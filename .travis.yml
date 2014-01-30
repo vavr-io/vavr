@@ -1,0 +1,5 @@
+language: java
+jdk:
+  - oraclejdk8
+before_install:
+  - git clone git://github.com/rocketscience-projects/rocket-base.git ../rocket-base
