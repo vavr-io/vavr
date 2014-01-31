@@ -1,19 +1,10 @@
 language: java
 jdk:
   - oraclejdk8
+env:
+  global:
+    - secure: "Gj8zkuyn9RnuMWlSXR3hlSGG95kbgK4DWEFMNV2kAahlW8LnIHMK0cAo56i6R3eGI3+gwkZLHl4Hqsdphsgwm37DKeI/ij5Z/mrNPy+Cg0BxYy8FLJNrpcpuuVVHjLjX+YrpxPgNTSAZLAeE/6iE/ffpj+e1iP04iXev9EFXQZM="
 before_install:
   - git clone git://github.com/rocketscience-projects/rocket-base.git ../rocket-base
 after_success:
-  - echo "Host github.com" >> ~/.ssh/config
-  - echo "   StrictHostKeyChecking no" >> ~/.ssh/config
-  - echo "   CheckHostIP no" >> ~/.ssh/config
-  - echo "   UserKnownHostsFile=/dev/null" >> ~/.ssh/config
-  - git clone https://github.com/rocketscience-projects/maven-repository.git ../maven-repository
   - ../rocket-base/deploy.sh
-  - cd ../maven-repository
-  - git config --global user.email "mail@rocketscience.io"
-  - git config --global user.name "Rocket Science"
-  - git config credential.helper "store --file=.git/credentials"
-  - echo "https://${GH_TOKEN}:@github.com" > .git/credentials
-  - git commit -a -m "travis-ci snapshot $TRAVIS_REPO_SLUG $TRAVIS_COMMIT"
-  - git push
