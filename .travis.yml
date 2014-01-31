@@ -11,5 +11,7 @@ after_success:
   - git clone https://github.com/rocketscience-projects/maven-repository.git ../maven-repository
   - ../rocket-base/deploy.sh
   - cd ../maven-repository
-  - git commit -a -m 'TRAVIS-CI: new snapshot $TRAVIS_REPO_SLUG $TRAVIS_COMMIT'
+  - git config credential.helper "store --file=.git/credentials"
+  - echo "https://${GH_TOKEN}:@github.com" > .git/credentials
+  - git commit -a -m "travis-ci snapshot $TRAVIS_REPO_SLUG $TRAVIS_COMMIT'
   - git push
