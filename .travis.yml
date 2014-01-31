@@ -8,8 +8,8 @@ after_success:
   - echo "   StrictHostKeyChecking no" >> ~/.ssh/config
   - echo "   CheckHostIP no" >> ~/.ssh/config
   - echo "   UserKnownHostsFile=/dev/null" >> ~/.ssh/config
-  - git clone git@github.com:rocketscience-projects/maven-repository.git ../maven-repository
+  - git clone https://github.com/rocketscience-projects/maven-repository.git ../maven-repository
   - ../rocket-base/deploy.sh
   - cd ../maven-repository
-  - git commit -a -m "TRAVIS-CI: new snapshot $TRAVIS_REPO_SLUG $TRAVIS_COMMIT"
+  - git commit -a -m 'TRAVIS-CI: new snapshot $TRAVIS_REPO_SLUG $TRAVIS_COMMIT'
   - git push
