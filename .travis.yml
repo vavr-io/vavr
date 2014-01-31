@@ -3,3 +3,13 @@ jdk:
   - oraclejdk8
 before_install:
   - git clone git://github.com/rocketscience-projects/rocket-base.git ../rocket-base
+after_success:
+  - echo "Host github.com" >> ~/.ssh/config
+  - echo "   StrictHostKeyChecking no" >> ~/.ssh/config
+  - echo "   CheckHostIP no" >> ~/.ssh/config
+  - echo "   UserKnownHostsFile=/dev/null" >> ~/.ssh/config
+  - git clone git@github.com:rocketscience-projects/maven-repository.git ../maven-repository
+  - ../rocket-base/deploy.sh
+  - cd ../maven-repository
+  - git commit -a -m "TRAVIS-CI: new snapshot $TRAVIS_REPO_SLUG $TRAVIS_COMMIT"
+  - git push
