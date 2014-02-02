@@ -3,14 +3,15 @@ package io.rocketscience.java.lang;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.util.stream.Collectors.toList;
-import static org.fest.util.Lists.newArrayList;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.StringJoiner;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 // TODO: handle dates (o instanceof Date and asISODate(o) instanceof Date)
 public interface ObjectConverters {
@@ -19,11 +20,10 @@ public interface ObjectConverters {
 	 * Converts an Object o to a Boolean according to these rules:
 	 * <ul>
 	 * <li>Null and Boolean values are passed back.</li>
-	 * <li>Numbers != 0 map to true, false otherwise.</li>
-	 * <li>Strings that are "true" (case-insensitive) or a Number != 0 map to true, false otherwise.</li>
-	 * <li>Iterables map to true, if their first value (if exists) is a Boolean according to these rules, false
-	 * otherwise.</li>
-	 * <li>Optionals are mapped to the Boolean representation of their underlying value or null.</li>
+	 * <li>Number != 0 maps to true, false otherwise.</li>
+	 * <li>String that equals "true" (ignoring case) or String number != 0 map to true, false otherwise.</li>
+	 * <li>Collection maps to the first value (if exists) according to these rules, false otherwise.</li>
+	 * <li>Optional maps to the Boolean representation of the underlying value or null.</li>
 	 * <li>Other Objects map to true, if toString() is a Boolean according to these rules.</li>
 	 * </ul>
 	 * 
@@ -48,8 +48,8 @@ public interface ObjectConverters {
 					return FALSE;
 				}
 			}
-		} else if (o instanceof Iterable) {
-			final Iterator<?> iterator = ((Iterable<?>) o).iterator();
+		} else if (o instanceof Collection) {
+			final Iterator<?> iterator = ((Collection<?>) o).iterator();
 			return iterator.hasNext() ? asBoolean(iterator.next()) : FALSE;
 		} else if (o instanceof Optional) {
 			final Optional<?> optional = (Optional<?>) o;
@@ -63,12 +63,12 @@ public interface ObjectConverters {
 	 * Converts an Object o to an Integer according to these rules:
 	 * <ul>
 	 * <li>Null values are passed back.</li>
-	 * <li>Booleans are mapped to 1 (true) and 0 (false).</li>
-	 * <li>Numbers are mapped to intValue().</li>
-	 * <li>Strings are converted to BigDecimal and mapped to intValue(). If the given String cannot be converted to a
+	 * <li>Boolean maps to 1 (true) and 0 (false).</li>
+	 * <li>Number maps to intValue().</li>
+	 * <li>String is converted to BigDecimal and mapped to intValue(). If the given String cannot be converted to a
 	 * BigDecimal, null is returned.</li>
-	 * <li>Iterables map to the Integer representation of their first value (if exists). Empty Iterables map to null.</li>
-	 * <li>Optionals are mapped to the Integer representation of their underlying value or null.</li>
+	 * <li>Collection maps to the Integer representation of the first value (if exists). Empty Collection maps to null.</li>
+	 * <li>Optional maps to the Integer representation of the underlying value or null.</li>
 	 * <li>Other Objects map to the Integer representation of toString(), according to these rules.</li>
 	 * </ul>
 	 * 
@@ -89,8 +89,8 @@ public interface ObjectConverters {
 			} catch (NumberFormatException x) {
 				return null;
 			}
-		} else if (o instanceof Iterable) {
-			final Iterator<?> iterator = ((Iterable<?>) o).iterator();
+		} else if (o instanceof Collection) {
+			final Iterator<?> iterator = ((Collection<?>) o).iterator();
 			return iterator.hasNext() ? asInt(iterator.next()) : null;
 		} else if (o instanceof Optional) {
 			final Optional<?> optional = (Optional<?>) o;
@@ -104,12 +104,12 @@ public interface ObjectConverters {
 	 * Converts an Object o to a Double according to these rules:
 	 * <ul>
 	 * <li>Null values are passed back.</li>
-	 * <li>Booleans are mapped to 1.0d (true) and 0.0d (false).</li>
-	 * <li>Numbers are mapped to doubleValue().</li>
-	 * <li>Strings are converted to BigDecimal and mapped to doubleValue(). If the given String cannot be converted to a
+	 * <li>Boolean maps to 1.0d (true) and 0.0d (false).</li>
+	 * <li>Number maps to doubleValue().</li>
+	 * <li>String is converted to BigDecimal and mapped to doubleValue(). If the given String cannot be converted to a
 	 * BigDecimal, null is returned.</li>
-	 * <li>Iterables map to the Double representation of their first value (if exists). Empty Iterables map to null.</li>
-	 * <li>Optionals are mapped to the Double representation of their underlying value or null.</li>
+	 * <li>Collection maps to the Double representation of the first value (if exists). Empty Collection maps to null.</li>
+	 * <li>Optional maps to the Double representation of the underlying value or null.</li>
 	 * <li>Other Objects map to the Double representation of toString(), according to these rules.</li>
 	 * </ul>
 	 * 
@@ -130,8 +130,8 @@ public interface ObjectConverters {
 			} catch (NumberFormatException x) {
 				return null;
 			}
-		} else if (o instanceof Iterable) {
-			final Iterator<?> iterator = ((Iterable<?>) o).iterator();
+		} else if (o instanceof Collection) {
+			final Iterator<?> iterator = ((Collection<?>) o).iterator();
 			return iterator.hasNext() ? asDouble(iterator.next()) : null;
 		} else if (o instanceof Optional) {
 			final Optional<?> optional = (Optional<?>) o;
@@ -145,9 +145,9 @@ public interface ObjectConverters {
 	 * Converts an Object o to a String according to these rules:
 	 * <ul>
 	 * <li>Null and String values are passed back.</li>
-	 * <li>Booleans and Numberss are mapped to their toString() value.</li>
-	 * <li>Iterables o1, o2, ... map to "[asString(o1), asString(o2), ...]", empty Iterables map to "[]".</li>
-	 * <li>Optionals are mapped to the String representation of their underlying value or null.</li>
+	 * <li>Boolean and Number are mapped to their toString() value.</li>
+	 * <li>Collection o1, o2, ... maps to "[asString(o1), asString(o2), ...]", empty Collction maps to "[]".</li>
+	 * <li>Optional maps to the String representation of the underlying value or null.</li>
 	 * <li>Other Objects are mapped to toString().</li>
 	 * </ul>
 	 * 
@@ -161,11 +161,8 @@ public interface ObjectConverters {
 			return (String) o;
 		} else if (o instanceof Boolean || o instanceof Number) {
 			return o.toString();
-		} else if (o instanceof Iterable) {
-			final Iterable<?> iterable = (Iterable<?>) o;
-			final StringJoiner sj = new StringJoiner(", ", "[", "]");
-			iterable.forEach(item -> sj.add(asString(item)));
-			return sj.toString();
+		} else if (o instanceof Collection) {
+			return ((Collection<?>) o).stream().map(item -> asString(item)).collect(Collectors.joining(", ", "[", "]"));
 		} else if (o instanceof Optional) {
 			final Optional<?> optional = (Optional<?>) o;
 			return optional.isPresent() ? asString(optional.get()) : null;
@@ -177,10 +174,10 @@ public interface ObjectConverters {
 	/**
 	 * Converts an Object o to a List according to these rules:
 	 * <ul>
-	 * <li>Null and Lists are passed back.</li>
-	 * <li>Booleans and Numbers are mapped to their toString() value.</li>
-	 * <li>Iterables are mapped to Lists containing the same Objects.</li>
-	 * <li>Optionals are mapped to a List accoring to these rules.</li>
+	 * <li>Null and List are passed back.</li>
+	 * <li>Boolean and Number are mapped to their toString() value.</li>
+	 * <li>Collection maps to a List of same elements.</li>
+	 * <li>Optional value is wrapped in a List if present or maps to null.</li>
 	 * <li>Other Objects are wrapped into single-value Lists.</li>
 	 * </ul>
 	 * 
@@ -193,14 +190,13 @@ public interface ObjectConverters {
 			return null;
 		} else if (o instanceof List) {
 			return (List<?>) o;
-		} else if (o instanceof Iterable) {
-			final Iterable<?> iterable = (Iterable<?>) o;
-			return newArrayList(iterable);
+		} else if (o instanceof Collection) {
+			return new ArrayList<>((Collection<?>) o);
 		} else if (o instanceof Optional) {
 			final Optional<?> optional = (Optional<?>) o;
 			return optional.isPresent() ? asList(optional.get()) : null;
 		} else {
-			return newArrayList(o);
+			return asList(o);
 		}
 	}
 
