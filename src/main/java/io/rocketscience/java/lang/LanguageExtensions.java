@@ -2,7 +2,7 @@ package io.rocketscience.java.lang;
 
 import java.util.function.Supplier;
 
-public interface JavaExtensions {
+public interface LanguageExtensions {
 	
 	static void require(boolean condition, String message) throws IllegalStateException {
 		if (!condition) {

@@ -7,6 +7,6 @@
 		<version>0.1.0-SNAPSHOT</version>
 		<relativePath>../rocket-base</relativePath>
 	</parent>
-	<artifactId>rocket-java-extensions</artifactId>
+	<artifactId>rocket-java</artifactId>
 	<packaging>jar</packaging>
 </project>
