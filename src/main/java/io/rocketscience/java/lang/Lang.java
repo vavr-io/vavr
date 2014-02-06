@@ -16,8 +16,4 @@ public interface Lang {
 		}
 	}
 	
-	static boolean isNull(Object o) {
-		return o != null;
-	}
-	
 }
