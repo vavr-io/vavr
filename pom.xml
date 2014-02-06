@@ -5,8 +5,20 @@
 		<groupId>io.rocketscience</groupId>
 		<artifactId>rocket-base</artifactId>
 		<version>0.1.0-SNAPSHOT</version>
-		<relativePath>../rocket-base</relativePath>
 	</parent>
 	<artifactId>rocket-java</artifactId>
 	<packaging>jar</packaging>
+	<properties>
+		<repo.base.url>https://github.com/rocketscience-projects/maven-repository/raw/master</repo.base.url>
+	</properties>
+	<repositories>
+		<repository>
+			<id>rocketscience-releases</id>
+			<url>${repo.base.url}/releases</url>
+		</repository>
+		<repository>
+			<id>rocketscience-snapshots</id>
+			<url>${repo.base.url}/snapshots</url>
+		</repository>
+	</repositories>
 </project>

@@ -3,8 +3,6 @@ jdk:
   - oraclejdk8
 env:
   global:
-    - secure: "Gj8zkuyn9RnuMWlSXR3hlSGG95kbgK4DWEFMNV2kAahlW8LnIHMK0cAo56i6R3eGI3+gwkZLHl4Hqsdphsgwm37DKeI/ij5Z/mrNPy+Cg0BxYy8FLJNrpcpuuVVHjLjX+YrpxPgNTSAZLAeE/6iE/ffpj+e1iP04iXev9EFXQZM="
-before_install:
-  - git clone git://github.com/rocketscience-projects/rocket-base.git ../rocket-base
+    - secure: "idDQHs5MtIPAKhU6LzPy4pwCGuxQ8H6/X2nK5L+j6USzrsMGX2lpTBI+r06HGtegGlvtIGY4sZq14pBRd1xAw1bzMw8VOI6JvyEy27kvujSow6xBy+Obv+1pO3rnIGgNQPWaHBs8zJXNI/JnzAMjFtwr0Aics0bSwayqkhoa1wY="
 after_success:
-  - ../rocket-base/deploy.sh
+  - ./deploy.sh

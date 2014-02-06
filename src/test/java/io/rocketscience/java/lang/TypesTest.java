@@ -1,6 +1,6 @@
 package io.rocketscience.java.lang;
 
-public class ObjectConvertersTest {
+public class TypesTest {
 
 	// TODO
 	

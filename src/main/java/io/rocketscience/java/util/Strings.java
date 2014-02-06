@@ -1,7 +1,7 @@
 package io.rocketscience.java.util;
 
 
-public interface StringUtils {
+public interface Strings {
 
 	static String repeat(String s, int times) {
 		if (s == null) {

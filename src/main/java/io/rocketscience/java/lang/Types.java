@@ -1,12 +1,16 @@
 package io.rocketscience.java.lang;
 
 import static java.math.BigDecimal.ZERO;
+import static java.util.stream.Collectors.joining;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
-public interface ObjectConverters {
+public interface Types {
 
 	/**
 	 * Converts an Object o to a Boolean according to these rules:
@@ -235,4 +239,26 @@ public interface ObjectConverters {
 		return (arr != null && arr.length == 1) ? arr[0] : null;
 	}
 	
+	// TODO: javadoc
+	static String toString(Object o) {
+		return
+				(o == null) ? null :
+				(o instanceof Boolean || o instanceof Number) ? o.toString() :
+				(o instanceof String) ? (String) o :
+				(o.getClass().isArray()) ? Arrays.stream((Object[]) o).map(Types::toString).collect(joining(", ", "[", "]")) : 
+				(o instanceof Collection) ? ((Collection<?>) o).stream().map(Types::toString).collect(joining(", ", "[", "]")) :
+				(o instanceof Optional) ? toString(((Optional<?>) o).orElse(null)) :
+				o.toString();
+	}
+
+	// TODO: javadoc
+	static List<Object> toList(Object o) {
+		return
+				(o == null) ? null :
+				(o.getClass().isArray()) ? Arrays.asList((Object[]) o) : 
+				(o instanceof Collection) ? new ArrayList<Object>((Collection<?>) o) :
+				/** TODO: remove cast to (Object) (see {@link https://bugs.eclipse.org/bugs/show_bug.cgi?id=427223}) */
+				(o instanceof Optional) ? Arrays.asList((Object) ((Optional<?>) o).orElse(null)) :
+				Arrays.asList(o);
+	}
 }

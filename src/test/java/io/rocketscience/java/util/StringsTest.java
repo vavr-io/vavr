@@ -1,12 +1,12 @@
 package io.rocketscience.java.util;
 
-import static io.rocketscience.java.util.StringUtils.escape;
-import static io.rocketscience.java.util.StringUtils.repeat;
+import static io.rocketscience.java.util.Strings.escape;
+import static io.rocketscience.java.util.Strings.repeat;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import org.junit.Test;
 
-public class StringUtilsTest {
+public class StringsTest {
 
 	@Test
 	public void shouldRepeatNullAsNull() {

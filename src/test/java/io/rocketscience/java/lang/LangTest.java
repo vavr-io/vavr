@@ -1,6 +1,6 @@
 package io.rocketscience.java.lang;
 
-public class JavaExtensionsTest {
+public class LangTest {
 
 	// TODO
 	

@@ -2,7 +2,7 @@ package io.rocketscience.java.lang;
 
 import java.util.function.Supplier;
 
-public interface LanguageExtensions {
+public interface Lang {
 	
 	static void require(boolean condition, String message) throws IllegalStateException {
 		if (!condition) {
@@ -14,6 +14,10 @@ public interface LanguageExtensions {
 		if (!condition) {
 			throw new IllegalStateException(lazyMessage.get());
 		}
+	}
+	
+	static boolean isNull(Object o) {
+		return o != null;
 	}
 	
 }
