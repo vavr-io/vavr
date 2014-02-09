@@ -1,7 +1,6 @@
 package io.rocketscience.java.collection.tree;
 
 import static io.rocketscience.java.lang.Lang.require;
-import io.rocketscience.java.lang.Lang;
 import io.rocketscience.java.util.Strings;
 
 import java.util.ArrayList;

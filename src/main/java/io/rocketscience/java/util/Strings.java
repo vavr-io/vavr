@@ -7,18 +7,21 @@ import static java.util.Arrays.fill;
 import static java.util.regex.Pattern.compile;
 import static java.util.stream.Collectors.joining;
 
-import io.rocketscience.java.lang.Types;
 import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public interface Strings {
+public final class Strings {
 	
 	/**
 	 * An end of line pattern (mac/unix/win)
 	 */
-	static final Pattern EOL = compile("\\r\\n|\\n|\\r");
+	public static final Pattern EOL = compile("\\r\\n|\\n|\\r");
+	
+	private Strings() {
+        throw new AssertionError(Strings.class.getName() + " cannot be instantiated.");
+    }
 
 	/**
 	 * Duplicate a string n times.
@@ -27,7 +30,7 @@ public interface Strings {
 	 * @param n Duplication count >= 0.
 	 * @return A string, s duplicated n times or null, if s is null.
 	 */
-	static String repeat(String s, int n) {
+	public static String repeat(String s, int n) {
 		require(n >= 0, "n < 0");
 		if (s == null) {
 			return null;
@@ -46,7 +49,7 @@ public interface Strings {
 	 * @param times A count of spaces.
 	 * @return A string of spaces which has length times.
 	 */
-	static String space(int times) {
+	public static String space(int times) {
 		require(times >= 0, "");
 		if (times == 0) {
 			return "";
@@ -63,7 +66,7 @@ public interface Strings {
 	 * @param s A string.
 	 * @return Escaped string or null if s is null.
 	 */
-	static String escape(String s) {
+	public static String escape(String s) {
 		return (s == null) ? null : s.replaceAll("\\\\", "\\\\\\\\").replaceAll("\"", "\\\\\\\"");
 	}
 
@@ -74,7 +77,7 @@ public interface Strings {
 	 * @param index <= s.length
 	 * @return <code>new int[] { line, column }</code>
 	 */
-	static int[] lineAndColumn(String s, int index) {
+	public static int[] lineAndColumn(String s, int index) {
 		final String documentToCursor = s.substring(0, index);
 		final Matcher matcher = EOL.matcher(documentToCursor);
 		int line = 1;
@@ -86,41 +89,41 @@ public interface Strings {
 	}
 	
 	/**
-	 * Tests if given String s is null or empty.
+	 * Tests if given String is null or empty.
 	 * 
 	 * @param s A String
 	 * @return true, if s is null or empty, false otherwise
 	 */
-	static boolean isNullOrEmpty(String s) {
+	public static boolean isNullOrEmpty(String s) {
 		return s == null || "".equals(s);
 	}
 	
 	/**
 	 * Shortcut for <code>Arrays.asList(array).stream().map(Types::toString).collect(Collectors.joining(delimiter))</code>.
 	 */
-	static <T> String mkString(T[] array, CharSequence delimiter) {
+	public static <T> String mkString(T[] array, CharSequence delimiter) {
 		return mkString(asList(array), delimiter);
 	}
 
 	/**
 	 * Shortcut for <code>Arrays.asList(array).stream().map(Types::toString).collect(Collectors.joining(delimiter, prefix, suffix))</code>.
 	 */
-	static <T> String mkString(T[] array, CharSequence delimiter, CharSequence prefix, CharSequence suffix) {
+	public static <T> String mkString(T[] array, CharSequence delimiter, CharSequence prefix, CharSequence suffix) {
 		return mkString(asList(array), delimiter);
 	}
 
 	/**
 	 * Shortcut for <code>collection.stream().map(Types::toString).collect(joining(delimiter))</code>.
 	 */
-	static <T> String mkString(Collection<T> collection, CharSequence delimiter) {
-		return collection.stream().map(Types::toString).collect(joining(delimiter));
+	public static <T> String mkString(Collection<T> collection, CharSequence delimiter) {
+		return collection.stream().map(Objects::toString).collect(joining(delimiter));
 	}
 
 	/**
 	 * Shortcut for <code>collection.stream().map(Types::toString).collect(joining(delimiter, prefix, suffix))</code>.
 	 */
-	static <T> String mkString(Collection<T> collection, CharSequence delimiter, CharSequence prefix, CharSequence suffix) {
-		return collection.stream().map(Types::toString).collect(joining(delimiter, prefix, suffix));
+	public static <T> String mkString(Collection<T> collection, CharSequence delimiter, CharSequence prefix, CharSequence suffix) {
+		return collection.stream().map(Objects::toString).collect(joining(delimiter, prefix, suffix));
 	}
 
 }

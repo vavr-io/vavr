@@ -1,4 +1,4 @@
-package io.rocketscience.java.lang;
+package io.rocketscience.java.util;
 
 import static java.math.BigDecimal.ZERO;
 import static java.util.stream.Collectors.joining;
@@ -10,7 +10,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-public interface Types {
+public final class Objects {
+	
+	private Objects() {
+        throw new AssertionError(Objects.class.getName() + " cannot be instantiated.");
+    }
 
 	/**
 	 * Converts an Object o to a Boolean according to these rules:
@@ -29,7 +33,7 @@ public interface Types {
 	 * @param o An Object
 	 * @return A Boolean representation of o or null.
 	 */
-	static Boolean toBoolean(Object o) {
+	public static Boolean toBoolean(Object o) {
 		return
 				(o == null) ? null :
 				(o instanceof Boolean) ? (Boolean) o :
@@ -47,7 +51,7 @@ public interface Types {
 	 * @param o An Object
 	 * @return An Optional&lt;Boolean&gt; representation of o.
 	 */
-	static Optional<Boolean> toBooleanOption(Object o) {
+	public static Optional<Boolean> toBooleanOption(Object o) {
 		return Optional.ofNullable(toBoolean(o));
 	}
 	
@@ -71,7 +75,7 @@ public interface Types {
 	 * @param o An Object
 	 * @return A Number representation of o or null.
 	 */
-	static Number toNumber(Object o) {
+	public static Number toNumber(Object o) {
 		return
 				(o == null) ? null :
 				(o instanceof Boolean) ? ((Boolean) o) ? 1 : 0 :
@@ -89,7 +93,7 @@ public interface Types {
 	 * @param o An Object
 	 * @return An Optional&lt;Number&gt; representation of o.
 	 */
-	static Optional<Number> toNumberOption(Object o) {
+	public static Optional<Number> toNumberOption(Object o) {
 		return Optional.ofNullable(toNumber(o));
 	}
 	
@@ -110,7 +114,7 @@ public interface Types {
 	 * @param o An Object
 	 * @return A Number representation of o or null.
 	 */
-	static Number toNumber(String s) {
+	public static Number toNumber(String s) {
 		if (s == null) {
 			return null;
 		} else {
@@ -130,7 +134,7 @@ public interface Types {
 	 * @param s A String
 	 * @return An Optional&lt;Number&gt; representation of s.
 	 */
-	static Optional<Number> toNumberOption(String s) {
+	public static Optional<Number> toNumberOption(String s) {
 		return Optional.ofNullable(toNumber(s));
 	}
 
@@ -141,7 +145,7 @@ public interface Types {
 	 * @param s A String
 	 * @return An Integer representation of s.
 	 */
-	static Integer toInt(String s) {
+	public static Integer toInt(String s) {
 		try {
 			return (s == null) ? null : Integer.parseInt(s);
 		} catch(Exception x) {
@@ -155,7 +159,7 @@ public interface Types {
 	 * @param s A String
 	 * @return An Optional&lt;Integer&gt; representation of s.
 	 */
-	static Optional<Integer> toIntOption(String s) {
+	public static Optional<Integer> toIntOption(String s) {
 		return Optional.ofNullable(toInt(s));
 	}
 	
@@ -166,7 +170,7 @@ public interface Types {
 	 * @param s A String
 	 * @return A Double representation of s.
 	 */
-	static Double toDouble(String s) {
+	public static Double toDouble(String s) {
 		try {
 			return (s == null) ? null : Double.parseDouble(s);
 		} catch(Exception x) {
@@ -180,7 +184,7 @@ public interface Types {
 	 * @param s A String
 	 * @return An Optional&lt;Double&gt; representation of s.
 	 */
-	static Optional<Double> toDoubleOption(String s) {
+	public static Optional<Double> toDoubleOption(String s) {
 		return Optional.ofNullable(toDouble(s));
 	}
 	
@@ -191,7 +195,7 @@ public interface Types {
 	 * @param s A String
 	 * @return A BigDecimal representation of s.
 	 */
-	static BigDecimal toBigDecimal(String s) {
+	public static BigDecimal toBigDecimal(String s) {
 		try {
 			return (s == null) ? null : new BigDecimal(s);
 		} catch(Exception x) {
@@ -205,7 +209,7 @@ public interface Types {
 	 * @param s A String
 	 * @return An Optional&lt;BigDecimal&gt; representation of s.
 	 */
-	static Optional<BigDecimal> toBigDecimalOption(String s) {
+	public static Optional<BigDecimal> toBigDecimalOption(String s) {
 		return Optional.ofNullable(toBigDecimal(s));
 	}
 	
@@ -215,7 +219,7 @@ public interface Types {
 	 * @param c A Collection
 	 * @return The single element contained in c or null.
 	 */
-	static Object unbox(Collection<?> c) {
+	public static Object unbox(Collection<?> c) {
 		return (c != null && c.size() == 1) ? c.iterator().next() : null;
 	}
 	
@@ -225,7 +229,7 @@ public interface Types {
 	 * @param o An Optional
 	 * @return The single element contained in o or null.
 	 */
-	static Object unbox(Optional<?> o) {
+	public static Object unbox(Optional<?> o) {
 		return (o == null) ? null : o.orElse(null);
 	}
 	
@@ -235,24 +239,24 @@ public interface Types {
 	 * @param arr An Array
 	 * @return The single element contained in arr or null.
 	 */
-	static Object unbox(Object[] arr) {
+	public static Object unbox(Object[] arr) {
 		return (arr != null && arr.length == 1) ? arr[0] : null;
 	}
 	
 	// TODO: javadoc
-	static String toString(Object o) {
+	public static String toString(Object o) {
 		return
 				(o == null) ? null :
 				(o instanceof Boolean || o instanceof Number) ? o.toString() :
 				(o instanceof String) ? (String) o :
-				(o.getClass().isArray()) ? Arrays.stream((Object[]) o).map(Types::toString).collect(joining(", ", "[", "]")) : 
-				(o instanceof Collection) ? ((Collection<?>) o).stream().map(Types::toString).collect(joining(", ", "[", "]")) :
+				(o.getClass().isArray()) ? Arrays.stream((Object[]) o).map(Objects::toString).collect(joining(", ", "[", "]")) : 
+				(o instanceof Collection) ? ((Collection<?>) o).stream().map(Objects::toString).collect(joining(", ", "[", "]")) :
 				(o instanceof Optional) ? toString(((Optional<?>) o).orElse(null)) :
 				o.toString();
 	}
 
 	// TODO: javadoc
-	static List<Object> toList(Object o) {
+	public static List<Object> toList(Object o) {
 		return
 				(o == null) ? null :
 				(o.getClass().isArray()) ? Arrays.asList((Object[]) o) : 
