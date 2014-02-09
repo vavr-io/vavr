@@ -12,6 +12,7 @@ public final class IO {
         throw new AssertionError(IO.class.getName() + " cannot be instantiated.");
     }
 	
+	// TODO: return Either<byte[], String> instead of Optional
 	public static Optional<byte[]> toBytes(InputStream source) {
 		try(InputStream in = source) {
 			final ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -26,6 +27,14 @@ public final class IO {
 		} 
 	}
 
+	/**
+	 * There will be no 
+	 * 
+	 * @param in
+	 * @param charset
+	 * @return
+	 */
+	// TODO: return Either<String, String> instead of Optional
 	public static Optional<String> toString(InputStream in, Charset charset) {
 		return toBytes(in).map(bytes -> new String(bytes, charset));
 	}

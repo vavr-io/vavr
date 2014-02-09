@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 public final class Strings {
 	
 	/**

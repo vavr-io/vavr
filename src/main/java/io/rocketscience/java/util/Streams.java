@@ -16,8 +16,9 @@ public final class Streams {
 	 * Maps a source stream using the given mapper while the given condition holds. The elements are processed in the
 	 * encounter order of the source stream if the stream has a defined encounter order.<br>
 	 * <br>
-	 * Please note that we use the name map<em>While</em> because the mapping is performed before <em>after</em> test.
-	 * If the test is false, the mapped element is <em>not</em> part of the result stream.
+	 * Please note that we use the name map<em>While</em> because the mapping is performed <em>after</em> the test. If
+	 * the test is false, the mapped element is <em>not</em> part of the result stream and no more elements of the
+	 * source stream are processed.
 	 * 
 	 * @see java.util.Stream#forEachOrdered(java.util.function.Consumer)
 	 * 
@@ -34,7 +35,7 @@ public final class Streams {
 				if (condition.test(elem)) {
 					result.add(mapper.apply(elem));
 				} else {
-					// this is a constly operation. alternatives?
+					// this is a costly operation. alternatives?
 					throw new Break();
 				}
 			});
@@ -49,7 +50,8 @@ public final class Streams {
 	 * are processed in the encounter order of the source stream if the stream has a defined encounter order.<br>
 	 * <br>
 	 * Please note that we use the name map<em>Until</em> because the mapping is performed <em>before</em> the test.
-	 * However, if the test is false, the mapped element is <em>not</em> part of the result stream.
+	 * However, if the test is false, the mapped element is <em>not</em> part of the result stream and no more elements
+	 * of the source stream are processed.
 	 *
 	 * @see java.util.Stream#forEachOrdered(java.util.function.Consumer)
 	 * 
@@ -67,7 +69,7 @@ public final class Streams {
 				if (condition.test(mapped)) {
 					result.add(mapped);
 				} else {
-					// this is a constly operation. alternatives?
+					// this is a costly operation. alternatives?
 					throw new Break();
 				}
 			});
