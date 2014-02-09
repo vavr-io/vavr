@@ -9,7 +9,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
+// TODO: refactor this class and move methods to Strings, Arrays, Collections etc.
 public final class Objects {
 	
 	private Objects() {
@@ -39,7 +41,7 @@ public final class Objects {
 				(o instanceof Boolean) ? (Boolean) o :
 				(o instanceof Number) ? ((Number) o).intValue() != 0 :
 				(o instanceof String) ? Boolean.valueOf((String) o) ? true : toBigDecimalOption((String) o).map(n -> !ZERO.equals(n)).orElse(null) :
-				(o.getClass().isArray()) ? toBoolean(unbox((Object[]) o)) :
+				(o.getClass().isArray()) ? toBoolean(unbox(arrayToList(o))) :
 				(o instanceof Collection) ? toBoolean(unbox((Collection<?>) o)) :
 				(o instanceof Optional) ? toBoolean(unbox((Optional<?>) o)) :
 				toBoolean(o.toString());
@@ -81,7 +83,7 @@ public final class Objects {
 				(o instanceof Boolean) ? ((Boolean) o) ? 1 : 0 :
 				(o instanceof Number) ? (Number) o :
 				(o instanceof String) ? toNumber((String) o) :
-				(o.getClass().isArray()) ? toNumber(unbox((Object[]) o)) :
+				(o.getClass().isArray()) ? toNumber(unbox(arrayToList(o))) :
 				(o instanceof Collection) ? toNumber(unbox((Collection<?>) o)) :
 				(o instanceof Optional) ? toNumber(unbox((Optional<?>) o)) :
 				toNumber(o.toString());
@@ -249,20 +251,37 @@ public final class Objects {
 				(o == null) ? null :
 				(o instanceof Boolean || o instanceof Number) ? o.toString() :
 				(o instanceof String) ? (String) o :
-				(o.getClass().isArray()) ? Arrays.stream((Object[]) o).map(Objects::toString).collect(joining(", ", "[", "]")) : 
+				(o.getClass().isArray()) ? arrayToList(o).stream().map(Objects::toString).collect(joining(", ", "[", "]")) : 
 				(o instanceof Collection) ? ((Collection<?>) o).stream().map(Objects::toString).collect(joining(", ", "[", "]")) :
 				(o instanceof Optional) ? toString(((Optional<?>) o).orElse(null)) :
 				o.toString();
 	}
-
+	
 	// TODO: javadoc
-	public static List<Object> toList(Object o) {
+	public static List<?> toList(Object o) {
 		return
 				(o == null) ? null :
-				(o.getClass().isArray()) ? Arrays.asList((Object[]) o) : 
+				(o.getClass().isArray()) ? arrayToList(o) : 
 				(o instanceof Collection) ? new ArrayList<Object>((Collection<?>) o) :
 				/** TODO: remove cast to (Object) (see {@link https://bugs.eclipse.org/bugs/show_bug.cgi?id=427223}) */
 				(o instanceof Optional) ? Arrays.asList((Object) ((Optional<?>) o).orElse(null)) :
 				Arrays.asList(o);
+	}
+	
+	// TODO: javadoc
+	private static List<?> arrayToList(Object o) {
+		    final Class<?> type = o.getClass().getComponentType();
+		    return Arrays.asList(
+		    		type.isPrimitive() ?
+		    				boolean.class.isAssignableFrom(type) ? (boolean[]) o :
+		    				byte.class.isAssignableFrom(type)    ? (byte[])    o :
+		    				char.class.isAssignableFrom(type)    ? (char[])    o :
+		    				double.class.isAssignableFrom(type)  ? (double[])  o :
+		    				float.class.isAssignableFrom(type)   ? (float[])   o :
+		    				int.class.isAssignableFrom(type)     ? (int[])     o :
+		    				long.class.isAssignableFrom(type)    ? (long[])    o :
+		    				short.class.isAssignableFrom(type)   ? (short[])   o :
+		    				null :
+		    		(Object[]) o);
 	}
 }
