@@ -10,20 +10,37 @@ import java.util.function.Predicate;
 
 public class Tree<T> {
 	
-	public final String id; // identifier, not necessarily unique
-	public final T value;
+	private final String id; // identifier, not necessarily unique
+	private final T value;
+	private final List<Tree<T>> children = new ArrayList<>();
 
+	// needs to be accessible for attaching/detaching children
 	Tree<T> parent = null;
-	final List<Tree<T>> children = new ArrayList<>();
 
+	public Tree(String id) {
+		this(id, null);
+	}
+	
 	public Tree(String id, T value) {
 		require(id != null, "id cannot be null");
 		this.id = id;
 		this.value = value;
 	}
 	
+	public String getId() {
+		return id;
+	}
+	
+	public T getValue() {
+		return value;
+	}
+	
 	public List<Tree<T>> getChildren() {
 		return Collections.unmodifiableList(children);
+	}
+	
+	public Tree<T> getParent() {
+		return parent;
 	}
 	
 	/**
@@ -37,7 +54,7 @@ public class Tree<T> {
 			return false;
 		} else {
 			child.parent = this;
-			return children.add(child);
+			return children.add(child); // true
 		}
 	}
 	
@@ -65,7 +82,7 @@ public class Tree<T> {
 	}
 
 	public Tree<T> getRoot() {
-		return isRoot() ? this : parent.getRoot();
+		return (parent == null) ? this : parent.getRoot();
 	}
 
 	// TODO: public List<Tree<T>> toList(Strategy strategy), where Strategy in { BreadthFirst, DepthFirst }
