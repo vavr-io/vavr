@@ -245,8 +245,15 @@ public final class Objects {
 		return (arr != null && arr.length == 1) ? arr[0] : null;
 	}
 	
+	// TODO: DELME - just a test - use toString(Object) instead
+	public static String toString(int[] ints) {
+		return Arrays.asList(ints).stream().map(String::valueOf).collect(joining(", ", "[", "]"));
+	}
+	
 	// TODO: javadoc
+	// TODO: detect cycles => private String toString(Object o, Set<Object> visited)
 	public static String toString(Object o) {
+		System.out.println("## " + o);
 		return
 				(o == null) ? null :
 				(o instanceof Boolean || o instanceof Number) ? o.toString() :
@@ -281,7 +288,6 @@ public final class Objects {
 		    				int.class.isAssignableFrom(type)     ? (int[])     o :
 		    				long.class.isAssignableFrom(type)    ? (long[])    o :
 		    				short.class.isAssignableFrom(type)   ? (short[])   o :
-		    				null :
-		    		(Object[]) o);
+		    				new Object[] {} : (Object[]) o);
 	}
 }
