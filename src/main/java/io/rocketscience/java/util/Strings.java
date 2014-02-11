@@ -1,6 +1,5 @@
 package io.rocketscience.java.util;
 
-import static io.rocketscience.java.lang.Lang.require;
 import static java.lang.Math.max;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.fill;
