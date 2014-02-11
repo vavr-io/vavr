@@ -118,17 +118,7 @@ public class ObjectsTest {
 		final Boolean actual = Objects.toBoolean(new byte[] {});
 		assertThat(actual).isEqualTo(null);
 	}
-
-	public static void main(String[] args) {
-		final Object o = new byte[] {};
-		System.out.println("isString: " + (o instanceof String));
-		System.out.println("isArray: " + o.getClass().isArray());
-		final List<?> list = Objects.arrayToList(o);
-		System.out.println("list: " + Strings.mkString(list,  ", ", "[", "]"));
-		final Object x = Objects.unbox(list);
-		System.out.println("unbox(list): " + x);
-	}
-
+	
 	@Test
 	public void shouldConvertSingletonBooleanArrayToBoolean() {
 		// TODO
