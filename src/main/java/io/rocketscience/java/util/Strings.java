@@ -51,8 +51,7 @@ public final class Strings {
 	 * @return A string of spaces which has length times.
 	 */
 	public static String space(int times) {
-		require(times >= 0, "");
-		if (times == 0) {
+		if (times <= 0) {
 			return "";
 		} else {
 			final char[] buf = new char[times * 2];
