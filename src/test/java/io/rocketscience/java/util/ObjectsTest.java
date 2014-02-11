@@ -1,12 +1,8 @@
 package io.rocketscience.java.util;
 
 import static org.fest.assertions.api.Assertions.assertThat;
-import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
 
 import org.junit.Test;
 
@@ -75,7 +71,7 @@ public class ObjectsTest {
 	@Test
 	public void shouldConvertCharZeroToTrue() {
 		final Boolean actual = Objects.toBoolean('0');
-		assertThat(actual).isEqualTo(false);
+		assertThat(actual).isEqualTo(true);
 	}
 	
 	@Test
@@ -200,20 +196,20 @@ public class ObjectsTest {
 	
 	@Test
 	public void shouldConvertCharArrayContainingZeroToBoolean() {
-		final Boolean actual = Objects.toBoolean(new char[] { '0' });
+		final Boolean actual = Objects.toBoolean(new char[] { 0 });
 		assertThat(actual).isEqualTo(false);
 	}
 
 	@Test
 	public void shouldConvertCharArrayContainingOneToBoolean() {
-		final Boolean actual = Objects.toBoolean(new char[] { '1' });
+		final Boolean actual = Objects.toBoolean(new char[] { 1 });
 		assertThat(actual).isEqualTo(true);
 	}
 
 	@Test
 	public void shouldConvertCharArrayContainingDecimalZeroToBoolean() {
 		final Boolean actual = Objects.toBoolean(new char[] { 0 });
-		assertThat(actual).isEqualTo(true);
+		assertThat(actual).isEqualTo(false);
 	}
 
 	@Test
@@ -358,96 +354,6 @@ public class ObjectsTest {
 	public void shouldConvertShortArrayContainingTwoElementsToBoolean() {
 		final Boolean actual = Objects.toBoolean(new short[] { 0, 1 });
 		assertThat(actual).isEqualTo(null);
-	}
-	// TODO: toBoolean(Array of objects)
-
-	// TODO: toBoolean(Collection)
-
-	// TODO: toBoolean(Optional)
-
-	// TODO: toBoolean(Object)
-
-	// -- unbox(Collection) tests
-
-	@Test
-	public void shouldUnboxNullCollection() {
-		final Collection<?> c = null;
-		final Object actual = Objects.unbox(c);
-		assertThat(actual).isEqualTo(null);
-	}
-
-	@Test
-	public void shouldUnboxEmptyCollection() {
-		final Collection<?> c = java.util.Arrays.asList();
-		final Object actual = Objects.unbox(c);
-		assertThat(actual).isEqualTo(null);
-	}
-
-	@Test
-	public void shouldUnboxSingletonCollection() {
-		final Collection<?> c = java.util.Arrays.asList(1);
-		final Object actual = Objects.unbox(c);
-		assertThat(actual).isEqualTo(1);
-	}
-
-	@Test
-	public void shouldUnboxCollectionWithTwoValues() {
-		final Collection<?> c = java.util.Arrays.asList(1, 2);
-		final Object actual = Objects.unbox(c);
-		assertThat(actual).isEqualTo(null);
-	}
-
-	// -- unbox(List) tests
-
-	@Test
-	public void shouldUnboxNullList() {
-		final List<?> c = null;
-		final Object actual = Objects.unbox(c);
-		assertThat(actual).isEqualTo(null);
-	}
-
-	@Test
-	public void shouldUnboxEmptyList() {
-		final List<?> c = java.util.Arrays.asList();
-		final Object actual = Objects.unbox(c);
-		assertThat(actual).isEqualTo(null);
-	}
-
-	@Test
-	public void shouldUnboxSingletonList() {
-		final List<?> c = java.util.Arrays.asList(1);
-		final Object actual = Objects.unbox(c);
-		assertThat(actual).isEqualTo(1);
-	}
-
-	@Test
-	public void shouldUnboxListWithTwoValues() {
-		final List<?> c = java.util.Arrays.asList(1, 2);
-		final Object actual = Objects.unbox(c);
-		assertThat(actual).isEqualTo(null);
-	}
-
-	// -- unbox(Optional) tests
-
-	@Test
-	public void shouldUnboxNullOptional() {
-		final Optional<?> c = null;
-		final Object actual = Objects.unbox(c);
-		assertThat(actual).isEqualTo(null);
-	}
-
-	@Test
-	public void shouldUnboxEmptyOptional() {
-		final Optional<?> c = Optional.empty();
-		final Object actual = Objects.unbox(c);
-		assertThat(actual).isEqualTo(null);
-	}
-
-	@Test
-	public void shouldUnboxDefinedOptional() {
-		final Optional<?> c = Optional.of(1);
-		final Object actual = Objects.unbox(c);
-		assertThat(actual).isEqualTo(1);
 	}
 
 }

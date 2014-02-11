@@ -2,7 +2,6 @@ package io.rocketscience.java.util;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static java.lang.String.valueOf;
 import static java.math.BigDecimal.ZERO;
 import static java.util.stream.Collectors.joining;
 
@@ -11,7 +10,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-// TODO: refactor this class and move methods to Strings, Arrays, Collections etc.
 public final class Objects {
 	
 	private Objects() {
@@ -35,46 +33,19 @@ public final class Objects {
 	 * @param o An Object, may be null.
 	 * @return A Boolean representation of o or null.
 	 */
+	// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=427933
+	// TODO: detect cycles => private String toString(Object o, Set<Object> visited)
 	public static Boolean toBoolean(Object o) {
 		return
 				(o == null) ? null :
 				(o instanceof Boolean) ? (Boolean) o :
 				(o instanceof Number) ? numberToBoolean((Number) o) :
-				(o instanceof Character) ? charToBoolean((Character) o) :
+				(o instanceof Character) ? (Boolean) (((char) o) != 0) :
 				(o instanceof String) ? stringToBoolean((String) o) :
 				(o.getClass().isArray()) ? toBoolean(unbox(arrayToList(o))) :
 				(o instanceof Collection) ? toBoolean(unbox((Collection<?>) o)) :
 				(o instanceof Optional) ? toBoolean(unbox((Optional<?>) o)) :
 				stringToBoolean(o.toString());
-	}
-	
-	private static Boolean charToBoolean(Character c) {
-		return c.charValue() != '0';
-	}
-	
-	private static Boolean stringToBoolean(String s) {
-		final String test = s.toLowerCase();
-		return
-				"true".equals(test) ? TRUE :
-				"false".equals(test) ? FALSE :
-				toBigDecimalOption(s)
-					.map(n -> !ZERO.equals(n.stripTrailingZeros()))
-					.orElse(null);
-	}
-	
-	private static Boolean numberToBoolean(Number num) {
-		final BigDecimal b = new BigDecimal(String.valueOf(num));
-		return !ZERO.equals(b.stripTrailingZeros());
-	}
-
-	/**
-	 * Converts an Object o to an Optional&lt;Boolean&gt; by calling <code>Optional.ofNullable(toBoolean(o))</code>.
-	 * 
-	 * @param o An Object, may be null.
-	 * @return An Optional&lt;Boolean&gt; representation of o or null.
-	 */
-	public static Optional<Boolean> toBooleanOption(Object o) {
-		return Optional.ofNullable(toBoolean(o));
 	}
 	
 	/**
@@ -97,11 +68,13 @@ public final class Objects {
 	 * @param o An Object, may be null.
 	 * @return A Number representation of o or null.
 	 */
+	// TODO: detect cycles => private String toString(Object o, Set<Object> visited)
 	public static Number toNumber(Object o) {
 		return
 				(o == null) ? null :
 				(o instanceof Boolean) ? ((Boolean) o) ? 1 : 0 :
 				(o instanceof Number) ? (Number) o :
+				(o instanceof Character) ? (int) ((Character) o).charValue() :
 				(o instanceof String) ? toNumber((String) o) :
 				(o.getClass().isArray()) ? toNumber(unbox(arrayToList(o))) :
 				(o instanceof Collection) ? toNumber(unbox((Collection<?>) o)) :
@@ -109,184 +82,14 @@ public final class Objects {
 				toNumber(o.toString());
 	}
 	
-	/**
-	 * Converts an Object o to an Optional&lt;Number&gt; by calling <code>Optional.ofNullable(toNumber(o))</code>.
-	 * 
-	 * @param o An Object, may be null.
-	 * @return An Optional&lt;Number&gt; representation of o or null.
-	 */
-	public static Optional<Number> toNumberOption(Object o) {
-		return Optional.ofNullable(toNumber(o));
-	}
-	
-	/**
-	 * Converts a String to a Number according to these rules:
-	 * 
-	 * <ul>
-	 * <li>null -&gt; null</li>
-	 * <li>s is Integer -&gt; toInt(s)</li>
-	 * <li>s is Double -&gt; toDouble(s)</li>
-	 * <li>s is BigDecimal -&gt; toBigDecimal(s)</li>
-	 * <li>otherwise null</em></li>
-	 * </ul>
-	 * 
-	 * The returned {@link java.lang.Number} may be of type {@link java.lang.Integer}, {@link java.lang.Double} or
-	 * {@link java.math.BigDecimal}.
-	 * 
-	 * @param o An Object, may be null.
-	 * @return A Number representation of o or null.
-	 */
-	public static Number toNumber(String s) {
-		if (s == null) {
-			return null;
-		} else {
-			final Integer i = toInt(s);
-			if (i != null) {
-				return i;
-			} else {
-				final Double d = toDouble(s);
-				return (d != null) ? d : toBigDecimal(s);
-			}
-		}
-	}
-	
-	/**
-	 * Converts a String to an Optional&lt;Number&gt; by calling <code>Optional.ofNullable(toNumber(s))</code>.
-	 * 
-	 * @param s A String, may be null.
-	 * @return An Optional&lt;Number&gt; representation of s or null.
-	 */
-	public static Optional<Number> toNumberOption(String s) {
-		return Optional.ofNullable(toNumber(s));
-	}
-
-	/**
-	 * Given a String s, the result of {@link Integer#parseInteger(String)} is returned.
-	 * If s is null or a NumberFormatException occurs, null is returned.
-	 * 
-	 * @param s A String, may be null.
-	 * @return An Integer representation of s or null.
-	 */
-	public static Integer toInt(String s) {
-		try {
-			return (s == null) ? null : Integer.parseInt(s);
-		} catch(Exception x) {
-			return null;
-		}
-	}
-	
-	/**
-	 * Converts a String to an Optional&lt;Integer&gt; by calling <code>Optional.ofNullable(toInteger(s))</code>.
-	 * 
-	 * @param s A String, may be null.
-	 * @return An Optional&lt;Integer&gt; representation of s or null.
-	 */
-	public static Optional<Integer> toIntOption(String s) {
-		return Optional.ofNullable(toInt(s));
-	}
-	
-	/**
-	 * Given a String s, the result of {@link Double#parseDouble(String)} is returned.
-	 * If s is null or a NumberFormatException occurs, null is returned.
-	 * 
-	 * @param s A String, may be null.
-	 * @return A Double representation of s or null.
-	 */
-	public static Double toDouble(String s) {
-		try {
-			return (s == null) ? null : Double.parseDouble(s);
-		} catch(Exception x) {
-			return null;
-		}
-	}
-	
-	/**
-	 * Converts a String to an Optional&lt;Double&gt; by calling <code>Optional.ofNullable(toDouble(s))</code>.
-	 * 
-	 * @param s A String, may be null.
-	 * @return An Optional&lt;Double&gt; representation of s or null.
-	 */
-	public static Optional<Double> toDoubleOption(String s) {
-		return Optional.ofNullable(toDouble(s));
-	}
-	
-	/**
-	 * Given a String s, the result of new BigDecimal(s) is returned.
-	 * If s is null or a NumberFormatException occurs, null is returned.
-	 * 
-	 * @param s A String, may be null.
-	 * @return A BigDecimal representation of s or null.
-	 */
-	public static BigDecimal toBigDecimal(String s) {
-		try {
-			return (s == null) ? null : new BigDecimal(s);
-		} catch(Exception x) {
-			return null;
-		}
-	}
-	
-	/**
-	 * Converts a String to an Optional&lt;BigDecimal&gt; by calling <code>Optional.ofNullable(toBigDecimal(s))</code>.
-	 * 
-	 * @param s A String, may be null.
-	 * @return An Optional&lt;BigDecimal&gt; representation of s.
-	 */
-	public static Optional<BigDecimal> toBigDecimalOption(String s) {
-		return Optional.ofNullable(toBigDecimal(s));
-	}
-	
-	/**
-	 * Returns the single element of the given List or null.
-	 * 
-	 * @param list A List, may be null.
-	 * @return The single element contained in list (if present) or null.
-	 */
-	static Object unbox(List<?> list) {
-		return (list != null && list.size() == 1) ? list.get(0) : null;
-	}
-	
-	/**
-	 * Returns the single element of the given Collection or null.
-	 * 
-	 * @param list A Collection, may be null.
-	 * @return The single element contained in list (if present) or null.
-	 */
-	static Object unbox(Collection<?> c) {
-		return (c != null && c.size() == 1) ? c.iterator().next() : null;
-	}
-	
-	/**
-	 * Returns the single element of the Optional o or null, if it is empty or null.
-	 * 
-	 * @param o An Optional, may be null.
-	 * @return The single element contained in o (if present) or null.
-	 */
-	static Object unbox(Optional<?> o) {
-		return (o != null) ? o.orElse(null) : null;
-	}
-	
-	/**
-	 * Returns the single element of the Array arr or null, if it is null, empty or has more than one element.
-	 * 
-	 * @param arr An Array
-	 * @return The single element contained in arr or null.
-	 */
-	public static Object unbox(Object[] arr) {
-		return (arr != null && arr.length == 1) ? arr[0] : null;
-	}
-	
-	// TODO: DELME - just a test - use toString(Object) instead
-	public static String toString(int[] ints) {
-		return java.util.Arrays.asList(ints).stream().map(String::valueOf).collect(joining(", ", "[", "]"));
-	}
-	
 	// TODO: javadoc
 	// TODO: detect cycles => private String toString(Object o, Set<Object> visited)
 	public static String toString(Object o) {
-		System.out.println("## " + o);
 		return
 				(o == null) ? null :
-				(o instanceof Boolean || o instanceof Number) ? o.toString() :
+				(o instanceof Boolean
+						|| o instanceof Number
+						|| o instanceof Character) ? o.toString() :
 				(o instanceof String) ? (String) o :
 				(o.getClass().isArray()) ? arrayToList(o).stream().map(Objects::toString).collect(joining(", ", "[", "]")) : 
 				(o instanceof Collection) ? ((Collection<?>) o).stream().map(Objects::toString).collect(joining(", ", "[", "]")) :
@@ -299,9 +102,10 @@ public final class Objects {
 		return
 				(o == null) ? null :
 				(o.getClass().isArray()) ? arrayToList(o) : 
+				(o instanceof List) ? (List<?>) o :
 				(o instanceof Collection) ? new java.util.ArrayList<Object>((Collection<?>) o) :
-				(o instanceof Optional) ? java.util.Arrays.asList(((Optional<?>) o).orElse(null)) :
-					java.util.Arrays.asList(o);
+				(o instanceof Optional) ? java.util.Collections.singletonList(((Optional<?>) o).orElse(null)) :
+					java.util.Collections.singletonList(o);
 	}
 	
 	/**
@@ -310,7 +114,7 @@ public final class Objects {
 	 * @param o Object, not null.
 	 * @return A List representation of o if o is an array.
 	 */
-	static List<?> arrayToList(Object o) {
+	private static List<?> arrayToList(Object o) {
 		    final Class<?> type = o.getClass().getComponentType();
 		    return type.isPrimitive() ?
 		    				boolean.class.isAssignableFrom(type) ? Arrays.asList((boolean[]) o) :
@@ -323,6 +127,133 @@ public final class Objects {
 		    				short.class.isAssignableFrom(type)   ? Arrays.asList((short[])   o) :
 		    				null :
 		    		java.util.Arrays.asList((Object[]) o);
+	}
+	
+	
+	/**
+	 * Converts a String to a Number according to these rules:
+	 * 
+	 * <ul>
+	 * <li>s is Integer -&gt; toInt(s)</li>
+	 * <li>s is Double -&gt; toDouble(s)</li>
+	 * <li>s is BigDecimal -&gt; toBigDecimal(s)</li>
+	 * <li>otherwise null</em></li>
+	 * </ul>
+	 * 
+	 * The returned {@link java.lang.Number} may be of type {@link java.lang.Integer}, {@link java.lang.Double} or
+	 * {@link java.math.BigDecimal}.
+	 * 
+	 * @param o An Object, may not be null.
+	 * @return A Number representation of o or null.
+	 */
+	private static Number toNumber(String s) {
+		final Integer i = toInt(s);
+		if (i != null) {
+			return i;
+		} else {
+			final Double d = toDouble(s);
+			return (d != null) ? d : toBigDecimal(s);
+		}
+	}
+
+	/**
+	 * Given a String s, the result of {@link Integer#parseInteger(String)} is returned.
+	 * If s is null or a NumberFormatException occurs, null is returned.
+	 * 
+	 * @param s A String, may be null.
+	 * @return An Integer representation of s or null.
+	 */
+	private static Integer toInt(String s) {
+		try {
+			return Integer.parseInt(s);
+		} catch(Exception x) {
+			return null;
+		}
+	}
+	
+	/**
+	 * Given a String s, the result of {@link Double#parseDouble(String)} is returned.
+	 * If s is null or a NumberFormatException occurs, null is returned.
+	 * 
+	 * @param s A String, may be null.
+	 * @return A Double representation of s or null.
+	 */
+	private static Double toDouble(String s) {
+		try {
+			return Double.parseDouble(s);
+		} catch(Exception x) {
+			return null;
+		}
+	}
+	
+	/**
+	 * Given a String s, the result of new BigDecimal(s) is returned.
+	 * If s is null or a NumberFormatException occurs, null is returned.
+	 * 
+	 * @param s A String, may be null.
+	 * @return A BigDecimal representation of s or null.
+	 */
+	private static BigDecimal toBigDecimal(String s) {
+		try {
+			return new BigDecimal(s);
+		} catch(Exception x) {
+			return null;
+		}
+	}
+	
+	/**
+	 * Converts a String to an Optional&lt;BigDecimal&gt; by calling <code>Optional.ofNullable(toBigDecimal(s))</code>.
+	 * 
+	 * @param s A String, may be null.
+	 * @return An Optional&lt;BigDecimal&gt; representation of s.
+	 */
+	private static Optional<BigDecimal> toBigDecimalOption(String s) {
+		return Optional.ofNullable(toBigDecimal(s));
+	}
+	
+	/**
+	 * Returns the single element of the given List or null.
+	 * 
+	 * @param list A List, may be null.
+	 * @return The single element contained in list (if present) or null.
+	 */
+	private static Object unbox(List<?> list) {
+		return (list != null && list.size() == 1) ? list.get(0) : null;
+	}
+	
+	/**
+	 * Returns the single element of the given Collection or null.
+	 * 
+	 * @param list A Collection, may be null.
+	 * @return The single element contained in list (if present) or null.
+	 */
+	private static Object unbox(Collection<?> c) {
+		return (c != null && c.size() == 1) ? c.iterator().next() : null;
+	}
+	
+	/**
+	 * Returns the single element of the Optional o or null, if it is empty or null.
+	 * 
+	 * @param o An Optional, may be null.
+	 * @return The single element contained in o (if present) or null.
+	 */
+	private static Object unbox(Optional<?> o) {
+		return (o != null) ? o.orElse(null) : null;
+	}
+	
+	private static Boolean stringToBoolean(String s) {
+		final String test = s.toLowerCase();
+		return
+				"true".equals(test) ? TRUE :
+				"false".equals(test) ? FALSE :
+				toBigDecimalOption(s)
+					.map(n -> !ZERO.equals(n.stripTrailingZeros()))
+					.orElse(null);
+	}
+	
+	private static Boolean numberToBoolean(Number num) {
+		final BigDecimal b = new BigDecimal(String.valueOf(num));
+		return !ZERO.equals(b.stripTrailingZeros());
 	}
 	
 }
