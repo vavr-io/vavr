@@ -12,27 +12,29 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class Strings {
-	
+
 	/**
 	 * An end of line pattern (mac/unix/win)
 	 */
 	public static final Pattern EOL = compile("\\r\\n|\\n|\\r");
-	
+
 	private Strings() {
-        throw new AssertionError(Strings.class.getName() + " cannot be instantiated.");
-    }
+		throw new AssertionError(Strings.class.getName() + " cannot be instantiated.");
+	}
 
 	/**
 	 * Duplicate a string n times.
 	 * 
 	 * @param s A String
-	 * @param n Duplication count >= 0.
-	 * @return A string, s duplicated n times or null, if s is null.
+	 * @param n Duplication count, max be negative or zero.
+	 * @return A string, s duplicated n times or null, if s is null. If n is negative or zero, the empty string is
+	 *         returned.
 	 */
 	public static String repeat(String s, int n) {
-		require(n >= 0, "n < 0");
 		if (s == null) {
 			return null;
+		} else if (n <= 0) {
+			return "";
 		} else {
 			final StringBuilder builder = new StringBuilder();
 			for (int i = 0; i < n; i++) {
@@ -41,7 +43,7 @@ public final class Strings {
 			return builder.toString();
 		}
 	}
-	
+
 	/**
 	 * Returnes times * 2 spaces.
 	 * 
@@ -58,7 +60,7 @@ public final class Strings {
 			return String.valueOf(buf);
 		}
 	}
-	
+
 	/**
 	 * Escape backslash '\' and double quote '"'.
 	 * 
@@ -80,13 +82,14 @@ public final class Strings {
 		final String documentToCursor = s.substring(0, index);
 		final Matcher matcher = EOL.matcher(documentToCursor);
 		int line = 1;
-		for (; matcher.find(); line++);
+		for (; matcher.find(); line++)
+			;
 		final int eol = max(documentToCursor.lastIndexOf("\r"), documentToCursor.lastIndexOf("\n"));
 		final int len = documentToCursor.length();
 		final int column = (len == 0) ? 1 : len - ((eol == -1) ? 0 : eol);
 		return new int[] { line, column };
 	}
-	
+
 	/**
 	 * Tests if given String is null or empty.
 	 * 
@@ -96,16 +99,19 @@ public final class Strings {
 	public static boolean isNullOrEmpty(String s) {
 		return s == null || "".equals(s);
 	}
-	
+
 	/**
-	 * Shortcut for <code>Arrays.asList(array).stream().map(Types::toString).collect(Collectors.joining(delimiter))</code>.
+	 * Shortcut for
+	 * <code>Arrays.asList(array).stream().map(Types::toString).collect(Collectors.joining(delimiter))</code>.
 	 */
 	public static <T> String mkString(T[] array, CharSequence delimiter) {
 		return mkString(asList(array), delimiter);
 	}
 
 	/**
-	 * Shortcut for <code>Arrays.asList(array).stream().map(Types::toString).collect(Collectors.joining(delimiter, prefix, suffix))</code>.
+	 * Shortcut for
+	 * <code>Arrays.asList(array).stream().map(Types::toString).collect(Collectors.joining(delimiter, prefix, suffix))</code>
+	 * .
 	 */
 	public static <T> String mkString(T[] array, CharSequence delimiter, CharSequence prefix, CharSequence suffix) {
 		return mkString(asList(array), delimiter);
@@ -121,7 +127,8 @@ public final class Strings {
 	/**
 	 * Shortcut for <code>collection.stream().map(Types::toString).collect(joining(delimiter, prefix, suffix))</code>.
 	 */
-	public static <T> String mkString(Collection<T> collection, CharSequence delimiter, CharSequence prefix, CharSequence suffix) {
+	public static <T> String mkString(Collection<T> collection, CharSequence delimiter, CharSequence prefix,
+			CharSequence suffix) {
 		return collection.stream().map(Objects::toString).collect(joining(delimiter, prefix, suffix));
 	}
 
