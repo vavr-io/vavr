@@ -2,6 +2,7 @@ package io.rocketscience.java.util;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
+import static java.lang.String.valueOf;
 import static java.math.BigDecimal.ZERO;
 import static java.util.stream.Collectors.joining;
 
@@ -38,21 +39,32 @@ public final class Objects {
 		return
 				(o == null) ? null :
 				(o instanceof Boolean) ? (Boolean) o :
-				(o instanceof Number) ? ((Number) o).intValue() != 0 :
-				(o instanceof String) ? trueOrFalse((String) o).orElse(numberToBoolean((String) o)) :
+				(o instanceof Number) ? numberToBoolean((Number) o) :
+				(o instanceof Character) ? charToBoolean((Character) o) :
+				(o instanceof String) ? stringToBoolean((String) o) :
 				(o.getClass().isArray()) ? toBoolean(unbox(arrayToList(o))) :
 				(o instanceof Collection) ? toBoolean(unbox((Collection<?>) o)) :
 				(o instanceof Optional) ? toBoolean(unbox((Optional<?>) o)) :
-				toBoolean(o.toString());
+				stringToBoolean(o.toString());
 	}
 	
-	private static Optional<Boolean> trueOrFalse(String s) {
+	private static Boolean charToBoolean(Character c) {
+		return c.charValue() != '0';
+	}
+	
+	private static Boolean stringToBoolean(String s) {
 		final String test = s.toLowerCase();
-		return Optional.ofNullable("true".equals(test) ? TRUE : "false".equals(test) ? FALSE : null);
+		return
+				"true".equals(test) ? TRUE :
+				"false".equals(test) ? FALSE :
+				toBigDecimalOption(s)
+					.map(n -> !ZERO.equals(n.stripTrailingZeros()))
+					.orElse(null);
 	}
 	
-	private static Boolean numberToBoolean(String s) {
-		return toBigDecimalOption(s).map(n -> !ZERO.equals(n.stripTrailingZeros())).orElse(null);
+	private static Boolean numberToBoolean(Number num) {
+		final BigDecimal b = new BigDecimal(String.valueOf(num));
+		return !ZERO.equals(b.stripTrailingZeros());
 	}
 
 	/**
