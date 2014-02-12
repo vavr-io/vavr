@@ -14,6 +14,11 @@ public class Left<L, R> implements Either<L, R> {
 	public boolean isLeft() {
 		return true;
 	}
+	
+	@Override
+	public boolean isRight() {
+		return false;
+	}
 
 	@Override
 	public boolean equals(Object obj) {

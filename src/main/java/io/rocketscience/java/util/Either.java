@@ -20,9 +20,7 @@ public interface Either<L, R> {
 
 	boolean isLeft();
 
-	default boolean isRight() {
-		return !isLeft();
-	}
+	boolean isRight();
 	
 	static <L, R> Left<L, R> leftOf(L left) {
 		return new Left<L,R>(left);
