@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
+// TODO: traverse and collect with SearchStrategy (DFS, BFS)
 public class Tree<T> {
 
 	private final String id; // identifier, not necessarily unique
