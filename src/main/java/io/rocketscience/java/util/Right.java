@@ -19,7 +19,7 @@ public class Right<L, R> implements Either<L, R> {
 	public boolean isRight() {
 		return true;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {

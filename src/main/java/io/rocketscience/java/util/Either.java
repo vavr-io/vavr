@@ -2,7 +2,6 @@ package io.rocketscience.java.util;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -11,25 +10,25 @@ import java.util.function.Supplier;
 public interface Either<L, R> {
 
 	default LeftProjection<L, R> left() {
-		return new LeftProjection<L, R>(this);
+		return new LeftProjection<>(this);
 	}
 
 	default RightProjection<L, R> right() {
-		return new RightProjection<L, R>(this);
+		return new RightProjection<>(this);
 	}
 
 	boolean isLeft();
 
 	boolean isRight();
-	
+
 	static <L, R> Left<L, R> leftOf(L left) {
-		return new Left<L,R>(left);
+		return new Left<>(left);
 	}
 
 	static <L, R> Right<L, R> rightOf(R right) {
-		return new Right<L,R>(right);
+		return new Right<>(right);
 	}
-	
+
 	static class LeftProjection<L, R> {
 
 		private final Either<L, R> either;
@@ -61,13 +60,13 @@ public interface Either<L, R> {
 				throw exceptionSupplier.get();
 			}
 		}
-		
-		public Optional<Either<L, R>> filter(Predicate<? super L> predicate) {
+
+		public Option<Either<L, R>> filter(Predicate<? super L> predicate) {
 			Objects.requireNonNull(predicate);
 			if (either.isLeft() && predicate.test(asLeft())) {
-				return Optional.of(either);
+				return new Some<>(either);
 			} else {
-				return Optional.empty();
+				return None.instance();
 			}
 		}
 
@@ -76,7 +75,7 @@ public interface Either<L, R> {
 			if (either.isLeft())
 				return mapper.apply(asLeft());
 			else {
-				return new Right<U, R>(asRight());
+				return new Right<>(asRight());
 			}
 		}
 
@@ -88,13 +87,13 @@ public interface Either<L, R> {
 		}
 
 		public <U> Either<U, R> map(Function<? super L, ? extends U> mapper) {
-	        Objects.requireNonNull(mapper);
-	        if (either.isLeft())
-	            return new Left<U,R>(mapper.apply(asLeft()));
-	        else {
-	            return new Right<U,R>(asRight());
-	        }
-	    }
+			Objects.requireNonNull(mapper);
+			if (either.isLeft())
+				return new Left<>(mapper.apply(asLeft()));
+			else {
+				return new Right<>(asRight());
+			}
+		}
 
 		@Override
 		public boolean equals(Object obj) {
@@ -160,12 +159,12 @@ public interface Either<L, R> {
 			}
 		}
 
-		public Optional<Either<L, R>> filter(Predicate<? super R> predicate) {
+		public Option<Either<L, R>> filter(Predicate<? super R> predicate) {
 			Objects.requireNonNull(predicate);
 			if (either.isRight() && predicate.test(asRight())) {
-				return Optional.of(either);
+				return new Some<>(either);
 			} else {
-				return Optional.empty();
+				return None.instance();
 			}
 		}
 
@@ -174,7 +173,7 @@ public interface Either<L, R> {
 			if (either.isRight())
 				return mapper.apply(asRight());
 			else {
-				return new Left<L, U>(asLeft());
+				return new Left<>(asLeft());
 			}
 		}
 
@@ -188,9 +187,9 @@ public interface Either<L, R> {
 		public <U> Either<L, U> map(Function<? super R, ? extends U> mapper) {
 			Objects.requireNonNull(mapper);
 			if (either.isRight())
-				return new Right<L, U>(mapper.apply(asRight()));
+				return new Right<>(mapper.apply(asRight()));
 			else {
-				return new Left<L, U>(asLeft());
+				return new Left<>(asLeft());
 			}
 		}
 
