@@ -6,11 +6,11 @@ import java.util.function.Supplier;
  * General Java languange extensions. See also {@link java.util.Objects}.
  */
 public final class Lang {
-	
+
 	private Lang() {
-        throw new AssertionError(Lang.class.getName() + " cannot be instantiated.");
-    }
-	
+		throw new AssertionError(Lang.class.getName() + " cannot be instantiated.");
+	}
+
 	/**
 	 * Runtime check which will throw an IllegalStateException containing the given message if the condition is false.
 	 * 
@@ -37,5 +37,26 @@ public final class Lang {
 			throw new IllegalStateException(lazyMessage.get());
 		}
 	}
-	
+
+	/**
+	 * Checks whether t is a fatal, i.e. non-recoverable, error or not. t is considered fatal, if it is an instance of
+	 * the following classes:
+	 * 
+	 * <ul>
+	 * <li>InterruptedException</li>
+	 * <li>LinkageError</li>
+	 * <li>ThreadDeath</li>
+	 * <li>VirtualMachineError (i.e. OutOfMemoryError)</li>
+	 * </ul>
+	 * 
+	 * However, StackOverflowError is considered non-fatal.
+	 * 
+	 * @param t A Throwable
+	 * @return true, if t is fatal, false otherwise.
+	 */
+	public static boolean isFatal(Throwable t) {
+		return t instanceof VirtualMachineError || t instanceof ThreadDeath || t instanceof InterruptedException
+				|| t instanceof LinkageError;
+	}
+
 }
