@@ -1,11 +1,14 @@
 package io.rocketscience.java.io;
 
+import io.rocketscience.java.util.Failure;
+import io.rocketscience.java.util.Success;
+import io.rocketscience.java.util.Try;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.Optional;
 
 public final class IO {
 	
@@ -45,8 +48,7 @@ public final class IO {
 	 * @param in Input
 	 * @return An Optional containing the bytes of in or empty if the input could not be read.
 	 */
-	// TODO: return Either<byte[], String> instead of Optional
-	public static Optional<byte[]> toBytes(InputStream in) {
+	public static Try<byte[]> toBytes(InputStream in) {
 		try (InputStream source = in) {
 			final ByteArrayOutputStream out = new ByteArrayOutputStream();
 			final byte[] buf = new byte[4096];
@@ -54,10 +56,21 @@ public final class IO {
 			while ((read = source.read(buf)) != -1) {
 				out.write(buf, 0, read);
 			}
-			return Optional.of(out.toByteArray());
-		} catch (IOException e) {
-			return Optional.empty();
+			return new Success<>(out.toByteArray());
+		} catch (IOException x) {
+			return new Failure<>(x);
 		}
+	}
+	
+	/**
+	 * Reads a system reosurce and returns the content as byte[].
+	 * 
+	 * @param resource A system resource path.
+	 * @return The content of resource.
+	 */
+	public static Try<byte[]> resourceToBytes(String resource) {
+		final InputStream in = ClassLoader.getSystemResourceAsStream(resource);
+		return toBytes(in);
 	}
 
 	/**
@@ -69,9 +82,20 @@ public final class IO {
 	 * @param charset Charset used to convert stream of bytes to String.
 	 * @return An Optional of encoded String, empty if the input could not be read.
 	 */
-	// TODO: return Either<String, String> instead of Optional
-	public static Optional<String> toString(InputStream in, Charset charset) {
+	public static Try<String> toString(InputStream in, Charset charset) {
 		return toBytes(in).map(bytes -> new String(bytes, charset));
 	}
 
+	/**
+	 * Reads a system reosurce and returns the content as String using a specific Charset to encode the bytes.<br>
+	 * 
+	 * @param resource A system resource path.
+	 * @param charset Charset used to convert stream of bytes to String.
+	 * @return The content of resource.
+	 */
+	public static Try<String> resourceToString(String resource, Charset charset) {
+		final InputStream in = ClassLoader.getSystemResourceAsStream(resource);
+		return toString(in, charset);
+	}
+	
 }
