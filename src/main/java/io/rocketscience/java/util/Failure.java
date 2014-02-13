@@ -1,5 +1,9 @@
 package io.rocketscience.java.util;
 
+import io.rocketscience.java.lang.Lang;
+import io.rocketscience.java.lang.NonFatal;
+import io.rocketscience.java.lang.Thrown;
+
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -8,10 +12,16 @@ import java.util.function.Supplier;
 
 public class Failure<T> implements Try<T> {
 	
-	private final Throwable exception;
+	private final NonFatal throwable;
 	
-	public Failure(Throwable exception) {
-		this.exception = exception;
+	public Failure(Throwable t) {
+		Lang.require(t != null, "Throwable is null");
+		final Thrown thrown = Thrown.of(t);
+		if (thrown.isFatal()) {
+			throw thrown;
+		} else {
+			this.throwable = (NonFatal) thrown;
+		}
 	}
 	
 	@Override
@@ -25,8 +35,8 @@ public class Failure<T> implements Try<T> {
 	}
 
 	@Override
-	public T get() throws Throwable {
-		throw exception;
+	public T get() throws NonFatal {
+		throw throwable;
 	}
 	
 	@Override
@@ -46,15 +56,15 @@ public class Failure<T> implements Try<T> {
 	
 	@Override
 	public Try<T> recover(Function<? super Throwable, ? extends T> f) {
-		return Try.of(() -> f.apply(exception));
+		return Try.of(() -> f.apply(throwable.get()));
 	}
 
 	@Override
 	public Try<T> recoverWith(Function<? super Throwable, Try<T>> f) {
 		try {
-			return f.apply(exception);
+			return f.apply(throwable.get());
 		} catch(Throwable t) {
-			return Try.handle(t);
+			return new Failure<>(t);
 		}
 	}
 
@@ -89,7 +99,7 @@ public class Failure<T> implements Try<T> {
 	
 	@Override
 	public Try<Throwable> failed() {
-		return new Success<>(exception);
+		return new Success<>(throwable.get());
 	}
 	
 	@Override
@@ -101,17 +111,17 @@ public class Failure<T> implements Try<T> {
 			return false;
 		}
 		final Failure<?> failure = (Failure<?>) obj;
-		return Objects.equals(exception, failure.exception);
+		return Objects.equals(throwable.get(), failure.throwable.get());
 	}
 	
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(exception);
+		return Objects.hashCode(throwable.get());
 	}
 	
 	@Override
 	public String toString() {
-		return String.format("Failure[%s]", exception);
+		return String.format("Failure[%s]", throwable.get());
 	}
 	
 }

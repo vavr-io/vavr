@@ -29,34 +29,13 @@ public final class Lang {
 	 * The message is computed only if the condition is false.
 	 * 
 	 * @param condition A boolean
-	 * @param lazyMessage An error message, computed lazily.
+	 * @param messageSupplier An error message, computed lazily.
 	 * @throws IllegalStateException If condition is false, contains the message.
 	 */
-	public static void require(boolean condition, Supplier<String> lazyMessage) throws IllegalStateException {
+	public static void require(boolean condition, Supplier<String> messageSupplier) throws IllegalStateException {
 		if (!condition) {
-			throw new IllegalStateException(lazyMessage.get());
+			throw new IllegalStateException(messageSupplier.get());
 		}
 	}
-
-	/**
-	 * Checks whether t is a fatal, i.e. non-recoverable, error or not. t is considered fatal, if it is an instance of
-	 * the following classes:
-	 * 
-	 * <ul>
-	 * <li>InterruptedException</li>
-	 * <li>LinkageError</li>
-	 * <li>ThreadDeath</li>
-	 * <li>VirtualMachineError (i.e. OutOfMemoryError)</li>
-	 * </ul>
-	 * 
-	 * However, StackOverflowError is considered non-fatal.
-	 * 
-	 * @param t A Throwable
-	 * @return true, if t is fatal, false otherwise.
-	 */
-	public static boolean isFatal(Throwable t) {
-		return t instanceof VirtualMachineError || t instanceof ThreadDeath || t instanceof InterruptedException
-				|| t instanceof LinkageError;
-	}
-
+	
 }

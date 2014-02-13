@@ -1,7 +1,6 @@
 package io.rocketscience.java.util;
 
-import static io.rocketscience.java.lang.Lang.isFatal;
-import io.rocketscience.java.lang.FatalError;
+import io.rocketscience.java.lang.NonFatal;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -14,23 +13,15 @@ public interface Try<T> {
 		try {
 			return new Success<>(supplier.get());
 		} catch (Throwable t) {
-			return handle(t);
-		}
-	}
-	
-	static <T> Try<T> handle(Throwable t) {
-		if (isFatal(t)) {
-			throw new FatalError(t);
-		} else {
 			return new Failure<>(t);
 		}
 	}
-
+	
 	boolean isFailure();
 
 	boolean isSuccess();
 
-	T get() throws Throwable;
+	T get() throws NonFatal;
 	
     T orElse(T other);
 

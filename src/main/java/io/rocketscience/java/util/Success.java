@@ -69,7 +69,7 @@ public class Success<T> implements Try<T> {
 				return new Failure<T>(new NoSuchElementException("Predicate does not hold for " + value));
 			}
 		} catch (Throwable t) {
-			return Try.handle(t);
+			return new Failure<>(t);
 		}
 	}
 
@@ -78,7 +78,7 @@ public class Success<T> implements Try<T> {
 		try {
 			return mapper.apply(value);
 		} catch (Throwable t) {
-			return Try.handle(t);
+			return new Failure<>(t);
 		}
 	}
 
@@ -92,13 +92,13 @@ public class Success<T> implements Try<T> {
 		try {
 			return new Success<>(mapper.apply(value));
 		} catch (Throwable t) {
-			return Try.handle(t);
+			return new Failure<>(t);
 		}
 	}
 
 	@Override
 	public Try<Throwable> failed() {
-		return new Failure<>(new UnsupportedOperationException("Success.failed"));
+		return new Failure<>(new UnsupportedOperationException("Success.failed()"));
 	}
 
 	@Override
