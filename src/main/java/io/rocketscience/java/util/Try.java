@@ -8,15 +8,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-/**
- * A <code>Try&lt;T&gt;</code> has a {@link #recover(Function)} instead of <code>orElse(L)</code> and a
- * {@link #recoverWith(Function)} instead of <code>orElseGet(Supplier&lt;? extends L&gt;)</code>. There is no equivalent
- * of <code>orElseThrow(Supplier&lt;? extends X&gt;)</code>. However, a <code>Try&lt;T&gt;</code> can be converted to an
- * {@link Option} by calling {@link #toOption()}, which has <code>orElse</code>, <code>orElseGet</code> and
- * <code>orElseThrow</code>.
- *
- * @param <T> The type of a value contained by a {@link Success}.
- */
 public interface Try<T> {
 	
 	static <T> Try<T> of(Supplier<T> supplier) {
@@ -40,6 +31,12 @@ public interface Try<T> {
 	boolean isSuccess();
 
 	T get() throws Throwable;
+	
+    T orElse(T other);
+
+    T orElseGet(Supplier<? extends T> other);
+
+    <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) throws X;
 
 	Try<T> recover(Function<? super Throwable, ? extends T> f);
 
