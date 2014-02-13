@@ -25,6 +25,21 @@ public final class None<T> implements Option<T> {
 	}
 	
 	@Override
+	public T orElse(T other) {
+		return other;
+	}
+
+	@Override
+	public T orElseGet(Supplier<? extends T> other) {
+		return other.get();
+	}
+
+	@Override
+	public <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) throws X {
+		throw exceptionSupplier.get();
+	}
+	
+	@Override
 	public boolean isPresent() {
 		return false;
 	}
@@ -49,19 +64,6 @@ public final class None<T> implements Option<T> {
 		return None.instance();
 	}
 
-	@Override
-	public T orElse(T other) {
-		return other;
-	}
-
-	@Override
-	public T orElseGet(Supplier<? extends T> other) {
-		return other.get();
-	}
-
-	@Override
-	public <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) throws X {
-		throw exceptionSupplier.get();
-	}
+	// TODO: equals, hashCode, toString
 
 }

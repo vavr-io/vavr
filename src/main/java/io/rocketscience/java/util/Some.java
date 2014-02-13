@@ -19,6 +19,21 @@ public class Some<T> implements Option<T> {
 	}
 	
 	@Override
+	public T orElse(T other) {
+		return value;
+	}
+
+	@Override
+	public T orElseGet(Supplier<? extends T> other) {
+		return value;
+	}
+
+	@Override
+	public <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) throws X {
+		return value;
+	}
+	
+	@Override
 	public boolean isPresent() {
 		return true;
 	}
@@ -47,19 +62,6 @@ public class Some<T> implements Option<T> {
 		return mapper.apply(value);
 	}
 
-	@Override
-	public T orElse(T other) {
-		return value;
-	}
-
-	@Override
-	public T orElseGet(Supplier<? extends T> other) {
-		return value;
-	}
-
-	@Override
-	public <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) throws X {
-		return value;
-	}
+	// TODO: equals, hashCode, toString
 
 }

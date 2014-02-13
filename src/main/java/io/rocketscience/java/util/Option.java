@@ -18,6 +18,12 @@ public interface Option<T> {
 	
     T get();
     
+    T orElse(T other);
+
+    T orElseGet(Supplier<? extends T> other);
+
+    <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) throws X;
+    
     boolean isPresent();
     
     void ifPresent(Consumer<? super T> consumer);
@@ -28,10 +34,4 @@ public interface Option<T> {
 
     <U> Option<U> flatMap(Function<? super T, Option<U>> mapper);
 
-    T orElse(T other);
-
-    T orElseGet(Supplier<? extends T> other);
-
-    <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) throws X;
-    
 }
