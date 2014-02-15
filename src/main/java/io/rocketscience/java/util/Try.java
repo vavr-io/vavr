@@ -8,7 +8,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public interface Try<T> {
-	
+
 	static <T> Try<T> of(Supplier<T> supplier) {
 		try {
 			return new Success<>(supplier.get());
@@ -16,18 +16,18 @@ public interface Try<T> {
 			return new Failure<>(t);
 		}
 	}
-	
+
 	boolean isFailure();
 
 	boolean isSuccess();
 
 	T get() throws NonFatal;
-	
-    T orElse(T other);
 
-    T orElseGet(Supplier<? extends T> other);
+	T orElse(T other);
 
-    <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) throws X;
+	T orElseGet(Function<Throwable, ? extends T> other);
+
+	<X extends Throwable> T orElseThrow(Function<Throwable, ? extends X> exceptionProvider) throws X;
 
 	Try<T> recover(Function<? super Throwable, ? extends T> f);
 

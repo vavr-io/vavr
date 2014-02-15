@@ -1,21 +1,14 @@
 package io.rocketscience.java.lang;
 
 /**
- * Use {@link Thrown#of(Throwable)} to create instances of {@link Fatal} and {@link NonFatal}.
+ * Use {@link Cause#of(Throwable)} to create instances of {@link Fatal} and {@link NonFatal}.
  */
-public class NonFatal extends Thrown {
+public class NonFatal extends Cause {
 
 	private static final long serialVersionUID = 1L;
 
-	private final Throwable t;
-
-	NonFatal(Throwable t) {
-		this.t = t;
-	}
-
-	@Override
-	public Throwable get() {
-		return t;
+	NonFatal(Throwable cause) {
+		super(cause);
 	}
 
 	@Override

@@ -5,7 +5,6 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 public class Success<T> implements Try<T> {
 
@@ -36,12 +35,12 @@ public class Success<T> implements Try<T> {
 	}
 
 	@Override
-	public T orElseGet(Supplier<? extends T> other) {
+	public T orElseGet(Function<Throwable, ? extends T> other) {
 		return value;
 	}
 
 	@Override
-	public <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) throws X {
+	public <X extends Throwable> T orElseThrow(Function<Throwable, ? extends X> exceptionSupplier) throws X {
 		return value;
 	}
 	

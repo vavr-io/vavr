@@ -2,25 +2,24 @@ package io.rocketscience.java.util;
 
 import io.rocketscience.java.lang.Lang;
 import io.rocketscience.java.lang.NonFatal;
-import io.rocketscience.java.lang.Thrown;
+import io.rocketscience.java.lang.Cause;
 
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 public class Failure<T> implements Try<T> {
 	
-	private final NonFatal throwable;
+	private final NonFatal cause;
 	
 	public Failure(Throwable t) {
 		Lang.require(t != null, "Throwable is null");
-		final Thrown thrown = Thrown.of(t);
-		if (thrown.isFatal()) {
-			throw thrown;
+		final Cause cause = Cause.of(t);
+		if (cause.isFatal()) {
+			throw cause;
 		} else {
-			this.throwable = (NonFatal) thrown;
+			this.cause = (NonFatal) cause;
 		}
 	}
 	
@@ -36,7 +35,7 @@ public class Failure<T> implements Try<T> {
 
 	@Override
 	public T get() throws NonFatal {
-		throw throwable;
+		throw cause;
 	}
 	
 	@Override
@@ -45,24 +44,24 @@ public class Failure<T> implements Try<T> {
 	}
 
 	@Override
-	public T orElseGet(Supplier<? extends T> other) {
-		return other.get();
+	public T orElseGet(Function<Throwable, ? extends T> other) {
+		return other.apply(cause.getCause());
 	}
 
 	@Override
-	public <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) throws X {
-		throw exceptionSupplier.get();
+	public <X extends Throwable> T orElseThrow(Function<Throwable, ? extends X> exceptionProvider) throws X {
+		throw exceptionProvider.apply(cause.getCause());
 	}
 	
 	@Override
 	public Try<T> recover(Function<? super Throwable, ? extends T> f) {
-		return Try.of(() -> f.apply(throwable.get()));
+		return Try.of(() -> f.apply(cause.getCause()));
 	}
 
 	@Override
 	public Try<T> recoverWith(Function<? super Throwable, Try<T>> f) {
 		try {
-			return f.apply(throwable.get());
+			return f.apply(cause.getCause());
 		} catch(Throwable t) {
 			return new Failure<>(t);
 		}
@@ -99,7 +98,7 @@ public class Failure<T> implements Try<T> {
 	
 	@Override
 	public Try<Throwable> failed() {
-		return new Success<>(throwable.get());
+		return new Success<>(cause.getCause());
 	}
 	
 	@Override
@@ -111,17 +110,17 @@ public class Failure<T> implements Try<T> {
 			return false;
 		}
 		final Failure<?> failure = (Failure<?>) obj;
-		return Objects.equals(throwable.get(), failure.throwable.get());
+		return Objects.equals(cause.getCause(), failure.cause.getCause());
 	}
 	
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(throwable.get());
+		return Objects.hashCode(cause.getCause());
 	}
 	
 	@Override
 	public String toString() {
-		return String.format("Failure[%s]", throwable.get());
+		return String.format("Failure[%s]", cause.getCause());
 	}
 	
 }

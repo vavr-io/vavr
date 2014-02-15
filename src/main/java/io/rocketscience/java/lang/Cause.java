@@ -2,16 +2,18 @@ package io.rocketscience.java.lang;
 
 import static io.rocketscience.java.lang.Lang.require;
 
-public abstract class Thrown extends RuntimeException {
+public abstract class Cause extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
-
-	public abstract Throwable get();
+	
+	Cause(Throwable cause) {
+		super(cause);
+	}
 
 	public abstract boolean isFatal();
 
 	/**
-	 * Wraps t in a Thrown which is either a {@link Fatal} or a {@link NonFatal}. The given Throwable t is wrapped in a
+	 * Wraps t in a Cause which is either a {@link Fatal} or a {@link NonFatal}. The given Throwable t is wrapped in a
 	 * Fatal, i.e. considered as a non-recoverable, if t is an instance of one of the following classes:
 	 * 
 	 * <ul>
@@ -26,7 +28,7 @@ public abstract class Thrown extends RuntimeException {
 	 * @param t A Throwable
 	 * @return A {@link Fatal}, if t is fatal, a {@link NonFatal} otherwise.
 	 */
-	public static Thrown of(Throwable t) {
+	public static Cause of(Throwable t) {
 		require(t != null, "throwable is null");
 		final boolean isFatal = t instanceof VirtualMachineError//
 				|| t instanceof ThreadDeath//

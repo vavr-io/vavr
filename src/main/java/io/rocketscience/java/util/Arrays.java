@@ -3,7 +3,6 @@ package io.rocketscience.java.util;
 import java.util.List;
 import java.util.function.Function;
 
-
 public final class Arrays {
 
 	private Arrays() {

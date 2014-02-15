@@ -15,8 +15,6 @@ public final class Runtimes {
 	 * 
 	 * @param status the exit status, zero for OK, non-zero for error
 	 * @param timeout The maximum delay in milliseconds before calling <code>Runtime.getRuntime().halt(status)</code>.
-	 * 
-	 * @see http://blog.joda.org/2014/02/exiting-jvm.html
 	 */
 	public static void exit(int status, long timeout) {
 		final Runtime runtime = Runtime.getRuntime();
@@ -24,6 +22,8 @@ public final class Runtimes {
 			Timers.schedule(() -> runtime.halt(status), timeout);
 			runtime.exit(status);
 		} catch (Throwable x) {
+			runtime.halt(status);
+		} finally { // double-check
 			runtime.halt(status);
 		}
 	}

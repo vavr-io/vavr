@@ -1,5 +1,6 @@
 package io.rocketscience.java.lang;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -36,6 +37,17 @@ public final class Lang {
 		if (!condition) {
 			throw new IllegalStateException(messageSupplier.get());
 		}
+	}
+	
+	/**
+	 * Builder pattern.
+	 * 
+	 * @param obj
+	 * @param f
+	 * @return
+	 */
+	public static <T,U> U with(T obj, Function<T,U> f) {
+		return f.apply(obj);
 	}
 	
 }
