@@ -10,8 +10,32 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
+/**
+ * The IO class provides convenient methods for loading system resources and converting data between
+ * <code>InputStream</code>, <code>byte[]</code> and <code>String</code>.<br>
+ * <br>
+ * When converting <code>bytes</code> to <code>String</code>, the charset has to be provided explicitly. Most
+ * encoding-related errors occur, because the default charset is used. This may produce unwanted side-effects when
+ * relying on a specific encoding. Please consider this as a good example, where <em>coding by convention</em> does
+ * <strong>not</strong> apply.<br>
+ * <br>
+ * Also it is strongly encouraged to use {@link IO#UTF8} as charset for encoding Strings, therefore this is the only
+ * charset constant defined in the <code>IO</code> class. Working with charsets works best if the encoding is used
+ * consistently throughout the whole code base of the underlying project. E.g. Maven projects set the encoding in the
+ * pom.xml similar to this:
+ * 
+ * <pre>
+ * <code>
+ * &lt;properties&gt;
+ *     &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+ * &lt;/properties&gt;
+ * </code>
+ * </pre>
+ * 
+ * This sounds as a matter of course but many projects are missing the encoding.
+ */
 public final class IO {
-	
+
 	/** It is encouraged here to usage a unified charset. */
 	public static final Charset UTF8 = Charset.forName("UTF-8");
 
@@ -61,17 +85,6 @@ public final class IO {
 			return new Failure<>(x);
 		}
 	}
-	
-	/**
-	 * Reads a system reosurce and returns the content as byte[].
-	 * 
-	 * @param resource A system resource path.
-	 * @return The content of resource.
-	 */
-	public static Try<byte[]> resourceToBytes(String resource) {
-		final InputStream in = ClassLoader.getSystemResourceAsStream(resource);
-		return toBytes(in);
-	}
 
 	/**
 	 * Convert an InputStream to String using a specific Charset to encode the bytes.<br>
@@ -87,15 +100,26 @@ public final class IO {
 	}
 
 	/**
+	 * Reads a system reosurce and returns the content as byte[].
+	 * 
+	 * @param resource A system resource path.
+	 * @return The content of resource.
+	 */
+	public static Try<byte[]> loadResource(String resource) {
+		final InputStream in = ClassLoader.getSystemResourceAsStream(resource);
+		return toBytes(in);
+	}
+
+	/**
 	 * Reads a system reosurce and returns the content as String using a specific Charset to encode the bytes.<br>
 	 * 
 	 * @param resource A system resource path.
 	 * @param charset Charset used to convert stream of bytes to String.
 	 * @return The content of resource.
 	 */
-	public static Try<String> resourceToString(String resource, Charset charset) {
+	public static Try<String> loadResource(String resource, Charset charset) {
 		final InputStream in = ClassLoader.getSystemResourceAsStream(resource);
 		return toString(in, charset);
 	}
-	
+
 }
