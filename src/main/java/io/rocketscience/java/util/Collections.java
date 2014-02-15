@@ -26,8 +26,8 @@ public final class Collections {
 	 * @return The last element of the list or null, if the list is null, empty or the last
 	 *         element is null.
 	 */
-	public static <T> T lastElement(List<T> list) {
-		return isNullOrEmpty(list) ? null : list.get(list.size() - 1);
+	public static <T> Option<T> lastElement(List<T> list) {
+		return isNullOrEmpty(list) ? None.<T>instance() : new Some<T>(list.get(list.size() - 1));
 	}
 	
 }

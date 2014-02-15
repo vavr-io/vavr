@@ -4,12 +4,14 @@ import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.math.BigDecimal.ZERO;
 import static java.util.stream.Collectors.joining;
+import io.rocketscience.internal.Experimental;
 
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+@Experimental(reason="too many types recognized in conversion")
 public final class Objects {
 	
 	private Objects() {
@@ -22,11 +24,10 @@ public final class Objects {
 	 * <ul>
 	 * <li>null -&gt; null</li>
 	 * <li>Boolean b -&gt; b</li>
-	 * <li>Number n -&gt; n.intValue() != 0</li>
-	 * <li>String s -&gt; Boolean.valueOf((String) o) ? true : toBigDecimalOption((String) o).map(n -> !ZERO.equals(n)).orElse(null)</li>
-	 * <li>Object[] arr -&gt; toBoolean(unbox(arr))</li>
-	 * <li>Collection c -&gt; toBoolean(unbox(c))</li>
-	 * <li>Optional o -&gt; toBoolean(unbox(o))</li>
+	 * <li>Number n -&gt; BigDecimal of n is not ZERO</li>
+	 * <li>Character c -&gt; c as unsigned int is not zero</li>
+	 * <li>String s -&gt; s.toLowerCase "true" =&gt; true, "false" =&gt; false, BigDecimal of s is not ZERO, else null</li>
+	 * <li>Array, Collection, Optional, Option, Try, Either -&gt; the single element contained or null</li>
 	 * <li>Object o -&gt; toBoolean(o.toString())</li>
 	 * </ul>
 	 * 
@@ -40,11 +41,14 @@ public final class Objects {
 				(o == null) ? null :
 				(o instanceof Boolean) ? (Boolean) o :
 				(o instanceof Number) ? numberToBoolean((Number) o) :
-				(o instanceof Character) ? (Boolean) (((char) o) != 0) :
+				(o instanceof Character) ? (Boolean) ((char) o != 0) :
 				(o instanceof String) ? stringToBoolean((String) o) :
 				(o.getClass().isArray()) ? toBoolean(unbox(arrayToList(o))) :
 				(o instanceof Collection) ? toBoolean(unbox((Collection<?>) o)) :
-				(o instanceof Optional) ? toBoolean(unbox((Optional<?>) o)) :
+				(o instanceof Optional) ? toBoolean(((Optional<?>) o).orElse(null)) :
+				(o instanceof Option) ? toBoolean(((Option<?>) o).orElse(null)) :
+				(o instanceof Try) ? toBoolean(((Try<?>) o).orElse(null)) :
+				(o instanceof Either) ? toBoolean(unbox((Either<?,?>) o)) :
 				stringToBoolean(o.toString());
 	}
 	
@@ -78,7 +82,10 @@ public final class Objects {
 				(o instanceof String) ? toNumber((String) o) :
 				(o.getClass().isArray()) ? toNumber(unbox(arrayToList(o))) :
 				(o instanceof Collection) ? toNumber(unbox((Collection<?>) o)) :
-				(o instanceof Optional) ? toNumber(unbox((Optional<?>) o)) :
+				(o instanceof Optional) ? toNumber(((Optional<?>) o).orElse(null)) :
+				(o instanceof Option) ? toNumber(((Option<?>) o).orElse(null)) :
+				(o instanceof Try) ? toNumber(((Try<?>) o).orElse(null)) :
+				(o instanceof Either) ? toNumber(unbox((Either<?,?>) o)) :
 				toNumber(o.toString());
 	}
 	
@@ -94,6 +101,9 @@ public final class Objects {
 				(o.getClass().isArray()) ? arrayToList(o).stream().map(Objects::toString).collect(joining(", ", "[", "]")) : 
 				(o instanceof Collection) ? ((Collection<?>) o).stream().map(Objects::toString).collect(joining(", ", "[", "]")) :
 				(o instanceof Optional) ? toString(((Optional<?>) o).orElse(null)) :
+				(o instanceof Option) ? toString(((Option<?>) o).orElse(null)) :
+				(o instanceof Try) ? toString(((Try<?>) o).orElse(null)) :
+				(o instanceof Either) ? toString(unbox((Either<?,?>) o)) :
 				o.toString();
 	}
 	
@@ -105,14 +115,17 @@ public final class Objects {
 				(o instanceof List) ? (List<?>) o :
 				(o instanceof Collection) ? new java.util.ArrayList<Object>((Collection<?>) o) :
 				(o instanceof Optional) ? java.util.Collections.singletonList(((Optional<?>) o).orElse(null)) :
-					java.util.Collections.singletonList(o);
+				(o instanceof Option) ? java.util.Collections.singletonList(((Option<?>) o).orElse(null)) :
+				(o instanceof Try) ? java.util.Collections.singletonList(((Try<?>) o).orElse(null)) :
+				(o instanceof Either) ? java.util.Collections.singletonList(unbox((Either<?,?>) o)) :
+				java.util.Collections.singletonList(o);
 	}
 	
 	/**
-	 * Casts o to it
+	 * Converts a given array to a List, depending on its component type (primitive or Object).
 	 * 
-	 * @param o Object, not null.
-	 * @return A List representation of o if o is an array.
+	 * @param o An array, not null.
+	 * @return A List representation of the given array.
 	 */
 	private static List<?> arrayToList(Object o) {
 		    final Class<?> type = o.getClass().getComponentType();
@@ -232,13 +245,13 @@ public final class Objects {
 	}
 	
 	/**
-	 * Returns the single element of the Optional o or null, if it is empty or null.
+	 * Returns the single element of the Either either or null.
 	 * 
-	 * @param o An Optional, may be null.
-	 * @return The single element contained in o (if present) or null.
+	 * @param either An Object, may be null.
+	 * @return The left element contained in either, if it is a Left, the right element if it is a Right, or null.
 	 */
-	private static Object unbox(Optional<?> o) {
-		return (o != null) ? o.orElse(null) : null;
+	private static Object unbox(Either<?,?> either) {
+		return either.isLeft() ? either.left().get() : either.right().get();
 	}
 	
 	private static Boolean stringToBoolean(String s) {

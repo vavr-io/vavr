@@ -63,7 +63,12 @@ public final class None<T> implements Option<T> {
 	public <U> Option<U> flatMap(Function<? super T, Option<U>> mapper) {
 		return None.instance();
 	}
+	
+	// super.equals and super.hashCode are fine
 
-	// TODO: equals, hashCode, toString
+	@Override
+	public String toString() {
+		return "None";
+	}
 
 }

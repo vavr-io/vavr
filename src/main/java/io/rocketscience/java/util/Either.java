@@ -20,15 +20,7 @@ public interface Either<L, R> {
 	boolean isLeft();
 
 	boolean isRight();
-
-	static <L, R> Left<L, R> leftOf(L left) {
-		return new Left<>(left);
-	}
-
-	static <L, R> Right<L, R> rightOf(R right) {
-		return new Right<>(right);
-	}
-
+	
 	static class LeftProjection<L, R> {
 
 		private final Either<L, R> either;

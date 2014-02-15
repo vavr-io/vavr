@@ -19,6 +19,38 @@ public final class Arrays {
 		return array == null || array.length == 0;
 	}
 	
+	public static boolean isNullOrEmpty(boolean[] array) {
+		return array == null || array.length == 0;
+	}
+
+	public static boolean isNullOrEmpty(byte[] array) {
+		return array == null || array.length == 0;
+	}
+
+	public static boolean isNullOrEmpty(char[] array) {
+		return array == null || array.length == 0;
+	}
+
+	public static boolean isNullOrEmpty(double[] array) {
+		return array == null || array.length == 0;
+	}
+
+	public static boolean isNullOrEmpty(float[] array) {
+		return array == null || array.length == 0;
+	}
+
+	public static boolean isNullOrEmpty(int[] array) {
+		return array == null || array.length == 0;
+	}
+
+	public static boolean isNullOrEmpty(long[] array) {
+		return array == null || array.length == 0;
+	}
+
+	public static boolean isNullOrEmpty(short[] array) {
+		return array == null || array.length == 0;
+	}
+	
 	public static List<Boolean> asList(boolean[] array) {
 		return createList(Boolean.class, array.length, i -> array[i]);
 	}
@@ -50,14 +82,14 @@ public final class Arrays {
 	public static List<Short> asList(short[] array) {
 		return createList(Short.class, array.length, i -> array[i]);
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	private static <T> List<T> createList(Class<T> componentType, int size, Function<Integer, T> generator) {
 		final Object[] array = new Object[size];
 		for (int i = 0; i < size; i++) {
 			array[i] = generator.apply(i);
 		}
-		return java.util.Arrays.asList((T[]) array); // the cast is correct
+		return java.util.Arrays.asList((T[]) array); // the cast is not nice but correct
 	}
 	
 }

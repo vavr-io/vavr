@@ -1,5 +1,6 @@
 package io.rocketscience.java.util;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -62,6 +63,26 @@ public class Some<T> implements Option<T> {
 		return mapper.apply(value);
 	}
 
-	// TODO: equals, hashCode, toString
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof Some)) {
+			return false;
+		}
+		final Some<?> other = (Some<?>) obj;
+		return Objects.equals(value, other.value);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(value);
+	}
+
+	@Override
+	public String toString() {
+		return String.format("Some[%s]", value);
+	}
 
 }
