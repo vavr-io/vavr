@@ -7,7 +7,7 @@ public class Fatal extends Thrown {
 
 	private static final long serialVersionUID = 1L;
 
-	final Throwable t;
+	private final Throwable t;
 
 	Fatal(Throwable t) {
 		this.t = t;
