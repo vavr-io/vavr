@@ -2,12 +2,32 @@ package io.rocketscience.java.lang;
 
 import static io.rocketscience.java.lang.Lang.require;
 
+/**
+ * Causes wrap Throwables. They are unchecked, i.e. RuntimeExceptions, which are either fatal (represented by the
+ * subclass {@link Fatal}) or non-fatal (represented by the subclass {@link NonFatal}). Fatal causes are considered to
+ * be non-recoverable.<br>
+ * <br>
+ * Use {@link Cause#get(Throwable)} to get an instance of Cause. The instance returned is either of type {@link Fatal}
+ * or {@link NonFatal}.<br>
+ * <br>
+ * Use {@link #get()}, which is a convenient method and essentially the same as {@link #getCause()}, to get the wrapped
+ * Throwable. {@link #isFatal()} states, if this Cause is considered to be non-recoverable.
+ */
 public abstract class Cause extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	Cause(Throwable cause) {
 		super(cause);
+	}
+
+	/**
+	 * Convenience method, returns the Throwable of this Cause which is considered either as fatal or non-fatal.
+	 * 
+	 * @return Either The Throwable of this Cause.
+	 */
+	public Throwable get() {
+		return getCause();
 	}
 
 	public abstract boolean isFatal();
