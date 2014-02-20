@@ -4,14 +4,12 @@ import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.math.BigDecimal.ZERO;
 import static java.util.stream.Collectors.joining;
-import io.rocketscience.internal.Experimental;
 
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-@Experimental(reason="too many types recognized in conversion")
 public final class Objects {
 	
 	private Objects() {

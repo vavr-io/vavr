@@ -7,10 +7,15 @@ import org.junit.Test;
 public class CauseTest {
 
 	@Test
-	public void testName() throws Exception {
+	public void shouldDetectFatalException() throws Exception {
 		final Cause cause = Cause.of(new OutOfMemoryError());
 		assertThat(cause.isFatal()).isTrue();
-		
 	}
-	
+
+	@Test
+	public void shouldDetectNonFatalException() throws Exception {
+		final Cause cause = Cause.of(new StackOverflowError());
+		assertThat(cause.isFatal()).isFalse();
+	}
+
 }

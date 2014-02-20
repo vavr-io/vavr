@@ -50,7 +50,7 @@ public abstract class Cause extends RuntimeException {
 	 */
 	public static Cause of(Throwable t) {
 		require(t != null, "throwable is null");
-		final boolean isFatal = t instanceof VirtualMachineError//
+		final boolean isFatal = (t instanceof VirtualMachineError && !(t instanceof StackOverflowError))//
 				|| t instanceof ThreadDeath//
 				|| t instanceof InterruptedException//
 				|| t instanceof LinkageError;
