@@ -2,6 +2,9 @@ package javaslang.lang;
 
 import javaslang.util.Timers;
 
+/**
+ * Additions to {@link java.lang.Runtime}.
+ */
 public final class Runtimes {
 
 	private Runtimes() {

@@ -3,6 +3,9 @@ package javaslang.util;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Additions to {@link java.util.Collections}.
+ */
 public final class Collections {
 
 	private Collections() {

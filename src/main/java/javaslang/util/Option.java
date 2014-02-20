@@ -6,9 +6,11 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
+ * Replacement for {@link java.util.Option}<br>
+ * <br>
  * <code>Option</code> is a <a href="http://stackoverflow.com/questions/13454347/monads-with-java-8">monadic</a>
  * container type which represents an optional value. Instances of <code>Option</code> are either an instance of
- * <code>javaslang.util.Some</code> or the singleton {@link javaslang.util.None}.<br>
+ * {@link javaslang.util.Some} or the singleton {@link javaslang.util.None}.<br>
  * <br>
  * Most of the API taken from <code>java.util.Optional</code>. A similar type can be found in <a
  * href="http://hackage.haskell.org/package/base-4.6.0.1/docs/Data-Maybe.html">Haskell</a> and <a

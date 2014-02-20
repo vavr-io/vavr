@@ -3,6 +3,9 @@ package javaslang.util;
 import java.util.List;
 import java.util.function.Function;
 
+/**
+ * Additions to {@link java.util.Arrays}.
+ */
 public final class Arrays {
 
 	private Arrays() {
