@@ -1,24 +1,52 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>io.rocketscience</groupId>
-		<artifactId>rocket-base</artifactId>
-		<version>0.1.0-SNAPSHOT</version>
-	</parent>
-	<artifactId>rocket-java</artifactId>
+	<groupId>javaslang</groupId>
+	<artifactId>javaslang</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<properties>
+		<java.version>1.8</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!-- TODO: use sonatype oss -->
 		<repo.base.url>https://github.com/rocketscience-projects/maven-repository/raw/master</repo.base.url>
 	</properties>
-	<repositories>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.easytesting</groupId>
+			<artifactId>fest-assert-core</artifactId>
+			<version>2.0M10</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<distributionManagement>
+		<!-- TODO: use sonatype oss -->
 		<repository>
 			<id>rocketscience-releases</id>
 			<url>${repo.base.url}/releases</url>
 		</repository>
-		<repository>
+		<snapshotRepository>
 			<id>rocketscience-snapshots</id>
 			<url>${repo.base.url}/snapshots</url>
-		</repository>
-	</repositories>
+		</snapshotRepository>
+	</distributionManagement>
 </project>
