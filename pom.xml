@@ -48,6 +48,22 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>2.4.2</version>
+					<configuration>
+						<!-- Circumvent maven-gpg-plugin bug -->
+						<mavenExecutorId>forked-path</mavenExecutorId>
+						<useReleaseProfile>false</useReleaseProfile>
+						<!-- Honor arguments passed via command line -->
+						<arguments>${arguments} -Psonatype-oss-release</arguments>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 	<dependencies>
 		<dependency>
@@ -64,10 +80,12 @@
 		</dependency>
 	</dependencies>
 	<profiles>
+		<!-- A profile for gpg-signing .jars when releasing -->
 		<profile>
 			<id>release-sign-artifacts</id>
 			<activation>
 				<property>
+					<!-- Automatically set to true on mvn release:perform -->
 					<name>performRelease</name>
 					<value>true</value>
 				</property>
