@@ -13,6 +13,32 @@ public final class Lang {
 	}
 
 	/**
+	 * Shortcut for <code>System.out.print(String.format(format, args))</code>.
+	 * 
+	 * @param format
+	 * @param args
+	 * 
+	 * @see String#format(String, Object...)
+	 */
+	public static void print(String format, Object... args) {
+		final String s = String.format(format, args);
+		System.out.print(s);
+	}
+
+	/**
+	 * Shortcut for <code>System.out.print(String.format(format, args))</code>.
+	 * 
+	 * @param format
+	 * @param args
+	 * 
+	 * @see String#format(String, Object...)
+	 */
+	public static void println(String format, Object... args) {
+		final String s = String.format(format, args);
+		System.out.println(s);
+	}
+
+	/**
 	 * Runtime check which will throw an IllegalStateException containing the given message if the condition is false.
 	 * 
 	 * @param condition A boolean
@@ -38,7 +64,7 @@ public final class Lang {
 			throw new IllegalStateException(messageSupplier.get());
 		}
 	}
-	
+
 	/**
 	 * Builder pattern.
 	 * 
@@ -46,8 +72,8 @@ public final class Lang {
 	 * @param f
 	 * @return
 	 */
-	public static <T,U> U with(T obj, Function<T,U> f) {
+	public static <T, U> U with(T obj, Function<T, U> f) {
 		return f.apply(obj);
 	}
-	
+
 }
