@@ -5,8 +5,11 @@ import static java.util.Arrays.asList;
 import static java.util.Arrays.fill;
 import static java.util.regex.Pattern.compile;
 import static java.util.stream.Collectors.joining;
+import static javaslang.lang.Lang.require;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,7 +28,7 @@ public final class Strings {
 	 * Duplicate a string n times.
 	 * 
 	 * @param s A String
-	 * @param n Duplication count, max be negative or zero.
+	 * @param n Duplication count, may be negative or zero.
 	 * @return A string, s duplicated n times or null, if s is null. If n is negative or zero, the empty string is
 	 *         returned.
 	 */
@@ -44,16 +47,17 @@ public final class Strings {
 	}
 
 	/**
-	 * Returnes times * 2 spaces.
+	 * Duplicates a char n times.
 	 * 
-	 * @param times A count of spaces.
-	 * @return A string of spaces which has length times.
+	 * @param c A char.
+	 * @param n A count of spaces, may be negative or zero.
+	 * @return A string, c duplicated n times. If n is negative or zero, the empty string is returned.
 	 */
-	public static String space(int times) {
-		if (times <= 0) {
+	public static String repeat(char c, int n) {
+		if (n <= 0) {
 			return "";
 		} else {
-			final char[] buf = new char[times * 2];
+			final char[] buf = new char[n];
 			fill(buf, ' ');
 			return String.valueOf(buf);
 		}
@@ -128,6 +132,39 @@ public final class Strings {
 	public static <T> String mkString(Collection<T> collection, CharSequence delimiter, CharSequence prefix,
 			CharSequence suffix) {
 		return collection.stream().map(Objects::toString).collect(joining(delimiter, prefix, suffix));
+	}
+
+	/**
+	 * Splits a string using a specific separator. By definition, a separator separates two string. This leads to the following:
+	 * 
+	 * <ul>
+	 * <li>split("", "#") = [""]</li>
+	 * <li>split("#", "#") = ["", ""]</li>
+	 * <li>split("##", "#") = ["", "" ,""]</li>
+	 * <li>split("123##456", "#") = ["123", "" ,"456"]</li>
+	 * <li>split("123##456", "##") = ["123", "456"]</li>
+	 * <li>split("#123#", "#") = ["", "123", ""]</li>
+	 * </ul>
+	 * 
+	 * @param string A string to be splitted, not null.
+	 * @param separator A token separator, not null and not empty.
+	 * @return The tokens contained in string, without separators.
+	 */
+	public static String[] split(String string, String separator) {
+		require(string != null, "string is null");
+		require(separator != null, "separator is null");
+		require(separator.length() > 0, "separator is empty");
+		final List<String> tokens = new ArrayList<String>();
+		int current = 0;
+		int next;
+		while ((next = string.indexOf(separator, current)) != -1) {
+			final String token = string.substring(current, next);
+			tokens.add(token);
+			current = next + separator.length();
+		}
+		final String token = string.substring(current);
+		tokens.add(token);
+		return tokens.toArray(new String[tokens.size()]);
 	}
 
 }

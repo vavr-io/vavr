@@ -129,7 +129,7 @@ public class Tree<T> {
 	}
 
 	protected String toString(int depth) {
-		final String indent = Strings.space(depth);
+		final String indent = Strings.repeat(' ', depth * 2);
 		final String inner = children.stream().map(child -> child.toString(depth + 1)) // create child strings
 				.reduce((l, r) -> l + ",\n" + r) // concatenate child strings
 				.map(s -> "\n" + s + "\n" + indent) // apply if concatenation is not empty

@@ -2,6 +2,7 @@ package javaslang.util;
 
 import static javaslang.util.Strings.escape;
 import static javaslang.util.Strings.repeat;
+import static javaslang.util.Strings.split;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import org.junit.Test;
@@ -67,11 +68,47 @@ public class StringsTest {
 		final String s = escape("\\");
 		assertThat(s).isEqualTo("\\\\");
 	}
-	
+
 	@Test
 	public void shouldNotEscapeNonEscapeChars() {
 		final String name = getClass().getName();
 		final String s = escape(name);
 		assertThat(s).isEqualTo(name);
+	}
+
+	@Test
+	public void shouldSplitEmptyString() {
+		final String[] actual = split("", "#");
+		assertThat(actual).isEqualTo(new String[] { "" });
+	}
+
+	@Test
+	public void shouldSplitWithOneSeparator() {
+		final String[] actual = split("#", "#");
+		assertThat(actual).isEqualTo(new String[] { "", "" });
+	}
+
+	@Test
+	public void shouldSplitWithTwoSeparators() {
+		final String[] actual = split("##", "#");
+		assertThat(actual).isEqualTo(new String[] { "", "", "" });
+	}
+
+	@Test
+	public void shouldSplitWithEmptyInnerToken() {
+		final String[] actual = split("123##456", "#");
+		assertThat(actual).isEqualTo(new String[] { "123", "", "456" });
+	}
+
+	@Test
+	public void shouldSplitWithLongSeparators() {
+		final String[] actual = split("123##456", "##");
+		assertThat(actual).isEqualTo(new String[] { "123", "456" });
+	}
+
+	@Test
+	public void shouldSplitEmptyStartAndEndToken() {
+		final String[] actual = split("#123#", "#");
+		assertThat(actual).isEqualTo(new String[] { "", "123", "" });
 	}
 }
