@@ -1,15 +1,40 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>9</version>
+	</parent>
 	<groupId>com.javaslang</groupId>
 	<artifactId>javaslang</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
+	<name>Javaslang</name>
+	<description>Javaslang is a Java standard library extension built for Java 8 and above.</description>
+	<url>http://javaslang.com</url>
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<scm>
+		<connection>scm:git:git@github.com:rocketscience-projects/javaslang.git</connection>
+		<developerConnection>scm:git:git@github.com:rocketscience-projects/javaslang.git</developerConnection>
+		<url>git@github.com:rocketscience-projects/javaslang.git</url>
+	</scm>
+	<developers>
+		<developer>
+			<id>danieldietrich</id>
+			<name>Daniel Dietrich</name>
+			<email>cafebab3@gmail.com</email>
+		</developer>
+	</developers>
 	<properties>
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<!-- TODO: use sonatype oss -->
-		<repo.base.url>https://github.com/rocketscience-projects/maven-repository/raw/master</repo.base.url>
 	</properties>
 	<build>
 		<plugins>
@@ -38,15 +63,4 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	<distributionManagement>
-		<!-- TODO: use sonatype oss -->
-		<repository>
-			<id>rocketscience-releases</id>
-			<url>${repo.base.url}/releases</url>
-		</repository>
-		<snapshotRepository>
-			<id>rocketscience-snapshots</id>
-			<url>${repo.base.url}/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
 </project>
