@@ -33,23 +33,27 @@ public final class Objects {
 	 * </ul>
 	 * 
 	 * @param o An Object, may be null.
-	 * @return A Boolean representation of o or null.
+	 * @return Some Boolean representation of o or None.
 	 */
 	// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=427933
 	// TODO: detect cycles => private String toString(Object o, Set<Object> visited)
-	public static Boolean toBoolean(Object o) {
+	public static Option<Boolean> toBoolean(Object o) {
+		return Option.of(internalToBoolean(o));
+	}
+	
+	private static Boolean internalToBoolean(Object o) {
 		return
 				(o == null) ? null :
 				(o instanceof Boolean) ? (Boolean) o :
 				(o instanceof Number) ? numberToBoolean((Number) o) :
 				(o instanceof Character) ? (Boolean) ((char) o != 0) :
 				(o instanceof String) ? stringToBoolean((String) o) :
-				(o.getClass().isArray()) ? toBoolean(unbox(arrayToList(o))) :
-				(o instanceof Collection) ? toBoolean(unbox((Collection<?>) o)) :
-				(o instanceof Optional) ? toBoolean(((Optional<?>) o).orElse(null)) :
-				(o instanceof Option) ? toBoolean(((Option<?>) o).orElse(null)) :
-				(o instanceof Try) ? toBoolean(((Try<?>) o).orElse(null)) :
-				(o instanceof Either) ? toBoolean(unbox((Either<?,?>) o)) :
+				(o.getClass().isArray()) ? internalToBoolean(unbox(arrayToList(o))) :
+				(o instanceof Collection) ? internalToBoolean(unbox((Collection<?>) o)) :
+				(o instanceof Optional) ? internalToBoolean(((Optional<?>) o).orElse(null)) :
+				(o instanceof Option) ? internalToBoolean(((Option<?>) o).orElse(null)) :
+				(o instanceof Try) ? internalToBoolean(((Try<?>) o).orElse(null)) :
+				(o instanceof Either) ? internalToBoolean(unbox((Either<?,?>) o)) :
 				stringToBoolean(o.toString());
 	}
 	
@@ -60,56 +64,68 @@ public final class Objects {
 	 * <li>null -&gt; null</li>
 	 * <li>Boolean b -&gt; b ? 1 : 0</li>
 	 * <li>Number n -&gt; n</li>
-	 * <li>String s -&gt; toNumber(s) <em>(calling {@link #toNumber(String)})</em></li>
-	 * <li>Object[] arr -&gt; toNumber(unbox(arr)) <em>(calling {@link #toNumber(Object)})</em></li>
-	 * <li>Collection c -&gt; toNumber(unbox(c)) <em>(calling {@link #toNumber(Object)})</em></li>
-	 * <li>Optional o -&gt; toNumber(unbox(o)) <em>(calling {@link #toNumber(Object)})</em></li>
-	 * <li>Object o -&gt; toNumber(o.toString()) <em>(calling {@link #toNumber(String)})</em></li>
+	 * <li>String s -&gt; toNumber(s)</li>
+	 * <li>Object[] arr -&gt; toNumber(unbox(arr))</li>
+	 * <li>Collection c -&gt; toNumber(unbox(c))</li>
+	 * <li>Optional o -&gt; toNumber(unbox(o))</li>
+	 * <li>Object o -&gt; toNumber(o.toString())</li>
 	 * </ul>
 	 * 
 	 * The returned {@link java.lang.Number} may be of type {@link java.lang.Integer}, {@link java.lang.Double} or
 	 * {@link java.math.BigDecimal}.
 	 * 
 	 * @param o An Object, may be null.
-	 * @return A Number representation of o or null.
+	 * @return Some Number representation of o or None.
 	 */
 	// TODO: detect cycles => private String toString(Object o, Set<Object> visited)
-	public static Number toNumber(Object o) {
+	public static Option<Number> toNumber(Object o) {
+		return Option.of(internalToNumber(o));
+	}
+	
+	private static Number internalToNumber(Object o) {
 		return
 				(o == null) ? null :
 				(o instanceof Boolean) ? ((Boolean) o) ? 1 : 0 :
 				(o instanceof Number) ? (Number) o :
 				(o instanceof Character) ? (int) ((Character) o).charValue() :
 				(o instanceof String) ? toNumber((String) o) :
-				(o.getClass().isArray()) ? toNumber(unbox(arrayToList(o))) :
-				(o instanceof Collection) ? toNumber(unbox((Collection<?>) o)) :
-				(o instanceof Optional) ? toNumber(((Optional<?>) o).orElse(null)) :
-				(o instanceof Option) ? toNumber(((Option<?>) o).orElse(null)) :
-				(o instanceof Try) ? toNumber(((Try<?>) o).orElse(null)) :
-				(o instanceof Either) ? toNumber(unbox((Either<?,?>) o)) :
+				(o.getClass().isArray()) ? internalToNumber(unbox(arrayToList(o))) :
+				(o instanceof Collection) ? internalToNumber(unbox((Collection<?>) o)) :
+				(o instanceof Optional) ? internalToNumber(((Optional<?>) o).orElse(null)) :
+				(o instanceof Option) ? internalToNumber(((Option<?>) o).orElse(null)) :
+				(o instanceof Try) ? internalToNumber(((Try<?>) o).orElse(null)) :
+				(o instanceof Either) ? internalToNumber(unbox((Either<?,?>) o)) :
 				toNumber(o.toString());
 	}
 	
 	// TODO: javadoc
 	// TODO: detect cycles => private String toString(Object o, Set<Object> visited)
-	public static String toString(Object o) {
+	public static Option<String> toString(Object o) {
+		return Option.of(internalToString(o));
+	}
+	
+	private static String internalToString(Object o) {
 		return
 				(o == null) ? null :
 				(o instanceof Boolean
 						|| o instanceof Number
 						|| o instanceof Character) ? o.toString() :
 				(o instanceof String) ? (String) o :
-				(o.getClass().isArray()) ? arrayToList(o).stream().map(Objects::toString).collect(joining(", ", "[", "]")) : 
-				(o instanceof Collection) ? ((Collection<?>) o).stream().map(Objects::toString).collect(joining(", ", "[", "]")) :
-				(o instanceof Optional) ? toString(((Optional<?>) o).orElse(null)) :
-				(o instanceof Option) ? toString(((Option<?>) o).orElse(null)) :
-				(o instanceof Try) ? toString(((Try<?>) o).orElse(null)) :
-				(o instanceof Either) ? toString(unbox((Either<?,?>) o)) :
+				(o.getClass().isArray()) ? arrayToList(o).stream().map(Objects::internalToString).collect(joining(", ", "[", "]")) : 
+				(o instanceof Collection) ? ((Collection<?>) o).stream().map(Objects::internalToString).collect(joining(", ", "[", "]")) :
+				(o instanceof Optional) ? internalToString(((Optional<?>) o).orElse(null)) :
+				(o instanceof Option) ? internalToString(((Option<?>) o).orElse(null)) :
+				(o instanceof Try) ? internalToString(((Try<?>) o).orElse(null)) :
+				(o instanceof Either) ? internalToString(unbox((Either<?,?>) o)) :
 				o.toString();
 	}
 	
 	// TODO: javadoc
-	public static List<?> toList(Object o) {
+	public static Option<List<?>> toList(Object o) {
+		return Option.of(internalToList(o));
+	}
+	
+	private static List<?> internalToList(Object o) {
 		return
 				(o == null) ? null :
 				(o.getClass().isArray()) ? arrayToList(o) : 
@@ -252,7 +268,7 @@ public final class Objects {
 	 * @return The left element contained in either, if it is a Left, the right element if it is a Right, or null.
 	 */
 	private static Object unbox(Either<?,?> either) {
-		return either.isLeft() ? either.left().get() : either.right().get();
+		return either.isRight() ? either.right().get() : either.left().get();
 	}
 	
 	private static Boolean stringToBoolean(String s) {

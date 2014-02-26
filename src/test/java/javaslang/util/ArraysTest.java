@@ -36,7 +36,7 @@ public class ArraysTest {
 	public void shoudConvertByteArrayToList() {
 		final byte[] array = new byte[] { 1, 2, 3 };
 		final List<Byte> list = Arrays.asList(array);
-		assertThat(Objects.toString(list)).isEqualTo("[1, 2, 3]");
+		assertThat(Objects.toString(list).get()).isEqualTo("[1, 2, 3]");
 	}
 
 }
