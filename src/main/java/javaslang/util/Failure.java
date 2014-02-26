@@ -1,12 +1,13 @@
 package javaslang.util;
 
+import static javaslang.lang.Lang.require;
+
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 import javaslang.lang.Cause;
-import javaslang.lang.Lang;
 import javaslang.lang.NonFatal;
 
 public class Failure<T> implements Try<T> {
@@ -14,7 +15,7 @@ public class Failure<T> implements Try<T> {
 	private final NonFatal cause;
 	
 	public Failure(Throwable t) {
-		Lang.require(t != null, "Throwable is null");
+		require(t != null, "Throwable is null");
 		final Cause cause = Cause.of(t);
 		if (cause.isFatal()) {
 			throw cause;
