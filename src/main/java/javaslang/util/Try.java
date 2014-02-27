@@ -3,13 +3,13 @@ package javaslang.util;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
+import javaslang.function.CheckedSupplier;
 import javaslang.lang.NonFatal;
 
 public interface Try<T> {
 
-	static <T> Try<T> of(Supplier<T> supplier) {
+	static <T> Try<T> of(CheckedSupplier<T> supplier) {
 		try {
 			return new Success<>(supplier.get());
 		} catch (Throwable t) {
