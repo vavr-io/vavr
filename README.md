@@ -1,20 +1,12 @@
-## Javaslang
+## Javaslang [![Build Status](https://travis-ci.org/rocketscience-projects/javaslang.png)](https://travis-ci.org/rocketscience-projects/javaslang)
 
-[Javaslang](http://javaslang.com) is a [rocketscience.io](https://github.com/rocketscience-projects) project.
-
-[![Build Status](https://travis-ci.org/rocketscience-projects/javaslang.png)](https://travis-ci.org/rocketscience-projects/javaslang)
-
-## Change is the only Constant
-
-**Javaslang** _/ˈdʒɑːvə/ /slæŋ/_ is a library for the Java&trade; 8 language. Why _~slang_?
+**Javaslang** _/ˈdʒɑːvə/ /slæŋ/_ is a standard library extension for the Java&trade; 8 language. Why _~slang_?
 
 > "Slang consists of a lexicon of non-standard words and phrases in a given language."
 
 > Michael Adams remarks that "Slang is on the edge." 
 
 > "It is often difficult to differentiate slang from (...) standard language, because slang generally becomes accepted into the standard lexicon over time."
-
-> "Still, while a great deal of slang takes off, even becoming accepted into the standard lexicon, much slang dies out (...)"
 
 _\- taken from http://en.wikipedia.org/wiki/Slang_
 
@@ -30,132 +22,22 @@ Functions for the rescue! Objects are data structures with functions, closures/l
 
 Naturally, in contrast to object structures, computations are built bottom up. We use functions to compute values. The results are input of new computations and so on.
 
-Java 8 offers the new streaming API to chain operations. This is an instant transformation of data, which can be easily performed in parallel.
+Java 8 offers the new streaming API to chain/pipe operations. This is an instant transformation of data, which can be easily performed in parallel. Along the pipeline of operations we have to deal with common problems: undefined states, null values, (non-fatal) exceptions, etc. We don't want to clutter our code base with technical stuff like null-checks and try-catch blocks. This is the part where functional patterns help us to create better programs.
 
-## What Does Javaslang Offer?
+## What does Javaslang offer?
 
-Java 8 allows us to express things in different ways - object oriented and functional. The `Javaslang` component library gives us the tools to
+Java 8 allows us to express things in different ways - object oriented and functional. Popular component libraries, like the [apache-commons](http://commons.apache.org) library and the [google-guava](http://code.google.com/p/guava-libraries) library, were not designed to help us coding the functional way. There is the need for new (versions of) Java libraries, which embrace the concepts of functional programming.
+
+The Javaslang component library gives us the tools to
 
 * Prevent NullPointerExceptions
 * Handle exceptions without try/catch
 * Focus on computations without technical interruption and boilerplate
 
-This is accomplished by introducing the new types
+This is accomplished by bringing [Option](https://github.com/rocketscience-projects/javaslang/blob/master/src/main/java/javaslang/util/Option.java), [Try](https://github.com/rocketscience-projects/javaslang/blob/master/src/main/java/javaslang/util/Try.java) and [Either](https://github.com/rocketscience-projects/javaslang/blob/master/src/main/java/javaslang/util/Either.java) into play.
 
-* Option (a replacement for java.util.Optional)
-* Try
-* Either
-
-Having these types, we need new components which make use of them. For example, the [apache-commons](http://commons.apache.org) library and [google-guava](http://code.google.com/p/guava-libraries) were not designed to help us coding the functional way. They are intended to be used with previous versions of Java.
+Having these types, we need new components which make use of them. For example,  They are intended to be used with previous versions of Java.
 
 The Javaslang library was designed from the ground up to be used with all the awesomeness Java 8 offers.
 
-## The need for Container types
-
-`Optional` is an example for a container type. It can hold a non-null value and has a specific representation (empty) for null. It encourages developers to check the state of an Optional before performing specific operations because it is obvious that an Optional may be empty. This is the big difference to null values. Often it is not clear if a value may be null or not which leaves us in NPE hell.
-
-There are other container types which serve different purposes. Lets take a look at `Option`, `Try` and `Either` in the following.
-
-### Motivation
-
-How would we get the first element of a given list? There are three general cases we want to take a look at.
-
-**1) Rely on integrity**
-
-```java
-Object getFirstElement1(List<?> list) {
-    return list.get(0);
-}
-```
-
-This will throw an `IndexOutOfBoundsException` Exception if the given list is null or empty. It is generally no good idea to rely on integrity.
-
-**2) Use _null_ as placeholder for _nothing_.**
-
-```java
-Object getFirstElement2(List<?> list) {
-    if (list == null || list.isEmpty()) {
-        return null;
-    } else {
-        return list.get(0);
-    }
-}
-```
-
-We are lost in an ambiguous situation because it is not clear how to interpret `null`. The `null` value is returned, if the list is `null` or empty or if the first element of the list is `null`.
-
-**3) Throw an exception back to the caller if there is no first element.**
-
-```java
-Object getFirstElement3(List<?> list) throws Exception {
-   if (list == null || list.isEmpty()) {
-      throw new Exception("no such element");
-   } else {
-      return list.get(0);
-   }
-}
-```
-
-This is the Java <8 way to circumvent an undefined state. But it introduces new problems.
-
-### What's wrong with java.util.Optional?
-
-Java 8 introduces the container type `java.util.Optional`, which holds one value or is empty if the value is null. We have to make a decision what `Optional.empty()` should represent.
-
-#### Map empty list to Optional.empty()
-
-`Optional.empty()` represents the empty list (null or empty). `Optional.of(elem)` throws if `elem` is null, so we have to use `Optional.ofNullable(elem)`.
-
-```java
-Optional<?> getFirstElement2(List<?> list) {
-    if (list == null || list.isEmpty()) {
-        return Optional.empty();
-    } else {
-        return Optional.ofNullable(list.get(0));
-    }
-}
-```
-
-This means that effectively we get an `Optional.empty()` if the list is empty or the element is `null`. We leave the caller of the method in an ambivalent situation.
-
-#### Map empty list to null
-
-A second solution is to represent the empty list by `null`. If the first element of the list is `null` we have `Optional.empty()` and otherwise `Optional.of(elem)`.
-
-```java
-Optional<?> getFirstElement2(List<?> list) {
-    if (list == null || list.isEmpty()) {
-        return null;
-    } else {
-        return Optional.ofNullable(list.get(0));
-    }
-}
-```
-
-The resulting values are not ambiguous any more. But the caller has to perform `null` checks.
-
-#### We can do better: javaslang.util.Option
-
-`Option` is roughly equivalent to `Optional`. The difference is, that it allows us to store `null` values. `Option.of(elem)` has the same semantics as `Optional.of(elem)`. But additionally it offers specific types `Some` (has a value) and `None` (is empty).
-
-```java
-Option<?> getFirstElement2(List<?> list) {
-    if (list == null || list.isEmpty) {
-        return None.instance();
-    } else {
-        return new Some(list.get(0));
-    }
-}
-```
-
-Yay! Now the result is always an `Option` and we can distinguish between an empty list and a `null` value.
-
-## javaslang.util.Try
-
-_\#tobedone_
-
-## javaslang.util.Either
-
-_\#tobedone_
-
-# _Work in progress..._
+_Work in progress..._
