@@ -62,6 +62,11 @@ public class Some<T> implements Option<T> {
 	public <U> Option<U> flatMap(Function<? super T, Option<U>> mapper) {
 		return mapper.apply(value);
 	}
+	
+	@Override
+	public void forEach(Consumer<? super T> action) {
+		action.accept(value);
+	}
 
 	@Override
 	public boolean equals(Object obj) {

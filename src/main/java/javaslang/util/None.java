@@ -74,7 +74,12 @@ public final class None<T> implements Option<T> {
 	public <U> Option<U> flatMap(Function<? super T, Option<U>> mapper) {
 		return None.instance();
 	}
-
+	
+	@Override
+	public void forEach(Consumer<? super T> action) {
+		// nothing to do
+	}
+	
 	// super.equals and super.hashCode are fine because this is a singleton
 
 	@Override

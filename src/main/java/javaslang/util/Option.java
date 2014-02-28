@@ -47,5 +47,7 @@ public interface Option<T> {
 	<U> Option<U> map(Function<? super T, ? extends U> mapper);
 
 	<U> Option<U> flatMap(Function<? super T, Option<U>> mapper);
+	
+	void forEach(Consumer<? super T> action);
 
 }
