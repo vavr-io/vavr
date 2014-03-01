@@ -22,7 +22,7 @@ Functions for the rescue! Objects are data structures with functions, closures/l
 
 Naturally, in contrast to object structures, computations are built bottom up. We use functions to compute values. The results are input of new computations and so on.
 
-Java 8 offers the new streaming API to chain/pipe operations. This is an instant transformation of data, which can be easily performed in parallel. Along the pipeline of operations we have to deal with common problems: undefined states, null values, (non-fatal) exceptions, etc. We don't want to clutter our code base with technical stuff like null-checks and try-catch blocks. This is the part where functional patterns help us to create better programs.
+Java 8 offers the new streaming API to chain/pipe operations. This is an instant transformation of data, which can be easily performed in parallel. Along the pipeline of operations we have to deal with common problems: undefined state, null values, (non-fatal) exceptions, etc. We don't want to clutter our code base with technical stuff like null-checks and try-catch blocks. This is the part where functional patterns help us to create better programs.
 
 ## What does Javaslang offer?
 
@@ -36,8 +36,6 @@ The Javaslang component library gives us the tools to
 
 This is accomplished by bringing [Option](https://github.com/rocketscience-projects/javaslang/blob/master/src/main/java/javaslang/util/Option.java), [Try](https://github.com/rocketscience-projects/javaslang/blob/master/src/main/java/javaslang/util/Try.java) and [Either](https://github.com/rocketscience-projects/javaslang/blob/master/src/main/java/javaslang/util/Either.java) into play.
 
-Having these types, we need new components which make use of them. For example,  They are intended to be used with previous versions of Java.
-
-The Javaslang library was designed from the ground up to be used with all the awesomeness Java 8 offers.
+Having these types, we need new components which make use of them.
 
 _Work in progress..._
