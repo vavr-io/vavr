@@ -34,8 +34,6 @@ The Javaslang component library gives us the tools to
 * Handle exceptions without try/catch
 * Focus on computations without technical interruption and boilerplate
 
-This is accomplished by bringing [Option](https://github.com/rocketscience-projects/javaslang/blob/master/src/main/java/javaslang/util/Option.java), [Try](https://github.com/rocketscience-projects/javaslang/blob/master/src/main/java/javaslang/util/Try.java) and [Either](https://github.com/rocketscience-projects/javaslang/blob/master/src/main/java/javaslang/util/Either.java) into play.
-
-Having these types, we need new components which make use of them.
+This is accomplished by bringing [Option](https://github.com/rocketscience-projects/javaslang/blob/master/src/main/java/javaslang/util/Option.java), [Try](https://github.com/rocketscience-projects/javaslang/blob/master/src/main/java/javaslang/util/Try.java) and [Either](https://github.com/rocketscience-projects/javaslang/blob/master/src/main/java/javaslang/util/Either.java) into play. Having these types, we need new components which make use of them.
 
 _Work in progress..._
