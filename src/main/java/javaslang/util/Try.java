@@ -4,8 +4,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import javaslang.function.CheckedSupplier;
 import javaslang.lang.NonFatal;
+import javaslang.util.function.CheckedSupplier;
 
 public interface Try<T> {
 

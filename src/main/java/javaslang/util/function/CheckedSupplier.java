@@ -1,4 +1,4 @@
-package javaslang.function;
+package javaslang.util.function;
 
 /**
  * @see java.function.Supplier
