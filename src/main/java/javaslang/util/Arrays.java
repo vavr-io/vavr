@@ -86,6 +86,11 @@ public final class Arrays {
 		return createList(Short.class, array.length, i -> array[i]);
 	}
 	
+	/** convenience method, calls {@link java.util.Arrays#asList(Object...)} */
+	public static <T> List<T> asList(T[] array) {
+		return java.util.Arrays.asList(array);
+	}
+	
 	@SuppressWarnings("unchecked")
 	private static <T> List<T> createList(Class<T> componentType, int size, Function<Integer, T> generator) {
 		final Object[] array = new Object[size];

@@ -8,6 +8,10 @@ public interface Executable {
 
 	<T> List<T> list(RowMapper<T> rowMapper) throws SQLException;
 	<T> T single(RowMapper<T> rowMapper) throws SQLException;
+	
+	// TODO: <T> Try<Optional<T>> optional(RowMapper<T> rowMapper) throws SQLException
 	<T> Optional<T> optional(RowMapper<T> rowMapper) throws SQLException;
+	
+	// TODO: insert, update, delete
 
 }

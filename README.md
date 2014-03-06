@@ -1,5 +1,31 @@
 ## Javaslang [![Build Status](https://travis-ci.org/rocketscience-projects/javaslang.png)](https://travis-ci.org/rocketscience-projects/javaslang)
 
+**Javaslang** _/ˈdʒɑːvə/ /slæŋ/_ is an easy library extension for the Java&trade; 8 language.
+
+Compared with [apache-commons](http://commons.apache.org) and [google-guava](http://code.google.com/p/guava-libraries) it focuses solely on Java 8+.
+
+Currently it offers the following functionality. _Work in progress..._
+
+## `javaslang.jdbc`
+
+Javaslang jdbc provides a thin layer above java.sql.
+
+
+
+## `javaslang.json`
+
+
+
+
+## `javaslang.text`
+
+## `javaslang.util`
+
+## `javaslang.xml`
+
+
+
+
 **Javaslang** _/ˈdʒɑːvə/ /slæŋ/_ is a standard library extension for the Java&trade; 8 language. Why _~slang_?
 
 > "Slang consists of a lexicon of non-standard words and phrases in a given language."

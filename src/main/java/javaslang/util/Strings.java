@@ -123,7 +123,7 @@ public final class Strings {
 	 * Shortcut for <code>collection.stream().map(Types::toString).collect(joining(delimiter))</code>.
 	 */
 	public static <T> String mkString(Collection<T> collection, CharSequence delimiter) {
-		return collection.stream().map(o -> Objects.toString(o).orElse("")).collect(joining(delimiter));
+		return collection.stream().map(o -> Objects.toString(o)).collect(joining(delimiter));
 	}
 
 	/**
@@ -131,7 +131,7 @@ public final class Strings {
 	 */
 	public static <T> String mkString(Collection<T> collection, CharSequence delimiter, CharSequence prefix,
 			CharSequence suffix) {
-		return collection.stream().map(o -> Objects.toString(o).orElse("")).collect(joining(delimiter, prefix, suffix));
+		return collection.stream().map(o -> Objects.toString(o)).collect(joining(delimiter, prefix, suffix));
 	}
 
 	/**

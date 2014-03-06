@@ -8,12 +8,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import javaslang.util.function.CheckedSupplier;
+
 public final class Query implements Executable {
 	
-	private final Supplier<Connection> connectionSupplier;
+	private final ConnectionSupplier connectionSupplier;
 	private final String sql;
 	
-	Query(Supplier<Connection> connectionSupplier, String sql) {
+	Query(ConnectionSupplier connectionSupplier, String sql) {
 		this.connectionSupplier = connectionSupplier;
 		this.sql = sql;
 	}

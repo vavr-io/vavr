@@ -1,13 +1,11 @@
 package javaslang.jdbc;
 
-import java.sql.Connection;
-import java.util.function.Supplier;
 
 public class Jdbc {
 	
-	private final Supplier<Connection> connectionSupplier;
+	private final ConnectionSupplier connectionSupplier;
 
-	public Jdbc(Supplier<Connection> connectionSupplier) {
+	public Jdbc(ConnectionSupplier connectionSupplier) {
 		this.connectionSupplier = connectionSupplier;
 	}
 	

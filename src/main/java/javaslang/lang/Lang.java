@@ -3,6 +3,8 @@ package javaslang.lang;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import javaslang.util.Objects;
+
 /**
  * General Java languange extensions. See also {@link java.util.Objects}.
  */
@@ -10,6 +12,34 @@ public final class Lang {
 
 	private Lang() {
 		throw new AssertionError(Lang.class.getName() + " cannot be instantiated.");
+	}
+	
+	public static void print(Supplier<Object> supplier) {
+		print(supplier.get());
+	}
+
+	public static void println(Supplier<Object> supplier) {
+		println(supplier.get());
+	}
+
+	/**
+	 * Shortcut for <code>System.out.print(javaslang.util.Objects.toString(o))</code>.
+	 * 
+	 * @param o an Object
+	 */
+	public static void print(Object o) {
+		final String s = Objects.toString(o);
+		System.out.print(s);
+	}
+
+	/**
+	 * Shortcut for <code>System.out.println(javaslang.util.Objects.toString(o))</code>.
+	 * 
+	 * @param o an Object
+	 */
+	public static void println(Object o) {
+		final String s = Objects.toString(o);
+		System.out.println(s);
 	}
 
 	/**
@@ -26,7 +56,7 @@ public final class Lang {
 	}
 
 	/**
-	 * Shortcut for <code>System.out.print(String.format(format, args))</code>.
+	 * Shortcut for <code>System.out.println(String.format(format, args))</code>.
 	 * 
 	 * @param format
 	 * @param args

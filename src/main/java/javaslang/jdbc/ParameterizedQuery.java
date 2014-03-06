@@ -8,16 +8,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 public class ParameterizedQuery<P> implements Executable {
 	
-	private final Supplier<Connection> connectionSupplier;
+	private final ConnectionSupplier connectionSupplier;
 	private final String sql;
 	private final ParamSetter<P> paramSetter;
 	private final List<P> params;
 	
-	ParameterizedQuery(Supplier<Connection> connectionSupplier, String sql, ParamSetter<P> paramSetter, List<P> params) {
+	ParameterizedQuery(ConnectionSupplier connectionSupplier, String sql, ParamSetter<P> paramSetter, List<P> params) {
 		require(connectionSupplier != null, "connection supplier is null");
 		require(sql != null, "sql is null");
 		require(params != null, "parameter list is null");

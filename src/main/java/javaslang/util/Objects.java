@@ -100,23 +100,15 @@ public final class Objects {
 	
 	// TODO: javadoc
 	// TODO: detect cycles => private String toString(Object o, Set<Object> visited)
-	public static Option<String> toString(Object o) {
-		return Option.of(internalToString(o));
-	}
-	
-	private static String internalToString(Object o) {
+	public static String toString(Object o) {
 		return
-				(o == null) ? null :
+				(o == null) ? "null" :
 				(o instanceof Boolean
 						|| o instanceof Number
 						|| o instanceof Character) ? o.toString() :
 				(o instanceof String) ? (String) o :
-				(o.getClass().isArray()) ? arrayToList(o).stream().map(Objects::internalToString).collect(joining(", ", "[", "]")) : 
-				(o instanceof Collection) ? ((Collection<?>) o).stream().map(Objects::internalToString).collect(joining(", ", "[", "]")) :
-				(o instanceof Optional) ? internalToString(((Optional<?>) o).orElse(null)) :
-				(o instanceof Option) ? internalToString(((Option<?>) o).orElse(null)) :
-				(o instanceof Try) ? internalToString(((Try<?>) o).orElse(null)) :
-				(o instanceof Either) ? internalToString(unbox((Either<?,?>) o)) :
+				(o.getClass().isArray()) ? arrayToList(o).stream().map(Objects::toString).collect(joining(", ", "[", "]")) : 
+				(o instanceof Collection) ? ((Collection<?>) o).stream().map(Objects::toString).collect(joining(", ", "[", "]")) :
 				o.toString();
 	}
 	
