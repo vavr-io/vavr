@@ -74,7 +74,7 @@ public class Matcher<T> implements Function<Object, T> {
 			this.function = function;
 		}
 
-		/** true, if value == Some(v) && v equals obj or value == None */
+		/** value := Some(v). isApplicable == true <=> v equals obj or value == None */
 		boolean isApplicable(Object obj) {
 			return value.map(v -> v == obj || (v != null && v.equals(obj))).orElse(true);
 		}
