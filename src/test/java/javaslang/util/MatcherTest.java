@@ -2,7 +2,6 @@ package javaslang.util;
 
 import static javaslang.lang.Lang.println;
 import static org.fest.assertions.api.Assertions.assertThat;
-import javaslang.lang.Lang;
 
 import org.junit.Test;
 
@@ -104,7 +103,17 @@ public class MatcherTest {
 				.apply(x);
 			assertThat(actual).isEqualTo(x);
 	}
-
+	
+	@Test
+	public void shouldMatchByTypeOnMultipleCases6() {
+		final int actual = Matcher.of(Character.class)
+				.caze(1, () -> 'a')
+				.caze((Number n) -> 'b')
+				.caze(x -> 'c')
+				.apply(2.0d);
+			assertThat(actual).isEqualTo('b');
+	}
+	
 	@Test
 	public void shouldMatchWithGuardsMultipleCases() throws Exception {
 		// TODO: to be implemented

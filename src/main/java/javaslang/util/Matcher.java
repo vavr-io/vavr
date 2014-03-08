@@ -4,6 +4,7 @@ import static javaslang.lang.Lang.require;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -20,15 +21,22 @@ public class Matcher<T> implements Function<Object, T> {
 		return this;
 	}
 
-	public <S> Matcher<T> caze(S value, Function<S, T> function) {
+	public <S> Matcher<T> caze(S prototype, Function<S, T> function) {
 		require(function != null, "function is null");
-		cases.add(new Case<>(new Some<>(value), function));
+		cases.add(new Case<>(new Some<>(prototype), function));
 		return this;
 	}
 
-	public <S> Matcher<T> caze(S value, Supplier<T> supplier) {
+	// TODO: does this method make sense?
+	public <S> Matcher<T> caze(S prototype, Consumer<S> consumer) {
+		require(consumer != null, "supplier is null");
+		cases.add(new Case<>(new Some<>(prototype), (S o) -> { consumer.accept(o); return null; }));
+		return this;
+	}
+	
+	public <S> Matcher<T> caze(S prototype, Supplier<T> supplier) {
 		require(supplier != null, "supplier is null");
-		cases.add(new Case<>(new Some<>(value), o -> supplier.get()));
+		cases.add(new Case<>(new Some<>(prototype), o -> supplier.get()));
 		return this;
 	}
 
@@ -66,17 +74,17 @@ public class Matcher<T> implements Function<Object, T> {
 	}
 
 	static class Case<T> {
-		final Option<?> value;
+		final Option<?> prototype;
 		final Function<?, T> function;
 
-		Case(Option<?> value, Function<?, T> function) {
-			this.value = value;
+		Case(Option<?> prototype, Function<?, T> function) {
+			this.prototype = prototype;
 			this.function = function;
 		}
 
-		/** value := Some(v). isApplicable == true <=> v equals obj or value == None */
+		/** prototype := Some(value). isApplicable == true <=> value equals obj or prototype == None */
 		boolean isApplicable(Object obj) {
-			return value.map(v -> v == obj || (v != null && v.equals(obj))).orElse(true);
+			return prototype.map(v -> v == obj || (v != null && v.equals(obj))).orElse(true);
 		}
 		
 		@SuppressWarnings("unchecked")

@@ -2,13 +2,9 @@ package javaslang.jdbc;
 
 import static java.util.Arrays.asList;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
-
-import javaslang.util.function.CheckedSupplier;
 
 public final class Query implements Executable {
 	
