@@ -1,6 +1,8 @@
 package javaslang.util;
 
+import static javaslang.lang.Lang.println;
 import static org.fest.assertions.api.Assertions.assertThat;
+import javaslang.lang.Lang;
 
 import org.junit.Test;
 
@@ -23,7 +25,8 @@ public class MatcherTest {
 	@Test
 	public void shouldMatchByValuesUsingFunction() {
 		final int actual = Matcher.of(Integer.class)
-			.caze("1", s -> 1)
+			// TODO: depends on https://bugs.eclipse.org/bugs/show_bug.cgi?id=429759
+			.caze("1", (String s) -> 1)
 			.apply("1");
 		assertThat(actual).isEqualTo(1);
 	}
@@ -90,42 +93,42 @@ public class MatcherTest {
 			assertThat(actual).isEqualTo(3);
 	}
 
-//	@Test
-//	public void shouldMatchByTypeOnMultipleCases2() throws Exception {
-//		final short x = 1; // TODO: check values bigger than Byte and/or Short
-//		final int actual = Matcher.of(Integer.class)
-//				.caze((Byte b) -> (int) b)
-//				.caze((Short s) -> (int) s)
-//				.caze((Integer i) -> i)
-//				.apply(x);
-//			assertThat(actual).isEqualTo(x);
-//	}
+	@Test
+	public void shouldMatchByTypeOnMultipleCases5() throws Exception {
+		final short x = 1; // TODO: check values bigger than Byte and/or Short
+		final int actual = Matcher.of(Integer.class)
+				// TODO: depends on https://bugs.eclipse.org/bugs/show_bug.cgi?id=429763
+				.caze((Byte b) -> (int) b)
+				.caze((Short s) -> (int) s)
+				.caze((Integer i) -> i)
+				.apply(x);
+			assertThat(actual).isEqualTo(x);
+	}
 
-//	@Test
-//	public void shouldMatchWithGuardsMultipleCases() throws Exception {
-//		// TODO: to be implemented
-//		throw new UnsupportedOperationException();
-//	}
-
+	@Test
+	public void shouldMatchWithGuardsMultipleCases() throws Exception {
+		// TODO: to be implemented
+	}
 	
-//	final Matcher<Integer> matcher = Matcher.of(Integer.class)
-//			// .caze(o -> { throw new RuntimeException("oh"); })
-//			.caze((Some<Integer> some) -> some.get())
-//			.caze(new Some<>(1.1d), () -> 22)
-//			.<Some<Integer>>	caze(some -> some.get())
-//			.<Some<String>>		caze(some -> Integer.parseInt(some.get()))
-//			.<None<?>>			caze(none -> -1)
-//			.caze(o -> -13);
-//	
-//	@Test
-//	public void shouldDoTheJob() {
-//
-//		println("%s: %s", Option.of(1), matcher.apply(Option.of(1)));
-//		println("%s: %s", Option.of("13"), matcher.apply(Option.of("13")));
-//		println("%s: %s", Option.of(null), matcher.apply(Option.of(null)));
-//		println("%s: %s", Option.of(1.1d), matcher.apply(Option.of(1.1d)));
-//		println("%s: %s", null, matcher.apply(null));
-//		
-//	}
+	final Matcher<Integer> matcher = Matcher.of(Integer.class)
+			// .caze(o -> { throw new RuntimeException("oh"); })
+			.caze((Some<Integer> some) -> some.get())
+			// TODO: depends on https://bugs.eclipse.org/bugs/show_bug.cgi?id=429733
+			.caze(new Some<>(1.1d), () -> 22)
+			.<Some<Integer>>	caze(some -> some.get())
+			.<Some<String>>		caze(some -> Integer.parseInt(some.get()))
+			.<None<?>>			caze(none -> -1)
+			.caze(o -> -13);
+	
+	@Test
+	public void shouldDoTheJob() {
+
+		println("%s: %s", Option.of(1), matcher.apply(Option.of(1)));
+		println("%s: %s", Option.of("13"), matcher.apply(Option.of("13")));
+		println("%s: %s", Option.of(null), matcher.apply(Option.of(null)));
+		println("%s: %s", Option.of(1.1d), matcher.apply(Option.of(1.1d)));
+		println("%s: %s", null, matcher.apply(null));
+		
+	}
 
 }
