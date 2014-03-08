@@ -24,12 +24,13 @@ public class JdbcTest {
 				}));
 	}
 	
-	void client() {
+	void clientSpike() {
 		
-		JdbcTest service = new JdbcTest(); // Context.getBean(JdbcTest.class);
+		final JdbcTest service = new JdbcTest(); // Context.getBean(JdbcTest.class);
 		
-		final Try<Optional<Person>> person = service.getPersonByName("Hans");
-
+		// TODO: transaction monad
+		/*final Try<Optional<Person>> person =*/ service.getPersonByName("Hans");
+		
 	}
 	
 	static class Person {

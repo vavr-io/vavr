@@ -8,32 +8,56 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class Matcher<T> implements Function<Object, T> {
+public final class Matcher<T> implements Function<Object, T> {
 
 	private List<Case<T>> cases = new ArrayList<>();
 
-	private Matcher() {
+	Matcher() {
 	}
 
+	/**
+	 *  When this case is met, no check is performed and the current obj is applied to the function.
+	 *  
+	 * @param function
+	 * @return
+	 */
 	public <S> Matcher<T> caze(Function<S, T> function) {
 		require(function != null, "function is null");
 		cases.add(new Case<>(None.instance(), function));
 		return this;
 	}
 
+	/**
+	 * 
+	 * @param prototype
+	 * @param function
+	 * @return
+	 */
 	public <S> Matcher<T> caze(S prototype, Function<S, T> function) {
 		require(function != null, "function is null");
 		cases.add(new Case<>(new Some<>(prototype), function));
 		return this;
 	}
 
-	// TODO: does this method make sense?
+	/**
+	 * 
+	 * @param prototype
+	 * @param consumer
+	 * @return
+	 */
+	// TODO: hey, a Matcher is an 'expression'. Does it make sense to return no value!? Which use-case?
 	public <S> Matcher<T> caze(S prototype, Consumer<S> consumer) {
-		require(consumer != null, "supplier is null");
+		require(consumer != null, "consumer is null");
 		cases.add(new Case<>(new Some<>(prototype), (S o) -> { consumer.accept(o); return null; }));
 		return this;
 	}
 	
+	/**
+	 * 
+	 * @param prototype
+	 * @param supplier
+	 * @return
+	 */
 	public <S> Matcher<T> caze(S prototype, Supplier<T> supplier) {
 		require(supplier != null, "supplier is null");
 		cases.add(new Case<>(new Some<>(prototype), o -> supplier.get()));
@@ -48,15 +72,10 @@ public class Matcher<T> implements Function<Object, T> {
 	public static <T> Matcher<T> of(Class<T> type) {
 		return new Matcher<>();
 	}
-	
-	/**
-	 * Creates a Matcher which returns nothing, i.e. <code>Void</code>.
-	 * @return A Matcher instance of type <code>Matcher&lt;Void&gt;</code>
-	 */
-	public static Matcher<Void> create() {
-		return new Matcher<>();
-	}
 
+	/**
+	 * 
+	 */
 	@Override
 	public T apply(Object obj) {
 		for (Case<T> caze : cases) {
@@ -73,10 +92,18 @@ public class Matcher<T> implements Function<Object, T> {
 		throw new MatchError(obj);
 	}
 
+	/**
+	 * @param <T>
+	 */
 	static class Case<T> {
 		final Option<?> prototype;
 		final Function<?, T> function;
 
+		/**
+		 * 
+		 * @param prototype
+		 * @param function
+		 */
 		Case(Option<?> prototype, Function<?, T> function) {
 			this.prototype = prototype;
 			this.function = function;
@@ -87,6 +114,11 @@ public class Matcher<T> implements Function<Object, T> {
 			return prototype.map(v -> v == obj || (v != null && v.equals(obj))).orElse(true);
 		}
 		
+		/**
+		 * 
+		 * @param obj
+		 * @return
+		 */
 		@SuppressWarnings("unchecked")
 		T apply(Object obj) {
 			return ((Function<Object, T>) function).apply(obj);

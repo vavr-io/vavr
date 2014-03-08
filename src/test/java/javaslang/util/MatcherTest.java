@@ -8,11 +8,6 @@ import org.junit.Test;
 
 public class MatcherTest {
 	
-	@Test(expected = MatchError.class)
-	public void shouldThrowOnEmptyMatcher() {
-		Matcher.create().apply(1);
-	}
-	
 	@Test
 	public void shouldMatchByValuesUsingSupplier() {
 		final int actual = Matcher.of(Integer.class)
