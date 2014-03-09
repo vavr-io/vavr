@@ -83,14 +83,11 @@ public final class Matcher<T> implements Function<Object, T> {
 	@Override
 	public T apply(Object obj) throws MatchError {
 		for (Case<T> caze : cases) {
-			try {
-				if (caze.isApplicableTo(obj)) {
-					return caze.apply(obj);
+			if (caze.isApplicable(obj)) {
+				final Option<Try<T>> value = caze.tryToApply(obj);
+				if (value.isPresent()) {
+					return value.get().get();
 				}
-			} catch (ClassCastException x) {
-				// TODO: may also occur within f.apply if o has correct type
-			} catch (NullPointerException x) {
-				// TODO: may also occur within f.apply if o has correct type
 			}
 		}
 		throw new MatchError(obj);
@@ -117,16 +114,16 @@ public final class Matcher<T> implements Function<Object, T> {
 		}
 
 		/**
-		 * Checks if a given object is applicable to the Matcher case represented by this Case.
+		 * Checks if the Matcher case represented by this Case can be applied to the given object.
 		 * 
 		 * @param obj An object, may be null.
 		 * @return true, if prototype is None or prototype is Some(value) and value equals obj,
 		 *         false otherwise.
 		 */
-		boolean isApplicableTo(Object obj) {
+		boolean isApplicable(Object obj) {
 			return prototype.map(
 					val -> val == obj || (val != null && val.equals(obj)))
-					.orElse(true);
+					.orElse(obj != null);
 		}
 
 		/**
@@ -135,9 +132,17 @@ public final class Matcher<T> implements Function<Object, T> {
 		 * @param obj An object.
 		 * @return The result of function.apply(obj).
 		 */
-		@SuppressWarnings("unchecked")
-		T apply(Object obj) {
-			return ((Function<Object, T>) function).apply(obj);
+		Option<Try<T>> tryToApply(Object obj) {
+			try {
+				@SuppressWarnings("unchecked")
+				final T value = ((Function<Object, T>) function).apply(obj);
+				return new Some<>(new Success<>(value));
+			} catch (ClassCastException x) {
+				// TODO: may also occur within f.apply if o has correct type
+				return None.instance();
+			} catch (Throwable x) {
+				return new Some<>(new Failure<>(x));
+			}
 		}
 	}
 }

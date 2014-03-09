@@ -7,36 +7,38 @@ import org.junit.Test;
 
 
 public class MatcherTest {
-	
+
 	@Test
-	public void shouldMatchByValuesUsingSupplier() {
+	public void shouldMatchNull() {
 		final int actual = Matcher.of(Integer.class)
-			.caze("1", o -> 1)
-			.apply("1");
+				.caze( (String s) -> s.length())
+				.caze( null, o -> 1 )
+				.apply(null);
 		assertThat(actual).isEqualTo(1);
 	}
-	
+
 	@Test
 	public void shouldMatchByValuesUsingFunction() {
 		final int actual = Matcher.of(Integer.class)
-			.caze("1", (String s) -> 1).apply("1");
+				.caze("1", (String s) -> 1)
+				.apply("1");
 		assertThat(actual).isEqualTo(1);
 	}
 
 	@Test(expected = MatchError.class)
 	public void shouldThrowOnNoMatchByValue() {
 		Matcher.of(Integer.class)
-			.caze("1", o -> 1)
-			.apply("2");
+				.caze("1", o -> 1)
+				.apply("2");
 	}
 	
 	@Test
 	public void shouldMatchByValueOnMultipleCases() {
 		final int actual = Matcher.of(Integer.class)
-			.caze("1", o -> 1)
-			.caze("2", o -> 2)
-			.caze("3", o -> 3)
-			.apply("2");
+				.caze("1", o -> 1)
+				.caze("2", o -> 2)
+				.caze("3", o -> 3)
+				.apply("2");
 		assertThat(actual).isEqualTo(2);
 	}
 
@@ -44,17 +46,17 @@ public class MatcherTest {
 	public void shouldMatchByTypeOnMultipleCasesUsingGenericType() {
 		final int actual = Matcher.of(Integer.class)
 				.<Byte>		caze(b -> (int) b)
-				.<Short>	caze(s -> (int) s)
-				.<Integer>	caze(i -> i)
-				.apply(1);
-		assertThat(actual).isEqualTo(1);
+				.<Short>	caze(s -> s + 1)
+				.<Integer>	caze(i -> i + 2)
+				.apply((short) 1);
+		assertThat(actual).isEqualTo(2);
 	}
 	
 	@Test
 	public void shouldMatchByIntOnMultipleCasesUsingGenericType() {
 		final int actual = Matcher.of(Integer.class)
 				.<Byte>		caze(b -> 1)
-				.<Double>	caze(d -> 2)
+				.<Short>	caze(s -> 2)
 				.<Integer>	caze(i -> 3)
 				.apply(1);
 		assertThat(actual).isEqualTo(3);
@@ -73,10 +75,10 @@ public class MatcherTest {
 	@Test
 	public void shouldMatchDoubleOnMultipleCasesUsingTypedParam() {
 		final int actual =
-				caze( (Byte b) -> 1 ).
-				caze( (Double d) -> 2 ).
-				caze( (Integer i) -> 3 ).
-				apply( 1.0d );
+				caze( (Byte b) -> 1 )
+				.caze( (Double d) -> 2 )
+				.caze( (Integer i) -> 3 )
+				.apply( 1.0d );
 		assertThat(actual).isEqualTo(2);
 	}
 
@@ -91,23 +93,57 @@ public class MatcherTest {
 	}
 	
 	@Test
-	public void shouldMatchByTypeOnMultipleCases6() {
+	public void shouldMatchByAssignableTypeOnMultipleCases() {
 		final int actual = Matcher.of(Character.class)
 				.caze(1, o -> 'a')
 				.caze((Number n) -> 'b')
-				.caze(x -> 'c')
+				.caze(o -> 'c')
 				.apply(2.0d);
 		assertThat(actual).isEqualTo('b');
 	}
 	
 	@Test
-	public void shouldMatchContainerTypeByContainedTypeOnMultipleCases() {
+	public void shouldMatchDefaultCase() {
 		final int actual = Matcher.of(Integer.class)
-			.<Some<Integer>>	caze(some -> some.get())
-			.<Some<String>>		caze(some -> Integer.parseInt(some.get()))
-			.<None<?>>			caze(none -> -1)
-			.caze(o -> -13)
-			.apply(new Some<>("123"));
-		assertThat(actual).isEqualTo(123);
+				.caze(null, o -> 1)
+				.caze(o -> 2)
+				.apply("default");
+		assertThat(actual).isEqualTo(2);
 	}
+	
+	@Test
+	public void shouldClarifyHereThatTypeErasureIsPresent() {
+		final int actual = Matcher.of(Integer.class)
+				.<Some<Integer>>	caze(some -> 1)
+				.<Some<String>>		caze(some -> Integer.parseInt(some.get()))
+				.apply(new Some<>("123"));
+		assertThat(actual).isEqualTo(1);
+	}
+	
+	@Test
+	public void shouldClarifyHereThatClassCastExceptionsAreInterpretedAsNotMatching() {
+		final Integer actual = Matchers
+				.caze(o -> (int) o )
+				.caze(o -> -1)
+				.apply("test");
+		assertThat(actual).isEqualTo(-1);
+	}
+
+	@Test
+	public void shouldClarifyHereThatTryWrapsExceptions() {
+		final Try<Integer> actual = Matchers
+				.caze(o -> Try.<Integer>of(() -> { throw new ClassCastException(); } ))
+				.apply("test");
+		assertThat(actual.failed().get().getClass().getName()).isEqualTo(ClassCastException.class.getName());
+	}
+
+	@Test
+	public void shouldClarifyHereThatTrySeparatesClassCastExceptions() {
+		final Try<Integer> actual = Matchers
+				.caze((Integer i) -> Try.<Integer>of(() -> { throw new ClassCastException(); } ))
+				.caze((String s) -> new Success<>(1))
+				.apply("test");
+		assertThat(actual).isEqualTo(new Success<>(1));
+	}
+
 }
