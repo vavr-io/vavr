@@ -138,7 +138,6 @@ public final class Matcher<T> implements Function<Object, T> {
 				final T value = ((Function<Object, T>) function).apply(obj);
 				return new Some<>(new Success<>(value));
 			} catch (ClassCastException x) {
-				// TODO: may also occur within f.apply if o has correct type
 				return None.instance();
 			} catch (Throwable x) {
 				return new Some<>(new Failure<>(x));
