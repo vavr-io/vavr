@@ -1,7 +1,6 @@
 package javaslang.util;
 
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public final class Matchers {
 
@@ -15,19 +14,9 @@ public final class Matchers {
 		return new Matcher<T>().caze(function);
 	}
 
-	/** Shortcut for <code>new Matcher<>().caze(supplier)</code>. */
-	public static <T> Matcher<T> caze(Supplier<T> supplier) {
-		return new Matcher<T>().caze(supplier);
-	}
-
 	/** Shortcut for <code>new Matcher<>().caze(prototype, function)</code>. */
 	public static <S, T> Matcher<T> caze(S prototype, Function<S, T> function) {
 		return new Matcher<T>().caze(prototype, function);
-	}
-
-	/** Shortcut for <code>new Matcher<>().caze(prototype, supplier)</code>. */
-	public static <S, T> Matcher<T> caze(S prototype, Supplier<T> supplier) {
-		return new Matcher<T>().caze(prototype, supplier);
 	}
 
 }

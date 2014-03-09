@@ -5,7 +5,6 @@ import static javaslang.lang.Lang.require;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * A better switch for Java. A Matcher is
@@ -47,21 +46,6 @@ public final class Matcher<T> implements Function<Object, T> {
 	}
 
 	/**
-	 * If the type of the object applied to this Matcher (see {@link #apply(Object)}) is assignable
-	 * to S, the given object is applied to supplier.<br>
-	 * <br>
-	 * Use this method to match a type.
-	 * 
-	 * @param supplier A supplier.
-	 * @return this, the current instance of Matcher.
-	 */
-	public Matcher<T> caze(Supplier<T> supplier) {
-		require(supplier != null, "supplier is null");
-		cases.add(new Case<>(None.instance(), o -> supplier.get()));
-		return this;
-	}
-
-	/**
 	 * If the given prototype value is equal to the object applied to this Matcher (see
 	 * {@link #apply(Object)}), the object is applied to function.<br>
 	 * <br>
@@ -74,23 +58,6 @@ public final class Matcher<T> implements Function<Object, T> {
 	public <S> Matcher<T> caze(S prototype, Function<S, T> function) {
 		require(function != null, "function is null");
 		cases.add(new Case<>(new Some<>(prototype), function));
-		return this;
-	}
-
-	/**
-	 * If the given prototype value is equal to the object applied to this Matcher (see
-	 * {@link #apply(Object)}), the object is applied to supplier.<br>
-	 * <br>
-	 * Use this method to match a value and return a result orthogonal (read <em>independent</em>)
-	 * to the value.
-	 * 
-	 * @param prototype
-	 * @param supplier
-	 * @return this, the current instance of Matcher.
-	 */
-	public <S> Matcher<T> caze(S prototype, Supplier<T> supplier) {
-		require(supplier != null, "supplier is null");
-		cases.add(new Case<>(new Some<>(prototype), o -> supplier.get()));
 		return this;
 	}
 

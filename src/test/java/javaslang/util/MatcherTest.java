@@ -11,7 +11,7 @@ public class MatcherTest {
 	@Test
 	public void shouldMatchByValuesUsingSupplier() {
 		final int actual = Matcher.of(Integer.class)
-			.caze("1", () -> 1)
+			.caze("1", o -> 1)
 			.apply("1");
 		assertThat(actual).isEqualTo(1);
 	}
@@ -26,16 +26,16 @@ public class MatcherTest {
 	@Test(expected = MatchError.class)
 	public void shouldThrowOnNoMatchByValue() {
 		Matcher.of(Integer.class)
-			.caze("1", () -> 1)
+			.caze("1", o -> 1)
 			.apply("2");
 	}
 	
 	@Test
 	public void shouldMatchByValueOnMultipleCases() {
 		final int actual = Matcher.of(Integer.class)
-			.caze("1", () -> 1)
-			.caze("2", () -> 2)
-			.caze("3", () -> 3)
+			.caze("1", o -> 1)
+			.caze("2", o -> 2)
+			.caze("3", o -> 3)
 			.apply("2");
 		assertThat(actual).isEqualTo(2);
 	}
@@ -93,7 +93,7 @@ public class MatcherTest {
 	@Test
 	public void shouldMatchByTypeOnMultipleCases6() {
 		final int actual = Matcher.of(Character.class)
-				.caze(1, () -> 'a')
+				.caze(1, o -> 'a')
 				.caze((Number n) -> 'b')
 				.caze(x -> 'c')
 				.apply(2.0d);
