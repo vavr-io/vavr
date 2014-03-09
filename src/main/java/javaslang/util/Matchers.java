@@ -16,6 +16,16 @@ public final class Matchers {
 		return new Matcher<T>().caze(function);
 	}
 
+	/** Shortcut for <code>new Matcher<>().caze(consumer)</code>. */
+	public static <S> Matcher<Void> caze(Consumer<S> consumer) {
+		return new Matcher<Void>().caze(consumer);
+	}
+
+	/** Shortcut for <code>new Matcher<>().caze(supplier)</code>. */
+	public static <T> Matcher<T> caze(Supplier<T> supplier) {
+		return new Matcher<T>().caze(supplier);
+	}
+
 	/** Shortcut for <code>new Matcher<>().caze(prototype, function)</code>. */
 	public static <S, T> Matcher<T> caze(S prototype, Function<S, T> function) {
 		return new Matcher<T>().caze(prototype, function);
