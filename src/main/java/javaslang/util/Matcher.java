@@ -4,7 +4,6 @@ import static javaslang.lang.Lang.require;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -49,24 +48,6 @@ public final class Matcher<T> implements Function<Object, T> {
 
 	/**
 	 * If the type of the object applied to this Matcher (see {@link #apply(Object)}) is assignable
-	 * to S, the given object is applied to consumer.<br>
-	 * <br>
-	 * Use this method to match a type.
-	 * 
-	 * @param consumer A consumer.
-	 * @return this, the current instance of Matcher.
-	 */
-	public <S> Matcher<T> caze(Consumer<S> consumer) {
-		require(consumer != null, "consumer is null");
-		cases.add(new Case<>(None.instance(), (S o) -> {
-			consumer.accept(o);
-			return null;
-		}));
-		return this;
-	}
-
-	/**
-	 * If the type of the object applied to this Matcher (see {@link #apply(Object)}) is assignable
 	 * to S, the given object is applied to supplier.<br>
 	 * <br>
 	 * Use this method to match a type.
@@ -93,25 +74,6 @@ public final class Matcher<T> implements Function<Object, T> {
 	public <S> Matcher<T> caze(S prototype, Function<S, T> function) {
 		require(function != null, "function is null");
 		cases.add(new Case<>(new Some<>(prototype), function));
-		return this;
-	}
-
-	/**
-	 * If the given prototype value is equal to the object applied to this Matcher (see
-	 * {@link #apply(Object)}), the object is applied to consumer.<br>
-	 * <br>
-	 * Use this method to match a value and consume it, i.e. produce side-effect(s).
-	 * 
-	 * @param prototype
-	 * @param consumer
-	 * @return this, the current instance of Matcher.
-	 */
-	public <S> Matcher<T> caze(S prototype, Consumer<S> consumer) {
-		require(consumer != null, "consumer is null");
-		cases.add(new Case<>(new Some<>(prototype), (S o) -> {
-			consumer.accept(o);
-			return null;
-		}));
 		return this;
 	}
 
