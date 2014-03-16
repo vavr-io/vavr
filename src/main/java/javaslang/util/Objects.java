@@ -35,7 +35,6 @@ public final class Objects {
 	 * @param o An Object, may be null.
 	 * @return Some Boolean representation of o or None.
 	 */
-	// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=427933
 	// TODO: detect cycles => private String toString(Object o, Set<Object> visited)
 	public static Option<Boolean> toBoolean(Object o) {
 		return Option.of(internalToBoolean(o));
