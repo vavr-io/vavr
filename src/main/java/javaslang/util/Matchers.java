@@ -5,8 +5,7 @@ import java.util.function.Function;
 public final class Matchers {
 
 	private Matchers() {
-		throw new AssertionError(Matchers.class.getName()
-				+ " cannot be instantiated.");
+		throw new AssertionError(Matchers.class.getName() + " cannot be instantiated.");
 	}
 
 	/** Shortcut for <code>new Matcher<>().caze(function)</code>. */
