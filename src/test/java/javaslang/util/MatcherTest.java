@@ -1,18 +1,16 @@
 package javaslang.util;
 
-import static javaslang.util.Matchers.caze;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import org.junit.Test;
-
 
 public class MatcherTest {
 
 	@Test
 	public void shouldMatchNull() {
 		final int actual = Matcher.of(Integer.class)
-				.caze( (String s) -> s.length())
-				.caze( null, o -> 1 )
+				.caze((String s) -> s.length())
+				.caze(null, o -> 1)
 				.apply(null);
 		assertThat(actual).isEqualTo(1);
 	}
@@ -73,28 +71,28 @@ public class MatcherTest {
 	}
 	
 	@Test
-	public void shouldMatchDoubleOnMultipleCasesUsingTypedParam() {
-		final int actual =
-				caze( (Byte b) -> 1 )
-				.caze( (Double d) -> 2 )
-				.caze( (Integer i) -> 3 )
-				.apply( 1.0d );
+	public void shouldMatchByDoubleOnMultipleCasesUsingTypedParameter() {
+		final int actual = Matchers
+				.caze((Byte b) -> 1)
+				.caze((Double d) -> 2)
+				.caze((Integer i) -> 3)
+				.apply(1.0d);
 		assertThat(actual).isEqualTo(2);
 	}
 
 	@Test
-	public void shouldMatchMaxIntOnMultipleCasesUsingTypedParam() {
-		final int actual = Matcher.of(Integer.class)
-				.caze( (Byte b)		-> (int) b )
-				.caze( (Short s)	-> (int) s )
-				.caze( (Integer i)	-> i )
+	public void shouldMatchByIntOnMultipleCasesUsingTypedParameter() {
+		final int actual = Matchers
+				.caze((Byte b) -> (int) b)
+				.caze((Double d) -> d.intValue())
+				.caze((Integer i) -> i)
 				.apply(Integer.MAX_VALUE);
 		assertThat(actual).isEqualTo(Integer.MAX_VALUE);
 	}
 	
 	@Test
 	public void shouldMatchByAssignableTypeOnMultipleCases() {
-		final int actual = Matcher.of(Character.class)
+		final int actual = Matchers
 				.caze(1, o -> 'a')
 				.caze((Number n) -> 'b')
 				.caze(o -> 'c')
@@ -123,7 +121,7 @@ public class MatcherTest {
 	@Test
 	public void shouldClarifyHereThatClassCastExceptionsAreInterpretedAsNotMatching() {
 		final Integer actual = Matchers
-				.caze(o -> (int) o )
+				.caze(o -> (int) o)
 				.caze(o -> -1)
 				.apply("test");
 		assertThat(actual).isEqualTo(-1);
@@ -131,16 +129,17 @@ public class MatcherTest {
 
 	@Test
 	public void shouldClarifyHereThatTryWrapsExceptions() {
+		final ClassCastException x = new ClassCastException();
 		final Try<Integer> actual = Matchers
-				.caze(o -> Try.<Integer>of(() -> { throw new ClassCastException(); } ))
+				.caze(o -> Try.<Integer>of(() -> { throw x; }))
 				.apply("test");
-		assertThat(actual.failed().get().getClass().getName()).isEqualTo(ClassCastException.class.getName());
+		assertThat(actual.failed().get()).isEqualTo(x);
 	}
 
 	@Test
 	public void shouldClarifyHereThatTrySeparatesClassCastExceptions() {
 		final Try<Integer> actual = Matchers
-				.caze((Integer i) -> Try.<Integer>of(() -> { throw new ClassCastException(); } ))
+				.caze((Integer i) -> Try.<Integer>of(() -> { throw new ClassCastException(); }))
 				.caze((String s) -> new Success<>(1))
 				.apply("test");
 		assertThat(actual).isEqualTo(new Success<>(1));
