@@ -1,8 +1,8 @@
 package javaslang.lang;
 
-import java.util.function.Function;
 import java.util.function.Supplier;
 
+import javaslang.util.Arrays;
 import javaslang.util.Objects;
 
 /**
@@ -43,27 +43,29 @@ public final class Lang {
 	}
 
 	/**
-	 * Shortcut for <code>System.out.print(String.format(format, args))</code>.
+	 * Shortcut for <code>System.out.print(String.format(format, Arrays.map(objects, Objects::toString)))</code>.
 	 * 
 	 * @param format
-	 * @param args
+	 * @param objects
 	 * 
 	 * @see String#format(String, Object...)
 	 */
-	public static void print(String format, Object... args) {
+	public static void print(String format, Object... objects) {
+		final Object[] args = Arrays.map(objects, Objects::toString);
 		final String s = String.format(format, args);
 		System.out.print(s);
 	}
 
 	/**
-	 * Shortcut for <code>System.out.println(String.format(format, args))</code>.
+	 * Shortcut for <code>System.out.println(String.format(format, Arrays.map(objects, Objects::toString)))</code>.
 	 * 
 	 * @param format
-	 * @param args
+	 * @param objects
 	 * 
 	 * @see String#format(String, Object...)
 	 */
-	public static void println(String format, Object... args) {
+	public static void println(String format, Object... objects) {
+		final Object[] args = Arrays.map(objects, Objects::toString);
 		final String s = String.format(format, args);
 		System.out.println(s);
 	}
@@ -93,17 +95,6 @@ public final class Lang {
 		if (!condition) {
 			throw new IllegalStateException(messageSupplier.get());
 		}
-	}
-
-	/**
-	 * Builder pattern.
-	 * 
-	 * @param obj
-	 * @param f
-	 * @return
-	 */
-	public static <T, U> U with(T obj, Function<T, U> f) {
-		return f.apply(obj);
 	}
 
 }
