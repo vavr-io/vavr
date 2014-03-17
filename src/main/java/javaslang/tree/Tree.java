@@ -9,7 +9,12 @@ import java.util.function.Predicate;
 
 import javaslang.util.Strings;
 
-// TODO: traverse and collect with SearchStrategy (DFS, BFS)
+/**
+ * A tree representation, Inspired by <a
+ * href="http://zef.me/4030/avoiding-javascript-pitfalls-through-tree-hugging">treehugger.js</a>.
+ *
+ * @param <T> Type of tree node values.
+ */
 public class Tree<T> {
 
 	private final String id; // identifier, not necessarily unique
@@ -64,7 +69,8 @@ public class Tree<T> {
 	 * Detaches a node from this tree.
 	 * 
 	 * @param child A Tree.
-	 * @return true, if the child was successfully detached, false if it is not a child of this tree.
+	 * @return true, if the child was successfully detached, false if it is not a child of this
+	 *         tree.
 	 */
 	public boolean detach(Tree<T> child) {
 		if (children.remove(child)) {
@@ -97,8 +103,8 @@ public class Tree<T> {
 	}
 
 	/**
-	 * Traverses this tree top down, testing the given predicate against each tree node. If predicate.test() returns
-	 * true, descend children, else go on with neighbors.
+	 * Traverses this tree top down, testing the given predicate against each tree node. If
+	 * predicate.test() returns true, descend children, else go on with neighbors.
 	 */
 	public void traverse(Predicate<Tree<T>> predicate) {
 		if (predicate.test(this)) {
@@ -107,8 +113,8 @@ public class Tree<T> {
 	}
 
 	/**
-	 * Traverses this tree top down, applying the given predicate to each tree node. If predicate.test() returns true,
-	 * the tree node is part of the result list.
+	 * Traverses this tree top down, applying the given predicate to each tree node. If
+	 * predicate.test() returns true, the tree node is part of the result list.
 	 */
 	public List<Tree<T>> collect(Predicate<Tree<T>> predicate) {
 		final List<Tree<T>> result = new ArrayList<>();
@@ -130,11 +136,18 @@ public class Tree<T> {
 
 	protected String toString(int depth) {
 		final String indent = Strings.repeat(' ', depth * 2);
-		final String inner = children.stream().map(child -> child.toString(depth + 1)) // create child strings
-				.reduce((l, r) -> l + ",\n" + r) // concatenate child strings
-				.map(s -> "\n" + s + "\n" + indent) // apply if concatenation is not empty
+		final String inner = children.stream().map(child -> child.toString(depth + 1)) // create
+																						// child
+																						// strings
+				.reduce((l, r) -> l + ",\n" + r)
+				// concatenate child strings
+				.map(s -> "\n" + s + "\n" + indent)
+				// apply if concatenation is not empty
 				.orElse("");
-		final String content = (value == null) ? "" : value.toString().replaceAll("\\s+", " ").trim();
+		final String content = (value == null) ? "" : value
+				.toString()
+				.replaceAll("\\s+", " ")
+				.trim();
 		return indent + id + "(" + content + inner + ")";
 	}
 

@@ -6,16 +6,6 @@ import java.util.function.Predicate;
 
 import javaslang.option.Option;
 
-/**
- * TODO: Try.lazyOf: converts an instance of ThrowingFunction&lt;I, O&gt; to
- * Function&lt;I, Supplier&lt;Try&lt;O&gt;&gt;&gt;<br>
- * TODO: Try.collect, Try.groupingBySuccess, ...<br>
- * See also <a href=
- * "http://blog.zenika.com/index.php?post/2014/02/19/Repenser-la-propagation-des-exceptions-avec-Java-8"
- * >Repenser-la-propagation-des-exceptions-avec-Java-8</a>.
- *
- * @param <T>
- */
 public interface Try<T> {
 
 	static <T> Try<T> of(Try.CheckedSupplier<T> supplier) {

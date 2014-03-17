@@ -5,7 +5,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-// TODO: delete Option, Some, None because it adds fragmentation to Java (with respect to java.util.Optional)
 /**
  * Replacement for {@link java.util.Option}<br>
  * <br>

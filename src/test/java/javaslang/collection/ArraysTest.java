@@ -5,9 +5,6 @@ import static org.fest.assertions.api.Assertions.assertThat;
 import java.util.ArrayList;
 import java.util.List;
 
-import javaslang.collection.Arrays;
-import javaslang.util.Strings;
-
 import org.junit.Test;
 
 public class ArraysTest {
