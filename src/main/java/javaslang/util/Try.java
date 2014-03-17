@@ -5,7 +5,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import javaslang.lang.NonFatal;
-import javaslang.util.function.CheckedSupplier;
 
 /**
  * TODO: Try.lazyOf: converts an instance of ThrowingFunction&lt;I, O&gt; to
@@ -19,7 +18,7 @@ import javaslang.util.function.CheckedSupplier;
  */
 public interface Try<T> {
 
-	static <T> Try<T> of(CheckedSupplier<T> supplier) {
+	static <T> Try<T> of(Try.CheckedSupplier<T> supplier) {
 		try {
 			return new Success<>(supplier.get());
 		} catch (Throwable t) {
@@ -55,5 +54,23 @@ public interface Try<T> {
 	<U> Try<U> map(Function<? super T, ? extends U> mapper);
 
 	Try<Throwable> failed();
+	
+	/**
+	 * Used to initialize a Try calling {@link Try#of(Try.CheckedSupplier)}.
+	 *
+	 * @param <T> Type of supplied object.
+	 */
+	@FunctionalInterface
+	static interface CheckedSupplier<T> {
+
+	    /**
+	     * Gets a result or throws a Throwable.
+	     *
+	     * @return a result
+	     * @throws A Throwable if an error occurs.
+	     */
+		T get() throws Throwable;
+		
+	}
 
 }
