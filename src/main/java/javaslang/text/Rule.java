@@ -6,10 +6,10 @@
  */
 package javaslang.text;
 
+import static javaslang.collection.Arrays.isNullOrEmpty;
 import static javaslang.lang.Lang.require;
-import static javaslang.util.Arrays.isNullOrEmpty;
-import javaslang.util.Collections;
-import javaslang.util.tree.Tree;
+import javaslang.collection.Collections;
+import javaslang.tree.Tree;
 
 import java.util.Arrays;
 import java.util.List;

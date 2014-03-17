@@ -4,10 +4,33 @@ import static javaslang.util.Strings.escape;
 import static javaslang.util.Strings.repeat;
 import static javaslang.util.Strings.split;
 import static org.fest.assertions.api.Assertions.assertThat;
+import javaslang.util.Strings;
 
 import org.junit.Test;
 
 public class StringsTest {
+	
+	@Test
+	public void shouldConvertNullToString() {
+		final String actual = Strings.toString("null");
+		assertThat(actual).isEqualTo("null");
+	}
+
+	@Test
+	public void shouldDetectInfiniteLoopsOnToString() {
+		final Object[] loop = new Object[1];
+		loop[0] = loop;
+		final String actual = Strings.toString(loop);
+		assertThat(actual).isEqualTo("[...]");
+	}
+
+	@Test
+	public void shouldVisitTwoSimilarPathsOnToString() {
+		final Object[] path = new Object[] { "path" };
+		final Object[] array = new Object[] { path, path };
+		final String actual = Strings.toString(array);
+		assertThat(actual).isEqualTo("[[path], [path]]");
+	}
 
 	@Test
 	public void shouldRepeatNullAsNull() {

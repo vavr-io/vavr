@@ -2,11 +2,11 @@ package javaslang.lang;
 
 import java.util.function.Supplier;
 
-import javaslang.util.Arrays;
-import javaslang.util.Objects;
+import javaslang.collection.Arrays;
+import javaslang.util.Strings;
 
 /**
- * General Java languange extensions. See also {@link java.util.Objects}.
+ * General Java languange extensions.
  */
 public final class Lang {
 
@@ -23,22 +23,22 @@ public final class Lang {
 	}
 
 	/**
-	 * Shortcut for <code>System.out.print(javaslang.util.Objects.toString(o))</code>.
+	 * Shortcut for <code>System.out.print(javaslang.text.Strings.toString(o))</code>.
 	 * 
 	 * @param o an Object
 	 */
 	public static void print(Object o) {
-		final String s = Objects.toString(o);
+		final String s = Strings.toString(o);
 		System.out.print(s);
 	}
 
 	/**
-	 * Shortcut for <code>System.out.println(javaslang.util.Objects.toString(o))</code>.
+	 * Shortcut for <code>System.out.println(javaslang.text.Strings.toString(o))</code>.
 	 * 
 	 * @param o an Object
 	 */
 	public static void println(Object o) {
-		final String s = Objects.toString(o);
+		final String s = Strings.toString(o);
 		System.out.println(s);
 	}
 
@@ -51,7 +51,7 @@ public final class Lang {
 	 * @see String#format(String, Object...)
 	 */
 	public static void print(String format, Object... objects) {
-		final Object[] args = Arrays.map(objects, Objects::toString);
+		final Object[] args = Arrays.map(objects, Strings::toString);
 		final String s = String.format(format, args);
 		System.out.print(s);
 	}
@@ -65,7 +65,7 @@ public final class Lang {
 	 * @see String#format(String, Object...)
 	 */
 	public static void println(String format, Object... objects) {
-		final Object[] args = Arrays.map(objects, Objects::toString);
+		final Object[] args = Arrays.map(objects, Strings::toString);
 		final String s = String.format(format, args);
 		System.out.println(s);
 	}

@@ -9,9 +9,15 @@ import static javaslang.lang.Lang.require;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
-import java.util.regex.Matcher;
+import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javaslang.collection.Arrays;
+import javaslang.match.Matcher;
 
 public final class Strings {
 
@@ -22,6 +28,10 @@ public final class Strings {
 
 	private Strings() {
 		throw new AssertionError(Strings.class.getName() + " cannot be instantiated.");
+	}
+	
+	public static String toString(Object o) {
+		return toString(o, new HashSet<>());
 	}
 
 	/**
@@ -82,7 +92,7 @@ public final class Strings {
 	 */
 	public static int[] lineAndColumn(String s, int index) {
 		final String documentToCursor = s.substring(0, index);
-		final Matcher matcher = EOL.matcher(documentToCursor);
+		final java.util.regex.Matcher matcher = EOL.matcher(documentToCursor);
 		int line = 1;
 		for (; matcher.find(); line++)
 			;
@@ -123,7 +133,7 @@ public final class Strings {
 	 * Shortcut for <code>collection.stream().map(Types::toString).collect(joining(delimiter))</code>.
 	 */
 	public static <T> String mkString(Collection<T> collection, CharSequence delimiter) {
-		return collection.stream().map(o -> Objects.toString(o)).collect(joining(delimiter));
+		return collection.stream().map(o -> toString(o)).collect(joining(delimiter));
 	}
 
 	/**
@@ -131,7 +141,7 @@ public final class Strings {
 	 */
 	public static <T> String mkString(Collection<T> collection, CharSequence delimiter, CharSequence prefix,
 			CharSequence suffix) {
-		return collection.stream().map(o -> Objects.toString(o)).collect(joining(delimiter, prefix, suffix));
+		return collection.stream().map(o -> toString(o)).collect(joining(delimiter, prefix, suffix));
 	}
 
 	/**
@@ -165,6 +175,53 @@ public final class Strings {
 		final String token = string.substring(current);
 		tokens.add(token);
 		return tokens.toArray(new String[tokens.size()]);
+	}
+	
+	
+	private static String toString(Object o, Set<Object> visited) {
+		if (visited.contains(o)) {
+			return "...";
+		} else if (o == null) {
+			return "null";
+		} else if (o.getClass().isArray()) {
+			visited.add(o);
+			final String result = getStream(o)
+					.map(x -> toString(x, visited))
+					.collect(Collectors.joining(", ", "[", "]"));
+			visited.remove(o);
+			return result;
+		} else if (o instanceof Collection) {
+			visited.add(o);
+			final String result = ((Collection<?>) o)
+					.stream()
+					.map(x -> toString(x, visited))
+					.collect(Collectors.joining(", ", "[", "]"));
+			visited.remove(o);
+			return result;
+		} else {
+			return o.toString();
+		}
+	}
+
+	private static final Matcher<Stream<?>> ARRAY_TO_STREAM_MATCHER = Matcher.<Stream<?>>create()
+			.caze((boolean[] a) -> Arrays.stream(a))
+			.caze((byte[] a) -> Arrays.stream(a))
+			.caze((char[] a) -> Arrays.stream(a))
+			.caze((double[] a) -> Arrays.stream(a))
+			.caze((float[] a) -> Arrays.stream(a))
+			.caze((int[] a) -> Arrays.stream(a))
+			.caze((long[] a) -> Arrays.stream(a))
+			.caze((short[] a) -> Arrays.stream(a))
+			.caze((Object[] a) -> Arrays.stream(a));
+	
+	/**
+	 * Converts a given array to a List, depending on its component type (primitive or Object).
+	 * 
+	 * @param o An array, not null.
+	 * @return A List representation of the given array.
+	 */
+	private static Stream<?> getStream(Object object) {
+		return ARRAY_TO_STREAM_MATCHER.apply(object);
 	}
 
 }

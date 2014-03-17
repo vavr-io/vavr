@@ -2,7 +2,7 @@ package javaslang.text;
 
 import static javaslang.lang.Lang.require;
 import static javaslang.util.Strings.isNullOrEmpty;
-import javaslang.util.tree.Tree;
+import javaslang.tree.Tree;
 
 class Literal implements Parser {
 

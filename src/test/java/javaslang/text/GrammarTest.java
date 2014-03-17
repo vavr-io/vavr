@@ -7,9 +7,9 @@ import static javaslang.text.Sequence.Bound.ZERO;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
+import javaslang.exception.Try;
 import javaslang.io.IO;
-import javaslang.util.Try;
-import javaslang.util.tree.Tree;
+import javaslang.tree.Tree;
 
 import org.junit.Test;
 

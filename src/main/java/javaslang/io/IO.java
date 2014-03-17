@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
-import javaslang.util.Failure;
-import javaslang.util.Success;
-import javaslang.util.Try;
+import javaslang.exception.Failure;
+import javaslang.exception.Success;
+import javaslang.exception.Try;
 
 /**
  * The IO class provides convenient methods for loading system resources and converting data between

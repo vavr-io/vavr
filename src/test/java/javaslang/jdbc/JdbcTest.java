@@ -2,7 +2,7 @@ package javaslang.jdbc;
 
 import java.util.Optional;
 
-import javaslang.util.Try;
+import javaslang.exception.Try;
 
 import javax.sql.DataSource;
 

@@ -1,6 +1,6 @@
 package javaslang.text;
 
-import javaslang.util.tree.Tree;
+import javaslang.tree.Tree;
 
 @FunctionalInterface
 public interface Parser {

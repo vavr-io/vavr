@@ -1,7 +1,7 @@
 package javaslang.text;
 
 import static javaslang.lang.Lang.require;
-import javaslang.util.tree.Tree;
+import javaslang.tree.Tree;
 
 /**
  * Repeats a parser lowerBound (min) to upperBound (max) times.<br>
