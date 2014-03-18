@@ -21,51 +21,44 @@ public final class Arrays {
 		throw new AssertionError(Arrays.class.getName() + " cannot be instantiated.");
 	}
 
-	// -- asList
-
-	/** Convenience method, calls {@link java.util.Arrays#asList(Object...)} */
-	public static <T> List<T> asList(T[] array) {
-		require(array != null, "array is null");
-		// performs better than createList(array.length, i -> array[i])
-		return java.util.Arrays.asList(array);
-	}
-
-	public static List<Boolean> asList(boolean[] array) {
+	// -- asList (use {@link java.util.Arrays#asList(Object...)} for Objects).
+	
+	public static List<Boolean> asList(boolean... array) {
 		require(array != null, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
 
-	public static List<Byte> asList(byte[] array) {
+	public static List<Byte> asList(byte... array) {
 		require(array != null, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
 
-	public static List<Character> asList(char[] array) {
+	public static List<Character> asList(char... array) {
 		require(array != null, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
 
-	public static List<Double> asList(double[] array) {
+	public static List<Double> asList(double... array) {
 		require(array != null, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
 
-	public static List<Float> asList(float[] array) {
+	public static List<Float> asList(float... array) {
 		require(array != null, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
 
-	public static List<Integer> asList(int[] array) {
+	public static List<Integer> asList(int... array) {
 		require(array != null, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
 
-	public static List<Long> asList(long[] array) {
+	public static List<Long> asList(long... array) {
 		require(array != null, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
 
-	public static List<Short> asList(short[] array) {
+	public static List<Short> asList(short... array) {
 		require(array != null, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
