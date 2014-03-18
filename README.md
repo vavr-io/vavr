@@ -29,8 +29,6 @@ void test() {
 
 If list is null or first element >= 2, result is "nothing" else the first list element is returned as string.
 
-## Fluent code, less exception boilerplate
-
 ## Match because if/return is like goto 
 
 Instead of
@@ -93,4 +91,19 @@ Matcher matcher = Matchers.caze("Moin", s -> s + " Kiel!");
 
 // later...
 String s = matcher.apply("Moin"); // = "Moin Kiel!"
+```
+
+## Fluent code, less exception boilerplate
+
+Exception handling adds additional technical boilerplate to our source code. Also Java does not distinguish between Fatal (non-recoverable) and NonFatal (recoverable) exceptions.
+
+Use Try to handle exceptions in a clean way.
+
+```java
+Try<byte[]> bytes = IO.loadResource("some/system/resource.txt")
+
+String s = Matchers.
+    .caze((Success<byte[]> s) -> new String(s))
+    .caze((Failure f) -> f.toString())
+    .apply(bytes);
 ```
