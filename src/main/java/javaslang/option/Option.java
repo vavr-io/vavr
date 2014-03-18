@@ -6,19 +6,17 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- * Replacement for {@link java.util.Option}<br>
- * <br>
- * <code>Option</code> is a <a href="http://stackoverflow.com/questions/13454347/monads-with-java-8">monadic</a>
- * container type which represents an optional value. Instances of <code>Option</code> are either an instance of
- * {@link javaslang.option.Some} or the singleton {@link javaslang.option.None}.<br>
- * <br>
- * Most of the API taken from <code>java.util.Optional</code>. A similar type can be found in <a
+ * Replacement for {@link java.util.Optional}.
+ * <p>
+ * Option is a <a href="http://stackoverflow.com/questions/13454347/monads-with-java-8">monadic</a>
+ * container type which represents an optional value. Instances of Option are either an instance of
+ * {@link javaslang.option.Some} or the singleton {@link javaslang.option.None}.
+ * <p>
+ * Most of the API is taken from {@link java.util.Optional}. A similar type can be found in <a
  * href="http://hackage.haskell.org/package/base-4.6.0.1/docs/Data-Maybe.html">Haskell</a> and <a
  * href="http://www.scala-lang.org/api/current/#scala.Option">Scala</a>.
  * 
- * There are two types
- * 
- * @param <T>
+ * @param <T> The type of the optional value.
  */
 public interface Option<T> {
 

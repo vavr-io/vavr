@@ -22,7 +22,7 @@ public final class Arrays {
 	}
 
 	// -- asList (use {@link java.util.Arrays#asList(Object...)} for Objects).
-	
+
 	public static List<Boolean> asList(boolean... array) {
 		require(array != null, "array is null");
 		return createList(array.length, i -> array[i]);
@@ -124,6 +124,7 @@ public final class Arrays {
 	/**
 	 * Tests if given Array is null or empty.
 	 * 
+	 * @param <T> type of array elements
 	 * @param array An Array
 	 * @return true, if arr is null or empty, false otherwise
 	 */
@@ -167,8 +168,14 @@ public final class Arrays {
 
 	/**
 	 * Convenience method for
-	 * <code>Arrays.stream(array).map(f).collect(Collectors.toList()).toArray(new R[array.length])</code>
+	 * {@code Arrays.stream(array).map(f).collect(Collectors.toList()).toArray(new R[array.length])}
 	 * .
+	 *
+	 * @param <R> Type of result array elements
+	 * @param <T> Type of input array elements
+	 * @param array An array
+	 * @param f function which maps array elements
+	 * @return An array of mapped elements
 	 */
 	public static <R, T> R[] map(T[] array, Function<? super T, ? extends R> f) {
 		require(array != null, "array is null");

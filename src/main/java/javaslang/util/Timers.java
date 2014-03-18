@@ -13,7 +13,9 @@ public final class Timers {
 	 * Syntactic sugar, allows to call
 	 * 
 	 * <pre>
-	 * <code>final Timer timer = Timers.schedule(() -> println("hi"), 1000)</code>
+	 * <code>
+	 * final Timer timer = Timers.schedule(() -&gt; println("hi"), 1000)
+	 * </code>
 	 * </pre>
 	 * 
 	 * instead of

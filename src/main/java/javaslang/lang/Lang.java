@@ -13,17 +13,27 @@ public final class Lang {
 	private Lang() {
 		throw new AssertionError(Lang.class.getName() + " cannot be instantiated.");
 	}
-	
+
+	/**
+	 * Calls {code print(supplier.get())}.
+	 * 
+	 * @param supplier An Object supplier
+	 */
 	public static void print(Supplier<Object> supplier) {
 		print(supplier.get());
 	}
 
+	/**
+	 * Calls {code println(supplier.get())}.
+	 * 
+	 * @param supplier An Object supplier
+	 */
 	public static void println(Supplier<Object> supplier) {
 		println(supplier.get());
 	}
 
 	/**
-	 * Shortcut for <code>System.out.print(javaslang.text.Strings.toString(o))</code>.
+	 * Shortcut for {@code System.out.print(javaslang.text.Strings.toString(o))}.
 	 * 
 	 * @param o an Object
 	 */
@@ -33,7 +43,7 @@ public final class Lang {
 	}
 
 	/**
-	 * Shortcut for <code>System.out.println(javaslang.text.Strings.toString(o))</code>.
+	 * Shortcut for {@code System.out.println(javaslang.text.Strings.toString(o))}.
 	 * 
 	 * @param o an Object
 	 */
@@ -43,10 +53,11 @@ public final class Lang {
 	}
 
 	/**
-	 * Shortcut for <code>System.out.print(String.format(format, Arrays.map(objects, Objects::toString)))</code>.
+	 * Shortcut for
+	 * {@code System.out.print(String.format(format, Arrays.map(objects, Objects::toString)))}.
 	 * 
-	 * @param format
-	 * @param objects
+	 * @param format A String format
+	 * @param objects Zero or more String format arguments
 	 * 
 	 * @see String#format(String, Object...)
 	 */
@@ -57,10 +68,11 @@ public final class Lang {
 	}
 
 	/**
-	 * Shortcut for <code>System.out.println(String.format(format, Arrays.map(objects, Objects::toString)))</code>.
+	 * Shortcut for {@code System.out.println(String.format(format, Arrays.map(objects,
+	 * Objects::toString)))}.
 	 * 
-	 * @param format
-	 * @param objects
+	 * @param format A String format
+	 * @param objects Zero or more String format arguments
 	 * 
 	 * @see String#format(String, Object...)
 	 */
@@ -71,7 +83,8 @@ public final class Lang {
 	}
 
 	/**
-	 * Runtime check which will throw an IllegalStateException containing the given message if the condition is false.
+	 * Runtime check which will throw an IllegalStateException containing the given message if the
+	 * condition is false.
 	 * 
 	 * @param condition A boolean
 	 * @param message A message An error message.
@@ -84,14 +97,15 @@ public final class Lang {
 	}
 
 	/**
-	 * Runtime check which will throw an IllegalStateException containing the given message if the condition is false.
-	 * The message is computed only if the condition is false.
+	 * Runtime check which will throw an IllegalStateException containing the given message if the
+	 * condition is false. The message is computed only if the condition is false.
 	 * 
 	 * @param condition A boolean
 	 * @param messageSupplier An error message, computed lazily.
 	 * @throws IllegalStateException If condition is false, contains the message.
 	 */
-	public static void require(boolean condition, Supplier<String> messageSupplier) throws IllegalStateException {
+	public static void require(boolean condition, Supplier<String> messageSupplier)
+			throws IllegalStateException {
 		if (!condition) {
 			throw new IllegalStateException(messageSupplier.get());
 		}

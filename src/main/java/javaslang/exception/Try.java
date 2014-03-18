@@ -6,6 +6,11 @@ import java.util.function.Predicate;
 
 import javaslang.option.Option;
 
+/**
+ * An implementation similar to Scala's Try monad.
+ *
+ * @param <T> Value type in the case of success.
+ */
 public interface Try<T> {
 
 	static <T> Try<T> of(Try.CheckedSupplier<T> supplier) {
@@ -57,7 +62,7 @@ public interface Try<T> {
 	     * Gets a result or throws a Throwable.
 	     *
 	     * @return a result
-	     * @throws A Throwable if an error occurs.
+	     * @throws java.lang.Throwable if an error occurs.
 	     */
 		T get() throws Throwable;
 		

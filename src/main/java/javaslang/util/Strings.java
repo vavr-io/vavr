@@ -29,7 +29,7 @@ public final class Strings {
 	private Strings() {
 		throw new AssertionError(Strings.class.getName() + " cannot be instantiated.");
 	}
-	
+
 	public static String toString(Object o) {
 		return toString(o, new HashSet<>());
 	}
@@ -39,8 +39,8 @@ public final class Strings {
 	 * 
 	 * @param s A String
 	 * @param n Duplication count, may be negative or zero.
-	 * @return A string, s duplicated n times or null, if s is null. If n is negative or zero, the empty string is
-	 *         returned.
+	 * @return A string, s duplicated n times or null, if s is null. If n is negative or zero, the
+	 *         empty string is returned.
 	 */
 	public static String repeat(String s, int n) {
 		if (s == null) {
@@ -61,7 +61,8 @@ public final class Strings {
 	 * 
 	 * @param c A char.
 	 * @param n A count of spaces, may be negative or zero.
-	 * @return A string, c duplicated n times. If n is negative or zero, the empty string is returned.
+	 * @return A string, c duplicated n times. If n is negative or zero, the empty string is
+	 *         returned.
 	 */
 	public static String repeat(char c, int n) {
 		if (n <= 0) {
@@ -87,8 +88,8 @@ public final class Strings {
 	 * Computes line and column of index within s.
 	 * 
 	 * @param s input
-	 * @param index <= s.length
-	 * @return <code>new int[] { line, column }</code>
+	 * @param index {@code <= s.length}
+	 * @return {@code new int[] { line, column }}
 	 */
 	public static int[] lineAndColumn(String s, int index) {
 		final String documentToCursor = s.substring(0, index);
@@ -113,39 +114,74 @@ public final class Strings {
 	}
 
 	/**
-	 * Shortcut for
-	 * <code>Arrays.asList(array).stream().map(Types::toString).collect(Collectors.joining(delimiter))</code>.
+	 * Combines the elements of an array to a String using a specific delimiter. Shortcut for
+	 * <code>Arrays.asList(array).stream().map(Types::toString).collect(Collectors.joining(delimiter))</code>
+	 * .
+	 *
+	 * @param <T> Type of elements in the given array.
+	 * @param array An array.
+	 * @param delimiter Element delimiter.
+	 * @return array[0] + delimiter + ... + array[n-1], where n = array.length
 	 */
 	public static <T> String mkString(T[] array, CharSequence delimiter) {
 		return mkString(asList(array), delimiter);
 	}
 
 	/**
+	 * Combines the elements of an array to a String using a specific delimiter, prefix and suffix.
 	 * Shortcut for
 	 * <code>Arrays.asList(array).stream().map(Types::toString).collect(Collectors.joining(delimiter, prefix, suffix))</code>
 	 * .
+	 *
+	 * @param <T> Type of elements in the given array.
+	 * @param array An array.
+	 * @param delimiter Element delimiter.
+	 * @param prefix Prefix of the result String.
+	 * @param suffix Suffix of the result String.
+	 * @return prefix + array[0] + delimiter + ... + array[n-1] + suffix, where n = array.length
 	 */
-	public static <T> String mkString(T[] array, CharSequence delimiter, CharSequence prefix, CharSequence suffix) {
-		return mkString(asList(array), delimiter);
+	public static <T> String mkString(T[] array, CharSequence delimiter, CharSequence prefix,
+			CharSequence suffix) {
+		return mkString(asList(array), delimiter, prefix, suffix);
 	}
 
 	/**
-	 * Shortcut for <code>collection.stream().map(Types::toString).collect(joining(delimiter))</code>.
+	 * Combines the elements of a collection to a String using a specific delimiter. Shortcut for
+	 * <code>collection.stream().map(Types::toString).collect(joining(delimiter))</code>.
+	 *
+	 * @param <T> Type of elements in the given collection.
+	 * @param collection A Collection.
+	 * @param delimiter Element delimiter.
+	 * @return array[0] + delimiter + ... + array[n-1], where n = array.length
 	 */
 	public static <T> String mkString(Collection<T> collection, CharSequence delimiter) {
 		return collection.stream().map(o -> toString(o)).collect(joining(delimiter));
 	}
 
 	/**
-	 * Shortcut for <code>collection.stream().map(Types::toString).collect(joining(delimiter, prefix, suffix))</code>.
+	 * Combines the elements of an array to a String using a specific delimiter, prefix and suffix.
+	 * Shortcut for
+	 * <code>collection.stream().map(Types::toString).collect(joining(delimiter, prefix, suffix))</code>
+	 * .
+	 *
+	 * @param <T> Type of elements in the given collection.
+	 * @param collection A Collection.
+	 * @param delimiter Element delimiter.
+	 * @param prefix Prefix of the result String.
+	 * @param suffix Suffix of the result String.
+	 * @return prefix + array[0] + delimiter + ... + array[n-1] + suffix, where n = array.length
 	 */
-	public static <T> String mkString(Collection<T> collection, CharSequence delimiter, CharSequence prefix,
-			CharSequence suffix) {
-		return collection.stream().map(o -> toString(o)).collect(joining(delimiter, prefix, suffix));
+	public static <T> String mkString(Collection<T> collection, CharSequence delimiter,
+			CharSequence prefix, CharSequence suffix) {
+		return collection
+				.stream()
+				.map(o -> toString(o))
+				.collect(joining(delimiter, prefix, suffix));
 	}
 
 	/**
-	 * Splits a string using a specific separator. By definition, a separator separates two string. This leads to the following:
+	 * Splits a string using a specific separator. By definition, a separator separates two string.
+	 * This leads to the following:
 	 * 
 	 * <ul>
 	 * <li>split("", "#") = [""]</li>
@@ -176,8 +212,7 @@ public final class Strings {
 		tokens.add(token);
 		return tokens.toArray(new String[tokens.size()]);
 	}
-	
-	
+
 	private static String toString(Object o, Set<Object> visited) {
 		if (visited.contains(o)) {
 			return "...";
@@ -185,9 +220,8 @@ public final class Strings {
 			return "null";
 		} else if (o.getClass().isArray()) {
 			visited.add(o);
-			final String result = getStream(o)
-					.map(x -> toString(x, visited))
-					.collect(Collectors.joining(", ", "[", "]"));
+			final String result = getStream(o).map(x -> toString(x, visited)).collect(
+					Collectors.joining(", ", "[", "]"));
 			visited.remove(o);
 			return result;
 		} else if (o instanceof Collection) {
@@ -203,7 +237,8 @@ public final class Strings {
 		}
 	}
 
-	private static final Matcher<Stream<?>> ARRAY_TO_STREAM_MATCHER = Matcher.<Stream<?>>create()
+	private static final Matcher<Stream<?>> ARRAY_TO_STREAM_MATCHER = Matcher
+			.<Stream<?>> create()
 			.caze((boolean[] a) -> Arrays.stream(a))
 			.caze((byte[] a) -> Arrays.stream(a))
 			.caze((char[] a) -> Arrays.stream(a))
@@ -213,7 +248,7 @@ public final class Strings {
 			.caze((long[] a) -> Arrays.stream(a))
 			.caze((short[] a) -> Arrays.stream(a))
 			.caze((Object[] a) -> Arrays.stream(a));
-	
+
 	/**
 	 * Converts a given array to a List, depending on its component type (primitive or Object).
 	 * 

@@ -3,15 +3,16 @@ package javaslang.exception;
 import static javaslang.lang.Lang.require;
 
 /**
- * Causes wrap Throwables. They are unchecked, i.e. RuntimeExceptions, which are either fatal (represented by the
- * subclass {@link Fatal}) or non-fatal (represented by the subclass {@link NonFatal}). Fatal causes are considered to
- * be non-recoverable.<br>
- * <br>
- * Use {@link Cause#get(Throwable)} to get an instance of Cause. The instance returned is either of type {@link Fatal}
- * or {@link NonFatal}.<br>
- * <br>
- * Use {@link #get()}, which is a convenient method and essentially the same as {@link #getCause()}, to get the wrapped
- * Throwable. {@link #isFatal()} states, if this Cause is considered to be non-recoverable.
+ * Causes wrap Throwables. They are unchecked, i.e. RuntimeExceptions, which are either fatal
+ * (represented by the subclass {@link Fatal}) or non-fatal (represented by the subclass
+ * {@link NonFatal}). Fatal causes are considered to be non-recoverable.
+ * <p>
+ * Use {@link Cause#of(Throwable)} to get an instance of Cause. The instance returned is either of
+ * type {@link Fatal} or {@link NonFatal}.
+ * <p>
+ * Use {@link #get()}, which is a convenient method and essentially the same as {@link #getCause()},
+ * to get the wrapped Throwable. {@link #isFatal()} states, if this Cause is considered to be
+ * non-recoverable.
  */
 public abstract class Cause extends RuntimeException {
 
@@ -22,7 +23,8 @@ public abstract class Cause extends RuntimeException {
 	}
 
 	/**
-	 * Convenience method, returns the Throwable of this Cause which is considered either as fatal or non-fatal.
+	 * Convenience method, returns the Throwable of this Cause which is considered either as fatal
+	 * or non-fatal.
 	 * 
 	 * @return Either The Throwable of this Cause.
 	 */
@@ -33,8 +35,9 @@ public abstract class Cause extends RuntimeException {
 	public abstract boolean isFatal();
 
 	/**
-	 * Wraps t in a Cause which is either a {@link Fatal} or a {@link NonFatal}. The given Throwable t is wrapped in a
-	 * Fatal, i.e. considered as a non-recoverable, if t is an instance of one of the following classes:
+	 * Wraps t in a Cause which is either a {@link Fatal} or a {@link NonFatal}. The given Throwable
+	 * t is wrapped in a Fatal, i.e. considered as a non-recoverable, if t is an instance of one of
+	 * the following classes:
 	 * 
 	 * <ul>
 	 * <li>InterruptedException</li>

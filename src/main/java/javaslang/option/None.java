@@ -6,6 +6,12 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+/**
+ * None is a singleton representation of the undefined {@link javaslang.option.Option}. The instance
+ * is obtained by calling {@link #instance()}.
+ *
+ * @param <T> The type of the optional value.
+ */
 public final class None<T> implements Option<T> {
 
 	private static final None<?> NONE = new None<>();
@@ -14,13 +20,14 @@ public final class None<T> implements Option<T> {
 	}
 
 	/**
-	 * Returns the singleton instance of <code>None</code> as <code>None&lt;T&gt;</code> in the context of a type
-	 * &lt;T&gt;, e.g.
+	 * Returns the singleton instance of None as {@code None<T>} in the
+	 * context of a type {@code <T>}, e.g.
 	 * 
 	 * <pre>
 	 * <code>final Option&lt;Integer&gt; o = None.instance(); // o is of type None&lt;Integer&gt;</code>
 	 * </pre>
 	 * 
+	 * @param <T> The type of the optional value.
 	 * @return None
 	 */
 	public static <T> None<T> instance() {
@@ -74,12 +81,12 @@ public final class None<T> implements Option<T> {
 	public <U> Option<U> flatMap(Function<? super T, Option<U>> mapper) {
 		return None.instance();
 	}
-	
+
 	@Override
 	public void forEach(Consumer<? super T> action) {
 		// nothing to do
 	}
-	
+
 	// super.equals and super.hashCode are fine because this is a singleton
 
 	@Override

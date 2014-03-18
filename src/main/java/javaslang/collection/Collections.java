@@ -29,6 +29,7 @@ public final class Collections {
 	/**
 	 * Returns the last element of the given list.
 	 * 
+	 * @param <T> type of list elements
 	 * @param list A List, may be null or empty.
 	 * @return The last element of the list or null, if the list is null, empty or the last
 	 *         element is null.
