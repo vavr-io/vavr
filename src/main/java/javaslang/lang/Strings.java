@@ -1,4 +1,4 @@
-package javaslang.util;
+package javaslang.lang;
 
 import static java.lang.Math.max;
 import static java.util.Arrays.asList;
@@ -16,7 +16,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javaslang.collection.Arrays;
 import javaslang.match.Matcher;
 
 public final class Strings {

@@ -1,4 +1,4 @@
-package javaslang.util;
+package javaslang.lang;
 
 import java.util.Timer;
 import java.util.TimerTask;

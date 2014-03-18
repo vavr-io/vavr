@@ -2,7 +2,37 @@
 
 **Javaslang** is a functional library for Java&trade; 8 and above.
 
-## Avoid use of null
+Here you see the dependency graph as layered
+```
+|                     io                    |
+| collection | either | exception | matcher |
+|         lang        |       option        |
+ - - - - - - - - - - - - - - - - - - - - - - 
+|                   java 8                  |
+```
+
+1. Language
+    1. Lang - assertions and a better println
+    2. Arrays - conversion and bulk operations
+    3. Strings - string operations
+    4. Runtimes - definite jvm termination
+    5. Timers - syntactic sugar for Timer
+2. Monads and Matching
+    1. Option - null avoidance
+    2. Matcher - type and value matching
+    3. Try - deferred exception handling
+    4. Either - Variety of results
+3. Collections
+    1. Collections - missing collection functions
+    2. Sets - set operations (math.)
+4. Input/Output
+    1. IO - resource loading and encoding
+5. (_scheduled_) Text - a parser framework
+6. (_scheduled_) Jdbc - a functional jdbc layer
+7. (_scheduled_) Json - another json api
+8. (_scheduled_) Xml - missing xml functions
+
+## Option - Avoid use of null
 
 Use Option to represent value which may be undefined. Some represents the a value (which may be null), and None is the placeholder for nothing. Both types implement Option, so that no more NullPointerExceptions should occur.
 
@@ -102,7 +132,7 @@ Use Try to handle exceptions in a clean way.
 ```java
 Try<byte[]> bytes = IO.loadResource("some/system/resource.txt");
 
-String s = Matchers.
+String s = Matchers
     .caze((Success<byte[]> s) -> new String(s))
     .caze((Failure f) -> f.toString())
     .apply(bytes);

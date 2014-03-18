@@ -1,10 +1,10 @@
 package javaslang.util;
 
-import static javaslang.util.Strings.escape;
-import static javaslang.util.Strings.repeat;
-import static javaslang.util.Strings.split;
+import static javaslang.lang.Strings.escape;
+import static javaslang.lang.Strings.repeat;
+import static javaslang.lang.Strings.split;
 import static org.fest.assertions.api.Assertions.assertThat;
-import javaslang.util.Strings;
+import javaslang.lang.Strings;
 
 import org.junit.Test;
 

@@ -1,4 +1,4 @@
-package javaslang.collection;
+package javaslang.lang;
 
 import static javaslang.lang.Lang.require;
 

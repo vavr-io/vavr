@@ -2,9 +2,6 @@ package javaslang.lang;
 
 import java.util.function.Supplier;
 
-import javaslang.collection.Arrays;
-import javaslang.util.Strings;
-
 /**
  * General Java languange extensions.
  */
