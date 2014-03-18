@@ -29,7 +29,7 @@ void test() {
 
 If list is null or first element >= 2, result is "nothing" else the first list element is returned as string.
 
-## Match because if/return is like goto 
+## Use match expression instead of if/return statements 
 
 Instead of
 
@@ -89,21 +89,23 @@ It is also possible to match values instead of types by passing prototype object
 ```java
 Matcher matcher = Matchers.caze("Moin", s -> s + " Kiel!");
 
-// later...
+// and then...
 String s = matcher.apply("Moin"); // = "Moin Kiel!"
 ```
 
-## Fluent code, less exception boilerplate
+## Write fluent code and reduce exception handling boilerplate
 
 Exception handling adds additional technical boilerplate to our source code. Also Java does not distinguish between Fatal (non-recoverable) and NonFatal (recoverable) exceptions.
 
 Use Try to handle exceptions in a clean way.
 
 ```java
-Try<byte[]> bytes = IO.loadResource("some/system/resource.txt")
+Try<byte[]> bytes = IO.loadResource("some/system/resource.txt");
 
 String s = Matchers.
     .caze((Success<byte[]> s) -> new String(s))
     .caze((Failure f) -> f.toString())
     .apply(bytes);
 ```
+
+No try/catch needed here.
