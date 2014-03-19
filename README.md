@@ -1,15 +1,15 @@
 ## Why Javaslang? [![Build Status](https://travis-ci.org/rocketscience-projects/javaslang.png)](https://travis-ci.org/rocketscience-projects/javaslang)
 
-**Javaslang** is a non-profit functional library for Java&trade; 8 and above. With the release of Java 8 we face a new programming paradigm - Java goes functional. Objects are not obsolete - the opposite is true. We've learned from other JVM languages like Scala, that it is a good practice to take the best from both worlds, objects and functions. Javaslang adds some API and best practices, to take advantage of Lambdas & co in the daily programming.
+**Javaslang** is a non-profit functional library for Java&trade; 8 and above. With the release of Java 8 we face a new programming paradigm - Java goes functional. Objects are not obsolete - the opposite is true. We've learned from other JVM languages like Scala, that it is a good practice to take the best from both worlds, objects and functions. Javaslang offers API and best practices to take advantage of Lambdas & co in the daily programming.
+
+Most libraries, also the popular ones, like spring, apache-commons and google-guava, can be considered as outdated from the perspective of Java 8. Even if new functionality targeting Java 8 is added to these libraries, they still will carry all the burden of the past. Javaslang is a fresh and lightweight start into the second age of Java. It is no re-implementation of existing APIs in a new fashion. Javaslang is simple and focused.
 
 Javaslang makes your code more concise by reducing boilerplate. In particular
 
 * it closes the gap between primitive data types and objects by providing extensions methods, e.g. to uniform the streaming API. Did you notice for example, that IntStream and Stream have no common super type which provides the methods map, flatMap and filter?
-* it introduces new types to [avoid using null](http://blog.rocketscience.io/java-8-the-happy-path/) (read also [this](http://blog.rocketscience.io/your-codebase-looks-like-this/)) and defer exception handling. This can be subsumed under the term [monadic](http://blog.rocketscience.io/trying-to-explain-monads).
+* it introduces new types to [avoid using null](http://blog.rocketscience.io/java-8-the-happy-path/) (also read [this](http://blog.rocketscience.io/your-codebase-looks-like-this/)) and defers exception handling. This can be subsumed under the term [monadic](http://blog.rocketscience.io/trying-to-explain-monads).
 
-The functionality described above is the basis to create simple and powerful high-level APIs. This is demonstrated with the javaslang.io package for resource reading and conversion. Future releases of Javaslang will contain additional high-level functionality for text parsing, a jdbc layer based on lambdas, etc.
-
-Most libraries, also the popular ones, like spring, apache-commons and google-guava, can be considered as outdated from the perspective of Java 8. Even if new functionality is added to these libraries or they just build using Java 8, they still will carry all the burden of the past. Javaslang is a fresh and lightweight start into the second age of Java. It is no re-implementation of existing APIs in a new fashion. Javaslang is simple and focused.
+The functionality described above is the basis to create simple and powerful high-level APIs based on Java 8. This is demonstrated with the javaslang.io package for resource reading and conversion. Future releases of Javaslang will contain additional high-level functionality for text parsing, a jdbc layer based on Lambdas, etc.
 
 ## Howto integrate Javaslang in your Project
 
@@ -57,6 +57,8 @@ The .jars are available at [Maven Central](http://search.maven.org/#search%7Cga%
  - - - - - - - - - - - - - - - - - - - - - - 
 |                  (java 8)                 |
 ```
+
+- - - - - - - - - - - - -_work in progress below this line_- - - - - - - - - - - - -
 
 ## Option - Avoid use of null
 
