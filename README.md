@@ -1,18 +1,54 @@
 ## Why Javaslang? [![Build Status](https://travis-ci.org/rocketscience-projects/javaslang.png)](https://travis-ci.org/rocketscience-projects/javaslang)
 
-**Javaslang** is a functional library for Java&trade; 8 and above. With the release of Java 8 we face a new programming paradigm - Java goes functional. Objects are not obsolete - the opposite is true. We've learned from other JVM languages like Scala, that it is a good practice to take the best from both worlds, objects and functions. Javaslang adds some API and best practices, to take advantage of Lambdas & co in the daily programming.
+**Javaslang** is a non-profit functional library for Java&trade; 8 and above. With the release of Java 8 we face a new programming paradigm - Java goes functional. Objects are not obsolete - the opposite is true. We've learned from other JVM languages like Scala, that it is a good practice to take the best from both worlds, objects and functions. Javaslang adds some API and best practices, to take advantage of Lambdas & co in the daily programming.
 
 Javaslang makes your code more concise by reducing boilerplate. In particular
 
 * it closes the gap between primitive data types and objects by providing extensions methods, e.g. to uniform the streaming API. Did you notice for example, that IntStream and Stream have no common super type which provides the methods map, flatMap and filter?
-* it adds a clean and functional way to handle different sates in a stateless way. I know, this sounds weird. But a function call can be considered as point in time if it is referential transparent. That means, that state is bound to time. If there is no state, the function call can be substituted with its return value given a set of parameters. Using the type system to project different states to immutable values of a common type and adding some sugar, like monadic operations (read: map, flatMap and filter), which preserve a structure (read: type), we are able to transport the state (read: value of a specific type) back to the caller of a specific (business) function. The state may be mutated on its way but structural properties (provable laws in a math. sense) are preserved.
-* as described above, types are needed to create structure-preserving operations. The benefit is reducing technical boilerplate and focusing on the business domain. Examples are Option to avoid null, Try to transport exceptions and Either to distinguish results in general. To evaluate computation results, Javaslang introduces a new match API that is a switch on steroids.
+* it introduces new types to [avoid using null](http://blog.rocketscience.io/java-8-the-happy-path/) (read also [this](http://blog.rocketscience.io/your-codebase-looks-like-this/)) and defer exception handling. This can be subsumed under the term [monadic](http://blog.rocketscience.io/trying-to-explain-monads).
 
-The functionality described above are the basis to provide powerful APIs based on Java 8 and Javaslang. This is demonstrated by the javaslang.io API for resource reading and conversion. Future releases of Javaslang will add additional high-level API for text parsing, a functional jdbc layer, etc.
+The functionality described above is the basis to create simple and powerful high-level APIs. This is demonstrated with the javaslang.io package for resource reading and conversion. Future releases of Javaslang will contain additional high-level functionality for text parsing, a jdbc layer based on lambdas, etc.
 
 Most libraries, also the popular ones, like spring, apache-commons and google-guava, can be considered as outdated from the perspective of Java 8. Even if new functionality is added to these libraries or they just build using Java 8, they still will carry all the burden of the past. Javaslang is a fresh and lightweight start into the second age of Java. It is no re-implementation of existing APIs in a new fashion. Javaslang is simple and focused.
 
-## Overview of Packages and Dependencies
+## Howto integrate Javaslang in your Project
+
+The .jars are available at [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cjavaslang).
+
+```xml
+<dependency>
+    <groupId>com.javaslang</groupId>
+    <artifactId>javaslang</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+## Content
+
+1. Packages and their Dependencies
+2. Language
+    1. Lang - assertions and a better println
+    2. Arrays - type conversion and bulk operations
+    3. Strings - string operations
+    4. Runtimes - definite jvm termination
+    5. Timers - syntactic sugar for Timer
+3. Monads and Matching
+    1. Option - null avoidance
+    2. Matcher - type and value matching
+    3. Try - deferred exception handling
+    4. Either - Variety of results
+4. Collections
+    1. Collections - missing collection functions
+    2. Sets - set operations (math.)
+5. Input/Output
+    1. IO - resource loading and encoding
+6. (_scheduled_) Text - a parser framework
+7. (_scheduled_) Jdbc - a functional jdbc layer
+8. (_scheduled_) Json - another json api
+9. (_scheduled_) Xml - missing xml functions
+
+
+## Packages and their Dependencies
 
 ```
 |                     io                    |
@@ -21,29 +57,6 @@ Most libraries, also the popular ones, like spring, apache-commons and google-gu
  - - - - - - - - - - - - - - - - - - - - - - 
 |                  (java 8)                 |
 ```
-
-## Content
-
-1. Language
-    1. Lang - assertions and a better println
-    2. Arrays - type conversion and bulk operations
-    3. Strings - string operations
-    4. Runtimes - definite jvm termination
-    5. Timers - syntactic sugar for Timer
-2. Monads and Matching
-    1. Option - null avoidance
-    2. Matcher - type and value matching
-    3. Try - deferred exception handling
-    4. Either - Variety of results
-3. Collections
-    1. Collections - missing collection functions
-    2. Sets - set operations (math.)
-4. Input/Output
-    1. IO - resource loading and encoding
-5. (_scheduled_) Text - a parser framework
-6. (_scheduled_) Jdbc - a functional jdbc layer
-7. (_scheduled_) Json - another json api
-8. (_scheduled_) Xml - missing xml functions
 
 ## Option - Avoid use of null
 
