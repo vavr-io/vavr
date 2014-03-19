@@ -2,7 +2,8 @@
 
 **Javaslang** is a functional library for Java&trade; 8 and above.
 
-Here you see the dependency graph as layered
+Packages and dependency overview:
+
 ```
 |                     io                    |
 | collection | either | exception | matcher |
