@@ -1,6 +1,6 @@
 ## Why Javaslang? [![Build Status](https://travis-ci.org/rocketscience-projects/javaslang.png)](https://travis-ci.org/rocketscience-projects/javaslang)
 
-**Javaslang** is a non-profit functional library for Java&trade; 8 and above. With the release of Java 8 we face a new programming paradigm - Java goes functional. Objects are not obsolete - the opposite is true. We've learned from other JVM languages like Scala, that it is a good practice to take the best from both worlds, objects and functions. Javaslang offers API and best practices to take advantage of Lambdas & co in the daily programming.
+**Javaslang** is a non-profit functional library for Java&trade; 8 and above. With the release of Java 8 we face a new programming paradigm - Java goes functional. Objects are not obsolete - the opposite is true. We've learned from other JVM languages like Scala, that it is a good practice to take the best from both worlds, objects and functions.
 
 Most libraries, also the popular ones, like spring, apache-commons and google-guava, can be considered as outdated from the perspective of Java 8. Even if new functionality targeting Java 8 is added to these libraries, they still will carry all the burden of the past. Javaslang is a fresh and lightweight start into the second age of Java. It is no re-implementation of existing APIs in a new fashion. Javaslang is simple and focused.
 
@@ -22,6 +22,8 @@ The .jars are available at [Maven Central](http://search.maven.org/#search%7Cga%
     <version>1.0.0</version>
 </dependency>
 ```
+
+Please ensure that the maven .pom targets jdk 1.8.
 
 ## Content
 
