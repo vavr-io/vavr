@@ -23,8 +23,7 @@
 		<connection>scm:git:git@github.com:rocketscience-projects/javaslang.git</connection>
 		<developerConnection>scm:git:git@github.com:rocketscience-projects/javaslang.git</developerConnection>
 		<url>git@github.com:rocketscience-projects/javaslang.git</url>
-	  <tag>HEAD</tag>
-  </scm>
+	</scm>
 	<developers>
 		<developer>
 			<id>danieldietrich</id>
