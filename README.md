@@ -12,40 +12,26 @@ Packages and dependency overview:
 |                   java 8                  |
 ```
 
-<ol>
-  <li>Language
-    <ol>
-      <li>Lang - assertions and a better println</li>
-      <li>Arrays - conversion and bulk operations</li>
-      <li>Strings - string operations</li>
-      <li>Runtimes - definite jvm termination</li>
-      <li>Timers - syntactic sugar for Timer</li>
-    </ol>
-  </li>
-  <li>Monads and Matching
-    <ol>
-      <li>Option - null avoidance</li>
-      <li>Matcher - type and value matching</li>
-      <li>Try - deferred exception handling</li>
-      <li>Either - Variety of results</li>
-    </ol>
-  </li>
-  <li>Collections
-    <ol>
-      <li>Collections - missing collection functions</li>
-      <li>Sets - set operations (math.)</li>
-    </ol>
-  </li>
-  <li>Input/Output
-    <ol>
-      <li>IO - resource loading and encoding</li>
-      <li>(_scheduled_) Text - a parser framework</li>
-      <li>(_scheduled_) Jdbc - a functional jdbc layer</li>
-      <li>(_scheduled_) Json - another json api</li>
-      <li>(_scheduled_) Xml - missing xml functions</li>
-    </ol>
-  </li>
-</ol>
+1. Language
+    1. Lang - assertions and a better println
+    2. Arrays - conversion and bulk operations
+    3. Strings - string operations
+    4. Runtimes - definite jvm termination
+    5. Timers - syntactic sugar for Timer
+2. Monads and Matching
+    1. Option - null avoidance
+    2. Matcher - type and value matching
+    3. Try - deferred exception handling
+    4. Either - Variety of results
+3. Collections
+    1. Collections - missing collection functions
+    2. Sets - set operations (math.)
+4. Input/Output
+    1. IO - resource loading and encoding
+5. (_scheduled_) Text - a parser framework
+6. (_scheduled_) Jdbc - a functional jdbc layer
+7. (_scheduled_) Json - another json api
+8. (_scheduled_) Xml - missing xml functions
 
 ## Option - Avoid use of null
 
