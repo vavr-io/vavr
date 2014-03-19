@@ -60,7 +60,7 @@ Please ensure that the maven .pom targets jdk 1.8.
 |                  (java 8)                 |
 ```
 
-- - - - - - - - - - - - -_work in progress below this line_- - - - - - - - - - - - -
+\- - - - - - - - - - - - -_work in progress below this line_- - - - - - - - - - - - -
 
 ## Option - Avoid use of null
 
