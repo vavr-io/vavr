@@ -1,8 +1,18 @@
-## Javaslang [![Build Status](https://travis-ci.org/rocketscience-projects/javaslang.png)](https://travis-ci.org/rocketscience-projects/javaslang)
+## Why Javaslang? [![Build Status](https://travis-ci.org/rocketscience-projects/javaslang.png)](https://travis-ci.org/rocketscience-projects/javaslang)
 
-**Javaslang** is a functional library for Java&trade; 8 and above.
+**Javaslang** is a functional library for Java&trade; 8 and above. With the release of Java 8 we face a new programming paradigm - Java goes functional. Objects are not obsolete - the opposite is true. We've learned from other JVM languages like Scala, that it is a good practice to take the best from both worlds, Objects and Functions. Javaslang adds some API and best practices, to take advantage of Lambdas & Co in the daily programming.
 
-Packages and dependency overview:
+Javaslang makes your code more concise by reducing boilerplate. In particular
+
+* it closes the gap between primitive data types and Objects by providing extensions methods, e.g. to uniform the streaming API. Did you notice for example, that IntStream and Stream have no common super type which provides the methods map, flatMap and filter?
+* it adds a clean and functional way to handle different sates in a stateless way. I know, this sounds weird. But a function call can be considered as point in time if it is referential transparent. That means, that state is bound to time. If there is no state, the function call can be substituted with its return value given a set of parameters. Using the type system to project different states to immutable values of a common type and adding some sugar, like monadic operations (read: map, flatMap and filter), which preserve our structure (read: type), we are able to transport the state (read: value of a specific type) back to the caller of a specific (business) function. The state may be mutated on its way but structural properties (provable laws in a math. sense) are preserved.
+* as described above, types are needed to create structure-preserving operations. Examples are Option, Try and Either (see below). To evaluate computation results, Javaslang introduces a new Matcher API that is a switch on steroids.
+
+The functions described above are the basis to provide powerful APIs based on Java 8 and Javaslang. This is demonstrated by the javaslang.io API for resource reading and conversion. Future releases of Javaslang will add additional high-level API for text parsing, a functional jdbc layer, etc.
+
+Most libraries, also the popular ones, like spring, apache-commons and google-guava, can be considered as outdated from the perspective of Java 8. Even if new functionality is added to these libraries or they build using Java 8, they still will carry all the clutter of the past. Javaslang is a fresh and lightweight start into the second age of Java. It is no re-implementation of existing API in a new fashion. Javaslang is simple and focused.
+
+## Packages and dependency overview:
 
 ```
 |                     io                    |
@@ -11,6 +21,8 @@ Packages and dependency overview:
  - - - - - - - - - - - - - - - - - - - - - - 
 |                   java 8                  |
 ```
+
+## Content
 
 1. Language
     1. Lang - assertions and a better println
