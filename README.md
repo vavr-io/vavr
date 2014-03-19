@@ -26,7 +26,7 @@ Most libraries, also the popular ones, like spring, apache-commons and google-gu
 
 1. Language
     1. Lang - assertions and a better println
-    2. Arrays - conversion and bulk operations
+    2. Arrays - type conversion and bulk operations
     3. Strings - string operations
     4. Runtimes - definite jvm termination
     5. Timers - syntactic sugar for Timer
