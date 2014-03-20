@@ -1,4 +1,4 @@
-package javaslang.collection;
+package javaslang.lang;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 

@@ -1,4 +1,4 @@
-package javaslang.util;
+package javaslang.lang;
 
 import static javaslang.lang.Strings.escape;
 import static javaslang.lang.Strings.repeat;
