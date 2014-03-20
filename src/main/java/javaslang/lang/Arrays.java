@@ -22,6 +22,18 @@ public final class Arrays {
 	}
 
 	// -- asList (use {@link java.util.Arrays#asList(Object...)} for Objects).
+	
+	/**
+	 * Convenience method, calling {@link java.util.Arrays.asList(array)}.
+	 * 
+	 * @param <T> Component type of given array.
+	 * @param array An array.
+	 * @return A List containing the elements of array in the same order.
+	 */
+	public static <T> List<T> asList(T[] array) {
+		require(array != null, "array is null");
+		return java.util.Arrays.asList(array);
+	}
 
 	public static List<Boolean> asList(boolean... array) {
 		require(array != null, "array is null");
