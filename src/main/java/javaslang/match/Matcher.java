@@ -32,16 +32,15 @@ public final class Matcher<T> implements Function<Object, T> {
 	private List<Case<T>> cases = new ArrayList<>();
 
 	/**
-	 * Use {@link Matcher#of(Class)} or one of {@link Matchers#caze} to create a Matcher.
+	 * Creates a Matcher.
+	 * @see Matchers#caze
 	 */
-	Matcher() {
+	public Matcher() {
 	}
 
 	/**
-	 * If the type of the object applied to this Matcher (see {@link #apply(Object)}) is assignable
-	 * to S, the given object is applied to function.
-	 * <p>
-	 * Use this method to match a type.
+	 * Use this method to match by type S. Implementations of this method apply the given function
+	 * to an object, if the object is of type S.
 	 * 
 	 * @param <S> type of the object to be matched
 	 * @param function A function which is applied to a matched object.
@@ -54,13 +53,11 @@ public final class Matcher<T> implements Function<Object, T> {
 	}
 
 	/**
-	 * If the given prototype value is equal to the object applied to this Matcher (see
-	 * {@link #apply(Object)}), the object is applied to function.
-	 * <p>
-	 * Use this method to match a value and map it.
+	 * Use this method to match by value. Implementations of this method apply the given function
+	 * to an object, if the object equals a prototype of type S.
 	 * 
 	 * @param <S> type of the prototype object
-	 * @param prototype An object which matches by equality.
+	 * @param prototype An object to be matched by equality.
 	 * @param function A function which is applied to a matched object.
 	 * @return this, the current instance of Matcher.
 	 */
@@ -68,16 +65,6 @@ public final class Matcher<T> implements Function<Object, T> {
 		require(function != null, "function is null");
 		cases.add(new Case<>(new Some<>(prototype), function));
 		return this;
-	}
-
-	/**
-	 * Creates a Matcher. See also {@link Matchers}.
-	 * 
-	 * @param <T> return type of the matcher function
-	 * @return A Matcher instance of type <code>Matcher&lt;T&gt;</code>.
-	 */
-	public static <T> Matcher<T> create() {
-		return new Matcher<>();
 	}
 
 	/**

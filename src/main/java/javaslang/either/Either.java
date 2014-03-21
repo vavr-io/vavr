@@ -7,6 +7,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import javaslang.match.Matcher;
 import javaslang.option.None;
 import javaslang.option.Option;
 import javaslang.option.Some;
@@ -89,6 +90,11 @@ public interface Either<L, R> {
 			else {
 				return new Right<>(asRight());
 			}
+		}
+		
+		public <S> S match(Matcher<S> matcher) {
+			Objects.requireNonNull(matcher);
+			return matcher.apply(either);
 		}
 
 		@Override
@@ -187,6 +193,11 @@ public interface Either<L, R> {
 			else {
 				return new Left<>(asLeft());
 			}
+		}
+		
+		public <S> S match(Matcher<S> matcher) {
+			Objects.requireNonNull(matcher);
+			return matcher.apply(either);
 		}
 
 		@Override

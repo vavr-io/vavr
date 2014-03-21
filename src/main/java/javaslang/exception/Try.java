@@ -1,9 +1,11 @@
 package javaslang.exception;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import javaslang.match.Matcher;
 import javaslang.option.Option;
 
 /**
@@ -47,7 +49,12 @@ public interface Try<T> {
 	void forEach(Consumer<? super T> action);
 
 	<U> Try<U> map(Function<? super T, ? extends U> mapper);
-
+	
+	default <S> S match(Matcher<S> matcher) {
+		Objects.requireNonNull(matcher);
+		return matcher.apply(this);
+	}
+	
 	Try<Throwable> failed();
 	
 	/**

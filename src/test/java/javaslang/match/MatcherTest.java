@@ -49,7 +49,7 @@ public class MatcherTest {
 
 	@Test
 	public void shouldMatchByTypeOnMultipleCasesUsingGenericType() {
-		final int actual = Matcher.<Integer>create()
+		final int actual = new Matcher<Integer>()
 				.<Byte>		caze(b -> (int) b)
 				.<Short>	caze(s -> s + 1)
 				.<Integer>	caze(i -> i + 2)
@@ -59,7 +59,7 @@ public class MatcherTest {
 	
 	@Test
 	public void shouldMatchByIntOnMultipleCasesUsingGenericType() {
-		final int actual = Matcher.<Integer>create()
+		final int actual = new Matcher<Integer>()
 				.<Byte>		caze(b -> 1)
 				.<Short>	caze(s -> 2)
 				.<Integer>	caze(i -> 3)
@@ -69,7 +69,7 @@ public class MatcherTest {
 
 	@Test
 	public void shouldMatchByDoubleOnMultipleCasesUsingGenericType() {
-		final int actual = Matcher.<Integer>create()
+		final int actual = new Matcher<Integer>()
 				.<Byte>		caze(b -> 1)
 				.<Double>	caze(d -> 2)
 				.<Integer>	caze(i -> 3)
@@ -118,7 +118,7 @@ public class MatcherTest {
 	
 	@Test
 	public void shouldClarifyHereThatTypeErasureIsPresent() {
-		final int actual = Matcher.<Integer>create()
+		final int actual = new Matcher<Integer>()
 				.<Some<Integer>>	caze(some -> 1)
 				.<Some<String>>		caze(some -> Integer.parseInt(some.get()))
 				.apply(new Some<>("123"));
@@ -155,7 +155,7 @@ public class MatcherTest {
 	@Test
 	public void shouldCompileAssignmentWithGenericWildcardType() {
 		@SuppressWarnings("unused")
-		final Matcher<List<?>> list = Matcher.<List<?>>create();
+		final Matcher<List<?>> list = new Matcher<>();
 	}
 
 }

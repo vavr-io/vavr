@@ -236,8 +236,7 @@ public final class Strings {
 		}
 	}
 
-	private static final Matcher<Stream<?>> ARRAY_TO_STREAM_MATCHER = Matcher
-			.<Stream<?>> create()
+	private static final Matcher<Stream<?>> ARRAY_TO_STREAM_MATCHER = new Matcher<Stream<?>>()
 			.caze((boolean[] a) -> Arrays.stream(a))
 			.caze((byte[] a) -> Arrays.stream(a))
 			.caze((char[] a) -> Arrays.stream(a))

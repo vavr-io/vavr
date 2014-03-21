@@ -53,11 +53,11 @@ Please ensure that the maven .pom targets jdk 1.8.
 ## Packages and their Dependencies
 
 ```
-|                     io                    |
-| collection | either | exception | matcher |
-|         lang        |       option        |
- - - - - - - - - - - - - - - - - - - - - - - 
-|                  (java 8)                 |
+|                          io                        |
+| collection | either | exception | option | matcher |
+|                         lang                       |
+ - - - - - - - - - - - - - - - - - - - - - - - - - - -
+|                        (java 8)                    |
 ```
 
 \- - - - - - - - - - - - -_work in progress below this line_- - - - - - - - - - - - -
@@ -163,7 +163,7 @@ Use Try to handle exceptions in a clean way.
 Try<byte[]> bytes = IO.loadResource("some/system/resource.txt");
 
 String s = Matchers
-    .caze((Success<byte[]> s) -> new String(s))
+    .caze((Success<byte[]> s) -> new String(s.get()))
     .caze((Failure f) -> f.toString())
     .apply(bytes);
 ```

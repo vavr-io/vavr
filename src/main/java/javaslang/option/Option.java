@@ -1,9 +1,12 @@
 package javaslang.option;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+
+import javaslang.match.Matcher;
 
 /**
  * Replacement for {@link java.util.Optional}.
@@ -47,5 +50,10 @@ public interface Option<T> {
 	<U> Option<U> flatMap(Function<? super T, Option<U>> mapper);
 	
 	void forEach(Consumer<? super T> action);
+	
+	default <S> S match(Matcher<S> matcher) {
+		Objects.requireNonNull(matcher);
+		return matcher.apply(this);
+	}
 
 }

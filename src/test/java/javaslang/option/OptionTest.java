@@ -1,9 +1,7 @@
 package javaslang.option;
 
+import static javaslang.match.Matchers.caze;
 import static org.fest.assertions.api.Assertions.assertThat;
-import javaslang.option.None;
-import javaslang.option.Option;
-import javaslang.option.Some;
 
 import org.junit.Test;
 
@@ -24,6 +22,24 @@ public class OptionTest {
 	public void shouldWrapNullInSome() throws Exception {
 		final Some<?> some = new Some<>(null);
 		assertThat(some.get()).isEqualTo(null);
+	}
+	
+	@Test
+	public void shouldMatchSome() {
+		final int actual = Option.of("ok").match(
+				caze((Some<?> some) -> 1).
+				caze((None<?> none) -> 0)
+		);
+		assertThat(actual).isEqualTo(1);
+	}
+
+	@Test
+	public void shouldMatchNone() {
+		final int actual = Option.of(null).match(
+				caze((Some<?> some) -> 1).
+				caze((None<?> none) -> 0)
+		);
+		assertThat(actual).isEqualTo(0);
 	}
 	
 }
