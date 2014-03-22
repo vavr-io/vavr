@@ -1,5 +1,7 @@
 package javaslang.collection;
 
+import static javaslang.lang.Lang.require;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -14,6 +16,22 @@ public final class Collections {
 
 	private Collections() {
 		throw new AssertionError(Collections.class.getName() + " cannot be instantiated.");
+	}
+	
+	/**
+	 * Adds an element to a given collection and returns the element.
+	 * The element is returned, even if {@code c.add(elem)} returns false.
+	 * 
+	 * @param <T> the component type of the collection
+	 * @param <E> the element type, extends T
+	 * @param c A Collection of component type T
+	 * @param elem An element of type T
+	 * @return The given element
+	 */
+	public static <T,E extends T> E add(Collection<T> c, E elem) {
+		require(c != null, "collection is null");
+		c.add(elem);
+		return elem;
 	}
 
 	/**
