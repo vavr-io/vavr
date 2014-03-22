@@ -1,6 +1,10 @@
 package javaslang.text;
 
 import static javaslang.lang.Lang.require;
+import static javaslang.text.Multiplicity.Bounds.ONE_TO_N;
+import static javaslang.text.Multiplicity.Bounds.ZERO_TO_ONE;
+
+import java.util.function.Supplier;
 
 /**
  * Repeats a parser lowerBound (min) to upperBound (max) times.<br>
@@ -15,46 +19,52 @@ import static javaslang.lang.Lang.require;
  */
 class Multiplicity implements Parser {
 
-	final Parser parser;
-	final Bound lowerBound;
-	final Bound upperBound;
+	static enum Bounds {
+		ZERO_TO_ONE, ZERO_TO_N, ONE_TO_N;
+	}
 
-	Multiplicity(Parser parser, Bound lowerBound, Bound upperBound) {
+	final Supplier<Parser> parser;
+	final Bounds bounds;
+
+	Multiplicity(Supplier<Parser> parser, Bounds bounds) {
 		require(parser != null, "parser is null");
-		require(lowerBound.isLessOrEqual(upperBound), "min > max");
+		require(bounds != null, "bounds is null");
 		this.parser = parser;
-		this.lowerBound = lowerBound;
-		this.upperBound = upperBound;
+		this.bounds = bounds;
 	}
 
 	@Override
 	public Tree<Token> parse(String text, int index) {
-		final Tree<Token> result = new Tree<>("Sequence");
-		// TODO: double-check if index grows on repeated calls of parser
-		int currentIndex = index;
-		Tree<Token> parsed = null;
-		while((parsed = parser.parse(text, currentIndex)) != null) {
-			result.attach(parsed);
-			currentIndex = parsed.getValue().end;
-		}
-		// TODO Auto-generated method stub
-		return result;
+		return extracted(text, index);
 	}
 
-	static enum Bound {
-		ZERO, ONE, N;
-
-		boolean isLessOrEqual(Bound that) {
-			switch (this) {
-				case ZERO:
-					return true;
-				case ONE:
-					return !ZERO.equals(that);
-				case N:
-					return N.equals(that);
-				default:
-					return false;
+	private Tree<Token> extracted(String text, int index) {
+		if (ZERO_TO_ONE.equals(bounds)) {
+			final Tree<Token> result = new Tree<>(bounds.name(), new Token(text, index, index));
+			final Tree<Token> child = parser.get().parse(text, index);
+			if (child != null) {
+				result.attach(child);
+				result.getValue().end = child.getValue().end;
+			}				
+			return result;
+		} else {
+			// upper bound is N
+			final Tree<Token> result = new Tree<>(bounds.name(), new Token(text, index, index));
+			int currentIndex = index;
+			Tree<Token> child = null;
+			while((child = parser.get().parse(text, currentIndex)) != null) {
+				result.attach(child);
+				currentIndex = child.getValue().end;
+				result.getValue().end = currentIndex;
+			}
+			final boolean notMatched = currentIndex == index;
+			final boolean shouldHaveMatched = ONE_TO_N.equals(bounds); 
+			if (notMatched && shouldHaveMatched) {
+				return null;
+			} else {
+				return result;
 			}
 		}
 	}
+	
 }
