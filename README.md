@@ -44,7 +44,7 @@ Please ensure that the maven .pom targets jdk 1.8.
     2. Sets - set operations (math.)
 5. Input/Output
     1. IO - resource loading and encoding
-6. (_scheduled_) Text - a parser framework
+6. Parsers
 7. (_scheduled_) Jdbc - a functional jdbc layer
 8. (_scheduled_) Json - another json api
 9. (_scheduled_) Xml - missing xml functions
@@ -53,7 +53,7 @@ Please ensure that the maven .pom targets jdk 1.8.
 ## Packages and their Dependencies
 
 ```
-|                          io                        |
+|             io            |          text          |
 | collection | either | exception | option | matcher |
 |                         lang                       |
  - - - - - - - - - - - - - - - - - - - - - - - - - - -
