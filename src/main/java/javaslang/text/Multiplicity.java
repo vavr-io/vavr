@@ -11,13 +11,13 @@ import java.util.function.Supplier;
  * <br>
  * Examples:
  * <ul>
- *   <li>X = 1 occurrence (lower bound = upper bound = 1)</li>
- *   <li>X? = 0..1 occurrences</li>
- *   <li>X* = 0..n occurrences</li>
- *   <li>X+ = 1..n occurrences</li>
+ * <li>X = 1 occurrence (lower bound = upper bound = 1)</li>
+ * <li>X? = 0..1 occurrences</li>
+ * <li>X* = 0..n occurrences</li>
+ * <li>X+ = 1..n occurrences</li>
  * </ul>
  */
-class Multiplicity implements Parser {
+class Multiplicity implements Parser, Supplier<Multiplicity> {
 
 	static enum Bounds {
 		ZERO_TO_ONE, ZERO_TO_N, ONE_TO_N;
@@ -35,36 +35,34 @@ class Multiplicity implements Parser {
 
 	@Override
 	public Tree<Token> parse(String text, int index) {
-		return extracted(text, index);
-	}
-
-	private Tree<Token> extracted(String text, int index) {
-		if (ZERO_TO_ONE.equals(bounds)) {
-			final Tree<Token> result = new Tree<>(bounds.name(), new Token(text, index, index));
-			final Tree<Token> child = parser.get().parse(text, index);
-			if (child != null) {
-				result.attach(child);
-				result.getValue().end = child.getValue().end;
-			}				
-			return result;
+		final Tree<Token> result = new Tree<>(bounds.name(), new Token(text, index, index));
+		parseChildren(result, text, index);
+		final boolean notMatched = result.getChildren().isEmpty();
+		final boolean shouldHaveMatched = ONE_TO_N.equals(bounds);
+		if (notMatched && shouldHaveMatched) {
+			return null;
 		} else {
-			// upper bound is N
-			final Tree<Token> result = new Tree<>(bounds.name(), new Token(text, index, index));
-			int currentIndex = index;
-			Tree<Token> child = null;
-			while((child = parser.get().parse(text, currentIndex)) != null) {
-				result.attach(child);
-				currentIndex = child.getValue().end;
-				result.getValue().end = currentIndex;
-			}
-			final boolean notMatched = currentIndex == index;
-			final boolean shouldHaveMatched = ONE_TO_N.equals(bounds); 
-			if (notMatched && shouldHaveMatched) {
-				return null;
-			} else {
-				return result;
-			}
+			return result;
 		}
 	}
 	
+	private void parseChildren(Tree<Token> tree, String text, int index) {
+		final boolean unbound = !ZERO_TO_ONE.equals(bounds);
+		boolean found = true;
+		do {
+			final Tree<Token> child = parser.get().parse(text, tree.getValue().end);
+			if (child != null) {
+				tree.attach(child);
+				tree.getValue().end = child.getValue().end;
+			} else {
+				found = false;
+			}
+		} while (unbound && found);
+	}
+
+	@Override
+	public Multiplicity get() {
+		return this;
+	}
+
 }

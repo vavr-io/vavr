@@ -1,10 +1,11 @@
 package javaslang.text;
 
-import static javaslang.text.Multiplicity.Bounds.ZERO_TO_ONE;
 import static javaslang.text.Multiplicity.Bounds.ZERO_TO_N;
+import static javaslang.text.Multiplicity.Bounds.ZERO_TO_ONE;
 
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.function.Supplier;
 
 import javaslang.exception.Try;
 import javaslang.io.IO;
@@ -19,58 +20,66 @@ public class GrammarTest {
 		final InputStream in = getClass().getResourceAsStream("bootstrap.json");
 		final Try<String> json = IO.toString(in, Charset.forName("UTF-8"));
 		System.out.println("JSON: " + json.get());
-		final Try<Tree<Token>> ast = json.map(s -> JSONGrammar.JSON.parse(s, 0));
+		final Grammar jsonGrammar = new JSONGrammar();
+		final Try<Tree<Token>> ast = json.map(jsonGrammar);
 		final String result = ast.map(tree -> tree.toString()).orElse("<no result>");
-		System.out.println("AST: " + result);
+		System.out.println("AST: " + result);	
 	}
 
-	static class JSONGrammar {
+	// TODO: Whitespace handling!
+	// TODO: 
+	static class JSONGrammar extends Grammar {
+		
+		JSONGrammar() {
+			super(JSONGrammar::JSON);
+		}
 
-		// TODO: Whitespace handling!
-		static final Parser JSON = new Branch(
+		static Parser JSON() {
+			return new Branch(
 				JSONGrammar::JSON_OBJECT,
 				JSONGrammar::JSON_ARRAY,
 				JSONGrammar::JSON_NUMBER,
 				JSONGrammar::JSON_BOOLEAN);
-
-		static final Parser JSON_OBJECT() {
-			return new Sequence("JSON_OBJECT",
-					() -> new Literal("{"),
-					() -> n(PAIR(), ","),
-					() -> new Literal("}"));
 		}
 
-		static final Parser PAIR() {
+		static Parser JSON_OBJECT() {
+			return new Sequence("JSON_OBJECT",
+					new Literal("{"),
+					n(PAIR(), ","),
+					new Literal("}"));
+		}
+
+		static Parser PAIR() {
 			return new Sequence("PAIR",
 					JSONGrammar::KEY,
-					() -> new Literal(":"),
-					() -> JSON);
+					new Literal(":"),
+					JSONGrammar::JSON);
 		}
 
-		static final Parser KEY() {
+		static Parser KEY() {
 			return new Branch(
-					() -> new Literal("\"a\""),
-					() -> new Literal("\"b\""));
+					new Literal("\"a\""),
+					new Literal("\"b\""));
 		}
 
-		static final Parser JSON_ARRAY() {
+		static Parser JSON_ARRAY() {
 			return new Sequence("JSON_ARRAY",
-					() -> new Literal("["),
-					() -> n(JSON_NUMBER(), ","),
-					() -> new Literal("]"));
+					new Literal("["),
+					n(JSON_NUMBER(), ","),
+					new Literal("]"));
 		}
 
-		static final Parser JSON_NUMBER() {
+		static Parser JSON_NUMBER() {
 			return new Branch(
-					() -> new Literal("1"),
-					() -> new Literal("2"),
-					() -> new Literal("3"));
+					new Literal("1"),
+					new Literal("2"),
+					new Literal("3"));
 		}
 
-		static final Parser JSON_BOOLEAN() {
+		static Parser JSON_BOOLEAN() {
 			return new Branch(
-					() -> new Literal("true"),
-					() -> new Literal("false"));
+					new Literal("true"),
+					new Literal("false"));
 		}
 
 		/**
@@ -80,7 +89,7 @@ public class GrammarTest {
 		 * @param separator
 		 * @return
 		 */
-		static Parser n(Parser parser, String separator) {
+		static Supplier<? extends Parser> n(Parser parser, String separator) {
 
 			// [ ',' P]*
 			final Parser more = new Multiplicity(

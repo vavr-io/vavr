@@ -1,9 +1,12 @@
 package javaslang.text;
 
 import static javaslang.lang.Lang.require;
+
+import java.util.function.Supplier;
+
 import javaslang.lang.Strings;
 
-class Literal implements Parser {
+class Literal implements Parser, Supplier<Literal> {
 
 	final String literal;
 
@@ -19,4 +22,9 @@ class Literal implements Parser {
 				: null;
 	}
 
+	@Override
+	public Literal get() {
+		return this;
+	}
+	
 }
