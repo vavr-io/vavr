@@ -74,7 +74,7 @@ public final class Lang {
 	 * 
 	 * @param condition A boolean
 	 * @param message A message An error message.
-	 * @throws IllegalStateException If condition is false, contains the message.
+	 * @throws IllegalStateException if condition is false, contains the message.
 	 */
 	public static void require(boolean condition, String message) {
 		if (!condition) {
@@ -88,7 +88,7 @@ public final class Lang {
 	 * 
 	 * @param condition A boolean
 	 * @param messageSupplier An error message, computed lazily.
-	 * @throws IllegalStateException If condition is false, contains the message.
+	 * @throws IllegalStateException if condition is false, contains the message.
 	 * @throws NullPointerException If messageSupplier is null.
 	 */
 	public static void require(boolean condition, Supplier<String> messageSupplier) {

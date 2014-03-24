@@ -20,7 +20,7 @@ import javaslang.option.Option;
 import javaslang.option.Some;
 
 /**
- * A better switch for Java. A Matcher is
+ * A better switch for Java. A Match is
  * <ul>
  * <li>an expression, i.e. the call of {@link #apply(Object)} results in a value. In fact it is a
  * Function.</li>
@@ -29,19 +29,19 @@ import javaslang.option.Some;
  * <li>lazily processes an object in the case of a match</li>
  * </ul>
  * 
- * See {@link Matchers} for convenience methods creating a matcher.
+ * See {@link Matchs} for convenience methods creating a matcher.
  *
- * @param <T> The result type of the Matcher expression.
+ * @param <T> The result type of the Match expression.
  */
-public final class Matcher<T> implements Function<Object, T> {
+public final class Match<T> implements Function<Object, T> {
 
 	private List<Case<T>> cases = new ArrayList<>();
 
 	/**
-	 * Creates a Matcher.
-	 * @see Matchers#caze
+	 * Creates a Match.
+	 * @see Matchs#caze
 	 */
-	public Matcher() {
+	public Match() {
 	}
 
 	/**
@@ -50,10 +50,10 @@ public final class Matcher<T> implements Function<Object, T> {
 	 * 
 	 * @param <S> type of the object to be matched
 	 * @param function A function which is applied to a matched object.
-	 * @return this, the current instance of Matcher.
+	 * @return this, the current instance of Match.
 	 * @throws IllegalStateException if function is null.
 	 */
-	public <S> Matcher<T> caze(Function<S, T> function) {
+	public <S> Match<T> caze(Function<S, T> function) {
 		require(function != null, "function is null");
 		cases.add(new Case<>(None.instance(), function));
 		return this;
@@ -66,10 +66,10 @@ public final class Matcher<T> implements Function<Object, T> {
 	 * @param <S> type of the prototype object
 	 * @param prototype An object to be matched by equality.
 	 * @param function A function which is applied to a matched object.
-	 * @return this, the current instance of Matcher.
+	 * @return this, the current instance of Match.
 	 * @throws IllegalStateException if function is null.
 	 */
-	public <S> Matcher<T> caze(S prototype, Function<S, T> function) {
+	public <S> Match<T> caze(S prototype, Function<S, T> function) {
 		require(function != null, "function is null");
 		cases.add(new Case<>(new Some<>(prototype), function));
 		return this;
@@ -82,7 +82,7 @@ public final class Matcher<T> implements Function<Object, T> {
 	 * @return The result when applying the given obj to the first matching case. If the case has a
 	 *         consumer, the result is null, otherwise the result of the underlying function or
 	 *         supplier.
-	 * @throws MatchError if no Matcher case matches the given object.
+	 * @throws MatchError if no Match case matches the given object.
 	 */
 	@Override
 	public T apply(Object obj) throws MatchError {
@@ -98,9 +98,9 @@ public final class Matcher<T> implements Function<Object, T> {
 	}
 
 	/**
-	 * Internal representation of a Matcher case.
+	 * Internal representation of a Match case.
 	 * 
-	 * @param <T> The same type as the return type of the Matcher a case belongs to.
+	 * @param <T> The same type as the return type of the Match a case belongs to.
 	 */
 	static class Case<T> {
 		final Option<?> prototype;
@@ -118,7 +118,7 @@ public final class Matcher<T> implements Function<Object, T> {
 		}
 
 		/**
-		 * Checks if the Matcher case represented by this Case can be applied to the given object.
+		 * Checks if the Match case represented by this Case can be applied to the given object.
 		 * 
 		 * @param obj An object, may be null.
 		 * @return true, if prototype is None or prototype is Some(value) and value equals obj,

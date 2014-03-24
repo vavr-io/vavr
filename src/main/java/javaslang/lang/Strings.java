@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javaslang.match.Matcher;
+import javaslang.match.Match;
 
 /**
  * Extension methods for {@link java.lang.String}.
@@ -254,7 +254,7 @@ public final class Strings {
 		}
 	}
 
-	private static final Matcher<Stream<?>> ARRAY_TO_STREAM_MATCHER = new Matcher<Stream<?>>()
+	private static final Match<Stream<?>> ARRAY_TO_STREAM_MATCHER = new Match<Stream<?>>()
 			.caze((boolean[] a) -> Arrays.stream(a))
 			.caze((byte[] a) -> Arrays.stream(a))
 			.caze((char[] a) -> Arrays.stream(a))

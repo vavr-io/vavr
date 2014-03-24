@@ -12,7 +12,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import javaslang.match.Matcher;
+import javaslang.match.Match;
 
 /**
  * Replacement for {@link java.util.Optional}.
@@ -57,7 +57,7 @@ public interface Option<T> {
 	
 	void forEach(Consumer<? super T> action);
 	
-	default <S> S match(Matcher<S> matcher) {
+	default <S> S match(Match<S> matcher) {
 		Objects.requireNonNull(matcher);
 		return matcher.apply(this);
 	}

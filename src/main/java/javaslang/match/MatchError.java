@@ -9,7 +9,7 @@ package javaslang.match;
 import javaslang.lang.Strings;
 
 /**
- * A {@link Matcher} throws a MatchError if no case matches the applied object.
+ * A {@link Match} throws a MatchError if no case matches the applied object.
  */
 public class MatchError extends RuntimeException {
 	
@@ -18,7 +18,7 @@ public class MatchError extends RuntimeException {
 	private final Object obj;
 	
 	/**
-	 * Internally called by {@link Matcher}.
+	 * Internally called by {@link Match}.
 	 * @param obj The object which could not be matched.
 	 */
 	MatchError(Object obj) {

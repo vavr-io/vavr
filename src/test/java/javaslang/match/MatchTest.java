@@ -7,17 +7,17 @@ import java.util.List;
 import javaslang.exception.Success;
 import javaslang.exception.Try;
 import javaslang.match.MatchError;
-import javaslang.match.Matcher;
-import javaslang.match.Matchers;
+import javaslang.match.Match;
+import javaslang.match.Matchs;
 import javaslang.option.Some;
 
 import org.junit.Test;
 
-public class MatcherTest {
+public class MatchTest {
 
 	@Test
 	public void shouldMatchNull() {
-		final int actual = Matchers
+		final int actual = Matchs
 				.caze((String s) -> s.length())
 				.caze(null, o -> 1)
 				.apply(null);
@@ -26,7 +26,7 @@ public class MatcherTest {
 
 	@Test
 	public void shouldMatchByValuesUsingFunction() {
-		final int actual = Matchers
+		final int actual = Matchs
 				.caze("1", (String s) -> 1)
 				.apply("1");
 		assertThat(actual).isEqualTo(1);
@@ -34,12 +34,12 @@ public class MatcherTest {
 
 	@Test(expected = MatchError.class)
 	public void shouldThrowOnNoMatchByValue() {
-		Matchers.caze("1", o -> 1).apply("2");
+		Matchs.caze("1", o -> 1).apply("2");
 	}
 	
 	@Test
 	public void shouldMatchByValueOnMultipleCases() {
-		final int actual = Matchers
+		final int actual = Matchs
 				.caze("1", o -> 1)
 				.caze("2", o -> 2)
 				.caze("3", o -> 3)
@@ -49,7 +49,7 @@ public class MatcherTest {
 
 	@Test
 	public void shouldMatchByTypeOnMultipleCasesUsingGenericType() {
-		final int actual = new Matcher<Integer>()
+		final int actual = new Match<Integer>()
 				.<Byte>		caze(b -> (int) b)
 				.<Short>	caze(s -> s + 1)
 				.<Integer>	caze(i -> i + 2)
@@ -59,7 +59,7 @@ public class MatcherTest {
 	
 	@Test
 	public void shouldMatchByIntOnMultipleCasesUsingGenericType() {
-		final int actual = new Matcher<Integer>()
+		final int actual = new Match<Integer>()
 				.<Byte>		caze(b -> 1)
 				.<Short>	caze(s -> 2)
 				.<Integer>	caze(i -> 3)
@@ -69,7 +69,7 @@ public class MatcherTest {
 
 	@Test
 	public void shouldMatchByDoubleOnMultipleCasesUsingGenericType() {
-		final int actual = new Matcher<Integer>()
+		final int actual = new Match<Integer>()
 				.<Byte>		caze(b -> 1)
 				.<Double>	caze(d -> 2)
 				.<Integer>	caze(i -> 3)
@@ -79,7 +79,7 @@ public class MatcherTest {
 	
 	@Test
 	public void shouldMatchByDoubleOnMultipleCasesUsingTypedParameter() {
-		final int actual = Matchers
+		final int actual = Matchs
 				.caze((Byte b) -> 1)
 				.caze((Double d) -> 2)
 				.caze((Integer i) -> 3)
@@ -89,7 +89,7 @@ public class MatcherTest {
 
 	@Test
 	public void shouldMatchByIntOnMultipleCasesUsingTypedParameter() {
-		final int actual = Matchers
+		final int actual = Matchs
 				.caze((Byte b) -> (int) b)
 				.caze((Double d) -> d.intValue())
 				.caze((Integer i) -> i)
@@ -99,7 +99,7 @@ public class MatcherTest {
 	
 	@Test
 	public void shouldMatchByAssignableTypeOnMultipleCases() {
-		final int actual = Matchers
+		final int actual = Matchs
 				.caze(1, o -> 'a')
 				.caze((Number n) -> 'b')
 				.caze(o -> 'c')
@@ -109,7 +109,7 @@ public class MatcherTest {
 	
 	@Test
 	public void shouldMatchDefaultCase() {
-		final int actual = Matchers
+		final int actual = Matchs
 				.caze(null, o -> 1)
 				.caze(o -> 2)
 				.apply("default");
@@ -118,7 +118,7 @@ public class MatcherTest {
 	
 	@Test
 	public void shouldClarifyHereThatTypeErasureIsPresent() {
-		final int actual = new Matcher<Integer>()
+		final int actual = new Match<Integer>()
 				.<Some<Integer>>	caze(some -> 1)
 				.<Some<String>>		caze(some -> Integer.parseInt(some.get()))
 				.apply(new Some<>("123"));
@@ -127,7 +127,7 @@ public class MatcherTest {
 	
 	@Test
 	public void shouldClarifyHereThatClassCastExceptionsAreInterpretedAsNotMatching() {
-		final Integer actual = Matchers
+		final Integer actual = Matchs
 				.caze(o -> (int) o)
 				.caze(o -> -1)
 				.apply("test");
@@ -137,7 +137,7 @@ public class MatcherTest {
 	@Test
 	public void shouldClarifyHereThatTryWrapsExceptions() {
 		final ClassCastException x = new ClassCastException();
-		final Try<Integer> actual = Matchers
+		final Try<Integer> actual = Matchs
 				.caze(o -> Try.<Integer>of(() -> { throw x; }))
 				.apply("test");
 		assertThat(actual.failed().get()).isEqualTo(x);
@@ -145,7 +145,7 @@ public class MatcherTest {
 
 	@Test
 	public void shouldClarifyHereThatTrySeparatesClassCastExceptions() {
-		final Try<Integer> actual = Matchers
+		final Try<Integer> actual = Matchs
 				.caze((Integer i) -> Try.<Integer>of(() -> { throw new ClassCastException(); }))
 				.caze((String s) -> new Success<>(1))
 				.apply("test");
@@ -155,7 +155,7 @@ public class MatcherTest {
 	@Test
 	public void shouldCompileAssignmentWithGenericWildcardType() {
 		@SuppressWarnings("unused")
-		final Matcher<List<?>> list = new Matcher<>();
+		final Match<List<?>> list = new Match<>();
 	}
 
 }

@@ -36,7 +36,7 @@ Please ensure that the maven .pom targets jdk 1.8.
     5. Timers - syntactic sugar for Timer
 3. Monads and Matching
     1. Option - null avoidance
-    2. Matcher - type and value matching
+    2. Match - type and value matching
     3. Try - deferred exception handling
     4. Either - Variety of results
 4. Collections
@@ -128,7 +128,7 @@ static Stream<?> getStream(Object object) {
 the match API allows us to write
 
 ```java
-    static final Matcher<Stream<?>> ARRAY_TO_STREAM_MATCHER = Matcher.<Stream<?>>create()
+    static final Match<Stream<?>> ARRAY_TO_STREAM_MATCHER = new Match<Stream<?>>()
             .caze((boolean[] a) -> Arrays.stream(a))
             .caze((byte[] a) -> Arrays.stream(a))
             .caze((char[] a) -> Arrays.stream(a))
@@ -147,7 +147,7 @@ the match API allows us to write
 It is also possible to match values instead of types by passing prototype objects to the caze function:
 
 ```java
-Matcher matcher = Matchers.caze("Moin", s -> s + " Kiel!");
+Match matcher = Matchs.caze("Moin", s -> s + " Kiel!");
 
 // and then...
 String s = matcher.apply("Moin"); // = "Moin Kiel!"
@@ -162,7 +162,7 @@ Use Try to handle exceptions in a clean way.
 ```java
 Try<byte[]> bytes = IO.loadResource("some/system/resource.txt");
 
-String s = Matchers
+String s = Matchs
     .caze((Success<byte[]> s) -> new String(s.get()))
     .caze((Failure f) -> f.toString())
     .apply(bytes);

@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import javaslang.match.Matcher;
+import javaslang.match.Match;
 import javaslang.option.Option;
 
 /**
@@ -56,7 +56,7 @@ public interface Try<T> {
 
 	<U> Try<U> map(Function<? super T, ? extends U> mapper);
 	
-	default <S> S match(Matcher<S> matcher) {
+	default <S> S match(Match<S> matcher) {
 		Objects.requireNonNull(matcher);
 		return matcher.apply(this);
 	}

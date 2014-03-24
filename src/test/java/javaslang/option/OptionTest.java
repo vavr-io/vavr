@@ -1,6 +1,6 @@
 package javaslang.option;
 
-import static javaslang.match.Matchers.caze;
+import static javaslang.match.Matchs.caze;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import org.junit.Test;

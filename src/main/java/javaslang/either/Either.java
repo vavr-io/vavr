@@ -13,7 +13,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import javaslang.match.Matcher;
+import javaslang.match.Match;
 import javaslang.option.None;
 import javaslang.option.Option;
 import javaslang.option.Some;
@@ -129,7 +129,7 @@ public interface Either<L, R> {
 			}
 		}
 
-		public <S> S match(Matcher<S> matcher) {
+		public <S> S match(Match<S> matcher) {
 			Objects.requireNonNull(matcher);
 			return matcher.apply(either);
 		}
@@ -233,7 +233,7 @@ public interface Either<L, R> {
 			}
 		}
 
-		public <S> S match(Matcher<S> matcher) {
+		public <S> S match(Match<S> matcher) {
 			Objects.requireNonNull(matcher);
 			return matcher.apply(either);
 		}
