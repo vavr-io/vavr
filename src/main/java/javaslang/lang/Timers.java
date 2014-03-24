@@ -1,3 +1,9 @@
+/**                       ___ __          ,                   ___                                
+ *  __ ___ _____  _______/  /  / ______  / \_   ______ ______/__/_____  ______  _______ _____    
+ * /  '__/'  _  \/   ___/      \/   "__\/  _/__/ ____/'  ___/  /   "__\/   ,  \/   ___/'  "__\   
+ * \__/  \______/\______\__/___/\______/\___/\_____/ \______\_/\______/\__/___/\______\______/.io
+ * Licensed under the Apache License, Version 2.0. Copyright 2014 Daniel Dietrich.
+ */
 package javaslang.lang;
 
 import java.util.Timer;
@@ -5,6 +11,9 @@ import java.util.TimerTask;
 
 public final class Timers {
 
+	/**
+	 * This class is not intendet to be instantiated.
+	 */
 	private Timers() {
 		throw new AssertionError(Timers.class.getName() + " cannot be instantiated.");
 	}

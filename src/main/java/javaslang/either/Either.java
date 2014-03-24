@@ -1,3 +1,9 @@
+/**                       ___ __          ,                   ___                                
+ *  __ ___ _____  _______/  /  / ______  / \_   ______ ______/__/_____  ______  _______ _____    
+ * /  '__/'  _  \/   ___/      \/   "__\/  _/__/ ____/'  ___/  /   "__\/   ,  \/   ___/'  "__\   
+ * \__/  \______/\______\__/___/\______/\___/\_____/ \______\_/\______/\__/___/\______\______/.io
+ * Licensed under the Apache License, Version 2.0. Copyright 2014 Daniel Dietrich.
+ */
 package javaslang.either;
 
 import java.util.NoSuchElementException;
@@ -12,6 +18,36 @@ import javaslang.option.None;
 import javaslang.option.Option;
 import javaslang.option.Some;
 
+/**
+ * Either represents a value of two possible types. An Either is either a
+ * {@link javaslang.either.Left} or a {@link javaslang.either.Right}.
+ * <p>
+ * It is possible to project an Either to a Left or a Right. Both cases can be further processed
+ * with monad operations map, flatMap, filter.
+ * <p>
+ * If the given Either is a Right and projected to a Left, the Left operations have no effect on the
+ * Right value.<br>
+ * If the given Either is a Left and projected to a Right, the Right operations have no effect on
+ * the Left value.<br>
+ * If a Left is projected to a Left or a Right is projected to a Right, the operations have an
+ * effect.
+ * <p>
+ * <strong>Example:</strong> A compute() function, which results either in an Integer value (in the
+ * case of success) or in an error message of type String (in the case of failure). By convention
+ * the success case is Right and the failure is Left.
+ * 
+ * <pre>
+ * <code>
+ * Either&lt;String,Integer&gt; value = compute().right().map(i -> i * 2);
+ * </code>
+ * </pre>
+ * 
+ * If the result of compute() is Right(1), the value is Right(2).<br>
+ * If the result of compute() is Left("error), the value is Left("error").
+ *
+ * @param <L> The type of a Left value of the Either.
+ * @param <R> The type of a Right value of the Either.
+ */
 public interface Either<L, R> {
 
 	default LeftProjection<L, R> left() {
@@ -25,7 +61,7 @@ public interface Either<L, R> {
 	boolean isLeft();
 
 	boolean isRight();
-	
+
 	static class LeftProjection<L, R> {
 
 		private final Either<L, R> either;
@@ -50,7 +86,8 @@ public interface Either<L, R> {
 			return either.isLeft() ? asLeft() : other.get();
 		}
 
-		public <X extends Throwable> L orElseThrow(Supplier<? extends X> exceptionSupplier) throws X {
+		public <X extends Throwable> L orElseThrow(Supplier<? extends X> exceptionSupplier)
+				throws X {
 			if (either.isLeft()) {
 				return asLeft();
 			} else {
@@ -91,7 +128,7 @@ public interface Either<L, R> {
 				return new Right<>(asRight());
 			}
 		}
-		
+
 		public <S> S match(Matcher<S> matcher) {
 			Objects.requireNonNull(matcher);
 			return matcher.apply(either);
@@ -153,7 +190,8 @@ public interface Either<L, R> {
 			return either.isRight() ? asRight() : other.get();
 		}
 
-		public <X extends Throwable> R orElseThrow(Supplier<? extends X> exceptionSupplier) throws X {
+		public <X extends Throwable> R orElseThrow(Supplier<? extends X> exceptionSupplier)
+				throws X {
 			if (either.isRight()) {
 				return asRight();
 			} else {
@@ -194,7 +232,7 @@ public interface Either<L, R> {
 				return new Left<>(asLeft());
 			}
 		}
-		
+
 		public <S> S match(Matcher<S> matcher) {
 			Objects.requireNonNull(matcher);
 			return matcher.apply(either);

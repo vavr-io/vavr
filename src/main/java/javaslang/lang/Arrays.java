@@ -1,3 +1,9 @@
+/**                       ___ __          ,                   ___                                
+ *  __ ___ _____  _______/  /  / ______  / \_   ______ ______/__/_____  ______  _______ _____    
+ * /  '__/'  _  \/   ___/      \/   "__\/  _/__/ ____/'  ___/  /   "__\/   ,  \/   ___/'  "__\   
+ * \__/  \______/\______\__/___/\______/\___/\_____/ \______\_/\______/\__/___/\______\______/.io
+ * Licensed under the Apache License, Version 2.0. Copyright 2014 Daniel Dietrich.
+ */
 package javaslang.lang;
 
 import static javaslang.lang.Lang.require;
@@ -17,14 +23,19 @@ import java.util.stream.StreamSupport;
  */
 public final class Arrays {
 
+	/**
+	 * This class is not intendet to be instantiated.
+	 */
 	private Arrays() {
 		throw new AssertionError(Arrays.class.getName() + " cannot be instantiated.");
 	}
 
-	// -- asList (use {@link java.util.Arrays#asList(Object...)} for Objects).
-	
+	// -- asList
+	// (no varargs constructors here, because the primitive array-args are not supported by
+	// java.util.Array.asList(Object...))
+
 	/**
-	 * Convenience method, calling {@link java.util.Arrays.asList(array)}.
+	 * Convenience method, calling {@link java.util.Arrays#asList(Object...)}.
 	 * 
 	 * @param <T> Component type of given array.
 	 * @param array An array.
@@ -35,42 +46,42 @@ public final class Arrays {
 		return java.util.Arrays.asList(array);
 	}
 
-	public static List<Boolean> asList(boolean... array) {
+	public static List<Boolean> asList(boolean[] array) {
 		require(array != null, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
 
-	public static List<Byte> asList(byte... array) {
+	public static List<Byte> asList(byte[] array) {
 		require(array != null, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
 
-	public static List<Character> asList(char... array) {
+	public static List<Character> asList(char[] array) {
 		require(array != null, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
 
-	public static List<Double> asList(double... array) {
+	public static List<Double> asList(double[] array) {
 		require(array != null, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
 
-	public static List<Float> asList(float... array) {
+	public static List<Float> asList(float[] array) {
 		require(array != null, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
 
-	public static List<Integer> asList(int... array) {
+	public static List<Integer> asList(int[] array) {
 		require(array != null, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
 
-	public static List<Long> asList(long... array) {
+	public static List<Long> asList(long[] array) {
 		require(array != null, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
 
-	public static List<Short> asList(short... array) {
+	public static List<Short> asList(short[] array) {
 		require(array != null, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
@@ -247,7 +258,8 @@ public final class Arrays {
 
 	public static <T> Stream<T> stream(T[] array) {
 		require(array != null, "array is null");
-		final Spliterator<T> spliterator = Spliterators.spliterator(array, Spliterator.ORDERED);
+		final Spliterator<T> spliterator = Spliterators.spliterator(array, Spliterator.ORDERED
+				| Spliterator.IMMUTABLE);
 		return StreamSupport.stream(spliterator, false);
 	}
 
@@ -295,7 +307,8 @@ public final class Arrays {
 
 	public static <T> Stream<T> parallelStream(T[] array) {
 		require(array != null, "array is null");
-		final Spliterator<T> spliterator = Spliterators.spliterator(array, Spliterator.ORDERED);
+		final Spliterator<T> spliterator = Spliterators.spliterator(array, Spliterator.ORDERED
+				| Spliterator.IMMUTABLE);
 		return StreamSupport.stream(spliterator, true);
 	}
 

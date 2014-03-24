@@ -1,3 +1,9 @@
+/**                       ___ __          ,                   ___                                
+ *  __ ___ _____  _______/  /  / ______  / \_   ______ ______/__/_____  ______  _______ _____    
+ * /  '__/'  _  \/   ___/      \/   "__\/  _/__/ ____/'  ___/  /   "__\/   ,  \/   ___/'  "__\   
+ * \__/  \______/\______\__/___/\______/\___/\_____/ \______\_/\______/\__/___/\______\______/.io
+ * Licensed under the Apache License, Version 2.0. Copyright 2014 Daniel Dietrich.
+ */
 package javaslang.exception;
 
 import static javaslang.lang.Lang.require;
@@ -26,12 +32,18 @@ public abstract class Cause extends RuntimeException {
 	 * Convenience method, returns the Throwable of this Cause which is considered either as fatal
 	 * or non-fatal.
 	 * 
-	 * @return Either The Throwable of this Cause.
+	 * @return The Throwable of this Cause.
 	 */
 	public Throwable get() {
 		return getCause();
 	}
 
+	/**
+	 * Returns true, if this is Fatal, i.e. if the cause is fatal. See {@link Cause#of(Throwable)}
+	 * for the definition on when a Throwable is fatal.
+	 * 
+	 * @return true, if this instance is Fatal, false otherwise.
+	 */
 	public abstract boolean isFatal();
 
 	/**
@@ -50,6 +62,7 @@ public abstract class Cause extends RuntimeException {
 	 * 
 	 * @param t A Throwable
 	 * @return A {@link Fatal}, if t is fatal, a {@link NonFatal} otherwise.
+	 * @throws IllegalStateException if t is null.
 	 */
 	public static Cause of(Throwable t) {
 		require(t != null, "throwable is null");

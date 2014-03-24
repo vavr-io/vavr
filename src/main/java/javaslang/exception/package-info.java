@@ -7,5 +7,7 @@
  * A Cause is unchecked, i.e. a RuntimeException, and is Fatal or NonFatal.
  * Fatal exceptions cannot be handled and are thrown without further processing.
  * NonFatal exceptions are wrapped in a Failure.
+ * 
+ * TODO
  */
 package javaslang.exception;

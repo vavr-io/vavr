@@ -1,3 +1,9 @@
+/**                       ___ __          ,                   ___                                
+ *  __ ___ _____  _______/  /  / ______  / \_   ______ ______/__/_____  ______  _______ _____    
+ * /  '__/'  _  \/   ___/      \/   "__\/  _/__/ ____/'  ___/  /   "__\/   ,  \/   ___/'  "__\   
+ * \__/  \______/\______\__/___/\______/\___/\_____/ \______\_/\______/\__/___/\______\______/.io
+ * Licensed under the Apache License, Version 2.0. Copyright 2014 Daniel Dietrich.
+ */
 package javaslang.io;
 
 import java.io.ByteArrayInputStream;
@@ -36,9 +42,12 @@ import javaslang.exception.Try;
  */
 public final class IO {
 
-	/** It is encouraged here to usage a unified charset. */
+	/** It is encouraged here to use a unified charset. */
 	public static final Charset UTF8 = Charset.forName("UTF-8");
 
+	/**
+	 * This class is not intendet to be instantiated.
+	 */
 	private IO() {
 		throw new AssertionError(IO.class.getName() + " cannot be instantiated.");
 	}

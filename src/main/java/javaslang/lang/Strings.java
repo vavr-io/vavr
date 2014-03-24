@@ -1,3 +1,9 @@
+/**                       ___ __          ,                   ___                                
+ *  __ ___ _____  _______/  /  / ______  / \_   ______ ______/__/_____  ______  _______ _____    
+ * /  '__/'  _  \/   ___/      \/   "__\/  _/__/ ____/'  ___/  /   "__\/   ,  \/   ___/'  "__\   
+ * \__/  \______/\______\__/___/\______/\___/\_____/ \______\_/\______/\__/___/\______\______/.io
+ * Licensed under the Apache License, Version 2.0. Copyright 2014 Daniel Dietrich.
+ */
 package javaslang.lang;
 
 import static java.lang.Math.max;
@@ -18,6 +24,9 @@ import java.util.stream.Stream;
 
 import javaslang.match.Matcher;
 
+/**
+ * Extension methods for {@link java.lang.String}.
+ */
 public final class Strings {
 
 	/**
@@ -25,10 +34,19 @@ public final class Strings {
 	 */
 	public static final Pattern EOL = compile("\\r\\n|\\n|\\r");
 
+	/**
+	 * This class is not intendet to be instantiated.
+	 */
 	private Strings() {
 		throw new AssertionError(Strings.class.getName() + " cannot be instantiated.");
 	}
 
+	/**
+	 * Returns a deep string representation of an Object.
+	 * 
+	 * @param o An Object.
+	 * @return A deep string representation of o.
+	 */
 	public static String toString(Object o) {
 		return toString(o, new HashSet<>());
 	}

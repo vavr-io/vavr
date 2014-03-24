@@ -1,3 +1,9 @@
+/**                       ___ __          ,                   ___                                
+ *  __ ___ _____  _______/  /  / ______  / \_   ______ ______/__/_____  ______  _______ _____    
+ * /  '__/'  _  \/   ___/      \/   "__\/  _/__/ ____/'  ___/  /   "__\/   ,  \/   ___/'  "__\   
+ * \__/  \______/\______\__/___/\______/\___/\_____/ \______\_/\______/\__/___/\______\______/.io
+ * Licensed under the Apache License, Version 2.0. Copyright 2014 Daniel Dietrich.
+ */
 package javaslang.match;
 
 import static javaslang.lang.Lang.require;
@@ -45,6 +51,7 @@ public final class Matcher<T> implements Function<Object, T> {
 	 * @param <S> type of the object to be matched
 	 * @param function A function which is applied to a matched object.
 	 * @return this, the current instance of Matcher.
+	 * @throws IllegalStateException if function is null.
 	 */
 	public <S> Matcher<T> caze(Function<S, T> function) {
 		require(function != null, "function is null");
@@ -60,6 +67,7 @@ public final class Matcher<T> implements Function<Object, T> {
 	 * @param prototype An object to be matched by equality.
 	 * @param function A function which is applied to a matched object.
 	 * @return this, the current instance of Matcher.
+	 * @throws IllegalStateException if function is null.
 	 */
 	public <S> Matcher<T> caze(S prototype, Function<S, T> function) {
 		require(function != null, "function is null");

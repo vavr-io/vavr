@@ -1,5 +1,12 @@
+/**                       ___ __          ,                   ___                                
+ *  __ ___ _____  _______/  /  / ______  / \_   ______ ______/__/_____  ______  _______ _____    
+ * /  '__/'  _  \/   ___/      \/   "__\/  _/__/ ____/'  ___/  /   "__\/   ,  \/   ___/'  "__\   
+ * \__/  \______/\______\__/___/\______/\___/\_____/ \______\_/\______/\__/___/\______\______/.io
+ * Licensed under the Apache License, Version 2.0. Copyright 2014 Daniel Dietrich.
+ */
 package javaslang.lang;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -9,24 +16,6 @@ public final class Lang {
 
 	private Lang() {
 		throw new AssertionError(Lang.class.getName() + " cannot be instantiated.");
-	}
-
-	/**
-	 * Calls {code print(supplier.get())}.
-	 * 
-	 * @param supplier An Object supplier
-	 */
-	public static void print(Supplier<Object> supplier) {
-		print(supplier.get());
-	}
-
-	/**
-	 * Calls {code println(supplier.get())}.
-	 * 
-	 * @param supplier An Object supplier
-	 */
-	public static void println(Supplier<Object> supplier) {
-		println(supplier.get());
 	}
 
 	/**
@@ -87,7 +76,7 @@ public final class Lang {
 	 * @param message A message An error message.
 	 * @throws IllegalStateException If condition is false, contains the message.
 	 */
-	public static void require(boolean condition, String message) throws IllegalStateException {
+	public static void require(boolean condition, String message) {
 		if (!condition) {
 			throw new IllegalStateException(message);
 		}
@@ -100,11 +89,12 @@ public final class Lang {
 	 * @param condition A boolean
 	 * @param messageSupplier An error message, computed lazily.
 	 * @throws IllegalStateException If condition is false, contains the message.
+	 * @throws NullPointerException If messageSupplier is null.
 	 */
-	public static void require(boolean condition, Supplier<String> messageSupplier)
-			throws IllegalStateException {
+	public static void require(boolean condition, Supplier<String> messageSupplier) {
 		if (!condition) {
-			throw new IllegalStateException(messageSupplier.get());
+			throw new IllegalStateException(Objects.requireNonNull(messageSupplier,
+					"messageSupplier is null").get());
 		}
 	}
 
