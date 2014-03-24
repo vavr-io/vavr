@@ -36,7 +36,8 @@
 ### Extension Methods
 
 * Classes containing extensions methods have the name of the extended class and end with an 's'. E.g. `java.util.List` is extended by `javaslang.collection.Lists`.
-* ~ are final and have a private constructor.
+* Classes containing extensions methods are final and have a private constructor.
+* Extension methods are static.
 * The private constructor of class Xxx is:
 ```java
 /**
@@ -47,6 +48,12 @@ private Xxx() {
 }
 ```
 * The extended type is the first parameter of an extension method. E.g. `Lists.lastElement(list)`.
+
+### Class instantiation
+
+* Classes are instantiated via `new`.
+* Interface may provide static factory methods. E.g. javaslang.option.Option.of(Object obj).
+* Extension methods may instantiate classes, too. 
 
 ### Unit tests
 
