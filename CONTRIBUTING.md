@@ -7,7 +7,7 @@
 * A package, which is part of the public API, contains a `package-info.java`.
 * Unit tests contain no javadoc at all (because they introduce no new API and contain no business logic).
 * Running `mvn javadoc:javadoc` results in no javadoc errors.
-* A class starts with
+* A (non-test) class starts with
 ```java
 /**                       ___ __          ,                   ___                                
  *  __ ___ _____  _______/  /  / ______  / \_   ______ ______/__/_____  ______  _______ _____    
