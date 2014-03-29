@@ -6,9 +6,14 @@
  */
 package javaslang.text;
 
+/**
+ * @see <a
+ *      href="http://stackoverflow.com/questions/1888854/what-is-the-difference-between-an-abstract-syntax-tree-and-a-concrete-syntax-tre">ast
+ *      vs. cst</a>
+ */
 @FunctionalInterface
 public interface Parser {
 
 	Tree<Token> parse(String text, int index);
-	
+
 }
