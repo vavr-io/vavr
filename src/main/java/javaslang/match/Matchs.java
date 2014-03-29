@@ -6,7 +6,7 @@
  */
 package javaslang.match;
 
-import java.util.function.Function;
+import javaslang.match.Match.SerializableFunction;
 
 /**
  * Extension methods for {@link Match}.
@@ -28,7 +28,7 @@ public final class Matchs {
 	 * @param function A function which is applied to a matched object.
 	 * @return A Match of type T
 	 */
-	public static <S, T> Match<T> caze(Function<S, T> function) {
+	public static <S, T> Match<T> caze(SerializableFunction<S, T> function) {
 		return new Match<T>().caze(function);
 	}
 
@@ -41,7 +41,7 @@ public final class Matchs {
 	 * @param function A function which is applied to a matched object.
 	 * @return A Match of type T
 	 */
-	public static <S, T> Match<T> caze(S prototype, Function<S, T> function) {
+	public static <S, T> Match<T> caze(S prototype, SerializableFunction<S, T> function) {
 		return new Match<T>().caze(prototype, function);
 	}
 

@@ -8,13 +8,13 @@ package javaslang.match;
 
 import static javaslang.lang.Lang.require;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import javaslang.exception.Failure;
-import javaslang.exception.Success;
-import javaslang.exception.Try;
+import javaslang.exception.NonFatal;
+import javaslang.lang.Invocations;
 import javaslang.option.None;
 import javaslang.option.Option;
 import javaslang.option.Some;
@@ -33,35 +33,28 @@ import javaslang.option.Some;
  *
  * @param <T> The result type of the Match expression.
  */
-public final class Match<T> implements Function<Object, T> {
+public class Match<T> implements Function<Object, T> {
 
 	private List<Case<T>> cases = new ArrayList<>();
-
-	/**
-	 * Creates a Match.
-	 * @see Matchs#caze
-	 */
-	public Match() {
-	}
 
 	/**
 	 * Use this method to match by type S. Implementations of this method apply the given function
 	 * to an object, if the object is of type S.
 	 * 
 	 * @param <S> type of the object to be matched
-	 * @param function A function which is applied to a matched object.
+	 * @param function A SerializableFunction which is applied to a matched object.
 	 * @return this, the current instance of Match.
 	 * @throws IllegalStateException if function is null.
 	 */
-	public <S> Match<T> caze(Function<S, T> function) {
+	public <S> Match<T> caze(SerializableFunction<S, T> function) {
 		require(function != null, "function is null");
 		cases.add(new Case<>(None.instance(), function));
 		return this;
 	}
 
 	/**
-	 * Use this method to match by value. Implementations of this method apply the given function
-	 * to an object, if the object equals a prototype of type S.
+	 * Use this method to match by value. Implementations of this method apply the given function to
+	 * an object, if the object equals a prototype of type S.
 	 * 
 	 * @param <S> type of the prototype object
 	 * @param prototype An object to be matched by equality.
@@ -69,7 +62,7 @@ public final class Match<T> implements Function<Object, T> {
 	 * @return this, the current instance of Match.
 	 * @throws IllegalStateException if function is null.
 	 */
-	public <S> Match<T> caze(S prototype, Function<S, T> function) {
+	public <S> Match<T> caze(S prototype, SerializableFunction<S, T> function) {
 		require(function != null, "function is null");
 		cases.add(new Case<>(new Some<>(prototype), function));
 		return this;
@@ -83,15 +76,13 @@ public final class Match<T> implements Function<Object, T> {
 	 *         consumer, the result is null, otherwise the result of the underlying function or
 	 *         supplier.
 	 * @throws MatchError if no Match case matches the given object.
+	 * @throws NonFatal if an error occurs executing the matched case.
 	 */
 	@Override
-	public T apply(Object obj) throws MatchError {
+	public T apply(Object obj) {
 		for (Case<T> caze : cases) {
 			if (caze.isApplicable(obj)) {
-				final Option<Try<T>> value = caze.tryToApply(obj);
-				if (value.isPresent()) {
-					return value.get().get();
-				}
+				return caze.apply(obj);
 			}
 		}
 		throw new MatchError(obj);
@@ -104,7 +95,8 @@ public final class Match<T> implements Function<Object, T> {
 	 */
 	static class Case<T> {
 		final Option<?> prototype;
-		final Function<?, T> function;
+		final SerializableFunction<?, T> function;
+		final Class<?> parameterType;
 
 		/**
 		 * Constructs a Case.
@@ -112,22 +104,28 @@ public final class Match<T> implements Function<Object, T> {
 		 * @param prototype
 		 * @param function
 		 */
-		Case(Option<?> prototype, Function<?, T> function) {
+		Case(Option<?> prototype, SerializableFunction<?, T> function) {
 			this.prototype = prototype;
 			this.function = function;
+			this.parameterType = Invocations.getLambdaSignature(function).getParameterTypes()[0];
 		}
 
 		/**
-		 * Checks if the Match case represented by this Case can be applied to the given object.
+		 * Checks if the Match case represented by this Case can be applied to the given object. The
+		 * null value is applicable, if the prototype is null. If no prototype is specified, a null
+		 * obj is not applicable because the first occuring function would match otherwise, which
+		 * wouldn't be correct in general.
 		 * 
 		 * @param obj An object, may be null.
 		 * @return true, if prototype is None or prototype is Some(value) and value equals obj,
 		 *         false otherwise.
 		 */
 		boolean isApplicable(Object obj) {
-			return prototype.map(
-					val -> val == obj || (val != null && val.equals(obj)))
-					.orElse(obj != null);
+			final boolean isCompatible = obj == null
+					|| parameterType.isAssignableFrom(obj.getClass());
+			return isCompatible
+					&& prototype.map(val -> val == obj || (val != null && val.equals(obj))).orElse(
+							obj != null);
 		}
 
 		/**
@@ -136,16 +134,21 @@ public final class Match<T> implements Function<Object, T> {
 		 * @param obj An object.
 		 * @return The result of function.apply(obj).
 		 */
-		Option<Try<T>> tryToApply(Object obj) {
-			try {
-				@SuppressWarnings("unchecked")
-				final T value = ((Function<Object, T>) function).apply(obj);
-				return new Some<>(new Success<>(value));
-			} catch (ClassCastException x) {
-				return None.instance();
-			} catch (Throwable x) {
-				return new Some<>(new Failure<>(x));
-			}
+		@SuppressWarnings("unchecked")
+		T apply(Object obj) {
+			return ((SerializableFunction<Object, T>) function).apply(obj);
 		}
 	}
+
+	/**
+	 * A function which implements Serializable in order to obtain runtime type information about
+	 * the lambda via {@link javaslang.lang.Invocations#getLambdaSignature(Serializable)}.
+	 *
+	 * @param <T> The parameter type of the function.
+	 * @param <R> The return type of the function.
+	 */
+	@FunctionalInterface
+	public static interface SerializableFunction<T, R> extends Function<T, R>, Serializable {
+	}
+
 }
