@@ -4,11 +4,6 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.util.List;
 
-import javaslang.exception.Success;
-import javaslang.exception.Try;
-import javaslang.match.MatchError;
-import javaslang.match.Match;
-import javaslang.match.Matchs;
 import javaslang.option.Some;
 
 import org.junit.Test;
@@ -123,33 +118,6 @@ public class MatchTest {
 				.<Some<String>>		caze(some -> Integer.parseInt(some.get()))
 				.apply(new Some<>("123"));
 		assertThat(actual).isEqualTo(1);
-	}
-	
-	@Test
-	public void shouldClarifyHereThatClassCastExceptionsAreInterpretedAsNotMatching() {
-		final Integer actual = Matchs
-				.caze(o -> (int) o)
-				.caze(o -> -1)
-				.apply("test");
-		assertThat(actual).isEqualTo(-1);
-	}
-
-	@Test
-	public void shouldClarifyHereThatTryWrapsExceptions() {
-		final ClassCastException x = new ClassCastException();
-		final Try<Integer> actual = Matchs
-				.caze(o -> Try.<Integer>of(() -> { throw x; }))
-				.apply("test");
-		assertThat(actual.failed().get()).isEqualTo(x);
-	}
-
-	@Test
-	public void shouldClarifyHereThatTrySeparatesClassCastExceptions() {
-		final Try<Integer> actual = Matchs
-				.caze((Integer i) -> Try.<Integer>of(() -> { throw new ClassCastException(); }))
-				.caze((String s) -> new Success<>(1))
-				.apply("test");
-		assertThat(actual).isEqualTo(new Success<>(1));
 	}
 	
 	@Test
