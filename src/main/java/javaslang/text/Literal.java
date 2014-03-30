@@ -8,11 +8,15 @@ package javaslang.text;
 
 import static javaslang.lang.Lang.require;
 
+import java.util.Set;
 import java.util.function.Supplier;
 
+import javaslang.either.Either;
+import javaslang.either.Left;
+import javaslang.either.Right;
 import javaslang.lang.Strings;
 
-class Literal implements Parser, Supplier<Literal> {
+public class Literal extends Parser implements Supplier<Literal> {
 
 	final String literal;
 
@@ -22,15 +26,20 @@ class Literal implements Parser, Supplier<Literal> {
 	}
 
 	@Override
-	public Tree<Token> parse(String text, int index) {
+	public Either<Integer, Tree<Token>> parse(String text, int index) {
 		return text.startsWith(literal, index)
-				? new Tree<Token>("Literal", new Token(text, index, index + literal.length()))
-				: null;
+				? new Right<>(new Tree<Token>("Literal", new Token(text, index, index + literal.length())))
+				: new Left<>(index);
 	}
 
 	@Override
 	public Literal get() {
 		return this;
+	}
+	
+	@Override
+	protected void stringify(StringBuilder rule, StringBuilder definitions, Set<String> visited) {
+		rule.append("'" + literal + "'");
 	}
 	
 }

@@ -6,14 +6,20 @@
  */
 package javaslang.text;
 
+import java.util.Set;
+
+import javaslang.either.Either;
+
 /**
+ * @see <a href="http://en.wikipedia.org/wiki/Parser_combinator">Parser combinator</a>
  * @see <a
  *      href="http://stackoverflow.com/questions/1888854/what-is-the-difference-between-an-abstract-syntax-tree-and-a-concrete-syntax-tre">ast
  *      vs. cst</a>
  */
-@FunctionalInterface
-public interface Parser {
+public abstract class Parser {
 
-	Tree<Token> parse(String text, int index);
+	public abstract Either<Integer, Tree<Token>> parse(String text, int index);
+	
+	protected abstract void stringify(StringBuilder rule, StringBuilder definitions, Set<String> visited);
 
 }

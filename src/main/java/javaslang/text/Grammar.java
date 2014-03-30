@@ -8,10 +8,13 @@ package javaslang.text;
 
 import static javaslang.lang.Lang.require;
 
-import java.util.function.Function;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Supplier;
 
-public class Grammar implements Parser, Supplier<Grammar>, Function<String, Tree<Token>> {
+import javaslang.either.Either;
+
+public class Grammar {
 	
 	final Parser parser;
 	
@@ -20,23 +23,20 @@ public class Grammar implements Parser, Supplier<Grammar>, Function<String, Tree
 		this.parser = parser.get();
 	}
 	
-	public Tree<Token> parse(String text) {
-		return parse(text, 0);
+	public Either<Integer, Tree<Token>> parse(String text) {
+		final Either<Integer, Tree<Token>> cst = parser.parse(text, 0);
+		/*TODO:DELME*/System.out.println("endet at index " + (cst.isRight() ? cst.right().get().getValue().end : cst.left().get()) + " of " + (text.length() - 1));
+		return cst;
 	}
 	
-	@Override
-	public Tree<Token> apply(String text) {
-		return parse(text);
+	public String stringify() {
+		final StringBuilder rule = new StringBuilder();
+		final StringBuilder definitions = new StringBuilder();
+		final Set<String> visited = new HashSet<>();
+		rule.append("Grammar\n  : ");
+		parser.stringify(rule, definitions, visited);
+		rule.append("\n  ;\n\n");
+		return rule.append(definitions).toString();
 	}
 	
-	@Override
-	public Tree<Token> parse(String text, int index) {
-		return parser.parse(text, index);
-	}
-	
-	@Override
-	public Grammar get() {
-		return this;
-	}
-
 }

@@ -8,13 +8,17 @@ package javaslang.text;
 
 import static javaslang.lang.Lang.require;
 
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javaslang.either.Either;
+import javaslang.either.Left;
+import javaslang.either.Right;
 import javaslang.lang.Arrays;
 
-class Sequence implements Parser, Supplier<Sequence> {
+public class Sequence extends Parser implements Supplier<Sequence> {
 
 	// TODO: make whitespace regex configurable
 	private static final Pattern WHITESPACE = Pattern.compile("\\s*");
@@ -23,6 +27,13 @@ class Sequence implements Parser, Supplier<Sequence> {
 	final Supplier<? extends Parser>[] parsers;
 
 	@SafeVarargs
+	Sequence(Supplier<? extends Parser>... parsers) {
+		require(!Arrays.isNullOrEmpty(parsers), "no parsers");
+		this.name = null;
+		this.parsers = parsers;
+	}
+	
+	@SafeVarargs
 	Sequence(String name, Supplier<? extends Parser>... parsers) {
 		require(!Arrays.isNullOrEmpty(parsers), "no parsers");
 		this.name = name;
@@ -30,36 +41,40 @@ class Sequence implements Parser, Supplier<Sequence> {
 	}
 
 	@Override
-	public Tree<Token> parse(String text, int index) {
+	public Either<Integer, Tree<Token>> parse(String text, int index) {
 		// Starts with an emty root tree and successively attaches parsed children.
 		// The whole result is null, if one of the children couldn't been parsed.
 		// TODO: Does parallelStream() instead of stream() sense (using StreamSupport and Ordered
 		// Splitterator)!?
-		return Arrays.stream(parsers).reduce(new Tree<>(name, new Token(text, index, index)),
+		final String id = (name == null) ? "<Anonymous>" : name;
+		final Either<Integer, Tree<Token>> initial = new Right<>(new Tree<>(id, new Token(text, index, index)));
+		return Arrays.stream(parsers).reduce(initial,
 				(tree, parser) -> {
-					if (tree == null) {
+					if (tree.isLeft()) {
 						// if one parser returned null the sequence does not match and the whole
 						// result is null.
-				return null;
+				return tree;
 			} else {
 				try {
 					// next parser parses at current index
-					final int lastIndex = tree.getValue().end;
+					final Tree<Token> node = tree.right().get();
+					final int lastIndex = node.getValue().end;
 					final Matcher matcher = WHITESPACE.matcher(text);
 					final int currentIndex = matcher.find(lastIndex) ? matcher.end() : lastIndex;
-					final Tree<Token> parsed = parser.get().parse(text, currentIndex);
+					final Either<Integer, Tree<Token>> parsed = parser.get().parse(text, currentIndex);
 					// on success, attach token to tree, else the sequence does not match and the
 					// whole
 					// result is null
-					if (parsed != null) {
+					if (parsed.isRight()) {
+						final Tree<Token> child = parsed.right().get();
 						// attach child
-						tree.attach(parsed);
+						node.attach(child);
 						// update current index
-						tree.getValue().end = parsed.getValue().end;
+						node.getValue().end = child.getValue().end;
 						return tree;
 					} else {
 						// parser failed => the whole sequence could not be parsed
-						return null;
+						return new Left<>(node.getValue().end);
 					}
 				} catch (Exception x) {
 					// TODO
@@ -74,5 +89,29 @@ class Sequence implements Parser, Supplier<Sequence> {
 	public Sequence get() {
 		return this;
 	}
-
+	
+	@Override
+	protected void stringify(StringBuilder rule, StringBuilder definitions, Set<String> visited) {
+		if (name != null) {
+		rule.append(name);
+		if (!visited.contains(name)) {
+			visited.add(name);
+			definitions.append(name + "\n  : ");
+			final StringBuilder definitionsBuffer = new StringBuilder();
+			for (Supplier<? extends Parser> parserSupplier : parsers) {
+				final Parser parser = parserSupplier.get();
+				parser.stringify(definitions, definitionsBuffer, visited);
+				definitions.append(" ");
+			}
+			definitions.append("\n  ;\n\n").append(definitionsBuffer);
+		}
+		} else {
+			for (Supplier<? extends Parser> parserSupplier : parsers) {
+				final Parser parser = parserSupplier.get();
+				parser.stringify(rule, definitions, visited);
+				rule.append(" ");
+			}
+		}
+	}
+	
 }
