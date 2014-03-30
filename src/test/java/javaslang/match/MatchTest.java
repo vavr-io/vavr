@@ -11,14 +11,22 @@ import org.junit.Test;
 public class MatchTest {
 
 	@Test
-	public void shouldMatchNull() {
+	public void shouldMatchNullAsPrototype() {
 		final int actual = Matchs
 				.caze((String s) -> s.length())
 				.caze(null, o -> 1)
 				.apply(null);
 		assertThat(actual).isEqualTo(1);
 	}
-
+	
+	@Test(expected = MatchError.class)
+	public void shouldNotMatchNullAsType() {
+		new Match<Boolean>()
+				.caze((int i) -> false)
+				.caze((Integer i) -> true)
+				.apply(null);
+	}
+	
 	@Test
 	public void shouldMatchByValuesUsingFunction() {
 		final int actual = Matchs
@@ -94,6 +102,114 @@ public class MatchTest {
 	public void shouldCompileAssignmentWithGenericWildcardType() {
 		@SuppressWarnings("unused")
 		final Match<List<?>> list = new Match<>();
+	}
+	
+	@Test
+	public void shouldMatchPrimitiveInt() {
+		final boolean actual = new Match<Boolean>()
+				.caze((int i) -> true)
+				.caze((Integer i) -> false)
+				.apply(1);
+		assertThat(actual).isTrue();
+	}
+
+	@Test
+	public void shouldMatchBoxedPrimitiveIntAsInteger() {
+		final boolean actual = new Match<Boolean>()
+				.caze((Integer i) -> true)
+				.caze((int i) -> false)
+				.apply(1);
+		assertThat(actual).isTrue();
+	}
+	
+	@Test
+	public void shouldMatchIntegerAsPrimitiveInt() {
+		final boolean actual = new Match<Boolean>()
+				.caze((int i) -> true)
+				.caze((Integer i) -> false)
+				.apply(new Integer(1));
+		assertThat(actual).isTrue();
+	}
+
+	@Test
+	public void shouldMatchInteger() {
+		final boolean actual = new Match<Boolean>()
+				.caze((Integer i) -> true)
+				.caze((int i) -> false)
+				.apply(new Integer(1));
+		assertThat(actual).isTrue();
+	}
+	
+	@Test
+	public void shouldMatchPrimitiveBooleanValueAndApplyBooleanFunction() {
+		final int actual = new Match<Integer>()
+				.caze(true, (boolean b) -> 1)
+				.caze(Boolean.TRUE, (Boolean b) -> 2)
+				.apply(true);
+		assertThat(actual).isEqualTo(1);
+	}
+
+	@Test
+	public void shouldMatchPrimitiveBooleanValueAndApplyFunction() {
+		final int actual = new Match<Integer>()
+				.caze(true, (Boolean b) -> 1)
+				.caze(Boolean.TRUE, (Boolean b) -> 2)
+				.apply(true);
+		assertThat(actual).isEqualTo(1);
+	}
+	
+	@Test
+	public void shouldMatchBooleanValueAsPrimitiveBooleanAndApplyBooleanFunction() {
+		final int actual = new Match<Integer>()
+				.caze(true, (boolean b) -> 1)
+				.caze(Boolean.TRUE, (Boolean b) -> 2)
+				.apply(Boolean.TRUE);
+		assertThat(actual).isEqualTo(1);
+	}
+
+	@Test
+	public void shouldMatchBooleanValueAsPrimitiveBooleanAndApplyFunction() {
+		final int actual = new Match<Integer>()
+				.caze(true, (Boolean b) -> 1)
+				.caze(Boolean.TRUE, (Boolean b) -> 2)
+				.apply(Boolean.TRUE);
+		assertThat(actual).isEqualTo(1);
+	}
+
+	@Test
+	public void shouldMatchPrimitiveBooleanValueAsBooleanAndApplyBooleanFunction() {
+		final int actual = new Match<Integer>()
+				.caze(Boolean.TRUE, (Boolean b) -> 1)
+				.caze(true, (boolean b) -> 2)
+				.apply(true);
+		assertThat(actual).isEqualTo(1);
+	}
+
+	@Test
+	public void shouldMatchPrimitiveBooleanValueAsBooleanAndApplyFunction() {
+		final int actual = new Match<Integer>()
+				.caze(Boolean.TRUE, (Boolean b) -> 1)
+				.caze(true, (Boolean b) -> 2)
+				.apply(true);
+		assertThat(actual).isEqualTo(1);
+	}
+	
+	@Test
+	public void shouldMatchBooleanValueAndApplyBooleanFunction() {
+		final int actual = new Match<Integer>()
+				.caze(Boolean.TRUE, (Boolean b) -> 1)
+				.caze(true, (boolean b) -> 2)
+				.apply(Boolean.TRUE);
+		assertThat(actual).isEqualTo(1);
+	}
+
+	@Test
+	public void shouldMatchBooleanValueAndApplyFunction() {
+		final int actual = new Match<Integer>()
+				.caze(Boolean.TRUE, (Boolean b) -> 1)
+				.caze(true, (Boolean b) -> 2)
+				.apply(Boolean.TRUE);
+		assertThat(actual).isEqualTo(1);
 	}
 
 }

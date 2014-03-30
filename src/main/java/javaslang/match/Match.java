@@ -23,16 +23,21 @@ import javaslang.option.Option;
 import javaslang.option.Some;
 
 /**
- * A better switch for Java. A Match is
+ * A better switch for Java. A Match...
  * <ul>
- * <li>an expression, i.e. the call of {@link #apply(Object)} results in a value. In fact it is a
- * Function.</li>
- * <li>able to match types</li>
- * <li>able to match values</li>
+ * <li>is an expression, i.e. the call of {@link #apply(Object)} results in a value. In fact it is a
+ * {@code Function<Object, R>}.</li>
+ * <li>is able to match types</li>
+ * <li>is able to match values</li>
  * <li>lazily processes an object in the case of a match</li>
  * </ul>
  * 
  * See {@link Matchs} for convenience methods creating a matcher.
+ * <p>
+ * Match is a first class member of the monads provided with javaslang. See
+ * {@link javaslang.option.Option#match(Match)}, {@link javaslang.exception.Try#match(Match)},
+ * {@link javaslang.either.Either.LeftProjection#match(Match)} and
+ * {@link javaslang.either.Either.RightProjection#match(Match)}.
  *
  * @param <R> The result type of the Match expression.
  */
@@ -41,10 +46,10 @@ public class Match<R> implements Function<Object, R> {
 	private List<Case<R>> cases = new ArrayList<>();
 
 	/**
-	 * Use this method to match by type S. Implementations of this method apply the given function
-	 * to an object, if the object is of type S.
+	 * Use this method to match by object type T. An object o matches this case, if
+	 * {@code o != null && T isAssignableFrom o.getClass()}.
 	 * 
-	 * @param <T> type of the object to be matched
+	 * @param <T> (super-)type type of the object to be matched
 	 * @param function A SerializableFunction which is applied to a matched object.
 	 * @return this, the current instance of Match.
 	 * @throws IllegalStateException if function is null.
@@ -56,12 +61,12 @@ public class Match<R> implements Function<Object, R> {
 	}
 
 	/**
-	 * Use this method to match by value. Implementations of this method apply the given function to
-	 * an object, if the object equals a prototype of type S.
+	 * Use this method to match by prototype value of object type T. An object o matches this case,
+	 * if {@code prototype == o || (prototype != null && prototype.equals(o))}.
 	 * 
-	 * @param <T> type of the prototype object
-	 * @param prototype An object to be matched by equality.
-	 * @param function A function which is applied to a matched object.
+	 * @param <T> (super-)type of the object to be matched
+	 * @param prototype An object to be matched by equality as defined above.
+	 * @param function A SerializableFunction which is applied to a matched object.
 	 * @return this, the current instance of Match.
 	 * @throws IllegalStateException if function is null.
 	 */
@@ -70,103 +75,126 @@ public class Match<R> implements Function<Object, R> {
 		cases.add(new Case<>(new Some<>(prototype), function));
 		return this;
 	}
-	
+
+	/**
+	 * Use this method to match by boolean. An object o matches this case, if {@code o != null &&
+	 * o.getClass() == Boolean.class}.
+	 * 
+	 * @param function A BooleanFunction which is applied to a matched object.
+	 * @return this, the current instance of Match.
+	 * @throws IllegalStateException if function is null.
+	 */
 	public Match<R> caze(BooleanFunction<R> function) {
 		require(function != null, "function is null");
-		cases.add(new Case<>(None.instance(), (Boolean b) -> function.apply(b), boolean.class));
+		cases.add(new Case<>(None.instance(), (Boolean b) -> function.apply(b), Boolean.class));
 		return this;
 	}
-	
+
+	/**
+	 * Use this method to match by prototype value of type boolean (the prototype is boxed to
+	 * Boolean). An object o matches this case, if {@code prototype == o || (prototype != null &&
+	 * prototype.equals(o))}.
+	 * 
+	 * @param prototype An object to be matched by equality as defined above.
+	 * @param function A BooleanFunction which is applied to a matched object.
+	 * @return this, the current instance of Match.
+	 * @throws IllegalStateException if function is null.
+	 */
 	public Match<R> caze(boolean prototype, BooleanFunction<R> function) {
 		require(function != null, "function is null");
-		cases.add(new Case<>(new Some<>(prototype), (Boolean b) -> function.apply(b), boolean.class));
+		cases
+				.add(new Case<>(new Some<>(prototype), (Boolean b) -> function.apply(b),
+						Boolean.class));
 		return this;
 	}
-	
+
 	public Match<R> caze(ByteFunction<R> function) {
 		require(function != null, "function is null");
-		cases.add(new Case<>(None.instance(), (Byte b) -> function.apply(b), byte.class));
+		cases.add(new Case<>(None.instance(), (Byte b) -> function.apply(b), Byte.class));
 		return this;
 	}
 
 	public Match<R> caze(byte prototype, ByteFunction<R> function) {
 		require(function != null, "function is null");
-		cases.add(new Case<>(new Some<>(prototype), (Byte b) -> function.apply(b), byte.class));
+		cases.add(new Case<>(new Some<>(prototype), (Byte b) -> function.apply(b), Byte.class));
 		return this;
 	}
-	
+
 	public Match<R> caze(CharFunction<R> function) {
 		require(function != null, "function is null");
-		cases.add(new Case<>(None.instance(), (Character c) -> function.apply(c), char.class));
+		cases.add(new Case<>(None.instance(), (Character c) -> function.apply(c), Character.class));
 		return this;
 	}
 
 	public Match<R> caze(char prototype, CharFunction<R> function) {
 		require(function != null, "function is null");
-		cases.add(new Case<>(new Some<>(prototype), (Character c) -> function.apply(c), char.class));
+		cases.add(new Case<>(new Some<>(prototype), (Character c) -> function.apply(c),
+				Character.class));
 		return this;
 	}
-	
+
 	public Match<R> caze(DoubleFunction<R> function) {
 		require(function != null, "function is null");
-		cases.add(new Case<>(None.instance(), (Double d) -> function.apply(d), double.class));
+		cases.add(new Case<>(None.instance(), (Double d) -> function.apply(d), Double.class));
 		return this;
 	}
-	
+
 	public Match<R> caze(double prototype, DoubleFunction<R> function) {
 		require(function != null, "function is null");
-		cases.add(new Case<>(new Some<>(prototype), (Double d) -> function.apply(d), double.class));
+		cases.add(new Case<>(new Some<>(prototype), (Double d) -> function.apply(d), Double.class));
 		return this;
 	}
-	
+
 	public Match<R> caze(FloatFunction<R> function) {
 		require(function != null, "function is null");
-		cases.add(new Case<>(None.instance(), (Float f) -> function.apply(f), float.class));
+		cases.add(new Case<>(None.instance(), (Float f) -> function.apply(f), Float.class));
 		return this;
 	}
-	
+
 	public Match<R> caze(float prototype, FloatFunction<R> function) {
 		require(function != null, "function is null");
-		cases.add(new Case<>(new Some<>(prototype), (Float f) -> function.apply(f), float.class));
+		cases.add(new Case<>(new Some<>(prototype), (Float f) -> function.apply(f), Float.class));
 		return this;
 	}
 
 	public Match<R> caze(IntFunction<R> function) {
 		require(function != null, "function is null");
-		cases.add(new Case<>(None.instance(), (Integer i) -> function.apply(i), int.class));
+		cases.add(new Case<>(None.instance(), (Integer i) -> function.apply(i), Integer.class));
 		return this;
 	}
 
 	public Match<R> caze(int prototype, IntFunction<R> function) {
 		require(function != null, "function is null");
-		cases.add(new Case<>(new Some<>(prototype), (Integer i) -> function.apply(i), int.class));
+		cases
+				.add(new Case<>(new Some<>(prototype), (Integer i) -> function.apply(i),
+						Integer.class));
 		return this;
 	}
-	
+
 	public Match<R> caze(LongFunction<R> function) {
 		require(function != null, "function is null");
-		cases.add(new Case<>(None.instance(), (Long l) -> function.apply(l), long.class));
+		cases.add(new Case<>(None.instance(), (Long l) -> function.apply(l), Long.class));
 		return this;
 	}
-	
+
 	public Match<R> caze(long prototype, LongFunction<R> function) {
 		require(function != null, "function is null");
-		cases.add(new Case<>(new Some<>(prototype), (Long l) -> function.apply(l), long.class));
+		cases.add(new Case<>(new Some<>(prototype), (Long l) -> function.apply(l), Long.class));
 		return this;
 	}
-	
+
 	public Match<R> caze(ShortFunction<R> function) {
 		require(function != null, "function is null");
-		cases.add(new Case<>(None.instance(), (Short s) -> function.apply(s), short.class));
+		cases.add(new Case<>(None.instance(), (Short s) -> function.apply(s), Short.class));
 		return this;
 	}
-	
+
 	public Match<R> caze(short prototype, ShortFunction<R> function) {
 		require(function != null, "function is null");
-		cases.add(new Case<>(new Some<>(prototype), (Short s) -> function.apply(s), short.class));
+		cases.add(new Case<>(new Some<>(prototype), (Short s) -> function.apply(s), Short.class));
 		return this;
 	}
-	
+
 	/**
 	 * Applies an object to this matcher.
 	 * 
@@ -208,7 +236,7 @@ public class Match<R> implements Function<Object, R> {
 			this.function = function;
 			this.parameterType = Invocations.getLambdaSignature(function).getParameterTypes()[0];
 		}
-		
+
 		/**
 		 * Constructs a Case, used for functions having a primitive parameter type.
 		 * 
@@ -218,7 +246,7 @@ public class Match<R> implements Function<Object, R> {
 		 */
 		Case(Option<?> prototype, Function<?, R> boxedFunction, Class<?> parameterType) {
 			this.prototype = prototype;
-			this.function =  boxedFunction;
+			this.function = boxedFunction;
 			this.parameterType = parameterType;
 		}
 
@@ -248,7 +276,7 @@ public class Match<R> implements Function<Object, R> {
 		 */
 		@SuppressWarnings("unchecked")
 		R apply(Object obj) {
-			return ((SerializableFunction<Object, R>) function).apply(obj);
+			return ((Function<Object, R>) function).apply(obj);
 		}
 	}
 
@@ -272,20 +300,20 @@ public class Match<R> implements Function<Object, R> {
 	public static interface ByteFunction<R> {
 		R apply(byte b);
 	}
-	
+
 	@FunctionalInterface
 	public static interface CharFunction<R> {
-		R apply(char b);
+		R apply(char c);
 	}
-	
+
 	@FunctionalInterface
 	public static interface FloatFunction<R> {
-		R apply(float b);
+		R apply(float f);
 	}
-	
+
 	@FunctionalInterface
 	public static interface ShortFunction<R> {
-		R apply(short b);
+		R apply(short s);
 	}
 
 }
