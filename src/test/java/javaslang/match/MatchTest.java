@@ -41,36 +41,6 @@ public class MatchTest {
 				.apply("2");
 		assertThat(actual).isEqualTo(2);
 	}
-
-	@Test
-	public void shouldMatchByTypeOnMultipleCasesUsingGenericType() {
-		final int actual = new Match<Integer>()
-				.<Byte>		caze(b -> (int) b)
-				.<Short>	caze(s -> s + 1)
-				.<Integer>	caze(i -> i + 2)
-				.apply((short) 1);
-		assertThat(actual).isEqualTo(2);
-	}
-	
-	@Test
-	public void shouldMatchByIntOnMultipleCasesUsingGenericType() {
-		final int actual = new Match<Integer>()
-				.<Byte>		caze(b -> 1)
-				.<Short>	caze(s -> 2)
-				.<Integer>	caze(i -> 3)
-				.apply(1);
-		assertThat(actual).isEqualTo(3);
-	}
-
-	@Test
-	public void shouldMatchByDoubleOnMultipleCasesUsingGenericType() {
-		final int actual = new Match<Integer>()
-				.<Byte>		caze(b -> 1)
-				.<Double>	caze(d -> 2)
-				.<Integer>	caze(i -> 3)
-				.apply(1.0d);
-		assertThat(actual).isEqualTo(2);
-	}
 	
 	@Test
 	public void shouldMatchByDoubleOnMultipleCasesUsingTypedParameter() {
@@ -97,7 +67,7 @@ public class MatchTest {
 		final int actual = Matchs
 				.caze(1, o -> 'a')
 				.caze((Number n) -> 'b')
-				.caze(o -> 'c')
+				.caze((Object o) -> 'c')
 				.apply(2.0d);
 		assertThat(actual).isEqualTo('b');
 	}
@@ -106,7 +76,7 @@ public class MatchTest {
 	public void shouldMatchDefaultCase() {
 		final int actual = Matchs
 				.caze(null, o -> 1)
-				.caze(o -> 2)
+				.caze((Object o) -> 2)
 				.apply("default");
 		assertThat(actual).isEqualTo(2);
 	}
@@ -114,8 +84,8 @@ public class MatchTest {
 	@Test
 	public void shouldClarifyHereThatTypeErasureIsPresent() {
 		final int actual = new Match<Integer>()
-				.<Some<Integer>>	caze(some -> 1)
-				.<Some<String>>		caze(some -> Integer.parseInt(some.get()))
+				.caze((Some<Integer> some) -> 1)
+				.caze((Some<String> some) -> Integer.parseInt(some.get()))
 				.apply(new Some<>("123"));
 		assertThat(actual).isEqualTo(1);
 	}

@@ -11,7 +11,10 @@ import static javaslang.lang.Lang.require;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.DoubleFunction;
 import java.util.function.Function;
+import java.util.function.IntFunction;
+import java.util.function.LongFunction;
 
 import javaslang.exception.NonFatal;
 import javaslang.lang.Invocations;
@@ -31,22 +34,22 @@ import javaslang.option.Some;
  * 
  * See {@link Matchs} for convenience methods creating a matcher.
  *
- * @param <T> The result type of the Match expression.
+ * @param <R> The result type of the Match expression.
  */
-public class Match<T> implements Function<Object, T> {
+public class Match<R> implements Function<Object, R> {
 
-	private List<Case<T>> cases = new ArrayList<>();
+	private List<Case<R>> cases = new ArrayList<>();
 
 	/**
 	 * Use this method to match by type S. Implementations of this method apply the given function
 	 * to an object, if the object is of type S.
 	 * 
-	 * @param <S> type of the object to be matched
+	 * @param <T> type of the object to be matched
 	 * @param function A SerializableFunction which is applied to a matched object.
 	 * @return this, the current instance of Match.
 	 * @throws IllegalStateException if function is null.
 	 */
-	public <S> Match<T> caze(SerializableFunction<S, T> function) {
+	public <T> Match<R> caze(SerializableFunction<T, R> function) {
 		require(function != null, "function is null");
 		cases.add(new Case<>(None.instance(), function));
 		return this;
@@ -56,18 +59,114 @@ public class Match<T> implements Function<Object, T> {
 	 * Use this method to match by value. Implementations of this method apply the given function to
 	 * an object, if the object equals a prototype of type S.
 	 * 
-	 * @param <S> type of the prototype object
+	 * @param <T> type of the prototype object
 	 * @param prototype An object to be matched by equality.
 	 * @param function A function which is applied to a matched object.
 	 * @return this, the current instance of Match.
 	 * @throws IllegalStateException if function is null.
 	 */
-	public <S> Match<T> caze(S prototype, SerializableFunction<S, T> function) {
+	public <T> Match<R> caze(T prototype, SerializableFunction<T, R> function) {
 		require(function != null, "function is null");
 		cases.add(new Case<>(new Some<>(prototype), function));
 		return this;
 	}
+	
+	public Match<R> caze(BooleanFunction<R> function) {
+		require(function != null, "function is null");
+		cases.add(new Case<>(None.instance(), (Boolean b) -> function.apply(b), boolean.class));
+		return this;
+	}
+	
+	public Match<R> caze(boolean prototype, BooleanFunction<R> function) {
+		require(function != null, "function is null");
+		cases.add(new Case<>(new Some<>(prototype), (Boolean b) -> function.apply(b), boolean.class));
+		return this;
+	}
+	
+	public Match<R> caze(ByteFunction<R> function) {
+		require(function != null, "function is null");
+		cases.add(new Case<>(None.instance(), (Byte b) -> function.apply(b), byte.class));
+		return this;
+	}
 
+	public Match<R> caze(byte prototype, ByteFunction<R> function) {
+		require(function != null, "function is null");
+		cases.add(new Case<>(new Some<>(prototype), (Byte b) -> function.apply(b), byte.class));
+		return this;
+	}
+	
+	public Match<R> caze(CharFunction<R> function) {
+		require(function != null, "function is null");
+		cases.add(new Case<>(None.instance(), (Character c) -> function.apply(c), char.class));
+		return this;
+	}
+
+	public Match<R> caze(char prototype, CharFunction<R> function) {
+		require(function != null, "function is null");
+		cases.add(new Case<>(new Some<>(prototype), (Character c) -> function.apply(c), char.class));
+		return this;
+	}
+	
+	public Match<R> caze(DoubleFunction<R> function) {
+		require(function != null, "function is null");
+		cases.add(new Case<>(None.instance(), (Double d) -> function.apply(d), double.class));
+		return this;
+	}
+	
+	public Match<R> caze(double prototype, DoubleFunction<R> function) {
+		require(function != null, "function is null");
+		cases.add(new Case<>(new Some<>(prototype), (Double d) -> function.apply(d), double.class));
+		return this;
+	}
+	
+	public Match<R> caze(FloatFunction<R> function) {
+		require(function != null, "function is null");
+		cases.add(new Case<>(None.instance(), (Float f) -> function.apply(f), float.class));
+		return this;
+	}
+	
+	public Match<R> caze(float prototype, FloatFunction<R> function) {
+		require(function != null, "function is null");
+		cases.add(new Case<>(new Some<>(prototype), (Float f) -> function.apply(f), float.class));
+		return this;
+	}
+
+	public Match<R> caze(IntFunction<R> function) {
+		require(function != null, "function is null");
+		cases.add(new Case<>(None.instance(), (Integer i) -> function.apply(i), int.class));
+		return this;
+	}
+
+	public Match<R> caze(int prototype, IntFunction<R> function) {
+		require(function != null, "function is null");
+		cases.add(new Case<>(new Some<>(prototype), (Integer i) -> function.apply(i), int.class));
+		return this;
+	}
+	
+	public Match<R> caze(LongFunction<R> function) {
+		require(function != null, "function is null");
+		cases.add(new Case<>(None.instance(), (Long l) -> function.apply(l), long.class));
+		return this;
+	}
+	
+	public Match<R> caze(long prototype, LongFunction<R> function) {
+		require(function != null, "function is null");
+		cases.add(new Case<>(new Some<>(prototype), (Long l) -> function.apply(l), long.class));
+		return this;
+	}
+	
+	public Match<R> caze(ShortFunction<R> function) {
+		require(function != null, "function is null");
+		cases.add(new Case<>(None.instance(), (Short s) -> function.apply(s), short.class));
+		return this;
+	}
+	
+	public Match<R> caze(short prototype, ShortFunction<R> function) {
+		require(function != null, "function is null");
+		cases.add(new Case<>(new Some<>(prototype), (Short s) -> function.apply(s), short.class));
+		return this;
+	}
+	
 	/**
 	 * Applies an object to this matcher.
 	 * 
@@ -79,8 +178,8 @@ public class Match<T> implements Function<Object, T> {
 	 * @throws NonFatal if an error occurs executing the matched case.
 	 */
 	@Override
-	public T apply(Object obj) {
-		for (Case<T> caze : cases) {
+	public R apply(Object obj) {
+		for (Case<R> caze : cases) {
 			if (caze.isApplicable(obj)) {
 				return caze.apply(obj);
 			}
@@ -91,23 +190,36 @@ public class Match<T> implements Function<Object, T> {
 	/**
 	 * Internal representation of a Match case.
 	 * 
-	 * @param <T> The same type as the return type of the Match a case belongs to.
+	 * @param <R> The same type as the return type of the Match a case belongs to.
 	 */
-	static class Case<T> {
+	static class Case<R> {
 		final Option<?> prototype;
-		final SerializableFunction<?, T> function;
+		final Function<?, R> function;
 		final Class<?> parameterType;
 
 		/**
-		 * Constructs a Case.
+		 * Constructs a Case, used for functions having an object parameter type.
 		 * 
-		 * @param prototype
-		 * @param function
+		 * @param prototype A prototype object.
+		 * @param function A serializable function.
 		 */
-		Case(Option<?> prototype, SerializableFunction<?, T> function) {
+		Case(Option<?> prototype, SerializableFunction<?, R> function) {
 			this.prototype = prototype;
 			this.function = function;
 			this.parameterType = Invocations.getLambdaSignature(function).getParameterTypes()[0];
+		}
+		
+		/**
+		 * Constructs a Case, used for functions having a primitive parameter type.
+		 * 
+		 * @param prototype A prototype object.
+		 * @param boxedFunction A function with boxed argument.
+		 * @param parameterType The type of the unboxed function argument.
+		 */
+		Case(Option<?> prototype, Function<?, R> boxedFunction, Class<?> parameterType) {
+			this.prototype = prototype;
+			this.function =  boxedFunction;
+			this.parameterType = parameterType;
 		}
 
 		/**
@@ -135,8 +247,8 @@ public class Match<T> implements Function<Object, T> {
 		 * @return The result of function.apply(obj).
 		 */
 		@SuppressWarnings("unchecked")
-		T apply(Object obj) {
-			return ((SerializableFunction<Object, T>) function).apply(obj);
+		R apply(Object obj) {
+			return ((SerializableFunction<Object, R>) function).apply(obj);
 		}
 	}
 
@@ -149,6 +261,31 @@ public class Match<T> implements Function<Object, T> {
 	 */
 	@FunctionalInterface
 	public static interface SerializableFunction<T, R> extends Function<T, R>, Serializable {
+	}
+
+	@FunctionalInterface
+	public static interface BooleanFunction<R> {
+		R apply(boolean b);
+	}
+
+	@FunctionalInterface
+	public static interface ByteFunction<R> {
+		R apply(byte b);
+	}
+	
+	@FunctionalInterface
+	public static interface CharFunction<R> {
+		R apply(char b);
+	}
+	
+	@FunctionalInterface
+	public static interface FloatFunction<R> {
+		R apply(float b);
+	}
+	
+	@FunctionalInterface
+	public static interface ShortFunction<R> {
+		R apply(short b);
 	}
 
 }
