@@ -5,7 +5,6 @@ import static javaslang.text.Multiplicity.Bounds.ZERO_TO_ONE;
 
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.function.Supplier;
 
 import javaslang.either.Either;
 import javaslang.exception.Try;
@@ -32,7 +31,6 @@ public class GrammarTest {
 	}
 
 	// TODO: Whitespace handling!
-	// TODO:
 	static class JSONGrammar extends Grammar {
 
 		JSONGrammar() {
@@ -68,11 +66,6 @@ public class GrammarTest {
 		static Parser JSON_BOOLEAN() {
 			return new Sequence("JSON_BOOLEAN", new Branch(new Literal("true"), new Literal("false")));
 		}
-
-		@SuppressWarnings("unchecked")
-		static Supplier<? extends Parser> n(Parser parser, String separator) {
-			return n((Supplier<? extends Parser>) parser, separator);
-		}
 		
 		/**
 		 * n(P, ',') = [ P [ ',' P]* ]?
@@ -81,10 +74,10 @@ public class GrammarTest {
 		 * @param separator
 		 * @return
 		 */
-		static Supplier<? extends Parser> n(Supplier<? extends Parser> parser, String separator) {
+		static Parser n(Parser parser, String separator) {
 
 			// [ ',' P]*
-			final Supplier<? extends Parser> more = new Multiplicity(new Sequence(new Literal(separator), parser), ZERO_TO_N);
+			final Parser more = new Multiplicity(new Sequence(new Literal(separator), parser), ZERO_TO_N);
 
 			// [ P <more> ]?
 			return new Multiplicity(new Sequence(parser, more), ZERO_TO_ONE);

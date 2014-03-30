@@ -49,8 +49,7 @@ public class ParserTest {
 
 	@Test
 	public void shouldParseSequenceOfLiterals() {
-		final Sequence sequence = new Sequence("LETTERS", () -> new Literal("a"),
-				() -> new Literal("b"));
+		final Sequence sequence = new Sequence("LETTERS", new Literal("a"), new Literal("b"));
 		final Either<Integer, Tree<Token>> ast = sequence.parse("ab", 0);
 		assertThat(ast.right().get().toString()).isEqualTo(
 				"LETTERS(Token('ab')\n  Literal(Token('a')),\n  Literal(Token('b'))\n)");
@@ -58,8 +57,7 @@ public class ParserTest {
 
 	@Test
 	public void shouldParseSequenceOfLiteralsAtIndex() {
-		final Sequence sequence = new Sequence("LETTERS", () -> new Literal("a"),
-				() -> new Literal("b"));
+		final Sequence sequence = new Sequence("LETTERS", new Literal("a"), new Literal("b"));
 		final Either<Integer, Tree<Token>> ast = sequence.parse(">>ab<<", 2);
 		assertThat(ast.right().get().toString()).isEqualTo(
 				"LETTERS(Token('ab')\n  Literal(Token('a')),\n  Literal(Token('b'))\n)");
@@ -67,16 +65,14 @@ public class ParserTest {
 
 	@Test
 	public void shouldReturnNullOnNoSequenceMatch() {
-		final Sequence sequence = new Sequence("LETTERS", () -> new Literal("a"),
-				() -> new Literal("b"));
+		final Sequence sequence = new Sequence("LETTERS", new Literal("a"), new Literal("b"));
 		final Either<Integer, Tree<Token>> ast = sequence.parse("xxx", 0);
 		assertThat(ast.left().get()).isEqualTo(0);
 	}
 
 	@Test
 	public void shouldParseSequenceIgnoringWhitespace() {
-		final Sequence sequence = new Sequence("LETTERS", () -> new Literal("a"),
-				() -> new Literal("b"));
+		final Sequence sequence = new Sequence("LETTERS", new Literal("a"), new Literal("b"));
 		final Either<Integer, Tree<Token>> ast = sequence.parse("  a\nb.", 0);
 		assertThat(ast.right().get().toString()).isEqualTo(
 				"LETTERS(Token(' a b')\n  Literal(Token('a')),\n  Literal(Token('b'))\n)");
@@ -84,28 +80,28 @@ public class ParserTest {
 
 	@Test
 	public void shouldParseFirstBranch() {
-		final Branch branch = new Branch(() -> new Literal("a"), () -> new Literal("b"));
+		final Branch branch = new Branch(new Literal("a"), new Literal("b"));
 		final Either<Integer, Tree<Token>> ast = branch.parse("a", 0);
 		assertThat(ast.right().get().toString()).isEqualTo("Literal(Token('a'))");
 	}
 
 	@Test
 	public void shouldParseSecondBranch() {
-		final Branch branch = new Branch(() -> new Literal("a"), () -> new Literal("b"));
+		final Branch branch = new Branch(new Literal("a"), new Literal("b"));
 		final Either<Integer, Tree<Token>> ast = branch.parse("b", 0);
 		assertThat(ast.right().get().toString()).isEqualTo("Literal(Token('b'))");
 	}
 
 	@Test
 	public void shouldReturnNullOnNoBranchMatch() {
-		final Branch branch = new Branch(() -> new Literal("a"), () -> new Literal("b"));
+		final Branch branch = new Branch(new Literal("a"), new Literal("b"));
 		final Either<Integer, Tree<Token>> ast = branch.parse("xxx", 0);
 		assertThat(ast.left().get()).isEqualTo(0);
 	}
 
 	@Test
 	public void shouldParseZeroToOneWhenMatchingNone() {
-		final Multiplicity multiplicity = new Multiplicity(() -> new Literal("a"),
+		final Multiplicity multiplicity = new Multiplicity(new Literal("a"),
 				Multiplicity.Bounds.ZERO_TO_ONE);
 		final Either<Integer, Tree<Token>> ast = multiplicity.parse("xxx", 0);
 		assertThat(ast.right().get().toString()).isEqualTo("ZERO_TO_ONE(Token(''))");
@@ -113,7 +109,7 @@ public class ParserTest {
 
 	@Test
 	public void shouldParseZeroToOneWhenMatchingOne() {
-		final Multiplicity multiplicity = new Multiplicity(() -> new Literal("a"),
+		final Multiplicity multiplicity = new Multiplicity(new Literal("a"),
 				Multiplicity.Bounds.ZERO_TO_ONE);
 		final Either<Integer, Tree<Token>> ast = multiplicity.parse("aaa", 0);
 		assertThat(ast.right().get().toString()).isEqualTo(
@@ -122,7 +118,7 @@ public class ParserTest {
 
 	@Test
 	public void shouldParseZeroToNWhenMatchingNone() {
-		final Multiplicity multiplicity = new Multiplicity(() -> new Literal("a"),
+		final Multiplicity multiplicity = new Multiplicity(new Literal("a"),
 				Multiplicity.Bounds.ZERO_TO_N);
 		final Either<Integer, Tree<Token>> ast = multiplicity.parse("xxx", 0);
 		assertThat(ast.right().get().toString()).isEqualTo("ZERO_TO_N(Token(''))");
@@ -130,7 +126,7 @@ public class ParserTest {
 
 	@Test
 	public void shouldParseZeroToNWhenMatchingMoreThanOne() {
-		final Multiplicity multiplicity = new Multiplicity(() -> new Literal("a"),
+		final Multiplicity multiplicity = new Multiplicity(new Literal("a"),
 				Multiplicity.Bounds.ZERO_TO_N);
 		final Either<Integer, Tree<Token>> ast = multiplicity.parse("aaa", 0);
 		assertThat(ast.right().get().toString()).isEqualTo(
@@ -139,7 +135,7 @@ public class ParserTest {
 
 	@Test
 	public void shouldNotParseOneToNWhenMatchingNone() {
-		final Multiplicity multiplicity = new Multiplicity(() -> new Literal("a"),
+		final Multiplicity multiplicity = new Multiplicity(new Literal("a"),
 				Multiplicity.Bounds.ONE_TO_N);
 		final Either<Integer, Tree<Token>> ast = multiplicity.parse("xxx", 0);
 		assertThat(ast.left().get()).isEqualTo(0);
@@ -147,15 +143,16 @@ public class ParserTest {
 
 	@Test
 	public void shouldParseOneToNWhenMatchingOne() {
-		final Multiplicity multiplicity = new Multiplicity(() -> new Literal("a"),
+		final Multiplicity multiplicity = new Multiplicity(new Literal("a"),
 				Multiplicity.Bounds.ONE_TO_N);
 		final Either<Integer, Tree<Token>> ast = multiplicity.parse("abc", 0);
-		assertThat(ast.right().get().toString()).isEqualTo("ONE_TO_N(Token('a')\n  Literal(Token('a'))\n)");
+		assertThat(ast.right().get().toString()).isEqualTo(
+				"ONE_TO_N(Token('a')\n  Literal(Token('a'))\n)");
 	}
 
 	@Test
 	public void shouldParseOneToNWhenMatchingMoreThanOne() {
-		final Multiplicity multiplicity = new Multiplicity(() -> new Literal("a"),
+		final Multiplicity multiplicity = new Multiplicity(new Literal("a"),
 				Multiplicity.Bounds.ONE_TO_N);
 		final Either<Integer, Tree<Token>> ast = multiplicity.parse("aaa", 0);
 		assertThat(ast.right().get().toString()).isEqualTo(
@@ -179,12 +176,11 @@ public class ParserTest {
 	private Parser n(Parser parser, String separator) {
 
 		// [ ',' P]*
-		final Parser more = new Multiplicity(() -> new Sequence("Sequence", () -> new Literal(
-				separator), () -> parser), ZERO_TO_N);
+		final Parser more = new Multiplicity(new Sequence("Sequence", new Literal(separator),
+				parser), ZERO_TO_N);
 
 		// [ P <more> ]?
-		return new Multiplicity(() -> new Sequence("Sequence", () -> parser, () -> more),
-				ZERO_TO_ONE);
+		return new Multiplicity(new Sequence("Sequence", parser, more), ZERO_TO_ONE);
 	}
 
 }

@@ -16,15 +16,15 @@ import javaslang.either.Either;
 
 public class Grammar {
 	
-	final Parser parser;
+	final Supplier<Parser> parser;
 	
-	public Grammar(Supplier<? extends Parser> parser) {
+	public Grammar(Supplier<Parser> parser) {
 		require(parser != null, "parser is null");
-		this.parser = parser.get();
+		this.parser = parser;
 	}
 	
 	public Either<Integer, Tree<Token>> parse(String text) {
-		final Either<Integer, Tree<Token>> cst = parser.parse(text, 0);
+		final Either<Integer, Tree<Token>> cst = parser.get().parse(text, 0);
 		/*TODO:DELME*/System.out.println("endet at index " + (cst.isRight() ? cst.right().get().getValue().end : cst.left().get()) + " of " + (text.length() - 1));
 		return cst;
 	}
@@ -34,7 +34,7 @@ public class Grammar {
 		final StringBuilder definitions = new StringBuilder();
 		final Set<String> visited = new HashSet<>();
 		rule.append("Grammar\n  : ");
-		parser.stringify(rule, definitions, visited);
+		parser.get().stringify(rule, definitions, visited);
 		rule.append("\n  ;\n\n");
 		return rule.append(definitions).toString();
 	}

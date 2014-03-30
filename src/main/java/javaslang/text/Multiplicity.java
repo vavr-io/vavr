@@ -28,12 +28,12 @@ import javaslang.either.Right;
  * <li>X+ = 1..n occurrences</li>
  * </ul>
  */
-public class Multiplicity extends Parser implements Supplier<Multiplicity> {
+public class Multiplicity extends Parser {
 
-	final Supplier<? extends Parser> parser;
+	final Supplier<Parser> parser;
 	final Bounds bounds;
 
-	Multiplicity(Supplier<? extends Parser> parser, Bounds bounds) {
+	Multiplicity(Supplier<Parser> parser, Bounds bounds) {
 		require(parser != null, "parser is null");
 		require(bounds != null, "bounds is null");
 		this.parser = parser;
@@ -66,11 +66,6 @@ public class Multiplicity extends Parser implements Supplier<Multiplicity> {
 				found = false;
 			}
 		} while (unbound && found);
-	}
-
-	@Override
-	public Multiplicity get() {
-		return this;
 	}
 	
 	@Override

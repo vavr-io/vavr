@@ -18,23 +18,23 @@ import javaslang.either.Left;
 import javaslang.either.Right;
 import javaslang.lang.Arrays;
 
-public class Sequence extends Parser implements Supplier<Sequence> {
+public class Sequence extends Parser {
 
 	// TODO: make whitespace regex configurable
 	private static final Pattern WHITESPACE = Pattern.compile("\\s*");
 
 	final String name;
-	final Supplier<? extends Parser>[] parsers;
+	final Supplier<Parser>[] parsers;
 
 	@SafeVarargs
-	Sequence(Supplier<? extends Parser>... parsers) {
+	Sequence(Supplier<Parser>... parsers) {
 		require(!Arrays.isNullOrEmpty(parsers), "no parsers");
 		this.name = null;
 		this.parsers = parsers;
 	}
-	
+
 	@SafeVarargs
-	Sequence(String name, Supplier<? extends Parser>... parsers) {
+	Sequence(String name, Supplier<Parser>... parsers) {
 		require(!Arrays.isNullOrEmpty(parsers), "no parsers");
 		this.name = name;
 		this.parsers = parsers;
@@ -47,12 +47,12 @@ public class Sequence extends Parser implements Supplier<Sequence> {
 		// TODO: Does parallelStream() instead of stream() sense (using StreamSupport and Ordered
 		// Splitterator)!?
 		final String id = (name == null) ? "<Anonymous>" : name;
-		final Either<Integer, Tree<Token>> initial = new Right<>(new Tree<>(id, new Token(text, index, index)));
-		return Arrays.stream(parsers).reduce(initial,
-				(tree, parser) -> {
-					if (tree.isLeft()) {
-						// if one parser returned null the sequence does not match and the whole
-						// result is null.
+		final Either<Integer, Tree<Token>> initial = new Right<>(new Tree<>(id, new Token(text,
+				index, index)));
+		return Arrays.stream(parsers).reduce(initial, (tree, parser) -> {
+			if (tree.isLeft()) {
+				// if one parser returned null the sequence does not match and the whole
+				// result is null.
 				return tree;
 			} else {
 				try {
@@ -61,7 +61,8 @@ public class Sequence extends Parser implements Supplier<Sequence> {
 					final int lastIndex = node.getValue().end;
 					final Matcher matcher = WHITESPACE.matcher(text);
 					final int currentIndex = matcher.find(lastIndex) ? matcher.end() : lastIndex;
-					final Either<Integer, Tree<Token>> parsed = parser.get().parse(text, currentIndex);
+					final Either<Integer, Tree<Token>> parsed = parser.get().parse(text,
+							currentIndex);
 					// on success, attach token to tree, else the sequence does not match and the
 					// whole
 					// result is null
@@ -86,25 +87,20 @@ public class Sequence extends Parser implements Supplier<Sequence> {
 	}
 
 	@Override
-	public Sequence get() {
-		return this;
-	}
-	
-	@Override
 	protected void stringify(StringBuilder rule, StringBuilder definitions, Set<String> visited) {
 		if (name != null) {
-		rule.append(name);
-		if (!visited.contains(name)) {
-			visited.add(name);
-			definitions.append(name + "\n  : ");
-			final StringBuilder definitionsBuffer = new StringBuilder();
-			for (Supplier<? extends Parser> parserSupplier : parsers) {
-				final Parser parser = parserSupplier.get();
-				parser.stringify(definitions, definitionsBuffer, visited);
-				definitions.append(" ");
+			rule.append(name);
+			if (!visited.contains(name)) {
+				visited.add(name);
+				definitions.append(name + "\n  : ");
+				final StringBuilder definitionsBuffer = new StringBuilder();
+				for (Supplier<? extends Parser> parserSupplier : parsers) {
+					final Parser parser = parserSupplier.get();
+					parser.stringify(definitions, definitionsBuffer, visited);
+					definitions.append(" ");
+				}
+				definitions.append("\n  ;\n\n").append(definitionsBuffer);
 			}
-			definitions.append("\n  ;\n\n").append(definitionsBuffer);
-		}
 		} else {
 			for (Supplier<? extends Parser> parserSupplier : parsers) {
 				final Parser parser = parserSupplier.get();
@@ -113,5 +109,5 @@ public class Sequence extends Parser implements Supplier<Sequence> {
 			}
 		}
 	}
-	
+
 }

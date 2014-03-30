@@ -9,14 +9,13 @@ package javaslang.text;
 import static javaslang.lang.Lang.require;
 
 import java.util.Set;
-import java.util.function.Supplier;
 
 import javaslang.either.Either;
 import javaslang.either.Left;
 import javaslang.either.Right;
 import javaslang.lang.Strings;
 
-public class Literal extends Parser implements Supplier<Literal> {
+public class Literal extends Parser {
 
 	final String literal;
 
@@ -30,11 +29,6 @@ public class Literal extends Parser implements Supplier<Literal> {
 		return text.startsWith(literal, index)
 				? new Right<>(new Tree<Token>("Literal", new Token(text, index, index + literal.length())))
 				: new Left<>(index);
-	}
-
-	@Override
-	public Literal get() {
-		return this;
 	}
 	
 	@Override

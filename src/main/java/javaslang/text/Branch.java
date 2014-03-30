@@ -17,12 +17,12 @@ import javaslang.either.Left;
 import javaslang.lang.Arrays;
 import javaslang.lang.Strings;
 
-public class Branch extends Parser implements Supplier<Branch> {
+public class Branch extends Parser {
 
-	final Supplier<? extends Parser>[] parsers;
+	final Supplier<Parser>[] parsers;
 
 	@SafeVarargs
-	Branch(Supplier<? extends Parser>... parsers) {
+	Branch(Supplier<Parser>... parsers) {
 		require(!isNullOrEmpty(parsers), "no parsers");
 		this.parsers = parsers;
 	}
@@ -46,14 +46,9 @@ public class Branch extends Parser implements Supplier<Branch> {
 	}
 
 	@Override
-	public Branch get() {
-		return this;
-	}
-
-	@Override
 	protected void stringify(StringBuilder rule, StringBuilder definitions, Set<String> visited) {
 		boolean separator = false;
-		for (Supplier<? extends Parser> parser : parsers) {
+		for (Supplier<Parser> parser : parsers) {
 			if (separator) {
 				rule.append("\n  | ");	
 			} else {
