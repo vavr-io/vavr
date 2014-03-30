@@ -100,7 +100,7 @@ public class Tree<T> {
 	}
 
 	/**
-	 * Convenience method for <code>collect(node -> true)</code>.
+	 * Convenience method for {@code collect(node -> true)}.
 	 * 
 	 * @return A list presentation of this tree, collection the children top down.
 	 */
@@ -111,6 +111,8 @@ public class Tree<T> {
 	/**
 	 * Traverses this tree top down, testing the given predicate against each tree node. If
 	 * predicate.test() returns true, descend children, else go on with neighbors.
+	 * 
+	 * @param predicate Predicate to be tested.
 	 */
 	public void traverse(Predicate<Tree<T>> predicate) {
 		if (predicate.test(this)) {
@@ -121,6 +123,9 @@ public class Tree<T> {
 	/**
 	 * Traverses this tree top down, applying the given predicate to each tree node. If
 	 * predicate.test() returns true, the tree node is part of the result list.
+	 * 
+	 * @param predicate Predicate to be tested.
+	 * @return A list of tree nodes matching the given predicate.
 	 */
 	public List<Tree<T>> collect(Predicate<Tree<T>> predicate) {
 		final List<Tree<T>> result = new ArrayList<>();
@@ -143,7 +148,7 @@ public class Tree<T> {
 	protected String toString(int depth) {
 		final String indent = Strings.repeat(' ', depth * 2);
 		final String inner = children.stream()
-				// create child strings
+		// create child strings
 				.map(child -> child.toString(depth + 1))
 				// combine strings
 				.reduce((l, r) -> l + ",\n" + r)

@@ -38,7 +38,7 @@ import javaslang.option.Some;
  * 
  * <pre>
  * <code>
- * Either&lt;String,Integer&gt; value = compute().right().map(i -> i * 2);
+ * Either&lt;String,Integer&gt; value = compute().right().map(i -&gt; i * 2);
  * </code>
  * </pre>
  * 
