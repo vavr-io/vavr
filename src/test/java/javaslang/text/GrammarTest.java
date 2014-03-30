@@ -19,11 +19,11 @@ public class GrammarTest {
 		// TODO: Grammar.toString
 		final InputStream in = getClass().getResourceAsStream("bootstrap.json");
 		final Try<String> json = IO.toString(in, Charset.forName("UTF-8"));
-		System.out.println("JSON: " + json.get());
+		// System.out.println("JSON: " + json.get());
 		final Grammar jsonGrammar = new JSONGrammar();
 		final Try<Tree<Token>> ast = json.map(jsonGrammar);
 		final String result = ast.map(tree -> tree.toString()).orElse("<no result>");
-		System.out.println("AST: " + result);	
+		// System.out.println("AST: " + result);	
 	}
 
 	// TODO: Whitespace handling!
