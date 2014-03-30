@@ -6,7 +6,6 @@ import static javaslang.text.Multiplicity.Bounds.ZERO_TO_ONE;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
-import javaslang.either.Either;
 import javaslang.exception.Try;
 import javaslang.io.IO;
 
@@ -24,13 +23,12 @@ public class GrammarTest {
 		final Try<String> json = IO.toString(in, Charset.forName("UTF-8"));
 		System.out.println("JSON: " + json.get());
 
-		final Try<Either<Integer, Tree<Token>>> ast = json.map(s -> jsonGrammar.parse(s));
+		final Try<Tree<Token>> ast = json.flatMap(s -> jsonGrammar.parse(s));
 		final String result = ast.map(tree -> tree.toString()).orElse("<no result>");
 		System.out.println("AST: " + result);
 
 	}
 
-	// TODO: Whitespace handling!
 	static class JSONGrammar extends Grammar {
 
 		JSONGrammar() {
