@@ -38,8 +38,8 @@ public class GrammarTest {
 		}
 
 		static Parser JSON() {
-			return new Sequence("JSON", new Branch(JSONGrammar::JSON_OBJECT, JSONGrammar::JSON_ARRAY,
-					JSONGrammar::JSON_NUMBER, JSONGrammar::JSON_BOOLEAN));
+			return new Branch("JSON", JSONGrammar::JSON_OBJECT, JSONGrammar::JSON_ARRAY,
+					JSONGrammar::JSON_NUMBER, JSONGrammar::JSON_BOOLEAN);
 		}
 
 		static Parser JSON_OBJECT() {

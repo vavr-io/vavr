@@ -94,20 +94,24 @@ public class Sequence extends Parser {
 				visited.add(name);
 				definitions.append(name + "\n  : ");
 				final StringBuilder definitionsBuffer = new StringBuilder();
-				for (Supplier<? extends Parser> parserSupplier : parsers) {
-					final Parser parser = parserSupplier.get();
-					parser.stringify(definitions, definitionsBuffer, visited);
-					definitions.append(" ");
-				}
+				internalStringify(definitions, definitionsBuffer, visited);
 				definitions.append("\n  ;\n\n").append(definitionsBuffer);
 			}
 		} else {
-			for (Supplier<? extends Parser> parserSupplier : parsers) {
-				final Parser parser = parserSupplier.get();
-				parser.stringify(rule, definitions, visited);
-				rule.append(" ");
-			}
+			internalStringify(rule, definitions, visited);
 		}
 	}
-
+	
+	private void internalStringify(StringBuilder rule, StringBuilder definitions, Set<String> visited) {
+		boolean separator = false;
+		for (Supplier<? extends Parser> parserSupplier : parsers) {
+			final Parser parser = parserSupplier.get();
+			if (separator) {
+				rule.append(" ");
+			} else {
+				separator = true;
+			}
+			parser.stringify(rule, definitions, visited);
+		}
+	}
 }

@@ -19,11 +19,20 @@ import javaslang.lang.Strings;
 
 public class Branch extends Parser {
 
+	final String name;
 	final Supplier<Parser>[] parsers;
 
 	@SafeVarargs
 	Branch(Supplier<Parser>... parsers) {
 		require(!isNullOrEmpty(parsers), "no parsers");
+		this.name = null;
+		this.parsers = parsers;
+	}
+
+	@SafeVarargs
+	Branch(String name, Supplier<Parser>... parsers) {
+		require(!isNullOrEmpty(parsers), "no parsers");
+		this.name = name;
 		this.parsers = parsers;
 	}
 
@@ -47,15 +56,46 @@ public class Branch extends Parser {
 
 	@Override
 	protected void stringify(StringBuilder rule, StringBuilder definitions, Set<String> visited) {
-		boolean separator = false;
+//		boolean separator = false;
+//		for (Supplier<Parser> parser : parsers) {
+//			if (separator) {
+//				rule.append("\n  | ");	
+//			} else {
+//				separator = true;
+//			}
+//			parser.get().stringify(rule, definitions, visited);
+//		}
+		if (name != null) {
+			rule.append(name);
+			if (!visited.contains(name)) {
+				visited.add(name);
+				definitions.append(name + "\n  : ");
+				final StringBuilder definitionsBuffer = new StringBuilder();
+				internalStringify(definitions, definitionsBuffer, visited, "", "", "\n  | ");
+				definitions.append("\n  ;\n\n").append(definitionsBuffer);
+			}
+		} else {
+			internalStringify(rule, definitions, visited, "(", ")", " | ");
+		}
+	}
+
+	protected void internalStringify(StringBuilder rule, StringBuilder definitions, Set<String> visited, String prefix, String suffix, String separator) {
+		boolean writeBraces = parsers.length > 1;
+		boolean writeSeparator = false;
+		if (writeBraces) {
+			rule.append(prefix);
+		}
 		for (Supplier<Parser> parser : parsers) {
-			if (separator) {
-				rule.append("\n  | ");	
+			if (writeSeparator) {
+				rule.append(separator);	
 			} else {
-				separator = true;
+				writeSeparator = true;
 			}
 			parser.get().stringify(rule, definitions, visited);
 		}
+		if (writeBraces) {
+			rule.append(suffix);
+		}
 	}
-	
+
 }
