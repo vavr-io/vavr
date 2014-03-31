@@ -21,11 +21,11 @@ public class GrammarTest {
 
 		final InputStream in = getClass().getResourceAsStream("bootstrap.json");
 		final Try<String> json = IO.toString(in, Charset.forName("UTF-8"));
-		System.out.println("JSON: " + json.get());
+		System.out.println("Input:\n" + json.get());
 
 		final Try<Tree<Token>> parseTree = json.flatMap(s -> jsonGrammar.parse(s));
 		final String result = parseTree.map(tree -> tree.toString()).recover(x -> x.getMessage()).get();
-		System.out.println("Parse tree: " + result);
+		System.out.println("Parse tree:\n" + result);
 
 	}
 

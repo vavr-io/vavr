@@ -18,13 +18,16 @@ import javaslang.exception.Success;
 import javaslang.exception.Try;
 
 // TODO: CST to AST transformation (as external DSL within the grammar)
+// TODO: add Regex Parser: "regex" (literal has single quotes 'lll')
+// TODO: unescape literals
+// TODO: remove Branch, Sequence and Multiplicity nodes if they have no name/id
 public class Grammar {
 
 	final Supplier<Parser> parser;
 
 	public Grammar(Supplier<Parser> parser) {
 		require(parser != null, "parser is null");
-		this.parser = new Sequence("Grammar", parser, EOF.INSTANCE);
+		this.parser = new Sequence(parser, EOF.INSTANCE);
 	}
 
 	public Try<Tree<Token>> parse(String text) {
