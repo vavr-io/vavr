@@ -6,42 +6,41 @@
  */
 package javaslang.text;
 
-import static javaslang.lang.Lang.require;
-
 import java.util.Set;
 
 import javaslang.either.Either;
 import javaslang.either.Left;
 import javaslang.either.Right;
-import javaslang.lang.Strings;
 
-public class Literal extends Parser {
+/**
+ * TODO
+ */
+public final class EOF extends Parser {
+	
+	private static final String NAME = "<EOF>";
+	
+	static final EOF INSTANCE = new EOF();
 
-	final String literal;
-
-	Literal(String literal) {
-		require(!Strings.isNullOrEmpty(literal), "literal is null or empty");
-		this.literal = literal;
+	private EOF() {
 	}
-
+	
 	@Override
 	public Either<Integer, Tree<Token>> parse(String text, int index) {
-		if (text.startsWith(literal, index)) {
-			final Token token = new Token(text, index, index + literal.length());
-			return new Right<>(new Tree<Token>("Literal", token));
+		if (index == text.length()) {
+			return new Right<>(new Tree<>(NAME, new Token(text, index, index)));
 		} else {
 			return new Left<>(index);
 		}
 	}
-
+	
 	@Override
 	protected void stringify(StringBuilder rule, StringBuilder definitions, Set<String> visited) {
-		rule.append(toString());
+		rule.append(NAME);
 	}
 
 	@Override
 	public String toString() {
-		return "'" + literal + "'";
+		return NAME;
 	}
 
 }

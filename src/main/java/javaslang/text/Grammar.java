@@ -18,7 +18,6 @@ import javaslang.exception.Success;
 import javaslang.exception.Try;
 
 // TODO: whitespace handling
-// TODO: index of undefined input
 // TODO: EOF detection
 // TODO: CST to AST transformation (as external DSL within the grammar)
 public class Grammar {
@@ -27,14 +26,11 @@ public class Grammar {
 
 	public Grammar(Supplier<Parser> parser) {
 		require(parser != null, "parser is null");
-		this.parser = parser;
+		this.parser = new Sequence("Grammar", parser, EOF.INSTANCE);
 	}
 
 	public Try<Tree<Token>> parse(String text) {
 		final Either<Integer, Tree<Token>> cst = parser.get().parse(text, 0);
-		/* TODO:DELME */System.out.println("endet at index "
-				+ (cst.isRight() ? cst.right().get().getValue().end : cst.left().get()) + " of "
-				+ (text.length() - 1));
 		return cst.isRight() ? new Success<>(cst.right().get()) : new Failure<>(
 				new IllegalArgumentException("cannot parse input at index " + cst.left().get()));
 	}

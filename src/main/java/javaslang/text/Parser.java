@@ -20,9 +20,10 @@ import javaslang.either.Either;
 public abstract class Parser implements Supplier<Parser> {
 
 	public abstract Either<Integer, Tree<Token>> parse(String text, int index);
-	
-	protected abstract void stringify(StringBuilder rule, StringBuilder definitions, Set<String> visited);
-	
+
+	protected abstract void stringify(StringBuilder rule, StringBuilder definitions,
+			Set<String> visited);
+
 	@Override
 	public Parser get() {
 		return this;

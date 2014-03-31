@@ -14,7 +14,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javaslang.either.Either;
-import javaslang.either.Left;
 import javaslang.either.Right;
 import javaslang.lang.Arrays;
 
@@ -43,44 +42,29 @@ public class Sequence extends Parser {
 	@Override
 	public Either<Integer, Tree<Token>> parse(String text, int index) {
 		// Starts with an emty root tree and successively attaches parsed children.
-		// The whole result is null, if one of the children couldn't been parsed.
-		// TODO: Does parallelStream() instead of stream() sense (using StreamSupport and Ordered
-		// Splitterator)!?
-		final String id = (name == null) ? "<Anonymous>" : name;
+		final String id = (name == null) ? "<Sequence>".intern() : name;
 		final Either<Integer, Tree<Token>> initial = new Right<>(new Tree<>(id, new Token(text,
 				index, index)));
 		return Arrays.stream(parsers).reduce(initial, (tree, parser) -> {
 			if (tree.isLeft()) {
-				// if one parser returned null the sequence does not match and the whole
-				// result is null.
+				// first failure returned
 				return tree;
 			} else {
-				try {
-					// next parser parses at current index
-					final Tree<Token> node = tree.right().get();
-					final int lastIndex = node.getValue().end;
-					final Matcher matcher = WHITESPACE.matcher(text);
-					final int currentIndex = matcher.find(lastIndex) ? matcher.end() : lastIndex;
-					final Either<Integer, Tree<Token>> parsed = parser.get().parse(text,
-							currentIndex);
-					// on success, attach token to tree, else the sequence does not match and the
-					// whole
-					// result is null
-					if (parsed.isRight()) {
-						final Tree<Token> child = parsed.right().get();
-						// attach child
-						node.attach(child);
-						// update current index
-						node.getValue().end = child.getValue().end;
-						return tree;
-					} else {
-						// parser failed => the whole sequence could not be parsed
-						return new Left<>(node.getValue().end);
-					}
-				} catch (Exception x) {
-					// TODO
-					x.printStackTrace();
-					throw x;
+				// next parser parses at current index
+				final Tree<Token> node = tree.right().get();
+				final int lastIndex = node.getValue().end;
+				final Matcher matcher = WHITESPACE.matcher(text);
+				final int currentIndex = matcher.find(lastIndex) ? matcher.end() : lastIndex;
+				final Either<Integer, Tree<Token>> parsed = parser.get().parse(text, currentIndex);
+				// on success, attach token to tree
+				if (parsed.isRight()) {
+					final Tree<Token> child = parsed.right().get();
+					node.attach(child);
+					node.getValue().end = child.getValue().end;
+					return tree;
+				} else {
+					// parser failed => the whole sequence could not be parsed
+					return parsed;
 				}
 			}
 		}, (t1, t2) -> null); // the combiner is not used here because this is no parallel stream
@@ -88,30 +72,12 @@ public class Sequence extends Parser {
 
 	@Override
 	protected void stringify(StringBuilder rule, StringBuilder definitions, Set<String> visited) {
-		if (name != null) {
-			rule.append(name);
-			if (!visited.contains(name)) {
-				visited.add(name);
-				definitions.append(name + "\n  : ");
-				final StringBuilder definitionsBuffer = new StringBuilder();
-				internalStringify(definitions, definitionsBuffer, visited);
-				definitions.append("\n  ;\n\n").append(definitionsBuffer);
-			}
-		} else {
-			internalStringify(rule, definitions, visited);
-		}
+		Parsers.stringify(name, parsers, " ", " ", false, rule, definitions, visited);
 	}
-	
-	private void internalStringify(StringBuilder rule, StringBuilder definitions, Set<String> visited) {
-		boolean separator = false;
-		for (Supplier<? extends Parser> parserSupplier : parsers) {
-			final Parser parser = parserSupplier.get();
-			if (separator) {
-				rule.append(" ");
-			} else {
-				separator = true;
-			}
-			parser.stringify(rule, definitions, visited);
-		}
+
+	@Override
+	public String toString() {
+		return Parsers.toString(name, parsers, " ");
 	}
+
 }

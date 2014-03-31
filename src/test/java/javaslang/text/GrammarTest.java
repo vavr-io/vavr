@@ -23,9 +23,9 @@ public class GrammarTest {
 		final Try<String> json = IO.toString(in, Charset.forName("UTF-8"));
 		System.out.println("JSON: " + json.get());
 
-		final Try<Tree<Token>> ast = json.flatMap(s -> jsonGrammar.parse(s));
-		final String result = ast.map(tree -> tree.toString()).orElse("<no result>");
-		System.out.println("AST: " + result);
+		final Try<Tree<Token>> parseTree = json.flatMap(s -> jsonGrammar.parse(s));
+		final String result = parseTree.map(tree -> tree.toString()).recover(x -> x.getMessage()).get();
+		System.out.println("Parse tree: " + result);
 
 	}
 

@@ -74,6 +74,11 @@ public class Multiplicity extends Parser {
 		parser.get().stringify(rule, definitions, visited);
 		rule.append(" ]").append(bounds.symbol());
 	}
+
+	@Override
+	public String toString() {
+		return "[ " + parser.get().toString() + " ]" + bounds.symbol();
+	}
 	
 	static enum Bounds {
 		ZERO_TO_ONE, ZERO_TO_N, ONE_TO_N;
