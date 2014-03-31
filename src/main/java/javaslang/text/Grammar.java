@@ -17,8 +17,6 @@ import javaslang.exception.Failure;
 import javaslang.exception.Success;
 import javaslang.exception.Try;
 
-// TODO: whitespace handling
-// TODO: EOF detection
 // TODO: CST to AST transformation (as external DSL within the grammar)
 public class Grammar {
 
