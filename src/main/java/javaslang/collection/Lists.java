@@ -59,5 +59,18 @@ public class Lists {
 		return Collections.isNullOrEmpty(list) ? None.<T> instance() : new Some<T>(list.get(list
 				.size() - 1));
 	}
+	
+	/**
+	 * Shortcut for {@code list.toArray(new T[list.size()])}.
+	 * 
+	 * @param <T> Element type.
+	 * @param list A List containing elements of type T.
+	 * @return An array containing the elements of the given list in the same order.
+	 */
+	public static <T> T[] toArray(List<T> list) {
+		@SuppressWarnings("unchecked")
+		final T[] array = (T[]) new Object[list.size()];
+		return list.toArray(array);
+	}
 
 }
