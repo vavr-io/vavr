@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.sonatype.oss</groupId>
@@ -23,8 +24,8 @@
 		<connection>scm:git:git@github.com:rocketscience-projects/javaslang.git</connection>
 		<developerConnection>scm:git:git@github.com:rocketscience-projects/javaslang.git</developerConnection>
 		<url>git@github.com:rocketscience-projects/javaslang.git</url>
-	  <tag>HEAD</tag>
-  </scm>
+		<tag>HEAD</tag>
+	</scm>
 	<developers>
 		<developer>
 			<id>danieldietrich</id>
@@ -60,6 +61,31 @@
 						<useReleaseProfile>false</useReleaseProfile>
 						<!-- Honor arguments passed via command line -->
 						<arguments>${arguments} -Psonatype-oss-release</arguments>
+					</configuration>
+				</plugin>
+				<!-- Elimate the eclipse warning 'maven-enforcer-plugin (goal "enforce") is ignored by m2e' -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-enforcer-plugin</artifactId>
+										<versionRange>[1.0.0,)</versionRange>
+										<goals>
+											<goal>enforce</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
 					</configuration>
 				</plugin>
 			</plugins>
