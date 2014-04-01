@@ -52,12 +52,13 @@ public class Multiplicity extends Parser {
 			return new Right<>(result);
 		}
 	}
-	
+
 	private void parseChildren(Tree<Token> tree, String text, int index) {
 		final boolean unbound = !ZERO_TO_ONE.equals(bounds);
 		boolean found = true;
 		do {
-			final Either<Integer, Tree<Token>> child = parser.get().parse(text, tree.getValue().end);
+			final Either<Integer, Tree<Token>> child = parser.get()
+					.parse(text, tree.getValue().end);
 			if (child.isRight()) {
 				final Tree<Token> node = child.right().get();
 				tree.attach(node);
@@ -69,28 +70,44 @@ public class Multiplicity extends Parser {
 	}
 	
 	@Override
+	int getChildCount() {
+		return 1;
+	}
+
+	@Override
 	protected void stringify(StringBuilder rule, StringBuilder definitions, Set<String> visited) {
-		rule.append("[ ");
-		parser.get().stringify(rule, definitions, visited);
-		rule.append(" ]").append(bounds.symbol());
+		final Parser p = parser.get();
+		final boolean writeBraces = p.getChildCount() > 1 || p instanceof Multiplicity;
+		if (writeBraces) {
+			rule.append("(");
+		}
+		p.stringify(rule, definitions, visited);
+		if (writeBraces) {
+			rule.append(")");
+		}
+		rule.append(bounds.symbol());
 	}
 
 	@Override
 	public String toString() {
 		return "[ " + parser.get().toString() + " ]" + bounds.symbol();
 	}
-	
+
 	static enum Bounds {
 		ZERO_TO_ONE, ZERO_TO_N, ONE_TO_N;
-		
+
 		String symbol() {
-			switch(this) {
-				case ZERO_TO_ONE : return "?";
-				case ZERO_TO_N : return "*";
-				case ONE_TO_N : return "+";
-				default : throw new IllegalStateException("Unknown Bounds: " + name());
+			switch (this) {
+				case ZERO_TO_ONE:
+					return "?";
+				case ZERO_TO_N:
+					return "*";
+				case ONE_TO_N:
+					return "+";
+				default:
+					throw new IllegalStateException("Unknown Bounds: " + name());
 			}
 		}
 	}
-	
+
 }

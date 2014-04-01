@@ -63,6 +63,11 @@ public class Branch extends Parser {
 			return tree2;
 		}
 	}
+	
+	@Override
+	int getChildCount() {
+		return parsers.length;
+	}
 
 	@Override
 	protected void stringify(StringBuilder rule, StringBuilder definitions, Set<String> visited) {

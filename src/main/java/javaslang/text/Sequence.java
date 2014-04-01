@@ -69,6 +69,11 @@ public class Sequence extends Parser {
 			}
 		}, (t1, t2) -> null); // the combiner is not used here because this is no parallel stream
 	}
+	
+	@Override
+	int getChildCount() {
+		return parsers.length;
+	}
 
 	@Override
 	protected void stringify(StringBuilder rule, StringBuilder definitions, Set<String> visited) {

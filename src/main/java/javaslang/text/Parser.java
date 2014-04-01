@@ -20,7 +20,10 @@ import javaslang.either.Either;
 public abstract class Parser implements Supplier<Parser> {
 
 	public abstract Either<Integer, Tree<Token>> parse(String text, int index);
-
+	
+	int getChildCount() {
+		return 0;
+	}
 	protected abstract void stringify(StringBuilder rule, StringBuilder definitions,
 			Set<String> visited);
 

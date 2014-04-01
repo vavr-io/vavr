@@ -211,5 +211,15 @@ public class MatchTest {
 				.apply(Boolean.TRUE);
 		assertThat(actual).isEqualTo(1);
 	}
+	
+	@Test
+	public void shouldCompilePrimitiveIntegerPrototypeCase() {
+		new Match<>().caze(1, (int i) -> i);
+	}
+
+	@Test
+	public void shouldCompileObjectIntegerPrototypeCase() {
+		new Match<>().caze(1, (Integer i) -> i);
+	}
 
 }
