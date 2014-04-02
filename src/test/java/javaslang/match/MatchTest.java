@@ -143,83 +143,32 @@ public class MatchTest {
 	@Test
 	public void shouldMatchPrimitiveBooleanValueAndApplyBooleanFunction() {
 		final int actual = new Match<Integer>()
-				.caze(true, (boolean b) -> 1)
-				.caze(Boolean.TRUE, (Boolean b) -> 2)
+				.caze(true, b -> 1)
+				.caze(Boolean.TRUE, b -> 2)
 				.apply(true);
-		assertThat(actual).isEqualTo(1);
-	}
-
-	@Test
-	public void shouldMatchPrimitiveBooleanValueAndApplyFunction() {
-		final int actual = new Match<Integer>()
-				.caze(true, (Boolean b) -> 1)
-				.caze(Boolean.TRUE, (Boolean b) -> 2)
-				.apply(true);
-		assertThat(actual).isEqualTo(1);
-	}
-	
-	@Test
-	public void shouldMatchBooleanValueAsPrimitiveBooleanAndApplyBooleanFunction() {
-		final int actual = new Match<Integer>()
-				.caze(true, (boolean b) -> 1)
-				.caze(Boolean.TRUE, (Boolean b) -> 2)
-				.apply(Boolean.TRUE);
-		assertThat(actual).isEqualTo(1);
-	}
-
-	@Test
-	public void shouldMatchBooleanValueAsPrimitiveBooleanAndApplyFunction() {
-		final int actual = new Match<Integer>()
-				.caze(true, (Boolean b) -> 1)
-				.caze(Boolean.TRUE, (Boolean b) -> 2)
-				.apply(Boolean.TRUE);
 		assertThat(actual).isEqualTo(1);
 	}
 
 	@Test
 	public void shouldMatchPrimitiveBooleanValueAsBooleanAndApplyBooleanFunction() {
 		final int actual = new Match<Integer>()
-				.caze(Boolean.TRUE, (Boolean b) -> 1)
-				.caze(true, (boolean b) -> 2)
+				.caze(Boolean.TRUE, b -> 1)
+				.caze(true, b -> 2)
 				.apply(true);
 		assertThat(actual).isEqualTo(1);
 	}
 
-	@Test
-	public void shouldMatchPrimitiveBooleanValueAsBooleanAndApplyFunction() {
-		final int actual = new Match<Integer>()
-				.caze(Boolean.TRUE, (Boolean b) -> 1)
-				.caze(true, (Boolean b) -> 2)
-				.apply(true);
-		assertThat(actual).isEqualTo(1);
-	}
+    // TODO: add tests for all primitive types + new Object() 
+
+    @Test 
+    public void shouldCompileObjectIntegerPrototypeCase() { 
+            // Does *not* compile: new Match<>().caze(1, (int i) -> i); 
+            new Match<>().caze(1, (Integer i) -> i); 
+    } 
+
+    @Test 
+    public void shouldCompileUnqualifiedIntegerPrototypeCase() { 
+            new Match<>().caze(1, i -> i); 
+    } 
 	
-	@Test
-	public void shouldMatchBooleanValueAndApplyBooleanFunction() {
-		final int actual = new Match<Integer>()
-				.caze(Boolean.TRUE, (Boolean b) -> 1)
-				.caze(true, (boolean b) -> 2)
-				.apply(Boolean.TRUE);
-		assertThat(actual).isEqualTo(1);
-	}
-
-	@Test
-	public void shouldMatchBooleanValueAndApplyFunction() {
-		final int actual = new Match<Integer>()
-				.caze(Boolean.TRUE, (Boolean b) -> 1)
-				.caze(true, (Boolean b) -> 2)
-				.apply(Boolean.TRUE);
-		assertThat(actual).isEqualTo(1);
-	}
-	
-	@Test
-	public void shouldCompilePrimitiveIntegerPrototypeCase() {
-		new Match<>().caze(1, (int i) -> i);
-	}
-
-	@Test
-	public void shouldCompileObjectIntegerPrototypeCase() {
-		new Match<>().caze(1, (Integer i) -> i);
-	}
-
 }

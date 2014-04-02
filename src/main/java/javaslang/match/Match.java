@@ -91,22 +91,6 @@ public class Match<R> implements Function<Object, R> {
 	}
 
 	/**
-	 * Use this method to match by prototype value of type boolean (the prototype is boxed to
-	 * Boolean). An object o matches this case, if {@code prototype == o || (prototype != null &&
-	 * prototype.equals(o))}.
-	 * 
-	 * @param prototype An object to be matched by equality as defined above.
-	 * @param function A BooleanFunction which is applied to a matched object.
-	 * @return this, the current instance of Match.
-	 * @throws IllegalStateException if function is null.
-	 */
-	public Match<R> caze(boolean prototype, BooleanFunction<R> function) {
-		require(function != null, "function is null");
-		cases.add(new Case<>(new Some<>(prototype), (Boolean b) -> function.apply(b), Boolean.class));
-		return this;
-	}
-
-	/**
 	 * Use this method to match by byte. An object o matches this case, if {@code o != null &&
 	 * o.getClass() == Byte.class}.
 	 * 
@@ -117,22 +101,6 @@ public class Match<R> implements Function<Object, R> {
 	public Match<R> caze(ByteFunction<R> function) {
 		require(function != null, "function is null");
 		cases.add(new Case<>(None.instance(), (Byte b) -> function.apply(b), Byte.class));
-		return this;
-	}
-
-	/**
-	 * Use this method to match by prototype value of type byte (the prototype is boxed to Byte). An
-	 * object o matches this case, if {@code prototype == o || (prototype != null &&
-	 * prototype.equals(o))}.
-	 * 
-	 * @param prototype An object to be matched by equality as defined above.
-	 * @param function A ByteFunction which is applied to a matched object.
-	 * @return this, the current instance of Match.
-	 * @throws IllegalStateException if function is null.
-	 */
-	public Match<R> caze(byte prototype, ByteFunction<R> function) {
-		require(function != null, "function is null");
-		cases.add(new Case<>(new Some<>(prototype), (Byte b) -> function.apply(b), Byte.class));
 		return this;
 	}
 
@@ -151,23 +119,6 @@ public class Match<R> implements Function<Object, R> {
 	}
 
 	/**
-	 * Use this method to match by prototype value of type char (the prototype is boxed to
-	 * Character). An object o matches this case, if {@code prototype == o || (prototype != null &&
-	 * prototype.equals(o))}.
-	 * 
-	 * @param prototype An object to be matched by equality as defined above.
-	 * @param function A CharFunction which is applied to a matched object.
-	 * @return this, the current instance of Match.
-	 * @throws IllegalStateException if function is null.
-	 */
-	public Match<R> caze(char prototype, CharFunction<R> function) {
-		require(function != null, "function is null");
-		cases.add(new Case<>(new Some<>(prototype), (Character c) -> function.apply(c),
-				Character.class));
-		return this;
-	}
-
-	/**
 	 * Use this method to match by double. An object o matches this case, if {@code o != null &&
 	 * o.getClass() == Double.class}.
 	 * 
@@ -178,22 +129,6 @@ public class Match<R> implements Function<Object, R> {
 	public Match<R> caze(DoubleFunction<R> function) {
 		require(function != null, "function is null");
 		cases.add(new Case<>(None.instance(), (Double d) -> function.apply(d), Double.class));
-		return this;
-	}
-
-	/**
-	 * Use this method to match by prototype value of type double (the prototype is boxed to
-	 * Double). An object o matches this case, if {@code prototype == o || (prototype != null &&
-	 * prototype.equals(o))}.
-	 * 
-	 * @param prototype An object to be matched by equality as defined above.
-	 * @param function A DoubleFunction which is applied to a matched object.
-	 * @return this, the current instance of Match.
-	 * @throws IllegalStateException if function is null.
-	 */
-	public Match<R> caze(double prototype, DoubleFunction<R> function) {
-		require(function != null, "function is null");
-		cases.add(new Case<>(new Some<>(prototype), (Double d) -> function.apply(d), Double.class));
 		return this;
 	}
 
@@ -212,22 +147,6 @@ public class Match<R> implements Function<Object, R> {
 	}
 
 	/**
-	 * Use this method to match by prototype value of type float (the prototype is boxed to Float).
-	 * An object o matches this case, if {@code prototype == o || (prototype != null &&
-	 * prototype.equals(o))}.
-	 * 
-	 * @param prototype An object to be matched by equality as defined above.
-	 * @param function A FloatFunction which is applied to a matched object.
-	 * @return this, the current instance of Match.
-	 * @throws IllegalStateException if function is null.
-	 */
-	public Match<R> caze(float prototype, FloatFunction<R> function) {
-		require(function != null, "function is null");
-		cases.add(new Case<>(new Some<>(prototype), (Float f) -> function.apply(f), Float.class));
-		return this;
-	}
-
-	/**
 	 * Use this method to match by int. An object o matches this case, if {@code o != null &&
 	 * o.getClass() == Integer.class}.
 	 * 
@@ -238,22 +157,6 @@ public class Match<R> implements Function<Object, R> {
 	public Match<R> caze(IntFunction<R> function) {
 		require(function != null, "function is null");
 		cases.add(new Case<>(None.instance(), (Integer i) -> function.apply(i), Integer.class));
-		return this;
-	}
-
-	/**
-	 * Use this method to match by prototype value of type int (the prototype is boxed to Integer).
-	 * An object o matches this case, if {@code prototype == o || (prototype != null &&
-	 * prototype.equals(o))}.
-	 * 
-	 * @param prototype An object to be matched by equality as defined above.
-	 * @param function A IntFunction which is applied to a matched object.
-	 * @return this, the current instance of Match.
-	 * @throws IllegalStateException if function is null.
-	 */
-	public Match<R> caze(int prototype, IntFunction<R> function) {
-		require(function != null, "function is null");
-		cases.add(new Case<>(new Some<>(prototype), (Integer i) -> function.apply(i), Integer.class));
 		return this;
 	}
 
@@ -272,22 +175,6 @@ public class Match<R> implements Function<Object, R> {
 	}
 
 	/**
-	 * Use this method to match by prototype value of type long (the prototype is boxed to Long). An
-	 * object o matches this case, if {@code prototype == o || (prototype != null &&
-	 * prototype.equals(o))}.
-	 * 
-	 * @param prototype An object to be matched by equality as defined above.
-	 * @param function A LongFunction which is applied to a matched object.
-	 * @return this, the current instance of Match.
-	 * @throws IllegalStateException if function is null.
-	 */
-	public Match<R> caze(long prototype, LongFunction<R> function) {
-		require(function != null, "function is null");
-		cases.add(new Case<>(new Some<>(prototype), (Long l) -> function.apply(l), Long.class));
-		return this;
-	}
-
-	/**
 	 * Use this method to match by short. An object o matches this case, if {@code o != null &&
 	 * o.getClass() == Short.class}.
 	 * 
@@ -298,22 +185,6 @@ public class Match<R> implements Function<Object, R> {
 	public Match<R> caze(ShortFunction<R> function) {
 		require(function != null, "function is null");
 		cases.add(new Case<>(None.instance(), (Short s) -> function.apply(s), Short.class));
-		return this;
-	}
-
-	/**
-	 * Use this method to match by prototype value of type short (the prototype is boxed to Short).
-	 * An object o matches this case, if {@code prototype == o || (prototype != null &&
-	 * prototype.equals(o))}.
-	 * 
-	 * @param prototype An object to be matched by equality as defined above.
-	 * @param function A ShortFunction which is applied to a matched object.
-	 * @return this, the current instance of Match.
-	 * @throws IllegalStateException if function is null.
-	 */
-	public Match<R> caze(short prototype, ShortFunction<R> function) {
-		require(function != null, "function is null");
-		cases.add(new Case<>(new Some<>(prototype), (Short s) -> function.apply(s), Short.class));
 		return this;
 	}
 
