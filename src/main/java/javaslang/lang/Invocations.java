@@ -119,8 +119,7 @@ public final class Invocations {
 			case '[': {
 				final int index = jvmFieldType.lastIndexOf('[') + 1;
 				final Class<?> componentType = getJavaType(jvmFieldType.substring(index));
-				final int[] dimensions = new int[index];
-				java.util.Arrays.fill(dimensions, 0);
+				final int[] dimensions = new int[index]; // initialized with zeros '0'
 				return Array.newInstance(componentType, dimensions).getClass();
 			}
 			default:
