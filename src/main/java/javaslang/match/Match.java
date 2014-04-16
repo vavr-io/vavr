@@ -159,7 +159,7 @@ public class Match<R> implements Function<Object, R> {
 		cases.add(new Case<>(None.instance(), (Integer i) -> function.apply(i), Integer.class));
 		return this;
 	}
-
+	
 	/**
 	 * Use this method to match by long. An object o matches this case, if {@code o != null &&
 	 * o.getClass() == Long.class}.

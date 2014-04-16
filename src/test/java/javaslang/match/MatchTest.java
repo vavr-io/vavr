@@ -164,11 +164,11 @@ public class MatchTest {
     public void shouldCompileObjectIntegerPrototypeCase() { 
             // Does *not* compile: new Match<>().caze(1, (int i) -> i); 
             new Match<>().caze(1, (Integer i) -> i); 
-    } 
+    }
 
     @Test 
     public void shouldCompileUnqualifiedIntegerPrototypeCase() { 
             new Match<>().caze(1, i -> i); 
-    } 
+    }
 	
 }
