@@ -77,7 +77,7 @@ public class Tuples {
 	}
 
 	private static String stringify(Object... objects) {
-		return Strings.mkString(objects, ", ", "(", ")");
+		return Strings.join(objects, ", ", "(", ")");
 	}
 
 	public static interface Tuple {
