@@ -101,6 +101,22 @@ public final class Strings {
 	public static String escape(String s) {
 		return (s == null) ? null : s.replaceAll("\\\\", "\\\\\\\\").replaceAll("\"", "\\\\\\\"");
 	}
+	
+	/**
+	 * Escapes occurrences of character within s with the given escape character.
+	 * The escape character is also escaped.
+	 * 
+	 * @param s The String to be escaped.
+	 * @param character The character to be escaped.
+	 * @param escape The escape character.
+	 * @return The escaped String.
+	 */
+	public static String escape(String s, char character, char escape) {
+		return s.chars().mapToObj(i -> {
+			final char c = (char) i;
+			return (c == character || c == escape) ? ("" + escape + c) : ("" + c);
+		}).collect(Collectors.joining());
+	}
 
 	/**
 	 * Computes line and column of index within s.
@@ -319,21 +335,6 @@ public final class Strings {
 		}
 		tokens.add(buf.toString());
 		return tokens.toArray(new String[tokens.size()]);
-	}
-
-	/**
-	 * Escapes occurrences of escape or separator within s with the given escape character.
-	 * 
-	 * @param s A String to be escaped.
-	 * @param separator A separator character.
-	 * @param escape An escape character.
-	 * @return The escaped String.
-	 */
-	public static String escape(String s, char separator, char escape) {
-		return s.chars().mapToObj(i -> {
-			final char c = (char) i;
-			return (c == separator || c == escape) ? ("" + escape + c) : ("" + c);
-		}).collect(Collectors.joining());
 	}
 
 	/**
