@@ -63,12 +63,6 @@ public class StringsTest {
 	}
 
 	@Test
-	public void shouldNotRepeatNegativeTime() {
-		final String s = escape(null);
-		assertThat(s).isNull();
-	}
-
-	@Test
 	public void shouldEscapeNull() {
 		final String s = escape(null);
 		assertThat(s).isNull();
