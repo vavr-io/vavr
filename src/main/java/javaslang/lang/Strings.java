@@ -373,6 +373,8 @@ public final class Strings {
 					.collect(Collectors.joining(", ", "[", "]"));
 			visited.remove(o);
 			return result;
+		} else if (o instanceof CharSequence) {
+			return '"' + o.toString() + '"';
 		} else {
 			return o.toString();
 		}

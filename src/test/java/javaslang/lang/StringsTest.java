@@ -8,7 +8,7 @@ public class StringsTest {
 	
 	@Test
 	public void shouldConvertNullToString() {
-		final String actual = Strings.toString("null");
+		final String actual = Strings.toString(null);
 		assertThat(actual).isEqualTo("null");
 	}
 
@@ -25,7 +25,7 @@ public class StringsTest {
 		final Object[] path = new Object[] { "path" };
 		final Object[] array = new Object[] { path, path };
 		final String actual = Strings.toString(array);
-		assertThat(actual).isEqualTo("[[path], [path]]");
+		assertThat(actual).isEqualTo("[[\"path\"], [\"path\"]]");
 	}
 
 	@Test
