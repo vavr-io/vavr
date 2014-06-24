@@ -50,15 +50,15 @@
  * 
  * <u>Literal</u>
  * <pre><code>'literal'</code></pre>
- * TODO: escape chars + unicode
+ * TODO: escape chars + unicode<p>
  * 
  * <u>Charset</u>
  * <pre><code>[charset] <em>// e.g. [a-zA-Z]</em></code></pre>
- * TODO: escape chars + unicode
+ * TODO: escape chars + unicode<p>
  * 
  * <u>Range</u>
  * <pre><code>'a'..'z' <em>// same as [a-z]</em></code></pre>
- * TODO: escape chars + unicode
+ * TODO: escape chars + unicode<p>
  * 
  * <u>Wildcard</u>
  * <pre><code>.</code></pre>
