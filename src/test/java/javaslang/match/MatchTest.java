@@ -24,7 +24,7 @@ public class MatchTest {
 		new Match<Boolean>()
 				.caze((int i) -> false)
 				.caze((Integer i) -> true)
-				.apply(null);
+				.apply((Integer) null);
 	}
 	
 	@Test
