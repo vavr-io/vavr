@@ -18,10 +18,34 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import javaslang.match.Match;
+
 /**
  * Additions to {@link java.util.Arrays}.
  */
 public final class Arrays {
+
+	private static final Match<Stream<?>> ARRAY_TO_STREAM_MATCHER = new Match<Stream<?>>()
+			.caze((boolean[] a) -> stream(a))
+			.caze((byte[] a) -> stream(a))
+			.caze((char[] a) -> stream(a))
+			.caze((double[] a) -> stream(a))
+			.caze((float[] a) -> stream(a))
+			.caze((int[] a) -> stream(a))
+			.caze((long[] a) -> stream(a))
+			.caze((short[] a) -> stream(a))
+			.caze((Object[] a) -> stream(a));
+
+	private static final Match<Stream<?>> ARRAY_TO_PARALLEL_STREAM_MATCHER = new Match<Stream<?>>()
+			.caze((boolean[] a) -> parallelStream(a))
+			.caze((byte[] a) -> parallelStream(a))
+			.caze((char[] a) -> parallelStream(a))
+			.caze((double[] a) -> parallelStream(a))
+			.caze((float[] a) -> parallelStream(a))
+			.caze((int[] a) -> parallelStream(a))
+			.caze((long[] a) -> parallelStream(a))
+			.caze((short[] a) -> parallelStream(a))
+			.caze((Object[] a) -> parallelStream(a));
 
 	/**
 	 * This class is not intendet to be instantiated.
@@ -31,9 +55,7 @@ public final class Arrays {
 	}
 
 	// -- asList
-	// (no varargs constructors here, because the primitive array-args are not supported by
-	// java.util.Array.asList(Object...))
-
+	
 	/**
 	 * Convenience method, calling {@link java.util.Arrays#asList(Object...)}.
 	 * 
@@ -41,47 +63,48 @@ public final class Arrays {
 	 * @param array An array.
 	 * @return A List containing the elements of array in the same order.
 	 */
-	public static <T> List<T> asList(T[] array) {
+    @SafeVarargs
+	public static <T> List<T> asList(T... array) {
 		require(array != null, "array is null");
 		return java.util.Arrays.asList(array);
 	}
 
-	public static List<Boolean> asList(boolean[] array) {
+	public static List<Boolean> asList(boolean... array) {
 		require(array != null, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
 
-	public static List<Byte> asList(byte[] array) {
+	public static List<Byte> asList(byte... array) {
 		require(array != null, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
 
-	public static List<Character> asList(char[] array) {
+	public static List<Character> asList(char... array) {
 		require(array != null, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
 
-	public static List<Double> asList(double[] array) {
+	public static List<Double> asList(double... array) {
 		require(array != null, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
 
-	public static List<Float> asList(float[] array) {
+	public static List<Float> asList(float... array) {
 		require(array != null, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
 
-	public static List<Integer> asList(int[] array) {
+	public static List<Integer> asList(int... array) {
 		require(array != null, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
 
-	public static List<Long> asList(long[] array) {
+	public static List<Long> asList(long... array) {
 		require(array != null, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
 
-	public static List<Short> asList(short[] array) {
+	public static List<Short> asList(short... array) {
 		require(array != null, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
@@ -302,6 +325,10 @@ public final class Arrays {
 		require(array != null, "array is null");
 		return new StreamableList<Short>(array.length, i -> array[i]).stream();
 	}
+	
+	public static Stream<?> toStream(Object object) {
+		return ARRAY_TO_STREAM_MATCHER.apply(object);
+	}
 
 	// -- parallelStream
 
@@ -350,6 +377,10 @@ public final class Arrays {
 	public static Stream<Short> parallelStream(short[] array) {
 		require(array != null, "array is null");
 		return new StreamableList<Short>(array.length, i -> array[i]).parallelStream();
+	}
+	
+	public static Stream<?> toParallelStream(Object object) {
+		return ARRAY_TO_PARALLEL_STREAM_MATCHER.apply(object);
 	}
 
 	// -- internal helpers

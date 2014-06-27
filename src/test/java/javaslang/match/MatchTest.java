@@ -170,5 +170,13 @@ public class MatchTest {
     public void shouldCompileUnqualifiedIntegerPrototypeCase() { 
             new Match<>().caze(1, i -> i); 
     }
+    
+    @Test
+    public void shouldMatchBooleanArray() {
+    	final int actual = new Match<Integer>()
+				.caze((boolean[] b) -> 1)
+				.apply(new boolean[] { true });
+		assertThat(actual).isEqualTo(1);
+    }
 	
 }

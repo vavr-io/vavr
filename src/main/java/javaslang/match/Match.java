@@ -198,6 +198,7 @@ public class Match<R> implements Function<Object, R> {
 	 * @throws MatchError if no Match case matches the given object.
 	 * @throws NonFatal if an error occurs executing the matched case.
 	 */
+	// FIXME: match (primitive) array types
 	@Override
 	public R apply(Object obj) {
 		for (Case<R> caze : cases) {

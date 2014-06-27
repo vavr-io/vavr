@@ -8,6 +8,7 @@ package javaslang.lang;
 
 import java.util.Objects;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 /**
  * General Java languange extensions.
@@ -48,8 +49,7 @@ public final class Lang {
 	 * @see String#format(String, Object...)
 	 */
 	public static void print(String format, Object... objects) {
-		final Object[] args = Arrays.map(objects, Strings::toString);
-		final String s = String.format(format, args);
+		final String s = format(format, objects);
 		System.out.print(s);
 	}
 
@@ -63,9 +63,20 @@ public final class Lang {
 	 * @see String#format(String, Object...)
 	 */
 	public static void println(String format, Object... objects) {
-		final Object[] args = Arrays.map(objects, Strings::toString);
-		final String s = String.format(format, args);
+		final String s = format(format, objects);
 		System.out.println(s);
+	}
+	
+	/**
+	 * Converts given objects to strings and passes them as args to {@code String.format(format, args)}.
+	 * 
+	 * @param format A String format, see {@link String#format(String, Object...)}
+	 * @param objects String format arguments
+	 * @return A formatted string
+	 */
+	private static String format(String format, Object[] objects) {
+		final Object[] args = Stream.of(objects).map(Strings::toString).toArray();
+		return String.format(format, args);
 	}
 
 	/**

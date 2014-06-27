@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import javaslang.either.Either;
 import javaslang.either.Right;
@@ -45,7 +46,7 @@ public class Sequence extends Parser {
 		final String id = (name == null) ? "<Sequence>".intern() : name;
 		final Either<Integer, Tree<Token>> initial = new Right<>(new Tree<>(id, new Token(text,
 				index, index)));
-		return Arrays.stream(parsers).reduce(initial, (tree, parser) -> {
+		return Stream.of(parsers).reduce(initial, (tree, parser) -> {
 			if (tree.isLeft()) {
 				// first failure returned
 				return tree;

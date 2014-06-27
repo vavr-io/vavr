@@ -9,8 +9,7 @@ package javaslang.text;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
-import javaslang.lang.Arrays;
+import java.util.stream.Stream;
 
 /**
  * Utils for implementations of {@link Parser}.
@@ -96,8 +95,7 @@ class Parsers {
 		if (name != null) {
 			return name;
 		} else {
-			return Arrays.asList(parsers)
-					.stream()
+			return Stream.of(parsers)
 					.map(p -> p.get().toString())
 					.collect(Collectors.joining(separator));
 		}

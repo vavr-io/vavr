@@ -23,8 +23,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javaslang.match.Match;
-
 /**
  * Extension methods for {@link java.lang.String}.
  */
@@ -235,7 +233,7 @@ public final class Strings {
 	public static String join(String[] strings, char separator, char escape) {
 		require(strings != null, "strings is null");
 		require(separator != escape, "separator equals escape charater");
-		return Arrays.stream(strings)
+		return Stream.of(strings)
 				.map(s -> escape(s, separator, escape))
 				.collect(Collectors.joining(String.valueOf(separator)));
 	}
@@ -333,6 +331,8 @@ public final class Strings {
 			}
 			index = nextIndex(string, separator, escape, fromIndex);
 		}
+		final String rest = string.substring(fromIndex);
+		buf.append(rest);
 		tokens.add(buf.toString());
 		return tokens.toArray(new String[tokens.size()]);
 	}
@@ -362,8 +362,9 @@ public final class Strings {
 			return "null";
 		} else if (o.getClass().isArray()) {
 			visited.add(o);
-			final String result = getStream(o).map(x -> toString(x, visited)).collect(
-					Collectors.joining(", ", "[", "]"));
+			final String result = Arrays.toStream(o)
+					.map(x -> toString(x, visited))
+					.collect(Collectors.joining(", ", "[", "]"));
 			visited.remove(o);
 			return result;
 		} else if (o instanceof Collection) {
@@ -379,26 +380,5 @@ public final class Strings {
 			return o.toString();
 		}
 	}
-
-	private static final Match<Stream<?>> ARRAY_TO_STREAM_MATCHER = new Match<Stream<?>>().caze(
-			(boolean[] a) -> Arrays.stream(a))
-			.caze((byte[] a) -> Arrays.stream(a))
-			.caze((char[] a) -> Arrays.stream(a))
-			.caze((double[] a) -> Arrays.stream(a))
-			.caze((float[] a) -> Arrays.stream(a))
-			.caze((int[] a) -> Arrays.stream(a))
-			.caze((long[] a) -> Arrays.stream(a))
-			.caze((short[] a) -> Arrays.stream(a))
-			.caze((Object[] a) -> Arrays.stream(a));
-
-	/**
-	 * Converts a given array to a List, depending on its component type (primitive or Object).
-	 * 
-	 * @param o An array, not null.
-	 * @return A List representation of the given array.
-	 */
-	private static Stream<?> getStream(Object object) {
-		return ARRAY_TO_STREAM_MATCHER.apply(object);
-	}
-
+	
 }

@@ -22,10 +22,17 @@ public class StringsTest {
 
 	@Test
 	public void shouldVisitTwoSimilarPathsOnToString() {
-		final Object[] path = new Object[] { "path" };
-		final Object[] array = new Object[] { path, path };
+		final Object[] path = { "path" };
+		final Object[] array = { path, path };
 		final String actual = Strings.toString(array);
 		assertThat(actual).isEqualTo("[[\"path\"], [\"path\"]]");
+	}
+	
+	@Test
+	public void shouldConvertPrimitiveArrayToString() {
+		final boolean[] array = { true, false };
+		final String actual = Strings.toString(array);
+		assertThat(actual).isEqualTo("[true, false]");
 	}
 
 	@Test
@@ -150,6 +157,12 @@ public class StringsTest {
 	}
 
 	@Test
+	public void shouldJoinTwoNonSeparators() {
+		final String actual = Strings.join(new String[] { "A", "B" }, ';', '\\');
+		assertThat(actual).isEqualTo("A;B");
+	}
+
+	@Test
 	public void shouldJoinTwoEscapedSeparatorsWithEscape() {
 		final String actual = Strings.join(new String[] { "\\^", "\\^\\" }, '^', '\\');
 		assertThat(actual).isEqualTo("\\\\\\^^\\\\\\^\\\\");
@@ -177,6 +190,12 @@ public class StringsTest {
 	public void shouldSplitTwoSeparatorsWithEscape() {
 		final String[] actual = Strings.split("\\;;\\;", ';', '\\');
 		assertThat(actual).isEqualTo(new String[] { ";", ";" });
+	}
+
+	@Test
+	public void shouldSplitTwoNonSeparators() {
+		final String[] actual = Strings.split("A;B", ';', '\\');
+		assertThat(actual).isEqualTo(new String[] { "A", "B" });
 	}
 
 	@Test

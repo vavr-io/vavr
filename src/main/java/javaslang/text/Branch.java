@@ -6,12 +6,12 @@
  */
 package javaslang.text;
 
-import static javaslang.lang.Arrays.isNullOrEmpty;
 import static javaslang.lang.Lang.require;
 import static javaslang.lang.Strings.lineAndColumn;
 
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import javaslang.either.Either;
 import javaslang.either.Left;
@@ -25,14 +25,14 @@ public class Branch extends Parser {
 
 	@SafeVarargs
 	Branch(Supplier<Parser>... parsers) {
-		require(!isNullOrEmpty(parsers), "no parsers");
+		require(!Arrays.isNullOrEmpty(parsers), "no parsers");
 		this.name = null;
 		this.parsers = parsers;
 	}
 
 	@SafeVarargs
 	Branch(String name, Supplier<Parser>... parsers) {
-		require(!isNullOrEmpty(parsers), "no parsers");
+		require(!Arrays.isNullOrEmpty(parsers), "no parsers");
 		this.name = name;
 		this.parsers = parsers;
 	}
@@ -40,7 +40,7 @@ public class Branch extends Parser {
 	@Override
 	public Either<Integer, Tree<Token>> parse(String text, int index) {
 		final Either<Integer, Tree<Token>> initial = new Left<>(index);
-		return Arrays.parallelStream(parsers)
+		return Stream.of(parsers).parallel()
 				.map(parser -> {
 					return parser.get().parse(text, index);
 				})
