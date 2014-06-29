@@ -23,6 +23,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javaslang.lang.Tuples.Tuple2;
+
 /**
  * Extension methods for {@link java.lang.String}.
  */
@@ -32,6 +34,12 @@ public final class Strings {
 	 * An end of line pattern (mac/unix/win)
 	 */
 	public static final Pattern EOL = compile("\\r\\n|\\n|\\r");
+
+	/**
+	 * Lock, needed to detect indirect loops. See
+	 * {@link StringsTest#shouldDetectIndirectLoopOnToString()}.
+	 */
+	private static final ThreadLocal<Boolean> isToStringLocked = new ThreadLocal<>();
 
 	/**
 	 * This class is not intendet to be instantiated.
@@ -47,7 +55,7 @@ public final class Strings {
 	 * @return A deep string representation of o.
 	 */
 	public static String toString(Object o) {
-		return toString(o, new HashSet<>());
+		return Lang.decycle(isToStringLocked, () -> toString(o, new HashSet<>()), () -> "...");
 	}
 
 	/**
@@ -99,10 +107,10 @@ public final class Strings {
 	public static String escape(String s) {
 		return (s == null) ? null : s.replaceAll("\\\\", "\\\\\\\\").replaceAll("\"", "\\\\\\\"");
 	}
-	
+
 	/**
-	 * Escapes occurrences of character within s with the given escape character.
-	 * The escape character is also escaped.
+	 * Escapes occurrences of character within s with the given escape character. The escape
+	 * character is also escaped.
 	 * 
 	 * @param s The String to be escaped.
 	 * @param character The character to be escaped.
@@ -123,7 +131,7 @@ public final class Strings {
 	 * @param index {@code <= s.length}
 	 * @return {@code new int[] line, column }
 	 */
-	public static int[] lineAndColumn(String s, int index) {
+	public static Tuple2<Integer, Integer> lineAndColumn(String s, int index) {
 		final String documentToCursor = s.substring(0, index);
 		final java.util.regex.Matcher matcher = EOL.matcher(documentToCursor);
 		int line = 1;
@@ -132,7 +140,7 @@ public final class Strings {
 		final int eol = max(documentToCursor.lastIndexOf("\r"), documentToCursor.lastIndexOf("\n"));
 		final int len = documentToCursor.length();
 		final int column = (len == 0) ? 1 : len - ((eol == -1) ? 0 : eol);
-		return new int[] { line, column };
+		return Tuples.of(line, column);
 	}
 
 	/**
@@ -196,8 +204,8 @@ public final class Strings {
 	}
 
 	/**
-	 * Combines the elements of a Collection to a String using a specific delimiter, prefix and suffix.
-	 * Shortcut for
+	 * Combines the elements of a Collection to a String using a specific delimiter, prefix and
+	 * suffix. Shortcut for
 	 * <code>collection.stream().map(Types::toString).collect(joining(delimiter, prefix, suffix))</code>
 	 * .
 	 *
@@ -213,9 +221,10 @@ public final class Strings {
 	public static <T> String join(Collection<T> collection, CharSequence delimiter,
 			CharSequence prefix, CharSequence suffix) {
 		require(collection != null, "collection is null");
-		return collection.stream().map(o -> toString(o)).collect(joining(delimiter, prefix, suffix));
+		return collection.stream()
+				.map(o -> toString(o))
+				.collect(joining(delimiter, prefix, suffix));
 	}
-	
 
 	/**
 	 * Concatenates the given strings using the given separator character. Occurrences of escape or
@@ -356,29 +365,30 @@ public final class Strings {
 	}
 
 	private static String toString(Object o, Set<Object> visited) {
-		if (visited.contains(o)) {
-			return "...";
-		} else if (o == null) {
+		if (o == null) {
 			return "null";
-		} else if (o.getClass().isArray()) {
-			visited.add(o);
-			final String result = Arrays.toStream(o)
-					.map(x -> toString(x, visited))
-					.collect(Collectors.joining(", ", "[", "]"));
-			visited.remove(o);
-			return result;
-		} else if (o instanceof Collection) {
-			visited.add(o);
-			final String result = ((Collection<?>) o).stream()
-					.map(x -> toString(x, visited))
-					.collect(Collectors.joining(", ", "[", "]"));
-			visited.remove(o);
-			return result;
+		} else if (visited.contains(o)) {
+			return "...";
 		} else if (o instanceof CharSequence) {
 			return '"' + o.toString() + '"';
+		} else if (o.getClass().isArray()) {
+			return toString(ArrayExtensions.toStream(o), ", ", "[", "]", visited, o);
+		} else if (o instanceof Set) {
+			return toString(((Set<?>) o).stream(), ", ", "{", "}", visited, o);
+		} else if (o instanceof Collection) {
+			return toString(((Collection<?>) o).stream(), ", ", "(", ")", visited, o);
 		} else {
 			return o.toString();
 		}
 	}
-	
+
+	private static String toString(Stream<?> stream, CharSequence delimiter, CharSequence prefix,
+			CharSequence suffix, Set<Object> visited, Object o) {
+		visited.add(o);
+		final String result = stream.map(x -> toString(x, visited)).collect(
+				Collectors.joining(delimiter, prefix, suffix));
+		visited.remove(o);
+		return result;
+	}
+
 }

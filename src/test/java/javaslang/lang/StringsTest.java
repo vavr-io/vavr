@@ -2,6 +2,11 @@ package javaslang.lang;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javaslang.lang.Tuples.Tuple1;
+
 import org.junit.Test;
 
 public class StringsTest {
@@ -13,13 +18,22 @@ public class StringsTest {
 	}
 
 	@Test
-	public void shouldDetectInfiniteLoopsOnToString() {
+	public void shouldDetectDirectLoopOnToString() {
 		final Object[] loop = new Object[1];
 		loop[0] = loop;
 		final String actual = Strings.toString(loop);
 		assertThat(actual).isEqualTo("[...]");
 	}
 
+	@Test
+	public void shouldDetectIndirectLoopOnToString() {
+		final List<Tuple1<List<?>>> list = new ArrayList<>();
+		final Tuple1<List<?>> tuple = Tuples.of(list);
+		list.add(tuple);
+		final String actual = Strings.toString(list);
+		assertThat(actual).isEqualTo("((...))");
+	}
+	
 	@Test
 	public void shouldVisitTwoSimilarPathsOnToString() {
 		final Object[] path = { "path" };

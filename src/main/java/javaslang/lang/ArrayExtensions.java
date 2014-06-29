@@ -15,15 +15,15 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import javaslang.match.Match;
 
 /**
  * Additions to {@link java.util.Arrays}.
  */
-public final class Arrays {
+public final class ArrayExtensions {
 
 	private static final Match<Stream<?>> ARRAY_TO_STREAM_MATCHER = new Match<Stream<?>>()
 			.caze((boolean[] a) -> stream(a))
@@ -34,7 +34,7 @@ public final class Arrays {
 			.caze((int[] a) -> stream(a))
 			.caze((long[] a) -> stream(a))
 			.caze((short[] a) -> stream(a))
-			.caze((Object[] a) -> stream(a));
+			.caze((Object[] a) -> java.util.Arrays.stream(a));
 
 	private static final Match<Stream<?>> ARRAY_TO_PARALLEL_STREAM_MATCHER = new Match<Stream<?>>()
 			.caze((boolean[] a) -> parallelStream(a))
@@ -45,33 +45,20 @@ public final class Arrays {
 			.caze((int[] a) -> parallelStream(a))
 			.caze((long[] a) -> parallelStream(a))
 			.caze((short[] a) -> parallelStream(a))
-			.caze((Object[] a) -> parallelStream(a));
+			.caze((Object[] a) -> java.util.Arrays.stream(a).parallel());
 
 	/**
 	 * This class is not intendet to be instantiated.
 	 */
-	private Arrays() {
-		throw new AssertionError(Arrays.class.getName() + " cannot be instantiated.");
+	private ArrayExtensions() {
+		throw new AssertionError(ArrayExtensions.class.getName() + " cannot be instantiated.");
 	}
 
 	// -- asList
-	
-	/**
-	 * Convenience method, calling {@link java.util.Arrays#asList(Object...)}.
-	 * 
-	 * @param <T> Component type of given array.
-	 * @param array An array.
-	 * @return A List containing the elements of array in the same order.
-	 */
-    @SafeVarargs
-	public static <T> List<T> asList(T... array) {
-		require(array != null, "array is null");
-		return java.util.Arrays.asList(array);
-	}
 
 	public static List<Boolean> asList(boolean... array) {
 		require(array != null, "array is null");
-		return createList(array.length, i -> array[i]);
+		return stream(array).collect(Collectors.toList());
 	}
 
 	public static List<Byte> asList(byte... array) {
@@ -279,13 +266,6 @@ public final class Arrays {
 
 	// -- stream
 
-	public static <T> Stream<T> stream(T[] array) {
-		require(array != null, "array is null");
-		final Spliterator<T> spliterator = Spliterators.spliterator(array, Spliterator.ORDERED
-				| Spliterator.IMMUTABLE);
-		return StreamSupport.stream(spliterator, false);
-	}
-
 	public static Stream<Boolean> stream(boolean[] array) {
 		require(array != null, "array is null");
 		return new StreamableList<Boolean>(array.length, i -> array[i]).stream();
@@ -331,13 +311,6 @@ public final class Arrays {
 	}
 
 	// -- parallelStream
-
-	public static <T> Stream<T> parallelStream(T[] array) {
-		require(array != null, "array is null");
-		final Spliterator<T> spliterator = Spliterators.spliterator(array, Spliterator.ORDERED
-				| Spliterator.IMMUTABLE);
-		return StreamSupport.stream(spliterator, true);
-	}
 
 	public static Stream<Boolean> parallelStream(boolean[] array) {
 		require(array != null, "array is null");
@@ -434,7 +407,7 @@ public final class Arrays {
 
 		@Override
 		public Spliterator<E> spliterator() {
-			return Spliterators.spliterator(this, Spliterator.ORDERED);
+			return Spliterators.spliterator(this, Spliterator.ORDERED | Spliterator.IMMUTABLE);
 		}
 	}
 

@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  */
 public final class Invocations {
 
-	private static final Pattern JVM_FIELD_TYPE = Pattern.compile("\\[*B|C|D|F|I|J|L.*;|S|V|Z");
+	private static final Pattern JVM_FIELD_TYPE = Pattern.compile("\\[*(B|C|D|F|I|J|(L.*;)|S|V|Z)");
 
 	/**
 	 * This class is not intendet to be instantiated.

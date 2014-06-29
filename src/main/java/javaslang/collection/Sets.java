@@ -14,7 +14,7 @@ import java.util.Set;
 /**
  * Extension methods for {@link java.util.Set}.
  */
-public class Sets {
+public final class Sets {
 
 	/**
 	 * This class is not intendet to be instantiated.
@@ -45,7 +45,7 @@ public class Sets {
 	 * @return A Set containing the given elements.
 	 */
 	@SafeVarargs
-	public static <T> Set<T> newSet(T... elements) {
+	public static <T> Set<T> of(T... elements) {
 		final Set<T> result = new HashSet<>(elements.length);
 		for (T element : elements) {
 			result.add(element);

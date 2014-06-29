@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 
 import javaslang.either.Either;
 import javaslang.either.Right;
-import javaslang.lang.Arrays;
+import javaslang.lang.ArrayExtensions;
 
 public class Sequence extends Parser {
 
@@ -28,14 +28,14 @@ public class Sequence extends Parser {
 
 	@SafeVarargs
 	Sequence(Supplier<Parser>... parsers) {
-		require(!Arrays.isNullOrEmpty(parsers), "no parsers");
+		require(!ArrayExtensions.isNullOrEmpty(parsers), "no parsers");
 		this.name = null;
 		this.parsers = parsers;
 	}
 
 	@SafeVarargs
 	Sequence(String name, Supplier<Parser>... parsers) {
-		require(!Arrays.isNullOrEmpty(parsers), "no parsers");
+		require(!ArrayExtensions.isNullOrEmpty(parsers), "no parsers");
 		this.name = name;
 		this.parsers = parsers;
 	}

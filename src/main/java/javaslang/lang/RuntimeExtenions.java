@@ -9,13 +9,13 @@ package javaslang.lang;
 /**
  * Additions to {@link java.lang.Runtime}.
  */
-public final class Runtimes {
+public final class RuntimeExtenions {
 
 	/**
 	 * This class is not intendet to be instantiated.
 	 */
-	private Runtimes() {
-		throw new AssertionError(Runtimes.class.getName() + " cannot be instantiated.");
+	private RuntimeExtenions() {
+		throw new AssertionError(RuntimeExtenions.class.getName() + " cannot be instantiated.");
 	}
 
 	/**

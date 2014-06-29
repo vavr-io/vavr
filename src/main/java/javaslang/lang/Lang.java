@@ -20,7 +20,7 @@ public final class Lang {
 	}
 
 	/**
-	 * Shortcut for {@code System.out.print(javaslang.text.Strings.toString(o))}.
+	 * Shortcut for {@code System.out.print(javaslang.text.Strings.toString(o))} .
 	 * 
 	 * @param o an Object
 	 */
@@ -41,7 +41,7 @@ public final class Lang {
 
 	/**
 	 * Shortcut for
-	 * {@code System.out.print(String.format(format, Arrays.map(objects, Objects::toString)))}.
+	 * {@code System.out.print(String.format(format, Arrays.map(objects, Objects::toString)))} .
 	 * 
 	 * @param format A String format
 	 * @param objects Zero or more String format arguments
@@ -66,9 +66,10 @@ public final class Lang {
 		final String s = format(format, objects);
 		System.out.println(s);
 	}
-	
+
 	/**
-	 * Converts given objects to strings and passes them as args to {@code String.format(format, args)}.
+	 * Converts given objects to strings and passes them as args to
+	 * {@code String.format(format, args)}.
 	 * 
 	 * @param format A String format, see {@link String#format(String, Object...)}
 	 * @param objects String format arguments
@@ -106,6 +107,57 @@ public final class Lang {
 		if (!condition) {
 			throw new IllegalStateException(Objects.requireNonNull(messageSupplier,
 					"messageSupplier is null").get());
+		}
+	}
+
+	/**
+	 * Ensures that there are no cycles in a direct/indirect recursion. A method may use this, if
+	 * the return value recursively calls the method under some circumstances and the recursion does
+	 * not end.
+	 * <p>
+	 * The ThreadLocal instance should be unique for each recursive method. In a static context, the
+	 * ThreadLocal instance is also static:
+	 * 
+	 * <pre>
+	 * <code>
+	 * private static final ThreadLocal<Boolean> isToStringLocked = new ThreadLocal<>();
+	 *     
+	 * public static String toString(Object o) {
+	 *     return Lang.decycle(isToStringLocked, () -> o.toString(), () -> "...");
+	 * }
+	 * </code>
+	 * </pre>
+	 * 
+	 * In a non-static context, the ThreadLocal instance is also non-static:
+	 * 
+	 * <pre>
+	 * <code>
+	 * private final ThreadLocal<Boolean> isHashCodeLocked = new ThreadLocal<>();
+	 * 
+	 * &#64;Override
+	 * public int hashCode() {
+	 *     return Lang.decycle(isHashCodeLocked, () -> super.hashCode(), () -> 0);
+	 * }
+	 * </code>
+	 * </pre>
+	 * 
+	 * @param isLocked A semaphore, set to true and false, should be used exclusively within one
+	 *            method.
+	 * @param value A return value used if no cycle is present.
+	 * @param defaultValue A return value used if a cycle has been detected.
+	 * @return value.get() if no cycle detected, otherwise defaultValue.get().
+	 */
+	public static <T> T decycle(ThreadLocal<Boolean> isLocked, Supplier<T> value,
+			Supplier<T> defaultValue) {
+		if (Boolean.TRUE.equals(isLocked.get())) {
+			return defaultValue.get();
+		} else {
+			try {
+				isLocked.set(true);
+				return value.get();
+			} finally {
+				isLocked.set(false);
+			}
 		}
 	}
 

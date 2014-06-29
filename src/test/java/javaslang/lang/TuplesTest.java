@@ -9,82 +9,116 @@ package javaslang.lang;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static javaslang.lang.Tuples.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
 
 public class TuplesTest {
 
 	@Test
 	public void shouldCreateEmptyTuple() {
-		assertThat(t().toString()).isEqualTo("()");
+		assertThat(of().toString()).isEqualTo("()");
 	}
 
 	@Test
 	public void shouldCreateSingle() {
-		assertThat(t(1).toString()).isEqualTo("(1)");
+		assertThat(of(1).toString()).isEqualTo("(1)");
 	}
 
 	@Test
 	public void shouldCreatePair() {
-		assertThat(t(1, 2).toString()).isEqualTo("(1, 2)");
+		assertThat(of(1, 2).toString()).isEqualTo("(1, 2)");
 	}
 
 	@Test
 	public void shouldCreateTriple() {
-		assertThat(t(1, 2, 3).toString()).isEqualTo("(1, 2, 3)");
+		assertThat(of(1, 2, 3).toString()).isEqualTo("(1, 2, 3)");
 	}
 
 	@Test
 	public void shouldCreateQuadruple() {
-		assertThat(t(1, 2, 3, 4).toString()).isEqualTo("(1, 2, 3, 4)");
+		assertThat(of(1, 2, 3, 4).toString()).isEqualTo("(1, 2, 3, 4)");
 	}
 
 	@Test
 	public void shouldCreateQuintuple() {
-		assertThat(t(1, 2, 3, 4, 5).toString()).isEqualTo("(1, 2, 3, 4, 5)");
+		assertThat(of(1, 2, 3, 4, 5).toString()).isEqualTo("(1, 2, 3, 4, 5)");
 	}
 
 	@Test
 	public void shouldCreateSextuple() {
-		assertThat(t(1, 2, 3, 4, 5, 6).toString()).isEqualTo("(1, 2, 3, 4, 5, 6)");
+		assertThat(of(1, 2, 3, 4, 5, 6).toString()).isEqualTo("(1, 2, 3, 4, 5, 6)");
 	}
 
 	@Test
 	public void shouldCreateSeptuple() {
-		assertThat(t(1, 2, 3, 4, 5, 6, 7).toString()).isEqualTo("(1, 2, 3, 4, 5, 6, 7)");
+		assertThat(of(1, 2, 3, 4, 5, 6, 7).toString()).isEqualTo("(1, 2, 3, 4, 5, 6, 7)");
 	}
 
 	@Test
 	public void shouldCreateOctuple() {
-		assertThat(t(1, 2, 3, 4, 5, 6, 7, 8).toString()).isEqualTo("(1, 2, 3, 4, 5, 6, 7, 8)");
+		assertThat(of(1, 2, 3, 4, 5, 6, 7, 8).toString()).isEqualTo("(1, 2, 3, 4, 5, 6, 7, 8)");
 	}
 
 	@Test
 	public void shouldCreateNonuple() {
-		assertThat(t(1, 2, 3, 4, 5, 6, 7, 8, 9).toString()).isEqualTo("(1, 2, 3, 4, 5, 6, 7, 8, 9)");
+		assertThat(of(1, 2, 3, 4, 5, 6, 7, 8, 9).toString()).isEqualTo("(1, 2, 3, 4, 5, 6, 7, 8, 9)");
 	}
 
 	@Test
 	public void shouldCreateDecuple() {
-		assertThat(t(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).toString()).isEqualTo(
+		assertThat(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).toString()).isEqualTo(
 				"(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)");
 	}
 
 	@Test
 	public void shouldCreateUndecuple() {
-		assertThat(t(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11).toString()).isEqualTo(
+		assertThat(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11).toString()).isEqualTo(
 				"(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)");
 	}
 
 	@Test
 	public void shouldCreateDuodecuple() {
-		assertThat(t(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12).toString()).isEqualTo(
+		assertThat(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12).toString()).isEqualTo(
 				"(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)");
 	}
 
 	@Test
 	public void shouldCreateTredecuple() {
-		assertThat(t(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13).toString()).isEqualTo(
+		assertThat(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13).toString()).isEqualTo(
 				"(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)");
+	}
+	
+	@Test
+	public void shouldDetectLoopOnEquals() {
+		
+		// create recursive structure1
+		final List<Tuple> listA = new ArrayList<>();
+		final Tuple tupleA = Tuples.of(listA);
+		listA.add(tupleA);
+
+		// create recursive structure2
+		final List<Tuple> listB = new ArrayList<>();
+		final Tuple tupleB = Tuples.of(listB);
+		listB.add(tupleB);
+		
+		// detect that structures are not the same
+		final boolean actual = tupleA.equals(tupleB);
+		assertThat(actual).isFalse();
+	}
+
+	@Test
+	public void shouldDetectLoopOnHashCode() {
+		
+		// create recursive structure
+		final List<Tuple1<?>> list = new ArrayList<>();
+		final Tuple1<List<?>> tuple = Tuples.of(list);
+		list.add(tuple);
+		
+		// detect loop on hashCode
+		final int actual = tuple.hashCode();
+		assertThat(actual).isNotNull();
 	}
 
 }

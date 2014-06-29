@@ -7,7 +7,6 @@
 package javaslang.text;
 
 import static javaslang.lang.Lang.require;
-import static javaslang.lang.Strings.lineAndColumn;
 
 import java.util.Set;
 import java.util.function.Supplier;
@@ -15,7 +14,7 @@ import java.util.stream.Stream;
 
 import javaslang.either.Either;
 import javaslang.either.Left;
-import javaslang.lang.Arrays;
+import javaslang.lang.ArrayExtensions;
 import javaslang.lang.Strings;
 
 public class Branch extends Parser {
@@ -25,14 +24,14 @@ public class Branch extends Parser {
 
 	@SafeVarargs
 	Branch(Supplier<Parser>... parsers) {
-		require(!Arrays.isNullOrEmpty(parsers), "no parsers");
+		require(!ArrayExtensions.isNullOrEmpty(parsers), "no parsers");
 		this.name = null;
 		this.parsers = parsers;
 	}
 
 	@SafeVarargs
 	Branch(String name, Supplier<Parser>... parsers) {
-		require(!Arrays.isNullOrEmpty(parsers), "no parsers");
+		require(!ArrayExtensions.isNullOrEmpty(parsers), "no parsers");
 		this.name = name;
 		this.parsers = parsers;
 	}
@@ -41,17 +40,16 @@ public class Branch extends Parser {
 	public Either<Integer, Tree<Token>> parse(String text, int index) {
 		final Either<Integer, Tree<Token>> initial = new Left<>(index);
 		return Stream.of(parsers).parallel()
-				.map(parser -> {
-					return parser.get().parse(text, index);
-				})
-				.reduce(initial, (tree1, tree2) -> reduce(tree1, tree2, text, index),
+				.map(parser -> parser.get().parse(text, index))
+				.reduce(initial,
+						(t1, t2) -> reduce(t1, t2, text, index),
 						(t1, t2) -> reduce(t1, t2, text, index));
 	}
 
 	private Either<Integer, Tree<Token>> reduce(Either<Integer, Tree<Token>> tree1,
 			Either<Integer, Tree<Token>> tree2, String text, int index) {
 		require(tree1.isLeft() || tree2.isLeft(),
-				() -> "ambiguity found at " + Strings.toString(lineAndColumn(text, index)) + ":\n"
+				() -> "ambiguity found at " + Strings.lineAndColumn(text, index) + ":\n"
 						+ text);
 		if (tree1.isRight()) {
 			return tree1;

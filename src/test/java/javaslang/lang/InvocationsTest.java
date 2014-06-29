@@ -72,10 +72,17 @@ public class InvocationsTest {
 	}
 
 	@Test
-	public void shouldParseReturnTypeArrayReference() {
+	public void shouldParseReturnTypeArrayOfInt() {
 		final ReturnTypeArrayOfInt lambda = () -> new int[] {};
 		final Class<?> actual = Invocations.getLambdaSignature(lambda).getReturnType();
 		assertThat(actual.getName()).isEqualTo("[I");
+	}
+	
+	@Test
+	public void shouldParseParameterTypeArrayOfBoolean() {
+		final ParameterTypeArrayOfBoolean lambda = (boolean[] b) -> { return; };
+		final Class<?> actual = Invocations.getLambdaSignature(lambda).getParameterTypes()[0];
+		assertThat(actual.getName()).isEqualTo("[Z");
 	}
 
 	@Test
@@ -187,5 +194,10 @@ public class InvocationsTest {
 	static interface TwoParameterTypes extends Serializable {
 		void go(String s, byte[][] bytes);
 	}
-	
+
+	@FunctionalInterface
+	static interface ParameterTypeArrayOfBoolean extends Serializable {
+		void go(boolean[] b);
+	}
+
 }

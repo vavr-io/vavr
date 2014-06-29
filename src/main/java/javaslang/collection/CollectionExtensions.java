@@ -11,13 +11,13 @@ import java.util.Collection;
 /**
  * Additions to {@link java.util.Collections}.
  */
-public final class Collections {
+public final class CollectionExtensions {
 
 	/**
 	 * This class is not intendet to be instantiated.
 	 */
-	private Collections() {
-		throw new AssertionError(Collections.class.getName() + " cannot be instantiated.");
+	private CollectionExtensions() {
+		throw new AssertionError(CollectionExtensions.class.getName() + " cannot be instantiated.");
 	}
 
 	/**

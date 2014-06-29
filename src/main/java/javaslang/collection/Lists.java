@@ -20,11 +20,11 @@ import javaslang.option.Some;
  * <strong>Note:</strong> If the list is an array of primitive component type, e.g. int[], the
  * {@link java.util.Arrays#asList(Object...)} is not sufficient, because the array is treated as
  * object. In this case please use one of the asList methods provided by
- * {@link javaslang.lang.Arrays}, e.g. {@link javaslang.lang.Arrays#asList(int[])}.
+ * {@link javaslang.lang.ArrayExtensions}, e.g. {@link javaslang.lang.ArrayExtensions#asList(int[])}.
  * 
  * @see java.util.Collections
  */
-public class Lists {
+public final class Lists {
 
 	/**
 	 * This class is not intendet to be instantiated.
@@ -43,7 +43,7 @@ public class Lists {
 	 * @return None, if the list is null or empty, otherwise Some containing the first element.
 	 */
 	public static <T> Option<T> firstElement(List<T> list) {
-		return Collections.isNullOrEmpty(list) ? None.<T> instance() : new Some<T>(list.get(0));
+		return CollectionExtensions.isNullOrEmpty(list) ? None.<T> instance() : new Some<T>(list.get(0));
 	}
 
 	/**
@@ -56,7 +56,7 @@ public class Lists {
 	 * @return None, if the list is null or empty, otherwise Some containing the last element.
 	 */
 	public static <T> Option<T> lastElement(List<T> list) {
-		return Collections.isNullOrEmpty(list) ? None.<T> instance() : new Some<T>(list.get(list
+		return CollectionExtensions.isNullOrEmpty(list) ? None.<T> instance() : new Some<T>(list.get(list
 				.size() - 1));
 	}
 	
