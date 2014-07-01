@@ -68,7 +68,7 @@ public class Branch extends Parser {
 
 	@Override
 	protected void stringify(StringBuilder rule, StringBuilder definitions, Set<String> visited) {
-		Parsers.stringify(name, parsers, "\n  | ", " | ", true, rule, definitions, visited);
+		Parsers.stringify(name, this, parsers, "\n  | ", " | ", rule, definitions, visited);
 	}
 
 	@Override

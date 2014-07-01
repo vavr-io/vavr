@@ -67,7 +67,7 @@ public class Multiplicity extends Parser {
 			}
 		} while (unbound && found);
 	}
-	
+
 	@Override
 	int getChildCount() {
 		return 1;

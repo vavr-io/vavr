@@ -77,7 +77,7 @@ public class Sequence extends Parser {
 
 	@Override
 	protected void stringify(StringBuilder rule, StringBuilder definitions, Set<String> visited) {
-		Parsers.stringify(name, parsers, " ", " ", false, rule, definitions, visited);
+		Parsers.stringify(name, this, parsers, " ", " ", rule, definitions, visited);
 	}
 
 	@Override

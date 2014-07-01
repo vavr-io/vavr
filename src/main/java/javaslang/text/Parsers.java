@@ -34,8 +34,8 @@ class Parsers {
 	 * @param definitions
 	 * @param visited
 	 */
-	static void stringify(String name, Supplier<Parser>[] parsers, String separator,
-			String separatorInline, boolean withBraces, StringBuilder rule,
+	static void stringify(String name, Parser parent, Supplier<Parser>[] parsers, String separator,
+			String separatorInline, StringBuilder rule,
 			StringBuilder definitions, Set<String> visited) {
 		if (name != null) {
 			rule.append(name);
@@ -43,11 +43,11 @@ class Parsers {
 				visited.add(name);
 				definitions.append(name + "\n  : ");
 				final StringBuilder definitionsBuffer = new StringBuilder();
-				stringify(parsers, separator, false, definitions, definitionsBuffer, visited);
+				stringify(parent, parsers, separator, definitions, definitionsBuffer, visited);
 				definitions.append("\n  ;\n\n").append(definitionsBuffer);
 			}
 		} else {
-			stringify(parsers, separatorInline, withBraces, rule, definitions, visited);
+			stringify(parent, parsers, separatorInline, rule, definitions, visited);
 		}
 	}
 
@@ -61,12 +61,8 @@ class Parsers {
 	 * @param definitions
 	 * @param visited
 	 */
-	static void stringify(Supplier<Parser>[] parsers, String separator, boolean withBraces,
+	private static void stringify(Parser parent, Supplier<Parser>[] parsers, String separator,
 			StringBuilder rule, StringBuilder definitions, Set<String> visited) {
-		final boolean writeBraces = withBraces && parsers.length > 1;
-		if (writeBraces) {
-			rule.append("(");
-		}
 		boolean writeSeparator = false;
 		for (Supplier<? extends Parser> parserSupplier : parsers) {
 			final Parser parser = parserSupplier.get();
@@ -75,10 +71,25 @@ class Parsers {
 			} else {
 				writeSeparator = true;
 			}
+			// how could we do this more elegant?
+			final boolean writeBraces = (
+						parent instanceof Sequence
+						&& parser instanceof Branch
+						&& ((Branch) parser).name == null
+						&& parsers.length > 1
+					) || (
+						parent instanceof Branch
+						&& parser instanceof Branch
+						&& ((Branch) parser).getChildCount() > 1
+						&& parsers.length > 1
+					);
+			if (writeBraces) {
+				rule.append("(");
+			}
 			parser.stringify(rule, definitions, visited);
-		}
-		if (writeBraces) {
-			rule.append(")");
+			if (writeBraces) {
+				rule.append(")");
+			}
 		}
 	}
 

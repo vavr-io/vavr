@@ -13,7 +13,7 @@ import javaslang.either.Right;
 
 public class EOF extends Parser {
 	
-	private static final String NAME = "<EOF>";
+	private static final String NAME = "EOF";
 	
 	/**
 	 * The singleton instance of EOF.

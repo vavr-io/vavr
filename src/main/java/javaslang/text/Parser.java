@@ -23,11 +23,12 @@ public abstract class Parser implements Supplier<Parser> {
 	int getChildCount() {
 		return 0;
 	}
+	
 	protected abstract void stringify(StringBuilder rule, StringBuilder definitions,
 			Set<String> visited);
 
 	@Override
-	public Parser get() {
+	public final Parser get() {
 		return this;
 	}
 
