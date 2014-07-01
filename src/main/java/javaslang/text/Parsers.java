@@ -6,6 +6,7 @@
 package javaslang.text;
 
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -23,19 +24,18 @@ class Parsers {
 	}
 
 	/**
-	 * TODO
 	 * 
 	 * @param name
 	 * @param parsers
 	 * @param separator
 	 * @param separatorInline
-	 * @param withBraces
+	 * @param needBraces
 	 * @param rule
 	 * @param definitions
 	 * @param visited
 	 */
-	static void stringify(String name, Parser parent, Supplier<Parser>[] parsers, String separator,
-			String separatorInline, StringBuilder rule,
+	static void stringify(String name, Supplier<Parser>[] parsers, String separator,
+			String separatorInline, Predicate<Parser> needBraces, StringBuilder rule,
 			StringBuilder definitions, Set<String> visited) {
 		if (name != null) {
 			rule.append(name);
@@ -43,25 +43,24 @@ class Parsers {
 				visited.add(name);
 				definitions.append(name + "\n  : ");
 				final StringBuilder definitionsBuffer = new StringBuilder();
-				stringify(parent, parsers, separator, definitions, definitionsBuffer, visited);
+				stringify(parsers, separator, needBraces, definitions, definitionsBuffer, visited);
 				definitions.append("\n  ;\n\n").append(definitionsBuffer);
 			}
 		} else {
-			stringify(parent, parsers, separatorInline, rule, definitions, visited);
+			stringify(parsers, separatorInline, needBraces, rule, definitions, visited);
 		}
 	}
 
 	/**
-	 * TODO
 	 * 
 	 * @param parsers
 	 * @param separator
-	 * @param withBraces
+	 * @param needBraces
 	 * @param rule
 	 * @param definitions
 	 * @param visited
 	 */
-	private static void stringify(Parser parent, Supplier<Parser>[] parsers, String separator,
+	private static void stringify(Supplier<Parser>[] parsers, String separator, Predicate<Parser> needBraces,
 			StringBuilder rule, StringBuilder definitions, Set<String> visited) {
 		boolean writeSeparator = false;
 		for (Supplier<? extends Parser> parserSupplier : parsers) {
@@ -71,18 +70,7 @@ class Parsers {
 			} else {
 				writeSeparator = true;
 			}
-			// how could we do this more elegant?
-			final boolean writeBraces = (
-						parent instanceof Sequence
-						&& parser instanceof Branch
-						&& ((Branch) parser).name == null
-						&& parsers.length > 1
-					) || (
-						parent instanceof Branch
-						&& parser instanceof Branch
-						&& ((Branch) parser).getChildCount() > 1
-						&& parsers.length > 1
-					);
+			final boolean writeBraces = needBraces.test(parser);
 			if (writeBraces) {
 				rule.append("(");
 			}
@@ -94,7 +82,6 @@ class Parsers {
 	}
 
 	/**
-	 * TODO
 	 * 
 	 * @param name
 	 * @param parsers

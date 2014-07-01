@@ -8,6 +8,7 @@ package javaslang.text;
 import static javaslang.lang.Lang.require;
 
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -77,7 +78,8 @@ public class Sequence extends Parser {
 
 	@Override
 	protected void stringify(StringBuilder rule, StringBuilder definitions, Set<String> visited) {
-		Parsers.stringify(name, this, parsers, " ", " ", rule, definitions, visited);
+		final Predicate<Parser> writeBraces = p -> parsers.length > 1 && p instanceof Branch && ((Branch) p).name == null;
+		Parsers.stringify(name, parsers, " ", " ", writeBraces, rule, definitions, visited);
 	}
 
 	@Override

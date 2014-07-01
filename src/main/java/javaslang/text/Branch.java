@@ -8,6 +8,7 @@ package javaslang.text;
 import static javaslang.lang.Lang.require;
 
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -68,7 +69,8 @@ public class Branch extends Parser {
 
 	@Override
 	protected void stringify(StringBuilder rule, StringBuilder definitions, Set<String> visited) {
-		Parsers.stringify(name, this, parsers, "\n  | ", " | ", rule, definitions, visited);
+		final Predicate<Parser> needBraces = p -> parsers.length > 1 && p instanceof Branch && ((Branch) p).getChildCount() > 1;
+		Parsers.stringify(name, parsers, "\n  | ", " | ", needBraces, rule, definitions, visited);
 	}
 
 	@Override
