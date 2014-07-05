@@ -20,7 +20,8 @@ import javaslang.lang.Strings;
  *
  * @param <T> Type of tree node values.
  */
-public class Tree<T> {
+// TODO: discouraged impl, made package-private. goal: create functional javaslang.collection.{List,Set,Map,Tree,...}
+class Tree<T> {
 
 	private final String id; // identifier, not necessarily unique
 	private final T value;
@@ -29,11 +30,11 @@ public class Tree<T> {
 	// needs to be accessible interally for attaching/detaching children
 	Tree<T> parent = null;
 
-	public Tree(String id) {
+	Tree(String id) {
 		this(id, null);
 	}
 
-	public Tree(String id, T value) {
+	Tree(String id, T value) {
 		require(id != null, "id cannot be null");
 		this.id = id;
 		this.value = value;
