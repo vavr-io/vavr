@@ -43,6 +43,26 @@ import javaslang.option.Some;
 public class Match<R> implements Function<Object, R> {
 
 	private List<Case<R>> cases = new ArrayList<>();
+	
+	/**
+	 * Applies an object to this matcher. This is the implementation of the {@link Function} interface.
+	 * 
+	 * @param obj An object.
+	 * @return The result when applying the given obj to the first matching case. If the case has a
+	 *         consumer, the result is null, otherwise the result of the underlying function or
+	 *         supplier.
+	 * @throws MatchError if no Match case matches the given object.
+	 * @throws NonFatal if an error occurs executing the matched case.
+	 */
+	@Override
+	public R apply(Object obj) {
+		for (Case<R> caze : cases) {
+			if (caze.isApplicable(obj)) {
+				return caze.apply(obj);
+			}
+		}
+		throw new MatchError(obj);
+	}
 
 	/**
 	 * Use this method to match by object type T. An object o matches this case, if
@@ -185,26 +205,6 @@ public class Match<R> implements Function<Object, R> {
 		require(function != null, "function is null");
 		cases.add(new Case<>(None.instance(), (Short s) -> function.apply(s), Short.class));
 		return this;
-	}
-
-	/**
-	 * Applies an object to this matcher.
-	 * 
-	 * @param obj An object.
-	 * @return The result when applying the given obj to the first matching case. If the case has a
-	 *         consumer, the result is null, otherwise the result of the underlying function or
-	 *         supplier.
-	 * @throws MatchError if no Match case matches the given object.
-	 * @throws NonFatal if an error occurs executing the matched case.
-	 */
-	@Override
-	public R apply(Object obj) {
-		for (Case<R> caze : cases) {
-			if (caze.isApplicable(obj)) {
-				return caze.apply(obj);
-			}
-		}
-		throw new MatchError(obj);
 	}
 
 	/**
