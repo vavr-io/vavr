@@ -1,0 +1,64 @@
+// TODO: whitespace: optional (WS*, default), required (WS+), none (~WS)
+// Reserved words: Grammar (= start rule), WS (= whitespace, may be re-defined), EOF (= end of file)
+//
+Grammar WS*
+  : RuleDefinition+ EOF
+  ;
+
+RuleDefinition
+  : IDENTIFIER ':' Branch ';' 
+  ;
+
+Branch
+  : ( RuleReference | Multiplicity | Sequence | CharSet | Range | Wildcard | Literal | SingleLineComment | MultiLineComment | 'EOF' ) ( '|' Branch )*
+  | '(' Branch ')'
+  ;
+
+RuleReference
+  : IDENTIFIER
+  ;
+
+Multiplicity
+  : Branch ~WS ( '*' | '+' | '?' | '*?' | '+?' | '??' )
+  ;
+
+Sequence WS+
+  : Branch+
+  ;
+
+CharSet
+  : // TODO
+  ;
+
+Range
+  : // TODO
+  ;
+
+Wildcard
+  : // TODO
+  ;
+
+Literal
+  : DOUBLE_QUOTE DOUBLE_QUOTE_ESCAPED_STRING DOUBLE_QUOTE
+  | SINGLE_QUOTE SINGLE_QUOTE_ESCAPED_STRING SINGLE_QUOTE
+  ;
+  
+DOUBLE_QUOTE
+  : '"'
+  ;
+
+SINGLE_QUOTE
+  : "'"
+  ;
+
+DOUBLE_QUOTE_ESCAPED_STRING
+  : // TODO
+  ;
+
+SINGLE_QUOTE_ESCAPED_STRING
+  : // TODO
+  ;
+
+IDENTIFIER
+  : [a-zA-Z] [a-zA-Z_$]* // TODO: escaped characters, unicode, etc.
+  ;
