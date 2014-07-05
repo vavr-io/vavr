@@ -119,10 +119,10 @@ public final class Lang {
 	 * 
 	 * <pre>
 	 * <code>
-	 * private static final ThreadLocal<Boolean> isToStringLocked = new ThreadLocal<>();
+	 * private static final ThreadLocal&lt;Boolean&gt; isToStringLocked = new ThreadLocal&lt;&gt;();
 	 *     
 	 * public static String toString(Object o) {
-	 *     return Lang.decycle(isToStringLocked, () -> o.toString(), () -> "...");
+	 *     return Lang.decycle(isToStringLocked, () -&gt; o.toString(), () -&gt; "...");
 	 * }
 	 * </code>
 	 * </pre>
@@ -131,15 +131,16 @@ public final class Lang {
 	 * 
 	 * <pre>
 	 * <code>
-	 * private final ThreadLocal<Boolean> isHashCodeLocked = new ThreadLocal<>();
+	 * private final ThreadLocal&lt;Boolean&gt; isHashCodeLocked = new ThreadLocal&lt;&gt;();
 	 * 
 	 * &#64;Override
 	 * public int hashCode() {
-	 *     return Lang.decycle(isHashCodeLocked, () -> super.hashCode(), () -> 0);
+	 *     return Lang.decycle(isHashCodeLocked, () -&gt; super.hashCode(), () -&gt; 0);
 	 * }
 	 * </code>
 	 * </pre>
 	 * 
+	 * @param <T> Element type of recursion values.
 	 * @param isLocked A semaphore, set to true and false, should be used exclusively within one
 	 *            method.
 	 * @param value A return value used if no cycle is present.

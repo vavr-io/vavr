@@ -247,7 +247,7 @@ public final class Strings {
 	}
 
 	/**
-	 * Convenience method that calls {@link #concat(String[], char, char)} by converting the given
+	 * Convenience method that calls {@link #join(String[], char, char)} by converting the given
 	 * Collection strings to a String array.
 	 * 
 	 * @param strings A Collection of Strings, not null.
