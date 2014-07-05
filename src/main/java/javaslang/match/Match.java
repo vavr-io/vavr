@@ -16,7 +16,7 @@ import java.util.function.IntFunction;
 import java.util.function.LongFunction;
 
 import javaslang.exception.NonFatal;
-import javaslang.lang.Invocations;
+import javaslang.lang.Lambdas;
 import javaslang.option.None;
 import javaslang.option.Option;
 import javaslang.option.Some;
@@ -226,7 +226,7 @@ public class Match<R> implements Function<Object, R> {
 		Case(Option<?> prototype, SerializableFunction<?, R> function) {
 			this.prototype = prototype;
 			this.function = function;
-			this.parameterType = Invocations.getLambdaSignature(function).getParameterTypes()[0];
+			this.parameterType = Lambdas.getLambdaSignature(function).getParameterTypes()[0];
 		}
 
 		/**
@@ -274,7 +274,7 @@ public class Match<R> implements Function<Object, R> {
 
 	/**
 	 * A function which implements Serializable in order to obtain runtime type information about
-	 * the lambda via {@link javaslang.lang.Invocations#getLambdaSignature(Serializable)}.
+	 * the lambda via {@link javaslang.lang.Lambdas#getLambdaSignature(Serializable)}.
 	 *
 	 * @param <T> The parameter type of the function.
 	 * @param <R> The return type of the function.
