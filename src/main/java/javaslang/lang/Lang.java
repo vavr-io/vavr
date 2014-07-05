@@ -273,7 +273,8 @@ public final class Lang {
 	 * <pre>
 	 * <code>
 	 * private static final ThreadLocal&lt;Boolean&gt; isToStringLocked = new ThreadLocal&lt;&gt;();
-	 *     
+	 * 
+	 * // an objects toString() method may call this method (recursively)
 	 * public static String toString(Object o) {
 	 *     return Lang.decycle(isToStringLocked, () -&gt; o.toString(), () -&gt; "...");
 	 * }
@@ -286,6 +287,7 @@ public final class Lang {
 	 * <code>
 	 * private final ThreadLocal&lt;Boolean&gt; isHashCodeLocked = new ThreadLocal&lt;&gt;();
 	 * 
+	 * // hashCode() may be called recursively, e.g. if a composite object references itself
 	 * &#64;Override
 	 * public int hashCode() {
 	 *     return Lang.decycle(isHashCodeLocked, () -&gt; super.hashCode(), () -&gt; 0);
