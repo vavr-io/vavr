@@ -21,15 +21,15 @@ import java.util.regex.Pattern;
  *      href="http://stackoverflow.com/questions/21860875/printing-debug-info-on-errors-with-java-8-lambda-expressions">printing
  *      debug info on errors with java 8 lambda expressions</a>
  */
-public final class Invocations {
+public final class Lambdas {
 
 	private static final Pattern JVM_FIELD_TYPE = Pattern.compile("\\[*(B|C|D|F|I|J|(L.*;)|S|V|Z)");
 
 	/**
 	 * This class is not intendet to be instantiated.
 	 */
-	private Invocations() {
-		throw new AssertionError(Invocations.class.getName() + " cannot be instantiated.");
+	private Lambdas() {
+		throw new AssertionError(Lambdas.class.getName() + " cannot be instantiated.");
 	}
 
 	/**
@@ -66,11 +66,10 @@ public final class Invocations {
 		final int index = signature.lastIndexOf(')');
 		final Class<?> returnType = getJavaType(signature.substring(index + 1));
 		final List<Class<?>> parameterTypes = new ArrayList<>();
-		for (Matcher matcher = JVM_FIELD_TYPE.matcher(signature.substring(1, index)); matcher
-				.find(); parameterTypes.add(getJavaType(matcher.group())))
+		for (Matcher matcher = JVM_FIELD_TYPE.matcher(signature.substring(1, index)); matcher.find(); parameterTypes.add(getJavaType(matcher.group())))
 			;
-		return new LambdaSignature(returnType, parameterTypes.toArray(new Class<?>[parameterTypes
-				.size()]));
+		return new LambdaSignature(returnType,
+				parameterTypes.toArray(new Class<?>[parameterTypes.size()]));
 	}
 
 	/**
@@ -99,8 +98,7 @@ public final class Invocations {
 			case 'J':
 				return long.class;
 			case 'L': {
-				final String javaType = jvmFieldType
-						.substring(1, jvmFieldType.length() - 1)
+				final String javaType = jvmFieldType.substring(1, jvmFieldType.length() - 1)
 						.replaceAll("/", ".");
 				try {
 					return Class.forName(javaType);
@@ -127,8 +125,8 @@ public final class Invocations {
 	}
 
 	/**
-	 * Represents a Lambda signature having a return type and parameter types, similar to a
-	 * {@link java.lang.reflect.Method}.
+	 * Represents a Lambda signature having a return type and parameter types but no name, similar
+	 * to a {@link java.lang.reflect.Method}.
 	 */
 	public static class LambdaSignature {
 		private final Class<?> returnType;
