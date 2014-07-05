@@ -11,8 +11,6 @@ import java.io.Serializable;
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -67,11 +65,12 @@ public final class Lambdaz {
 		final String signature = getSerializedLambda(lambda).getImplMethodSignature();
 		final int index = signature.lastIndexOf(')');
 		final Class<?> returnType = getJavaType(signature.substring(index + 1));
-		final List<Class<?>> parameterTypes = new ArrayList<>();
-		for (Matcher matcher = JVM_FIELD_TYPE.matcher(signature.substring(1, index)); matcher.find(); parameterTypes.add(getJavaType(matcher.group())))
-			;
-		return new LambdaSignature(returnType,
-				parameterTypes.toArray(new Class<?>[parameterTypes.size()]));
+		final Matcher matcher = JVM_FIELD_TYPE.matcher(signature.substring(1, index));
+		final Class<?>[] parameterTypes = Lang
+				.stream(matcher)
+				.map(Lambdaz::getJavaType)
+				.toArray(Class<?>[]::new);
+		return new LambdaSignature(returnType, parameterTypes);
 	}
 
 	/**
@@ -100,7 +99,8 @@ public final class Lambdaz {
 			case 'J':
 				return long.class;
 			case 'L': {
-				final String javaType = jvmFieldType.substring(1, jvmFieldType.length() - 1)
+				final String javaType = jvmFieldType
+						.substring(1, jvmFieldType.length() - 1)
 						.replaceAll("/", ".");
 				try {
 					return Class.forName(javaType);
