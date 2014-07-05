@@ -12,10 +12,10 @@ import java.util.function.Supplier;
 import javaslang.either.Either;
 
 /**
- * @see <a href="http://en.wikipedia.org/wiki/Parser_combinator">Parser combinator</a>
- * @see <a
- *      href="http://stackoverflow.com/questions/1888854/what-is-the-difference-between-an-abstract-syntax-tree-and-a-concrete-syntax-tre">ast
- *      vs. cst</a>
+ * @see <a href="http://en.wikipedia.org/wiki/Parser_combinator">Parser combinator</a>.<br>
+ * @see <a href=
+ *      "http://stackoverflow.com/questions/1888854/what-is-the-difference-between-an-abstract-syntax-tree-and-a-concrete-syntax-tre"
+ *      >ast vs. cst</a>
  */
 public abstract class Parser implements Supplier<Parser> {
 
@@ -27,7 +27,7 @@ public abstract class Parser implements Supplier<Parser> {
 	}
 
 	abstract void stringify(StringBuilder rule, StringBuilder definitions, Set<String> visited);
-	
+
 	@Override
 	public final Parser get() {
 		return this;
