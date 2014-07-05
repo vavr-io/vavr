@@ -5,8 +5,8 @@
  */
 package javaslang.text;
 
-import static javaslang.lang.Lang.require;
-import static javaslang.lang.Lang.requireNotNullOrEmpty;
+import static javaslang.Lang.require;
+import static javaslang.Lang.requireNotNullOrEmpty;
 
 import java.util.Set;
 import java.util.function.Predicate;
@@ -14,9 +14,9 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javaslang.Stringz;
 import javaslang.either.Either;
 import javaslang.either.Left;
-import javaslang.lang.Strings;
 
 public class Branch extends Parser {
 
@@ -50,7 +50,7 @@ public class Branch extends Parser {
 	private Either<Integer, Tree<Token>> reduce(Either<Integer, Tree<Token>> tree1,
 			Either<Integer, Tree<Token>> tree2, String text, int index) {
 		require(tree1.isLeft() || tree2.isLeft(),
-				() -> "Ambiguity found at " + Strings.lineAndColumn(text, index) + ":\n" + text);
+				() -> "Ambiguity found at " + Stringz.lineAndColumn(text, index) + ":\n" + text);
 		if (tree1.isRight()) {
 			return tree1;
 		} else if (tree2.isRight()) {

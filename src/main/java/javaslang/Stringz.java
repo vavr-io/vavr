@@ -3,16 +3,17 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.lang;
+package javaslang;
 
 import static java.lang.Math.max;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.fill;
 import static java.util.regex.Pattern.compile;
 import static java.util.stream.Collectors.joining;
-import static javaslang.lang.Lang.require;
-import static javaslang.lang.Lang.requireNonNull;
-import static javaslang.lang.Lang.requireNotNullOrEmpty;
+import static javaslang.Lang.require;
+import static javaslang.Lang.requireNonNull;
+import static javaslang.Lang.requireNotInstantiable;
+import static javaslang.Lang.requireNotNullOrEmpty;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,12 +24,12 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javaslang.lang.Tuples.Tuple2;
+import javaslang.Tuplez.Tuple2;
 
 /**
  * Extension methods for {@link java.lang.String}.
  */
-public final class Strings {
+public final class Stringz {
 
 	/**
 	 * An end of line pattern (mac/unix/win)
@@ -37,15 +38,15 @@ public final class Strings {
 
 	/**
 	 * Lock, needed to detect indirect loops. See
-	 * {@link StringsTest#shouldDetectIndirectLoopOnToString()}.
+	 * {@link StringzTest#shouldDetectIndirectLoopOnToString()}.
 	 */
 	private static final ThreadLocal<Boolean> isToStringLocked = new ThreadLocal<>();
 
 	/**
-	 * This class is not intendet to be instantiated.
+	 * This class is not intended to be instantiated.
 	 */
-	private Strings() {
-		throw new AssertionError(Strings.class.getName() + " cannot be instantiated.");
+	private Stringz() {
+		requireNotInstantiable();
 	}
 
 	/**
@@ -140,7 +141,7 @@ public final class Strings {
 		final int eol = max(documentToCursor.lastIndexOf("\r"), documentToCursor.lastIndexOf("\n"));
 		final int len = documentToCursor.length();
 		final int column = (len == 0) ? 1 : len - ((eol == -1) ? 0 : eol);
-		return Tuples.of(line, column);
+		return Tuplez.of(line, column);
 	}
 
 	/**
@@ -369,7 +370,7 @@ public final class Strings {
 		} else if (o instanceof CharSequence) {
 			return '"' + o.toString() + '"';
 		} else if (o.getClass().isArray()) {
-			return toString(ArrayExtensions.toStream(o), ", ", "[", "]", visited, o);
+			return toString(Arrayz.toStream(o), ", ", "[", "]", visited, o);
 		} else if (o instanceof Set) {
 			return toString(((Set<?>) o).stream(), ", ", "{", "}", visited, o);
 		} else if (o instanceof Collection) {

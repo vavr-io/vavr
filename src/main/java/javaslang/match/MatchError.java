@@ -5,7 +5,7 @@
  */
 package javaslang.match;
 
-import javaslang.lang.Strings;
+import javaslang.Stringz;
 
 /**
  * A {@link Match} throws a MatchError if no case matches the applied object.
@@ -21,7 +21,7 @@ public class MatchError extends RuntimeException {
 	 * @param obj The object which could not be matched.
 	 */
 	MatchError(Object obj) {
-		super((obj == null) ? "null" : "type: " + obj.getClass().getName() + ", value: " + Strings.toString(obj));
+		super((obj == null) ? "null" : "type: " + obj.getClass().getName() + ", value: " + Stringz.toString(obj));
 		this.obj = obj;
 	}
 	

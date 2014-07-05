@@ -8,8 +8,8 @@ package javaslang.text;
 import static javaslang.text.Multiplicity.Bounds.ZERO_TO_N;
 import static javaslang.text.Multiplicity.Bounds.ZERO_TO_ONE;
 import static org.fest.assertions.api.Assertions.assertThat;
+import javaslang.Lang.UnsatisfiedRequirementException;
 import javaslang.either.Either;
-import javaslang.lang.Lang.UnsatisfiedRequirementException;
 
 import org.junit.Test;
 

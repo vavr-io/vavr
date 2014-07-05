@@ -5,14 +5,14 @@
  */
 package javaslang.text;
 
-import static javaslang.lang.Lang.requireNonNull;
+import static javaslang.Lang.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
-import javaslang.lang.Strings;
+import javaslang.Stringz;
 
 /**
  * A tree representation, Inspired by <a
@@ -146,7 +146,7 @@ public class Tree<T> {
 	}
 
 	protected String toString(int depth) {
-		final String indent = Strings.repeat(' ', depth * 2);
+		final String indent = Stringz.repeat(' ', depth * 2);
 		final String inner = children.stream()
 		// create child strings
 				.map(child -> child.toString(depth + 1))

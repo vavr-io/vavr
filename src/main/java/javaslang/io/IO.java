@@ -5,6 +5,8 @@
  */
 package javaslang.io;
 
+import static javaslang.Lang.requireNotInstantiable;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -45,10 +47,10 @@ public final class IO {
 	public static final Charset UTF8 = Charset.forName("UTF-8");
 
 	/**
-	 * This class is not intendet to be instantiated.
+	 * This class is not intended to be instantiated.
 	 */
 	private IO() {
-		throw new AssertionError(IO.class.getName() + " cannot be instantiated.");
+		requireNotInstantiable();
 	}
 
 	/**

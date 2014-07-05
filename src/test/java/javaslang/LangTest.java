@@ -3,10 +3,10 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.lang;
+package javaslang;
 
-import javaslang.lang.Lang;
-import javaslang.lang.Lang.UnsatisfiedRequirementException;
+import javaslang.Lang;
+import javaslang.Lang.UnsatisfiedRequirementException;
 
 import org.junit.Test;
 

@@ -3,125 +3,127 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.lang;
+package javaslang;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.io.Serializable;
 
+import javaslang.Lambdaz;
+
 import org.junit.Test;
 
-public class LambdasTest {
+public class LambdazTest {
 
 	@Test
 	public void shouldParseReturnTypeVoid() {
 		final ReturnTypeVoid lambda = () -> {};
-		final Class<?> actual = Lambdas.getLambdaSignature(lambda).getReturnType();
+		final Class<?> actual = Lambdaz.getLambdaSignature(lambda).getReturnType();
 		assertThat(actual.getName()).isEqualTo("void");
 	}
 
 	@Test
 	public void shouldParseReturnTypeBoolean() {
 		final ReturnTypeBoolean lambda = () -> true;
-		final Class<?> actual = Lambdas.getLambdaSignature(lambda).getReturnType();
+		final Class<?> actual = Lambdaz.getLambdaSignature(lambda).getReturnType();
 		assertThat(actual.getName()).isEqualTo("boolean");
 	}
 
 	@Test
 	public void shouldParseReturnTypeByte() {
 		final ReturnTypeByte lambda = () -> (byte) 1;
-		final Class<?> actual = Lambdas.getLambdaSignature(lambda).getReturnType();
+		final Class<?> actual = Lambdaz.getLambdaSignature(lambda).getReturnType();
 		assertThat(actual.getName()).isEqualTo("byte");
 	}
 
 	@Test
 	public void shouldParseReturnTypeChar() {
 		final ReturnTypeChar lambda = () -> '@';
-		final Class<?> actual = Lambdas.getLambdaSignature(lambda).getReturnType();
+		final Class<?> actual = Lambdaz.getLambdaSignature(lambda).getReturnType();
 		assertThat(actual.getName()).isEqualTo("char");
 	}
 
 	@Test
 	public void shouldParseReturnTypeDouble() {
 		final ReturnTypeDouble lambda = () -> 1.0d;
-		final Class<?> actual = Lambdas.getLambdaSignature(lambda).getReturnType();
+		final Class<?> actual = Lambdaz.getLambdaSignature(lambda).getReturnType();
 		assertThat(actual.getName()).isEqualTo("double");
 	}
 
 	@Test
 	public void shouldParseReturnTypeFloat() {
 		final ReturnTypeFloat lambda = () -> 1.0f;
-		final Class<?> actual = Lambdas.getLambdaSignature(lambda).getReturnType();
+		final Class<?> actual = Lambdaz.getLambdaSignature(lambda).getReturnType();
 		assertThat(actual.getName()).isEqualTo("float");
 	}
 
 	@Test
 	public void shouldParseReturnTypeInt() {
 		final ReturnTypeInt lambda = () -> 1;
-		final Class<?> actual = Lambdas.getLambdaSignature(lambda).getReturnType();
+		final Class<?> actual = Lambdaz.getLambdaSignature(lambda).getReturnType();
 		assertThat(actual.getName()).isEqualTo("int");
 	}
 
 	@Test
 	public void shouldParseReturnTypeLong() {
 		final ReturnTypeLong lambda = () -> 1L;
-		final Class<?> actual = Lambdas.getLambdaSignature(lambda).getReturnType();
+		final Class<?> actual = Lambdaz.getLambdaSignature(lambda).getReturnType();
 		assertThat(actual.getName()).isEqualTo("long");
 	}
 
 	@Test
 	public void shouldParseReturnTypeShort() {
 		final ReturnTypeShort lambda = () -> (short) 1;
-		final Class<?> actual = Lambdas.getLambdaSignature(lambda).getReturnType();
+		final Class<?> actual = Lambdaz.getLambdaSignature(lambda).getReturnType();
 		assertThat(actual.getName()).isEqualTo("short");
 	}
 
 	@Test
 	public void shouldParseReturnTypeArrayOfInt() {
 		final ReturnTypeArrayOfInt lambda = () -> new int[] {};
-		final Class<?> actual = Lambdas.getLambdaSignature(lambda).getReturnType();
+		final Class<?> actual = Lambdaz.getLambdaSignature(lambda).getReturnType();
 		assertThat(actual.getName()).isEqualTo("[I");
 	}
 	
 	@Test
 	public void shouldParseParameterTypeArrayOfBoolean() {
 		final ParameterTypeArrayOfBoolean lambda = (boolean[] b) -> { return; };
-		final Class<?> actual = Lambdas.getLambdaSignature(lambda).getParameterTypes()[0];
+		final Class<?> actual = Lambdaz.getLambdaSignature(lambda).getParameterTypes()[0];
 		assertThat(actual.getName()).isEqualTo("[Z");
 	}
 
 	@Test
 	public void shouldParseReturnTypeArrayOfArrayReference() {
 		final ReturnTypeArrayOfArrayOfString lambda = () -> new String[][] {};
-		final Class<?> actual = Lambdas.getLambdaSignature(lambda).getReturnType();
+		final Class<?> actual = Lambdaz.getLambdaSignature(lambda).getReturnType();
 		assertThat(actual.getName()).isEqualTo("[[Ljava.lang.String;");
 	}
 
 	@Test
 	public void shouldParseReturnTypeClassReference() {
 		final ReturnTypeClassReference lambda = () -> "hi";
-		final Class<?> actual = Lambdas.getLambdaSignature(lambda).getReturnType();
+		final Class<?> actual = Lambdaz.getLambdaSignature(lambda).getReturnType();
 		assertThat(actual.getName()).isEqualTo("java.lang.String");
 	}
 
 	@Test
 	public void shouldParseNoParameterTypes() {
 		final NoParameterTypes lambda = () -> {};
-		final Class<?>[] actual = Lambdas.getLambdaSignature(lambda).getParameterTypes();
+		final Class<?>[] actual = Lambdaz.getLambdaSignature(lambda).getParameterTypes();
 		assertThat(actual).isEmpty();
 	}
 	
 	@Test
 	public void shouldParseOneParameterType() {
 		final OneParameterType lambda = (int i) -> {};
-		final Class<?>[] actual = Lambdas.getLambdaSignature(lambda).getParameterTypes();
+		final Class<?>[] actual = Lambdaz.getLambdaSignature(lambda).getParameterTypes();
 		assertThat(actual).containsExactly(int.class);
 	}
 	
 	@Test
 	public void shouldParseTwoParameterTypes() throws ClassNotFoundException {
 		final TwoParameterTypes lambda = (String s, byte[][] bytes) -> {};
-		final Class<?>[] actual = Lambdas.getLambdaSignature(lambda).getParameterTypes();
+		final Class<?>[] actual = Lambdaz.getLambdaSignature(lambda).getParameterTypes();
 		assertThat(actual).containsExactly(String.class, Class.forName("[[B"));
 	}
 	

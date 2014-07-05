@@ -3,17 +3,19 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.lang;
+package javaslang;
 
 import static org.fest.assertions.api.Assertions.assertThat;
-import static javaslang.lang.Tuples.*;
+import static javaslang.Tuplez.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javaslang.Tuplez;
+
 import org.junit.Test;
 
-public class TuplesTest {
+public class TuplezTest {
 
 	@Test
 	public void shouldCreateEmptyTuple() {
@@ -94,12 +96,12 @@ public class TuplesTest {
 		
 		// create recursive structure1
 		final List<Tuple> listA = new ArrayList<>();
-		final Tuple tupleA = Tuples.of(listA);
+		final Tuple tupleA = Tuplez.of(listA);
 		listA.add(tupleA);
 
 		// create recursive structure2
 		final List<Tuple> listB = new ArrayList<>();
-		final Tuple tupleB = Tuples.of(listB);
+		final Tuple tupleB = Tuplez.of(listB);
 		listB.add(tupleB);
 		
 		// detect that structures are not the same
@@ -112,7 +114,7 @@ public class TuplesTest {
 		
 		// create recursive structure
 		final List<Tuple1<?>> list = new ArrayList<>();
-		final Tuple1<List<?>> tuple = Tuples.of(list);
+		final Tuple1<List<?>> tuple = Tuplez.of(list);
 		list.add(tuple);
 		
 		// detect loop on hashCode

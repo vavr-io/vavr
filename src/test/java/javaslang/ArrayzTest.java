@@ -3,44 +3,44 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.lang;
+package javaslang;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javaslang.lang.ArrayExtensions;
+import javaslang.Arrayz;
 
 import org.junit.Test;
 
-public class ArrayExtensionsTest {
+public class ArrayzTest {
 	
 	@Test
 	public void shoudRecognizeNullArray() {
 		final byte[] array = null;
-		final boolean actual = ArrayExtensions.isNullOrEmpty(array);
+		final boolean actual = Arrayz.isNullOrEmpty(array);
 		assertThat(actual).isEqualTo(true);
 	}
 
 	@Test
 	public void shoudRecognizeEmptyArray() {
 		final byte[] array = new byte[] { };
-		final boolean actual = ArrayExtensions.isNullOrEmpty(array);
+		final boolean actual = Arrayz.isNullOrEmpty(array);
 		assertThat(actual).isEqualTo(true);
 	}
 	
 	@Test
 	public void shoudRecognizeNoneEmptyArray() {
 		final byte[] array = new byte[] { 1, 2, 3 };
-		final boolean actual = ArrayExtensions.isNullOrEmpty(array);
+		final boolean actual = Arrayz.isNullOrEmpty(array);
 		assertThat(actual).isEqualTo(false);
 	}
 	
 	@Test
 	public void shoudConvertIntArrayToList() {
 		final int[] array = new int[] { 1, 2, 3 };
-		final List<Integer> actual = ArrayExtensions.asList(array);
+		final List<Integer> actual = Arrayz.asList(array);
 		final List<Integer> expected = new ArrayList<Integer>();
 		expected.add(1);
 		expected.add(2);

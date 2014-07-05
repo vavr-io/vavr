@@ -5,6 +5,8 @@
  */
 package javaslang.collection;
 
+import static javaslang.Lang.requireNotInstantiable;
+
 import java.util.List;
 
 import javaslang.option.None;
@@ -19,17 +21,17 @@ import javaslang.option.Some;
  * <strong>Note:</strong> If the list is an array of primitive component type, e.g. int[], the
  * {@link java.util.Arrays#asList(Object...)} is not sufficient, because the array is treated as
  * object. In this case please use one of the asList methods provided by
- * {@link javaslang.lang.ArrayExtensions}, e.g. {@link javaslang.lang.ArrayExtensions#asList(int[])}.
+ * {@link javaslang.Arrayz}, e.g. {@link javaslang.Arrayz#asList(int[])}.
  * 
  * @see java.util.Collections
  */
-public final class Lists {
+public final class Listz {
 
 	/**
-	 * This class is not intendet to be instantiated.
+	 * This class is not intended to be instantiated.
 	 */
-	private Lists() {
-		throw new AssertionError(Lists.class.getName() + " cannot be instantiated.");
+	private Listz() {
+		requireNotInstantiable();
 	}
 
 	/**
@@ -42,7 +44,7 @@ public final class Lists {
 	 * @return None, if the list is null or empty, otherwise Some containing the first element.
 	 */
 	public static <T> Option<T> firstElement(List<T> list) {
-		return CollectionExtensions.isNullOrEmpty(list) ? None.<T> instance() : new Some<T>(list.get(0));
+		return Collectionz.isNullOrEmpty(list) ? None.<T> instance() : new Some<T>(list.get(0));
 	}
 
 	/**
@@ -55,7 +57,7 @@ public final class Lists {
 	 * @return None, if the list is null or empty, otherwise Some containing the last element.
 	 */
 	public static <T> Option<T> lastElement(List<T> list) {
-		return CollectionExtensions.isNullOrEmpty(list) ? None.<T> instance() : new Some<T>(list.get(list
+		return Collectionz.isNullOrEmpty(list) ? None.<T> instance() : new Some<T>(list.get(list
 				.size() - 1));
 	}
 	

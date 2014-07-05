@@ -17,7 +17,7 @@ public class MatchTest {
 
 	@Test
 	public void shouldMatchNullAsPrototype() {
-		final int actual = Matchs
+		final int actual = Matchz
 				.caze((String s) -> s.length())
 				.caze(null, o -> 1)
 				.apply(null);
@@ -34,7 +34,7 @@ public class MatchTest {
 	
 	@Test
 	public void shouldMatchByValuesUsingFunction() {
-		final int actual = Matchs
+		final int actual = Matchz
 				.caze("1", (String s) -> 1)
 				.apply("1");
 		assertThat(actual).isEqualTo(1);
@@ -42,12 +42,12 @@ public class MatchTest {
 
 	@Test(expected = MatchError.class)
 	public void shouldThrowOnNoMatchByValue() {
-		Matchs.caze("1", o -> 1).apply("2");
+		Matchz.caze("1", o -> 1).apply("2");
 	}
 	
 	@Test
 	public void shouldMatchByValueOnMultipleCases() {
-		final int actual = Matchs
+		final int actual = Matchz
 				.caze("1", o -> 1)
 				.caze("2", o -> 2)
 				.caze("3", o -> 3)
@@ -57,7 +57,7 @@ public class MatchTest {
 	
 	@Test
 	public void shouldMatchByDoubleOnMultipleCasesUsingTypedParameter() {
-		final int actual = Matchs
+		final int actual = Matchz
 				.caze((Byte b) -> 1)
 				.caze((Double d) -> 2)
 				.caze((Integer i) -> 3)
@@ -67,7 +67,7 @@ public class MatchTest {
 
 	@Test
 	public void shouldMatchByIntOnMultipleCasesUsingTypedParameter() {
-		final int actual = Matchs
+		final int actual = Matchz
 				.caze((Byte b) -> (int) b)
 				.caze((Double d) -> d.intValue())
 				.caze((Integer i) -> i)
@@ -77,7 +77,7 @@ public class MatchTest {
 	
 	@Test
 	public void shouldMatchByAssignableTypeOnMultipleCases() {
-		final int actual = Matchs
+		final int actual = Matchz
 				.caze(1, o -> 'a')
 				.caze((Number n) -> 'b')
 				.caze((Object o) -> 'c')
@@ -87,7 +87,7 @@ public class MatchTest {
 	
 	@Test
 	public void shouldMatchDefaultCase() {
-		final int actual = Matchs
+		final int actual = Matchz
 				.caze(null, o -> 1)
 				.caze((Object o) -> 2)
 				.apply("default");

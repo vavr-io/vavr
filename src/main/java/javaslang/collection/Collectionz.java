@@ -5,18 +5,20 @@
  */
 package javaslang.collection;
 
+import static javaslang.Lang.requireNotInstantiable;
+
 import java.util.Collection;
 
 /**
  * Additions to {@link java.util.Collections}.
  */
-public final class CollectionExtensions {
+public final class Collectionz {
 
 	/**
-	 * This class is not intendet to be instantiated.
+	 * This class is not intended to be instantiated.
 	 */
-	private CollectionExtensions() {
-		throw new AssertionError(CollectionExtensions.class.getName() + " cannot be instantiated.");
+	private Collectionz() {
+		requireNotInstantiable();
 	}
 
 	/**

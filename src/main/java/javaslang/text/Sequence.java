@@ -5,7 +5,7 @@
  */
 package javaslang.text;
 
-import static javaslang.lang.Lang.requireNotNullOrEmpty;
+import static javaslang.Lang.requireNotNullOrEmpty;
 
 import java.util.Set;
 import java.util.function.Predicate;

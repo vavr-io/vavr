@@ -3,12 +3,15 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.lang;
+package javaslang;
 
-import static javaslang.lang.Lang.requireNonNull;
+import static javaslang.Lang.requireNonNull;
+import static javaslang.Lang.requireNotInstantiable;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -22,7 +25,7 @@ import javaslang.match.Match;
 /**
  * Additions to {@link java.util.Arrays}.
  */
-public final class ArrayExtensions {
+public final class Arrayz {
 
 	private static final Match<Stream<?>> ARRAY_TO_STREAM_MATCHER = new Match<Stream<?>>()
 			.caze((boolean[] a) -> stream(a))
@@ -33,7 +36,7 @@ public final class ArrayExtensions {
 			.caze((int[] a) -> stream(a))
 			.caze((long[] a) -> stream(a))
 			.caze((short[] a) -> stream(a))
-			.caze((Object[] a) -> java.util.Arrays.stream(a));
+			.caze((Object[] a) -> Arrays.stream(a));
 
 	private static final Match<Stream<?>> ARRAY_TO_PARALLEL_STREAM_MATCHER = new Match<Stream<?>>()
 			.caze((boolean[] a) -> parallelStream(a))
@@ -44,13 +47,13 @@ public final class ArrayExtensions {
 			.caze((int[] a) -> parallelStream(a))
 			.caze((long[] a) -> parallelStream(a))
 			.caze((short[] a) -> parallelStream(a))
-			.caze((Object[] a) -> java.util.Arrays.stream(a).parallel());
+			.caze((Object[] a) -> Arrays.stream(a).parallel());
 
 	/**
-	 * This class is not intendet to be instantiated.
+	 * This class is not intended to be instantiated.
 	 */
-	private ArrayExtensions() {
-		throw new AssertionError(ArrayExtensions.class.getName() + " cannot be instantiated.");
+	private Arrayz() {
+		requireNotInstantiable();
 	}
 
 	// -- asList
@@ -302,6 +305,7 @@ public final class ArrayExtensions {
 
 	public static Stream<Short> stream(short[] array) {
 		requireNonNull(array, "array is null");
+		Stream.of(array);
 		return new StreamableList<Short>(array.length, i -> array[i]).stream();
 	}
 	
@@ -381,7 +385,7 @@ public final class ArrayExtensions {
 		for (int i = 0; i < size; i++) {
 			result.add(generator.apply(i));
 		}
-		return java.util.Collections.unmodifiableList(result);
+		return Collections.unmodifiableList(result);
 	}
 
 	private static class StreamableList<E> extends AbstractList<E> {

@@ -5,7 +5,7 @@
  */
 package javaslang.exception;
 
-import static javaslang.match.Matchs.caze;
+import static javaslang.match.Matchz.caze;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import org.junit.Test;

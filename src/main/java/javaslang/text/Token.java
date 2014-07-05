@@ -11,7 +11,7 @@ public class Token {
 	int start;
 	int end;
 	
-	public Token(String text, int start, int end) {
+	Token(String text, int start, int end) {
 		this.text = text;
 		this.start = start;
 		this.end = end;

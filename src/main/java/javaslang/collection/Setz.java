@@ -5,7 +5,8 @@
  */
 package javaslang.collection;
 
-import static javaslang.lang.Lang.requireNonNull;
+import static javaslang.Lang.requireNonNull;
+import static javaslang.Lang.requireNotInstantiable;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -13,13 +14,13 @@ import java.util.Set;
 /**
  * Extension methods for {@link java.util.Set}.
  */
-public final class Sets {
+public final class Setz {
 
 	/**
-	 * This class is not intendet to be instantiated.
+	 * This class is not intended to be instantiated.
 	 */
-	private Sets() {
-		throw new AssertionError(Sets.class.getName() + " cannot be instantiated.");
+	private Setz() {
+		requireNotInstantiable();
 	}
 
 	/**

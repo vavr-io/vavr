@@ -11,26 +11,26 @@ import java.util.List;
 
 import org.junit.Test;
 
-public class CollectionExtensionsTest {
+public class CollectionzTest {
 	
 	@Test
 	public void shoudRecognizeNullList() {
 		final List<?> list = null;
-		final boolean actual = CollectionExtensions.isNullOrEmpty(list);
+		final boolean actual = Collectionz.isNullOrEmpty(list);
 		assertThat(actual).isEqualTo(true);
 	}
 
 	@Test
 	public void shoudRecognizeEmptyList() {
 		final List<?> list = java.util.Collections.emptyList();
-		final boolean actual = CollectionExtensions.isNullOrEmpty(list);
+		final boolean actual = Collectionz.isNullOrEmpty(list);
 		assertThat(actual).isEqualTo(true);
 	}
 	
 	@Test
 	public void shoudRecognizeNoneEmptyList() {
 		final List<?> list = java.util.Arrays.asList(1, 2, 3);
-		final boolean actual = CollectionExtensions.isNullOrEmpty(list);
+		final boolean actual = Collectionz.isNullOrEmpty(list);
 		assertThat(actual).isEqualTo(false);
 	}
 

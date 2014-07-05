@@ -3,8 +3,10 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.lang;
+package javaslang;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -13,8 +15,11 @@ import java.util.stream.Stream;
  */
 public final class Lang {
 
+	/**
+	 * This class is not intended to be instantiated.
+	 */
 	private Lang() {
-		throw new AssertionError(Lang.class.getName() + " cannot be instantiated.");
+		requireNotInstantiable();
 	}
 
 	/**
@@ -23,7 +28,7 @@ public final class Lang {
 	 * @param o an Object
 	 */
 	public static void print(Object o) {
-		final String s = Strings.toString(o);
+		final String s = Stringz.toString(o);
 		System.out.print(s);
 	}
 
@@ -33,7 +38,7 @@ public final class Lang {
 	 * @param o an Object
 	 */
 	public static void println(Object o) {
-		final String s = Strings.toString(o);
+		final String s = Stringz.toString(o);
 		System.out.println(s);
 	}
 
@@ -74,7 +79,7 @@ public final class Lang {
 	 * @return A formatted string
 	 */
 	private static String format(String format, Object[] objects) {
-		final Object[] args = Stream.of(objects).map(Strings::toString).toArray();
+		final Object[] args = Stream.of(objects).map(Stringz::toString).toArray();
 		return String.format(format, args);
 	}
 
@@ -263,6 +268,33 @@ public final class Lang {
 	}
 
 	/**
+	 * Method used in conjunction with the class-not-instantiable idiom. The exception stack strace
+	 * tells the prohibited constructor call.
+	 * 
+	 * <pre>
+	 * <code>
+	 * import static javaslang.Lang.*;
+	 * 
+	 * public class FunkyType {
+	 * 
+	 *    &#47;**
+	 *     * This class is not intended to be instantiated.
+	 *     *&#47;
+	 *     private FunkyType() {
+	 *         requireNotInstantiable();
+	 *     }
+	 * 
+	 * }
+	 * </code>
+	 * </pre>
+	 * 
+	 * @throws UnsatisfiedRequirementException yes, that's true.
+	 */
+	public static void requireNotInstantiable() {
+		throw new UnsatisfiedRequirementException("Class cannot be instantiated.");
+	}
+
+	/**
 	 * Ensures that there are no cycles in a direct/indirect recursion. A method may use this, if
 	 * the return value recursively calls the method under some circumstances and the recursion does
 	 * not end.
@@ -316,6 +348,71 @@ public final class Lang {
 		}
 	}
 
+	/**
+	 * Exits the JVM using {@code Runtime.getRuntime().exit(status)} (which is equivalent to
+	 * {@code System.exit(0)}). If something goes wrong while running the finalizers and shutdown
+	 * hooks, or the timeout is reached, the JVM is forced to be terminated by calling
+	 * {@code Runtime.getRuntime().halt(status)}.
+	 * 
+	 * @param status the exit status, zero for OK, non-zero for error
+	 * @param timeout The maximum delay in milliseconds before calling
+	 *            {@code Runtime.getRuntime().halt(status)}.
+	 * 
+	 * @see <a href="http://blog.joda.org/2014/02/exiting-jvm.html">exiting jvm</a>
+	 */
+	public static void exit(int status, long timeout) {
+		final Runtime runtime = Runtime.getRuntime();
+		try {
+			schedule(() -> runtime.halt(status), timeout);
+			runtime.exit(status);
+		} catch (Throwable x) {
+			runtime.halt(status);
+		} finally { // double-check
+			runtime.halt(status);
+		}
+	}
+
+	/**
+	 * Syntactic sugar, allows to call
+	 * 
+	 * <pre>
+	 * <code>
+	 * final Timer timer = Timers.schedule(() -&gt; println("hi"), 1000)
+	 * </code>
+	 * </pre>
+	 * 
+	 * instead of
+	 * 
+	 * <pre>
+	 * <code>
+	 * final Timer timer = new Timer();
+	 * timer.schedule(new TimerTask() {
+	 *     &#64;Override
+	 *     public void run() {
+	 *         println("hi");
+	 *     }
+	 * }, 1000);
+	 * </code>
+	 * </pre>
+	 * 
+	 * @param task A Runnable
+	 * @param delay A delay in milliseconds
+	 * @return A Timer
+	 */
+	public static Timer schedule(Runnable task, long delay) {
+		final Timer timer = new Timer();
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				task.run();
+			}
+		}, delay);
+		return timer;
+	}
+
+	/**
+	 * Thrown by the {@linkplain Lang#require}* methods.
+	 */
 	public static class UnsatisfiedRequirementException extends RuntimeException {
 
 		private static final long serialVersionUID = 1L;

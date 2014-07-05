@@ -3,19 +3,21 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.lang;
+package javaslang;
+
+import static javaslang.Lang.requireNotInstantiable;
 
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public final class Tuples {
+public final class Tuplez {
 
 	/**
-	 * This class is not intendet to be instantiated.
+	 * This class is not intended to be instantiated.
 	 */
-	private Tuples() {
-		throw new AssertionError(Tuples.class.getName() + " cannot be instantiated.");
+	private Tuplez() {
+		requireNotInstantiable();
 	}
 	
 	public static Tuple0 of() {
@@ -90,7 +92,7 @@ public final class Tuples {
 	}
 
 	private static String stringify(Object... objects) {
-		return Stream.of(objects).map(Strings::toString)
+		return Stream.of(objects).map(Stringz::toString)
 				.collect(Collectors.joining(", ", "(", ")"));
 	}
 
@@ -121,7 +123,7 @@ public final class Tuples {
 
 		@Override
 		public String toString() {
-			return Tuples.stringify();
+			return Tuplez.stringify();
 		}
 	}
 
@@ -154,7 +156,7 @@ public final class Tuples {
 
 		@Override
 		public String toString() {
-			return Tuples.stringify(_1);
+			return Tuplez.stringify(_1);
 		}
 	}
 
@@ -190,7 +192,7 @@ public final class Tuples {
 
 		@Override
 		public String toString() {
-			return Tuples.stringify(_1, _2);
+			return Tuplez.stringify(_1, _2);
 		}
 	}
 
@@ -229,7 +231,7 @@ public final class Tuples {
 
 		@Override
 		public String toString() {
-			return Tuples.stringify(_1, _2, _3);
+			return Tuplez.stringify(_1, _2, _3);
 		}
 	}
 
@@ -271,7 +273,7 @@ public final class Tuples {
 
 		@Override
 		public String toString() {
-			return Tuples.stringify(_1, _2, _3, _4);
+			return Tuplez.stringify(_1, _2, _3, _4);
 		}
 	}
 
@@ -316,7 +318,7 @@ public final class Tuples {
 
 		@Override
 		public String toString() {
-			return Tuples.stringify(_1, _2, _3, _4, _5);
+			return Tuplez.stringify(_1, _2, _3, _4, _5);
 		}
 	}
 
@@ -364,7 +366,7 @@ public final class Tuples {
 
 		@Override
 		public String toString() {
-			return Tuples.stringify(_1, _2, _3, _4, _5, _6);
+			return Tuplez.stringify(_1, _2, _3, _4, _5, _6);
 		}
 	}
 
@@ -416,7 +418,7 @@ public final class Tuples {
 
 		@Override
 		public String toString() {
-			return Tuples.stringify(_1, _2, _3, _4, _5, _6, _7);
+			return Tuplez.stringify(_1, _2, _3, _4, _5, _6, _7);
 		}
 	}
 
@@ -471,7 +473,7 @@ public final class Tuples {
 
 		@Override
 		public String toString() {
-			return Tuples.stringify(_1, _2, _3, _4, _5, _6, _7, _8);
+			return Tuplez.stringify(_1, _2, _3, _4, _5, _6, _7, _8);
 		}
 	}
 
@@ -530,7 +532,7 @@ public final class Tuples {
 
 		@Override
 		public String toString() {
-			return Tuples.stringify(_1, _2, _3, _4, _5, _6, _7, _8, _9);
+			return Tuplez.stringify(_1, _2, _3, _4, _5, _6, _7, _8, _9);
 		}
 	}
 
@@ -592,7 +594,7 @@ public final class Tuples {
 
 		@Override
 		public String toString() {
-			return Tuples.stringify(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10);
+			return Tuplez.stringify(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10);
 		}
 	}
 
@@ -657,7 +659,7 @@ public final class Tuples {
 
 		@Override
 		public String toString() {
-			return Tuples.stringify(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10,
+			return Tuplez.stringify(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10,
 					_11);
 		}
 	}
@@ -727,7 +729,7 @@ public final class Tuples {
 
 		@Override
 		public String toString() {
-			return Tuples.stringify(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10,
+			return Tuplez.stringify(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10,
 					_11, _12);
 		}
 	}
@@ -800,7 +802,7 @@ public final class Tuples {
 
 		@Override
 		public String toString() {
-			return Tuples.stringify(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10,
+			return Tuplez.stringify(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10,
 					_11, _12, _13);
 		}
 	}

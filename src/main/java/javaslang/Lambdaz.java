@@ -3,7 +3,9 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.lang;
+package javaslang;
+
+import static javaslang.Lang.requireNotInstantiable;
 
 import java.io.Serializable;
 import java.lang.invoke.SerializedLambda;
@@ -21,15 +23,15 @@ import java.util.regex.Pattern;
  *      href="http://stackoverflow.com/questions/21860875/printing-debug-info-on-errors-with-java-8-lambda-expressions">printing
  *      debug info on errors with java 8 lambda expressions</a>
  */
-public final class Lambdas {
+public final class Lambdaz {
 
 	private static final Pattern JVM_FIELD_TYPE = Pattern.compile("\\[*(B|C|D|F|I|J|(L.*;)|S|V|Z)");
 
 	/**
-	 * This class is not intendet to be instantiated.
+	 * This class is not intended to be instantiated.
 	 */
-	private Lambdas() {
-		throw new AssertionError(Lambdas.class.getName() + " cannot be instantiated.");
+	private Lambdaz() {
+		requireNotInstantiable();
 	}
 
 	/**

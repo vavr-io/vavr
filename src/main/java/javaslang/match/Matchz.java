@@ -5,18 +5,19 @@
  */
 package javaslang.match;
 
+import static javaslang.Lang.requireNotInstantiable;
 import javaslang.match.Match.SerializableFunction;
 
 /**
  * Extension methods for {@link Match}.
  */
-public final class Matchs {
+public final class Matchz {
 
 	/**
-	 * This class is not intendet to be instantiated.
+	 * This class is not intended to be instantiated.
 	 */
-	private Matchs() {
-		throw new AssertionError(Matchs.class.getName() + " cannot be instantiated.");
+	private Matchz() {
+		requireNotInstantiable();
 	}
 
 	/**
