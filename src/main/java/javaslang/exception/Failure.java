@@ -5,7 +5,7 @@
  */
 package javaslang.exception;
 
-import static javaslang.lang.Lang.require;
+import static javaslang.lang.Lang.requireNonNull;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -26,7 +26,7 @@ public class Failure<T> implements Try<T> {
 	 * @throws IllegalStateException if t is null.
 	 */
 	public Failure(Throwable t) {
-		require(t != null, "Throwable is null");
+		requireNonNull(t, "Throwable is null");
 		final Cause cause = Cause.of(t);
 		if (cause.isFatal()) {
 			throw cause;

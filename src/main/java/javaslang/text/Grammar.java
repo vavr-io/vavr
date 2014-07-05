@@ -5,7 +5,7 @@
  */
 package javaslang.text;
 
-import static javaslang.lang.Lang.require;
+import static javaslang.lang.Lang.requireNonNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -29,10 +29,10 @@ import javaslang.exception.Try;
 // TODO: remove Branch, Sequence and Multiplicity nodes if they have no name/id
 public class Grammar {
 	
-	final Supplier<Parser> parser;
+	private final Supplier<Parser> parser;
 
 	public Grammar(Supplier<Parser> parser) {
-		require(parser != null, "parser is null");
+		requireNonNull(parser, "parser is null");
 		this.parser = new Sequence(parser, EOF.instance());
 	}
 

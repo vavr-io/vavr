@@ -5,18 +5,18 @@
  */
 package javaslang.text;
 
-import static javaslang.lang.Lang.require;
+import static javaslang.lang.Lang.requireNotNullOrEmpty;
 
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javaslang.either.Either;
 import javaslang.either.Right;
-import javaslang.lang.ArrayExtensions;
 
 public class Sequence extends Parser {
 
@@ -27,15 +27,15 @@ public class Sequence extends Parser {
 	final Supplier<Parser>[] parsers;
 
 	@SafeVarargs
-	Sequence(Supplier<Parser>... parsers) {
-		require(!ArrayExtensions.isNullOrEmpty(parsers), "no parsers");
+	public Sequence(Supplier<Parser>... parsers) {
+		requireNotNullOrEmpty(parsers, "No parsers");
 		this.name = null;
 		this.parsers = parsers;
 	}
 
 	@SafeVarargs
-	Sequence(String name, Supplier<Parser>... parsers) {
-		require(!ArrayExtensions.isNullOrEmpty(parsers), "no parsers");
+	public Sequence(String name, Supplier<Parser>... parsers) {
+		requireNotNullOrEmpty(parsers, "No parsers");
 		this.name = name;
 		this.parsers = parsers;
 	}
@@ -77,14 +77,16 @@ public class Sequence extends Parser {
 	}
 
 	@Override
-	protected void stringify(StringBuilder rule, StringBuilder definitions, Set<String> visited) {
+	void stringify(StringBuilder rule, StringBuilder definitions, Set<String> visited) {
 		final Predicate<Parser> writeBraces = p -> parsers.length > 1 && p instanceof Branch && ((Branch) p).name == null;
-		Parsers.stringify(name, parsers, " ", " ", writeBraces, rule, definitions, visited);
+		Parser.stringify(name, parsers, " ", " ", writeBraces, rule, definitions, visited);
 	}
 
 	@Override
-	public String toString() {
-		return Parsers.toString(name, parsers, " ");
+	public String toString() {		
+		return (name != null) ? name : Stream.of(parsers)
+				.map(p -> p.get().toString())
+				.collect(Collectors.joining(" "));
 	}
 
 }

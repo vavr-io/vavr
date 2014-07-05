@@ -5,7 +5,8 @@
  */
 package javaslang.exception;
 
-import static javaslang.lang.Lang.require;
+import static javaslang.lang.Lang.requireNonNull;
+
 
 /**
  * Causes wrap Throwables. They are unchecked, i.e. RuntimeExceptions, which are either fatal
@@ -64,7 +65,7 @@ public abstract class Cause extends RuntimeException {
 	 * @throws IllegalStateException if t is null.
 	 */
 	public static Cause of(Throwable t) {
-		require(t != null, "throwable is null");
+		requireNonNull(t, "Throwable is null");
 		final boolean isFatal = (t instanceof VirtualMachineError && !(t instanceof StackOverflowError))//
 				|| t instanceof ThreadDeath//
 				|| t instanceof InterruptedException//

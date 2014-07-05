@@ -5,7 +5,7 @@
  */
 package javaslang.match;
 
-import static javaslang.lang.Lang.require;
+import static javaslang.lang.Lang.requireNonNull;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -74,7 +74,7 @@ public class Match<R> implements Function<Object, R> {
 	 * @throws IllegalStateException if function is null.
 	 */
 	public <T> Match<R> caze(SerializableFunction<T, R> function) {
-		require(function != null, "function is null");
+		requireNonNull(function, "function is null");
 		cases.add(new Case<>(None.instance(), function));
 		return this;
 	}
@@ -90,7 +90,7 @@ public class Match<R> implements Function<Object, R> {
 	 * @throws IllegalStateException if function is null.
 	 */
 	public <T> Match<R> caze(T prototype, SerializableFunction<T, R> function) {
-		require(function != null, "function is null");
+		requireNonNull(function, "function is null");
 		cases.add(new Case<>(new Some<>(prototype), function));
 		return this;
 	}
@@ -104,7 +104,7 @@ public class Match<R> implements Function<Object, R> {
 	 * @throws IllegalStateException if function is null.
 	 */
 	public Match<R> caze(BooleanFunction<R> function) {
-		require(function != null, "function is null");
+		requireNonNull(function, "function is null");
 		cases.add(new Case<>(None.instance(), (Boolean b) -> function.apply(b), Boolean.class));
 		return this;
 	}
@@ -118,7 +118,7 @@ public class Match<R> implements Function<Object, R> {
 	 * @throws IllegalStateException if function is null.
 	 */
 	public Match<R> caze(ByteFunction<R> function) {
-		require(function != null, "function is null");
+		requireNonNull(function, "function is null");
 		cases.add(new Case<>(None.instance(), (Byte b) -> function.apply(b), Byte.class));
 		return this;
 	}
@@ -132,7 +132,7 @@ public class Match<R> implements Function<Object, R> {
 	 * @throws IllegalStateException if function is null.
 	 */
 	public Match<R> caze(CharFunction<R> function) {
-		require(function != null, "function is null");
+		requireNonNull(function, "function is null");
 		cases.add(new Case<>(None.instance(), (Character c) -> function.apply(c), Character.class));
 		return this;
 	}
@@ -146,7 +146,7 @@ public class Match<R> implements Function<Object, R> {
 	 * @throws IllegalStateException if function is null.
 	 */
 	public Match<R> caze(DoubleFunction<R> function) {
-		require(function != null, "function is null");
+		requireNonNull(function, "function is null");
 		cases.add(new Case<>(None.instance(), (Double d) -> function.apply(d), Double.class));
 		return this;
 	}
@@ -160,7 +160,7 @@ public class Match<R> implements Function<Object, R> {
 	 * @throws IllegalStateException if function is null.
 	 */
 	public Match<R> caze(FloatFunction<R> function) {
-		require(function != null, "function is null");
+		requireNonNull(function, "function is null");
 		cases.add(new Case<>(None.instance(), (Float f) -> function.apply(f), Float.class));
 		return this;
 	}
@@ -174,7 +174,7 @@ public class Match<R> implements Function<Object, R> {
 	 * @throws IllegalStateException if function is null.
 	 */
 	public Match<R> caze(IntFunction<R> function) {
-		require(function != null, "function is null");
+		requireNonNull(function, "function is null");
 		cases.add(new Case<>(None.instance(), (Integer i) -> function.apply(i), Integer.class));
 		return this;
 	}
@@ -188,7 +188,7 @@ public class Match<R> implements Function<Object, R> {
 	 * @throws IllegalStateException if function is null.
 	 */
 	public Match<R> caze(LongFunction<R> function) {
-		require(function != null, "function is null");
+		requireNonNull(function, "function is null");
 		cases.add(new Case<>(None.instance(), (Long l) -> function.apply(l), Long.class));
 		return this;
 	}
@@ -202,7 +202,7 @@ public class Match<R> implements Function<Object, R> {
 	 * @throws IllegalStateException if function is null.
 	 */
 	public Match<R> caze(ShortFunction<R> function) {
-		require(function != null, "function is null");
+		requireNonNull(function, "function is null");
 		cases.add(new Case<>(None.instance(), (Short s) -> function.apply(s), Short.class));
 		return this;
 	}

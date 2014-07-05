@@ -5,7 +5,7 @@
  */
 package javaslang.text;
 
-import static javaslang.lang.Lang.require;
+import static javaslang.lang.Lang.requireNonNull;
 import static javaslang.text.Multiplicity.Bounds.ONE_TO_N;
 import static javaslang.text.Multiplicity.Bounds.ZERO_TO_ONE;
 
@@ -32,9 +32,9 @@ public class Multiplicity extends Parser {
 	final Supplier<Parser> parser;
 	final Bounds bounds;
 
-	Multiplicity(Supplier<Parser> parser, Bounds bounds) {
-		require(parser != null, "parser is null");
-		require(bounds != null, "bounds is null");
+	public Multiplicity(Supplier<Parser> parser, Bounds bounds) {
+		requireNonNull(parser, "parser is null");
+		requireNonNull(bounds, "bounds is null");
 		this.parser = parser;
 		this.bounds = bounds;
 	}
@@ -74,7 +74,7 @@ public class Multiplicity extends Parser {
 	}
 
 	@Override
-	protected void stringify(StringBuilder rule, StringBuilder definitions, Set<String> visited) {
+	void stringify(StringBuilder rule, StringBuilder definitions, Set<String> visited) {
 		final Parser p = parser.get();
 		final boolean writeBraces = p.getChildCount() > 1 || p instanceof Multiplicity;
 		if (writeBraces) {
@@ -92,7 +92,7 @@ public class Multiplicity extends Parser {
 		return "[ " + parser.get().toString() + " ]" + bounds.symbol();
 	}
 
-	static enum Bounds {
+	public static enum Bounds {
 		ZERO_TO_ONE, ZERO_TO_N, ONE_TO_N;
 
 		String symbol() {

@@ -45,7 +45,7 @@ public class EOF extends Parser {
 	}
 	
 	@Override
-	protected void stringify(StringBuilder rule, StringBuilder definitions, Set<String> visited) {
+	void stringify(StringBuilder rule, StringBuilder definitions, Set<String> visited) {
 		rule.append(NAME);
 	}
 

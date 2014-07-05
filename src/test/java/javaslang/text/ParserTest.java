@@ -4,12 +4,13 @@ import static javaslang.text.Multiplicity.Bounds.ZERO_TO_N;
 import static javaslang.text.Multiplicity.Bounds.ZERO_TO_ONE;
 import static org.fest.assertions.api.Assertions.assertThat;
 import javaslang.either.Either;
+import javaslang.lang.Lang.UnsatisfiedRequirementException;
 
 import org.junit.Test;
 
 public class ParserTest {
 
-	@Test(expected = IllegalStateException.class)
+	@Test(expected = UnsatisfiedRequirementException.class)
 	public void shouldThrowOnEmptyLiteral() {
 		new Literal("");
 	}
@@ -42,7 +43,7 @@ public class ParserTest {
 		assertThat(ast.left().get()).isEqualTo(0);
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test(expected = UnsatisfiedRequirementException.class)
 	public void shouldThrowOnEmptySequenceOfLiterals() {
 		new Sequence("EMPTY");
 	}

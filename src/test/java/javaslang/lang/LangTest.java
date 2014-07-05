@@ -1,6 +1,7 @@
 package javaslang.lang;
 
 import javaslang.lang.Lang;
+import javaslang.lang.Lang.UnsatisfiedRequirementException;
 
 import org.junit.Test;
 
@@ -11,7 +12,7 @@ public class LangTest {
 		Lang.require(true, "you will never see this");
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test(expected = UnsatisfiedRequirementException.class)
 	public void shouldThrowOnFalseCondition() {
 		Lang.require(false, "expected");
 	}

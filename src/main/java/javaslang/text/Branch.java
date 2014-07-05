@@ -6,15 +6,16 @@
 package javaslang.text;
 
 import static javaslang.lang.Lang.require;
+import static javaslang.lang.Lang.requireNotNullOrEmpty;
 
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javaslang.either.Either;
 import javaslang.either.Left;
-import javaslang.lang.ArrayExtensions;
 import javaslang.lang.Strings;
 
 public class Branch extends Parser {
@@ -23,15 +24,15 @@ public class Branch extends Parser {
 	final Supplier<Parser>[] parsers;
 
 	@SafeVarargs
-	Branch(Supplier<Parser>... parsers) {
-		require(!ArrayExtensions.isNullOrEmpty(parsers), "no parsers");
+	public Branch(Supplier<Parser>... parsers) {
+		requireNotNullOrEmpty(parsers, "No parsers");
 		this.name = null;
 		this.parsers = parsers;
 	}
 
 	@SafeVarargs
-	Branch(String name, Supplier<Parser>... parsers) {
-		require(!ArrayExtensions.isNullOrEmpty(parsers), "no parsers");
+	public Branch(String name, Supplier<Parser>... parsers) {
+		requireNotNullOrEmpty(parsers, "No parsers");
 		this.name = name;
 		this.parsers = parsers;
 	}
@@ -39,18 +40,17 @@ public class Branch extends Parser {
 	@Override
 	public Either<Integer, Tree<Token>> parse(String text, int index) {
 		final Either<Integer, Tree<Token>> initial = new Left<>(index);
-		return Stream.of(parsers).parallel()
+		return Stream.of(parsers)
+				.parallel()
 				.map(parser -> parser.get().parse(text, index))
-				.reduce(initial,
-						(t1, t2) -> reduce(t1, t2, text, index),
+				.reduce(initial, (t1, t2) -> reduce(t1, t2, text, index),
 						(t1, t2) -> reduce(t1, t2, text, index));
 	}
 
 	private Either<Integer, Tree<Token>> reduce(Either<Integer, Tree<Token>> tree1,
 			Either<Integer, Tree<Token>> tree2, String text, int index) {
 		require(tree1.isLeft() || tree2.isLeft(),
-				() -> "ambiguity found at " + Strings.lineAndColumn(text, index) + ":\n"
-						+ text);
+				() -> "Ambiguity found at " + Strings.lineAndColumn(text, index) + ":\n" + text);
 		if (tree1.isRight()) {
 			return tree1;
 		} else if (tree2.isRight()) {
@@ -61,21 +61,24 @@ public class Branch extends Parser {
 			return tree2;
 		}
 	}
-	
+
 	@Override
 	int getChildCount() {
 		return parsers.length;
 	}
 
 	@Override
-	protected void stringify(StringBuilder rule, StringBuilder definitions, Set<String> visited) {
-		final Predicate<Parser> needBraces = p -> parsers.length > 1 && p instanceof Branch && ((Branch) p).getChildCount() > 1;
-		Parsers.stringify(name, parsers, "\n  | ", " | ", needBraces, rule, definitions, visited);
+	void stringify(StringBuilder rule, StringBuilder definitions, Set<String> visited) {
+		final Predicate<Parser> checkBraces = p -> parsers.length > 1 && p instanceof Branch
+				&& ((Branch) p).getChildCount() > 1;
+		Parser.stringify(name, parsers, "\n  | ", " | ", checkBraces, rule, definitions, visited);
 	}
 
 	@Override
 	public String toString() {
-		return Parsers.toString(name, parsers, " | ");
+		return (name != null) ? name : Stream.of(parsers)
+				.map(p -> p.get().toString())
+				.collect(Collectors.joining(" | "));
 	}
 
 }

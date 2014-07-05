@@ -5,7 +5,7 @@
  */
 package javaslang.collection;
 
-import static javaslang.lang.Lang.require;
+import static javaslang.lang.Lang.requireNonNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -63,8 +63,8 @@ public final class Sets {
 	 * @throws IllegalStateException if set1 or set2 is null.
 	 */
 	public static <T> Set<T> complement(Set<T> set1, Set<T> set2) {
-		require(set1 != null, "set1 is null");
-		require(set2 != null, "set2 is null");
+		requireNonNull(set1, "set1 is null");
+		requireNonNull(set2, "set2 is null");
 		final Set<T> result = new HashSet<>(set1.size() + set2.size());
 		result.addAll(set1);
 		result.removeAll(set2);
@@ -82,8 +82,8 @@ public final class Sets {
 	 * @throws IllegalStateException if set1 or set2 is null.
 	 */
 	public static <T> Set<T> intersection(Set<T> set1, Set<T> set2) {
-		require(set1 != null, "set1 is null");
-		require(set2 != null, "set2 is null");
+		requireNonNull(set1, "set1 is null");
+		requireNonNull(set2, "set2 is null");
 		final Set<T> result = new HashSet<>(set1.size() + set2.size());
 		result.addAll(set1);
 		result.retainAll(set2);
@@ -101,8 +101,8 @@ public final class Sets {
 	 * @throws IllegalStateException if set1 or set2 is null.
 	 */
 	public static <T> Set<T> union(Set<T> set1, Set<T> set2) {
-		require(set1 != null, "set1 is null");
-		require(set2 != null, "set2 is null");
+		requireNonNull(set1, "set1 is null");
+		requireNonNull(set2, "set2 is null");
 		final Set<T> result = new HashSet<>(set1.size() + set2.size());
 		result.addAll(set1);
 		result.addAll(set2);

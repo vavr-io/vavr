@@ -5,7 +5,7 @@
  */
 package javaslang.lang;
 
-import static javaslang.lang.Lang.require;
+import static javaslang.lang.Lang.requireNonNull;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -56,98 +56,98 @@ public final class ArrayExtensions {
 	// -- asList
 
 	public static List<Boolean> asList(boolean... array) {
-		require(array != null, "array is null");
+		requireNonNull(array, "array is null");
 		return stream(array).collect(Collectors.toList());
 	}
 
 	public static List<Byte> asList(byte... array) {
-		require(array != null, "array is null");
+		requireNonNull(array, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
 
 	public static List<Character> asList(char... array) {
-		require(array != null, "array is null");
+		requireNonNull(array, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
 
 	public static List<Double> asList(double... array) {
-		require(array != null, "array is null");
+		requireNonNull(array, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
 
 	public static List<Float> asList(float... array) {
-		require(array != null, "array is null");
+		requireNonNull(array, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
 
 	public static List<Integer> asList(int... array) {
-		require(array != null, "array is null");
+		requireNonNull(array, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
 
 	public static List<Long> asList(long... array) {
-		require(array != null, "array is null");
+		requireNonNull(array, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
 
 	public static List<Short> asList(short... array) {
-		require(array != null, "array is null");
+		requireNonNull(array, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
 
 	// -- forEach
 
 	public static <T> void forEach(T[] array, Consumer<? super T> action) {
-		require(array != null, "array is null");
-		require(action != null, "action is null");
+		requireNonNull(array, "array is null");
+		requireNonNull(action, "action is null");
 		consume(array.length, i -> array[i], action);
 	}
 
 	public static void forEach(boolean[] array, Consumer<Boolean> action) {
-		require(array != null, "array is null");
-		require(action != null, "action is null");
+		requireNonNull(array, "array is null");
+		requireNonNull(action, "action is null");
 		consume(array.length, i -> array[i], action);
 	}
 
 	public static void forEach(byte[] array, Consumer<Byte> action) {
-		require(array != null, "array is null");
-		require(action != null, "action is null");
+		requireNonNull(array, "array is null");
+		requireNonNull(action, "action is null");
 		consume(array.length, i -> array[i], action);
 	}
 
 	public static void forEach(char[] array, Consumer<Character> action) {
-		require(array != null, "array is null");
-		require(action != null, "action is null");
+		requireNonNull(array, "array is null");
+		requireNonNull(action, "action is null");
 		consume(array.length, i -> array[i], action);
 	}
 
 	public static void forEach(double[] array, Consumer<Double> action) {
-		require(array != null, "array is null");
-		require(action != null, "action is null");
+		requireNonNull(array, "array is null");
+		requireNonNull(action, "action is null");
 		consume(array.length, i -> array[i], action);
 	}
 
 	public static void forEach(float[] array, Consumer<Float> action) {
-		require(array != null, "array is null");
-		require(action != null, "action is null");
+		requireNonNull(array, "array is null");
+		requireNonNull(action, "action is null");
 		consume(array.length, i -> array[i], action);
 	}
 
 	public static void forEach(int[] array, Consumer<Integer> action) {
-		require(array != null, "array is null");
-		require(action != null, "action is null");
+		requireNonNull(array, "array is null");
+		requireNonNull(action, "action is null");
 		consume(array.length, i -> array[i], action);
 	}
 
 	public static void forEach(long[] array, Consumer<Long> action) {
-		require(array != null, "array is null");
-		require(action != null, "action is null");
+		requireNonNull(array, "array is null");
+		requireNonNull(action, "action is null");
 		consume(array.length, i -> array[i], action);
 	}
 
 	public static void forEach(short[] array, Consumer<Short> action) {
-		require(array != null, "array is null");
-		require(action != null, "action is null");
+		requireNonNull(array, "array is null");
+		requireNonNull(action, "action is null");
 		consume(array.length, i -> array[i], action);
 	}
 
@@ -210,98 +210,98 @@ public final class ArrayExtensions {
 	 * @return An array of mapped elements
 	 */
 	public static <R, T> R[] map(T[] array, Function<? super T, ? extends R> f) {
-		require(array != null, "array is null");
-		require(f != null, "function is null");
+		requireNonNull(array, "array is null");
+		requireNonNull(f, "function is null");
 		return createArray(array.length, i -> array[i], f);
 	}
 
 	public static <R> R[] map(boolean[] array, Function<Boolean, ? extends R> f) {
-		require(array != null, "array is null");
-		require(f != null, "function is null");
+		requireNonNull(array, "array is null");
+		requireNonNull(f, "function is null");
 		return createArray(array.length, i -> array[i], f);
 	}
 
 	public static <R> R[] map(byte[] array, Function<Byte, ? extends R> f) {
-		require(array != null, "array is null");
-		require(f != null, "function is null");
+		requireNonNull(array, "array is null");
+		requireNonNull(f, "function is null");
 		return createArray(array.length, i -> array[i], f);
 	}
 
 	public static <R> R[] map(char[] array, Function<Character, ? extends R> f) {
-		require(array != null, "array is null");
-		require(f != null, "function is null");
+		requireNonNull(array, "array is null");
+		requireNonNull(f, "function is null");
 		return createArray(array.length, i -> array[i], f);
 	}
 
 	public static <R> R[] map(double[] array, Function<Double, ? extends R> f) {
-		require(array != null, "array is null");
-		require(f != null, "function is null");
+		requireNonNull(array, "array is null");
+		requireNonNull(f, "function is null");
 		return createArray(array.length, i -> array[i], f);
 	}
 
 	public static <R> R[] map(float[] array, Function<Float, ? extends R> f) {
-		require(array != null, "array is null");
-		require(f != null, "function is null");
+		requireNonNull(array, "array is null");
+		requireNonNull(f, "function is null");
 		return createArray(array.length, i -> array[i], f);
 	}
 
 	public static <R> R[] map(int[] array, Function<Integer, ? extends R> f) {
-		require(array != null, "array is null");
-		require(f != null, "function is null");
+		requireNonNull(array, "array is null");
+		requireNonNull(f, "function is null");
 		return createArray(array.length, i -> array[i], f);
 	}
 
 	public static <R> R[] map(long[] array, Function<Long, ? extends R> f) {
-		require(array != null, "array is null");
-		require(f != null, "function is null");
+		requireNonNull(array, "array is null");
+		requireNonNull(f, "function is null");
 		return createArray(array.length, i -> array[i], f);
 	}
 
 	public static <R> R[] map(short[] array, Function<Short, ? extends R> f) {
-		require(array != null, "array is null");
-		require(f != null, "function is null");
+		requireNonNull(array, "array is null");
+		requireNonNull(f, "function is null");
 		return createArray(array.length, i -> array[i], f);
 	}
 
 	// -- stream
 
 	public static Stream<Boolean> stream(boolean[] array) {
-		require(array != null, "array is null");
+		requireNonNull(array, "array is null");
 		return new StreamableList<Boolean>(array.length, i -> array[i]).stream();
 	}
 
 	public static Stream<Byte> stream(byte[] array) {
-		require(array != null, "array is null");
+		requireNonNull(array, "array is null");
 		return new StreamableList<Byte>(array.length, i -> array[i]).stream();
 	}
 
 	public static Stream<Character> stream(char[] array) {
-		require(array != null, "array is null");
+		requireNonNull(array, "array is null");
 		return new StreamableList<Character>(array.length, i -> array[i]).stream();
 	}
 
 	public static Stream<Double> stream(double[] array) {
-		require(array != null, "array is null");
+		requireNonNull(array, "array is null");
 		return new StreamableList<Double>(array.length, i -> array[i]).stream();
 	}
 
 	public static Stream<Float> stream(float[] array) {
-		require(array != null, "array is null");
+		requireNonNull(array, "array is null");
 		return new StreamableList<Float>(array.length, i -> array[i]).stream();
 	}
 
 	public static Stream<Integer> stream(int[] array) {
-		require(array != null, "array is null");
+		requireNonNull(array, "array is null");
 		return new StreamableList<Integer>(array.length, i -> array[i]).stream();
 	}
 
 	public static Stream<Long> stream(long[] array) {
-		require(array != null, "array is null");
+		requireNonNull(array, "array is null");
 		return new StreamableList<Long>(array.length, i -> array[i]).stream();
 	}
 
 	public static Stream<Short> stream(short[] array) {
-		require(array != null, "array is null");
+		requireNonNull(array, "array is null");
 		return new StreamableList<Short>(array.length, i -> array[i]).stream();
 	}
 	
@@ -312,42 +312,42 @@ public final class ArrayExtensions {
 	// -- parallelStream
 
 	public static Stream<Boolean> parallelStream(boolean[] array) {
-		require(array != null, "array is null");
+		requireNonNull(array, "array is null");
 		return new StreamableList<Boolean>(array.length, i -> array[i]).parallelStream();
 	}
 
 	public static Stream<Byte> parallelStream(byte[] array) {
-		require(array != null, "array is null");
+		requireNonNull(array, "array is null");
 		return new StreamableList<Byte>(array.length, i -> array[i]).parallelStream();
 	}
 
 	public static Stream<Character> parallelStream(char[] array) {
-		require(array != null, "array is null");
+		requireNonNull(array, "array is null");
 		return new StreamableList<Character>(array.length, i -> array[i]).parallelStream();
 	}
 
 	public static Stream<Double> parallelStream(double[] array) {
-		require(array != null, "array is null");
+		requireNonNull(array, "array is null");
 		return new StreamableList<Double>(array.length, i -> array[i]).parallelStream();
 	}
 
 	public static Stream<Float> parallelStream(float[] array) {
-		require(array != null, "array is null");
+		requireNonNull(array, "array is null");
 		return new StreamableList<Float>(array.length, i -> array[i]).parallelStream();
 	}
 
 	public static Stream<Integer> parallelStream(int[] array) {
-		require(array != null, "array is null");
+		requireNonNull(array, "array is null");
 		return new StreamableList<Integer>(array.length, i -> array[i]).parallelStream();
 	}
 
 	public static Stream<Long> parallelStream(long[] array) {
-		require(array != null, "array is null");
+		requireNonNull(array, "array is null");
 		return new StreamableList<Long>(array.length, i -> array[i]).parallelStream();
 	}
 
 	public static Stream<Short> parallelStream(short[] array) {
-		require(array != null, "array is null");
+		requireNonNull(array, "array is null");
 		return new StreamableList<Short>(array.length, i -> array[i]).parallelStream();
 	}
 	

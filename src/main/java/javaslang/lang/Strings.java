@@ -11,12 +11,13 @@ import static java.util.Arrays.fill;
 import static java.util.regex.Pattern.compile;
 import static java.util.stream.Collectors.joining;
 import static javaslang.lang.Lang.require;
+import static javaslang.lang.Lang.requireNonNull;
+import static javaslang.lang.Lang.requireNotNullOrEmpty;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -165,7 +166,7 @@ public final class Strings {
 	 * @throws NullPointerException If array is null.
 	 */
 	public static <T> String join(T[] array, CharSequence delimiter) {
-		require(array != null, "array is null");
+		requireNonNull(array, "array is null");
 		return join(asList(array), delimiter);
 	}
 
@@ -183,7 +184,7 @@ public final class Strings {
 	 */
 	public static <T> String join(T[] array, CharSequence delimiter, CharSequence prefix,
 			CharSequence suffix) {
-		require(array != null, "array is null");
+		requireNonNull(array, "array is null");
 		return join(asList(array), delimiter, prefix, suffix);
 	}
 
@@ -198,7 +199,7 @@ public final class Strings {
 	 * @throws NullPointerException If collection is null.
 	 */
 	public static <T> String join(Collection<T> collection, CharSequence delimiter) {
-		require(collection != null, "collection is null");
+		requireNonNull(collection, "collection is null");
 		return collection.stream().map(o -> toString(o)).collect(joining(delimiter));
 	}
 
@@ -219,7 +220,7 @@ public final class Strings {
 	 */
 	public static <T> String join(Collection<T> collection, CharSequence delimiter,
 			CharSequence prefix, CharSequence suffix) {
-		require(collection != null, "collection is null");
+		requireNonNull(collection, "collection is null");
 		return collection.stream()
 				.map(o -> toString(o))
 				.collect(joining(delimiter, prefix, suffix));
@@ -239,7 +240,7 @@ public final class Strings {
 	 * @throws NullPointerException If strings is null.
 	 */
 	public static String join(String[] strings, char separator, char escape) {
-		require(strings != null, "strings is null");
+		requireNonNull(strings, "strings is null");
 		require(separator != escape, "separator equals escape charater");
 		return Stream.of(strings)
 				.map(s -> escape(s, separator, escape))
@@ -260,7 +261,7 @@ public final class Strings {
 	 * @throws NullPointerException If strings is null.
 	 */
 	public static String join(Collection<String> strings, char separator, char escape) {
-		require(strings != null, "strings is null");
+		requireNonNull(strings, "strings is null");
 		require(separator != escape, "separator equals escape charater");
 		return strings.stream()
 				.map(s -> escape(s, separator, escape))
@@ -285,9 +286,8 @@ public final class Strings {
 	 * @return The tokens contained in string, without separators.
 	 */
 	public static String[] split(String string, String separator) {
-		require(string != null, "string is null");
-		require(separator != null, "separator is null");
-		require(separator.length() > 0, "separator is empty");
+		requireNonNull(string, "string is null");
+		requireNotNullOrEmpty(separator, "separator is empty");
 		final List<String> tokens = new ArrayList<String>();
 		int fromIndex = 0;
 		int index;
@@ -316,10 +316,8 @@ public final class Strings {
 	 * @throws NullPointerException If strings is null.
 	 */
 	public static String[] split(String string, char separator, char escape) {
-		Objects.requireNonNull(string, "string is null");
-		if (separator == escape) {
-			throw new IllegalArgumentException("separator equals escape charater");
-		}
+		requireNonNull(string, "string is null");
+		require(separator != escape, "separator equals escape charater");
 		final List<String> tokens = new ArrayList<String>();
 		final StringBuilder buf = new StringBuilder();
 		int fromIndex = 0;

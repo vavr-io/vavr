@@ -5,7 +5,7 @@
  */
 package javaslang.text;
 
-import static javaslang.lang.Lang.require;
+import static javaslang.lang.Lang.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,21 +21,21 @@ import javaslang.lang.Strings;
  * @param <T> Type of tree node values.
  */
 // TODO: discouraged impl, made package-private. goal: create functional javaslang.collection.{List,Set,Map,Tree,...}
-class Tree<T> {
+public class Tree<T> {
 
 	private final String id; // identifier, not necessarily unique
 	private final T value;
 	private final List<Tree<T>> children = new ArrayList<>();
 
 	// needs to be accessible interally for attaching/detaching children
-	Tree<T> parent = null;
+	public Tree<T> parent = null;
 
-	Tree(String id) {
+	public Tree(String id) {
 		this(id, null);
 	}
 
-	Tree(String id, T value) {
-		require(id != null, "id cannot be null");
+	public Tree(String id, T value) {
+		requireNonNull(id, "id cannot be null");
 		this.id = id;
 		this.value = value;
 	}

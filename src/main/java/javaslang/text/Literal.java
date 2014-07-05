@@ -5,21 +5,20 @@
  */
 package javaslang.text;
 
-import static javaslang.lang.Lang.require;
+import static javaslang.lang.Lang.requireNotNullOrEmpty;
 
 import java.util.Set;
 
 import javaslang.either.Either;
 import javaslang.either.Left;
 import javaslang.either.Right;
-import javaslang.lang.Strings;
 
 public class Literal extends Parser {
 
 	final String literal;
 
-	Literal(String literal) {
-		require(!Strings.isNullOrEmpty(literal), "literal is null or empty");
+	public Literal(String literal) {
+		requireNotNullOrEmpty(literal, "No literal");
 		this.literal = literal;
 	}
 
@@ -34,7 +33,7 @@ public class Literal extends Parser {
 	}
 
 	@Override
-	protected void stringify(StringBuilder rule, StringBuilder definitions, Set<String> visited) {
+	void stringify(StringBuilder rule, StringBuilder definitions, Set<String> visited) {
 		rule.append(toString());
 	}
 

@@ -5,7 +5,6 @@
  */
 package javaslang.lang;
 
-import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -80,33 +79,187 @@ public final class Lang {
 	}
 
 	/**
-	 * Runtime check which will throw an IllegalStateException containing the given message if the
-	 * condition is false.
+	 * Runtime check which throws an UnsatisfiedRequirementException if the given condition is
+	 * false.
 	 * 
-	 * @param condition A boolean
-	 * @param message A message An error message.
-	 * @throws IllegalStateException if condition is false, contains the message.
+	 * @param condition A boolean.
+	 * @param message An error message.
+	 * @throws UnsatisfiedRequirementException If condition is false, contains the given message.
 	 */
 	public static void require(boolean condition, String message) {
 		if (!condition) {
-			throw new IllegalStateException(message);
+			throw new UnsatisfiedRequirementException(message);
 		}
 	}
 
 	/**
-	 * Runtime check which will throw an IllegalStateException containing the given message if the
-	 * condition is false. The message is computed only if the condition is false.
+	 * Runtime check which throws an UnsatisfiedRequirementException if the given condition is
+	 * false.
 	 * 
-	 * @param condition A boolean
+	 * @param condition A boolean.
 	 * @param messageSupplier An error message, computed lazily.
-	 * @throws IllegalStateException if condition is false, contains the message.
+	 * @throws UnsatisfiedRequirementException If the given condition is false, contains the
+	 *             supplied message.
 	 * @throws NullPointerException If messageSupplier is null.
 	 */
 	public static void require(boolean condition, Supplier<String> messageSupplier) {
 		if (!condition) {
-			throw new IllegalStateException(Objects.requireNonNull(messageSupplier,
-					"messageSupplier is null").get());
+			throw new UnsatisfiedRequirementException(messageSupplier.get());
 		}
+	}
+
+	/**
+	 * Runtime check which throws an UnsatisfiedRequirementException if the given object is null.
+	 * 
+	 * @param <T> Type of object.
+	 * @param obj An object.
+	 * @return obj
+	 * @throws UnsatisfiedRequirementException If the given object is null.
+	 */
+	public static <T> T requireNonNull(T obj) {
+		if (obj == null) {
+			throw new UnsatisfiedRequirementException("Object is null");
+		}
+		return obj;
+	}
+
+	/**
+	 * Runtime check which throws an UnsatisfiedRequirementException if the given object is null.
+	 * 
+	 * @param <T> Type of object.
+	 * @param obj An object
+	 * @param message An error message.
+	 * @return obj
+	 * @throws UnsatisfiedRequirementException If the given object is null, contains the given
+	 *             message.
+	 */
+	public static <T> T requireNonNull(T obj, String message) {
+		if (obj == null) {
+			throw new UnsatisfiedRequirementException(message);
+		}
+		return obj;
+	}
+
+	/**
+	 * Runtime check which throws an UnsatisfiedRequirementException if the given object is null.
+	 * 
+	 * @param <T> Type of object.
+	 * @param obj An object.
+	 * @param messageSupplier An error message, computed lazily.
+	 * @return obj
+	 * @throws UnsatisfiedRequirementException If the given object is null, contains the supplied
+	 *             message.
+	 * @throws NullPointerException If messageSupplier is null.
+	 */
+	public static <T> T requireNonNull(T obj, Supplier<String> messageSupplier) {
+		if (obj == null) {
+			throw new UnsatisfiedRequirementException(messageSupplier.get());
+		}
+		return obj;
+	}
+
+	/**
+	 * Runtime check which throws an UnsatisfiedRequirementException if the given array is null or
+	 * empty.
+	 * 
+	 * @param <T> Component type of array.
+	 * @param array An array.
+	 * @return array
+	 * @throws UnsatisfiedRequirementException If the given array is empty.
+	 */
+	public static <T> T[] requireNotNullOrEmpty(T[] array) {
+		if (requireNonNull(array).length == 0) {
+			throw new UnsatisfiedRequirementException("Array is empty");
+		}
+		return array;
+	}
+
+	/**
+	 * Runtime check which throws an UnsatisfiedRequirementException if the given array is null or
+	 * empty.
+	 * 
+	 * @param <T> Component type of array.
+	 * @param array An array.
+	 * @param message An error message.
+	 * @return array
+	 * @throws UnsatisfiedRequirementException If the given array is empty, contains the given
+	 *             message.
+	 */
+	public static <T> T[] requireNotNullOrEmpty(T[] array, String message) {
+		if (requireNonNull(array).length == 0) {
+			throw new UnsatisfiedRequirementException(message);
+		}
+		return array;
+	}
+
+	/**
+	 * Runtime check which throws an UnsatisfiedRequirementException if the given array is null or
+	 * empty.
+	 * 
+	 * @param <T> Component type of array.
+	 * @param array An array.
+	 * @param messageSupplier An error message, computed lazily.
+	 * @return array
+	 * @throws UnsatisfiedRequirementException If the given array is empty, contains the supplied
+	 *             message.
+	 * @throws NullPointerException If messageSupplier is null.
+	 */
+	public static <T> T[] requireNotNullOrEmpty(T[] array, Supplier<String> messageSupplier) {
+		if (requireNonNull(array).length == 0) {
+			throw new UnsatisfiedRequirementException(messageSupplier.get());
+		}
+		return array;
+	}
+
+	/**
+	 * Runtime check which throws an UnsatisfiedRequirementException if the given CharSequence is
+	 * null or empty.
+	 * 
+	 * @param chars A CharSequence.
+	 * @return chars
+	 * @throws UnsatisfiedRequirementException If the given CharSequence is empty.
+	 */
+	public static CharSequence requireNotNullOrEmpty(CharSequence chars) {
+		if (requireNonNull(chars).length() == 0) {
+			throw new UnsatisfiedRequirementException("CharSequence is empty");
+		}
+		return chars;
+	}
+
+	/**
+	 * Runtime check which throws an UnsatisfiedRequirementException if the given CharSequence is
+	 * null or empty.
+	 * 
+	 * @param chars A CharSequence.
+	 * @param message An error message.
+	 * @return chars
+	 * @throws UnsatisfiedRequirementException If the given CharSequence is empty, contains the
+	 *             given message.
+	 */
+	public static CharSequence requireNotNullOrEmpty(CharSequence chars, String message) {
+		if (requireNonNull(chars).length() == 0) {
+			throw new UnsatisfiedRequirementException(message);
+		}
+		return chars;
+	}
+
+	/**
+	 * Runtime check which throws an UnsatisfiedRequirementException if the given CharSequence is
+	 * null or empty.
+	 * 
+	 * @param chars A CharSequence.
+	 * @param messageSupplier An error message, computed lazily.
+	 * @return chars
+	 * @throws UnsatisfiedRequirementException If the given CharSequence is empty, contains the
+	 *             supplied message.
+	 * @throws NullPointerException If messageSupplier is null.
+	 */
+	public static CharSequence requireNotNullOrEmpty(CharSequence chars,
+			Supplier<String> messageSupplier) {
+		if (requireNonNull(chars).length() == 0) {
+			throw new UnsatisfiedRequirementException(messageSupplier.get());
+		}
+		return chars;
 	}
 
 	/**
@@ -158,6 +311,15 @@ public final class Lang {
 			} finally {
 				isLocked.set(false);
 			}
+		}
+	}
+
+	public static class UnsatisfiedRequirementException extends RuntimeException {
+
+		private static final long serialVersionUID = 1L;
+
+		UnsatisfiedRequirementException(String message) {
+			super(message);
 		}
 	}
 

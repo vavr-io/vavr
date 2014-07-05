@@ -36,7 +36,7 @@ public class GrammarTest {
 		}
 
 		static Parser JSON() {
-			return new Branch("JSON", JSONGrammar::JSON_OBJECT, JSONGrammar::JSON_ARRAY,
+			return new Branch("JSON", JSONGrammar::JSON_OBJECT, JSONGrammar::JSON_ARRAY, new Branch(new Literal("a"), new Literal("b")),
 					JSONGrammar::JSON_NUMBER, JSONGrammar::JSON_BOOLEAN);
 		}
 
@@ -58,7 +58,7 @@ public class GrammarTest {
 		}
 
 		static Parser JSON_NUMBER() {
-			return new Sequence("JSON_NUMBER", new Branch(new Literal("1"), new Literal("2"), new Literal("3")));
+			return new Sequence("JSON_NUMBER", new Multiplicity(new Sequence(new Literal("d"), new Literal("d")), ZERO_TO_N), new Branch(new Literal("1"), new Literal("2"), new Branch("Hello", new Literal("hello")), new Sequence(new Branch(new Literal("X"), new Literal("Y")), new Literal("A")), new Literal("3")));
 		}
 
 		static Parser JSON_BOOLEAN() {
