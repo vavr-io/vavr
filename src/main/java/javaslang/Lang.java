@@ -336,8 +336,6 @@ public final class Lang {
 	 * @param value A return value used if no cycle is present.
 	 * @param defaultValue A return value used if a cycle has been detected.
 	 * @return value.get() if no cycle detected, otherwise defaultValue.get().
-	 * 
-	 * TODO: may change location in future
 	 */
 	public static <T> T decycle(ThreadLocal<Boolean> isLocked, Supplier<T> value,
 			Supplier<T> defaultValue) {
@@ -364,8 +362,6 @@ public final class Lang {
 	 *            {@code Runtime.getRuntime().halt(status)}.
 	 * 
 	 * @see <a href="http://blog.joda.org/2014/02/exiting-jvm.html">exiting jvm</a>
-	 * 
-	 * TODO: may change location in future
 	 */
 	public static void exit(int status, long timeout) {
 		final Runtime runtime = Runtime.getRuntime();
@@ -405,8 +401,6 @@ public final class Lang {
 	 * @param task A Runnable
 	 * @param delay A delay in milliseconds
 	 * @return A Timer
-	 * 
-	 * TODO: may change location in future
 	 */
 	public static Timer schedule(Runnable task, long delay) {
 		final Timer timer = new Timer();
@@ -424,8 +418,6 @@ public final class Lang {
 	 * 
 	 * @param matcher A Matcher.
 	 * @return A Stream of matches by successively calling {@link Matcher#group()}.
-	 * 
-	 * TODO: may change location in future
 	 */
 	public static Stream<String> stream(Matcher matcher) {
 		final List<String> matches = new ArrayList<>();

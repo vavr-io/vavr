@@ -14,6 +14,8 @@ import java.lang.reflect.Method;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javaslang.Tuplez.Tuple2;
+
 /**
  * Extension methods for java.lang.invoke.*
  * 
@@ -62,15 +64,26 @@ public final class Lambdaz {
 	 * @return The signature of the lambda.
 	 */
 	public static LambdaSignature getLambdaSignature(Serializable lambda) {
-		final String signature = getSerializedLambda(lambda).getImplMethodSignature();
-		final int index = signature.lastIndexOf(')');
-		final Class<?> returnType = getJavaType(signature.substring(index + 1));
-		final Matcher matcher = JVM_FIELD_TYPE.matcher(signature.substring(1, index));
+		final Tuple2<String, String> signature = split(getSerializedLambda(lambda)
+				.getImplMethodSignature());
+		final Matcher matcher = JVM_FIELD_TYPE.matcher(signature._1);
 		final Class<?>[] parameterTypes = Lang
 				.stream(matcher)
 				.map(Lambdaz::getJavaType)
 				.toArray(Class<?>[]::new);
-		return new LambdaSignature(returnType, parameterTypes);
+		final Class<?> returnType = getJavaType(signature._2);
+		return new LambdaSignature(parameterTypes, returnType);
+	}
+
+	/**
+	 * Splits a lambda signature string into the parts parameters and return string.
+	 * 
+	 * @param signature '(' + paramsSignatureString + ')' + returnSignatureString
+	 * @return Tuple2(paramsSignatureString, returnSignatureString)
+	 */
+	private static Tuple2<String, String> split(String signature) {
+		final int index = signature.lastIndexOf(')');
+		return Tuplez.of(signature.substring(1, index), signature.substring(index + 1));
 	}
 
 	/**
@@ -81,7 +94,7 @@ public final class Lambdaz {
 	 * @throws IllegalStateException if the class referenced by a JVM field type 'L ClassName ;'
 	 *             cannot be found.
 	 * @see <a href="http://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html">JVM field
-	 *      types</a>
+	 *      types</a>.
 	 */
 	private static Class<?> getJavaType(String jvmFieldType) {
 		final char firstChar = jvmFieldType.charAt(0);
@@ -131,20 +144,20 @@ public final class Lambdaz {
 	 * to a {@link java.lang.reflect.Method}.
 	 */
 	public static class LambdaSignature {
-		private final Class<?> returnType;
 		private final Class<?>[] parameterTypes;
+		private final Class<?> returnType;
 
-		public LambdaSignature(Class<?> returnType, Class<?>[] parameterTypes) {
-			this.returnType = returnType;
+		public LambdaSignature(Class<?>[] parameterTypes, Class<?> returnType) {
 			this.parameterTypes = parameterTypes;
-		}
-
-		public Class<?> getReturnType() {
-			return returnType;
+			this.returnType = returnType;
 		}
 
 		public Class<?>[] getParameterTypes() {
 			return parameterTypes;
+		}
+
+		public Class<?> getReturnType() {
+			return returnType;
 		}
 	}
 
