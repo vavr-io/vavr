@@ -15,7 +15,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -97,63 +96,7 @@ public final class Arrayz {
 		requireNonNull(array, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
-
-	// -- forEach
-
-	public static <T> void forEach(T[] array, Consumer<? super T> action) {
-		requireNonNull(array, "array is null");
-		requireNonNull(action, "action is null");
-		consume(array.length, i -> array[i], action);
-	}
-
-	public static void forEach(boolean[] array, Consumer<Boolean> action) {
-		requireNonNull(array, "array is null");
-		requireNonNull(action, "action is null");
-		consume(array.length, i -> array[i], action);
-	}
-
-	public static void forEach(byte[] array, Consumer<Byte> action) {
-		requireNonNull(array, "array is null");
-		requireNonNull(action, "action is null");
-		consume(array.length, i -> array[i], action);
-	}
-
-	public static void forEach(char[] array, Consumer<Character> action) {
-		requireNonNull(array, "array is null");
-		requireNonNull(action, "action is null");
-		consume(array.length, i -> array[i], action);
-	}
-
-	public static void forEach(double[] array, Consumer<Double> action) {
-		requireNonNull(array, "array is null");
-		requireNonNull(action, "action is null");
-		consume(array.length, i -> array[i], action);
-	}
-
-	public static void forEach(float[] array, Consumer<Float> action) {
-		requireNonNull(array, "array is null");
-		requireNonNull(action, "action is null");
-		consume(array.length, i -> array[i], action);
-	}
-
-	public static void forEach(int[] array, Consumer<Integer> action) {
-		requireNonNull(array, "array is null");
-		requireNonNull(action, "action is null");
-		consume(array.length, i -> array[i], action);
-	}
-
-	public static void forEach(long[] array, Consumer<Long> action) {
-		requireNonNull(array, "array is null");
-		requireNonNull(action, "action is null");
-		consume(array.length, i -> array[i], action);
-	}
-
-	public static void forEach(short[] array, Consumer<Short> action) {
-		requireNonNull(array, "array is null");
-		requireNonNull(action, "action is null");
-		consume(array.length, i -> array[i], action);
-	}
-
+	
 	// -- isNullOrEmpty
 
 	/**
@@ -360,14 +303,6 @@ public final class Arrayz {
 	}
 
 	// -- internal helpers
-
-	private static <T> void consume(int length, Function<Integer, T> generator,
-			Consumer<? super T> action) {
-		for (int i = 0; i < length; i++) {
-			final T t = generator.apply(i);
-			action.accept(t);
-		}
-	}
 
 	private static <R, T> R[] createArray(int length, Function<Integer, T> generator,
 			Function<? super T, ? extends R> f) {
