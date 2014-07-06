@@ -384,12 +384,16 @@ public final class Stringz {
 			return o.toString();
 		}
 	}
-	
+
 	private static String toString(Class<?> clazz) {
-		final int dimension = clazz.getName().lastIndexOf('[') + 1; // may be 0
-		for (int i = 0; i < dimension; i++, clazz = clazz.getComponentType())
-			;
-		return clazz.getName() + repeat("[]", dimension); // = name, if dimension is 0
+		if (clazz.isArray()) {
+			final int dimension = clazz.getName().lastIndexOf('[') + 1; // may be 0
+			for (int i = 0; i < dimension; i++, clazz = clazz.getComponentType())
+				;
+			return clazz.getName() + repeat("[]", dimension); // = name, if dimension is 0
+		} else {
+			return clazz.getName();
+		}
 	}
 
 	private static String toString(Stream<?> stream, CharSequence delimiter, CharSequence prefix,
