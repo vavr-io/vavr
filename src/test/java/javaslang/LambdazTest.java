@@ -10,6 +10,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 import java.io.Serializable;
 
 import javaslang.Lambdaz;
+import javaslang.Tuplez.Tuple3;
 
 import org.junit.Test;
 
@@ -17,7 +18,8 @@ public class LambdazTest {
 
 	@Test
 	public void shouldParseReturnTypeVoid() {
-		final ReturnTypeVoid lambda = () -> {};
+		final ReturnTypeVoid lambda = () -> {
+		};
 		final Class<?> actual = Lambdaz.getLambdaSignature(lambda).getReturnType();
 		assertThat(actual.getName()).isEqualTo("void");
 	}
@@ -84,10 +86,12 @@ public class LambdazTest {
 		final Class<?> actual = Lambdaz.getLambdaSignature(lambda).getReturnType();
 		assertThat(actual.getName()).isEqualTo("[I");
 	}
-	
+
 	@Test
 	public void shouldParseParameterTypeArrayOfBoolean() {
-		final ParameterTypeArrayOfBoolean lambda = (boolean[] b) -> { return; };
+		final ParameterTypeArrayOfBoolean lambda = (boolean[] b) -> {
+			return;
+		};
 		final Class<?> actual = Lambdaz.getLambdaSignature(lambda).getParameterTypes()[0];
 		assertThat(actual.getName()).isEqualTo("[Z");
 	}
@@ -108,25 +112,85 @@ public class LambdazTest {
 
 	@Test
 	public void shouldParseNoParameterTypes() {
-		final NoParameterTypes lambda = () -> {};
+		final NoParameterTypes lambda = () -> {
+		};
 		final Class<?>[] actual = Lambdaz.getLambdaSignature(lambda).getParameterTypes();
 		assertThat(actual).isEmpty();
 	}
-	
+
 	@Test
 	public void shouldParseOneParameterType() {
-		final OneParameterType lambda = (int i) -> {};
+		final OneParameterType lambda = (int i) -> {
+		};
 		final Class<?>[] actual = Lambdaz.getLambdaSignature(lambda).getParameterTypes();
 		assertThat(actual).containsExactly(int.class);
 	}
-	
+
 	@Test
 	public void shouldParseTwoParameterTypes() throws ClassNotFoundException {
-		final TwoParameterTypes lambda = (String s, byte[][] bytes) -> {};
+		final TwoParameterTypes lambda = (String s, byte[][] bytes) -> {
+		};
 		final Class<?>[] actual = Lambdaz.getLambdaSignature(lambda).getParameterTypes();
 		assertThat(actual).containsExactly(String.class, Class.forName("[[B"));
 	}
-	
+
+	@Test
+	public void shouldConvertUnitLambdaSignatureToString() {
+		final Unit lambda = () -> {
+		};
+		final String actual = Lambdaz.getLambdaSignature(lambda).toString();
+		assertThat(actual).isEqualTo("() -> void");
+	}
+
+	@Test
+	public void shouldConvertNonTrivialLambdaSignatureToString() {
+		final StringIntegerArrayDoubleArrayToTuple3 lambda = (s, i, d) -> Tuplez.of(s, i, d);
+		final String actual = Lambdaz.getLambdaSignature(lambda).toString();
+		assertThat(actual).isEqualTo(
+				"(java.lang.String, java.lang.Integer[][], double[][]) -> javaslang.Tuplez$Tuple3");
+	}
+
+	@Test
+	public void shouldRecognizeTrivialEqualLambdaSignatures() {
+		final Unit lambda1 = () -> {
+		};
+		final Unit lambda2 = () -> {
+		};
+		assertThat(Lambdaz.getLambdaSignature(lambda1)).isEqualTo(
+				Lambdaz.getLambdaSignature(lambda2));
+	}
+
+	@Test
+	public void shouldRecognizeNonTrivialEqualLambdaSignatures() {
+		final StringIntegerArrayDoubleArrayToTuple3 lambda1 = (s, i, d) -> Tuplez.of(s, i, d);
+		final StringIntegerArrayDoubleArrayToTuple3 lambda2 = (s, i, d) -> Tuplez.of(s, i, d);
+		assertThat(Lambdaz.getLambdaSignature(lambda1)).isEqualTo(
+				Lambdaz.getLambdaSignature(lambda2));
+	}
+
+	@Test
+	public void shouldRecognizeNonTrivialNonEqualLambdaSignatures() {
+		final StringIntegerArrayDoubleArrayToTuple3 lambda1 = (s, i, d) -> Tuplez.of(s, i, d);
+		final StringIntArrayDoubleArrayToTuple3 lambda2 = (s, i, d) -> Tuplez.of(s, i, d);
+		assertThat(Lambdaz.getLambdaSignature(lambda1)).isNotEqualTo(
+				Lambdaz.getLambdaSignature(lambda2));
+	}
+
+	@FunctionalInterface
+	static interface Unit extends Serializable {
+		void go();
+	}
+
+	@FunctionalInterface
+	static interface StringIntegerArrayDoubleArrayToTuple3 extends Serializable {
+		Tuple3<String, Integer[][], double[][]> go(String s, Integer[][] i, double[][] d);
+	}
+
+	@FunctionalInterface
+	static interface StringIntArrayDoubleArrayToTuple3 extends Serializable {
+		Tuple3<String, int[][], double[][]> go(String s, int[][] i, double[][] d);
+	}
+
 	@FunctionalInterface
 	static interface ReturnTypeVoid extends Serializable {
 		void go();
@@ -136,7 +200,7 @@ public class LambdazTest {
 	static interface ReturnTypeBoolean extends Serializable {
 		boolean go();
 	}
-	
+
 	@FunctionalInterface
 	static interface ReturnTypeByte extends Serializable {
 		byte go();
@@ -146,42 +210,42 @@ public class LambdazTest {
 	static interface ReturnTypeChar extends Serializable {
 		char go();
 	}
-	
+
 	@FunctionalInterface
 	static interface ReturnTypeFloat extends Serializable {
 		float go();
 	}
-	
+
 	@FunctionalInterface
 	static interface ReturnTypeDouble extends Serializable {
 		double go();
 	}
-	
+
 	@FunctionalInterface
 	static interface ReturnTypeInt extends Serializable {
 		int go();
 	}
-	
+
 	@FunctionalInterface
 	static interface ReturnTypeLong extends Serializable {
 		long go();
 	}
-	
+
 	@FunctionalInterface
 	static interface ReturnTypeShort extends Serializable {
 		short go();
 	}
-	
+
 	@FunctionalInterface
 	static interface ReturnTypeArrayOfInt extends Serializable {
 		int[] go();
 	}
-	
+
 	@FunctionalInterface
 	static interface ReturnTypeArrayOfArrayOfString extends Serializable {
 		String[][] go();
 	}
-	
+
 	@FunctionalInterface
 	static interface ReturnTypeClassReference extends Serializable {
 		String go();
@@ -191,12 +255,12 @@ public class LambdazTest {
 	static interface NoParameterTypes extends Serializable {
 		void go();
 	}
-	
+
 	@FunctionalInterface
 	static interface OneParameterType extends Serializable {
 		void go(int i);
 	}
-	
+
 	@FunctionalInterface
 	static interface TwoParameterTypes extends Serializable {
 		void go(String s, byte[][] bytes);

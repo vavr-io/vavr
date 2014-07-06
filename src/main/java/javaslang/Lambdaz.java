@@ -5,14 +5,16 @@
  */
 package javaslang;
 
+import static java.util.stream.Collectors.joining;
 import static javaslang.Lang.requireNotInstantiable;
 
 import java.io.Serializable;
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
-import java.util.regex.Matcher;
+import java.util.Arrays;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import javaslang.Tuplez.Tuple2;
 
@@ -25,7 +27,8 @@ import javaslang.Tuplez.Tuple2;
  */
 public final class Lambdaz {
 
-	private static final Pattern JVM_FIELD_TYPE = Pattern.compile("\\[*(B|C|D|F|I|J|(L.*;)|S|V|Z)");
+	private static final Pattern JVM_FIELD_TYPE = Pattern
+			.compile("\\[*(B|C|D|F|I|J|(L.*?;)|S|V|Z)");
 
 	/**
 	 * This class is not intended to be instantiated.
@@ -66,9 +69,8 @@ public final class Lambdaz {
 	public static LambdaSignature getLambdaSignature(Serializable lambda) {
 		final Tuple2<String, String> signature = split(getSerializedLambda(lambda)
 				.getImplMethodSignature());
-		final Matcher matcher = JVM_FIELD_TYPE.matcher(signature._1);
 		final Class<?>[] parameterTypes = Lang
-				.stream(matcher)
+				.stream(JVM_FIELD_TYPE.matcher(signature._1))
 				.map(Lambdaz::getJavaType)
 				.toArray(Class<?>[]::new);
 		final Class<?> returnType = getJavaType(signature._2);
@@ -146,10 +148,12 @@ public final class Lambdaz {
 	public static class LambdaSignature {
 		private final Class<?>[] parameterTypes;
 		private final Class<?> returnType;
+		private final int hashCode;
 
 		public LambdaSignature(Class<?>[] parameterTypes, Class<?> returnType) {
 			this.parameterTypes = parameterTypes;
 			this.returnType = returnType;
+			this.hashCode = toString().hashCode(); // don't keep the string in memory
 		}
 
 		public Class<?>[] getParameterTypes() {
@@ -158,6 +162,30 @@ public final class Lambdaz {
 
 		public Class<?> getReturnType() {
 			return returnType;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o == null || !(o instanceof LambdaSignature)) {
+				return false;
+			} else {
+				final LambdaSignature that = (LambdaSignature) o;
+				return this.returnType.equals(that.returnType)
+						&& Arrays.deepEquals(this.parameterTypes, that.parameterTypes);
+			}
+		}
+
+		@Override
+		public int hashCode() {
+			return hashCode;
+		}
+
+		@Override
+		public String toString() {
+			return Stream//
+					.of(parameterTypes)
+					.map(Stringz::toString)
+					.collect(joining(", ", "(", ") -> ")) + returnType.getName();
 		}
 	}
 
