@@ -181,7 +181,6 @@ public final class Arrayz {
 
 	public static Stream<Short> stream(short[] array) {
 		requireNonNull(array, "array is null");
-		Stream.of(array);
 		return new StreamableList<Short>(array.length, i -> array[i]).stream();
 	}
 	
