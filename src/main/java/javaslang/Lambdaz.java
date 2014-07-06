@@ -148,12 +148,11 @@ public final class Lambdaz {
 	public static class LambdaSignature {
 		private final Class<?>[] parameterTypes;
 		private final Class<?> returnType;
-		private final int hashCode;
+		private int hashCode;
 
 		public LambdaSignature(Class<?>[] parameterTypes, Class<?> returnType) {
 			this.parameterTypes = parameterTypes;
 			this.returnType = returnType;
-			this.hashCode = toString().hashCode(); // don't keep the string in memory
 		}
 
 		public Class<?>[] getParameterTypes() {
@@ -177,6 +176,11 @@ public final class Lambdaz {
 
 		@Override
 		public int hashCode() {
+			// no synchronization, implementation identical to String.hashCode 
+			if (hashCode == 0) {
+				// toString() cannot be empty => hashCode > 0
+				hashCode = toString().hashCode();
+			}
 			return hashCode;
 		}
 
