@@ -171,7 +171,7 @@ public final class Lambdaz {
 			} else {
 				final LambdaSignature that = (LambdaSignature) o;
 				return this.returnType.equals(that.returnType)
-						&& Arrays.deepEquals(this.parameterTypes, that.parameterTypes);
+						&& Arrays.equals(this.parameterTypes, that.parameterTypes);
 			}
 		}
 
