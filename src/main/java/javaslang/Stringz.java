@@ -222,7 +222,8 @@ public final class Stringz {
 	public static <T> String join(Collection<T> collection, CharSequence delimiter,
 			CharSequence prefix, CharSequence suffix) {
 		requireNonNull(collection, "collection is null");
-		return collection.stream()
+		return collection
+				.stream()
 				.map(o -> toString(o))
 				.collect(joining(delimiter, prefix, suffix));
 	}
@@ -243,7 +244,8 @@ public final class Stringz {
 	public static String join(String[] strings, char separator, char escape) {
 		requireNonNull(strings, "strings is null");
 		require(separator != escape, "separator equals escape charater");
-		return Stream.of(strings)
+		return Stream
+				.of(strings)
 				.map(s -> escape(s, separator, escape))
 				.collect(Collectors.joining(String.valueOf(separator)));
 	}
@@ -264,7 +266,8 @@ public final class Stringz {
 	public static String join(Collection<String> strings, char separator, char escape) {
 		requireNonNull(strings, "strings is null");
 		require(separator != escape, "separator equals escape charater");
-		return strings.stream()
+		return strings
+				.stream()
 				.map(s -> escape(s, separator, escape))
 				.collect(Collectors.joining(String.valueOf(separator)));
 	}
@@ -369,6 +372,8 @@ public final class Stringz {
 			return "...";
 		} else if (o instanceof CharSequence) {
 			return '"' + o.toString() + '"';
+		} else if (o instanceof Class) {
+			return toString((Class<?>) o);
 		} else if (o.getClass().isArray()) {
 			return toString(Arrayz.toStream(o), ", ", "[", "]", visited, o);
 		} else if (o instanceof Set) {
@@ -378,6 +383,13 @@ public final class Stringz {
 		} else {
 			return o.toString();
 		}
+	}
+	
+	private static String toString(Class<?> clazz) {
+		final int dimension = clazz.getName().lastIndexOf('[') + 1; // may be 0
+		for (int i = 0; i < dimension; i++, clazz = clazz.getComponentType())
+			;
+		return clazz.getName() + repeat("[]", dimension); // = name, if dimension is 0
 	}
 
 	private static String toString(Stream<?> stream, CharSequence delimiter, CharSequence prefix,
