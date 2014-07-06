@@ -142,73 +142,6 @@ public final class Arrayz {
 		return array == null || array.length == 0;
 	}
 
-	// -- map
-
-	/**
-	 * Convenience method for
-	 * {@code Arrays.stream(array).map(f).collect(Collectors.toList()).toArray(new R[array.length])}
-	 * .
-	 *
-	 * @param <R> Type of result array elements
-	 * @param <T> Type of input array elements
-	 * @param array An array
-	 * @param f function which maps array elements
-	 * @return An array of mapped elements
-	 */
-	public static <R, T> R[] map(T[] array, Function<? super T, ? extends R> f) {
-		requireNonNull(array, "array is null");
-		requireNonNull(f, "function is null");
-		return createArray(array.length, i -> array[i], f);
-	}
-
-	public static <R> R[] map(boolean[] array, Function<Boolean, ? extends R> f) {
-		requireNonNull(array, "array is null");
-		requireNonNull(f, "function is null");
-		return createArray(array.length, i -> array[i], f);
-	}
-
-	public static <R> R[] map(byte[] array, Function<Byte, ? extends R> f) {
-		requireNonNull(array, "array is null");
-		requireNonNull(f, "function is null");
-		return createArray(array.length, i -> array[i], f);
-	}
-
-	public static <R> R[] map(char[] array, Function<Character, ? extends R> f) {
-		requireNonNull(array, "array is null");
-		requireNonNull(f, "function is null");
-		return createArray(array.length, i -> array[i], f);
-	}
-
-	public static <R> R[] map(double[] array, Function<Double, ? extends R> f) {
-		requireNonNull(array, "array is null");
-		requireNonNull(f, "function is null");
-		return createArray(array.length, i -> array[i], f);
-	}
-
-	public static <R> R[] map(float[] array, Function<Float, ? extends R> f) {
-		requireNonNull(array, "array is null");
-		requireNonNull(f, "function is null");
-		return createArray(array.length, i -> array[i], f);
-	}
-
-	public static <R> R[] map(int[] array, Function<Integer, ? extends R> f) {
-		requireNonNull(array, "array is null");
-		requireNonNull(f, "function is null");
-		return createArray(array.length, i -> array[i], f);
-	}
-
-	public static <R> R[] map(long[] array, Function<Long, ? extends R> f) {
-		requireNonNull(array, "array is null");
-		requireNonNull(f, "function is null");
-		return createArray(array.length, i -> array[i], f);
-	}
-
-	public static <R> R[] map(short[] array, Function<Short, ? extends R> f) {
-		requireNonNull(array, "array is null");
-		requireNonNull(f, "function is null");
-		return createArray(array.length, i -> array[i], f);
-	}
-
 	// -- stream
 
 	public static Stream<Boolean> stream(boolean[] array) {
@@ -300,19 +233,6 @@ public final class Arrayz {
 	
 	public static Stream<?> toParallelStream(Object object) {
 		return ARRAY_TO_PARALLEL_STREAM_MATCHER.apply(object);
-	}
-
-	// -- internal helpers
-
-	private static <R, T> R[] createArray(int length, Function<Integer, T> generator,
-			Function<? super T, ? extends R> f) {
-		@SuppressWarnings("unchecked")
-		final R[] result = (R[]) new Object[length];
-		for (int i = 0; i < length; i++) {
-			final T value = generator.apply(i);
-			result[i] = f.apply(value);
-		}
-		return result;
 	}
 
 	private static <T> List<T> createList(int size, Function<Integer, T> generator) {
