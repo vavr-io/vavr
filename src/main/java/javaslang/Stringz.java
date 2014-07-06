@@ -373,7 +373,7 @@ public final class Stringz {
 		} else if (o instanceof CharSequence) {
 			return '"' + o.toString() + '"';
 		} else if (o instanceof Class) {
-			return toString((Class<?>) o);
+			return toString((Class<?>) o, 0);
 		} else if (o.getClass().isArray()) {
 			return toString(Arrayz.toStream(o), ", ", "[", "]", visited, o);
 		} else if (o instanceof Set) {
@@ -385,14 +385,11 @@ public final class Stringz {
 		}
 	}
 
-	private static String toString(Class<?> clazz) {
+	private static String toString(Class<?> clazz, int dimension) {
 		if (clazz.isArray()) {
-			final int dimension = clazz.getName().lastIndexOf('[') + 1; // may be 0
-			for (int i = 0; i < dimension; i++, clazz = clazz.getComponentType())
-				;
-			return clazz.getName() + repeat("[]", dimension); // = name, if dimension is 0
+			return toString(clazz.getComponentType(), dimension + 1);
 		} else {
-			return clazz.getName();
+			return clazz.getName() + repeat("[]", dimension);
 		}
 	}
 
