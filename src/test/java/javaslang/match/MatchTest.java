@@ -8,6 +8,7 @@ package javaslang.match;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.util.List;
+import java.util.function.Function;
 
 import javaslang.option.Some;
 
@@ -17,26 +18,18 @@ public class MatchTest {
 
 	@Test
 	public void shouldMatchNullAsPrototype() {
-		final int actual = Matchz
-				.caze((String s) -> s.length())
-				.caze(null, o -> 1)
-				.apply(null);
+		final int actual = Matchz.caze((String s) -> s.length()).caze(null, o -> 1).apply(null);
 		assertThat(actual).isEqualTo(1);
 	}
-	
+
 	@Test(expected = MatchError.class)
 	public void shouldNotMatchNullAsType() {
-		new Match<Boolean>()
-				.caze((int i) -> false)
-				.caze((Integer i) -> true)
-				.apply((Integer) null);
+		new Match<Boolean>().caze((int i) -> false).caze((Integer i) -> true).apply((Integer) null);
 	}
-	
+
 	@Test
 	public void shouldMatchByValuesUsingFunction() {
-		final int actual = Matchz
-				.caze("1", (String s) -> 1)
-				.apply("1");
+		final int actual = Matchz.caze("1", (String s) -> 1).apply("1");
 		assertThat(actual).isEqualTo(1);
 	}
 
@@ -44,17 +37,13 @@ public class MatchTest {
 	public void shouldThrowOnNoMatchByValue() {
 		Matchz.caze("1", o -> 1).apply("2");
 	}
-	
+
 	@Test
 	public void shouldMatchByValueOnMultipleCases() {
-		final int actual = Matchz
-				.caze("1", o -> 1)
-				.caze("2", o -> 2)
-				.caze("3", o -> 3)
-				.apply("2");
+		final int actual = Matchz.caze("1", o -> 1).caze("2", o -> 2).caze("3", o -> 3).apply("2");
 		assertThat(actual).isEqualTo(2);
 	}
-	
+
 	@Test
 	public void shouldMatchByDoubleOnMultipleCasesUsingTypedParameter() {
 		final int actual = Matchz
@@ -74,7 +63,7 @@ public class MatchTest {
 				.apply(Integer.MAX_VALUE);
 		assertThat(actual).isEqualTo(Integer.MAX_VALUE);
 	}
-	
+
 	@Test
 	public void shouldMatchByAssignableTypeOnMultipleCases() {
 		final int actual = Matchz
@@ -84,16 +73,13 @@ public class MatchTest {
 				.apply(2.0d);
 		assertThat(actual).isEqualTo('b');
 	}
-	
+
 	@Test
 	public void shouldMatchDefaultCase() {
-		final int actual = Matchz
-				.caze(null, o -> 1)
-				.caze((Object o) -> 2)
-				.apply("default");
+		final int actual = Matchz.caze(null, o -> 1).caze((Object o) -> 2).apply("default");
 		assertThat(actual).isEqualTo(2);
 	}
-	
+
 	@Test
 	public void shouldClarifyHereThatTypeErasureIsPresent() {
 		final int actual = new Match<Integer>()
@@ -102,13 +88,13 @@ public class MatchTest {
 				.apply(new Some<>("123"));
 		assertThat(actual).isEqualTo(1);
 	}
-	
+
 	@Test
 	public void shouldCompileAssignmentWithGenericWildcardType() {
 		@SuppressWarnings("unused")
 		final Match<List<?>> list = new Match<>();
 	}
-	
+
 	@Test
 	public void shouldMatchPrimitiveInt() {
 		final boolean actual = new Match<Boolean>()
@@ -126,7 +112,7 @@ public class MatchTest {
 				.apply(1);
 		assertThat(actual).isTrue();
 	}
-	
+
 	@Test
 	public void shouldMatchIntegerAsPrimitiveInt() {
 		final boolean actual = new Match<Boolean>()
@@ -144,7 +130,7 @@ public class MatchTest {
 				.apply(new Integer(1));
 		assertThat(actual).isTrue();
 	}
-	
+
 	@Test
 	public void shouldMatchPrimitiveBooleanValueAndApplyBooleanFunction() {
 		final int actual = new Match<Integer>()
@@ -163,25 +149,44 @@ public class MatchTest {
 		assertThat(actual).isEqualTo(1);
 	}
 
-    // TODO: add tests for all primitive types + new Object() 
+	// TODO: add tests for all primitive types + new Object()
 
-    @Test 
-    public void shouldCompileObjectIntegerPrototypeCase() { 
-            // Does *not* compile: new Match<>().caze(1, (int i) -> i); 
-            new Match<>().caze(1, (Integer i) -> i); 
-    }
+	@Test
+	public void shouldCompileObjectIntegerPrototypeCase() {
+		// Does *not* compile: new Match<>().caze(1, (int i) -> i);
+		new Match<>().caze(1, (Integer i) -> i);
+	}
 
-    @Test 
-    public void shouldCompileUnqualifiedIntegerPrototypeCase() { 
-            new Match<>().caze(1, i -> i); 
-    }
-    
-    @Test
-    public void shouldMatchBooleanArray() {
-    	final int actual = new Match<Integer>()
-				.caze((boolean[] b) -> 1)
-				.apply(new boolean[] { true });
+	@Test
+	public void shouldCompileUnqualifiedIntegerPrototypeCase() {
+		new Match<>().caze(1, i -> i);
+	}
+
+	@Test
+	public void shouldMatchBooleanArray() {
+		final int actual = new Match<Integer>().caze((boolean[] b) -> 1).apply(
+				new boolean[] { true });
 		assertThat(actual).isEqualTo(1);
-    }
-	
+	}
+
+	@Test
+	public void shouldMatchLambdaConsideringTypeHierarchy() {
+		final SpecialFunction lambda = i -> String.valueOf(i);
+		final String actual = Matchz
+				.caze((SameSignatureAsSpecialFunction f) -> f.apply(1))
+				.caze((Function<Integer, String> f) -> f.apply(2))
+				.apply(lambda);
+		assertThat(actual).isEqualTo("2");
+	}
+
+	@FunctionalInterface
+	static interface SpecialFunction extends Function<Integer, String> {
+		String apply(Integer i);
+	}
+
+	@FunctionalInterface
+	static interface SameSignatureAsSpecialFunction extends Function<Integer, String> {
+		String apply(Integer i);
+	}
+
 }

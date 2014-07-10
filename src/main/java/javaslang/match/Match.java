@@ -89,12 +89,15 @@ public class Match<R> implements Function<Object, R> {
 	 * @return this, the current instance of Match.
 	 * @throws IllegalStateException if function is null.
 	 */
+	// DEV NOTE: the compiler cannot distinguish between primitive and Object types, e.g.
+	//           public Match<R> caze(int prototype, IntFunction<R> function)
+	//           Autoboxing does not work here.
 	public <T> Match<R> caze(T prototype, SerializableFunction<T, R> function) {
 		requireNonNull(function, "function is null");
 		cases.add(new Case<>(new Some<>(prototype), function));
 		return this;
 	}
-
+	
 	/**
 	 * Use this method to match by boolean. An object o matches this case, if {@code o != null &&
 	 * o.getClass() == Boolean.class}.
