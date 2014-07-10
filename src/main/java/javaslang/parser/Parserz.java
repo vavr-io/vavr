@@ -24,6 +24,42 @@ import javaslang.match.Match;
 import javaslang.match.Matchz;
 import javaslang.text.Tree;
 
+//
+// TODO:
+// - Greedy & non-greedy quantors (?,+,*,??,+?,*?) // Naming: Quantor vs Multiplicity
+//
+// - Empty subrules
+//   rule : ( "a" | | "c" ) # empty sub-rule alternative
+//        |                 # empty alternative
+//        ;
+//
+// - Charset [a-zA-Z]+ is a shorthand for Range ('a'..'z'|'A'..'Z')+ 
+//   a-z = 'a'..'z' 
+//   [a-zA-Z]+      Multiplicity(1..n)
+//                         | 
+//                      Choice 
+//                       /   \ 
+//                   Range   Range 
+//                    / \     / \ 
+//                   a   z   A   Z 
+//
+// - Whitespace handling
+//   * Automatic whitespace handling within parser rules (use reserved word WHITESPACE instead of WS)
+//   * Switch to non-automatic whitespace handling within lexer rules
+//   * Leads to no distinction between lexer and parser phase.
+//     Just one phase with context switch.
+//     No switch for Literals in the context of parsers.
+//     Context switch only within referenced lexer rules.
+//
+//   Lexer rules 
+//   ----------- 
+//   Charset : '[' (Char | Char '-' Char)+ ']'; // no auto-whitespace between lexer parts! 
+//   Char : // Unicode character 
+//
+//   Parser rules 
+//   ------------ 
+//   example : Charset*; // whitespace between parser tokens allowed!
+//
 class Parserz {
 
 	/**
@@ -34,14 +70,14 @@ class Parserz {
 	}
 
 	/**
-	 * Dot '.' parser. Matches a single, arbitrary character.
+	 * Wildcard '.' parser. Matches a single, arbitrary character.
 	 */
-	static class Dot extends AbstractParser {
+	static class Any extends AbstractParser {
 
-		static final Dot INSTANCE = new Dot();
+		static final Any INSTANCE = new Any();
 
 		// hidden
-		private Dot() {
+		private Any() {
 		}
 
 		/*
@@ -51,7 +87,7 @@ class Parserz {
 		@Override
 		public Either<Integer, Tree<Tuple2<Integer, Integer>>> parse(String text, int index) {
 			if (index < text.length()) {
-				return new Right<>(new Tree<>("Dot", Tuplez.of(index, 1)));
+				return new Right<>(new Tree<>("Any", Tuplez.of(index, 1)));
 			} else {
 				return new Left<>(index);
 			}
@@ -192,7 +228,7 @@ class Parserz {
 	private static abstract class AbstractParser implements Parser, Supplier<Parser> {
 
 		static final Match<String> TO_STRING = Matchz//
-				.caze((Dot dot) -> ".")
+				.caze((Any any) -> ".")
 				.caze((EOF eof) -> "EOF")
 				.caze((Literal l) -> "'" + l.literal + "'")
 				.caze((Rule r) -> Stream
