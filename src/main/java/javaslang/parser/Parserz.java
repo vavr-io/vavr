@@ -139,6 +139,7 @@ class Parserz {
 		}
 	}
 
+	// TODO: javadoc
 	static class Quantifier extends AbstractParser {
 
 		final Supplier<Parser> parser;
@@ -260,6 +261,7 @@ class Parserz {
 		}
 	}
 
+	// TODO: javadoc
 	static class Sequence extends AbstractParser {
 
 		// TODO: make whitespace regex configurable
@@ -327,8 +329,8 @@ class Parserz {
 				.caze((Any any) -> ".")
 				.caze((EOF eof) -> "EOF")
 				.caze((Literal l) -> "'" + l.literal + "'")
+				// TODO: does quantifier need braces '(' ')'?
 				.caze((Quantifier q) -> q.parser + q.bounds.symbol)
-				// TODO: need braces '(' ')'?
 				.caze((Rule r) -> Stream
 						.of(r.parsers)
 						.map(p -> p.get().toString())
