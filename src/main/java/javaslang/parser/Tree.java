@@ -3,7 +3,7 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.text;
+package javaslang.parser;
 
 import static javaslang.Lang.requireNonNull;
 
@@ -20,15 +20,15 @@ import javaslang.Stringz;
  *
  * @param <T> Type of tree node values.
  */
-// TODO: discouraged impl, goal: create functional javaslang.collection.{List,Set,Map,Tree,...}
-public class Tree<T> {
+//TODO: discouraged impl, goal: create functional javaslang.collection.{List,Set,Map,Tree,...}
+class Tree<T> {
 
 	private final String id; // identifier, not necessarily unique
-	private final T value;
 	private final List<Tree<T>> children = new ArrayList<>();
 
-	// needs to be accessible interally for attaching/detaching children
+	// need to be accessible interally for attaching/detaching children
 	Tree<T> parent = null;
+	T value;
 
 	Tree(String id) {
 		this(id, null);
@@ -42,10 +42,6 @@ public class Tree<T> {
 
 	public String getId() {
 		return id;
-	}
-
-	public T getValue() {
-		return value;
 	}
 
 	public List<Tree<T>> getChildren() {

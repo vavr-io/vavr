@@ -7,7 +7,6 @@ package javaslang.parser;
 
 import javaslang.Tuplez.Tuple2;
 import javaslang.either.Either;
-import javaslang.text.Tree;
 
 interface Parser {
 

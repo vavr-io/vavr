@@ -12,6 +12,8 @@ import static javaslang.Lang.requireNotInstantiable;
 import static javaslang.Lang.requireNotNullOrEmpty;
 
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import javaslang.Stringz;
@@ -22,7 +24,6 @@ import javaslang.either.Left;
 import javaslang.either.Right;
 import javaslang.match.Match;
 import javaslang.match.Matchz;
-import javaslang.text.Tree;
 
 //
 // TODO:
@@ -80,10 +81,6 @@ class Parserz {
 		private Any() {
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see javaslang.parser.Parser#parse(java.lang.String, int)
-		 */
 		@Override
 		public Either<Integer, Tree<Tuple2<Integer, Integer>>> parse(String text, int index) {
 			if (index < text.length()) {
@@ -92,7 +89,6 @@ class Parserz {
 				return new Left<>(index);
 			}
 		}
-
 	}
 
 	/**
@@ -106,10 +102,6 @@ class Parserz {
 		private EOF() {
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see javaslang.parser.Parser#parse(java.lang.String, int)
-		 */
 		@Override
 		public Either<Integer, Tree<Tuple2<Integer, Integer>>> parse(String text, int index) {
 			if (index == text.length()) {
@@ -118,7 +110,6 @@ class Parserz {
 				return new Left<>(index);
 			}
 		}
-
 	}
 
 	/**
@@ -138,10 +129,6 @@ class Parserz {
 			this.literal = literal;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see javaslang.parser.Parser#parse(java.lang.String, int)
-		 */
 		@Override
 		public Either<Integer, Tree<Tuple2<Integer, Integer>>> parse(String text, int index) {
 			if (text.startsWith(literal, index)) {
@@ -150,7 +137,62 @@ class Parserz {
 				return new Left<>(index);
 			}
 		}
+	}
 
+	static class Quantifier extends AbstractParser {
+
+		final Supplier<Parser> parser;
+		final Bounds bounds;
+
+		Quantifier(Supplier<Parser> parser, Bounds bounds) {
+			requireNonNull(parser, "parser is null");
+			requireNonNull(bounds, "bounds is null");
+			this.parser = parser;
+			this.bounds = bounds;
+		}
+
+		@Override
+		public Either<Integer, Tree<Tuple2<Integer, Integer>>> parse(String text, int index) {
+			final Tree<Tuple2<Integer, Integer>> result = new Tree<>(bounds.name(), Tuplez.of(
+					index, 0));
+			parseChildren(result, text, index);
+			final boolean notMatched = result.getChildren().isEmpty();
+			final boolean shouldHaveMatched = Bounds.ONE_TO_N.equals(bounds);
+			if (notMatched && shouldHaveMatched) {
+				return new Left<>(index);
+			} else {
+				return new Right<>(result);
+			}
+		}
+
+		// TODO: rewrite this method (immutable & recursive)
+		private void parseChildren(Tree<Tuple2<Integer, Integer>> tree, String text, int index) {
+			final boolean unbound = !Bounds.ZERO_TO_ONE.equals(bounds);
+			boolean found = true;
+			do {
+				final Either<Integer, Tree<Tuple2<Integer, Integer>>> child = parser.get().parse(
+						text, tree.value._1 + tree.value._2);
+				if (child.isRight()) {
+					final Tree<Tuple2<Integer, Integer>> node = child.right().get();
+					tree.attach(node);
+					tree.value = Tuplez.of(tree.value._1, node.value._2);
+				} else {
+					found = false;
+				}
+			} while (unbound && found);
+		}
+
+		static enum Bounds {
+
+			ZERO_TO_ONE("?"), ZERO_TO_N("*"), ONE_TO_N("+"), // greedy
+			ZERO_TO_ONE_NG("??"), ZERO_TO_N_NG("*?"), ONE_TO_N_NG("+?"); // non-greedy
+
+			final String symbol;
+
+			Bounds(String symbol) {
+				this.symbol = symbol;
+			}
+		}
 	}
 
 	/**
@@ -178,10 +220,6 @@ class Parserz {
 			this.parsers = parsers;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see javaslang.parser.Parser#parse(java.lang.String, int)
-		 */
 		@Override
 		public Either<Integer, Tree<Tuple2<Integer, Integer>>> parse(String text, int index) {
 			final Either<Integer, Tree<Tuple2<Integer, Integer>>> initial = new Left<>(index);
@@ -203,6 +241,7 @@ class Parserz {
 		 * @param index The current index.
 		 * @return One of the given parse trees, which is either no match (Left) or a match (Right).
 		 */
+		// TODO: implement operator precedence & resolve ambiguities here
 		private Either<Integer, Tree<Tuple2<Integer, Integer>>> reduce(
 				Either<Integer, Tree<Tuple2<Integer, Integer>>> tree1,
 				Either<Integer, Tree<Tuple2<Integer, Integer>>> tree2, String text, int index) {
@@ -219,7 +258,64 @@ class Parserz {
 				return tree2; // both trees did not match, second tree consumed more characters
 			}
 		}
+	}
 
+	static class Sequence extends AbstractParser {
+
+		// TODO: make whitespace regex configurable
+		private static final Pattern WHITESPACE = Pattern.compile("\\s*");
+
+		final String name;
+		final Supplier<Parser>[] parsers;
+
+		@SafeVarargs
+		public Sequence(Supplier<Parser>... parsers) {
+			requireNotNullOrEmpty(parsers, "No parsers");
+			this.name = null;
+			this.parsers = parsers;
+		}
+
+		@SafeVarargs
+		public Sequence(String name, Supplier<Parser>... parsers) {
+			requireNotNullOrEmpty(parsers, "No parsers");
+			this.name = name;
+			this.parsers = parsers;
+		}
+
+		// TODO: rewrite this method (immutable & recursive)
+		@Override
+		public Either<Integer, Tree<Tuple2<Integer, Integer>>> parse(String text, int index) {
+			// Starts with an emty root tree and successively attaches parsed children.
+			final String id = (name == null) ? "<Sequence>".intern() : name;
+			final Either<Integer, Tree<Tuple2<Integer, Integer>>> initial = new Right<>(new Tree<>(
+					id, Tuplez.of(index, 0)));
+			return Stream.of(parsers).reduce(initial, (tree, parser) -> {
+				if (tree.isLeft()) {
+					// first failure returned
+					return tree;
+				} else {
+					// next parser parses at current index
+					final Tree<Tuple2<Integer, Integer>> node = tree.right().get();
+					final int lastIndex = node.value._1 + node.value._2;
+					final Matcher matcher = WHITESPACE.matcher(text);
+					final int currentIndex = matcher.find(lastIndex) ? matcher.end() : lastIndex;
+					final Either<Integer, Tree<Tuple2<Integer, Integer>>> parsed = parser
+							.get()
+							.parse(text, currentIndex);
+					// on success, attach token to tree
+					if (parsed.isRight()) {
+						final Tree<Tuple2<Integer, Integer>> child = parsed.right().get();
+						node.attach(child);
+						node.value = Tuplez.of(node.value._1, child.value._2);
+						return tree;
+					} else {
+						// parser failed => the whole sequence could not be parsed
+						return parsed;
+					}
+				}
+			}, (t1, t2) -> null); // the combiner is not used here because this is no parallel
+									// stream
+		}
 	}
 
 	/**
@@ -231,28 +327,22 @@ class Parserz {
 				.caze((Any any) -> ".")
 				.caze((EOF eof) -> "EOF")
 				.caze((Literal l) -> "'" + l.literal + "'")
+				.caze((Quantifier q) -> q.parser + q.bounds.symbol)
+				// TODO: need braces '(' ')'?
 				.caze((Rule r) -> Stream
 						.of(r.parsers)
 						.map(p -> p.get().toString())
 						.collect(joining("\n  | ", r.name + "\n  : ", "\n  ;")));
 
-		/*
-		 * (non-Javadoc)
-		 * @see java.util.function.Supplier#get()
-		 */
 		@Override
 		public final Parser get() {
 			return this;
 		}
 
-		/**
-		 * Calls {@link Stringifiable#stringify()}
-		 */
 		@Override
 		public final String toString() {
 			return TO_STRING.apply(this);
 		}
-
 	}
 
 }
