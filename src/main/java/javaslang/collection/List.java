@@ -30,13 +30,7 @@ public interface List<T> extends Iterable<T> {
 	boolean isEmpty();
 
 	default List<T> append(T element) {
-		List<T> result = new LinearList<>(element, EmptyList.instance());
-		List<T> list = this.reverse();
-		while (!list.isEmpty()) {
-			result = result.prepend(list.head());
-			list = list.tail();
-		}
-		return result;
+		return reverse().prepend(element).reverse();
 	}
 
 	default List<T> prepend(T element) {
