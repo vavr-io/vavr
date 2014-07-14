@@ -135,5 +135,20 @@ public interface List<T> extends Iterable<T> {
 
 		return new ListIterator(this);
 	}
+	
+	static <T> List<T> empty() {
+		return EmptyList.instance();
+	}
+	
+	// Listz.of(1, 2, 3, 4) = List(1, List(2, List(3, List(4, EmptyList()))))
+	@SafeVarargs
+	static <T> List<T> of(T... elements) {
+		requireNonNull(elements, "elements is null");
+		List<T> result = EmptyList.instance();
+		for (int i = elements.length - 1; i >= 0; i--) {
+			result.prepend(elements[i]);
+		}
+		return result;
+	}
 
 }
