@@ -71,6 +71,35 @@ public interface List<T> extends Iterable<T> {
 		return list.head();
 	}
 
+	default int indexOf(T o) {
+		List<T> list = this;
+		int index = 0;
+		while (!list.isEmpty()) {
+			final T head = head();
+			if (head == o || (head != null && head.equals(o))) {
+				return index;
+			}
+			index++;
+			list = list.tail();
+		}
+		return -1;
+	}
+	
+	default int lastIndexOf(T o) {
+		List<T> list = this;
+		int result = -1;
+		int index = 0;
+		while (!list.isEmpty()) {
+			final T head = head();
+			if (head == o || (head != null && head.equals(o))) {
+				result = index;
+			}
+			index++;
+			list = list.tail();
+		}
+		return result;
+	}
+
 	/**
 	 * Reverses this List and returns a new List in O(n).
 	 * 
@@ -135,11 +164,11 @@ public interface List<T> extends Iterable<T> {
 
 		return new ListIterator(this);
 	}
-	
+
 	static <T> List<T> empty() {
 		return EmptyList.instance();
 	}
-	
+
 	// Listz.of(1, 2, 3, 4) = List(1, List(2, List(3, List(4, EmptyList()))))
 	@SafeVarargs
 	static <T> List<T> of(T... elements) {
