@@ -5,73 +5,22 @@
  */
 package javaslang.collection;
 
-import static javaslang.Lang.requireNotInstantiable;
-
-import java.util.List;
-
-import javaslang.option.None;
-import javaslang.option.Option;
-import javaslang.option.Some;
+import static javaslang.Lang.requireNonNull;
 
 /**
- * Extension methods for {@link java.util.List}.
- * <p>
- * For list creation, see {@link java.util.Arrays#asList(Object...)} and
- * {@link java.util.Collections#emptyList()}.<br>
- * <strong>Note:</strong> If the list is an array of primitive component type, e.g. int[], the
- * {@link java.util.Arrays#asList(Object...)} is not sufficient, because the array is treated as
- * object. In this case please use one of the asList methods provided by
- * {@link javaslang.Arrayz}, e.g. {@link javaslang.Arrayz#asList(int[])}.
- * 
- * @see java.util.Collections
+ * Extension methods for {@link javaslang.collection.List}.
  */
 public final class Listz {
 
-	/**
-	 * This class is not intended to be instantiated.
-	 */
-	private Listz() {
-		requireNotInstantiable();
-	}
-
-	/**
-	 * Returns an {@link javaslang.option.Option} of the first element of the given list. If the
-	 * given list is null or empty, {@link javaslang.option.None} is returned, otherwise
-	 * {@link javaslang.option.Some} containing the first element.
-	 * 
-	 * @param <T> type of list elements
-	 * @param list A List, may be null or empty.
-	 * @return None, if the list is null or empty, otherwise Some containing the first element.
-	 */
-	public static <T> Option<T> firstElement(List<T> list) {
-		return Collectionz.isNullOrEmpty(list) ? None.<T> instance() : new Some<T>(list.get(0));
-	}
-
-	/**
-	 * Returns an {@link javaslang.option.Option} of the last element of the given list. If the
-	 * given list is null or empty, {@link javaslang.option.None} is returned, otherwise
-	 * {@link javaslang.option.Some} containing the last element.
-	 * 
-	 * @param <T> type of list elements
-	 * @param list A List, may be null or empty.
-	 * @return None, if the list is null or empty, otherwise Some containing the last element.
-	 */
-	public static <T> Option<T> lastElement(List<T> list) {
-		return Collectionz.isNullOrEmpty(list) ? None.<T> instance() : new Some<T>(list.get(list
-				.size() - 1));
-	}
-	
-	/**
-	 * Shortcut for {@code list.toArray(new T[list.size()])}.
-	 * 
-	 * @param <T> Element type.
-	 * @param list A List containing elements of type T.
-	 * @return An array containing the elements of the given list in the same order.
-	 */
-	public static <T> T[] toArray(List<T> list) {
-		@SuppressWarnings("unchecked")
-		final T[] array = (T[]) new Object[list.size()];
-		return list.toArray(array);
+	// Listz.of(1, 2, 3, 4) = List(1, List(2, List(3, List(4, EmptyList()))))
+	@SafeVarargs
+	public static <T> List<T> of(T... elements) {
+		requireNonNull(elements, "elements is null");
+		List<T> result = EmptyList.instance();
+		for (int i = elements.length - 1; i >= 0; i--) {
+			result.prepend(elements[i]);
+		}
+		return result;
 	}
 
 }
