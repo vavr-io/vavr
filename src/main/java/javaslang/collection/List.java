@@ -36,6 +36,14 @@ public interface List<T> extends Iterable<T> {
 	default List<T> prepend(T element) {
 		return new LinearList<>(element, this);
 	}
+	
+	// TODO: insert(index, element)
+	
+	// TODO: set(index, element)
+	
+	// TODO: remove(element)
+	
+	// TODO: implement equals(Object), hashCode()
 
 	/**
 	 * Calculates the size of a List in O(n).
