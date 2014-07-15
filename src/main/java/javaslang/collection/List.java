@@ -55,15 +55,7 @@ public interface List<T> extends Iterable<T> {
 	}
 
 	default boolean contains(T o) {
-		List<T> list = this;
-		while (!list.isEmpty()) {
-			final T head = list.head();
-			if (head == o || (head != null && head.equals(o))) {
-				return true;
-			}
-			list = list.tail();
-		}
-		return false;
+		return indexOf(o) != -1;
 	}
 
 	default T get(int index) {
