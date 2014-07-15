@@ -5,6 +5,9 @@
  */
 package javaslang.collection;
 
+import static java.util.stream.Collectors.joining;
+import javaslang.Stringz;
+
 /**
  * Non-empty List.
  * 
@@ -12,7 +15,7 @@ package javaslang.collection;
  *
  * @param <T> Component type of the List.
  */
-public class LinearList<T> implements List<T> {
+public class LinearList<T> extends AbstractList<T> {
 
 	private final T head;
 	private final List<T> tail;
@@ -21,17 +24,17 @@ public class LinearList<T> implements List<T> {
 		this.head = head;
 		this.tail = tail;
 	}
-	
+
 	@Override
 	public T head() {
 		return head;
 	}
-	
+
 	@Override
 	public List<T> tail() {
 		return tail;
 	}
-	
+
 	@Override
 	public boolean isEmpty() {
 		return false;

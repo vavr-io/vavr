@@ -12,7 +12,7 @@ package javaslang.collection;
  * 
  * @param <T> Component type of the List.
  */
-public final class EmptyList<T> implements List<T> {
+public final class EmptyList<T> extends AbstractList<T> {
 	
 	private static final EmptyList<?> INSTANCE = new EmptyList<>();
 	

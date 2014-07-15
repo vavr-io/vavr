@@ -36,14 +36,28 @@ public interface List<T> extends Iterable<T> {
 	default List<T> prepend(T element) {
 		return new LinearList<>(element, this);
 	}
-	
+
 	// TODO: insert(index, element)
-	
+
 	// TODO: set(index, element)
-	
+
 	// TODO: remove(element)
 	
-	// TODO: implement equals(Object), hashCode()
+	// TODO: appendAll
+	
+	// TODO: prependAll
+	
+	// TODO: insertAll
+	
+	// TODO: removeAll
+	
+	// TODO: retainAll
+	
+	// TODO: sort : List<T>
+	
+	// TODO: clear -> List.empty()
+	
+	// TODO: subList(fromIndex, toIndex) 
 
 	/**
 	 * Calculates the size of a List in O(n).
@@ -59,14 +73,23 @@ public interface List<T> extends Iterable<T> {
 	}
 
 	default T get(int index) {
-		if (index < 0 || index >= size()) {
-			throw new IndexOutOfBoundsException("No element at specified index: " + index);
+		if (isEmpty()) {
+			throw new IndexOutOfBoundsException("get(" + index + ") on empty list");
+		}
+		if (index < 0) {
+			throw new IndexOutOfBoundsException("get(" + index + ")");
 		}
 		List<T> list = this;
 		int currentIndex = index;
 		while (currentIndex > 0) {
 			currentIndex--;
 			list = list.tail();
+			if (list.isEmpty()) {
+				throw new IndexOutOfBoundsException("get("
+						+ index
+						+ ") on list of size "
+						+ (index - currentIndex));
+			}
 		}
 		return list.head();
 	}
@@ -76,7 +99,7 @@ public interface List<T> extends Iterable<T> {
 		int index = 0;
 		while (!list.isEmpty()) {
 			final T head = head();
-			if (head == o || (head != null && head.equals(o))) {
+			if (head == null ? o == null : head.equals(o)) {
 				return index;
 			}
 			index++;
@@ -84,14 +107,14 @@ public interface List<T> extends Iterable<T> {
 		}
 		return -1;
 	}
-	
+
 	default int lastIndexOf(T o) {
 		List<T> list = this;
 		int result = -1;
 		int index = 0;
 		while (!list.isEmpty()) {
 			final T head = head();
-			if (head == o || (head != null && head.equals(o))) {
+			if (head == null ? o == null : head.equals(o)) {
 				result = index;
 			}
 			index++;
@@ -128,11 +151,19 @@ public interface List<T> extends Iterable<T> {
 		return StreamSupport.stream(spliterator(), true);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Iterable#spliterator()
+	 */
 	@Override
 	default Spliterator<T> spliterator() {
 		return Spliterators.spliterator(iterator(), size(), Spliterator.ORDERED);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Iterable#iterator()
+	 */
 	@Override
 	default Iterator<T> iterator() {
 
@@ -164,7 +195,22 @@ public interface List<T> extends Iterable<T> {
 
 		return new ListIterator(this);
 	}
+	
+    /**
+	 * Equivalent to {@link java.util.List#equals(Object)}.
+     */
+    boolean equals(Object o);
 
+    /**
+     * Equivalent to {@link java.util.List#hashCode()}.
+     */
+    int hashCode();
+    
+    /**
+     * TODO: javadoc
+     */
+    String toString();
+	
 	static <T> List<T> empty() {
 		return EmptyList.instance();
 	}
@@ -175,7 +221,7 @@ public interface List<T> extends Iterable<T> {
 		requireNonNull(elements, "elements is null");
 		List<T> result = EmptyList.instance();
 		for (int i = elements.length - 1; i >= 0; i--) {
-			result.prepend(elements[i]);
+			result = result.prepend(elements[i]);
 		}
 		return result;
 	}
