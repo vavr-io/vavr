@@ -41,6 +41,7 @@ public interface List<T> extends Iterable<T> {
 	 * @return
 	 */
 	default List<T> appendAll(List<? extends T> elements) {
+		requireNonNull(elements, "elements is null");
 		return this.reverse().prependAll(elements.reverse()).reverse();
 	}
 
@@ -55,6 +56,7 @@ public interface List<T> extends Iterable<T> {
 	 * @return
 	 */
 	default List<T> prependAll(List<? extends T> elements) {
+		requireNonNull(elements, "elements is null");
 		List<T> result = this;
 		for (List<? extends T> list = elements.reverse(); !list.isEmpty(); list = list.tail()) {
 			result = result.prepend(list.head());
