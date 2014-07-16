@@ -62,10 +62,14 @@ public interface List<T> extends Iterable<T> {
 	/**
 	 * Calculates the size of a List in O(n).
 	 * 
+	 * {@code isEmpty() ? 0 : 1 + tail().size()}
+	 * 
 	 * @return The size of this List.
 	 */
 	default int size() {
-		return isEmpty() ? 0 : 1 + tail().size();
+		int result = 0;
+		for(List<T> list = this; !list.isEmpty(); list = list.tail(), result++) ;
+		return result;
 	}
 
 	default boolean contains(T o) {
