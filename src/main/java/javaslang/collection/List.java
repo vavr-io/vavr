@@ -33,9 +33,10 @@ public interface List<T> extends Iterable<T> {
 	default List<T> append(T element) {
 		return reverse().prepend(element).reverse();
 	}
-	
+
 	/**
-	 * Example: {@code List.of(1,2,3).appendAll(List.of(4,5,6))} equals {@code List.of(1,2,3,4,5,6)}.
+	 * Example: {@code List.of(1,2,3).appendAll(List.of(4,5,6))} equals {@code List.of(1,2,3,4,5,6)}
+	 * .
 	 * 
 	 * @param elements
 	 * @return
@@ -50,7 +51,8 @@ public interface List<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Example: {@code List.of(4,5,6).prependAll(List.of(1,2,3))} equals {@code List.of(1,2,3,4,5,6)}.
+	 * Example: {@code List.of(4,5,6).prependAll(List.of(1,2,3))} equals
+	 * {@code List.of(1,2,3,4,5,6)}.
 	 * 
 	 * @param elements
 	 * @return
@@ -65,8 +67,6 @@ public interface List<T> extends Iterable<T> {
 	}
 
 	// TODO: insert(index, element)
-
-	// TODO: set(index, element)
 
 	// TODO: remove(element)
 
@@ -116,6 +116,80 @@ public interface List<T> extends Iterable<T> {
 			}
 		}
 		return list.head();
+	}
+
+	default List<T> set(int index, T element) {
+		if (isEmpty()) {
+			throw new IndexOutOfBoundsException("set(" + index + ") on empty list");
+		}
+		if (index < 0) {
+			throw new IndexOutOfBoundsException("set(" + index + ")");
+		}
+		// TODO: IndexOutOfBounds("set(index, ...)
+		return this.sublist(index + 1).prepend(element).prependAll(sublist(0, index));
+	}
+
+	default List<T> sublist(int beginIndex) {
+		if (beginIndex < 0) {
+			throw new IndexOutOfBoundsException("sublist(" + beginIndex + ")");
+		}
+		List<T> result = this;
+		for (int i = 0; i < beginIndex; i++) {
+			result = result.tail();
+			if (result.isEmpty()) {
+				throw new IndexOutOfBoundsException(String.format("sublist(%s) on list of size %s",
+						beginIndex, beginIndex - i));
+			}
+		}
+		return result;
+	}
+
+	default List<T> sublist(int beginIndex, int endIndex) {
+		final int subLen = endIndex - beginIndex;
+		if (beginIndex < 0 || subLen < 0) {
+			throw new IndexOutOfBoundsException(String.format("sublist(%s, %s) on list of size %2",
+					beginIndex, endIndex, size()));
+		}
+		List<T> result = EmptyList.instance();
+		List<T> list = this.sublist(beginIndex);
+		for (int i = 0; i < subLen; i++, list = list.tail()) {
+			if (list.isEmpty()) {
+				throw new IndexOutOfBoundsException(String.format(
+						"sublist(%s, %s) on list of size %2", beginIndex, endIndex, beginIndex + (subLen - i)));
+			}
+			result = result.prepend(list.head());
+		}
+		return result.reverse();
+	}
+
+	/**
+	 * Drops the first n elements of this list or the whole list, if this size < n.
+	 * 
+	 * @param n The number of elements to drop.
+	 * @return A list consisting of all elements of this list except the first n ones, or else the
+	 *         empty list, if this list has less than n elements.
+	 */
+	default List<T> drop(int n) {
+		List<T> result = this;
+		for (int i = 0; i < n && !result.isEmpty(); i++, result = result.tail())
+			;
+		return result;
+	}
+
+	/**
+	 * Takes the first n elements of this list or the whole list, if this size < n.
+	 * 
+	 * @param n The number of elements to take.
+	 * @return A list consisting of the first n elements of this list or the whole list, if it has
+	 *         less than n elements.
+	 */
+	default List<T> take(int n) {
+		List<T> result = EmptyList.instance();
+		List<T> list = this;
+		for (int i = 0; i < n && !list.isEmpty(); i++, list = list.tail()) {
+			result.prepend(list.head());
+		}
+		return result.reverse();
 	}
 
 	default int indexOf(T o) {
