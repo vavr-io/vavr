@@ -7,11 +7,21 @@ package javaslang.collection;
 
 import static javaslang.Lang.requireNonNull;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Set;
 import java.util.Spliterator;
 import java.util.Spliterators;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
+import java.util.stream.Collector.Characteristics;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -68,19 +78,30 @@ public interface List<T> extends Iterable<T> {
 
 	// TODO: insert(index, element)
 
-	// TODO: remove(element)
-
 	// TODO: insertAll
+
+	// TODO: remove(element)
 
 	// TODO: removeAll
 
 	// TODO: retainAll
 
-	// TODO: sort : List<T>
+	default List<T> sort() {
+		return stream().sorted().collect(List.collector());
+	}
 
-	// TODO: clear -> List.empty()
+	default List<T> sort(Comparator<? super T> c) {
+		return stream().sorted(c).collect(List.collector());
+	}
 
-	// TODO: subList(fromIndex, toIndex)
+	static <E> Collector<E, List<E>, List<E>> collector() {
+		return new CollectorImpl<E, List<E>, List<E>>(//
+				List::empty, // supplier
+				List::prepend, // accumulator
+				(left, right) -> left.prependAll(right), // combiner
+				List::reverse, // finisher
+				Characteristics.IDENTITY_FINISH);
+	}
 
 	/**
 	 * Calculates the size of a List in O(n).
@@ -155,7 +176,8 @@ public interface List<T> extends Iterable<T> {
 		for (int i = 0; i < subLen; i++, list = list.tail()) {
 			if (list.isEmpty()) {
 				throw new IndexOutOfBoundsException(String.format(
-						"sublist(%s, %s) on list of size %2", beginIndex, endIndex, beginIndex + (subLen - i)));
+						"sublist(%s, %s) on list of size %2", beginIndex, endIndex, beginIndex
+								+ (subLen - i)));
 			}
 			result = result.prepend(list.head());
 		}
@@ -334,6 +356,58 @@ public interface List<T> extends Iterable<T> {
 			result = result.prepend(elements[i]);
 		}
 		return result;
+	}
+
+	/**
+	 * Simple implementation class for {@code Collector}.
+	 *
+	 * @param <T> the type of elements to be collected
+	 * @param <A> the type of the accumulator
+	 * @param <R> the type of the result
+	 */
+	static class CollectorImpl<T, A, R> implements Collector<T, A, R> {
+
+		private final Supplier<A> supplier;
+		private final BiConsumer<A, T> accumulator;
+		private final BinaryOperator<A> combiner;
+		private final Function<A, R> finisher;
+		private final Set<Characteristics> characteristics;
+
+		CollectorImpl(Supplier<A> supplier, BiConsumer<A, T> accumulator,
+				BinaryOperator<A> combiner, Function<A, R> finisher,
+				Characteristics characteristics1, Characteristics... characteristics2) {
+			this.supplier = supplier;
+			this.accumulator = accumulator;
+			this.combiner = combiner;
+			this.finisher = finisher;
+			this.characteristics = Collections.unmodifiableSet(EnumSet.of(characteristics1,
+					characteristics2));
+		}
+
+		@Override
+		public BiConsumer<A, T> accumulator() {
+			return accumulator;
+		}
+
+		@Override
+		public Supplier<A> supplier() {
+			return supplier;
+		}
+
+		@Override
+		public BinaryOperator<A> combiner() {
+			return combiner;
+		}
+
+		@Override
+		public Function<A, R> finisher() {
+			return finisher;
+		}
+
+		@Override
+		public Set<Characteristics> characteristics() {
+			return characteristics;
+		}
 	}
 
 }
