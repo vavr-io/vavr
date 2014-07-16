@@ -11,12 +11,12 @@ import javaslang.match.Match.SerializableFunction;
 /**
  * Extension methods for {@link Match}.
  */
-public final class Matchz {
+public final class Matchs {
 
 	/**
 	 * This class is not intended to be instantiated.
 	 */
-	private Matchz() {
+	private Matchs() {
 		requireNotInstantiable();
 	}
 

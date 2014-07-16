@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
-import javaslang.Stringz;
+import javaslang.Strings;
 
 /**
  * A tree representation, Inspired by <a
@@ -146,7 +146,7 @@ public class Tree<T> {
 	}
 
 	protected String toString(int depth) {
-		final String indent = Stringz.repeat(' ', depth * 2);
+		final String indent = Strings.repeat(' ', depth * 2);
 		final String inner = children.stream()
 		// create child strings
 				.map(child -> child.toString(depth + 1))

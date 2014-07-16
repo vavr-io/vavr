@@ -6,16 +6,16 @@
 package javaslang;
 
 import static org.fest.assertions.api.Assertions.assertThat;
-import static javaslang.Tuplez.*;
+import static javaslang.Tuples.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javaslang.Tuplez;
+import javaslang.Tuples;
 
 import org.junit.Test;
 
-public class TuplezTest {
+public class TuplesTest {
 
 	@Test
 	public void shouldCreateEmptyTuple() {
@@ -96,12 +96,12 @@ public class TuplezTest {
 		
 		// create recursive structure1
 		final List<Tuple> listA = new ArrayList<>();
-		final Tuple tupleA = Tuplez.of(listA);
+		final Tuple tupleA = Tuples.of(listA);
 		listA.add(tupleA);
 
 		// create recursive structure2
 		final List<Tuple> listB = new ArrayList<>();
-		final Tuple tupleB = Tuplez.of(listB);
+		final Tuple tupleB = Tuples.of(listB);
 		listB.add(tupleB);
 		
 		// detect that structures are not the same
@@ -114,7 +114,7 @@ public class TuplezTest {
 		
 		// create recursive structure
 		final List<Tuple1<?>> list = new ArrayList<>();
-		final Tuple1<List<?>> tuple = Tuplez.of(list);
+		final Tuple1<List<?>> tuple = Tuples.of(list);
 		list.add(tuple);
 		
 		// detect loop on hashCode

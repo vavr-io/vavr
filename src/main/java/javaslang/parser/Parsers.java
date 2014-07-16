@@ -16,14 +16,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import javaslang.Stringz;
-import javaslang.Tuplez;
-import javaslang.Tuplez.Tuple2;
+import javaslang.Strings;
+import javaslang.Tuples;
+import javaslang.Tuples.Tuple2;
 import javaslang.either.Either;
 import javaslang.either.Left;
 import javaslang.either.Right;
 import javaslang.match.Match;
-import javaslang.match.Matchz;
+import javaslang.match.Matchs;
 
 //
 // TODO:
@@ -61,12 +61,12 @@ import javaslang.match.Matchz;
 //   ------------ 
 //   example : Charset*; // whitespace between parser tokens allowed!
 //
-class Parserz {
+class Parsers {
 
 	/**
 	 * This class is not intended to be instantiated.
 	 */
-	private Parserz() {
+	private Parsers() {
 		requireNotInstantiable();
 	}
 
@@ -84,7 +84,7 @@ class Parserz {
 		@Override
 		public Either<Integer, Tree<Tuple2<Integer, Integer>>> parse(String text, int index) {
 			if (index < text.length()) {
-				return new Right<>(new Tree<>("Any", Tuplez.of(index, 1)));
+				return new Right<>(new Tree<>("Any", Tuples.of(index, 1)));
 			} else {
 				return new Left<>(index);
 			}
@@ -105,7 +105,7 @@ class Parserz {
 		@Override
 		public Either<Integer, Tree<Tuple2<Integer, Integer>>> parse(String text, int index) {
 			if (index == text.length()) {
-				return new Right<>(new Tree<>("EOF", Tuplez.of(index, 0)));
+				return new Right<>(new Tree<>("EOF", Tuples.of(index, 0)));
 			} else {
 				return new Left<>(index);
 			}
@@ -132,7 +132,7 @@ class Parserz {
 		@Override
 		public Either<Integer, Tree<Tuple2<Integer, Integer>>> parse(String text, int index) {
 			if (text.startsWith(literal, index)) {
-				return new Right<>(new Tree<>("Literal", Tuplez.of(index, literal.length())));
+				return new Right<>(new Tree<>("Literal", Tuples.of(index, literal.length())));
 			} else {
 				return new Left<>(index);
 			}
@@ -154,7 +154,7 @@ class Parserz {
 
 		@Override
 		public Either<Integer, Tree<Tuple2<Integer, Integer>>> parse(String text, int index) {
-			final Tree<Tuple2<Integer, Integer>> result = new Tree<>(bounds.name(), Tuplez.of(
+			final Tree<Tuple2<Integer, Integer>> result = new Tree<>(bounds.name(), Tuples.of(
 					index, 0));
 			parseChildren(result, text, index);
 			final boolean notMatched = result.getChildren().isEmpty();
@@ -176,7 +176,7 @@ class Parserz {
 				if (child.isRight()) {
 					final Tree<Tuple2<Integer, Integer>> node = child.right().get();
 					tree.attach(node);
-					tree.value = Tuplez.of(tree.value._1, node.value._2);
+					tree.value = Tuples.of(tree.value._1, node.value._2);
 				} else {
 					found = false;
 				}
@@ -248,7 +248,7 @@ class Parserz {
 				Either<Integer, Tree<Tuple2<Integer, Integer>>> tree2, String text, int index) {
 			// if both trees are valid parse results, i.e. Right, then we found an ambiguity
 			require(tree1.isLeft() || tree2.isLeft(),
-					() -> "Ambiguity found at " + Stringz.lineAndColumn(text, index) + ":\n" + text);
+					() -> "Ambiguity found at " + Strings.lineAndColumn(text, index) + ":\n" + text);
 			if (tree1.isRight()) {
 				return tree1; // first tree is a valid parse result
 			} else if (tree2.isRight()) {
@@ -290,7 +290,7 @@ class Parserz {
 			// Starts with an emty root tree and successively attaches parsed children.
 			final String id = (name == null) ? "<Sequence>".intern() : name;
 			final Either<Integer, Tree<Tuple2<Integer, Integer>>> initial = new Right<>(new Tree<>(
-					id, Tuplez.of(index, 0)));
+					id, Tuples.of(index, 0)));
 			return Stream.of(parsers).reduce(initial, (tree, parser) -> {
 				if (tree.isLeft()) {
 					// first failure returned
@@ -308,7 +308,7 @@ class Parserz {
 					if (parsed.isRight()) {
 						final Tree<Tuple2<Integer, Integer>> child = parsed.right().get();
 						node.attach(child);
-						node.value = Tuplez.of(node.value._1, child.value._2);
+						node.value = Tuples.of(node.value._1, child.value._2);
 						return tree;
 					} else {
 						// parser failed => the whole sequence could not be parsed
@@ -325,7 +325,7 @@ class Parserz {
 	 */
 	private static abstract class AbstractParser implements Parser, Supplier<Parser> {
 
-		static final Match<String> TO_STRING = Matchz//
+		static final Match<String> TO_STRING = Matchs//
 				.caze((Any any) -> ".")
 				.caze((EOF eof) -> "EOF")
 				.caze((Literal l) -> "'" + l.literal + "'")

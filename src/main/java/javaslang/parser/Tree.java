@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
-import javaslang.Stringz;
+import javaslang.Strings;
 
 /**
  * A tree representation, Inspired by <a
@@ -20,15 +20,15 @@ import javaslang.Stringz;
  *
  * @param <T> Type of tree node values.
  */
-//TODO: discouraged impl, goal: create functional javaslang.collection.{List,Set,Map,Tree,...}
+// TODO: discouraged impl, goal: create functional javaslang.collection.{List,Set,Map,Tree,...}
 class Tree<T> {
 
-	private final String id; // identifier, not necessarily unique
-	private final List<Tree<T>> children = new ArrayList<>();
+	final String id; // identifier, not necessarily unique
+	final List<Tree<T>> children = new ArrayList<>();
 
 	// need to be accessible interally for attaching/detaching children
-	Tree<T> parent = null;
 	T value;
+	Tree<T> parent = null;
 
 	Tree(String id) {
 		this(id, null);
@@ -38,10 +38,6 @@ class Tree<T> {
 		requireNonNull(id, "id cannot be null");
 		this.id = id;
 		this.value = value;
-	}
-
-	public String getId() {
-		return id;
 	}
 
 	public List<Tree<T>> getChildren() {
@@ -142,7 +138,7 @@ class Tree<T> {
 	}
 
 	protected String toString(int depth) {
-		final String indent = Stringz.repeat(' ', depth * 2);
+		final String indent = Strings.repeat(' ', depth * 2);
 		final String inner = children.stream()
 		// create child strings
 				.map(child -> child.toString(depth + 1))

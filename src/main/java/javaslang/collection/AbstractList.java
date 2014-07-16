@@ -9,14 +9,17 @@ import static java.util.stream.Collectors.joining;
 
 import java.util.Objects;
 
-import javaslang.Stringz;
+import javaslang.Strings;
 
 /**
- * 
+ * This class is needed because interface List cannot override Object's methods equals, hashCode and
+ * toString.
+ * <p>
+ * See <a href="http://mail.openjdk.java.net/pipermail/lambda-dev/2013-March/008435.html">Allow default methods to override Object's methods</a>.
  *
- * @param <T>
+ * @param <T> Component type of the List.
  */
-public abstract class AbstractList<T> implements List<T> {
+abstract class AbstractList<T> implements List<T> {
 
 	@Override
 	public boolean equals(Object o) {
@@ -28,7 +31,7 @@ public abstract class AbstractList<T> implements List<T> {
 			while (!list1.isEmpty() && !list2.isEmpty()) {
 				final Object head1 = list1.head();
 				final Object head2 = list2.head();
-				final boolean isEqual = Objects.equals(head1,  head2);
+				final boolean isEqual = Objects.equals(head1, head2);
 				if (!isEqual) {
 					return false;
 				}
@@ -52,7 +55,7 @@ public abstract class AbstractList<T> implements List<T> {
 
 	@Override
 	public String toString() {
-		return stream().map(Stringz::toString).collect(joining(", ", "(", ")"));
+		return stream().map(Strings::toString).collect(joining(", ", "(", ")"));
 	}
 
 }

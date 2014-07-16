@@ -15,7 +15,7 @@ import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.LongFunction;
 
-import javaslang.Lambdaz;
+import javaslang.Lambdas;
 import javaslang.exception.NonFatal;
 import javaslang.option.None;
 import javaslang.option.Option;
@@ -31,7 +31,7 @@ import javaslang.option.Some;
  * <li>lazily processes an object in the case of a match</li>
  * </ul>
  * 
- * See {@link Matchz} for convenience methods creating a matcher.
+ * See {@link Matchs} for convenience methods creating a matcher.
  * <p>
  * Match is a first class member of the monads provided with javaslang. See
  * {@link javaslang.option.Option#match(Match)}, {@link javaslang.exception.Try#match(Match)},
@@ -229,7 +229,7 @@ public class Match<R> implements Function<Object, R> {
 		Case(Option<?> prototype, SerializableFunction<?, R> function) {
 			this.prototype = prototype;
 			this.function = function;
-			this.parameterType = Lambdaz.getLambdaSignature(function).getParameterTypes()[0];
+			this.parameterType = Lambdas.getLambdaSignature(function).getParameterTypes()[0];
 		}
 
 		/**
@@ -277,7 +277,7 @@ public class Match<R> implements Function<Object, R> {
 
 	/**
 	 * A function which implements Serializable in order to obtain runtime type information about
-	 * the lambda via {@link javaslang.Lambdaz#getLambdaSignature(Serializable)}.
+	 * the lambda via {@link javaslang.Lambdas#getLambdaSignature(Serializable)}.
 	 *
 	 * @param <T> The parameter type of the function.
 	 * @param <R> The return type of the function.

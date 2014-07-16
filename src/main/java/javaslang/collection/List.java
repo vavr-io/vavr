@@ -20,7 +20,7 @@ import java.util.stream.StreamSupport;
  * 
  * TODO: javadoc
  * 
- * @param <T> Component type of this list
+ * @param <T> Component type of the List.
  */
 public interface List<T> extends Iterable<T> {
 
@@ -207,7 +207,9 @@ public interface List<T> extends Iterable<T> {
 	/**
 	 * Returns the single instance of EmptyList. Same as {@code EmptyList.instance()}.
 	 * 
-	 * @return
+	 * @param <T> Component type of EmptyList, determined by type inference in the particular
+	 *            context.
+	 * @return The empty list.
 	 */
 	static <T> List<T> empty() {
 		return EmptyList.instance();
@@ -223,9 +225,10 @@ public interface List<T> extends Iterable<T> {
 	 * = new LinearList(1, new LinearList(2, new LinearList(3, new LinearList(4, EmptyList.instance()))))
 	 * </code>
 	 * </pre>
-	 * 
-	 * @param elements
-	 * @return
+	 *
+	 * @param <T> Component type of the List.
+	 * @param elements List elements.
+	 * @return A list containing the given elements in the same order.
 	 */
 	@SafeVarargs
 	static <T> List<T> of(T... elements) {

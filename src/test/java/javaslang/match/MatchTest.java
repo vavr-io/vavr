@@ -18,7 +18,7 @@ public class MatchTest {
 
 	@Test
 	public void shouldMatchNullAsPrototype() {
-		final int actual = Matchz.caze((String s) -> s.length()).caze(null, o -> 1).apply(null);
+		final int actual = Matchs.caze((String s) -> s.length()).caze(null, o -> 1).apply(null);
 		assertThat(actual).isEqualTo(1);
 	}
 
@@ -29,24 +29,24 @@ public class MatchTest {
 
 	@Test
 	public void shouldMatchByValuesUsingFunction() {
-		final int actual = Matchz.caze("1", (String s) -> 1).apply("1");
+		final int actual = Matchs.caze("1", (String s) -> 1).apply("1");
 		assertThat(actual).isEqualTo(1);
 	}
 
 	@Test(expected = MatchError.class)
 	public void shouldThrowOnNoMatchByValue() {
-		Matchz.caze("1", o -> 1).apply("2");
+		Matchs.caze("1", o -> 1).apply("2");
 	}
 
 	@Test
 	public void shouldMatchByValueOnMultipleCases() {
-		final int actual = Matchz.caze("1", o -> 1).caze("2", o -> 2).caze("3", o -> 3).apply("2");
+		final int actual = Matchs.caze("1", o -> 1).caze("2", o -> 2).caze("3", o -> 3).apply("2");
 		assertThat(actual).isEqualTo(2);
 	}
 
 	@Test
 	public void shouldMatchByDoubleOnMultipleCasesUsingTypedParameter() {
-		final int actual = Matchz
+		final int actual = Matchs
 				.caze((Byte b) -> 1)
 				.caze((Double d) -> 2)
 				.caze((Integer i) -> 3)
@@ -56,7 +56,7 @@ public class MatchTest {
 
 	@Test
 	public void shouldMatchByIntOnMultipleCasesUsingTypedParameter() {
-		final int actual = Matchz
+		final int actual = Matchs
 				.caze((Byte b) -> (int) b)
 				.caze((Double d) -> d.intValue())
 				.caze((Integer i) -> i)
@@ -66,7 +66,7 @@ public class MatchTest {
 
 	@Test
 	public void shouldMatchByAssignableTypeOnMultipleCases() {
-		final int actual = Matchz
+		final int actual = Matchs
 				.caze(1, o -> 'a')
 				.caze((Number n) -> 'b')
 				.caze((Object o) -> 'c')
@@ -76,7 +76,7 @@ public class MatchTest {
 
 	@Test
 	public void shouldMatchDefaultCase() {
-		final int actual = Matchz.caze(null, o -> 1).caze((Object o) -> 2).apply("default");
+		final int actual = Matchs.caze(null, o -> 1).caze((Object o) -> 2).apply("default");
 		assertThat(actual).isEqualTo(2);
 	}
 
@@ -172,7 +172,7 @@ public class MatchTest {
 	@Test
 	public void shouldMatchLambdaConsideringTypeHierarchy() {
 		final SpecialFunction lambda = i -> String.valueOf(i);
-		final String actual = Matchz
+		final String actual = Matchs
 				.caze((SameSignatureAsSpecialFunction f) -> f.apply(1))
 				.caze((Function<Integer, String> f) -> f.apply(2))
 				.apply(lambda);

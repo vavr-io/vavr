@@ -24,12 +24,12 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javaslang.Tuplez.Tuple2;
+import javaslang.Tuples.Tuple2;
 
 /**
  * Extension methods for {@link java.lang.String}.
  */
-public final class Stringz {
+public final class Strings {
 
 	/**
 	 * An end of line pattern (mac/unix/win)
@@ -38,14 +38,14 @@ public final class Stringz {
 
 	/**
 	 * Lock, needed to detect indirect loops. See
-	 * {@link StringzTest#shouldDetectIndirectLoopOnToString()}.
+	 * {@link StringsTest#shouldDetectIndirectLoopOnToString()}.
 	 */
 	private static final ThreadLocal<Boolean> isToStringLocked = new ThreadLocal<>();
 
 	/**
 	 * This class is not intended to be instantiated.
 	 */
-	private Stringz() {
+	private Strings() {
 		requireNotInstantiable();
 	}
 
@@ -141,7 +141,7 @@ public final class Stringz {
 		final int eol = max(documentToCursor.lastIndexOf("\r"), documentToCursor.lastIndexOf("\n"));
 		final int len = documentToCursor.length();
 		final int column = (len == 0) ? 1 : len - ((eol == -1) ? 0 : eol);
-		return Tuplez.of(line, column);
+		return Tuples.of(line, column);
 	}
 
 	/**

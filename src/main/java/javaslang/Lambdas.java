@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import javaslang.Tuplez.Tuple2;
+import javaslang.Tuples.Tuple2;
 
 /**
  * Extension methods for java.lang.invoke.*
@@ -25,7 +25,7 @@ import javaslang.Tuplez.Tuple2;
  *      href="http://stackoverflow.com/questions/21860875/printing-debug-info-on-errors-with-java-8-lambda-expressions">printing
  *      debug info on errors with java 8 lambda expressions</a>
  */
-public final class Lambdaz {
+public final class Lambdas {
 
 	private static final Pattern JVM_FIELD_TYPE = Pattern
 			.compile("\\[*(B|C|D|F|I|J|(L.*?;)|S|V|Z)");
@@ -33,7 +33,7 @@ public final class Lambdaz {
 	/**
 	 * This class is not intended to be instantiated.
 	 */
-	private Lambdaz() {
+	private Lambdas() {
 		requireNotInstantiable();
 	}
 
@@ -71,7 +71,7 @@ public final class Lambdaz {
 				.getImplMethodSignature());
 		final Class<?>[] parameterTypes = Lang
 				.stream(JVM_FIELD_TYPE.matcher(signature._1))
-				.map(Lambdaz::getJavaType)
+				.map(Lambdas::getJavaType)
 				.toArray(Class<?>[]::new);
 		final Class<?> returnType = getJavaType(signature._2);
 		return new LambdaSignature(parameterTypes, returnType);
@@ -85,7 +85,7 @@ public final class Lambdaz {
 	 */
 	private static Tuple2<String, String> split(String signature) {
 		final int index = signature.lastIndexOf(')');
-		return Tuplez.of(signature.substring(1, index), signature.substring(index + 1));
+		return Tuples.of(signature.substring(1, index), signature.substring(index + 1));
 	}
 
 	/**
@@ -188,7 +188,7 @@ public final class Lambdaz {
 		public String toString() {
 			return Stream//
 					.of(parameterTypes)
-					.map(Stringz::toString)
+					.map(Strings::toString)
 					.collect(joining(", ", "(", ") -> ")) + returnType.getName();
 		}
 	}

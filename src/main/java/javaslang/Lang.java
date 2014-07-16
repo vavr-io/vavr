@@ -31,7 +31,7 @@ public final class Lang {
 	 * @param o an Object
 	 */
 	public static void print(Object o) {
-		final String s = Stringz.toString(o);
+		final String s = Strings.toString(o);
 		System.out.print(s);
 	}
 
@@ -41,7 +41,7 @@ public final class Lang {
 	 * @param o an Object
 	 */
 	public static void println(Object o) {
-		final String s = Stringz.toString(o);
+		final String s = Strings.toString(o);
 		System.out.println(s);
 	}
 
@@ -82,7 +82,7 @@ public final class Lang {
 	 * @return A formatted string
 	 */
 	private static String format(String format, Object[] objects) {
-		final Object[] args = Stream.of(objects).map(Stringz::toString).toArray();
+		final Object[] args = Stream.of(objects).map(Strings::toString).toArray();
 		return String.format(format, args);
 	}
 

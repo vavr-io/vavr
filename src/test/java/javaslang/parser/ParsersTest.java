@@ -6,12 +6,12 @@
 package javaslang.parser;
 
 import static org.fest.assertions.api.Assertions.assertThat;
-import javaslang.parser.Parserz.Literal;
-import javaslang.parser.Parserz.Rule;
+import javaslang.parser.Parsers.Literal;
+import javaslang.parser.Parsers.Rule;
 
 import org.junit.Test;
 
-public class ParserzTest {
+public class ParsersTest {
 
 	/**
 	 * Given an input sequence {@code 'aaa'}, the following {@code LexerRule2} should match.

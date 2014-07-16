@@ -5,7 +5,7 @@
  */
 package javaslang.parser;
 
-import javaslang.Tuplez.Tuple2;
+import javaslang.Tuples.Tuple2;
 import javaslang.either.Either;
 
 interface Parser {

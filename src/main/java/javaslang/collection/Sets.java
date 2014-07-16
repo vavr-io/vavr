@@ -14,12 +14,12 @@ import java.util.Set;
 /**
  * Extension methods for {@link java.util.Set}.
  */
-public final class Setz {
+public final class Sets {
 
 	/**
 	 * This class is not intended to be instantiated.
 	 */
-	private Setz() {
+	private Sets() {
 		requireNotInstantiable();
 	}
 
