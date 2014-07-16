@@ -9,6 +9,7 @@ import static javaslang.Lang.requireNonNull;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.Stream;
@@ -42,22 +43,22 @@ public interface List<T> extends Iterable<T> {
 	// TODO: set(index, element)
 
 	// TODO: remove(element)
-	
+
 	// TODO: appendAll
-	
+
 	// TODO: prependAll
-	
+
 	// TODO: insertAll
-	
+
 	// TODO: removeAll
-	
+
 	// TODO: retainAll
-	
+
 	// TODO: sort : List<T>
-	
+
 	// TODO: clear -> List.empty()
-	
-	// TODO: subList(fromIndex, toIndex) 
+
+	// TODO: subList(fromIndex, toIndex)
 
 	/**
 	 * Calculates the size of a List in O(n).
@@ -68,7 +69,8 @@ public interface List<T> extends Iterable<T> {
 	 */
 	default int size() {
 		int result = 0;
-		for(List<T> list = this; !list.isEmpty(); list = list.tail(), result++) ;
+		for (List<T> list = this; !list.isEmpty(); list = list.tail(), result++)
+			;
 		return result;
 	}
 
@@ -84,45 +86,32 @@ public interface List<T> extends Iterable<T> {
 			throw new IndexOutOfBoundsException("get(" + index + ")");
 		}
 		List<T> list = this;
-		int currentIndex = index;
-		while (currentIndex > 0) {
-			currentIndex--;
+		for (int i = index; i > 0; i--) {
 			list = list.tail();
 			if (list.isEmpty()) {
-				throw new IndexOutOfBoundsException("get("
-						+ index
-						+ ") on list of size "
-						+ (index - currentIndex));
+				throw new IndexOutOfBoundsException(String.format("get(%s) on list of size %s",
+						index, index - i));
 			}
 		}
 		return list.head();
 	}
 
 	default int indexOf(T o) {
-		List<T> list = this;
 		int index = 0;
-		while (!list.isEmpty()) {
-			final T head = head();
-			if (head == null ? o == null : head.equals(o)) {
+		for (List<T> list = this; !list.isEmpty(); list = list.tail(), index++) {
+			if (Objects.equals(head(), o)) {
 				return index;
 			}
-			index++;
-			list = list.tail();
 		}
 		return -1;
 	}
 
 	default int lastIndexOf(T o) {
-		List<T> list = this;
-		int result = -1;
-		int index = 0;
-		while (!list.isEmpty()) {
-			final T head = head();
-			if (head == null ? o == null : head.equals(o)) {
+		int result = -1, index = 0;
+		for (List<T> list = this; !list.isEmpty(); list = list.tail(), index++) {
+			if (Objects.equals(head(), o)) {
 				result = index;
 			}
-			index++;
-			list = list.tail();
 		}
 		return result;
 	}
@@ -134,16 +123,15 @@ public interface List<T> extends Iterable<T> {
 	 */
 	default List<T> reverse() {
 		List<T> result = EmptyList.instance();
-		List<T> list = this;
-		while (!list.isEmpty()) {
+		for (List<T> list = this; !list.isEmpty(); list = list.tail()) {
 			result = result.prepend(list.head());
-			list = list.tail();
 		}
 		return result;
 	}
 
 	@SuppressWarnings("unchecked")
 	default T[] toArray() {
+		// TODO: better impl?
 		return (T[]) stream().toArray();
 	}
 
@@ -161,7 +149,8 @@ public interface List<T> extends Iterable<T> {
 	 */
 	@Override
 	default Spliterator<T> spliterator() {
-		return Spliterators.spliterator(iterator(), size(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
+		return Spliterators.spliterator(iterator(), size(), Spliterator.ORDERED
+				| Spliterator.IMMUTABLE);
 	}
 
 	/*
@@ -199,27 +188,45 @@ public interface List<T> extends Iterable<T> {
 
 		return new ListIterator(this);
 	}
-	
-    /**
-	 * Equivalent to {@link java.util.List#equals(Object)}.
-     */
-    boolean equals(Object o);
 
-    /**
-     * Equivalent to {@link java.util.List#hashCode()}.
-     */
-    int hashCode();
-    
-    /**
-     * TODO: javadoc
-     */
-    String toString();
-	
+	/**
+	 * Equivalent to {@link java.util.List#equals(Object)}.
+	 */
+	boolean equals(Object o);
+
+	/**
+	 * Equivalent to {@link java.util.List#hashCode()}.
+	 */
+	int hashCode();
+
+	/**
+	 * TODO: javadoc
+	 */
+	String toString();
+
+	/**
+	 * Returns the single instance of EmptyList. Same as {@code EmptyList.instance()}.
+	 * 
+	 * @return
+	 */
 	static <T> List<T> empty() {
 		return EmptyList.instance();
 	}
 
-	// Listz.of(1, 2, 3, 4) = List(1, List(2, List(3, List(4, EmptyList()))))
+	/**
+	 * Creates a List of given elements.
+	 * 
+	 * <pre>
+	 * <code>
+	 *   List.of(1, 2, 3, 4)
+	 * = EmptyList.instance().prepend(4).prepend(3).prepend(2).prepend(1)
+	 * = new LinearList(1, new LinearList(2, new LinearList(3, new LinearList(4, EmptyList.instance()))))
+	 * </code>
+	 * </pre>
+	 * 
+	 * @param elements
+	 * @return
+	 */
 	@SafeVarargs
 	static <T> List<T> of(T... elements) {
 		requireNonNull(elements, "elements is null");
