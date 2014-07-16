@@ -7,11 +7,8 @@ package javaslang;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import javaslang.Arrayz;
 
 import org.junit.Test;
 
