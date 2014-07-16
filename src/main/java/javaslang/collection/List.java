@@ -48,8 +48,8 @@ public interface List<T> extends Iterable<T> {
 	 * Example: {@code List.of(1,2,3).appendAll(List.of(4,5,6))} equals {@code List.of(1,2,3,4,5,6)}
 	 * .
 	 * 
-	 * @param elements
-	 * @return
+	 * @param elements Elements to be appended.
+	 * @return A list containing the given elements appended to this list.
 	 */
 	default List<T> appendAll(List<? extends T> elements) {
 		requireNonNull(elements, "elements is null");
@@ -64,8 +64,8 @@ public interface List<T> extends Iterable<T> {
 	 * Example: {@code List.of(4,5,6).prependAll(List.of(1,2,3))} equals
 	 * {@code List.of(1,2,3,4,5,6)}.
 	 * 
-	 * @param elements
-	 * @return
+	 * @param elements Elements to be prepended.
+	 * @return A list containing the given elements prepended to this list.
 	 */
 	default List<T> prependAll(List<? extends T> elements) {
 		requireNonNull(elements, "elements is null");
@@ -185,7 +185,7 @@ public interface List<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Drops the first n elements of this list or the whole list, if this size < n.
+	 * Drops the first n elements of this list or the whole list, if this size &lt; n.
 	 * 
 	 * @param n The number of elements to drop.
 	 * @return A list consisting of all elements of this list except the first n ones, or else the
@@ -199,7 +199,7 @@ public interface List<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Takes the first n elements of this list or the whole list, if this size < n.
+	 * Takes the first n elements of this list or the whole list, if this size &lt; n.
 	 * 
 	 * @param n The number of elements to take.
 	 * @return A list consisting of the first n elements of this list or the whole list, if it has
