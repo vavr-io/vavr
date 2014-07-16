@@ -14,6 +14,11 @@ public class ListTest {
 		List.empty().get(0);
 	}
 
+	@Test
+	public void shouldGetFirstElement() {
+		List.of((Object) null).get(0);
+	}
+
 	@Test(expected = IndexOutOfBoundsException.class)
 	public void shouldThrowOnGetExceedingUpperBound() {
 		List.of((Object) null).get(1);
