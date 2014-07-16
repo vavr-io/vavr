@@ -33,9 +33,33 @@ public interface List<T> extends Iterable<T> {
 	default List<T> append(T element) {
 		return reverse().prepend(element).reverse();
 	}
+	
+	/**
+	 * Example: {@code List.of(1,2,3).appendAll(List.of(4,5,6))} equals {@code List.of(1,2,3,4,5,6)}.
+	 * 
+	 * @param elements
+	 * @return
+	 */
+	default List<T> appendAll(List<? extends T> elements) {
+		return this.reverse().prependAll(elements.reverse()).reverse();
+	}
 
 	default List<T> prepend(T element) {
 		return new LinearList<>(element, this);
+	}
+
+	/**
+	 * Example: {@code List.of(4,5,6).prependAll(List.of(1,2,3))} equals {@code List.of(1,2,3,4,5,6)}.
+	 * 
+	 * @param elements
+	 * @return
+	 */
+	default List<T> prependAll(List<? extends T> elements) {
+		List<T> result = this;
+		for (List<? extends T> list = elements.reverse(); !list.isEmpty(); list = list.tail()) {
+			result = result.prepend(list.head());
+		}
+		return result;
 	}
 
 	// TODO: insert(index, element)
@@ -43,10 +67,6 @@ public interface List<T> extends Iterable<T> {
 	// TODO: set(index, element)
 
 	// TODO: remove(element)
-
-	// TODO: appendAll
-
-	// TODO: prependAll
 
 	// TODO: insertAll
 
