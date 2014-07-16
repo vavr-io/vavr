@@ -5,9 +5,6 @@
  */
 package javaslang.collection;
 
-import static java.util.stream.Collectors.joining;
-import javaslang.Stringz;
-
 /**
  * Non-empty List.
  * 
@@ -20,7 +17,7 @@ public class LinearList<T> extends AbstractList<T> {
 	private final T head;
 	private final List<T> tail;
 
-	LinearList(T head, List<T> tail) {
+	public LinearList(T head, List<T> tail) {
 		this.head = head;
 		this.tail = tail;
 	}
