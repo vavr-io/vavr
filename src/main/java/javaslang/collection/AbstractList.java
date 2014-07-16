@@ -6,6 +6,9 @@
 package javaslang.collection;
 
 import static java.util.stream.Collectors.joining;
+
+import java.util.Objects;
+
 import javaslang.Stringz;
 
 /**
@@ -25,7 +28,7 @@ public abstract class AbstractList<T> implements List<T> {
 			while (!list1.isEmpty() && !list2.isEmpty()) {
 				final Object head1 = list1.head();
 				final Object head2 = list2.head();
-				final boolean isEqual = (head1 == null) ? head2 == null : head1.equals(head2);
+				final boolean isEqual = Objects.equals(head1,  head2);
 				if (!isEqual) {
 					return false;
 				}
