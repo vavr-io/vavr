@@ -157,7 +157,7 @@ public interface List<T> extends Iterable<T> {
 	 */
 	@Override
 	default Spliterator<T> spliterator() {
-		return Spliterators.spliterator(iterator(), size(), Spliterator.ORDERED);
+		return Spliterators.spliterator(iterator(), size(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
 	}
 
 	/*
