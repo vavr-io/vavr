@@ -32,23 +32,24 @@ public final class Assertions {
 			Lang.requireNonNull(expectedException, "expectedException is null");
 			try {
 				test.run();
-				throw new AssertionError("Test did not throw.");
+				throw new AssertionError(expectedException.getName() + " not thrown");
 			} catch (Throwable x) {
 				if (!expectedException.isAssignableFrom(x.getClass())) {
 					throw new AssertionError("Expected exception assignable to type "
 							+ expectedException.getClass().getName()
 							+ " but was "
-							+ x.getClass().getName());
+							+ x.getClass().getName()
+							+ ".");
 				}
 				final String actualMessage = x.getMessage();
 				final boolean isOk = (actualMessage == null) ? (expectedMessage == null)
 						: actualMessage.equals(expectedMessage);
 				if (!isOk) {
-					throw new AssertionError("Expected exception message '"
-							+ expectedMessage
-							+ "' but was '"
-							+ actualMessage
-							+ "'");
+					throw new AssertionError("Expected exception message "
+							+ Strings.toString(expectedMessage)
+							+ " but was "
+							+ Strings.toString(actualMessage)
+							+ ".");
 				}
 			}
 		}

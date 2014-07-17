@@ -14,9 +14,10 @@ public class ListTest {
 
 	// -- head
 
-	@Test(expected = UnsupportedOperationException.class)
+	@Test
 	public void shouldThrowWhenHeadOnEmptyList() {
-		EmptyList.instance().head();
+		assertThat(() -> EmptyList.instance().head()).isThrowing(
+				UnsupportedOperationException.class, "head of empty list");
 	}
 
 	@Test
@@ -27,9 +28,10 @@ public class ListTest {
 
 	// -- tail
 
-	@Test(expected = UnsupportedOperationException.class)
+	@Test
 	public void shouldThrowWhenTailOnEmptyList() {
-		EmptyList.instance().tail();
+		assertThat(() -> EmptyList.instance().tail()).isThrowing(
+				UnsupportedOperationException.class, "tail of empty list");
 	}
 
 	@Test
@@ -174,12 +176,13 @@ public class ListTest {
 	public void shouldRecognizeThatNonEmptyListContainsAnElement() {
 		assertThat(List.of(1).contains(1)).isTrue();
 	}
-	
+
 	// -- get
-	
+
 	@Test
 	public void shouldThrowWhenGetWithNegativeIndexOnEmptyList() {
-		assertThat(() -> List.empty().get(-1)).isThrowing(IndexOutOfBoundsException.class, "get(-1) on empty list");
+		assertThat(() -> List.empty().get(-1)).isThrowing(IndexOutOfBoundsException.class,
+				"get(-1) on empty list");
 	}
 
 	@Test
@@ -189,17 +192,19 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowWhenGetOnEmptyList() {
-		assertThat(() -> List.empty().get(0)).isThrowing(IndexOutOfBoundsException.class, "get(0) on empty list");
+		assertThat(() -> List.empty().get(0)).isThrowing(IndexOutOfBoundsException.class,
+				"get(0) on empty list");
 	}
 
 	@Test
 	public void shouldThrowWhenGetWithTooBigIndexOnNonEmptyList() {
-		assertThat(() -> List.of(1).get(1)).isThrowing(IndexOutOfBoundsException.class, "get(1) on list of size 1");
+		assertThat(() -> List.of(1).get(1)).isThrowing(IndexOutOfBoundsException.class,
+				"get(1) on list of size 1");
 	}
 
 	@Test
 	public void shouldGetFirstElement() {
 		assertThat(List.of(1).get(0)).isEqualTo(1);
 	}
-	
+
 }

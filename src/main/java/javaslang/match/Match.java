@@ -5,6 +5,7 @@
  */
 package javaslang.match;
 
+import static javaslang.Lang.require;
 import static javaslang.Lang.requireNonNull;
 
 import java.io.Serializable;
@@ -14,12 +15,15 @@ import java.util.function.DoubleFunction;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.LongFunction;
+import java.util.function.Supplier;
 
 import javaslang.Lambdas;
 import javaslang.exception.NonFatal;
 import javaslang.option.None;
 import javaslang.option.Option;
 import javaslang.option.Some;
+
+// TODO: new match builder ensuring: 1) no case after orElse, 2) orElse not twice, 3) apply after case or orElse
 
 /**
  * A better switch for Java. A Match...
@@ -42,39 +46,58 @@ import javaslang.option.Some;
  */
 public class Match<R> implements Function<Object, R> {
 
-	private List<Case<R>> cases = new ArrayList<>();
-	
+	private final List<Case<R>> cases = new ArrayList<>();
+	private Option<Supplier<R>> defaultOption = Option.empty();
+
 	/**
-	 * Applies an object to this matcher. This is the implementation of the {@link Function} interface.
+	 * Applies an object to this matcher. This is the implementation of the {@link Function}
+	 * interface.
 	 * 
 	 * @param obj An object.
 	 * @return The result when applying the given obj to the first matching case. If the case has a
 	 *         consumer, the result is null, otherwise the result of the underlying function or
 	 *         supplier.
-	 * @throws MatchError if no Match case matches the given object.
+	 * @throws MatchError if no Match case matches the given object and no default is defined via
+	 *             {@link #orElse(Supplier)}.
 	 * @throws NonFatal if an error occurs executing the matched case.
 	 */
 	@Override
 	public R apply(Object obj) {
+		require(!cases.isEmpty() || defaultOption.isPresent(), "empty match");
 		for (Case<R> caze : cases) {
 			if (caze.isApplicable(obj)) {
 				return caze.apply(obj);
 			}
 		}
-		throw new MatchError(obj);
+		return defaultOption.orElseThrow(() -> new MatchError(obj)).get();
+	}
+
+	/**
+	 * Defines the default return value.
+	 * 
+	 * @param <T> (super-)type of the object to be matched
+	 * @param defaultSupplier Supplier of the default return value of this Match.
+	 * @return this, the current instance of Match.
+	 */
+	public <T> Match<R> orElse(Supplier<R> defaultSupplier) {
+		requireNonNull(defaultSupplier, "defaultSupplier is null");
+		require(!defaultOption.isPresent(), "orElse called twice");
+		defaultOption = Option.of(defaultSupplier);
+		return this;
 	}
 
 	/**
 	 * Use this method to match by object type T. An object o matches this case, if
 	 * {@code o != null && T isAssignableFrom o.getClass()}.
 	 * 
-	 * @param <T> (super-)type type of the object to be matched
+	 * @param <T> (super-)type of the object to be matched
 	 * @param function A SerializableFunction which is applied to a matched object.
 	 * @return this, the current instance of Match.
 	 * @throws IllegalStateException if function is null.
 	 */
 	public <T> Match<R> caze(SerializableFunction<T, R> function) {
 		requireNonNull(function, "function is null");
+		require(!defaultOption.isPresent(), "caze after orElse");
 		cases.add(new Case<>(None.instance(), function));
 		return this;
 	}
@@ -90,14 +113,15 @@ public class Match<R> implements Function<Object, R> {
 	 * @throws IllegalStateException if function is null.
 	 */
 	// DEV NOTE: the compiler cannot distinguish between primitive and Object types, e.g.
-	//           public Match<R> caze(int prototype, IntFunction<R> function)
-	//           Autoboxing does not work here.
+	// public Match<R> caze(int prototype, IntFunction<R> function)
+	// Autoboxing does not work here.
 	public <T> Match<R> caze(T prototype, SerializableFunction<T, R> function) {
 		requireNonNull(function, "function is null");
+		require(!defaultOption.isPresent(), "caze after orElse");
 		cases.add(new Case<>(new Some<>(prototype), function));
 		return this;
 	}
-	
+
 	/**
 	 * Use this method to match by boolean. An object o matches this case, if {@code o != null &&
 	 * o.getClass() == Boolean.class}.
@@ -108,6 +132,7 @@ public class Match<R> implements Function<Object, R> {
 	 */
 	public Match<R> caze(BooleanFunction<R> function) {
 		requireNonNull(function, "function is null");
+		require(!defaultOption.isPresent(), "caze after orElse");
 		cases.add(new Case<>(None.instance(), (Boolean b) -> function.apply(b), Boolean.class));
 		return this;
 	}
@@ -122,6 +147,7 @@ public class Match<R> implements Function<Object, R> {
 	 */
 	public Match<R> caze(ByteFunction<R> function) {
 		requireNonNull(function, "function is null");
+		require(!defaultOption.isPresent(), "caze after orElse");
 		cases.add(new Case<>(None.instance(), (Byte b) -> function.apply(b), Byte.class));
 		return this;
 	}
@@ -136,6 +162,7 @@ public class Match<R> implements Function<Object, R> {
 	 */
 	public Match<R> caze(CharFunction<R> function) {
 		requireNonNull(function, "function is null");
+		require(!defaultOption.isPresent(), "caze after orElse");
 		cases.add(new Case<>(None.instance(), (Character c) -> function.apply(c), Character.class));
 		return this;
 	}
@@ -150,6 +177,7 @@ public class Match<R> implements Function<Object, R> {
 	 */
 	public Match<R> caze(DoubleFunction<R> function) {
 		requireNonNull(function, "function is null");
+		require(!defaultOption.isPresent(), "caze after orElse");
 		cases.add(new Case<>(None.instance(), (Double d) -> function.apply(d), Double.class));
 		return this;
 	}
@@ -164,6 +192,7 @@ public class Match<R> implements Function<Object, R> {
 	 */
 	public Match<R> caze(FloatFunction<R> function) {
 		requireNonNull(function, "function is null");
+		require(!defaultOption.isPresent(), "caze after orElse");
 		cases.add(new Case<>(None.instance(), (Float f) -> function.apply(f), Float.class));
 		return this;
 	}
@@ -178,10 +207,11 @@ public class Match<R> implements Function<Object, R> {
 	 */
 	public Match<R> caze(IntFunction<R> function) {
 		requireNonNull(function, "function is null");
+		require(!defaultOption.isPresent(), "caze after orElse");
 		cases.add(new Case<>(None.instance(), (Integer i) -> function.apply(i), Integer.class));
 		return this;
 	}
-	
+
 	/**
 	 * Use this method to match by long. An object o matches this case, if {@code o != null &&
 	 * o.getClass() == Long.class}.
@@ -192,6 +222,7 @@ public class Match<R> implements Function<Object, R> {
 	 */
 	public Match<R> caze(LongFunction<R> function) {
 		requireNonNull(function, "function is null");
+		require(!defaultOption.isPresent(), "caze after orElse");
 		cases.add(new Case<>(None.instance(), (Long l) -> function.apply(l), Long.class));
 		return this;
 	}
@@ -206,6 +237,7 @@ public class Match<R> implements Function<Object, R> {
 	 */
 	public Match<R> caze(ShortFunction<R> function) {
 		requireNonNull(function, "function is null");
+		require(!defaultOption.isPresent(), "caze after orElse");
 		cases.add(new Case<>(None.instance(), (Short s) -> function.apply(s), Short.class));
 		return this;
 	}
