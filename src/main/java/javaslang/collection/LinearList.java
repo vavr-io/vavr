@@ -12,25 +12,25 @@ import javaslang.collection.List.AbstractList;
  * 
  * TODO: javadoc
  *
- * @param <T> Component type of the List.
+ * @param <E> Component type of the List.
  */
-public class LinearList<T> extends AbstractList<T> {
+public class LinearList<E> extends AbstractList<E> {
 
-	private final T head;
-	private final List<T> tail;
+	private final E head;
+	private final List<E> tail;
 
-	public LinearList(T head, List<T> tail) {
+	public LinearList(E head, List<E> tail) {
 		this.head = head;
 		this.tail = tail;
 	}
 
 	@Override
-	public T head() {
+	public E head() {
 		return head;
 	}
 
 	@Override
-	public List<T> tail() {
+	public List<E> tail() {
 		return tail;
 	}
 

@@ -12,9 +12,9 @@ import javaslang.collection.List.AbstractList;
  *
  * TODO: javadoc
  * 
- * @param <T> Component type of the List.
+ * @param <E> Component type of the List.
  */
-public final class EmptyList<T> extends AbstractList<T> {
+public final class EmptyList<E> extends AbstractList<E> {
 	
 	private static final EmptyList<?> INSTANCE = new EmptyList<>();
 	
@@ -29,12 +29,12 @@ public final class EmptyList<T> extends AbstractList<T> {
 	}
 	
 	@Override
-	public T head() {
+	public E head() {
 		throw new UnsupportedOperationException("head of empty list");
 	}
 	
 	@Override
-	public List<T> tail() {
+	public List<E> tail() {
 		throw new UnsupportedOperationException("tail of empty list");
 	}
 

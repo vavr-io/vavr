@@ -33,13 +33,13 @@ import javaslang.Strings;
  * 
  * TODO: javadoc
  * 
- * @param <T> Component type of the List.
+ * @param <E> Component type of the List.
  */
-public interface List<T> extends Iterable<T> {
+public interface List<E> extends Iterable<E> {
 
-	T head();
+	E head();
 
-	List<T> tail();
+	List<E> tail();
 
 	boolean isEmpty();
 
@@ -48,9 +48,9 @@ public interface List<T> extends Iterable<T> {
 	 * 
 	 * @return A new List instance containing the elements of this List in reverse order.
 	 */
-	default List<T> reverse() {
-		List<T> result = EmptyList.instance();
-		for (List<T> list = this; !list.isEmpty(); list = list.tail()) {
+	default List<E> reverse() {
+		List<E> result = EmptyList.instance();
+		for (List<E> list = this; !list.isEmpty(); list = list.tail()) {
 			result = result.prepend(list.head());
 		}
 		return result;
@@ -65,13 +65,17 @@ public interface List<T> extends Iterable<T> {
 	 */
 	default int size() {
 		int result = 0;
-		for (List<T> list = this; !list.isEmpty(); list = list.tail(), result++)
+		for (List<E> list = this; !list.isEmpty(); list = list.tail(), result++)
 			;
 		return result;
 	}
 
-	default List<T> append(T element) {
-		return isEmpty() ? new LinearList<>(element, this) : reverse().prepend(element).reverse();
+	default List<E> append(E element) {
+		if (isEmpty()) {
+			return new LinearList<>(element, this);
+		} else {
+			return reverse().prepend(element).reverse();
+		}
 	}
 
 	/**
@@ -82,12 +86,18 @@ public interface List<T> extends Iterable<T> {
 	 * @return A list containing the given elements appended to this list.
 	 */
 	@SuppressWarnings("unchecked")
-	default List<T> appendAll(List<? extends T> elements) {
+	default List<E> appendAll(List<? extends E> elements) {
 		requireNonNull(elements, "elements is null");
-		return isEmpty() ? (List<T>) elements : ((List<T>) elements).prependAll(this);
+		if (isEmpty()) {
+			return (List<E>) elements;
+		} else if (elements.isEmpty()) {
+			return this;
+		} else {
+			return ((List<E>) elements).prependAll(this);
+		}
 	}
 
-	default List<T> prepend(T element) {
+	default List<E> prepend(E element) {
 		return new LinearList<>(element, this);
 	}
 
@@ -99,13 +109,15 @@ public interface List<T> extends Iterable<T> {
 	 * @return A list containing the given elements prepended to this list.
 	 */
 	@SuppressWarnings("unchecked")
-	default List<T> prependAll(List<? extends T> elements) {
+	default List<E> prependAll(List<? extends E> elements) {
 		requireNonNull(elements, "elements is null");
 		if (isEmpty()) {
-			return (List<T>) elements;
+			return (List<E>) elements;
+		} else if (elements.isEmpty()) {
+			return this;
 		} else {
-			List<T> result = this;
-			for (List<? extends T> list = elements.reverse(); !list.isEmpty(); list = list.tail()) {
+			List<E> result = this;
+			for (List<? extends E> list = elements.reverse(); !list.isEmpty(); list = list.tail()) {
 				result = result.prepend(list.head());
 			}
 			return result;
@@ -114,29 +126,43 @@ public interface List<T> extends Iterable<T> {
 
 	// TODO: insert(index, element)
 
-	// TODO: insertAll
+	// TODO: insertAll(index, List)
 
 	// TODO: remove(element)
 
-	// TODO: removeAll
+	// TODO: removeAll(List)
 
-	// TODO: retainAll
+	// TODO: retainAll(List)
+	
+	// TODO: replaceAll(List)
+	
+	// TODO: T[] toArray(T[] a)
 
-	default boolean contains(T o) {
+	// TODO: containsAll(List)
+	
+	// TODO: clear
+	
+	// TODO: iterator(int)
+
+	/**
+	 * Indicates if this list contains o by returning {@code indexOf(o) != -1}.
+	 * 
+	 * @param o An object, may be null.
+	 * @return true, if o is contained in this List, false otherwise.
+	 */
+	default boolean contains(E o) {
 		return indexOf(o) != -1;
 	}
-	
-	// TODO: containsAll(?)
 
-	default T get(int index) {
+	default E get(int index) {
 		if (isEmpty()) {
 			throw new IndexOutOfBoundsException("get(" + index + ") on empty list");
 		}
 		if (index < 0) {
 			throw new IndexOutOfBoundsException("get(" + index + ")");
 		}
-		List<T> list = this;
-		for (int i = index; i > 0; i--) {
+		List<E> list = this;
+		for (int i = index - 1; i >= 0; i--) {
 			list = list.tail();
 			if (list.isEmpty()) {
 				throw new IndexOutOfBoundsException(String.format("get(%s) on list of size %s",
@@ -146,7 +172,7 @@ public interface List<T> extends Iterable<T> {
 		return list.head();
 	}
 
-	default List<T> set(int index, T element) {
+	default List<E> set(int index, E element) {
 		if (isEmpty()) {
 			throw new IndexOutOfBoundsException("set(" + index + ") on empty list");
 		}
@@ -157,11 +183,11 @@ public interface List<T> extends Iterable<T> {
 		return this.sublist(index + 1).prepend(element).prependAll(sublist(0, index));
 	}
 
-	default List<T> sublist(int beginIndex) {
+	default List<E> sublist(int beginIndex) {
 		if (beginIndex < 0) {
 			throw new IndexOutOfBoundsException("sublist(" + beginIndex + ")");
 		}
-		List<T> result = this;
+		List<E> result = this;
 		for (int i = 0; i < beginIndex; i++) {
 			result = result.tail();
 			if (result.isEmpty()) {
@@ -172,14 +198,14 @@ public interface List<T> extends Iterable<T> {
 		return result;
 	}
 
-	default List<T> sublist(int beginIndex, int endIndex) {
+	default List<E> sublist(int beginIndex, int endIndex) {
 		final int subLen = endIndex - beginIndex;
 		if (beginIndex < 0 || subLen < 0) {
 			throw new IndexOutOfBoundsException(String.format("sublist(%s, %s) on list of size %2",
 					beginIndex, endIndex, size()));
 		}
-		List<T> result = EmptyList.instance();
-		List<T> list = this.sublist(beginIndex);
+		List<E> result = EmptyList.instance();
+		List<E> list = this.sublist(beginIndex);
 		for (int i = 0; i < subLen; i++, list = list.tail()) {
 			if (list.isEmpty()) {
 				throw new IndexOutOfBoundsException(String.format(
@@ -198,8 +224,8 @@ public interface List<T> extends Iterable<T> {
 	 * @return A list consisting of all elements of this list except the first n ones, or else the
 	 *         empty list, if this list has less than n elements.
 	 */
-	default List<T> drop(int n) {
-		List<T> result = this;
+	default List<E> drop(int n) {
+		List<E> result = this;
 		for (int i = 0; i < n && !result.isEmpty(); i++, result = result.tail())
 			;
 		return result;
@@ -212,18 +238,18 @@ public interface List<T> extends Iterable<T> {
 	 * @return A list consisting of the first n elements of this list or the whole list, if it has
 	 *         less than n elements.
 	 */
-	default List<T> take(int n) {
-		List<T> result = EmptyList.instance();
-		List<T> list = this;
+	default List<E> take(int n) {
+		List<E> result = EmptyList.instance();
+		List<E> list = this;
 		for (int i = 0; i < n && !list.isEmpty(); i++, list = list.tail()) {
 			result.prepend(list.head());
 		}
 		return result.reverse();
 	}
 
-	default int indexOf(T o) {
+	default int indexOf(E o) {
 		int index = 0;
-		for (List<T> list = this; !list.isEmpty(); list = list.tail(), index++) {
+		for (List<E> list = this; !list.isEmpty(); list = list.tail(), index++) {
 			if (Objects.equals(head(), o)) {
 				return index;
 			}
@@ -231,9 +257,9 @@ public interface List<T> extends Iterable<T> {
 		return -1;
 	}
 
-	default int lastIndexOf(T o) {
+	default int lastIndexOf(E o) {
 		int result = -1, index = 0;
-		for (List<T> list = this; !list.isEmpty(); list = list.tail(), index++) {
+		for (List<E> list = this; !list.isEmpty(); list = list.tail(), index++) {
 			if (Objects.equals(head(), o)) {
 				result = index;
 			}
@@ -241,37 +267,40 @@ public interface List<T> extends Iterable<T> {
 		return result;
 	}
 
-	default T[] toArray() {
+	// TODO: versus stream().toArray()
+	default E[] toArray() {
 		@SuppressWarnings("unchecked")
-		final T[] result = (T[]) new Object[size()];
+		final E[] result = (E[]) new Object[size()];
 		int i = 0;
-		for (List<T> list = this; !list.isEmpty(); list = list.tail(), i++) {
+		for (List<E> list = this; !list.isEmpty(); list = list.tail(), i++) {
 			result[i] = list.head();
 		}
 		return result;
 	}
 	
-	default java.util.ArrayList<T> toArrayList() {
-		final java.util.ArrayList<T> result = new java.util.ArrayList<>();
-		for (List<T> list = this; !list.isEmpty(); list = list.tail()) {
+	// TODO: stream()toArray(T[])
+
+	default java.util.ArrayList<E> toArrayList() {
+		final java.util.ArrayList<E> result = new java.util.ArrayList<>();
+		for (List<E> list = this; !list.isEmpty(); list = list.tail()) {
 			result.add(list.head());
 		}
 		return result;
 	}
 
-	default List<T> sort() {
+	default List<E> sort() {
 		return stream().sorted().collect(List.collector());
 	}
 
-	default List<T> sort(Comparator<? super T> c) {
+	default List<E> sort(Comparator<? super E> c) {
 		return stream().sorted(c).collect(List.collector());
 	}
 
-	default Stream<T> stream() {
+	default Stream<E> stream() {
 		return StreamSupport.stream(spliterator(), false);
 	}
 
-	default Stream<T> parallelStream() {
+	default Stream<E> parallelStream() {
 		return StreamSupport.stream(spliterator(), true);
 	}
 
@@ -280,7 +309,7 @@ public interface List<T> extends Iterable<T> {
 	 * @see java.lang.Iterable#spliterator()
 	 */
 	@Override
-	default Spliterator<T> spliterator() {
+	default Spliterator<E> spliterator() {
 		return Spliterators.spliterator(iterator(), size(), Spliterator.ORDERED
 				| Spliterator.IMMUTABLE);
 	}
@@ -290,13 +319,13 @@ public interface List<T> extends Iterable<T> {
 	 * @see java.lang.Iterable#iterator()
 	 */
 	@Override
-	default Iterator<T> iterator() {
+	default Iterator<E> iterator() {
 
-		final class ListIterator implements Iterator<T> {
+		final class ListIterator implements Iterator<E> {
 
-			List<T> list;
+			List<E> list;
 
-			ListIterator(List<T> list) {
+			ListIterator(List<E> list) {
 				requireNonNull(list, "list is null");
 				this.list = list;
 			}
@@ -307,11 +336,11 @@ public interface List<T> extends Iterable<T> {
 			}
 
 			@Override
-			public T next() {
+			public E next() {
 				if (list.isEmpty()) {
 					throw new NoSuchElementException();
 				} else {
-					final T result = list.head();
+					final E result = list.head();
 					list = list.tail();
 					return result;
 				}
@@ -337,7 +366,8 @@ public interface List<T> extends Iterable<T> {
 	String toString();
 
 	/**
-	 * Returns the single instance of EmptyList. Same as {@code EmptyList.instance()}.
+	 * Returns the single instance of EmptyList. Convenience method for {@code EmptyList.instance()}
+	 * .
 	 * 
 	 * @param <T> Component type of EmptyList, determined by type inference in the particular
 	 *            context.
@@ -372,8 +402,8 @@ public interface List<T> extends Iterable<T> {
 		return result;
 	}
 
-	static <E> Collector<E, List<E>, List<E>> collector() {
-		return new CollectorImpl<E, List<E>, List<E>>(//
+	static <T> Collector<T, List<T>, List<T>> collector() {
+		return new CollectorImpl<T, List<T>, List<T>>(//
 				List::empty, // supplier
 				List::prepend, // accumulator
 				(left, right) -> left.prependAll(right), // combiner
@@ -440,9 +470,9 @@ public interface List<T> extends Iterable<T> {
 	 * See <a href="http://mail.openjdk.java.net/pipermail/lambda-dev/2013-March/008435.html">Allow
 	 * default methods to override Object's methods</a>.
 	 *
-	 * @param <T> Component type of the List.
+	 * @param <E> Component type of the List.
 	 */
-	abstract class AbstractList<T> implements List<T> {
+	abstract class AbstractList<E> implements List<E> {
 
 		@Override
 		public boolean equals(Object o) {
@@ -469,8 +499,8 @@ public interface List<T> extends Iterable<T> {
 		@Override
 		public int hashCode() {
 			int hashCode = 1;
-			for (List<T> list = this; !list.isEmpty(); list = list.tail()) {
-				final T element = list.head();
+			for (List<E> list = this; !list.isEmpty(); list = list.tail()) {
+				final E element = list.head();
 				hashCode = 31 * hashCode + (element == null ? 0 : element.hashCode());
 			}
 			return hashCode;
