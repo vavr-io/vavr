@@ -5,6 +5,8 @@
  */
 package javaslang.collection;
 
+import javaslang.collection.List.AbstractList;
+
 /**
  * Non-empty List.
  * 

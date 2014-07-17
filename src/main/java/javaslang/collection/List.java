@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import static java.util.stream.Collectors.joining;
 import static javaslang.Lang.requireNonNull;
 
 import java.util.Collections;
@@ -25,6 +26,8 @@ import java.util.stream.Collector.Characteristics;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import javaslang.Strings;
+
 /**
  * TODO: need a Collector for terminal stream operations for this List type
  * 
@@ -40,67 +43,17 @@ public interface List<T> extends Iterable<T> {
 
 	boolean isEmpty();
 
-	default List<T> append(T element) {
-		return reverse().prepend(element).reverse();
-	}
-
 	/**
-	 * Example: {@code List.of(1,2,3).appendAll(List.of(4,5,6))} equals {@code List.of(1,2,3,4,5,6)}
-	 * .
+	 * Reverses this List and returns a new List in O(n).
 	 * 
-	 * @param elements Elements to be appended.
-	 * @return A list containing the given elements appended to this list.
+	 * @return A new List instance containing the elements of this List in reverse order.
 	 */
-	default List<T> appendAll(List<? extends T> elements) {
-		requireNonNull(elements, "elements is null");
-		return this.reverse().prependAll(elements.reverse()).reverse();
-	}
-
-	default List<T> prepend(T element) {
-		return new LinearList<>(element, this);
-	}
-
-	/**
-	 * Example: {@code List.of(4,5,6).prependAll(List.of(1,2,3))} equals
-	 * {@code List.of(1,2,3,4,5,6)}.
-	 * 
-	 * @param elements Elements to be prepended.
-	 * @return A list containing the given elements prepended to this list.
-	 */
-	default List<T> prependAll(List<? extends T> elements) {
-		requireNonNull(elements, "elements is null");
-		List<T> result = this;
-		for (List<? extends T> list = elements.reverse(); !list.isEmpty(); list = list.tail()) {
+	default List<T> reverse() {
+		List<T> result = EmptyList.instance();
+		for (List<T> list = this; !list.isEmpty(); list = list.tail()) {
 			result = result.prepend(list.head());
 		}
 		return result;
-	}
-
-	// TODO: insert(index, element)
-
-	// TODO: insertAll
-
-	// TODO: remove(element)
-
-	// TODO: removeAll
-
-	// TODO: retainAll
-
-	default List<T> sort() {
-		return stream().sorted().collect(List.collector());
-	}
-
-	default List<T> sort(Comparator<? super T> c) {
-		return stream().sorted(c).collect(List.collector());
-	}
-
-	static <E> Collector<E, List<E>, List<E>> collector() {
-		return new CollectorImpl<E, List<E>, List<E>>(//
-				List::empty, // supplier
-				List::prepend, // accumulator
-				(left, right) -> left.prependAll(right), // combiner
-				List::reverse, // finisher
-				Characteristics.IDENTITY_FINISH);
 	}
 
 	/**
@@ -117,9 +70,63 @@ public interface List<T> extends Iterable<T> {
 		return result;
 	}
 
+	default List<T> append(T element) {
+		return isEmpty() ? new LinearList<>(element, this) : reverse().prepend(element).reverse();
+	}
+
+	/**
+	 * Example: {@code List.of(1,2,3).appendAll(List.of(4,5,6))} equals {@code List.of(1,2,3,4,5,6)}
+	 * .
+	 * 
+	 * @param elements Elements to be appended.
+	 * @return A list containing the given elements appended to this list.
+	 */
+	@SuppressWarnings("unchecked")
+	default List<T> appendAll(List<? extends T> elements) {
+		requireNonNull(elements, "elements is null");
+		return isEmpty() ? (List<T>) elements : ((List<T>) elements).prependAll(this);
+	}
+
+	default List<T> prepend(T element) {
+		return new LinearList<>(element, this);
+	}
+
+	/**
+	 * Example: {@code List.of(4,5,6).prependAll(List.of(1,2,3))} equals
+	 * {@code List.of(1,2,3,4,5,6)}.
+	 * 
+	 * @param elements Elements to be prepended.
+	 * @return A list containing the given elements prepended to this list.
+	 */
+	@SuppressWarnings("unchecked")
+	default List<T> prependAll(List<? extends T> elements) {
+		requireNonNull(elements, "elements is null");
+		if (isEmpty()) {
+			return (List<T>) elements;
+		} else {
+			List<T> result = this;
+			for (List<? extends T> list = elements.reverse(); !list.isEmpty(); list = list.tail()) {
+				result = result.prepend(list.head());
+			}
+			return result;
+		}
+	}
+
+	// TODO: insert(index, element)
+
+	// TODO: insertAll
+
+	// TODO: remove(element)
+
+	// TODO: removeAll
+
+	// TODO: retainAll
+
 	default boolean contains(T o) {
 		return indexOf(o) != -1;
 	}
+	
+	// TODO: containsAll(?)
 
 	default T get(int index) {
 		if (isEmpty()) {
@@ -234,23 +241,30 @@ public interface List<T> extends Iterable<T> {
 		return result;
 	}
 
-	/**
-	 * Reverses this List and returns a new List in O(n).
-	 * 
-	 * @return A new List instance containing the elements of this List in reverse order.
-	 */
-	default List<T> reverse() {
-		List<T> result = EmptyList.instance();
+	default T[] toArray() {
+		@SuppressWarnings("unchecked")
+		final T[] result = (T[]) new Object[size()];
+		int i = 0;
+		for (List<T> list = this; !list.isEmpty(); list = list.tail(), i++) {
+			result[i] = list.head();
+		}
+		return result;
+	}
+	
+	default java.util.ArrayList<T> toArrayList() {
+		final java.util.ArrayList<T> result = new java.util.ArrayList<>();
 		for (List<T> list = this; !list.isEmpty(); list = list.tail()) {
-			result = result.prepend(list.head());
+			result.add(list.head());
 		}
 		return result;
 	}
 
-	@SuppressWarnings("unchecked")
-	default T[] toArray() {
-		// TODO: better impl?
-		return (T[]) stream().toArray();
+	default List<T> sort() {
+		return stream().sorted().collect(List.collector());
+	}
+
+	default List<T> sort(Comparator<? super T> c) {
+		return stream().sorted(c).collect(List.collector());
 	}
 
 	default Stream<T> stream() {
@@ -358,6 +372,15 @@ public interface List<T> extends Iterable<T> {
 		return result;
 	}
 
+	static <E> Collector<E, List<E>, List<E>> collector() {
+		return new CollectorImpl<E, List<E>, List<E>>(//
+				List::empty, // supplier
+				List::prepend, // accumulator
+				(left, right) -> left.prependAll(right), // combiner
+				List::reverse, // finisher
+				Characteristics.IDENTITY_FINISH);
+	}
+
 	/**
 	 * Simple implementation class for {@code Collector}.
 	 *
@@ -408,6 +431,56 @@ public interface List<T> extends Iterable<T> {
 		public Set<Characteristics> characteristics() {
 			return characteristics;
 		}
+	}
+
+	/**
+	 * This class is needed because interface List cannot override Object's methods equals, hashCode
+	 * and toString.
+	 * <p>
+	 * See <a href="http://mail.openjdk.java.net/pipermail/lambda-dev/2013-March/008435.html">Allow
+	 * default methods to override Object's methods</a>.
+	 *
+	 * @param <T> Component type of the List.
+	 */
+	abstract class AbstractList<T> implements List<T> {
+
+		@Override
+		public boolean equals(Object o) {
+			if (o == null || !(o instanceof List)) {
+				return false;
+			} else {
+				List<?> list1 = this;
+				List<?> list2 = (List<?>) o;
+				while (!list1.isEmpty() && !list2.isEmpty()) {
+					final Object head1 = list1.head();
+					final Object head2 = list2.head();
+					final boolean isEqual = Objects.equals(head1, head2);
+					if (!isEqual) {
+						return false;
+					}
+					list1 = list1.tail();
+					list2 = list2.tail();
+				}
+				final boolean isSameSize = list1.isEmpty() && list2.isEmpty();
+				return isSameSize;
+			}
+		}
+
+		@Override
+		public int hashCode() {
+			int hashCode = 1;
+			for (List<T> list = this; !list.isEmpty(); list = list.tail()) {
+				final T element = list.head();
+				hashCode = 31 * hashCode + (element == null ? 0 : element.hashCode());
+			}
+			return hashCode;
+		}
+
+		@Override
+		public String toString() {
+			return stream().map(Strings::toString).collect(joining(", ", "(", ")"));
+		}
+
 	}
 
 }
