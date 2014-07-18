@@ -37,17 +37,23 @@ import javaslang.option.Some;
  * 
  * See {@link Matchs} for convenience methods creating a matcher.
  * <p>
+ * TODO: remove these methods? it's not nice to pass an 'unfinished' object as arg in favor of a nice api
  * Match is a first class member of the monads provided with javaslang. See
- * {@link javaslang.option.Option#match(Match)}, {@link javaslang.exception.Try#match(Match)},
- * {@link javaslang.either.Either.LeftProjection#match(Match)} and
- * {@link javaslang.either.Either.RightProjection#match(Match)}.
+ * {@link javaslang.option.Option#match(Match.Builder)}, {@link javaslang.exception.Try#match(Match.Builder)},
+ * {@link javaslang.either.Either.LeftProjection#match(Match.Builder)} and
+ * {@link javaslang.either.Either.RightProjection#match(Match.Builder)}.
  *
  * @param <R> The result type of the Match expression.
  */
 public class Match<R> implements Function<Object, R> {
 
-	private final List<Case<R>> cases = new ArrayList<>();
-	private Option<Supplier<R>> defaultOption = Option.empty();
+	private final List<Case<R>> cases;
+	private final Option<Supplier<R>> defaultOption;
+	
+	private Match(List<Case<R>> cases, Option<Supplier<R>> defaultOption) {
+		this.cases = cases;
+		this.defaultOption = defaultOption;
+	}
 
 	/**
 	 * Applies an object to this matcher. This is the implementation of the {@link Function}
@@ -57,8 +63,7 @@ public class Match<R> implements Function<Object, R> {
 	 * @return The result when applying the given obj to the first matching case. If the case has a
 	 *         consumer, the result is null, otherwise the result of the underlying function or
 	 *         supplier.
-	 * @throws MatchError if no Match case matches the given object and no default is defined via
-	 *             {@link #orElse(Supplier)}.
+	 * @throws MatchError if no Match case matches the given object and no default is defined via orElse().
 	 * @throws NonFatal if an error occurs executing the matched case.
 	 */
 	@Override
@@ -70,176 +75,6 @@ public class Match<R> implements Function<Object, R> {
 			}
 		}
 		return defaultOption.orElseThrow(() -> new MatchError(obj)).get();
-	}
-
-	/**
-	 * Defines the default return value.
-	 * 
-	 * @param <T> (super-)type of the object to be matched
-	 * @param defaultSupplier Supplier of the default return value of this Match.
-	 * @return this, the current instance of Match.
-	 */
-	public <T> Match<R> orElse(Supplier<R> defaultSupplier) {
-		requireNonNull(defaultSupplier, "defaultSupplier is null");
-		require(!defaultOption.isPresent(), "orElse called twice");
-		defaultOption = Option.of(defaultSupplier);
-		return this;
-	}
-
-	/**
-	 * Use this method to match by object type T. An object o matches this case, if
-	 * {@code o != null && T isAssignableFrom o.getClass()}.
-	 * 
-	 * @param <T> (super-)type of the object to be matched
-	 * @param function A SerializableFunction which is applied to a matched object.
-	 * @return this, the current instance of Match.
-	 * @throws IllegalStateException if function is null.
-	 */
-	public <T> Match<R> caze(SerializableFunction<T, R> function) {
-		requireNonNull(function, "function is null");
-		require(!defaultOption.isPresent(), "caze after orElse");
-		cases.add(new Case<>(None.instance(), function));
-		return this;
-	}
-
-	/**
-	 * Use this method to match by prototype value of object type T. An object o matches this case,
-	 * if {@code prototype == o || (prototype != null && prototype.equals(o))}.
-	 * 
-	 * @param <T> (super-)type of the object to be matched
-	 * @param prototype An object to be matched by equality as defined above.
-	 * @param function A SerializableFunction which is applied to a matched object.
-	 * @return this, the current instance of Match.
-	 * @throws IllegalStateException if function is null.
-	 */
-	// DEV NOTE: the compiler cannot distinguish between primitive and Object types, e.g.
-	// public Match<R> caze(int prototype, IntFunction<R> function)
-	// Autoboxing does not work here.
-	public <T> Match<R> caze(T prototype, SerializableFunction<T, R> function) {
-		requireNonNull(function, "function is null");
-		require(!defaultOption.isPresent(), "caze after orElse");
-		cases.add(new Case<>(new Some<>(prototype), function));
-		return this;
-	}
-
-	/**
-	 * Use this method to match by boolean. An object o matches this case, if {@code o != null &&
-	 * o.getClass() == Boolean.class}.
-	 * 
-	 * @param function A BooleanFunction which is applied to a matched object.
-	 * @return this, the current instance of Match.
-	 * @throws IllegalStateException if function is null.
-	 */
-	public Match<R> caze(BooleanFunction<R> function) {
-		requireNonNull(function, "function is null");
-		require(!defaultOption.isPresent(), "caze after orElse");
-		cases.add(new Case<>(None.instance(), (Boolean b) -> function.apply(b), Boolean.class));
-		return this;
-	}
-
-	/**
-	 * Use this method to match by byte. An object o matches this case, if {@code o != null &&
-	 * o.getClass() == Byte.class}.
-	 * 
-	 * @param function A ByteFunction which is applied to a matched object.
-	 * @return this, the current instance of Match.
-	 * @throws IllegalStateException if function is null.
-	 */
-	public Match<R> caze(ByteFunction<R> function) {
-		requireNonNull(function, "function is null");
-		require(!defaultOption.isPresent(), "caze after orElse");
-		cases.add(new Case<>(None.instance(), (Byte b) -> function.apply(b), Byte.class));
-		return this;
-	}
-
-	/**
-	 * Use this method to match by char. An object o matches this case, if {@code o != null &&
-	 * o.getClass() == Character.class}.
-	 * 
-	 * @param function A CharFunction which is applied to a matched object.
-	 * @return this, the current instance of Match.
-	 * @throws IllegalStateException if function is null.
-	 */
-	public Match<R> caze(CharFunction<R> function) {
-		requireNonNull(function, "function is null");
-		require(!defaultOption.isPresent(), "caze after orElse");
-		cases.add(new Case<>(None.instance(), (Character c) -> function.apply(c), Character.class));
-		return this;
-	}
-
-	/**
-	 * Use this method to match by double. An object o matches this case, if {@code o != null &&
-	 * o.getClass() == Double.class}.
-	 * 
-	 * @param function A DoubleFunction which is applied to a matched object.
-	 * @return this, the current instance of Match.
-	 * @throws IllegalStateException if function is null.
-	 */
-	public Match<R> caze(DoubleFunction<R> function) {
-		requireNonNull(function, "function is null");
-		require(!defaultOption.isPresent(), "caze after orElse");
-		cases.add(new Case<>(None.instance(), (Double d) -> function.apply(d), Double.class));
-		return this;
-	}
-
-	/**
-	 * Use this method to match by float. An object o matches this case, if {@code o != null &&
-	 * o.getClass() == Float.class}.
-	 * 
-	 * @param function A FloatFunction which is applied to a matched object.
-	 * @return this, the current instance of Match.
-	 * @throws IllegalStateException if function is null.
-	 */
-	public Match<R> caze(FloatFunction<R> function) {
-		requireNonNull(function, "function is null");
-		require(!defaultOption.isPresent(), "caze after orElse");
-		cases.add(new Case<>(None.instance(), (Float f) -> function.apply(f), Float.class));
-		return this;
-	}
-
-	/**
-	 * Use this method to match by int. An object o matches this case, if {@code o != null &&
-	 * o.getClass() == Integer.class}.
-	 * 
-	 * @param function A IntFunction which is applied to a matched object.
-	 * @return this, the current instance of Match.
-	 * @throws IllegalStateException if function is null.
-	 */
-	public Match<R> caze(IntFunction<R> function) {
-		requireNonNull(function, "function is null");
-		require(!defaultOption.isPresent(), "caze after orElse");
-		cases.add(new Case<>(None.instance(), (Integer i) -> function.apply(i), Integer.class));
-		return this;
-	}
-
-	/**
-	 * Use this method to match by long. An object o matches this case, if {@code o != null &&
-	 * o.getClass() == Long.class}.
-	 * 
-	 * @param function A LongFunction which is applied to a matched object.
-	 * @return this, the current instance of Match.
-	 * @throws IllegalStateException if function is null.
-	 */
-	public Match<R> caze(LongFunction<R> function) {
-		requireNonNull(function, "function is null");
-		require(!defaultOption.isPresent(), "caze after orElse");
-		cases.add(new Case<>(None.instance(), (Long l) -> function.apply(l), Long.class));
-		return this;
-	}
-
-	/**
-	 * Use this method to match by short. An object o matches this case, if {@code o != null &&
-	 * o.getClass() == Short.class}.
-	 * 
-	 * @param function A ShortFunction which is applied to a matched object.
-	 * @return this, the current instance of Match.
-	 * @throws IllegalStateException if function is null.
-	 */
-	public Match<R> caze(ShortFunction<R> function) {
-		requireNonNull(function, "function is null");
-		require(!defaultOption.isPresent(), "caze after orElse");
-		cases.add(new Case<>(None.instance(), (Short s) -> function.apply(s), Short.class));
-		return this;
 	}
 
 	/**
@@ -306,6 +141,8 @@ public class Match<R> implements Function<Object, R> {
 			return ((Function<Object, R>) function).apply(obj);
 		}
 	}
+	
+	// -- case lambda args
 
 	/**
 	 * A function which implements Serializable in order to obtain runtime type information about
@@ -371,6 +208,214 @@ public class Match<R> implements Function<Object, R> {
 	@FunctionalInterface
 	public static interface ShortFunction<R> {
 		R apply(short s);
+	}
+	
+	// -- builder
+	
+	public static class Builder<R> extends OrElseBuilder<R> {
+		
+		private final List<Case<R>> cases = new ArrayList<>();
+		private Option<Supplier<R>> defaultOption = Option.empty();
+		
+		/**
+		 * Use this method to match by object type T. An object o matches this case, if
+		 * {@code o != null && T isAssignableFrom o.getClass()}.
+		 * 
+		 * @param <T> (super-)type of the object to be matched
+		 * @param function A SerializableFunction which is applied to a matched object.
+		 * @return this, the current instance of Match.
+		 * @throws IllegalStateException if function is null.
+		 */
+		public <T> Builder<R> caze(SerializableFunction<T, R> function) {
+			requireNonNull(function, "function is null");
+			cases.add(new Case<>(None.instance(), function));
+			return this;
+		}
+
+		/**
+		 * Use this method to match by prototype value of object type T. An object o matches this case,
+		 * if {@code prototype == o || (prototype != null && prototype.equals(o))}.
+		 * 
+		 * @param <T> (super-)type of the object to be matched
+		 * @param prototype An object to be matched by equality as defined above.
+		 * @param function A SerializableFunction which is applied to a matched object.
+		 * @return this, the current instance of Match.
+		 * @throws IllegalStateException if function is null.
+		 */
+		// DEV NOTE: the compiler cannot distinguish between primitive and Object types, e.g.
+		// public Match<R> caze(int prototype, IntFunction<R> function)
+		// Autoboxing does not work here.
+		public <T> Builder<R> caze(T prototype, SerializableFunction<T, R> function) {
+			requireNonNull(function, "function is null");
+			cases.add(new Case<>(new Some<>(prototype), function));
+			return this;
+		}
+
+		/**
+		 * Use this method to match by boolean. An object o matches this case, if {@code o != null &&
+		 * o.getClass() == Boolean.class}.
+		 * 
+		 * @param function A BooleanFunction which is applied to a matched object.
+		 * @return this, the current instance of Match.
+		 * @throws IllegalStateException if function is null.
+		 */
+		public Builder<R> caze(BooleanFunction<R> function) {
+			requireNonNull(function, "function is null");
+			cases.add(new Case<>(None.instance(), (Boolean b) -> function.apply(b), Boolean.class));
+			return this;
+		}
+
+		/**
+		 * Use this method to match by byte. An object o matches this case, if {@code o != null &&
+		 * o.getClass() == Byte.class}.
+		 * 
+		 * @param function A ByteFunction which is applied to a matched object.
+		 * @return this, the current instance of Match.
+		 * @throws IllegalStateException if function is null.
+		 */
+		public Builder<R> caze(ByteFunction<R> function) {
+			requireNonNull(function, "function is null");
+			cases.add(new Case<>(None.instance(), (Byte b) -> function.apply(b), Byte.class));
+			return this;
+		}
+
+		/**
+		 * Use this method to match by char. An object o matches this case, if {@code o != null &&
+		 * o.getClass() == Character.class}.
+		 * 
+		 * @param function A CharFunction which is applied to a matched object.
+		 * @return this, the current instance of Match.
+		 * @throws IllegalStateException if function is null.
+		 */
+		public Builder<R> caze(CharFunction<R> function) {
+			requireNonNull(function, "function is null");
+			cases.add(new Case<>(None.instance(), (Character c) -> function.apply(c), Character.class));
+			return this;
+		}
+
+		/**
+		 * Use this method to match by double. An object o matches this case, if {@code o != null &&
+		 * o.getClass() == Double.class}.
+		 * 
+		 * @param function A DoubleFunction which is applied to a matched object.
+		 * @return this, the current instance of Match.
+		 * @throws IllegalStateException if function is null.
+		 */
+		public Builder<R> caze(DoubleFunction<R> function) {
+			requireNonNull(function, "function is null");
+			cases.add(new Case<>(None.instance(), (Double d) -> function.apply(d), Double.class));
+			return this;
+		}
+
+		/**
+		 * Use this method to match by float. An object o matches this case, if {@code o != null &&
+		 * o.getClass() == Float.class}.
+		 * 
+		 * @param function A FloatFunction which is applied to a matched object.
+		 * @return this, the current instance of Match.
+		 * @throws IllegalStateException if function is null.
+		 */
+		public Builder<R> caze(FloatFunction<R> function) {
+			requireNonNull(function, "function is null");
+			cases.add(new Case<>(None.instance(), (Float f) -> function.apply(f), Float.class));
+			return this;
+		}
+
+		/**
+		 * Use this method to match by int. An object o matches this case, if {@code o != null &&
+		 * o.getClass() == Integer.class}.
+		 * 
+		 * @param function A IntFunction which is applied to a matched object.
+		 * @return this, the current instance of Match.
+		 * @throws IllegalStateException if function is null.
+		 */
+		public Builder<R> caze(IntFunction<R> function) {
+			requireNonNull(function, "function is null");
+			cases.add(new Case<>(None.instance(), (Integer i) -> function.apply(i), Integer.class));
+			return this;
+		}
+
+		/**
+		 * Use this method to match by long. An object o matches this case, if {@code o != null &&
+		 * o.getClass() == Long.class}.
+		 * 
+		 * @param function A LongFunction which is applied to a matched object.
+		 * @return this, the current instance of Match.
+		 * @throws IllegalStateException if function is null.
+		 */
+		public Builder<R> caze(LongFunction<R> function) {
+			requireNonNull(function, "function is null");
+			cases.add(new Case<>(None.instance(), (Long l) -> function.apply(l), Long.class));
+			return this;
+		}
+
+		/**
+		 * Use this method to match by short. An object o matches this case, if {@code o != null &&
+		 * o.getClass() == Short.class}.
+		 * 
+		 * @param function A ShortFunction which is applied to a matched object.
+		 * @return this, the current instance of Match.
+		 * @throws IllegalStateException if function is null.
+		 */
+		public Builder<R> caze(ShortFunction<R> function) {
+			requireNonNull(function, "function is null");
+			cases.add(new Case<>(None.instance(), (Short s) -> function.apply(s), Short.class));
+			return this;
+		}
+
+		/* (non-Javadoc)
+		 * @see javaslang.match.Match.MatchBuilder#getCases()
+		 */
+		@Override
+		protected List<Case<R>> getCases() {
+			return cases;
+		}
+
+		/* (non-Javadoc)
+		 * @see javaslang.match.Match.MatchBuilder#getDefault()
+		 */
+		@Override
+		protected Option<Supplier<R>> getDefault() {
+			return defaultOption;
+		}
+
+		/* (non-Javadoc)
+		 * @see javaslang.match.Match.MatchBuilder#setDefault(javaslang.option.Option)
+		 */
+		@Override
+		protected void setDefault(Option<Supplier<R>> defaultOption) {
+			this.defaultOption = defaultOption;
+		}
+	}
+	
+	public static abstract class OrElseBuilder<R> extends MatchBuilder<R> {
+		
+		/**
+		 * Defines the default return value.
+		 * 
+		 * @param <T> (super-)type of the object to be matched
+		 * @param defaultSupplier Supplier of the default return value of this Match.
+		 * @return this, the current instance of Match.
+		 */
+		public <T> MatchBuilder<R> orElse(Supplier<R> defaultSupplier) {
+			requireNonNull(defaultSupplier, "defaultSupplier is null");
+			setDefault(Option.of(defaultSupplier));
+			return this;
+		}		
+	}
+
+	public static abstract class MatchBuilder<R> {
+		
+		public Match<R> build() {
+			return new Match<>(getCases(), getDefault());
+		}
+		
+		protected abstract List<Case<R>> getCases();
+		
+		protected abstract Option<Supplier<R>> getDefault();
+		
+		protected abstract void setDefault(Option<Supplier<R>> defaultOption);
+		
 	}
 
 }

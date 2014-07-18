@@ -26,7 +26,7 @@ import javaslang.match.Match;
  */
 public final class Arrayz {
 
-	private static final Match<Stream<?>> ARRAY_TO_STREAM_MATCHER = new Match<Stream<?>>()
+	private static final Match<Stream<?>> ARRAY_TO_STREAM_MATCHER = new Match.Builder<Stream<?>>()
 			.caze((boolean[] a) -> stream(a))
 			.caze((byte[] a) -> stream(a))
 			.caze((char[] a) -> stream(a))
@@ -35,9 +35,10 @@ public final class Arrayz {
 			.caze((int[] a) -> stream(a))
 			.caze((long[] a) -> stream(a))
 			.caze((short[] a) -> stream(a))
-			.caze((Object[] a) -> Arrays.stream(a));
+			.caze((Object[] a) -> Arrays.stream(a))
+			.build();
 
-	private static final Match<Stream<?>> ARRAY_TO_PARALLEL_STREAM_MATCHER = new Match<Stream<?>>()
+	private static final Match<Stream<?>> ARRAY_TO_PARALLEL_STREAM_MATCHER = new Match.Builder<Stream<?>>()
 			.caze((boolean[] a) -> parallelStream(a))
 			.caze((byte[] a) -> parallelStream(a))
 			.caze((char[] a) -> parallelStream(a))
@@ -46,7 +47,8 @@ public final class Arrayz {
 			.caze((int[] a) -> parallelStream(a))
 			.caze((long[] a) -> parallelStream(a))
 			.caze((short[] a) -> parallelStream(a))
-			.caze((Object[] a) -> Arrays.stream(a).parallel());
+			.caze((Object[] a) -> Arrays.stream(a).parallel())
+			.build();
 
 	/**
 	 * This class is not intended to be instantiated.

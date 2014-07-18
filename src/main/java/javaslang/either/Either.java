@@ -128,9 +128,10 @@ public interface Either<L, R> {
 			}
 		}
 
-		public <S> S match(Match<S> matcher) {
+		// TODO: remove method? it's not nice to pass an 'unfinished' object as arg in favor of a nice api
+		public <S> S match(Match.Builder<S> matcher) {
 			Objects.requireNonNull(matcher);
-			return matcher.apply(either);
+			return matcher.build().apply(either);
 		}
 
 		@Override
@@ -232,9 +233,10 @@ public interface Either<L, R> {
 			}
 		}
 
-		public <S> S match(Match<S> matcher) {
+		// TODO: remove method? it's not nice to pass an 'unfinished' object as arg in favor of a nice api
+		public <S> S match(Match.Builder<S> matcher) {
 			Objects.requireNonNull(matcher);
-			return matcher.apply(either);
+			return matcher.build().apply(either);
 		}
 
 		@Override

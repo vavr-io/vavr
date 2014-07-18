@@ -56,9 +56,10 @@ public interface Option<T> {
 	
 	void forEach(Consumer<? super T> action);
 	
-	default <S> S match(Match<S> matcher) {
+	// TODO: remove method? it's not nice to pass an 'unfinished' object as arg in favor of a nice api
+	default <S> S match(Match.Builder<S> matcher) {
 		Objects.requireNonNull(matcher);
-		return matcher.apply(this);
+		return matcher.build().apply(this);
 	}
 
 }
