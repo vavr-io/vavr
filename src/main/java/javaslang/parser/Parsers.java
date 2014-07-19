@@ -326,7 +326,6 @@ class Parsers {
 	private static abstract class AbstractParser implements Parser, Supplier<Parser> {
 
 		static final Match<String> TO_STRING = Matchs//
-				.caze((boolean b) -> "")
 				.caze((Any any) -> ".")
 				.caze((EOF eof) -> "EOF")
 				.caze((Literal l) -> "'" + l.literal + "'")
