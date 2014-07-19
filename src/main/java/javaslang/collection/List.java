@@ -37,16 +37,36 @@ import javaslang.Strings;
  */
 public interface List<E> extends Iterable<E> {
 
+	/**
+	 * Returns the first element of this List in O(1).
+	 * 
+	 * @return The head of this List.
+	 * @throws UnsupportedOperationException, if this is EmptyList.
+	 */
 	E head();
 
+	/**
+	 * Returns all elements except the first element of this List in O(1).
+	 * 
+	 * @return The tail of this List.
+	 * @throws UnsupportedOperationException, if this is EmptyList.
+	 */
 	List<E> tail();
 
+	/**
+	 * Tests whether this List is empty in O(1).
+	 * 
+	 * @return true, if this List is empty, false otherwise.
+	 */
 	boolean isEmpty();
 
 	/**
 	 * Reverses this List and returns a new List in O(n).
+	 * <p>
+	 * The result is equivalent to {@code isEmpty() ? 0 : 1 + tail().size()} but implemented without
+	 * recursion.
 	 * 
-	 * @return A new List instance containing the elements of this List in reverse order.
+	 * @return A new List containing the elements of this List in reverse order.
 	 */
 	default List<E> reverse() {
 		List<E> result = EmptyList.instance();
@@ -58,8 +78,9 @@ public interface List<E> extends Iterable<E> {
 
 	/**
 	 * Calculates the size of a List in O(n).
-	 * 
-	 * {@code isEmpty() ? 0 : 1 + tail().size()}
+	 * <p>
+	 * The result is equivalent to {@code isEmpty() ? 0 : 1 + tail().size()} but implemented without
+	 * recursion.
 	 * 
 	 * @return The size of this List.
 	 */
@@ -70,6 +91,14 @@ public interface List<E> extends Iterable<E> {
 		return result;
 	}
 
+	/**
+	 * Appends an element to this List in O(n).
+	 * <p>
+	 * The result is equivalent to {@code reverse().prepend(element).reverse()}.
+	 * 
+	 * @param element An element.
+	 * @return A new List containing the elements of this list, appended the given element.
+	 */
 	default List<E> append(E element) {
 		if (isEmpty()) {
 			return new LinearList<>(element, this);
@@ -79,11 +108,16 @@ public interface List<E> extends Iterable<E> {
 	}
 
 	/**
+	 * Appends all elements of a given List to this List in O(n).
+	 * <p>
 	 * Example: {@code List.of(1,2,3).appendAll(List.of(4,5,6))} equals {@code List.of(1,2,3,4,5,6)}
 	 * .
+	 * <p>
+	 * The result is equivalent to {@code elements.prependAll(this)}.
 	 * 
 	 * @param elements Elements to be appended.
-	 * @return A list containing the given elements appended to this list.
+	 * @return A new List containing the given elements appended to this List.
+	 * @throws javaslang.Lang.UnsatisfiedRequirementException if elements is null
 	 */
 	@SuppressWarnings("unchecked")
 	default List<E> appendAll(List<? extends E> elements) {
@@ -97,16 +131,31 @@ public interface List<E> extends Iterable<E> {
 		}
 	}
 
+	/**
+	 * Prepends an element to this List in O(1).
+	 * <p>
+	 * The result is equivalent to {new LinearList<>(element, this)}.
+	 * 
+	 * @param element An element.
+	 * @return A new List containing the elements of this list, prepended the given element.
+	 */
 	default List<E> prepend(E element) {
 		return new LinearList<>(element, this);
 	}
 
 	/**
+	 * Prepends all elements of a given List to this List in O(n).
+	 * <p>
 	 * Example: {@code List.of(4,5,6).prependAll(List.of(1,2,3))} equals
 	 * {@code List.of(1,2,3,4,5,6)}.
+	 * <p>
+	 * The result is equivalent to
+	 * {@code elements.isEmpty() ? this : prependAll(elements.tail()).prepend(elements.head())} but
+	 * implemented without recursion.
 	 * 
 	 * @param elements Elements to be prepended.
-	 * @return A list containing the given elements prepended to this list.
+	 * @return A new List containing the given elements prepended to this List.
+	 * @throws javaslang.Lang.UnsatisfiedRequirementException if elements is null
 	 */
 	@SuppressWarnings("unchecked")
 	default List<E> prependAll(List<? extends E> elements) {
@@ -133,27 +182,57 @@ public interface List<E> extends Iterable<E> {
 	// TODO: removeAll(List)
 
 	// TODO: retainAll(List)
-	
+
 	// TODO: replaceAll(List)
-	
+
 	// TODO: T[] toArray(T[] a)
 
-	// TODO: containsAll(List)
-	
 	// TODO: clear
-	
+
 	// TODO: iterator(int)
 
 	/**
-	 * Indicates if this list contains o by returning {@code indexOf(o) != -1}.
+	 * Tests if this List contains a given value as an element in O(n).
+	 * <p>
+	 * The result is equivalent to {@code indexOf(element) != -1}.
 	 * 
-	 * @param o An object, may be null.
-	 * @return true, if o is contained in this List, false otherwise.
+	 * @param element A Object of type E, may be null.
+	 * @return true, if element is in this List, false otherwise.
 	 */
-	default boolean contains(E o) {
-		return indexOf(o) != -1;
+	default boolean contains(E element) {
+		return indexOf(element) != -1;
 	}
 
+	/**
+	 * Tests if this List contains all given values as elements in O(n^2).
+	 * <p>
+	 * The result is equivalent to
+	 * {@code elements.isEmpty() ? true : contains(elements.head()) && containsAll(elements.tail())}.
+	 * 
+	 * @param elements A List of values of type E.
+	 * @return true, if this List contains all given elements, false otherwise.
+	 * @throws javaslang.Lang.UnsatisfiedRequirementException if elements is null
+	 */
+	default boolean containsAll(List<? extends E> elements) {
+		requireNonNull(elements, "elements is null");
+		for (List<? extends E> list = elements; !list.isEmpty(); list = list.tail()) {
+			if (!this.contains(list.head())) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Returns the element of this List at the specified index in O(n).
+	 * <p>
+	 * The result is roughly equivalent to {@code (index == 0) ? head() : tail().get(index - 1)}.
+	 * 
+	 * @param index An index, where 0 &lt;= index &lt; this.size()
+	 * @return The element at the specified index.
+	 * @throws IndexOutOfBoundsException if this List is empty, index &lt; 0 or index &gt;= size of
+	 *             this List.
+	 */
 	default E get(int index) {
 		if (isEmpty()) {
 			throw new IndexOutOfBoundsException("get(" + index + ") on empty list");
@@ -172,17 +251,48 @@ public interface List<E> extends Iterable<E> {
 		return list.head();
 	}
 
+	/**
+	 * Replaces the element at the specified index in O(n).
+	 * <p>
+	 * The result is roughly equivalent to
+	 * {@code (index == 0) ? tail().prepend(element) : new LinearList(head(), tail().set(index - 1, element))}.
+	 * 
+	 * @param index An index, where 0 &lt;= index &lt; this.size()
+	 * @param element A new element.
+	 * @return A list containing all of the elements of this List but the given element at the given
+	 *         index.
+	 * @throws IndexOutOfBoundsException if this List is empty, index &lt; 0 or index &gt;= size of
+	 *             this List.
+	 */
 	default List<E> set(int index, E element) {
 		if (isEmpty()) {
-			throw new IndexOutOfBoundsException("set(" + index + ") on empty list");
+			throw new IndexOutOfBoundsException("set(" + index + ", e) on empty list");
 		}
 		if (index < 0) {
 			throw new IndexOutOfBoundsException("set(" + index + ")");
 		}
-		// TODO: IndexOutOfBounds("set(index, ...)
-		return this.sublist(index + 1).prepend(element).prependAll(sublist(0, index));
+		List<E> result = EmptyList.instance();
+		List<E> list = this;
+		for (int i = index; i > 0; i--, list = list.tail()) {
+			if (list.isEmpty()) {
+				throw new IndexOutOfBoundsException("set("
+						+ index
+						+ ", e) on list of size "
+						+ size());
+			}
+			result = result.prepend(list.head());
+		}
+		if (list.isEmpty()) {
+			throw new IndexOutOfBoundsException("set(" + index + ", e) on list of size " + size());
+		}
+		return tail().prependAll(result.prepend(element).reverse());
 	}
 
+	/**
+	 * 
+	 * @param beginIndex
+	 * @return
+	 */
 	default List<E> sublist(int beginIndex) {
 		if (beginIndex < 0) {
 			throw new IndexOutOfBoundsException("sublist(" + beginIndex + ")");
@@ -199,26 +309,28 @@ public interface List<E> extends Iterable<E> {
 	}
 
 	default List<E> sublist(int beginIndex, int endIndex) {
-		final int subLen = endIndex - beginIndex;
-		if (beginIndex < 0 || subLen < 0) {
-			throw new IndexOutOfBoundsException(String.format("sublist(%s, %s) on list of size %2",
+		if (beginIndex < 0 || endIndex - beginIndex < 0) {
+			throw new IndexOutOfBoundsException(String.format("sublist(%s, %s) on list of size %s",
 					beginIndex, endIndex, size()));
 		}
 		List<E> result = EmptyList.instance();
-		List<E> list = this.sublist(beginIndex);
-		for (int i = 0; i < subLen; i++, list = list.tail()) {
+		List<E> list = this;
+		for (int i = 0; i < endIndex; i++, list = list.tail()) {
 			if (list.isEmpty()) {
 				throw new IndexOutOfBoundsException(String.format(
-						"sublist(%s, %s) on list of size %2", beginIndex, endIndex, beginIndex
-								+ (subLen - i)));
+						"sublist(%s, %s) on list of size %s", beginIndex, endIndex, i));
 			}
-			result = result.prepend(list.head());
+			if (i >= beginIndex) {
+				result = result.prepend(list.head());
+			}
 		}
 		return result.reverse();
 	}
 
 	/**
-	 * Drops the first n elements of this list or the whole list, if this size &lt; n.
+	 * Drops the first n elements of this list or the whole list, if this size &lt; n or n &lt; 0;
+	 * <p>
+	 * Equivalent to {@code sublist(n)} but does not throw if n &lt; 0 or n &gt; this.size().
 	 * 
 	 * @param n The number of elements to drop.
 	 * @return A list consisting of all elements of this list except the first n ones, or else the
@@ -233,6 +345,8 @@ public interface List<E> extends Iterable<E> {
 
 	/**
 	 * Takes the first n elements of this list or the whole list, if this size &lt; n.
+	 * <p>
+	 * Equivalent to {@code sublist(0, n)} but does not throw if n &lt; 0 or n &gt; this.size().
 	 * 
 	 * @param n The number of elements to take.
 	 * @return A list consisting of the first n elements of this list or the whole list, if it has
@@ -277,8 +391,8 @@ public interface List<E> extends Iterable<E> {
 		}
 		return result;
 	}
-	
-	// TODO: stream()toArray(T[])
+
+	// TODO: stream().toArray(T[])
 
 	default java.util.ArrayList<E> toArrayList() {
 		final java.util.ArrayList<E> result = new java.util.ArrayList<>();
@@ -391,6 +505,7 @@ public interface List<E> extends Iterable<E> {
 	 * @param <T> Component type of the List.
 	 * @param elements List elements.
 	 * @return A list containing the given elements in the same order.
+	 * @throws javaslang.Lang.UnsatisfiedRequirementException if elements is null
 	 */
 	@SafeVarargs
 	static <T> List<T> of(T... elements) {
@@ -464,8 +579,8 @@ public interface List<E> extends Iterable<E> {
 	}
 
 	/**
-	 * This class is needed because interface List cannot override Object's methods equals, hashCode
-	 * and toString.
+	 * This class is needed because the interface {@link List} cannot use default methods to
+	 * override Object's non-final methods equals, hashCode and toString.
 	 * <p>
 	 * See <a href="http://mail.openjdk.java.net/pipermail/lambda-dev/2013-March/008435.html">Allow
 	 * default methods to override Object's methods</a>.
