@@ -171,9 +171,65 @@ public interface List<E> extends Iterable<E> {
 		}
 	}
 
-	// TODO: insert(index, element)
+	/**
+	 * TODO
+	 * 
+	 * ().insert(0, 1) = (1)
+	 * (4).insert(0, 1) = (1,4)
+	 * (4).insert(1, 1) = (4,1)
+	 * (1,2,3).insert(2, 4) = (1,2,4,3)
+	 * 
+	 * @param index
+	 * @param element
+	 * @return
+	 */
+	default List<E> insert(int index, E element) {
+		if (index < 0) {
+			throw new IndexOutOfBoundsException("insert(" + index + ", e)");
+		}
+		List<E> result = EmptyList.instance();
+		List<E> list = this;
+		for (int i = index; i > 0; i--, list = list.tail()) {
+			if (list.isEmpty()) {
+				throw new IndexOutOfBoundsException("insert("
+						+ index
+						+ ", e) on list of size "
+						+ size());
+			}
+			result = result.prepend(list.head());
+		}
+		return list.prepend(element).prependAll(result.reverse());
+	}
 
-	// TODO: insertAll(index, List)
+	/**
+	 * TODO
+	 * 
+	 * ().insertAll(0, (1,2,3)) = (1,2,3)
+	 * (4).insertAll(0, (1,2,3)) = (1,2,3,4)
+	 * (4).insertAll(1, (1,2,3)) = (4,1,2,3)
+	 * (1,2,3).insertAll(2, (4,5)) = (1,2,4,5,3)
+	 * 
+	 * @param index
+	 * @param elements
+	 * @return
+	 */
+	default List<E> insertAll(int index, List<? extends E> elements) {
+		if (index < 0) {
+			throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
+		}
+		List<E> result = EmptyList.instance();
+		List<E> list = this;
+		for (int i = index; i > 0; i--, list = list.tail()) {
+			if (list.isEmpty()) {
+				throw new IndexOutOfBoundsException("insertAll("
+						+ index
+						+ ", elements) on list of size "
+						+ size());
+			}
+			result = result.prepend(list.head());
+		}
+		return list.prependAll(elements).prependAll(result.reverse());
+	}
 
 	// TODO: remove(element)
 
@@ -311,7 +367,7 @@ public interface List<E> extends Iterable<E> {
 			throw new IndexOutOfBoundsException("set(" + index + ", e) on empty list");
 		}
 		if (index < 0) {
-			throw new IndexOutOfBoundsException("set(" + index + ")");
+			throw new IndexOutOfBoundsException("set(" + index + ", e)");
 		}
 		List<E> result = EmptyList.instance();
 		List<E> list = this;
@@ -327,7 +383,8 @@ public interface List<E> extends Iterable<E> {
 		if (list.isEmpty()) {
 			throw new IndexOutOfBoundsException("set(" + index + ", e) on list of size " + size());
 		}
-		return tail().prependAll(result.prepend(element).reverse());
+		// skip the current head element because it is replaced
+		return list.tail().prepend(element).prependAll(result.reverse());
 	}
 
 	/**
@@ -352,7 +409,8 @@ public interface List<E> extends Iterable<E> {
 	 * The result is equivalent to {@code (index == 0) ? this : tail().sublist(index - 1)} but
 	 * implemented without recursion.
 	 * <p>
-	 * If you do not want to check the bounds, use {@code drop(beginIndex)} instead.
+	 * If you do not want the bounds to be checked, use the fail-safe variant
+	 * {@code drop(beginIndex)} instead.
 	 * 
 	 * @param beginIndex Start index of the sublist, where 0 &lt;= beginIndex &lt;= size()
 	 * @return The sublist of the List, starting at beginIndex (inclusive).
@@ -398,7 +456,7 @@ public interface List<E> extends Iterable<E> {
 	 * {@code (beginIndex == 0) ? reverse().sublist(size() - endIndex).reverse() : tail().sublist(beginIndex - 1, endIndex)}
 	 * but implemented without recursion.
 	 * <p>
-	 * If you do not want to check the bounds, use
+	 * If you do not want the bounds to be checked, use the fail-safe variant
 	 * {@code drop(beginIndex).take(endIndex - beginIndex)} instead.
 	 * 
 	 * @param beginIndex Start index of the sublist, where 0 &lt;= beginIndex &lt;= size()
@@ -463,18 +521,21 @@ public interface List<E> extends Iterable<E> {
 		return result.reverse();
 	}
 
-	// TODO: versus stream().toArray()
 	default E[] toArray() {
 		@SuppressWarnings("unchecked")
 		final E[] result = (E[]) new Object[size()];
+		// TODO: return toArray(result);
 		int i = 0;
 		for (List<E> list = this; !list.isEmpty(); list = list.tail(), i++) {
 			result[i] = list.head();
 		}
 		return result;
 	}
-
-	// TODO: stream().toArray(T[])
+	
+	default E[] toArray(E[] array) {
+		// TODO
+		return null;
+	}
 
 	default java.util.ArrayList<E> toArrayList() {
 		final java.util.ArrayList<E> result = new java.util.ArrayList<>();

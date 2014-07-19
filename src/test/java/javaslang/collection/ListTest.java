@@ -182,16 +182,94 @@ public class ListTest {
 		assertThat(actual).isEqualTo(expected);
 	}
 
-	// -- contains
+	// -- insert
 
 	@Test
-	public void shouldRecognizeThatEmptyListContainsNoElement() {
-		assertThat(List.empty().contains(null)).isFalse();
+	public void shouldInsertIntoEmptyList() {
+		final List<Integer> actual = List.<Integer> empty().insert(0, 1);
+		final List<Integer> expected = List.of(1);
+		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
-	public void shouldRecognizeThatNonEmptyListContainsAnElement() {
-		assertThat(List.of(1).contains(1)).isTrue();
+	public void shouldInsertInFrontOfElement() {
+		final List<Integer> actual = List.of(4).insert(0, 1);
+		final List<Integer> expected = List.of(1, 4);
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldInsertBehindOfElement() {
+		final List<Integer> actual = List.of(4).insert(1, 1);
+		final List<Integer> expected = List.of(4, 1);
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldInsertIntoList() {
+		final List<Integer> actual = List.of(1, 2, 3).insert(2, 4);
+		final List<Integer> expected = List.of(1, 2, 4, 3);
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldThrowOnInsertWithNegativeIndex() {
+		assertThat(() -> List.empty().insert(-1, null)).isThrowing(IndexOutOfBoundsException.class,
+				"insert(-1, e)");
+	}
+
+	@Test
+	public void shouldThrowOnInsertWhenExceedingUpperBound() {
+		assertThat(() -> List.empty().insert(1, null)).isThrowing(IndexOutOfBoundsException.class,
+				"insert(1, e) on list of size 0");
+	}
+
+	// -- insertAll
+
+	@Test
+	public void shouldInserAlltIntoEmptyList() {
+		final List<Integer> actual = List.<Integer> empty().insertAll(0, List.of(1, 2, 3));
+		final List<Integer> expected = List.of(1, 2, 3);
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldInsertAllInFrontOfElement() {
+		final List<Integer> actual = List.of(4).insertAll(0, List.of(1, 2, 3));
+		final List<Integer> expected = List.of(1, 2, 3, 4);
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldInsertAllBehindOfElement() {
+		final List<Integer> actual = List.of(4).insertAll(1, List.of(1, 2, 3));
+		final List<Integer> expected = List.of(4, 1, 2, 3);
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldInsertAllIntoList() {
+		final List<Integer> actual = List.of(1, 2, 3).insertAll(2, List.of(4, 5));
+		final List<Integer> expected = List.of(1, 2, 4, 5, 3);
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldThrowOnInsertAllWithEmptyList() {
+		assertThat(() -> List.empty().insertAll(0, null)).isThrowing(UnsatisfiedRequirementException.class,
+				"elements is null");
+	}
+
+	@Test
+	public void shouldThrowOnInsertAllWithNegativeIndex() {
+		assertThat(() -> List.empty().insertAll(-1, List.empty())).isThrowing(IndexOutOfBoundsException.class,
+				"insertAll(-1, elements)");
+	}
+
+	@Test
+	public void shouldThrowOnInsertAllWhenExceedingUpperBound() {
+		assertThat(() -> List.empty().insertAll(1, List.empty())).isThrowing(IndexOutOfBoundsException.class,
+				"insertAll(1, elements) on list of size 0");
 	}
 
 	// -- contains
@@ -233,6 +311,8 @@ public class ListTest {
 		final boolean actual = List.of(1, 2, 3).containsAll(List.of(1, 2, 3));
 		assertThat(actual).isTrue();
 	}
+	
+	// TODO: shouldThrow..., see insert(index, element)
 
 	// -- indexOf
 
@@ -381,5 +461,69 @@ public class ListTest {
 		assertThat(() -> List.of(1, 2, 3).sublist(1, 4)).isThrowing(
 				IndexOutOfBoundsException.class, "sublist(1, 4) on list of size 3");
 	}
+
+	// -- drop
+
+	// TODO
+
+	// -- take
+
+	// TODO
+
+	// -- toArray
+
+	// TODO
+
+	// -- toArrayList
+
+	// TODO
+
+	// -- sort
+
+	// TODO
+
+	// -- sort(Comparator)
+
+	// TODO
+
+	// -- stream
+
+	// TODO
+
+	// -- parallelStream
+
+	// TODO
+
+	// -- spliterator
+
+	// TODO
+
+	// -- iterator
+
+	// TODO
+
+	// -- equals
+
+	// TODO
+
+	// -- hashCode
+
+	// TODO
+
+	// -- toString
+
+	// TODO
+
+	// -- List.empty
+
+	// TODO
+
+	// -- List.of
+
+	// TODO
+
+	// -- List.collector
+
+	// TODO
 
 }
