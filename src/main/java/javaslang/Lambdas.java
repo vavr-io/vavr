@@ -159,6 +159,13 @@ public final class Lambdas {
 			return parameterTypes;
 		}
 
+		public Class<?> getParameterType(int index) {
+			if (index < 0 || index >= parameterTypes.length) {
+				throw new IndexOutOfBoundsException("getParameterType(" + index + ")");
+			}
+			return parameterTypes[index];
+		}
+
 		public Class<?> getReturnType() {
 			return returnType;
 		}
@@ -176,7 +183,7 @@ public final class Lambdas {
 
 		@Override
 		public int hashCode() {
-			// no synchronization, implementation identical to String.hashCode 
+			// no synchronization, implementation identical to String.hashCode
 			if (hashCode == 0) {
 				// toString() cannot be empty => hashCode > 0
 				hashCode = toString().hashCode();
