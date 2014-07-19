@@ -51,7 +51,7 @@ import javaslang.option.Some;
  *     .build();
  * final Number number = toNumber.apply(1.0d); // result: -1</code>
  * </pre>
- * 
+ * <p>
  * The following calls are equivalent:
  * <ul>
  * <li>{@code new Match.Builder<R>.caze(...).build().apply(obj)}</li>
