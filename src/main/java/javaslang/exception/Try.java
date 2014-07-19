@@ -5,12 +5,10 @@
  */
 package javaslang.exception;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import javaslang.match.Match;
 import javaslang.option.Option;
 
 /**
@@ -38,8 +36,8 @@ public interface Try<T> {
 
 	T orElseGet(Function<Throwable, ? extends T> other);
 
-	<X extends Throwable> T orElseThrow(
-			Function<Throwable, ? extends X> exceptionProvider) throws X;
+	<X extends Throwable> T orElseThrow(Function<Throwable, ? extends X> exceptionProvider)
+			throws X;
 
 	Try<T> recover(Function<? super Throwable, ? extends T> f);
 
@@ -54,15 +52,9 @@ public interface Try<T> {
 	void forEach(Consumer<? super T> action);
 
 	<U> Try<U> map(Function<? super T, ? extends U> mapper);
-	
-	// TODO: remove method? it's not nice to pass an 'unfinished' object as arg in favor of a nice api
-	default <S> S match(Match.Builder<S> matcher) {
-		Objects.requireNonNull(matcher);
-		return matcher.build().apply(this);
-	}
-	
+
 	Try<Throwable> failed();
-	
+
 	/**
 	 * Used to initialize a Try calling {@link Try#of(Try.CheckedSupplier)}.
 	 *
@@ -71,14 +63,14 @@ public interface Try<T> {
 	@FunctionalInterface
 	static interface CheckedSupplier<T> {
 
-	    /**
-	     * Gets a result or throws a Throwable.
-	     *
-	     * @return a result
-	     * @throws java.lang.Throwable if an error occurs.
-	     */
+		/**
+		 * Gets a result or throws a Throwable.
+		 *
+		 * @return a result
+		 * @throws java.lang.Throwable if an error occurs.
+		 */
 		T get() throws Throwable;
-		
+
 	}
 
 }

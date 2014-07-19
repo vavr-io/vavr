@@ -5,7 +5,6 @@
  */
 package javaslang.either;
 
-import static javaslang.match.Matchs.caze;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.util.NoSuchElementException;
@@ -86,26 +85,6 @@ public class EitherTest {
 	public void shouldFilterNoneOnLeft() {
 		final boolean actual = new Left<String, Integer>("1").left().filter(s -> "2".equals(s)).isPresent();
 		assertThat(actual).isFalse();
-	}
-	
-	// matching
-	
-	@Test
-	public void shouldMatchRight() {
-		final int actual = new Right<String, Integer>(1).right().match(
-				caze((Right<?,?> right) -> 1).
-				caze((Left<?,?> left) -> 0)
-		);
-		assertThat(actual).isEqualTo(1);
-	}
-
-	@Test
-	public void shouldMatchLeft() {
-		final int actual = new Left<String, Integer>("left").left().match(
-				caze((Right<?,?> right) -> 1).
-				caze((Left<?,?> left) -> 0)
-		);
-		assertThat(actual).isEqualTo(0);
 	}
 	
 }

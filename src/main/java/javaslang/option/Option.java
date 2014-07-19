@@ -5,13 +5,10 @@
  */
 package javaslang.option;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-
-import javaslang.match.Match;
 
 /**
  * Replacement for {@link java.util.Optional}.
@@ -56,10 +53,4 @@ public interface Option<T> {
 	
 	void forEach(Consumer<? super T> action);
 	
-	// TODO: remove method? it's not nice to pass an 'unfinished' object as arg in favor of a nice api
-	default <S> S match(Match.Builder<S> matcher) {
-		Objects.requireNonNull(matcher);
-		return matcher.build().apply(this);
-	}
-
 }

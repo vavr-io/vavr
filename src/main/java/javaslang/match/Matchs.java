@@ -31,60 +31,59 @@ public final class Matchs {
 	}
 
 	/**
-	 * Shortcut for {@code new Match.Builder<T>().caze(function)}.
+	 * Shortcut for {@code new Match.Builder<R>().caze(function)}.
 	 * 
-	 * @param <S> type of the object to be matched
-	 * @param <T> return type of the matcher function
+	 * @param <R> return type of the matcher function
 	 * @param function A function which is applied to a matched object.
 	 * @return A Match of type T
 	 */
-	public static <S, T> Match.Builder<T> caze(SerializableFunction<S, T> function) {
-		return new Match.Builder<T>().caze(function);
+	public static <R> Match.Builder<R> caze(SerializableFunction<?, R> function) {
+		return new Match.Builder<R>().caze(function);
 	}
 
 	/**
-	 * Shortcut for {@code new Match.Builder<T>().caze(prototype, function)}.
+	 * Shortcut for {@code new Match.Builder<R>().caze(prototype, function)}.
 	 * 
-	 * @param <S> type of the prototype object
-	 * @param <T> return type of the matcher function
+	 * @param <T> type of the prototype object
+	 * @param <R> return type of the matcher function
 	 * @param prototype An object which matches by equality.
 	 * @param function A function which is applied to a matched object.
 	 * @return A Match of type T
 	 */
-	public static <S, T> Match.Builder<T> caze(S prototype, SerializableFunction<S, T> function) {
-		return new Match.Builder<T>().caze(prototype, function);
+	public static <T, R> Match.Builder<R> caze(T prototype, SerializableFunction<T, R> function) {
+		return new Match.Builder<R>().caze(prototype, function);
 	}
 	
-	public static <T> Match.Builder<T> caze(BooleanFunction<T> function) {
-		return new Match.Builder<T>().caze(function);
+	public static <R> Match.Builder<R> caze(BooleanFunction<R> function) {
+		return new Match.Builder<R>().caze(function);
 	}
 
-	public static <T> Match.Builder<T> caze(ByteFunction<T> function) {
-		return new Match.Builder<T>().caze(function);
+	public static <R> Match.Builder<R> caze(ByteFunction<R> function) {
+		return new Match.Builder<R>().caze(function);
 	}
 
-	public static <T> Match.Builder<T> caze(CharFunction<T> function) {
-		return new Match.Builder<T>().caze(function);
+	public static <R> Match.Builder<R> caze(CharFunction<R> function) {
+		return new Match.Builder<R>().caze(function);
 	}
 
-	public static <T> Match.Builder<T> caze(DoubleFunction<T> function) {
-		return new Match.Builder<T>().caze(function);
+	public static <R> Match.Builder<R> caze(DoubleFunction<R> function) {
+		return new Match.Builder<R>().caze(function);
 	}
 
-	public static <T> Match.Builder<T> caze(FloatFunction<T> function) {
-		return new Match.Builder<T>().caze(function);
+	public static <R> Match.Builder<R> caze(FloatFunction<R> function) {
+		return new Match.Builder<R>().caze(function);
 	}
 
-	public static <T> Match.Builder<T> caze(IntFunction<T> function) {
-		return new Match.Builder<T>().caze(function);
+	public static <R> Match.Builder<R> caze(IntFunction<R> function) {
+		return new Match.Builder<R>().caze(function);
 	}
 
-	public static <T> Match.Builder<T> caze(LongFunction<T> function) {
-		return new Match.Builder<T>().caze(function);
+	public static <R> Match.Builder<R> caze(LongFunction<R> function) {
+		return new Match.Builder<R>().caze(function);
 	}
 
-	public static <T> Match.Builder<T> caze(ShortFunction<T> function) {
-		return new Match.Builder<T>().caze(function);
+	public static <R> Match.Builder<R> caze(ShortFunction<R> function) {
+		return new Match.Builder<R>().caze(function);
 	}
 
 }

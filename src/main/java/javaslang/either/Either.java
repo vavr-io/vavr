@@ -12,7 +12,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import javaslang.match.Match;
 import javaslang.option.None;
 import javaslang.option.Option;
 import javaslang.option.Some;
@@ -128,12 +127,6 @@ public interface Either<L, R> {
 			}
 		}
 
-		// TODO: remove method? it's not nice to pass an 'unfinished' object as arg in favor of a nice api
-		public <S> S match(Match.Builder<S> matcher) {
-			Objects.requireNonNull(matcher);
-			return matcher.build().apply(either);
-		}
-
 		@Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
@@ -231,12 +224,6 @@ public interface Either<L, R> {
 			else {
 				return new Left<>(asLeft());
 			}
-		}
-
-		// TODO: remove method? it's not nice to pass an 'unfinished' object as arg in favor of a nice api
-		public <S> S match(Match.Builder<S> matcher) {
-			Objects.requireNonNull(matcher);
-			return matcher.build().apply(either);
 		}
 
 		@Override

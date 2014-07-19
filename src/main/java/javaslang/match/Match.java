@@ -5,7 +5,6 @@
  */
 package javaslang.match;
 
-import static javaslang.Lang.require;
 import static javaslang.Lang.requireNonNull;
 
 import java.io.Serializable;
@@ -23,33 +22,52 @@ import javaslang.option.None;
 import javaslang.option.Option;
 import javaslang.option.Some;
 
-// TODO: new match builder ensuring: 1) no case after orElse, 2) orElse not twice, 3) apply after case or orElse
-
 /**
  * A better switch for Java. A Match...
  * <ul>
- * <li>is an expression, i.e. the call of {@link #apply(Object)} results in a value. In fact it is a
- * {@code Function<Object, R>}.</li>
- * <li>is able to match types</li>
- * <li>is able to match values</li>
- * <li>lazily processes an object in the case of a match</li>
+ * <li>is lazy</li>
+ * <li>is an expression, i.e. a {@code Function<Object, R>}</li>
+ * <li>is able to match types, i.e. {@code Matchs.caze((byte b) -> "a byte: " + b)}</li>
+ * <li>is able to match values, i.e. {@code Matchs.caze(BigDecimal.ZERO, b -> "Zero: " + b)}</li>
  * </ul>
  * 
- * See {@link Matchs} for convenience methods creating a matcher.
- * <p>
- * TODO: remove these methods? it's not nice to pass an 'unfinished' object as arg in favor of a nice api
- * Match is a first class member of the monads provided with javaslang. See
- * {@link javaslang.option.Option#match(Match.Builder)}, {@link javaslang.exception.Try#match(Match.Builder)},
- * {@link javaslang.either.Either.LeftProjection#match(Match.Builder)} and
- * {@link javaslang.either.Either.RightProjection#match(Match.Builder)}.
- *
+ * Example of a Match as <strong>partial</strong> function:
+ * 
+ * <pre>
+ * <code>final Match&lt;Number&gt; toNumber = new Match.Builder&lt;Number&gt;()
+ *     .caze((Integer i) -&gt; i)
+ *     .caze((String s) -&gt; new BigDecimal(s))
+ *     .build();
+ * final Number number = toNumber.apply(1.0d); // throws a MatchError</code>
+ * </pre>
+ * 
+ * Example of a Match as <strong>total</strong> function:
+ * 
+ * <pre>
+ * <code>final Match&lt;Number&gt; toNumber = new Match.Builder&lt;Number&gt;()
+ *     .caze((Integer i) -&gt; i)
+ *     .caze((String s) -&gt; new BigDecimal(s))
+ *     .orElse(() -&gt; -1)
+ *     .build();
+ * final Number number = toNumber.apply(1.0d); // result: -1</code>
+ * </pre>
+ * 
+ * The following calls are equivalent:
+ * <ul>
+ * <li>{@code new Match.Builder<R>.caze(...).build().apply(obj)}</li>
+ * <li>{@code new Match.Builder<R>.caze(...).apply(obj)}</li>
+ * <li>{@code Matchs.caze(...).apply(obj)}</li>
+ * </ul>
+ * 
  * @param <R> The result type of the Match expression.
+ * 
+ * @see javaslang.match.Matchs
  */
 public class Match<R> implements Function<Object, R> {
 
 	private final List<Case<R>> cases;
 	private final Option<Supplier<R>> defaultOption;
-	
+
 	private Match(List<Case<R>> cases, Option<Supplier<R>> defaultOption) {
 		this.cases = cases;
 		this.defaultOption = defaultOption;
@@ -63,12 +81,12 @@ public class Match<R> implements Function<Object, R> {
 	 * @return The result when applying the given obj to the first matching case. If the case has a
 	 *         consumer, the result is null, otherwise the result of the underlying function or
 	 *         supplier.
-	 * @throws MatchError if no Match case matches the given object and no default is defined via orElse().
+	 * @throws MatchError if no Match case matches the given object and no default is defined via
+	 *             orElse().
 	 * @throws NonFatal if an error occurs executing the matched case.
 	 */
 	@Override
 	public R apply(Object obj) {
-		require(!cases.isEmpty() || defaultOption.isPresent(), "empty match");
 		for (Case<R> caze : cases) {
 			if (caze.isApplicable(obj)) {
 				return caze.apply(obj);
@@ -94,9 +112,7 @@ public class Match<R> implements Function<Object, R> {
 		 * @param function A serializable function.
 		 */
 		Case(Option<?> prototype, SerializableFunction<?, R> function) {
-			this.prototype = prototype;
-			this.function = function;
-			this.parameterType = Lambdas.getLambdaSignature(function).getParameterTypes()[0];
+			this(prototype, function, Lambdas.getLambdaSignature(function).getParameterType(0));
 		}
 
 		/**
@@ -141,8 +157,8 @@ public class Match<R> implements Function<Object, R> {
 			return ((Function<Object, R>) function).apply(obj);
 		}
 	}
-	
-	// -- case lambda args
+
+	// -- lambda types for cases
 
 	/**
 	 * A function which implements Serializable in order to obtain runtime type information about
@@ -209,34 +225,33 @@ public class Match<R> implements Function<Object, R> {
 	public static interface ShortFunction<R> {
 		R apply(short s);
 	}
-	
+
 	// -- builder
-	
+
 	public static class Builder<R> extends OrElseBuilder<R> {
-		
+
 		private final List<Case<R>> cases = new ArrayList<>();
 		private Option<Supplier<R>> defaultOption = Option.empty();
-		
+
 		/**
 		 * Use this method to match by object type T. An object o matches this case, if
 		 * {@code o != null && T isAssignableFrom o.getClass()}.
 		 * 
-		 * @param <T> (super-)type of the object to be matched
 		 * @param function A SerializableFunction which is applied to a matched object.
 		 * @return this, the current instance of Match.
 		 * @throws IllegalStateException if function is null.
 		 */
-		public <T> Builder<R> caze(SerializableFunction<T, R> function) {
+		public Builder<R> caze(SerializableFunction<?, R> function) {
 			requireNonNull(function, "function is null");
 			cases.add(new Case<>(None.instance(), function));
 			return this;
 		}
 
 		/**
-		 * Use this method to match by prototype value of object type T. An object o matches this case,
-		 * if {@code prototype == o || (prototype != null && prototype.equals(o))}.
+		 * Use this method to match by prototype value of object type T. An object o matches this
+		 * case, if {@code prototype == o || (prototype != null && prototype.equals(o))}.
 		 * 
-		 * @param <T> (super-)type of the object to be matched
+		 * @param <T> type of the object to be matched
 		 * @param prototype An object to be matched by equality as defined above.
 		 * @param function A SerializableFunction which is applied to a matched object.
 		 * @return this, the current instance of Match.
@@ -252,7 +267,8 @@ public class Match<R> implements Function<Object, R> {
 		}
 
 		/**
-		 * Use this method to match by boolean. An object o matches this case, if {@code o != null &&
+		 * Use this method to match by boolean. An object o matches this case, if
+		 * {@code o != null &&
 		 * o.getClass() == Boolean.class}.
 		 * 
 		 * @param function A BooleanFunction which is applied to a matched object.
@@ -289,7 +305,8 @@ public class Match<R> implements Function<Object, R> {
 		 */
 		public Builder<R> caze(CharFunction<R> function) {
 			requireNonNull(function, "function is null");
-			cases.add(new Case<>(None.instance(), (Character c) -> function.apply(c), Character.class));
+			cases.add(new Case<>(None.instance(), (Character c) -> function.apply(c),
+					Character.class));
 			return this;
 		}
 
@@ -363,7 +380,8 @@ public class Match<R> implements Function<Object, R> {
 			return this;
 		}
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
 		 * @see javaslang.match.Match.MatchBuilder#getCases()
 		 */
 		@Override
@@ -371,7 +389,8 @@ public class Match<R> implements Function<Object, R> {
 			return cases;
 		}
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
 		 * @see javaslang.match.Match.MatchBuilder#getDefault()
 		 */
 		@Override
@@ -379,7 +398,8 @@ public class Match<R> implements Function<Object, R> {
 			return defaultOption;
 		}
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
 		 * @see javaslang.match.Match.MatchBuilder#setDefault(javaslang.option.Option)
 		 */
 		@Override
@@ -387,9 +407,9 @@ public class Match<R> implements Function<Object, R> {
 			this.defaultOption = defaultOption;
 		}
 	}
-	
+
 	public static abstract class OrElseBuilder<R> extends MatchBuilder<R> {
-		
+
 		/**
 		 * Defines the default return value.
 		 * 
@@ -401,21 +421,31 @@ public class Match<R> implements Function<Object, R> {
 			requireNonNull(defaultSupplier, "defaultSupplier is null");
 			setDefault(Option.of(defaultSupplier));
 			return this;
-		}		
+		}
 	}
 
 	public static abstract class MatchBuilder<R> {
-		
+
 		public Match<R> build() {
 			return new Match<>(getCases(), getDefault());
 		}
-		
+
+		/**
+		 * Shortcut for {@code build().apply(obj)}.
+		 * 
+		 * @param obj An object.
+		 * @return The match result.
+		 */
+		public R apply(Object obj) {
+			return build().apply(obj);
+		}
+
 		protected abstract List<Case<R>> getCases();
-		
+
 		protected abstract Option<Supplier<R>> getDefault();
-		
+
 		protected abstract void setDefault(Option<Supplier<R>> defaultOption);
-		
+
 	}
 
 }
