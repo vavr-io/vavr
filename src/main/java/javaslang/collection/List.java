@@ -41,7 +41,7 @@ public interface List<E> extends Iterable<E> {
 	 * Returns the first element of this List in O(1).
 	 * 
 	 * @return The head of this List.
-	 * @throws UnsupportedOperationException, if this is EmptyList.
+	 * @throws UnsupportedOperationException if this is EmptyList.
 	 */
 	E head();
 
@@ -49,7 +49,7 @@ public interface List<E> extends Iterable<E> {
 	 * Returns all elements except the first element of this List in O(1).
 	 * 
 	 * @return The tail of this List.
-	 * @throws UnsupportedOperationException, if this is EmptyList.
+	 * @throws UnsupportedOperationException if this is EmptyList.
 	 */
 	List<E> tail();
 
@@ -134,7 +134,7 @@ public interface List<E> extends Iterable<E> {
 	/**
 	 * Prepends an element to this List in O(1).
 	 * <p>
-	 * The result is equivalent to {new LinearList<>(element, this)}.
+	 * The result is equivalent to {@code new LinearList<>(element, this)}.
 	 * 
 	 * @param element An element.
 	 * @return A new List containing the elements of this list, prepended the given element.
@@ -288,11 +288,6 @@ public interface List<E> extends Iterable<E> {
 		return tail().prependAll(result.prepend(element).reverse());
 	}
 
-	/**
-	 * 
-	 * @param beginIndex
-	 * @return
-	 */
 	default List<E> sublist(int beginIndex) {
 		if (beginIndex < 0) {
 			throw new IndexOutOfBoundsException("sublist(" + beginIndex + ")");
