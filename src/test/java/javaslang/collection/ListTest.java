@@ -7,6 +7,7 @@ package javaslang.collection;
 
 import static javaslang.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.assertThat;
+import javaslang.Lang.UnsatisfiedRequirementException;
 
 import org.junit.Test;
 
@@ -93,29 +94,37 @@ public class ListTest {
 		assertThat(actual).isEqualTo(expected);
 	}
 
+	// -- appendAll
+
 	@Test
-	public void shouldAppendEmptyListToEmptyList() {
+	public void shouldThrowOnAppendAllOfNull() {
+		assertThat(() -> List.empty().appendAll(null)).isThrowing(
+				UnsatisfiedRequirementException.class, "elements is null");
+	}
+
+	@Test
+	public void shouldAppendAllEmptyListToEmptyList() {
 		final List<Object> actual = List.empty().appendAll(List.empty());
 		final List<Object> expected = List.empty();
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
-	public void shouldAppendNonEmptyListToEmptyList() {
+	public void shouldAppendAllNonEmptyListToEmptyList() {
 		final List<Integer> actual = List.<Integer> empty().appendAll(List.of(1, 2, 3));
 		final List<Integer> expected = List.of(1, 2, 3);
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
-	public void shouldAppendEmptyListToNonEmptyList() {
+	public void shouldAppendAllEmptyListToNonEmptyList() {
 		final List<Integer> actual = List.of(1, 2, 3).appendAll(List.empty());
 		final List<Integer> expected = List.of(1, 2, 3);
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
-	public void shouldAppendNonEmptyListToNonEmptyList() {
+	public void shouldAppendAllNonEmptyListToNonEmptyList() {
 		final List<Integer> actual = List.of(1, 2, 3).appendAll(List.of(4, 5, 6));
 		final List<Integer> expected = List.of(1, 2, 3, 4, 5, 6);
 		assertThat(actual).isEqualTo(expected);
@@ -137,29 +146,37 @@ public class ListTest {
 		assertThat(actual).isEqualTo(expected);
 	}
 
+	// -- prependAll
+
 	@Test
-	public void shouldPrependEmptyListToEmptyList() {
+	public void shouldThrowOnPrependAllOfNull() {
+		assertThat(() -> List.empty().prependAll(null)).isThrowing(
+				UnsatisfiedRequirementException.class, "elements is null");
+	}
+
+	@Test
+	public void shouldPrependAllEmptyListToEmptyList() {
 		final List<Integer> actual = List.<Integer> empty().prependAll(List.empty());
 		final List<Integer> expected = List.empty();
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
-	public void shouldPrependEmptyListToNonEmptyList() {
+	public void shouldPrependAllEmptyListToNonEmptyList() {
 		final List<Integer> actual = List.of(1, 2, 3).prependAll(List.empty());
 		final List<Integer> expected = List.of(1, 2, 3);
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
-	public void shouldPrependNonEmptyListToEmptyList() {
+	public void shouldPrependAllNonEmptyListToEmptyList() {
 		final List<Integer> actual = List.<Integer> empty().prependAll(List.of(1, 2, 3));
 		final List<Integer> expected = List.of(1, 2, 3);
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
-	public void shouldPrependNonEmptyListToNonEmptyList() {
+	public void shouldPrependAllNonEmptyListToNonEmptyList() {
 		final List<Integer> actual = List.of(4, 5, 6).prependAll(List.of(1, 2, 3));
 		final List<Integer> expected = List.of(1, 2, 3, 4, 5, 6);
 		assertThat(actual).isEqualTo(expected);
@@ -176,6 +193,54 @@ public class ListTest {
 	public void shouldRecognizeThatNonEmptyListContainsAnElement() {
 		assertThat(List.of(1).contains(1)).isTrue();
 	}
+
+	// -- contains
+
+	@Test
+	public void shouldRecognizeEmptyListContainsNoElement() {
+		final boolean actual = List.empty().contains(null);
+		assertThat(actual).isFalse();
+	}
+
+	@Test
+	public void shouldRecognizeNonEmptyListDoesNotContainElement() {
+		final boolean actual = List.of(1, 2, 3).contains(0);
+		assertThat(actual).isFalse();
+	}
+
+	@Test
+	public void shouldRecognizeNonEmptyListDoesContainElement() {
+		final boolean actual = List.of(1, 2, 3).contains(2);
+		assertThat(actual).isTrue();
+	}
+
+	// -- containsAll
+
+	@Test
+	public void shouldRecognizeEmptyListNotContainsAllElements() {
+		final boolean actual = List.empty().containsAll(List.of(1, 2, 3));
+		assertThat(actual).isFalse();
+	}
+
+	@Test
+	public void shouldRecognizeNonEmptyListNotContainsAllOverlappingElements() {
+		final boolean actual = List.of(1, 2, 3).containsAll(List.of(2, 3, 4));
+		assertThat(actual).isFalse();
+	}
+
+	@Test
+	public void shouldRecognizeNonEmptyListContainsAllOnSelf() {
+		final boolean actual = List.of(1, 2, 3).containsAll(List.of(1, 2, 3));
+		assertThat(actual).isTrue();
+	}
+
+	// -- indexOf
+
+	// TODO
+
+	// -- lastIndexOf
+
+	// TODO
 
 	// -- get
 
@@ -205,6 +270,116 @@ public class ListTest {
 	@Test
 	public void shouldGetFirstElement() {
 		assertThat(List.of(1).get(0)).isEqualTo(1);
+	}
+
+	// -- set
+
+	// TODO
+
+	// -- sublist(beginIndex)
+
+	@Test
+	public void shouldReturnEmptyListWhenSublistFrom0OnEmptyList() {
+		final List<Integer> actual = List.<Integer> empty().sublist(0);
+		assertThat(actual).isEqualTo(List.empty());
+	}
+
+	@Test
+	public void shouldReturnIdentityWhenSublistFrom0OnNonEmptyList() {
+		final List<Integer> actual = List.of(1).sublist(0);
+		assertThat(actual).isEqualTo(List.of(1));
+	}
+
+	@Test
+	public void shouldReturnEmptyListWhenSublistFrom1OnListOf1() {
+		final List<Integer> actual = List.of(1).sublist(1);
+		assertThat(actual).isEqualTo(List.empty());
+	}
+
+	@Test
+	public void shouldReturnSublistWhenIndexIsWithinRange() {
+		final List<Integer> actual = List.of(1, 2, 3).sublist(1);
+		assertThat(actual).isEqualTo(List.of(2, 3));
+	}
+
+	@Test
+	public void shouldReturnEmptyListWhenSublistBeginningWithSize() {
+		final List<Integer> actual = List.of(1, 2, 3).sublist(3);
+		assertThat(actual).isEqualTo(List.empty());
+	}
+
+	@Test
+	public void shouldThrowWhenSublist0OnEmptyList() {
+		assertThat(() -> List.<Integer> empty().sublist(1)).isThrowing(
+				IndexOutOfBoundsException.class, "sublist(1) on list of size 0");
+	}
+
+	@Test
+	public void shouldThrowWhenSublistWithOutOfLowerBound() {
+		assertThat(() -> List.of(1, 2, 3).sublist(-1)).isThrowing(IndexOutOfBoundsException.class,
+				"sublist(-1)");
+	}
+
+	@Test
+	public void shouldThrowWhenSublistWithOutOfUpperBound() {
+		assertThat(() -> List.of(1, 2, 3).sublist(4)).isThrowing(IndexOutOfBoundsException.class,
+				"sublist(4) on list of size 3");
+	}
+
+	// -- sublist(beginIndex, endIndex)
+
+	@Test
+	public void shouldReturnEmptyListWhenSublistFrom0To0OnEmptyList() {
+		final List<Integer> actual = List.<Integer> empty().sublist(0, 0);
+		assertThat(actual).isEqualTo(List.empty());
+	}
+
+	@Test
+	public void shouldReturnEmptyListWhenSublistFrom0To0OnNonEmptyList() {
+		final List<Integer> actual = List.of(1).sublist(0, 0);
+		assertThat(actual).isEqualTo(List.empty());
+	}
+
+	@Test
+	public void shouldReturnListWithFirstElementWhenSublistFrom0To1OnNonEmptyList() {
+		final List<Integer> actual = List.of(1).sublist(0, 1);
+		assertThat(actual).isEqualTo(List.of(1));
+	}
+
+	@Test
+	public void shouldReturnEmptyListWhenSublistFrom1To1OnNonEmptyList() {
+		final List<Integer> actual = List.of(1).sublist(1, 1);
+		assertThat(actual).isEqualTo(List.empty());
+	}
+
+	@Test
+	public void shouldReturnSublistWhenIndicesAreWithinRange() {
+		final List<Integer> actual = List.of(1, 2, 3).sublist(1, 3);
+		assertThat(actual).isEqualTo(List.of(2, 3));
+	}
+
+	@Test
+	public void shouldReturnEmptyListWhenIndicesBothAreUpperBound() {
+		final List<Integer> actual = List.of(1, 2, 3).sublist(3, 3);
+		assertThat(actual).isEqualTo(List.empty());
+	}
+
+	@Test
+	public void shouldThrowOnSublistWhenEndIndexIsGreaterThanBeginIndex() {
+		assertThat(() -> List.of(1, 2, 3).sublist(1, 0)).isThrowing(
+				IndexOutOfBoundsException.class, "sublist(1, 0) on list of size 3");
+	}
+
+	@Test
+	public void shouldThrowOnSublistWhenBeginIndexExceedsLowerBound() {
+		assertThat(() -> List.of(1, 2, 3).sublist(-1, 2)).isThrowing(
+				IndexOutOfBoundsException.class, "sublist(-1, 2) on list of size 3");
+	}
+
+	@Test
+	public void shouldThrowOnSublistWhenEndIndexExceedsUpperBound() {
+		assertThat(() -> List.of(1, 2, 3).sublist(1, 4)).isThrowing(
+				IndexOutOfBoundsException.class, "sublist(1, 4) on list of size 3");
 	}
 
 }

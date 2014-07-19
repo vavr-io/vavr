@@ -29,8 +29,6 @@ import java.util.stream.StreamSupport;
 import javaslang.Strings;
 
 /**
- * TODO: need a Collector for terminal stream operations for this List type
- * 
  * TODO: javadoc
  * 
  * @param <E> Component type of the List.
@@ -196,7 +194,7 @@ public interface List<E> extends Iterable<E> {
 	 * <p>
 	 * The result is equivalent to {@code indexOf(element) != -1}.
 	 * 
-	 * @param element A Object of type E, may be null.
+	 * @param element An Object of type E, may be null.
 	 * @return true, if element is in this List, false otherwise.
 	 */
 	default boolean contains(E element) {
@@ -207,7 +205,8 @@ public interface List<E> extends Iterable<E> {
 	 * Tests if this List contains all given values as elements in O(n^2).
 	 * <p>
 	 * The result is equivalent to
-	 * {@code elements.isEmpty() ? true : contains(elements.head()) && containsAll(elements.tail())}.
+	 * {@code elements.isEmpty() ? true : contains(elements.head()) && containsAll(elements.tail())}
+	 * but implemented without recursion.
 	 * 
 	 * @param elements A List of values of type E.
 	 * @return true, if this List contains all given elements, false otherwise.
@@ -224,9 +223,51 @@ public interface List<E> extends Iterable<E> {
 	}
 
 	/**
+	 * Returns the index of the given element in O(n). The result is -1, if the element is not
+	 * contained.
+	 * <p>
+	 * The result is equivalent to {@code head().equals(element) ? 0 : 1 + tail().indexOf(element)}
+	 * but implemented without recursion.
+	 * 
+	 * @param element An Object of type E, may be null.
+	 * @return The index of element or -1.
+	 */
+	default int indexOf(E element) {
+		int index = 0;
+		for (List<E> list = this; !list.isEmpty(); list = list.tail(), index++) {
+			if (Objects.equals(list.head(), element)) {
+				return index;
+			}
+		}
+		return -1;
+	}
+
+	/**
+	 * Returns the last index of the given element in O(n). The result is -1, if the element is not
+	 * contained.
+	 * <p>
+	 * The result is equivalent to
+	 * {@code (reverse().indexOf(element) == -1) ? -1 : size() - reverse().indexOf(element)} but
+	 * implemented without recursion.
+	 * 
+	 * @param element An Object of type E, may be null.
+	 * @return The index of element or -1.
+	 */
+	default int lastIndexOf(E element) {
+		int result = -1, index = 0;
+		for (List<E> list = this; !list.isEmpty(); list = list.tail(), index++) {
+			if (Objects.equals(list.head(), element)) {
+				result = index;
+			}
+		}
+		return result;
+	}
+
+	/**
 	 * Returns the element of this List at the specified index in O(n).
 	 * <p>
-	 * The result is roughly equivalent to {@code (index == 0) ? head() : tail().get(index - 1)}.
+	 * The result is roughly equivalent to {@code (index == 0) ? head() : tail().get(index - 1)} but
+	 * implemented without recursion.
 	 * 
 	 * @param index An index, where 0 &lt;= index &lt; this.size()
 	 * @return The element at the specified index.
@@ -255,7 +296,8 @@ public interface List<E> extends Iterable<E> {
 	 * Replaces the element at the specified index in O(n).
 	 * <p>
 	 * The result is roughly equivalent to
-	 * {@code (index == 0) ? tail().prepend(element) : new LinearList(head(), tail().set(index - 1, element))}.
+	 * {@code (index == 0) ? tail().prepend(element) : new LinearList(head(), tail().set(index - 1, element))}
+	 * but implemented without recursion.
 	 * 
 	 * @param index An index, where 0 &lt;= index &lt; this.size()
 	 * @param element A new element.
@@ -288,21 +330,84 @@ public interface List<E> extends Iterable<E> {
 		return tail().prependAll(result.prepend(element).reverse());
 	}
 
+	/**
+	 * Returns a new List which contains all elements starting at beginIndex (inclusive).
+	 * <p>
+	 * Examples:
+	 * <ul>
+	 * <li>{@code List.empty().sublist(0)} returns {@code List.empty()}</li>
+	 * <li>{@code List.of(1).sublist(0)} returns {@code List.of(1)}</li>
+	 * <li>{@code List.of(1).sublist(1)} returns {@code List.empty()}</li>
+	 * <li>{@code List.of(1,2,3).sublist(1)} returns {@code List.of(2,3)}</li>
+	 * <li>{@code List.of(1,2,3).sublist(3)} returns {@code List.empty()}</li>
+	 * </ul>
+	 * <p>
+	 * The following calls are illegal:
+	 * <ul>
+	 * <li>{@code List.empty().sublist(1)} throws</li>
+	 * <li>{@code List.of(1,2,3).sublist(-1)} throws}</li>
+	 * <li>{@code List.of(1,2,3).sublist(4)} throws}</li>
+	 * </ul>
+	 * <p>
+	 * The result is equivalent to {@code (index == 0) ? this : tail().sublist(index - 1)} but
+	 * implemented without recursion.
+	 * <p>
+	 * If you do not want to check the bounds, use {@code drop(beginIndex)} instead.
+	 * 
+	 * @param beginIndex Start index of the sublist, where 0 &lt;= beginIndex &lt;= size()
+	 * @return The sublist of the List, starting at beginIndex (inclusive).
+	 * @see #drop(int)
+	 * @see #take(int)
+	 */
 	default List<E> sublist(int beginIndex) {
 		if (beginIndex < 0) {
 			throw new IndexOutOfBoundsException("sublist(" + beginIndex + ")");
 		}
 		List<E> result = this;
-		for (int i = 0; i < beginIndex; i++) {
-			result = result.tail();
+		for (int i = 0; i < beginIndex; i++, result = result.tail()) {
 			if (result.isEmpty()) {
 				throw new IndexOutOfBoundsException(String.format("sublist(%s) on list of size %s",
-						beginIndex, beginIndex - i));
+						beginIndex, i));
 			}
 		}
 		return result;
 	}
 
+	/**
+	 * Returns a new List which contains the elements from beginIndex (inclusive) to endIndex
+	 * (exclusive) of this List.
+	 * <p>
+	 * Examples:
+	 * <ul>
+	 * <li>{@code List.empty().sublist(0,0)} returns {@code List.empty()}</li>
+	 * <li>{@code List.of(1).sublist(0,0)} returns {@code List.empty()}</li>
+	 * <li>{@code List.of(1).sublist(0,1)} returns {@code List.of(1)}</li>
+	 * <li>{@code List.of(1).sublist(1,1)} returns {@code List.empty()}</li>
+	 * <li>{@code List.of(1,2,3).sublist(1,3)} returns {@code List.of(2,3)}</li>
+	 * <li>{@code List.of(1,2,3).sublist(3,3)} returns {@code List.empty()}</li>
+	 * </ul>
+	 * <p>
+	 * The following calls are illegal:
+	 * <ul>
+	 * <li>{@code List.of(1,2,3).sublist(1,0)} throws}</li>
+	 * <li>{@code List.of(1,2,3).sublist(-1,2)} throws}</li>
+	 * <li>{@code List.of(1,2,3).sublist(1,4)} throws}</li>
+	 * </ul>
+	 * <p>
+	 * The result is equivalent to
+	 * {@code (beginIndex == 0) ? reverse().sublist(size() - endIndex).reverse() : tail().sublist(beginIndex - 1, endIndex)}
+	 * but implemented without recursion.
+	 * <p>
+	 * If you do not want to check the bounds, use
+	 * {@code drop(beginIndex).take(endIndex - beginIndex)} instead.
+	 * 
+	 * @param beginIndex Start index of the sublist, where 0 &lt;= beginIndex &lt;= size()
+	 * @param endIndex End index of the sublist, where beginIndex &lt;= endIndex &lt;= size()
+	 * @return The sublist of the List, starting at beginIndex (inclusive) and ending at endIndex
+	 *         (exclusive).
+	 * @see #drop(int)
+	 * @see #take(int)
+	 */
 	default List<E> sublist(int beginIndex, int endIndex) {
 		if (beginIndex < 0 || endIndex - beginIndex < 0) {
 			throw new IndexOutOfBoundsException(String.format("sublist(%s, %s) on list of size %s",
@@ -325,7 +430,8 @@ public interface List<E> extends Iterable<E> {
 	/**
 	 * Drops the first n elements of this list or the whole list, if this size &lt; n or n &lt; 0;
 	 * <p>
-	 * Equivalent to {@code sublist(n)} but does not throw if n &lt; 0 or n &gt; this.size().
+	 * The result is equivalent to {@code sublist(n)} but does not throw if n &lt; 0 or n &gt;
+	 * this.size().
 	 * 
 	 * @param n The number of elements to drop.
 	 * @return A list consisting of all elements of this list except the first n ones, or else the
@@ -341,7 +447,8 @@ public interface List<E> extends Iterable<E> {
 	/**
 	 * Takes the first n elements of this list or the whole list, if this size &lt; n.
 	 * <p>
-	 * Equivalent to {@code sublist(0, n)} but does not throw if n &lt; 0 or n &gt; this.size().
+	 * The result is equivalent to {@code sublist(0, n)} but does not throw if n &lt; 0 or n &gt;
+	 * this.size().
 	 * 
 	 * @param n The number of elements to take.
 	 * @return A list consisting of the first n elements of this list or the whole list, if it has
@@ -354,26 +461,6 @@ public interface List<E> extends Iterable<E> {
 			result.prepend(list.head());
 		}
 		return result.reverse();
-	}
-
-	default int indexOf(E o) {
-		int index = 0;
-		for (List<E> list = this; !list.isEmpty(); list = list.tail(), index++) {
-			if (Objects.equals(head(), o)) {
-				return index;
-			}
-		}
-		return -1;
-	}
-
-	default int lastIndexOf(E o) {
-		int result = -1, index = 0;
-		for (List<E> list = this; !list.isEmpty(); list = list.tail(), index++) {
-			if (Objects.equals(head(), o)) {
-				result = index;
-			}
-		}
-		return result;
 	}
 
 	// TODO: versus stream().toArray()
@@ -490,11 +577,9 @@ public interface List<E> extends Iterable<E> {
 	 * Creates a List of given elements.
 	 * 
 	 * <pre>
-	 * <code>
-	 *   List.of(1, 2, 3, 4)
+	 * <code>  List.of(1, 2, 3, 4)
 	 * = EmptyList.instance().prepend(4).prepend(3).prepend(2).prepend(1)
-	 * = new LinearList(1, new LinearList(2, new LinearList(3, new LinearList(4, EmptyList.instance()))))
-	 * </code>
+	 * = new LinearList(1, new LinearList(2, new LinearList(3, new LinearList(4, EmptyList.instance()))))</code>
 	 * </pre>
 	 *
 	 * @param <T> Component type of the List.

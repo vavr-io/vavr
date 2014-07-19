@@ -33,12 +33,16 @@ public final class Assertions {
 			try {
 				test.run();
 				throw new AssertionError(expectedException.getName() + " not thrown");
+			} catch (AssertionError x) {
+				throw x;
 			} catch (Throwable x) {
 				if (!expectedException.isAssignableFrom(x.getClass())) {
 					throw new AssertionError("Expected exception assignable to type "
-							+ expectedException.getClass().getName()
+							+ expectedException.getName()
 							+ " but was "
 							+ x.getClass().getName()
+							+ " with message "
+							+ Strings.toString(x.getMessage())
 							+ ".");
 				}
 				final String actualMessage = x.getMessage();
