@@ -298,60 +298,6 @@ public final class Lang {
 	}
 
 	/**
-	 * Ensures that there are no cycles in a direct/indirect recursion. A method may use this, if
-	 * the return value recursively calls the method under some circumstances and the recursion does
-	 * not end.
-	 * <p>
-	 * The ThreadLocal instance should be unique for each recursive method. In a static context, the
-	 * ThreadLocal instance is also static:
-	 * 
-	 * <pre>
-	 * <code>
-	 * private static final ThreadLocal&lt;Boolean&gt; isToStringLocked = new ThreadLocal&lt;&gt;();
-	 * 
-	 * // an objects toString() method may call this method (recursively)
-	 * public static String toString(Object o) {
-	 *     return Lang.decycle(isToStringLocked, () -&gt; o.toString(), () -&gt; "...");
-	 * }
-	 * </code>
-	 * </pre>
-	 * 
-	 * In a non-static context, the ThreadLocal instance is also non-static:
-	 * 
-	 * <pre>
-	 * <code>
-	 * private final ThreadLocal&lt;Boolean&gt; isHashCodeLocked = new ThreadLocal&lt;&gt;();
-	 * 
-	 * // hashCode() may be called recursively, e.g. if a composite object references itself
-	 * &#64;Override
-	 * public int hashCode() {
-	 *     return Lang.decycle(isHashCodeLocked, () -&gt; super.hashCode(), () -&gt; 0);
-	 * }
-	 * </code>
-	 * </pre>
-	 * 
-	 * @param <T> Element type of recursion values.
-	 * @param isLocked A semaphore, set to true and false, should be used exclusively within one
-	 *            method.
-	 * @param value A return value used if no cycle is present.
-	 * @param defaultValue A return value used if a cycle has been detected.
-	 * @return value.get() if no cycle detected, otherwise defaultValue.get().
-	 */
-	public static <T> T decycle(ThreadLocal<Boolean> isLocked, Supplier<T> value,
-			Supplier<T> defaultValue) {
-		if (Boolean.TRUE.equals(isLocked.get())) {
-			return defaultValue.get();
-		} else {
-			try {
-				isLocked.set(true);
-				return value.get();
-			} finally {
-				isLocked.set(false);
-			}
-		}
-	}
-
-	/**
 	 * Exits the JVM using {@code Runtime.getRuntime().exit(status)} (which is equivalent to
 	 * {@code System.exit(0)}). If something goes wrong while running the finalizers and shutdown
 	 * hooks, or the timeout is reached, the JVM is forced to be terminated by calling

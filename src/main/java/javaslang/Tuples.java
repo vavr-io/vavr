@@ -8,6 +8,7 @@ package javaslang;
 import static javaslang.Lang.requireNotInstantiable;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -802,25 +803,51 @@ public final class Tuples {
 	 */
 	private static abstract class AbstractTuple implements Tuple {
 
-		// equals-lock per object/thread
+		// equals-lock per instance/thread (not static!)
 		private final ThreadLocal<Boolean> isEqualsLocked = new ThreadLocal<>();
 
-		// hashCode-lock per object/thread
+		// hashCode-lock per instance/thread (not static!)
 		private final ThreadLocal<Boolean> isHashCodeLocked = new ThreadLocal<>();
 
 		@Override
 		public final boolean equals(Object o) {
-			return Lang.decycle(isEqualsLocked, () -> internalEquals(o), () -> false);
+			return decycle(isEqualsLocked, () -> internalEquals(o), () -> false);
 		}
 
 		@Override
 		public final int hashCode() {
-			return Lang.decycle(isHashCodeLocked, () -> internalHashCode(), () -> 0);
+			return decycle(isHashCodeLocked, () -> internalHashCode(), () -> 0);
 		}
 
 		protected abstract boolean internalEquals(Object o);
 
 		protected abstract int internalHashCode();
+
+		/**
+		 * Ensures that there are no cycles in a direct/indirect recursion. A method may use this,
+		 * if the return value recursively calls the method under some circumstances and the
+		 * recursion does not end.
+		 * 
+		 * @param <T> Element type of recursion values.
+		 * @param isLocked A semaphore, set to true and false, should be used exclusively within one
+		 *            method.
+		 * @param value A return value used if no cycle is present.
+		 * @param defaultValue A return value used if a cycle has been detected.
+		 * @return value.get() if no cycle detected, otherwise defaultValue.get().
+		 */
+		private static <T> T decycle(ThreadLocal<Boolean> isLocked, Supplier<T> value,
+				Supplier<T> defaultValue) {
+			if (isLocked.get()) {
+				return defaultValue.get();
+			} else {
+				try {
+					isLocked.set(true);
+					return value.get();
+				} finally {
+					isLocked.set(false);
+				}
+			}
+		}
 
 	}
 
