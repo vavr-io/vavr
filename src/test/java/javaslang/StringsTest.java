@@ -42,6 +42,13 @@ public class StringsTest {
 	}
 	
 	@Test
+	public void shouldCallToStringRecursively() {
+		final String actual = Tuples.of(Tuples.of(1)).toString();
+		final String expected = "((1))";
+		assertThat(actual).isEqualTo(expected);
+	}
+	
+	@Test
 	public void shouldVisitTwoSimilarPathsOnToString() {
 		final Object[] path = { "path" };
 		final Object[] array = { path, path };

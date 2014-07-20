@@ -37,10 +37,10 @@ public final class Strings {
 	public static final Pattern EOL = compile("\\r\\n|\\n|\\r");
 
 	/**
-	 * Lock, needed to detect indirect loops. See
-	 * {@link StringsTest#shouldDetectIndirectLoopOnToString()}.
+	 * Needed to detect indirect loops on recursive calls of {@link #toString(Object)}.
 	 */
-	private static final ThreadLocal<Boolean> isToStringLocked = new ThreadLocal<>();
+	private static final ThreadLocal<Set<Object>> toStringVisited = ThreadLocal
+			.withInitial(HashSet::new);
 
 	/**
 	 * This class is not intended to be instantiated.
@@ -56,7 +56,15 @@ public final class Strings {
 	 * @return A deep string representation of o.
 	 */
 	public static String toString(Object o) {
-		return Lang.decycle(isToStringLocked, () -> toString(o, new HashSet<>()), () -> "...");
+		final Set<Object> visited = toStringVisited.get();
+		final boolean isEntryPoint = visited.isEmpty();
+		try {
+			return toString(o, visited);
+		} finally {
+			if (isEntryPoint) {
+				visited.clear();
+			}
+		}
 	}
 
 	/**
