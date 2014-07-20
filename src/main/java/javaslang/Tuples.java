@@ -837,7 +837,7 @@ public final class Tuples {
 		 */
 		private static <T> T decycle(ThreadLocal<Boolean> isLocked, Supplier<T> value,
 				Supplier<T> defaultValue) {
-			if (isLocked.get()) {
+			if (Boolean.TRUE.equals(isLocked.get())) {
 				return defaultValue.get();
 			} else {
 				try {
