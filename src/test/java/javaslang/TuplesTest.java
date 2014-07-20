@@ -121,5 +121,23 @@ public class TuplesTest {
 		final int actual = tuple.hashCode();
 		assertThat(actual).isNotNull();
 	}
+	
+	@Test
+	public void shouldDetectEqualityOnTupleOfTuples() {
+
+		final Tuple tupleA = Tuples.of(Tuples.of(1), Tuples.of(1));
+		final Tuple tupleB = Tuples.of(Tuples.of(1), Tuples.of(1));
+		
+		assertThat(tupleA.equals(tupleB)).isTrue();
+	}
+	
+	@Test
+	public void shouldDetectUnequalityOnTupleOfTuples() {
+		
+		final Tuple tupleA = Tuples.of(Tuples.of(1), Tuples.of(1));
+		final Tuple tupleB = Tuples.of(Tuples.of(1), Tuples.of(2));
+		
+		assertThat(tupleA.equals(tupleB)).isFalse();
+	}
 
 }
