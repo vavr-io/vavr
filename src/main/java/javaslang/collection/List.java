@@ -103,7 +103,7 @@ public interface List<E> extends Iterable<E> {
 	}
 
 	/**
-	 * Appends an element to this List in O(n).
+	 * Appends an element to this List in O(2n).
 	 * <p>
 	 * The result is equivalent to {@code reverse().prepend(element).reverse()}.
 	 * 
@@ -119,7 +119,7 @@ public interface List<E> extends Iterable<E> {
 	}
 
 	/**
-	 * Appends all elements of a given List to this List in O(n).
+	 * Appends all elements of a given List to this List in O(2n).
 	 * <p>
 	 * Example: {@code List.of(1,2,3).appendAll(List.of(4,5,6))} equals {@code List.of(1,2,3,4,5,6)}
 	 * .
@@ -155,7 +155,7 @@ public interface List<E> extends Iterable<E> {
 	}
 
 	/**
-	 * Prepends all elements of a given List to this List in O(n).
+	 * Prepends all elements of a given List to this List in O(2n).
 	 * <p>
 	 * Example: {@code List.of(4,5,6).prependAll(List.of(1,2,3))} equals
 	 * {@code List.of(1,2,3,4,5,6)}.
@@ -185,14 +185,21 @@ public interface List<E> extends Iterable<E> {
 	}
 
 	/**
-	 * TODO
+	 * Inserts the given element at the specified index into this List in O(n).
+	 * <p>
+	 * Examples:
 	 * 
-	 * ().insert(0, 1) = (1) (4).insert(0, 1) = (1,4) (4).insert(1, 1) = (4,1) (1,2,3).insert(2, 4)
-	 * = (1,2,4,3)
+	 * <pre>
+	 * <code>().insert(0, 1) = (1)
+	 * (4).insert(0, 1) = (1,4)
+	 * (4).insert(1, 1) = (4,1)
+	 * (1,2,3).insert(2, 4) = (1,2,4,3)</code>
+	 * </pre>
 	 * 
-	 * @param index
-	 * @param element
-	 * @return
+	 * @param index The insertion index.
+	 * @param element An element to be inserted.
+	 * @return This List with the given element inserted at the given index.
+	 * @throws IndexOutOfBoundsException if the index &lt; 0 or index &gt; this.size()
 	 */
 	default List<E> insert(int index, E element) {
 		if (index < 0) {
@@ -217,14 +224,21 @@ public interface List<E> extends Iterable<E> {
 	}
 
 	/**
-	 * TODO
+	 * Inserts all of the given elements at the specified index into this List in O(n).
+	 * <p>
+	 * Examples:
 	 * 
-	 * ().insertAll(0, (1,2,3)) = (1,2,3) (4).insertAll(0, (1,2,3)) = (1,2,3,4) (4).insertAll(1,
-	 * (1,2,3)) = (4,1,2,3) (1,2,3).insertAll(2, (4,5)) = (1,2,4,5,3)
+	 * <pre>
+	 * <code>().insertAll(0, (1,2,3)) = (1,2,3)
+	 * (4).insertAll(0, (1,2,3)) = (1,2,3,4)
+	 * (4).insertAll(1, (1,2,3)) = (4,1,2,3)
+	 * (1,2,3).insertAll(2, (4,5)) = (1,2,4,5,3)</code>
+	 * </pre>
 	 * 
-	 * @param index
-	 * @param elements
-	 * @return
+	 * @param index The insertion index.
+	 * @param elements The elements to be inserted.
+	 * @return This List with the given elements inserted at the given index.
+	 * @throws IndexOutOfBoundsException if the index &lt; 0 or index &gt; this.size()
 	 */
 	default List<E> insertAll(int index, List<? extends E> elements) {
 		if (index < 0) {
@@ -299,9 +313,25 @@ public interface List<E> extends Iterable<E> {
 
 	// TODO: T[] toArray(T[] a)
 
-	// TODO: clear
+	/**
+	 * Convenience method, because it is well known from java.util collections. It has not effect on
+	 * the original List, it just returns EmptyList.instance().
+	 * 
+	 * @return EmptyList.instance()
+	 */
+	default List<E> clear() {
+		return EmptyList.instance();
+	}
 
-	// TODO: iterator(int)
+	/**
+	 * Shortcut for {@code sublist(index).iterator()}.
+	 * 
+	 * @param index The start index of the iterator.
+	 * @return An iterator, starting at the given index.
+	 */
+	default Iterator<E> iterator(int index) {
+		return sublist(index).iterator();
+	}
 
 	/**
 	 * Tests if this List contains a given value as an element in O(n).
@@ -450,7 +480,8 @@ public interface List<E> extends Iterable<E> {
 	}
 
 	/**
-	 * Returns a new List which contains all elements starting at beginIndex (inclusive).
+	 * Returns a new List which contains all elements starting at beginIndex (inclusive). The
+	 * sublist is computed in O(n).
 	 * <p>
 	 * Examples:
 	 * <ul>
@@ -495,7 +526,7 @@ public interface List<E> extends Iterable<E> {
 
 	/**
 	 * Returns a new List which contains the elements from beginIndex (inclusive) to endIndex
-	 * (exclusive) of this List.
+	 * (exclusive) of this List. The sublist is computed in O(2n).
 	 * <p>
 	 * Examples:
 	 * <ul>
@@ -548,7 +579,8 @@ public interface List<E> extends Iterable<E> {
 	}
 
 	/**
-	 * Drops the first n elements of this list or the whole list, if this size &lt; n or n &lt; 0;
+	 * Drops the first n elements of this list or the whole list, if this size &lt; n or n &lt; 0.
+	 * The elements are dropped in O(n).
 	 * <p>
 	 * The result is equivalent to {@code sublist(n)} but does not throw if n &lt; 0 or n &gt;
 	 * this.size().
@@ -565,7 +597,8 @@ public interface List<E> extends Iterable<E> {
 	}
 
 	/**
-	 * Takes the first n elements of this list or the whole list, if this size &lt; n.
+	 * Takes the first n elements of this list or the whole list, if this size &lt; n. The elements
+	 * are taken in O(n).
 	 * <p>
 	 * The result is equivalent to {@code sublist(0, n)} but does not throw if n &lt; 0 or n &gt;
 	 * this.size().
@@ -583,10 +616,15 @@ public interface List<E> extends Iterable<E> {
 		return result.reverse();
 	}
 
+	/**
+	 * Returns an array containing all elements of this List in the same order. The array is created
+	 * in O(2n).
+	 * 
+	 * @return The elements of this List as array.
+	 */
+	@SuppressWarnings("unchecked")
 	default E[] toArray() {
-		@SuppressWarnings("unchecked")
 		final E[] result = (E[]) new Object[size()];
-		// TODO: return toArray(result);
 		int i = 0;
 		for (List<E> list = this; !list.isEmpty(); list = list.tail(), i++) {
 			result[i] = list.head();
@@ -594,31 +632,47 @@ public interface List<E> extends Iterable<E> {
 		return result;
 	}
 
-	default E[] toArray(E[] array) {
-		// TODO
-		return null;
-	}
-
-	default java.util.ArrayList<E> toArrayList() {
-		final java.util.ArrayList<E> result = new java.util.ArrayList<>();
-		for (List<E> list = this; !list.isEmpty(); list = list.tail()) {
-			result.add(list.head());
-		}
-		return result;
-	}
-
+	/**
+	 * Sorts the elements of this List according to their natural order.
+	 * <p>
+	 * This call is equivalent to {@code stream().sorted().collect(List.collector())}.
+	 * 
+	 * @return An ordered List.
+	 */
 	default List<E> sort() {
 		return stream().sorted().collect(List.collector());
 	}
 
+	/**
+	 * Sorts the elements of this List according to the provided {@link java.util.Comparator}.
+	 * <p>
+	 * This call is equivalent to {@code stream().sorted(c).collect(List.collector())}.
+	 * 
+	 * @param c An element Comparator.
+	 * @return An ordered List.
+	 */
 	default List<E> sort(Comparator<? super E> c) {
 		return stream().sorted(c).collect(List.collector());
 	}
 
+	/**
+	 * Returns a sequential {@link java.util.stream.Stream} representation of this List.
+	 * <p>
+	 * This call is equivalent to {@code StreamSupport.stream(spliterator(), false)}.
+	 * 
+	 * @return A sequential Stream of elements of this List.
+	 */
 	default Stream<E> stream() {
 		return StreamSupport.stream(spliterator(), false);
 	}
 
+	/**
+	 * Returns a parallel {@link java.util.stream.Stream} representation of this List.
+	 * <p>
+	 * This call is equivalent to {@code StreamSupport.stream(spliterator(), true)}.
+	 * 
+	 * @return A parallel Stream of elements of this List.
+	 */
 	default Stream<E> parallelStream() {
 		return StreamSupport.stream(spliterator(), true);
 	}
@@ -680,7 +734,15 @@ public interface List<E> extends Iterable<E> {
 	int hashCode();
 
 	/**
-	 * TODO: javadoc
+	 * Returns a String representation of this List.
+	 * <p>
+	 * If this is EmptyList, {@code "()"} is returned.
+	 * <p>
+	 * If this is an LinearList containing the elements e1, ..., en, then
+	 * {@code "(" + Strings.toString(e1)
+	 * + ", " + ... + ", " + Strings.toString(en) + ")"} is returned.
+	 * 
+	 * @return This List as String.
 	 */
 	String toString();
 
@@ -720,7 +782,6 @@ public interface List<E> extends Iterable<E> {
 		return result;
 	}
 
-	// TODO: better solution instead of list.prependAll() in conjunction with list.reverse()!?
 	static <T> Collector<T, List<T>, List<T>> collector() {
 		return new CollectorImpl<T, List<T>, List<T>>(//
 				List::empty, // supplier
