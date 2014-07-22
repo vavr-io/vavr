@@ -29,7 +29,20 @@ import java.util.stream.StreamSupport;
 import javaslang.Strings;
 
 /**
- * TODO: javadoc
+ * An immutable List implementation, suitable for concurrent programming.
+ * <p>
+ * A List is composed of a {@code head()} element and a {@code tail()} List.
+ * <p>
+ * There are two implementations of the interface List:
+ * <ul>
+ * <li>{@link EmptyList}, which represents a List containing no elements.</li>
+ * <li>{@link LinearList}, which represents a List containing elements.</li>
+ * </ul>
+ * <p>
+ * Use {@code List.of(1, 2, 3)} instance of
+ * {@code new LinearList(1, new LinearList(2, new LinearList(3, EmptyList.instance())))}.
+ * <p>
+ * Use {@code List.empty()} instead of {@code EmptyList.instance()}.
  * 
  * @param <E> Component type of the List.
  */
@@ -185,18 +198,22 @@ public interface List<E> extends Iterable<E> {
 		if (index < 0) {
 			throw new IndexOutOfBoundsException("insert(" + index + ", e)");
 		}
-		List<E> result = EmptyList.instance();
-		List<E> list = this;
-		for (int i = index; i > 0; i--, list = list.tail()) {
-			if (list.isEmpty()) {
+		List<E> preceding = EmptyList.instance();
+		List<E> tail = this;
+		for (int i = index; i > 0; i--, tail = tail.tail()) {
+			if (tail.isEmpty()) {
 				throw new IndexOutOfBoundsException("insert("
 						+ index
 						+ ", e) on list of size "
 						+ size());
 			}
-			result = result.prepend(list.head());
+			preceding = preceding.prepend(tail.head());
 		}
-		return list.prepend(element).prependAll(result.reverse());
+		List<E> result = tail.prepend(element);
+		for (E next : preceding) {
+			result = result.prepend(next);
+		}
+		return result;
 	}
 
 	/**
@@ -213,18 +230,22 @@ public interface List<E> extends Iterable<E> {
 		if (index < 0) {
 			throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
 		}
-		List<E> result = EmptyList.instance();
-		List<E> list = this;
-		for (int i = index; i > 0; i--, list = list.tail()) {
-			if (list.isEmpty()) {
+		List<E> preceding = EmptyList.instance();
+		List<E> tail = this;
+		for (int i = index; i > 0; i--, tail = tail.tail()) {
+			if (tail.isEmpty()) {
 				throw new IndexOutOfBoundsException("insertAll("
 						+ index
 						+ ", elements) on list of size "
 						+ size());
 			}
-			result = result.prepend(list.head());
+			preceding = preceding.prepend(tail.head());
 		}
-		return list.prependAll(elements).prependAll(result.reverse());
+		List<E> result = tail.prependAll(elements);
+		for (E next : preceding) {
+			result = result.prepend(next);
+		}
+		return result;
 	}
 
 	/**
@@ -406,22 +427,26 @@ public interface List<E> extends Iterable<E> {
 		if (index < 0) {
 			throw new IndexOutOfBoundsException("set(" + index + ", e)");
 		}
-		List<E> result = EmptyList.instance();
-		List<E> list = this;
-		for (int i = index; i > 0; i--, list = list.tail()) {
-			if (list.isEmpty()) {
+		List<E> preceding = EmptyList.instance();
+		List<E> tail = this;
+		for (int i = index; i > 0; i--, tail = tail.tail()) {
+			if (tail.isEmpty()) {
 				throw new IndexOutOfBoundsException("set("
 						+ index
 						+ ", e) on list of size "
 						+ size());
 			}
-			result = result.prepend(list.head());
+			preceding = preceding.prepend(tail.head());
 		}
-		if (list.isEmpty()) {
+		if (tail.isEmpty()) {
 			throw new IndexOutOfBoundsException("set(" + index + ", e) on list of size " + size());
 		}
 		// skip the current head element because it is replaced
-		return list.tail().prepend(element).prependAll(result.reverse());
+		List<E> result = tail.tail().prepend(element);
+		for (E next : preceding) {
+			result = result.prepend(next);
+		}
+		return result;
 	}
 
 	/**
@@ -695,6 +720,7 @@ public interface List<E> extends Iterable<E> {
 		return result;
 	}
 
+	// TODO: better solution instead of list.prependAll() in conjunction with list.reverse()!?
 	static <T> Collector<T, List<T>, List<T>> collector() {
 		return new CollectorImpl<T, List<T>, List<T>>(//
 				List::empty, // supplier
