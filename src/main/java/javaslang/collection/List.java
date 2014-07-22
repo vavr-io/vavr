@@ -199,7 +199,7 @@ public interface List<E> extends Iterable<E> {
 	 * @param index The insertion index.
 	 * @param element An element to be inserted.
 	 * @return This List with the given element inserted at the given index.
-	 * @throws IndexOutOfBoundsException if the index &lt; 0 or index &gt; this.size()
+	 * @throws IndexOutOfBoundsException if the index &lt; 0 or index &gt; size()
 	 */
 	default List<E> insert(int index, E element) {
 		if (index < 0) {
@@ -234,11 +234,27 @@ public interface List<E> extends Iterable<E> {
 	 * (4).insertAll(1, (1,2,3)) = (4,1,2,3)
 	 * (1,2,3).insertAll(2, (4,5)) = (1,2,4,5,3)</code>
 	 * </pre>
+	 * <p>
+	 * The result is roughly (without bounds check) equivalent to
+	 * 
+	 * <pre>
+	 * <code>if (isEmpty()) {
+	 *     return elements;
+	 * } else if (index == 0) {
+	 *     if (elements.isEmpty()) {
+	 *         return this;
+	 *     } else {
+	 *         return new LinearList(elements.head(), insertAll(0, elements.tail()));
+	 *     }
+	 * } else {
+	 *     return new LinearList(head(), tail().insertAll(index - 1, elements));
+	 * }</code>
+	 * </pre>
 	 * 
 	 * @param index The insertion index.
 	 * @param elements The elements to be inserted.
 	 * @return This List with the given elements inserted at the given index.
-	 * @throws IndexOutOfBoundsException if the index &lt; 0 or index &gt; this.size()
+	 * @throws IndexOutOfBoundsException if the index &lt; 0 or index &gt; size()
 	 */
 	default List<E> insertAll(int index, List<? extends E> elements) {
 		if (index < 0) {
@@ -263,7 +279,7 @@ public interface List<E> extends Iterable<E> {
 	}
 
 	/**
-	 * Removes the first occurrence of the given element from this list in O(n).
+	 * Removes the first occurrence of the given element from this list if it is present in O(n).
 	 * <p>
 	 * Example: {@code List.of(1,2,3).remove(2)} equals {@code List.of(1,3)}.
 	 * <p>
@@ -305,7 +321,36 @@ public interface List<E> extends Iterable<E> {
 		return result;
 	}
 
-	// TODO: removeAll(List)
+	/**
+	 * Removes all occurrences of the given elements from this List in O(n^2).
+	 * <p>
+	 * Example: {@code List.of(1,2,3,1,2,3).removeAll(List.of(1,2))} is equal to
+	 * {@code List.of(3,3)}.
+	 * <p>
+	 * The result is equivalent to
+	 * 
+	 * <pre>
+	 * <code>if (isEmpty())
+	 *     return this;
+	 * } else if (elements.contains(head())) {
+	 *     return tail().removeAll(elements);
+	 * } else {
+	 *     return new LinearList(head(), tail().removeAll(elements));
+	 * }</code>
+	 * </pre>
+	 * 
+	 * @param elements Elements to be removed.
+	 * @return A List containing all of this except the given elements.
+	 */
+	default List<E> removeAll(List<E> elements) {
+		List<E> result = List.empty();
+		for (E element : this) {
+			if (!elements.contains(element)) {
+				result.prepend(element);
+			}
+		}
+		return result.reverse();
+	}
 
 	// TODO: retainAll(List)
 
@@ -413,7 +458,7 @@ public interface List<E> extends Iterable<E> {
 	 * The result is roughly equivalent to {@code (index == 0) ? head() : tail().get(index - 1)} but
 	 * implemented without recursion.
 	 * 
-	 * @param index An index, where 0 &lt;= index &lt; this.size()
+	 * @param index An index, where 0 &lt;= index &lt; size()
 	 * @return The element at the specified index.
 	 * @throws IndexOutOfBoundsException if this List is empty, index &lt; 0 or index &gt;= size of
 	 *             this List.
@@ -443,7 +488,7 @@ public interface List<E> extends Iterable<E> {
 	 * {@code (index == 0) ? tail().prepend(element) : new LinearList(head(), tail().set(index - 1, element))}
 	 * but implemented without recursion.
 	 * 
-	 * @param index An index, where 0 &lt;= index &lt; this.size()
+	 * @param index An index, where 0 &lt;= index &lt; size()
 	 * @param element A new element.
 	 * @return A list containing all of the elements of this List but the given element at the given
 	 *         index.
@@ -583,7 +628,7 @@ public interface List<E> extends Iterable<E> {
 	 * The elements are dropped in O(n).
 	 * <p>
 	 * The result is equivalent to {@code sublist(n)} but does not throw if n &lt; 0 or n &gt;
-	 * this.size().
+	 * size().
 	 * 
 	 * @param n The number of elements to drop.
 	 * @return A list consisting of all elements of this list except the first n ones, or else the
@@ -601,7 +646,7 @@ public interface List<E> extends Iterable<E> {
 	 * are taken in O(n).
 	 * <p>
 	 * The result is equivalent to {@code sublist(0, n)} but does not throw if n &lt; 0 or n &gt;
-	 * this.size().
+	 * size().
 	 * 
 	 * @param n The number of elements to take.
 	 * @return A list consisting of the first n elements of this list or the whole list, if it has

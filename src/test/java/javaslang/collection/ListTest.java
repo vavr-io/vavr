@@ -12,7 +12,7 @@ import javaslang.Requirements.UnsatisfiedRequirementException;
 import org.junit.Test;
 
 public class ListTest {
-
+	
 	// -- head
 
 	@Test
