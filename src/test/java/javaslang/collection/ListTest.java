@@ -256,20 +256,45 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowOnInsertAllWithEmptyList() {
-		assertThat(() -> List.empty().insertAll(0, null)).isThrowing(UnsatisfiedRequirementException.class,
-				"elements is null");
+		assertThat(() -> List.empty().insertAll(0, null)).isThrowing(
+				UnsatisfiedRequirementException.class, "elements is null");
 	}
 
 	@Test
 	public void shouldThrowOnInsertAllWithNegativeIndex() {
-		assertThat(() -> List.empty().insertAll(-1, List.empty())).isThrowing(IndexOutOfBoundsException.class,
-				"insertAll(-1, elements)");
+		assertThat(() -> List.empty().insertAll(-1, List.empty())).isThrowing(
+				IndexOutOfBoundsException.class, "insertAll(-1, elements)");
 	}
 
 	@Test
 	public void shouldThrowOnInsertAllWhenExceedingUpperBound() {
-		assertThat(() -> List.empty().insertAll(1, List.empty())).isThrowing(IndexOutOfBoundsException.class,
-				"insertAll(1, elements) on list of size 0");
+		assertThat(() -> List.empty().insertAll(1, List.empty())).isThrowing(
+				IndexOutOfBoundsException.class, "insertAll(1, elements) on list of size 0");
+	}
+
+	@Test
+	public void shouldRemoveElementFromEmptyList() {
+		assertThat(List.empty().remove(null)).isEqualTo(List.empty());
+	}
+
+	@Test
+	public void shouldRemoveFirstElement() {
+		assertThat(List.of(1, 2, 3).remove(1)).isEqualTo(List.of(2, 3));
+	}
+
+	@Test
+	public void shouldRemoveLastElement() {
+		assertThat(List.of(1, 2, 3).remove(3)).isEqualTo(List.of(1, 2));
+	}
+
+	@Test
+	public void shouldRemoveInnerElement() {
+		assertThat(List.of(1, 2, 3).remove(2)).isEqualTo(List.of(1, 3));
+	}
+
+	@Test
+	public void shouldRemoveNonExistingElement() {
+		assertThat(List.of(1, 2, 3).remove(4)).isEqualTo(List.of(1, 2, 3));
 	}
 
 	// -- contains
@@ -311,7 +336,7 @@ public class ListTest {
 		final boolean actual = List.of(1, 2, 3).containsAll(List.of(1, 2, 3));
 		assertThat(actual).isTrue();
 	}
-	
+
 	// -- indexOf
 
 	// TODO

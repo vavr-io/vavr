@@ -174,10 +174,8 @@ public interface List<E> extends Iterable<E> {
 	/**
 	 * TODO
 	 * 
-	 * ().insert(0, 1) = (1)
-	 * (4).insert(0, 1) = (1,4)
-	 * (4).insert(1, 1) = (4,1)
-	 * (1,2,3).insert(2, 4) = (1,2,4,3)
+	 * ().insert(0, 1) = (1) (4).insert(0, 1) = (1,4) (4).insert(1, 1) = (4,1) (1,2,3).insert(2, 4)
+	 * = (1,2,4,3)
 	 * 
 	 * @param index
 	 * @param element
@@ -204,10 +202,8 @@ public interface List<E> extends Iterable<E> {
 	/**
 	 * TODO
 	 * 
-	 * ().insertAll(0, (1,2,3)) = (1,2,3)
-	 * (4).insertAll(0, (1,2,3)) = (1,2,3,4)
-	 * (4).insertAll(1, (1,2,3)) = (4,1,2,3)
-	 * (1,2,3).insertAll(2, (4,5)) = (1,2,4,5,3)
+	 * ().insertAll(0, (1,2,3)) = (1,2,3) (4).insertAll(0, (1,2,3)) = (1,2,3,4) (4).insertAll(1,
+	 * (1,2,3)) = (4,1,2,3) (1,2,3).insertAll(2, (4,5)) = (1,2,4,5,3)
 	 * 
 	 * @param index
 	 * @param elements
@@ -231,7 +227,48 @@ public interface List<E> extends Iterable<E> {
 		return list.prependAll(elements).prependAll(result.reverse());
 	}
 
-	// TODO: remove(element)
+	/**
+	 * Removes the first occurrence of the given element from this list in O(n).
+	 * <p>
+	 * Example: {@code List.of(1,2,3).remove(2)} equals {@code List.of(1,3)}.
+	 * <p>
+	 * The result is equivalent to
+	 * 
+	 * <pre>
+	 * <code>if (isEmpty()) {
+	 *     return this;
+	 * } else if (head().equals(element)) {
+	 *     return tail();
+	 * } else {
+	 *     return new LinearList(head(), tail().remove(element));
+	 * }</code>
+	 * </pre>
+	 * 
+	 * but implemented without recursion.
+	 * 
+	 * @param element An element to be removed from this List.
+	 * @return A new list where the first occurrence of the element is removed or the same list, if
+	 *         the given element is not part of the list.
+	 */
+	default List<E> remove(E element) {
+		List<E> preceding = List.empty();
+		List<E> tail = this;
+		boolean found = false;
+		while (!found && !tail.isEmpty()) {
+			final E head = tail.head();
+			if (head.equals(element)) {
+				found = true;
+			} else {
+				preceding = preceding.prepend(head);
+			}
+			tail = tail.tail();
+		}
+		List<E> result = tail;
+		for (E next : preceding) {
+			result = result.prepend(next);
+		}
+		return result;
+	}
 
 	// TODO: removeAll(List)
 
@@ -531,7 +568,7 @@ public interface List<E> extends Iterable<E> {
 		}
 		return result;
 	}
-	
+
 	default E[] toArray(E[] array) {
 		// TODO
 		return null;
