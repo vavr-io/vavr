@@ -6,10 +6,10 @@
 package javaslang.parser;
 
 import static java.util.stream.Collectors.joining;
-import static javaslang.Lang.require;
-import static javaslang.Lang.requireNonNull;
-import static javaslang.Lang.requireNotInstantiable;
-import static javaslang.Lang.requireNotNullOrEmpty;
+import static javaslang.Requirements.require;
+import static javaslang.Requirements.requireNonNull;
+import static javaslang.Requirements.requireNotInstantiable;
+import static javaslang.Requirements.requireNotNullOrEmpty;
 
 import java.util.function.Supplier;
 import java.util.regex.Matcher;

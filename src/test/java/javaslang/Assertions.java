@@ -5,7 +5,7 @@
  */
 package javaslang;
 
-import static javaslang.Lang.requireNotInstantiable;
+import static javaslang.Requirements.requireNotInstantiable;
 
 public final class Assertions {
 
@@ -29,7 +29,7 @@ public final class Assertions {
 		}
 
 		public void isThrowing(Class<? extends Throwable> expectedException, String expectedMessage) {
-			Lang.requireNonNull(expectedException, "expectedException is null");
+			Requirements.requireNonNull(expectedException, "expectedException is null");
 			try {
 				test.run();
 				throw new AssertionError(expectedException.getName() + " not thrown");

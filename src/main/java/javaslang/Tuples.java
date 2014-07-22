@@ -5,7 +5,7 @@
  */
 package javaslang;
 
-import static javaslang.Lang.requireNotInstantiable;
+import static javaslang.Requirements.requireNotInstantiable;
 
 import java.util.Objects;
 import java.util.function.Supplier;

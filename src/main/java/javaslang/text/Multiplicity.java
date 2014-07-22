@@ -5,7 +5,7 @@
  */
 package javaslang.text;
 
-import static javaslang.Lang.requireNonNull;
+import static javaslang.Requirements.requireNonNull;
 import static javaslang.text.Multiplicity.Bounds.ONE_TO_N;
 import static javaslang.text.Multiplicity.Bounds.ZERO_TO_ONE;
 

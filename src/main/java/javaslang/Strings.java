@@ -10,10 +10,10 @@ import static java.util.Arrays.asList;
 import static java.util.Arrays.fill;
 import static java.util.regex.Pattern.compile;
 import static java.util.stream.Collectors.joining;
-import static javaslang.Lang.require;
-import static javaslang.Lang.requireNonNull;
-import static javaslang.Lang.requireNotInstantiable;
-import static javaslang.Lang.requireNotNullOrEmpty;
+import static javaslang.Requirements.require;
+import static javaslang.Requirements.requireNonNull;
+import static javaslang.Requirements.requireNotInstantiable;
+import static javaslang.Requirements.requireNotNullOrEmpty;
 
 import java.util.ArrayList;
 import java.util.Collection;

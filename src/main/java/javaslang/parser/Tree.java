@@ -5,7 +5,7 @@
  */
 package javaslang.parser;
 
-import static javaslang.Lang.requireNonNull;
+import static javaslang.Requirements.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.Collections;

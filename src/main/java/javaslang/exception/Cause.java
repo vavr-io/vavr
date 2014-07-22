@@ -5,7 +5,7 @@
  */
 package javaslang.exception;
 
-import static javaslang.Lang.requireNonNull;
+import static javaslang.Requirements.requireNonNull;
 
 
 /**

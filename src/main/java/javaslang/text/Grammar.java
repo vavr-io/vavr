@@ -5,7 +5,7 @@
  */
 package javaslang.text;
 
-import static javaslang.Lang.requireNonNull;
+import static javaslang.Requirements.requireNonNull;
 
 import java.util.HashSet;
 import java.util.Set;

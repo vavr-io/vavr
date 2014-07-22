@@ -5,7 +5,7 @@
  */
 package javaslang.io;
 
-import static javaslang.Lang.requireNotInstantiable;
+import static javaslang.Requirements.requireNotInstantiable;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

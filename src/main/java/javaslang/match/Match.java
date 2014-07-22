@@ -5,7 +5,7 @@
  */
 package javaslang.match;
 
-import static javaslang.Lang.requireNonNull;
+import static javaslang.Requirements.requireNonNull;
 
 import java.io.Serializable;
 import java.util.ArrayList;

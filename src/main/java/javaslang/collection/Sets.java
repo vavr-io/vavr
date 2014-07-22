@@ -5,8 +5,8 @@
  */
 package javaslang.collection;
 
-import static javaslang.Lang.requireNonNull;
-import static javaslang.Lang.requireNotInstantiable;
+import static javaslang.Requirements.requireNonNull;
+import static javaslang.Requirements.requireNotInstantiable;
 
 import java.util.HashSet;
 import java.util.Set;

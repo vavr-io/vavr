@@ -6,7 +6,7 @@
 package javaslang.collection;
 
 import static java.util.stream.Collectors.joining;
-import static javaslang.Lang.requireNonNull;
+import static javaslang.Requirements.requireNonNull;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -115,7 +115,7 @@ public interface List<E> extends Iterable<E> {
 	 * 
 	 * @param elements Elements to be appended.
 	 * @return A new List containing the given elements appended to this List.
-	 * @throws javaslang.Lang.UnsatisfiedRequirementException if elements is null
+	 * @throws javaslang.Requirements.UnsatisfiedRequirementException if elements is null
 	 */
 	@SuppressWarnings("unchecked")
 	default List<E> appendAll(List<? extends E> elements) {
@@ -153,7 +153,7 @@ public interface List<E> extends Iterable<E> {
 	 * 
 	 * @param elements Elements to be prepended.
 	 * @return A new List containing the given elements prepended to this List.
-	 * @throws javaslang.Lang.UnsatisfiedRequirementException if elements is null
+	 * @throws javaslang.Requirements.UnsatisfiedRequirementException if elements is null
 	 */
 	@SuppressWarnings("unchecked")
 	default List<E> prependAll(List<? extends E> elements) {
@@ -266,7 +266,7 @@ public interface List<E> extends Iterable<E> {
 	 * 
 	 * @param elements A List of values of type E.
 	 * @return true, if this List contains all given elements, false otherwise.
-	 * @throws javaslang.Lang.UnsatisfiedRequirementException if elements is null
+	 * @throws javaslang.Requirements.UnsatisfiedRequirementException if elements is null
 	 */
 	default boolean containsAll(List<? extends E> elements) {
 		requireNonNull(elements, "elements is null");
@@ -646,7 +646,7 @@ public interface List<E> extends Iterable<E> {
 	 * @param <T> Component type of the List.
 	 * @param elements List elements.
 	 * @return A list containing the given elements in the same order.
-	 * @throws javaslang.Lang.UnsatisfiedRequirementException if elements is null
+	 * @throws javaslang.Requirements.UnsatisfiedRequirementException if elements is null
 	 */
 	@SafeVarargs
 	static <T> List<T> of(T... elements) {

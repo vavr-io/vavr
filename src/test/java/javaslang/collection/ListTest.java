@@ -7,7 +7,7 @@ package javaslang.collection;
 
 import static javaslang.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.assertThat;
-import javaslang.Lang.UnsatisfiedRequirementException;
+import javaslang.Requirements.UnsatisfiedRequirementException;
 
 import org.junit.Test;
 
@@ -312,8 +312,6 @@ public class ListTest {
 		assertThat(actual).isTrue();
 	}
 	
-	// TODO: shouldThrow..., see insert(index, element)
-
 	// -- indexOf
 
 	// TODO

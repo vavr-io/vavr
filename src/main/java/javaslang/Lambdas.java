@@ -6,13 +6,16 @@
 package javaslang;
 
 import static java.util.stream.Collectors.joining;
-import static javaslang.Lang.requireNotInstantiable;
+import static javaslang.Requirements.requireNotInstantiable;
 
 import java.io.Serializable;
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -69,12 +72,25 @@ public final class Lambdas {
 	public static LambdaSignature getLambdaSignature(Serializable lambda) {
 		final Tuple2<String, String> signature = split(getSerializedLambda(lambda)
 				.getImplMethodSignature());
-		final Class<?>[] parameterTypes = Lang
+		final Class<?>[] parameterTypes = Lambdas
 				.stream(JVM_FIELD_TYPE.matcher(signature._1))
 				.map(Lambdas::getJavaType)
 				.toArray(Class<?>[]::new);
 		final Class<?> returnType = getJavaType(signature._2);
 		return new LambdaSignature(parameterTypes, returnType);
+	}
+
+	/**
+	 * Stream regex match results of {@link java.util.regex.Matcher}.
+	 * 
+	 * @param matcher A Matcher.
+	 * @return A Stream of matches by successively calling {@link Matcher#group()}.
+	 */
+	private static Stream<String> stream(Matcher matcher) {
+		final List<String> matches = new ArrayList<>();
+		for (; matcher.find(); matches.add(matcher.group()))
+			;
+		return matches.stream();
 	}
 
 	/**

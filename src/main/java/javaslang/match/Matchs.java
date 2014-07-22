@@ -5,7 +5,7 @@
  */
 package javaslang.match;
 
-import static javaslang.Lang.requireNotInstantiable;
+import static javaslang.Requirements.requireNotInstantiable;
 
 import java.util.function.DoubleFunction;
 import java.util.function.IntFunction;

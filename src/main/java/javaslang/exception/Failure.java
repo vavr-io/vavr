@@ -5,7 +5,7 @@
  */
 package javaslang.exception;
 
-import static javaslang.Lang.requireNonNull;
+import static javaslang.Requirements.requireNonNull;
 
 import java.util.Objects;
 import java.util.function.Consumer;

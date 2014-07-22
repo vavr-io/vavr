@@ -5,85 +5,18 @@
  */
 package javaslang;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.function.Supplier;
-import java.util.regex.Matcher;
-import java.util.stream.Stream;
 
 /**
- * General Java languange extensions.
+ * Runtime checks of requirements.
  */
-public final class Lang {
+public final class Requirements {
 
 	/**
 	 * This class is not intended to be instantiated.
 	 */
-	private Lang() {
+	private Requirements() {
 		requireNotInstantiable();
-	}
-
-	/**
-	 * Shortcut for {@code System.out.print(javaslang.text.Strings.toString(o))} .
-	 * 
-	 * @param o an Object
-	 */
-	public static void print(Object o) {
-		final String s = Strings.toString(o);
-		System.out.print(s);
-	}
-
-	/**
-	 * Shortcut for {@code System.out.println(javaslang.text.Strings.toString(o))}.
-	 * 
-	 * @param o an Object
-	 */
-	public static void println(Object o) {
-		final String s = Strings.toString(o);
-		System.out.println(s);
-	}
-
-	/**
-	 * Shortcut for
-	 * {@code System.out.print(String.format(format, Arrays.map(objects, Objects::toString)))} .
-	 * 
-	 * @param format A String format
-	 * @param objects Zero or more String format arguments
-	 * 
-	 * @see String#format(String, Object...)
-	 */
-	public static void print(String format, Object... objects) {
-		final String s = format(format, objects);
-		System.out.print(s);
-	}
-
-	/**
-	 * Shortcut for {@code System.out.println(String.format(format, Arrays.map(objects,
-	 * Objects::toString)))}.
-	 * 
-	 * @param format A String format
-	 * @param objects Zero or more String format arguments
-	 * 
-	 * @see String#format(String, Object...)
-	 */
-	public static void println(String format, Object... objects) {
-		final String s = format(format, objects);
-		System.out.println(s);
-	}
-
-	/**
-	 * Converts given objects to strings and passes them as args to
-	 * {@code String.format(format, args)}.
-	 * 
-	 * @param format A String format, see {@link String#format(String, Object...)}
-	 * @param objects String format arguments
-	 * @return A formatted string
-	 */
-	private static String format(String format, Object[] objects) {
-		final Object[] args = Stream.of(objects).map(Strings::toString).toArray();
-		return String.format(format, args);
 	}
 
 	/**
@@ -276,9 +209,9 @@ public final class Lang {
 	 * 
 	 * <pre>
 	 * <code>
-	 * import static javaslang.Lang.*;
+	 * import static javaslang.Requirements.*;
 	 * 
-	 * public class FunkyType {
+	 * public final class FunkyType {
 	 * 
 	 *    &#47;**
 	 *     * This class is not intended to be instantiated.
@@ -286,6 +219,8 @@ public final class Lang {
 	 *     private FunkyType() {
 	 *         requireNotInstantiable();
 	 *     }
+	 *     
+	 *     // public static methods
 	 * 
 	 * }
 	 * </code>
@@ -298,82 +233,7 @@ public final class Lang {
 	}
 
 	/**
-	 * Exits the JVM using {@code Runtime.getRuntime().exit(status)} (which is equivalent to
-	 * {@code System.exit(0)}). If something goes wrong while running the finalizers and shutdown
-	 * hooks, or the timeout is reached, the JVM is forced to be terminated by calling
-	 * {@code Runtime.getRuntime().halt(status)}.
-	 * 
-	 * @param status the exit status, zero for OK, non-zero for error
-	 * @param timeout The maximum delay in milliseconds before calling
-	 *            {@code Runtime.getRuntime().halt(status)}.
-	 * 
-	 * @see <a href="http://blog.joda.org/2014/02/exiting-jvm.html">exiting jvm</a>
-	 */
-	public static void exit(int status, long timeout) {
-		final Runtime runtime = Runtime.getRuntime();
-		try {
-			schedule(() -> runtime.halt(status), timeout);
-			runtime.exit(status);
-		} catch (Throwable x) {
-			runtime.halt(status);
-		} finally { // double-check
-			runtime.halt(status);
-		}
-	}
-
-	/**
-	 * Syntactic sugar, allows to call
-	 * 
-	 * <pre>
-	 * <code>
-	 * final Timer timer = Timers.schedule(() -&gt; println("hi"), 1000)
-	 * </code>
-	 * </pre>
-	 * 
-	 * instead of
-	 * 
-	 * <pre>
-	 * <code>
-	 * final Timer timer = new Timer();
-	 * timer.schedule(new TimerTask() {
-	 *     &#64;Override
-	 *     public void run() {
-	 *         println("hi");
-	 *     }
-	 * }, 1000);
-	 * </code>
-	 * </pre>
-	 * 
-	 * @param task A Runnable
-	 * @param delay A delay in milliseconds
-	 * @return A Timer
-	 */
-	public static Timer schedule(Runnable task, long delay) {
-		final Timer timer = new Timer();
-		timer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				task.run();
-			}
-		}, delay);
-		return timer;
-	}
-
-	/**
-	 * Stream regex match results of {@link java.util.regex.Matcher}.
-	 * 
-	 * @param matcher A Matcher.
-	 * @return A Stream of matches by successively calling {@link Matcher#group()}.
-	 */
-	public static Stream<String> stream(Matcher matcher) {
-		final List<String> matches = new ArrayList<>();
-		for (; matcher.find(); matches.add(matcher.group()))
-			;
-		return matches.stream();
-	}
-
-	/**
-	 * Thrown by the {@linkplain Lang#require}* methods.
+	 * Thrown by the {@linkplain Requirements#require}* methods.
 	 */
 	public static class UnsatisfiedRequirementException extends RuntimeException {
 

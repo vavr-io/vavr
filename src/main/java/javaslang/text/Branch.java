@@ -5,8 +5,8 @@
  */
 package javaslang.text;
 
-import static javaslang.Lang.require;
-import static javaslang.Lang.requireNotNullOrEmpty;
+import static javaslang.Requirements.require;
+import static javaslang.Requirements.requireNotNullOrEmpty;
 
 import java.util.Set;
 import java.util.function.Predicate;
