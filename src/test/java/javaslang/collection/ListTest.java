@@ -400,11 +400,37 @@ public class ListTest {
 
 	// -- indexOf
 
-	// TODO
+	@Test
+	public void shouldNotFindIndexOfElementWhenListIsEmpty() {
+		assertThat(List.empty().indexOf(1)).isEqualTo(-1);
+	}
+
+	@Test
+	public void shouldFindIndexOfFirstElement() {
+		assertThat(List.of(1, 2, 3).indexOf(1)).isEqualTo(0);
+	}
+
+	@Test
+	public void shouldFindIndexOfInnerElement() {
+		assertThat(List.of(1, 2, 3).indexOf(2)).isEqualTo(1);
+	}
+
+	@Test
+	public void shouldFindIndexOfLastElement() {
+		assertThat(List.of(1, 2, 3).indexOf(3)).isEqualTo(2);
+	}
 
 	// -- lastIndexOf
 
-	// TODO
+	@Test
+	public void shouldNotFindLastIndexOfElementWhenListIsEmpty() {
+		assertThat(List.empty().lastIndexOf(1)).isEqualTo(-1);
+	}
+
+	@Test
+	public void shouldFindLastIndexOfElement() {
+		assertThat(List.of(1, 2, 3, 1, 2, 3).lastIndexOf(1)).isEqualTo(3);
+	}
 
 	// -- get
 
