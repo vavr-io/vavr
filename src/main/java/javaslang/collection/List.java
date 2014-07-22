@@ -47,6 +47,7 @@ import javaslang.Strings;
  * 
  * @param <E> Component type of the List.
  */
+// TODO: Serializable (readObject, writeObject(
 public interface List<E> extends Iterable<E> {
 
 	/**
@@ -341,19 +342,52 @@ public interface List<E> extends Iterable<E> {
 	 * </pre>
 	 * 
 	 * @param elements Elements to be removed.
-	 * @return A List containing all of this except the given elements.
+	 * @return A List containing all of this elements except the given elements.
 	 */
-	default List<E> removeAll(List<E> elements) {
+	default List<E> removeAll(List<? extends E> elements) {
+		@SuppressWarnings("unchecked")
+		List<E> removed = (List<E>) elements;
 		List<E> result = List.empty();
 		for (E element : this) {
-			if (!elements.contains(element)) {
+			if (!removed.contains(element)) {
 				result = result.prepend(element);
 			}
 		}
 		return result.reverse();
 	}
 
-	// TODO: retainAll(List)
+	/**
+	 * Keeps all occurrences of the given elements from this List in O(n^2).
+	 * <p>
+	 * Example: {@code List.of(1,2,3,1,2,3).retainAll(List.of(1,2))} is equal to
+	 * {@code List.of(1,2,1,2)}.
+	 * <p>
+	 * The result is equivalent to
+	 * 
+	 * <pre>
+	 * <code>if (isEmpty())
+	 *     return this;
+	 * } else if (elements.contains(head())) {
+	 *     return new LinearList(head(), tail().retainAll(elements));
+	 * } else {
+	 *     return tail().retainAll(elements);
+	 * }</code>
+	 * </pre>
+	 * 
+	 * @param elements Elements to be retained.
+	 * @return A List containing all of this elements which are also in the given elements.
+	 */
+	default List<E> retainAll(List<? extends E> elements) {
+		@SuppressWarnings("unchecked")
+		List<E> keeped = (List<E>) elements;
+		List<E> result = List.empty();
+		for (E element : this) {
+			if (keeped.contains(element)) {
+				result = result.prepend(element);
+			}
+		}
+		return result.reverse();
+	}
 
 	/**
 	 * Applies an {@link java.util.function.UnaryOperator} to all elements of this List and returns
