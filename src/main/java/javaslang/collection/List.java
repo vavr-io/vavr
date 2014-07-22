@@ -21,6 +21,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collector;
 import java.util.stream.Collector.Characteristics;
 import java.util.stream.Stream;
@@ -346,7 +347,7 @@ public interface List<E> extends Iterable<E> {
 		List<E> result = List.empty();
 		for (E element : this) {
 			if (!elements.contains(element)) {
-				result.prepend(element);
+				result = result.prepend(element);
 			}
 		}
 		return result.reverse();
@@ -354,9 +355,25 @@ public interface List<E> extends Iterable<E> {
 
 	// TODO: retainAll(List)
 
-	// TODO: replaceAll(List)
-
-	// TODO: T[] toArray(T[] a)
+	/**
+	 * Applies an {@link java.util.function.UnaryOperator} to all elements of this List and returns
+	 * the result as new List (of same order) in O(2n).
+	 * <p>
+	 * Example: {@code List.of(1,2,3).replayAll(i -> i + 1)} equals {List.of(2,3,4)}.
+	 * <p>
+	 * The result is equivalent to:
+	 * {@code isEmpty() ? this : new LinearList(operator.apply(head()), tail().replaceAll(operator))}.
+	 * 
+	 * @param operator An unary operator.
+	 * @return A List of elements transformed by the given operator.
+	 */
+	default List<E> replaceAll(UnaryOperator<E> operator) {
+		List<E> result = EmptyList.instance();
+		for (E element : this) {
+			result = result.prepend(operator.apply(element));
+		}
+		return result.reverse();
+	}
 
 	/**
 	 * Convenience method, because it is well known from java.util collections. It has not effect on
