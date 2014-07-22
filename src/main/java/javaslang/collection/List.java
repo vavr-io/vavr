@@ -420,16 +420,6 @@ public interface List<E> extends Iterable<E> {
 	}
 
 	/**
-	 * Shortcut for {@code sublist(index).iterator()}.
-	 * 
-	 * @param index The start index of the iterator.
-	 * @return An iterator, starting at the given index.
-	 */
-	default Iterator<E> iterator(int index) {
-		return sublist(index).iterator();
-	}
-
-	/**
 	 * Tests if this List contains a given value as an element in O(n).
 	 * <p>
 	 * The result is equivalent to {@code indexOf(element) != -1}.
@@ -817,6 +807,16 @@ public interface List<E> extends Iterable<E> {
 		}
 
 		return new ListIterator(this);
+	}
+
+	/**
+	 * Shortcut for {@code sublist(index).iterator()}.
+	 * 
+	 * @param index The start index of the iterator.
+	 * @return An iterator, starting at the given index.
+	 */
+	default Iterator<E> iterator(int index) {
+		return sublist(index).iterator();
 	}
 
 	/**

@@ -12,7 +12,7 @@ import javaslang.Requirements.UnsatisfiedRequirementException;
 import org.junit.Test;
 
 public class ListTest {
-	
+
 	// -- head
 
 	@Test
@@ -272,6 +272,8 @@ public class ListTest {
 				IndexOutOfBoundsException.class, "insertAll(1, elements) on list of size 0");
 	}
 
+	// -- remove
+
 	@Test
 	public void shouldRemoveElementFromEmptyList() {
 		assertThat(List.empty().remove(null)).isEqualTo(List.empty());
@@ -295,6 +297,65 @@ public class ListTest {
 	@Test
 	public void shouldRemoveNonExistingElement() {
 		assertThat(List.of(1, 2, 3).remove(4)).isEqualTo(List.of(1, 2, 3));
+	}
+
+	// -- removeAll
+
+	@Test
+	public void shouldRemoveAllElementsFromEmptyList() {
+		assertThat(List.empty().removeAll(List.of(1, 2, 3))).isEqualTo(List.empty());
+	}
+
+	@Test
+	public void shouldRemoveAllExistingElementsFromNonEmptyList() {
+		assertThat(List.of(1, 2, 3, 1, 2, 3).removeAll(List.of(1, 2))).isEqualTo(List.of(3, 3));
+	}
+
+	@Test
+	public void shouldNotRemoveAllNonExistingElementsFromNonEmptyList() {
+		assertThat(List.of(1, 2, 3).removeAll(List.of(4, 5))).isEqualTo(List.of(1, 2, 3));
+	}
+
+	// -- retainAll
+
+	@Test
+	public void shouldRetainAllElementsFromEmptyList() {
+		assertThat(List.empty().retainAll(List.of(1, 2, 3))).isEqualTo(List.empty());
+	}
+
+	@Test
+	public void shouldRetainAllExistingElementsFromNonEmptyList() {
+		assertThat(List.of(1, 2, 3, 1, 2, 3).retainAll(List.of(1, 2))).isEqualTo(
+				List.of(1, 2, 1, 2));
+	}
+
+	@Test
+	public void shouldNotRetainAllNonExistingElementsFromNonEmptyList() {
+		assertThat(List.of(1, 2, 3).retainAll(List.of(4, 5))).isEqualTo(List.empty());
+	}
+
+	// -- replaceAll
+
+	@Test
+	public void shouldReplaceAllElementsOfEmptyList() {
+		assertThat(List.<Integer> empty().replaceAll(i -> i + 1)).isEqualTo(List.empty());
+	}
+
+	@Test
+	public void shouldReplaceAllElementsOfNonEmptyList() {
+		assertThat(List.of(1, 2, 3).replaceAll(i -> i + 1)).isEqualTo(List.of(2, 3, 4));
+	}
+
+	// -- clear
+
+	@Test
+	public void shouldClearEmptyList() {
+		assertThat(List.empty().clear()).isEqualTo(List.empty());
+	}
+
+	@Test
+	public void shouldClearNonEmptyList() {
+		assertThat(List.of(1, 2, 3).clear()).isEqualTo(List.empty());
 	}
 
 	// -- contains
@@ -497,10 +558,6 @@ public class ListTest {
 
 	// TODO
 
-	// -- toArrayList
-
-	// TODO
-
 	// -- sort
 
 	// TODO
@@ -522,6 +579,10 @@ public class ListTest {
 	// TODO
 
 	// -- iterator
+
+	// TODO
+
+	// -- iterator(int)
 
 	// TODO
 
