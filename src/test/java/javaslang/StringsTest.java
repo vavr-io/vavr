@@ -7,17 +7,10 @@ package javaslang;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javaslang.Strings;
-import javaslang.Tuples;
-import javaslang.Tuples.Tuple1;
-
 import org.junit.Test;
 
 public class StringsTest {
-	
+
 	@Test
 	public void shouldConvertNullToString() {
 		final String actual = Strings.toString(null);
@@ -33,21 +26,12 @@ public class StringsTest {
 	}
 
 	@Test
-	public void shouldDetectIndirectLoopOnToString() {
-		final List<Tuple1<List<?>>> list = new ArrayList<>();
-		final Tuple1<List<?>> tuple = Tuples.of(list);
-		list.add(tuple);
-		final String actual = Strings.toString(list);
-		assertThat(actual).isEqualTo("((...))");
-	}
-	
-	@Test
 	public void shouldCallToStringRecursively() {
 		final String actual = Tuples.of(Tuples.of(1)).toString();
 		final String expected = "((1))";
 		assertThat(actual).isEqualTo(expected);
 	}
-	
+
 	@Test
 	public void shouldVisitTwoSimilarPathsOnToString() {
 		final Object[] path = { "path" };
@@ -55,7 +39,7 @@ public class StringsTest {
 		final String actual = Strings.toString(array);
 		assertThat(actual).isEqualTo("[[\"path\"], [\"path\"]]");
 	}
-	
+
 	@Test
 	public void shouldConvertPrimitiveArrayToString() {
 		final boolean[] array = { true, false };
@@ -159,7 +143,7 @@ public class StringsTest {
 		final String[] actual = Strings.split("#123#", "#");
 		assertThat(actual).isEqualTo(new String[] { "", "123", "" });
 	}
-	
+
 	@Test
 	public void shouldJoinEmptyStringWithEscape() {
 		final String actual = Strings.join(new String[] { "" }, ';', '\\');
@@ -195,7 +179,7 @@ public class StringsTest {
 		final String actual = Strings.join(new String[] { "\\^", "\\^\\" }, '^', '\\');
 		assertThat(actual).isEqualTo("\\\\\\^^\\\\\\^\\\\");
 	}
-	
+
 	@Test
 	public void shouldSplitEmptyStringWithEscape() {
 		final String[] actual = Strings.split("", ';', '\\');
@@ -231,5 +215,5 @@ public class StringsTest {
 		final String[] actual = Strings.split("\\\\\\^^\\\\\\^\\\\", '^', '\\');
 		assertThat(actual).isEqualTo(new String[] { "\\^", "\\^\\" });
 	}
-	
+
 }
