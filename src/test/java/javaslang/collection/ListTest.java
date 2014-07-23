@@ -730,19 +730,42 @@ public class ListTest {
 		assertThat(List.of(3, 4, 1, 2).sort()).isEqualTo(List.of(1, 2, 3, 4));
 	}
 
-	// TODO
-
 	// -- sort(Comparator)
 
-	// TODO
+	@Test
+	public void shouldSortEmptyListUsingComparator() {
+		assertThat(List.<Integer> empty().sort((i, j) -> j - i)).isEqualTo(List.empty());
+	}
+
+	@Test
+	public void shouldSortNonEmptyListUsingComparator() {
+		assertThat(List.of(3, 4, 1, 2).sort((i, j) -> j - i)).isEqualTo(List.of(4, 3, 2, 1));
+	}
 
 	// -- stream
 
-	// TODO
+	@Test
+	public void shouldStreamAndCollectEmptyList() {
+		assertThat(List.empty().stream().collect(List.collector())).isEqualTo(List.empty());
+	}
+
+	@Test
+	public void shouldStreamAndCollectNonEmptyList() {
+		assertThat(List.of(1, 2, 3).stream().collect(List.collector())).isEqualTo(List.of(1, 2, 3));
+	}
 
 	// -- parallelStream
 
-	// TODO
+	@Test
+	public void shouldParallelStreamAndCollectEmptyList() {
+		assertThat(List.empty().parallelStream().collect(List.collector())).isEqualTo(List.empty());
+	}
+
+	@Test
+	public void shouldParallelStreamAndCollectNonEmptyList() {
+		assertThat(List.of(1, 2, 3).parallelStream().collect(List.collector())).isEqualTo(
+				List.of(1, 2, 3));
+	}
 
 	// -- spliterator
 
@@ -758,7 +781,25 @@ public class ListTest {
 
 	// -- equals
 
-	// TODO
+	@Test
+	public void shouldRecognizeEqualityOfEmptyLists() {
+		assertThat(List.empty().equals(List.empty())).isTrue();
+	}
+
+	@Test
+	public void shouldRecognizeEqualityOfNonEmptyLists() {
+		assertThat(List.of(1, 2, 3).equals(List.of(1, 2, 3))).isTrue();
+	}
+
+	@Test
+	public void shouldRecognizeNonEqualityOfListsOfSameSize() {
+		assertThat(List.of(1, 2, 3).equals(List.of(1, 2, 4))).isFalse();
+	}
+
+	@Test
+	public void shouldRecognizeNonEqualityOfListsOfDifferentSize() {
+		assertThat(List.of(1, 2, 3).equals(List.of(1, 2))).isFalse();
+	}
 
 	// -- hashCode
 
@@ -766,6 +807,14 @@ public class ListTest {
 
 	// -- toString
 
-	// TODO
+	@Test
+	public void shouldStringifyEmptyList() {
+		assertThat(List.empty().toString()).isEqualTo("()");
+	}
+
+	@Test
+	public void shouldStringifyNonEmptyList() {
+		assertThat(List.of(1, 2, 3).toString()).isEqualTo("(1, 2, 3)");
+	}
 
 }

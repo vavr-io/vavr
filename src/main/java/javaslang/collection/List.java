@@ -913,12 +913,18 @@ public interface List<E> extends Iterable<E> {
 		return result;
 	}
 
+	/**
+	 * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
+	 * {@link Stream#collect(Collector)} to obtain a {@link javaslang.collection.List}.
+	 * 
+	 * @return A List Collector.
+	 */
 	static <T> Collector<T, ArrayList<T>, List<T>> collector() {
 		final Supplier<ArrayList<T>> supplier = ArrayList::new;
 		final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
 		final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
 			left.addAll(right);
-			return right;
+			return left;
 		};
 		final Function<ArrayList<T>, List<T>> finisher = elements -> {
 			List<T> result = EmptyList.instance();
