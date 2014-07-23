@@ -8,7 +8,6 @@ package javaslang;
 import static javaslang.Requirements.requireNotInstantiable;
 
 import java.util.Objects;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -128,7 +127,7 @@ public final class Tuples {
 	/**
 	 * Implementation of a single, a tuple containing 1 element.
 	 */
-	public static class Tuple1<T> extends AbstractTuple {
+	public static class Tuple1<T> implements Tuple {
 		public final T _1;
 
 		public Tuple1(T t) {
@@ -136,7 +135,7 @@ public final class Tuples {
 		}
 
 		@Override
-		protected boolean internalEquals(Object o) {
+		public boolean equals(Object o) {
 			if (this == o) {
 				return true;
 			} else if (o == null || !(o instanceof Tuple1)) {
@@ -148,7 +147,7 @@ public final class Tuples {
 		}
 
 		@Override
-		protected int internalHashCode() {
+		public int hashCode() {
 			return Objects.hash(_1);
 		}
 
@@ -161,7 +160,7 @@ public final class Tuples {
 	/**
 	 * Implementation of a pair, a tuple containing 2 elements.
 	 */
-	public static class Tuple2<T1, T2> extends AbstractTuple {
+	public static class Tuple2<T1, T2> implements Tuple {
 		public final T1 _1;
 		public final T2 _2;
 
@@ -171,7 +170,7 @@ public final class Tuples {
 		}
 
 		@Override
-		protected boolean internalEquals(Object o) {
+		public boolean equals(Object o) {
 			if (this == o) {
 				return true;
 			} else if (o == null || !(o instanceof Tuple2)) {
@@ -183,7 +182,7 @@ public final class Tuples {
 		}
 
 		@Override
-		protected int internalHashCode() {
+		public int hashCode() {
 			return Objects.hash(_1, _2);
 		}
 
@@ -196,7 +195,7 @@ public final class Tuples {
 	/**
 	 * Implementation of a triple, a tuple containing 3 elements.
 	 */
-	public static class Tuple3<T1, T2, T3> extends AbstractTuple {
+	public static class Tuple3<T1, T2, T3> implements Tuple {
 		public final T1 _1;
 		public final T2 _2;
 		public final T3 _3;
@@ -208,7 +207,7 @@ public final class Tuples {
 		}
 
 		@Override
-		protected boolean internalEquals(Object o) {
+		public boolean equals(Object o) {
 			if (this == o) {
 				return true;
 			} else if (o == null || !(o instanceof Tuple3)) {
@@ -222,7 +221,7 @@ public final class Tuples {
 		}
 
 		@Override
-		protected int internalHashCode() {
+		public int hashCode() {
 			return Objects.hash(_1, _2, _3);
 		}
 
@@ -235,7 +234,7 @@ public final class Tuples {
 	/**
 	 * Implementation of a quadruple, a tuple containing 4 elements.
 	 */
-	public static class Tuple4<T1, T2, T3, T4> extends AbstractTuple {
+	public static class Tuple4<T1, T2, T3, T4> implements Tuple {
 		public final T1 _1;
 		public final T2 _2;
 		public final T3 _3;
@@ -249,7 +248,7 @@ public final class Tuples {
 		}
 
 		@Override
-		protected boolean internalEquals(Object o) {
+		public boolean equals(Object o) {
 			if (this == o) {
 				return true;
 			} else if (o == null || !(o instanceof Tuple4)) {
@@ -264,7 +263,7 @@ public final class Tuples {
 		}
 
 		@Override
-		protected int internalHashCode() {
+		public int hashCode() {
 			return Objects.hash(_1, _2, _3, _4);
 		}
 
@@ -277,7 +276,7 @@ public final class Tuples {
 	/**
 	 * Implementation of a quintuple, a tuple containing 5 elements.
 	 */
-	public static class Tuple5<T1, T2, T3, T4, T5> extends AbstractTuple {
+	public static class Tuple5<T1, T2, T3, T4, T5> implements Tuple {
 		public final T1 _1;
 		public final T2 _2;
 		public final T3 _3;
@@ -293,7 +292,7 @@ public final class Tuples {
 		}
 
 		@Override
-		protected boolean internalEquals(Object o) {
+		public boolean equals(Object o) {
 			if (this == o) {
 				return true;
 			} else if (o == null || !(o instanceof Tuple5)) {
@@ -309,7 +308,7 @@ public final class Tuples {
 		}
 
 		@Override
-		protected int internalHashCode() {
+		public int hashCode() {
 			return Objects.hash(_1, _2, _3, _4, _5);
 		}
 
@@ -322,7 +321,7 @@ public final class Tuples {
 	/**
 	 * Implementation of a sextuple, a tuple containing 6 elements.
 	 */
-	public static class Tuple6<T1, T2, T3, T4, T5, T6> extends AbstractTuple {
+	public static class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple {
 		public final T1 _1;
 		public final T2 _2;
 		public final T3 _3;
@@ -340,7 +339,7 @@ public final class Tuples {
 		}
 
 		@Override
-		protected boolean internalEquals(Object o) {
+		public boolean equals(Object o) {
 			if (this == o) {
 				return true;
 			} else if (o == null || !(o instanceof Tuple6)) {
@@ -357,7 +356,7 @@ public final class Tuples {
 		}
 
 		@Override
-		protected int internalHashCode() {
+		public int hashCode() {
 			return Objects.hash(_1, _2, _3, _4, _5, _6);
 		}
 
@@ -370,7 +369,7 @@ public final class Tuples {
 	/**
 	 * Implementation of a septuple, a tuple containing 7 elements.
 	 */
-	public static class Tuple7<T1, T2, T3, T4, T5, T6, T7> extends AbstractTuple {
+	public static class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple {
 		public final T1 _1;
 		public final T2 _2;
 		public final T3 _3;
@@ -390,7 +389,7 @@ public final class Tuples {
 		}
 
 		@Override
-		protected boolean internalEquals(Object o) {
+		public boolean equals(Object o) {
 			if (this == o) {
 				return true;
 			} else if (o == null || !(o instanceof Tuple7)) {
@@ -408,7 +407,7 @@ public final class Tuples {
 		}
 
 		@Override
-		protected int internalHashCode() {
+		public int hashCode() {
 			return Objects.hash(_1, _2, _3, _4, _5, _6, _7);
 		}
 
@@ -421,7 +420,7 @@ public final class Tuples {
 	/**
 	 * Implementation of a octuple, a tuple containing 8 elements.
 	 */
-	public static class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> extends AbstractTuple {
+	public static class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple {
 		public final T1 _1;
 		public final T2 _2;
 		public final T3 _3;
@@ -443,7 +442,7 @@ public final class Tuples {
 		}
 
 		@Override
-		protected boolean internalEquals(Object o) {
+		public boolean equals(Object o) {
 			if (this == o) {
 				return true;
 			} else if (o == null || !(o instanceof Tuple8)) {
@@ -462,7 +461,7 @@ public final class Tuples {
 		}
 
 		@Override
-		protected int internalHashCode() {
+		public int hashCode() {
 			return Objects.hash(_1, _2, _3, _4, _5, _6, _7, _8);
 		}
 
@@ -475,7 +474,7 @@ public final class Tuples {
 	/**
 	 * Implementation of a nonuple, a tuple containing 9 elements.
 	 */
-	public static class Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9> extends AbstractTuple {
+	public static class Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9> implements Tuple {
 		public final T1 _1;
 		public final T2 _2;
 		public final T3 _3;
@@ -499,7 +498,7 @@ public final class Tuples {
 		}
 
 		@Override
-		protected boolean internalEquals(Object o) {
+		public boolean equals(Object o) {
 			if (this == o) {
 				return true;
 			} else if (o == null || !(o instanceof Tuple9)) {
@@ -519,7 +518,7 @@ public final class Tuples {
 		}
 
 		@Override
-		protected int internalHashCode() {
+		public int hashCode() {
 			return Objects.hash(_1, _2, _3, _4, _5, _6, _7, _8, _9);
 		}
 
@@ -532,7 +531,7 @@ public final class Tuples {
 	/**
 	 * Implementation of a decuple, a tuple containing 10 elements.
 	 */
-	public static class Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> extends AbstractTuple {
+	public static class Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> implements Tuple {
 		public final T1 _1;
 		public final T2 _2;
 		public final T3 _3;
@@ -558,7 +557,7 @@ public final class Tuples {
 		}
 
 		@Override
-		protected boolean internalEquals(Object o) {
+		public boolean equals(Object o) {
 			if (this == o) {
 				return true;
 			} else if (o == null || !(o instanceof Tuple10)) {
@@ -579,7 +578,7 @@ public final class Tuples {
 		}
 
 		@Override
-		protected int internalHashCode() {
+		public int hashCode() {
 			return Objects.hash(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10);
 		}
 
@@ -592,7 +591,7 @@ public final class Tuples {
 	/**
 	 * Implementation of a undecuple, a tuple containing 11 elements.
 	 */
-	public static class Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> extends AbstractTuple {
+	public static class Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> implements Tuple {
 		public final T1 _1;
 		public final T2 _2;
 		public final T3 _3;
@@ -621,7 +620,7 @@ public final class Tuples {
 		}
 
 		@Override
-		protected boolean internalEquals(Object o) {
+		public boolean equals(Object o) {
 			if (this == o) {
 				return true;
 			} else if (o == null || !(o instanceof Tuple11)) {
@@ -643,7 +642,7 @@ public final class Tuples {
 		}
 
 		@Override
-		protected int internalHashCode() {
+		public int hashCode() {
 			return Objects.hash(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11);
 		}
 
@@ -656,8 +655,7 @@ public final class Tuples {
 	/**
 	 * Implementation of a duodecuple, a tuple containing 12 elements.
 	 */
-	public static class Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> extends
-			AbstractTuple {
+	public static class Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> implements Tuple {
 		public final T1 _1;
 		public final T2 _2;
 		public final T3 _3;
@@ -688,7 +686,7 @@ public final class Tuples {
 		}
 
 		@Override
-		protected boolean internalEquals(Object o) {
+		public boolean equals(Object o) {
 			if (this == o) {
 				return true;
 			} else if (o == null || !(o instanceof Tuple12)) {
@@ -711,7 +709,7 @@ public final class Tuples {
 		}
 
 		@Override
-		protected int internalHashCode() {
+		public int hashCode() {
 			return Objects.hash(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12);
 		}
 
@@ -724,8 +722,8 @@ public final class Tuples {
 	/**
 	 * Implementation of a tredecuple, a tuple containing 13 elements.
 	 */
-	public static class Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> extends
-			AbstractTuple {
+	public static class Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> implements
+			Tuple {
 		public final T1 _1;
 		public final T2 _2;
 		public final T3 _3;
@@ -758,7 +756,7 @@ public final class Tuples {
 		}
 
 		@Override
-		protected boolean internalEquals(Object o) {
+		public boolean equals(Object o) {
 			if (this == o) {
 				return true;
 			} else if (o == null || !(o instanceof Tuple13)) {
@@ -782,7 +780,7 @@ public final class Tuples {
 		}
 
 		@Override
-		protected int internalHashCode() {
+		public int hashCode() {
 			return Objects.hash(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13);
 		}
 
@@ -793,62 +791,37 @@ public final class Tuples {
 	}
 
 	/**
-	 * Tagging interface
+	 * Tuple interface.
 	 */
 	public static interface Tuple {
-	}
-
-	/**
-	 * This base super class of tuples is taking case of detecting loops in
-	 */
-	private static abstract class AbstractTuple implements Tuple {
-
-		// equals-lock per instance/thread (not static!)
-		private final ThreadLocal<Boolean> isEqualsLocked = new ThreadLocal<>();
-
-		// hashCode-lock per instance/thread (not static!)
-		private final ThreadLocal<Boolean> isHashCodeLocked = new ThreadLocal<>();
-
-		@Override
-		public final boolean equals(Object o) {
-			return decycle(isEqualsLocked, () -> internalEquals(o), () -> false);
-		}
-
-		@Override
-		public final int hashCode() {
-			return decycle(isHashCodeLocked, () -> internalHashCode(), () -> 0);
-		}
-
-		protected abstract boolean internalEquals(Object o);
-
-		protected abstract int internalHashCode();
 
 		/**
-		 * Ensures that there are no cycles in a direct/indirect recursion. A method may use this,
-		 * if the return value recursively calls the method under some circumstances and the
-		 * recursion does not end.
+		 * Tests if an object is equal to this Tuple.
+		 * <p>
+		 * An object equals this Tuple, if it is not null, of the same type and all elements are
+		 * pair-wise equal calling {@link java.util.Objects#equals(Object, Object)}.
 		 * 
-		 * @param <T> Element type of recursion values.
-		 * @param isLocked A semaphore, set to true and false, should be used exclusively within one
-		 *            method.
-		 * @param value A return value used if no cycle is present.
-		 * @param defaultValue A return value used if a cycle has been detected.
-		 * @return value.get() if no cycle detected, otherwise defaultValue.get().
+		 * @param obj An object.
+		 * @return true, if obj is equal to this in the sense described above, false otherwise.
 		 */
-		private static <T> T decycle(ThreadLocal<Boolean> isLocked, Supplier<T> value,
-				Supplier<T> defaultValue) {
-			if (Boolean.TRUE.equals(isLocked.get())) {
-				return defaultValue.get();
-			} else {
-				try {
-					isLocked.set(true);
-					return value.get();
-				} finally {
-					isLocked.set(false);
-				}
-			}
-		}
+		boolean equals(Object obj);
 
+		/**
+		 * Computes the hashCode of this Tuple by calling {@link java.util.Objects#hash(Object...)},
+		 * passing all elements of this Tuple in the order of occurrence.
+		 * 
+		 * @return The hashCode of this Tuple in the sense described above.
+		 */
+		int hashCode();
+
+		/**
+		 * Returns the String representation of this Tuple. The result starts with '(', ends with
+		 * ')' and contains the String representations of the Tuple elements in their order of
+		 * occurrence, separated by ', '.
+		 * 
+		 * @return This Tuple as String.
+		 */
+		String toString();
 	}
 
 }

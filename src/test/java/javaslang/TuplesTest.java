@@ -5,13 +5,9 @@
  */
 package javaslang;
 
+import static javaslang.Tuples.of;
 import static org.fest.assertions.api.Assertions.assertThat;
-import static javaslang.Tuples.*;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javaslang.Tuples;
+import javaslang.Tuples.Tuple;
 
 import org.junit.Test;
 
@@ -89,37 +85,6 @@ public class TuplesTest {
 	public void shouldCreateTredecuple() {
 		assertThat(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13).toString()).isEqualTo(
 				"(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)");
-	}
-	
-	@Test
-	public void shouldDetectLoopOnEquals() {
-		
-		// create recursive structure1
-		final List<Tuple> listA = new ArrayList<>();
-		final Tuple tupleA = Tuples.of(listA);
-		listA.add(tupleA);
-
-		// create recursive structure2
-		final List<Tuple> listB = new ArrayList<>();
-		final Tuple tupleB = Tuples.of(listB);
-		listB.add(tupleB);
-		
-		// detect that structures are not the same
-		final boolean actual = tupleA.equals(tupleB);
-		assertThat(actual).isFalse();
-	}
-
-	@Test
-	public void shouldDetectLoopOnHashCode() {
-		
-		// create recursive structure
-		final List<Tuple1<?>> list = new ArrayList<>();
-		final Tuple1<List<?>> tuple = Tuples.of(list);
-		list.add(tuple);
-		
-		// detect loop on hashCode
-		final int actual = tuple.hashCode();
-		assertThat(actual).isNotNull();
 	}
 	
 	@Test
