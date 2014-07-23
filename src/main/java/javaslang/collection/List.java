@@ -40,7 +40,7 @@ import javaslang.Strings;
  * <li>{@link LinearList}, which represents a List containing elements.</li>
  * </ul>
  * <p>
- * Use {@code List.of(1, 2, 3)} instance of
+ * Use {@code List.of(1, 2, 3)} instead of
  * {@code new LinearList(1, new LinearList(2, new LinearList(3, EmptyList.instance())))}.
  * <p>
  * Use {@code List.empty()} instead of {@code EmptyList.instance()}.
@@ -76,8 +76,20 @@ public interface List<E> extends Iterable<E> {
 	/**
 	 * Reverses this List and returns a new List in O(n).
 	 * <p>
-	 * The result is equivalent to {@code isEmpty() ? 0 : 1 + tail().size()} but implemented without
-	 * recursion.
+	 * The result is equivalent to
+	 * 
+	 * <pre>
+	 * <code>List&lt;E&gt; reverse(List&lt;E&gt; reversed, List&lt;E&gt; remaining) {
+	 *     if (remaining.isEmpty()) {
+	 *        return reversed; 
+	 *     } else {
+	 *        return reverse(reversed.prepend(remaining.head()), remaining.tail());
+	 *     }
+	 * }
+	 * reverse(EmptyList.instance(), this);</code>
+	 * </pre>
+	 * 
+	 * but implemented without recursion.
 	 * 
 	 * @return A new List containing the elements of this List in reverse order.
 	 */
@@ -393,7 +405,7 @@ public interface List<E> extends Iterable<E> {
 	 * Applies an {@link java.util.function.UnaryOperator} to all elements of this List and returns
 	 * the result as new List (of same order) in O(2n).
 	 * <p>
-	 * Example: {@code List.of(1,2,3).replayAll(i -> i + 1)} equals {List.of(2,3,4)}.
+	 * Example: {@code List.of(1,2,3).replaceAll(i -> i + 1)} equals {List.of(2,3,4)}.
 	 * <p>
 	 * The result is equivalent to:
 	 * {@code isEmpty() ? this : new LinearList(operator.apply(head()), tail().replaceAll(operator))}.
