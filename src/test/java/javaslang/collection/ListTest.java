@@ -7,6 +7,10 @@ package javaslang.collection;
 
 import static javaslang.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.assertThat;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import javaslang.Requirements.UnsatisfiedRequirementException;
 
 import org.junit.Test;
@@ -459,12 +463,49 @@ public class ListTest {
 
 	@Test
 	public void shouldGetFirstElement() {
-		assertThat(List.of(1).get(0)).isEqualTo(1);
+		assertThat(List.of(1, 2, 3).get(0)).isEqualTo(1);
+	}
+
+	@Test
+	public void shouldGetLastElement() {
+		assertThat(List.of(1, 2, 3).get(2)).isEqualTo(3);
 	}
 
 	// -- set
 
-	// TODO
+	@Test
+	public void shouldThrowWhenSetWithNegativeIndexOnEmptyList() {
+		assertThat(() -> List.empty().set(-1, null)).isThrowing(IndexOutOfBoundsException.class,
+				"set(-1, e) on empty list");
+	}
+
+	@Test
+	public void shouldThrowWhenSetWithNegativeIndexOnNonEmptyList() {
+		assertThat(() -> List.of(1).set(-1, 2)).isThrowing(IndexOutOfBoundsException.class,
+				"set(-1, e)");
+	}
+
+	@Test
+	public void shouldThrowWhenSetOnEmptyList() {
+		assertThat(() -> List.empty().set(0, null)).isThrowing(IndexOutOfBoundsException.class,
+				"set(0, e) on empty list");
+	}
+
+	@Test
+	public void shouldThrowWhenSetWithTooBigIndexOnNonEmptyList() {
+		assertThat(() -> List.of(1).set(1, 2)).isThrowing(IndexOutOfBoundsException.class,
+				"set(1, e) on list of size 1");
+	}
+
+	@Test
+	public void shouldSetFirstElement() {
+		assertThat(List.of(1, 2, 3).set(0, 4)).isEqualTo(List.of(4, 2, 3));
+	}
+
+	@Test
+	public void shouldSetLastElement() {
+		assertThat(List.of(1, 2, 3).set(2, 4)).isEqualTo(List.of(1, 2, 4));
+	}
 
 	// -- sublist(beginIndex)
 
@@ -574,16 +615,109 @@ public class ListTest {
 
 	// -- drop
 
-	// TODO
+	@Test
+	public void shouldDropNoneOnEmptyList() {
+		assertThat(List.empty().drop(1)).isEqualTo(List.empty());
+	}
+
+	@Test
+	public void shouldDropNoneIfCountIsNegative() {
+		assertThat(List.of(1, 2, 3).drop(-1)).isEqualTo(List.of(1, 2, 3));
+	}
+
+	@Test
+	public void shouldDropAsExpectedIfCountIsLessThanSize() {
+		assertThat(List.of(1, 2, 3).drop(2)).isEqualTo(List.of(3));
+	}
+
+	@Test
+	public void shouldDropAllIfCountExceedsSize() {
+		assertThat(List.of(1, 2, 3).drop(4)).isEqualTo(List.empty());
+	}
 
 	// -- take
 
-	// TODO
+	@Test
+	public void shouldTakeNoneOnEmptyList() {
+		assertThat(List.empty().take(1)).isEqualTo(List.empty());
+	}
+
+	@Test
+	public void shouldTakeNoneIfCountIsNegative() {
+		assertThat(List.of(1, 2, 3).take(-1)).isEqualTo(List.empty());
+	}
+
+	@Test
+	public void shouldTakeAsExpectedIfCountIsLessThanSize() {
+		assertThat(List.of(1, 2, 3).take(2)).isEqualTo(List.of(1, 2));
+	}
+
+	@Test
+	public void shouldTakeAllIfCountExceedsSize() {
+		assertThat(List.of(1, 2, 3).take(4)).isEqualTo(List.of(1, 2, 3));
+	}
 
 	// -- toArray
 
-	// TODO
+	@Test
+	public void shouldConvertEmptyListToArray() {
+		assertThat(List.<Integer> empty().toArray()).isEqualTo(new Integer[] {});
+	}
 
+	@Test
+	public void shouldConvertNonEmptyListToArray() {
+		assertThat(List.of(1, 2, 3).toArray()).isEqualTo(new Integer[] { 1, 2, 3 });
+	}
+
+	// -- toArray(E[])
+
+	@Test
+	public void shouldConvertEmptyListGivenEmptyArray() {
+		final Integer[] actual = List.<Integer> empty().toArray(new Integer[] {});
+		final Integer[] expected = new Integer[] {};
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldConvertEmptyListGivenNonEmptyArray() {
+		final Integer[] array = List.<Integer> empty().toArray(new Integer[] { 9, 9, 9 });
+		final Integer[] expected = new Integer[] { null, 9, 9 };
+		assertThat(array).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldConvertNonEmptyListToGivenArrayIfSizeIsSmaller() {
+		final Integer[] array = List.of(1, 2).toArray(new Integer[] { 9, 9, 9 });
+		final Integer[] expected = new Integer[] { 1, 2, null };
+		assertThat(array).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldConvertNonEmptyListToGivenArrayIfSizeIsEqual() {
+		final Integer[] actual = List.of(1, 2, 3).toArray(new Integer[] { 9, 9, 9 });
+		final Integer[] expected = new Integer[] { 1, 2, 3 };
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldConvertNonEmptyListToGivenArrayIfSizeIsBigger() {
+		final Integer[] array = List.of(1, 2, 3, 4).toArray(new Integer[] { 9, 9, 9 });
+		final Integer[] expected = new Integer[] { 1, 2, 3, 4 };
+		assertThat(array).isEqualTo(expected);
+	}
+
+	// -- toArrayList
+
+	@Test
+	public void shouldConvertEmptyListToArrayList() {
+		assertThat(List.<Integer> empty().toArrayList()).isEqualTo(new ArrayList<Integer>());
+	}
+
+	@Test
+	public void shouldConvertNonEmptyListToArrayList() {
+		assertThat(List.of(1, 2, 3).toArrayList()).isEqualTo(Arrays.asList(1, 2, 3));
+	}
+	
 	// -- sort
 
 	// TODO

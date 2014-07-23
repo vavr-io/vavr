@@ -677,8 +677,8 @@ public interface List<E> extends Iterable<E> {
 	}
 
 	/**
-	 * Drops the first n elements of this list or the whole list, if this size &lt; n or n &lt; 0.
-	 * The elements are dropped in O(n).
+	 * Drops the first n elements of this list or the whole list, if this size &lt; n. The elements
+	 * are dropped in O(n).
 	 * <p>
 	 * The result is equivalent to {@code sublist(n)} but does not throw if n &lt; 0 or n &gt;
 	 * size().
@@ -709,7 +709,7 @@ public interface List<E> extends Iterable<E> {
 		List<E> result = EmptyList.instance();
 		List<E> list = this;
 		for (int i = 0; i < n && !list.isEmpty(); i++, list = list.tail()) {
-			result.prepend(list.head());
+			result = result.prepend(list.head());
 		}
 		return result.reverse();
 	}
@@ -720,9 +720,8 @@ public interface List<E> extends Iterable<E> {
 	 * 
 	 * @return The elements of this List as array.
 	 */
-	@SuppressWarnings("unchecked")
-	default E[] toArray() {
-		final E[] result = (E[]) new Object[size()];
+	default Object[] toArray() {
+		final Object[] result = new Object[size()];
 		int i = 0;
 		for (List<E> list = this; !list.isEmpty(); list = list.tail(), i++) {
 			result[i] = list.head();
@@ -731,8 +730,8 @@ public interface List<E> extends Iterable<E> {
 	}
 
 	/**
-	 * Returns the given array filled with this elements in the same order or a new Array
-	 * containing this elements, if array.length < size(). This takes O(2n).
+	 * Returns the given array filled with this elements in the same order or a new Array containing
+	 * this elements, if array.length < size(). This takes O(2n).
 	 * <p>
 	 * According to {@link java.util.ArrayList#toArray(Object[])}, the element in the array
 	 * immediately following the end of the List is set to null.
@@ -741,26 +740,7 @@ public interface List<E> extends Iterable<E> {
 	 * @return The given array containing this elements or a new one if array.length < size().
 	 */
 	default E[] toArray(E[] array) {
-		final int size = size();
-		if (array.length < size) {
-			// copy/pasted from toArray() to safe one size() call, which is O(n)
-			@SuppressWarnings("unchecked")
-			final E[] result = (E[]) new Object[size];
-			int i = 0;
-			for (List<E> list = this; !list.isEmpty(); list = list.tail(), i++) {
-				result[i] = list.head();
-			}
-			return result;
-		} else {
-			int i = 0;
-			for (E element : this) {
-				array[i++] = element;
-			}
-			if (i < array.length) {
-				array[i] = null;
-			}
-			return array;
-		}
+		return toArrayList().toArray(array);
 	}
 
 	/**
