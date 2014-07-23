@@ -731,6 +731,45 @@ public interface List<E> extends Iterable<E> {
 	}
 
 	/**
+	 * Returns the given array filled with this elements in the same order or a new Array containing
+	 * this elements, if array.length < size().
+	 * <p>
+	 * According to {@link java.util.ArrayList#toArray(Object[])}, the element in the array
+	 * immediately following the end of the List is set to null.
+	 * 
+	 * @param array An Array to be filled with this elements.
+	 * @return The given array containing this elements or a new {@link #toArray()} if array.length
+	 *         < size().
+	 */
+	default E[] toArray(E[] array) {
+		if (array.length < size()) {
+			return toArray();
+		} else {
+			int i = 0;
+			for (E element : this) {
+				array[i++] = element;
+			}
+			if (i < array.length) {
+				array[i] = null;
+			}
+			return array;
+		}
+	}
+
+	/**
+	 * Converts this List into an {@link java.util.ArrayList} which is mutable.
+	 * 
+	 * @return An ArrayList of the same size, containing this elements.
+	 */
+	default java.util.ArrayList<E> toArrayList() {
+		final java.util.ArrayList<E> result = new java.util.ArrayList<E>();
+		for (E element : this) {
+			result.add(element);
+		}
+		return result;
+	}
+
+	/**
 	 * Sorts the elements of this List according to their natural order.
 	 * <p>
 	 * This call is equivalent to {@code stream().sorted().collect(List.collector())}.
