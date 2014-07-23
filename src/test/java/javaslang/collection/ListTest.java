@@ -717,8 +717,18 @@ public class ListTest {
 	public void shouldConvertNonEmptyListToArrayList() {
 		assertThat(List.of(1, 2, 3).toArrayList()).isEqualTo(Arrays.asList(1, 2, 3));
 	}
-	
+
 	// -- sort
+
+	@Test
+	public void shouldSortEmptyList() {
+		assertThat(List.empty().sort()).isEqualTo(List.empty());
+	}
+
+	@Test
+	public void shouldSortNonEmptyList() {
+		assertThat(List.of(3, 4, 1, 2).sort()).isEqualTo(List.of(1, 2, 3, 4));
+	}
 
 	// TODO
 
@@ -755,18 +765,6 @@ public class ListTest {
 	// TODO
 
 	// -- toString
-
-	// TODO
-
-	// -- List.empty
-
-	// TODO
-
-	// -- List.of
-
-	// TODO
-
-	// -- List.collector
 
 	// TODO
 
