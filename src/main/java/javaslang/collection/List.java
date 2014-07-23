@@ -731,19 +731,26 @@ public interface List<E> extends Iterable<E> {
 	}
 
 	/**
-	 * Returns the given array filled with this elements in the same order or a new Array containing
-	 * this elements, if array.length < size().
+	 * Returns the given array filled with this elements in the same order or a new Array
+	 * containing this elements, if array.length < size(). This takes O(2n).
 	 * <p>
 	 * According to {@link java.util.ArrayList#toArray(Object[])}, the element in the array
 	 * immediately following the end of the List is set to null.
 	 * 
 	 * @param array An Array to be filled with this elements.
-	 * @return The given array containing this elements or a new {@link #toArray()} if array.length
-	 *         < size().
+	 * @return The given array containing this elements or a new one if array.length < size().
 	 */
 	default E[] toArray(E[] array) {
-		if (array.length < size()) {
-			return toArray();
+		final int size = size();
+		if (array.length < size) {
+			// copy/pasted from toArray() to safe one size() call, which is O(n)
+			@SuppressWarnings("unchecked")
+			final E[] result = (E[]) new Object[size];
+			int i = 0;
+			for (List<E> list = this; !list.isEmpty(); list = list.tail(), i++) {
+				result[i] = list.head();
+			}
+			return result;
 		} else {
 			int i = 0;
 			for (E element : this) {
