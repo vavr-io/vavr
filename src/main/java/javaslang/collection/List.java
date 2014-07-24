@@ -678,7 +678,8 @@ public interface List<E> extends Iterable<E> {
 	 * are dropped in O(n).
 	 * <p>
 	 * The result is equivalent to {@code sublist(n)} but does not throw if n &lt; 0 or n &gt;
-	 * size().
+	 * size(). In the case of n &lt; 0 this List is returned, in the case of n &gt; size() the
+	 * EmptyList is returned.
 	 * 
 	 * @param n The number of elements to drop.
 	 * @return A list consisting of all elements of this list except the first n ones, or else the
@@ -696,7 +697,8 @@ public interface List<E> extends Iterable<E> {
 	 * are taken in O(n).
 	 * <p>
 	 * The result is equivalent to {@code sublist(0, n)} but does not throw if n &lt; 0 or n &gt;
-	 * size().
+	 * size(). In the case of n &lt; 0 the EmptyList is returned, in the case of n &gt; size() this
+	 * List is returned.
 	 * 
 	 * @param n The number of elements to take.
 	 * @return A list consisting of the first n elements of this list or the whole list, if it has
@@ -746,7 +748,7 @@ public interface List<E> extends Iterable<E> {
 	 * @return An ArrayList of the same size, containing this elements.
 	 */
 	default java.util.ArrayList<E> toArrayList() {
-		final java.util.ArrayList<E> result = new java.util.ArrayList<E>();
+		final java.util.ArrayList<E> result = new java.util.ArrayList<>();
 		for (E element : this) {
 			result.add(element);
 		}
