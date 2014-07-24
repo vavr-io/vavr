@@ -730,13 +730,13 @@ public interface List<E> extends Iterable<E> {
 
 	/**
 	 * Returns the given array filled with this elements in the same order or a new Array containing
-	 * this elements, if array.length < size(). This takes O(2n).
+	 * this elements, if array.length &lt; size(). This takes O(2n).
 	 * <p>
 	 * According to {@link java.util.ArrayList#toArray(Object[])}, the element in the array
 	 * immediately following the end of the List is set to null.
 	 * 
 	 * @param array An Array to be filled with this elements.
-	 * @return The given array containing this elements or a new one if array.length < size().
+	 * @return The given array containing this elements or a new one if array.length &lt; size().
 	 */
 	default E[] toArray(E[] array) {
 		return toArrayList().toArray(array);
@@ -901,7 +901,7 @@ public interface List<E> extends Iterable<E> {
 	 * </pre>
 	 *
 	 * @param <T> Component type of the List.
-	 * @param elements First (required) element.
+	 * @param element First (required) element.
 	 * @param elements Zero or more additional elements.
 	 * @return A list containing the given elements in the same order.
 	 */
@@ -917,6 +917,7 @@ public interface List<E> extends Iterable<E> {
 	/**
 	 * Creates a List of the given elements.
 	 * 
+	 * @param <T> Component type of the List.
 	 * @param elements An Iterable of elements.
 	 * @return A list containing the given elements in the same order.
 	 */
@@ -932,6 +933,7 @@ public interface List<E> extends Iterable<E> {
 	 * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
 	 * {@link Stream#collect(Collector)} to obtain a {@link javaslang.collection.List}.
 	 * 
+	 * @param <T> Component type of the List.
 	 * @return A List Collector.
 	 */
 	static <T> Collector<T, ArrayList<T>, List<T>> collector() {
