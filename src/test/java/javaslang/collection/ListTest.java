@@ -837,7 +837,7 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowWhenEmptyListIteratorStartingAtIndex() {
-		assertThat(() -> List.empty().iterator(1)).isThrowing(IndexOutOfBoundsException.class,
+		assertThat(() -> { List.empty().iterator(1); }).isThrowing(IndexOutOfBoundsException.class,
 				"sublist(1) on list of size 0");
 	}
 
