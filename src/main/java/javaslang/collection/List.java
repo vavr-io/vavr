@@ -44,7 +44,6 @@ import javaslang.Strings;
  * 
  * @param <E> Component type of the List.
  */
-// TODO: Serializable (readObject, writeObject(
 public interface List<E> extends Iterable<E> {
 
 	/**
