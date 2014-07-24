@@ -892,7 +892,7 @@ public interface List<E> extends Iterable<E> {
 	}
 
 	/**
-	 * Creates a List of given elements.
+	 * Creates a List of the given elements.
 	 * 
 	 * <pre>
 	 * <code>  List.of(1, 2, 3, 4)
@@ -901,20 +901,33 @@ public interface List<E> extends Iterable<E> {
 	 * </pre>
 	 *
 	 * @param <T> Component type of the List.
-	 * @param elements List elements.
+	 * @param elements First (required) element.
+	 * @param elements Zero or more additional elements.
 	 * @return A list containing the given elements in the same order.
-	 * @throws javaslang.Requirements.UnsatisfiedRequirementException if elements is null
 	 */
 	@SafeVarargs
-	static <T> List<T> of(T... elements) {
-		requireNonNull(elements, "elements is null");
+	static <T> List<T> of(T element, T... elements) {
 		List<T> result = EmptyList.instance();
 		for (int i = elements.length - 1; i >= 0; i--) {
 			result = result.prepend(elements[i]);
 		}
-		return result;
+		return result.prepend(element);
 	}
-
+	
+	/**
+	 * Creates a List of the given elements.
+	 * 
+	 * @param elements An Iterable of elements.
+	 * @return A list containing the given elements in the same order.
+	 */
+	static <T> List<T> of(Iterable<T> elements) {
+		List<T> result = EmptyList.instance();
+		for (T element : elements) {
+			result = result.prepend(element);
+		}
+		return result.reverse();
+	}
+	
 	/**
 	 * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
 	 * {@link Stream#collect(Collector)} to obtain a {@link javaslang.collection.List}.

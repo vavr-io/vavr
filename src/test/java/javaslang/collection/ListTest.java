@@ -10,6 +10,9 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Spliterator;
 
 import javaslang.Requirements.UnsatisfiedRequirementException;
 
@@ -769,15 +772,88 @@ public class ListTest {
 
 	// -- spliterator
 
-	// TODO
+	@Test
+	public void shouldSplitEmptyList() {
+		final java.util.List<Integer> actual = new java.util.ArrayList<>();
+		List.<Integer> empty().spliterator().forEachRemaining(i -> actual.add(i));
+		assertThat(actual).isEqualTo(Arrays.asList());
+	}
+
+	@Test
+	public void shouldSplitNonEmptyList() {
+		final java.util.List<Integer> actual = new java.util.ArrayList<>();
+		List.of(1, 2, 3).spliterator().forEachRemaining(i -> actual.add(i));
+		assertThat(actual).isEqualTo(Arrays.asList(1, 2, 3));
+	}
+	
+	@Test
+	public void shouldHaveImmutableSpliterator() {
+		assertThat(List.of(1, 2, 3).spliterator().characteristics() & Spliterator.IMMUTABLE).isNotZero();
+	}
+
+	@Test
+	public void shouldHaveOrderedSpliterator() {
+		assertThat(List.of(1, 2, 3).spliterator().characteristics() & Spliterator.ORDERED).isNotZero();
+	}
+
+	@Test
+	public void shouldHaveSizedSpliterator() {
+		assertThat(List.of(1, 2, 3).spliterator().characteristics() & Spliterator.SIZED).isNotZero();
+	}
+
+	@Test
+	public void shouldReturnSizeWhenSpliterator() {
+		assertThat(List.of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(3);
+	}
 
 	// -- iterator
 
-	// TODO
+	@Test
+	public void shouldNotHasNextWhenEmptyListIterator() {
+		assertThat(List.empty().iterator().hasNext()).isFalse();
+	}
+
+	@Test
+	public void shouldThrowOnNextWhenEmptyListIterator() {
+		assertThat(() -> List.empty().iterator().next()).isThrowing(NoSuchElementException.class,
+				null);
+	}
+
+	@Test
+	public void shouldIterateFirstElementOfNonEmptyList() {
+		assertThat(List.of(1, 2, 3).iterator().next()).isEqualTo(1);
+	}
+
+	@Test
+	public void shouldFullyIterateNonEmptyList() {
+		int actual = -1;
+		for (Iterator<Integer> iter = List.of(1, 2, 3).iterator(); iter.hasNext(); actual = iter
+				.next())
+			;
+		assertThat(actual).isEqualTo(3);
+	}
 
 	// -- iterator(int)
 
-	// TODO
+	@Test
+	public void shouldThrowWhenEmptyListIteratorStartingAtIndex() {
+		assertThat(() -> List.empty().iterator(1)).isThrowing(IndexOutOfBoundsException.class,
+				"sublist(1) on list of size 0");
+	}
+
+	@Test
+	public void shouldIterateFirstElementOfNonEmptyListStartingAtIndex() {
+		assertThat(List.of(1, 2, 3).iterator(1).next()).isEqualTo(2);
+	}
+
+	@Test
+	public void shouldFullyIterateNonEmptyListStartingAtIndex() {
+		int actual = -1;
+		for (Iterator<Integer> iter = List.of(1, 2, 3).iterator(1); iter.hasNext(); actual = iter
+				.next())
+			;
+		assertThat(actual).isEqualTo(3);
+	}
 
 	// -- equals
 
@@ -803,7 +879,15 @@ public class ListTest {
 
 	// -- hashCode
 
-	// TODO
+	@Test
+	public void shouldCalculateHashCodeOfEmptyList() {
+		assertThat(List.empty().hashCode()).isEqualTo(1);
+	}
+
+	@Test
+	public void shouldCalculateHashCodeOfNonEmptyList() {
+		assertThat(List.of(1, 2, 3).hashCode()).isEqualTo(31 * (31 * (31 * 1 + 1) + 2) + 3);
+	}
 
 	// -- toString
 
@@ -815,6 +899,30 @@ public class ListTest {
 	@Test
 	public void shouldStringifyNonEmptyList() {
 		assertThat(List.of(1, 2, 3).toString()).isEqualTo("(1, 2, 3)");
+	}
+
+	// -- List.empty()
+
+	@Test
+	public void shouldCreateEmptyList() {
+		assertThat(List.empty()).isEqualTo(EmptyList.instance());
+	}
+
+	// -- List.of(T, T...)
+
+	@Test
+	public void shouldCreateListOfElements() {
+		final List<Object> actual = List.of(1, 2);
+		final List<Object> expected = new LinearList<>(1, new LinearList<>(2, EmptyList.instance()));
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	// -- List.of(Iterable)
+
+	@Test
+	public void shouldCreateListOfIterable() {
+		final java.util.List<Integer> arrayList = Arrays.asList(1, 2, 3);
+		assertThat(List.of(arrayList)).isEqualTo(List.of(1, 2, 3));
 	}
 
 }
