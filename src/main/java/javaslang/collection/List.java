@@ -129,12 +129,11 @@ public interface List<E> extends Iterable<E> {
 	}
 
 	/**
-	 * Appends all elements of a given List to this List in O(2n).
+	 * Appends all elements of a given List to this List in O(2n). This implementation returns
+	 * {@code elements.prependAll(this)}.
 	 * <p>
 	 * Example: {@code List.of(1,2,3).appendAll(List.of(4,5,6))} equals {@code List.of(1,2,3,4,5,6)}
 	 * .
-	 * <p>
-	 * The result is equivalent to {@code elements.prependAll(this)}.
 	 * 
 	 * @param elements Elements to be appended.
 	 * @return A new List containing the given elements appended to this List.
@@ -143,13 +142,7 @@ public interface List<E> extends Iterable<E> {
 	@SuppressWarnings("unchecked")
 	default List<E> appendAll(List<? extends E> elements) {
 		requireNonNull(elements, "elements is null");
-		if (isEmpty()) {
-			return (List<E>) elements;
-		} else if (elements.isEmpty()) {
-			return this;
-		} else {
-			return ((List<E>) elements).prependAll(this);
-		}
+		return ((List<E>) elements).prependAll(this);
 	}
 
 	/**
@@ -166,6 +159,9 @@ public interface List<E> extends Iterable<E> {
 
 	/**
 	 * Prepends all elements of a given List to this List in O(2n).
+	 * <p>
+	 * If this.isEmpty(), elements is returned. If elements.isEmpty(), this is returned. Otherwise
+	 * elements are prepended to this.
 	 * <p>
 	 * Example: {@code List.of(4,5,6).prependAll(List.of(1,2,3))} equals
 	 * {@code List.of(1,2,3,4,5,6)}.
@@ -912,7 +908,7 @@ public interface List<E> extends Iterable<E> {
 		}
 		return result.prepend(element);
 	}
-	
+
 	/**
 	 * Creates a List of the given elements.
 	 * 
@@ -927,7 +923,7 @@ public interface List<E> extends Iterable<E> {
 		}
 		return result.reverse();
 	}
-	
+
 	/**
 	 * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
 	 * {@link Stream#collect(Collector)} to obtain a {@link javaslang.collection.List}.

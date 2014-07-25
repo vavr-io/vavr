@@ -5,16 +5,19 @@
  */
 package javaslang.collection;
 
+import java.io.Serializable;
+
 import javaslang.collection.List.AbstractList;
 
 /**
  * Non-empty List.
  * 
- * TODO: javadoc
- *
  * @param <E> Component type of the List.
  */
-public class LinearList<E> extends AbstractList<E> {
+// DEV NOTE: A future implementation of Cloneable clone() could be new LinearList(head, tail).
+public class LinearList<E> extends AbstractList<E> implements Serializable {
+
+	private static final long serialVersionUID = 2734262077812389412L;
 
 	private final E head;
 	private final List<E> tail;
