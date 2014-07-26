@@ -52,7 +52,7 @@ public final class EmptyList<E> extends AbstractList<E> implements Serializable 
 	/**
 	 * Instance control for object serialization.
 	 * 
-	 * @return The singleton object of EmptyList.
+	 * @return The singleton instance of EmptyList.
 	 * @see java.io.Serializable
 	 */
 	private Object readResolve() {
