@@ -134,5 +134,5 @@ public class Failure<T> implements Try<T> {
 	public String toString() {
 		return String.format("Failure[%s]", cause.getCause());
 	}
-	
+
 }
