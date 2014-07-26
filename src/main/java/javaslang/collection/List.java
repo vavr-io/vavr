@@ -41,6 +41,12 @@ import javaslang.Strings;
  * {@code new LinearList(1, new LinearList(2, new LinearList(3, EmptyList.instance())))}.
  * <p>
  * Use {@code List.empty()} instead of {@code EmptyList.instance()}.
+ * <p>
+ * In contrast to the mutable List variant {@link java.util.ArrayList}, it does not make sense for
+ * immutable Lists to implement the interface {@link java.lang.Cloneable} because of the following
+ * conclusion: <blockquote>
+ * "[...] , it doesn’t make sense for immutable classes to support object copying, because copies would be virtually indistinguishable from the original."
+ * </blockquote> <em>(see Effective Java, 2nd ed., p. 61)</em>.
  * 
  * @param <E> Component type of the List.
  */

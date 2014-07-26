@@ -16,7 +16,6 @@ import javaslang.collection.List.AbstractList;
  * 
  * @param <E> Component type of the List.
  */
-// DEV NOTE: A future implementation of Cloneable should return the singleton instance.
 public final class EmptyList<E> extends AbstractList<E> implements Serializable {
 
 	private static final long serialVersionUID = 809473773619488283L;

@@ -14,7 +14,6 @@ import javaslang.collection.List.AbstractList;
  * 
  * @param <E> Component type of the List.
  */
-// DEV NOTE: A future implementation of Cloneable clone() could be new LinearList(head, tail).
 public class LinearList<E> extends AbstractList<E> implements Serializable {
 
 	private static final long serialVersionUID = 2734262077812389412L;
