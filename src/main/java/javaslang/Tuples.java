@@ -154,7 +154,7 @@ public final class Tuples {
 
 		@Override
 		public boolean equals(Object o) {
-			if (this == o) {
+			if (o == this) {
 				return true;
 			} else if (o == null || !(o instanceof Tuple1)) {
 				return false;
@@ -192,7 +192,7 @@ public final class Tuples {
 
 		@Override
 		public boolean equals(Object o) {
-			if (this == o) {
+			if (o == this) {
 				return true;
 			} else if (o == null || !(o instanceof Tuple2)) {
 				return false;
@@ -232,7 +232,7 @@ public final class Tuples {
 
 		@Override
 		public boolean equals(Object o) {
-			if (this == o) {
+			if (o == this) {
 				return true;
 			} else if (o == null || !(o instanceof Tuple3)) {
 				return false;
@@ -276,7 +276,7 @@ public final class Tuples {
 
 		@Override
 		public boolean equals(Object o) {
-			if (this == o) {
+			if (o == this) {
 				return true;
 			} else if (o == null || !(o instanceof Tuple4)) {
 				return false;
@@ -323,7 +323,7 @@ public final class Tuples {
 
 		@Override
 		public boolean equals(Object o) {
-			if (this == o) {
+			if (o == this) {
 				return true;
 			} else if (o == null || !(o instanceof Tuple5)) {
 				return false;
@@ -373,7 +373,7 @@ public final class Tuples {
 
 		@Override
 		public boolean equals(Object o) {
-			if (this == o) {
+			if (o == this) {
 				return true;
 			} else if (o == null || !(o instanceof Tuple6)) {
 				return false;
@@ -426,7 +426,7 @@ public final class Tuples {
 
 		@Override
 		public boolean equals(Object o) {
-			if (this == o) {
+			if (o == this) {
 				return true;
 			} else if (o == null || !(o instanceof Tuple7)) {
 				return false;
@@ -482,7 +482,7 @@ public final class Tuples {
 
 		@Override
 		public boolean equals(Object o) {
-			if (this == o) {
+			if (o == this) {
 				return true;
 			} else if (o == null || !(o instanceof Tuple8)) {
 				return false;
@@ -542,7 +542,7 @@ public final class Tuples {
 
 		@Override
 		public boolean equals(Object o) {
-			if (this == o) {
+			if (o == this) {
 				return true;
 			} else if (o == null || !(o instanceof Tuple9)) {
 				return false;
@@ -605,7 +605,7 @@ public final class Tuples {
 
 		@Override
 		public boolean equals(Object o) {
-			if (this == o) {
+			if (o == this) {
 				return true;
 			} else if (o == null || !(o instanceof Tuple10)) {
 				return false;
@@ -672,7 +672,7 @@ public final class Tuples {
 
 		@Override
 		public boolean equals(Object o) {
-			if (this == o) {
+			if (o == this) {
 				return true;
 			} else if (o == null || !(o instanceof Tuple11)) {
 				return false;
@@ -742,7 +742,7 @@ public final class Tuples {
 
 		@Override
 		public boolean equals(Object o) {
-			if (this == o) {
+			if (o == this) {
 				return true;
 			} else if (o == null || !(o instanceof Tuple12)) {
 				return false;
@@ -815,7 +815,7 @@ public final class Tuples {
 
 		@Override
 		public boolean equals(Object o) {
-			if (this == o) {
+			if (o == this) {
 				return true;
 			} else if (o == null || !(o instanceof Tuple13)) {
 				return false;

@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  *
  * @param <T> The type of the optional value.
  */
-public class Some<T> implements Option<T> {
+public final class Some<T> implements Option<T> {
 
 	private final T value;
 
@@ -82,10 +82,10 @@ public class Some<T> implements Option<T> {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
+		if (obj == this) {
 			return true;
 		}
-		if (!(obj instanceof Some)) {
+		if (obj == null || !(obj instanceof Some)) {
 			return false;
 		}
 		final Some<?> other = (Some<?>) obj;

@@ -11,7 +11,7 @@ import org.junit.Test;
 
 public class TryTest {
 
-	@Test(expected = Fatal.class)
+	@Test(expected = Failure.Fatal.class)
 	public void shouldPassThroughFatalException() {
 		Try.of(() -> {
 			throw new UnknownError();

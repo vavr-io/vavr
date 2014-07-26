@@ -129,10 +129,10 @@ public interface Either<L, R> {
 
 		@Override
 		public boolean equals(Object obj) {
-			if (this == obj) {
+			if (obj == this) {
 				return true;
 			}
-			if (!(obj instanceof LeftProjection)) {
+			if (obj == null || !(obj instanceof LeftProjection)) {
 				return false;
 			}
 			final LeftProjection<?, ?> other = (LeftProjection<?, ?>) obj;
@@ -228,10 +228,10 @@ public interface Either<L, R> {
 
 		@Override
 		public boolean equals(Object obj) {
-			if (this == obj) {
+			if (obj == this) {
 				return true;
 			}
-			if (!(obj instanceof RightProjection)) {
+			if (obj == null || !(obj instanceof RightProjection)) {
 				return false;
 			}
 			final RightProjection<?, ?> other = (RightProjection<?, ?>) obj;

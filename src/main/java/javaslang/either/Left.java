@@ -7,7 +7,7 @@ package javaslang.either;
 
 import java.util.Objects;
 
-public class Left<L, R> implements Either<L, R> {
+public final class Left<L, R> implements Either<L, R> {
 
 	final L left;
 
@@ -27,10 +27,10 @@ public class Left<L, R> implements Either<L, R> {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
+		if (obj == this) {
 			return true;
 		}
-		if (!(obj instanceof Left)) {
+		if (obj == null || !(obj instanceof Left)) {
 			return false;
 		}
 		final Left<?, ?> other = (Left<?, ?>) obj;

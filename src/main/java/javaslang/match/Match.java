@@ -17,7 +17,6 @@ import java.util.function.LongFunction;
 import java.util.function.Supplier;
 
 import javaslang.Lambdas;
-import javaslang.exception.NonFatal;
 import javaslang.option.None;
 import javaslang.option.Option;
 import javaslang.option.Some;
@@ -63,7 +62,7 @@ import javaslang.option.Some;
  * 
  * @see javaslang.match.Matchs
  */
-public class Match<R> implements Function<Object, R> {
+public final class Match<R> implements Function<Object, R> {
 
 	private final List<Case<R>> cases;
 	private final Option<Supplier<R>> defaultOption;
@@ -83,7 +82,7 @@ public class Match<R> implements Function<Object, R> {
 	 *         supplier.
 	 * @throws MatchError if no Match case matches the given object and no default is defined via
 	 *             orElse().
-	 * @throws NonFatal if an error occurs executing the matched case.
+	 * @throws javaslang.exception.Failure.NonFatal if an error occurs executing the matched case.
 	 */
 	@Override
 	public R apply(Object obj) {

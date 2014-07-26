@@ -6,7 +6,7 @@
 package javaslang.exception;
 
 import static org.fest.assertions.api.Assertions.assertThat;
-import javaslang.exception.Cause;
+import javaslang.exception.Failure.Cause;
 
 import org.junit.Test;
 

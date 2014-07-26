@@ -188,7 +188,9 @@ public final class Lambdas {
 
 		@Override
 		public boolean equals(Object o) {
-			if (o == null || !(o instanceof LambdaSignature)) {
+			if (o == this) {
+				return true;
+			} else if (o == null || !(o instanceof LambdaSignature)) {
 				return false;
 			} else {
 				final LambdaSignature that = (LambdaSignature) o;

@@ -967,6 +967,9 @@ public interface List<E> extends Iterable<E> {
 
 		@Override
 		public boolean equals(Object o) {
+			if (o == this) {
+				return true;
+			}
 			if (o == null || !(o instanceof List)) {
 				return false;
 			} else {

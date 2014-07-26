@@ -14,7 +14,7 @@ import java.util.function.Predicate;
 import javaslang.option.Option;
 import javaslang.option.Some;
 
-public class Success<T> implements Try<T> {
+public final class Success<T> implements Try<T> {
 
 	private T value;
 
@@ -36,7 +36,7 @@ public class Success<T> implements Try<T> {
 	public T get() {
 		return value;
 	}
-	
+
 	@Override
 	public T orElse(T other) {
 		return value;
@@ -48,10 +48,11 @@ public class Success<T> implements Try<T> {
 	}
 
 	@Override
-	public <X extends Throwable> T orElseThrow(Function<Throwable, ? extends X> exceptionSupplier) throws X {
+	public <X extends Throwable> T orElseThrow(Function<Throwable, ? extends X> exceptionSupplier)
+			throws X {
 		return value;
 	}
-	
+
 	@Override
 	public Try<T> recover(Function<? super Throwable, ? extends T> f) {
 		return this;
@@ -66,14 +67,15 @@ public class Success<T> implements Try<T> {
 	public Option<T> toOption() {
 		return new Some<>(value);
 	}
-	
+
 	@Override
 	public Try<T> filter(Predicate<? super T> predicate) {
 		try {
 			if (predicate.test(value)) {
 				return this;
 			} else {
-				return new Failure<T>(new NoSuchElementException("Predicate does not hold for " + value));
+				return new Failure<T>(new NoSuchElementException("Predicate does not hold for "
+						+ value));
 			}
 		} catch (Throwable t) {
 			return new Failure<>(t);
@@ -110,24 +112,24 @@ public class Success<T> implements Try<T> {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
+		if (obj == this) {
 			return true;
 		}
-		if (!(obj instanceof Success)) {
+		if (obj == null || !(obj instanceof Success)) {
 			return false;
 		}
 		final Success<?> success = (Success<?>) obj;
 		return Objects.equals(value, success.value);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(value);
 	}
-	
+
 	@Override
 	public String toString() {
 		return String.format("Success[%s]", value);
 	}
-	
+
 }
