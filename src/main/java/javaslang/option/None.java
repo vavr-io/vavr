@@ -82,7 +82,7 @@ public final class None<T> implements Option<T>, Serializable {
 
 	@Override
 	public Option<T> filter(Predicate<? super T> predicate) {
-		// semantically correct but structurally the same that <code>return this;</code>
+		// semantically correct but structurally the same as <code>return this;</code>
 		return None.instance();
 	}
 
