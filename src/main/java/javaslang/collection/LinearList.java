@@ -64,7 +64,7 @@ public final class LinearList<E> extends AbstractList<E> implements Serializable
 	/**
 	 * {@code readObject} method for the serialization proxy pattern.
 	 * <p>
-	 * Guarantee that the serialization system will never generate a serialized instance of the
+	 * Guarantees that the serialization system will never generate a serialized instance of the
 	 * enclosing class.
 	 * 
 	 * @param stream An object serialization stream.
@@ -128,7 +128,7 @@ public final class LinearList<E> extends AbstractList<E> implements Serializable
 				InvalidObjectException, IOException {
 			s.defaultReadObject();
 			final int size = s.readInt();
-			if (size == 0) {
+			if (size <= 0) {
 				throw new InvalidObjectException("No elements");
 			}
 			List<E> temp = EmptyList.instance();
@@ -147,7 +147,7 @@ public final class LinearList<E> extends AbstractList<E> implements Serializable
 		 * method causes the serialization system to translate the serialization proxy back into an
 		 * instance of the enclosing class upon deserialization.
 		 * 
-		 * @return
+		 * @return A deserialized instance of the enclosing class.
 		 */
 		private Object readResolve() {
 			return list;
