@@ -11,7 +11,6 @@ import static javaslang.Tuples.of;
 import static org.fest.assertions.api.Assertions.assertThat;
 import javaslang.Tuples.Tuple;
 import javaslang.Tuples.Tuple0;
-import javaslang.collection.List;
 
 import org.junit.Test;
 
@@ -127,12 +126,6 @@ public class TuplesTest {
 
 	@Test
 	public void shouldSerializeDeserializeNonEmptyList() throws Exception {
-
-		System.out.println("ser(List.empty()).length = " + serialize(List.empty()).length);
-		System.out.println("ser(List.of(1)).length = " + serialize(List.of(1, 2, 3, 4, 5, 6)).length);
-		System.out.println("ser(Tuple.of()).length = " + serialize(Tuples.of()).length);
-		System.out.println("ser(Tuple.of(1)).length = " + serialize(Tuples.of(1, 2, 3, 4, 5, 6)).length);
-
 		final Object actual = deserialize(serialize(Tuples.of(1, 2, 3)));
 		final Object expected = Tuples.of(1, 2, 3);
 		assertThat(actual).isEqualTo(expected);
