@@ -5,6 +5,7 @@
  */
 package javaslang.option;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -18,7 +19,9 @@ import java.util.function.Supplier;
  *
  * @param <T> The type of the optional value.
  */
-public final class Some<T> implements Option<T> {
+public final class Some<T> implements Option<T>, Serializable {
+
+	private static final long serialVersionUID = 8703728987837576700L;
 
 	private final T value;
 

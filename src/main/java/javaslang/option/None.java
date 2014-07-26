@@ -5,6 +5,7 @@
  */
 package javaslang.option;
 
+import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -17,12 +18,14 @@ import java.util.function.Supplier;
  *
  * @param <T> The type of the optional value.
  */
-public final class None<T> implements Option<T> {
+public final class None<T> implements Option<T>, Serializable {
+
+	private static final long serialVersionUID = -7265680402159660165L;
 
 	/**
 	 * The singleton instance of None.
 	 */
-	private static final None<?> NONE = new None<>();
+	private static final None<?> INSTANCE = new None<>();
 
 	/**
 	 * Hidden constructor.
@@ -31,8 +34,8 @@ public final class None<T> implements Option<T> {
 	}
 
 	/**
-	 * Returns the singleton instance of None as {@code None<T>} in the
-	 * context of a type {@code <T>}, e.g.
+	 * Returns the singleton instance of None as {@code None<T>} in the context of a type
+	 * {@code <T>}, e.g.
 	 * 
 	 * <pre>
 	 * <code>final Option&lt;Integer&gt; o = None.instance(); // o is of type None&lt;Integer&gt;</code>
@@ -43,7 +46,7 @@ public final class None<T> implements Option<T> {
 	 */
 	public static <T> None<T> instance() {
 		@SuppressWarnings("unchecked")
-		final None<T> none = (None<T>) NONE;
+		final None<T> none = (None<T>) INSTANCE;
 		return none;
 	}
 
@@ -103,6 +106,18 @@ public final class None<T> implements Option<T> {
 	@Override
 	public String toString() {
 		return "None";
+	}
+
+	// -- Serializable implementation
+
+	/**
+	 * Instance control for object serialization.
+	 * 
+	 * @return The singleton instance of EmptyList.
+	 * @see java.io.Serializable
+	 */
+	private Object readResolve() {
+		return INSTANCE;
 	}
 
 }

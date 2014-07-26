@@ -5,9 +5,12 @@
  */
 package javaslang.either;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public final class Left<L, R> implements Either<L, R> {
+public final class Left<L, R> implements Either<L, R>, Serializable {
+
+	private static final long serialVersionUID = 3297057402720487673L;
 
 	final L left;
 

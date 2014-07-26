@@ -5,6 +5,7 @@
  */
 package javaslang.exception;
 
+import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -14,7 +15,9 @@ import java.util.function.Predicate;
 import javaslang.option.Option;
 import javaslang.option.Some;
 
-public final class Success<T> implements Try<T> {
+public final class Success<T> implements Try<T>, Serializable {
+
+	private static final long serialVersionUID = 9157097743377386892L;
 
 	private T value;
 

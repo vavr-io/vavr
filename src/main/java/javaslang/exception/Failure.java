@@ -7,6 +7,7 @@ package javaslang.exception;
 
 import static javaslang.Requirements.requireNonNull;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -15,7 +16,9 @@ import java.util.function.Predicate;
 import javaslang.option.None;
 import javaslang.option.Option;
 
-public final class Failure<T> implements Try<T> {
+public final class Failure<T> implements Try<T>, Serializable {
+
+	private static final long serialVersionUID = 2836756728630414146L;
 
 	private final NonFatal cause;
 
@@ -206,9 +209,9 @@ public final class Failure<T> implements Try<T> {
 	/**
 	 * Use {@link Cause#of(Throwable)} to create instances of {@link Fatal} and {@link NonFatal}.
 	 */
-	public static final class Fatal extends Cause {
+	public static final class Fatal extends Cause implements Serializable {
 
-		private static final long serialVersionUID = 1L;
+		private static final long serialVersionUID = 7927552082244515502L;
 
 		Fatal(Throwable cause) {
 			super(cause);
@@ -224,9 +227,9 @@ public final class Failure<T> implements Try<T> {
 	/**
 	 * Use {@link Cause#of(Throwable)} to create instances of {@link Fatal} and {@link NonFatal}.
 	 */
-	public static final class NonFatal extends Cause {
+	public static final class NonFatal extends Cause implements Serializable {
 
-		private static final long serialVersionUID = 1L;
+		private static final long serialVersionUID = -1643015386682564223L;
 
 		NonFatal(Throwable cause) {
 			super(cause);
