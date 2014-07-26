@@ -68,11 +68,15 @@ public final class Parsers {
 			.caze((EOF eof) -> "EOF")
 			.caze((Literal l) -> "'" + l.literal + "'")
 			// TODO: does quantifier need braces '(' ')'?
-			.caze((Quantifier q) -> q.parser + q.bounds.symbol)
+			.caze((Quantifier q) -> stringify(q.parser.get()) + q.bounds.symbol)
 			.caze((Rule r) -> Stream
 					.of(r.parsers)
 					.map(p -> stringify(p.get()))
 					.collect(joining("\n  | ", r.name + "\n  : ", "\n  ;")))
+			.caze((Sequence s) -> Stream
+					.of(s.parsers)
+					.map(p -> stringify(p.get()))
+					.collect(joining(" ")))
 			.build();
 
 	/**
