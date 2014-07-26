@@ -956,7 +956,7 @@ public class ListTest {
 		assertThat(actual).isEqualTo(expected);
 	}
 
-	private byte[] serialize(Object obj) throws IOException {
+	private static byte[] serialize(Object obj) throws IOException {
 		try (ByteArrayOutputStream buf = new ByteArrayOutputStream();
 				ObjectOutputStream stream = new ObjectOutputStream(buf)) {
 			stream.writeObject(obj);
@@ -964,7 +964,7 @@ public class ListTest {
 		}
 	}
 
-	private Object deserialize(byte[] objectData) throws ClassNotFoundException, IOException {
+	private static Object deserialize(byte[] objectData) throws ClassNotFoundException, IOException {
 		try (ObjectInputStream stream = new ObjectInputStream(new ByteArrayInputStream(objectData))) {
 			return stream.readObject();
 		}
