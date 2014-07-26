@@ -61,7 +61,19 @@ import javaslang.match.Matchs;
 //   ------------ 
 //   example : Charset*; // whitespace between parser tokens allowed!
 //
-class Parsers {
+public final class Parsers {
+
+	private static final Match<String> TO_STRING = Matchs
+			.caze((Any any) -> ".")
+			.caze((EOF eof) -> "EOF")
+			.caze((Literal l) -> "'" + l.literal + "'")
+			// TODO: does quantifier need braces '(' ')'?
+			.caze((Quantifier q) -> q.parser + q.bounds.symbol)
+			.caze((Rule r) -> Stream
+					.of(r.parsers)
+					.map(p -> stringify(p.get()))
+					.collect(joining("\n  | ", r.name + "\n  : ", "\n  ;")))
+			.build();
 
 	/**
 	 * This class is not intended to be instantiated.
@@ -70,10 +82,14 @@ class Parsers {
 		requireNotInstantiable();
 	}
 
+	public static final String stringify(Parser parser) {
+		return TO_STRING.apply(parser);
+	}
+
 	/**
 	 * Wildcard '.' parser. Matches a single, arbitrary character.
 	 */
-	static class Any extends AbstractParser {
+	static class Any implements Parser {
 
 		static final Any INSTANCE = new Any();
 
@@ -94,7 +110,7 @@ class Parsers {
 	/**
 	 * End-of-file (EOF) parser. Recognized the end of the input.
 	 */
-	static class EOF extends AbstractParser {
+	static class EOF implements Parser {
 
 		static final EOF INSTANCE = new EOF();
 
@@ -121,7 +137,7 @@ class Parsers {
 	 * </code>
 	 * </pre>
 	 */
-	static class Literal extends AbstractParser {
+	static class Literal implements Parser {
 
 		final String literal;
 
@@ -140,7 +156,7 @@ class Parsers {
 	}
 
 	// TODO: javadoc
-	static class Quantifier extends AbstractParser {
+	static class Quantifier implements Parser {
 
 		final Supplier<Parser> parser;
 		final Bounds bounds;
@@ -208,7 +224,7 @@ class Parsers {
 	 * </code>
 	 * </pre>
 	 */
-	static class Rule extends AbstractParser {
+	static class Rule implements Parser {
 
 		final String name;
 		final Supplier<Parser>[] parsers;
@@ -262,7 +278,7 @@ class Parsers {
 	}
 
 	// TODO: javadoc
-	static class Sequence extends AbstractParser {
+	static class Sequence implements Parser {
 
 		// TODO: make whitespace regex configurable
 		private static final Pattern WHITESPACE = Pattern.compile("\\s*");
@@ -315,37 +331,7 @@ class Parsers {
 						return parsed;
 					}
 				}
-			}, (t1, t2) -> null); // the combiner is not used here because this is no parallel
-									// stream
+			}, (t1, t2) -> null); // combiner not used because stream is not parallel
 		}
 	}
-
-	/**
-	 * Unity of common parser properties.
-	 */
-	private static abstract class AbstractParser implements Parser, Supplier<Parser> {
-
-		static final Match<String> TO_STRING = Matchs//
-				.caze((Any any) -> ".")
-				.caze((EOF eof) -> "EOF")
-				.caze((Literal l) -> "'" + l.literal + "'")
-				// TODO: does quantifier need braces '(' ')'?
-				.caze((Quantifier q) -> q.parser + q.bounds.symbol)
-				.caze((Rule r) -> Stream
-						.of(r.parsers)
-						.map(p -> p.get().toString())
-						.collect(joining("\n  | ", r.name + "\n  : ", "\n  ;")))
-				.build();
-
-		@Override
-		public final Parser get() {
-			return this;
-		}
-
-		@Override
-		public final String toString() {
-			return TO_STRING.apply(this);
-		}
-	}
-
 }

@@ -63,10 +63,10 @@ public class ParsersTest {
 	public void shouldMatchTheAllRule() {
 		// TODO
 	}
-	
+
 	@Test
 	public void shouldConvertRuleToString() {
-		final String actual = new Rule("testRule", new Literal("123")).toString();
+		final String actual = Parsers.stringify(new Rule("testRule", new Literal("123")));
 		assertThat(actual).isEqualTo("testRule\n  : '123'\n  ;");
 	}
 
