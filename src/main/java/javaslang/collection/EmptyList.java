@@ -47,6 +47,8 @@ public final class EmptyList<E> extends AbstractList<E> implements Serializable 
 		return true;
 	}
 
+	// -- Serializable implementation
+	
 	/**
 	 * Instance control for object serialization.
 	 * 

@@ -8,6 +8,11 @@ package javaslang.collection;
 import static javaslang.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.assertThat;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -785,20 +790,23 @@ public class ListTest {
 		List.of(1, 2, 3).spliterator().forEachRemaining(i -> actual.add(i));
 		assertThat(actual).isEqualTo(Arrays.asList(1, 2, 3));
 	}
-	
+
 	@Test
 	public void shouldHaveImmutableSpliterator() {
-		assertThat(List.of(1, 2, 3).spliterator().characteristics() & Spliterator.IMMUTABLE).isNotZero();
+		assertThat(List.of(1, 2, 3).spliterator().characteristics() & Spliterator.IMMUTABLE)
+				.isNotZero();
 	}
 
 	@Test
 	public void shouldHaveOrderedSpliterator() {
-		assertThat(List.of(1, 2, 3).spliterator().characteristics() & Spliterator.ORDERED).isNotZero();
+		assertThat(List.of(1, 2, 3).spliterator().characteristics() & Spliterator.ORDERED)
+				.isNotZero();
 	}
 
 	@Test
 	public void shouldHaveSizedSpliterator() {
-		assertThat(List.of(1, 2, 3).spliterator().characteristics() & Spliterator.SIZED).isNotZero();
+		assertThat(List.of(1, 2, 3).spliterator().characteristics() & Spliterator.SIZED)
+				.isNotZero();
 	}
 
 	@Test
@@ -837,8 +845,9 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowWhenEmptyListIteratorStartingAtIndex() {
-		assertThat(() -> { List.empty().iterator(1); }).isThrowing(IndexOutOfBoundsException.class,
-				"sublist(1) on list of size 0");
+		assertThat(() -> {
+			List.empty().iterator(1);
+		}).isThrowing(IndexOutOfBoundsException.class, "sublist(1) on list of size 0");
 	}
 
 	@Test
@@ -923,6 +932,42 @@ public class ListTest {
 	public void shouldCreateListOfIterable() {
 		final java.util.List<Integer> arrayList = Arrays.asList(1, 2, 3);
 		assertThat(List.of(arrayList)).isEqualTo(List.of(1, 2, 3));
+	}
+
+	// -- Serializable interface
+
+	@Test
+	public void shouldSerializeDeserializeEmptyList() throws Exception {
+		final Object actual = deserialize(serialize(List.empty()));
+		final Object expected = List.empty();
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldPreserveSingletonInstanceOnDeserialization() throws Exception {
+		final boolean actual = deserialize(serialize(List.empty())) == List.empty();
+		assertThat(actual).isTrue();
+	}
+
+	@Test
+	public void shouldSerializeDeserializeNonEmptyList() throws Exception {
+		final Object actual = deserialize(serialize(List.of(1, 2, 3)));
+		final Object expected = List.of(1, 2, 3);
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	private byte[] serialize(Object obj) throws IOException {
+		try (ByteArrayOutputStream buf = new ByteArrayOutputStream();
+				ObjectOutputStream stream = new ObjectOutputStream(buf)) {
+			stream.writeObject(obj);
+			return buf.toByteArray();
+		}
+	}
+
+	private Object deserialize(byte[] objectData) throws ClassNotFoundException, IOException {
+		try (ObjectInputStream stream = new ObjectInputStream(new ByteArrayInputStream(objectData))) {
+			return stream.readObject();
+		}
 	}
 
 }
