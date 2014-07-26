@@ -6,13 +6,10 @@
 package javaslang.collection;
 
 import static javaslang.Assertions.assertThat;
+import static javaslang.Serializables.deserialize;
+import static javaslang.Serializables.serialize;
 import static org.fest.assertions.api.Assertions.assertThat;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -954,20 +951,6 @@ public class ListTest {
 		final Object actual = deserialize(serialize(List.of(1, 2, 3)));
 		final Object expected = List.of(1, 2, 3);
 		assertThat(actual).isEqualTo(expected);
-	}
-
-	private static byte[] serialize(Object obj) throws IOException {
-		try (ByteArrayOutputStream buf = new ByteArrayOutputStream();
-				ObjectOutputStream stream = new ObjectOutputStream(buf)) {
-			stream.writeObject(obj);
-			return buf.toByteArray();
-		}
-	}
-
-	private static Object deserialize(byte[] objectData) throws ClassNotFoundException, IOException {
-		try (ObjectInputStream stream = new ObjectInputStream(new ByteArrayInputStream(objectData))) {
-			return stream.readObject();
-		}
 	}
 
 }
