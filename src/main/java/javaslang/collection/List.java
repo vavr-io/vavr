@@ -420,8 +420,8 @@ public interface List<E> extends Iterable<E> {
 	}
 
 	/**
-	 * Convenience method, because it is well known from java.util collections. It has not effect on
-	 * the original List, it just returns EmptyList.instance().
+	 * Convenience method, well known from java.util collections. It has no effect on the original
+	 * List, it just returns EmptyList.instance().
 	 * 
 	 * @return EmptyList.instance()
 	 */
@@ -976,17 +976,14 @@ public interface List<E> extends Iterable<E> {
 				List<?> list1 = this;
 				List<?> list2 = (List<?>) o;
 				while (!list1.isEmpty() && !list2.isEmpty()) {
-					final Object head1 = list1.head();
-					final Object head2 = list2.head();
-					final boolean isEqual = Objects.equals(head1, head2);
+					final boolean isEqual = Objects.equals(list1.head(), list2.head());
 					if (!isEqual) {
 						return false;
 					}
 					list1 = list1.tail();
 					list2 = list2.tail();
 				}
-				final boolean isSameSize = list1.isEmpty() && list2.isEmpty();
-				return isSameSize;
+				return list1.isEmpty() && list2.isEmpty();
 			}
 		}
 
