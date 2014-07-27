@@ -26,51 +26,11 @@ interface Parser extends Supplier<Parser> {
 	Either<Integer, Tree<Tuple2<Integer, Integer>>> parse(String text, int index);
 
 	/**
-	 * Being a self-supplier is the key for constructing grammars programatically using methods.
+	 * Being a self-supplier is the key for constructing grammars programatically using methods,
+	 * which are evaluated lazily. This allows to build grammars containing cyclic references.
+	 * <p>
 	 * Parser implementations which have child parsers, should provide a constructor having
-	 * Supplier&lt;Parser&gt; as argument. This allows to build grammars containing cyclic
-	 * references:
-	 * 
-	 * <pre>
-	 * <code>class JSONGrammar extends Grammar {
-	 * 
-	 *     // define start rule
-	 *     JSONGrammar() {
-	 *         super(JSONGrammar::json);
-	 *     }
-	 *     
-	 *     // json : jsonObject | jsonArray | jsonString | jsonNumber | 'true' | 'false' | 'null' ;
-	 *     static Rule json() {
-	 *         return new Rule("json",
-	 *                 JSONGrammar::jsonObject, // rule reference
-	 *                 JSONGrammar::jsonArray,
-	 *                 JSONGrammar::jsonString,
-	 *                 JSONGrammar::jsonNumber,
-	 *                 new Literal("true"),
-	 *                 new Literal("false"),
-	 *                 new Literal("null"));
-	 *     }
-	 *     
-	 *     // jsonObject : '{' ( pair ( ',' pair )* )? '}' ;
-	 *     static Rule jsonObject() {
-	 *         return new Rule("jsonObject", new Sequence(
-	 *                 new Literal("{"),
-	 *                 zeroOrMore(JSONGrammar::pair, ","), // comma separated pairs
-	 *                 new Literal("}"));
-	 *     }
-	 *     
-	 *     // pair : jsonString ':' json ;
-	 *     static Parser pair() {
-	 *         return new Sequence(
-	 *                 JSONGrammar::jsonString,
-	 *                 new Literal(":"),
-	 *                 JSONGrammar::json); // LOOK MA! CYCLIC REFERENCE!
-	 *     }
-	 *     
-	 *     // etc.
-	 *     
-	 * }</code>
-	 * </pre>
+	 * Supplier&lt;Parser&gt; as argument.
 	 * 
 	 * @return This Parser instance.
 	 * @see java.util.function.Supplier#get()

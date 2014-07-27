@@ -67,10 +67,9 @@ public final class Parsers {
 			.caze((Any any) -> ".")
 			.caze((EOF eof) -> "EOF")
 			.caze((Literal l) -> "'" + l.literal + "'")
-			// TODO: does quantifier need braces '(' ')'?
-			.caze((Quantifier q) -> stringify(q.parser.get()) + q.bounds.symbol)
+			.caze((Quantifier q) -> "(" + stringify(q.parser.get()) + ")" + q.bounds.symbol)
 			.caze((Rule r) -> Stream
-					.of(r.parsers)
+					.of(r.alternatives)
 					.map(p -> stringify(p.get()))
 					.collect(joining("\n  | ", r.name + "\n  : ", "\n  ;")))
 			.caze((Sequence s) -> Stream
@@ -231,21 +230,21 @@ public final class Parsers {
 	static class Rule implements Parser {
 
 		final String name;
-		final Supplier<Parser>[] parsers;
+		final Supplier<Parser>[] alternatives;
 
 		@SafeVarargs
-		Rule(String name, Supplier<Parser>... parsers) {
+		Rule(String name, Supplier<Parser>... alternatives) {
 			requireNonNull(name, "name is null");
-			requireNotNullOrEmpty(parsers, "No parsers");
+			requireNotNullOrEmpty(alternatives, "No alternatives");
 			this.name = name;
-			this.parsers = parsers;
+			this.alternatives = alternatives;
 		}
 
 		@Override
 		public Either<Integer, Tree<Tuple2<Integer, Integer>>> parse(String text, int index) {
 			final Either<Integer, Tree<Tuple2<Integer, Integer>>> initial = new Left<>(index);
 			return Stream
-					.of(parsers)
+					.of(alternatives)
 					.parallel()
 					.map(parser -> parser.get().parse(text, index))
 					.reduce(initial, (t1, t2) -> reduce(t1, t2, text, index),
@@ -287,20 +286,11 @@ public final class Parsers {
 		// TODO: make whitespace regex configurable
 		private static final Pattern WHITESPACE = Pattern.compile("\\s*");
 
-		final String name;
 		final Supplier<Parser>[] parsers;
 
 		@SafeVarargs
 		public Sequence(Supplier<Parser>... parsers) {
 			requireNotNullOrEmpty(parsers, "No parsers");
-			this.name = null;
-			this.parsers = parsers;
-		}
-
-		@SafeVarargs
-		public Sequence(String name, Supplier<Parser>... parsers) {
-			requireNotNullOrEmpty(parsers, "No parsers");
-			this.name = name;
 			this.parsers = parsers;
 		}
 
@@ -308,9 +298,8 @@ public final class Parsers {
 		@Override
 		public Either<Integer, Tree<Tuple2<Integer, Integer>>> parse(String text, int index) {
 			// Starts with an emty root tree and successively attaches parsed children.
-			final String id = (name == null) ? "<Sequence>".intern() : name;
 			final Either<Integer, Tree<Tuple2<Integer, Integer>>> initial = new Right<>(new Tree<>(
-					id, Tuples.of(index, 0)));
+					"Sequence", Tuples.of(index, 0)));
 			return Stream.of(parsers).reduce(initial, (tree, parser) -> {
 				if (tree.isLeft()) {
 					// first failure returned

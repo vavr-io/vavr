@@ -31,8 +31,10 @@ public class Grammar {
 	
 	private final Supplier<Parser> parser;
 
+	// TODO: Start Rule/Branch instead of Parser
 	public Grammar(Supplier<Parser> parser) {
 		requireNonNull(parser, "parser is null");
+		// TODO: don't add EOF
 		this.parser = new Sequence(parser, EOF.instance());
 	}
 

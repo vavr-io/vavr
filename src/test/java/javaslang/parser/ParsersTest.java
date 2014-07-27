@@ -5,10 +5,6 @@
  */
 package javaslang.parser;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-import javaslang.parser.Parsers.Literal;
-import javaslang.parser.Parsers.Rule;
-
 import org.junit.Test;
 
 public class ParsersTest {
@@ -33,41 +29,10 @@ public class ParsersTest {
 	 * </code>
 	 * </pre>
 	 */
+	// TODO: antlr uses the first rule which matches
 	@Test
 	public void shouldMatchTheLexerRuleThatRecognizesTheMostInputCharacters() {
 		// TODO
-	}
-
-	/**
-	 * Given an input sequence {@code 'aaa'}, the following {@code all} rule should match.
-	 * 
-	 * <pre>
-	 * <code>
-	 * grammar
-	 *   : LexerRule1
-	 *   | LexerRule2
-	 *   | .*         # all
-	 *   ; // EOF not required
-	 * 
-	 * LexerRule1
-	 *   : 'a'
-	 *   ;
-	 *   
-	 * LexerRule2
-	 *   : 'aa'
-	 *   ;
-	 * </code>
-	 * </pre>
-	 */
-	@Test
-	public void shouldMatchTheAllRule() {
-		// TODO
-	}
-
-	@Test
-	public void shouldConvertRuleToString() {
-		final String actual = Parsers.stringify(new Rule("testRule", new Literal("123")));
-		assertThat(actual).isEqualTo("testRule\n  : '123'\n  ;");
 	}
 
 }
