@@ -71,27 +71,35 @@ import javaslang.parser.Parsers.Sequence;
  * </pre>
  */
 // DEV NOTE: Grammar is meant to be extended, i.e. it is not final.
-public class Grammar {
+public interface Grammar {
 
-	private final Supplier<Rule> startRule;
+	/**
+	 * 
+	 * @param text
+	 * @return
+	 * @see http 
+	 *      ://stackoverflow.com/questions/1888854/what-is-the-difference-between-an-abstract-syntax
+	 *      -tree-and-a-concrete-syntax-tre
+	 */
+	Try<Tree<Tuple2<Integer, Integer>>> parse(String text);
 
-	public Grammar(Supplier<Rule> startRule) {
+	static Grammar of(Supplier<Rule> startRule) {
+		// TODO: startRule.get() might be null
 		requireNonNull(startRule, "startRule is null");
-		this.startRule = startRule;
-	}
-
-	public Try<Tree<Tuple2<Integer, Integer>>> parse(String text) {
-		final Either<Integer, Tree<Tuple2<Integer, Integer>>> parseResult = startRule.get().parse(
-				text, 0);
-		if (parseResult.isRight()) {
-			final Tree<Tuple2<Integer, Integer>> concreteSyntaxTree = parseResult.right().get();
-			return new Success<>(concreteSyntaxTree);
-		} else {
-			final int index = parseResult.left().get();
-			final Exception x = new IllegalArgumentException("cannot parse input at "
-					+ Strings.lineAndColumn(text, index));
-			return new Failure<>(x);
-		}
+		return text -> {
+			final Either<Integer, Tree<Tuple2<Integer, Integer>>> parseResult = startRule
+					.get()
+					.parse(text, 0);
+			if (parseResult.isRight()) {
+				final Tree<Tuple2<Integer, Integer>> concreteSyntaxTree = parseResult.right().get();
+				return new Success<>(concreteSyntaxTree);
+			} else {
+				final int index = parseResult.left().get();
+				final Exception x = new IllegalArgumentException("cannot parse input at "
+						+ Strings.lineAndColumn(text, index));
+				return new Failure<>(x);
+			}
+		};
 	}
 
 	// -- shortcuts used in grammar definitions
@@ -113,7 +121,7 @@ public class Grammar {
 	 * @param separator A separator.
 	 * @return A Parser which recognizes {@code ( P ( ',' P )* )?}.
 	 */
-	public static Parser list(Supplier<Parser> parser, String separator) {
+	static Parser list(Supplier<Parser> parser, String separator) {
 		return _0_1(parser, _0_n(str(separator), parser));
 	}
 
@@ -123,22 +131,22 @@ public class Grammar {
 	 * @param s A string.
 	 * @return {@code new Literal(s)}.
 	 */
-	public static Parser str(String s) {
+	static Parser str(String s) {
 		return new Literal(s);
 	}
 
 	@SafeVarargs
-	public static Parser _0_1(Supplier<Parser>... parsers) {
+	static Parser _0_1(Supplier<Parser>... parsers) {
 		return new Quantifier(new Sequence(parsers), ZERO_TO_ONE);
 	}
 
 	@SafeVarargs
-	public static Parser _0_n(Supplier<Parser>... parsers) {
+	static Parser _0_n(Supplier<Parser>... parsers) {
 		return new Quantifier(new Sequence(parsers), ZERO_TO_N);
 	}
 
 	@SafeVarargs
-	public static Parser _1_n(Supplier<Parser>... parsers) {
+	static Parser _1_n(Supplier<Parser>... parsers) {
 		return new Quantifier(new Sequence(parsers), ONE_TO_N);
 	}
 
