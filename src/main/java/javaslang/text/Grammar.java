@@ -28,7 +28,7 @@ import javaslang.exception.Try;
 // TODO: unescape literals
 // TODO: remove Branch, Sequence and Multiplicity nodes if they have no name/id
 public class Grammar {
-	
+
 	private final Supplier<Parser> parser;
 
 	// TODO: Start Rule/Branch instead of Parser
@@ -53,5 +53,5 @@ public class Grammar {
 		rule.append("\n  ;\n\n");
 		return rule.append(definitions).toString();
 	}
-	
+
 }

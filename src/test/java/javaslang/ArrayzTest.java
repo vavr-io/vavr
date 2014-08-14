@@ -13,7 +13,7 @@ import java.util.List;
 import org.junit.Test;
 
 public class ArrayzTest {
-	
+
 	@Test
 	public void shoudRecognizeNullArray() {
 		final byte[] array = null;
@@ -23,18 +23,18 @@ public class ArrayzTest {
 
 	@Test
 	public void shoudRecognizeEmptyArray() {
-		final byte[] array = new byte[] { };
+		final byte[] array = new byte[] {};
 		final boolean actual = Arrayz.isNullOrEmpty(array);
 		assertThat(actual).isEqualTo(true);
 	}
-	
+
 	@Test
 	public void shoudRecognizeNoneEmptyArray() {
 		final byte[] array = new byte[] { 1, 2, 3 };
 		final boolean actual = Arrayz.isNullOrEmpty(array);
 		assertThat(actual).isEqualTo(false);
 	}
-	
+
 	@Test
 	public void shoudConvertIntArrayToList() {
 		final List<Integer> actual = Arrayz.asList(1, 2, 3);

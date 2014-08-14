@@ -6,3 +6,4 @@
  * If a Left is projected to a Right, the Right monad operations have no effect on the Left value.
  */
 package javaslang.either;
+

@@ -100,7 +100,7 @@ public final class Tuples {
 	public static final class Tuple0 implements Tuple, Serializable {
 
 		private static final long serialVersionUID = -8715576573413569748L;
-		
+
 		/**
 		 * The singleton instance of Tuple0.
 		 */
@@ -127,7 +127,7 @@ public final class Tuples {
 		}
 
 		// -- Serializable implementation
-		
+
 		/**
 		 * Instance control for object serialization.
 		 * 
@@ -143,9 +143,9 @@ public final class Tuples {
 	 * Implementation of a single, a tuple containing 1 element.
 	 */
 	public static final class Tuple1<T> implements Tuple, Serializable {
-		
+
 		private static final long serialVersionUID = -8005498887610699234L;
-		
+
 		public final T _1;
 
 		public Tuple1(T t) {
@@ -179,9 +179,9 @@ public final class Tuples {
 	 * Implementation of a pair, a tuple containing 2 elements.
 	 */
 	public static final class Tuple2<T1, T2> implements Tuple, Serializable {
-		
+
 		private static final long serialVersionUID = -1359843718617881431L;
-		
+
 		public final T1 _1;
 		public final T2 _2;
 
@@ -217,9 +217,9 @@ public final class Tuples {
 	 * Implementation of a triple, a tuple containing 3 elements.
 	 */
 	public static final class Tuple3<T1, T2, T3> implements Tuple, Serializable {
-		
+
 		private static final long serialVersionUID = 1353320010987934190L;
-		
+
 		public final T1 _1;
 		public final T2 _2;
 		public final T3 _3;
@@ -259,9 +259,9 @@ public final class Tuples {
 	 * Implementation of a quadruple, a tuple containing 4 elements.
 	 */
 	public static final class Tuple4<T1, T2, T3, T4> implements Tuple, Serializable {
-		
+
 		private static final long serialVersionUID = -835853771811712181L;
-		
+
 		public final T1 _1;
 		public final T2 _2;
 		public final T3 _3;
@@ -304,9 +304,9 @@ public final class Tuples {
 	 * Implementation of a quintuple, a tuple containing 5 elements.
 	 */
 	public static final class Tuple5<T1, T2, T3, T4, T5> implements Tuple, Serializable {
-		
+
 		private static final long serialVersionUID = 8365094604388856720L;
-		
+
 		public final T1 _1;
 		public final T2 _2;
 		public final T3 _3;
@@ -352,9 +352,9 @@ public final class Tuples {
 	 * Implementation of a sextuple, a tuple containing 6 elements.
 	 */
 	public static final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Serializable {
-		
+
 		private static final long serialVersionUID = -5282391675740552818L;
-		
+
 		public final T1 _1;
 		public final T2 _2;
 		public final T3 _3;
@@ -403,9 +403,9 @@ public final class Tuples {
 	 * Implementation of a septuple, a tuple containing 7 elements.
 	 */
 	public static final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Serializable {
-		
+
 		private static final long serialVersionUID = 6913366542759921153L;
-		
+
 		public final T1 _1;
 		public final T2 _2;
 		public final T3 _3;
@@ -457,9 +457,9 @@ public final class Tuples {
 	 * Implementation of a octuple, a tuple containing 8 elements.
 	 */
 	public static final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Serializable {
-		
+
 		private static final long serialVersionUID = 117641715065938183L;
-		
+
 		public final T1 _1;
 		public final T2 _2;
 		public final T3 _3;
@@ -515,9 +515,9 @@ public final class Tuples {
 	 */
 	public static final class Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9> implements Tuple,
 			Serializable {
-		
+
 		private static final long serialVersionUID = -1578540921124551840L;
-		
+
 		public final T1 _1;
 		public final T2 _2;
 		public final T3 _3;
@@ -576,9 +576,9 @@ public final class Tuples {
 	 */
 	public static final class Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> implements Tuple,
 			Serializable {
-		
+
 		private static final long serialVersionUID = 7991284808329690986L;
-		
+
 		public final T1 _1;
 		public final T2 _2;
 		public final T3 _3;
@@ -640,9 +640,9 @@ public final class Tuples {
 	 */
 	public static final class Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> implements
 			Tuple, Serializable {
-		
+
 		private static final long serialVersionUID = 3493688489700741360L;
-		
+
 		public final T1 _1;
 		public final T2 _2;
 		public final T3 _3;
@@ -708,9 +708,9 @@ public final class Tuples {
 	 */
 	public static final class Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> implements
 			Tuple, Serializable {
-		
+
 		private static final long serialVersionUID = -175212910367376967L;
-		
+
 		public final T1 _1;
 		public final T2 _2;
 		public final T3 _3;
@@ -779,9 +779,9 @@ public final class Tuples {
 	 */
 	public static final class Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>
 			implements Tuple, Serializable {
-		
+
 		private static final long serialVersionUID = 2027952127515234777L;
-		
+
 		public final T1 _1;
 		public final T2 _2;
 		public final T3 _3;

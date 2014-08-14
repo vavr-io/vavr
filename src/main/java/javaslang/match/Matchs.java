@@ -53,7 +53,7 @@ public final class Matchs {
 	public static <T, R> Match.Builder<R> caze(T prototype, SerializableFunction<T, R> function) {
 		return new Match.Builder<R>().caze(prototype, function);
 	}
-	
+
 	public static <R> Match.Builder<R> caze(BooleanFunction<R> function) {
 		return new Match.Builder<R>().caze(function);
 	}

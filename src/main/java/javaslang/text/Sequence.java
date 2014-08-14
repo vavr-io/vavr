@@ -70,7 +70,7 @@ public class Sequence extends Parser {
 			}
 		}, (t1, t2) -> null); // the combiner is not used here because this is no parallel stream
 	}
-	
+
 	@Override
 	int getChildCount() {
 		return parsers.length;
@@ -78,13 +78,16 @@ public class Sequence extends Parser {
 
 	@Override
 	void stringify(StringBuilder rule, StringBuilder definitions, Set<String> visited) {
-		final Predicate<Parser> writeBraces = p -> parsers.length > 1 && p instanceof Branch && ((Branch) p).name == null;
+		final Predicate<Parser> writeBraces = p -> parsers.length > 1
+				&& p instanceof Branch
+				&& ((Branch) p).name == null;
 		Parser.stringify(name, parsers, " ", " ", writeBraces, rule, definitions, visited);
 	}
 
 	@Override
-	public String toString() {		
-		return (name != null) ? name : Stream.of(parsers)
+	public String toString() {
+		return (name != null) ? name : Stream
+				.of(parsers)
 				.map(p -> p.get().toString())
 				.collect(Collectors.joining(" "));
 	}

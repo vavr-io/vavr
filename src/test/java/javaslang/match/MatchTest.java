@@ -173,7 +173,7 @@ public class MatchTest {
 		final Number number = toNumber.apply("1");
 		assertThat(number).isEqualTo(new BigDecimal("1"));
 	}
-	
+
 	@Test
 	public void shouldAllowCommonReturnTypeUsingMatchs() {
 		final Match<Number> toNumber = Matchs
@@ -183,7 +183,7 @@ public class MatchTest {
 		final Number number = toNumber.apply("1");
 		assertThat(number).isEqualTo(new BigDecimal("1"));
 	}
-	
+
 	@Test
 	public void shouldAllowCommonReturnTypeUsingMatchsWithPrototype() {
 		final Match<Number> toNumber = Matchs
@@ -193,7 +193,7 @@ public class MatchTest {
 		final Number number = toNumber.apply("1");
 		assertThat(number).isEqualTo(new BigDecimal("1"));
 	}
-	
+
 	@Test
 	public void shouldMatchLambdaConsideringTypeHierarchy() {
 		final SpecialFunction lambda = i -> String.valueOf(i);

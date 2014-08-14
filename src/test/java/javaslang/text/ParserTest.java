@@ -135,8 +135,9 @@ public class ParserTest {
 		final Multiplicity multiplicity = new Multiplicity(new Literal("a"),
 				Multiplicity.Bounds.ZERO_TO_N);
 		final Either<Integer, Tree<Token>> ast = multiplicity.parse("aaa", 0);
-		assertThat(ast.right().get().toString()).isEqualTo(
-				"ZERO_TO_N(Token('aaa')\n  Literal(Token('a')),\n  Literal(Token('a')),\n  Literal(Token('a'))\n)");
+		assertThat(ast.right().get().toString())
+				.isEqualTo(
+						"ZERO_TO_N(Token('aaa')\n  Literal(Token('a')),\n  Literal(Token('a')),\n  Literal(Token('a'))\n)");
 	}
 
 	@Test
@@ -161,8 +162,9 @@ public class ParserTest {
 		final Multiplicity multiplicity = new Multiplicity(new Literal("a"),
 				Multiplicity.Bounds.ONE_TO_N);
 		final Either<Integer, Tree<Token>> ast = multiplicity.parse("aaa", 0);
-		assertThat(ast.right().get().toString()).isEqualTo(
-				"ONE_TO_N(Token('aaa')\n  Literal(Token('a')),\n  Literal(Token('a')),\n  Literal(Token('a'))\n)");
+		assertThat(ast.right().get().toString())
+				.isEqualTo(
+						"ONE_TO_N(Token('aaa')\n  Literal(Token('a')),\n  Literal(Token('a')),\n  Literal(Token('a'))\n)");
 	}
 
 	@Test

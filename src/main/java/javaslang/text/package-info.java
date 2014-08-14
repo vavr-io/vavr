@@ -1,4 +1,3 @@
-
 /**
  * <h1>Syntax</h1>
  * 
@@ -103,3 +102,4 @@
  *INT : [0-9]+</code></pre>
  */
 package javaslang.text;
+

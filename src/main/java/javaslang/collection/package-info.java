@@ -3,3 +3,4 @@
  * TODO: mid term goal is to design a immutable collection library with mature, math. operations
  */
 package javaslang.collection;
+

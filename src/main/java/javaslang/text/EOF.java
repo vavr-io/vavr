@@ -12,9 +12,9 @@ import javaslang.either.Left;
 import javaslang.either.Right;
 
 public class EOF extends Parser {
-	
+
 	private static final String NAME = "EOF";
-	
+
 	/**
 	 * The singleton instance of EOF.
 	 */
@@ -34,7 +34,7 @@ public class EOF extends Parser {
 	public static EOF instance() {
 		return INSTANCE;
 	}
-	
+
 	@Override
 	public Either<Integer, Tree<Token>> parse(String text, int index) {
 		if (index == text.length()) {
@@ -43,7 +43,7 @@ public class EOF extends Parser {
 			return new Left<>(index);
 		}
 	}
-	
+
 	@Override
 	void stringify(StringBuilder rule, StringBuilder definitions, Set<String> visited) {
 		rule.append(NAME);

@@ -40,7 +40,8 @@ public class Branch extends Parser {
 	@Override
 	public Either<Integer, Tree<Token>> parse(String text, int index) {
 		final Either<Integer, Tree<Token>> initial = new Left<>(index);
-		return Stream.of(parsers)
+		return Stream
+				.of(parsers)
 				.parallel()
 				.map(parser -> parser.get().parse(text, index))
 				.reduce(initial, (t1, t2) -> reduce(t1, t2, text, index),
@@ -69,14 +70,16 @@ public class Branch extends Parser {
 
 	@Override
 	void stringify(StringBuilder rule, StringBuilder definitions, Set<String> visited) {
-		final Predicate<Parser> checkBraces = p -> parsers.length > 1 && p instanceof Branch
+		final Predicate<Parser> checkBraces = p -> parsers.length > 1
+				&& p instanceof Branch
 				&& ((Branch) p).getChildCount() > 1;
 		Parser.stringify(name, parsers, "\n  | ", " | ", checkBraces, rule, definitions, visited);
 	}
 
 	@Override
 	public String toString() {
-		return (name != null) ? name : Stream.of(parsers)
+		return (name != null) ? name : Stream
+				.of(parsers)
 				.map(p -> p.get().toString())
 				.collect(Collectors.joining(" | "));
 	}

@@ -5,7 +5,6 @@
  */
 package javaslang;
 
-import javaslang.Requirements;
 import javaslang.Requirements.UnsatisfiedRequirementException;
 
 import org.junit.Test;

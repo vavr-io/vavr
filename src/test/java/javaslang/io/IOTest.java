@@ -10,12 +10,10 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.io.InputStream;
 
-import javaslang.io.IO;
-
 import org.junit.Test;
 
 public class IOTest {
-	
+
 	@Test
 	public void shouldConvertInputStreamToBytes() throws Exception {
 		final byte[] expected = "hello".getBytes();
@@ -23,7 +21,7 @@ public class IOTest {
 		final byte[] actual = IO.toBytes(in).orElse(null);
 		assertThat(actual).isEqualTo(expected);
 	}
-	
+
 	@Test
 	public void shouldConvertInputStreamToString() throws Exception {
 		final String expected = "hello";
@@ -31,5 +29,5 @@ public class IOTest {
 		final String actual = IO.toString(in, UTF8).orElse(null);
 		assertThat(actual).isEqualTo(expected);
 	}
-	
+
 }

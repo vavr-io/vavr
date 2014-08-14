@@ -98,7 +98,7 @@ public final class Arrayz {
 		requireNonNull(array, "array is null");
 		return createList(array.length, i -> array[i]);
 	}
-	
+
 	// -- isNullOrEmpty
 
 	/**
@@ -185,7 +185,7 @@ public final class Arrayz {
 		requireNonNull(array, "array is null");
 		return new StreamableList<Short>(array.length, i -> array[i]).stream();
 	}
-	
+
 	public static Stream<?> toStream(Object object) {
 		return ARRAY_TO_STREAM_MATCHER.apply(object);
 	}
@@ -231,7 +231,7 @@ public final class Arrayz {
 		requireNonNull(array, "array is null");
 		return new StreamableList<Short>(array.length, i -> array[i]).parallelStream();
 	}
-	
+
 	public static Stream<?> toParallelStream(Object object) {
 		return ARRAY_TO_PARALLEL_STREAM_MATCHER.apply(object);
 	}

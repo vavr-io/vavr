@@ -9,7 +9,6 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.io.Serializable;
 
-import javaslang.Lambdas;
 import javaslang.Tuples.Tuple3;
 
 import org.junit.Test;

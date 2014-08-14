@@ -11,3 +11,4 @@
  * TODO
  */
 package javaslang.exception;
+

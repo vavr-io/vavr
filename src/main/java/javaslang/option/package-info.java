@@ -6,3 +6,4 @@
  * TODO
  */
 package javaslang.option;
+
