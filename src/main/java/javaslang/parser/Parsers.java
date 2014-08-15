@@ -11,11 +11,15 @@ import static javaslang.Requirements.requireNonNull;
 import static javaslang.Requirements.requireNotInstantiable;
 import static javaslang.Requirements.requireNotNullOrEmpty;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import javaslang.Requirements.UnsatisfiedRequirementException;
 import javaslang.Strings;
 import javaslang.Tuples;
 import javaslang.Tuples.Tuple2;
@@ -107,6 +111,111 @@ public final class Parsers {
 			} else {
 				return new Left<>(index);
 			}
+		}
+	}
+
+	/**
+	 * Character range parser:
+	 *
+	 * <pre>
+	 * <code>
+	 * 'a'..'z'
+	 * </code>
+	 * </pre>
+	 */
+	static class CharRange implements Parser {
+
+		final Predicate<Character> isInRange;
+
+		/**
+		 * Constructs a character range.
+		 * 
+		 * @param from First character this range includes.
+		 * @param to Last character this range includes.
+		 * @throws UnsatisfiedRequirementException in case of a negative range, i.e. from &gt; to.
+		 */
+		CharRange(char from, char to) {
+			require(from <= to, "from > to");
+			this.isInRange = c -> c >= from && c <= to;
+		}
+
+		@Override
+		public Either<Integer, Tree<Tuple2<Integer, Integer>>> parse(String text, int index) {
+			if (index < text.length() && isInRange.test(text.charAt(index))) {
+				return new Right<>(new Tree<>("CharRange", Tuples.of(index, 1)));
+			} else {
+				return new Left<>(index);
+			}
+		}
+	}
+
+	/**
+	 * Character set parser:
+	 *
+	 * <pre>
+	 * <code>
+	 * [a-zA-Z$_]
+	 * </code>
+	 * </pre>
+	 */
+	static class CharSet implements Parser {
+
+		/** Matches ranges within char sets. */
+		static final Pattern CHAR_SET_RANGE_PATTERN = Pattern.compile(".-.");
+
+		final Predicate<Character> isInSet;
+
+		/**
+		 * Constructs a character range.
+		 * 
+		 * @param set A set of characters to include.
+		 */
+		CharSet(String charSetString) {
+			this.isInSet = parse(charSetString);
+		}
+
+		@Override
+		public Either<Integer, Tree<Tuple2<Integer, Integer>>> parse(String text, int index) {
+			if (index < text.length() && isInSet.test(text.charAt(index))) {
+				return new Right<>(new Tree<>("CharSet", Tuples.of(index, 1)));
+			} else {
+				return new Left<>(index);
+			}
+		}
+
+		/**
+		 * Parses a char set String which contains sequences of characters and character ranges
+		 * denoted as {@code a-z}.
+		 * 
+		 * @param charSetString A String defining a char set.
+		 * @return A Predicate that tests, if a given char is in the char set.
+		 */
+		Predicate<Character> parse(String charSetString) {
+
+			final List<Predicate<Character>> predicates = new ArrayList<>();
+			final Matcher matcher = CHAR_SET_RANGE_PATTERN.matcher(charSetString);
+			final StringBuffer charsBuf = new StringBuffer();
+
+			while (matcher.find()) {
+
+				// save single characters to buffer
+				matcher.appendReplacement(charsBuf, "");
+
+				// create Predicate from range
+				final String range = matcher.group(0);
+				final char from = range.charAt(0);
+				final char to = range.charAt(2);
+				predicates.add(c -> from <= c && c <= to);
+
+			}
+
+			// collect remaining characters to buffer and create Predicate
+			matcher.appendTail(charsBuf);
+			final String chars = charsBuf.toString();
+			predicates.add(c -> chars.indexOf(c) != -1);
+
+			// compose predicates
+			return predicates.stream().reduce(Predicate::or).orElse(c -> false);
 		}
 	}
 
