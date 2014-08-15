@@ -136,7 +136,7 @@ public final class Parsers {
 		 */
 		CharRange(char from, char to) {
 			require(from <= to, "from > to");
-			this.isInRange = c -> c >= from && c <= to;
+			this.isInRange = c -> from <= c && c <= to;
 		}
 
 		@Override
