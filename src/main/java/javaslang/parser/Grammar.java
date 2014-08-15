@@ -69,20 +69,28 @@ import javaslang.parser.Parsers.Sequence;
  *     
  * }</code>
  * </pre>
+ * 
+ * @see http
+ *      ://stackoverflow.com/questions/1888854/what-is-the-difference-between-an-abstract-syntax
+ *      -tree-and-a-concrete-syntax-tre
  */
-// DEV NOTE: Grammar is meant to be extended, i.e. it is not final.
 public interface Grammar {
 
 	/**
+	 * TODO: javadoc
 	 * 
-	 * @param text
-	 * @return
-	 * @see http 
-	 *      ://stackoverflow.com/questions/1888854/what-is-the-difference-between-an-abstract-syntax
-	 *      -tree-and-a-concrete-syntax-tre
+	 * @param text A text input to be parsed.
+	 * @return A concrete syntax tree of the text on parse success or a failure if a parse error
+	 *         occured.
 	 */
 	Try<Tree<Tuple2<Integer, Integer>>> parse(String text);
 
+	/**
+	 * TODO: javadoc
+	 * 
+	 * @param startRule
+	 * @return
+	 */
 	static Grammar of(Supplier<Rule> startRule) {
 		// TODO: startRule.get() might be null
 		requireNonNull(startRule, "startRule is null");
@@ -102,28 +110,7 @@ public interface Grammar {
 		};
 	}
 
-	// -- shortcuts used in grammar definitions
-
-	/**
-	 * A separated list, equivalent to {@code ( P ( ',' P )* )?}.
-	 * <p>
-	 * {@code list(parser, separator)}
-	 * <p>
-	 * is a shortcut for
-	 * <p>
-	 * {@code _0_1(parser, _0_N(str(separator), parser))}.
-	 * <p>
-	 * which expands to
-	 * <p>
-	 * {@code new Quantifier(new Sequence(parser, new Quantifier(new Sequence(new Literal(separator), parser), ZERO_TO_N)), ZERO_TO_ONE)}.
-	 * 
-	 * @param parser A Parser.
-	 * @param separator A separator.
-	 * @return A Parser which recognizes {@code ( P ( ',' P )* )?}.
-	 */
-	static Parser list(Supplier<Parser> parser, String separator) {
-		return _0_1(parser, _0_n(str(separator), parser));
-	}
+	// -- atomic shortcuts used in grammar definitions
 
 	/**
 	 * A string literal, {@code '<string>'}.
@@ -148,6 +135,29 @@ public interface Grammar {
 	@SafeVarargs
 	static Parser _1_n(Supplier<Parser>... parsers) {
 		return new Quantifier(new Sequence(parsers), ONE_TO_N);
+	}
+
+	// -- composite shortcuts used in grammar definitions
+
+	/**
+	 * A separated list, equivalent to {@code ( P ( ',' P )* )?}.
+	 * <p>
+	 * {@code list(parser, separator)}
+	 * <p>
+	 * is a shortcut for
+	 * <p>
+	 * {@code _0_1(parser, _0_N(str(separator), parser))}.
+	 * <p>
+	 * which expands to
+	 * <p>
+	 * {@code new Quantifier(new Sequence(parser, new Quantifier(new Sequence(new Literal(separator), parser), ZERO_TO_N)), ZERO_TO_ONE)}.
+	 * 
+	 * @param parser A Parser.
+	 * @param separator A separator.
+	 * @return A Parser which recognizes {@code ( P ( ',' P )* )?}.
+	 */
+	static Parser list(Supplier<Parser> parser, String separator) {
+		return _0_1(parser, _0_n(str(separator), parser));
 	}
 
 }
