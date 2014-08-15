@@ -1,5 +1,10 @@
 ## Coding Conventions
 
+### Style guidelines
+
+* The file `eclipse_formatter.xml` has to be used with Eclipse IDE.
+* It is recommended to automatically organize imports and format code on save action.
+
 ### Javadoc
 
 * Public API needs javadoc, e.g. public classes and public methods.
@@ -7,13 +12,12 @@
 * A package, which is part of the public API, contains a `package-info.java`.
 * Unit tests contain no javadoc at all (because they introduce no new API and contain no business logic).
 * Running `mvn javadoc:javadoc` results in no javadoc errors.
-* A (non-test) class starts with
+* All classes start with the following copyright notice, which contains the list of core developers:
 ```java
-/**                       ___ __          ,                   ___                                
- *  __ ___ _____  _______/  /  / ______  / \_   ______ ______/__/_____  ______  _______ _____    
- * /  '__/'  _  \/   ___/      \/   "__\/  _/__/ ____/'  ___/  /   "__\/   ,  \/   ___/'  "__\   
- * \__/  \______/\______\__/___/\______/\___/\_____/ \______\_/\______/\__/___/\______\______/.io
- * Licensed under the Apache License, Version 2.0. Copyright 2014 Daniel Dietrich.
+/**    / \____  _    ______   _____ / \____   ____  _____
+ *    /  \__  \/ \  / \__  \ /  __//  \__  \ /    \/ __  \   Javaslang
+ *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014 Daniel Dietrich
+ * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
 ```
 
@@ -44,7 +48,7 @@
  * This class is not intendet to be instantiated.
  */
 private Xxx() {
-	throw new AssertionError(Xxx.class.getName() + " cannot be instantiated.");
+	requireNotInstantiable();
 }
 ```
 * The extended type is the first parameter of an extension method. E.g. `Lists.lastElement(list)`.
