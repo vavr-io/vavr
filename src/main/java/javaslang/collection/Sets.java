@@ -66,10 +66,14 @@ public final class Sets {
 	public static <T> Set<T> complement(Set<T> set1, Set<T> set2) {
 		requireNonNull(set1, "set1 is null");
 		requireNonNull(set2, "set2 is null");
-		final Set<T> result = new HashSet<>(set1.size() + set2.size());
-		result.addAll(set1);
-		result.removeAll(set2);
-		return result;
+		if (set1.isEmpty() || set2.isEmpty()) {
+			return Sets.of();
+		} else {
+			final Set<T> result = new HashSet<>(set1.size() + set2.size());
+			result.addAll(set1);
+			result.removeAll(set2);
+			return result;
+		}
 	}
 
 	/**
@@ -85,10 +89,14 @@ public final class Sets {
 	public static <T> Set<T> intersection(Set<T> set1, Set<T> set2) {
 		requireNonNull(set1, "set1 is null");
 		requireNonNull(set2, "set2 is null");
-		final Set<T> result = new HashSet<>(set1.size() + set2.size());
-		result.addAll(set1);
-		result.retainAll(set2);
-		return result;
+		if (set1.isEmpty() || set2.isEmpty()) {
+			return Sets.of();
+		} else {
+			final Set<T> result = new HashSet<>(set1.size() + set2.size());
+			result.addAll(set1);
+			result.retainAll(set2);
+			return result;
+		}
 	}
 
 	/**
