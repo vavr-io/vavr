@@ -8,6 +8,7 @@ package javaslang;
 import static javaslang.Requirements.requireNonNull;
 import static javaslang.Requirements.requireNotInstantiable;
 
+import java.lang.reflect.Array;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,6 +56,50 @@ public final class Arrayz {
 	 */
 	private Arrayz() {
 		requireNotInstantiable();
+	}
+
+	// -- array creation
+
+	@SuppressWarnings("unchecked")
+	public static <T> T[] newArray(Class<T> componentType, int length) {
+		return (T[]) Array.newInstance(componentType, length);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> Class<T> getComponentType(T[] array) {
+		return (Class<T>) array.getClass().getComponentType();
+	}
+
+	@SafeVarargs
+	public static <T> T[] of(T... elements) {
+		return elements;
+	}
+
+	public static <T> T[] combine(T[] array1, T[] array2) {
+		requireNonNull(array1, "array1 is null");
+		requireNonNull(array2, "array2 is null");
+		if (array1.length == 0) {
+			return array2;
+		} else if (array2.length == 0) {
+			return array1;
+		} else {
+			final T[] result = newArray(getComponentType(array1), array1.length + array2.length);
+			System.arraycopy(array1, 0, result, 0, array1.length);
+			System.arraycopy(array2, 0, result, array1.length, array2.length);
+			return result;
+		}
+	}
+
+	public static <T> T[] append(T[] array, T element) {
+		requireNonNull(array, "array is null");
+		final T[] elements = newArray(getComponentType(array), array.length + 1);
+		return combine(array, elements);
+	}
+
+	public static <T> T[] prepend(T[] array, T element) {
+		requireNonNull(array, "array is null");
+		final T[] elements = newArray(getComponentType(array), array.length + 1);
+		return combine(elements, array);
 	}
 
 	// -- asList
