@@ -5,10 +5,10 @@
  */
 package javaslang;
 
+import static javaslang.Requirements.require;
 import static javaslang.Requirements.requireNotInstantiable;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -38,13 +38,9 @@ public final class Streamz {
 	 *         the given stream is parallel.
 	 */
 	public static <T> Stream<Tuple2<Integer, T>> zipWithIndex(Stream<T> stream) {
+		require(!stream.isParallel(), "stream is parallel");
 		final AtomicInteger index = new AtomicInteger();
-		final Function<T, Tuple2<Integer, T>> zipper = e -> Tuples.of(index.getAndIncrement(), e);
-		if (stream.isParallel()) {
-			return stream.sequential().map(zipper).parallel();
-		} else {
-			return stream.map(zipper);
-		}
+		return stream.map(e -> Tuples.of(index.getAndIncrement(), e));
 	}
 
 	/**
@@ -55,6 +51,7 @@ public final class Streamz {
 	 * @see Streamz#zipWithIndex(Stream)
 	 */
 	public static Stream<Tuple2<Integer, Double>> zipWithIndex(DoubleStream stream) {
+		require(!stream.isParallel(), "stream is parallel");
 		return zipWithIndex(stream.boxed());
 	}
 
@@ -66,6 +63,7 @@ public final class Streamz {
 	 * @see Streamz#zipWithIndex(Stream)
 	 */
 	public static Stream<Tuple2<Integer, Integer>> zipWithIndex(IntStream stream) {
+		require(!stream.isParallel(), "stream is parallel");
 		return zipWithIndex(stream.boxed());
 	}
 
@@ -77,6 +75,7 @@ public final class Streamz {
 	 * @see Streamz#zipWithIndex(Stream)
 	 */
 	public static Stream<Tuple2<Integer, Long>> zipWithIndex(LongStream stream) {
+		require(!stream.isParallel(), "stream is parallel");
 		return zipWithIndex(stream.boxed());
 	}
 
