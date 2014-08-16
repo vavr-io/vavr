@@ -8,32 +8,53 @@ package javaslang.collection;
 import static javaslang.Requirements.require;
 
 import java.io.Serializable;
+import java.util.function.UnaryOperator;
 
-public final class Tree<T> implements Serializable {
+import javaslang.option.Option;
+
+public class Tree<T> implements Serializable {
 
 	private static final long serialVersionUID = 3366047180513233623L;
 
-	final Tree<T> parent;
-	final T value;
-	final List<Tree<T>> children;
+	private static final String UNIDIRECTIONAL_ERROR = "unidirectional tree has no parent ref";
+
+	private final boolean bidirectional;
+	private final Tree<T> parent;
+	private final T value;
+	private final List<Tree<T>> children;
 
 	public Tree(T value) {
+		this(value, false);
+	}
+
+	public Tree(T value, boolean bidirectional) {
+		this.bidirectional = bidirectional;
 		this.parent = null;
 		this.value = value;
 		this.children = List.empty();
 	}
 
-	protected Tree(Tree<T> parent, T value, List<Tree<T>> children) {
-		this.parent = parent;
+	protected Tree(Tree<T> parent, T value, List<Tree<T>> children, boolean bidirectional) {
+		this.bidirectional = bidirectional;
+		this.parent = parent; // TODO: (bidirectional && parent != null) ? parent.updateChild(oldChild, newChild) : parent;
 		this.value = value;
-		this.children = children.replaceAll(child -> setParent(child, this));
+		if (bidirectional) {
+			final UnaryOperator<Tree<T>> f = child -> new Tree<>(this, child.value, child.children, bidirectional);
+			this.children = children.replaceAll(f);
+		} else {
+			this.children = children;
+		}
 	}
 
 	// -- accessors
 
-	public Tree<T> getParent() {
-		require(parent != null, "root has no parent");
-		return parent;
+	public boolean isBidirectional() {
+		return bidirectional;
+	}
+
+	public Option<Tree<T>> getParent() {
+		require(bidirectional, UNIDIRECTIONAL_ERROR);
+		return Option.of(parent);
 	}
 
 	public T getValue() {
@@ -45,6 +66,7 @@ public final class Tree<T> implements Serializable {
 	}
 
 	public boolean isRoot() {
+		require(bidirectional, UNIDIRECTIONAL_ERROR);
 		return parent == null;
 	}
 
@@ -54,18 +76,33 @@ public final class Tree<T> implements Serializable {
 
 	// -- mutators
 
-	@SafeVarargs
-	public final Tree<T> attach(Tree<T> tree1, Tree<T>... trees) {
-		return new Tree<T>(parent, value, List.of(tree1, trees).prependAll(children));
+	public Tree<T> attach(Tree<T> tree1, @SuppressWarnings("unchecked") Tree<T>... trees) {
+		return new Tree<>(parent, value, List.of(tree1, trees).prependAll(children), bidirectional);
 	}
 
-	@SafeVarargs
-	public final Tree<T> detach(Tree<T> tree1, Tree<T>... trees) {
-		return new Tree<T>(parent, value, children.removeAll(List.of(tree1, trees)));
+	public Tree<T> detach(Tree<T> tree1, @SuppressWarnings("unchecked") Tree<T>... trees) {
+		return new Tree<>(parent, value, children.removeAll(List.of(tree1, trees)), bidirectional);
 	}
 
-	private static <T> Tree<T> setParent(Tree<T> tree, Tree<T> parent) {
-		return (tree.parent == parent) ? tree : new Tree<>(parent, tree.value, tree.children);
+	public Tree<T> setChildren(List<Tree<T>> children) {
+		return new Tree<>(parent, value, children, bidirectional);
+	}
+
+	public Tree<T> subtree() {
+		final boolean hasParentRef = bidirectional && parent != null;
+		if (hasParentRef) {
+			return new Tree<>(null, value, children, bidirectional);
+		} else {
+			return this;
+		}
+	}
+
+	public Tree<T> bidirectional() {
+		return bidirectional ? this : new Tree<>(null, value, children, true);
+	}
+
+	public Tree<T> unidirectional() {
+		return bidirectional ? new Tree<>(null, value, children, false) : this;
 	}
 
 }
