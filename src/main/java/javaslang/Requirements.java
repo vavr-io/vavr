@@ -204,6 +204,57 @@ public final class Requirements {
 	}
 
 	/**
+	 * Runtime check which throws an UnsatisfiedRequirementException if the given CharSequence is
+	 * null or empty. The CharSequence is considered empty, if it contains only whitespaces.
+	 * 
+	 * @param chars A CharSequence.
+	 * @return chars
+	 * @throws UnsatisfiedRequirementException If the given CharSequence is empty.
+	 */
+	public static CharSequence requireNotNullOrEmptyTrimmed(CharSequence chars) {
+		if (requireNonNull(chars).toString().trim().length() == 0) {
+			throw new UnsatisfiedRequirementException("CharSequence is empty");
+		}
+		return chars;
+	}
+
+	/**
+	 * Runtime check which throws an UnsatisfiedRequirementException if the given CharSequence is
+	 * null or empty. The CharSequence is considered empty, if it contains only whitespaces.
+	 * 
+	 * @param chars A CharSequence.
+	 * @param message An error message.
+	 * @return chars
+	 * @throws UnsatisfiedRequirementException If the given CharSequence is empty, contains the
+	 *             given message.
+	 */
+	public static CharSequence requireNotNullOrEmptyTrimmed(CharSequence chars, String message) {
+		if (requireNonNull(chars).toString().trim().length() == 0) {
+			throw new UnsatisfiedRequirementException(message);
+		}
+		return chars;
+	}
+
+	/**
+	 * Runtime check which throws an UnsatisfiedRequirementException if the given CharSequence is
+	 * null or empty. The CharSequence is considered empty, if it contains only whitespaces.
+	 * 
+	 * @param chars A CharSequence.
+	 * @param messageSupplier An error message, computed lazily.
+	 * @return chars
+	 * @throws UnsatisfiedRequirementException If the given CharSequence is empty, contains the
+	 *             supplied message.
+	 * @throws NullPointerException If messageSupplier is null.
+	 */
+	public static CharSequence requireNotNullOrEmptyTrimmed(CharSequence chars,
+			Supplier<String> messageSupplier) {
+		if (requireNonNull(chars).toString().trim().length() == 0) {
+			throw new UnsatisfiedRequirementException(messageSupplier.get());
+		}
+		return chars;
+	}
+
+	/**
 	 * Method used in conjunction with the class-not-instantiable idiom. The exception stack strace
 	 * tells the prohibited constructor call.
 	 * 
