@@ -41,33 +41,31 @@ public final class Tuples {
 		return new Tuple4<>(t1, t2, t3, t4);
 	}
 
-	public static <T1, T2, T3, T4, T5> Tuple5<T1, T2, T3, T4, T5> of(T1 t1, T2 t2, T3 t3, T4 t4,
-			T5 t5) {
+	public static <T1, T2, T3, T4, T5> Tuple5<T1, T2, T3, T4, T5> of(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) {
 		return new Tuple5<>(t1, t2, t3, t4, t5);
 	}
 
-	public static <T1, T2, T3, T4, T5, T6> Tuple6<T1, T2, T3, T4, T5, T6> of(T1 t1, T2 t2, T3 t3,
-			T4 t4, T5 t5, T6 t6) {
+	public static <T1, T2, T3, T4, T5, T6> Tuple6<T1, T2, T3, T4, T5, T6> of(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6) {
 		return new Tuple6<>(t1, t2, t3, t4, t5, t6);
 	}
 
-	public static <T1, T2, T3, T4, T5, T6, T7> Tuple7<T1, T2, T3, T4, T5, T6, T7> of(T1 t1, T2 t2,
-			T3 t3, T4 t4, T5 t5, T6 t6, T7 t7) {
+	public static <T1, T2, T3, T4, T5, T6, T7> Tuple7<T1, T2, T3, T4, T5, T6, T7> of(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5,
+			T6 t6, T7 t7) {
 		return new Tuple7<>(t1, t2, t3, t4, t5, t6, t7);
 	}
 
-	public static <T1, T2, T3, T4, T5, T6, T7, T8> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> of(T1 t1,
-			T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8) {
+	public static <T1, T2, T3, T4, T5, T6, T7, T8> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> of(T1 t1, T2 t2, T3 t3,
+			T4 t4, T5 t5, T6 t6, T7 t7, T8 t8) {
 		return new Tuple8<>(t1, t2, t3, t4, t5, t6, t7, t8);
 	}
 
-	public static <T1, T2, T3, T4, T5, T6, T7, T8, T9> Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9> of(
-			T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9) {
+	public static <T1, T2, T3, T4, T5, T6, T7, T8, T9> Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9> of(T1 t1, T2 t2,
+			T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9) {
 		return new Tuple9<>(t1, t2, t3, t4, t5, t6, t7, t8, t9);
 	}
 
-	public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> of(
-			T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10) {
+	public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> of(T1 t1,
+			T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10) {
 		return new Tuple10<>(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10);
 	}
 
@@ -82,16 +80,12 @@ public final class Tuples {
 	}
 
 	public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> of(
-			T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11,
-			T12 t12, T13 t13) {
+			T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13) {
 		return new Tuple13<>(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13);
 	}
 
 	private static String stringify(Object... objects) {
-		return Stream
-				.of(objects)
-				.map(Strings::toString)
-				.collect(Collectors.joining(", ", "(", ")"));
+		return Stream.of(objects).map(Strings::toString).collect(Collectors.joining(", ", "(", ")"));
 	}
 
 	/**
@@ -513,8 +507,7 @@ public final class Tuples {
 	/**
 	 * Implementation of a nonuple, a tuple containing 9 elements.
 	 */
-	public static final class Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9> implements Tuple,
-			Serializable {
+	public static final class Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9> implements Tuple, Serializable {
 
 		private static final long serialVersionUID = -1578540921124551840L;
 
@@ -574,8 +567,7 @@ public final class Tuples {
 	/**
 	 * Implementation of a decuple, a tuple containing 10 elements.
 	 */
-	public static final class Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> implements Tuple,
-			Serializable {
+	public static final class Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> implements Tuple, Serializable {
 
 		private static final long serialVersionUID = 7991284808329690986L;
 
@@ -638,8 +630,7 @@ public final class Tuples {
 	/**
 	 * Implementation of a undecuple, a tuple containing 11 elements.
 	 */
-	public static final class Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> implements
-			Tuple, Serializable {
+	public static final class Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> implements Tuple, Serializable {
 
 		private static final long serialVersionUID = 3493688489700741360L;
 
@@ -655,8 +646,7 @@ public final class Tuples {
 		public final T10 _10;
 		public final T11 _11;
 
-		public Tuple11(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10,
-				T11 t11) {
+		public Tuple11(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11) {
 			this._1 = t1;
 			this._2 = t2;
 			this._3 = t3;
@@ -706,8 +696,7 @@ public final class Tuples {
 	/**
 	 * Implementation of a duodecuple, a tuple containing 12 elements.
 	 */
-	public static final class Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> implements
-			Tuple, Serializable {
+	public static final class Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> implements Tuple, Serializable {
 
 		private static final long serialVersionUID = -175212910367376967L;
 
@@ -724,8 +713,7 @@ public final class Tuples {
 		public final T11 _11;
 		public final T12 _12;
 
-		public Tuple12(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10,
-				T11 t11, T12 t12) {
+		public Tuple12(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12) {
 			this._1 = t1;
 			this._2 = t2;
 			this._3 = t3;
@@ -777,8 +765,8 @@ public final class Tuples {
 	/**
 	 * Implementation of a tredecuple, a tuple containing 13 elements.
 	 */
-	public static final class Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>
-			implements Tuple, Serializable {
+	public static final class Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> implements Tuple,
+			Serializable {
 
 		private static final long serialVersionUID = 2027952127515234777L;
 
@@ -796,8 +784,7 @@ public final class Tuples {
 		public final T12 _12;
 		public final T13 _13;
 
-		public Tuple13(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10,
-				T11 t11, T12 t12, T13 t13) {
+		public Tuple13(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13) {
 			this._1 = t1;
 			this._2 = t2;
 			this._3 = t3;
@@ -856,8 +843,8 @@ public final class Tuples {
 		/**
 		 * Tests if an object is equal to this Tuple.
 		 * <p>
-		 * An object equals this Tuple, if it is not null, of the same type and all elements are
-		 * pair-wise equal calling {@link java.util.Objects#equals(Object, Object)}.
+		 * An object equals this Tuple, if it is not null, of the same type and all elements are pair-wise equal calling
+		 * {@link java.util.Objects#equals(Object, Object)}.
 		 * 
 		 * @param obj An object.
 		 * @return true, if obj is equal to this in the sense described above, false otherwise.
@@ -865,17 +852,16 @@ public final class Tuples {
 		boolean equals(Object obj);
 
 		/**
-		 * Computes the hashCode of this Tuple by calling {@link java.util.Objects#hash(Object...)},
-		 * passing all elements of this Tuple in the order of occurrence.
+		 * Computes the hashCode of this Tuple by calling {@link java.util.Objects#hash(Object...)}, passing all
+		 * elements of this Tuple in the order of occurrence.
 		 * 
 		 * @return The hashCode of this Tuple in the sense described above.
 		 */
 		int hashCode();
 
 		/**
-		 * Returns the String representation of this Tuple. The result starts with '(', ends with
-		 * ')' and contains the String representations of the Tuple elements in their order of
-		 * occurrence, separated by ', '.
+		 * Returns the String representation of this Tuple. The result starts with '(', ends with ')' and contains the
+		 * String representations of the Tuple elements in their order of occurrence, separated by ', '.
 		 * 
 		 * @return This Tuple as String.
 		 */

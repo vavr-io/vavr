@@ -13,8 +13,8 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- * None is a singleton representation of the undefined {@link javaslang.option.Option}. The instance
- * is obtained by calling {@link #instance()}.
+ * None is a singleton representation of the undefined {@link javaslang.option.Option}. The instance is obtained by
+ * calling {@link #instance()}.
  *
  * @param <T> The type of the optional value.
  */
@@ -34,8 +34,7 @@ public final class None<T> implements Option<T>, Serializable {
 	}
 
 	/**
-	 * Returns the singleton instance of None as {@code None<T>} in the context of a type
-	 * {@code <T>}, e.g.
+	 * Returns the singleton instance of None as {@code None<T>} in the context of a type {@code <T>}, e.g.
 	 * 
 	 * <pre>
 	 * <code>final Option&lt;Integer&gt; o = None.instance(); // o is of type None&lt;Integer&gt;</code>

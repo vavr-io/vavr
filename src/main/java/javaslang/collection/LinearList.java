@@ -52,8 +52,8 @@ public final class LinearList<E> extends AbstractList<E> implements Serializable
 	/**
 	 * {@code writeReplace} method for the serialization proxy pattern.
 	 * <p>
-	 * The presence of this method causes the serialization system to emit a SerializationProxy
-	 * instance instead of an instance of the enclosing class.
+	 * The presence of this method causes the serialization system to emit a SerializationProxy instance instead of an
+	 * instance of the enclosing class.
 	 * 
 	 * @return A SerialiationProxy for this enclosing class.
 	 */
@@ -64,8 +64,7 @@ public final class LinearList<E> extends AbstractList<E> implements Serializable
 	/**
 	 * {@code readObject} method for the serialization proxy pattern.
 	 * <p>
-	 * Guarantees that the serialization system will never generate a serialized instance of the
-	 * enclosing class.
+	 * Guarantees that the serialization system will never generate a serialized instance of the enclosing class.
 	 * 
 	 * @param stream An object serialization stream.
 	 * @throws InvalidObjectException This method will throw with the message "Proxy required".
@@ -75,8 +74,8 @@ public final class LinearList<E> extends AbstractList<E> implements Serializable
 	}
 
 	/**
-	 * A serialization proxy which, in this context, is used to deserialize immutable, linked Lists
-	 * with final instance fields.
+	 * A serialization proxy which, in this context, is used to deserialize immutable, linked Lists with final instance
+	 * fields.
 	 *
 	 * @param <E> The component type of the underlying list.
 	 */
@@ -92,8 +91,8 @@ public final class LinearList<E> extends AbstractList<E> implements Serializable
 		/**
 		 * Constructor for the case of serialization, called by {@link LinearList#writeReplace()}.
 		 * <p>
-		 * The constructor of a SerializationProxy takes an argument that concisely represents the
-		 * logical state of an instance of the enclosing class.
+		 * The constructor of a SerializationProxy takes an argument that concisely represents the logical state of an
+		 * instance of the enclosing class.
 		 * 
 		 * @param linearList
 		 */
@@ -119,13 +118,11 @@ public final class LinearList<E> extends AbstractList<E> implements Serializable
 		 * Read an object from a deserialization stream.
 		 * 
 		 * @param s An object deserialization stream.
-		 * @throws ClassNotFoundException If the object's class read from the stream cannot be
-		 *             found.
+		 * @throws ClassNotFoundException If the object's class read from the stream cannot be found.
 		 * @throws InvalidObjectException If the stream contains no list elements.
 		 * @throws IOException If an error occurs reading from the stream.
 		 */
-		private void readObject(ObjectInputStream s) throws ClassNotFoundException,
-				InvalidObjectException, IOException {
+		private void readObject(ObjectInputStream s) throws ClassNotFoundException, InvalidObjectException, IOException {
 			s.defaultReadObject();
 			final int size = s.readInt();
 			if (size <= 0) {
@@ -143,9 +140,9 @@ public final class LinearList<E> extends AbstractList<E> implements Serializable
 		/**
 		 * {@code readResolve} method for the serialization proxy pattern.
 		 * <p>
-		 * Returns a logically equivalent instance of the enclosing class. The presence of this
-		 * method causes the serialization system to translate the serialization proxy back into an
-		 * instance of the enclosing class upon deserialization.
+		 * Returns a logically equivalent instance of the enclosing class. The presence of this method causes the
+		 * serialization system to translate the serialization proxy back into an instance of the enclosing class upon
+		 * deserialization.
 		 * 
 		 * @return A deserialized instance of the enclosing class.
 		 */

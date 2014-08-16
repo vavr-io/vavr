@@ -63,20 +63,17 @@ public class TuplesTest {
 
 	@Test
 	public void shouldCreateNonuple() {
-		assertThat(of(1, 2, 3, 4, 5, 6, 7, 8, 9).toString()).isEqualTo(
-				"(1, 2, 3, 4, 5, 6, 7, 8, 9)");
+		assertThat(of(1, 2, 3, 4, 5, 6, 7, 8, 9).toString()).isEqualTo("(1, 2, 3, 4, 5, 6, 7, 8, 9)");
 	}
 
 	@Test
 	public void shouldCreateDecuple() {
-		assertThat(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).toString()).isEqualTo(
-				"(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)");
+		assertThat(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).toString()).isEqualTo("(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)");
 	}
 
 	@Test
 	public void shouldCreateUndecuple() {
-		assertThat(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11).toString()).isEqualTo(
-				"(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)");
+		assertThat(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11).toString()).isEqualTo("(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)");
 	}
 
 	@Test

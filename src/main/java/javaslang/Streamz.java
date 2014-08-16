@@ -29,13 +29,12 @@ public final class Streamz {
 	}
 
 	/**
-	 * Zips the elements of a given Stream to tuples {@code (index, element)}, where index is the
-	 * occurrence within the original Stream.
+	 * Zips the elements of a given Stream to tuples {@code (index, element)}, where index is the occurrence within the
+	 * original Stream.
 	 * 
 	 * @param stream A {@linkplain java.util.stream.Stream}.
-	 * @return A zipped stream containing elements of type {@link javaslang.Tuples.Tuple2} and
-	 *         values {@code (index, element)}. The resulting Stream is parallel if, and only if,
-	 *         the given stream is parallel.
+	 * @return A zipped stream containing elements of type {@link javaslang.Tuples.Tuple2} and values
+	 *         {@code (index, element)}. The resulting Stream is parallel if, and only if, the given stream is parallel.
 	 */
 	public static <T> Stream<Tuple2<Integer, T>> zipWithIndex(Stream<T> stream) {
 		require(!stream.isParallel(), "stream is parallel");

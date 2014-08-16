@@ -73,15 +73,12 @@ public final class Match<R> implements Function<Object, R> {
 	}
 
 	/**
-	 * Applies an object to this matcher. This is the implementation of the {@link Function}
-	 * interface.
+	 * Applies an object to this matcher. This is the implementation of the {@link Function} interface.
 	 * 
 	 * @param obj An object.
-	 * @return The result when applying the given obj to the first matching case. If the case has a
-	 *         consumer, the result is null, otherwise the result of the underlying function or
-	 *         supplier.
-	 * @throws MatchError if no Match case matches the given object and no default is defined via
-	 *             orElse().
+	 * @return The result when applying the given obj to the first matching case. If the case has a consumer, the result
+	 *         is null, otherwise the result of the underlying function or supplier.
+	 * @throws MatchError if no Match case matches the given object and no default is defined via orElse().
 	 * @throws javaslang.exception.Failure.NonFatal if an error occurs executing the matched case.
 	 */
 	@Override
@@ -128,21 +125,17 @@ public final class Match<R> implements Function<Object, R> {
 		}
 
 		/**
-		 * Checks if the Match case represented by this Case can be applied to the given object. The
-		 * null value is applicable, if the prototype is null. If no prototype is specified, a null
-		 * obj is not applicable because the first occuring function would match otherwise, which
-		 * wouldn't be correct in general.
+		 * Checks if the Match case represented by this Case can be applied to the given object. The null value is
+		 * applicable, if the prototype is null. If no prototype is specified, a null obj is not applicable because the
+		 * first occuring function would match otherwise, which wouldn't be correct in general.
 		 * 
 		 * @param obj An object, may be null.
-		 * @return true, if prototype is None or prototype is Some(value) and value equals obj,
-		 *         false otherwise.
+		 * @return true, if prototype is None or prototype is Some(value) and value equals obj, false otherwise.
 		 */
 		boolean isApplicable(Object obj) {
-			final boolean isCompatible = obj == null
-					|| parameterType.isAssignableFrom(obj.getClass());
+			final boolean isCompatible = obj == null || parameterType.isAssignableFrom(obj.getClass());
 			return isCompatible
-					&& prototype.map(val -> val == obj || (val != null && val.equals(obj))).orElse(
-							obj != null);
+					&& prototype.map(val -> val == obj || (val != null && val.equals(obj))).orElse(obj != null);
 		}
 
 		/**
@@ -160,8 +153,8 @@ public final class Match<R> implements Function<Object, R> {
 	// -- lambda types for cases
 
 	/**
-	 * A function which implements Serializable in order to obtain runtime type information about
-	 * the lambda via {@link javaslang.Lambdas#getLambdaSignature(Serializable)}.
+	 * A function which implements Serializable in order to obtain runtime type information about the lambda via
+	 * {@link javaslang.Lambdas#getLambdaSignature(Serializable)}.
 	 *
 	 * @param <T> The parameter type of the function.
 	 * @param <R> The return type of the function.
@@ -171,8 +164,8 @@ public final class Match<R> implements Function<Object, R> {
 	}
 
 	/**
-	 * Represents a function that accepts a boolean-valued argument and produces a result. This is
-	 * the {@code boolean}-consuming primitive specialization for {@link Function}.
+	 * Represents a function that accepts a boolean-valued argument and produces a result. This is the {@code boolean}
+	 * -consuming primitive specialization for {@link Function}.
 	 *
 	 * @param <R> the type of the result of the function
 	 */
@@ -182,8 +175,8 @@ public final class Match<R> implements Function<Object, R> {
 	}
 
 	/**
-	 * Represents a function that accepts a byte-valued argument and produces a result. This is the
-	 * {@code byte}-consuming primitive specialization for {@link Function}.
+	 * Represents a function that accepts a byte-valued argument and produces a result. This is the {@code byte}
+	 * -consuming primitive specialization for {@link Function}.
 	 *
 	 * @param <R> the type of the result of the function
 	 */
@@ -193,8 +186,8 @@ public final class Match<R> implements Function<Object, R> {
 	}
 
 	/**
-	 * Represents a function that accepts a char-valued argument and produces a result. This is the
-	 * {@code char}-consuming primitive specialization for {@link Function}.
+	 * Represents a function that accepts a char-valued argument and produces a result. This is the {@code char}
+	 * -consuming primitive specialization for {@link Function}.
 	 *
 	 * @param <R> the type of the result of the function
 	 */
@@ -204,8 +197,8 @@ public final class Match<R> implements Function<Object, R> {
 	}
 
 	/**
-	 * Represents a function that accepts a float-valued argument and produces a result. This is the
-	 * {@code float}-consuming primitive specialization for {@link Function}.
+	 * Represents a function that accepts a float-valued argument and produces a result. This is the {@code float}
+	 * -consuming primitive specialization for {@link Function}.
 	 *
 	 * @param <R> the type of the result of the function
 	 */
@@ -215,8 +208,8 @@ public final class Match<R> implements Function<Object, R> {
 	}
 
 	/**
-	 * Represents a function that accepts a short-valued argument and produces a result. This is the
-	 * {@code short}-consuming primitive specialization for {@link Function}.
+	 * Represents a function that accepts a short-valued argument and produces a result. This is the {@code short}
+	 * -consuming primitive specialization for {@link Function}.
 	 *
 	 * @param <R> the type of the result of the function
 	 */
@@ -247,8 +240,8 @@ public final class Match<R> implements Function<Object, R> {
 		}
 
 		/**
-		 * Use this method to match by prototype value of object type T. An object o matches this
-		 * case, if {@code prototype == o || (prototype != null && prototype.equals(o))}.
+		 * Use this method to match by prototype value of object type T. An object o matches this case, if
+		 * {@code prototype == o || (prototype != null && prototype.equals(o))}.
 		 * 
 		 * @param <T> type of the object to be matched
 		 * @param prototype An object to be matched by equality as defined above.
@@ -266,8 +259,7 @@ public final class Match<R> implements Function<Object, R> {
 		}
 
 		/**
-		 * Use this method to match by boolean. An object o matches this case, if
-		 * {@code o != null &&
+		 * Use this method to match by boolean. An object o matches this case, if {@code o != null &&
 		 * o.getClass() == Boolean.class}.
 		 * 
 		 * @param function A BooleanFunction which is applied to a matched object.
@@ -304,8 +296,7 @@ public final class Match<R> implements Function<Object, R> {
 		 */
 		public Builder<R> caze(CharFunction<R> function) {
 			requireNonNull(function, "function is null");
-			cases.add(new Case<>(None.instance(), (Character c) -> function.apply(c),
-					Character.class));
+			cases.add(new Case<>(None.instance(), (Character c) -> function.apply(c), Character.class));
 			return this;
 		}
 

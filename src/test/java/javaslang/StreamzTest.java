@@ -24,8 +24,8 @@ public class StreamzTest {
 	public void shouldZipStreamWithIndex() {
 		final Stream<String> stream = Stream.of(I_WILL_BE_BACK);
 		final List<Tuple2<Integer, String>> actual = Streamz.zipWithIndex(stream).collect(toList());
-		final List<Tuple2<Integer, String>> expected = Arrays.asList(Tuples.of(0, "I"),
-				Tuples.of(1, "will"), Tuples.of(2, "be"), Tuples.of(3, "back!"));
+		final List<Tuple2<Integer, String>> expected = Arrays.asList(Tuples.of(0, "I"), Tuples.of(1, "will"),
+				Tuples.of(2, "be"), Tuples.of(3, "back!"));
 		assertThat(actual).isEqualTo(expected);
 	}
 

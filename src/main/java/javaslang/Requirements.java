@@ -20,8 +20,7 @@ public final class Requirements {
 	}
 
 	/**
-	 * Runtime check which throws an UnsatisfiedRequirementException if the given condition is
-	 * false.
+	 * Runtime check which throws an UnsatisfiedRequirementException if the given condition is false.
 	 * 
 	 * @param condition A boolean.
 	 * @param message An error message.
@@ -34,13 +33,11 @@ public final class Requirements {
 	}
 
 	/**
-	 * Runtime check which throws an UnsatisfiedRequirementException if the given condition is
-	 * false.
+	 * Runtime check which throws an UnsatisfiedRequirementException if the given condition is false.
 	 * 
 	 * @param condition A boolean.
 	 * @param messageSupplier An error message, computed lazily.
-	 * @throws UnsatisfiedRequirementException If the given condition is false, contains the
-	 *             supplied message.
+	 * @throws UnsatisfiedRequirementException If the given condition is false, contains the supplied message.
 	 * @throws NullPointerException If messageSupplier is null.
 	 */
 	public static void require(boolean condition, Supplier<String> messageSupplier) {
@@ -71,8 +68,7 @@ public final class Requirements {
 	 * @param obj An object
 	 * @param message An error message.
 	 * @return obj
-	 * @throws UnsatisfiedRequirementException If the given object is null, contains the given
-	 *             message.
+	 * @throws UnsatisfiedRequirementException If the given object is null, contains the given message.
 	 */
 	public static <T> T requireNonNull(T obj, String message) {
 		if (obj == null) {
@@ -88,8 +84,7 @@ public final class Requirements {
 	 * @param obj An object.
 	 * @param messageSupplier An error message, computed lazily.
 	 * @return obj
-	 * @throws UnsatisfiedRequirementException If the given object is null, contains the supplied
-	 *             message.
+	 * @throws UnsatisfiedRequirementException If the given object is null, contains the supplied message.
 	 * @throws NullPointerException If messageSupplier is null.
 	 */
 	public static <T> T requireNonNull(T obj, Supplier<String> messageSupplier) {
@@ -100,8 +95,7 @@ public final class Requirements {
 	}
 
 	/**
-	 * Runtime check which throws an UnsatisfiedRequirementException if the given array is null or
-	 * empty.
+	 * Runtime check which throws an UnsatisfiedRequirementException if the given array is null or empty.
 	 * 
 	 * @param <T> Component type of array.
 	 * @param array An array.
@@ -116,15 +110,13 @@ public final class Requirements {
 	}
 
 	/**
-	 * Runtime check which throws an UnsatisfiedRequirementException if the given array is null or
-	 * empty.
+	 * Runtime check which throws an UnsatisfiedRequirementException if the given array is null or empty.
 	 * 
 	 * @param <T> Component type of array.
 	 * @param array An array.
 	 * @param message An error message.
 	 * @return array
-	 * @throws UnsatisfiedRequirementException If the given array is empty, contains the given
-	 *             message.
+	 * @throws UnsatisfiedRequirementException If the given array is empty, contains the given message.
 	 */
 	public static <T> T[] requireNotNullOrEmpty(T[] array, String message) {
 		if (requireNonNull(array).length == 0) {
@@ -134,15 +126,13 @@ public final class Requirements {
 	}
 
 	/**
-	 * Runtime check which throws an UnsatisfiedRequirementException if the given array is null or
-	 * empty.
+	 * Runtime check which throws an UnsatisfiedRequirementException if the given array is null or empty.
 	 * 
 	 * @param <T> Component type of array.
 	 * @param array An array.
 	 * @param messageSupplier An error message, computed lazily.
 	 * @return array
-	 * @throws UnsatisfiedRequirementException If the given array is empty, contains the supplied
-	 *             message.
+	 * @throws UnsatisfiedRequirementException If the given array is empty, contains the supplied message.
 	 * @throws NullPointerException If messageSupplier is null.
 	 */
 	public static <T> T[] requireNotNullOrEmpty(T[] array, Supplier<String> messageSupplier) {
@@ -153,8 +143,7 @@ public final class Requirements {
 	}
 
 	/**
-	 * Runtime check which throws an UnsatisfiedRequirementException if the given CharSequence is
-	 * null or empty.
+	 * Runtime check which throws an UnsatisfiedRequirementException if the given CharSequence is null or empty.
 	 * 
 	 * @param chars A CharSequence.
 	 * @return chars
@@ -168,14 +157,12 @@ public final class Requirements {
 	}
 
 	/**
-	 * Runtime check which throws an UnsatisfiedRequirementException if the given CharSequence is
-	 * null or empty.
+	 * Runtime check which throws an UnsatisfiedRequirementException if the given CharSequence is null or empty.
 	 * 
 	 * @param chars A CharSequence.
 	 * @param message An error message.
 	 * @return chars
-	 * @throws UnsatisfiedRequirementException If the given CharSequence is empty, contains the
-	 *             given message.
+	 * @throws UnsatisfiedRequirementException If the given CharSequence is empty, contains the given message.
 	 */
 	public static CharSequence requireNotNullOrEmpty(CharSequence chars, String message) {
 		if (requireNonNull(chars).length() == 0) {
@@ -185,18 +172,15 @@ public final class Requirements {
 	}
 
 	/**
-	 * Runtime check which throws an UnsatisfiedRequirementException if the given CharSequence is
-	 * null or empty.
+	 * Runtime check which throws an UnsatisfiedRequirementException if the given CharSequence is null or empty.
 	 * 
 	 * @param chars A CharSequence.
 	 * @param messageSupplier An error message, computed lazily.
 	 * @return chars
-	 * @throws UnsatisfiedRequirementException If the given CharSequence is empty, contains the
-	 *             supplied message.
+	 * @throws UnsatisfiedRequirementException If the given CharSequence is empty, contains the supplied message.
 	 * @throws NullPointerException If messageSupplier is null.
 	 */
-	public static CharSequence requireNotNullOrEmpty(CharSequence chars,
-			Supplier<String> messageSupplier) {
+	public static CharSequence requireNotNullOrEmpty(CharSequence chars, Supplier<String> messageSupplier) {
 		if (requireNonNull(chars).length() == 0) {
 			throw new UnsatisfiedRequirementException(messageSupplier.get());
 		}
@@ -204,8 +188,8 @@ public final class Requirements {
 	}
 
 	/**
-	 * Runtime check which throws an UnsatisfiedRequirementException if the given CharSequence is
-	 * null or empty. The CharSequence is considered empty, if it contains only whitespaces.
+	 * Runtime check which throws an UnsatisfiedRequirementException if the given CharSequence is null or empty. The
+	 * CharSequence is considered empty, if it contains only whitespaces.
 	 * 
 	 * @param chars A CharSequence.
 	 * @return chars
@@ -219,14 +203,13 @@ public final class Requirements {
 	}
 
 	/**
-	 * Runtime check which throws an UnsatisfiedRequirementException if the given CharSequence is
-	 * null or empty. The CharSequence is considered empty, if it contains only whitespaces.
+	 * Runtime check which throws an UnsatisfiedRequirementException if the given CharSequence is null or empty. The
+	 * CharSequence is considered empty, if it contains only whitespaces.
 	 * 
 	 * @param chars A CharSequence.
 	 * @param message An error message.
 	 * @return chars
-	 * @throws UnsatisfiedRequirementException If the given CharSequence is empty, contains the
-	 *             given message.
+	 * @throws UnsatisfiedRequirementException If the given CharSequence is empty, contains the given message.
 	 */
 	public static CharSequence requireNotNullOrEmptyTrimmed(CharSequence chars, String message) {
 		if (requireNonNull(chars).toString().trim().length() == 0) {
@@ -236,18 +219,16 @@ public final class Requirements {
 	}
 
 	/**
-	 * Runtime check which throws an UnsatisfiedRequirementException if the given CharSequence is
-	 * null or empty. The CharSequence is considered empty, if it contains only whitespaces.
+	 * Runtime check which throws an UnsatisfiedRequirementException if the given CharSequence is null or empty. The
+	 * CharSequence is considered empty, if it contains only whitespaces.
 	 * 
 	 * @param chars A CharSequence.
 	 * @param messageSupplier An error message, computed lazily.
 	 * @return chars
-	 * @throws UnsatisfiedRequirementException If the given CharSequence is empty, contains the
-	 *             supplied message.
+	 * @throws UnsatisfiedRequirementException If the given CharSequence is empty, contains the supplied message.
 	 * @throws NullPointerException If messageSupplier is null.
 	 */
-	public static CharSequence requireNotNullOrEmptyTrimmed(CharSequence chars,
-			Supplier<String> messageSupplier) {
+	public static CharSequence requireNotNullOrEmptyTrimmed(CharSequence chars, Supplier<String> messageSupplier) {
 		if (requireNonNull(chars).toString().trim().length() == 0) {
 			throw new UnsatisfiedRequirementException(messageSupplier.get());
 		}
@@ -255,8 +236,8 @@ public final class Requirements {
 	}
 
 	/**
-	 * Method used in conjunction with the class-not-instantiable idiom. The exception stack strace
-	 * tells the prohibited constructor call.
+	 * Method used in conjunction with the class-not-instantiable idiom. The exception stack strace tells the prohibited
+	 * constructor call.
 	 * 
 	 * <pre>
 	 * <code>

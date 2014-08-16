@@ -13,9 +13,9 @@ import java.util.function.Supplier;
 /**
  * Replacement for {@link java.util.Optional}.
  * <p>
- * Option is a <a href="http://stackoverflow.com/questions/13454347/monads-with-java-8">monadic</a>
- * container type which represents an optional value. Instances of Option are either an instance of
- * {@link javaslang.option.Some} or the singleton {@link javaslang.option.None}.
+ * Option is a <a href="http://stackoverflow.com/questions/13454347/monads-with-java-8">monadic</a> container type which
+ * represents an optional value. Instances of Option are either an instance of {@link javaslang.option.Some} or the
+ * singleton {@link javaslang.option.None}.
  * <p>
  * Most of the API is taken from {@link java.util.Optional}. A similar type can be found in <a
  * href="http://hackage.haskell.org/package/base-4.6.0.1/docs/Data-Maybe.html">Haskell</a> and <a

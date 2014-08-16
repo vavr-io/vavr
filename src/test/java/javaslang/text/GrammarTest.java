@@ -29,10 +29,7 @@ public class GrammarTest {
 		System.out.println("Input:\n" + json.get());
 
 		final Try<Tree<Token>> parseTree = json.flatMap(s -> jsonGrammar.parse(s));
-		final String result = parseTree
-				.map(tree -> tree.toString())
-				.recover(x -> x.getMessage())
-				.get();
+		final String result = parseTree.map(tree -> tree.toString()).recover(x -> x.getMessage()).get();
 		System.out.println("Parse tree:\n" + result);
 
 	}
@@ -44,9 +41,8 @@ public class GrammarTest {
 		}
 
 		static Parser JSON() {
-			return new Branch("JSON", JSONGrammar::JSON_OBJECT, JSONGrammar::JSON_ARRAY,
-					new Branch(new Literal("a"), new Literal("b")), JSONGrammar::JSON_NUMBER,
-					JSONGrammar::JSON_BOOLEAN);
+			return new Branch("JSON", JSONGrammar::JSON_OBJECT, JSONGrammar::JSON_ARRAY, new Branch(new Literal("a"),
+					new Literal("b")), JSONGrammar::JSON_NUMBER, JSONGrammar::JSON_BOOLEAN);
 		}
 
 		static Parser JSON_OBJECT() {
@@ -62,20 +58,18 @@ public class GrammarTest {
 		}
 
 		static Parser JSON_ARRAY() {
-			return new Sequence("JSON_ARRAY", new Literal("["), n(JSON_NUMBER(), ","), new Literal(
-					"]"));
+			return new Sequence("JSON_ARRAY", new Literal("["), n(JSON_NUMBER(), ","), new Literal("]"));
 		}
 
 		static Parser JSON_NUMBER() {
-			return new Sequence("JSON_NUMBER", new Multiplicity(new Sequence(new Literal("d"),
-					new Literal("d")), ZERO_TO_N), new Branch(new Literal("1"), new Literal("2"),
-					new Branch("Hello", new Literal("hello")), new Sequence(new Branch(new Literal(
-							"X"), new Literal("Y")), new Literal("A")), new Literal("3")));
+			return new Sequence("JSON_NUMBER", new Multiplicity(new Sequence(new Literal("d"), new Literal("d")),
+					ZERO_TO_N), new Branch(new Literal("1"), new Literal("2"),
+					new Branch("Hello", new Literal("hello")), new Sequence(new Branch(new Literal("X"), new Literal(
+							"Y")), new Literal("A")), new Literal("3")));
 		}
 
 		static Parser JSON_BOOLEAN() {
-			return new Sequence("JSON_BOOLEAN", new Branch(new Literal("true"),
-					new Literal("false")));
+			return new Sequence("JSON_BOOLEAN", new Branch(new Literal("true"), new Literal("false")));
 		}
 
 		/**
@@ -88,8 +82,7 @@ public class GrammarTest {
 		static Parser n(Parser parser, String separator) {
 
 			// [ ',' P]*
-			final Parser more = new Multiplicity(new Sequence(new Literal(separator), parser),
-					ZERO_TO_N);
+			final Parser more = new Multiplicity(new Sequence(new Literal(separator), parser), ZERO_TO_N);
 
 			// [ P <more> ]?
 			return new Multiplicity(new Sequence(parser, more), ZERO_TO_ONE);

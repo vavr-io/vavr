@@ -44,8 +44,7 @@ public class Sequence extends Parser {
 	public Either<Integer, Tree<Token>> parse(String text, int index) {
 		// Starts with an emty root tree and successively attaches parsed children.
 		final String id = (name == null) ? "<Sequence>".intern() : name;
-		final Either<Integer, Tree<Token>> initial = new Right<>(new Tree<>(id, new Token(text,
-				index, index)));
+		final Either<Integer, Tree<Token>> initial = new Right<>(new Tree<>(id, new Token(text, index, index)));
 		return Stream.of(parsers).reduce(initial, (tree, parser) -> {
 			if (tree.isLeft()) {
 				// first failure returned
@@ -86,10 +85,7 @@ public class Sequence extends Parser {
 
 	@Override
 	public String toString() {
-		return (name != null) ? name : Stream
-				.of(parsers)
-				.map(p -> p.get().toString())
-				.collect(Collectors.joining(" "));
+		return (name != null) ? name : Stream.of(parsers).map(p -> p.get().toString()).collect(Collectors.joining(" "));
 	}
 
 }

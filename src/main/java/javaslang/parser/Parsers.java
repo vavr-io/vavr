@@ -206,8 +206,7 @@ public final class Parsers {
 		}
 
 		/**
-		 * Parses a char set String which contains sequences of characters and character ranges
-		 * denoted as {@code a-z}.
+		 * Parses a char set String which contains sequences of characters and character ranges denoted as {@code a-z}.
 		 * 
 		 * @param charSetString A String defining a char set.
 		 * @return A Predicate that tests, if a given char is in the char set.
@@ -315,8 +314,7 @@ public final class Parsers {
 
 		@Override
 		public Either<Integer, Tree<Tuple2<Integer, Integer>>> parse(String text, int index) {
-			final Tree<Tuple2<Integer, Integer>> result = new Tree<>(bounds.name(), Tuples.of(
-					index, 0));
+			final Tree<Tuple2<Integer, Integer>> result = new Tree<>(bounds.name(), Tuples.of(index, 0));
 			parseChildren(result, text, index);
 			final boolean notMatched = result.getChildren().isEmpty();
 			final boolean shouldHaveMatched = Bounds.ONE_TO_N.equals(bounds);
@@ -343,8 +341,8 @@ public final class Parsers {
 			final boolean unbound = !Bounds.ZERO_TO_ONE.equals(bounds);
 			boolean found = true;
 			do {
-				final Either<Integer, Tree<Tuple2<Integer, Integer>>> child = parser.get().parse(
-						text, tree.value._1 + tree.value._2);
+				final Either<Integer, Tree<Tuple2<Integer, Integer>>> child = parser.get().parse(text,
+						tree.value._1 + tree.value._2);
 				if (child.isRight()) {
 					final Tree<Tuple2<Integer, Integer>> node = child.right().get();
 					tree.attach(node);
@@ -393,9 +391,8 @@ public final class Parsers {
 		final Supplier<Parser>[] alternatives;
 
 		/**
-		 * Creates a subrule with multiple alternatives which is embedded in a primary rule. In
-		 * particular a subrule has no name and therefore may not be referenced by other (primary)
-		 * rules.
+		 * Creates a subrule with multiple alternatives which is embedded in a primary rule. In particular a subrule has
+		 * no name and therefore may not be referenced by other (primary) rules.
 		 * 
 		 * @param alternative1 First alternative rule.
 		 * @param alternative2 Second alternative rule.
@@ -403,8 +400,7 @@ public final class Parsers {
 		 * @throws UnsatisfiedRequirementException if one of the alternatives is null.
 		 */
 		@SafeVarargs
-		Rule(Supplier<Parser> alternative1, Supplier<Parser> alternative2,
-				Supplier<Parser>... alternatives) {
+		Rule(Supplier<Parser> alternative1, Supplier<Parser> alternative2, Supplier<Parser>... alternatives) {
 			requireNonNull(alternative1, "alternative1 is null");
 			requireNonNull(alternative2, "alternative2 is null");
 			requireNonNull(alternatives, "alternatives is null");
@@ -417,8 +413,8 @@ public final class Parsers {
 		 * 
 		 * @param alternative1 First alternative rule.
 		 * @param alternatives Zero or more alternative rules.
-		 * @throws UnsatisfiedRequirementException if name is invalid, i.e. null, a reserved word or
-		 *             not a valid identifier) or one of the alternatives is null.
+		 * @throws UnsatisfiedRequirementException if name is invalid, i.e. null, a reserved word or not a valid
+		 *             identifier) or one of the alternatives is null.
 		 */
 		@SafeVarargs
 		Rule(String name, Supplier<Parser> alternative1, Supplier<Parser>... alternatives) {
@@ -443,8 +439,7 @@ public final class Parsers {
 					.of(alternatives)
 					.parallel()
 					.map(parser -> parser.get().parse(text, index))
-					.reduce(initial, (t1, t2) -> reduce(t1, t2, text, index),
-							(t1, t2) -> reduce(t1, t2, text, index));
+					.reduce(initial, (t1, t2) -> reduce(t1, t2, text, index), (t1, t2) -> reduce(t1, t2, text, index));
 		}
 
 		@Override
@@ -454,8 +449,8 @@ public final class Parsers {
 		}
 
 		/**
-		 * Make decision on following one of two parse trees. Each tree may may be a valid match on
-		 * the input text or not.
+		 * Make decision on following one of two parse trees. Each tree may may be a valid match on the input text or
+		 * not.
 		 * 
 		 * @param tree1 First parse tree.
 		 * @param tree2 Second parse tree.
@@ -468,8 +463,10 @@ public final class Parsers {
 				Either<Integer, Tree<Tuple2<Integer, Integer>>> tree1,
 				Either<Integer, Tree<Tuple2<Integer, Integer>>> tree2, String text, int index) {
 			// if both trees are valid parse results, i.e. Right, then we found an ambiguity
-			require(tree1.isLeft() || tree2.isLeft(),
-					() -> "Ambiguity found at " + Strings.lineAndColumn(text, index) + ":\n" + text);
+			require(tree1.isLeft() || tree2.isLeft(), () -> "Ambiguity found at "
+					+ Strings.lineAndColumn(text, index)
+					+ ":\n"
+					+ text);
 			if (tree1.isRight()) {
 				return tree1; // first tree is a valid parse result
 			} else if (tree2.isRight()) {
@@ -500,8 +497,8 @@ public final class Parsers {
 		@Override
 		public Either<Integer, Tree<Tuple2<Integer, Integer>>> parse(String text, int index) {
 			// Starts with an emty root tree and successively attaches parsed children.
-			final Either<Integer, Tree<Tuple2<Integer, Integer>>> initial = new Right<>(new Tree<>(
-					"Sequence", Tuples.of(index, 0)));
+			final Either<Integer, Tree<Tuple2<Integer, Integer>>> initial = new Right<>(new Tree<>("Sequence",
+					Tuples.of(index, 0)));
 			return Stream.of(parsers).reduce(initial, (tree, parser) -> {
 				if (tree.isLeft()) {
 					// first failure returned
@@ -512,9 +509,8 @@ public final class Parsers {
 					final int lastIndex = node.value._1 + node.value._2;
 					final Matcher matcher = WHITESPACE.matcher(text);
 					final int currentIndex = matcher.find(lastIndex) ? matcher.end() : lastIndex;
-					final Either<Integer, Tree<Tuple2<Integer, Integer>>> parsed = parser
-							.get()
-							.parse(text, currentIndex);
+					final Either<Integer, Tree<Tuple2<Integer, Integer>>> parsed = parser.get().parse(text,
+							currentIndex);
 					// on success, attach token to tree
 					if (parsed.isRight()) {
 						final Tree<Tuple2<Integer, Integer>> child = parsed.right().get();

@@ -30,8 +30,7 @@ import javaslang.Tuples.Tuple2;
  */
 public final class Lambdas {
 
-	private static final Pattern JVM_FIELD_TYPE = Pattern
-			.compile("\\[*(B|C|D|F|I|J|(L.*?;)|S|V|Z)");
+	private static final Pattern JVM_FIELD_TYPE = Pattern.compile("\\[*(B|C|D|F|I|J|(L.*?;)|S|V|Z)");
 
 	/**
 	 * This class is not intended to be instantiated.
@@ -41,8 +40,7 @@ public final class Lambdas {
 	}
 
 	/**
-	 * Serializes the given Serializable lambda and returns the corresponding
-	 * {@link java.lang.invoke.SerializedLambda}.
+	 * Serializes the given Serializable lambda and returns the corresponding {@link java.lang.invoke.SerializedLambda}.
 	 * 
 	 * @param lambda An instance of a lambda.
 	 * @return The serialized lambda.
@@ -58,20 +56,18 @@ public final class Lambdas {
 	}
 
 	/**
-	 * Gets the runtime method signature of the given lambda instance. Especially this function is
-	 * handy when the functional interface is generic and the parameter and/or return types cannot
-	 * be determined directly.
+	 * Gets the runtime method signature of the given lambda instance. Especially this function is handy when the
+	 * functional interface is generic and the parameter and/or return types cannot be determined directly.
 	 * <p>
-	 * Uses internally the {@link java.lang.invoke.SerializedLambda#getImplMethodSignature()} by
-	 * parsing the JVM field types of the method signature. The result is a {@link LambdaSignature}
-	 * which contains the return type and the parameter types of the given lambda.
+	 * Uses internally the {@link java.lang.invoke.SerializedLambda#getImplMethodSignature()} by parsing the JVM field
+	 * types of the method signature. The result is a {@link LambdaSignature} which contains the return type and the
+	 * parameter types of the given lambda.
 	 * 
 	 * @param lambda A serializable lambda.
 	 * @return The signature of the lambda.
 	 */
 	public static LambdaSignature getLambdaSignature(Serializable lambda) {
-		final Tuple2<String, String> signature = split(getSerializedLambda(lambda)
-				.getImplMethodSignature());
+		final Tuple2<String, String> signature = split(getSerializedLambda(lambda).getImplMethodSignature());
 		final Class<?>[] parameterTypes = Lambdas
 				.stream(JVM_FIELD_TYPE.matcher(signature._1))
 				.map(Lambdas::getJavaType)
@@ -109,10 +105,8 @@ public final class Lambdas {
 	 * 
 	 * @param jvmFieldType
 	 * @return The Class instance corresponding to the given jvmFieldType.
-	 * @throws IllegalStateException if the class referenced by a JVM field type 'L ClassName ;'
-	 *             cannot be found.
-	 * @see <a href="http://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html">JVM field
-	 *      types</a>.
+	 * @throws IllegalStateException if the class referenced by a JVM field type 'L ClassName ;' cannot be found.
+	 * @see <a href="http://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html">JVM field types</a>.
 	 */
 	private static Class<?> getJavaType(String jvmFieldType) {
 		final char firstChar = jvmFieldType.charAt(0);
@@ -130,14 +124,11 @@ public final class Lambdas {
 			case 'J':
 				return long.class;
 			case 'L': {
-				final String javaType = jvmFieldType
-						.substring(1, jvmFieldType.length() - 1)
-						.replaceAll("/", ".");
+				final String javaType = jvmFieldType.substring(1, jvmFieldType.length() - 1).replaceAll("/", ".");
 				try {
 					return Class.forName(javaType);
 				} catch (ClassNotFoundException x) {
-					throw new IllegalStateException("Error loading class of JVM field type "
-							+ jvmFieldType, x);
+					throw new IllegalStateException("Error loading class of JVM field type " + jvmFieldType, x);
 				}
 			}
 			case 'S':
@@ -158,8 +149,8 @@ public final class Lambdas {
 	}
 
 	/**
-	 * Represents a Lambda signature having a return type and parameter types but no name, similar
-	 * to a {@link java.lang.reflect.Method}.
+	 * Represents a Lambda signature having a return type and parameter types but no name, similar to a
+	 * {@link java.lang.reflect.Method}.
 	 */
 	public static class LambdaSignature {
 		private final Class<?>[] parameterTypes;

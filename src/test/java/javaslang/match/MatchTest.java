@@ -46,11 +46,7 @@ public class MatchTest {
 
 	@Test
 	public void shouldMatchByDoubleOnMultipleCasesUsingTypedParameter() {
-		final int actual = Matchs
-				.caze((Byte b) -> 1)
-				.caze((Double d) -> 2)
-				.caze((Integer i) -> 3)
-				.apply(1.0d);
+		final int actual = Matchs.caze((Byte b) -> 1).caze((Double d) -> 2).caze((Integer i) -> 3).apply(1.0d);
 		assertThat(actual).isEqualTo(2);
 	}
 
@@ -66,11 +62,7 @@ public class MatchTest {
 
 	@Test
 	public void shouldMatchByAssignableTypeOnMultipleCases() {
-		final int actual = Matchs
-				.caze(1, o -> 'a')
-				.caze((Number n) -> 'b')
-				.caze((Object o) -> 'c')
-				.apply(2.0d);
+		final int actual = Matchs.caze(1, o -> 'a').caze((Number n) -> 'b').caze((Object o) -> 'c').apply(2.0d);
 		assertThat(actual).isEqualTo('b');
 	}
 
@@ -103,19 +95,13 @@ public class MatchTest {
 
 	@Test
 	public void shouldMatchIntegerAsPrimitiveInt() {
-		final boolean actual = Matchs
-				.caze((int i) -> true)
-				.caze((Integer i) -> false)
-				.apply(new Integer(1));
+		final boolean actual = Matchs.caze((int i) -> true).caze((Integer i) -> false).apply(new Integer(1));
 		assertThat(actual).isTrue();
 	}
 
 	@Test
 	public void shouldMatchInteger() {
-		final boolean actual = Matchs
-				.caze((Integer i) -> true)
-				.caze((int i) -> false)
-				.apply(new Integer(1));
+		final boolean actual = Matchs.caze((Integer i) -> true).caze((int i) -> false).apply(new Integer(1));
 		assertThat(actual).isTrue();
 	}
 
@@ -147,10 +133,7 @@ public class MatchTest {
 
 	@Test
 	public void shouldMatchBooleanArray() {
-		final int actual = new Match.Builder<Integer>()
-				.caze((boolean[] b) -> 1)
-				.build()
-				.apply(new boolean[] { true });
+		final int actual = new Match.Builder<Integer>().caze((boolean[] b) -> 1).build().apply(new boolean[] { true });
 		assertThat(actual).isEqualTo(1);
 	}
 

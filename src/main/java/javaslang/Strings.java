@@ -39,8 +39,7 @@ public final class Strings {
 	/**
 	 * Needed to detect indirect loops on recursive calls of {@link #toString(Object)}.
 	 */
-	private static final ThreadLocal<Set<Object>> toStringVisited = ThreadLocal
-			.withInitial(HashSet::new);
+	private static final ThreadLocal<Set<Object>> toStringVisited = ThreadLocal.withInitial(HashSet::new);
 
 	/**
 	 * This class is not intended to be instantiated.
@@ -72,8 +71,8 @@ public final class Strings {
 	 * 
 	 * @param s A String
 	 * @param n Duplication count, may be negative or zero.
-	 * @return A string, s duplicated n times or null, if s is null. If n is negative or zero, the
-	 *         empty string is returned.
+	 * @return A string, s duplicated n times or null, if s is null. If n is negative or zero, the empty string is
+	 *         returned.
 	 */
 	public static String repeat(String s, int n) {
 		if (s == null) {
@@ -94,8 +93,7 @@ public final class Strings {
 	 * 
 	 * @param c A char.
 	 * @param n A count of spaces, may be negative or zero.
-	 * @return A string, c duplicated n times. If n is negative or zero, the empty string is
-	 *         returned.
+	 * @return A string, c duplicated n times. If n is negative or zero, the empty string is returned.
 	 */
 	public static String repeat(char c, int n) {
 		if (n <= 0) {
@@ -118,8 +116,7 @@ public final class Strings {
 	}
 
 	/**
-	 * Escapes occurrences of character within s with the given escape character. The escape
-	 * character is also escaped.
+	 * Escapes occurrences of character within s with the given escape character. The escape character is also escaped.
 	 * 
 	 * @param s The String to be escaped.
 	 * @param character The character to be escaped.
@@ -164,8 +161,7 @@ public final class Strings {
 
 	/**
 	 * Combines the elements of an array to a String using a specific delimiter. Shortcut for
-	 * <code>Arrays.asList(array).stream().map(Types::toString).collect(Collectors.joining(delimiter))</code>
-	 * .
+	 * <code>Arrays.asList(array).stream().map(Types::toString).collect(Collectors.joining(delimiter))</code> .
 	 *
 	 * @param <T> Type of elements in the given array.
 	 * @param array An array.
@@ -191,8 +187,7 @@ public final class Strings {
 	 * 
 	 * @throws NullPointerException If array is null.
 	 */
-	public static <T> String join(T[] array, CharSequence delimiter, CharSequence prefix,
-			CharSequence suffix) {
+	public static <T> String join(T[] array, CharSequence delimiter, CharSequence prefix, CharSequence suffix) {
 		requireNonNull(array, "array is null");
 		return join(asList(array), delimiter, prefix, suffix);
 	}
@@ -213,10 +208,8 @@ public final class Strings {
 	}
 
 	/**
-	 * Combines the elements of a Collection to a String using a specific delimiter, prefix and
-	 * suffix. Shortcut for
-	 * <code>collection.stream().map(Types::toString).collect(joining(delimiter, prefix, suffix))</code>
-	 * .
+	 * Combines the elements of a Collection to a String using a specific delimiter, prefix and suffix. Shortcut for
+	 * <code>collection.stream().map(Types::toString).collect(joining(delimiter, prefix, suffix))</code> .
 	 *
 	 * @param <T> Type of elements in the given collection.
 	 * @param collection A Collection.
@@ -227,24 +220,20 @@ public final class Strings {
 	 * 
 	 * @throws NullPointerException If collection is null.
 	 */
-	public static <T> String join(Collection<T> collection, CharSequence delimiter,
-			CharSequence prefix, CharSequence suffix) {
+	public static <T> String join(Collection<T> collection, CharSequence delimiter, CharSequence prefix,
+			CharSequence suffix) {
 		requireNonNull(collection, "collection is null");
-		return collection
-				.stream()
-				.map(o -> toString(o))
-				.collect(joining(delimiter, prefix, suffix));
+		return collection.stream().map(o -> toString(o)).collect(joining(delimiter, prefix, suffix));
 	}
 
 	/**
-	 * Concatenates the given strings using the given separator character. Occurrences of escape or
-	 * separator within a string are escaped with the given escape character.
+	 * Concatenates the given strings using the given separator character. Occurrences of escape or separator within a
+	 * string are escaped with the given escape character.
 	 * 
 	 * @param strings An array of Strings, not null.
 	 * @param separator A separator character.
 	 * @param escape An escape character.
-	 * @return The concatenation of the escaped strings using the given separator and escape
-	 *         character.
+	 * @return The concatenation of the escaped strings using the given separator and escape character.
 	 * 
 	 * @throws IllegalArgumentException If separator equals escape.
 	 * @throws NullPointerException If strings is null.
@@ -259,14 +248,13 @@ public final class Strings {
 	}
 
 	/**
-	 * Convenience method that calls {@link #join(String[], char, char)} by converting the given
-	 * Collection strings to a String array.
+	 * Convenience method that calls {@link #join(String[], char, char)} by converting the given Collection strings to a
+	 * String array.
 	 * 
 	 * @param strings A Collection of Strings, not null.
 	 * @param separator A separator character.
 	 * @param escape An escape character.
-	 * @return The concatenation of the escaped strings using the given separator and escape
-	 *         character.
+	 * @return The concatenation of the escaped strings using the given separator and escape character.
 	 * 
 	 * @throws IllegalArgumentException If separator equals escape.
 	 * @throws NullPointerException If strings is null.
@@ -281,8 +269,8 @@ public final class Strings {
 	}
 
 	/**
-	 * Splits a string using a specific separator. By definition, a separator separates two string.
-	 * This leads to the following:
+	 * Splits a string using a specific separator. By definition, a separator separates two string. This leads to the
+	 * following:
 	 * 
 	 * <ul>
 	 * <li>split("", "#") = [""]</li>
@@ -314,12 +302,11 @@ public final class Strings {
 	}
 
 	/**
-	 * Splits a string which consists of zero or more parts concatenated with the given separator.
-	 * Occurrences of the separator in the given string are assumed to be escaped with the given
-	 * escape character. The escape character itself is also assumed to be escaped.
+	 * Splits a string which consists of zero or more parts concatenated with the given separator. Occurrences of the
+	 * separator in the given string are assumed to be escaped with the given escape character. The escape character
+	 * itself is also assumed to be escaped.
 	 * 
-	 * @param string A string consisting of zero or more parts concatenated with the given
-	 *            separator.
+	 * @param string A string consisting of zero or more parts concatenated with the given separator.
 	 * @param separator A separator character.
 	 * @param escape An escape character.
 	 * @return An array of unescaped parts of the given string.
@@ -356,8 +343,7 @@ public final class Strings {
 	}
 
 	/**
-	 * Computes the index of the first occurrence of separator or escape within s starting at
-	 * position fromIndex.
+	 * Computes the index of the first occurrence of separator or escape within s starting at position fromIndex.
 	 * <p>
 	 * Returns -1 only, and only if both of separator and escape are not found.
 	 *
@@ -401,8 +387,8 @@ public final class Strings {
 		}
 	}
 
-	private static String toString(Stream<?> stream, CharSequence delimiter, CharSequence prefix,
-			CharSequence suffix, Set<Object> visited, Object o) {
+	private static String toString(Stream<?> stream, CharSequence delimiter, CharSequence prefix, CharSequence suffix,
+			Set<Object> visited, Object o) {
 		visited.add(o);
 		final String result = stream.map(x -> toString(x, visited)).collect(
 				Collectors.joining(delimiter, prefix, suffix));

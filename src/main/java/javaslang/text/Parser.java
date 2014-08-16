@@ -33,9 +33,8 @@ public abstract class Parser implements Supplier<Parser> {
 		return this;
 	}
 
-	static void stringify(String name, Supplier<Parser>[] parsers, String separator,
-			String separatorInline, Predicate<Parser> needBraces, StringBuilder rule,
-			StringBuilder definitions, Set<String> visited) {
+	static void stringify(String name, Supplier<Parser>[] parsers, String separator, String separatorInline,
+			Predicate<Parser> needBraces, StringBuilder rule, StringBuilder definitions, Set<String> visited) {
 		if (name != null) {
 			rule.append(name);
 			if (!visited.contains(name)) {
@@ -50,9 +49,8 @@ public abstract class Parser implements Supplier<Parser> {
 		}
 	}
 
-	private static void stringify(Supplier<Parser>[] parsers, String separator,
-			Predicate<Parser> needBraces, StringBuilder rule, StringBuilder definitions,
-			Set<String> visited) {
+	private static void stringify(Supplier<Parser>[] parsers, String separator, Predicate<Parser> needBraces,
+			StringBuilder rule, StringBuilder definitions, Set<String> visited) {
 		boolean writeSeparator = false;
 		for (Supplier<? extends Parser> parserSupplier : parsers) {
 			final Parser parser = parserSupplier.get();

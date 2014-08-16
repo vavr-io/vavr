@@ -40,8 +40,8 @@ public class Grammar {
 
 	public Try<Tree<Token>> parse(String text) {
 		final Either<Integer, Tree<Token>> cst = parser.get().parse(text, 0);
-		return cst.isRight() ? new Success<>(cst.right().get()) : new Failure<>(
-				new IllegalArgumentException("cannot parse input at index " + cst.left().get()));
+		return cst.isRight() ? new Success<>(cst.right().get()) : new Failure<>(new IllegalArgumentException(
+				"cannot parse input at index " + cst.left().get()));
 	}
 
 	public String stringify() {

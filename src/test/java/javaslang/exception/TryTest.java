@@ -24,8 +24,7 @@ public class TryTest {
 			throw new RuntimeException();
 		});
 		assertThat(actual.isFailure()).isTrue();
-		assertThat(actual.failed().get().getClass().getName()).isEqualTo(
-				RuntimeException.class.getName());
+		assertThat(actual.failed().get().getClass().getName()).isEqualTo(RuntimeException.class.getName());
 	}
 
 	@Test

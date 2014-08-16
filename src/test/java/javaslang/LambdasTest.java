@@ -145,8 +145,8 @@ public class LambdasTest {
 	public void shouldConvertNonTrivialLambdaSignatureToString() {
 		final StringIntegerArrayDoubleArrayToTuple3 lambda = (s, i, d) -> Tuples.of(s, i, d);
 		final String actual = Lambdas.getLambdaSignature(lambda).toString();
-		assertThat(actual).isEqualTo(
-				"(java.lang.String, java.lang.Integer[][], double[][]) -> javaslang.Tuples$Tuple3");
+		assertThat(actual)
+				.isEqualTo("(java.lang.String, java.lang.Integer[][], double[][]) -> javaslang.Tuples$Tuple3");
 	}
 
 	@Test
@@ -155,24 +155,21 @@ public class LambdasTest {
 		};
 		final Unit lambda2 = () -> {
 		};
-		assertThat(Lambdas.getLambdaSignature(lambda1)).isEqualTo(
-				Lambdas.getLambdaSignature(lambda2));
+		assertThat(Lambdas.getLambdaSignature(lambda1)).isEqualTo(Lambdas.getLambdaSignature(lambda2));
 	}
 
 	@Test
 	public void shouldRecognizeNonTrivialEqualLambdaSignatures() {
 		final StringIntegerArrayDoubleArrayToTuple3 lambda1 = (s, i, d) -> Tuples.of(s, i, d);
 		final StringIntegerArrayDoubleArrayToTuple3 lambda2 = (s, i, d) -> Tuples.of(s, i, d);
-		assertThat(Lambdas.getLambdaSignature(lambda1)).isEqualTo(
-				Lambdas.getLambdaSignature(lambda2));
+		assertThat(Lambdas.getLambdaSignature(lambda1)).isEqualTo(Lambdas.getLambdaSignature(lambda2));
 	}
 
 	@Test
 	public void shouldRecognizeNonTrivialNonEqualLambdaSignatures() {
 		final StringIntegerArrayDoubleArrayToTuple3 lambda1 = (s, i, d) -> Tuples.of(s, i, d);
 		final StringIntArrayDoubleArrayToTuple3 lambda2 = (s, i, d) -> Tuples.of(s, i, d);
-		assertThat(Lambdas.getLambdaSignature(lambda1)).isNotEqualTo(
-				Lambdas.getLambdaSignature(lambda2));
+		assertThat(Lambdas.getLambdaSignature(lambda1)).isNotEqualTo(Lambdas.getLambdaSignature(lambda2));
 	}
 
 	@FunctionalInterface

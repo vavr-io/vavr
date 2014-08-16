@@ -17,22 +17,19 @@ import javaslang.option.Option;
 import javaslang.option.Some;
 
 /**
- * Either represents a value of two possible types. An Either is either a
- * {@link javaslang.either.Left} or a {@link javaslang.either.Right}.
+ * Either represents a value of two possible types. An Either is either a {@link javaslang.either.Left} or a
+ * {@link javaslang.either.Right}.
  * <p>
- * It is possible to project an Either to a Left or a Right. Both cases can be further processed
- * with monad operations map, flatMap, filter.
+ * It is possible to project an Either to a Left or a Right. Both cases can be further processed with monad operations
+ * map, flatMap, filter.
  * <p>
- * If the given Either is a Right and projected to a Left, the Left operations have no effect on the
- * Right value.<br>
- * If the given Either is a Left and projected to a Right, the Right operations have no effect on
- * the Left value.<br>
- * If a Left is projected to a Left or a Right is projected to a Right, the operations have an
- * effect.
+ * If the given Either is a Right and projected to a Left, the Left operations have no effect on the Right value.<br>
+ * If the given Either is a Left and projected to a Right, the Right operations have no effect on the Left value.<br>
+ * If a Left is projected to a Left or a Right is projected to a Right, the operations have an effect.
  * <p>
- * <strong>Example:</strong> A compute() function, which results either in an Integer value (in the
- * case of success) or in an error message of type String (in the case of failure). By convention
- * the success case is Right and the failure is Left.
+ * <strong>Example:</strong> A compute() function, which results either in an Integer value (in the case of success) or
+ * in an error message of type String (in the case of failure). By convention the success case is Right and the failure
+ * is Left.
  * 
  * <pre>
  * <code>
@@ -84,8 +81,7 @@ public interface Either<L, R> {
 			return either.isLeft() ? asLeft() : other.get();
 		}
 
-		public <X extends Throwable> L orElseThrow(Supplier<? extends X> exceptionSupplier)
-				throws X {
+		public <X extends Throwable> L orElseThrow(Supplier<? extends X> exceptionSupplier) throws X {
 			if (either.isLeft()) {
 				return asLeft();
 			} else {
@@ -183,8 +179,7 @@ public interface Either<L, R> {
 			return either.isRight() ? asRight() : other.get();
 		}
 
-		public <X extends Throwable> R orElseThrow(Supplier<? extends X> exceptionSupplier)
-				throws X {
+		public <X extends Throwable> R orElseThrow(Supplier<? extends X> exceptionSupplier) throws X {
 			if (either.isRight()) {
 				return asRight();
 			} else {

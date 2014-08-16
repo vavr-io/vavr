@@ -13,9 +13,9 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- * Some represents a defined {@link javaslang.option.Option}. It contains a value which may be null.
- * However, to create an Option containing null, {@code new Some(null)} has to be called. In all
- * other cases {@link Option#of(Object)} is sufficient.
+ * Some represents a defined {@link javaslang.option.Option}. It contains a value which may be null. However, to create
+ * an Option containing null, {@code new Some(null)} has to be called. In all other cases {@link Option#of(Object)} is
+ * sufficient.
  *
  * @param <T> The type of the optional value.
  */

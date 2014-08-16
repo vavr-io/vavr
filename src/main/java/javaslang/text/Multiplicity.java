@@ -56,9 +56,7 @@ public class Multiplicity extends Parser {
 		final boolean unbound = !ZERO_TO_ONE.equals(bounds);
 		boolean found = true;
 		do {
-			final Either<Integer, Tree<Token>> child = parser
-					.get()
-					.parse(text, tree.getValue().end);
+			final Either<Integer, Tree<Token>> child = parser.get().parse(text, tree.getValue().end);
 			if (child.isRight()) {
 				final Tree<Token> node = child.right().get();
 				tree.attach(node);

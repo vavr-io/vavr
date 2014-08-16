@@ -34,10 +34,7 @@ public final class Grammars {
 					.of(r.alternatives)
 					.map(p -> stringify(p.get()))
 					.collect(joining("\n  | ", r.name + "\n  : ", "\n  ;")))
-			.caze((Sequence s) -> Stream
-					.of(s.parsers)
-					.map(p -> stringify(p.get()))
-					.collect(joining(" ")))
+			.caze((Sequence s) -> Stream.of(s.parsers).map(p -> stringify(p.get())).collect(joining(" ")))
 			.build();
 
 	/**

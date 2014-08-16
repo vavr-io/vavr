@@ -64,7 +64,7 @@
 <setting id="org.eclipse.jdt.core.formatter.insert_space_before_opening_paren_in_annotation" value="do not insert"/>
 <setting id="org.eclipse.jdt.core.formatter.insert_space_before_comma_in_method_invocation_arguments" value="do not insert"/>
 <setting id="org.eclipse.jdt.core.formatter.insert_space_before_opening_brace_in_switch" value="insert"/>
-<setting id="org.eclipse.jdt.core.formatter.comment.line_length" value="100"/>
+<setting id="org.eclipse.jdt.core.formatter.comment.line_length" value="120"/>
 <setting id="org.eclipse.jdt.core.formatter.use_on_off_tags" value="false"/>
 <setting id="org.eclipse.jdt.core.formatter.insert_space_between_empty_brackets_in_array_allocation_expression" value="do not insert"/>
 <setting id="org.eclipse.jdt.core.formatter.insert_space_before_opening_brace_in_enum_constant" value="insert"/>
@@ -124,7 +124,7 @@
 <setting id="org.eclipse.jdt.core.formatter.insert_space_before_and_in_type_parameter" value="insert"/>
 <setting id="org.eclipse.jdt.core.formatter.insert_new_line_in_empty_type_declaration" value="insert"/>
 <setting id="org.eclipse.jdt.core.formatter.insert_space_after_opening_paren_in_parenthesized_expression" value="do not insert"/>
-<setting id="org.eclipse.jdt.core.formatter.comment.format_line_comments" value="true"/>
+<setting id="org.eclipse.jdt.core.formatter.comment.format_line_comments" value="false"/>
 <setting id="org.eclipse.jdt.core.formatter.insert_space_after_colon_in_labeled_statement" value="insert"/>
 <setting id="org.eclipse.jdt.core.formatter.align_type_members_on_columns" value="false"/>
 <setting id="org.eclipse.jdt.core.formatter.alignment_for_assignment" value="0"/>
@@ -288,7 +288,7 @@
 <setting id="org.eclipse.jdt.core.formatter.tabulation.char" value="tab"/>
 <setting id="org.eclipse.jdt.core.formatter.insert_space_before_comma_in_multiple_field_declarations" value="do not insert"/>
 <setting id="org.eclipse.jdt.core.formatter.blank_lines_between_import_groups" value="1"/>
-<setting id="org.eclipse.jdt.core.formatter.lineSplit" value="100"/>
+<setting id="org.eclipse.jdt.core.formatter.lineSplit" value="120"/>
 <setting id="org.eclipse.jdt.core.formatter.insert_space_after_opening_paren_in_annotation" value="do not insert"/>
 <setting id="org.eclipse.jdt.core.formatter.insert_space_before_opening_paren_in_switch" value="insert"/>
 </profile>

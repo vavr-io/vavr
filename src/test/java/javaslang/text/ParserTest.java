@@ -107,64 +107,53 @@ public class ParserTest {
 
 	@Test
 	public void shouldParseZeroToOneWhenMatchingNone() {
-		final Multiplicity multiplicity = new Multiplicity(new Literal("a"),
-				Multiplicity.Bounds.ZERO_TO_ONE);
+		final Multiplicity multiplicity = new Multiplicity(new Literal("a"), Multiplicity.Bounds.ZERO_TO_ONE);
 		final Either<Integer, Tree<Token>> ast = multiplicity.parse("xxx", 0);
 		assertThat(ast.right().get().toString()).isEqualTo("ZERO_TO_ONE(Token(''))");
 	}
 
 	@Test
 	public void shouldParseZeroToOneWhenMatchingOne() {
-		final Multiplicity multiplicity = new Multiplicity(new Literal("a"),
-				Multiplicity.Bounds.ZERO_TO_ONE);
+		final Multiplicity multiplicity = new Multiplicity(new Literal("a"), Multiplicity.Bounds.ZERO_TO_ONE);
 		final Either<Integer, Tree<Token>> ast = multiplicity.parse("aaa", 0);
-		assertThat(ast.right().get().toString()).isEqualTo(
-				"ZERO_TO_ONE(Token('a')\n  Literal(Token('a'))\n)");
+		assertThat(ast.right().get().toString()).isEqualTo("ZERO_TO_ONE(Token('a')\n  Literal(Token('a'))\n)");
 	}
 
 	@Test
 	public void shouldParseZeroToNWhenMatchingNone() {
-		final Multiplicity multiplicity = new Multiplicity(new Literal("a"),
-				Multiplicity.Bounds.ZERO_TO_N);
+		final Multiplicity multiplicity = new Multiplicity(new Literal("a"), Multiplicity.Bounds.ZERO_TO_N);
 		final Either<Integer, Tree<Token>> ast = multiplicity.parse("xxx", 0);
 		assertThat(ast.right().get().toString()).isEqualTo("ZERO_TO_N(Token(''))");
 	}
 
 	@Test
 	public void shouldParseZeroToNWhenMatchingMoreThanOne() {
-		final Multiplicity multiplicity = new Multiplicity(new Literal("a"),
-				Multiplicity.Bounds.ZERO_TO_N);
+		final Multiplicity multiplicity = new Multiplicity(new Literal("a"), Multiplicity.Bounds.ZERO_TO_N);
 		final Either<Integer, Tree<Token>> ast = multiplicity.parse("aaa", 0);
-		assertThat(ast.right().get().toString())
-				.isEqualTo(
-						"ZERO_TO_N(Token('aaa')\n  Literal(Token('a')),\n  Literal(Token('a')),\n  Literal(Token('a'))\n)");
+		assertThat(ast.right().get().toString()).isEqualTo(
+				"ZERO_TO_N(Token('aaa')\n  Literal(Token('a')),\n  Literal(Token('a')),\n  Literal(Token('a'))\n)");
 	}
 
 	@Test
 	public void shouldNotParseOneToNWhenMatchingNone() {
-		final Multiplicity multiplicity = new Multiplicity(new Literal("a"),
-				Multiplicity.Bounds.ONE_TO_N);
+		final Multiplicity multiplicity = new Multiplicity(new Literal("a"), Multiplicity.Bounds.ONE_TO_N);
 		final Either<Integer, Tree<Token>> ast = multiplicity.parse("xxx", 0);
 		assertThat(ast.left().get()).isEqualTo(0);
 	}
 
 	@Test
 	public void shouldParseOneToNWhenMatchingOne() {
-		final Multiplicity multiplicity = new Multiplicity(new Literal("a"),
-				Multiplicity.Bounds.ONE_TO_N);
+		final Multiplicity multiplicity = new Multiplicity(new Literal("a"), Multiplicity.Bounds.ONE_TO_N);
 		final Either<Integer, Tree<Token>> ast = multiplicity.parse("abc", 0);
-		assertThat(ast.right().get().toString()).isEqualTo(
-				"ONE_TO_N(Token('a')\n  Literal(Token('a'))\n)");
+		assertThat(ast.right().get().toString()).isEqualTo("ONE_TO_N(Token('a')\n  Literal(Token('a'))\n)");
 	}
 
 	@Test
 	public void shouldParseOneToNWhenMatchingMoreThanOne() {
-		final Multiplicity multiplicity = new Multiplicity(new Literal("a"),
-				Multiplicity.Bounds.ONE_TO_N);
+		final Multiplicity multiplicity = new Multiplicity(new Literal("a"), Multiplicity.Bounds.ONE_TO_N);
 		final Either<Integer, Tree<Token>> ast = multiplicity.parse("aaa", 0);
-		assertThat(ast.right().get().toString())
-				.isEqualTo(
-						"ONE_TO_N(Token('aaa')\n  Literal(Token('a')),\n  Literal(Token('a')),\n  Literal(Token('a'))\n)");
+		assertThat(ast.right().get().toString()).isEqualTo(
+				"ONE_TO_N(Token('aaa')\n  Literal(Token('a')),\n  Literal(Token('a')),\n  Literal(Token('a'))\n)");
 	}
 
 	@Test
@@ -184,8 +173,7 @@ public class ParserTest {
 	private Parser n(Parser parser, String separator) {
 
 		// [ ',' P]*
-		final Parser more = new Multiplicity(new Sequence("Sequence", new Literal(separator),
-				parser), ZERO_TO_N);
+		final Parser more = new Multiplicity(new Sequence("Sequence", new Literal(separator), parser), ZERO_TO_N);
 
 		// [ P <more> ]?
 		return new Multiplicity(new Sequence("Sequence", parser, more), ZERO_TO_ONE);

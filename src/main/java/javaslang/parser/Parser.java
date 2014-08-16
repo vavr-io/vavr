@@ -20,17 +20,16 @@ interface Parser extends Supplier<Parser> {
 	 * 
 	 * @param text The whole text to parse.
 	 * @param index The current index of the parser.
-	 * @return Either a Left, containing the index of failure or a Right, containing the range
-	 *         (index, length) parsed.
+	 * @return Either a Left, containing the index of failure or a Right, containing the range (index, length) parsed.
 	 */
 	Either<Integer, Tree<Tuple2<Integer, Integer>>> parse(String text, int index);
 
 	/**
-	 * Being a self-supplier is the key for constructing grammars programatically using methods,
-	 * which are evaluated lazily. This allows to build grammars containing cyclic references.
+	 * Being a self-supplier is the key for constructing grammars programatically using methods, which are evaluated
+	 * lazily. This allows to build grammars containing cyclic references.
 	 * <p>
-	 * Parser implementations which have child parsers, should provide a constructor having
-	 * Supplier&lt;Parser&gt; as argument.
+	 * Parser implementations which have child parsers, should provide a constructor having Supplier&lt;Parser&gt; as
+	 * argument.
 	 * 
 	 * @return This Parser instance.
 	 * @see java.util.function.Supplier#get()

@@ -44,14 +44,15 @@ public class Branch extends Parser {
 				.of(parsers)
 				.parallel()
 				.map(parser -> parser.get().parse(text, index))
-				.reduce(initial, (t1, t2) -> reduce(t1, t2, text, index),
-						(t1, t2) -> reduce(t1, t2, text, index));
+				.reduce(initial, (t1, t2) -> reduce(t1, t2, text, index), (t1, t2) -> reduce(t1, t2, text, index));
 	}
 
-	private Either<Integer, Tree<Token>> reduce(Either<Integer, Tree<Token>> tree1,
-			Either<Integer, Tree<Token>> tree2, String text, int index) {
-		require(tree1.isLeft() || tree2.isLeft(),
-				() -> "Ambiguity found at " + Strings.lineAndColumn(text, index) + ":\n" + text);
+	private Either<Integer, Tree<Token>> reduce(Either<Integer, Tree<Token>> tree1, Either<Integer, Tree<Token>> tree2,
+			String text, int index) {
+		require(tree1.isLeft() || tree2.isLeft(), () -> "Ambiguity found at "
+				+ Strings.lineAndColumn(text, index)
+				+ ":\n"
+				+ text);
 		if (tree1.isRight()) {
 			return tree1;
 		} else if (tree2.isRight()) {

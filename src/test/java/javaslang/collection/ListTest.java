@@ -26,8 +26,8 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowWhenHeadOnEmptyList() {
-		assertThat(() -> EmptyList.instance().head()).isThrowing(
-				UnsupportedOperationException.class, "head of empty list");
+		assertThat(() -> EmptyList.instance().head()).isThrowing(UnsupportedOperationException.class,
+				"head of empty list");
 	}
 
 	@Test
@@ -40,8 +40,8 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowWhenTailOnEmptyList() {
-		assertThat(() -> EmptyList.instance().tail()).isThrowing(
-				UnsupportedOperationException.class, "tail of empty list");
+		assertThat(() -> EmptyList.instance().tail()).isThrowing(UnsupportedOperationException.class,
+				"tail of empty list");
 	}
 
 	@Test
@@ -107,8 +107,8 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowOnAppendAllOfNull() {
-		assertThat(() -> List.empty().appendAll(null)).isThrowing(
-				UnsatisfiedRequirementException.class, "elements is null");
+		assertThat(() -> List.empty().appendAll(null)).isThrowing(UnsatisfiedRequirementException.class,
+				"elements is null");
 	}
 
 	@Test
@@ -159,8 +159,8 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowOnPrependAllOfNull() {
-		assertThat(() -> List.empty().prependAll(null)).isThrowing(
-				UnsatisfiedRequirementException.class, "elements is null");
+		assertThat(() -> List.empty().prependAll(null)).isThrowing(UnsatisfiedRequirementException.class,
+				"elements is null");
 	}
 
 	@Test
@@ -223,8 +223,7 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowOnInsertWithNegativeIndex() {
-		assertThat(() -> List.empty().insert(-1, null)).isThrowing(IndexOutOfBoundsException.class,
-				"insert(-1, e)");
+		assertThat(() -> List.empty().insert(-1, null)).isThrowing(IndexOutOfBoundsException.class, "insert(-1, e)");
 	}
 
 	@Test
@@ -265,20 +264,20 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowOnInsertAllWithEmptyList() {
-		assertThat(() -> List.empty().insertAll(0, null)).isThrowing(
-				UnsatisfiedRequirementException.class, "elements is null");
+		assertThat(() -> List.empty().insertAll(0, null)).isThrowing(UnsatisfiedRequirementException.class,
+				"elements is null");
 	}
 
 	@Test
 	public void shouldThrowOnInsertAllWithNegativeIndex() {
-		assertThat(() -> List.empty().insertAll(-1, List.empty())).isThrowing(
-				IndexOutOfBoundsException.class, "insertAll(-1, elements)");
+		assertThat(() -> List.empty().insertAll(-1, List.empty())).isThrowing(IndexOutOfBoundsException.class,
+				"insertAll(-1, elements)");
 	}
 
 	@Test
 	public void shouldThrowOnInsertAllWhenExceedingUpperBound() {
-		assertThat(() -> List.empty().insertAll(1, List.empty())).isThrowing(
-				IndexOutOfBoundsException.class, "insertAll(1, elements) on list of size 0");
+		assertThat(() -> List.empty().insertAll(1, List.empty())).isThrowing(IndexOutOfBoundsException.class,
+				"insertAll(1, elements) on list of size 0");
 	}
 
 	// -- remove
@@ -334,8 +333,7 @@ public class ListTest {
 
 	@Test
 	public void shouldRetainAllExistingElementsFromNonEmptyList() {
-		assertThat(List.of(1, 2, 3, 1, 2, 3).retainAll(List.of(1, 2))).isEqualTo(
-				List.of(1, 2, 1, 2));
+		assertThat(List.of(1, 2, 3, 1, 2, 3).retainAll(List.of(1, 2))).isEqualTo(List.of(1, 2, 1, 2));
 	}
 
 	@Test
@@ -445,8 +443,7 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowWhenGetWithNegativeIndexOnEmptyList() {
-		assertThat(() -> List.empty().get(-1)).isThrowing(IndexOutOfBoundsException.class,
-				"get(-1) on empty list");
+		assertThat(() -> List.empty().get(-1)).isThrowing(IndexOutOfBoundsException.class, "get(-1) on empty list");
 	}
 
 	@Test
@@ -456,14 +453,12 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowWhenGetOnEmptyList() {
-		assertThat(() -> List.empty().get(0)).isThrowing(IndexOutOfBoundsException.class,
-				"get(0) on empty list");
+		assertThat(() -> List.empty().get(0)).isThrowing(IndexOutOfBoundsException.class, "get(0) on empty list");
 	}
 
 	@Test
 	public void shouldThrowWhenGetWithTooBigIndexOnNonEmptyList() {
-		assertThat(() -> List.of(1).get(1)).isThrowing(IndexOutOfBoundsException.class,
-				"get(1) on list of size 1");
+		assertThat(() -> List.of(1).get(1)).isThrowing(IndexOutOfBoundsException.class, "get(1) on list of size 1");
 	}
 
 	@Test
@@ -486,8 +481,7 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowWhenSetWithNegativeIndexOnNonEmptyList() {
-		assertThat(() -> List.of(1).set(-1, 2)).isThrowing(IndexOutOfBoundsException.class,
-				"set(-1, e)");
+		assertThat(() -> List.of(1).set(-1, 2)).isThrowing(IndexOutOfBoundsException.class, "set(-1, e)");
 	}
 
 	@Test
@@ -546,14 +540,13 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowWhenSublist0OnEmptyList() {
-		assertThat(() -> List.<Integer> empty().sublist(1)).isThrowing(
-				IndexOutOfBoundsException.class, "sublist(1) on list of size 0");
+		assertThat(() -> List.<Integer> empty().sublist(1)).isThrowing(IndexOutOfBoundsException.class,
+				"sublist(1) on list of size 0");
 	}
 
 	@Test
 	public void shouldThrowWhenSublistWithOutOfLowerBound() {
-		assertThat(() -> List.of(1, 2, 3).sublist(-1)).isThrowing(IndexOutOfBoundsException.class,
-				"sublist(-1)");
+		assertThat(() -> List.of(1, 2, 3).sublist(-1)).isThrowing(IndexOutOfBoundsException.class, "sublist(-1)");
 	}
 
 	@Test
@@ -602,20 +595,20 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowOnSublistWhenEndIndexIsGreaterThanBeginIndex() {
-		assertThat(() -> List.of(1, 2, 3).sublist(1, 0)).isThrowing(
-				IndexOutOfBoundsException.class, "sublist(1, 0) on list of size 3");
+		assertThat(() -> List.of(1, 2, 3).sublist(1, 0)).isThrowing(IndexOutOfBoundsException.class,
+				"sublist(1, 0) on list of size 3");
 	}
 
 	@Test
 	public void shouldThrowOnSublistWhenBeginIndexExceedsLowerBound() {
-		assertThat(() -> List.of(1, 2, 3).sublist(-1, 2)).isThrowing(
-				IndexOutOfBoundsException.class, "sublist(-1, 2) on list of size 3");
+		assertThat(() -> List.of(1, 2, 3).sublist(-1, 2)).isThrowing(IndexOutOfBoundsException.class,
+				"sublist(-1, 2) on list of size 3");
 	}
 
 	@Test
 	public void shouldThrowOnSublistWhenEndIndexExceedsUpperBound() {
-		assertThat(() -> List.of(1, 2, 3).sublist(1, 4)).isThrowing(
-				IndexOutOfBoundsException.class, "sublist(1, 4) on list of size 3");
+		assertThat(() -> List.of(1, 2, 3).sublist(1, 4)).isThrowing(IndexOutOfBoundsException.class,
+				"sublist(1, 4) on list of size 3");
 	}
 
 	// -- drop
@@ -768,8 +761,7 @@ public class ListTest {
 
 	@Test
 	public void shouldParallelStreamAndCollectNonEmptyList() {
-		assertThat(List.of(1, 2, 3).parallelStream().collect(List.collector())).isEqualTo(
-				List.of(1, 2, 3));
+		assertThat(List.of(1, 2, 3).parallelStream().collect(List.collector())).isEqualTo(List.of(1, 2, 3));
 	}
 
 	// -- spliterator
@@ -790,20 +782,17 @@ public class ListTest {
 
 	@Test
 	public void shouldHaveImmutableSpliterator() {
-		assertThat(List.of(1, 2, 3).spliterator().characteristics() & Spliterator.IMMUTABLE)
-				.isNotZero();
+		assertThat(List.of(1, 2, 3).spliterator().characteristics() & Spliterator.IMMUTABLE).isNotZero();
 	}
 
 	@Test
 	public void shouldHaveOrderedSpliterator() {
-		assertThat(List.of(1, 2, 3).spliterator().characteristics() & Spliterator.ORDERED)
-				.isNotZero();
+		assertThat(List.of(1, 2, 3).spliterator().characteristics() & Spliterator.ORDERED).isNotZero();
 	}
 
 	@Test
 	public void shouldHaveSizedSpliterator() {
-		assertThat(List.of(1, 2, 3).spliterator().characteristics() & Spliterator.SIZED)
-				.isNotZero();
+		assertThat(List.of(1, 2, 3).spliterator().characteristics() & Spliterator.SIZED).isNotZero();
 	}
 
 	@Test
@@ -820,8 +809,7 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowOnNextWhenEmptyListIterator() {
-		assertThat(() -> List.empty().iterator().next()).isThrowing(NoSuchElementException.class,
-				null);
+		assertThat(() -> List.empty().iterator().next()).isThrowing(NoSuchElementException.class, null);
 	}
 
 	@Test
@@ -832,8 +820,7 @@ public class ListTest {
 	@Test
 	public void shouldFullyIterateNonEmptyList() {
 		int actual = -1;
-		for (Iterator<Integer> iter = List.of(1, 2, 3).iterator(); iter.hasNext(); actual = iter
-				.next())
+		for (Iterator<Integer> iter = List.of(1, 2, 3).iterator(); iter.hasNext(); actual = iter.next())
 			;
 		assertThat(actual).isEqualTo(3);
 	}
@@ -855,8 +842,7 @@ public class ListTest {
 	@Test
 	public void shouldFullyIterateNonEmptyListStartingAtIndex() {
 		int actual = -1;
-		for (Iterator<Integer> iter = List.of(1, 2, 3).iterator(1); iter.hasNext(); actual = iter
-				.next())
+		for (Iterator<Integer> iter = List.of(1, 2, 3).iterator(1); iter.hasNext(); actual = iter.next())
 			;
 		assertThat(actual).isEqualTo(3);
 	}

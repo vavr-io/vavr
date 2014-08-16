@@ -21,15 +21,15 @@ import javaslang.exception.Try;
  * The IO class provides convenient methods for loading system resources and converting data between
  * <code>InputStream</code>, <code>byte[]</code> and <code>String</code>.
  * <p>
- * When converting <code>bytes</code> to <code>String</code>, the charset has to be provided
- * explicitly. Most encoding-related errors occur, because the default charset is used. This may
- * produce unwanted side-effects when relying on a specific encoding. Please consider this as a good
- * example, where <em>coding by convention</em> does <strong>not</strong> apply.
+ * When converting <code>bytes</code> to <code>String</code>, the charset has to be provided explicitly. Most
+ * encoding-related errors occur, because the default charset is used. This may produce unwanted side-effects when
+ * relying on a specific encoding. Please consider this as a good example, where <em>coding by convention</em> does
+ * <strong>not</strong> apply.
  * <p>
- * Also it is strongly encouraged to use {@link IO#UTF8} as charset for encoding Strings, therefore
- * this is the only charset constant defined in the <code>IO</code> class. Working with charsets
- * works best if the encoding is used consistently throughout the whole code base of the underlying
- * project. E.g. Maven projects set the encoding in the pom.xml similar to this:
+ * Also it is strongly encouraged to use {@link IO#UTF8} as charset for encoding Strings, therefore this is the only
+ * charset constant defined in the <code>IO</code> class. Working with charsets works best if the encoding is used
+ * consistently throughout the whole code base of the underlying project. E.g. Maven projects set the encoding in the
+ * pom.xml similar to this:
  * 
  * <pre>
  * <code>
@@ -66,8 +66,7 @@ public final class IO {
 	/**
 	 * Converts a String to an InputStream using a specific Charset to decode the bytes.
 	 * <p>
-	 * There will be no <code>toInputStream(String)</code> method in order to enforce correctness of
-	 * charset encoding.
+	 * There will be no <code>toInputStream(String)</code> method in order to enforce correctness of charset encoding.
 	 * 
 	 * @param s A String
 	 * @param charset A Charset
@@ -100,8 +99,7 @@ public final class IO {
 	/**
 	 * Convert an InputStream to String using a specific Charset to encode the bytes.
 	 * <p>
-	 * There will be no <code>toString(InputStream)</code> method in order to enforce correctness of
-	 * charset encoding.
+	 * There will be no <code>toString(InputStream)</code> method in order to enforce correctness of charset encoding.
 	 * 
 	 * @param in Input
 	 * @param charset Charset used to convert stream of bytes to String.
@@ -123,8 +121,7 @@ public final class IO {
 	}
 
 	/**
-	 * Reads a system reosurce and returns the content as String using a specific Charset to encode
-	 * the bytes.
+	 * Reads a system reosurce and returns the content as String using a specific Charset to encode the bytes.
 	 * 
 	 * @param resource A system resource path.
 	 * @param charset Charset used to convert stream of bytes to String.

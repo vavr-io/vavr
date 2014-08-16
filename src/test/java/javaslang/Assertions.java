@@ -46,8 +46,8 @@ public final class Assertions {
 							+ ".");
 				}
 				final String actualMessage = x.getMessage();
-				final boolean isOk = (actualMessage == null) ? (expectedMessage == null)
-						: actualMessage.equals(expectedMessage);
+				final boolean isOk = (actualMessage == null) ? (expectedMessage == null) : actualMessage
+						.equals(expectedMessage);
 				if (!isOk) {
 					throw new AssertionError("Expected exception message "
 							+ Strings.toString(expectedMessage)

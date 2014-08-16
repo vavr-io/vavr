@@ -67,8 +67,7 @@ class Tree<T> {
 	 * Detaches a node from this tree.
 	 * 
 	 * @param child A Tree.
-	 * @return true, if the child was successfully detached, false if it is not a child of this
-	 *         tree.
+	 * @return true, if the child was successfully detached, false if it is not a child of this tree.
 	 */
 	public boolean detach(Tree<T> child) {
 		if (children.remove(child)) {
@@ -101,8 +100,8 @@ class Tree<T> {
 	}
 
 	/**
-	 * Traverses this tree top down, testing the given predicate against each tree node. If
-	 * predicate.test() returns true, descend children, else go on with neighbors.
+	 * Traverses this tree top down, testing the given predicate against each tree node. If predicate.test() returns
+	 * true, descend children, else go on with neighbors.
 	 * 
 	 * @param predicate Predicate to be tested.
 	 */
@@ -113,8 +112,8 @@ class Tree<T> {
 	}
 
 	/**
-	 * Traverses this tree top down, applying the given predicate to each tree node. If
-	 * predicate.test() returns true, the tree node is part of the result list.
+	 * Traverses this tree top down, applying the given predicate to each tree node. If predicate.test() returns true,
+	 * the tree node is part of the result list.
 	 * 
 	 * @param predicate Predicate to be tested.
 	 * @return A list of tree nodes matching the given predicate.
@@ -148,10 +147,7 @@ class Tree<T> {
 				.map(s -> "\n" + s + "\n" + indent)
 				// apply if concatenation is not empty
 				.orElse("");
-		final String content = (value == null) ? "" : value
-				.toString()
-				.replaceAll("\\s+", " ")
-				.trim();
+		final String content = (value == null) ? "" : value.toString().replaceAll("\\s+", " ").trim();
 		return indent + id + "(" + content + inner + ")";
 	}
 

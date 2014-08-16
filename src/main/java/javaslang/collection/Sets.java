@@ -54,8 +54,8 @@ public final class Sets {
 	}
 
 	/**
-	 * Relative complement of sets, subtracting elements <code>set1 - set2</code>. Returns a new
-	 * set, does not modify set1 and set2.
+	 * Relative complement of sets, subtracting elements <code>set1 - set2</code>. Returns a new set, does not modify
+	 * set1 and set2.
 	 * 
 	 * @param <T> type of Set elements.
 	 * @param set1 Starting set.
@@ -77,8 +77,7 @@ public final class Sets {
 	}
 
 	/**
-	 * Intersection of sets <code>set1</code> and <code>set2</code>. Returns a new set, does not
-	 * modify set1 and set2.
+	 * Intersection of sets <code>set1</code> and <code>set2</code>. Returns a new set, does not modify set1 and set2.
 	 * 
 	 * @param <T> type of Set elements.
 	 * @param set1 A set.
@@ -100,8 +99,7 @@ public final class Sets {
 	}
 
 	/**
-	 * Union of sets, adding <code>set1 + set2</code>. Returns a new set, does not modify set1 and
-	 * set2.
+	 * Union of sets, adding <code>set1 + set2</code>. Returns a new set, does not modify set1 and set2.
 	 * 
 	 * @param <T> type of Set elements
 	 * @param set1 A set.

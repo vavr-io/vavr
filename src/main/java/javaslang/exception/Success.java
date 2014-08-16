@@ -51,8 +51,7 @@ public final class Success<T> implements Try<T>, Serializable {
 	}
 
 	@Override
-	public <X extends Throwable> T orElseThrow(Function<Throwable, ? extends X> exceptionSupplier)
-			throws X {
+	public <X extends Throwable> T orElseThrow(Function<Throwable, ? extends X> exceptionSupplier) throws X {
 		return value;
 	}
 
@@ -77,8 +76,7 @@ public final class Success<T> implements Try<T>, Serializable {
 			if (predicate.test(value)) {
 				return this;
 			} else {
-				return new Failure<T>(new NoSuchElementException("Predicate does not hold for "
-						+ value));
+				return new Failure<T>(new NoSuchElementException("Predicate does not hold for " + value));
 			}
 		} catch (Throwable t) {
 			return new Failure<>(t);

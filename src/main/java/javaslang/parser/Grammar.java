@@ -70,8 +70,7 @@ import javaslang.parser.Parsers.Sequence;
  * }</code>
  * </pre>
  * 
- * @see http
- *      ://stackoverflow.com/questions/1888854/what-is-the-difference-between-an-abstract-syntax
+ * @see http ://stackoverflow.com/questions/1888854/what-is-the-difference-between-an-abstract-syntax
  *      -tree-and-a-concrete-syntax-tre
  */
 public interface Grammar {
@@ -80,8 +79,7 @@ public interface Grammar {
 	 * TODO: javadoc
 	 * 
 	 * @param text A text input to be parsed.
-	 * @return A concrete syntax tree of the text on parse success or a failure if a parse error
-	 *         occured.
+	 * @return A concrete syntax tree of the text on parse success or a failure if a parse error occured.
 	 */
 	Try<Tree<Tuple2<Integer, Integer>>> parse(String text);
 
@@ -95,9 +93,7 @@ public interface Grammar {
 		// TODO: startRule.get() might be null
 		requireNonNull(startRule, "startRule is null");
 		return text -> {
-			final Either<Integer, Tree<Tuple2<Integer, Integer>>> parseResult = startRule
-					.get()
-					.parse(text, 0);
+			final Either<Integer, Tree<Tuple2<Integer, Integer>>> parseResult = startRule.get().parse(text, 0);
 			if (parseResult.isRight()) {
 				final Tree<Tuple2<Integer, Integer>> concreteSyntaxTree = parseResult.right().get();
 				return new Success<>(concreteSyntaxTree);
