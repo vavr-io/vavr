@@ -13,21 +13,23 @@ import static javaslang.Requirements.requireNotNullOrEmpty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import javaslang.Arrayz;
 import javaslang.Requirements.UnsatisfiedRequirementException;
 import javaslang.Strings;
 import javaslang.Tuples;
 import javaslang.Tuples.Tuple2;
+import javaslang.collection.Sets;
 import javaslang.either.Either;
 import javaslang.either.Left;
 import javaslang.either.Right;
-import javaslang.match.Match;
-import javaslang.match.Matchs;
 
 //
 // TODO:
@@ -67,30 +69,11 @@ import javaslang.match.Matchs;
 //
 public final class Parsers {
 
-	private static final Match<String> TO_STRING = Matchs
-			.caze((Any any) -> ".")
-			.caze((EOF eof) -> "EOF")
-			.caze((Literal l) -> "'" + l.literal + "'")
-			.caze((Quantifier q) -> "(" + stringify(q.parser.get()) + ")" + q.bounds.symbol)
-			.caze((Rule r) -> Stream
-					.of(r.alternatives)
-					.map(p -> stringify(p.get()))
-					.collect(joining("\n  | ", r.name + "\n  : ", "\n  ;")))
-			.caze((Sequence s) -> Stream
-					.of(s.parsers)
-					.map(p -> stringify(p.get()))
-					.collect(joining(" ")))
-			.build();
-
 	/**
 	 * This class is not intended to be instantiated.
 	 */
 	private Parsers() {
 		requireNotInstantiable();
-	}
-
-	public static final String stringify(Parser parser) {
-		return TO_STRING.apply(parser);
 	}
 
 	/**
@@ -112,6 +95,11 @@ public final class Parsers {
 				return new Left<>(index);
 			}
 		}
+
+		@Override
+		public String toString() {
+			return ".";
+		}
 	}
 
 	/**
@@ -125,6 +113,8 @@ public final class Parsers {
 	 */
 	static class CharRange implements Parser {
 
+		final char from;
+		final char to;
 		final Predicate<Character> isInRange;
 
 		/**
@@ -136,6 +126,8 @@ public final class Parsers {
 		 */
 		CharRange(char from, char to) {
 			require(from <= to, "from > to");
+			this.from = from;
+			this.to = to;
 			this.isInRange = c -> from <= c && c <= to;
 		}
 
@@ -146,6 +138,11 @@ public final class Parsers {
 			} else {
 				return new Left<>(index);
 			}
+		}
+
+		@Override
+		public String toString() {
+			return from + ".." + to;
 		}
 	}
 
@@ -163,6 +160,7 @@ public final class Parsers {
 		/** Matches ranges within char sets. */
 		static final Pattern CHAR_SET_RANGE_PATTERN = Pattern.compile(".-.");
 
+		final String charSetString;
 		final Predicate<Character> isInSet;
 
 		/**
@@ -171,6 +169,7 @@ public final class Parsers {
 		 * @param set A set of characters to include.
 		 */
 		CharSet(String charSetString) {
+			this.charSetString = charSetString;
 			this.isInSet = parse(charSetString);
 		}
 
@@ -183,6 +182,29 @@ public final class Parsers {
 			}
 		}
 
+		@Override
+		public String toString() {
+			return charSetString.chars().boxed().map(i -> {
+				final char c = (char) i.intValue();
+				// TODO: add more special characters?
+					switch (c) {
+						case 0x09:
+							return "\\t";
+						case 0x0A:
+							return "\\n";
+						case 0x0D:
+							return "\\r";
+						case 0x0C:
+							return "\\f";
+						case 0x5C:
+							return "\\\\";
+						default:
+							// TODO: unicode chars
+							return String.valueOf(c);
+					}
+				}).collect(joining("", "[", "]"));
+		}
+
 		/**
 		 * Parses a char set String which contains sequences of characters and character ranges
 		 * denoted as {@code a-z}.
@@ -190,7 +212,7 @@ public final class Parsers {
 		 * @param charSetString A String defining a char set.
 		 * @return A Predicate that tests, if a given char is in the char set.
 		 */
-		Predicate<Character> parse(String charSetString) {
+		private Predicate<Character> parse(String charSetString) {
 
 			final List<Predicate<Character>> predicates = new ArrayList<>();
 			final Matcher matcher = CHAR_SET_RANGE_PATTERN.matcher(charSetString);
@@ -238,6 +260,11 @@ public final class Parsers {
 				return new Left<>(index);
 			}
 		}
+
+		@Override
+		public String toString() {
+			return "EOF";
+		}
 	}
 
 	/**
@@ -254,6 +281,7 @@ public final class Parsers {
 		final String literal;
 
 		Literal(String literal) {
+			// TODO: escape literal? e.g. '\n' -> '\\n'
 			this.literal = literal;
 		}
 
@@ -264,6 +292,11 @@ public final class Parsers {
 			} else {
 				return new Left<>(index);
 			}
+		}
+
+		@Override
+		public String toString() {
+			return "'" + literal + "'";
 		}
 	}
 
@@ -294,6 +327,17 @@ public final class Parsers {
 			}
 		}
 
+		@Override
+		public String toString() {
+			if (parser instanceof Rule && !((Rule) parser).isSubRule()) {
+				return ((Rule) parser).name + bounds.symbol;
+			} else if (parser instanceof Sequence) {
+				return "(" + parser.toString() + ")" + bounds.symbol;
+			} else {
+				return parser.toString() + bounds.symbol;
+			}
+		}
+
 		// TODO: rewrite this method (immutable & recursive)
 		private void parseChildren(Tree<Tuple2<Integer, Integer>> tree, String text, int index) {
 			final boolean unbound = !Bounds.ZERO_TO_ONE.equals(bounds);
@@ -313,13 +357,18 @@ public final class Parsers {
 
 		static enum Bounds {
 
-			ZERO_TO_ONE("?"), ZERO_TO_N("*"), ONE_TO_N("+"), // greedy
-			ZERO_TO_ONE_NG("??"), ZERO_TO_N_NG("*?"), ONE_TO_N_NG("+?"); // non-greedy
+			// greedy
+			ZERO_TO_ONE("?", true), ZERO_TO_N("*", true), ONE_TO_N("+", true),
+
+			// non-greedy
+			ZERO_TO_ONE_NG("??", false), ZERO_TO_N_NG("*?", false), ONE_TO_N_NG("+?", false);
 
 			final String symbol;
+			final boolean greedy;
 
-			Bounds(String symbol) {
+			Bounds(String symbol, boolean greedy) {
 				this.symbol = symbol;
+				this.greedy = greedy;
 			}
 		}
 	}
@@ -338,15 +387,53 @@ public final class Parsers {
 	 */
 	static class Rule implements Parser {
 
-		final String name;
+		static final Set<String> RESERVED_WORDS = Sets.of("EOF");
+
+		final Optional<String> name;
 		final Supplier<Parser>[] alternatives;
 
+		/**
+		 * Creates a subrule with multiple alternatives which is embedded in a primary rule. In
+		 * particular a subrule has no name and therefore may not be referenced by other (primary)
+		 * rules.
+		 * 
+		 * @param alternative1 First alternative rule.
+		 * @param alternative2 Second alternative rule.
+		 * @param alternatives Zero or more alternative rules.
+		 * @throws UnsatisfiedRequirementException if one of the alternatives is null.
+		 */
 		@SafeVarargs
-		Rule(String name, Supplier<Parser>... alternatives) {
+		Rule(Supplier<Parser> alternative1, Supplier<Parser> alternative2,
+				Supplier<Parser>... alternatives) {
+			requireNonNull(alternative1, "alternative1 is null");
+			requireNonNull(alternative2, "alternative2 is null");
+			requireNonNull(alternatives, "alternatives is null");
+			this.name = Optional.empty();
+			this.alternatives = Arrayz.combine(Arrayz.of(alternative1, alternative2), alternatives);
+		}
+
+		/**
+		 * Creates a primary rule, i.e. a rule with a name which may be referenced by other rules.
+		 * 
+		 * @param alternative1 First alternative rule.
+		 * @param alternatives Zero or more alternative rules.
+		 * @throws UnsatisfiedRequirementException if name is invalid, i.e. null, a reserved word or
+		 *             not a valid identifier) or one of the alternatives is null.
+		 */
+		@SafeVarargs
+		Rule(String name, Supplier<Parser> alternative1, Supplier<Parser>... alternatives) {
 			requireNonNull(name, "name is null");
-			requireNotNullOrEmpty(alternatives, "No alternatives");
-			this.name = name;
-			this.alternatives = alternatives;
+			// TODO: require(RULE_IDENTIFIER.test(name), "name " + name +
+			// " is not a valid rule identifier (<pattern>");
+			require(!RESERVED_WORDS.contains(name), "name " + name + " is reserved");
+			requireNonNull(alternative1, "alternative1 is null");
+			requireNonNull(alternatives, "alternatives is null");
+			this.name = Optional.of(name);
+			this.alternatives = Arrayz.prepend(alternatives, alternative1);
+		}
+
+		public boolean isSubRule() {
+			return !name.isPresent();
 		}
 
 		@Override
@@ -358,6 +445,12 @@ public final class Parsers {
 					.map(parser -> parser.get().parse(text, index))
 					.reduce(initial, (t1, t2) -> reduce(t1, t2, text, index),
 							(t1, t2) -> reduce(t1, t2, text, index));
+		}
+
+		@Override
+		public String toString() {
+			// TODO
+			throw new UnsupportedOperationException();
 		}
 
 		/**
@@ -434,6 +527,12 @@ public final class Parsers {
 					}
 				}
 			}, (t1, t2) -> null); // combiner not used because stream is not parallel
+		}
+
+		@Override
+		public String toString() {
+			// TODO
+			throw new UnsupportedOperationException();
 		}
 	}
 }
