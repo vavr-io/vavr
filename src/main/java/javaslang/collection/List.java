@@ -24,7 +24,10 @@ import java.util.stream.Collector;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import javaslang.Requirements.UnsatisfiedRequirementException;
 import javaslang.Strings;
+import javaslang.Tuples;
+import javaslang.Tuples.Tuple2;
 
 /**
  * An immutable List implementation, suitable for concurrent programming.
@@ -685,6 +688,76 @@ public interface List<E> extends Iterable<E> {
 	}
 
 	/**
+	 * Returns a List formed from this List and another Iterable collection by combining corresponding elements in
+	 * pairs. If one of the two collections is longer than the other, its remaining elements are ignored.
+	 * 
+	 * @param <T> The type of the second half of the returned pairs.
+	 * @param that The Iterable providing the second half of each result pair.
+	 * @return a new List containing pairs consisting of corresponding elements of this list and that. The length of the
+	 *         returned collection is the minimum of the lengths of this List and that.
+	 * @throws UnsatisfiedRequirementException if that is null.
+	 */
+	default <T> List<Tuple2<E, T>> zip(Iterable<T> that) {
+		requireNonNull(that, "that is null");
+		List<Tuple2<E, T>> result = EmptyList.instance();
+		List<E> list1 = this;
+		Iterator<T> list2 = that.iterator();
+		while (!list1.isEmpty() && list2.hasNext()) {
+			result = result.prepend(Tuples.of(list1.head(), list2.next()));
+			list1 = list1.tail();
+		}
+		return result.reverse();
+	}
+
+	/**
+	 * Returns a List formed from this List and another Iterable collection by combining corresponding elements in
+	 * pairs. If one of the two collections is shorter than the other, placeholder elements are used to extend the
+	 * shorter collection to the length of the longer.
+	 * 
+	 * @param <T> The type of the second half of the returned pairs.
+	 * @param that The Iterable providing the second half of each result pair.
+	 * @param thisElem The element to be used to fill up the result if this List is shorter than that.
+	 * @param thatElem The element to be used to fill up the result if that is shorter than this List.
+	 * @return A new List containing pairs consisting of corresponding elements of this List and that. The length of the
+	 *         returned collection is the maximum of the lengths of this List and that. If this List is shorter than
+	 *         that, thisElem values are used to pad the result. If that is shorter than this List, thatElem values are
+	 *         used to pad the result.
+	 * @throws UnsatisfiedRequirementException if that is null.
+	 */
+	default <T> List<Tuple2<E, T>> zipAll(Iterable<T> that, E thisElem, T thatElem) {
+		requireNonNull(that, "that is null");
+		List<Tuple2<E, T>> result = EmptyList.instance();
+		List<E> list1 = this;
+		Iterator<T> list2 = that.iterator();
+		while (!(list1.isEmpty() && !list2.hasNext())) {
+			final E elem1;
+			if (list1.isEmpty()) {
+				elem1 = thisElem;
+			} else {
+				elem1 = list1.head();
+				list1 = list1.tail();
+			}
+			final T elem2 = list2.hasNext() ? list2.next() : thatElem;
+			result = result.prepend(Tuples.of(elem1, elem2));
+		}
+		return result.reverse();
+	}
+
+	/**
+	 * Zips this List with its indices.
+	 * 
+	 * @return A new List containing all elements of this List paired with their index, starting with 0.
+	 */
+	default List<Tuple2<E, Integer>> zipWithIndex() {
+		List<Tuple2<E, Integer>> result = EmptyList.instance();
+		int index = 0;
+		for (List<E> list = this; !list.isEmpty(); list = list.tail()) {
+			result = result.prepend(Tuples.of(list.head(), index++));
+		}
+		return result.reverse();
+	}
+
+	/**
 	 * Returns an array containing all elements of this List in the same order. The array is created in O(2n).
 	 * 
 	 * @return The elements of this List as array.
@@ -828,11 +901,13 @@ public interface List<E> extends Iterable<E> {
 	/**
 	 * Equivalent to {@link java.util.List#equals(Object)}.
 	 */
+	@Override
 	boolean equals(Object o);
 
 	/**
 	 * Equivalent to {@link java.util.List#hashCode()}.
 	 */
+	@Override
 	int hashCode();
 
 	/**
@@ -845,6 +920,7 @@ public interface List<E> extends Iterable<E> {
 	 * 
 	 * @return This List as String.
 	 */
+	@Override
 	String toString();
 
 	/**

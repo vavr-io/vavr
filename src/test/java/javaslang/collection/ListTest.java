@@ -17,6 +17,8 @@ import java.util.NoSuchElementException;
 import java.util.Spliterator;
 
 import javaslang.Requirements.UnsatisfiedRequirementException;
+import javaslang.Tuples;
+import javaslang.Tuples.Tuple2;
 
 import org.junit.Test;
 
@@ -653,6 +655,107 @@ public class ListTest {
 	@Test
 	public void shouldTakeAllIfCountExceedsSize() {
 		assertThat(List.of(1, 2, 3).take(4)).isEqualTo(List.of(1, 2, 3));
+	}
+
+	// -- zip
+
+	@Test
+	public void shouldZipEmptyLists() {
+		assertThat(List.empty().zip(List.empty())).isEqualTo(List.empty());
+	}
+
+	@Test
+	public void shouldZipEmptyAndNonEmptyList() {
+		assertThat(List.empty().zip(List.of(1))).isEqualTo(List.empty());
+	}
+
+	@Test
+	public void shouldZipNonEmptyAndEmptyList() {
+		assertThat(List.of(1).zip(List.empty())).isEqualTo(List.empty());
+	}
+
+	@Test
+	public void shouldZipNonEmptyListsIfThisIsSmaller() {
+		final List<Tuple2<Integer, String>> actual = List.of(1, 2).zip(List.of("a", "b", "c"));
+		final List<Tuple2<Integer, String>> expected = List.of(Tuples.of(1, "a"), Tuples.of(2, "b"));
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldZipNonEmptyListsIfThatIsSmaller() {
+		final List<Tuple2<Integer, String>> actual = List.of(1, 2, 3).zip(List.of("a", "b"));
+		final List<Tuple2<Integer, String>> expected = List.of(Tuples.of(1, "a"), Tuples.of(2, "b"));
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldZipNonEmptyListsOfSameSize() {
+		final List<Tuple2<Integer, String>> actual = List.of(1, 2, 3).zip(List.of("a", "b", "c"));
+		final List<Tuple2<Integer, String>> expected = List.of(Tuples.of(1, "a"), Tuples.of(2, "b"), Tuples.of(3, "c"));
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldThrowIfZipWithThatIsNull() {
+		assertThat(() -> List.empty().zip(null)).isThrowing(UnsatisfiedRequirementException.class, "that is null");
+	}
+
+	// -- zipAll
+
+	@Test
+	public void shouldZipAllEmptyLists() {
+		assertThat(List.empty().zipAll(List.empty(), null, null)).isEqualTo(List.empty());
+	}
+
+	@Test
+	public void shouldZipAllEmptyAndNonEmptyList() {
+		assertThat(List.empty().zipAll(List.of(1), null, null)).isEqualTo(List.of(Tuples.of(null, 1)));
+	}
+
+	@Test
+	public void shouldZipAllNonEmptyAndEmptyList() {
+		assertThat(List.of(1).zipAll(List.empty(), null, null)).isEqualTo(List.of(Tuples.of(1, null)));
+	}
+
+	@Test
+	public void shouldZipAllNonEmptyListsIfThisIsSmaller() {
+		final List<Tuple2<Integer, String>> actual = List.of(1, 2).zipAll(List.of("a", "b", "c"), 9, "z");
+		final List<Tuple2<Integer, String>> expected = List.of(Tuples.of(1, "a"), Tuples.of(2, "b"), Tuples.of(9, "c"));
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldZipAllNonEmptyListsIfThatIsSmaller() {
+		final List<Tuple2<Integer, String>> actual = List.of(1, 2, 3).zipAll(List.of("a", "b"), 9, "z");
+		final List<Tuple2<Integer, String>> expected = List.of(Tuples.of(1, "a"), Tuples.of(2, "b"), Tuples.of(3, "z"));
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldZipAllNonEmptyListsOfSameSize() {
+		final List<Tuple2<Integer, String>> actual = List.of(1, 2, 3).zipAll(List.of("a", "b", "c"), 9, "z");
+		final List<Tuple2<Integer, String>> expected = List.of(Tuples.of(1, "a"), Tuples.of(2, "b"), Tuples.of(3, "c"));
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldThrowIfZipAllWithThatIsNull() {
+		assertThat(() -> List.empty().zipAll(null, null, null)).isThrowing(UnsatisfiedRequirementException.class,
+				"that is null");
+	}
+
+	// -- zipWithIndex
+
+	@Test
+	public void shouldZipEmptyListWithIndex() {
+		assertThat(List.<String> empty().zipWithIndex()).isEqualTo(List.<Tuple2<String, Integer>> empty());
+	}
+
+	@Test
+	public void shouldZipNonEmptyListWithIndex() {
+		final List<Tuple2<String, Integer>> actual = List.of("a", "b", "c").zipWithIndex();
+		final List<Tuple2<String, Integer>> expected = List.of(Tuples.of("a", 0), Tuples.of("b", 1), Tuples.of("c", 2));
+		assertThat(actual).isEqualTo(expected);
 	}
 
 	// -- toArray
