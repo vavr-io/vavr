@@ -6,12 +6,14 @@
 package javaslang;
 
 import static java.util.stream.Collectors.toList;
+import static javaslang.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import javaslang.Requirements.UnsatisfiedRequirementException;
 import javaslang.Tuples.Tuple2;
 
 import org.junit.Test;
@@ -23,22 +25,23 @@ public class StreamzTest {
 	@Test
 	public void shouldZipStreamWithIndex() {
 		final Stream<String> stream = Stream.of(I_WILL_BE_BACK);
-		final List<Tuple2<Integer, String>> actual = Streamz.zipWithIndex(stream).collect(toList());
-		final List<Tuple2<Integer, String>> expected = Arrays.asList(Tuples.of(0, "I"), Tuples.of(1, "will"),
-				Tuples.of(2, "be"), Tuples.of(3, "back!"));
+		final List<Tuple2<String, Integer>> actual = Streamz.zipWithIndex(stream).collect(toList());
+		final List<Tuple2<String, Integer>> expected = Arrays.asList(Tuples.of("I", 0), Tuples.of("will", 1),
+				Tuples.of("be", 2), Tuples.of("back!", 3));
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
-	public void shouldZipStreamWithIndexPreservingSequentialState() {
+	public void shouldZipSequentialStream() {
 		final Stream<String> stream = Stream.of(I_WILL_BE_BACK);
 		assertThat(Streamz.zipWithIndex(stream).isParallel()).isFalse();
 	}
 
 	@Test
-	public void shouldZipStreamWithIndexPreservingParallelState() {
+	public void shouldThrowWhenZipWithParallelStream() {
 		final Stream<String> stream = Stream.of(I_WILL_BE_BACK).parallel();
-		assertThat(Streamz.zipWithIndex(stream).isParallel()).isTrue();
+		assertThat(() -> Streamz.zipWithIndex(stream)).isThrowing(UnsatisfiedRequirementException.class,
+				"stream is parallel");
 	}
 
 }

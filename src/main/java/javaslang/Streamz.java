@@ -29,17 +29,18 @@ public final class Streamz {
 	}
 
 	/**
-	 * Zips the elements of a given Stream to tuples {@code (index, element)}, where index is the occurrence within the
-	 * original Stream.
+	 * Zips the elements of a given Stream to pairs {@code (element, index)}, where index is the occurrence within the
+	 * original Stream, starting with 0.
 	 * 
+	 * @param <T> the type of the stream elements
 	 * @param stream A {@linkplain java.util.stream.Stream}.
 	 * @return A zipped stream containing elements of type {@link javaslang.Tuples.Tuple2} and values
 	 *         {@code (index, element)}. The resulting Stream is parallel if, and only if, the given stream is parallel.
 	 */
-	public static <T> Stream<Tuple2<Integer, T>> zipWithIndex(Stream<T> stream) {
+	public static <T> Stream<Tuple2<T, Integer>> zipWithIndex(Stream<T> stream) {
 		require(!stream.isParallel(), "stream is parallel");
 		final AtomicInteger index = new AtomicInteger();
-		return stream.map(e -> Tuples.of(index.getAndIncrement(), e));
+		return stream.map(e -> Tuples.of(e, index.getAndIncrement()));
 	}
 
 	/**
@@ -49,7 +50,7 @@ public final class Streamz {
 	 * @return A zipped stream with index. The original stream is boxed.
 	 * @see Streamz#zipWithIndex(Stream)
 	 */
-	public static Stream<Tuple2<Integer, Double>> zipWithIndex(DoubleStream stream) {
+	public static Stream<Tuple2<Double, Integer>> zipWithIndex(DoubleStream stream) {
 		require(!stream.isParallel(), "stream is parallel");
 		return zipWithIndex(stream.boxed());
 	}
@@ -73,7 +74,7 @@ public final class Streamz {
 	 * @return A zipped stream with index. The original stream is boxed.
 	 * @see Streamz#zipWithIndex(Stream)
 	 */
-	public static Stream<Tuple2<Integer, Long>> zipWithIndex(LongStream stream) {
+	public static Stream<Tuple2<Long, Integer>> zipWithIndex(LongStream stream) {
 		require(!stream.isParallel(), "stream is parallel");
 		return zipWithIndex(stream.boxed());
 	}
