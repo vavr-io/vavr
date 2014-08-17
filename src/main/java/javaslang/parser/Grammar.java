@@ -70,8 +70,9 @@ import javaslang.parser.Parsers.Sequence;
  * }</code>
  * </pre>
  * 
- * @see http ://stackoverflow.com/questions/1888854/what-is-the-difference-between-an-abstract-syntax
- *      -tree-and-a-concrete-syntax-tre
+ * @see <a
+ *      href="http://stackoverflow.com/questions/1888854/what-is-the-difference-between-an-abstract-syntax-tree-and-a-concrete-syntax-tre">Abstract
+ *      vs. concrete syntax tree</a>
  */
 public interface Grammar {
 
@@ -84,10 +85,10 @@ public interface Grammar {
 	Try<Tree<Tuple2<Integer, Integer>>> parse(String text);
 
 	/**
-	 * TODO: javadoc
+	 * Creates a Grammar with a specific start rule.
 	 * 
-	 * @param startRule
-	 * @return
+	 * @param startRule The start rule of the grammar.
+	 * @return An instance of Grammar which is parses textual inputs starting with startRule.
 	 */
 	static Grammar of(Supplier<Rule> startRule) {
 		// TODO: startRule.get() might be null
