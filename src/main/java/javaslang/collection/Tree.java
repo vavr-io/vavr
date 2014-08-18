@@ -46,6 +46,19 @@ public interface Tree<T, TREE extends Tree<T, ?>> /* TODO:extends Iterable<T> */
 
 	TREE subtree();
 
+	// -- conversion
+
+	BidirectionalTree<T> bidirectional();
+
+	UnidirectionalTree<T> unidirectional();
+
+	//		return bidirectional ? this : new Tree<>(this, null, value, children, true);
+	//	}
+	//
+	//	public Tree<T> unidirectional() {
+	//		return bidirectional ? new Tree<>(this, null, value, children, false) : this;
+	//	}
+	//
 	//	// -- conversion and transformation
 	//
 	//	public Tree<T> bidirectional() {

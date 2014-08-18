@@ -18,7 +18,7 @@ public class UnidirectionalTree<T> implements Tree<T, UnidirectionalTree<T>>, Se
 	private final T value;
 	private final List<UnidirectionalTree<T>> children;
 
-	private UnidirectionalTree(T value, List<UnidirectionalTree<T>> children) {
+	UnidirectionalTree(T value, List<UnidirectionalTree<T>> children) {
 		this.value = value;
 		this.children = children;
 	}
@@ -67,6 +67,27 @@ public class UnidirectionalTree<T> implements Tree<T, UnidirectionalTree<T>>, Se
 
 	@Override
 	public UnidirectionalTree<T> subtree() {
+		return this;
+	}
+
+	@Override
+	public BidirectionalTree<T> bidirectional() {
+		return new BidirectionalTree<>(null, null, value, children
+				.stream()
+				.map(child -> bidirectional(child))
+				.collect(List.collector()), BidirectionalTree.UPDATE_CHILDREN);
+	}
+
+	// omits updating child refs multiple times when calling bidirectional()
+	private BidirectionalTree<T> bidirectional(UnidirectionalTree<T> tree) {
+		return new BidirectionalTree<>(null, null, tree.value, tree.children
+				.stream()
+				.map(child -> bidirectional(child))
+				.collect(List.collector()), BidirectionalTree.UPDATE_NONE);
+	}
+
+	@Override
+	public UnidirectionalTree<T> unidirectional() {
 		return this;
 	}
 
