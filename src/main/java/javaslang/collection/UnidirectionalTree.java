@@ -9,22 +9,28 @@ import java.io.Serializable;
 
 import javaslang.option.Option;
 
-public class UnidirectionalTree<T> extends Tree.AbstractTree<T, UnidirectionalTree<T>> implements Serializable {
+public class UnidirectionalTree<T> implements Tree<T, UnidirectionalTree<T>>, Serializable {
 
 	private static final String UNIDIRECTIONAL_TREE_HAS_NO_PARENT = "unidirectional tree has no parent";
 
 	private static final long serialVersionUID = 317802359716550715L;
 
+	private final T value;
 	private final List<UnidirectionalTree<T>> children;
 
 	private UnidirectionalTree(T value, List<UnidirectionalTree<T>> children) {
-		super(value);
+		this.value = value;
 		this.children = children;
 	}
 
 	@Override
 	public Option<UnidirectionalTree<T>> getParent() {
 		throw new UnsupportedOperationException(UNIDIRECTIONAL_TREE_HAS_NO_PARENT);
+	}
+
+	@Override
+	public T getValue() {
+		return value;
 	}
 
 	@Override

@@ -5,8 +5,6 @@
  */
 package javaslang.collection;
 
-import java.io.Serializable;
-
 import javaslang.option.Option;
 
 public interface Tree<T, TREE extends Tree<T, ?>> /* TODO:extends Iterable<T> */{
@@ -47,26 +45,6 @@ public interface Tree<T, TREE extends Tree<T, ?>> /* TODO:extends Iterable<T> */
 	TREE setValue(T value);
 
 	TREE subtree();
-
-	// -- common tree properties
-
-	// DEV-NOTE: no children property here, because they have to be rewritten while object construction of BidirectionalTree
-	static abstract class AbstractTree<T, TREE extends Tree<T, ?>> implements Tree<T, TREE>, Serializable {
-
-		private static final long serialVersionUID = -5377072236515682938L;
-
-		protected final T value;
-
-		protected AbstractTree(T value) {
-			this.value = value;
-		}
-
-		@Override
-		public T getValue() {
-			return value;
-		}
-
-	}
 
 	//	// -- conversion and transformation
 	//

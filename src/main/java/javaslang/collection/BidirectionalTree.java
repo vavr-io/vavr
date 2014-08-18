@@ -13,11 +13,12 @@ import javaslang.option.Option;
  * TODO
  *
  */
-public class BidirectionalTree<T> extends Tree.AbstractTree<T, BidirectionalTree<T>> implements Serializable {
+public class BidirectionalTree<T> implements Tree<T, BidirectionalTree<T>>, Serializable {
 
 	private static final long serialVersionUID = -5010567338163511359L;
 
 	private final BidirectionalTree<T> parent;
+	private final T value;
 	private final List<BidirectionalTree<T>> children;
 
 	static enum UpdateMode {
@@ -26,7 +27,7 @@ public class BidirectionalTree<T> extends Tree.AbstractTree<T, BidirectionalTree
 
 	BidirectionalTree(BidirectionalTree<T> copyOf, BidirectionalTree<T> parent, T value,
 			List<BidirectionalTree<T>> children, UpdateMode mode) {
-		super(value);
+		this.value = value;
 		if (mode == UpdateMode.CHILDREN || parent == null || copyOf == null) {
 			this.parent = parent;
 		} else {
@@ -45,6 +46,11 @@ public class BidirectionalTree<T> extends Tree.AbstractTree<T, BidirectionalTree
 	@Override
 	public Option<BidirectionalTree<T>> getParent() {
 		return Option.of(parent);
+	}
+
+	@Override
+	public T getValue() {
+		return value;
 	}
 
 	@Override
