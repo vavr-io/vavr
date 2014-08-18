@@ -11,9 +11,9 @@ import javaslang.option.Option;
 
 public class UnidirectionalTree<T> implements Tree<T, UnidirectionalTree<T>>, Serializable {
 
-	private static final String UNIDIRECTIONAL_TREE_HAS_NO_PARENT = "unidirectional tree has no parent";
-
 	private static final long serialVersionUID = 317802359716550715L;
+
+	private static final String UNIDIRECTIONAL_TREE_HAS_NO_PARENT = "unidirectional tree has no parent";
 
 	private final T value;
 	private final List<UnidirectionalTree<T>> children;
