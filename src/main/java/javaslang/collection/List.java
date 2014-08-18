@@ -391,6 +391,59 @@ public interface List<E> extends Iterable<E> {
 	}
 
 	/**
+	 * Replaces the first occurrence (if exists) of the given currentElement with newElement in O(2n).
+	 * <p>
+	 * Example: {@code List.of(1,2,3,2).replace(2,4)} equals {List.of(1,4,3,2)}.
+	 * <p>
+	 * The result is equivalent to:
+	 * {@code isEmpty() ? this : Objects.equals(head(), currentElement) ? new LinearList(newElement, tail()) : new LinearList(head(), tail().replace(currentElement, newElement))}.
+	 * 
+	 * @param currentElement The element to be replaced.
+	 * @param newElement The replacement for currentElement.
+	 * @return A List of elements, where the first occurrence (if exists) of currentElement is replaced with newElement.
+	 */
+	default List<E> replace(E currentElement, E newElement) {
+		List<E> preceding = EmptyList.instance();
+		List<E> tail = this;
+		while (!tail.isEmpty() && !Objects.equals(tail.head(), currentElement)) {
+			preceding = preceding.prepend(tail.head());
+			tail = tail.tail();
+		}
+		if (tail.isEmpty()) {
+			return this;
+		}
+		// skip the current head element because it is replaced
+		List<E> result = tail.tail().prepend(newElement);
+		for (E next : preceding) {
+			result = result.prepend(next);
+		}
+		return result;
+	}
+
+	/**
+	 * Replaces all occurrences (if any) of the given currentElement with newElement in O(2n).
+	 * <p>
+	 * Example: {@code List.of(1,2,3,2).replaceAll(2,4)} equals {List.of(1,4,3,4)}.
+	 * <p>
+	 * The result is equivalent to:
+	 * {@code isEmpty() ? this : new LinearList(Objects.equals(head(), currentElement) ? newElement : head(), tail().replaceAll(currentElement, newElement))}.
+	 * 
+	 * @param currentElement The element to be replaced.
+	 * @param newElement The replacement for currentElement.
+	 * @return A List of elements, where all occurrences (if any) of currentElement are replaced with newElement.
+	 */
+
+	default List<E> replaceAll(E currentElement, E newElement) {
+		List<E> result = EmptyList.instance();
+		for (List<E> list = this; !list.isEmpty(); list = list.tail()) {
+			final E head = list.head();
+			final E elem = Objects.equals(head, currentElement) ? newElement : head;
+			result = result.prepend(elem);
+		}
+		return result.reverse();
+	}
+
+	/**
 	 * Applies an {@link java.util.function.UnaryOperator} to all elements of this List and returns the result as new
 	 * List (of same order) in O(2n).
 	 * <p>

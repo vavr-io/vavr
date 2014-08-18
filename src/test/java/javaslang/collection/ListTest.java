@@ -343,15 +343,39 @@ public class ListTest {
 		assertThat(List.of(1, 2, 3).retainAll(List.of(4, 5))).isEqualTo(List.empty());
 	}
 
-	// -- replaceAll
+	// -- replace(curr, new)
 
 	@Test
-	public void shouldReplaceAllElementsOfEmptyList() {
+	public void shouldReplaceElementOfEmptyListUsingCurrNew() {
+		assertThat(List.<Integer> empty().replace(1, 2)).isEqualTo(List.empty());
+	}
+
+	@Test
+	public void shouldReplaceElementOfNonEmptyListUsingCurrNew() {
+		assertThat(List.of(0, 1, 2, 1).replace(1, 3)).isEqualTo(List.of(0, 3, 2, 1));
+	}
+
+	// -- replaceAll(curr, new)
+
+	@Test
+	public void shouldReplaceAllElementsOfEmptyListUsingCurrNew() {
+		assertThat(List.<Integer> empty().replaceAll(1, 2)).isEqualTo(List.empty());
+	}
+
+	@Test
+	public void shouldReplaceAllElementsOfNonEmptyListUsingCurrNew() {
+		assertThat(List.of(0, 1, 2, 1).replaceAll(1, 3)).isEqualTo(List.of(0, 3, 2, 3));
+	}
+
+	// -- replaceAll(UnaryOp)
+
+	@Test
+	public void shouldReplaceAllElementsOfEmptyListUsingUnaryOp() {
 		assertThat(List.<Integer> empty().replaceAll(i -> i + 1)).isEqualTo(List.empty());
 	}
 
 	@Test
-	public void shouldReplaceAllElementsOfNonEmptyList() {
+	public void shouldReplaceAllElementsOfNonEmptyListUsingUnaryOp() {
 		assertThat(List.of(1, 2, 3).replaceAll(i -> i + 1)).isEqualTo(List.of(2, 3, 4));
 	}
 
