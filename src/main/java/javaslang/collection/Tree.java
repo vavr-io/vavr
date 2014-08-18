@@ -5,104 +5,120 @@
  */
 package javaslang.collection;
 
-import static javaslang.Requirements.require;
-
 import java.io.Serializable;
-import java.util.function.UnaryOperator;
 
 import javaslang.option.Option;
 
-public class Tree<T> implements Serializable {
-
-	private static final long serialVersionUID = 3366047180513233623L;
-
-	private static final String UNIDIRECTIONAL_ERROR = "unidirectional tree has no parent ref";
-
-	private final boolean bidirectional;
-	private final Tree<T> parent;
-	private final T value;
-	private final List<Tree<T>> children;
-
-	public Tree(T value) {
-		this(value, false);
-	}
-
-	public Tree(T value, boolean bidirectional) {
-		this.bidirectional = bidirectional;
-		this.parent = null;
-		this.value = value;
-		this.children = List.empty();
-	}
-
-	protected Tree(Tree<T> parent, T value, List<Tree<T>> children, boolean bidirectional) {
-		this.bidirectional = bidirectional;
-		this.parent = parent; // TODO: (bidirectional && parent != null) ? parent.updateChild(oldChild, newChild) : parent;
-		this.value = value;
-		if (bidirectional) {
-			final UnaryOperator<Tree<T>> f = child -> new Tree<>(this, child.value, child.children, bidirectional);
-			this.children = children.replaceAll(f);
-		} else {
-			this.children = children;
-		}
-	}
+public interface Tree<T, TREE extends Tree<T, ?>> /* TODO:extends Iterable<T> */{
 
 	// -- accessors
 
-	public boolean isBidirectional() {
-		return bidirectional;
+	Option<TREE> getParent();
+
+	T getValue();
+
+	List<TREE> getChildren();
+
+	@SuppressWarnings("unchecked")
+	default TREE getRoot() {
+		return getParent().map(parent -> (TREE) parent.getRoot()).orElse((TREE) this);
 	}
 
-	public Option<Tree<T>> getParent() {
-		require(bidirectional, UNIDIRECTIONAL_ERROR);
-		return Option.of(parent);
+	default boolean isRoot() {
+		return !getParent().isPresent();
 	}
 
-	public T getValue() {
-		return value;
-	}
-
-	public List<Tree<T>> getChildren() {
-		return children;
-	}
-
-	public boolean isRoot() {
-		require(bidirectional, UNIDIRECTIONAL_ERROR);
-		return parent == null;
-	}
-
-	public boolean isLeaf() {
-		return children.isEmpty();
+	default boolean isLeaf() {
+		return getChildren().isEmpty();
 	}
 
 	// -- mutators
 
-	public Tree<T> attach(Tree<T> tree1, @SuppressWarnings("unchecked") Tree<T>... trees) {
-		return new Tree<>(parent, value, List.of(tree1, trees).prependAll(children), bidirectional);
-	}
+	@SuppressWarnings("unchecked")
+	TREE attach(TREE tree1, TREE... trees);
 
-	public Tree<T> detach(Tree<T> tree1, @SuppressWarnings("unchecked") Tree<T>... trees) {
-		return new Tree<>(parent, value, children.removeAll(List.of(tree1, trees)), bidirectional);
-	}
+	@SuppressWarnings("unchecked")
+	TREE detach(TREE tree1, TREE... trees);
 
-	public Tree<T> setChildren(List<Tree<T>> children) {
-		return new Tree<>(parent, value, children, bidirectional);
-	}
+	TREE setChildren(List<TREE> children);
 
-	public Tree<T> subtree() {
-		final boolean hasParentRef = bidirectional && parent != null;
-		if (hasParentRef) {
-			return new Tree<>(null, value, children, bidirectional);
-		} else {
-			return this;
+	TREE setParent(TREE parent);
+
+	TREE setValue(T value);
+
+	TREE subtree();
+
+	// -- common tree properties
+
+	// DEV-NOTE: no children property here, because they have to be rewritten while object construction of BidirectionalTree
+	static abstract class AbstractTree<T, TREE extends Tree<T, ?>> implements Tree<T, TREE>, Serializable {
+
+		private static final long serialVersionUID = -5377072236515682938L;
+
+		protected final T value;
+
+		protected AbstractTree(T value) {
+			this.value = value;
 		}
+
+		@Override
+		public T getValue() {
+			return value;
+		}
+
 	}
 
-	public Tree<T> bidirectional() {
-		return bidirectional ? this : new Tree<>(null, value, children, true);
-	}
-
-	public Tree<T> unidirectional() {
-		return bidirectional ? new Tree<>(null, value, children, false) : this;
-	}
+	//	// -- conversion and transformation
+	//
+	//	public Tree<T> bidirectional() {
+	//		return bidirectional ? this : new Tree<>(this, null, value, children, true);
+	//	}
+	//
+	//	public Tree<T> unidirectional() {
+	//		return bidirectional ? new Tree<>(this, null, value, children, false) : this;
+	//	}
+	//
+	//	/**
+	//	 * TODO: (element, index)
+	//	 * 
+	//	 * @return
+	//	 */
+	//	public Tree<Tuple2<T, Integer>> zipWithIndex() {
+	//		// TODO
+	//		throw new UnsupportedOperationException();
+	//	}
+	//
+	//	/**
+	//	 * TODO: (element, depth, index)
+	//	 * <p>
+	//	 * <strong>Using Breadth-First Search (BFS):</strong>
+	//	 * 
+	//	 * <pre>
+	//	 * <code>
+	//	 *                 (e1,0,0)
+	//	 *                /        \
+	//	 *        (e2,1,0)          (e3,1,1)
+	//	 *        /      \          /      \
+	//	 *    (e4,2,0) (e5,2,1) (e6,2,2) (e7,2,3)
+	//	 * </code>
+	//	 * </pre>
+	//	 * 
+	//	 * @return
+	//	 */
+	//	public Tree<Tuple3<T, Integer, Integer>> zipWithCoordinates() {
+	//		// TODO
+	//		throw new UnsupportedOperationException();
+	//	}
+	//
+	//	// -- traveral
+	//
+	//	// TODO: see http://rosettacode.org/wiki/Tree_traversal
+	//
+	//	@Override
+	//	public Iterator<T> iterator() {
+	//		// TODO Auto-generated method stub
+	//		return null;
+	//	}
+	//	// TODO: stream(), parallelStream(), ...
 
 }
