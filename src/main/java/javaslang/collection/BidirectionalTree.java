@@ -53,9 +53,16 @@ public class BidirectionalTree<T> implements TreeWithParent<T, BidirectionalTree
 		}
 	}
 
+	// -- core
+
 	@Override
 	public Option<BidirectionalTree<T>> getParent() {
 		return Option.of(parent);
+	}
+
+	@Override
+	public BidirectionalTree<T> setParent(BidirectionalTree<T> parent) {
+		return new BidirectionalTree<>(this, parent, value, children, UPDATE_BOTH);
 	}
 
 	@Override
@@ -64,9 +71,21 @@ public class BidirectionalTree<T> implements TreeWithParent<T, BidirectionalTree
 	}
 
 	@Override
+	public BidirectionalTree<T> setValue(T value) {
+		return new BidirectionalTree<>(this, parent, value, children, UPDATE_BOTH);
+	}
+
+	@Override
 	public List<BidirectionalTree<T>> getChildren() {
 		return children;
 	}
+
+	@Override
+	public BidirectionalTree<T> setChildren(List<BidirectionalTree<T>> children) {
+		return new BidirectionalTree<>(this, parent, value, children, UPDATE_BOTH);
+	}
+
+	// -- operations
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -81,24 +100,11 @@ public class BidirectionalTree<T> implements TreeWithParent<T, BidirectionalTree
 	}
 
 	@Override
-	public BidirectionalTree<T> setChildren(List<BidirectionalTree<T>> children) {
-		return new BidirectionalTree<>(this, parent, value, children, UPDATE_BOTH);
-	}
-
-	@Override
-	public BidirectionalTree<T> setParent(BidirectionalTree<T> parent) {
-		return new BidirectionalTree<>(this, parent, value, children, UPDATE_BOTH);
-	}
-
-	@Override
-	public BidirectionalTree<T> setValue(T value) {
-		return new BidirectionalTree<>(this, parent, value, children, UPDATE_BOTH);
-	}
-
-	@Override
 	public BidirectionalTree<T> subtree() {
-		return new BidirectionalTree<>(this, null, value, children, UPDATE_BOTH);
+		return new BidirectionalTree<>(this, null, value, children, UPDATE_CHILDREN);
 	}
+
+	// -- conversion
 
 	@Override
 	public BidirectionalTree<T> bidirectional() {

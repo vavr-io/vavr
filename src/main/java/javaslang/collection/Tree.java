@@ -9,27 +9,27 @@ import javaslang.option.Option;
 
 public interface Tree<T, TREE extends Tree<T, ?>> /* TODO:extends Iterable<T> */{
 
-	// -- accessors
+	// -- core
 
 	T getValue();
 
+	TREE setValue(T value);
+
 	List<TREE> getChildren();
+
+	TREE setChildren(List<TREE> children);
 
 	default boolean isLeaf() {
 		return getChildren().isEmpty();
 	}
 
-	// -- mutators
+	// -- operations
 
 	@SuppressWarnings("unchecked")
 	TREE attach(TREE tree1, TREE... trees);
 
 	@SuppressWarnings("unchecked")
 	TREE detach(TREE tree1, TREE... trees);
-
-	TREE setChildren(List<TREE> children);
-
-	TREE setValue(T value);
 
 	TREE subtree();
 
@@ -51,6 +51,8 @@ public interface Tree<T, TREE extends Tree<T, ?>> /* TODO:extends Iterable<T> */
 
 		Option<TREE> getParent();
 
+		TREE setParent(TREE parent);
+
 		@SuppressWarnings("unchecked")
 		default TREE getRoot() {
 			return getParent().map(parent -> (TREE) parent.getRoot()).orElse((TREE) this);
@@ -59,8 +61,6 @@ public interface Tree<T, TREE extends Tree<T, ?>> /* TODO:extends Iterable<T> */
 		default boolean isRoot() {
 			return !getParent().isPresent();
 		}
-
-		TREE setParent(TREE parent);
 
 	}
 

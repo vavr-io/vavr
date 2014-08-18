@@ -11,8 +11,6 @@ public class UnidirectionalTree<T> implements Tree<T, UnidirectionalTree<T>>, Se
 
 	private static final long serialVersionUID = 317802359716550715L;
 
-	static final String UNIDIRECTIONAL_TREE_HAS_NO_PARENT = "unidirectional tree has no parent";
-
 	private final T value;
 	private final List<UnidirectionalTree<T>> children;
 
@@ -21,15 +19,29 @@ public class UnidirectionalTree<T> implements Tree<T, UnidirectionalTree<T>>, Se
 		this.children = children;
 	}
 
+	// -- core
+
 	@Override
 	public T getValue() {
 		return value;
 	}
 
 	@Override
+	public UnidirectionalTree<T> setValue(T value) {
+		return new UnidirectionalTree<>(value, children);
+	}
+
+	@Override
 	public List<UnidirectionalTree<T>> getChildren() {
 		return children;
 	}
+
+	@Override
+	public UnidirectionalTree<T> setChildren(List<UnidirectionalTree<T>> children) {
+		return new UnidirectionalTree<>(value, children);
+	}
+
+	// -- operations
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -44,19 +56,11 @@ public class UnidirectionalTree<T> implements Tree<T, UnidirectionalTree<T>>, Se
 	}
 
 	@Override
-	public UnidirectionalTree<T> setChildren(List<UnidirectionalTree<T>> children) {
-		return new UnidirectionalTree<>(value, children);
-	}
-
-	@Override
-	public UnidirectionalTree<T> setValue(T value) {
-		return new UnidirectionalTree<>(value, children);
-	}
-
-	@Override
 	public UnidirectionalTree<T> subtree() {
 		return this;
 	}
+
+	// -- conversion
 
 	@Override
 	public BidirectionalTree<T> bidirectional() {

@@ -11,7 +11,7 @@ import org.junit.Test;
 
 public class UnidirectionalTreeTest {
 
-	// -- accessors (single node properties)
+	// -- core (single node properties)
 
 	@Test
 	public void shouldBeLeafWhenSingleNode() {
