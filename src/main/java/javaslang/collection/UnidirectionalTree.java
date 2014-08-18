@@ -7,13 +7,11 @@ package javaslang.collection;
 
 import java.io.Serializable;
 
-import javaslang.option.Option;
-
 public class UnidirectionalTree<T> implements Tree<T, UnidirectionalTree<T>>, Serializable {
 
 	private static final long serialVersionUID = 317802359716550715L;
 
-	private static final String UNIDIRECTIONAL_TREE_HAS_NO_PARENT = "unidirectional tree has no parent";
+	static final String UNIDIRECTIONAL_TREE_HAS_NO_PARENT = "unidirectional tree has no parent";
 
 	private final T value;
 	private final List<UnidirectionalTree<T>> children;
@@ -21,11 +19,6 @@ public class UnidirectionalTree<T> implements Tree<T, UnidirectionalTree<T>>, Se
 	UnidirectionalTree(T value, List<UnidirectionalTree<T>> children) {
 		this.value = value;
 		this.children = children;
-	}
-
-	@Override
-	public Option<UnidirectionalTree<T>> getParent() {
-		throw new UnsupportedOperationException(UNIDIRECTIONAL_TREE_HAS_NO_PARENT);
 	}
 
 	@Override
@@ -78,6 +71,7 @@ public class UnidirectionalTree<T> implements Tree<T, UnidirectionalTree<T>>, Se
 				.collect(List.collector()), BidirectionalTree.UPDATE_CHILDREN);
 	}
 
+	// TODO: re-evaluate if method is still necessary after refactoring BidirectionalTree#new
 	// omits updating child refs multiple times when calling bidirectional()
 	private BidirectionalTree<T> bidirectional(UnidirectionalTree<T> tree) {
 		return new BidirectionalTree<>(null, null, tree.value, tree.children
@@ -90,5 +84,4 @@ public class UnidirectionalTree<T> implements Tree<T, UnidirectionalTree<T>>, Se
 	public UnidirectionalTree<T> unidirectional() {
 		return this;
 	}
-
 }

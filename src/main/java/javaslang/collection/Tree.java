@@ -9,22 +9,26 @@ import javaslang.option.Option;
 
 public interface Tree<T, TREE extends Tree<T, ?>> /* TODO:extends Iterable<T> */{
 
-	// -- accessors
+	static interface TreeWithParent<T, TREE extends TreeWithParent<T, ?>> extends Tree<T, TREE> {
 
-	Option<TREE> getParent();
+		Option<TREE> getParent();
+
+		@SuppressWarnings("unchecked")
+		default TREE getRoot() {
+			return getParent().map(parent -> (TREE) parent.getRoot()).orElse((TREE) this);
+		}
+
+		default boolean isRoot() {
+			return !getParent().isPresent();
+		}
+
+	}
+
+	// -- accessors
 
 	T getValue();
 
 	List<TREE> getChildren();
-
-	@SuppressWarnings("unchecked")
-	default TREE getRoot() {
-		return getParent().map(parent -> (TREE) parent.getRoot()).orElse((TREE) this);
-	}
-
-	default boolean isRoot() {
-		return !getParent().isPresent();
-	}
 
 	default boolean isLeaf() {
 		return getChildren().isEmpty();
@@ -51,6 +55,12 @@ public interface Tree<T, TREE extends Tree<T, ?>> /* TODO:extends Iterable<T> */
 	BidirectionalTree<T> bidirectional();
 
 	UnidirectionalTree<T> unidirectional();
+
+	// -- factory methods
+
+	static <T> UnidirectionalTree<T> of(T value) {
+		return new UnidirectionalTree<T>(value, List.empty());
+	}
 
 	//		return bidirectional ? this : new Tree<>(this, null, value, children, true);
 	//	}

@@ -9,13 +9,14 @@ import static javaslang.Requirements.requireNonNull;
 
 import java.io.Serializable;
 
+import javaslang.collection.Tree.TreeWithParent;
 import javaslang.option.Option;
 
 /**
  * TODO
  *
  */
-public class BidirectionalTree<T> implements Tree<T, BidirectionalTree<T>>, Serializable {
+public class BidirectionalTree<T> implements TreeWithParent<T, BidirectionalTree<T>>, Serializable {
 
 	private static final long serialVersionUID = -5010567338163511359L;
 
