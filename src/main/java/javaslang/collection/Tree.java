@@ -9,21 +9,6 @@ import javaslang.option.Option;
 
 public interface Tree<T, TREE extends Tree<T, ?>> /* TODO:extends Iterable<T> */{
 
-	static interface TreeWithParent<T, TREE extends TreeWithParent<T, ?>> extends Tree<T, TREE> {
-
-		Option<TREE> getParent();
-
-		@SuppressWarnings("unchecked")
-		default TREE getRoot() {
-			return getParent().map(parent -> (TREE) parent.getRoot()).orElse((TREE) this);
-		}
-
-		default boolean isRoot() {
-			return !getParent().isPresent();
-		}
-
-	}
-
 	// -- accessors
 
 	T getValue();
@@ -44,8 +29,6 @@ public interface Tree<T, TREE extends Tree<T, ?>> /* TODO:extends Iterable<T> */
 
 	TREE setChildren(List<TREE> children);
 
-	TREE setParent(TREE parent);
-
 	TREE setValue(T value);
 
 	TREE subtree();
@@ -62,32 +45,26 @@ public interface Tree<T, TREE extends Tree<T, ?>> /* TODO:extends Iterable<T> */
 		return new UnidirectionalTree<T>(value, List.empty());
 	}
 
-	//		return bidirectional ? this : new Tree<>(this, null, value, children, true);
-	//	}
-	//
-	//	public Tree<T> unidirectional() {
-	//		return bidirectional ? new Tree<>(this, null, value, children, false) : this;
-	//	}
-	//
-	//	// -- conversion and transformation
-	//
-	//	public Tree<T> bidirectional() {
-	//		return bidirectional ? this : new Tree<>(this, null, value, children, true);
-	//	}
-	//
-	//	public Tree<T> unidirectional() {
-	//		return bidirectional ? new Tree<>(this, null, value, children, false) : this;
-	//	}
-	//
-	//	/**
-	//	 * TODO: (element, index)
-	//	 * 
-	//	 * @return
-	//	 */
-	//	public Tree<Tuple2<T, Integer>> zipWithIndex() {
-	//		// TODO
-	//		throw new UnsupportedOperationException();
-	//	}
+	// -- specialized Tree interface with parent dependency for bidirectional tree implementation
+
+	static interface TreeWithParent<T, TREE extends TreeWithParent<T, ?>> extends Tree<T, TREE> {
+
+		Option<TREE> getParent();
+
+		@SuppressWarnings("unchecked")
+		default TREE getRoot() {
+			return getParent().map(parent -> (TREE) parent.getRoot()).orElse((TREE) this);
+		}
+
+		default boolean isRoot() {
+			return !getParent().isPresent();
+		}
+
+		TREE setParent(TREE parent);
+
+	}
+
+	//	Tree<Tuple2<T, Integer>> zipWithIndex();
 	//
 	//	/**
 	//	 * TODO: (element, depth, index)
@@ -106,20 +83,12 @@ public interface Tree<T, TREE extends Tree<T, ?>> /* TODO:extends Iterable<T> */
 	//	 * 
 	//	 * @return
 	//	 */
-	//	public Tree<Tuple3<T, Integer, Integer>> zipWithCoordinates() {
-	//		// TODO
-	//		throw new UnsupportedOperationException();
-	//	}
+	//	Tree<Tuple3<T, Integer, Integer>> zipWithCoordinates();
 	//
 	//	// -- traveral
 	//
 	//	// TODO: see http://rosettacode.org/wiki/Tree_traversal
 	//
-	//	@Override
-	//	public Iterator<T> iterator() {
-	//		// TODO Auto-generated method stub
-	//		return null;
-	//	}
 	//	// TODO: stream(), parallelStream(), ...
 
 }

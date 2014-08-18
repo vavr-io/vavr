@@ -49,11 +49,6 @@ public class UnidirectionalTree<T> implements Tree<T, UnidirectionalTree<T>>, Se
 	}
 
 	@Override
-	public UnidirectionalTree<T> setParent(UnidirectionalTree<T> parent) {
-		throw new UnsupportedOperationException(UNIDIRECTIONAL_TREE_HAS_NO_PARENT);
-	}
-
-	@Override
 	public UnidirectionalTree<T> setValue(T value) {
 		return new UnidirectionalTree<>(value, children);
 	}
