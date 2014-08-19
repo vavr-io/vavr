@@ -20,7 +20,7 @@ public class BidirectionalTree<T> implements TreeWithParent<T, BidirectionalTree
 	private final T value;
 	private final List<BidirectionalTree<T>> children;
 
-	// DEV-NOTE: should be used by UnidirectionalTree.bidirectional() only!
+	// DEV-NOTE: should be used internally by UnidirectionalTree.bidirectional() only!
 	BidirectionalTree(T value, List<BidirectionalTree<T>> children) {
 		this.parent = null;
 		this.value = value;
@@ -32,7 +32,7 @@ public class BidirectionalTree<T> implements TreeWithParent<T, BidirectionalTree
 		this(parent, value, children, TreeTransformer::updateParent, TreeTransformer::updateChildren);
 	}
 
-	BidirectionalTree(BidirectionalTree<T> parent, T value, List<BidirectionalTree<T>> children,
+	private BidirectionalTree(BidirectionalTree<T> parent, T value, List<BidirectionalTree<T>> children,
 			TreeTransformer<T> updateParent, TreeTransformer<T> updateChildren) {
 		this.value = value;
 		this.parent = Option.of(parent).map(updateParent.apply(this)).orElse(null);
@@ -113,7 +113,8 @@ public class BidirectionalTree<T> implements TreeWithParent<T, BidirectionalTree
 	 * 
 	 * @param <T>
 	 */
-	static interface TreeTransformer<T> extends Function<BidirectionalTree<T>, UnaryOperator<BidirectionalTree<T>>> {
+	private static interface TreeTransformer<T> extends
+			Function<BidirectionalTree<T>, UnaryOperator<BidirectionalTree<T>>> {
 
 		// use-case: tree tells parent how to re-create its parent 
 		static <T> UnaryOperator<BidirectionalTree<T>> updateParent(BidirectionalTree<T> self) {
