@@ -122,18 +122,18 @@ public class BidirectionalTree<T> implements TreeWithParent<T, BidirectionalTree
 					TreeTransformer::updateParent, TreeTransformer.substitutePreviousChild(parent));
 		}
 
-		// use-case: existing tree instructs its parent how to update its children
+		// use-case: existing tree instructs its parent to replace it and re-create the rest of the children
 		static <T> TreeTransformer<T> substitutePreviousChild(BidirectionalTree<T> prevChild) {
 			return self -> child -> (child == prevChild) ? self : new BidirectionalTree<>(self, child.value,
 					child.children, TreeTransformer::keepParent, TreeTransformer::updateChildren);
 		}
 
-		// use-case: tree passes itself as parent to his children
+		// use-case: tree passes itself as parent to its children
 		static <T> UnaryOperator<BidirectionalTree<T>> keepParent(BidirectionalTree<T> self) {
 			return parent -> self;
 		}
 
-		// use-case: tree tells its children to re-create all their children, passing the parent refs
+		// use-case: tree tells its children to re-create all their children without re-creating their parents
 		static <T> UnaryOperator<BidirectionalTree<T>> updateChildren(BidirectionalTree<T> self) {
 			return child -> new BidirectionalTree<>(self, child.value, child.children, TreeTransformer::keepParent,
 					TreeTransformer::updateChildren);
