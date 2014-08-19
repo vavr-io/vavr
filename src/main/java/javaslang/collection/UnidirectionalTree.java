@@ -64,19 +64,18 @@ public class UnidirectionalTree<T> implements Tree<T, UnidirectionalTree<T>>, Se
 
 	@Override
 	public BidirectionalTree<T> bidirectional() {
-		return new BidirectionalTree<>(null, null, value, children
+		return new BidirectionalTree<>(null, value, children
 				.stream()
 				.map(child -> bidirectional(child))
-				.collect(List.collector()), BidirectionalTree.UPDATE_CHILDREN);
+				.collect(List.collector()));
 	}
 
-	// TODO: re-evaluate if method is still necessary after refactoring BidirectionalTree#new
 	// omits updating child refs multiple times when calling bidirectional()
 	private BidirectionalTree<T> bidirectional(UnidirectionalTree<T> tree) {
-		return new BidirectionalTree<>(null, null, tree.value, tree.children
+		return new BidirectionalTree<>(tree.value, tree.children
 				.stream()
 				.map(child -> bidirectional(child))
-				.collect(List.collector()), BidirectionalTree.UPDATE_NONE);
+				.collect(List.collector()));
 	}
 
 	@Override

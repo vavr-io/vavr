@@ -5,52 +5,38 @@
  */
 package javaslang.collection;
 
-import static javaslang.Requirements.requireNonNull;
-
 import java.io.Serializable;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import javaslang.collection.Tree.TreeWithParent;
 import javaslang.option.Option;
 
-/**
- * TODO
- *
- */
 public class BidirectionalTree<T> implements TreeWithParent<T, BidirectionalTree<T>>, Serializable {
 
 	private static final long serialVersionUID = -5010567338163511359L;
-
-	static final int UPDATE_NONE = 0;
-	static final int UPDATE_PARENT = 1;
-	static final int UPDATE_CHILDREN = 2;
-	static final int UPDATE_BOTH = UPDATE_PARENT | UPDATE_CHILDREN;
 
 	private final BidirectionalTree<T> parent;
 	private final T value;
 	private final List<BidirectionalTree<T>> children;
 
-	// DEV-NOTE: caution, because 'this' leaves constructor
-	BidirectionalTree(BidirectionalTree<T> copyOf, BidirectionalTree<T> parent, T value,
-			List<BidirectionalTree<T>> children, int mode) {
-		requireNonNull(children, "children is null");
-
+	// DEV-NOTE: should be used by UnidirectionalTree.bidirectional() only!
+	BidirectionalTree(T value, List<BidirectionalTree<T>> children) {
+		this.parent = null;
 		this.value = value;
+		this.children = children;
+	}
 
-		final boolean updateParent = (mode & UPDATE_PARENT) == UPDATE_PARENT && parent != null && copyOf != null;
-		if (updateParent) {
-			final List<BidirectionalTree<T>> childrenOfParent = parent.children.replace(copyOf, this);
-			this.parent = new BidirectionalTree<>(parent, parent.parent, parent.value, childrenOfParent, UPDATE_PARENT);
-		} else {
-			this.parent = parent;
-		}
+	// Shortcut for {@code BidirectionalTree<>(parent, value, children, TreeTransformer::updateParent, TreeTransformer::updateChildren)}.
+	BidirectionalTree(BidirectionalTree<T> parent, T value, List<BidirectionalTree<T>> children) {
+		this(parent, value, children, TreeTransformer::updateParent, TreeTransformer::updateChildren);
+	}
 
-		final boolean updateChildren = (mode & UPDATE_CHILDREN) == UPDATE_CHILDREN && !children.isEmpty();
-		if (updateChildren) {
-			this.children = children.replaceAll(child -> new BidirectionalTree<>(child, this, child.value,
-					child.children, UPDATE_CHILDREN));
-		} else {
-			this.children = children;
-		}
+	BidirectionalTree(BidirectionalTree<T> parent, T value, List<BidirectionalTree<T>> children,
+			TreeTransformer<T> updateParent, TreeTransformer<T> updateChildren) {
+		this.value = value;
+		this.parent = Option.of(parent).map(updateParent.apply(this)).orElse(null);
+		this.children = children.replaceAll(updateChildren.apply(this));
 	}
 
 	// -- core
@@ -62,7 +48,8 @@ public class BidirectionalTree<T> implements TreeWithParent<T, BidirectionalTree
 
 	@Override
 	public BidirectionalTree<T> setParent(BidirectionalTree<T> parent) {
-		return new BidirectionalTree<>(this, parent, value, children, UPDATE_BOTH);
+		return new BidirectionalTree<>(parent, value, children, TreeTransformer::updateParent,
+				TreeTransformer::updateChildren);
 	}
 
 	@Override
@@ -72,7 +59,7 @@ public class BidirectionalTree<T> implements TreeWithParent<T, BidirectionalTree
 
 	@Override
 	public BidirectionalTree<T> setValue(T value) {
-		return new BidirectionalTree<>(this, parent, value, children, UPDATE_BOTH);
+		return new BidirectionalTree<>(parent, value, children);
 	}
 
 	@Override
@@ -82,7 +69,7 @@ public class BidirectionalTree<T> implements TreeWithParent<T, BidirectionalTree
 
 	@Override
 	public BidirectionalTree<T> setChildren(List<BidirectionalTree<T>> children) {
-		return new BidirectionalTree<>(this, parent, value, children, UPDATE_BOTH);
+		return new BidirectionalTree<>(parent, value, children);
 	}
 
 	// -- operations
@@ -90,18 +77,18 @@ public class BidirectionalTree<T> implements TreeWithParent<T, BidirectionalTree
 	@Override
 	@SuppressWarnings("unchecked")
 	public BidirectionalTree<T> attach(BidirectionalTree<T> tree1, BidirectionalTree<T>... trees) {
-		return new BidirectionalTree<>(this, parent, value, List.of(tree1, trees).prependAll(children), UPDATE_BOTH);
+		return new BidirectionalTree<>(parent, value, List.of(tree1, trees).prependAll(children));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public BidirectionalTree<T> detach(BidirectionalTree<T> tree1, BidirectionalTree<T>... trees) {
-		return new BidirectionalTree<>(this, parent, value, children.removeAll(List.of(tree1, trees)), UPDATE_BOTH);
+		return new BidirectionalTree<>(parent, value, children.removeAll(List.of(tree1, trees)));
 	}
 
 	@Override
 	public BidirectionalTree<T> subtree() {
-		return new BidirectionalTree<>(this, null, value, children, UPDATE_CHILDREN);
+		return new BidirectionalTree<>(null, value, children);
 	}
 
 	// -- conversion
@@ -117,5 +104,38 @@ public class BidirectionalTree<T> implements TreeWithParent<T, BidirectionalTree
 				.stream()
 				.map(child -> child.unidirectional())
 				.collect(List.collector()));
+	}
+
+	// -- transformation
+
+	/**
+	 * Manifest-type for and holder of Tree transformations.
+	 * 
+	 * @param <T>
+	 */
+	static interface TreeTransformer<T> extends Function<BidirectionalTree<T>, UnaryOperator<BidirectionalTree<T>>> {
+
+		// use-case: tree tells parent how to re-create its parent 
+		static <T> UnaryOperator<BidirectionalTree<T>> updateParent(BidirectionalTree<T> self) {
+			return parent -> new BidirectionalTree<>(parent.parent, parent.value, parent.children,
+					TreeTransformer::updateParent, TreeTransformer.substitutePreviousChild(parent));
+		}
+
+		// use-case: existing tree instructs its parent how to update its children
+		static <T> TreeTransformer<T> substitutePreviousChild(BidirectionalTree<T> prevChild) {
+			return self -> child -> (child == prevChild) ? self : new BidirectionalTree<>(self, child.value,
+					child.children, TreeTransformer::keepParent, TreeTransformer::updateChildren);
+		}
+
+		// use-case: tree passes itself as parent to his children
+		static <T> UnaryOperator<BidirectionalTree<T>> keepParent(BidirectionalTree<T> self) {
+			return parent -> self;
+		}
+
+		// use-case: tree tells its children to re-create all their children, passing the parent refs
+		static <T> UnaryOperator<BidirectionalTree<T>> updateChildren(BidirectionalTree<T> self) {
+			return child -> new BidirectionalTree<>(self, child.value, child.children, TreeTransformer::keepParent,
+					TreeTransformer::updateChildren);
+		}
 	}
 }
