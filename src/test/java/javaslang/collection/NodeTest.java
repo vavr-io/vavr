@@ -9,23 +9,23 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 import org.junit.Test;
 
-public class UnidirectionalTreeTest {
+public class NodeTest {
 
 	// -- core (single node properties)
 
 	@Test
 	public void shouldBeLeafWhenSingleNode() {
-		assertThat(Tree.of(1).isLeaf()).isTrue();
+		assertThat(new Node<>(1).isLeaf()).isTrue();
 	}
 
 	@Test
 	public void shouldHaveNoChildrenWhenSingleNode() {
-		assertThat(Tree.of(1).getChildren()).isEqualTo(List.empty());
+		assertThat(new Node<>(1).getChildren()).isEqualTo(List.empty());
 	}
 
 	@Test
 	public void shouldContainCorrectValueWhenSingleNode() {
-		assertThat(Tree.of(1).getValue()).isEqualTo(1);
+		assertThat(new Node<>(1).getValue()).isEqualTo(1);
 	}
 
 }

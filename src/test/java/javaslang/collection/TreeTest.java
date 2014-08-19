@@ -9,40 +9,40 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 import org.junit.Test;
 
-public class BidirectionalTreeTest {
+public class TreeTest {
 
 	// -- core (single node properties)
 
 	@Test
 	public void shouldBeRootWhenSingleNode() {
-		assertThat(Tree.of(1).bidirectional().isRoot()).isTrue();
+		assertThat(new Tree<>(1).isRoot()).isTrue();
 	}
 
 	@Test
 	public void shouldEqualRootWhenSingleNode() {
-		final BidirectionalTree<Integer> tree = Tree.of(1).bidirectional();
+		final Tree<Integer> tree = new Tree<>(1);
 		assertThat(tree.getRoot()).isEqualTo(tree);
 	}
 
 	@Test
 	public void shouldHaveNoParentWhenSingleNode() {
-		final BidirectionalTree<Integer> tree = Tree.of(1).bidirectional();
+		final Tree<Integer> tree = new Tree<>(1);
 		assertThat(tree.getParent().isPresent()).isFalse();
 	}
 
 	@Test
 	public void shouldBeLeafWhenSingleNode() {
-		assertThat(Tree.of(1).bidirectional().isLeaf()).isTrue();
+		assertThat(new Tree<>(1).isLeaf()).isTrue();
 	}
 
 	@Test
 	public void shouldHaveNoChildrenWhenSingleNode() {
-		assertThat(Tree.of(1).bidirectional().getChildren()).isEqualTo(List.empty());
+		assertThat(new Tree<>(1).getChildren()).isEqualTo(List.empty());
 	}
 
 	@Test
 	public void shouldContainCorrectValueWhenSingleNode() {
-		assertThat(Tree.of(1).bidirectional().getValue()).isEqualTo(1);
+		assertThat(new Tree<>(1).getValue()).isEqualTo(1);
 	}
 
 }

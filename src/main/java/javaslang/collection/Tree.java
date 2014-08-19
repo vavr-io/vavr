@@ -5,90 +5,150 @@
  */
 package javaslang.collection;
 
+import java.io.Serializable;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
+
 import javaslang.option.Option;
 
-public interface Tree<T, TREE extends Tree<T, ?>> /* TODO:extends Iterable<T> */{
+/**
+ * TODO
+ *
+ * @param <T>
+ */
+public class Tree<T> implements TreeLikeStructure<T, Tree<T>>, Serializable /* TODO:extends Iterable<T> */{
+
+	private static final long serialVersionUID = -7482343083286183794L;
+
+	private final Tree<T> parent;
+	private final T value;
+	private final List<Tree<T>> children;
+
+	// -- constructors
+
+	// Shortcut for {@code Tree<>(null, value, List.empty())}.
+	public Tree(T value) {
+		this(null, value, List.empty());
+	}
+
+	// Shortcut for {@code Tree<>(parent, value, List.empty())}.
+	public Tree(Tree<T> parent, T value) {
+		this(parent, value, List.empty());
+	}
+
+	// Shortcut for {@code Tree<>(null, value, List.empty())}.
+	public Tree(T value, List<Tree<T>> children) {
+		this(null, value, children);
+	}
+
+	public Tree(Tree<T> parent, T value, List<Tree<T>> children) {
+		this(parent, value, children, TreeTransformer::updateParent, TreeTransformer::updateChildren);
+	}
+
+	Tree(Tree<T> parent, T value, List<Tree<T>> children, TreeTransformer<T> updateParent,
+			TreeTransformer<T> updateChildren) {
+		this.value = value;
+		this.parent = (updateParent == null) ? parent : Option.of(parent).map(updateParent.apply(this)).orElse(null);
+		this.children = (updateChildren == null) ? children : children.replaceAll(updateChildren.apply(this));
+	}
 
 	// -- core
 
-	T getValue();
+	public Option<Tree<T>> getParent() {
+		return Option.of(parent);
+	}
 
-	TREE setValue(T value);
+	public Tree<T> setParent(Tree<T> parent) {
+		return new Tree<>(parent, value, children, TreeTransformer::updateParent, TreeTransformer::updateChildren);
+	}
 
-	List<TREE> getChildren();
+	public Tree<T> getRoot() {
+		Tree<T> tree = this;
+		while (tree.parent != null) {
+			tree = tree.parent;
+		}
+		return tree;
+	}
 
-	TREE setChildren(List<TREE> children);
+	public boolean isRoot() {
+		return parent == null;
+	}
 
-	default boolean isLeaf() {
-		return getChildren().isEmpty();
+	@Override
+	public T getValue() {
+		return value;
+	}
+
+	@Override
+	public Tree<T> setValue(T value) {
+		return new Tree<>(parent, value, children);
+	}
+
+	@Override
+	public List<Tree<T>> getChildren() {
+		return children;
+	}
+
+	@Override
+	public Tree<T> setChildren(List<Tree<T>> children) {
+		return new Tree<>(parent, value, children);
 	}
 
 	// -- operations
 
+	@Override
 	@SuppressWarnings("unchecked")
-	TREE attach(TREE tree1, TREE... trees);
+	public Tree<T> attach(Tree<T> tree1, Tree<T>... trees) {
+		return new Tree<>(parent, value, List.of(tree1, trees).prependAll(children));
+	}
 
+	@Override
 	@SuppressWarnings("unchecked")
-	TREE detach(TREE tree1, TREE... trees);
+	public Tree<T> detach(Tree<T> tree1, Tree<T>... trees) {
+		return new Tree<>(parent, value, children.removeAll(List.of(tree1, trees)));
+	}
 
-	TREE subtree();
+	@Override
+	public Tree<T> subtree() {
+		return new Tree<>(null, value, children);
+	}
 
 	// -- conversion
 
-	BidirectionalTree<T> bidirectional();
-
-	UnidirectionalTree<T> unidirectional();
-
-	// -- factory methods
-
-	static <T> UnidirectionalTree<T> of(T value) {
-		return new UnidirectionalTree<T>(value, List.empty());
+	public Node<T> asNode() {
+		return new Node<T>(value, children.stream().map(child -> child.asNode()).collect(List.collector()));
 	}
 
-	// -- specialized Tree interface with parent dependency for bidirectional tree implementation
+	// -- transformation
 
-	static interface TreeWithParent<T, TREE extends TreeWithParent<T, ?>> extends Tree<T, TREE> {
+	/**
+	 * Manifest-type for and holder of Tree transformations.
+	 * 
+	 * @param <T>
+	 */
+	private static interface TreeTransformer<T> extends Function<Tree<T>, UnaryOperator<Tree<T>>> {
 
-		Option<TREE> getParent();
-
-		TREE setParent(TREE parent);
-
-		@SuppressWarnings("unchecked")
-		default TREE getRoot() {
-			return getParent().map(parent -> (TREE) parent.getRoot()).orElse((TREE) this);
+		// use-case: tree tells parent how to re-create its parent 
+		static <T> UnaryOperator<Tree<T>> updateParent(Tree<T> self) {
+			return parent -> new Tree<>(parent.parent, parent.value, parent.children, TreeTransformer::updateParent,
+					TreeTransformer.substitutePreviousChild(parent));
 		}
 
-		default boolean isRoot() {
-			return !getParent().isPresent();
+		// use-case: existing tree instructs its parent to replace it and re-create the rest of the children
+		static <T> TreeTransformer<T> substitutePreviousChild(Tree<T> prevChild) {
+			return self -> child -> (child == prevChild) ? self : new Tree<>(self, child.value, child.children,
+					TreeTransformer::keepParent, TreeTransformer::updateChildren);
 		}
 
+		// use-case: tree passes itself as parent to its children
+		static <T> UnaryOperator<Tree<T>> keepParent(Tree<T> self) {
+			return parent -> self;
+		}
+
+		// use-case: tree tells its children to re-create all their children without re-creating their parents
+		static <T> UnaryOperator<Tree<T>> updateChildren(Tree<T> self) {
+			return child -> new Tree<>(self, child.value, child.children, TreeTransformer::keepParent,
+					TreeTransformer::updateChildren);
+		}
 	}
-
-	//	Tree<Tuple2<T, Integer>> zipWithIndex();
-	//
-	//	/**
-	//	 * TODO: (element, depth, index)
-	//	 * <p>
-	//	 * <strong>Using Breadth-First Search (BFS):</strong>
-	//	 * 
-	//	 * <pre>
-	//	 * <code>
-	//	 *                 (e1,0,0)
-	//	 *                /        \
-	//	 *        (e2,1,0)          (e3,1,1)
-	//	 *        /      \          /      \
-	//	 *    (e4,2,0) (e5,2,1) (e6,2,2) (e7,2,3)
-	//	 * </code>
-	//	 * </pre>
-	//	 * 
-	//	 * @return
-	//	 */
-	//	Tree<Tuple3<T, Integer, Integer>> zipWithCoordinates();
-	//
-	//	// -- traveral
-	//
-	//	// TODO: see http://rosettacode.org/wiki/Tree_traversal
-	//
-	//	// TODO: stream(), parallelStream(), ...
-
 }
