@@ -1,4 +1,6 @@
-## Why Javaslang? [![Build Status](https://travis-ci.org/rocketscience-projects/javaslang.png)](https://travis-ci.org/rocketscience-projects/javaslang)
+## Why Javaslang?
+[![Build Status](https://travis-ci.org/rocketscience-projects/javaslang.png)](https://travis-ci.org/rocketscience-projects/javaslang)
+[![Coverage Status](https://img.shields.io/coveralls/rocketscience-projects/javaslang.svg)](https://coveralls.io/r/rocketscience-projects/javaslang)
 
 **Javaslang** is a non-profit functional library for Java&trade; 8 and above. With the release of Java 8 we face a new programming paradigm - Java goes functional. Objects are not obsolete - the opposite is true. We've learned from other JVM languages like Scala, that it is a good practice to take the best from both worlds, objects and functions.
 
