@@ -94,7 +94,7 @@ interface TreeLikeStructure<T, TREE extends TreeLikeStructure<T, ?>> {
 	 * @param <T> value type of this tree structure
 	 * @param <TREE> type of the tree structure implementation
 	 */
-	abstract class AbstractTreeLikeStructure<T, TREE extends AbstractTreeLikeStructure<T, ?>> implements
+	static abstract class AbstractTreeLikeStructure<T, TREE extends AbstractTreeLikeStructure<T, ?>> implements
 			TreeLikeStructure<T, TREE> {
 
 		@Override

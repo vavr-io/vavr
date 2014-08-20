@@ -1056,7 +1056,7 @@ public interface List<E> extends Iterable<E> {
 	 *
 	 * @param <E> Component type of the List.
 	 */
-	abstract class AbstractList<E> implements List<E> {
+	static abstract class AbstractList<E> implements List<E> {
 
 		@Override
 		public boolean equals(Object o) {
