@@ -6,6 +6,9 @@
 package javaslang.collection;
 
 import static java.util.stream.Collectors.joining;
+
+import java.util.Objects;
+
 import javaslang.Strings;
 
 /**
@@ -82,17 +85,55 @@ interface TreeLikeStructure<T, TREE extends TreeLikeStructure<T, ?>> {
 	//	// TODO: stream(), parallelStream(), ...
 
 	/**
-	 * Prints the complete tree in LISP format {@code (root child1 .. childN)}. Prints just the value if node is a leaf.
+	 * This class is needed because the interface {@link TreeLikeStructure} cannot use default methods to override
+	 * Object's non-final methods equals, hashCode and toString.
+	 * <p>
+	 * See <a href="http://mail.openjdk.java.net/pipermail/lambda-dev/2013-March/008435.html">Allow default methods to
+	 * override Object's methods</a>.
 	 * 
-	 * @return The string representation of this tree structure in LISP format.
+	 * @param <T> value type of this tree structure
+	 * @param <TREE> type of the tree structure implementation
 	 */
-	default String stringify() {
-		final String value = Strings.toString(getValue());
-		if (isLeaf()) {
-			return value;
-		} else {
-			final String children = getChildren().stream().map(TreeLikeStructure::stringify).collect(joining(" "));
-			return String.format("(%s %s)", value, children);
+	abstract class AbstractTreeLikeStructure<T, TREE extends AbstractTreeLikeStructure<T, ?>> implements
+			TreeLikeStructure<T, TREE> {
+
+		@Override
+		public boolean equals(Object o) {
+			if (o == this) {
+				return true;
+			}
+			if (o == null || !(getClass().isAssignableFrom(o.getClass()))) {
+				return false;
+			} else {
+				final Tree<?> that = (Tree<?>) o;
+				return Objects.equals(getValue(), that.getValue()) && Objects.equals(getChildren(), that.getChildren());
+			}
+		}
+
+		@Override
+		public int hashCode() {
+			final T value = getValue();
+			return (value == null ? 0 : value.hashCode() * 31) + getChildren().hashCode();
+		}
+
+		/**
+		 * Prints the complete tree in LISP format {@code (root child1 .. childN)}. Prints just the value if node is a
+		 * leaf.
+		 * 
+		 * @return The string representation of this tree structure in LISP format.
+		 */
+		@Override
+		public String toString() {
+			final String value = Strings.toString(getValue());
+			if (isLeaf()) {
+				return value;
+			} else {
+				final String children = getChildren()
+						.stream()
+						.map(AbstractTreeLikeStructure::toString)
+						.collect(joining(" "));
+				return String.format("(%s %s)", value, children);
+			}
 		}
 	}
 }

@@ -5,14 +5,18 @@
  */
 package javaslang.collection;
 
+import static javaslang.Requirements.requireNonNull;
+
 import java.io.Serializable;
+
+import javaslang.collection.TreeLikeStructure.AbstractTreeLikeStructure;
 
 /**
  * TODO
  * 
  * @param <T> value type of this tree
  */
-public class Node<T> implements TreeLikeStructure<T, Node<T>>, Serializable /* TODO:extends Iterable<T> */{
+public class Node<T> extends AbstractTreeLikeStructure<T, Node<T>> implements Serializable /* TODO:extends Iterable<T> */{
 
 	private static final long serialVersionUID = 8021802992954631100L;
 
@@ -26,6 +30,7 @@ public class Node<T> implements TreeLikeStructure<T, Node<T>>, Serializable /* T
 	}
 
 	public Node(T value, List<Node<T>> children) {
+		requireNonNull(children, "children is null");
 		this.value = value;
 		this.children = children;
 	}
@@ -113,12 +118,5 @@ public class Node<T> implements TreeLikeStructure<T, Node<T>>, Serializable /* T
 				.stream()
 				.map(child -> asTree(child))
 				.collect(List.collector()), null, null);
-	}
-
-	// -- java.lang.Object
-
-	@Override
-	public String toString() {
-		return stringify();
 	}
 }
