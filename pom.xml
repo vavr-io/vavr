@@ -109,14 +109,12 @@
 		</dependency>
 	</dependencies>
 	<profiles>
-		<!-- A profile for coveralls.io code coverage with travis-ci continuous 
-			integration -->
+		<!-- A profile for code coverage analysis in ci environments -->
 		<profile>
-			<id>travis</id>
+			<id>ci</id>
 			<activation>
 				<property>
-					<name>TRAVIS</name>
-					<value>true</value>
+					<name>env.CI</name>
 				</property>
 			</activation>
 			<build>
