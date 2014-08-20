@@ -12,7 +12,6 @@ import static java.util.regex.Pattern.compile;
 import static java.util.stream.Collectors.joining;
 import static javaslang.Requirements.require;
 import static javaslang.Requirements.requireNonNull;
-import static javaslang.Requirements.requireNotInstantiable;
 import static javaslang.Requirements.requireNotNullOrEmpty;
 
 import java.util.ArrayList;
@@ -45,7 +44,7 @@ public final class Strings {
 	 * This class is not intended to be instantiated.
 	 */
 	private Strings() {
-		requireNotInstantiable();
+		throw new AssertionError(Strings.class.getName() + " is not intended to be instantiated.");
 	}
 
 	/**

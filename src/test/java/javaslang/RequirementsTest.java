@@ -5,11 +5,17 @@
  */
 package javaslang;
 
+import static javaslang.Assertions.assertThat;
 import javaslang.Requirements.UnsatisfiedRequirementException;
 
 import org.junit.Test;
 
 public class RequirementsTest {
+
+	@Test
+	public void shouldNotInstantiable() {
+		assertThat(Requirements.class).isNotInstantiable();
+	}
 
 	@Test
 	public void shouldPassOnTrueCondition() {

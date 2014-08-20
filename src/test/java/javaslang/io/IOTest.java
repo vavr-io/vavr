@@ -5,6 +5,7 @@
  */
 package javaslang.io;
 
+import static javaslang.Assertions.assertThat;
 import static javaslang.io.IO.UTF8;
 import static org.fest.assertions.api.Assertions.assertThat;
 
@@ -13,6 +14,11 @@ import java.io.InputStream;
 import org.junit.Test;
 
 public class IOTest {
+
+	@Test
+	public void shouldNotInstantiable() {
+		assertThat(IO.class).isNotInstantiable();
+	}
 
 	@Test
 	public void shouldConvertInputStreamToBytes() throws Exception {

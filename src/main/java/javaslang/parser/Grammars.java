@@ -6,7 +6,6 @@
 package javaslang.parser;
 
 import static java.util.stream.Collectors.joining;
-import static javaslang.Requirements.requireNotInstantiable;
 
 import java.util.stream.Stream;
 
@@ -41,7 +40,7 @@ public final class Grammars {
 	 * This class is not intended to be instantiated.
 	 */
 	private Grammars() {
-		requireNotInstantiable();
+		throw new AssertionError(Grammars.class.getName() + " is not intended to be instantiated.");
 	}
 
 	public static String stringify(Grammar grammar) {

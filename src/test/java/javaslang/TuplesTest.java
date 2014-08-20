@@ -5,6 +5,7 @@
  */
 package javaslang;
 
+import static javaslang.Assertions.assertThat;
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
 import static javaslang.Tuples.of;
@@ -15,6 +16,11 @@ import javaslang.Tuples.Tuple0;
 import org.junit.Test;
 
 public class TuplesTest {
+
+	@Test
+	public void shouldNotInstantiable() {
+		assertThat(Tuples.class).isNotInstantiable();
+	}
 
 	@Test
 	public void shouldCreateEmptyTuple() {

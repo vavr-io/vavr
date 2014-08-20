@@ -16,7 +16,7 @@ public final class Requirements {
 	 * This class is not intended to be instantiated.
 	 */
 	private Requirements() {
-		requireNotInstantiable();
+		throw new AssertionError(Requirements.class.getName() + " is not intended to be instantiated.");
 	}
 
 	/**
@@ -233,35 +233,6 @@ public final class Requirements {
 			throw new UnsatisfiedRequirementException(messageSupplier.get());
 		}
 		return chars;
-	}
-
-	/**
-	 * Method used in conjunction with the class-not-instantiable idiom. The exception stack strace tells the prohibited
-	 * constructor call.
-	 * 
-	 * <pre>
-	 * <code>
-	 * import static javaslang.Requirements.*;
-	 * 
-	 * public final class FunkyType {
-	 * 
-	 *    &#47;**
-	 *     * This class is not intended to be instantiated.
-	 *     *&#47;
-	 *     private FunkyType() {
-	 *         requireNotInstantiable();
-	 *     }
-	 *     
-	 *     // public static methods
-	 * 
-	 * }
-	 * </code>
-	 * </pre>
-	 * 
-	 * @throws UnsatisfiedRequirementException yes, that's true.
-	 */
-	public static void requireNotInstantiable() {
-		throw new UnsatisfiedRequirementException("Class cannot be instantiated.");
 	}
 
 	/**

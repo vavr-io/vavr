@@ -8,7 +8,6 @@ package javaslang.parser;
 import static java.util.stream.Collectors.joining;
 import static javaslang.Requirements.require;
 import static javaslang.Requirements.requireNonNull;
-import static javaslang.Requirements.requireNotInstantiable;
 import static javaslang.Requirements.requireNotNullOrEmpty;
 
 import java.util.ArrayList;
@@ -73,7 +72,7 @@ public final class Parsers {
 	 * This class is not intended to be instantiated.
 	 */
 	private Parsers() {
-		requireNotInstantiable();
+		throw new AssertionError(Parsers.class.getName() + " is not intended to be instantiated.");
 	}
 
 	/**

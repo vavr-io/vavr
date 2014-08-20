@@ -5,6 +5,7 @@
  */
 package javaslang;
 
+import static javaslang.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.io.Serializable;
@@ -14,6 +15,11 @@ import javaslang.Tuples.Tuple3;
 import org.junit.Test;
 
 public class LambdasTest {
+
+	@Test
+	public void shouldNotInstantiable() {
+		assertThat(Lambdas.class).isNotInstantiable();
+	}
 
 	@Test
 	public void shouldParseReturnTypeVoid() {

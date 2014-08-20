@@ -5,8 +5,6 @@
  */
 package javaslang.match;
 
-import static javaslang.Requirements.requireNotInstantiable;
-
 import java.util.function.DoubleFunction;
 import java.util.function.IntFunction;
 import java.util.function.LongFunction;
@@ -27,7 +25,7 @@ public final class Matchs {
 	 * This class is not intended to be instantiated.
 	 */
 	private Matchs() {
-		requireNotInstantiable();
+		throw new AssertionError(Matchs.class.getName() + " is not intended to be instantiated.");
 	}
 
 	/**

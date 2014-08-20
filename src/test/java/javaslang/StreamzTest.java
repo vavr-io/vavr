@@ -23,6 +23,11 @@ public class StreamzTest {
 	private static final String[] I_WILL_BE_BACK = { "I", "will", "be", "back!" };
 
 	@Test
+	public void shouldNotInstantiable() {
+		assertThat(Streamz.class).isNotInstantiable();
+	}
+
+	@Test
 	public void shouldZipStreamWithIndex() {
 		final Stream<String> stream = Stream.of(I_WILL_BE_BACK);
 		final List<Tuple2<String, Integer>> actual = Streamz.zipWithIndex(stream).collect(toList());

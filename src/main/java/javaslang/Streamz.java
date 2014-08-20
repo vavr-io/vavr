@@ -6,7 +6,6 @@
 package javaslang;
 
 import static javaslang.Requirements.require;
-import static javaslang.Requirements.requireNotInstantiable;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.DoubleStream;
@@ -25,7 +24,7 @@ public final class Streamz {
 	 * This class is not intended to be instantiated.
 	 */
 	private Streamz() {
-		requireNotInstantiable();
+		throw new AssertionError(Streamz.class.getName() + " is not intended to be instantiated.");
 	}
 
 	/**

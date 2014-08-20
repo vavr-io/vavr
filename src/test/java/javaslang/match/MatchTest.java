@@ -5,6 +5,7 @@
  */
 package javaslang.match;
 
+import static javaslang.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
@@ -15,6 +16,11 @@ import javaslang.option.Some;
 import org.junit.Test;
 
 public class MatchTest {
+
+	@Test
+	public void shouldNotInstantiable() {
+		assertThat(Matchs.class).isNotInstantiable();
+	}
 
 	@Test
 	public void shouldMatchNullAsPrototype() {
@@ -189,11 +195,13 @@ public class MatchTest {
 
 	@FunctionalInterface
 	static interface SpecialFunction extends Function<Integer, String> {
+		@Override
 		String apply(Integer i);
 	}
 
 	@FunctionalInterface
 	static interface SameSignatureAsSpecialFunction extends Function<Integer, String> {
+		@Override
 		String apply(Integer i);
 	}
 

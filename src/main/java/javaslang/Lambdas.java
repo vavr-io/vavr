@@ -6,7 +6,6 @@
 package javaslang;
 
 import static java.util.stream.Collectors.joining;
-import static javaslang.Requirements.requireNotInstantiable;
 
 import java.io.Serializable;
 import java.lang.invoke.SerializedLambda;
@@ -36,7 +35,7 @@ public final class Lambdas {
 	 * This class is not intended to be instantiated.
 	 */
 	private Lambdas() {
-		requireNotInstantiable();
+		throw new AssertionError(Lambdas.class.getName() + " is not intended to be instantiated.");
 	}
 
 	/**

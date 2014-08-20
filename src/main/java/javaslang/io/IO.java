@@ -5,8 +5,6 @@
  */
 package javaslang.io;
 
-import static javaslang.Requirements.requireNotInstantiable;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -50,7 +48,7 @@ public final class IO {
 	 * This class is not intended to be instantiated.
 	 */
 	private IO() {
-		requireNotInstantiable();
+		throw new AssertionError(IO.class.getName() + " is not intended to be instantiated.");
 	}
 
 	/**

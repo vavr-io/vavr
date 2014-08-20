@@ -5,9 +5,16 @@
  */
 package javaslang.parser;
 
+import static javaslang.Assertions.assertThat;
+
 import org.junit.Test;
 
 public class ParsersTest {
+
+	@Test
+	public void shouldNotInstantiable() {
+		assertThat(Parsers.class).isNotInstantiable();
+	}
 
 	// -- parser implementations
 

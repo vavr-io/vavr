@@ -6,7 +6,6 @@
 package javaslang;
 
 import static javaslang.Requirements.requireNonNull;
-import static javaslang.Requirements.requireNotInstantiable;
 
 import java.lang.reflect.Array;
 import java.util.AbstractList;
@@ -55,7 +54,7 @@ public final class Arrayz {
 	 * This class is not intended to be instantiated.
 	 */
 	private Arrayz() {
-		requireNotInstantiable();
+		throw new AssertionError(Arrayz.class.getName() + " is not intended to be instantiated.");
 	}
 
 	// -- array creation

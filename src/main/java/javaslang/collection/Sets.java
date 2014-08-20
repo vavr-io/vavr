@@ -5,8 +5,8 @@
  */
 package javaslang.collection;
 
+import static javaslang.Assertions.assertThat;
 import static javaslang.Requirements.requireNonNull;
-import static javaslang.Requirements.requireNotInstantiable;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -20,7 +20,7 @@ public final class Sets {
 	 * This class is not intended to be instantiated.
 	 */
 	private Sets() {
-		requireNotInstantiable();
+		assertThat(Sets.class).isNotInstantiable();
 	}
 
 	/**

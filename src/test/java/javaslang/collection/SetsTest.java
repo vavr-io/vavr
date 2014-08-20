@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import static javaslang.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.util.Set;
@@ -12,6 +13,11 @@ import java.util.Set;
 import org.junit.Test;
 
 public class SetsTest {
+
+	@Test
+	public void shouldNotInstantiable() {
+		assertThat(Sets.class).isNotInstantiable();
+	}
 
 	@Test
 	public void shouldComputeComplement() throws Exception {

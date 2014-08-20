@@ -14,7 +14,7 @@ import java.io.ObjectOutputStream;
 public final class Serializables {
 
 	private Serializables() {
-		Requirements.requireNotInstantiable();
+		throw new AssertionError(Serializables.class.getName() + " is not intended to be instantiated.");
 	}
 
 	public static byte[] serialize(Object obj) throws IOException {

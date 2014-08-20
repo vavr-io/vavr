@@ -5,6 +5,7 @@
  */
 package javaslang;
 
+import static javaslang.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.util.Arrays;
@@ -13,6 +14,11 @@ import java.util.List;
 import org.junit.Test;
 
 public class ArrayzTest {
+
+	@Test
+	public void shouldNotInstantiable() {
+		assertThat(Arrayz.class).isNotInstantiable();
+	}
 
 	@Test
 	public void shoudRecognizeNullArray() {
