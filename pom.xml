@@ -35,6 +35,8 @@
 	</developers>
 	<properties>
 		<java.version>1.8</java.version>
+		<maven.coveralls.version>2.2.0</maven.coveralls.version>
+		<maven.jacoco.version>0.7.1.201405082137</maven.jacoco.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<build>
@@ -63,7 +65,8 @@
 						<arguments>${arguments} -Psonatype-oss-release</arguments>
 					</configuration>
 				</plugin>
-				<!-- Elimate the eclipse warning 'maven-enforcer-plugin (goal "enforce") is ignored by m2e' -->
+				<!-- Elimate the eclipse warning 'maven-enforcer-plugin (goal "enforce") 
+					is ignored by m2e' -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -106,6 +109,31 @@
 		</dependency>
 	</dependencies>
 	<profiles>
+		<!-- A profile for coveralls.io code coverage with travis-ci continuous 
+			integration -->
+		<profile>
+			<id>travis</id>
+			<activation>
+				<property>
+					<name>env.TRAVIS</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<version>${maven.jacoco.version}</version>
+					</plugin>
+					<plugin>
+						<groupId>org.eluder.coveralls</groupId>
+						<artifactId>coveralls-maven-plugin</artifactId>
+						<version>${maven.coveralls.version}</version>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 		<!-- A profile for gpg-signing .jars when releasing -->
 		<profile>
 			<id>release-sign-artifacts</id>
