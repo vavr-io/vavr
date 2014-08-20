@@ -82,7 +82,7 @@ interface TreeLikeStructure<T, TREE extends TreeLikeStructure<T, ?>> {
 	//	// TODO: stream(), parallelStream(), ...
 
 	/**
-	 * Prints the complete tree is LISP format {@code (root child1 .. childN)}. Prints just the value if node is a leaf.
+	 * Prints the complete tree in LISP format {@code (root child1 .. childN)}. Prints just the value if node is a leaf.
 	 * 
 	 * @return The string representation of this tree structure in LISP format.
 	 */
