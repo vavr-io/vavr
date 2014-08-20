@@ -5,8 +5,6 @@
  */
 package javaslang;
 
-import static javaslang.Requirements.requireNotInstantiable;
-
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -18,7 +16,7 @@ public final class Tuples {
 	 * This class is not intended to be instantiated.
 	 */
 	private Tuples() {
-		requireNotInstantiable();
+		throw new AssertionError(Tuples.class.getName() + " is not intended to be instantiated.");
 	}
 
 	public static Tuple0 of() {
@@ -116,6 +114,11 @@ public final class Tuples {
 		}
 
 		@Override
+		public int arity() {
+			return 0;
+		}
+
+		@Override
 		public String toString() {
 			return Tuples.stringify();
 		}
@@ -144,6 +147,11 @@ public final class Tuples {
 
 		public Tuple1(T t) {
 			this._1 = t;
+		}
+
+		@Override
+		public int arity() {
+			return 1;
 		}
 
 		@Override
@@ -185,6 +193,11 @@ public final class Tuples {
 		}
 
 		@Override
+		public int arity() {
+			return 2;
+		}
+
+		@Override
 		public boolean equals(Object o) {
 			if (o == this) {
 				return true;
@@ -222,6 +235,11 @@ public final class Tuples {
 			this._1 = t1;
 			this._2 = t2;
 			this._3 = t3;
+		}
+
+		@Override
+		public int arity() {
+			return 3;
 		}
 
 		@Override
@@ -266,6 +284,11 @@ public final class Tuples {
 			this._2 = t2;
 			this._3 = t3;
 			this._4 = t4;
+		}
+
+		@Override
+		public int arity() {
+			return 4;
 		}
 
 		@Override
@@ -316,6 +339,11 @@ public final class Tuples {
 		}
 
 		@Override
+		public int arity() {
+			return 5;
+		}
+
+		@Override
 		public boolean equals(Object o) {
 			if (o == this) {
 				return true;
@@ -363,6 +391,11 @@ public final class Tuples {
 			this._4 = t4;
 			this._5 = t5;
 			this._6 = t6;
+		}
+
+		@Override
+		public int arity() {
+			return 6;
 		}
 
 		@Override
@@ -419,6 +452,11 @@ public final class Tuples {
 		}
 
 		@Override
+		public int arity() {
+			return 7;
+		}
+
+		@Override
 		public boolean equals(Object o) {
 			if (o == this) {
 				return true;
@@ -472,6 +510,11 @@ public final class Tuples {
 			this._6 = t6;
 			this._7 = t7;
 			this._8 = t8;
+		}
+
+		@Override
+		public int arity() {
+			return 8;
 		}
 
 		@Override
@@ -534,6 +577,11 @@ public final class Tuples {
 		}
 
 		@Override
+		public int arity() {
+			return 9;
+		}
+
+		@Override
 		public boolean equals(Object o) {
 			if (o == this) {
 				return true;
@@ -593,6 +641,11 @@ public final class Tuples {
 			this._8 = t8;
 			this._9 = t9;
 			this._10 = t10;
+		}
+
+		@Override
+		public int arity() {
+			return 10;
 		}
 
 		@Override
@@ -661,6 +714,11 @@ public final class Tuples {
 		}
 
 		@Override
+		public int arity() {
+			return 11;
+		}
+
+		@Override
 		public boolean equals(Object o) {
 			if (o == this) {
 				return true;
@@ -726,6 +784,11 @@ public final class Tuples {
 			this._10 = t10;
 			this._11 = t11;
 			this._12 = t12;
+		}
+
+		@Override
+		public int arity() {
+			return 12;
 		}
 
 		@Override
@@ -801,6 +864,11 @@ public final class Tuples {
 		}
 
 		@Override
+		public int arity() {
+			return 13;
+		}
+
+		@Override
 		public boolean equals(Object o) {
 			if (o == this) {
 				return true;
@@ -841,6 +909,13 @@ public final class Tuples {
 	public static interface Tuple {
 
 		/**
+		 * Returns the number of elements of this tuple.
+		 * 
+		 * @return The number of elements.
+		 */
+		int arity();
+
+		/**
 		 * Tests if an object is equal to this Tuple.
 		 * <p>
 		 * An object equals this Tuple, if it is not null, of the same type and all elements are pair-wise equal calling
@@ -849,6 +924,7 @@ public final class Tuples {
 		 * @param obj An object.
 		 * @return true, if obj is equal to this in the sense described above, false otherwise.
 		 */
+		@Override
 		boolean equals(Object obj);
 
 		/**
@@ -857,6 +933,7 @@ public final class Tuples {
 		 * 
 		 * @return The hashCode of this Tuple in the sense described above.
 		 */
+		@Override
 		int hashCode();
 
 		/**
@@ -865,6 +942,7 @@ public final class Tuples {
 		 * 
 		 * @return This Tuple as String.
 		 */
+		@Override
 		String toString();
 	}
 
