@@ -1,8 +1,5 @@
 language: java
 jdk:
   - oraclejdk8
-env:
-  global:
-    - secure: "tS5P5WtKXPzsfoButvyuRRAbxQh3dwstjCn6TUFbLv4ymA2CfHioxvYQ1PUshTvt7jB/OXdIBUdkBkLBiK6l6IqCDy0oNHCnXHJ2mMUG+UfZlMU+MmUqfXTf/EJGsWfYmiH/VSnYqaOVLmwSkX9Pf4bk3EJydVpo292dAxU34+I="
 after_success:
   - mvn jacoco:report coveralls:jacoco

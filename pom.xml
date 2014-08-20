@@ -115,7 +115,7 @@
 			<id>travis</id>
 			<activation>
 				<property>
-					<name>env.TRAVIS</name>
+					<name>TRAVIS</name>
 					<value>true</value>
 				</property>
 			</activation>
@@ -125,6 +125,14 @@
 						<groupId>org.jacoco</groupId>
 						<artifactId>jacoco-maven-plugin</artifactId>
 						<version>${maven.jacoco.version}</version>
+						<executions>
+							<execution>
+								<id>prepare-agent</id>
+								<goals>
+									<goal>prepare-agent</goal>
+								</goals>
+							</execution>
+						</executions>
 					</plugin>
 					<plugin>
 						<groupId>org.eluder.coveralls</groupId>

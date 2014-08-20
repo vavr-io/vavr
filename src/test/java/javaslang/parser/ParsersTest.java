@@ -9,6 +9,45 @@ import org.junit.Test;
 
 public class ParsersTest {
 
+	// -- parser implementations
+
+	@Test
+	public void shouldParseCharUsingAny() {
+		// TODO: fail("not implemented");
+	}
+
+	@Test
+	public void shouldParseCharUsingCharRange() {
+		// TODO: fail("not implemented");
+	}
+
+	@Test
+	public void shouldParseCharUsingCharSet() {
+		// TODO: fail("not implemented");
+	}
+
+	@Test
+	public void shouldParseCharUsingEOF() {
+		// TODO: fail("not implemented");
+	}
+
+	@Test
+	public void shouldParseCharUsingLiteral() {
+		// TODO: fail("not implemented");
+	}
+
+	@Test
+	public void shouldParseCharUsingRule() {
+		// TODO: fail("not implemented");
+	}
+
+	@Test
+	public void shouldParseCharUsingSequence() {
+		// TODO: fail("not implemented");
+	}
+
+	// -- resolving ambiguities
+
 	/**
 	 * Given an input sequence {@code 'aaa'}, the following {@code LexerRule2} should match.
 	 * 
