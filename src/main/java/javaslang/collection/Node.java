@@ -59,8 +59,9 @@ public class Node<T> extends AbstractTreeLikeStructure<T, Node<T>> implements Se
 	 * </pre>
 	 * 
 	 * @param <T> value type of the result Node
-	 * @param The value of the Node.
-	 * @param The children of the Node.
+	 * @param value The value of the Node.
+	 * @param children The children of the Node.
+	 * @return A new Node instance based on the arguments.
 	 */
 	@SafeVarargs
 	public static <T> Node<T> node(T value, Node<T>... children) {
