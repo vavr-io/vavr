@@ -996,17 +996,16 @@ public interface List<E> extends Iterable<E> {
 	 * </pre>
 	 *
 	 * @param <T> Component type of the List.
-	 * @param element First (required) element.
-	 * @param elements Zero or more additional elements.
+	 * @param elements Zero or more elements.
 	 * @return A list containing the given elements in the same order.
 	 */
 	@SafeVarargs
-	static <T> List<T> of(T element, T... elements) {
+	static <T> List<T> of(T... elements) {
 		List<T> result = EmptyList.instance();
 		for (int i = elements.length - 1; i >= 0; i--) {
 			result = result.prepend(elements[i]);
 		}
-		return result.prepend(element);
+		return result;
 	}
 
 	/**

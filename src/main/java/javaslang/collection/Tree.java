@@ -12,9 +12,13 @@ import java.util.function.UnaryOperator;
 import javaslang.option.Option;
 
 /**
- * TODO
+ * Because this is an immutable, bidirectional tree implementation, tree operations on any node result in creating new
+ * instances of all tree node. In particular, the original tree nodes stay uneffected.
+ * <p>
+ * <strong>Hint:</strong> Please take a look how to build a Tree with {@link Node#node(Object, Node...)} and
+ * {@link Node#asTree()} in O(n).
  *
- * @param <T>
+ * @param <T> value type of this tree
  */
 public class Tree<T> implements TreeLikeStructure<T, Tree<T>>, Serializable /* TODO:extends Iterable<T> */{
 
@@ -24,7 +28,7 @@ public class Tree<T> implements TreeLikeStructure<T, Tree<T>>, Serializable /* T
 	private final T value;
 	private final List<Tree<T>> children;
 
-	// -- constructors
+	// -- constructors + factory methods
 
 	// Shortcut for {@code Tree<>(null, value, List.empty())}.
 	public Tree(T value) {
@@ -97,15 +101,13 @@ public class Tree<T> implements TreeLikeStructure<T, Tree<T>>, Serializable /* T
 	// -- operations
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public Tree<T> attach(Tree<T> tree1, Tree<T>... trees) {
-		return new Tree<>(parent, value, List.of(tree1, trees).prependAll(children));
+	public Tree<T> attach(List<Tree<T>> trees) {
+		return new Tree<>(parent, value, trees.prependAll(children));
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public Tree<T> detach(Tree<T> tree1, Tree<T>... trees) {
-		return new Tree<>(parent, value, children.removeAll(List.of(tree1, trees)));
+	public Tree<T> detach(List<Tree<T>> trees) {
+		return new Tree<>(parent, value, children.removeAll(trees));
 	}
 
 	@Override
@@ -117,6 +119,13 @@ public class Tree<T> implements TreeLikeStructure<T, Tree<T>>, Serializable /* T
 
 	public Node<T> asNode() {
 		return new Node<T>(value, children.stream().map(child -> child.asNode()).collect(List.collector()));
+	}
+
+	// -- java.lang.Object
+
+	@Override
+	public String toString() {
+		return stringify();
 	}
 
 	// -- transformation

@@ -14,35 +14,40 @@ public class TreeTest {
 	// -- core (single node properties)
 
 	@Test
-	public void shouldBeRootWhenSingleNode() {
+	public void shouldBeRootWhenCreatedWithValue() {
 		assertThat(new Tree<>(1).isRoot()).isTrue();
 	}
 
 	@Test
-	public void shouldEqualRootWhenSingleNode() {
+	public void shouldEqualRootWhenCreatedWithValue() {
 		final Tree<Integer> tree = new Tree<>(1);
 		assertThat(tree.getRoot()).isEqualTo(tree);
 	}
 
 	@Test
-	public void shouldHaveNoParentWhenSingleNode() {
+	public void shouldHaveNoParentWhenCreatedWithValue() {
 		final Tree<Integer> tree = new Tree<>(1);
 		assertThat(tree.getParent().isPresent()).isFalse();
 	}
 
 	@Test
-	public void shouldBeLeafWhenSingleNode() {
+	public void shouldBeLeafWhenCreatedWithValue() {
 		assertThat(new Tree<>(1).isLeaf()).isTrue();
 	}
 
 	@Test
-	public void shouldHaveNoChildrenWhenSingleNode() {
+	public void shouldHaveNoChildrenWhenCreatedWithValue() {
 		assertThat(new Tree<>(1).getChildren()).isEqualTo(List.empty());
 	}
 
 	@Test
-	public void shouldContainCorrectValueWhenSingleNode() {
+	public void shouldContainCorrectValueWhenCreatedWithValue() {
 		assertThat(new Tree<>(1).getValue()).isEqualTo(1);
+	}
+
+	@Test
+	public void shouldContainCorrectValueWhenSetValue() {
+		assertThat(new Tree<>(1).setValue(2).getValue()).isEqualTo(2);
 	}
 
 }
