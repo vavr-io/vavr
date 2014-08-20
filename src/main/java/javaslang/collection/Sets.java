@@ -5,7 +5,6 @@
  */
 package javaslang.collection;
 
-import static javaslang.Assertions.assertThat;
 import static javaslang.Requirements.requireNonNull;
 
 import java.util.HashSet;
@@ -20,7 +19,7 @@ public final class Sets {
 	 * This class is not intended to be instantiated.
 	 */
 	private Sets() {
-		assertThat(Sets.class).isNotInstantiable();
+		throw new AssertionError(Sets.class.getName() + " is not intended to be instantiated.");
 	}
 
 	/**
