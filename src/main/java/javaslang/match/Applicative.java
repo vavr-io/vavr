@@ -21,9 +21,10 @@ interface Applicative<R> {
 	boolean isApplicable(Object obj);
 
 	/**
+	 * Maps a given object to an object of type R.
 	 * 
 	 * @param obj An object.
-	 * @return
+	 * @return The mapping result.
 	 */
 	R apply(Object obj);
 }
