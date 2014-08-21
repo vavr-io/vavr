@@ -96,7 +96,7 @@ public final class Match<R> implements Function<Object, R> {
 	 * 
 	 * @param <R> The same type as the return type of the Match a case belongs to.
 	 */
-	static class Case<R> {
+	static class Case<R> implements Applicative<R> {
 		final Option<?> prototype;
 		final Function<?, R> function;
 		final Class<?> parameterType;
@@ -132,7 +132,8 @@ public final class Match<R> implements Function<Object, R> {
 		 * @param obj An object, may be null.
 		 * @return true, if prototype is None or prototype is Some(value) and value equals obj, false otherwise.
 		 */
-		boolean isApplicable(Object obj) {
+		@Override
+		public boolean isApplicable(Object obj) {
 			final boolean isCompatible = obj == null || parameterType.isAssignableFrom(obj.getClass());
 			return isCompatible
 					&& prototype.map(val -> val == obj || (val != null && val.equals(obj))).orElse(obj != null);
@@ -144,8 +145,9 @@ public final class Match<R> implements Function<Object, R> {
 		 * @param obj An object.
 		 * @return The result of function.apply(obj).
 		 */
+		@Override
 		@SuppressWarnings("unchecked")
-		R apply(Object obj) {
+		public R apply(Object obj) {
 			return ((Function<Object, R>) function).apply(obj);
 		}
 	}
