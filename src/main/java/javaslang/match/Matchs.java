@@ -52,6 +52,12 @@ public final class Matchs {
 		return new Match.Builder<R>().caze(prototype, function);
 	}
 
+	// TODO: modify Case implementation to also accept Pattern
+	//	public static <T, D extends Tuple, R> Match.Builder<R> caze(Pattern<T, ?, D> pattern,
+	//			SerializableBiFunction<T, D, R> function) {
+	//		return new Match.Builder<R>().caze(pattern, function);
+	//	}
+
 	public static <R> Match.Builder<R> caze(BooleanFunction<R> function) {
 		return new Match.Builder<R>().caze(function);
 	}

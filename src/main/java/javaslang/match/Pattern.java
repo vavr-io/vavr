@@ -6,142 +6,130 @@
 package javaslang.match;
 
 import static javaslang.Requirements.requireNonNull;
+
+import java.util.function.Function;
+
 import javaslang.Lambdas;
-import javaslang.Lambdas.LambdaSignature;
 import javaslang.Tuples;
 import javaslang.Tuples.Tuple;
 import javaslang.Tuples.Tuple1;
 import javaslang.Tuples.Tuple2;
 import javaslang.option.Option;
 
-// TODO: Matchs.caze(Pattern.of(decomposableOfA, any(), any()), (a, dA) -> ???)
-public interface Pattern<R extends Tuple> extends Applicative<Option<R>> {
+/**
+ * Represents a Pattern for pattern matching. In this context, Pattern matching is defined as
+ * 
+ * <ol>
+ * <li>Perform check, if an object is applicable to the pattern.</li>
+ * <li>If the pattern is applicable, decompose the object.</li>
+ * <li>The pattern matches, if the prototype equals the decomposition result.</li>
+ * <li>After a match, the typed object and the decomposition result of the object can be further processed.</li>
+ * </ol>
+ *
+ * <strong>Note:</strong> Please not, that the equals check not necessary needs equal component types. I.e. the
+ * prototype could contain components, which equal any object.
+ * 
+ * <strong>Note:</strong> The decomposition can return arbitrary, refined results depending or not depending on the
+ * underlying object. With this property, code of further processing can be moved to the decomposition.
+ *
+ * @param <T> Object type to be decomposed.
+ * @param <P> Type of prototype tuple containing components that will be compared with the decomposition result.
+ * @param <R> Type of decomposition result.
+ */
+public class Pattern<T, P extends Tuple, R extends Tuple> implements Applicative<Option<Tuple2<T, R>>> {
+
+	private final Class<T> decompositionType;
+	private final Function<Object, Decomposition<T, R>> decompositionForObject;
+	private final P prototype;
+
+	/**
+	 * Constructs a Pattern.
+	 * 
+	 * @param decompositionType
+	 * @param decompositionForObject
+	 * @param prototype
+	 */
+	// DEV-NOTE: The decomposition is set directly because in the case of self-decomposable object it depends on the runtime object.
+	private Pattern(Class<T> decompositionType, Function<Object, Decomposition<T, R>> decompositionForObject,
+			P prototype) {
+		this.decompositionType = decompositionType;
+		this.decompositionForObject = decompositionForObject;
+		this.prototype = prototype;
+	}
+
+	/**
+	 * Checks, if an object can be decomposed by this pattern.
+	 * 
+	 * @param obj An object to be tested.
+	 * @return true, if the given object is not null and assignable to the decomposition type of this pattern.
+	 */
+	@Override
+	public boolean isApplicable(Object obj) {
+		return obj != null && decompositionType.isAssignableFrom(obj.getClass());
+	}
+
+	/**
+	 * Pattern matches the given object.
+	 * 
+	 * @param obj An object to be pattern matched.
+	 * @return {@code Some(typedObject, decompositionOfTypedObject)}, if the prototype of this pattern equals the
+	 *         decomposition result, otherwise {@code None}.
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public Option<Tuple2<T, R>> apply(Object obj) {
+		final T t = (T) obj;
+		final R components = decompositionForObject.apply(obj).unapply(t);
+		if (prototype.equals(components)) {
+			return Option.of(Tuples.of(t, components));
+		} else {
+			return Option.empty();
+		}
+	}
 
 	/**
 	 * Creates a Pattern for objects of type T. The Pattern matches a given object o, if {@code isApplicable(o)} returns
 	 * true and {@code prototype.equals(decomposition.apply(o))} returns true.
 	 * 
-	 * @param <T> Type of objects to be pattern matched.
-	 * @param <R> Decomposition result.
-	 * @param decomposable A Decomposable which provides a Decomposition for objects of type T.
-	 * @param prototype The Pattern matches, ifA prototype which will be compared
-	 * @return Some(decompositionResult) if the Pattern matches, otherwise None.
+	 * @param <T> Object type to be decomposed.
+	 * @param <P1> Type of component 1 of prototype.
+	 * @param <R1> Type of component 1 of decomposition result.
+	 * @param decomposition A Decomposition for objects of type T.
+	 * @param prototype The prototype for comparision with the decomposition result.
+	 * @return {@code Some(typedObject, decompositionOfTypedObject)} if the Pattern matches, otherwise {@code None}.
 	 */
-	static <T, R extends Tuple> Pattern<R> of(Decomposable<T, R> decomposable, R prototype) {
+	public static <T, P1, R1> Pattern<T, Tuple1<P1>, Tuple1<R1>> of(Decomposition<T, Tuple1<R1>> decomposition,
+			Tuple1<P1> prototype) {
 
-		requireNonNull(decomposable, "decomposable is null");
+		requireNonNull(decomposition, "decomposition is null");
 		requireNonNull(prototype, "prototype is null");
 
-		final Decomposition<T, R> decomposition = requireNonNull(decomposable.decomposition(), "decomposition is null");
-		final LambdaSignature signature = Lambdas.getLambdaSignature(decomposition);
+		@SuppressWarnings("unchecked")
+		final Class<T> type = (Class<T>) Lambdas.getLambdaSignature(decomposition).getParameterType(0);
 
-		return new Pattern<R>() {
-			@Override
-			public boolean isApplicable(Object obj) {
-				return obj != null && signature.getParameterType(0).isAssignableFrom(obj.getClass());
-			}
-
-			@Override
-			@SuppressWarnings("unchecked")
-			public Option<R> apply(Object obj) {
-				final R components = decomposition.apply((T) obj);
-				if (prototype.equals(components)) {
-					return Option.of(components);
-				} else {
-					return Option.empty();
-				}
-			}
-		};
+		return new Pattern<>(type, o -> decomposition, prototype);
 	}
 
 	/**
-	 * Convenience method for {@code Pattern.of(decomposable, Tuples.of(e1))}.
+	 * Creates a Pattern for objects of type T. The Pattern matches a given object o, if {@code isApplicable(o)} returns
+	 * true and {@code prototype.equals(decomposition.apply(o))} returns true.
 	 * 
-	 * @param <T> Type of objects to be pattern matched.
-	 * @param <E1> Type of decomposition component 1.
-	 * @param decomposable A Decomposable which provides a {@link Decomposition} of arity 1 for object of type T.
-	 * @param e1 Component 1 of the pattern that will be matched against component 1 of a decomposition.
-	 * @return A Pattern which is applicable to objects of type T.
+	 * @param <T> Object type to be decomposed, which is self-decomposable.
+	 * @param <P1> Type of component 1 of prototype.
+	 * @param <R1> Type of component 1 of decomposition result.
+	 * @param type A type hint for the Pattern implementation for the object type to be decomposed.
+	 * @param prototype The prototype for comparision with the decomposition result.
+	 * @return {@code Some(typedObject, decompositionOfTypedObject)} if the Pattern matches, otherwise {@code None}.
 	 */
-	static <T, E1> Pattern<Tuple1<E1>> of(Decomposable<T, Tuple1<E1>> decomposable, E1 e1) {
-		return Pattern.of(decomposable, Tuples.of(e1));
+	@SuppressWarnings("unchecked")
+	public static <T extends Decomposition<T, Tuple1<R1>>, P1, R1> Pattern<T, Tuple1<P1>, Tuple1<R1>> of(Class<T> type,
+			Tuple1<P1> prototype) {
+
+		requireNonNull(type, "type is null");
+		requireNonNull(prototype, "prototype is null");
+
+		return new Pattern<>(type, o -> (T) o, prototype);
 	}
 
-	/**
-	 * Convenience method for {@code Pattern.of(decomposable, Tuples.of(e1, e2))}.
-	 * 
-	 * @param <T> Type of objects to be pattern matched.
-	 * @param <E1> Type of decomposition component 1.
-	 * @param <E2> Type of decomposition component 2.
-	 * @param decomposable A Decomposable which provides a {@link Decomposition} of arity 2 for object of type T.
-	 * @param e1 Component 1 of the pattern that will be matched against component 1 of a decomposition.
-	 * @param e2 Component 2 of the pattern that will be matched against component 2 of a decomposition.
-	 * @return A Pattern which is applicable to objects of type T.
-	 */
-	static <T, E1, E2> Pattern<Tuple2<E1, E2>> of(Decomposable<T, Tuple2<E1, E2>> decomposable, E1 e1, E2 e2) {
-		return Pattern.of(decomposable, Tuples.of(e1, e2));
-	}
-
-	// TODO: commented out because of Eclipse JDT bug <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=442245">https://bugs.eclipse.org/bugs/show_bug.cgi?id=442245</a>
-	//	static <T, E1, E2, E3> Pattern<Tuple3<E1, E2, E3>> of(Decomposable<T, Tuple3<E1, E2, E3>> decomposable, E1 e1,
-	//			E2 e2, E3 e3) {
-	//		return Pattern.of(decomposable, Tuples.of(e1, e2, e3));
-	//	}
-	//
-	//	static <T, E1, E2, E3, E4> Pattern<Tuple4<E1, E2, E3, E4>> of(
-	//			Decomposable<T, Tuple4<E1, E2, E3, E4>> decomposable, E1 e1, E2 e2, E3 e3, E4 e4) {
-	//		return Pattern.of(decomposable, Tuples.of(e1, e2, e3, e4));
-	//	}
-	//
-	//	static <T, E1, E2, E3, E4, E5> Pattern<Tuple5<E1, E2, E3, E4, E5>> of(
-	//			Decomposable<T, Tuple5<E1, E2, E3, E4, E5>> decomposable, E1 e1, E2 e2, E3 e3, E4 e4, E5 e5) {
-	//		return Pattern.of(decomposable, Tuples.of(e1, e2, e3, e4, e5));
-	//	}
-	//
-	//	static <T, E1, E2, E3, E4, E5, E6> Pattern<Tuple6<E1, E2, E3, E4, E5, E6>> of(
-	//			Decomposable<T, Tuple6<E1, E2, E3, E4, E5, E6>> decomposable, E1 e1, E2 e2, E3 e3, E4 e4, E5 e5, E6 e6) {
-	//		return Pattern.of(decomposable, Tuples.of(e1, e2, e3, e4, e5, e6));
-	//	}
-	//
-	//	static <T, E1, E2, E3, E4, E5, E6, E7> Pattern<Tuple7<E1, E2, E3, E4, E5, E6, E7>> of(
-	//			Decomposable<T, Tuple7<E1, E2, E3, E4, E5, E6, E7>> decomposable, E1 e1, E2 e2, E3 e3, E4 e4, E5 e5,
-	//			E6 e6, E7 e7) {
-	//		return Pattern.of(decomposable, Tuples.of(e1, e2, e3, e4, e5, e6, e7));
-	//	}
-	//
-	//	static <T, E1, E2, E3, E4, E5, E6, E7, E8> Pattern<Tuple8<E1, E2, E3, E4, E5, E6, E7, E8>> of(
-	//			Decomposable<T, Tuple8<E1, E2, E3, E4, E5, E6, E7, E8>> decomposable, E1 e1, E2 e2, E3 e3, E4 e4, E5 e5,
-	//			E6 e6, E7 e7, E8 e8) {
-	//		return Pattern.of(decomposable, Tuples.of(e1, e2, e3, e4, e5, e6, e7, e8));
-	//	}
-	//
-	//	static <T, E1, E2, E3, E4, E5, E6, E7, E8, E9> Pattern<Tuple9<E1, E2, E3, E4, E5, E6, E7, E8, E9>> of(
-	//			Decomposable<T, Tuple9<E1, E2, E3, E4, E5, E6, E7, E8, E9>> decomposable, E1 e1, E2 e2, E3 e3, E4 e4,
-	//			E5 e5, E6 e6, E7 e7, E8 e8, E9 e9) {
-	//		return Pattern.of(decomposable, Tuples.of(e1, e2, e3, e4, e5, e6, e7, e8, e9));
-	//	}
-	//
-	//	static <T, E1, E2, E3, E4, E5, E6, E7, E8, E9, E10> Pattern<Tuple10<E1, E2, E3, E4, E5, E6, E7, E8, E9, E10>> of(
-	//			Decomposable<T, Tuple10<E1, E2, E3, E4, E5, E6, E7, E8, E9, E10>> decomposable, E1 e1, E2 e2, E3 e3,
-	//			E4 e4, E5 e5, E6 e6, E7 e7, E8 e8, E9 e9, E10 e10) {
-	//		return Pattern.of(decomposable, Tuples.of(e1, e2, e3, e4, e5, e6, e7, e8, e9, e10));
-	//	}
-	//
-	//	static <T, E1, E2, E3, E4, E5, E6, E7, E8, E9, E10, E11> Pattern<Tuple11<E1, E2, E3, E4, E5, E6, E7, E8, E9, E10, E11>> of(
-	//			Decomposable<T, Tuple11<E1, E2, E3, E4, E5, E6, E7, E8, E9, E10, E11>> decomposable, E1 e1, E2 e2, E3 e3,
-	//			E4 e4, E5 e5, E6 e6, E7 e7, E8 e8, E9 e9, E10 e10, E11 e11) {
-	//		return Pattern.of(decomposable, Tuples.of(e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11));
-	//	}
-	//
-	//	static <T, E1, E2, E3, E4, E5, E6, E7, E8, E9, E10, E11, E12> Pattern<Tuple12<E1, E2, E3, E4, E5, E6, E7, E8, E9, E10, E11, E12>> of(
-	//			Decomposable<T, Tuple12<E1, E2, E3, E4, E5, E6, E7, E8, E9, E10, E11, E12>> decomposable, E1 e1, E2 e2, E3 e3,
-	//			E4 e4, E5 e5, E6 e6, E7 e7, E8 e8, E9 e9, E10 e10, E11 e11, E12 e12) {
-	//		return Pattern.of(decomposable, Tuples.of(e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12));
-	//	}
-	//
-	//	static <T, E1, E2, E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E13> Pattern<Tuple13<E1, E2, E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E13>> of(
-	//			Decomposable<T, Tuple13<E1, E2, E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E13>> decomposable, E1 e1, E2 e2, E3 e3,
-	//			E4 e4, E5 e5, E6 e6, E7 e7, E8 e8, E9 e9, E10 e10, E11 e11, E12 e12, E13 e13) {
-	//		return Pattern.of(decomposable, Tuples.of(e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13));
-	//	}
+	// TODO: add Pattern.of(Class, ...) and Pattern.of(Decomposition, ...) factory methods for Tuple2, ... Tuple13.
 }

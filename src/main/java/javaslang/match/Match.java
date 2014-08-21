@@ -10,6 +10,7 @@ import static javaslang.Requirements.requireNonNull;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.DoubleFunction;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -155,14 +156,26 @@ public final class Match<R> implements Function<Object, R> {
 	// -- lambda types for cases
 
 	/**
-	 * A function which implements Serializable in order to obtain runtime type information about the lambda via
-	 * {@link javaslang.Lambdas#getLambdaSignature(Serializable)}.
+	 * A function with one argument which implements Serializable in order to obtain runtime type information about the
+	 * lambda via {@link javaslang.Lambdas#getLambdaSignature(Serializable)}.
 	 *
 	 * @param <T> The parameter type of the function.
 	 * @param <R> The return type of the function.
 	 */
 	@FunctionalInterface
 	public static interface SerializableFunction<T, R> extends Function<T, R>, Serializable {
+	}
+
+	/**
+	 * A function with two arguments which implements Serializable in order to obtain runtime type information about the
+	 * lambda via {@link javaslang.Lambdas#getLambdaSignature(Serializable)}.
+	 *
+	 * @param <T> The first parameter type of the function.
+	 * @param <T> The second parameter type of the function.
+	 * @param <R> The return type of the function.
+	 */
+	@FunctionalInterface
+	public static interface SerializableBiFunction<T, U, R> extends BiFunction<T, U, R>, Serializable {
 	}
 
 	/**
