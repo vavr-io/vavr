@@ -36,7 +36,7 @@ import javaslang.option.Option;
  * @param <P> Type of prototype tuple containing components that will be compared with the decomposition result.
  * @param <R> Type of decomposition result.
  */
-public class Pattern<T, P extends Tuple, R extends Tuple> implements Applicative<Option<Tuple2<T, R>>> {
+public class Pattern<T, P extends Tuple, R extends Tuple> {
 
 	private final Class<T> decompositionType;
 	private final Function<Object, Decomposition<T, R>> decompositionForObject;
@@ -63,7 +63,6 @@ public class Pattern<T, P extends Tuple, R extends Tuple> implements Applicative
 	 * @param obj An object to be tested.
 	 * @return true, if the given object is not null and assignable to the decomposition type of this pattern.
 	 */
-	@Override
 	public boolean isApplicable(Object obj) {
 		return obj != null && decompositionType.isAssignableFrom(obj.getClass());
 	}
@@ -75,7 +74,6 @@ public class Pattern<T, P extends Tuple, R extends Tuple> implements Applicative
 	 * @return {@code Some(typedObject, decompositionOfTypedObject)}, if the prototype of this pattern equals the
 	 *         decomposition result, otherwise {@code None}.
 	 */
-	@Override
 	@SuppressWarnings("unchecked")
 	public Option<Tuple2<T, R>> apply(Object obj) {
 		final T t = (T) obj;
