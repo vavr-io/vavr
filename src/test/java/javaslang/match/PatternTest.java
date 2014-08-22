@@ -30,5 +30,4 @@ public class PatternTest {
 		final Tuple2<Class<Integer>, Class<String>> decomposition = match._2;
 		assertThat(decomposition).isEqualTo(Tuples.of(Integer.class, String.class));
 	}
-
 }

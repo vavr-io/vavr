@@ -346,7 +346,7 @@ public final class Match<R> implements Function<Object, R> {
 		}
 
 		private Function<Object, Option<R>> caze(Option<?> prototype, SerializableFunction<?, R> function) {
-			return caze(prototype, function, Lambdas.getLambdaSignature(function).getParameterType(0));
+			return caze(prototype, function, Lambdas.getLambdaSignature(function).get().parameterType(0));
 		}
 
 		/**

@@ -103,7 +103,7 @@ public class Pattern<T, P extends Tuple, R extends Tuple> {
 		requireNonNull(prototype, "prototype is null");
 
 		@SuppressWarnings("unchecked")
-		final Class<T> type = (Class<T>) Lambdas.getLambdaSignature(decomposition).getParameterType(0);
+		final Class<T> type = (Class<T>) Lambdas.getLambdaSignature(decomposition).get().parameterType(0);
 
 		return new Pattern<>(type, o -> decomposition, prototype);
 	}
@@ -115,7 +115,7 @@ public class Pattern<T, P extends Tuple, R extends Tuple> {
 		requireNonNull(prototype, "prototype is null");
 
 		@SuppressWarnings("unchecked")
-		final Class<T> type = (Class<T>) Lambdas.getLambdaSignature(decomposition).getParameterType(0);
+		final Class<T> type = (Class<T>) Lambdas.getLambdaSignature(decomposition).get().parameterType(0);
 
 		return new Pattern<>(type, o -> decomposition, prototype);
 	}

@@ -5,6 +5,7 @@
  */
 package javaslang.match;
 
+import java.lang.invoke.MethodType;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -12,7 +13,6 @@ import javaslang.Tuples;
 import javaslang.Tuples.Tuple1;
 import javaslang.Tuples.Tuple2;
 import javaslang.lambda.Lambdas;
-import javaslang.lambda.Lambdas.LambdaSignature;
 import javaslang.lambda.SerializableFunction;
 import javaslang.lambda.SerializablePredicate;
 
@@ -42,7 +42,7 @@ public final class Patterns {
 		final Decomposition<Predicate<T>, Tuple1<Class<T>>> decomposition = predicate -> {
 			final SerializablePredicate<T> lambda = t -> predicate.test(t);
 			@SuppressWarnings("unchecked")
-			final Class<T> currentParamType = (Class<T>) Lambdas.getLambdaSignature(lambda).getParameterType(0);
+			final Class<T> currentParamType = (Class<T>) Lambdas.getLambdaSignature(lambda).get().parameterType(0);
 			return Tuples.of(currentParamType);
 		};
 		return Pattern.of(decomposition, Tuples.of(paramType));
@@ -55,17 +55,9 @@ public final class Patterns {
 
 			// TODO: BUG: lambda actually has signature (Function, Object) -> Object but should habe (Function) -> Tuple2
 			final SerializableFunction<T, R> lambda = t -> function.apply(t);
-			final LambdaSignature signature = Lambdas.getLambdaSignature(lambda);
-
-			// TODO: DELME -->
-			final SerializableFunction<Function<Integer, String>, Tuple2<Integer, String>> test = f -> Tuples
-					.of(1, "1");
-			System.out.println("LAMBDA: " + signature);
-			System.out.println("TEST: " + Lambdas.getLambdaSignature(test));
-			// <-- DELME
-
-			final Class<T> currentParamType = (Class<T>) signature.getParameterType(0);
-			final Class<R> currentReturnType = (Class<R>) signature.getReturnType();
+			final MethodType methodType = Lambdas.getLambdaSignature(lambda).get();
+			final Class<T> currentParamType = (Class<T>) methodType.parameterType(0);
+			final Class<R> currentReturnType = (Class<R>) methodType.returnType();
 			return Tuples.of(currentParamType, currentReturnType);
 		};
 		return Pattern.of(decomposition, Tuples.of(paramType, returnType));

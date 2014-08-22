@@ -5,33 +5,22 @@
  */
 package javaslang.lambda;
 
-import static java.util.stream.Collectors.joining;
-
 import java.io.Serializable;
+import java.lang.invoke.MethodType;
 import java.lang.invoke.SerializedLambda;
-import java.lang.reflect.Array;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
-import javaslang.Strings;
-import javaslang.Tuples;
-import javaslang.Tuples.Tuple2;
+import javaslang.exception.Try;
 
 /**
- * Extension methods for java.lang.invoke.*
+ * Extension methods for {@code java.lang.invoke.*}.
  * 
  * @see <a
  *      href="http://stackoverflow.com/questions/21860875/printing-debug-info-on-errors-with-java-8-lambda-expressions">printing
  *      debug info on errors with java 8 lambda expressions</a>
+ * @see <a href="http://www.slideshare.net/hendersk/method-handles-in-java">Method Handles in Java</a>
  */
 public final class Lambdas {
-
-	private static final Pattern JVM_FIELD_TYPE = Pattern.compile("\\[*(B|C|D|F|I|J|(L.*?;)|S|V|Z)");
 
 	/**
 	 * This class is not intended to be instantiated.
@@ -44,16 +33,15 @@ public final class Lambdas {
 	 * Serializes the given Serializable lambda and returns the corresponding {@link java.lang.invoke.SerializedLambda}.
 	 * 
 	 * @param lambda An instance of a lambda.
-	 * @return The serialized lambda.
+	 * @return The serialized lambda wrapped in a {@link javaslang.exception.Success}, or a
+	 *         {@link javaslang.exception.Failure} if an exception occurred.
 	 */
-	public static SerializedLambda getSerializedLambda(Serializable lambda) {
-		try {
+	public static Try<SerializedLambda> getSerializedLambda(Serializable lambda) {
+		return Try.of(() -> {
 			final Method method = lambda.getClass().getDeclaredMethod("writeReplace");
 			method.setAccessible(true);
 			return (SerializedLambda) method.invoke(lambda);
-		} catch (Throwable x) {
-			throw new IllegalStateException("Error serializing lamda expression.", x);
-		}
+		});
 	}
 
 	/**
@@ -65,149 +53,13 @@ public final class Lambdas {
 	 * parameter types of the given lambda.
 	 * 
 	 * @param lambda A serializable lambda.
-	 * @return The signature of the lambda.
+	 * @return The signature of the lambda wrapped in a {@link javaslang.exception.Success}, or a
+	 *         {@link javaslang.exception.Failure} if an exception occurred.
 	 */
-	public static LambdaSignature getLambdaSignature(Serializable lambda) {
-		final Tuple2<String, String> signature = split(getSerializedLambda(lambda).getImplMethodSignature());
-		final Class<?>[] parameterTypes = Lambdas
-				.stream(JVM_FIELD_TYPE.matcher(signature._1))
-				.map(Lambdas::getJavaType)
-				.toArray(Class<?>[]::new);
-		final Class<?> returnType = getJavaType(signature._2);
-		return new LambdaSignature(parameterTypes, returnType);
+	public static Try<MethodType> getLambdaSignature(Serializable lambda) {
+		return getSerializedLambda(lambda).map(serializedLambda -> {
+			final String signature = serializedLambda.getImplMethodSignature();
+			return MethodType.fromMethodDescriptorString(signature, lambda.getClass().getClassLoader());
+		});
 	}
-
-	/**
-	 * Stream regex match results of {@link java.util.regex.Matcher}.
-	 * 
-	 * @param matcher A Matcher.
-	 * @return A Stream of matches by successively calling {@link Matcher#group()}.
-	 */
-	private static Stream<String> stream(Matcher matcher) {
-		final List<String> matches = new ArrayList<>();
-		for (; matcher.find(); matches.add(matcher.group()))
-			;
-		return matches.stream();
-	}
-
-	/**
-	 * Splits a lambda signature string into the parts parameters and return string.
-	 * 
-	 * @param signature '(' + paramsSignatureString + ')' + returnSignatureString
-	 * @return Tuple2(paramsSignatureString, returnSignatureString)
-	 */
-	private static Tuple2<String, String> split(String signature) {
-		final int index = signature.lastIndexOf(')');
-		return Tuples.of(signature.substring(1, index), signature.substring(index + 1));
-	}
-
-	/**
-	 * Returns the Class<?> according to the given JVM field type.
-	 * 
-	 * @param jvmFieldType
-	 * @return The Class instance corresponding to the given jvmFieldType.
-	 * @throws IllegalStateException if the class referenced by a JVM field type 'L ClassName ;' cannot be found.
-	 * @see <a href="http://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html">JVM field types</a>.
-	 */
-	private static Class<?> getJavaType(String jvmFieldType) {
-		final char firstChar = jvmFieldType.charAt(0);
-		switch (firstChar) {
-			case 'B':
-				return byte.class;
-			case 'C':
-				return char.class;
-			case 'D':
-				return double.class;
-			case 'F':
-				return float.class;
-			case 'I':
-				return int.class;
-			case 'J':
-				return long.class;
-			case 'L': {
-				final String javaType = jvmFieldType.substring(1, jvmFieldType.length() - 1).replaceAll("/", ".");
-				try {
-					return Class.forName(javaType);
-				} catch (ClassNotFoundException x) {
-					throw new IllegalStateException("Error loading class of JVM field type " + jvmFieldType, x);
-				}
-			}
-			case 'S':
-				return short.class;
-			case 'V':
-				return void.class;
-			case 'Z':
-				return boolean.class;
-			case '[': {
-				final int index = jvmFieldType.lastIndexOf('[') + 1;
-				final Class<?> componentType = getJavaType(jvmFieldType.substring(index));
-				final int[] dimensions = new int[index]; // initialized with zeros '0'
-				return Array.newInstance(componentType, dimensions).getClass();
-			}
-			default:
-				throw new IllegalArgumentException("Unknown JVM field type: " + jvmFieldType);
-		}
-	}
-
-	/**
-	 * Represents a Lambda signature having a return type and parameter types but no name, similar to a
-	 * {@link java.lang.reflect.Method}.
-	 */
-	public static class LambdaSignature {
-		private final Class<?>[] parameterTypes;
-		private final Class<?> returnType;
-		private int hashCode;
-
-		public LambdaSignature(Class<?>[] parameterTypes, Class<?> returnType) {
-			this.parameterTypes = parameterTypes;
-			this.returnType = returnType;
-		}
-
-		public Class<?>[] getParameterTypes() {
-			return parameterTypes;
-		}
-
-		public Class<?> getParameterType(int index) {
-			if (index < 0 || index >= parameterTypes.length) {
-				throw new IndexOutOfBoundsException("getParameterType(" + index + ")");
-			}
-			return parameterTypes[index];
-		}
-
-		public Class<?> getReturnType() {
-			return returnType;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (o == this) {
-				return true;
-			} else if (o == null || !(o instanceof LambdaSignature)) {
-				return false;
-			} else {
-				final LambdaSignature that = (LambdaSignature) o;
-				return this.returnType.equals(that.returnType)
-						&& Arrays.equals(this.parameterTypes, that.parameterTypes);
-			}
-		}
-
-		@Override
-		public int hashCode() {
-			// no synchronization, implementation identical to String.hashCode
-			if (hashCode == 0) {
-				// toString() cannot be empty => hashCode > 0
-				hashCode = toString().hashCode();
-			}
-			return hashCode;
-		}
-
-		@Override
-		public String toString() {
-			return Stream//
-					.of(parameterTypes)
-					.map(Strings::toString)
-					.collect(joining(", ", "(", ") -> ")) + returnType.getName();
-		}
-	}
-
 }
