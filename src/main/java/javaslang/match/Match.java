@@ -15,9 +15,11 @@ import java.util.function.DoubleFunction;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.LongFunction;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import javaslang.Lambdas;
+import javaslang.Tuples.Tuple;
 import javaslang.option.None;
 import javaslang.option.Option;
 import javaslang.option.Some;
@@ -65,10 +67,10 @@ import javaslang.option.Some;
  */
 public final class Match<R> implements Function<Object, R> {
 
-	private final List<Case<R>> cases;
+	private final List<Function<Object, Option<R>>> cases;
 	private final Option<Supplier<R>> defaultOption;
 
-	private Match(List<Case<R>> cases, Option<Supplier<R>> defaultOption) {
+	private Match(List<Function<Object, Option<R>>> cases, Option<Supplier<R>> defaultOption) {
 		this.cases = cases;
 		this.defaultOption = defaultOption;
 	}
@@ -84,73 +86,13 @@ public final class Match<R> implements Function<Object, R> {
 	 */
 	@Override
 	public R apply(Object obj) {
-		for (Case<R> caze : cases) {
-			if (caze.isApplicable(obj)) {
-				return caze.apply(obj);
+		for (Function<Object, Option<R>> caze : cases) {
+			final Option<R> result = caze.apply(obj);
+			if (result.isPresent()) {
+				return result.get();
 			}
 		}
 		return defaultOption.orElseThrow(() -> new MatchError(obj)).get();
-	}
-
-	/**
-	 * Internal representation of a Match case.
-	 * 
-	 * @param <R> The same type as the return type of the Match a case belongs to.
-	 */
-	static class Case<R> implements Applicative<R> {
-		final Option<?> prototype;
-		final Function<?, R> function;
-		final Class<?> parameterType;
-
-		/**
-		 * Constructs a Case, used for functions having an object parameter type.
-		 * 
-		 * @param prototype A prototype object.
-		 * @param function A serializable function.
-		 */
-		Case(Option<?> prototype, SerializableFunction<?, R> function) {
-			this(prototype, function, Lambdas.getLambdaSignature(function).getParameterType(0));
-		}
-
-		/**
-		 * Constructs a Case, used for functions having a primitive parameter type.
-		 * 
-		 * @param prototype A prototype object.
-		 * @param boxedFunction A function with boxed argument.
-		 * @param parameterType The type of the unboxed function argument.
-		 */
-		Case(Option<?> prototype, Function<?, R> boxedFunction, Class<?> parameterType) {
-			this.prototype = prototype;
-			this.function = boxedFunction;
-			this.parameterType = parameterType;
-		}
-
-		/**
-		 * Checks if the Match case represented by this Case can be applied to the given object. The null value is
-		 * applicable, if the prototype is null. If no prototype is specified, a null obj is not applicable because the
-		 * first occuring function would match otherwise, which wouldn't be correct in general.
-		 * 
-		 * @param obj An object, may be null.
-		 * @return true, if prototype is None or prototype is Some(value) and value equals obj, false otherwise.
-		 */
-		@Override
-		public boolean isApplicable(Object obj) {
-			final boolean isCompatible = obj == null || parameterType.isAssignableFrom(obj.getClass());
-			return isCompatible
-					&& prototype.map(val -> val == obj || (val != null && val.equals(obj))).orElse(obj != null);
-		}
-
-		/**
-		 * Apply the function of this Case to the given object.
-		 * 
-		 * @param obj An object.
-		 * @return The result of function.apply(obj).
-		 */
-		@Override
-		@SuppressWarnings("unchecked")
-		public R apply(Object obj) {
-			return ((Function<Object, R>) function).apply(obj);
-		}
 	}
 
 	// -- lambda types for cases
@@ -237,7 +179,7 @@ public final class Match<R> implements Function<Object, R> {
 
 	public static class Builder<R> extends OrElseBuilder<R> {
 
-		private final List<Case<R>> cases = new ArrayList<>();
+		private final List<Function<Object, Option<R>>> cases = new ArrayList<>();
 		private Option<Supplier<R>> defaultOption = Option.empty();
 
 		/**
@@ -250,7 +192,7 @@ public final class Match<R> implements Function<Object, R> {
 		 */
 		public Builder<R> caze(SerializableFunction<?, R> function) {
 			requireNonNull(function, "function is null");
-			cases.add(new Case<>(None.instance(), function));
+			cases.add(caze(None.instance(), function));
 			return this;
 		}
 
@@ -269,7 +211,21 @@ public final class Match<R> implements Function<Object, R> {
 		// Autoboxing does not work here.
 		public <T> Builder<R> caze(T prototype, SerializableFunction<T, R> function) {
 			requireNonNull(function, "function is null");
-			cases.add(new Case<>(new Some<>(prototype), function));
+			cases.add(caze(new Some<>(prototype), function));
+			return this;
+		}
+
+		public <T, D extends Tuple> Builder<R> caze(Pattern<T, ?, D> pattern, SerializableBiFunction<T, D, R> function) {
+			requireNonNull(pattern, "pattern is null");
+			requireNonNull(function, "function is null");
+			final Function<Object, Option<R>> mapping = obj -> {
+				if (pattern.isApplicable(obj)) {
+					return pattern.apply(obj).map(d -> function.apply(d._1, d._2));
+				} else {
+					return None.instance();
+				}
+			};
+			cases.add(mapping);
 			return this;
 		}
 
@@ -283,7 +239,7 @@ public final class Match<R> implements Function<Object, R> {
 		 */
 		public Builder<R> caze(BooleanFunction<R> function) {
 			requireNonNull(function, "function is null");
-			cases.add(new Case<>(None.instance(), (Boolean b) -> function.apply(b), Boolean.class));
+			cases.add(caze(None.instance(), (Boolean b) -> function.apply(b), Boolean.class));
 			return this;
 		}
 
@@ -297,7 +253,7 @@ public final class Match<R> implements Function<Object, R> {
 		 */
 		public Builder<R> caze(ByteFunction<R> function) {
 			requireNonNull(function, "function is null");
-			cases.add(new Case<>(None.instance(), (Byte b) -> function.apply(b), Byte.class));
+			cases.add(caze(None.instance(), (Byte b) -> function.apply(b), Byte.class));
 			return this;
 		}
 
@@ -311,7 +267,7 @@ public final class Match<R> implements Function<Object, R> {
 		 */
 		public Builder<R> caze(CharFunction<R> function) {
 			requireNonNull(function, "function is null");
-			cases.add(new Case<>(None.instance(), (Character c) -> function.apply(c), Character.class));
+			cases.add(caze(None.instance(), (Character c) -> function.apply(c), Character.class));
 			return this;
 		}
 
@@ -325,7 +281,7 @@ public final class Match<R> implements Function<Object, R> {
 		 */
 		public Builder<R> caze(DoubleFunction<R> function) {
 			requireNonNull(function, "function is null");
-			cases.add(new Case<>(None.instance(), (Double d) -> function.apply(d), Double.class));
+			cases.add(caze(None.instance(), (Double d) -> function.apply(d), Double.class));
 			return this;
 		}
 
@@ -339,7 +295,7 @@ public final class Match<R> implements Function<Object, R> {
 		 */
 		public Builder<R> caze(FloatFunction<R> function) {
 			requireNonNull(function, "function is null");
-			cases.add(new Case<>(None.instance(), (Float f) -> function.apply(f), Float.class));
+			cases.add(caze(None.instance(), (Float f) -> function.apply(f), Float.class));
 			return this;
 		}
 
@@ -353,7 +309,7 @@ public final class Match<R> implements Function<Object, R> {
 		 */
 		public Builder<R> caze(IntFunction<R> function) {
 			requireNonNull(function, "function is null");
-			cases.add(new Case<>(None.instance(), (Integer i) -> function.apply(i), Integer.class));
+			cases.add(caze(None.instance(), (Integer i) -> function.apply(i), Integer.class));
 			return this;
 		}
 
@@ -367,7 +323,7 @@ public final class Match<R> implements Function<Object, R> {
 		 */
 		public Builder<R> caze(LongFunction<R> function) {
 			requireNonNull(function, "function is null");
-			cases.add(new Case<>(None.instance(), (Long l) -> function.apply(l), Long.class));
+			cases.add(caze(None.instance(), (Long l) -> function.apply(l), Long.class));
 			return this;
 		}
 
@@ -381,7 +337,7 @@ public final class Match<R> implements Function<Object, R> {
 		 */
 		public Builder<R> caze(ShortFunction<R> function) {
 			requireNonNull(function, "function is null");
-			cases.add(new Case<>(None.instance(), (Short s) -> function.apply(s), Short.class));
+			cases.add(caze(None.instance(), (Short s) -> function.apply(s), Short.class));
 			return this;
 		}
 
@@ -390,7 +346,7 @@ public final class Match<R> implements Function<Object, R> {
 		 * @see javaslang.match.Match.MatchBuilder#getCases()
 		 */
 		@Override
-		protected List<Case<R>> getCases() {
+		protected List<Function<Object, Option<R>>> getCases() {
 			return cases;
 		}
 
@@ -410,6 +366,35 @@ public final class Match<R> implements Function<Object, R> {
 		@Override
 		protected void setDefault(Option<Supplier<R>> defaultOption) {
 			this.defaultOption = defaultOption;
+		}
+
+		private Function<Object, Option<R>> caze(Option<?> prototype, SerializableFunction<?, R> function) {
+			return caze(prototype, function, Lambdas.getLambdaSignature(function).getParameterType(0));
+		}
+
+		/**
+		 * Constructs a Case, used for functions having a primitive parameter type.
+		 * 
+		 * @param prototype A prototype object.
+		 * @param function A function with boxed argument.
+		 * @param parameterType The type of the unboxed function argument.
+		 */
+		// TODO: split prototype and non-prototype cases to increase performance
+		private Function<Object, Option<R>> caze(Option<?> prototype, Function<?, R> function, Class<?> parameterType) {
+			final Predicate<Object> applicable = obj -> {
+				final boolean isCompatible = obj == null || parameterType.isAssignableFrom(obj.getClass());
+				return isCompatible
+						&& prototype.map(val -> val == obj || (val != null && val.equals(obj))).orElse(obj != null);
+			};
+			return obj -> {
+				if (applicable.test(obj)) {
+					@SuppressWarnings("unchecked")
+					final R result = ((Function<Object, R>) function).apply(obj);
+					return new Some<>(result);
+				} else {
+					return None.instance();
+				}
+			};
 		}
 	}
 
@@ -445,7 +430,7 @@ public final class Match<R> implements Function<Object, R> {
 			return build().apply(obj);
 		}
 
-		protected abstract List<Case<R>> getCases();
+		protected abstract List<Function<Object, Option<R>>> getCases();
 
 		protected abstract Option<Supplier<R>> getDefault();
 
