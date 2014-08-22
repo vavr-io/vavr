@@ -19,7 +19,7 @@ public final class Tuples {
 		throw new AssertionError(Tuples.class.getName() + " is not intended to be instantiated.");
 	}
 
-	public static Tuple0 of() {
+	public static Tuple0 empty() {
 		return Tuple0.instance();
 	}
 
