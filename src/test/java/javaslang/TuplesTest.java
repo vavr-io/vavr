@@ -24,7 +24,7 @@ public class TuplesTest {
 
 	@Test
 	public void shouldCreateEmptyTuple() {
-		assertThat(of().toString()).isEqualTo("()");
+		assertThat(Tuples.empty().toString()).isEqualTo("()");
 	}
 
 	@Test
