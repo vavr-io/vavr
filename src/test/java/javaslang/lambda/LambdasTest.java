@@ -3,14 +3,16 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang;
+package javaslang.lambda;
 
 import static javaslang.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.io.Serializable;
 
+import javaslang.Tuples;
 import javaslang.Tuples.Tuple3;
+import javaslang.lambda.Lambdas;
 
 import org.junit.Test;
 

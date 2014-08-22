@@ -13,6 +13,7 @@ import java.util.function.Function;
 
 import javaslang.option.Some;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class MatchTest {
@@ -193,6 +194,28 @@ public class MatchTest {
 		assertThat(actual).isEqualTo("2");
 	}
 
+	// TODO: depends on Issue #11
+	@Test
+	@Ignore
+	public void shouldPatternMatchLambdaWithSameSignature() {
+		final Function<Integer, String> lambda = i -> String.valueOf(i);
+		final boolean actual = Matchs
+				.caze(Patterns.Function(Integer.class, String.class), (f, dF) -> true)
+				.orElse(() -> false)
+				.apply(lambda);
+		assertThat(actual).isTrue();
+	}
+
+	@Test
+	public void shouldNotPatternMatchLambdaWithDifferentSignature() {
+		final Function<String, String> lambda = s -> s;
+		final boolean actual = Matchs
+				.caze(Patterns.Function(Integer.class, String.class), (f, dF) -> false)
+				.orElse(() -> true)
+				.apply(lambda);
+		assertThat(actual).isTrue();
+	}
+
 	@FunctionalInterface
 	static interface SpecialFunction extends Function<Integer, String> {
 		@Override
@@ -204,5 +227,4 @@ public class MatchTest {
 		@Override
 		String apply(Integer i);
 	}
-
 }

@@ -9,11 +9,11 @@ import static javaslang.Requirements.requireNonNull;
 
 import java.util.function.Function;
 
-import javaslang.Lambdas;
 import javaslang.Tuples;
 import javaslang.Tuples.Tuple;
 import javaslang.Tuples.Tuple1;
 import javaslang.Tuples.Tuple2;
+import javaslang.lambda.Lambdas;
 import javaslang.option.Option;
 
 /**
@@ -108,6 +108,18 @@ public class Pattern<T, P extends Tuple, R extends Tuple> {
 		return new Pattern<>(type, o -> decomposition, prototype);
 	}
 
+	public static <T, P1, P2, R1, R2> Pattern<T, Tuple2<P1, P2>, Tuple2<R1, R2>> of(
+			Decomposition<T, Tuple2<R1, R2>> decomposition, Tuple2<P1, P2> prototype) {
+
+		requireNonNull(decomposition, "decomposition is null");
+		requireNonNull(prototype, "prototype is null");
+
+		@SuppressWarnings("unchecked")
+		final Class<T> type = (Class<T>) Lambdas.getLambdaSignature(decomposition).getParameterType(0);
+
+		return new Pattern<>(type, o -> decomposition, prototype);
+	}
+
 	/**
 	 * Creates a Pattern for objects of type T. The Pattern matches a given object o, if {@code isApplicable(o)} returns
 	 * true and {@code prototype.equals(decomposition.apply(o))} returns true.
@@ -129,5 +141,15 @@ public class Pattern<T, P extends Tuple, R extends Tuple> {
 		return new Pattern<>(type, o -> (T) o, prototype);
 	}
 
-	// TODO: add Pattern.of(Class, ...) and Pattern.of(Decomposition, ...) factory methods for Tuple2, ... Tuple13.
+	@SuppressWarnings("unchecked")
+	public static <T extends Decomposition<T, Tuple2<R1, R2>>, P1, P2, R1, R2> Pattern<T, Tuple2<P1, P2>, Tuple2<R1, R2>> of(
+			Class<T> type, Tuple2<P1, P2> prototype) {
+
+		requireNonNull(type, "type is null");
+		requireNonNull(prototype, "prototype is null");
+
+		return new Pattern<>(type, o -> (T) o, prototype);
+	}
+
+	// TODO: add Pattern.of(Class, ...) and Pattern.of(Decomposition, ...) factory methods for Tuple3, ... Tuple13.
 }

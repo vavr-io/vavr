@@ -10,12 +10,12 @@ import java.util.function.IntFunction;
 import java.util.function.LongFunction;
 
 import javaslang.Tuples.Tuple;
+import javaslang.lambda.SerializableBiFunction;
+import javaslang.lambda.SerializableFunction;
 import javaslang.match.Match.BooleanFunction;
 import javaslang.match.Match.ByteFunction;
 import javaslang.match.Match.CharFunction;
 import javaslang.match.Match.FloatFunction;
-import javaslang.match.Match.SerializableBiFunction;
-import javaslang.match.Match.SerializableFunction;
 import javaslang.match.Match.ShortFunction;
 
 /**
