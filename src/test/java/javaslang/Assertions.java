@@ -8,6 +8,7 @@ package javaslang;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+// TODO: replace fest-assertions with javaslang.Assertions using Match API in a future release of Javaslang
 public final class Assertions {
 
 	/**
