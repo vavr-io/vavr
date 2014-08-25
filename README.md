@@ -171,3 +171,60 @@ String s = Matchs
 ```
 
 No try/catch needed here.
+
+## Developing Javaslang
+### Maven Goals
+
+* Executing tests: `mvn clean test`
+* Executing doclint: `mvn javadoc:javadoc`
+* Executing code coverage report: `mvn -P ci clean test jacoco:report`
+
+### Release Management
+
+See https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide
+
+
+Maven configuration of sonatype-nexus: `~/.m2/settings.xml`
+
+```xml
+<settings>
+  <servers>
+    <server>
+      <id>sonatype-nexus-snapshots</id>
+      <username>your-jira-id</username>
+      <password>your-jira-pwd</password>
+    </server>
+    <server>
+      <id>sonatype-nexus-staging</id>
+      <username>your-jira-id</username>
+      <password>your-jira-pwd</password>
+    </server>
+  </servers>
+</settings>
+```
+
+deploy snapshot to https://oss.sonatype.org/content/repositories/snapshots/
+
+```
+mvn clean deploy
+```
+
+create -javadoc.jar and -source.jar
+
+```
+mvn javadoc:jar
+mvn source:jar
+```
+
+prepare a release
+
+```
+mvn release:clean
+mvn release:prepare
+```
+
+stage a release
+
+```
+mvn release:perform
+```
