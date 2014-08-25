@@ -11,20 +11,29 @@ import java.util.function.Function;
 
 import javaslang.Tuples;
 import javaslang.Tuples.Tuple2;
+import javaslang.lambda.SerializableFunction;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class PatternTest {
 
-	// TODO: depends on Issue #11
 	@Test
-	@Ignore
-	public void shouldMatchFunctionBySignature() {
-		final Function<Integer, String> function = i -> String.valueOf(i);
-		final Pattern<Function<Integer, String>, Tuple2<Class<Integer>, Class<String>>, Tuple2<Class<Integer>, Class<String>>> pattern = Patterns
-				.Function(Integer.class, String.class);
-		final Tuple2<Function<Integer, String>, Tuple2<Class<Integer>, Class<String>>> match = pattern
+	public void shouldMatchFunctionWithoutCapturedArgsBySignature() {
+		final SerializableFunction<Integer, String> function = i -> String.valueOf(i);
+		final Tuple2<SerializableFunction<Integer, String>, Tuple2<Class<Integer>, Class<String>>> match = Patterns
+				.Function(Integer.class, String.class)
+				.apply(function)
+				.get();
+		final Tuple2<Class<Integer>, Class<String>> decomposition = match._2;
+		assertThat(decomposition).isEqualTo(Tuples.of(Integer.class, String.class));
+	}
+
+	@Test
+	public void shouldMatchFunctionWithCapturedArgsBySignature() {
+		final Function<Integer, String> f = i -> String.valueOf(i);
+		final SerializableFunction<Integer, String> function = i -> f.apply(i);
+		final Tuple2<SerializableFunction<Integer, String>, Tuple2<Class<Integer>, Class<String>>> match = Patterns
+				.Function(Integer.class, String.class)
 				.apply(function)
 				.get();
 		final Tuple2<Class<Integer>, Class<String>> decomposition = match._2;

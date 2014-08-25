@@ -7,7 +7,7 @@ package javaslang.match;
 
 import static javaslang.Requirements.requireNonNull;
 
-import java.util.function.Function;
+import java.lang.invoke.MethodType;
 
 import javaslang.Tuples;
 import javaslang.Tuples.Tuple;
@@ -39,21 +39,19 @@ import javaslang.option.Option;
 public class Pattern<T, P extends Tuple, R extends Tuple> {
 
 	private final Class<T> decompositionType;
-	private final Function<Object, Decomposition<T, R>> decompositionForObject;
+	private final Decomposition<T, R> decomposition;
 	private final P prototype;
 
 	/**
 	 * Constructs a Pattern.
 	 * 
 	 * @param decompositionType
-	 * @param decompositionForObject
+	 * @param decomposition
 	 * @param prototype
 	 */
-	// DEV-NOTE: The decomposition is set directly because in the case of self-decomposable object it depends on the runtime object.
-	private Pattern(Class<T> decompositionType, Function<Object, Decomposition<T, R>> decompositionForObject,
-			P prototype) {
+	private Pattern(Class<T> decompositionType, Decomposition<T, R> decomposition, P prototype) {
 		this.decompositionType = decompositionType;
-		this.decompositionForObject = decompositionForObject;
+		this.decomposition = decomposition;
 		this.prototype = prototype;
 	}
 
@@ -77,7 +75,7 @@ public class Pattern<T, P extends Tuple, R extends Tuple> {
 	@SuppressWarnings("unchecked")
 	public Option<Tuple2<T, R>> apply(Object obj) {
 		final T t = (T) obj;
-		final R components = decompositionForObject.apply(obj).unapply(t);
+		final R components = decomposition.unapply(t);
 		if (prototype.equals(components)) {
 			return Option.of(Tuples.of(t, components));
 		} else {
@@ -102,10 +100,11 @@ public class Pattern<T, P extends Tuple, R extends Tuple> {
 		requireNonNull(decomposition, "decomposition is null");
 		requireNonNull(prototype, "prototype is null");
 
+		final MethodType methodType = Lambdas.getLambdaSignature(decomposition).get();
 		@SuppressWarnings("unchecked")
-		final Class<T> type = (Class<T>) Lambdas.getLambdaSignature(decomposition).get().parameterType(0);
+		final Class<T> type = (Class<T>) methodType.parameterType(methodType.parameterCount() - 1);
 
-		return new Pattern<>(type, o -> decomposition, prototype);
+		return new Pattern<>(type, decomposition, prototype);
 	}
 
 	public static <T, P1, P2, R1, R2> Pattern<T, Tuple2<P1, P2>, Tuple2<R1, R2>> of(
@@ -114,42 +113,12 @@ public class Pattern<T, P extends Tuple, R extends Tuple> {
 		requireNonNull(decomposition, "decomposition is null");
 		requireNonNull(prototype, "prototype is null");
 
+		final MethodType methodType = Lambdas.getLambdaSignature(decomposition).get();
 		@SuppressWarnings("unchecked")
-		final Class<T> type = (Class<T>) Lambdas.getLambdaSignature(decomposition).get().parameterType(0);
+		final Class<T> type = (Class<T>) methodType.parameterType(methodType.parameterCount() - 1);
 
-		return new Pattern<>(type, o -> decomposition, prototype);
+		return new Pattern<>(type, decomposition, prototype);
 	}
 
-	/**
-	 * Creates a Pattern for objects of type T. The Pattern matches a given object o, if {@code isApplicable(o)} returns
-	 * true and {@code prototype.equals(decomposition.apply(o))} returns true.
-	 * 
-	 * @param <T> Object type to be decomposed, which is self-decomposable.
-	 * @param <P1> Type of component 1 of prototype.
-	 * @param <R1> Type of component 1 of decomposition result.
-	 * @param type A type hint for the Pattern implementation for the object type to be decomposed.
-	 * @param prototype The prototype for comparision with the decomposition result.
-	 * @return {@code Some(typedObject, decompositionOfTypedObject)} if the Pattern matches, otherwise {@code None}.
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T extends Decomposition<T, Tuple1<R1>>, P1, R1> Pattern<T, Tuple1<P1>, Tuple1<R1>> of(Class<T> type,
-			Tuple1<P1> prototype) {
-
-		requireNonNull(type, "type is null");
-		requireNonNull(prototype, "prototype is null");
-
-		return new Pattern<>(type, o -> (T) o, prototype);
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T extends Decomposition<T, Tuple2<R1, R2>>, P1, P2, R1, R2> Pattern<T, Tuple2<P1, P2>, Tuple2<R1, R2>> of(
-			Class<T> type, Tuple2<P1, P2> prototype) {
-
-		requireNonNull(type, "type is null");
-		requireNonNull(prototype, "prototype is null");
-
-		return new Pattern<>(type, o -> (T) o, prototype);
-	}
-
-	// TODO: add Pattern.of(Class, ...) and Pattern.of(Decomposition, ...) factory methods for Tuple3, ... Tuple13.
+	// TODO: add Pattern.of(Decomposition, ...) factory methods for Tuple3, ... Tuple13.
 }

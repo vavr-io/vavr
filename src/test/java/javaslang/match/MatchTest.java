@@ -11,9 +11,9 @@ import static org.fest.assertions.api.Assertions.assertThat;
 import java.math.BigDecimal;
 import java.util.function.Function;
 
+import javaslang.lambda.SerializableFunction;
 import javaslang.option.Some;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class MatchTest {
@@ -194,11 +194,9 @@ public class MatchTest {
 		assertThat(actual).isEqualTo("2");
 	}
 
-	// TODO: depends on Issue #11
 	@Test
-	@Ignore
 	public void shouldPatternMatchLambdaWithSameSignature() {
-		final Function<Integer, String> lambda = i -> String.valueOf(i);
+		final SerializableFunction<Integer, String> lambda = i -> String.valueOf(i);
 		final boolean actual = Matchs
 				.caze(Patterns.Function(Integer.class, String.class), (f, dF) -> true)
 				.orElse(() -> false)
@@ -208,7 +206,7 @@ public class MatchTest {
 
 	@Test
 	public void shouldNotPatternMatchLambdaWithDifferentSignature() {
-		final Function<String, String> lambda = s -> s;
+		final SerializableFunction<String, String> lambda = s -> s;
 		final boolean actual = Matchs
 				.caze(Patterns.Function(Integer.class, String.class), (f, dF) -> false)
 				.orElse(() -> true)

@@ -16,8 +16,4 @@ import java.util.function.Predicate;
  */
 @FunctionalInterface
 public interface SerializablePredicate<T> extends Predicate<T>, Serializable {
-
-	static <T, U, R> SerializablePredicate<T> of(Predicate<T> f) {
-		return t -> f.test(t);
-	}
 }

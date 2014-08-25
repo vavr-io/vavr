@@ -18,8 +18,4 @@ import java.util.function.BiFunction;
  */
 @FunctionalInterface
 public interface SerializableBiFunction<T, U, R> extends BiFunction<T, U, R>, Serializable {
-
-	static <T, U, R> SerializableBiFunction<T, U, R> of(BiFunction<T, U, R> f) {
-		return (t, u) -> f.apply(t, u);
-	}
 }

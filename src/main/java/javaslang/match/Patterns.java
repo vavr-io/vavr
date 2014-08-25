@@ -6,15 +6,12 @@
 package javaslang.match;
 
 import java.lang.invoke.MethodType;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 import javaslang.Tuples;
 import javaslang.Tuples.Tuple1;
 import javaslang.Tuples.Tuple2;
 import javaslang.lambda.Lambdas;
 import javaslang.lambda.SerializableFunction;
-import javaslang.lambda.SerializablePredicate;
 
 public final class Patterns {
 
@@ -38,28 +35,26 @@ public final class Patterns {
 
 	// -- patterns for functions
 
-	public static <T> Pattern<Predicate<T>, Tuple1<Class<T>>, Tuple1<Class<T>>> Predicate(Class<T> paramType) {
-		final Decomposition<Predicate<T>, Tuple1<Class<T>>> decomposition = predicate -> {
-			final SerializablePredicate<T> lambda = t -> predicate.test(t);
-			@SuppressWarnings("unchecked")
-			final Class<T> currentParamType = (Class<T>) Lambdas.getLambdaSignature(lambda).get().parameterType(0);
-			return Tuples.of(currentParamType);
-		};
-		return Pattern.of(decomposition, Tuples.of(paramType));
-	}
-
+	/**
+	 * This Pattern matches by the signature of a given function. The signature consists of a param type and a return
+	 * type.
+	 * 
+	 * @param <P> Function's argument type.
+	 * @param <R> Function's result type.
+	 * @param paramType Argument type of the function.
+	 * @param returnType Return type of the function.
+	 * @return A Pattern which matches functions by argument type and result type.
+	 */
 	@SuppressWarnings("unchecked")
-	public static <T, R> Pattern<Function<T, R>, Tuple2<Class<T>, Class<R>>, Tuple2<Class<T>, Class<R>>> Function(
+	public static <T, R> Pattern<SerializableFunction<T, R>, Tuple2<Class<?>, Class<?>>, Tuple2<Class<T>, Class<R>>> Function(
 			Class<T> paramType, Class<R> returnType) {
-		final Decomposition<Function<T, R>, Tuple2<Class<T>, Class<R>>> decomposition = function -> {
-
-			// TODO: BUG: lambda actually has signature (Function, Object) -> Object but should habe (Function) -> Tuple2
-			final SerializableFunction<T, R> lambda = t -> function.apply(t);
-			final MethodType methodType = Lambdas.getLambdaSignature(lambda).get();
-			final Class<T> currentParamType = (Class<T>) methodType.parameterType(0);
+		return Pattern.of((SerializableFunction<T, R> f) -> {
+			final MethodType methodType = Lambdas.getLambdaSignature(f).get();
+			/* if lambda has captured argument, the last parameter is the method argument */
+			final int paramIndex = methodType.parameterCount() - 1;
+			final Class<T> currentParamType = (Class<T>) methodType.parameterType(paramIndex);
 			final Class<R> currentReturnType = (Class<R>) methodType.returnType();
 			return Tuples.of(currentParamType, currentReturnType);
-		};
-		return Pattern.of(decomposition, Tuples.of(paramType, returnType));
+		}, Tuples.of(Integer.class, String.class));
 	}
 }
