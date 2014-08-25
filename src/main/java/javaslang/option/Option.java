@@ -53,4 +53,12 @@ public interface Option<T> {
 
 	void forEach(Consumer<? super T> action);
 
+	@Override
+	boolean equals(Object o);
+
+	@Override
+	int hashCode();
+
+	@Override
+	String toString();
 }

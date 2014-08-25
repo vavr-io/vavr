@@ -54,6 +54,15 @@ public interface Try<T> {
 
 	Try<Throwable> failed();
 
+	@Override
+	boolean equals(Object o);
+
+	@Override
+	int hashCode();
+
+	@Override
+	String toString();
+
 	/**
 	 * Used to initialize a Try calling {@link Try#of(Try.CheckedSupplier)}.
 	 *

@@ -57,6 +57,15 @@ public interface Either<L, R> {
 
 	boolean isRight();
 
+	@Override
+	boolean equals(Object o);
+
+	@Override
+	int hashCode();
+
+	@Override
+	String toString();
+
 	static class LeftProjection<L, R> {
 
 		private final Either<L, R> either;
