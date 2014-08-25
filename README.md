@@ -184,7 +184,7 @@ No try/catch needed here.
 See https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide
 
 
-Maven configuration of sonatype-nexus: `~/.m2/settings.xml`
+Sonatype-Nexus specific maven configuration: `~/.m2/settings.xml`
 
 ```xml
 <settings>
@@ -203,27 +203,27 @@ Maven configuration of sonatype-nexus: `~/.m2/settings.xml`
 </settings>
 ```
 
-deploy snapshot to https://oss.sonatype.org/content/repositories/snapshots/
+Deploy a snapshot to https://oss.sonatype.org/content/repositories/snapshots/
 
 ```
 mvn clean deploy
 ```
 
-create -javadoc.jar and -source.jar
+Create -javadoc.jar and -source.jar
 
 ```
 mvn javadoc:jar
 mvn source:jar
 ```
 
-prepare a release
+Prepare a release
 
 ```
 mvn release:clean
 mvn release:prepare
 ```
 
-stage a release
+Stage a release
 
 ```
 mvn release:perform
