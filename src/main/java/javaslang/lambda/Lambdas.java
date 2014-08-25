@@ -49,8 +49,8 @@ public final class Lambdas {
 	 * functional interface is generic and the parameter and/or return types cannot be determined directly.
 	 * <p>
 	 * Uses internally the {@link java.lang.invoke.SerializedLambda#getImplMethodSignature()} by parsing the JVM field
-	 * types of the method signature. The result is a {@link LambdaSignature} which contains the return type and the
-	 * parameter types of the given lambda.
+	 * types of the method signature. The result is a {@link java.lang.invoke.MethodType} which contains the return type
+	 * and the parameter types of the given lambda.
 	 * 
 	 * @param lambda A serializable lambda.
 	 * @return The signature of the lambda wrapped in a {@link javaslang.exception.Success}, or a

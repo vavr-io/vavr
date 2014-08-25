@@ -39,7 +39,7 @@ public final class Patterns {
 	 * This Pattern matches by the signature of a given function. The signature consists of a param type and a return
 	 * type.
 	 * 
-	 * @param <P> Function's argument type.
+	 * @param <T> Function's argument type.
 	 * @param <R> Function's result type.
 	 * @param paramType Argument type of the function.
 	 * @param returnType Return type of the function.
