@@ -57,4 +57,6 @@ public final class Patterns {
 			return Tuples.of(currentParamType, currentReturnType);
 		}, Tuples.of(Integer.class, String.class));
 	}
+
+	// TODO: define more patterns (Either, Option, Try and other value objects)
 }
