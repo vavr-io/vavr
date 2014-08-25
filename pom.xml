@@ -34,9 +34,16 @@
 		</developer>
 	</developers>
 	<properties>
+		<eclipse.lifecycle.mapping.version>1.0.0</eclipse.lifecycle.mapping.version>
+		<fest.assert.version>2.0M10</fest.assert.version>
 		<java.version>1.8</java.version>
+		<javaslang.generated.sources.dir>target/src-gen</javaslang.generated.sources.dir>
+		<junit.version>4.11</junit.version>
+		<maven.compiler.version>3.1</maven.compiler.version>
 		<maven.coveralls.version>2.2.0</maven.coveralls.version>
+		<maven.gpg.version>1.5</maven.gpg.version>
 		<maven.jacoco.version>0.7.1.201405082137</maven.jacoco.version>
+		<maven.release.version>2.5</maven.release.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<build>
@@ -44,7 +51,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
+				<version>${maven.compiler.version}</version>
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
@@ -56,7 +63,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-release-plugin</artifactId>
-					<version>2.5</version>
+					<version>${maven.release.version}</version>
 					<configuration>
 						<!-- Circumvent maven-gpg-plugin bug -->
 						<mavenExecutorId>forked-path</mavenExecutorId>
@@ -65,20 +72,19 @@
 						<arguments>${arguments} -Psonatype-oss-release</arguments>
 					</configuration>
 				</plugin>
-				<!-- Elimate the eclipse warning 'maven-enforcer-plugin (goal "enforce") 
-					is ignored by m2e' -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
+					<version>${eclipse.lifecycle.mapping.version}</version>
 					<configuration>
 						<lifecycleMappingMetadata>
 							<pluginExecutions>
+								<!-- Elimate the eclipse warning 'maven-enforcer-plugin (goal "enforce") is ignored by m2e' -->
 								<pluginExecution>
 									<pluginExecutionFilter>
 										<groupId>org.apache.maven.plugins</groupId>
 										<artifactId>maven-enforcer-plugin</artifactId>
-										<versionRange>[1.0.0,)</versionRange>
+										<versionRange>[0,)</versionRange>
 										<goals>
 											<goal>enforce</goal>
 										</goals>
@@ -98,13 +104,13 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.11</version>
+			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.easytesting</groupId>
 			<artifactId>fest-assert-core</artifactId>
-			<version>2.0M10</version>
+			<version>${fest.assert.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -155,7 +161,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
-						<version>1.5</version>
+						<version>${maven.gpg.version}</version>
 						<executions>
 							<execution>
 								<id>sign-artifacts</id>
