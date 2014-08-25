@@ -12,7 +12,18 @@ import java.lang.invoke.MethodType;
 import javaslang.Tuples;
 import javaslang.Tuples.Tuple;
 import javaslang.Tuples.Tuple1;
+import javaslang.Tuples.Tuple10;
+import javaslang.Tuples.Tuple11;
+import javaslang.Tuples.Tuple12;
+import javaslang.Tuples.Tuple13;
 import javaslang.Tuples.Tuple2;
+import javaslang.Tuples.Tuple3;
+import javaslang.Tuples.Tuple4;
+import javaslang.Tuples.Tuple5;
+import javaslang.Tuples.Tuple6;
+import javaslang.Tuples.Tuple7;
+import javaslang.Tuples.Tuple8;
+import javaslang.Tuples.Tuple9;
 import javaslang.lambda.Lambdas;
 import javaslang.option.Option;
 
@@ -96,20 +107,78 @@ public class Pattern<T, P extends Tuple, R extends Tuple> {
 	 */
 	public static <T, P1, R1> Pattern<T, Tuple1<P1>, Tuple1<R1>> of(Decomposition<T, Tuple1<R1>> decomposition,
 			Tuple1<P1> prototype) {
-
-		requireNonNull(decomposition, "decomposition is null");
-		requireNonNull(prototype, "prototype is null");
-
-		final MethodType methodType = Lambdas.getLambdaSignature(decomposition).get();
-		@SuppressWarnings("unchecked")
-		final Class<T> type = (Class<T>) methodType.parameterType(methodType.parameterCount() - 1);
-
-		return new Pattern<>(type, decomposition, prototype);
+		return create(decomposition, prototype);
 	}
 
 	public static <T, P1, P2, R1, R2> Pattern<T, Tuple2<P1, P2>, Tuple2<R1, R2>> of(
 			Decomposition<T, Tuple2<R1, R2>> decomposition, Tuple2<P1, P2> prototype) {
+		return create(decomposition, prototype);
+	}
 
+	public static <T, P1, P2, P3, R1, R2, R3> Pattern<T, Tuple3<P1, P2, P3>, Tuple3<R1, R2, R3>> of(
+			Decomposition<T, Tuple3<R1, R2, R3>> decomposition, Tuple3<P1, P2, P3> prototype) {
+		return create(decomposition, prototype);
+	}
+
+	public static <T, P1, P2, P3, P4, R1, R2, R3, R4> Pattern<T, Tuple4<P1, P2, P3, P4>, Tuple4<R1, R2, R3, R4>> of(
+			Decomposition<T, Tuple4<R1, R2, R3, R4>> decomposition, Tuple4<P1, P2, P3, P4> prototype) {
+		return create(decomposition, prototype);
+	}
+
+	public static <T, P1, P2, P3, P4, P5, R1, R2, R3, R4, R5> Pattern<T, Tuple5<P1, P2, P3, P4, P5>, Tuple5<R1, R2, R3, R4, R5>> of(
+			Decomposition<T, Tuple5<R1, R2, R3, R4, R5>> decomposition, Tuple5<P1, P2, P3, P4, P5> prototype) {
+		return create(decomposition, prototype);
+	}
+
+	public static <T, P1, P2, P3, P4, P5, P6, R1, R2, R3, R4, R5, R6> Pattern<T, Tuple6<P1, P2, P3, P4, P5, P6>, Tuple6<R1, R2, R3, R4, R5, R6>> of(
+			Decomposition<T, Tuple6<R1, R2, R3, R4, R5, R6>> decomposition, Tuple6<P1, P2, P3, P4, P5, P6> prototype) {
+		return create(decomposition, prototype);
+	}
+
+	public static <T, P1, P2, P3, P4, P5, P6, P7, R1, R2, R3, R4, R5, R6, R7> Pattern<T, Tuple7<P1, P2, P3, P4, P5, P6, P7>, Tuple7<R1, R2, R3, R4, R5, R6, R7>> of(
+			Decomposition<T, Tuple7<R1, R2, R3, R4, R5, R6, R7>> decomposition,
+			Tuple7<P1, P2, P3, P4, P5, P6, P7> prototype) {
+		return create(decomposition, prototype);
+	}
+
+	public static <T, P1, P2, P3, P4, P5, P6, P7, P8, R1, R2, R3, R4, R5, R6, R7, R8> Pattern<T, Tuple8<P1, P2, P3, P4, P5, P6, P7, P8>, Tuple8<R1, R2, R3, R4, R5, R6, R7, R8>> of(
+			Decomposition<T, Tuple8<R1, R2, R3, R4, R5, R6, R7, R8>> decomposition,
+			Tuple8<P1, P2, P3, P4, P5, P6, P7, P8> prototype) {
+		return create(decomposition, prototype);
+	}
+
+	public static <T, P1, P2, P3, P4, P5, P6, P7, P8, P9, R1, R2, R3, R4, R5, R6, R7, R8, R9> Pattern<T, Tuple9<P1, P2, P3, P4, P5, P6, P7, P8, P9>, Tuple9<R1, R2, R3, R4, R5, R6, R7, R8, R9>> of(
+			Decomposition<T, Tuple9<R1, R2, R3, R4, R5, R6, R7, R8, R9>> decomposition,
+			Tuple9<P1, P2, P3, P4, P5, P6, P7, P8, P9> prototype) {
+		return create(decomposition, prototype);
+	}
+
+	public static <T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10> Pattern<T, Tuple10<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>, Tuple10<R1, R2, R3, R4, R5, R6, R7, R8, R9, R10>> of(
+			Decomposition<T, Tuple10<R1, R2, R3, R4, R5, R6, R7, R8, R9, R10>> decomposition,
+			Tuple10<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10> prototype) {
+		return create(decomposition, prototype);
+	}
+
+	public static <T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11> Pattern<T, Tuple11<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11>, Tuple11<R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11>> of(
+			Decomposition<T, Tuple11<R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11>> decomposition,
+			Tuple11<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11> prototype) {
+		return create(decomposition, prototype);
+	}
+
+	public static <T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12> Pattern<T, Tuple12<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12>, Tuple12<R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12>> of(
+			Decomposition<T, Tuple12<R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12>> decomposition,
+			Tuple12<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12> prototype) {
+		return create(decomposition, prototype);
+	}
+
+	public static <T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13> Pattern<T, Tuple13<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13>, Tuple13<R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13>> of(
+			Decomposition<T, Tuple13<R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13>> decomposition,
+			Tuple13<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13> prototype) {
+		return create(decomposition, prototype);
+	}
+
+	private static <T, P extends Tuple, R extends Tuple> Pattern<T, P, R> create(Decomposition<T, R> decomposition,
+			P prototype) {
 		requireNonNull(decomposition, "decomposition is null");
 		requireNonNull(prototype, "prototype is null");
 
@@ -119,6 +188,4 @@ public class Pattern<T, P extends Tuple, R extends Tuple> {
 
 		return new Pattern<>(type, decomposition, prototype);
 	}
-
-	// TODO: add Pattern.of(Decomposition, ...) factory methods for Tuple3, ... Tuple13.
 }
