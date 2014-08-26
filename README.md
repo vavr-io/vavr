@@ -4,7 +4,7 @@
 
 **Javaslang** is a non-profit functional component library for Java&trade; 8 and above. Javaslang gives you the best from both worlds, functional and object oriented.
 
-## Howto use Javaslang with Maven
+## Using Javaslang
 
 The .jar is available at [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cjavaslang).
 
