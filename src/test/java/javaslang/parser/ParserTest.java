@@ -38,7 +38,7 @@ public class ParserTest {
 	@Test
 	public void shouldNotParseCharOutofCharRange() {
 		final Runnable actual = () -> parse(new Parsers.CharRange('a', 'z'), "@@@");
-		assertThat(actual).isThrowing(AssertionError.class, "no character");
+		assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
 	// -- CharSet parser
@@ -52,7 +52,7 @@ public class ParserTest {
 	@Test
 	public void shouldNotParseCharOutOfCharSetWithRange() {
 		final Runnable actual = () -> parse(new Parsers.CharSet("a-z"), "@@@");
-		assertThat(actual).isThrowing(AssertionError.class, "no character");
+		assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
 	@Test
@@ -70,7 +70,7 @@ public class ParserTest {
 	@Test
 	public void shouldNotParseCharOutOfFullFledgedCharSet() {
 		final Runnable actual = () -> parse(new Parsers.CharSet("a-z$_A-Z"), "@@@");
-		assertThat(actual).isThrowing(AssertionError.class, "no character");
+		assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
 	// -- EOF parser
@@ -84,7 +84,7 @@ public class ParserTest {
 	@Test
 	public void shouldRecognizeNotEOF() {
 		final Runnable actual = () -> parse(Parsers.EOF.INSTANCE, "abc");
-		assertThat(actual).isThrowing(AssertionError.class, "no character");
+		assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
 	// -- Literal parser
@@ -98,15 +98,21 @@ public class ParserTest {
 	@Test
 	public void shouldNotParseLiteralIfNotMatching() {
 		final Runnable actual = () -> parse(new Parsers.Literal("no match"), "literal!");
-		assertThat(actual).isThrowing(AssertionError.class, "no character");
+		assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
 	// -- Rule parser
 
 	@Test
-	@Ignore
 	public void shouldParseCharUsingRule() {
-		fail("not implemented");
+		final Parser[] parsers = new Parser[] {
+				new Parsers.Literal("one"),
+				Parsers.Any.INSTANCE,
+				new Parsers.Literal("two"),
+				Parsers.Any.INSTANCE,
+				new Parsers.Literal("three") };
+		final String actual = parse(new Parsers.Sequence(parsers), "one two three...");
+		assertThat(actual).isEqualTo("one two three");
 	}
 
 	// -- Sequence parser
@@ -123,7 +129,7 @@ public class ParserTest {
 		return parser
 				.parse(text, 0)
 				.right()
-				.orElseThrow(() -> new AssertionError("no character"))
+				.orElseThrow(i -> new AssertionError("no match at index " + i))
 				.getValue()
 				.asSubstringOf(text);
 	}

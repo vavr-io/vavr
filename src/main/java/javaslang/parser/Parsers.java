@@ -494,25 +494,40 @@ public final class Parsers {
 		@Override
 		public Either<Integer, Node<Token>> parse(String text, int index) {
 			// Starts with an emty root tree and successively attaches parsed children.
-			final Either<Integer, Node<Token>> initial = new Right<>(new Node<>(new Token("Sequence", index, 0)));
-			return Stream.of(parsers).reduce(initial, (tree, parser) -> {
-				if (tree.isLeft()) {
-					// first failure returned
-					return tree;
+			final List<Node<Token>> children = new ArrayList<>();
+			final Either<Integer, Integer> initialIndex = new Right<>(index);
+			final Either<Integer, Integer> result = Stream.of(parsers).reduce(initialIndex, (currentIndex, parser) -> {
+				if (currentIndex.isLeft()) {
+					return currentIndex;
 				} else {
-					// next parser parses at current index
-					final Node<Token> node = tree.right().get();
-					final int lastIndex = node.getValue().index + node.getValue().length;
-					final Matcher matcher = WHITESPACE.matcher(text);
-					final int currentIndex = matcher.find(lastIndex) ? matcher.end() : lastIndex;
-					final Either<Integer, Node<Token>> parsed = parser.get().parse(text, currentIndex);
-					// on success, attach token to tree
-					return parsed.right().map(child -> {
+					final int parseAtIndex = currentIndex.right().get();
+					final Either<Integer, Node<Token>> parseResult = parser.get().parse(text, parseAtIndex);
+					return parseResult.right().map(node -> {
 						final Token token = node.getValue();
-						return node.attach(child).setValue(new Token(token.id, token.index, token.length));
+						return token.index + token.length;
 					});
 				}
-			}, (t1, t2) -> null); // combiner not used because stream is not parallel
+			}, (t1, t2) -> null);
+			return result.right().map(
+					lastIndex -> new Node<>(new Token("Sequence", index, lastIndex - index)).attach(children));
+			//				
+			//				if (tree.isLeft()) {
+			//					// first failure returned
+			//					return tree;
+			//				} else {
+			//					// next parser parses at current index
+			//					final Node<Token> node = tree.right().get();
+			//					final int lastIndex = node.getValue().index + node.getValue().length;
+			//					final Matcher matcher = WHITESPACE.matcher(text);
+			//					final int currentIndex = matcher.find(lastIndex) ? matcher.end() : lastIndex;
+			//					final Either<Integer, Node<Token>> parsed = parser.get().parse(text, currentIndex);
+			//					// on success, attach token to tree
+			//					return parsed.right().map(child -> {
+			//						final Token token = node.getValue();
+			//						return node.attach(child).setValue(new Token(token.id, token.index, token.length));
+			//					});
+			//				}
+			//			}, (t1, t2) -> null); // combiner not used because stream is not parallel
 		}
 
 		@Override

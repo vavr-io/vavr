@@ -146,10 +146,9 @@ public interface List<E> extends Iterable<E> {
 	 * @throws javaslang.Requirements.UnsatisfiedRequirementException if elements is null
 	 */
 	@SuppressWarnings("unchecked")
-	default List<E> appendAll(Iterable<? extends E> iterable) {
-		requireNonNull(iterable, "iterable is null");
-		final List<E> elements = (List<E>) List.of(iterable);
-		return elements.prependAll(this);
+	default List<E> appendAll(Iterable<? extends E> elements) {
+		requireNonNull(elements, "elements is null");
+		return ((List<E>) List.of(elements)).prependAll(this);
 	}
 
 	/**
@@ -181,16 +180,16 @@ public interface List<E> extends Iterable<E> {
 	 * @throws javaslang.Requirements.UnsatisfiedRequirementException if elements is null
 	 */
 	@SuppressWarnings("unchecked")
-	default List<E> prependAll(Iterable<? extends E> iterable) {
-		final List<? extends E> elements = List.of(iterable);
+	default List<E> prependAll(Iterable<? extends E> elements) {
 		requireNonNull(elements, "elements is null");
+		final List<? extends E> elementList = List.of(elements);
 		if (isEmpty()) {
-			return (List<E>) elements;
-		} else if (elements.isEmpty()) {
+			return (List<E>) elementList;
+		} else if (elementList.isEmpty()) {
 			return this;
 		} else {
 			List<E> result = this;
-			for (List<? extends E> list = elements.reverse(); !list.isEmpty(); list = list.tail()) {
+			for (List<? extends E> list = elementList.reverse(); !list.isEmpty(); list = list.tail()) {
 				result = result.prepend(list.head());
 			}
 			return result;
@@ -348,9 +347,9 @@ public interface List<E> extends Iterable<E> {
 	 * @param elements Elements to be removed.
 	 * @return A List containing all of this elements except the given elements.
 	 */
-	default List<E> removeAll(Iterable<? extends E> iterable) {
+	default List<E> removeAll(Iterable<? extends E> elements) {
 		@SuppressWarnings("unchecked")
-		List<E> removed = (List<E>) List.of(iterable);
+		List<E> removed = (List<E>) List.of(elements);
 		List<E> result = List.empty();
 		for (E element : this) {
 			if (!removed.contains(element)) {
@@ -380,9 +379,9 @@ public interface List<E> extends Iterable<E> {
 	 * @param elements Elements to be retained.
 	 * @return A List containing all of this elements which are also in the given elements.
 	 */
-	default List<E> retainAll(Iterable<? extends E> iterable) {
+	default List<E> retainAll(Iterable<? extends E> elements) {
 		@SuppressWarnings("unchecked")
-		List<E> keeped = (List<E>) List.of(iterable);
+		List<E> keeped = (List<E>) List.of(elements);
 		List<E> result = List.empty();
 		for (E element : this) {
 			if (keeped.contains(element)) {
