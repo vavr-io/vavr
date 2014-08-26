@@ -36,7 +36,7 @@ interface TreeLikeStructure<T, TREE extends TreeLikeStructure<T, ?>> {
 		return getChildren().size();
 	}
 
-	TREE setChildren(List<TREE> children);
+	TREE setChildren(Iterable<TREE> children);
 
 	default boolean isLeaf() {
 		return getChildren().isEmpty();
@@ -48,13 +48,13 @@ interface TreeLikeStructure<T, TREE extends TreeLikeStructure<T, ?>> {
 		return attach(List.of(tree));
 	}
 
-	TREE attach(List<TREE> trees);
+	TREE attach(Iterable<TREE> trees);
 
 	default TREE detach(TREE tree) {
 		return detach(List.of(tree));
 	}
 
-	TREE detach(List<TREE> trees);
+	TREE detach(Iterable<TREE> trees);
 
 	TREE subtree();
 
@@ -166,11 +166,11 @@ interface TreeLikeStructure<T, TREE extends TreeLikeStructure<T, ?>> {
 			}
 		}
 
-		public String toTreeString() {
-			return toTreeString(0);
+		public String toIndentedString() {
+			return toIndentedString(0);
 		}
 
-		protected String toTreeString(int depth) {
+		protected String toIndentedString(int depth) {
 			final String indent = Strings.repeat(' ', depth * 2);
 			final String value = Strings.toString(getValue()).replaceAll("\\s+", " ").trim();
 			if (isLeaf()) {
@@ -178,7 +178,7 @@ interface TreeLikeStructure<T, TREE extends TreeLikeStructure<T, ?>> {
 			} else {
 				final String children = getChildren()
 						.stream()
-						.map(child -> child.toTreeString(depth + 1))
+						.map(child -> child.toIndentedString(depth + 1))
 						.reduce((l, r) -> l + ",\n" + r)
 						.map(s -> "\n" + s + "\n" + indent)
 						.orElse("");

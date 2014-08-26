@@ -44,20 +44,21 @@ public class Tree<T> extends AbstractTreeLikeStructure<T, Tree<T>> implements Se
 	}
 
 	// Shortcut for {@code Tree<>(null, value, List.empty())}.
-	public Tree(T value, List<Tree<T>> children) {
+	public Tree(T value, Iterable<Tree<T>> children) {
 		this(null, value, children);
 	}
 
-	public Tree(Tree<T> parent, T value, List<Tree<T>> children) {
+	public Tree(Tree<T> parent, T value, Iterable<Tree<T>> children) {
 		this(parent, value, children, TreeTransformer::updateParent, TreeTransformer::updateChildren);
 	}
 
-	Tree(Tree<T> parent, T value, List<Tree<T>> children, TreeTransformer<T> updateParent,
+	Tree(Tree<T> parent, T value, Iterable<Tree<T>> children, TreeTransformer<T> updateParent,
 			TreeTransformer<T> updateChildren) {
 		requireNonNull(children, "children is null");
 		this.value = value;
 		this.parent = (updateParent == null) ? parent : Option.of(parent).map(updateParent.apply(this)).orElse(null);
-		this.children = (updateChildren == null) ? children : children.replaceAll(updateChildren.apply(this));
+		this.children = (updateChildren == null) ? List.of(children) : List.of(children).replaceAll(
+				updateChildren.apply(this));
 	}
 
 	// -- core
@@ -98,19 +99,19 @@ public class Tree<T> extends AbstractTreeLikeStructure<T, Tree<T>> implements Se
 	}
 
 	@Override
-	public Tree<T> setChildren(List<Tree<T>> children) {
+	public Tree<T> setChildren(Iterable<Tree<T>> children) {
 		return new Tree<>(parent, value, children);
 	}
 
 	// -- operations
 
 	@Override
-	public Tree<T> attach(List<Tree<T>> trees) {
-		return new Tree<>(parent, value, trees.prependAll(children));
+	public Tree<T> attach(Iterable<Tree<T>> trees) {
+		return new Tree<>(parent, value, List.of(trees).prependAll(children));
 	}
 
 	@Override
-	public Tree<T> detach(List<Tree<T>> trees) {
+	public Tree<T> detach(Iterable<Tree<T>> trees) {
 		return new Tree<>(parent, value, children.removeAll(trees));
 	}
 

@@ -29,10 +29,10 @@ public class Node<T> extends AbstractTreeLikeStructure<T, Node<T>> implements Se
 		this(value, List.empty());
 	}
 
-	public Node(T value, List<Node<T>> children) {
+	public Node(T value, Iterable<Node<T>> children) {
 		requireNonNull(children, "children is null");
 		this.value = value;
-		this.children = children;
+		this.children = List.of(children);
 	}
 
 	/**
@@ -86,19 +86,19 @@ public class Node<T> extends AbstractTreeLikeStructure<T, Node<T>> implements Se
 	}
 
 	@Override
-	public Node<T> setChildren(List<Node<T>> children) {
+	public Node<T> setChildren(Iterable<Node<T>> children) {
 		return new Node<>(value, children);
 	}
 
 	// -- operations
 
 	@Override
-	public Node<T> attach(List<Node<T>> trees) {
-		return new Node<>(value, trees.prependAll(children));
+	public Node<T> attach(Iterable<Node<T>> nodes) {
+		return new Node<>(value, List.of(nodes).prependAll(children));
 	}
 
 	@Override
-	public Node<T> detach(List<Node<T>> trees) {
+	public Node<T> detach(Iterable<Node<T>> trees) {
 		return new Node<>(value, children.removeAll(trees));
 	}
 

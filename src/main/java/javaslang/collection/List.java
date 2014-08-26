@@ -146,9 +146,10 @@ public interface List<E> extends Iterable<E> {
 	 * @throws javaslang.Requirements.UnsatisfiedRequirementException if elements is null
 	 */
 	@SuppressWarnings("unchecked")
-	default List<E> appendAll(List<? extends E> elements) {
-		requireNonNull(elements, "elements is null");
-		return ((List<E>) elements).prependAll(this);
+	default List<E> appendAll(Iterable<? extends E> iterable) {
+		requireNonNull(iterable, "iterable is null");
+		final List<E> elements = (List<E>) List.of(iterable);
+		return elements.prependAll(this);
 	}
 
 	/**
@@ -180,7 +181,8 @@ public interface List<E> extends Iterable<E> {
 	 * @throws javaslang.Requirements.UnsatisfiedRequirementException if elements is null
 	 */
 	@SuppressWarnings("unchecked")
-	default List<E> prependAll(List<? extends E> elements) {
+	default List<E> prependAll(Iterable<? extends E> iterable) {
+		final List<? extends E> elements = List.of(iterable);
 		requireNonNull(elements, "elements is null");
 		if (isEmpty()) {
 			return (List<E>) elements;
@@ -264,7 +266,7 @@ public interface List<E> extends Iterable<E> {
 	 * @return This List with the given elements inserted at the given index.
 	 * @throws IndexOutOfBoundsException if the index &lt; 0 or index &gt; size()
 	 */
-	default List<E> insertAll(int index, List<? extends E> elements) {
+	default List<E> insertAll(int index, Iterable<? extends E> elements) {
 		if (index < 0) {
 			throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
 		}
@@ -346,9 +348,9 @@ public interface List<E> extends Iterable<E> {
 	 * @param elements Elements to be removed.
 	 * @return A List containing all of this elements except the given elements.
 	 */
-	default List<E> removeAll(List<? extends E> elements) {
+	default List<E> removeAll(Iterable<? extends E> iterable) {
 		@SuppressWarnings("unchecked")
-		List<E> removed = (List<E>) elements;
+		List<E> removed = (List<E>) List.of(iterable);
 		List<E> result = List.empty();
 		for (E element : this) {
 			if (!removed.contains(element)) {
@@ -378,9 +380,9 @@ public interface List<E> extends Iterable<E> {
 	 * @param elements Elements to be retained.
 	 * @return A List containing all of this elements which are also in the given elements.
 	 */
-	default List<E> retainAll(List<? extends E> elements) {
+	default List<E> retainAll(Iterable<? extends E> iterable) {
 		@SuppressWarnings("unchecked")
-		List<E> keeped = (List<E>) elements;
+		List<E> keeped = (List<E>) List.of(iterable);
 		List<E> result = List.empty();
 		for (E element : this) {
 			if (keeped.contains(element)) {
@@ -496,10 +498,10 @@ public interface List<E> extends Iterable<E> {
 	 * @return true, if this List contains all given elements, false otherwise.
 	 * @throws javaslang.Requirements.UnsatisfiedRequirementException if elements is null
 	 */
-	default boolean containsAll(List<? extends E> elements) {
+	default boolean containsAll(Iterable<? extends E> elements) {
 		requireNonNull(elements, "elements is null");
-		for (List<? extends E> list = elements; !list.isEmpty(); list = list.tail()) {
-			if (!this.contains(list.head())) {
+		for (E element : elements) {
+			if (!this.contains(element)) {
 				return false;
 			}
 		}
@@ -1016,11 +1018,15 @@ public interface List<E> extends Iterable<E> {
 	 * @return A list containing the given elements in the same order.
 	 */
 	static <T> List<T> of(Iterable<T> elements) {
-		List<T> result = EmptyList.instance();
-		for (T element : elements) {
-			result = result.prepend(element);
+		if (elements instanceof List) {
+			return (List<T>) elements;
+		} else {
+			List<T> result = EmptyList.instance();
+			for (T element : elements) {
+				result = result.prepend(element);
+			}
+			return result.reverse();
 		}
-		return result.reverse();
 	}
 
 	/**
