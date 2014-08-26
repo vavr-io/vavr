@@ -66,8 +66,6 @@ public final class Assertions {
 			try {
 				test.run();
 				throw new AssertionError(expectedException.getName() + " not thrown");
-			} catch (AssertionError x) {
-				throw x;
 			} catch (Throwable x) {
 				if (!expectedException.isAssignableFrom(x.getClass())) {
 					throw new AssertionError("Expected exception assignable to type "
