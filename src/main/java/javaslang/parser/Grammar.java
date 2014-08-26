@@ -13,7 +13,8 @@ import static javaslang.parser.Parsers.Quantifier.Bounds.ZERO_TO_ONE;
 import java.util.function.Supplier;
 
 import javaslang.Strings;
-import javaslang.Tuples.Tuple2;
+import javaslang.collection.Node;
+import javaslang.collection.Tree;
 import javaslang.either.Either;
 import javaslang.exception.Failure;
 import javaslang.exception.Success;
@@ -74,6 +75,7 @@ import javaslang.parser.Parsers.Sequence;
  *      href="http://stackoverflow.com/questions/1888854/what-is-the-difference-between-an-abstract-syntax-tree-and-a-concrete-syntax-tre">Abstract
  *      vs. concrete syntax tree</a>
  */
+@FunctionalInterface
 public interface Grammar {
 
 	/**
@@ -82,7 +84,7 @@ public interface Grammar {
 	 * @param text A text input to be parsed.
 	 * @return A concrete syntax tree of the text on parse success or a failure if a parse error occured.
 	 */
-	Try<Tree<Tuple2<Integer, Integer>>> parse(String text);
+	Try<Tree<Token>> parse(String text);
 
 	/**
 	 * Creates a Grammar with a specific start rule.
@@ -90,19 +92,18 @@ public interface Grammar {
 	 * @param startRule The start rule of the grammar.
 	 * @return An instance of Grammar which is parses textual inputs starting with startRule.
 	 */
-	static Grammar of(Supplier<Rule> startRule) {
-		// TODO: startRule.get() might be null
-		requireNonNull(startRule, "startRule is null");
+	static Grammar of(Supplier<Rule> startRuleSupplier) {
+		final Rule startRule = requireNonNull(requireNonNull(startRuleSupplier, "startRuleSupplier is null").get(),
+				"startRuleSupplier returns null");
 		return text -> {
-			final Either<Integer, Tree<Tuple2<Integer, Integer>>> parseResult = startRule.get().parse(text, 0);
+			final Either<Integer, Node<Token>> parseResult = startRule.get().parse(text, 0);
 			if (parseResult.isRight()) {
-				final Tree<Tuple2<Integer, Integer>> concreteSyntaxTree = parseResult.right().get();
+				final Tree<Token> concreteSyntaxTree = parseResult.right().get().asTree();
 				return new Success<>(concreteSyntaxTree);
 			} else {
 				final int index = parseResult.left().get();
-				final Exception x = new IllegalArgumentException("cannot parse input at "
-						+ Strings.lineAndColumn(text, index));
-				return new Failure<>(x);
+				return new Failure<>(new IllegalArgumentException("cannot parse input at "
+						+ Strings.lineAndColumn(text, index)));
 			}
 		};
 	}

@@ -7,7 +7,7 @@ package javaslang.parser;
 
 import java.util.function.Supplier;
 
-import javaslang.Tuples.Tuple2;
+import javaslang.collection.Node;
 import javaslang.either.Either;
 
 /**
@@ -22,7 +22,7 @@ interface Parser extends Supplier<Parser> {
 	 * @param index The current index of the parser.
 	 * @return Either a Left, containing the index of failure or a Right, containing the range (index, length) parsed.
 	 */
-	Either<Integer, Tree<Tuple2<Integer, Integer>>> parse(String text, int index);
+	Either<Integer, Node<Token>> parse(String text, int index);
 
 	/**
 	 * Being a self-supplier is the key for constructing grammars programatically using methods, which are evaluated

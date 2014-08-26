@@ -23,8 +23,7 @@ import java.util.stream.Stream;
 import javaslang.Arrayz;
 import javaslang.Requirements.UnsatisfiedRequirementException;
 import javaslang.Strings;
-import javaslang.Tuples;
-import javaslang.Tuples.Tuple2;
+import javaslang.collection.Node;
 import javaslang.collection.Sets;
 import javaslang.either.Either;
 import javaslang.either.Left;
@@ -87,9 +86,9 @@ public final class Parsers {
 		}
 
 		@Override
-		public Either<Integer, Tree<Tuple2<Integer, Integer>>> parse(String text, int index) {
+		public Either<Integer, Node<Token>> parse(String text, int index) {
 			if (index < text.length()) {
-				return new Right<>(new Tree<>("Any", Tuples.of(index, 1)));
+				return new Right<>(new Node<>(new Token("Any", index, 1)));
 			} else {
 				return new Left<>(index);
 			}
@@ -131,9 +130,9 @@ public final class Parsers {
 		}
 
 		@Override
-		public Either<Integer, Tree<Tuple2<Integer, Integer>>> parse(String text, int index) {
+		public Either<Integer, Node<Token>> parse(String text, int index) {
 			if (index < text.length() && isInRange.test(text.charAt(index))) {
-				return new Right<>(new Tree<>("CharRange", Tuples.of(index, 1)));
+				return new Right<>(new Node<>(new Token("CharRange", index, 1)));
 			} else {
 				return new Left<>(index);
 			}
@@ -173,9 +172,9 @@ public final class Parsers {
 		}
 
 		@Override
-		public Either<Integer, Tree<Tuple2<Integer, Integer>>> parse(String text, int index) {
+		public Either<Integer, Node<Token>> parse(String text, int index) {
 			if (index < text.length() && isInSet.test(text.charAt(index))) {
-				return new Right<>(new Tree<>("CharSet", Tuples.of(index, 1)));
+				return new Right<>(new Node<>(new Token("CharSet", index, 1)));
 			} else {
 				return new Left<>(index);
 			}
@@ -251,9 +250,9 @@ public final class Parsers {
 		}
 
 		@Override
-		public Either<Integer, Tree<Tuple2<Integer, Integer>>> parse(String text, int index) {
+		public Either<Integer, Node<Token>> parse(String text, int index) {
 			if (index == text.length()) {
-				return new Right<>(new Tree<>("EOF", Tuples.of(index, 0)));
+				return new Right<>(new Node<>(new Token("EOF", index, 0)));
 			} else {
 				return new Left<>(index);
 			}
@@ -284,9 +283,9 @@ public final class Parsers {
 		}
 
 		@Override
-		public Either<Integer, Tree<Tuple2<Integer, Integer>>> parse(String text, int index) {
+		public Either<Integer, Node<Token>> parse(String text, int index) {
 			if (text.startsWith(literal, index)) {
-				return new Right<>(new Tree<>("Literal", Tuples.of(index, literal.length())));
+				return new Right<>(new Node<>(new Token("Literal", index, literal.length())));
 			} else {
 				return new Left<>(index);
 			}
@@ -312,8 +311,8 @@ public final class Parsers {
 		}
 
 		@Override
-		public Either<Integer, Tree<Tuple2<Integer, Integer>>> parse(String text, int index) {
-			final Tree<Tuple2<Integer, Integer>> result = new Tree<>(bounds.name(), Tuples.of(index, 0));
+		public Either<Integer, Node<Token>> parse(String text, int index) {
+			final Node<Token> result = new Node<>(new Token(bounds.name(), index, 0));
 			parseChildren(result, text, index);
 			final boolean notMatched = result.getChildren().isEmpty();
 			final boolean shouldHaveMatched = Bounds.ONE_TO_N.equals(bounds);
@@ -336,16 +335,16 @@ public final class Parsers {
 		}
 
 		// TODO: rewrite this method (immutable & recursive)
-		private void parseChildren(Tree<Tuple2<Integer, Integer>> tree, String text, int index) {
+		private void parseChildren(Node<Token> tree, String text, int index) {
 			final boolean unbound = !Bounds.ZERO_TO_ONE.equals(bounds);
 			boolean found = true;
+			final Token token = tree.getValue();
 			do {
-				final Either<Integer, Tree<Tuple2<Integer, Integer>>> child = parser.get().parse(text,
-						tree.value._1 + tree.value._2);
+				final Either<Integer, Node<Token>> child = parser.get().parse(text, token.index + token.length);
 				if (child.isRight()) {
-					final Tree<Tuple2<Integer, Integer>> node = child.right().get();
+					final Node<Token> node = child.right().get();
 					tree.attach(node);
-					tree.value = Tuples.of(tree.value._1, node.value._2);
+					token.length = node.getValue().length;
 				} else {
 					found = false;
 				}
@@ -432,8 +431,8 @@ public final class Parsers {
 		}
 
 		@Override
-		public Either<Integer, Tree<Tuple2<Integer, Integer>>> parse(String text, int index) {
-			final Either<Integer, Tree<Tuple2<Integer, Integer>>> initial = new Left<>(index);
+		public Either<Integer, Node<Token>> parse(String text, int index) {
+			final Either<Integer, Node<Token>> initial = new Left<>(index);
 			return Stream
 					.of(alternatives)
 					.parallel()
@@ -458,9 +457,8 @@ public final class Parsers {
 		 * @return One of the given parse trees, which is either no match (Left) or a match (Right).
 		 */
 		// TODO: implement operator precedence & resolve ambiguities here
-		private Either<Integer, Tree<Tuple2<Integer, Integer>>> reduce(
-				Either<Integer, Tree<Tuple2<Integer, Integer>>> tree1,
-				Either<Integer, Tree<Tuple2<Integer, Integer>>> tree2, String text, int index) {
+		private Either<Integer, Node<Token>> reduce(Either<Integer, Node<Token>> tree1,
+				Either<Integer, Node<Token>> tree2, String text, int index) {
 			// if both trees are valid parse results, i.e. Right, then we found an ambiguity
 			require(tree1.isLeft() || tree2.isLeft(), () -> "Ambiguity found at "
 					+ Strings.lineAndColumn(text, index)
@@ -494,32 +492,25 @@ public final class Parsers {
 
 		// TODO: rewrite this method (immutable & recursive)
 		@Override
-		public Either<Integer, Tree<Tuple2<Integer, Integer>>> parse(String text, int index) {
+		public Either<Integer, Node<Token>> parse(String text, int index) {
 			// Starts with an emty root tree and successively attaches parsed children.
-			final Either<Integer, Tree<Tuple2<Integer, Integer>>> initial = new Right<>(new Tree<>("Sequence",
-					Tuples.of(index, 0)));
+			final Either<Integer, Node<Token>> initial = new Right<>(new Node<>(new Token("Sequence", index, 0)));
 			return Stream.of(parsers).reduce(initial, (tree, parser) -> {
 				if (tree.isLeft()) {
 					// first failure returned
 					return tree;
 				} else {
 					// next parser parses at current index
-					final Tree<Tuple2<Integer, Integer>> node = tree.right().get();
-					final int lastIndex = node.value._1 + node.value._2;
+					final Node<Token> node = tree.right().get();
+					final int lastIndex = node.getValue().index + node.getValue().length;
 					final Matcher matcher = WHITESPACE.matcher(text);
 					final int currentIndex = matcher.find(lastIndex) ? matcher.end() : lastIndex;
-					final Either<Integer, Tree<Tuple2<Integer, Integer>>> parsed = parser.get().parse(text,
-							currentIndex);
+					final Either<Integer, Node<Token>> parsed = parser.get().parse(text, currentIndex);
 					// on success, attach token to tree
-					if (parsed.isRight()) {
-						final Tree<Tuple2<Integer, Integer>> child = parsed.right().get();
-						node.attach(child);
-						node.value = Tuples.of(node.value._1, child.value._2);
-						return tree;
-					} else {
-						// parser failed => the whole sequence could not be parsed
-						return parsed;
-					}
+					return parsed.right().map(child -> {
+						final Token token = node.getValue();
+						return node.attach(child).setValue(new Token(token.id, token.index, token.length));
+					});
 				}
 			}, (t1, t2) -> null); // combiner not used because stream is not parallel
 		}
