@@ -8,6 +8,7 @@ package javaslang.collection;
 import static java.util.stream.Collectors.joining;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import javaslang.Strings;
 
@@ -57,6 +58,15 @@ interface TreeLikeStructure<T, TREE extends TreeLikeStructure<T, ?>> {
 
 	TREE subtree();
 
+	// TODO: stream(), iterator() : Enumerating all the items
+	// TODO: subtree() : Enumerating a section of a tree
+	// TODO: find() : Searching for an item
+	// TODO: Adding a new item at a certain position on the tree
+	// TODO: Deleting an item
+	// TODO: Pruning: Removing a whole section of a tree
+	// TODO: Grafting: Adding a whole section to a tree
+	// TODO: getRoot() Finding the root for any node
+
 	//	Tree<Tuple2<T, Integer>> zipWithIndex();
 	//
 	//	/**
@@ -78,11 +88,27 @@ interface TreeLikeStructure<T, TREE extends TreeLikeStructure<T, ?>> {
 	//	 */
 	//	Tree<Tuple3<T, Integer, Integer>> zipWithCoordinates();
 	//
-	//	// -- traveral
-	//
-	//	// TODO: see http://rosettacode.org/wiki/Tree_traversal
-	//
-	//	// TODO: stream(), parallelStream(), ...
+
+	// -- traveral
+
+	// TODO: see http://rosettacode.org/wiki/Tree_traversal
+
+	default void traverse(Consumer<TREE> consumer) {
+		// TODO
+	}
+
+	default void traverse(Traversal traversal, Consumer<TREE> consumer) {
+		// TODO
+	}
+
+	static enum Traversal {
+
+		PREORDER, INORDER, POSTORDER, LEVEL_ORDER;
+	}
+
+	// -- streaming 
+
+	// TODO: stream(), parallelStream(), ...
 
 	/**
 	 * This class is needed because the interface {@link TreeLikeStructure} cannot use default methods to override
@@ -116,14 +142,18 @@ interface TreeLikeStructure<T, TREE extends TreeLikeStructure<T, ?>> {
 			return (value == null ? 0 : value.hashCode() * 31) + getChildren().hashCode();
 		}
 
+		@Override
+		public String toString() {
+			return toLispString();
+		}
+
 		/**
 		 * Prints the complete tree in LISP format {@code (root child1 .. childN)}. Prints just the value if node is a
 		 * leaf.
 		 * 
 		 * @return The string representation of this tree structure in LISP format.
 		 */
-		@Override
-		public String toString() {
+		public String toLispString() {
 			final String value = Strings.toString(getValue());
 			if (isLeaf()) {
 				return value;
@@ -133,6 +163,26 @@ interface TreeLikeStructure<T, TREE extends TreeLikeStructure<T, ?>> {
 						.map(AbstractTreeLikeStructure::toString)
 						.collect(joining(" "));
 				return String.format("(%s %s)", value, children);
+			}
+		}
+
+		public String toTreeString() {
+			return toTreeString(0);
+		}
+
+		protected String toTreeString(int depth) {
+			final String indent = Strings.repeat(' ', depth * 2);
+			final String value = Strings.toString(getValue()).replaceAll("\\s+", " ").trim();
+			if (isLeaf()) {
+				return indent + value;
+			} else {
+				final String children = getChildren()
+						.stream()
+						.map(child -> child.toTreeString(depth + 1))
+						.reduce((l, r) -> l + ",\n" + r)
+						.map(s -> "\n" + s + "\n" + indent)
+						.orElse("");
+				return String.format("%s(%s %s)", indent, value, children);
 			}
 		}
 	}

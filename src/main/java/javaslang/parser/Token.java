@@ -20,4 +20,9 @@ public class Token {
 	String asSubstringOf(String text) {
 		return text.substring(index, index + length);
 	}
+
+	@Override
+	public String toString() {
+		return String.format("%s[%s,%s]", id, index, length);
+	}
 }

@@ -89,7 +89,7 @@ public interface Grammar {
 	/**
 	 * Creates a Grammar with a specific start rule.
 	 * 
-	 * @param startRule The start rule of the grammar.
+	 * @param startRuleSupplier Supplier of the grammar start rule.
 	 * @return An instance of Grammar which is parses textual inputs starting with startRule.
 	 */
 	static Grammar of(Supplier<Rule> startRuleSupplier) {
