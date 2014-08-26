@@ -90,11 +90,19 @@ public interface Either<L, R> {
 			return either.isLeft() ? asLeft() : other.get();
 		}
 
-		public <X extends Throwable> L orElseThrow(Supplier<? extends X> exceptionSupplier) throws X {
+		public <X extends Throwable> L orElseThrow(Supplier<X> exceptionSupplier) throws X {
 			if (either.isLeft()) {
 				return asLeft();
 			} else {
 				throw exceptionSupplier.get();
+			}
+		}
+
+		public <X extends Throwable> L orElseThrow(Function<R, X> exceptionFunction) throws X {
+			if (either.isLeft()) {
+				return asLeft();
+			} else {
+				throw exceptionFunction.apply(asRight());
 			}
 		}
 
@@ -123,7 +131,7 @@ public interface Either<L, R> {
 			}
 		}
 
-		public <U> Either<U, R> map(Function<? super L, ? extends U> mapper) {
+		public <U> Either<U, R> map(Function<? super L, U> mapper) {
 			Objects.requireNonNull(mapper);
 			if (either.isLeft())
 				return new Left<>(mapper.apply(asLeft()));
@@ -188,11 +196,19 @@ public interface Either<L, R> {
 			return either.isRight() ? asRight() : other.get();
 		}
 
-		public <X extends Throwable> R orElseThrow(Supplier<? extends X> exceptionSupplier) throws X {
+		public <X extends Throwable> R orElseThrow(Supplier<X> exceptionSupplier) throws X {
 			if (either.isRight()) {
 				return asRight();
 			} else {
 				throw exceptionSupplier.get();
+			}
+		}
+
+		public <X extends Throwable> R orElseThrow(Function<L, X> exceptionFunction) throws X {
+			if (either.isRight()) {
+				return asRight();
+			} else {
+				throw exceptionFunction.apply(asLeft());
 			}
 		}
 
@@ -221,7 +237,7 @@ public interface Either<L, R> {
 			}
 		}
 
-		public <U> Either<L, U> map(Function<? super R, ? extends U> mapper) {
+		public <U> Either<L, U> map(Function<? super R, U> mapper) {
 			Objects.requireNonNull(mapper);
 			if (either.isRight())
 				return new Right<>(mapper.apply(asRight()));
