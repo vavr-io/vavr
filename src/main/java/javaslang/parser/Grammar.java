@@ -96,7 +96,7 @@ public interface Grammar {
 		final Rule startRule = requireNonNull(requireNonNull(startRuleSupplier, "startRuleSupplier is null").get(),
 				"startRuleSupplier returns null");
 		return text -> {
-			final Either<Integer, Node<Token>> parseResult = startRule.get().parse(text, 0);
+			final Either<Integer, Node<Token>> parseResult = startRule.get().parse(text, 0, startRule.lexerRule);
 			if (parseResult.isRight()) {
 				final Tree<Token> concreteSyntaxTree = parseResult.right().get().asTree();
 				return new Success<>(concreteSyntaxTree);

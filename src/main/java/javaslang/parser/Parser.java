@@ -20,9 +20,12 @@ interface Parser extends Supplier<Parser> {
 	 * 
 	 * @param text The whole text to parse.
 	 * @param index The current index of the parser.
+	 * @param lexer Indicates, if the scope is lexing (true) or parsing (false). When in lexing mode, cascaded rules are
+	 *            combined to one and whitespace is not ignored. When in parsing mode, parse-results of cascaded rules
+	 *            are added as children the the actual tree node and whitespace may be ignored.
 	 * @return Either a Left, containing the index of failure or a Right, containing the range (index, length) parsed.
 	 */
-	Either<Integer, Node<Token>> parse(String text, int index);
+	Either<Integer, Node<Token>> parse(String text, int index, boolean lexer);
 
 	/**
 	 * Being a self-supplier is the key for constructing grammars programatically using methods, which are evaluated
@@ -38,5 +41,4 @@ interface Parser extends Supplier<Parser> {
 	default Parser get() {
 		return this;
 	}
-
 }

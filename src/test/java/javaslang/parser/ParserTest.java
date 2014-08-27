@@ -23,7 +23,7 @@ public class ParserTest {
 
 	@Test
 	public void shouldParseCharUsingAny() {
-		final String actual = parse(Parsers.Any.INSTANCE, "abc");
+		final String actual = parse(Parsers.Any.INSTANCE, "abc", false);
 		assertThat(actual).isEqualTo("a");
 	}
 
@@ -31,13 +31,13 @@ public class ParserTest {
 
 	@Test
 	public void shouldParseCharWithinCharRange() {
-		final String actual = parse(new Parsers.CharRange('a', 'z'), "abc");
+		final String actual = parse(new Parsers.CharRange('a', 'z'), "abc", false);
 		assertThat(actual).isEqualTo("a");
 	}
 
 	@Test
 	public void shouldNotParseCharOutofCharRange() {
-		final Runnable actual = () -> parse(new Parsers.CharRange('a', 'z'), "@@@");
+		final Runnable actual = () -> parse(new Parsers.CharRange('a', 'z'), "@@@", false);
 		assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
@@ -45,31 +45,31 @@ public class ParserTest {
 
 	@Test
 	public void shouldParseCharWithinCharSetWithRange() {
-		final String actual = parse(new Parsers.CharSet("a-z"), "abc");
+		final String actual = parse(new Parsers.CharSet("a-z"), "abc", false);
 		assertThat(actual).isEqualTo("a");
 	}
 
 	@Test
 	public void shouldNotParseCharOutOfCharSetWithRange() {
-		final Runnable actual = () -> parse(new Parsers.CharSet("a-z"), "@@@");
+		final Runnable actual = () -> parse(new Parsers.CharSet("a-z"), "@@@", false);
 		assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
 	@Test
 	public void shouldParseCharWithinFullFledgedCharSetTestingSingleChar() {
-		final String actual = parse(new Parsers.CharSet("a-z$_A-Z"), "$");
+		final String actual = parse(new Parsers.CharSet("a-z$_A-Z"), "$", false);
 		assertThat(actual).isEqualTo("$");
 	}
 
 	@Test
 	public void shouldParseCharWithinFullFledgedCharSetTesting2ndRange() {
-		final String actual = parse(new Parsers.CharSet("a-z$_A-Z"), "D");
+		final String actual = parse(new Parsers.CharSet("a-z$_A-Z"), "D", false);
 		assertThat(actual).isEqualTo("D");
 	}
 
 	@Test
 	public void shouldNotParseCharOutOfFullFledgedCharSet() {
-		final Runnable actual = () -> parse(new Parsers.CharSet("a-z$_A-Z"), "@@@");
+		final Runnable actual = () -> parse(new Parsers.CharSet("a-z$_A-Z"), "@@@", false);
 		assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
@@ -77,13 +77,13 @@ public class ParserTest {
 
 	@Test
 	public void shouldRecognizeEOF() {
-		final String actual = parse(Parsers.EOF.INSTANCE, "");
+		final String actual = parse(Parsers.EOF.INSTANCE, "", false);
 		assertThat(actual).isEqualTo("");
 	}
 
 	@Test
 	public void shouldRecognizeNotEOF() {
-		final Runnable actual = () -> parse(Parsers.EOF.INSTANCE, "abc");
+		final Runnable actual = () -> parse(Parsers.EOF.INSTANCE, "abc", false);
 		assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
@@ -91,43 +91,43 @@ public class ParserTest {
 
 	@Test
 	public void shouldParseLiteral() {
-		final String actual = parse(new Parsers.Literal("literal"), "literal!");
+		final String actual = parse(new Parsers.Literal("literal"), "literal!", false);
 		assertThat(actual).isEqualTo("literal");
 	}
 
 	@Test
 	public void shouldNotParseLiteralIfNotMatching() {
-		final Runnable actual = () -> parse(new Parsers.Literal("no match"), "literal!");
+		final Runnable actual = () -> parse(new Parsers.Literal("no match"), "literal!", false);
 		assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
 	// -- Rule parser
 
 	@Test
+	@Ignore
 	public void shouldParseCharUsingRule() {
+		fail("not implemented");
+	}
+
+	// -- Sequence parser
+
+	@Test
+	public void shouldParseCharUsingSequence() {
 		final Parser[] parsers = new Parser[] {
 				new Parsers.Literal("one"),
 				Parsers.Any.INSTANCE,
 				new Parsers.Literal("two"),
 				Parsers.Any.INSTANCE,
 				new Parsers.Literal("three") };
-		final String actual = parse(new Parsers.Sequence(parsers), "one two three...");
+		final String actual = parse(new Parsers.Sequence(parsers), "one two three...", false);
 		assertThat(actual).isEqualTo("one two three");
-	}
-
-	// -- Sequence parser
-
-	@Test
-	@Ignore
-	public void shouldParseCharUsingSequence() {
-		fail("not implemented");
 	}
 
 	// -- parse helpers
 
-	private String parse(Parser parser, String text) {
+	private String parse(Parser parser, String text, boolean lexer) {
 		return parser
-				.parse(text, 0)
+				.parse(text, 0, lexer)
 				.right()
 				.orElseThrow(i -> new AssertionError("no match at index " + i))
 				.getValue()

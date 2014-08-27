@@ -9,7 +9,7 @@ public class Token {
 
 	final String id;
 	final int index;
-	int length; // TODO: mutable to simplify tree rewriting during parsing
+	int length; // TODO: make this final
 
 	Token(String id, int index, int length) {
 		this.id = id;
@@ -23,6 +23,6 @@ public class Token {
 
 	@Override
 	public String toString() {
-		return String.format("%s[%s,%s]", id, index, length);
+		return String.format("%s[%s,%s]", id, index, index + length);
 	}
 }

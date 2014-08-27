@@ -13,18 +13,16 @@ import static javaslang.Requirements.requireNotNullOrEmpty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javaslang.Arrayz;
 import javaslang.Requirements.UnsatisfiedRequirementException;
 import javaslang.Strings;
 import javaslang.collection.Node;
-import javaslang.collection.Sets;
 import javaslang.either.Either;
 import javaslang.either.Left;
 import javaslang.either.Right;
@@ -86,7 +84,7 @@ public final class Parsers {
 		}
 
 		@Override
-		public Either<Integer, Node<Token>> parse(String text, int index) {
+		public Either<Integer, Node<Token>> parse(String text, int index, boolean lexer) {
 			if (index < text.length()) {
 				return new Right<>(new Node<>(new Token("Any", index, 1)));
 			} else {
@@ -130,7 +128,7 @@ public final class Parsers {
 		}
 
 		@Override
-		public Either<Integer, Node<Token>> parse(String text, int index) {
+		public Either<Integer, Node<Token>> parse(String text, int index, boolean lexer) {
 			if (index < text.length() && isInRange.test(text.charAt(index))) {
 				return new Right<>(new Node<>(new Token("CharRange", index, 1)));
 			} else {
@@ -172,7 +170,7 @@ public final class Parsers {
 		}
 
 		@Override
-		public Either<Integer, Node<Token>> parse(String text, int index) {
+		public Either<Integer, Node<Token>> parse(String text, int index, boolean lexer) {
 			if (index < text.length() && isInSet.test(text.charAt(index))) {
 				return new Right<>(new Node<>(new Token("CharSet", index, 1)));
 			} else {
@@ -250,7 +248,7 @@ public final class Parsers {
 		}
 
 		@Override
-		public Either<Integer, Node<Token>> parse(String text, int index) {
+		public Either<Integer, Node<Token>> parse(String text, int index, boolean lexer) {
 			if (index == text.length()) {
 				return new Right<>(new Node<>(new Token("EOF", index, 0)));
 			} else {
@@ -283,7 +281,7 @@ public final class Parsers {
 		}
 
 		@Override
-		public Either<Integer, Node<Token>> parse(String text, int index) {
+		public Either<Integer, Node<Token>> parse(String text, int index, boolean lexer) {
 			if (text.startsWith(literal, index)) {
 				return new Right<>(new Node<>(new Token("Literal", index, literal.length())));
 			} else {
@@ -311,9 +309,9 @@ public final class Parsers {
 		}
 
 		@Override
-		public Either<Integer, Node<Token>> parse(String text, int index) {
+		public Either<Integer, Node<Token>> parse(String text, int index, boolean lexer) {
 			final Node<Token> result = new Node<>(new Token(bounds.name(), index, 0));
-			parseChildren(result, text, index);
+			parseChildren(result, text, index, lexer);
 			final boolean notMatched = result.getChildren().isEmpty();
 			final boolean shouldHaveMatched = Bounds.ONE_TO_N.equals(bounds);
 			if (notMatched && shouldHaveMatched) {
@@ -325,22 +323,24 @@ public final class Parsers {
 
 		@Override
 		public String toString() {
-			if (parser instanceof Rule && !((Rule) parser).isSubRule()) {
-				return ((Rule) parser).name + bounds.symbol;
+			final String parserString;
+			if (parser instanceof Rule) {
+				parserString = ((Rule) parser).name;
 			} else if (parser instanceof Sequence) {
-				return "(" + parser.toString() + ")" + bounds.symbol;
+				parserString = "(" + parser.toString() + ")";
 			} else {
-				return parser.toString() + bounds.symbol;
+				parserString = parser.toString();
 			}
+			return parserString + bounds.symbol;
 		}
 
 		// TODO: rewrite this method (immutable & recursive)
-		private void parseChildren(Node<Token> tree, String text, int index) {
+		private void parseChildren(Node<Token> tree, String text, int index, boolean lexer) {
 			final boolean unbound = !Bounds.ZERO_TO_ONE.equals(bounds);
 			boolean found = true;
 			final Token token = tree.getValue();
 			do {
-				final Either<Integer, Node<Token>> child = parser.get().parse(text, token.index + token.length);
+				final Either<Integer, Node<Token>> child = parser.get().parse(text, token.index + token.length, lexer);
 				if (child.isRight()) {
 					final Node<Token> node = child.right().get();
 					tree.attach(node);
@@ -381,69 +381,75 @@ public final class Parsers {
 	 * </code>
 	 * </pre>
 	 */
-	static class Rule implements Parser {
+	static class Rule extends AbstractRule {
 
-		static final Set<String> RESERVED_WORDS = Sets.of("EOF");
-
-		final Optional<String> name;
-		final Supplier<Parser>[] alternatives;
-
-		/**
-		 * Creates a subrule with multiple alternatives which is embedded in a primary rule. In particular a subrule has
-		 * no name and therefore may not be referenced by other (primary) rules.
-		 * 
-		 * @param alternative1 First alternative rule.
-		 * @param alternative2 Second alternative rule.
-		 * @param alternatives Zero or more alternative rules.
-		 * @throws UnsatisfiedRequirementException if one of the alternatives is null.
-		 */
-		@SafeVarargs
-		Rule(Supplier<Parser> alternative1, Supplier<Parser> alternative2, Supplier<Parser>... alternatives) {
-			requireNonNull(alternative1, "alternative1 is null");
-			requireNonNull(alternative2, "alternative2 is null");
-			requireNonNull(alternatives, "alternatives is null");
-			this.name = Optional.empty();
-			this.alternatives = Arrayz.combine(Arrayz.of(alternative1, alternative2), alternatives);
-		}
+		final String name;
+		final boolean lexerRule;
 
 		/**
 		 * Creates a primary rule, i.e. a rule with a name which may be referenced by other rules.
+		 * <p>
+		 * Rules starting with an upper case are lexer rules, rules starting with a lower case are parser rules. Lexer
+		 * rules are not allowed to reference parser rules.
 		 * 
-		 * @param alternative1 First alternative rule.
-		 * @param alternatives Zero or more alternative rules.
+		 * @param alternatives One or more alternative rules.
 		 * @throws UnsatisfiedRequirementException if name is invalid, i.e. null, a reserved word or not a valid
 		 *             identifier) or one of the alternatives is null.
 		 */
 		@SafeVarargs
-		Rule(String name, Supplier<Parser> alternative1, Supplier<Parser>... alternatives) {
-			requireNonNull(name, "name is null");
-			// TODO: require(RULE_IDENTIFIER.test(name), "name " + name +
-			// " is not a valid rule identifier (<pattern>");
-			require(!RESERVED_WORDS.contains(name), "name " + name + " is reserved");
-			requireNonNull(alternative1, "alternative1 is null");
+		Rule(String name, Supplier<Parser>... alternatives) {
+			super(alternatives);
+			requireNotNullOrEmpty(name, "name is null or empty");
 			requireNonNull(alternatives, "alternatives is null");
-			this.name = Optional.of(name);
-			this.alternatives = Arrayz.prepend(alternatives, alternative1);
-		}
-
-		public boolean isSubRule() {
-			return !name.isPresent();
+			this.name = name;
+			this.lexerRule = Character.isUpperCase(name.charAt(0));
+			if (lexerRule) {
+				final Optional<Rule> referencedParserRule = Stream
+						.of(alternatives)
+						.filter(parser -> parser.get() instanceof Rule && !((Rule) parser.get()).lexerRule)
+						.map(parser -> (Rule) parser)
+						.findFirst();
+				require(!referencedParserRule.isPresent(), "lexer rule '"
+						+ name
+						+ "' references parser rule '"
+						+ referencedParserRule.get().name
+						+ "'");
+			}
 		}
 
 		@Override
-		public Either<Integer, Node<Token>> parse(String text, int index) {
-			final Either<Integer, Node<Token>> initial = new Left<>(index);
-			return Stream
-					.of(alternatives)
-					.parallel()
-					.map(parser -> parser.get().parse(text, index))
-					.reduce(initial, (t1, t2) -> reduce(t1, t2, text, index), (t1, t2) -> reduce(t1, t2, text, index));
+		public Either<Integer, Node<Token>> parse(String text, int index, boolean lexer) {
+			return super.parse(text, index, lexerRule);
 		}
 
 		@Override
 		public String toString() {
 			// TODO
 			throw new UnsupportedOperationException();
+		}
+	}
+
+	static class SubRule extends AbstractRule {
+
+	}
+
+	static abstract class AbstractRule implements Parser {
+
+		final Supplier<Parser>[] alternatives;
+
+		@SafeVarargs
+		AbstractRule(Supplier<Parser>... alternatives) {
+			this.alternatives = alternatives;
+		}
+
+		@Override
+		public Either<Integer, Node<Token>> parse(String text, int index, boolean lexer) {
+			final Either<Integer, Node<Token>> initial = new Left<>(index);
+			return Stream
+					.of(alternatives)
+					.parallel()
+					.map(parser -> parser.get().parse(text, index, lexer))
+					.reduce(initial, (t1, t2) -> reduce(t1, t2, text, index), (t1, t2) -> reduce(t1, t2, text, index));
 		}
 
 		/**
@@ -479,9 +485,6 @@ public final class Parsers {
 	// TODO: javadoc
 	static class Sequence implements Parser {
 
-		// TODO: make whitespace regex configurable
-		private static final Pattern WHITESPACE = Pattern.compile("\\s*");
-
 		final Supplier<Parser>[] parsers;
 
 		@SafeVarargs
@@ -490,50 +493,42 @@ public final class Parsers {
 			this.parsers = parsers;
 		}
 
-		// TODO: rewrite this method (immutable & recursive)
 		@Override
-		public Either<Integer, Node<Token>> parse(String text, int index) {
+		public Either<Integer, Node<Token>> parse(String text, int index, boolean lexer) {
 			// Starts with an emty root tree and successively attaches parsed children.
 			final List<Node<Token>> children = new ArrayList<>();
 			final Either<Integer, Integer> initialIndex = new Right<>(index);
 			final Either<Integer, Integer> result = Stream.of(parsers).reduce(initialIndex, (currentIndex, parser) -> {
-				if (currentIndex.isLeft()) {
-					return currentIndex;
-				} else {
-					final int parseAtIndex = currentIndex.right().get();
-					final Either<Integer, Node<Token>> parseResult = parser.get().parse(text, parseAtIndex);
-					return parseResult.right().map(node -> {
-						final Token token = node.getValue();
-						return token.index + token.length;
+
+				// variant 1
+					return currentIndex.right().flatMap(parseAtIndex -> {
+						final Either<Integer, Node<Token>> parseResult = parser.get().parse(text, parseAtIndex, lexer);
+						return parseResult.right().map(node -> {
+							final Token token = node.getValue();
+							return token.index + token.length;
+						});
 					});
-				}
-			}, (t1, t2) -> null);
+
+					//				// variant 2
+					//				if (currentIndex.isLeft()) {
+					//					return currentIndex;
+					//				} else {
+					//					final int parseAtIndex = currentIndex.right().get();
+					//					final Either<Integer, Node<Token>> parseResult = parser.get().parse(text, parseAtIndex);
+					//					return parseResult.right().map(node -> {
+					//						final Token token = node.getValue();
+					//						return token.index + token.length;
+					//					});
+					//				}
+
+				}, (t1, t2) -> null);
 			return result.right().map(
 					lastIndex -> new Node<>(new Token("Sequence", index, lastIndex - index)).attach(children));
-			//				
-			//				if (tree.isLeft()) {
-			//					// first failure returned
-			//					return tree;
-			//				} else {
-			//					// next parser parses at current index
-			//					final Node<Token> node = tree.right().get();
-			//					final int lastIndex = node.getValue().index + node.getValue().length;
-			//					final Matcher matcher = WHITESPACE.matcher(text);
-			//					final int currentIndex = matcher.find(lastIndex) ? matcher.end() : lastIndex;
-			//					final Either<Integer, Node<Token>> parsed = parser.get().parse(text, currentIndex);
-			//					// on success, attach token to tree
-			//					return parsed.right().map(child -> {
-			//						final Token token = node.getValue();
-			//						return node.attach(child).setValue(new Token(token.id, token.index, token.length));
-			//					});
-			//				}
-			//			}, (t1, t2) -> null); // combiner not used because stream is not parallel
 		}
 
 		@Override
 		public String toString() {
-			// TODO
-			throw new UnsupportedOperationException();
+			return Stream.of(parsers).map(Object::toString).collect(Collectors.joining(" "));
 		}
 	}
 }
