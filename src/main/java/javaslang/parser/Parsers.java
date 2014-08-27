@@ -12,7 +12,6 @@ import static javaslang.Requirements.requireNotNullOrEmpty;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
@@ -21,7 +20,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javaslang.Requirements.UnsatisfiedRequirementException;
-import javaslang.Strings;
 import javaslang.collection.Node;
 import javaslang.either.Either;
 import javaslang.either.Left;
@@ -381,9 +379,10 @@ public final class Parsers {
 	 * </code>
 	 * </pre>
 	 */
-	static class Rule extends AbstractRule {
+	static class Rule implements Parser {
 
 		final String name;
+		final Supplier<Parser>[] alternatives;
 		final boolean lexerRule;
 
 		/**
@@ -398,28 +397,25 @@ public final class Parsers {
 		 */
 		@SafeVarargs
 		Rule(String name, Supplier<Parser>... alternatives) {
-			super(alternatives);
 			requireNotNullOrEmpty(name, "name is null or empty");
 			requireNonNull(alternatives, "alternatives is null");
 			this.name = name;
+			this.alternatives = alternatives;
 			this.lexerRule = Character.isUpperCase(name.charAt(0));
-			if (lexerRule) {
-				final Optional<Rule> referencedParserRule = Stream
-						.of(alternatives)
-						.filter(parser -> parser.get() instanceof Rule && !((Rule) parser.get()).lexerRule)
-						.map(parser -> (Rule) parser)
-						.findFirst();
-				require(!referencedParserRule.isPresent(), "lexer rule '"
-						+ name
-						+ "' references parser rule '"
-						+ referencedParserRule.get().name
-						+ "'");
-			}
 		}
 
 		@Override
 		public Either<Integer, Node<Token>> parse(String text, int index, boolean lexer) {
-			return super.parse(text, index, lexerRule);
+			require(!lexer || lexerRule, "parser rule '" + name + "' referenced by a lexer rule");
+			for (Supplier<Parser> alternative : alternatives) {
+				final Either<Integer, Node<Token>> result = alternative.get().parse(text, index, lexerRule);
+				if (result.isRight()) {
+					final Node<Token> child = result.right().get();
+					final Token token = child.getValue();
+					return new Right<>(new Node<>(new Token("Rule", index, token.length)).attach(child));
+				}
+			}
+			return new Left<>(index);
 		}
 
 		@Override
@@ -429,56 +425,31 @@ public final class Parsers {
 		}
 	}
 
-	static class SubRule extends AbstractRule {
-
-	}
-
-	static abstract class AbstractRule implements Parser {
+	static class SubRule implements Parser {
 
 		final Supplier<Parser>[] alternatives;
 
 		@SafeVarargs
-		AbstractRule(Supplier<Parser>... alternatives) {
+		SubRule(Supplier<Parser>... alternatives) {
+			requireNonNull(alternatives, "alternatives is null");
 			this.alternatives = alternatives;
 		}
 
 		@Override
 		public Either<Integer, Node<Token>> parse(String text, int index, boolean lexer) {
-			final Either<Integer, Node<Token>> initial = new Left<>(index);
-			return Stream
-					.of(alternatives)
-					.parallel()
-					.map(parser -> parser.get().parse(text, index, lexer))
-					.reduce(initial, (t1, t2) -> reduce(t1, t2, text, index), (t1, t2) -> reduce(t1, t2, text, index));
+			for (Supplier<Parser> alternative : alternatives) {
+				final Either<Integer, Node<Token>> result = alternative.get().parse(text, index, lexer);
+				if (result.isRight()) {
+					return result;
+				}
+			}
+			return new Left<>(index);
 		}
 
-		/**
-		 * Make decision on following one of two parse trees. Each tree may may be a valid match on the input text or
-		 * not.
-		 * 
-		 * @param tree1 First parse tree.
-		 * @param tree2 Second parse tree.
-		 * @param text The input text.
-		 * @param index The current index.
-		 * @return One of the given parse trees, which is either no match (Left) or a match (Right).
-		 */
-		// TODO: implement operator precedence & resolve ambiguities here
-		private Either<Integer, Node<Token>> reduce(Either<Integer, Node<Token>> tree1,
-				Either<Integer, Node<Token>> tree2, String text, int index) {
-			// if both trees are valid parse results, i.e. Right, then we found an ambiguity
-			require(tree1.isLeft() || tree2.isLeft(), () -> "Ambiguity found at "
-					+ Strings.lineAndColumn(text, index)
-					+ ":\n"
-					+ text);
-			if (tree1.isRight()) {
-				return tree1; // first tree is a valid parse result
-			} else if (tree2.isRight()) {
-				return tree2; // second tree is a valid parse result
-			} else if (tree1.left().get() >= tree2.left().get()) {
-				return tree1; // both trees did not match, first tree consumed more characters
-			} else {
-				return tree2; // both trees did not match, second tree consumed more characters
-			}
+		@Override
+		public String toString() {
+			// TODO
+			throw new UnsupportedOperationException();
 		}
 	}
 
@@ -499,29 +470,14 @@ public final class Parsers {
 			final List<Node<Token>> children = new ArrayList<>();
 			final Either<Integer, Integer> initialIndex = new Right<>(index);
 			final Either<Integer, Integer> result = Stream.of(parsers).reduce(initialIndex, (currentIndex, parser) -> {
-
-				// variant 1
-					return currentIndex.right().flatMap(parseAtIndex -> {
-						final Either<Integer, Node<Token>> parseResult = parser.get().parse(text, parseAtIndex, lexer);
-						return parseResult.right().map(node -> {
-							final Token token = node.getValue();
-							return token.index + token.length;
-						});
+				return currentIndex.right().flatMap(parseAtIndex -> {
+					final Either<Integer, Node<Token>> parseResult = parser.get().parse(text, parseAtIndex, lexer);
+					return parseResult.right().map(node -> {
+						final Token token = node.getValue();
+						return token.index + token.length;
 					});
-
-					//				// variant 2
-					//				if (currentIndex.isLeft()) {
-					//					return currentIndex;
-					//				} else {
-					//					final int parseAtIndex = currentIndex.right().get();
-					//					final Either<Integer, Node<Token>> parseResult = parser.get().parse(text, parseAtIndex);
-					//					return parseResult.right().map(node -> {
-					//						final Token token = node.getValue();
-					//						return token.index + token.length;
-					//					});
-					//				}
-
-				}, (t1, t2) -> null);
+				});
+			}, (index1, index2) -> null);
 			return result.right().map(
 					lastIndex -> new Node<>(new Token("Sequence", index, lastIndex - index)).attach(children));
 		}
