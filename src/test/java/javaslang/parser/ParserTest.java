@@ -36,7 +36,7 @@ public class ParserTest {
 	}
 
 	@Test
-	public void shouldNotParseCharOutofCharRange() {
+	public void shouldNotParseCharNotWithinCharRange() {
 		final Runnable actual = () -> parse(new Parsers.CharRange('a', 'z'), "@@@", false);
 		assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
@@ -50,7 +50,7 @@ public class ParserTest {
 	}
 
 	@Test
-	public void shouldNotParseCharOutOfCharSetWithRange() {
+	public void shouldNotParseCharNotWithinCharSetWithRange() {
 		final Runnable actual = () -> parse(new Parsers.CharSet("a-z"), "@@@", false);
 		assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
@@ -68,7 +68,7 @@ public class ParserTest {
 	}
 
 	@Test
-	public void shouldNotParseCharOutOfFullFledgedCharSet() {
+	public void shouldNotParseChartNotWithinFullFledgedCharSet() {
 		final Runnable actual = () -> parse(new Parsers.CharSet("a-z$_A-Z"), "@@@", false);
 		assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
@@ -105,14 +105,16 @@ public class ParserTest {
 
 	@Test
 	@Ignore
-	public void shouldParseCharUsingRule() {
+	public void shouldParseTextUsingRule() {
 		fail("not implemented");
 	}
+
+	// TODO: shouldParseTextUsingFirstMatchingRule
 
 	// -- Sequence parser
 
 	@Test
-	public void shouldParseCharUsingSequence() {
+	public void shouldParseTextUsingSequence() {
 		final Parser[] parsers = new Parser[] {
 				new Parsers.Literal("one"),
 				Parsers.Any.INSTANCE,
