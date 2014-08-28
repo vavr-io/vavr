@@ -20,12 +20,13 @@ interface Parser extends Supplier<Parser> {
 	 * 
 	 * @param text The whole text to parse.
 	 * @param index The current index of the parser.
-	 * @param lexer Indicates, if the scope is lexing (true) or parsing (false). When in lexing mode, cascaded rules are
-	 *            combined to one and whitespace is not ignored. When in parsing mode, parse-results of cascaded rules
-	 *            are added as children the the actual tree node and whitespace may be ignored.
+	 * @param combineResults Indicates, if the scope is lexing (true) or parsing (false). When in lexing mode, cascaded
+	 *            rules are combined to one and whitespace is not ignored. When in parsing mode, parse-results of
+	 *            cascaded rules are added as children the the actual tree node and whitespace may be ignored.
 	 * @return Either a Left, containing the index of failure or a Right, containing the range (index, length) parsed.
 	 */
-	Either<Integer, Node<Token>> parse(String text, int index, boolean lexer);
+	// TODO: combineResults vs. lexer/parser rules vs. fragments
+	Either<Integer, Node<Token>> parse(String text, int index, boolean combineResults);
 
 	/**
 	 * Returns a String representation in grammar notation of this parser.

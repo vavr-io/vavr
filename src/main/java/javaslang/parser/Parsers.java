@@ -83,7 +83,7 @@ public final class Parsers {
 		}
 
 		@Override
-		public Either<Integer, Node<Token>> parse(String text, int index, boolean lexer) {
+		public Either<Integer, Node<Token>> parse(String text, int index, boolean combineResults) {
 			if (index < text.length()) {
 				return new Right<>(new Node<>(new Token("Any", index, 1)));
 			} else {
@@ -127,7 +127,7 @@ public final class Parsers {
 		}
 
 		@Override
-		public Either<Integer, Node<Token>> parse(String text, int index, boolean lexer) {
+		public Either<Integer, Node<Token>> parse(String text, int index, boolean combineResults) {
 			if (index < text.length() && isInRange.test(text.charAt(index))) {
 				return new Right<>(new Node<>(new Token("CharRange", index, 1)));
 			} else {
@@ -156,7 +156,7 @@ public final class Parsers {
 		static final Pattern CHAR_SET_RANGE_PATTERN = Pattern.compile(".-.");
 
 		final String charSetString;
-		final Predicate<Character> isInSet;
+		final Predicate<Character> inSet;
 
 		/**
 		 * Constructs a character range.
@@ -166,12 +166,12 @@ public final class Parsers {
 		CharSet(String charSetString) {
 			requireNotNullOrEmpty(charSetString, "charSetString is null or empty");
 			this.charSetString = charSetString;
-			this.isInSet = parse(charSetString);
+			this.inSet = parse(charSetString);
 		}
 
 		@Override
-		public Either<Integer, Node<Token>> parse(String text, int index, boolean lexer) {
-			if (index < text.length() && isInSet.test(text.charAt(index))) {
+		public Either<Integer, Node<Token>> parse(String text, int index, boolean combineResults) {
+			if (index < text.length() && inSet.test(text.charAt(index))) {
 				return new Right<>(new Node<>(new Token("CharSet", index, 1)));
 			} else {
 				return new Left<>(index);
@@ -248,7 +248,7 @@ public final class Parsers {
 		}
 
 		@Override
-		public Either<Integer, Node<Token>> parse(String text, int index, boolean lexer) {
+		public Either<Integer, Node<Token>> parse(String text, int index, boolean combineResults) {
 			if (index == text.length()) {
 				return new Right<>(new Node<>(new Token("EOF", index, 0)));
 			} else {
@@ -282,7 +282,7 @@ public final class Parsers {
 		}
 
 		@Override
-		public Either<Integer, Node<Token>> parse(String text, int index, boolean lexer) {
+		public Either<Integer, Node<Token>> parse(String text, int index, boolean combineResults) {
 			if (text.startsWith(literal, index)) {
 				return new Right<>(new Node<>(new Token("Literal", index, literal.length())));
 			} else {
@@ -310,9 +310,9 @@ public final class Parsers {
 		}
 
 		@Override
-		public Either<Integer, Node<Token>> parse(String text, int index, boolean lexer) {
+		public Either<Integer, Node<Token>> parse(String text, int index, boolean combineResults) {
 			final Node<Token> result = new Node<>(new Token(bounds.name(), index, 0));
-			parseChildren(result, text, index, lexer);
+			parseChildren(result, text, index, combineResults);
 			final boolean notMatched = result.getChildren().isEmpty();
 			final boolean shouldHaveMatched = Bounds.ONE_TO_N.equals(bounds);
 			if (notMatched && shouldHaveMatched) {
@@ -328,7 +328,7 @@ public final class Parsers {
 			if (parser instanceof Rule) {
 				parserString = ((Rule) parser).name;
 			} else if (parser instanceof Sequence) {
-				parserString = "(" + parser.toString() + ")";
+				parserString = "( " + parser.toString() + " )";
 			} else {
 				parserString = parser.toString();
 			}
@@ -336,12 +336,13 @@ public final class Parsers {
 		}
 
 		// TODO: rewrite this method (immutable & recursive)
-		private void parseChildren(Node<Token> tree, String text, int index, boolean lexer) {
+		private void parseChildren(Node<Token> tree, String text, int index, boolean combineResults) {
 			final boolean unbound = !Bounds.ZERO_TO_ONE.equals(bounds);
 			boolean found = true;
 			final Token token = tree.getValue();
 			do {
-				final Either<Integer, Node<Token>> child = parser.get().parse(text, token.index + token.length, lexer);
+				final Either<Integer, Node<Token>> child = parser.get().parse(text, token.index + token.length,
+						combineResults);
 				if (child.isRight()) {
 					final Node<Token> node = child.right().get();
 					tree.attach(node);
@@ -408,8 +409,8 @@ public final class Parsers {
 		}
 
 		@Override
-		public Either<Integer, Node<Token>> parse(String text, int index, boolean lexer) {
-			require(!lexer || lexerRule, "parser rule '" + name + "' is referenced by a lexer rule");
+		public Either<Integer, Node<Token>> parse(String text, int index, boolean combineResults) {
+			require(!combineResults || lexerRule, "parser rule '" + name + "' is referenced by a lexer rule");
 			for (Supplier<Parser> alternative : alternatives) {
 				final Either<Integer, Node<Token>> result = alternative.get().parse(text, index, lexerRule);
 				if (result.isRight()) {
@@ -441,14 +442,20 @@ public final class Parsers {
 		@Override
 		public String toString() {
 			final String indent = Strings.repeat(' ', name.length());
-			return Stream.of(alternatives).map(supplier -> {
-				final Parser parser = supplier.get();
-				if (parser instanceof Rule) {
-					return ((Rule) parser).name;
-				} else {
-					return parser.get().toString();
-				}
-			}).collect(Collectors.joining("\n" + indent + " | ", name + " : ", "\n" + indent + " ;"));
+			return Stream
+					.of(alternatives)
+					.map(supplier -> {
+						final Parser parser = supplier.get();
+						if (parser instanceof Rule) {
+							return ((Rule) parser).name;
+						} else {
+							return parser.get().toString();
+						}
+					})
+					.collect(
+							Collectors.joining("\n" + indent + " | ", name + " : ", (alternatives.length < 2)
+									? " ;"
+									: "\n" + indent + " ;"));
 		}
 	}
 
@@ -465,9 +472,9 @@ public final class Parsers {
 		}
 
 		@Override
-		public Either<Integer, Node<Token>> parse(String text, int index, boolean lexer) {
+		public Either<Integer, Node<Token>> parse(String text, int index, boolean combineResults) {
 			for (Supplier<Parser> alternative : alternatives) {
-				final Either<Integer, Node<Token>> result = alternative.get().parse(text, index, lexer);
+				final Either<Integer, Node<Token>> result = alternative.get().parse(text, index, combineResults);
 				if (result.isRight()) {
 					return result;
 				}
@@ -501,19 +508,23 @@ public final class Parsers {
 		}
 
 		@Override
-		public Either<Integer, Node<Token>> parse(String text, int index, boolean lexer) {
+		public Either<Integer, Node<Token>> parse(String text, int index, boolean combineResults) {
 			// Starts with an emty root tree and successively attaches parsed children.
 			final List<Node<Token>> children = new ArrayList<>();
 			final Either<Integer, Integer> initialIndex = new Right<>(index);
-			final Either<Integer, Integer> result = Stream.of(parsers).reduce(initialIndex, (currentIndex, parser) -> {
-				return currentIndex.right().flatMap(parseAtIndex -> {
-					final Either<Integer, Node<Token>> parseResult = parser.get().parse(text, parseAtIndex, lexer);
-					return parseResult.right().map(node -> {
-						final Token token = node.getValue();
-						return token.index + token.length;
-					});
-				});
-			}, (index1, index2) -> null);
+			final Either<Integer, Integer> result = Stream.of(parsers).reduce(
+					initialIndex,
+					(currentIndex, parser) -> {
+						return currentIndex.right().flatMap(
+								parseAtIndex -> {
+									final Either<Integer, Node<Token>> parseResult = parser.get().parse(text,
+											parseAtIndex, combineResults);
+									return parseResult.right().map(node -> {
+										final Token token = node.getValue();
+										return token.index + token.length;
+									});
+								});
+					}, (index1, index2) -> null);
 			return result.right().map(
 					lastIndex -> new Node<>(new Token("Sequence", index, lastIndex - index)).attach(children));
 		}
