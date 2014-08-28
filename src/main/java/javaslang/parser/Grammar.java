@@ -5,7 +5,13 @@
  */
 package javaslang.parser;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javaslang.Requirements;
 
 // TODO: Distinguish between tokenizing (Lexer) and parsing (Parser)
 //       - https://github.com/antlr/grammars-v4/blob/master/antlr4/ANTLRv4Lexer.g4
@@ -61,20 +67,32 @@ import java.util.function.Supplier;
 // DEV-NOTE: Extra class needed because interface cannot override Object#toString()
 public class Grammar implements GrammarInterface {
 
-	private final Supplier<Parsers.Rule> startRule;
+	private final Parsers.Rule startRule;
 
 	protected Grammar(Supplier<Parsers.Rule> startRule) {
-		this.startRule = startRule;
+		Requirements.requireNonNull(startRule, "startRule is null");
+		this.startRule = startRule.get();
 	}
 
 	@Override
 	public Parsers.Rule getStartRule() {
-		return startRule.get();
+		return startRule;
 	}
 
 	@Override
 	public String toString() {
-		// TODO: 1) get all rules, 2) print all rules
-		throw new UnsupportedOperationException("not implemented");
+		// preserving insertion order
+		final LinkedHashSet<Parsers.Rule> rules = new LinkedHashSet<>();
+		findRules(rules, startRule);
+		return rules.stream().map(Object::toString).collect(Collectors.joining("\n\n"));
+	}
+
+	private void findRules(Set<Parsers.Rule> rules, Parsers.Rule rule) {
+		if (!rules.contains(rule)) {
+			rules.add(rule);
+			Stream.of(rule.alternatives)
+					.filter(parser -> parser.get() instanceof Parsers.Rule)
+					.forEach(ruleRef -> findRules(rules, (Parsers.Rule) ruleRef));
+		}
 	}
 }

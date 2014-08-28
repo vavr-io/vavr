@@ -389,7 +389,7 @@ public final class Parsers {
 		final boolean lexerRule;
 
 		/**
-		 * Creates a primary rule, i.e. a rule with a name which may be referenced by other rules.
+		 * Creates a primary rule, i.e. a rule with a unique name which may be referenced by other rules.
 		 * <p>
 		 * Rules starting with an upper case are lexer rules, rules starting with a lower case are parser rules. Lexer
 		 * rules are not allowed to reference parser rules.
@@ -419,6 +419,23 @@ public final class Parsers {
 				}
 			}
 			return new Left<>(index);
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o == this) {
+				return true;
+			} else if (o == null || !(o instanceof Rule)) {
+				return false;
+			} else {
+				final String thatName = ((Rule) o).name;
+				return name.equals(thatName);
+			}
+		}
+
+		@Override
+		public int hashCode() {
+			return name.hashCode();
 		}
 
 		@Override
