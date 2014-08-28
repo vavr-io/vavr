@@ -64,7 +64,7 @@ public final class Failure<T> implements Try<T>, Serializable {
 	}
 
 	@Override
-	public <X extends Throwable> T orElseThrow(Function<Throwable, ? extends X> exceptionProvider) throws X {
+	public <X extends Throwable> T orElseThrow(Function<Throwable, X> exceptionProvider) throws X {
 		throw exceptionProvider.apply(cause.getCause());
 	}
 

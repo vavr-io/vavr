@@ -51,7 +51,7 @@ public final class Success<T> implements Try<T>, Serializable {
 	}
 
 	@Override
-	public <X extends Throwable> T orElseThrow(Function<Throwable, ? extends X> exceptionSupplier) throws X {
+	public <X extends Throwable> T orElseThrow(Function<Throwable, X> exceptionProvider) throws X {
 		return value;
 	}
 

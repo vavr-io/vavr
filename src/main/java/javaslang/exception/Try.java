@@ -36,7 +36,7 @@ public interface Try<T> {
 
 	T orElseGet(Function<Throwable, ? extends T> other);
 
-	<X extends Throwable> T orElseThrow(Function<Throwable, ? extends X> exceptionProvider) throws X;
+	<X extends Throwable> T orElseThrow(Function<Throwable, X> exceptionProvider) throws X;
 
 	Try<T> recover(Function<? super Throwable, ? extends T> f);
 
