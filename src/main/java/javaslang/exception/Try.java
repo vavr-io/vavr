@@ -38,9 +38,9 @@ public interface Try<T> {
 
 	<X extends Throwable> T orElseThrow(Function<Throwable, X> exceptionProvider) throws X;
 
-	Try<T> recover(Function<? super Throwable, ? extends T> f);
+	Try<T> recover(Function<Throwable, ? extends T> f);
 
-	Try<T> recoverWith(Function<? super Throwable, Try<T>> f);
+	Try<T> recoverWith(Function<Throwable, Try<T>> f);
 
 	Option<T> toOption();
 

@@ -69,12 +69,12 @@ public final class Failure<T> implements Try<T>, Serializable {
 	}
 
 	@Override
-	public Try<T> recover(Function<? super Throwable, ? extends T> f) {
+	public Try<T> recover(Function<Throwable, ? extends T> f) {
 		return Try.of(() -> f.apply(cause.getCause()));
 	}
 
 	@Override
-	public Try<T> recoverWith(Function<? super Throwable, Try<T>> f) {
+	public Try<T> recoverWith(Function<Throwable, Try<T>> f) {
 		try {
 			return f.apply(cause.getCause());
 		} catch (Throwable t) {

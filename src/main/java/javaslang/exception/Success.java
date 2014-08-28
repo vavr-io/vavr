@@ -56,12 +56,12 @@ public final class Success<T> implements Try<T>, Serializable {
 	}
 
 	@Override
-	public Try<T> recover(Function<? super Throwable, ? extends T> f) {
+	public Try<T> recover(Function<Throwable, ? extends T> f) {
 		return this;
 	}
 
 	@Override
-	public Try<T> recoverWith(Function<? super Throwable, Try<T>> f) {
+	public Try<T> recoverWith(Function<Throwable, Try<T>> f) {
 		return this;
 	}
 
