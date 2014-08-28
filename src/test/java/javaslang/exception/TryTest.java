@@ -38,14 +38,93 @@ public class TryTest {
 	}
 
 	@Test
-	public void shouldCreateFailureOnNonFatalException() {
-		assertThat(failure().failed().get().getClass().getName()).isEqualTo(RuntimeException.class.getName());
+	public void shouldThrowWhenGetOnFailure() {
+		assertThat(() -> failure().get()).isThrowing(Failure.NonFatal.class, "java.lang.RuntimeException");
 	}
 
-	private Try<String> failure() {
-		return Try.of(() -> {
-			throw new RuntimeException();
-		});
+	@Test
+	public void shouldReturnElseWhenOrElseOnFailure() {
+		assertThat(failure().orElse(OK)).isEqualTo(OK);
+	}
+
+	@Test
+	public void shouldReturnElseWhenOrElseGetOnFailure() {
+		assertThat(failure().orElseGet(x -> OK)).isEqualTo(OK);
+	}
+
+	@Test
+	public void shouldThrowOtherWhenOrElseThrowOnFailure() {
+		assertThat(() -> failure().orElseThrow(x -> new IllegalStateException(OK))).isThrowing(
+				IllegalStateException.class, OK);
+	}
+
+	@Test
+	public void shouldRecoverOnFailure() {
+		assertThat(failure().recover(x -> OK).get()).isEqualTo(OK);
+	}
+
+	@Test
+	public void shouldRecoverWithOnFailure() {
+		assertThat(failure().recoverWith(x -> success()).get()).isEqualTo(OK);
+	}
+
+	@Test
+	public void shouldConvertFailureToOption() {
+		assertThat(failure().toOption().isPresent()).isFalse();
+	}
+
+	@Test
+	public void shouldFilterMatchingPredicateOnFailure() {
+		final Try<String> actual = failure();
+		assertThat(actual.filter(s -> true)).isEqualTo(actual);
+	}
+
+	@Test
+	public void shouldFilterNonMatchingPredicateOnFailure() {
+		final Try<String> actual = failure();
+		assertThat(actual.filter(s -> false)).isEqualTo(actual);
+	}
+
+	@Test
+	public void shouldFilterWithExceptionOnFailure() {
+		final Try<String> actual = failure();
+		assertThat(actual.filter(s -> filter(s))).isEqualTo(actual);
+	}
+
+	@Test
+	public void shouldFlatMapOnFailure() {
+		final Try<String> actual = failure();
+		assertThat(actual.flatMap(s -> Try.of(() -> s + "!"))).isEqualTo(actual);
+	}
+
+	@Test
+	public void shouldFlatMapWithExceptionOnFailure() {
+		final Try<String> actual = failure();
+		assertThat(actual.flatMap(s -> flatMap(s))).isEqualTo(actual);
+	}
+
+	@Test
+	public void shouldForEachOnFailure() {
+		final List<String> actual = new ArrayList<>();
+		failure().forEach(s -> actual.add(s));
+		assertThat(actual.isEmpty()).isTrue();
+	}
+
+	@Test
+	public void shouldMapOnFailure() {
+		final Try<String> actual = failure();
+		assertThat(actual.map(s -> s + "!")).isEqualTo(actual);
+	}
+
+	@Test
+	public void shouldMapWithExceptionOnFailure() {
+		final Try<String> actual = failure();
+		assertThat(actual.map(s -> map(s))).isEqualTo(actual);
+	}
+
+	@Test
+	public void shouldCreateFailureOnNonFatalException() {
+		assertThat(failure().failed().get().getClass().getName()).isEqualTo(RuntimeException.class.getName());
 	}
 
 	// -- success
@@ -148,6 +227,26 @@ public class TryTest {
 	public void shouldThrowWhenCallingFailedOnSuccess() {
 		assertThat(() -> success().failed().get()).isThrowing(Failure.NonFatal.class,
 				"java.lang.UnsupportedOperationException: Success.failed()");
+	}
+
+	// -- helpers
+
+	private Try<String> failure() {
+		return Try.of(() -> {
+			throw new RuntimeException();
+		});
+	}
+
+	private <T> boolean filter(T t) {
+		throw new RuntimeException("xxx");
+	}
+
+	private <T> Try<T> flatMap(T t) {
+		throw new RuntimeException("xxx");
+	}
+
+	private <T> T map(T t) {
+		throw new RuntimeException("xxx");
 	}
 
 	private Try<String> success() {
