@@ -276,5 +276,4 @@ public interface Either<L, R> {
 			return ((Right<L, R>) either).right;
 		}
 	}
-
 }
