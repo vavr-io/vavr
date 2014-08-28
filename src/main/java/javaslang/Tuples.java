@@ -119,6 +119,22 @@ public final class Tuples {
 		}
 
 		@Override
+		public boolean equals(Object o) {
+			if (o == this) {
+				return true;
+			} else if (o == null || !(o instanceof Tuple0)) {
+				return false;
+			} else {
+				return true;
+			}
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash();
+		}
+
+		@Override
 		public String toString() {
 			return Tuples.stringify();
 		}
