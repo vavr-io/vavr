@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/rocketscience-projects/javaslang.png)](https://travis-ci.org/rocketscience-projects/javaslang)
 [![Coverage Status](https://img.shields.io/coveralls/rocketscience-projects/javaslang.svg)](https://coveralls.io/r/rocketscience-projects/javaslang)
 
-**Javaslang** is a non-profit functional component library for Java&trade; 8 and above. Javaslang gives you the best from both worlds, functional and object oriented.
+**Javaslang** is a non-profit functional component library for Java&trade; 8 and above.
 
 ## Using Javaslang
 
