@@ -28,6 +28,7 @@ import javaslang.Tuples.Tuple2;
 /**
  * Extension methods for {@link java.lang.String}.
  */
+// TODO: consider using CharSequence instead of String as method arguments
 public final class Strings {
 
 	/**
