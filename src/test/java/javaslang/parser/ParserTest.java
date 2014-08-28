@@ -22,12 +22,22 @@ public class ParserTest {
 	// -- Any parser
 
 	@Test
+	public void shouldConvertAnyToString() {
+		assertThat(Parsers.Any.INSTANCE.toString()).isEqualTo(".");
+	}
+
+	@Test
 	public void shouldParseCharUsingAny() {
 		final String actual = parse(Parsers.Any.INSTANCE, "abc", false);
 		assertThat(actual).isEqualTo("a");
 	}
 
 	// -- CharRange parser
+
+	@Test
+	public void shouldConvertCharRangeToString() {
+		assertThat(new Parsers.CharRange('a', 'z').toString()).isEqualTo("'a'..'z'");
+	}
 
 	@Test
 	public void shouldParseCharWithinCharRange() {
@@ -42,6 +52,11 @@ public class ParserTest {
 	}
 
 	// -- CharSet parser
+
+	@Test
+	public void shouldConvertCharSetToString() {
+		assertThat(new Parsers.CharSet("a-z$_A-Z").toString()).isEqualTo("[a-z$_A-Z]");
+	}
 
 	@Test
 	public void shouldParseCharWithinCharSetWithRange() {
@@ -76,6 +91,11 @@ public class ParserTest {
 	// -- EOF parser
 
 	@Test
+	public void shouldConvertEOFToString() {
+		assertThat(Parsers.EOF.INSTANCE.toString()).isEqualTo("EOF");
+	}
+
+	@Test
 	public void shouldRecognizeEOF() {
 		final String actual = parse(Parsers.EOF.INSTANCE, "", false);
 		assertThat(actual).isEqualTo("");
@@ -90,6 +110,11 @@ public class ParserTest {
 	// -- Literal parser
 
 	@Test
+	public void shouldConvertLiteralToString() {
+		assertThat(new Parsers.Literal("v'ger\\").toString()).isEqualTo("'v\\'ger\\\\'");
+	}
+
+	@Test
 	public void shouldParseLiteral() {
 		final String actual = parse(new Parsers.Literal("literal"), "literal!", false);
 		assertThat(actual).isEqualTo("literal");
@@ -102,6 +127,18 @@ public class ParserTest {
 	}
 
 	// -- Rule parser
+
+	@Test
+	public void shouldConvertRuleToString() {
+		assertThat(expr().toString()).isEqualTo("expr : expr '+' expr\n     | expr '*' expr\n     | INT\n     ;");
+	}
+
+	// DEV-NOTE: recursive self-reference of the rule
+	static Parsers.Rule expr() {
+		return new Parsers.Rule("expr", new Parsers.Sequence(ParserTest::expr, new Parsers.Literal("+"),
+				ParserTest::expr), new Parsers.Sequence(ParserTest::expr, new Parsers.Literal("*"), ParserTest::expr),
+				new Parsers.Rule("INT", () -> null));
+	}
 
 	@Test
 	@Ignore

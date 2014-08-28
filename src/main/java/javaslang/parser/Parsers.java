@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javaslang.Requirements.UnsatisfiedRequirementException;
+import javaslang.Strings;
 import javaslang.collection.Node;
 import javaslang.either.Either;
 import javaslang.either.Left;
@@ -136,7 +137,7 @@ public final class Parsers {
 
 		@Override
 		public String toString() {
-			return from + ".." + to;
+			return String.format("'%s'..'%s'", from, to);
 		}
 	}
 
@@ -163,6 +164,7 @@ public final class Parsers {
 		 * @param set A set of characters to include.
 		 */
 		CharSet(String charSetString) {
+			requireNotNullOrEmpty(charSetString, "charSetString is null or empty");
 			this.charSetString = charSetString;
 			this.isInSet = parse(charSetString);
 		}
@@ -180,7 +182,7 @@ public final class Parsers {
 		public String toString() {
 			return charSetString.chars().boxed().map(i -> {
 				final char c = (char) i.intValue();
-				// TODO: add more special characters?
+				// TODO: add more special characters. See http://stackoverflow.com/questions/504402/how-to-handle-escape-sequences-in-string-literals-in-antlr-3a
 					switch (c) {
 						case 0x09:
 							return "\\t";
@@ -274,6 +276,7 @@ public final class Parsers {
 		final String literal;
 
 		Literal(String literal) {
+			requireNotNullOrEmpty(literal, "literal is null or empty");
 			// TODO: escape literal? e.g. '\n' -> '\\n'
 			this.literal = literal;
 		}
@@ -289,7 +292,7 @@ public final class Parsers {
 
 		@Override
 		public String toString() {
-			return "'" + literal + "'";
+			return "'" + Strings.escape(literal, '\'', '\\') + "'";
 		}
 	}
 
@@ -398,7 +401,7 @@ public final class Parsers {
 		@SafeVarargs
 		Rule(String name, Supplier<Parser>... alternatives) {
 			requireNotNullOrEmpty(name, "name is null or empty");
-			requireNonNull(alternatives, "alternatives is null");
+			requireNotNullOrEmpty(alternatives, "alternatives is null or empty");
 			this.name = name;
 			this.alternatives = alternatives;
 			this.lexerRule = Character.isUpperCase(name.charAt(0));
@@ -406,7 +409,7 @@ public final class Parsers {
 
 		@Override
 		public Either<Integer, Node<Token>> parse(String text, int index, boolean lexer) {
-			require(!lexer || lexerRule, "parser rule '" + name + "' referenced by a lexer rule");
+			require(!lexer || lexerRule, "parser rule '" + name + "' is referenced by a lexer rule");
 			for (Supplier<Parser> alternative : alternatives) {
 				final Either<Integer, Node<Token>> result = alternative.get().parse(text, index, lexerRule);
 				if (result.isRight()) {
@@ -420,11 +423,19 @@ public final class Parsers {
 
 		@Override
 		public String toString() {
-			// TODO
-			throw new UnsupportedOperationException();
+			final String indent = Strings.repeat(' ', name.length());
+			return Stream.of(alternatives).map(supplier -> {
+				final Parser parser = supplier.get();
+				if (parser instanceof Rule) {
+					return ((Rule) parser).name;
+				} else {
+					return parser.get().toString();
+				}
+			}).collect(Collectors.joining("\n" + indent + " | ", name + " : ", "\n" + indent + " ;"));
 		}
 	}
 
+	// TODO: javadoc
 	static class SubRule implements Parser {
 
 		final Supplier<Parser>[] alternatives;
@@ -432,6 +443,7 @@ public final class Parsers {
 		@SafeVarargs
 		SubRule(Supplier<Parser>... alternatives) {
 			requireNonNull(alternatives, "alternatives is null");
+			require(alternatives.length >= 2, "number of alternatives < 2");
 			this.alternatives = alternatives;
 		}
 
@@ -448,8 +460,14 @@ public final class Parsers {
 
 		@Override
 		public String toString() {
-			// TODO
-			throw new UnsupportedOperationException();
+			return Stream.of(alternatives).map(supplier -> {
+				final Parser parser = supplier.get();
+				if (parser instanceof Rule) {
+					return ((Rule) parser).name;
+				} else {
+					return parser.toString();
+				}
+			}).collect(Collectors.joining(" | ", "( ", " )"));
 		}
 	}
 
@@ -460,7 +478,8 @@ public final class Parsers {
 
 		@SafeVarargs
 		public Sequence(Supplier<Parser>... parsers) {
-			requireNotNullOrEmpty(parsers, "No parsers");
+			requireNonNull(parsers, "no parsers");
+			require(parsers.length >= 2, "number of parsers < 2");
 			this.parsers = parsers;
 		}
 
@@ -484,7 +503,14 @@ public final class Parsers {
 
 		@Override
 		public String toString() {
-			return Stream.of(parsers).map(Object::toString).collect(Collectors.joining(" "));
+			return Stream.of(parsers).map(supplier -> {
+				final Parser parser = supplier.get();
+				if (parser instanceof Rule) {
+					return ((Rule) parser).name;
+				} else {
+					return parser.toString();
+				}
+			}).collect(Collectors.joining(" "));
 		}
 	}
 }

@@ -28,6 +28,14 @@ interface Parser extends Supplier<Parser> {
 	Either<Integer, Node<Token>> parse(String text, int index, boolean lexer);
 
 	/**
+	 * Returns a String representation in grammar notation of this parser.
+	 * 
+	 * @return A String in grammar notation.
+	 */
+	@Override
+	String toString();
+
+	/**
 	 * Being a self-supplier is the key for constructing grammars programatically using methods, which are evaluated
 	 * lazily. This allows to build grammars containing cyclic references.
 	 * <p>

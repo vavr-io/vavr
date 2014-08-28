@@ -5,24 +5,7 @@
  */
 package javaslang.parser;
 
-import static javaslang.Requirements.requireNonNull;
-import static javaslang.parser.Parsers.Quantifier.Bounds.ONE_TO_N;
-import static javaslang.parser.Parsers.Quantifier.Bounds.ZERO_TO_N;
-import static javaslang.parser.Parsers.Quantifier.Bounds.ZERO_TO_ONE;
-
 import java.util.function.Supplier;
-
-import javaslang.Strings;
-import javaslang.collection.Node;
-import javaslang.collection.Tree;
-import javaslang.either.Either;
-import javaslang.exception.Failure;
-import javaslang.exception.Success;
-import javaslang.exception.Try;
-import javaslang.parser.Parsers.Literal;
-import javaslang.parser.Parsers.Quantifier;
-import javaslang.parser.Parsers.Rule;
-import javaslang.parser.Parsers.Sequence;
 
 // TODO: Distinguish between tokenizing (Lexer) and parsing (Parser)
 //       - https://github.com/antlr/grammars-v4/blob/master/antlr4/ANTLRv4Lexer.g4
@@ -75,87 +58,23 @@ import javaslang.parser.Parsers.Sequence;
  *      href="http://stackoverflow.com/questions/1888854/what-is-the-difference-between-an-abstract-syntax-tree-and-a-concrete-syntax-tre">Abstract
  *      vs. concrete syntax tree</a>
  */
-@FunctionalInterface
-public interface Grammar {
+// DEV-NOTE: Extra class needed because interface cannot override Object#toString()
+public class Grammar implements GrammarInterface {
 
-	/**
-	 * TODO: javadoc
-	 * 
-	 * @param text A text input to be parsed.
-	 * @return A concrete syntax tree of the text on parse success or a failure if a parse error occured.
-	 */
-	Try<Tree<Token>> parse(String text);
+	private final Supplier<Parsers.Rule> startRule;
 
-	/**
-	 * Creates a Grammar with a specific start rule.
-	 * 
-	 * @param startRuleSupplier Supplier of the grammar start rule.
-	 * @return An instance of Grammar which is parses textual inputs starting with startRule.
-	 */
-	static Grammar of(Supplier<Rule> startRuleSupplier) {
-		final Rule startRule = requireNonNull(requireNonNull(startRuleSupplier, "startRuleSupplier is null").get(),
-				"startRuleSupplier returns null");
-		return text -> {
-			final Either<Integer, Node<Token>> parseResult = startRule.get().parse(text, 0, startRule.lexerRule);
-			if (parseResult.isRight()) {
-				final Tree<Token> concreteSyntaxTree = parseResult.right().get().asTree();
-				return new Success<>(concreteSyntaxTree);
-			} else {
-				final int index = parseResult.left().get();
-				return new Failure<>(new IllegalArgumentException("cannot parse input at "
-						+ Strings.lineAndColumn(text, index)));
-			}
-		};
+	protected Grammar(Supplier<Parsers.Rule> startRule) {
+		this.startRule = startRule;
 	}
 
-	// -- atomic shortcuts used in grammar definitions
-
-	/**
-	 * A string literal, {@code '<string>'}.
-	 * 
-	 * @param s A string.
-	 * @return {@code new Literal(s)}.
-	 */
-	static Parser str(String s) {
-		return new Literal(s);
+	@Override
+	public Parsers.Rule getStartRule() {
+		return startRule.get();
 	}
 
-	@SafeVarargs
-	static Parser _0_1(Supplier<Parser>... parsers) {
-		return new Quantifier(new Sequence(parsers), ZERO_TO_ONE);
+	@Override
+	public String toString() {
+		// TODO: 1) get all rules, 2) print all rules
+		throw new UnsupportedOperationException("not implemented");
 	}
-
-	@SafeVarargs
-	static Parser _0_n(Supplier<Parser>... parsers) {
-		return new Quantifier(new Sequence(parsers), ZERO_TO_N);
-	}
-
-	@SafeVarargs
-	static Parser _1_n(Supplier<Parser>... parsers) {
-		return new Quantifier(new Sequence(parsers), ONE_TO_N);
-	}
-
-	// -- composite shortcuts used in grammar definitions
-
-	/**
-	 * A separated list, equivalent to {@code ( P ( ',' P )* )?}.
-	 * <p>
-	 * {@code list(parser, separator)}
-	 * <p>
-	 * is a shortcut for
-	 * <p>
-	 * {@code _0_1(parser, _0_N(str(separator), parser))}.
-	 * <p>
-	 * which expands to
-	 * <p>
-	 * {@code new Quantifier(new Sequence(parser, new Quantifier(new Sequence(new Literal(separator), parser), ZERO_TO_N)), ZERO_TO_ONE)}.
-	 * 
-	 * @param parser A Parser.
-	 * @param separator A separator.
-	 * @return A Parser which recognizes {@code ( P ( ',' P )* )?}.
-	 */
-	static Parser list(Supplier<Parser> parser, String separator) {
-		return _0_1(parser, _0_n(str(separator), parser));
-	}
-
 }
