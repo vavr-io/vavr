@@ -3,13 +3,15 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.io;
+package javaslang;
 
 import static javaslang.Assertions.assertThat;
-import static javaslang.io.IO.UTF8;
+import static javaslang.IO.UTF8;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.io.InputStream;
+
+import javaslang.IO;
 
 import org.junit.Test;
 

@@ -10,8 +10,8 @@ import static org.fest.assertions.api.Assertions.assertThat;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
+import javaslang.IO;
 import javaslang.collection.Tree;
-import javaslang.io.IO;
 import javaslang.monad.Try;
 
 import org.junit.Ignore;
