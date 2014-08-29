@@ -120,13 +120,7 @@ public final class Tuples {
 
 		@Override
 		public boolean equals(Object o) {
-			if (o == this) {
-				return true;
-			} else if (o == null || !(o instanceof Tuple0)) {
-				return false;
-			} else {
-				return true;
-			}
+			return o == this;
 		}
 
 		@Override
