@@ -3,7 +3,7 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.either;
+package javaslang.monad;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -12,13 +12,9 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import javaslang.option.None;
-import javaslang.option.Option;
-import javaslang.option.Some;
-
 /**
- * Either represents a value of two possible types. An Either is either a {@link javaslang.either.Left} or a
- * {@link javaslang.either.Right}.
+ * Either represents a value of two possible types. An Either is either a {@link javaslang.monad.Left} or a
+ * {@link javaslang.monad.Right}.
  * <p>
  * It is possible to project an Either to a Left or a Right. Both cases can be further processed with monad operations
  * map, flatMap, filter.

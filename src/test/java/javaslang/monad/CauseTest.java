@@ -3,10 +3,10 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.exception;
+package javaslang.monad;
 
 import static org.fest.assertions.api.Assertions.assertThat;
-import javaslang.exception.Failure.Cause;
+import javaslang.monad.Failure.Cause;
 
 import org.junit.Test;
 

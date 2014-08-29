@@ -11,8 +11,8 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 
 import javaslang.collection.Tree;
-import javaslang.exception.Try;
 import javaslang.io.IO;
+import javaslang.monad.Try;
 
 import org.junit.Ignore;
 import org.junit.Test;

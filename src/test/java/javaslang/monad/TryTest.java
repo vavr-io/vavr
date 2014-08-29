@@ -3,7 +3,7 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.exception;
+package javaslang.monad;
 
 import static javaslang.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -11,6 +11,9 @@ import static org.fest.assertions.api.Assertions.assertThat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javaslang.monad.Failure;
+import javaslang.monad.Try;
 
 import org.junit.Test;
 

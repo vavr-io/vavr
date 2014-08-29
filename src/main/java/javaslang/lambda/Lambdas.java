@@ -10,7 +10,7 @@ import java.lang.invoke.MethodType;
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Method;
 
-import javaslang.exception.Try;
+import javaslang.monad.Try;
 
 /**
  * Extension methods for {@code java.lang.invoke.*}.
@@ -33,8 +33,8 @@ public final class Lambdas {
 	 * Serializes the given Serializable lambda and returns the corresponding {@link java.lang.invoke.SerializedLambda}.
 	 * 
 	 * @param lambda An instance of a lambda.
-	 * @return The serialized lambda wrapped in a {@link javaslang.exception.Success}, or a
-	 *         {@link javaslang.exception.Failure} if an exception occurred.
+	 * @return The serialized lambda wrapped in a {@link javaslang.monad.Success}, or a
+	 *         {@link javaslang.monad.Failure} if an exception occurred.
 	 */
 	public static Try<SerializedLambda> getSerializedLambda(Serializable lambda) {
 		return Try.of(() -> {
@@ -53,8 +53,8 @@ public final class Lambdas {
 	 * and the parameter types of the given lambda.
 	 * 
 	 * @param lambda A serializable lambda.
-	 * @return The signature of the lambda wrapped in a {@link javaslang.exception.Success}, or a
-	 *         {@link javaslang.exception.Failure} if an exception occurred.
+	 * @return The signature of the lambda wrapped in a {@link javaslang.monad.Success}, or a
+	 *         {@link javaslang.monad.Failure} if an exception occurred.
 	 */
 	public static Try<MethodType> getLambdaSignature(Serializable lambda) {
 		return getSerializedLambda(lambda).map(serializedLambda -> {

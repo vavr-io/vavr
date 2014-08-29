@@ -3,12 +3,16 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.option;
+package javaslang.monad;
 
 import static javaslang.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.util.NoSuchElementException;
+
+import javaslang.monad.None;
+import javaslang.monad.Option;
+import javaslang.monad.Some;
 
 import org.junit.Test;
 

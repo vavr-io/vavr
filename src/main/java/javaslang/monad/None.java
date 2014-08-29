@@ -3,7 +3,7 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.option;
+package javaslang.monad;
 
 import java.io.Serializable;
 import java.util.NoSuchElementException;
@@ -13,7 +13,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- * None is a singleton representation of the undefined {@link javaslang.option.Option}. The instance is obtained by
+ * None is a singleton representation of the undefined {@link javaslang.monad.Option}. The instance is obtained by
  * calling {@link #instance()}.
  *
  * @param <T> The type of the optional value.

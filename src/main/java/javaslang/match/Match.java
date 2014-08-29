@@ -20,9 +20,9 @@ import javaslang.Tuples.Tuple;
 import javaslang.lambda.Lambdas;
 import javaslang.lambda.SerializableBiFunction;
 import javaslang.lambda.SerializableFunction;
-import javaslang.option.None;
-import javaslang.option.Option;
-import javaslang.option.Some;
+import javaslang.monad.None;
+import javaslang.monad.Option;
+import javaslang.monad.Some;
 
 /**
  * A better switch for Java. A Match...
@@ -82,7 +82,7 @@ public final class Match<R> implements Function<Object, R> {
 	 * @return The result when applying the given obj to the first matching case. If the case has a consumer, the result
 	 *         is null, otherwise the result of the underlying function or supplier.
 	 * @throws MatchError if no Match case matches the given object and no default is defined via orElse().
-	 * @throws javaslang.exception.Failure.NonFatal if an error occurs executing the matched case.
+	 * @throws javaslang.monad.Failure.NonFatal if an error occurs executing the matched case.
 	 */
 	@Override
 	public R apply(Object obj) {

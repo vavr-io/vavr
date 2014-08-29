@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 import java.util.function.Function;
 
 import javaslang.lambda.SerializableFunction;
-import javaslang.option.Some;
+import javaslang.monad.Some;
 
 import org.junit.Test;
 

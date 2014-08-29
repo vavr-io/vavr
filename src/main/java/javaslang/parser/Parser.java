@@ -8,7 +8,7 @@ package javaslang.parser;
 import java.util.function.Supplier;
 
 import javaslang.collection.Node;
-import javaslang.either.Either;
+import javaslang.monad.Either;
 
 /**
  * The parser interface.

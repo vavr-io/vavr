@@ -15,10 +15,10 @@ import javaslang.Requirements;
 import javaslang.Strings;
 import javaslang.collection.Node;
 import javaslang.collection.Tree;
-import javaslang.either.Either;
-import javaslang.exception.Failure;
-import javaslang.exception.Success;
-import javaslang.exception.Try;
+import javaslang.monad.Either;
+import javaslang.monad.Failure;
+import javaslang.monad.Success;
+import javaslang.monad.Try;
 
 // TODO: Distinguish between tokenizing (Lexer) and parsing (Parser)
 //       - https://github.com/antlr/grammars-v4/blob/master/antlr4/ANTLRv4Lexer.g4

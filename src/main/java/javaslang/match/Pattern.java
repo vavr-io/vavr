@@ -25,7 +25,7 @@ import javaslang.Tuples.Tuple7;
 import javaslang.Tuples.Tuple8;
 import javaslang.Tuples.Tuple9;
 import javaslang.lambda.Lambdas;
-import javaslang.option.Option;
+import javaslang.monad.Option;
 
 /**
  * Represents a Pattern for pattern matching. In this context, Pattern matching is defined as

@@ -12,7 +12,7 @@ import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 import javaslang.collection.TreeLikeStructure.AbstractTreeLikeStructure;
-import javaslang.option.Option;
+import javaslang.monad.Option;
 
 /**
  * Because this is an immutable, bidirectional tree implementation, tree operations on any node result in creating new

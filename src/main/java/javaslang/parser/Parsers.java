@@ -22,9 +22,9 @@ import java.util.stream.Stream;
 import javaslang.Requirements.UnsatisfiedRequirementException;
 import javaslang.Strings;
 import javaslang.collection.Node;
-import javaslang.either.Either;
-import javaslang.either.Left;
-import javaslang.either.Right;
+import javaslang.monad.Either;
+import javaslang.monad.Left;
+import javaslang.monad.Right;
 
 //
 // TODO:

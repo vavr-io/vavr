@@ -3,7 +3,7 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.option;
+package javaslang.monad;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -13,7 +13,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- * Some represents a defined {@link javaslang.option.Option}. It contains a value which may be null. However, to create
+ * Some represents a defined {@link javaslang.monad.Option}. It contains a value which may be null. However, to create
  * an Option containing null, {@code new Some(null)} has to be called. In all other cases {@link Option#of(Object)} is
  * sufficient.
  *
