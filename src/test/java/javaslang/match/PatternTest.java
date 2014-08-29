@@ -5,6 +5,7 @@
  */
 package javaslang.match;
 
+import static javaslang.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.util.function.Function;
@@ -16,6 +17,11 @@ import javaslang.lambda.SerializableFunction;
 import org.junit.Test;
 
 public class PatternTest {
+
+	@Test
+	public void shouldNotInstantiable() {
+		assertThat(Patterns.class).isNotInstantiable();
+	}
 
 	@Test
 	public void shouldMatchFunctionWithoutCapturedArgsBySignature() {

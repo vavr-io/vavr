@@ -5,6 +5,7 @@
  */
 package javaslang;
 
+import static javaslang.Assertions.assertThat;
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -14,6 +15,11 @@ import org.junit.Test;
 public class SerializablesTest {
 
 	private static final String MAGIC_NUMBER = "0xCAFEBABE";
+
+	@Test
+	public void shouldNotInstantiable() {
+		assertThat(Serializables.class).isNotInstantiable();
+	}
 
 	@Test
 	public void shouldSerializeDeserialize() throws Exception {
