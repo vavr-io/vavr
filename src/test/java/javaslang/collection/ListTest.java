@@ -517,9 +517,15 @@ public class ListTest {
 	}
 
 	@Test
-	public void shouldThrowWhenSetWithTooBigIndexOnNonEmptyList() {
+	public void shouldThrowWhenSetWithIndexExceedingByOneOnNonEmptyList() {
 		assertThat(() -> List.of(1).set(1, 2)).isThrowing(IndexOutOfBoundsException.class,
 				"set(1, e) on list of size 1");
+	}
+
+	@Test
+	public void shouldThrowWhenSetWithIndexExceedingByTwoOnNonEmptyList() {
+		assertThat(() -> List.of(1).set(2, 2)).isThrowing(IndexOutOfBoundsException.class,
+				"set(2, e) on list of size 1");
 	}
 
 	@Test
@@ -975,6 +981,32 @@ public class ListTest {
 	}
 
 	// -- equals
+
+	@Test
+	public void shouldEqualSameListInstance() {
+		final List<?> list = List.empty();
+		assertThat(list.equals(list)).isTrue();
+	}
+
+	@Test
+	public void shouldEmptyListNotEqualsNull() {
+		assertThat(List.empty().equals(null)).isFalse();
+	}
+
+	@Test
+	public void shouldNonEmptyListNotEqualsNull() {
+		assertThat(List.of(1).equals(null)).isFalse();
+	}
+
+	@Test
+	public void shouldEmptyNotEqualsDifferentType() {
+		assertThat(List.empty().equals("")).isFalse();
+	}
+
+	@Test
+	public void shouldNonEmptyNotEqualsDifferentType() {
+		assertThat(List.of(1).equals("")).isFalse();
+	}
 
 	@Test
 	public void shouldRecognizeEqualityOfEmptyLists() {
