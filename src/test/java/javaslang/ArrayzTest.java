@@ -8,6 +8,9 @@ package javaslang;
 import static javaslang.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.assertThat;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 import org.junit.Test;
 
 public class ArrayzTest {
@@ -71,35 +74,322 @@ public class ArrayzTest {
 
 	// -- isNullOrEmpty
 
+	// Object
+
 	@Test
-	public void shoudRecognizeNullArray() {
+	public void shoudRecognizeNullObjectArray() {
+		final Object[] array = null;
+		final boolean actual = Arrayz.isNullOrEmpty(array);
+		assertThat(actual).isEqualTo(true);
+	}
+
+	@Test
+	public void shoudRecognizeEmptyObjectArray() {
+		final Object[] array = {};
+		final boolean actual = Arrayz.isNullOrEmpty(array);
+		assertThat(actual).isEqualTo(true);
+	}
+
+	@Test
+	public void shoudRecognizeNoneEmptyObjectArray() {
+		final Object[] array = { new Object() };
+		final boolean actual = Arrayz.isNullOrEmpty(array);
+		assertThat(actual).isEqualTo(false);
+	}
+
+	// boolean
+
+	@Test
+	public void shoudRecognizeNullBooleanArray() {
+		final boolean[] array = null;
+		final boolean actual = Arrayz.isNullOrEmpty(array);
+		assertThat(actual).isEqualTo(true);
+	}
+
+	@Test
+	public void shoudRecognizeEmptyBooleanArray() {
+		final boolean[] array = {};
+		final boolean actual = Arrayz.isNullOrEmpty(array);
+		assertThat(actual).isEqualTo(true);
+	}
+
+	@Test
+	public void shoudRecognizeNoneEmptyBooleanArray() {
+		final boolean[] array = { true };
+		final boolean actual = Arrayz.isNullOrEmpty(array);
+		assertThat(actual).isEqualTo(false);
+	}
+
+	// byte
+
+	@Test
+	public void shoudRecognizeNullByteArray() {
 		final byte[] array = null;
 		final boolean actual = Arrayz.isNullOrEmpty(array);
 		assertThat(actual).isEqualTo(true);
 	}
 
 	@Test
-	public void shoudRecognizeEmptyArray() {
-		final byte[] array = new byte[] {};
+	public void shoudRecognizeEmptyByteArray() {
+		final byte[] array = {};
 		final boolean actual = Arrayz.isNullOrEmpty(array);
 		assertThat(actual).isEqualTo(true);
 	}
 
 	@Test
-	public void shoudRecognizeNoneEmptyArray() {
-		final byte[] array = new byte[] { 1, 2, 3 };
+	public void shoudRecognizeNoneEmptyByteArray() {
+		final byte[] array = { 0 };
 		final boolean actual = Arrayz.isNullOrEmpty(array);
 		assertThat(actual).isEqualTo(false);
 	}
 
-	// TODO
+	// char
+
+	@Test
+	public void shoudRecognizeNullCharArray() {
+		final char[] array = null;
+		final boolean actual = Arrayz.isNullOrEmpty(array);
+		assertThat(actual).isEqualTo(true);
+	}
+
+	@Test
+	public void shoudRecognizeEmptyCharArray() {
+		final char[] array = {};
+		final boolean actual = Arrayz.isNullOrEmpty(array);
+		assertThat(actual).isEqualTo(true);
+	}
+
+	@Test
+	public void shoudRecognizeNoneEmptyCharArray() {
+		final char[] array = { ' ' };
+		final boolean actual = Arrayz.isNullOrEmpty(array);
+		assertThat(actual).isEqualTo(false);
+	}
+
+	// double
+
+	@Test
+	public void shoudRecognizeNullDoubleArray() {
+		final double[] array = null;
+		final boolean actual = Arrayz.isNullOrEmpty(array);
+		assertThat(actual).isEqualTo(true);
+	}
+
+	@Test
+	public void shoudRecognizeEmptyDoubleArray() {
+		final double[] array = {};
+		final boolean actual = Arrayz.isNullOrEmpty(array);
+		assertThat(actual).isEqualTo(true);
+	}
+
+	@Test
+	public void shoudRecognizeNoneEmptyDoubleArray() {
+		final double[] array = { 0 };
+		final boolean actual = Arrayz.isNullOrEmpty(array);
+		assertThat(actual).isEqualTo(false);
+	}
+
+	// float
+
+	@Test
+	public void shoudRecognizeNullFloatArray() {
+		final float[] array = null;
+		final boolean actual = Arrayz.isNullOrEmpty(array);
+		assertThat(actual).isEqualTo(true);
+	}
+
+	@Test
+	public void shoudRecognizeEmptyFloatArray() {
+		final float[] array = {};
+		final boolean actual = Arrayz.isNullOrEmpty(array);
+		assertThat(actual).isEqualTo(true);
+	}
+
+	@Test
+	public void shoudRecognizeNoneEmptyFloatArray() {
+		final float[] array = { 0 };
+		final boolean actual = Arrayz.isNullOrEmpty(array);
+		assertThat(actual).isEqualTo(false);
+	}
+
+	// int
+
+	@Test
+	public void shoudRecognizeNullIntArray() {
+		final int[] array = null;
+		final boolean actual = Arrayz.isNullOrEmpty(array);
+		assertThat(actual).isEqualTo(true);
+	}
+
+	@Test
+	public void shoudRecognizeEmptyIntArray() {
+		final int[] array = {};
+		final boolean actual = Arrayz.isNullOrEmpty(array);
+		assertThat(actual).isEqualTo(true);
+	}
+
+	@Test
+	public void shoudRecognizeNoneEmptyIntArray() {
+		final int[] array = { 0 };
+		final boolean actual = Arrayz.isNullOrEmpty(array);
+		assertThat(actual).isEqualTo(false);
+	}
+
+	// long
+
+	@Test
+	public void shoudRecognizeNullLongArray() {
+		final long[] array = null;
+		final boolean actual = Arrayz.isNullOrEmpty(array);
+		assertThat(actual).isEqualTo(true);
+	}
+
+	@Test
+	public void shoudRecognizeEmptyLongArray() {
+		final long[] array = {};
+		final boolean actual = Arrayz.isNullOrEmpty(array);
+		assertThat(actual).isEqualTo(true);
+	}
+
+	@Test
+	public void shoudRecognizeNoneEmptyLongArray() {
+		final long[] array = { 0 };
+		final boolean actual = Arrayz.isNullOrEmpty(array);
+		assertThat(actual).isEqualTo(false);
+	}
+
+	// short
+
+	@Test
+	public void shoudRecognizeNullShortArray() {
+		final short[] array = null;
+		final boolean actual = Arrayz.isNullOrEmpty(array);
+		assertThat(actual).isEqualTo(true);
+	}
+
+	@Test
+	public void shoudRecognizeEmptyShortArray() {
+		final short[] array = {};
+		final boolean actual = Arrayz.isNullOrEmpty(array);
+		assertThat(actual).isEqualTo(true);
+	}
+
+	@Test
+	public void shoudRecognizeNoneShortFloatArray() {
+		final short[] array = { 0 };
+		final boolean actual = Arrayz.isNullOrEmpty(array);
+		assertThat(actual).isEqualTo(false);
+	}
 
 	// -- stream
 
-	// TODO
+	@Test
+	public void shouldStreamBoolean() {
+		final boolean[] array = { true, false };
+		assertThat(Arrayz.stream(array).collect(Collectors.toList())).isEqualTo(Arrays.asList(true, false));
+	}
+
+	@Test
+	public void shouldStreamByte() {
+		final byte[] array = { 1, 2, 3 };
+		assertThat(Arrayz.stream(array).collect(Collectors.toList())).isEqualTo(
+				Arrays.asList((byte) 1, (byte) 2, (byte) 3));
+	}
+
+	@Test
+	public void shouldStreamChar() {
+		final char[] array = { 1, 2, 3 };
+		assertThat(Arrayz.stream(array).collect(Collectors.toList())).isEqualTo(
+				Arrays.asList((char) 1, (char) 2, (char) 3));
+	}
+
+	@Test
+	public void shouldStreamDouble() {
+		final double[] array = { 1, 2, 3 };
+		assertThat(Arrayz.stream(array).collect(Collectors.toList())).isEqualTo(
+				Arrays.asList((double) 1, (double) 2, (double) 3));
+	}
+
+	@Test
+	public void shouldStreamFloat() {
+		final float[] array = { 1, 2, 3 };
+		assertThat(Arrayz.stream(array).collect(Collectors.toList())).isEqualTo(
+				Arrays.asList((float) 1, (float) 2, (float) 3));
+	}
+
+	@Test
+	public void shouldStreamInt() {
+		final int[] array = { 1, 2, 3 };
+		assertThat(Arrayz.stream(array).collect(Collectors.toList())).isEqualTo(Arrays.asList(1, 2, 3));
+	}
+
+	@Test
+	public void shouldStreamLong() {
+		final long[] array = { 1, 2, 3 };
+		assertThat(Arrayz.stream(array).collect(Collectors.toList())).isEqualTo(
+				Arrays.asList((long) 1, (long) 2, (long) 3));
+	}
+
+	@Test
+	public void shouldStreamShort() {
+		final short[] array = { 1, 2, 3 };
+		assertThat(Arrayz.stream(array).collect(Collectors.toList())).isEqualTo(
+				Arrays.asList((short) 1, (short) 2, (short) 3));
+	}
 
 	// -- parallelStream
 
-	// TODO
+	@Test
+	public void shouldParallelStreamBoolean() {
+		final boolean[] array = { true, false };
+		assertThat(Arrayz.parallelStream(array).collect(Collectors.toList())).isEqualTo(Arrays.asList(true, false));
+	}
 
+	@Test
+	public void shouldParallelStreamByte() {
+		final byte[] array = { 1, 2, 3 };
+		assertThat(Arrayz.parallelStream(array).collect(Collectors.toList())).isEqualTo(
+				Arrays.asList((byte) 1, (byte) 2, (byte) 3));
+	}
+
+	@Test
+	public void shouldParallelStreamChar() {
+		final char[] array = { 1, 2, 3 };
+		assertThat(Arrayz.parallelStream(array).collect(Collectors.toList())).isEqualTo(
+				Arrays.asList((char) 1, (char) 2, (char) 3));
+	}
+
+	@Test
+	public void shouldParallelStreamDouble() {
+		final double[] array = { 1, 2, 3 };
+		assertThat(Arrayz.parallelStream(array).collect(Collectors.toList())).isEqualTo(
+				Arrays.asList((double) 1, (double) 2, (double) 3));
+	}
+
+	@Test
+	public void shouldParallelStreamFloat() {
+		final float[] array = { 1, 2, 3 };
+		assertThat(Arrayz.parallelStream(array).collect(Collectors.toList())).isEqualTo(
+				Arrays.asList((float) 1, (float) 2, (float) 3));
+	}
+
+	@Test
+	public void shouldParallelStreamInt() {
+		final int[] array = { 1, 2, 3 };
+		assertThat(Arrayz.parallelStream(array).collect(Collectors.toList())).isEqualTo(Arrays.asList(1, 2, 3));
+	}
+
+	@Test
+	public void shouldParallelStreamLong() {
+		final long[] array = { 1, 2, 3 };
+		assertThat(Arrayz.parallelStream(array).collect(Collectors.toList())).isEqualTo(
+				Arrays.asList((long) 1, (long) 2, (long) 3));
+	}
+
+	@Test
+	public void shouldParallelStreamShort() {
+		final short[] array = { 1, 2, 3 };
+		assertThat(Arrayz.parallelStream(array).collect(Collectors.toList())).isEqualTo(
+				Arrays.asList((short) 1, (short) 2, (short) 3));
+	}
 }
