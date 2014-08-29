@@ -8,9 +8,6 @@ package javaslang;
 import static javaslang.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.assertThat;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.junit.Test;
 
 public class ArrayzTest {
@@ -19,6 +16,60 @@ public class ArrayzTest {
 	public void shouldNotInstantiable() {
 		assertThat(Arrayz.class).isNotInstantiable();
 	}
+
+	// -- array creation
+
+	@Test
+	public void shouldCreateArrayOfVarargs() {
+		final String[] expected = { "" };
+		assertThat(Arrayz.of("")).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldCreateNewArrayOfSpecificComponentType() {
+		assertThat(Arrayz.newArray(String.class, 1).getClass().getComponentType().getName()).isEqualTo(
+				"java.lang.String");
+	}
+
+	@Test
+	public void shouldCreateNewTypedArrayOfSpecificLength() {
+		assertThat(Arrayz.newArray(String.class, 3).length).isEqualTo(3);
+	}
+
+	@Test
+	public void shouldGetComponentTypeOfDeclaredArray() {
+		final String[] array = { "test" };
+		assertThat(Arrayz.getComponentType(array).getName()).isEqualTo("java.lang.String");
+	}
+
+	@Test
+	public void shouldGetComponentTypeOfLazilyCreatedArray() {
+		assertThat(Arrayz.getComponentType(Arrayz.of("test")).getName()).isEqualTo("java.lang.String");
+	}
+
+	@Test
+	public void shouldCombineTwoArrays() {
+		final String[] array1 = { "1", "2" };
+		final String[] array2 = { "3", "4" };
+		final String[] expected = { "1", "2", "3", "4" };
+		assertThat(Arrayz.combine(array1, array2)).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldAppendElementToArray() {
+		final String[] array = { "1", "2" };
+		final String[] expected = { "1", "2", "3" };
+		assertThat(Arrayz.append(array, "3")).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldPrependElementToArray() {
+		final String[] array = { "2", "3" };
+		final String[] expected = { "1", "2", "3" };
+		assertThat(Arrayz.prepend(array, "1")).isEqualTo(expected);
+	}
+
+	// -- isNullOrEmpty
 
 	@Test
 	public void shoudRecognizeNullArray() {
@@ -41,11 +92,14 @@ public class ArrayzTest {
 		assertThat(actual).isEqualTo(false);
 	}
 
-	@Test
-	public void shoudConvertIntArrayToList() {
-		final List<Integer> actual = Arrayz.asList(1, 2, 3);
-		final List<Integer> expected = Arrays.asList(1, 2, 3);
-		assertThat(actual).isEqualTo(expected);
-	}
+	// TODO
+
+	// -- stream
+
+	// TODO
+
+	// -- parallelStream
+
+	// TODO
 
 }

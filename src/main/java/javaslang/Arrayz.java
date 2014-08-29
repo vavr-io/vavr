@@ -9,14 +9,10 @@ import static javaslang.Requirements.requireNonNull;
 
 import java.lang.reflect.Array;
 import java.util.AbstractList;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javaslang.match.Match;
@@ -59,6 +55,11 @@ public final class Arrayz {
 
 	// -- array creation
 
+	@SafeVarargs
+	public static <T> T[] of(T... elements) {
+		return elements;
+	}
+
 	@SuppressWarnings("unchecked")
 	public static <T> T[] newArray(Class<T> componentType, int length) {
 		return (T[]) Array.newInstance(componentType, length);
@@ -86,56 +87,12 @@ public final class Arrayz {
 
 	public static <T> T[] append(T[] array, T element) {
 		requireNonNull(array, "array is null");
-		final T[] elements = newArray(getComponentType(array), array.length + 1);
-		return combine(array, elements);
+		return combine(array, Arrayz.of(element));
 	}
 
 	public static <T> T[] prepend(T[] array, T element) {
 		requireNonNull(array, "array is null");
-		final T[] elements = newArray(getComponentType(array), array.length + 1);
-		return combine(elements, array);
-	}
-
-	// -- asList
-
-	public static List<Boolean> asList(boolean... array) {
-		requireNonNull(array, "array is null");
-		return stream(array).collect(Collectors.toList());
-	}
-
-	public static List<Byte> asList(byte... array) {
-		requireNonNull(array, "array is null");
-		return createList(array.length, i -> array[i]);
-	}
-
-	public static List<Character> asList(char... array) {
-		requireNonNull(array, "array is null");
-		return createList(array.length, i -> array[i]);
-	}
-
-	public static List<Double> asList(double... array) {
-		requireNonNull(array, "array is null");
-		return createList(array.length, i -> array[i]);
-	}
-
-	public static List<Float> asList(float... array) {
-		requireNonNull(array, "array is null");
-		return createList(array.length, i -> array[i]);
-	}
-
-	public static List<Integer> asList(int... array) {
-		requireNonNull(array, "array is null");
-		return createList(array.length, i -> array[i]);
-	}
-
-	public static List<Long> asList(long... array) {
-		requireNonNull(array, "array is null");
-		return createList(array.length, i -> array[i]);
-	}
-
-	public static List<Short> asList(short... array) {
-		requireNonNull(array, "array is null");
-		return createList(array.length, i -> array[i]);
+		return combine(Arrayz.of(element), array);
 	}
 
 	// -- isNullOrEmpty
@@ -275,14 +232,6 @@ public final class Arrayz {
 		return ARRAY_TO_PARALLEL_STREAM_MATCHER.apply(object);
 	}
 
-	private static <T> List<T> createList(int size, Function<Integer, T> generator) {
-		final List<T> result = new ArrayList<T>(size);
-		for (int i = 0; i < size; i++) {
-			result.add(generator.apply(i));
-		}
-		return Collections.unmodifiableList(result);
-	}
-
 	private static class StreamableList<E> extends AbstractList<E> {
 
 		final int size;
@@ -308,5 +257,4 @@ public final class Arrayz {
 			return Spliterators.spliterator(this, Spliterator.ORDERED | Spliterator.IMMUTABLE);
 		}
 	}
-
 }
