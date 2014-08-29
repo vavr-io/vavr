@@ -69,11 +69,6 @@ public final class Arrayz {
 		return (Class<T>) array.getClass().getComponentType();
 	}
 
-	@SafeVarargs
-	public static <T> T[] of(T... elements) {
-		return elements;
-	}
-
 	public static <T> T[] combine(T[] array1, T[] array2) {
 		requireNonNull(array1, "array1 is null");
 		requireNonNull(array2, "array2 is null");
