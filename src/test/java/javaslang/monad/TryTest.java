@@ -12,14 +12,27 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javaslang.monad.Failure;
-import javaslang.monad.Try;
+import javaslang.monad.Failure.Cause;
 
 import org.junit.Test;
 
 public class TryTest {
 
 	private static final String OK = "ok";
+
+	// -- failure cause
+
+	@Test
+	public void shouldDetectFatalException() throws Exception {
+		final Cause cause = Cause.of(new OutOfMemoryError());
+		assertThat(cause.isFatal()).isTrue();
+	}
+
+	@Test
+	public void shouldDetectNonFatalException() throws Exception {
+		final Cause cause = Cause.of(new StackOverflowError());
+		assertThat(cause.isFatal()).isFalse();
+	}
 
 	// -- failure
 
