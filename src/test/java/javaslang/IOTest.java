@@ -5,13 +5,10 @@
  */
 package javaslang;
 
-import static javaslang.Assertions.assertThat;
 import static javaslang.IO.UTF8;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.InputStream;
-
-import javaslang.IO;
 
 import org.junit.Test;
 
@@ -19,7 +16,7 @@ public class IOTest {
 
 	@Test
 	public void shouldNotInstantiable() {
-		assertThat(IO.class).isNotInstantiable();
+		AssertJExtensions.assertThat(IO.class).isNotInstantiable();
 	}
 
 	@Test

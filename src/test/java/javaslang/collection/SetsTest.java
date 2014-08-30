@@ -5,10 +5,11 @@
  */
 package javaslang.collection;
 
-import static javaslang.Assertions.assertThat;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Set;
+
+import javaslang.AssertJExtensions;
 
 import org.junit.Test;
 
@@ -16,7 +17,7 @@ public class SetsTest {
 
 	@Test
 	public void shouldNotInstantiable() {
-		assertThat(Sets.class).isNotInstantiable();
+		AssertJExtensions.assertThat(Sets.class).isNotInstantiable();
 	}
 
 	// -- complement

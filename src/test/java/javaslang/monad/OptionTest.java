@@ -5,12 +5,12 @@
  */
 package javaslang.monad;
 
-import static javaslang.Assertions.assertThat;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
+import javaslang.AssertJExtensions;
 import javaslang.Serializables;
 
 import org.junit.Test;
@@ -45,7 +45,8 @@ public class OptionTest {
 
 	@Test
 	public void shouldThrowOnGetWhenValueIsNotPresent() {
-		assertThat(() -> Option.empty().get()).isThrowing(NoSuchElementException.class, "No value present");
+		AssertJExtensions.assertThat(() -> Option.empty().get()).isThrowing(NoSuchElementException.class,
+				"No value present");
 	}
 
 	// -- orElse
@@ -81,7 +82,7 @@ public class OptionTest {
 
 	@Test
 	public void shouldThrowOnOrElseThrowWhenValueIsNotPresent() {
-		assertThat(() -> Option.empty().orElseThrow(() -> new RuntimeException("none"))).isThrowing(
+		AssertJExtensions.assertThat(() -> Option.empty().orElseThrow(() -> new RuntimeException("none"))).isThrowing(
 				RuntimeException.class, "none");
 	}
 

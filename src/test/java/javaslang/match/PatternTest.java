@@ -5,11 +5,11 @@
  */
 package javaslang.match;
 
-import static javaslang.Assertions.assertThat;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.function.Function;
 
+import javaslang.AssertJExtensions;
 import javaslang.Tuples;
 import javaslang.Tuples.Tuple2;
 import javaslang.lambda.SerializableFunction;
@@ -20,7 +20,7 @@ public class PatternTest {
 
 	@Test
 	public void shouldNotInstantiable() {
-		assertThat(Patterns.class).isNotInstantiable();
+		AssertJExtensions.assertThat(Patterns.class).isNotInstantiable();
 	}
 
 	@Test

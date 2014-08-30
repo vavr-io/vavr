@@ -5,10 +5,9 @@
  */
 package javaslang;
 
-import static javaslang.Assertions.assertThat;
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -21,7 +20,7 @@ public class SerializablesTest {
 
 	@Test
 	public void shouldNotInstantiable() {
-		assertThat(Serializables.class).isNotInstantiable();
+		AssertJExtensions.assertThat(Serializables.class).isNotInstantiable();
 	}
 
 	@Test
@@ -36,6 +35,7 @@ public class SerializablesTest {
 				throw new IOException();
 			}
 		};
-		assertThat(() -> serialize(o)).isThrowing(IllegalStateException.class, "Error serializing object");
+		AssertJExtensions.assertThat(() -> serialize(o)).isThrowing(IllegalStateException.class,
+				"Error serializing object");
 	}
 }

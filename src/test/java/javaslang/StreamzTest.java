@@ -6,8 +6,7 @@
 package javaslang;
 
 import static java.util.stream.Collectors.toList;
-import static javaslang.Assertions.assertThat;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +23,7 @@ public class StreamzTest {
 
 	@Test
 	public void shouldNotInstantiable() {
-		assertThat(Streamz.class).isNotInstantiable();
+		AssertJExtensions.assertThat(Streamz.class).isNotInstantiable();
 	}
 
 	@Test
@@ -45,8 +44,8 @@ public class StreamzTest {
 	@Test
 	public void shouldThrowWhenZipWithParallelStream() {
 		final Stream<String> stream = Stream.of(I_WILL_BE_BACK).parallel();
-		assertThat(() -> Streamz.zipWithIndex(stream)).isThrowing(UnsatisfiedRequirementException.class,
-				"stream is parallel");
+		AssertJExtensions.assertThat(() -> Streamz.zipWithIndex(stream)).isThrowing(
+				UnsatisfiedRequirementException.class, "stream is parallel");
 	}
 
 }

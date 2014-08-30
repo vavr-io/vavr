@@ -5,12 +5,12 @@
  */
 package javaslang.match;
 
-import static javaslang.Assertions.assertThat;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import java.util.function.Function;
 
+import javaslang.AssertJExtensions;
 import javaslang.lambda.SerializableFunction;
 import javaslang.monad.Some;
 
@@ -20,7 +20,7 @@ public class MatchTest {
 
 	@Test
 	public void shouldNotInstantiable() {
-		assertThat(Matchs.class).isNotInstantiable();
+		AssertJExtensions.assertThat(Matchs.class).isNotInstantiable();
 	}
 
 	@Test

@@ -5,8 +5,7 @@
  */
 package javaslang;
 
-import static javaslang.Assertions.assertThat;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 
@@ -14,7 +13,7 @@ public class StringsTest {
 
 	@Test
 	public void shouldNotInstantiable() {
-		assertThat(Strings.class).isNotInstantiable();
+		AssertJExtensions.assertThat(Strings.class).isNotInstantiable();
 	}
 
 	@Test

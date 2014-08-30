@@ -5,11 +5,11 @@
  */
 package javaslang.lambda;
 
-import static javaslang.Assertions.assertThat;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.Serializable;
 
+import javaslang.AssertJExtensions;
 import javaslang.Tuples;
 import javaslang.Tuples.Tuple3;
 
@@ -19,7 +19,7 @@ public class LambdasTest {
 
 	@Test
 	public void shouldNotInstantiable() {
-		assertThat(Lambdas.class).isNotInstantiable();
+		AssertJExtensions.assertThat(Lambdas.class).isNotInstantiable();
 	}
 
 	@Test

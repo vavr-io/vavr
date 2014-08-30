@@ -5,8 +5,7 @@
  */
 package javaslang;
 
-import static javaslang.Assertions.assertThat;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -17,7 +16,7 @@ public class ArrayzTest {
 
 	@Test
 	public void shouldNotInstantiable() {
-		assertThat(Arrayz.class).isNotInstantiable();
+		AssertJExtensions.assertThat(Arrayz.class).isNotInstantiable();
 	}
 
 	// -- array creation

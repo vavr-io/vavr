@@ -5,10 +5,9 @@
  */
 package javaslang;
 
-import static javaslang.Assertions.assertThat;
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Objects;
 
@@ -36,7 +35,7 @@ public class TuplesTest {
 
 	@Test
 	public void shouldNotInstantiable() {
-		assertThat(Tuples.class).isNotInstantiable();
+		AssertJExtensions.assertThat(Tuples.class).isNotInstantiable();
 	}
 
 	// -- Tuple0
