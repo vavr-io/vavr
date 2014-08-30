@@ -129,5 +129,4 @@ public final class Success<T> implements Try<T>, Serializable {
 	public String toString() {
 		return String.format("Success(%s)", value);
 	}
-
 }

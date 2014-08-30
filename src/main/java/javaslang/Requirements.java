@@ -240,11 +240,10 @@ public final class Requirements {
 	 */
 	public static class UnsatisfiedRequirementException extends RuntimeException {
 
-		private static final long serialVersionUID = 1L;
+		private static final long serialVersionUID = -6601105224101209604L;
 
 		UnsatisfiedRequirementException(String message) {
 			super(message);
 		}
 	}
-
 }

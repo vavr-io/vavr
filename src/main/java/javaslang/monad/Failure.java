@@ -150,7 +150,7 @@ public final class Failure<T> implements Try<T>, Serializable {
 	 */
 	public static abstract class Cause extends RuntimeException {
 
-		private static final long serialVersionUID = 1L;
+		private static final long serialVersionUID = 1905549717320100279L;
 
 		Cause(Throwable cause) {
 			super(cause);
@@ -234,7 +234,5 @@ public final class Failure<T> implements Try<T>, Serializable {
 		public boolean isFatal() {
 			return false;
 		}
-
 	}
-
 }

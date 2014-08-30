@@ -12,7 +12,7 @@ import javaslang.Strings;
  */
 public class MatchError extends RuntimeException {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -1536768869337224689L;
 
 	private final Object obj;
 
