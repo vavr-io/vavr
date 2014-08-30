@@ -8,15 +8,13 @@ package javaslang.monad;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.util.NoSuchElementException;
-
-import javaslang.monad.Left;
-import javaslang.monad.Right;
+import java.util.Objects;
 
 import org.junit.Test;
 
 public class EitherTest {
 
-	// right
+	// -- Right
 
 	@Test(expected = NoSuchElementException.class)
 	public void shouldThrowOnLeftGetOnRight() {
@@ -53,7 +51,43 @@ public class EitherTest {
 		assertThat(actual).isFalse();
 	}
 
-	// left
+	// equals
+
+	@Test
+	public void shouldEqualRightIfObjectIsSame() {
+		final Right<?, ?> right = new Right<>(1);
+		assertThat(right.equals(right)).isTrue();
+	}
+
+	@Test
+	public void shouldNotEqualRightIfObjectIsNull() {
+		assertThat(new Right<>(1).equals(null)).isFalse();
+	}
+
+	@Test
+	public void shouldNotEqualRightIfObjectIsOfDifferentType() {
+		assertThat(new Right<>(1).equals(new Object())).isFalse();
+	}
+
+	@Test
+	public void shouldEqualRight() {
+		assertThat(new Right<>(1)).isEqualTo(new Right<>(1));
+	}
+
+	// hashCode
+
+	public void shouldHashRight() {
+		assertThat(new Right<>(1).hashCode()).isEqualTo(Objects.hashCode(1));
+	}
+
+	// toString
+
+	@Test
+	public void shouldConvertRightToString() {
+		assertThat(new Right<>(1).toString()).isEqualTo("Right(1)");
+	}
+
+	// -- Left
 
 	@Test(expected = NoSuchElementException.class)
 	public void shouldThrowOnRightGetOnLeft() {
@@ -90,4 +124,39 @@ public class EitherTest {
 		assertThat(actual).isFalse();
 	}
 
+	// equals
+
+	@Test
+	public void shouldEqualLeftIfObjectIsSame() {
+		final Left<?, ?> left = new Left<>(1);
+		assertThat(left.equals(left)).isTrue();
+	}
+
+	@Test
+	public void shouldNotEqualLeftIfObjectIsNull() {
+		assertThat(new Left<>(1).equals(null)).isFalse();
+	}
+
+	@Test
+	public void shouldNotEqualLeftIfObjectIsOfDifferentType() {
+		assertThat(new Left<>(1).equals(new Object())).isFalse();
+	}
+
+	@Test
+	public void shouldEqualLeft() {
+		assertThat(new Left<>(1)).isEqualTo(new Left<>(1));
+	}
+
+	// hashCode
+
+	public void shouldHashLeft() {
+		assertThat(new Left<>(1).hashCode()).isEqualTo(Objects.hashCode(1));
+	}
+
+	// toString
+
+	@Test
+	public void shouldConvertLeftToString() {
+		assertThat(new Left<>(1).toString()).isEqualTo("Left(1)");
+	}
 }
