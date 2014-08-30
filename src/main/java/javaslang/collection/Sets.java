@@ -10,6 +10,8 @@ import static javaslang.Requirements.requireNonNull;
 import java.util.HashSet;
 import java.util.Set;
 
+import javaslang.Requirements.UnsatisfiedRequirementException;
+
 /**
  * Extension methods for {@link java.util.Set}.
  */
@@ -60,12 +62,12 @@ public final class Sets {
 	 * @param set1 Starting set.
 	 * @param set2 Elements to be removed from set1.
 	 * @return All elements of set1 which are not in set2.
-	 * @throws IllegalStateException if set1 or set2 is null.
+	 * @throws UnsatisfiedRequirementException if set1 or set2 is null.
 	 */
 	public static <T> Set<T> complement(Set<T> set1, Set<T> set2) {
 		requireNonNull(set1, "set1 is null");
 		requireNonNull(set2, "set2 is null");
-		if (set1.isEmpty() || set2.isEmpty()) {
+		if (set1.isEmpty()) {
 			return Sets.of();
 		} else {
 			final Set<T> result = new HashSet<>(set1.size() + set2.size());
@@ -82,7 +84,7 @@ public final class Sets {
 	 * @param set1 A set.
 	 * @param set2 Another set.
 	 * @return All elements which are in both of the given sets, set1 and set2.
-	 * @throws IllegalStateException if set1 or set2 is null.
+	 * @throws UnsatisfiedRequirementException if set1 or set2 is null.
 	 */
 	public static <T> Set<T> intersection(Set<T> set1, Set<T> set2) {
 		requireNonNull(set1, "set1 is null");
@@ -104,15 +106,15 @@ public final class Sets {
 	 * @param set1 A set.
 	 * @param set2 Another set.
 	 * @return The union of the given sets.
-	 * @throws IllegalStateException if set1 or set2 is null.
+	 * @throws UnsatisfiedRequirementException if set1 or set2 is null.
 	 */
 	public static <T> Set<T> union(Set<T> set1, Set<T> set2) {
 		requireNonNull(set1, "set1 is null");
 		requireNonNull(set2, "set2 is null");
+		// DEV-NOTE: don't check if set1/set2 is empty in order to return a new set in any case
 		final Set<T> result = new HashSet<>(set1.size() + set2.size());
 		result.addAll(set1);
 		result.addAll(set2);
 		return result;
 	}
-
 }
