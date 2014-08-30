@@ -49,5 +49,4 @@ public class TreeTest {
 	public void shouldContainCorrectValueWhenSetValue() {
 		assertThat(new Tree<>(1).setValue(2).getValue()).isEqualTo(2);
 	}
-
 }

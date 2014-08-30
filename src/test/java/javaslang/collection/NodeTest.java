@@ -44,5 +44,4 @@ public class NodeTest {
 		final String expected = "(\"A\" \"B\" (\"C\" \"D\" (\"E\" (\"F\" \"G\"))))";
 		assertThat(actual).isEqualTo(expected);
 	}
-
 }

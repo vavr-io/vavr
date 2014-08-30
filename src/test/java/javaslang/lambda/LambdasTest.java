@@ -272,5 +272,4 @@ public class LambdasTest {
 	static interface ParameterTypeArrayOfBoolean extends Serializable {
 		void go(boolean[] b);
 	}
-
 }

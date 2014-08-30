@@ -202,5 +202,4 @@ public class ParserTest {
 	public void shouldMatchTheLexerRuleThatRecognizesTheMostInputCharacters() {
 		fail("not implemented");
 	}
-
 }

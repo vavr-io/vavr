@@ -34,5 +34,4 @@ public class IOTest {
 		final String actual = IO.toString(in, UTF8).orElse(null);
 		assertThat(actual).isEqualTo(expected);
 	}
-
 }

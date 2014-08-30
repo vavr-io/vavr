@@ -1105,5 +1105,4 @@ public class ListTest {
 		final Object expected = List.of(1, 2, 3);
 		assertThat(actual).isEqualTo(expected);
 	}
-
 }

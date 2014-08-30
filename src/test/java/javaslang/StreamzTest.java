@@ -47,5 +47,4 @@ public class StreamzTest {
 		AssertJExtensions.assertThat(() -> Streamz.zipWithIndex(stream)).isThrowing(
 				UnsatisfiedRequirementException.class, "stream is parallel");
 	}
-
 }

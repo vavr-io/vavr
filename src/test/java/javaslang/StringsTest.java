@@ -220,5 +220,4 @@ public class StringsTest {
 		final String[] actual = Strings.split("\\\\\\^^\\\\\\^\\\\", '^', '\\');
 		assertThat(actual).isEqualTo(new String[] { "\\^", "\\^\\" });
 	}
-
 }
