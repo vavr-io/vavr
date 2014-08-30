@@ -22,7 +22,7 @@ public class SerializablesTest {
 	}
 
 	@Test
-	public void shouldSerializeDeserialize() throws Exception {
+	public void shouldSerializeDeserialize() {
 		assertThat(deserialize(serialize(MAGIC_NUMBER))).isEqualTo(MAGIC_NUMBER);
 	}
 }

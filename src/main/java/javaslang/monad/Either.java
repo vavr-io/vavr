@@ -155,7 +155,7 @@ public interface Either<L, R> {
 
 		@Override
 		public String toString() {
-			return String.format("LeftProjection[%s]", either);
+			return String.format("LeftProjection(%s)", either);
 		}
 
 		private L asLeft() {
@@ -261,7 +261,7 @@ public interface Either<L, R> {
 
 		@Override
 		public String toString() {
-			return String.format("RightProjection[%s]", either);
+			return String.format("RightProjection(%s)", either);
 		}
 
 		private L asLeft() {

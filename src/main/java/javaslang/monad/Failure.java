@@ -13,6 +13,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import javaslang.Requirements.UnsatisfiedRequirementException;
+
 public final class Failure<T> implements Try<T>, Serializable {
 
 	private static final long serialVersionUID = 2836756728630414146L;
@@ -23,7 +25,7 @@ public final class Failure<T> implements Try<T>, Serializable {
 	 * Constructs a Failure.
 	 * 
 	 * @param t A cause of type Throwable, may not be null.
-	 * @throws IllegalStateException if t is null.
+	 * @throws UnsatisfiedRequirementException if t is null.
 	 */
 	public Failure(Throwable t) {
 		requireNonNull(t, "Throwable is null");
@@ -132,7 +134,7 @@ public final class Failure<T> implements Try<T>, Serializable {
 
 	@Override
 	public String toString() {
-		return String.format("Failure[%s]", cause.getCause());
+		return String.format("Failure(%s)", cause.getCause());
 	}
 
 	/**
@@ -186,7 +188,7 @@ public final class Failure<T> implements Try<T>, Serializable {
 		 * 
 		 * @param t A Throwable
 		 * @return A {@link Fatal}, if t is fatal, a {@link NonFatal} otherwise.
-		 * @throws IllegalStateException if t is null.
+		 * @throws UnsatisfiedRequirementException if t is null.
 		 */
 		public static Cause of(Throwable t) {
 			requireNonNull(t, "Throwable is null");

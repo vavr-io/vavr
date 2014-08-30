@@ -1079,20 +1079,20 @@ public class ListTest {
 	// -- Serializable interface
 
 	@Test
-	public void shouldSerializeDeserializeEmptyList() throws Exception {
+	public void shouldSerializeDeserializeEmptyList() {
 		final Object actual = deserialize(serialize(List.empty()));
 		final Object expected = List.empty();
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
-	public void shouldPreserveSingletonInstanceOnDeserialization() throws Exception {
+	public void shouldPreserveSingletonInstanceOnDeserialization() {
 		final boolean actual = deserialize(serialize(List.empty())) == List.empty();
 		assertThat(actual).isTrue();
 	}
 
 	@Test
-	public void shouldSerializeDeserializeNonEmptyList() throws Exception {
+	public void shouldSerializeDeserializeNonEmptyList() {
 		final Object actual = deserialize(serialize(List.of(1, 2, 3)));
 		final Object expected = List.of(1, 2, 3);
 		assertThat(actual).isEqualTo(expected);

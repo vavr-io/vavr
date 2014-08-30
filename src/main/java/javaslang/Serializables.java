@@ -20,18 +20,34 @@ public final class Serializables {
 		throw new AssertionError(Serializables.class.getName() + " is not intended to be instantiated.");
 	}
 
-	public static byte[] serialize(Object obj) throws IOException {
+	/**
+	 * Serializes a given object.
+	 * 
+	 * @param obj An object.
+	 * @return IllegalStateException if an IOException occurs when writing the obj to the ObjectOutputStream.
+	 */
+	public static byte[] serialize(Object obj) {
 		try (ByteArrayOutputStream buf = new ByteArrayOutputStream();
 				ObjectOutputStream stream = new ObjectOutputStream(buf)) {
 			stream.writeObject(obj);
 			return buf.toByteArray();
+		} catch (IOException x) {
+			throw new IllegalStateException("Error serializing object", x);
 		}
 	}
 
-	public static Object deserialize(byte[] objectData) throws ClassNotFoundException, IOException {
+	/**
+	 * Deserializes a given object.
+	 * 
+	 * @param objectData A serialized object.
+	 * @return IllegalStateException if an IOException occurs when reading from the ObjectInputStream or the serialized
+	 *         class cannot be found.
+	 */
+	public static Object deserialize(byte[] objectData) {
 		try (ObjectInputStream stream = new ObjectInputStream(new ByteArrayInputStream(objectData))) {
 			return stream.readObject();
+		} catch (IOException | ClassNotFoundException x) {
+			throw new IllegalStateException("Error deserializing object", x);
 		}
 	}
-
 }

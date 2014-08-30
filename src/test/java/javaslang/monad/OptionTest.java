@@ -9,10 +9,9 @@ import static javaslang.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
-import javaslang.monad.None;
-import javaslang.monad.Option;
-import javaslang.monad.Some;
+import javaslang.Serializables;
 
 import org.junit.Test;
 
@@ -169,5 +168,76 @@ public class OptionTest {
 		final int[] actual = new int[] { -1 };
 		Option.<Integer> empty().forEach(i -> actual[0] = i);
 		assertThat(actual[0]).isEqualTo(-1);
+	}
+
+	// -- equals
+
+	@Test
+	public void shouldEqualNoneIfObjectIsSame() {
+		final None<?> none = None.instance();
+		assertThat(none.equals(none)).isTrue();
+	}
+
+	@Test
+	public void shouldEqualSomeIfObjectIsSame() {
+		final Some<?> some = new Some<>(1);
+		assertThat(some.equals(some)).isTrue();
+	}
+
+	@Test
+	public void shouldNotEqualNoneIfObjectIsNull() {
+		assertThat(None.instance().equals(null)).isFalse();
+	}
+
+	@Test
+	public void shouldNotEqualSomeIfObjectIsNull() {
+		assertThat(new Some<>(1).equals(null)).isFalse();
+	}
+
+	@Test
+	public void shouldNotEqualNoneIfObjectIsOfDifferentType() {
+		assertThat(None.instance().equals(new Object())).isFalse();
+	}
+
+	@Test
+	public void shouldNotEqualSomeIfObjectIsOfDifferentType() {
+		assertThat(new Some<>(1).equals(new Object())).isFalse();
+	}
+
+	@Test
+	public void shouldEqualSome() {
+		assertThat(new Some<>(1)).isEqualTo(new Some<>(1));
+	}
+
+	// -- hashCode
+
+	@Test
+	public void shouldHashNone() {
+		assertThat(None.instance().hashCode()).isEqualTo(Objects.hash());
+	}
+
+	@Test
+	public void shouldHashSome() {
+		assertThat(new Some<>(1).hashCode()).isEqualTo(Objects.hashCode(1));
+	}
+
+	// -- toString
+
+	@Test
+	public void shouldConvertSomeToString() {
+		assertThat(new Some<>(1).toString()).isEqualTo("Some(1)");
+	}
+
+	@Test
+	public void shouldConvertNoneToString() {
+		assertThat(None.instance().toString()).isEqualTo("None");
+	}
+
+	// -- serialization
+
+	@Test
+	public void shouldPreserveSingletonWhenDeserializingNone() {
+		final Object none = Serializables.deserialize(Serializables.serialize(None.instance()));
+		assertThat(none == None.instance()).isTrue();
 	}
 }

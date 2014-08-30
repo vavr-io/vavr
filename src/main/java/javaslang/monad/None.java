@@ -7,6 +7,7 @@ package javaslang.monad;
 
 import java.io.Serializable;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -100,7 +101,15 @@ public final class None<T> implements Option<T>, Serializable {
 		// nothing to do
 	}
 
-	// super.equals and super.hashCode are fine because this is a singleton
+	@Override
+	public boolean equals(Object o) {
+		return o == this;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash();
+	}
 
 	@Override
 	public String toString() {

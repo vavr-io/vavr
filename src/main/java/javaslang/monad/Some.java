@@ -102,7 +102,7 @@ public final class Some<T> implements Option<T>, Serializable {
 
 	@Override
 	public String toString() {
-		return String.format("Some[%s]", value);
+		return String.format("Some(%s)", value);
 	}
 
 }

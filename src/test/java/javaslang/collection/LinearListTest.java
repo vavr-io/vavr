@@ -25,31 +25,35 @@ public class LinearListTest {
 	}
 
 	@Test
-	public void shouldNotDeserializeLinearListWithSizeLessThanOne() throws Exception {
+	public void shouldNotDeserializeLinearListWithSizeLessThanOne() {
 		Assertions.assertThat(() -> {
-			/*
-			 * This implementation is stable regarding jvm impl changes of object serialization The index of the number
-			 * of List elements is gathered dynamically.
-			 */
-			final byte[] listWithOneElement = Serializables.serialize(List.of(0));
-			final byte[] listWithTwoElements = Serializables.serialize(List.of(0, 0));
-			int index = -1;
-			for (int i = 0; i < listWithOneElement.length && index == -1; i++) {
-				final byte b1 = listWithOneElement[i];
-				final byte b2 = listWithTwoElements[i];
-				if (b1 != b2) {
-					if (b1 != 1 || b2 != 2) {
-						throw new IllegalStateException("Difference does not indicate number of elements.");
-					} else {
-						index = i;
+			try {
+				/*
+				 * This implementation is stable regarding jvm impl changes of object serialization The index of the
+				 * number of List elements is gathered dynamically.
+				 */
+				final byte[] listWithOneElement = Serializables.serialize(List.of(0));
+				final byte[] listWithTwoElements = Serializables.serialize(List.of(0, 0));
+				int index = -1;
+				for (int i = 0; i < listWithOneElement.length && index == -1; i++) {
+					final byte b1 = listWithOneElement[i];
+					final byte b2 = listWithTwoElements[i];
+					if (b1 != b2) {
+						if (b1 != 1 || b2 != 2) {
+							throw new IllegalStateException("Difference does not indicate number of elements.");
+						} else {
+							index = i;
+						}
 					}
 				}
+				/*
+				 * Hack the serialized data and fake zero elements.
+				 */
+				listWithOneElement[index] = 0;
+				Serializables.deserialize(listWithOneElement);
+			} catch (IllegalStateException x) {
+				throw (x.getCause() != null) ? x.getCause() : x;
 			}
-			/*
-			 * Hack the serialized data and fake zero elements.
-			 */
-			listWithOneElement[index] = 0;
-			Serializables.deserialize(listWithOneElement);
 		}).isThrowing(InvalidObjectException.class, "No elements");
 	}
 

@@ -610,20 +610,20 @@ public class TuplesTest {
 	// -- Serializable interface
 
 	@Test
-	public void shouldSerializeDeserializeTuple0() throws Exception {
+	public void shouldSerializeDeserializeTuple0() {
 		final Object actual = deserialize(serialize(Tuple0.instance()));
 		final Object expected = Tuple0.instance();
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
-	public void shouldPreserveSingletonInstanceOnDeserialization() throws Exception {
+	public void shouldPreserveSingletonInstanceOnDeserialization() {
 		final boolean actual = deserialize(serialize(Tuple0.instance())) == Tuple0.instance();
 		assertThat(actual).isTrue();
 	}
 
 	@Test
-	public void shouldSerializeDeserializeNonEmptyList() throws Exception {
+	public void shouldSerializeDeserializeNonEmptyList() {
 		final Object actual = deserialize(serialize(Tuples.of(1, 2, 3)));
 		final Object expected = Tuples.of(1, 2, 3);
 		assertThat(actual).isEqualTo(expected);
