@@ -22,8 +22,13 @@ public final class Assertions {
 		return new ClassAssert(clazz);
 	}
 
-	public static RunnableAssert assertThat(Runnable test) {
+	public static RunnableAssert assertThat(CheckedRunnable test) {
 		return new RunnableAssert(test);
+	}
+
+	@FunctionalInterface
+	public static interface CheckedRunnable {
+		void run() throws Throwable;
 	}
 
 	public static class ClassAssert {
@@ -55,9 +60,9 @@ public final class Assertions {
 
 	public static class RunnableAssert {
 
-		final Runnable test;
+		final CheckedRunnable test;
 
-		RunnableAssert(Runnable test) {
+		RunnableAssert(CheckedRunnable test) {
 			this.test = test;
 		}
 

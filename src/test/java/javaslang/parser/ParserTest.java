@@ -8,6 +8,7 @@ package javaslang.parser;
 import static javaslang.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.fail;
+import javaslang.Assertions.CheckedRunnable;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -47,7 +48,7 @@ public class ParserTest {
 
 	@Test
 	public void shouldNotParseCharNotWithinCharRange() {
-		final Runnable actual = () -> parse(new Parsers.CharRange('a', 'z'), "@@@", false);
+		final CheckedRunnable actual = () -> parse(new Parsers.CharRange('a', 'z'), "@@@", false);
 		assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
@@ -66,7 +67,7 @@ public class ParserTest {
 
 	@Test
 	public void shouldNotParseCharNotWithinCharSetWithRange() {
-		final Runnable actual = () -> parse(new Parsers.CharSet("a-z"), "@@@", false);
+		final CheckedRunnable actual = () -> parse(new Parsers.CharSet("a-z"), "@@@", false);
 		assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
@@ -84,7 +85,7 @@ public class ParserTest {
 
 	@Test
 	public void shouldNotParseChartNotWithinFullFledgedCharSet() {
-		final Runnable actual = () -> parse(new Parsers.CharSet("a-z$_A-Z"), "@@@", false);
+		final CheckedRunnable actual = () -> parse(new Parsers.CharSet("a-z$_A-Z"), "@@@", false);
 		assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
@@ -103,7 +104,7 @@ public class ParserTest {
 
 	@Test
 	public void shouldRecognizeNotEOF() {
-		final Runnable actual = () -> parse(Parsers.EOF.INSTANCE, "abc", false);
+		final CheckedRunnable actual = () -> parse(Parsers.EOF.INSTANCE, "abc", false);
 		assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
@@ -122,7 +123,7 @@ public class ParserTest {
 
 	@Test
 	public void shouldNotParseLiteralIfNotMatching() {
-		final Runnable actual = () -> parse(new Parsers.Literal("no match"), "literal!", false);
+		final CheckedRunnable actual = () -> parse(new Parsers.Literal("no match"), "literal!", false);
 		assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
