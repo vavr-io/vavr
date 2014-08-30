@@ -76,6 +76,7 @@ public class EitherTest {
 
 	// hashCode
 
+	@Test
 	public void shouldHashRight() {
 		assertThat(new Right<>(1).hashCode()).isEqualTo(Objects.hashCode(1));
 	}
@@ -149,6 +150,7 @@ public class EitherTest {
 
 	// hashCode
 
+	@Test
 	public void shouldHashLeft() {
 		assertThat(new Left<>(1).hashCode()).isEqualTo(Objects.hashCode(1));
 	}
