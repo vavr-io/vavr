@@ -6,6 +6,7 @@
 package javaslang;
 
 import static javaslang.Assertions.assertThat;
+import static org.fest.assertions.api.Assertions.assertThat;
 import javaslang.Requirements.UnsatisfiedRequirementException;
 
 import org.junit.Test;
@@ -17,28 +18,290 @@ public class RequirementsTest {
 		assertThat(Requirements.class).isNotInstantiable();
 	}
 
+	// -- require(condition, message)
+
 	@Test
-	public void shouldPassOnTrueCondition() {
-		Requirements.require(true, "you will never see this");
-	}
-
-	@Test(expected = UnsatisfiedRequirementException.class)
-	public void shouldThrowOnFalseCondition() {
-		Requirements.require(false, "expected");
-	}
-
-	@Test(expected = Error.class)
-	public void shouldEvaluateNonLambdas() {
-		Requirements.require(true, getMessage());
+	public void shouldThrowOnRequireWithMessageWhenConditionIsFalse() {
+		assertThat(() -> Requirements.require(false, "false")).isThrowing(UnsatisfiedRequirementException.class,
+				"false");
 	}
 
 	@Test
-	public void shouldNotEvaluateLambdas() {
-		Requirements.require(true, () -> getMessage());
+	public void shouldPassOnRequireWithMessageWhenConditionIsTrue() {
+		Requirements.require(true, "");
 	}
 
-	private String getMessage() {
-		throw new Error();
+	// -- require(condition, () -> message)
+
+	@Test
+	public void shouldThrowOnRequireWithMessageSupplierWhenConditionIsFalse() {
+		assertThat(() -> Requirements.require(false, "false")).isThrowing(UnsatisfiedRequirementException.class,
+				"false");
 	}
 
+	@Test
+	public void shouldPassOnRequireWithMessageSupplierWhenConditionIsTrue() {
+		Requirements.require(true, "");
+	}
+
+	// -- requireNonNull(obj)
+
+	@Test
+	public void shouldRequireNonNullOnNonNull() {
+		final Object o = new Object();
+		assertThat(Requirements.requireNonNull(o) == o).isTrue();
+	}
+
+	@Test
+	public void shouldRequireNonNullOnNull() {
+		assertThat(() -> Requirements.requireNonNull(null)).isThrowing(UnsatisfiedRequirementException.class,
+				"Object is null");
+	}
+
+	// -- requireNonNull(obj, message)
+
+	@Test
+	public void shouldRequireNonNullOnNonNullWithMessage() {
+		final Object o = new Object();
+		assertThat(Requirements.requireNonNull(o, "") == o).isTrue();
+	}
+
+	@Test
+	public void shouldRequireNonNullOnNulWithMessage() {
+		assertThat(() -> Requirements.requireNonNull(null, "null")).isThrowing(UnsatisfiedRequirementException.class,
+				"null");
+	}
+
+	// -- requireNonNull(obj, () -> message)
+
+	@Test
+	public void shouldRequireNonNullOnNonNullWithMessageSupplier() {
+		final Object o = new Object();
+		assertThat(Requirements.requireNonNull(o, () -> "") == o).isTrue();
+	}
+
+	@Test
+	public void shouldRequireNonNullOnNulWithMessageSupplier() {
+		assertThat(() -> Requirements.requireNonNull(null, () -> "null")).isThrowing(
+				UnsatisfiedRequirementException.class, "null");
+	}
+
+	// -- requireNotNullOrEmpty(array)
+
+	@Test
+	public void shouldThrowOnRequireNotNullOrEmptyForArrayWhenNull() {
+		final Object[] array = null;
+		assertThat(() -> Requirements.requireNotNullOrEmpty(array)).isThrowing(UnsatisfiedRequirementException.class,
+				"Object is null");
+	}
+
+	@Test
+	public void shouldThrowOnRequireNotNullOrEmptyForArrayWhenEmpty() {
+		final Object[] array = {};
+		assertThat(() -> Requirements.requireNotNullOrEmpty(array)).isThrowing(UnsatisfiedRequirementException.class,
+				"Array is empty");
+	}
+
+	@Test
+	public void shouldPassOnRequireNotNullOrEmptyForArrayWhenNotNullOrEmpty() {
+		final Object[] array = { null };
+		assertThat(Requirements.requireNotNullOrEmpty(array) == array).isTrue();
+	}
+
+	// -- requireNotNullOrEmpty(array, message)
+
+	@Test
+	public void shouldThrowOnRequireNotNullOrEmptyForArrayWithMessageWhenNull() {
+		final Object[] array = null;
+		assertThat(() -> Requirements.requireNotNullOrEmpty(array, "null")).isThrowing(
+				UnsatisfiedRequirementException.class, "null");
+	}
+
+	@Test
+	public void shouldThrowOnRequireNotNullOrEmptyForArrayWithMessageWhenEmpty() {
+		final Object[] array = {};
+		assertThat(() -> Requirements.requireNotNullOrEmpty(array, "empty")).isThrowing(
+				UnsatisfiedRequirementException.class, "empty");
+	}
+
+	@Test
+	public void shouldPassOnRequireNotNullOrEmptyForArrayWithMessageWhenNotNullOrEmpty() {
+		final Object[] array = { null };
+		assertThat(Requirements.requireNotNullOrEmpty(array, "") == array).isTrue();
+	}
+
+	// -- requireNotNullOrEmpty(array, () -> message)
+
+	@Test
+	public void shouldThrowOnRequireNotNullOrEmptyForArrayWithMessageSupplierWhenNull() {
+		final Object[] array = null;
+		assertThat(() -> Requirements.requireNotNullOrEmpty(array, () -> "null")).isThrowing(
+				UnsatisfiedRequirementException.class, "null");
+	}
+
+	@Test
+	public void shouldThrowOnRequireNotNullOrEmptyForArrayWithMessageSupplierWhenEmpty() {
+		final Object[] array = {};
+		assertThat(() -> Requirements.requireNotNullOrEmpty(array, () -> "empty")).isThrowing(
+				UnsatisfiedRequirementException.class, "empty");
+	}
+
+	@Test
+	public void shouldPassOnRequireNotNullOrEmptyForArrayWithMessageSupplierWhenNotNullOrEmpty() {
+		final Object[] array = { null };
+		assertThat(Requirements.requireNotNullOrEmpty(array, () -> "") == array).isTrue();
+	}
+
+	// -- requireNotNullOrEmpty(charSequence)
+
+	@Test
+	public void shouldThrowOnRequireNotNullOrEmptyForCharSequenceWhenNull() {
+		final CharSequence charSequence = null;
+		assertThat(() -> Requirements.requireNotNullOrEmpty(charSequence)).isThrowing(
+				UnsatisfiedRequirementException.class, "Object is null");
+	}
+
+	@Test
+	public void shouldThrowOnRequireNotNullOrEmptyForCharSequenceWhenEmpty() {
+		final CharSequence charSequence = "";
+		assertThat(() -> Requirements.requireNotNullOrEmpty(charSequence)).isThrowing(
+				UnsatisfiedRequirementException.class, "CharSequence is empty");
+	}
+
+	@Test
+	public void shouldPassOnRequireNotNullOrEmptyForCharSequenceWhenNotNullOrEmpty() {
+		final CharSequence charSequence = " ";
+		assertThat(Requirements.requireNotNullOrEmpty(charSequence) == charSequence).isTrue();
+	}
+
+	// -- requireNotNullOrEmpty(array, message)
+
+	@Test
+	public void shouldThrowOnRequireNotNullOrEmptyForCharSequenceWithMessageWhenNull() {
+		final CharSequence charSequence = null;
+		assertThat(() -> Requirements.requireNotNullOrEmpty(charSequence, "null")).isThrowing(
+				UnsatisfiedRequirementException.class, "null");
+	}
+
+	@Test
+	public void shouldThrowOnRequireNotNullOrEmptyForCharSequenceWithMessageWhenEmpty() {
+		final CharSequence charSequence = "";
+		assertThat(() -> Requirements.requireNotNullOrEmpty(charSequence, "empty")).isThrowing(
+				UnsatisfiedRequirementException.class, "empty");
+	}
+
+	@Test
+	public void shouldPassOnRequireNotNullOrEmptyForCharSequenceWithMessageWhenNotNullOrEmpty() {
+		final CharSequence charSequence = " ";
+		assertThat(Requirements.requireNotNullOrEmpty(charSequence, "") == charSequence).isTrue();
+	}
+
+	// -- requireNotNullOrEmpty(charSequence, () -> message)
+
+	@Test
+	public void shouldThrowOnRequireNotNullOrEmptyForCharSequenceWithMessageSupplierWhenNull() {
+		final CharSequence charSequence = null;
+		assertThat(() -> Requirements.requireNotNullOrEmpty(charSequence, () -> "null")).isThrowing(
+				UnsatisfiedRequirementException.class, "null");
+	}
+
+	@Test
+	public void shouldThrowOnRequireNotNullOrEmptyForCharSequenceWithMessageSupplierWhenEmpty() {
+		final CharSequence charSequence = "";
+		assertThat(() -> Requirements.requireNotNullOrEmpty(charSequence, () -> "empty")).isThrowing(
+				UnsatisfiedRequirementException.class, "empty");
+	}
+
+	@Test
+	public void shouldPassOnRequireNotNullOrEmptyForCharSequenceWithMessageSupplierWhenNotNullOrEmpty() {
+		final CharSequence charSequence = " ";
+		assertThat(Requirements.requireNotNullOrEmpty(charSequence, () -> "") == charSequence).isTrue();
+	}
+
+	// -- requireNotNullOrEmptyTrimmed(charSequence)
+
+	@Test
+	public void shouldThrowOnRequireNotNullOrEmptyTrimmedForCharSequenceWhenNull() {
+		final CharSequence charSequence = null;
+		assertThat(() -> Requirements.requireNotNullOrEmptyTrimmed(charSequence)).isThrowing(
+				UnsatisfiedRequirementException.class, "Object is null");
+	}
+
+	@Test
+	public void shouldThrowOnRequireNotNullOrEmptyTrimmedForCharSequenceWhenEmpty() {
+		final CharSequence charSequence = "";
+		assertThat(() -> Requirements.requireNotNullOrEmptyTrimmed(charSequence)).isThrowing(
+				UnsatisfiedRequirementException.class, "CharSequence is empty");
+	}
+
+	@Test
+	public void shouldThrowOnRequireNotNullOrEmptyTrimmedForCharSequenceWhenWhitespaceTrimmed() {
+		final CharSequence charSequence = " ";
+		assertThat(() -> Requirements.requireNotNullOrEmptyTrimmed(charSequence)).isThrowing(
+				UnsatisfiedRequirementException.class, "CharSequence is empty");
+	}
+
+	@Test
+	public void shouldPassOnRequireNotNullOrEmptyTrimmedForCharSequenceWhenNotNullOrEmptyTrimmed() {
+		final CharSequence charSequence = ".";
+		assertThat(Requirements.requireNotNullOrEmptyTrimmed(charSequence) == charSequence).isTrue();
+	}
+
+	// -- requireNotNullOrEmptyTrimmed(array, message)
+
+	@Test
+	public void shouldThrowOnRequireNotNullOrEmptyTrimmedForCharSequenceWithMessageWhenNull() {
+		final CharSequence charSequence = null;
+		assertThat(() -> Requirements.requireNotNullOrEmptyTrimmed(charSequence, "null")).isThrowing(
+				UnsatisfiedRequirementException.class, "null");
+	}
+
+	@Test
+	public void shouldThrowOnRequireNotNullOrEmptyTrimmedForCharSequenceWithMessageWhenEmpty() {
+		final CharSequence charSequence = "";
+		assertThat(() -> Requirements.requireNotNullOrEmptyTrimmed(charSequence, "empty")).isThrowing(
+				UnsatisfiedRequirementException.class, "empty");
+	}
+
+	@Test
+	public void shouldThrowOnRequireNotNullOrEmptyTrimmedForCharSequenceWithMessageWhenWhitespaceTrimmed() {
+		final CharSequence charSequence = " ";
+		assertThat(() -> Requirements.requireNotNullOrEmptyTrimmed(charSequence, "empty")).isThrowing(
+				UnsatisfiedRequirementException.class, "empty");
+	}
+
+	@Test
+	public void shouldPassOnRequireNotNullOrEmptyTrimmedForCharSequenceWithMessageWhenNotNullOrEmptyTrimmed() {
+		final CharSequence charSequence = ".";
+		assertThat(Requirements.requireNotNullOrEmptyTrimmed(charSequence, "") == charSequence).isTrue();
+	}
+
+	// -- requireNotNullOrEmptyTrimmed(charSequence, () -> message)
+
+	@Test
+	public void shouldThrowOnRequireNotNullOrEmptyTrimmedForCharSequenceWithMessageSupplierWhenNull() {
+		final CharSequence charSequence = null;
+		assertThat(() -> Requirements.requireNotNullOrEmptyTrimmed(charSequence, () -> "null")).isThrowing(
+				UnsatisfiedRequirementException.class, "null");
+	}
+
+	@Test
+	public void shouldThrowOnRequireNotNullOrEmptyTrimmedForCharSequenceWithMessageSupplierWhenEmpty() {
+		final CharSequence charSequence = "";
+		assertThat(() -> Requirements.requireNotNullOrEmptyTrimmed(charSequence, () -> "empty")).isThrowing(
+				UnsatisfiedRequirementException.class, "empty");
+	}
+
+	@Test
+	public void shouldThrowOnRequireNotNullOrEmptyTrimmedForCharSequenceWithMessageSupplierWhenWhitespaceTrimmed() {
+		final CharSequence charSequence = " ";
+		assertThat(() -> Requirements.requireNotNullOrEmptyTrimmed(charSequence, () -> "empty")).isThrowing(
+				UnsatisfiedRequirementException.class, "empty");
+	}
+
+	@Test
+	public void shouldPassOnRequireNotNullOrEmptyTrimmedForCharSequenceWithMessageSupplierWhenNotNullOrEmptyTrimmed() {
+		final CharSequence charSequence = ".";
+		assertThat(Requirements.requireNotNullOrEmptyTrimmed(charSequence, () -> "") == charSequence).isTrue();
+	}
 }

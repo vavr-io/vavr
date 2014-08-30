@@ -119,7 +119,7 @@ public final class Requirements {
 	 * @throws UnsatisfiedRequirementException If the given array is empty, contains the given message.
 	 */
 	public static <T> T[] requireNotNullOrEmpty(T[] array, String message) {
-		if (requireNonNull(array).length == 0) {
+		if (requireNonNull(array, message).length == 0) {
 			throw new UnsatisfiedRequirementException(message);
 		}
 		return array;
@@ -136,7 +136,7 @@ public final class Requirements {
 	 * @throws NullPointerException If messageSupplier is null.
 	 */
 	public static <T> T[] requireNotNullOrEmpty(T[] array, Supplier<String> messageSupplier) {
-		if (requireNonNull(array).length == 0) {
+		if (requireNonNull(array, messageSupplier).length == 0) {
 			throw new UnsatisfiedRequirementException(messageSupplier.get());
 		}
 		return array;
@@ -165,7 +165,7 @@ public final class Requirements {
 	 * @throws UnsatisfiedRequirementException If the given CharSequence is empty, contains the given message.
 	 */
 	public static CharSequence requireNotNullOrEmpty(CharSequence chars, String message) {
-		if (requireNonNull(chars).length() == 0) {
+		if (requireNonNull(chars, message).length() == 0) {
 			throw new UnsatisfiedRequirementException(message);
 		}
 		return chars;
@@ -181,7 +181,7 @@ public final class Requirements {
 	 * @throws NullPointerException If messageSupplier is null.
 	 */
 	public static CharSequence requireNotNullOrEmpty(CharSequence chars, Supplier<String> messageSupplier) {
-		if (requireNonNull(chars).length() == 0) {
+		if (requireNonNull(chars, messageSupplier).length() == 0) {
 			throw new UnsatisfiedRequirementException(messageSupplier.get());
 		}
 		return chars;
@@ -212,7 +212,7 @@ public final class Requirements {
 	 * @throws UnsatisfiedRequirementException If the given CharSequence is empty, contains the given message.
 	 */
 	public static CharSequence requireNotNullOrEmptyTrimmed(CharSequence chars, String message) {
-		if (requireNonNull(chars).toString().trim().length() == 0) {
+		if (requireNonNull(chars, message).toString().trim().length() == 0) {
 			throw new UnsatisfiedRequirementException(message);
 		}
 		return chars;
@@ -229,7 +229,7 @@ public final class Requirements {
 	 * @throws NullPointerException If messageSupplier is null.
 	 */
 	public static CharSequence requireNotNullOrEmptyTrimmed(CharSequence chars, Supplier<String> messageSupplier) {
-		if (requireNonNull(chars).toString().trim().length() == 0) {
+		if (requireNonNull(chars, messageSupplier).toString().trim().length() == 0) {
 			throw new UnsatisfiedRequirementException(messageSupplier.get());
 		}
 		return chars;
