@@ -54,8 +54,9 @@ public class RequirementsTest {
 
 	@Test
 	public void shouldRequireNonNullOnNull() {
-		assertThat(() -> Requirements.requireNonNull(null)).isThrowing(UnsatisfiedRequirementException.class,
-				"Object is null");
+		// TODO: jdk needs full qualified name javaslang.Assertions.assertThat() to compile, eclipse not
+		javaslang.Assertions.assertThat(() -> Requirements.requireNonNull(null)).isThrowing(
+				UnsatisfiedRequirementException.class, "Object is null");
 	}
 
 	// -- requireNonNull(obj, message)
@@ -68,8 +69,9 @@ public class RequirementsTest {
 
 	@Test
 	public void shouldRequireNonNullOnNulWithMessage() {
-		assertThat(() -> Requirements.requireNonNull(null, "null")).isThrowing(UnsatisfiedRequirementException.class,
-				"null");
+		// TODO: jdk needs full qualified name javaslang.Assertions.assertThat() to compile, eclipse not
+		javaslang.Assertions.assertThat(() -> Requirements.requireNonNull(null, "null")).isThrowing(
+				UnsatisfiedRequirementException.class, "null");
 	}
 
 	// -- requireNonNull(obj, () -> message)
@@ -82,7 +84,8 @@ public class RequirementsTest {
 
 	@Test
 	public void shouldRequireNonNullOnNulWithMessageSupplier() {
-		assertThat(() -> Requirements.requireNonNull(null, () -> "null")).isThrowing(
+		// TODO: jdk needs full qualified name javaslang.Assertions.assertThat() to compile, eclipse not
+		javaslang.Assertions.assertThat(() -> Requirements.requireNonNull(null, () -> "null")).isThrowing(
 				UnsatisfiedRequirementException.class, "null");
 	}
 
