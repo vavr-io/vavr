@@ -10,6 +10,9 @@ import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
 import static org.fest.assertions.api.Assertions.assertThat;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+
 import org.junit.Test;
 
 public class SerializablesTest {
@@ -24,5 +27,15 @@ public class SerializablesTest {
 	@Test
 	public void shouldSerializeDeserialize() {
 		assertThat(deserialize(serialize(MAGIC_NUMBER))).isEqualTo(MAGIC_NUMBER);
+	}
+
+	@Test
+	public void shouldThrowIllegalStateExceptionOnSerializationError() {
+		final Object o = new Object() {
+			private void writeObject(ObjectOutputStream o) throws IOException {
+				throw new IOException();
+			}
+		};
+		assertThat(() -> serialize(o)).isThrowing(IllegalStateException.class, "Error serializing object");
 	}
 }
