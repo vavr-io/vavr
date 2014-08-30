@@ -58,5 +58,4 @@ public final class EmptyList<E> extends AbstractList<E> implements Serializable 
 	private Object readResolve() {
 		return INSTANCE;
 	}
-
 }

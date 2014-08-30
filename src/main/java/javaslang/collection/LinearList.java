@@ -149,7 +149,5 @@ public final class LinearList<E> extends AbstractList<E> implements Serializable
 		private Object readResolve() {
 			return list;
 		}
-
 	}
-
 }
