@@ -35,13 +35,13 @@ public class RequirementsTest {
 
 	@Test
 	public void shouldThrowOnRequireWithMessageSupplierWhenConditionIsFalse() {
-		assertThat(() -> Requirements.require(false, "false")).isThrowing(UnsatisfiedRequirementException.class,
+		assertThat(() -> Requirements.require(false, () -> "false")).isThrowing(UnsatisfiedRequirementException.class,
 				"false");
 	}
 
 	@Test
 	public void shouldPassOnRequireWithMessageSupplierWhenConditionIsTrue() {
-		Requirements.require(true, "");
+		Requirements.require(true, () -> "");
 	}
 
 	// -- requireNonNull(obj)
