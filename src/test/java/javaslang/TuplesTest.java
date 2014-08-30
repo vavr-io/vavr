@@ -77,6 +77,12 @@ public class TuplesTest {
 		assertThat(tuple0().equals(tuple0())).isTrue();
 	}
 
+	@Test
+	public void shouldDeserializeSingletonOfTuple0() {
+		Object tuple0 = Serializables.deserialize(Serializables.serialize(Tuple0.instance()));
+		assertThat(tuple0 == Tuple0.instance()).isTrue();
+	}
+
 	// -- Tuple1
 
 	@Test
