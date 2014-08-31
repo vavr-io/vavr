@@ -155,8 +155,7 @@ public final class Failure<T> implements Try<T>, Serializable {
 	 * Use {@link Cause#of(Throwable)} to get an instance of Cause. The instance returned is either of type
 	 * {@link Fatal} or {@link NonFatal}.
 	 * <p>
-	 * Use {@link #get()}, which is a convenient method and essentially the same as {@link #getCause()}, to get the
-	 * wrapped Throwable. {@link #isFatal()} states, if this Cause is considered to be non-recoverable.
+	 * {@link #isFatal()} states, if this Cause is considered to be non-recoverable.
 	 */
 	public static abstract class Cause extends RuntimeException {
 
@@ -164,15 +163,6 @@ public final class Failure<T> implements Try<T>, Serializable {
 
 		Cause(Throwable cause) {
 			super(cause);
-		}
-
-		/**
-		 * Convenience method, returns the Throwable of this Cause which is considered either as fatal or non-fatal.
-		 * 
-		 * @return The Throwable of this Cause.
-		 */
-		public Throwable get() {
-			return getCause();
 		}
 
 		/**

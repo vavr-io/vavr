@@ -88,6 +88,14 @@ public class TryTest {
 	}
 
 	@Test
+	public void shouldRecoverWithThrowingOnFailure() {
+		final RuntimeException error = error();
+		assertThat(failure().recoverWith(x -> {
+			throw error;
+		})).isEqualTo(new Failure<>(error));
+	}
+
+	@Test
 	public void shouldConvertFailureToOption() {
 		assertThat(failure().toOption().isPresent()).isFalse();
 	}
@@ -341,7 +349,7 @@ public class TryTest {
 
 	// -- helpers
 
-	private Throwable error() {
+	private RuntimeException error() {
 		return new RuntimeException("error");
 	}
 
