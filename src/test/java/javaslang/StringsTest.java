@@ -29,6 +29,54 @@ public class StringsTest {
 	}
 
 	@Test
+	public void shouldConvertCharSequenceToString() {
+		final String actual = Strings.toString(new CharSequenceImpl("test"));
+		assertThat(actual).isEqualTo("\"test\"");
+	}
+
+	@Test
+	public void shouldConvertNonArrayClassToString() {
+		final String actual = Strings.toString(String.class);
+		assertThat(actual).isEqualTo(String.class.getName());
+	}
+
+	@Test
+	public void shouldConvertArrayClassToString() {
+		final String actual = Strings.toString(byte[][][].class);
+		assertThat(actual).isEqualTo("byte[][][]");
+	}
+
+	@Test
+	public void shouldConvertArrayToString() {
+		final String actual = Strings.toString(new byte[] { (byte) 1, (byte) 2, (byte) 3 });
+		assertThat(actual).isEqualTo("Array(1, 2, 3)");
+	}
+
+	@Test
+	public void shouldConvertArrayOfArraysToString() {
+		final String actual = Strings.toString(new byte[][] { { (byte) 1 }, { (byte) 2 }, { (byte) 3 } });
+		assertThat(actual).isEqualTo("Array(Array(1), Array(2), Array(3))");
+	}
+
+	@Test
+	public void shouldConvertJavaslangListToString() {
+		final String actual = Strings.toString(javaslang.collection.List.of(1, 2, 3));
+		assertThat(actual).isEqualTo("List(1, 2, 3)");
+	}
+
+	@Test
+	public void shouldConvertIterableToString() {
+		final String actual = Strings.toString(Arrays.asList(1, 2, 3));
+		assertThat(actual).isEqualTo("ArrayList(1, 2, 3)");
+	}
+
+	@Test
+	public void shouldConvertOtherObjectToString() {
+		final String actual = Strings.toString(new OtherObject());
+		assertThat(actual).isEqualTo("OtherObject");
+	}
+
+	@Test
 	public void shouldDetectDirectLoopOnToString() {
 		final Object[] loop = new Object[1];
 		loop[0] = loop;
@@ -87,25 +135,25 @@ public class StringsTest {
 
 	@Test
 	public void shouldRepeatCharZeroTimes() {
-		final String s = Strings.repeat("x", 0);
+		final String s = Strings.repeat('x', 0);
 		assertThat(s).isEqualTo("");
 	}
 
 	@Test
 	public void shouldRepeatCharOneTime() {
-		final String s = Strings.repeat("x", 1);
+		final String s = Strings.repeat('x', 1);
 		assertThat(s).isEqualTo("x");
 	}
 
 	@Test
 	public void shouldRepeatCharTwoTimes() {
-		final String s = Strings.repeat("x", 2);
+		final String s = Strings.repeat('x', 2);
 		assertThat(s).isEqualTo("xx");
 	}
 
 	@Test
 	public void shouldRepeatCharNegativeTimes() {
-		final String s = Strings.repeat("x", -2);
+		final String s = Strings.repeat('x', -2);
 		assertThat(s).isEqualTo("");
 	}
 
@@ -385,5 +433,41 @@ public class StringsTest {
 	public void shouldSplitTwoEscapedSeparatorsWithEscape() {
 		final String[] actual = Strings.split("\\\\\\^^\\\\\\^\\\\", '^', '\\');
 		assertThat(actual).isEqualTo(new String[] { "\\^", "\\^\\" });
+	}
+
+	static class CharSequenceImpl implements CharSequence {
+
+		final CharSequence delegate;
+
+		CharSequenceImpl(CharSequence delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public int length() {
+			return delegate.length();
+		}
+
+		@Override
+		public char charAt(int index) {
+			return delegate.charAt(index);
+		}
+
+		@Override
+		public CharSequence subSequence(int start, int end) {
+			return delegate.subSequence(start, end);
+		}
+
+		@Override
+		public String toString() {
+			return delegate.toString();
+		}
+	}
+
+	static class OtherObject {
+		@Override
+		public String toString() {
+			return getClass().getSimpleName();
+		}
 	}
 }

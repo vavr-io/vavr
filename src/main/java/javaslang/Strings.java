@@ -89,7 +89,7 @@ public final class Strings {
 			return "";
 		} else {
 			final char[] buf = new char[n];
-			fill(buf, ' ');
+			fill(buf, c);
 			return String.valueOf(buf);
 		}
 	}
