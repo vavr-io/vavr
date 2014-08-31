@@ -83,7 +83,7 @@ public final class Tuples {
 	}
 
 	private static String stringify(Object... objects) {
-		return Stream.of(objects).map(Strings::toString).collect(Collectors.joining(", ", "(", ")"));
+		return Stream.of(objects).map(Strings::toString).collect(Collectors.joining(", ", "Tuple(", ")"));
 	}
 
 	/**

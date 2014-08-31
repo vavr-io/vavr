@@ -5,21 +5,16 @@
  */
 package javaslang;
 
-import static java.lang.Math.max;
-import static java.util.Arrays.asList;
 import static java.util.Arrays.fill;
-import static java.util.regex.Pattern.compile;
 import static java.util.stream.Collectors.joining;
 import static javaslang.Requirements.require;
 import static javaslang.Requirements.requireNonNull;
 import static javaslang.Requirements.requireNotNullOrEmpty;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,13 +23,7 @@ import javaslang.Tuples.Tuple2;
 /**
  * Extension methods for {@link java.lang.String}.
  */
-// TODO: consider using CharSequence instead of String as method arguments
 public final class Strings {
-
-	/**
-	 * An end of line pattern (mac/unix/win)
-	 */
-	public static final Pattern EOL = compile("\\r\\n|\\n|\\r");
 
 	/**
 	 * Needed to detect indirect loops on recursive calls of {@link #toString(Object)}.
@@ -124,28 +113,41 @@ public final class Strings {
 	 * @return The escaped String.
 	 */
 	public static String escape(String s, char character, char escape) {
-		return s.chars().mapToObj(i -> {
+		return (s == null) ? null : s.chars().mapToObj(i -> {
 			final char c = (char) i;
 			return (c == character || c == escape) ? ("" + escape + c) : ("" + c);
 		}).collect(Collectors.joining());
 	}
 
 	/**
-	 * Computes line and column of index within s.
+	 * Computes line and column of index within a given text.
+	 * <p>
+	 * Line breaks:
+	 * <ul>
+	 * <li>{@code \r\n (Windows, DOS, OS/2, CP/M, TOS (Atari))}</li>
+	 * <li>{@code \n} (Unix, Linux, Android, Mac OS X, AmigaOS, BSD, etc.)</li>
+	 * <li>{@code \r} ((Mac OS up to Version 9, Apple II, C64))</li>
+	 * </ul>
+	 * <p>
+	 * Examples:
+	 * <ul>
+	 * <li>{@code lineAndColumn(null, 0)} throws 's is null'</li>
+	 * <li>{@code lineAndColumn(emptyDocument, 0)} = (1,1)</li>
+	 * <li>{@code lineAndColumn("text", 0)} = (1,1)</li>
+	 * <li>{@code lineAndColumn("text", 1)} = (1,2)</li>
+	 * <li>{@code lineAndColumn("text", "text".length())} = (1,5)</li>
+	 * <li>{@code lineAndColumn("lorem\nipsum", "lorem\nipsum".indexOf('\n'))} = (1,6)</li>
+	 * <li>{@code lineAndColumn("lorem\nipsum", "lorem\nipsum".indexOf('\n') + 1)} = (2,1)</li>
+	 * </ul>
 	 * 
 	 * @param s input
 	 * @param index {@code <= s.length}
 	 * @return {@code new int[] line, column }
 	 */
 	public static Tuple2<Integer, Integer> lineAndColumn(String s, int index) {
-		final String documentToCursor = s.substring(0, index);
-		final java.util.regex.Matcher matcher = EOL.matcher(documentToCursor);
-		int line = 1;
-		for (; matcher.find(); line++)
-			;
-		final int eol = max(documentToCursor.lastIndexOf("\r"), documentToCursor.lastIndexOf("\n"));
-		final int len = documentToCursor.length();
-		final int column = (len == 0) ? 1 : len - ((eol == -1) ? 0 : eol);
+		final String text = requireNonNull(s, "s is null").substring(0, index);
+		final int line = ("$" + text + "$").split("\\r\\n|\\n|\\r").length;
+		final int column = text.length() - Math.max(text.lastIndexOf("\r"), text.lastIndexOf("\n"));
 		return Tuples.of(line, column);
 	}
 
@@ -160,75 +162,10 @@ public final class Strings {
 	}
 
 	/**
-	 * Combines the elements of an array to a String using a specific delimiter. Shortcut for
-	 * <code>Arrays.asList(array).stream().map(Types::toString).collect(Collectors.joining(delimiter))</code> .
-	 *
-	 * @param <T> Type of elements in the given array.
-	 * @param array An array.
-	 * @param delimiter Element delimiter.
-	 * @return array[0] + delimiter + ... + array[n-1], where n = array.length
-	 * 
-	 * @throws NullPointerException If array is null.
-	 */
-	public static <T> String join(T[] array, CharSequence delimiter) {
-		requireNonNull(array, "array is null");
-		return join(asList(array), delimiter);
-	}
-
-	/**
-	 * Combines the elements of an array to a String using a specific delimiter, prefix and suffix.
-	 *
-	 * @param <T> Type of elements in the given array.
-	 * @param array An array.
-	 * @param delimiter Element delimiter.
-	 * @param prefix Prefix of the result String.
-	 * @param suffix Suffix of the result String.
-	 * @return prefix + array[0] + delimiter + ... + array[n-1] + suffix, where n = array.length
-	 * 
-	 * @throws NullPointerException If array is null.
-	 */
-	public static <T> String join(T[] array, CharSequence delimiter, CharSequence prefix, CharSequence suffix) {
-		requireNonNull(array, "array is null");
-		return join(asList(array), delimiter, prefix, suffix);
-	}
-
-	/**
-	 * Combines the elements of a collection to a String using a specific delimiter.
-	 *
-	 * @param <T> Type of elements in the given collection.
-	 * @param collection A Collection.
-	 * @param delimiter Element delimiter.
-	 * @return array[0] + delimiter + ... + array[n-1], where n = array.length
-	 * 
-	 * @throws NullPointerException If collection is null.
-	 */
-	public static <T> String join(Collection<T> collection, CharSequence delimiter) {
-		requireNonNull(collection, "collection is null");
-		return collection.stream().map(o -> toString(o)).collect(joining(delimiter));
-	}
-
-	/**
-	 * Combines the elements of a Collection to a String using a specific delimiter, prefix and suffix. Shortcut for
-	 * <code>collection.stream().map(Types::toString).collect(joining(delimiter, prefix, suffix))</code> .
-	 *
-	 * @param <T> Type of elements in the given collection.
-	 * @param collection A Collection.
-	 * @param delimiter Element delimiter.
-	 * @param prefix Prefix of the result String.
-	 * @param suffix Suffix of the result String.
-	 * @return prefix + array[0] + delimiter + ... + array[n-1] + suffix, where n = array.length
-	 * 
-	 * @throws NullPointerException If collection is null.
-	 */
-	public static <T> String join(Collection<T> collection, CharSequence delimiter, CharSequence prefix,
-			CharSequence suffix) {
-		requireNonNull(collection, "collection is null");
-		return collection.stream().map(o -> toString(o)).collect(joining(delimiter, prefix, suffix));
-	}
-
-	/**
 	 * Concatenates the given strings using the given separator character. Occurrences of escape or separator within a
-	 * string are escaped with the given escape character.
+	 * string are escaped with the given escape character. Shortcut for
+	 * {@code Stream.of(strings).map(s -> Strings.escape(s, separator, escape)).collect(Collectors.joining(String.valueOf(separator)))}
+	 * .
 	 * 
 	 * @param strings An array of Strings, not null.
 	 * @param separator A separator character.
@@ -241,17 +178,16 @@ public final class Strings {
 	public static String join(String[] strings, char separator, char escape) {
 		requireNonNull(strings, "strings is null");
 		require(separator != escape, "separator equals escape charater");
-		return Stream
-				.of(strings)
-				.map(s -> escape(s, separator, escape))
-				.collect(Collectors.joining(String.valueOf(separator)));
+		return Stream.of(strings).map(s -> escape(s, separator, escape)).collect(joining(String.valueOf(separator)));
 	}
 
 	/**
-	 * Convenience method that calls {@link #join(String[], char, char)} by converting the given Collection strings to a
-	 * String array.
+	 * Concatenates a given Iterable of strings using the given separator character. Occurrences of escape or separator
+	 * within a string are escaped with the given escape character. Shortcut for
+	 * {@code Streamz.stream(strings).map(s -> Strings.escape(s, separator, escape)).collect(Collectors.joining(String.valueOf(separator)))}
+	 * .
 	 * 
-	 * @param strings A Collection of Strings, not null.
+	 * @param strings An Iterable of Strings, not null.
 	 * @param separator A separator character.
 	 * @param escape An escape character.
 	 * @return The concatenation of the escaped strings using the given separator and escape character.
@@ -259,13 +195,13 @@ public final class Strings {
 	 * @throws IllegalArgumentException If separator equals escape.
 	 * @throws NullPointerException If strings is null.
 	 */
-	public static String join(Collection<String> strings, char separator, char escape) {
+	public static String join(Iterable<String> strings, char separator, char escape) {
 		requireNonNull(strings, "strings is null");
 		require(separator != escape, "separator equals escape charater");
-		return strings
-				.stream()
+		return Streamz
+				.stream(strings)
 				.map(s -> escape(s, separator, escape))
-				.collect(Collectors.joining(String.valueOf(separator)));
+				.collect(joining(String.valueOf(separator)));
 	}
 
 	/**
@@ -369,11 +305,11 @@ public final class Strings {
 		} else if (o instanceof Class) {
 			return toString((Class<?>) o, 0);
 		} else if (o.getClass().isArray()) {
-			return toString(Arrayz.toStream(o), ", ", "[", "]", visited, o);
-		} else if (o instanceof Set) {
-			return toString(((Set<?>) o).stream(), ", ", "{", "}", visited, o);
-		} else if (o instanceof Collection) {
-			return toString(((Collection<?>) o).stream(), ", ", "(", ")", visited, o);
+			return toString(Arrayz.toStream(o), ", ", "Array(", ")", visited, o);
+		} else if (o.getClass().getName().startsWith("javaslang.")) {
+			return o.toString();
+		} else if (o instanceof Iterable) {
+			return toString(Streamz.stream((Iterable<?>) o), ", ", o.getClass().getSimpleName() + "(", ")", visited, o);
 		} else {
 			return o.toString();
 		}

@@ -41,7 +41,7 @@ public class NodeTest {
 		final String actual = node("A", node("B"), node("C", node("D"), node("E", node("F", node("G")))))
 				.asTree()
 				.toString();
-		final String expected = "(\"A\" \"B\" (\"C\" \"D\" (\"E\" (\"F\" \"G\"))))";
+		final String expected = "Tree(\"A\" \"B\" (\"C\" \"D\" (\"E\" (\"F\" \"G\"))))";
 		assertThat(actual).isEqualTo(expected);
 	}
 }

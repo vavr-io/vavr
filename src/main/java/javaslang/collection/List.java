@@ -1097,7 +1097,7 @@ public interface List<E> extends Iterable<E> {
 
 		@Override
 		public String toString() {
-			return stream().map(Strings::toString).collect(joining(", ", "(", ")"));
+			return stream().map(Strings::toString).collect(joining(", ", "List(", ")"));
 		}
 
 	}

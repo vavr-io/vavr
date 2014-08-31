@@ -9,6 +9,7 @@ import static java.util.stream.Collectors.joining;
 
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import javaslang.Strings;
 
@@ -144,30 +145,36 @@ interface TreeLikeStructure<T, TREE extends TreeLikeStructure<T, ?>> {
 
 		@Override
 		public String toString() {
-			return toLispString();
+			return toString(() -> toLispString());
+		}
+
+		private String toString(Supplier<String> stringifier) {
+			final String string = stringifier.get();
+			return getClass().getSimpleName() + (isLeaf() ? "(" + string + ")" : string);
 		}
 
 		/**
-		 * Prints the complete tree in LISP format {@code (root child1 .. childN)}. Prints just the value if node is a
+		 * Prints the complete tree in LISP format {@code ClassName(root child1 .. childN)}, where <em>ClassName</em> is
+		 * {@code Node} or {@code Tree}, depending on the implementation. Prints {@code ClassName(value)} if node is a
 		 * leaf.
 		 * 
 		 * @return The string representation of this tree structure in LISP format.
 		 */
-		public String toLispString() {
+		private String toLispString() {
 			final String value = Strings.toString(getValue());
 			if (isLeaf()) {
 				return value;
 			} else {
 				final String children = getChildren()
 						.stream()
-						.map(AbstractTreeLikeStructure::toString)
+						.map(AbstractTreeLikeStructure::toLispString)
 						.collect(joining(" "));
 				return String.format("(%s %s)", value, children);
 			}
 		}
 
 		public String toIndentedString() {
-			return toIndentedString(0);
+			return toString(() -> toIndentedString(0));
 		}
 
 		protected String toIndentedString(int depth) {

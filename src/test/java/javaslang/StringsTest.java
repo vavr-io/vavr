@@ -7,6 +7,10 @@ package javaslang;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Arrays;
+
+import javaslang.Requirements.UnsatisfiedRequirementException;
+
 import org.junit.Test;
 
 public class StringsTest {
@@ -15,6 +19,8 @@ public class StringsTest {
 	public void shouldNotInstantiable() {
 		AssertionsExtensions.assertThat(Strings.class).isNotInstantiable();
 	}
+
+	// toString(Object)
 
 	@Test
 	public void shouldConvertNullToString() {
@@ -27,14 +33,7 @@ public class StringsTest {
 		final Object[] loop = new Object[1];
 		loop[0] = loop;
 		final String actual = Strings.toString(loop);
-		assertThat(actual).isEqualTo("[...]");
-	}
-
-	@Test
-	public void shouldCallToStringRecursively() {
-		final String actual = Tuples.of(Tuples.of(1)).toString();
-		final String expected = "((1))";
-		assertThat(actual).isEqualTo(expected);
+		assertThat(actual).isEqualTo("Array(...)");
 	}
 
 	@Test
@@ -42,15 +41,17 @@ public class StringsTest {
 		final Object[] path = { "path" };
 		final Object[] array = { path, path };
 		final String actual = Strings.toString(array);
-		assertThat(actual).isEqualTo("[[\"path\"], [\"path\"]]");
+		assertThat(actual).isEqualTo("Array(Array(\"path\"), Array(\"path\"))");
 	}
 
 	@Test
 	public void shouldConvertPrimitiveArrayToString() {
 		final boolean[] array = { true, false };
 		final String actual = Strings.toString(array);
-		assertThat(actual).isEqualTo("[true, false]");
+		assertThat(actual).isEqualTo("Array(true, false)");
 	}
+
+	// repeat(string, count)
 
 	@Test
 	public void shouldRepeatNullAsNull() {
@@ -59,28 +60,56 @@ public class StringsTest {
 	}
 
 	@Test
-	public void shouldRepeatZeroTimes() {
+	public void shouldRepeatStringZeroTimes() {
 		final String s = Strings.repeat("x", 0);
 		assertThat(s).isEqualTo("");
 	}
 
 	@Test
-	public void shouldRepeatOneTime() {
+	public void shouldRepeatStringOneTime() {
 		final String s = Strings.repeat("x", 1);
 		assertThat(s).isEqualTo("x");
 	}
 
 	@Test
-	public void shouldRepeatTwoTimes() {
+	public void shouldRepeatStringTwoTimes() {
 		final String s = Strings.repeat("x", 2);
 		assertThat(s).isEqualTo("xx");
 	}
 
 	@Test
-	public void shouldRepeatNegativeTimes() {
+	public void shouldRepeatStringNegativeTimes() {
 		final String s = Strings.repeat("x", -2);
 		assertThat(s).isEqualTo("");
 	}
+
+	// repeat(char, count)
+
+	@Test
+	public void shouldRepeatCharZeroTimes() {
+		final String s = Strings.repeat("x", 0);
+		assertThat(s).isEqualTo("");
+	}
+
+	@Test
+	public void shouldRepeatCharOneTime() {
+		final String s = Strings.repeat("x", 1);
+		assertThat(s).isEqualTo("x");
+	}
+
+	@Test
+	public void shouldRepeatCharTwoTimes() {
+		final String s = Strings.repeat("x", 2);
+		assertThat(s).isEqualTo("xx");
+	}
+
+	@Test
+	public void shouldRepeatCharNegativeTimes() {
+		final String s = Strings.repeat("x", -2);
+		assertThat(s).isEqualTo("");
+	}
+
+	// escape(string)
 
 	@Test
 	public void shouldEscapeNull() {
@@ -112,6 +141,177 @@ public class StringsTest {
 		final String s = Strings.escape(name);
 		assertThat(s).isEqualTo(name);
 	}
+
+	// ecape(string, character, escape)
+
+	@Test
+	public void shouldEscapeCharacterNull() {
+		final String s = Strings.escape(null, '\\', '\\');
+		assertThat(s).isNull();
+	}
+
+	@Test
+	public void shouldEscapeCharacterEmptyString() {
+		final String s = Strings.escape("", '\\', '\\');
+		assertThat(s).isEqualTo("");
+	}
+
+	@Test
+	public void shouldEscapeCharacterEscapeChar() {
+		final String s = Strings.escape("\\", '\\', '\\');
+		assertThat(s).isEqualTo("\\\\");
+	}
+
+	@Test
+	public void shouldNotEscapeCharacterNonEscapeChars() {
+		final String name = getClass().getName();
+		final String s = Strings.escape(name, '\\', '\\');
+		assertThat(s).isEqualTo(name);
+	}
+
+	// lineAndColumn
+
+	@Test
+	public void shouldThrowWhenLineAndColumnOfNullString() {
+		AssertionsExtensions.assertThat(() -> Strings.lineAndColumn(null, 0)).isThrowing(
+				UnsatisfiedRequirementException.class, "s is null");
+	}
+
+	@Test
+	public void shouldThrowWhenLineAndColumnOfEmptyString() {
+		final String s = "";
+		assertThat(Strings.lineAndColumn(s, 0)).isEqualTo(Tuples.of(1, 1));
+	}
+
+	@Test
+	public void shouldComputeLineAndColumnForStartOfString() {
+		final String s = "text";
+		assertThat(Strings.lineAndColumn(s, 0)).isEqualTo(Tuples.of(1, 1));
+	}
+
+	@Test
+	public void shouldComputeLineAndColumnForEndOfStringWithoutNewlines() {
+		final String s = "text";
+		assertThat(Strings.lineAndColumn(s, s.length())).isEqualTo(Tuples.of(1, s.length() + 1));
+	}
+
+	@Test
+	public void shouldComputeLineAndColumnForEndOfStringWithNewlines() {
+		final String s = "lorem\nipsum";
+		assertThat(Strings.lineAndColumn(s, s.length())).isEqualTo(Tuples.of(2, 6));
+	}
+
+	@Test
+	public void shouldComputeLineAndColumnWithinStringAtEndOfLine() {
+		final String s = "lorem\nipsum";
+		assertThat(Strings.lineAndColumn(s, s.indexOf('\n'))).isEqualTo(Tuples.of(1, 6));
+	}
+
+	@Test
+	public void shouldComputeLineAndColumnWithinStringWithNewlines() {
+		final String s = "lorem\nipsum";
+		assertThat(Strings.lineAndColumn(s, s.indexOf('\n') + 1)).isEqualTo(Tuples.of(2, 1));
+	}
+
+	// isNullOrEmpty
+
+	@Test
+	public void shouldRecognizeNullString() {
+		assertThat(Strings.isNullOrEmpty(null)).isTrue();
+	}
+
+	@Test
+	public void shouldRecognizeEmptyString() {
+		assertThat(Strings.isNullOrEmpty("")).isTrue();
+	}
+
+	@Test
+	public void shouldRecognizeNonEmptyWhitespaceString() {
+		assertThat(Strings.isNullOrEmpty(" ")).isFalse();
+	}
+
+	@Test
+	public void shouldRecognizeNonEmptyNonWhitespaceString() {
+		assertThat(Strings.isNullOrEmpty("abc")).isFalse();
+	}
+
+	// join(String[], separator, escape)
+
+	@Test
+	public void shouldJoinArrayOfEmptyStringWithEscape() {
+		final String[] array = new String[] { "" };
+		assertThat(Strings.join(array, ';', '\\')).isEqualTo("");
+	}
+
+	@Test
+	public void shouldJoinArrayOfTwoEmptyStringsWithEscape() {
+		final String[] array = new String[] { "", "" };
+		assertThat(Strings.join(array, ';', '\\')).isEqualTo(";");
+	}
+
+	@Test
+	public void shouldJoinArrayOfSeparatorWithEscape() {
+		final String[] array = new String[] { ";" };
+		assertThat(Strings.join(array, ';', '\\')).isEqualTo("\\;");
+	}
+
+	@Test
+	public void shouldJoinArrayOfTwoSeparatorsWithEscape() {
+		final String[] array = new String[] { ";", ";" };
+		assertThat(Strings.join(array, ';', '\\')).isEqualTo("\\;;\\;");
+	}
+
+	@Test
+	public void shouldJoinArrayOfTwoNonSeparators() {
+		final String[] array = new String[] { "A", "B" };
+		assertThat(Strings.join(array, ';', '\\')).isEqualTo("A;B");
+	}
+
+	@Test
+	public void shouldJoinArrayOfTwoEscapedSeparatorsWithEscape() {
+		final String[] array = new String[] { "\\^", "\\^\\" };
+		assertThat(Strings.join(array, '^', '\\')).isEqualTo("\\\\\\^^\\\\\\^\\\\");
+	}
+
+	// join(Iterable<String>, separator, escape)
+
+	@Test
+	public void shouldJoinIterableOfEmptyStringWithEscape() {
+		final Iterable<String> iterable = Arrays.asList(new String[] { "" });
+		assertThat(Strings.join(iterable, ';', '\\')).isEqualTo("");
+	}
+
+	@Test
+	public void shouldJoinIterableOfTwoEmptyStringsWithEscape() {
+		final Iterable<String> iterable = Arrays.asList(new String[] { "", "" });
+		assertThat(Strings.join(iterable, ';', '\\')).isEqualTo(";");
+	}
+
+	@Test
+	public void shouldJoinIterableOfSeparatorWithEscape() {
+		final Iterable<String> iterable = Arrays.asList(new String[] { ";" });
+		assertThat(Strings.join(iterable, ';', '\\')).isEqualTo("\\;");
+	}
+
+	@Test
+	public void shouldJoinIterableOfTwoSeparatorsWithEscape() {
+		final Iterable<String> iterable = Arrays.asList(new String[] { ";", ";" });
+		assertThat(Strings.join(iterable, ';', '\\')).isEqualTo("\\;;\\;");
+	}
+
+	@Test
+	public void shouldJoinIterableOfTwoNonSeparators() {
+		final Iterable<String> iterable = Arrays.asList(new String[] { "A", "B" });
+		assertThat(Strings.join(iterable, ';', '\\')).isEqualTo("A;B");
+	}
+
+	@Test
+	public void shouldJoinIterableOfTwoEscapedSeparatorsWithEscape() {
+		final Iterable<String> iterable = Arrays.asList(new String[] { "\\^", "\\^\\" });
+		assertThat(Strings.join(iterable, '^', '\\')).isEqualTo("\\\\\\^^\\\\\\^\\\\");
+	}
+
+	// split(string, separator)
 
 	@Test
 	public void shouldSplitEmptyString() {
@@ -149,41 +349,7 @@ public class StringsTest {
 		assertThat(actual).isEqualTo(new String[] { "", "123", "" });
 	}
 
-	@Test
-	public void shouldJoinEmptyStringWithEscape() {
-		final String actual = Strings.join(new String[] { "" }, ';', '\\');
-		assertThat(actual).isEqualTo("");
-	}
-
-	@Test
-	public void shouldJoinTwoEmptyStringsWithEscape() {
-		final String actual = Strings.join(new String[] { "", "" }, ';', '\\');
-		assertThat(actual).isEqualTo(";");
-	}
-
-	@Test
-	public void shouldJoinSeparatorWithEscape() {
-		final String actual = Strings.join(new String[] { ";" }, ';', '\\');
-		assertThat(actual).isEqualTo("\\;");
-	}
-
-	@Test
-	public void shouldJoinTwoSeparatorsWithEscape() {
-		final String actual = Strings.join(new String[] { ";", ";" }, ';', '\\');
-		assertThat(actual).isEqualTo("\\;;\\;");
-	}
-
-	@Test
-	public void shouldJoinTwoNonSeparators() {
-		final String actual = Strings.join(new String[] { "A", "B" }, ';', '\\');
-		assertThat(actual).isEqualTo("A;B");
-	}
-
-	@Test
-	public void shouldJoinTwoEscapedSeparatorsWithEscape() {
-		final String actual = Strings.join(new String[] { "\\^", "\\^\\" }, '^', '\\');
-		assertThat(actual).isEqualTo("\\\\\\^^\\\\\\^\\\\");
-	}
+	// split(string, separator, escape)
 
 	@Test
 	public void shouldSplitEmptyStringWithEscape() {

@@ -32,6 +32,7 @@ public final class Streamz {
 	/**
 	 * Creates a sequential Stream of an Iterable.
 	 * 
+	 * @param <T> the type of the stream elements
 	 * @param iterable An Iterable.
 	 * @return A sequential Stream of elements of the given Iterable.
 	 */
@@ -43,6 +44,7 @@ public final class Streamz {
 	/**
 	 * Creates a parallel Stream of an Iterable.
 	 * 
+	 * @param <T> the type of the stream elements
 	 * @param iterable An Iterable.
 	 * @return A parallel Stream of elements of the given Iterable.
 	 */
