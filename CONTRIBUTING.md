@@ -55,6 +55,9 @@ private Xxx() {
 * Use `Iterable` instead of `Collection` to support also `javaslang.collection.*`. See `javaslang.Streamz.*` for streaming Iterables. 
 * Use `CharSequence` instead of `String` to widen the API (`charSequence.toString()` will provide the String).
 
+### toString
+* The String representation of an object o should be `o.getClass().getSimpleName() + "(" + string + ")"`.
+
 ### Class instantiation
 
 * Classes are instantiated via `new`.
