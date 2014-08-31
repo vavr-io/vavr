@@ -52,6 +52,8 @@ private Xxx() {
 }
 ```
 * The extended type is the first parameter of an extension method. E.g. `Lists.lastElement(list)`.
+* Use `Iterable` instead of `Collection` to support also `javaslang.collection.*`. See `javaslang.Streamz.*` for streaming Iterables. 
+* Use `CharSequence` instead of `String` to widen the API (`charSequence.toString()` will provide the String).
 
 ### Class instantiation
 
