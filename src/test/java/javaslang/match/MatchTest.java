@@ -6,6 +6,7 @@
 package javaslang.match;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import java.math.BigDecimal;
 import java.util.function.Function;
@@ -41,6 +42,16 @@ public class MatchTest {
 	@Test(expected = MatchError.class)
 	public void shouldThrowOnNoMatchByValue() {
 		Matchs.caze("1", o -> 1).apply("2");
+	}
+
+	@Test
+	public void shouldGetObjectWhenMatchErrorOccurs() {
+		try {
+			Matchs.caze("1", o -> 1).apply("2");
+			fail("No MatchError thrown");
+		} catch (MatchError x) {
+			assertThat(x.getObject()).isEqualTo("2");
+		}
 	}
 
 	// -- match by type of function
