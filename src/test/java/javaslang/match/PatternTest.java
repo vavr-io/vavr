@@ -24,6 +24,12 @@ public class PatternTest {
 	}
 
 	@Test
+	// DEV-NOTE: implemented to satisfy code coverage
+	public void shouldComparePrototype() {
+		assertThat(new Patterns.UnaryPrototype(o -> true).equals(new Object())).isTrue();
+	}
+
+	@Test
 	public void shouldMatchFunctionWithoutCapturedArgsBySignature() {
 		final SerializableFunction<Integer, String> function = i -> String.valueOf(i);
 		final Tuple2<SerializableFunction<Integer, String>, Tuple2<Class<Integer>, Class<String>>> match = Patterns

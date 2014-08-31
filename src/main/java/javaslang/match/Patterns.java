@@ -19,12 +19,7 @@ public final class Patterns {
 	 * The Pattern which macthes any object (including null).
 	 */
 	public static final Pattern<Object, Tuple1<Object>, Tuple1<Object>> ANY = Pattern.of(o -> Tuples.of(o),
-			Tuples.of(new Object() {
-				@Override
-				public boolean equals(Object o) {
-					return true;
-				}
-			}));
+			Tuples.of(new UnaryPrototype(o -> true)));
 
 	/**
 	 * This class is not intended to be instantiated.
@@ -59,4 +54,23 @@ public final class Patterns {
 	}
 
 	// TODO: define more patterns (Either, Option, Try and other value objects)
+
+	static class UnaryPrototype {
+
+		final Test test;
+
+		UnaryPrototype(Test test) {
+			this.test = test;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			return test.apply(o);
+		}
+
+		@FunctionalInterface
+		static interface Test {
+			boolean apply(Object o);
+		}
+	}
 }
