@@ -29,6 +29,20 @@ public class StreamzTest {
 		AssertionsExtensions.assertThat(Streamz.class).isNotInstantiable();
 	}
 
+	// -- stream of Iterable
+
+	@Test
+	public void shouldCreateSequentialStreamOfIterable() {
+		assertThat(Streamz.stream(Arrays.asList()).isParallel()).isFalse();
+	}
+
+	@Test
+	public void shouldCreateParallelStreamOfIterable() {
+		assertThat(Streamz.parallelStream(Arrays.asList()).isParallel()).isTrue();
+	}
+
+	// -- zipWithIndex
+
 	@Test
 	public void shouldZipObjectStreamWithIndex() {
 		final Stream<String> stream = Stream.of(I_WILL_BE_BACK);
@@ -37,6 +51,8 @@ public class StreamzTest {
 				Tuples.of("be", 2), Tuples.of("back!", 3));
 		assertThat(actual).isEqualTo(expected);
 	}
+
+	// zip vs. privitive types
 
 	@Test
 	public void shouldZipDoubleStreamWithIndex() {
@@ -65,7 +81,7 @@ public class StreamzTest {
 		assertThat(actual).isEqualTo(expected);
 	}
 
-	// -- parallel vs sequential
+	// zip vs. parallel/sequential
 
 	@Test
 	public void shouldZipSequentialStream() {

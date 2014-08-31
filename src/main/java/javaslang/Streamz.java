@@ -6,12 +6,14 @@
 package javaslang;
 
 import static javaslang.Requirements.require;
+import static javaslang.Requirements.requireNonNull;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import javaslang.Tuples.Tuple2;
 
@@ -25,6 +27,28 @@ public final class Streamz {
 	 */
 	private Streamz() {
 		throw new AssertionError(Streamz.class.getName() + " is not intended to be instantiated.");
+	}
+
+	/**
+	 * Creates a sequential Stream of an Iterable.
+	 * 
+	 * @param iterable An Iterable.
+	 * @return A sequential Stream of elements of the given Iterable.
+	 */
+	public static <T> Stream<T> stream(Iterable<T> iterable) {
+		requireNonNull(iterable, "iterable is null");
+		return StreamSupport.stream(iterable.spliterator(), false);
+	}
+
+	/**
+	 * Creates a parallel Stream of an Iterable.
+	 * 
+	 * @param iterable An Iterable.
+	 * @return A parallel Stream of elements of the given Iterable.
+	 */
+	public static <T> Stream<T> parallelStream(Iterable<T> iterable) {
+		requireNonNull(iterable, "iterable is null");
+		return StreamSupport.stream(iterable.spliterator(), true);
 	}
 
 	/**
