@@ -7,8 +7,8 @@ package javaslang.parser;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
-import javaslang.AssertJExtensions;
-import javaslang.AssertJExtensions.CheckedRunnable;
+import javaslang.AssertionsExtensions;
+import javaslang.AssertionsExtensions.CheckedRunnable;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -17,7 +17,7 @@ public class ParserTest {
 
 	@Test
 	public void shouldNotInstantiable() {
-		AssertJExtensions.assertThat(Parsers.class).isNotInstantiable();
+		AssertionsExtensions.assertThat(Parsers.class).isNotInstantiable();
 	}
 
 	// -- Any parser
@@ -49,7 +49,7 @@ public class ParserTest {
 	@Test
 	public void shouldNotParseCharNotWithinCharRange() {
 		final CheckedRunnable actual = () -> parse(new Parsers.CharRange('a', 'z'), "@@@", false);
-		AssertJExtensions.assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
+		AssertionsExtensions.assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
 	// -- CharSet parser
@@ -68,7 +68,7 @@ public class ParserTest {
 	@Test
 	public void shouldNotParseCharNotWithinCharSetWithRange() {
 		final CheckedRunnable actual = () -> parse(new Parsers.CharSet("a-z"), "@@@", false);
-		AssertJExtensions.assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
+		AssertionsExtensions.assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
 	@Test
@@ -86,7 +86,7 @@ public class ParserTest {
 	@Test
 	public void shouldNotParseChartNotWithinFullFledgedCharSet() {
 		final CheckedRunnable actual = () -> parse(new Parsers.CharSet("a-z$_A-Z"), "@@@", false);
-		AssertJExtensions.assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
+		AssertionsExtensions.assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
 	// -- EOF parser
@@ -105,7 +105,7 @@ public class ParserTest {
 	@Test
 	public void shouldRecognizeNotEOF() {
 		final CheckedRunnable actual = () -> parse(Parsers.EOF.INSTANCE, "abc", false);
-		AssertJExtensions.assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
+		AssertionsExtensions.assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
 	// -- Literal parser
@@ -124,7 +124,7 @@ public class ParserTest {
 	@Test
 	public void shouldNotParseLiteralIfNotMatching() {
 		final CheckedRunnable actual = () -> parse(new Parsers.Literal("no match"), "literal!", false);
-		AssertJExtensions.assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
+		AssertionsExtensions.assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
 	// -- Rule parser

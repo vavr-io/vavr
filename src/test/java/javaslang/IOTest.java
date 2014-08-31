@@ -16,7 +16,7 @@ public class IOTest {
 
 	@Test
 	public void shouldNotInstantiable() {
-		AssertJExtensions.assertThat(IO.class).isNotInstantiable();
+		AssertionsExtensions.assertThat(IO.class).isNotInstantiable();
 	}
 
 	@Test

@@ -11,7 +11,7 @@ import java.io.ObjectInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import javaslang.AssertJExtensions;
+import javaslang.AssertionsExtensions;
 import javaslang.Serializables;
 
 import org.junit.Test;
@@ -20,13 +20,13 @@ public class LinearListTest {
 
 	@Test
 	public void shouldNotSerializeEnclosingClass() throws Exception {
-		AssertJExtensions.assertThat(() -> callReadObject(List.of(1))).isThrowing(InvalidObjectException.class,
+		AssertionsExtensions.assertThat(() -> callReadObject(List.of(1))).isThrowing(InvalidObjectException.class,
 				"Proxy required");
 	}
 
 	@Test
 	public void shouldNotDeserializeLinearListWithSizeLessThanOne() {
-		AssertJExtensions.assertThat(() -> {
+		AssertionsExtensions.assertThat(() -> {
 			try {
 				/*
 				 * This implementation is stable regarding jvm impl changes of object serialization The index of the

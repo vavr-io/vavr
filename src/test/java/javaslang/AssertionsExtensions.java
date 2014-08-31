@@ -9,13 +9,13 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 // TODO: replace fest-assertions with javaslang.Assertions using Match API in a future release of Javaslang
-public final class AssertJExtensions {
+public final class AssertionsExtensions {
 
 	/**
 	 * This class is not intended to be instantiated.
 	 */
-	private AssertJExtensions() {
-		throw new AssertionError(AssertJExtensions.class.getName() + " is not intended to be instantiated.");
+	private AssertionsExtensions() {
+		throw new AssertionError(AssertionsExtensions.class.getName() + " is not intended to be instantiated.");
 	}
 
 	public static ClassAssert assertThat(Class<?> clazz) {

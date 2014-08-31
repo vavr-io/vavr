@@ -35,7 +35,7 @@ public class TuplesTest {
 
 	@Test
 	public void shouldNotInstantiable() {
-		AssertJExtensions.assertThat(Tuples.class).isNotInstantiable();
+		AssertionsExtensions.assertThat(Tuples.class).isNotInstantiable();
 	}
 
 	// -- Tuple0

@@ -16,7 +16,7 @@ public class ArrayzTest {
 
 	@Test
 	public void shouldNotInstantiable() {
-		AssertJExtensions.assertThat(Arrayz.class).isNotInstantiable();
+		AssertionsExtensions.assertThat(Arrayz.class).isNotInstantiable();
 	}
 
 	// -- array creation

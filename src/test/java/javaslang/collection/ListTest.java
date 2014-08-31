@@ -15,7 +15,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Spliterator;
 
-import javaslang.AssertJExtensions;
+import javaslang.AssertionsExtensions;
 import javaslang.Requirements.UnsatisfiedRequirementException;
 import javaslang.Tuples;
 import javaslang.Tuples.Tuple2;
@@ -28,7 +28,7 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowWhenHeadOnEmptyList() {
-		AssertJExtensions.assertThat(() -> EmptyList.instance().head()).isThrowing(UnsupportedOperationException.class,
+		AssertionsExtensions.assertThat(() -> EmptyList.instance().head()).isThrowing(UnsupportedOperationException.class,
 				"head of empty list");
 	}
 
@@ -42,7 +42,7 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowWhenTailOnEmptyList() {
-		AssertJExtensions.assertThat(() -> EmptyList.instance().tail()).isThrowing(UnsupportedOperationException.class,
+		AssertionsExtensions.assertThat(() -> EmptyList.instance().tail()).isThrowing(UnsupportedOperationException.class,
 				"tail of empty list");
 	}
 
@@ -109,7 +109,7 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowOnAppendAllOfNull() {
-		AssertJExtensions.assertThat(() -> List.empty().appendAll(null)).isThrowing(
+		AssertionsExtensions.assertThat(() -> List.empty().appendAll(null)).isThrowing(
 				UnsatisfiedRequirementException.class, "elements is null");
 	}
 
@@ -161,7 +161,7 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowOnPrependAllOfNull() {
-		AssertJExtensions.assertThat(() -> List.empty().prependAll(null)).isThrowing(
+		AssertionsExtensions.assertThat(() -> List.empty().prependAll(null)).isThrowing(
 				UnsatisfiedRequirementException.class, "elements is null");
 	}
 
@@ -225,13 +225,13 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowOnInsertWithNegativeIndex() {
-		AssertJExtensions.assertThat(() -> List.empty().insert(-1, null)).isThrowing(IndexOutOfBoundsException.class,
+		AssertionsExtensions.assertThat(() -> List.empty().insert(-1, null)).isThrowing(IndexOutOfBoundsException.class,
 				"insert(-1, e)");
 	}
 
 	@Test
 	public void shouldThrowOnInsertWhenExceedingUpperBound() {
-		AssertJExtensions.assertThat(() -> List.empty().insert(1, null)).isThrowing(IndexOutOfBoundsException.class,
+		AssertionsExtensions.assertThat(() -> List.empty().insert(1, null)).isThrowing(IndexOutOfBoundsException.class,
 				"insert(1, e) on list of size 0");
 	}
 
@@ -267,19 +267,19 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowOnInsertAllWithEmptyList() {
-		AssertJExtensions.assertThat(() -> List.empty().insertAll(0, null)).isThrowing(
+		AssertionsExtensions.assertThat(() -> List.empty().insertAll(0, null)).isThrowing(
 				UnsatisfiedRequirementException.class, "elements is null");
 	}
 
 	@Test
 	public void shouldThrowOnInsertAllWithNegativeIndex() {
-		AssertJExtensions.assertThat(() -> List.empty().insertAll(-1, List.empty())).isThrowing(
+		AssertionsExtensions.assertThat(() -> List.empty().insertAll(-1, List.empty())).isThrowing(
 				IndexOutOfBoundsException.class, "insertAll(-1, elements)");
 	}
 
 	@Test
 	public void shouldThrowOnInsertAllWhenExceedingUpperBound() {
-		AssertJExtensions.assertThat(() -> List.empty().insertAll(1, List.empty())).isThrowing(
+		AssertionsExtensions.assertThat(() -> List.empty().insertAll(1, List.empty())).isThrowing(
 				IndexOutOfBoundsException.class, "insertAll(1, elements) on list of size 0");
 	}
 
@@ -470,24 +470,24 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowWhenGetWithNegativeIndexOnEmptyList() {
-		AssertJExtensions.assertThat(() -> List.empty().get(-1)).isThrowing(IndexOutOfBoundsException.class,
+		AssertionsExtensions.assertThat(() -> List.empty().get(-1)).isThrowing(IndexOutOfBoundsException.class,
 				"get(-1) on empty list");
 	}
 
 	@Test
 	public void shouldThrowWhenGetWithNegativeIndexOnNonEmptyList() {
-		AssertJExtensions.assertThat(() -> List.of(1).get(-1)).isThrowing(IndexOutOfBoundsException.class, "get(-1)");
+		AssertionsExtensions.assertThat(() -> List.of(1).get(-1)).isThrowing(IndexOutOfBoundsException.class, "get(-1)");
 	}
 
 	@Test
 	public void shouldThrowWhenGetOnEmptyList() {
-		AssertJExtensions.assertThat(() -> List.empty().get(0)).isThrowing(IndexOutOfBoundsException.class,
+		AssertionsExtensions.assertThat(() -> List.empty().get(0)).isThrowing(IndexOutOfBoundsException.class,
 				"get(0) on empty list");
 	}
 
 	@Test
 	public void shouldThrowWhenGetWithTooBigIndexOnNonEmptyList() {
-		AssertJExtensions.assertThat(() -> List.of(1).get(1)).isThrowing(IndexOutOfBoundsException.class,
+		AssertionsExtensions.assertThat(() -> List.of(1).get(1)).isThrowing(IndexOutOfBoundsException.class,
 				"get(1) on list of size 1");
 	}
 
@@ -505,31 +505,31 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowWhenSetWithNegativeIndexOnEmptyList() {
-		AssertJExtensions.assertThat(() -> List.empty().set(-1, null)).isThrowing(IndexOutOfBoundsException.class,
+		AssertionsExtensions.assertThat(() -> List.empty().set(-1, null)).isThrowing(IndexOutOfBoundsException.class,
 				"set(-1, e) on empty list");
 	}
 
 	@Test
 	public void shouldThrowWhenSetWithNegativeIndexOnNonEmptyList() {
-		AssertJExtensions.assertThat(() -> List.of(1).set(-1, 2)).isThrowing(IndexOutOfBoundsException.class,
+		AssertionsExtensions.assertThat(() -> List.of(1).set(-1, 2)).isThrowing(IndexOutOfBoundsException.class,
 				"set(-1, e)");
 	}
 
 	@Test
 	public void shouldThrowWhenSetOnEmptyList() {
-		AssertJExtensions.assertThat(() -> List.empty().set(0, null)).isThrowing(IndexOutOfBoundsException.class,
+		AssertionsExtensions.assertThat(() -> List.empty().set(0, null)).isThrowing(IndexOutOfBoundsException.class,
 				"set(0, e) on empty list");
 	}
 
 	@Test
 	public void shouldThrowWhenSetWithIndexExceedingByOneOnNonEmptyList() {
-		AssertJExtensions.assertThat(() -> List.of(1).set(1, 2)).isThrowing(IndexOutOfBoundsException.class,
+		AssertionsExtensions.assertThat(() -> List.of(1).set(1, 2)).isThrowing(IndexOutOfBoundsException.class,
 				"set(1, e) on list of size 1");
 	}
 
 	@Test
 	public void shouldThrowWhenSetWithIndexExceedingByTwoOnNonEmptyList() {
-		AssertJExtensions.assertThat(() -> List.of(1).set(2, 2)).isThrowing(IndexOutOfBoundsException.class,
+		AssertionsExtensions.assertThat(() -> List.of(1).set(2, 2)).isThrowing(IndexOutOfBoundsException.class,
 				"set(2, e) on list of size 1");
 	}
 
@@ -577,19 +577,19 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowWhenSublist0OnEmptyList() {
-		AssertJExtensions.assertThat(() -> List.<Integer> empty().sublist(1)).isThrowing(
+		AssertionsExtensions.assertThat(() -> List.<Integer> empty().sublist(1)).isThrowing(
 				IndexOutOfBoundsException.class, "sublist(1) on list of size 0");
 	}
 
 	@Test
 	public void shouldThrowWhenSublistWithOutOfLowerBound() {
-		AssertJExtensions.assertThat(() -> List.of(1, 2, 3).sublist(-1)).isThrowing(IndexOutOfBoundsException.class,
+		AssertionsExtensions.assertThat(() -> List.of(1, 2, 3).sublist(-1)).isThrowing(IndexOutOfBoundsException.class,
 				"sublist(-1)");
 	}
 
 	@Test
 	public void shouldThrowWhenSublistWithOutOfUpperBound() {
-		AssertJExtensions.assertThat(() -> List.of(1, 2, 3).sublist(4)).isThrowing(IndexOutOfBoundsException.class,
+		AssertionsExtensions.assertThat(() -> List.of(1, 2, 3).sublist(4)).isThrowing(IndexOutOfBoundsException.class,
 				"sublist(4) on list of size 3");
 	}
 
@@ -633,19 +633,19 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowOnSublistWhenEndIndexIsGreaterThanBeginIndex() {
-		AssertJExtensions.assertThat(() -> List.of(1, 2, 3).sublist(1, 0)).isThrowing(IndexOutOfBoundsException.class,
+		AssertionsExtensions.assertThat(() -> List.of(1, 2, 3).sublist(1, 0)).isThrowing(IndexOutOfBoundsException.class,
 				"sublist(1, 0) on list of size 3");
 	}
 
 	@Test
 	public void shouldThrowOnSublistWhenBeginIndexExceedsLowerBound() {
-		AssertJExtensions.assertThat(() -> List.of(1, 2, 3).sublist(-1, 2)).isThrowing(IndexOutOfBoundsException.class,
+		AssertionsExtensions.assertThat(() -> List.of(1, 2, 3).sublist(-1, 2)).isThrowing(IndexOutOfBoundsException.class,
 				"sublist(-1, 2) on list of size 3");
 	}
 
 	@Test
 	public void shouldThrowOnSublistWhenEndIndexExceedsUpperBound() {
-		AssertJExtensions.assertThat(() -> List.of(1, 2, 3).sublist(1, 4)).isThrowing(IndexOutOfBoundsException.class,
+		AssertionsExtensions.assertThat(() -> List.of(1, 2, 3).sublist(1, 4)).isThrowing(IndexOutOfBoundsException.class,
 				"sublist(1, 4) on list of size 3");
 	}
 
@@ -733,7 +733,7 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowIfZipWithThatIsNull() {
-		AssertJExtensions.assertThat(() -> List.empty().zip(null)).isThrowing(UnsatisfiedRequirementException.class,
+		AssertionsExtensions.assertThat(() -> List.empty().zip(null)).isThrowing(UnsatisfiedRequirementException.class,
 				"that is null");
 	}
 
@@ -777,7 +777,7 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowIfZipAllWithThatIsNull() {
-		AssertJExtensions.assertThat(() -> List.empty().zipAll(null, null, null)).isThrowing(
+		AssertionsExtensions.assertThat(() -> List.empty().zipAll(null, null, null)).isThrowing(
 				UnsatisfiedRequirementException.class, "that is null");
 	}
 
@@ -949,7 +949,7 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowOnNextWhenEmptyListIterator() {
-		AssertJExtensions.assertThat(() -> List.empty().iterator().next()).isThrowing(NoSuchElementException.class,
+		AssertionsExtensions.assertThat(() -> List.empty().iterator().next()).isThrowing(NoSuchElementException.class,
 				null);
 	}
 
@@ -970,7 +970,7 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowWhenEmptyListIteratorStartingAtIndex() {
-		AssertJExtensions.assertThat(() -> {
+		AssertionsExtensions.assertThat(() -> {
 			List.empty().iterator(1);
 		}).isThrowing(IndexOutOfBoundsException.class, "sublist(1) on list of size 0");
 	}

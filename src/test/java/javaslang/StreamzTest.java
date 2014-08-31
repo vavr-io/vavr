@@ -10,6 +10,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 import javaslang.Requirements.UnsatisfiedRequirementException;
@@ -23,17 +26,46 @@ public class StreamzTest {
 
 	@Test
 	public void shouldNotInstantiable() {
-		AssertJExtensions.assertThat(Streamz.class).isNotInstantiable();
+		AssertionsExtensions.assertThat(Streamz.class).isNotInstantiable();
 	}
 
 	@Test
-	public void shouldZipStreamWithIndex() {
+	public void shouldZipObjectStreamWithIndex() {
 		final Stream<String> stream = Stream.of(I_WILL_BE_BACK);
 		final List<Tuple2<String, Integer>> actual = Streamz.zipWithIndex(stream).collect(toList());
 		final List<Tuple2<String, Integer>> expected = Arrays.asList(Tuples.of("I", 0), Tuples.of("will", 1),
 				Tuples.of("be", 2), Tuples.of("back!", 3));
 		assertThat(actual).isEqualTo(expected);
 	}
+
+	@Test
+	public void shouldZipDoubleStreamWithIndex() {
+		final DoubleStream stream = DoubleStream.of(1.4142, 2.7182, 3.1415);
+		final List<Tuple2<Double, Integer>> actual = Streamz.zipWithIndex(stream).collect(toList());
+		final List<Tuple2<Double, Integer>> expected = Arrays.asList(Tuples.of(1.4142, 0), Tuples.of(2.7182, 1),
+				Tuples.of(3.1415, 2));
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldZipIntStreamWithIndex() {
+		final IntStream stream = IntStream.of(1, 2, 3);
+		final List<Tuple2<Integer, Integer>> actual = Streamz.zipWithIndex(stream).collect(toList());
+		final List<Tuple2<Integer, Integer>> expected = Arrays
+				.asList(Tuples.of(1, 0), Tuples.of(2, 1), Tuples.of(3, 2));
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldZipLongStreamWithIndex() {
+		final LongStream stream = LongStream.of(1, 2, 3);
+		final List<Tuple2<Long, Integer>> actual = Streamz.zipWithIndex(stream).collect(toList());
+		final List<Tuple2<Long, Integer>> expected = Arrays
+				.asList(Tuples.of(1L, 0), Tuples.of(2L, 1), Tuples.of(3L, 2));
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	// -- parallel vs sequential
 
 	@Test
 	public void shouldZipSequentialStream() {
@@ -44,7 +76,7 @@ public class StreamzTest {
 	@Test
 	public void shouldThrowWhenZipWithParallelStream() {
 		final Stream<String> stream = Stream.of(I_WILL_BE_BACK).parallel();
-		AssertJExtensions.assertThat(() -> Streamz.zipWithIndex(stream)).isThrowing(
+		AssertionsExtensions.assertThat(() -> Streamz.zipWithIndex(stream)).isThrowing(
 				UnsatisfiedRequirementException.class, "stream is parallel");
 	}
 }

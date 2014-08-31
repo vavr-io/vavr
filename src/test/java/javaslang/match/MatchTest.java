@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.math.BigDecimal;
 import java.util.function.Function;
 
-import javaslang.AssertJExtensions;
+import javaslang.AssertionsExtensions;
 import javaslang.lambda.SerializableFunction;
 import javaslang.monad.Some;
 
@@ -20,8 +20,10 @@ public class MatchTest {
 
 	@Test
 	public void shouldNotInstantiable() {
-		AssertJExtensions.assertThat(Matchs.class).isNotInstantiable();
+		AssertionsExtensions.assertThat(Matchs.class).isNotInstantiable();
 	}
+
+	// -- null handling
 
 	@Test
 	public void shouldMatchNullAsPrototype() {
@@ -34,22 +36,14 @@ public class MatchTest {
 		Matchs.caze((int i) -> false).caze((Integer i) -> true).apply((Integer) null);
 	}
 
-	@Test
-	public void shouldMatchByValuesUsingFunction() {
-		final int actual = Matchs.caze("1", (String s) -> 1).apply("1");
-		assertThat(actual).isEqualTo(1);
-	}
+	// -- no match
 
 	@Test(expected = MatchError.class)
 	public void shouldThrowOnNoMatchByValue() {
 		Matchs.caze("1", o -> 1).apply("2");
 	}
 
-	@Test
-	public void shouldMatchByValueOnMultipleCases() {
-		final int actual = Matchs.caze("1", o -> 1).caze("2", o -> 2).caze("3", o -> 3).apply("2");
-		assertThat(actual).isEqualTo(2);
-	}
+	// -- match by type of function
 
 	@Test
 	public void shouldMatchByDoubleOnMultipleCasesUsingTypedParameter() {
@@ -73,11 +67,15 @@ public class MatchTest {
 		assertThat(actual).isEqualTo('b');
 	}
 
+	// -- default case
+
 	@Test
 	public void shouldMatchDefaultCase() {
 		final int actual = Matchs.caze(null, o -> 1).orElse(() -> 2).apply("default");
 		assertThat(actual).isEqualTo(2);
 	}
+
+	// -- generics vs type erasure
 
 	@Test
 	public void shouldClarifyHereThatTypeErasureIsPresent() {
@@ -87,6 +85,140 @@ public class MatchTest {
 				.apply(new Some<>("123"));
 		assertThat(actual).isEqualTo(1);
 	}
+
+	// -- primitive types vs objects
+
+	// boolean / Boolean
+
+	@Test
+	public void shouldMatchPrimitiveBoolean() {
+		final boolean actual = Matchs.caze((boolean b) -> true).caze((Boolean b) -> false).apply(true);
+		assertThat(actual).isTrue();
+	}
+
+	@Test
+	public void shouldMatchBoxedPrimitiveBooleanAsBoolean() {
+		final boolean actual = Matchs.caze((Boolean b) -> true).caze((boolean b) -> false).apply(true);
+		assertThat(actual).isTrue();
+	}
+
+	@Test
+	public void shouldMatchBooleanAsPrimitiveBoolean() {
+		final boolean actual = Matchs.caze((boolean b) -> true).caze((Boolean b) -> false).apply(Boolean.TRUE);
+		assertThat(actual).isTrue();
+	}
+
+	@Test
+	public void shouldMatchBoolean() {
+		final boolean actual = Matchs.caze((Boolean b) -> true).caze((boolean b) -> false).apply(Boolean.TRUE);
+		assertThat(actual).isTrue();
+	}
+
+	// byte / Byte
+
+	@Test
+	public void shouldMatchPrimitiveByte() {
+		final boolean actual = Matchs.caze((byte b) -> true).caze((Byte b) -> false).apply((byte) 1);
+		assertThat(actual).isTrue();
+	}
+
+	@Test
+	public void shouldMatchBoxedPrimitiveByteAsByte() {
+		final boolean actual = Matchs.caze((Byte b) -> true).caze((byte b) -> false).apply((byte) 1);
+		assertThat(actual).isTrue();
+	}
+
+	@Test
+	public void shouldMatchByteAsPrimitiveByte() {
+		final boolean actual = Matchs.caze((byte b) -> true).caze((Byte b) -> false).apply(new Byte((byte) 1));
+		assertThat(actual).isTrue();
+	}
+
+	@Test
+	public void shouldMatchByte() {
+		final boolean actual = Matchs.caze((Byte b) -> true).caze((byte b) -> false).apply(new Byte((byte) 1));
+		assertThat(actual).isTrue();
+	}
+
+	// char / Character
+
+	@Test
+	public void shouldMatchPrimitiveChar() {
+		final boolean actual = Matchs.caze((char c) -> true).caze((Character c) -> false).apply('#');
+		assertThat(actual).isTrue();
+	}
+
+	@Test
+	public void shouldMatchBoxedPrimitiveCharAsCharacter() {
+		final boolean actual = Matchs.caze((Character c) -> true).caze((char c) -> false).apply('#');
+		assertThat(actual).isTrue();
+	}
+
+	@Test
+	public void shouldMatchCharacterAsPrimitiveChar() {
+		final boolean actual = Matchs.caze((char c) -> true).caze((Character c) -> false).apply(Character.valueOf('#'));
+		assertThat(actual).isTrue();
+	}
+
+	@Test
+	public void shouldMatchCharacter() {
+		final boolean actual = Matchs.caze((Character c) -> true).caze((char c) -> false).apply(Character.valueOf('#'));
+		assertThat(actual).isTrue();
+	}
+
+	// double / Double
+
+	@Test
+	public void shouldMatchPrimitiveDouble() {
+		final boolean actual = Matchs.caze((double d) -> true).caze((Double d) -> false).apply((double) 1);
+		assertThat(actual).isTrue();
+	}
+
+	@Test
+	public void shouldMatchBoxedPrimitiveDoubleAsDouble() {
+		final boolean actual = Matchs.caze((Double d) -> true).caze((double d) -> false).apply((double) 1);
+		assertThat(actual).isTrue();
+	}
+
+	@Test
+	public void shouldMatchDoubleAsPrimitiveDouble() {
+		final boolean actual = Matchs.caze((double d) -> true).caze((Double d) -> false).apply(new Double(1));
+		assertThat(actual).isTrue();
+	}
+
+	@Test
+	public void shouldMatchDouble() {
+		final boolean actual = Matchs.caze((Double d) -> true).caze((double d) -> false).apply(new Double(1));
+		assertThat(actual).isTrue();
+	}
+
+	// float / Float
+
+	@Test
+	public void shouldMatchPrimitiveFloat() {
+		final boolean actual = Matchs.caze((float f) -> true).caze((Float f) -> false).apply((float) 1);
+		assertThat(actual).isTrue();
+	}
+
+	@Test
+	public void shouldMatchBoxedPrimitiveFloatAsFloat() {
+		final boolean actual = Matchs.caze((Float f) -> true).caze((float f) -> false).apply((float) 1);
+		assertThat(actual).isTrue();
+	}
+
+	@Test
+	public void shouldMatchFloatAsPrimitiveFloat() {
+		final boolean actual = Matchs.caze((float f) -> true).caze((Float f) -> false).apply(new Float(1));
+		assertThat(actual).isTrue();
+	}
+
+	@Test
+	public void shouldMatchFloat() {
+		final boolean actual = Matchs.caze((Float f) -> true).caze((float f) -> false).apply(new Float(1));
+		assertThat(actual).isTrue();
+	}
+
+	// int / Integer
 
 	@Test
 	public void shouldMatchPrimitiveInt() {
@@ -112,6 +244,60 @@ public class MatchTest {
 		assertThat(actual).isTrue();
 	}
 
+	// long / Long
+
+	@Test
+	public void shouldMatchPrimitiveLong() {
+		final boolean actual = Matchs.caze((long l) -> true).caze((Long l) -> false).apply(1L);
+		assertThat(actual).isTrue();
+	}
+
+	@Test
+	public void shouldMatchBoxedPrimitiveLongAsLong() {
+		final boolean actual = Matchs.caze((Long l) -> true).caze((long l) -> false).apply(1L);
+		assertThat(actual).isTrue();
+	}
+
+	@Test
+	public void shouldMatchLongAsPrimitiveLong() {
+		final boolean actual = Matchs.caze((long l) -> true).caze((Long l) -> false).apply(new Long(1));
+		assertThat(actual).isTrue();
+	}
+
+	@Test
+	public void shouldMatchLong() {
+		final boolean actual = Matchs.caze((Long l) -> true).caze((long l) -> false).apply(new Long(1));
+		assertThat(actual).isTrue();
+	}
+
+	// short / Short
+
+	@Test
+	public void shouldMatchPrimitiveShort() {
+		final boolean actual = Matchs.caze((short s) -> true).caze((Short s) -> false).apply((short) 1);
+		assertThat(actual).isTrue();
+	}
+
+	@Test
+	public void shouldMatchBoxedPrimitiveShortAsShort() {
+		final boolean actual = Matchs.caze((Short s) -> true).caze((short s) -> false).apply((short) 1);
+		assertThat(actual).isTrue();
+	}
+
+	@Test
+	public void shouldMatchShortAsPrimitiveShort() {
+		final boolean actual = Matchs.caze((short s) -> true).caze((Short s) -> false).apply(new Short((short) 1));
+		assertThat(actual).isTrue();
+	}
+
+	@Test
+	public void shouldMatchShort() {
+		final boolean actual = Matchs.caze((Short s) -> true).caze((short s) -> false).apply(new Short((short) 1));
+		assertThat(actual).isTrue();
+	}
+
+	// -- matching prototypes
+
 	@Test
 	public void shouldMatchPrimitiveBooleanValueAndApplyBooleanFunction() {
 		final int actual = Matchs.caze(true, b -> 1).caze(Boolean.TRUE, b -> 2).apply(true);
@@ -124,7 +310,17 @@ public class MatchTest {
 		assertThat(actual).isEqualTo(1);
 	}
 
-	// TODO: add tests for all primitive types + new Object()
+	@Test
+	public void shouldMatchByValuesUsingFunction() {
+		final int actual = Matchs.caze("1", (String s) -> 1).apply("1");
+		assertThat(actual).isEqualTo(1);
+	}
+
+	@Test
+	public void shouldMatchByValueOnMultipleCases() {
+		final int actual = Matchs.caze("1", o -> 1).caze("2", o -> 2).caze("3", o -> 3).apply("2");
+		assertThat(actual).isEqualTo(2);
+	}
 
 	@Test
 	public void shouldCompileObjectIntegerPrototypeCase() {
@@ -138,11 +334,15 @@ public class MatchTest {
 		new Match.Builder<>().caze(1, i -> i);
 	}
 
+	// -- matching arrays
+
 	@Test
 	public void shouldMatchBooleanArray() {
 		final int actual = new Match.Builder<Integer>().caze((boolean[] b) -> 1).build().apply(new boolean[] { true });
 		assertThat(actual).isEqualTo(1);
 	}
+
+	// -- return type of match
 
 	@Test
 	public void shouldAllowCommonReturnTypeUsingBuilder() {
@@ -184,6 +384,8 @@ public class MatchTest {
 		assertThat(number).isEqualTo(new BigDecimal("1"));
 	}
 
+	// -- lambda type
+
 	@Test
 	public void shouldMatchLambdaConsideringTypeHierarchy() {
 		final SpecialFunction lambda = i -> String.valueOf(i);
@@ -193,6 +395,8 @@ public class MatchTest {
 				.apply(lambda);
 		assertThat(actual).isEqualTo("2");
 	}
+
+	// -- pattern matching
 
 	@Test
 	public void shouldPatternMatchLambdaWithSameSignature() {

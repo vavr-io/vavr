@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.Serializable;
 
-import javaslang.AssertJExtensions;
+import javaslang.AssertionsExtensions;
 import javaslang.Tuples;
 import javaslang.Tuples.Tuple3;
 
@@ -19,7 +19,7 @@ public class LambdasTest {
 
 	@Test
 	public void shouldNotInstantiable() {
-		AssertJExtensions.assertThat(Lambdas.class).isNotInstantiable();
+		AssertionsExtensions.assertThat(Lambdas.class).isNotInstantiable();
 	}
 
 	@Test

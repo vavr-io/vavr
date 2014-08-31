@@ -13,7 +13,7 @@ public class StringsTest {
 
 	@Test
 	public void shouldNotInstantiable() {
-		AssertJExtensions.assertThat(Strings.class).isNotInstantiable();
+		AssertionsExtensions.assertThat(Strings.class).isNotInstantiable();
 	}
 
 	@Test

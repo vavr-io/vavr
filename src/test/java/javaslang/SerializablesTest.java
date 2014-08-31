@@ -20,7 +20,7 @@ public class SerializablesTest {
 
 	@Test
 	public void shouldNotInstantiable() {
-		AssertJExtensions.assertThat(Serializables.class).isNotInstantiable();
+		AssertionsExtensions.assertThat(Serializables.class).isNotInstantiable();
 	}
 
 	@Test
@@ -35,7 +35,7 @@ public class SerializablesTest {
 				throw new IOException();
 			}
 		};
-		AssertJExtensions.assertThat(() -> serialize(o)).isThrowing(IllegalStateException.class,
+		AssertionsExtensions.assertThat(() -> serialize(o)).isThrowing(IllegalStateException.class,
 				"Error serializing object");
 	}
 }

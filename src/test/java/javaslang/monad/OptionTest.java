@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-import javaslang.AssertJExtensions;
+import javaslang.AssertionsExtensions;
 import javaslang.Serializables;
 
 import org.junit.Test;
@@ -45,7 +45,7 @@ public class OptionTest {
 
 	@Test
 	public void shouldThrowOnGetWhenValueIsNotPresent() {
-		AssertJExtensions.assertThat(() -> Option.empty().get()).isThrowing(NoSuchElementException.class,
+		AssertionsExtensions.assertThat(() -> Option.empty().get()).isThrowing(NoSuchElementException.class,
 				"No value present");
 	}
 
@@ -82,7 +82,7 @@ public class OptionTest {
 
 	@Test
 	public void shouldThrowOnOrElseThrowWhenValueIsNotPresent() {
-		AssertJExtensions.assertThat(() -> Option.empty().orElseThrow(() -> new RuntimeException("none"))).isThrowing(
+		AssertionsExtensions.assertThat(() -> Option.empty().orElseThrow(() -> new RuntimeException("none"))).isThrowing(
 				RuntimeException.class, "none");
 	}
 
