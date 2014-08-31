@@ -124,7 +124,17 @@ public final class Failure<T> implements Try<T>, Serializable {
 			return false;
 		}
 		final Failure<?> failure = (Failure<?>) obj;
-		return Objects.equals(cause.getCause(), failure.cause.getCause());
+		return equals(cause.getCause(), failure.cause.getCause());
+	}
+
+	// DEV-NOTE: no cycle-detection, intentionally
+	private boolean equals(Throwable thisCause, Throwable thatCause) {
+		return (thisCause == thatCause)
+				|| (thisCause != null
+						&& thatCause != null
+						&& Objects.equals(thisCause.getClass(), thatCause.getClass())
+						&& Objects.equals(thisCause.getMessage(), thatCause.getMessage()) && equals(
+							thisCause.getCause(), thatCause.getCause()));
 	}
 
 	@Override

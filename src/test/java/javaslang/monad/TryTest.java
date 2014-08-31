@@ -10,8 +10,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import javaslang.AssertionsExtensions;
+import javaslang.Serializables;
 import javaslang.monad.Failure.Cause;
 
 import org.junit.Test;
@@ -20,7 +22,7 @@ public class TryTest {
 
 	private static final String OK = "ok";
 
-	// -- failure cause
+	// -- Failure.Cause
 
 	@Test
 	public void shouldDetectFatalException() throws Exception {
@@ -34,7 +36,7 @@ public class TryTest {
 		assertThat(cause.isFatal()).isFalse();
 	}
 
-	// -- failure
+	// -- Failure
 
 	@Test(expected = Failure.Fatal.class)
 	public void shouldPassThroughFatalException() {
@@ -144,7 +146,53 @@ public class TryTest {
 		assertThat(failure().failed().get().getClass().getName()).isEqualTo(RuntimeException.class.getName());
 	}
 
-	// -- success
+	// equals
+
+	@Test
+	public void shouldEqualFailureIfObjectIsSame() {
+		final Failure<?> success = new Failure<>(error());
+		assertThat(success.equals(success)).isTrue();
+	}
+
+	@Test
+	public void shouldNotEqualFailureIfObjectIsNull() {
+		assertThat(new Failure<>(error()).equals(null)).isFalse();
+	}
+
+	@Test
+	public void shouldNotEqualFailureIfObjectIsOfDifferentType() {
+		assertThat(new Failure<>(error()).equals(new Object())).isFalse();
+	}
+
+	@Test
+	public void shouldEqualFailure() {
+		assertThat(new Failure<>(error())).isEqualTo(new Failure<>(error()));
+	}
+
+	// hashCode
+
+	@Test
+	public void shouldHashFailure() {
+		final Throwable error = error();
+		assertThat(new Failure<>(error).hashCode()).isEqualTo(Objects.hashCode(error));
+	}
+
+	// toString
+
+	@Test
+	public void shouldConvertFailureToString() {
+		assertThat(new Failure<>(error()).toString()).isEqualTo("Failure(java.lang.RuntimeException: error)");
+	}
+
+	// serialization
+
+	@Test
+	public void shouldSerializeDeserializeFailure() {
+		final Object actual = Serializables.deserialize(Serializables.serialize(new Failure<>(error())));
+		assertThat(actual.toString()).isEqualTo(new Failure<>(error()).toString());
+	}
+
+	// -- Success
 
 	@Test
 	public void shouldDetectSuccess() {
@@ -246,7 +294,56 @@ public class TryTest {
 				"java.lang.UnsupportedOperationException: Success.failed()");
 	}
 
+	// equals
+
+	@Test
+	public void shouldEqualSuccessIfObjectIsSame() {
+		final Success<?> success = new Success<>(1);
+		assertThat(success.equals(success)).isTrue();
+	}
+
+	@Test
+	public void shouldNotEqualSuccessIfObjectIsNull() {
+		assertThat(new Success<>(1).equals(null)).isFalse();
+	}
+
+	@Test
+	public void shouldNotEqualSuccessIfObjectIsOfDifferentType() {
+		assertThat(new Success<>(1).equals(new Object())).isFalse();
+	}
+
+	@Test
+	public void shouldEqualSuccess() {
+		assertThat(new Success<>(1)).isEqualTo(new Success<>(1));
+	}
+
+	// hashCode
+
+	@Test
+	public void shouldHashSuccess() {
+		assertThat(new Success<>(1).hashCode()).isEqualTo(Objects.hashCode(1));
+	}
+
+	// toString
+
+	@Test
+	public void shouldConvertSuccessToString() {
+		assertThat(new Success<>(1).toString()).isEqualTo("Success(1)");
+	}
+
+	// serialization
+
+	@Test
+	public void shouldSerializeDeserializeSuccess() {
+		final Object actual = Serializables.deserialize(Serializables.serialize(new Success<>(1)));
+		assertThat(actual).isEqualTo(new Success<>(1));
+	}
+
 	// -- helpers
+
+	private Throwable error() {
+		return new RuntimeException("error");
+	}
 
 	private Try<String> failure() {
 		return Try.of(() -> {
