@@ -9,6 +9,7 @@ import static javaslang.IO.UTF8;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.InputStream;
+import java.nio.charset.Charset;
 
 import org.junit.Test;
 
@@ -32,6 +33,20 @@ public class IOTest {
 		final String expected = "hello";
 		final InputStream in = IO.toInputStream(expected, UTF8);
 		final String actual = IO.toString(in, UTF8).orElse(null);
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldLoadSystemResourceUsingDefaultCharset() {
+		final String actual = new String(IO.loadResource("javaslang/resource.txt").get(), UTF8);
+		final String expected = " ö\n( )\n/ \\";
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldLoadSystemResourceUsingSpecificCharset() {
+		final String actual = new String(IO.loadResource("javaslang/resource.txt").get(), Charset.forName("iso-8859-1"));
+		final String expected = " Ã¶\n( )\n/ \\";
 		assertThat(actual).isEqualTo(expected);
 	}
 }
