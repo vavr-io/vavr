@@ -23,6 +23,75 @@ public class PatternTest {
 		AssertionsExtensions.assertThat(Patterns.class).isNotInstantiable();
 	}
 
+	// -- pattern creation
+
+	@Test
+	public void shouldCreatePatternOfArity1() {
+		assertThat(Pattern.of(t -> null, Tuples.of(1))).isNotNull();
+	}
+
+	@Test
+	public void shouldCreatePatternOfArity2() {
+		assertThat(Pattern.of(t -> null, Tuples.of(1, 2))).isNotNull();
+	}
+	
+	@Test
+	public void shouldCreatePatternOfArity3() {
+		assertThat(Pattern.of(t -> null, Tuples.of(1, 2, 3))).isNotNull();
+	}
+	
+	@Test
+	public void shouldCreatePatternOfArity4() {
+		assertThat(Pattern.of(t -> null, Tuples.of(1, 2, 3, 4))).isNotNull();
+	}
+	
+	@Test
+	public void shouldCreatePatternOfArity5() {
+		assertThat(Pattern.of(t -> null, Tuples.of(1, 2, 3, 4, 5))).isNotNull();
+	}
+	
+	@Test
+	public void shouldCreatePatternOfArity6() {
+		assertThat(Pattern.of(t -> null, Tuples.of(1, 2, 3, 4, 5, 6))).isNotNull();
+	}
+	
+	@Test
+	public void shouldCreatePatternOfArity7() {
+		assertThat(Pattern.of(t -> null, Tuples.of(1, 2, 3, 4, 5, 6, 7))).isNotNull();
+	}
+	
+	@Test
+	public void shouldCreatePatternOfArity8() {
+		assertThat(Pattern.of(t -> null, Tuples.of(1, 2, 3, 4, 5, 6, 7, 8))).isNotNull();
+	}
+	
+	@Test
+	public void shouldCreatePatternOfArity9() {
+		assertThat(Pattern.of(t -> null, Tuples.of(1, 2, 3, 4, 5, 6, 7, 8, 9))).isNotNull();
+	}
+	
+	@Test
+	public void shouldCreatePatternOfArity10() {
+		assertThat(Pattern.of(t -> null, Tuples.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))).isNotNull();
+	}
+	
+	@Test
+	public void shouldCreatePatternOfArity11() {
+		assertThat(Pattern.of(t -> null, Tuples.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11))).isNotNull();
+	}
+	
+	@Test
+	public void shouldCreatePatternOfArity12() {
+		assertThat(Pattern.of(t -> null, Tuples.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12))).isNotNull();
+	}
+	
+	@Test
+	public void shouldCreatePatternOfArity13() {
+		assertThat(Pattern.of(t -> null, Tuples.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13))).isNotNull();
+	}
+
+	// -- pattern matching
+
 	@Test
 	// DEV-NOTE: implemented to satisfy code coverage
 	public void shouldComparePrototype() {
