@@ -146,6 +146,8 @@ interface TreeLikeStructure<T, TREE extends TreeLikeStructure<T, ?>> {
 			if (o == null || !(getClass().isAssignableFrom(o.getClass()))) {
 				return false;
 			} else {
+				// DEV-NOTE: the tree structure is always consistend regarding the parent/child dependencies.
+				//           therefore it is sufficient to test values and children for equality.
 				@SuppressWarnings("unchecked")
 				final TREE that = (TREE) o;
 				return Objects.equals(getValue(), that.getValue()) && Objects.equals(getChildren(), that.getChildren());
@@ -155,7 +157,7 @@ interface TreeLikeStructure<T, TREE extends TreeLikeStructure<T, ?>> {
 		@Override
 		public int hashCode() {
 			final T value = getValue();
-			return (value == null ? 0 : value.hashCode() * 31) + getChildren().hashCode();
+			return 31 * getChildren().hashCode() + Objects.hashCode(value);
 		}
 
 		@Override
