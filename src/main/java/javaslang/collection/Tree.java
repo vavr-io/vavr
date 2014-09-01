@@ -46,17 +46,17 @@ public class Tree<T> extends AbstractTreeLikeStructure<T, Tree<T>> implements Se
 	}
 
 	public Tree(Tree<T> parent, T value, Iterable<Tree<T>> children) {
-		this(parent, value, children, TreeTransformer::keepParent, TreeTransformer::updateChildren);
+		this(parent, value, List.of(children), TreeTransformer::keepParent, TreeTransformer::updateChildren);
 	}
 
-	Tree(Tree<T> parent, T value, Iterable<Tree<T>> children, TreeTransformer<T> updateParent,
+	Tree(Tree<T> parent, T value, List<Tree<T>> children, TreeTransformer<T> updateParent,
 			TreeTransformer<T> updateChildren) {
 		requireNonNull(children, "children is null");
 		requireNonNull(updateParent, "updateParent is null");
 		requireNonNull(updateChildren, "updateChildren is null");
 		this.value = value;
 		this.parent = Option.of(parent).map(updateParent.apply(this)).orElse(null);
-		this.children = List.of(children).replaceAll(updateChildren.apply(this));
+		this.children = children.replaceAll(updateChildren.apply(this));
 	}
 
 	/**
@@ -131,7 +131,8 @@ public class Tree<T> extends AbstractTreeLikeStructure<T, Tree<T>> implements Se
 
 	@Override
 	public Tree<T> setChildren(Iterable<Tree<T>> children) {
-		return new Tree<>(parent, value, children, TreeTransformer.updateParent(this), TreeTransformer::updateChildren);
+		return new Tree<>(parent, value, List.of(children), TreeTransformer.updateParent(this),
+				TreeTransformer::updateChildren);
 	}
 
 	// -- operations
