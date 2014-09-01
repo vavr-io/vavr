@@ -45,7 +45,7 @@ public class IOTest {
 
 	@Test
 	public void shouldLoadSystemResourceUsingSpecificCharset() {
-		final String actual = new String(IO.loadResource("javaslang/resource.txt").get(), Charset.forName("iso-8859-1"));
+		final String actual = IO.loadResource("javaslang/resource.txt", Charset.forName("iso-8859-1")).get();
 		final String expected = " Ã¶\n( )\n/ \\";
 		assertThat(actual).isEqualTo(expected);
 	}
