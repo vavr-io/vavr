@@ -42,7 +42,7 @@ public class TuplesTest {
 
 	@Test
 	public void shouldCreateEmptyTuple() {
-		assertThat(Tuples.empty().toString()).isEqualTo("Tuple()");
+		assertThat(Tuples.empty().toString()).isEqualTo("()");
 	}
 
 	@Test
@@ -86,7 +86,7 @@ public class TuplesTest {
 
 	@Test
 	public void shouldCreateSingle() {
-		assertThat(tuple1().toString()).isEqualTo("Tuple(1)");
+		assertThat(tuple1().toString()).isEqualTo("(1)");
 	}
 
 	@Test
@@ -125,7 +125,7 @@ public class TuplesTest {
 
 	@Test
 	public void shouldCreatePair() {
-		assertThat(tuple2().toString()).isEqualTo("Tuple(1, 2)");
+		assertThat(tuple2().toString()).isEqualTo("(1, 2)");
 	}
 
 	@Test
@@ -164,7 +164,7 @@ public class TuplesTest {
 
 	@Test
 	public void shouldCreateTriple() {
-		assertThat(tuple3().toString()).isEqualTo("Tuple(1, 2, 3)");
+		assertThat(tuple3().toString()).isEqualTo("(1, 2, 3)");
 	}
 
 	@Test
@@ -203,7 +203,7 @@ public class TuplesTest {
 
 	@Test
 	public void shouldCreateQuadruple() {
-		assertThat(tuple4().toString()).isEqualTo("Tuple(1, 2, 3, 4)");
+		assertThat(tuple4().toString()).isEqualTo("(1, 2, 3, 4)");
 	}
 
 	@Test
@@ -242,7 +242,7 @@ public class TuplesTest {
 
 	@Test
 	public void shouldCreateQuintuple() {
-		assertThat(tuple5().toString()).isEqualTo("Tuple(1, 2, 3, 4, 5)");
+		assertThat(tuple5().toString()).isEqualTo("(1, 2, 3, 4, 5)");
 	}
 
 	@Test
@@ -281,7 +281,7 @@ public class TuplesTest {
 
 	@Test
 	public void shouldCreateSextuple() {
-		assertThat(tuple6().toString()).isEqualTo("Tuple(1, 2, 3, 4, 5, 6)");
+		assertThat(tuple6().toString()).isEqualTo("(1, 2, 3, 4, 5, 6)");
 	}
 
 	@Test
@@ -320,7 +320,7 @@ public class TuplesTest {
 
 	@Test
 	public void shouldCreateSeptuple() {
-		assertThat(tuple7().toString()).isEqualTo("Tuple(1, 2, 3, 4, 5, 6, 7)");
+		assertThat(tuple7().toString()).isEqualTo("(1, 2, 3, 4, 5, 6, 7)");
 	}
 
 	@Test
@@ -359,7 +359,7 @@ public class TuplesTest {
 
 	@Test
 	public void shouldCreateOctuple() {
-		assertThat(tuple8().toString()).isEqualTo("Tuple(1, 2, 3, 4, 5, 6, 7, 8)");
+		assertThat(tuple8().toString()).isEqualTo("(1, 2, 3, 4, 5, 6, 7, 8)");
 	}
 
 	@Test
@@ -398,7 +398,7 @@ public class TuplesTest {
 
 	@Test
 	public void shouldCreateNonuple() {
-		assertThat(tuple9().toString()).isEqualTo("Tuple(1, 2, 3, 4, 5, 6, 7, 8, 9)");
+		assertThat(tuple9().toString()).isEqualTo("(1, 2, 3, 4, 5, 6, 7, 8, 9)");
 	}
 
 	@Test
@@ -437,7 +437,7 @@ public class TuplesTest {
 
 	@Test
 	public void shouldCreateDecuple() {
-		assertThat(tuple10().toString()).isEqualTo("Tuple(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)");
+		assertThat(tuple10().toString()).isEqualTo("(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)");
 	}
 
 	@Test
@@ -476,7 +476,7 @@ public class TuplesTest {
 
 	@Test
 	public void shouldCreateUndecuple() {
-		assertThat(tuple11().toString()).isEqualTo("Tuple(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)");
+		assertThat(tuple11().toString()).isEqualTo("(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)");
 	}
 
 	@Test
@@ -516,7 +516,7 @@ public class TuplesTest {
 
 	@Test
 	public void shouldCreateDuodecuple() {
-		assertThat(tuple12().toString()).isEqualTo("Tuple(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)");
+		assertThat(tuple12().toString()).isEqualTo("(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)");
 	}
 
 	@Test
@@ -556,7 +556,7 @@ public class TuplesTest {
 
 	@Test
 	public void shouldCreateTredecuple() {
-		assertThat(tuple13().toString()).isEqualTo("Tuple(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)");
+		assertThat(tuple13().toString()).isEqualTo("(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)");
 	}
 
 	@Test
