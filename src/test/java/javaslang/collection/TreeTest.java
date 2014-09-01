@@ -84,9 +84,9 @@ public class TreeTest {
 
 	@Test
 	public void shouldSetNewSameParentTwice() {
-		final Tree<Integer> parent = tree(1);
-		final Tree<Integer> tree = tree(2).setParent(parent).setParent(parent);
-		assertThat(tree.getRoot().toString()).isEqualTo("Tree(1 2)");
+		final Tree<Integer> tree = tree(2).setParent(tree(1));
+		final Tree<Integer> actual = tree.setParent(tree.getParent().get());
+		assertThat(actual.getRoot().toString()).isEqualTo("Tree(1 2)");
 	}
 
 	@Test
