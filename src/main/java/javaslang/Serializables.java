@@ -43,9 +43,10 @@ public final class Serializables {
 	 * @return IllegalStateException if an IOException occurs when reading from the ObjectInputStream or the serialized
 	 *         class cannot be found.
 	 */
-	public static Object deserialize(byte[] objectData) {
+	@SuppressWarnings("unchecked")
+	public static <T> T deserialize(byte[] objectData) {
 		try (ObjectInputStream stream = new ObjectInputStream(new ByteArrayInputStream(objectData))) {
-			return stream.readObject();
+			return (T) stream.readObject();
 		} catch (IOException | ClassNotFoundException x) {
 			throw new IllegalStateException("Error deserializing object", x);
 		}
