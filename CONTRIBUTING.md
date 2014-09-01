@@ -71,6 +71,7 @@ private Xxx() {
 * Corner cases are tested.
 * Trivial methods are not tested, e.g. getters, setters.
 * The test method name documents
+* Without loss of generality (w.l.o.g.) there should be only one assertion per @Test.
 
 ### 3rd party libraries
 
