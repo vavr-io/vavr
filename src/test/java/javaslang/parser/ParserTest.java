@@ -163,6 +163,13 @@ public class ParserTest {
 		assertThat(actual).isEqualTo("one two three");
 	}
 
+	// -- Token
+
+	@Test
+	public void shouldConvertTokenToString() {
+		assertThat(new Token("id", 0, 0).toString()).isEqualTo("id[0,0]");
+	}
+
 	// -- parse helpers
 
 	private String parse(Parser parser, String text, boolean lexer) {
