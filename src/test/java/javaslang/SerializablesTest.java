@@ -24,8 +24,15 @@ public class SerializablesTest {
 	}
 
 	@Test
-	public void shouldSerializeDeserialize() {
-		assertThat(deserialize(serialize(MAGIC_NUMBER))).isEqualTo(MAGIC_NUMBER);
+	public void shouldSerializeDeserializeTargetingAssignmentType() {
+		final String actual = deserialize(serialize(MAGIC_NUMBER));
+		assertThat(actual).isEqualTo(MAGIC_NUMBER);
+	}
+
+	@Test
+	public void shouldSerializeDeserializeTargetingCastType() {
+		final int actual = ((String) deserialize(serialize(MAGIC_NUMBER))).length();
+		assertThat(actual).isEqualTo(MAGIC_NUMBER.length());
 	}
 
 	@Test

@@ -37,11 +37,22 @@ public final class Serializables {
 	}
 
 	/**
-	 * Deserializes a given object.
+	 * Deserializes a given object, returning the correct target type of assignment or cast.
+	 * <p>
+	 * Examples:
+	 * 
+	 * <pre>
+	 * <code>
+	 * final String s = deserialize(serialize("test"));
+	 * 
+	 * final int i = ((String) deserialize(serialize("test"))).length();
+	 * </code>
+	 * </pre>
 	 * 
 	 * @param objectData A serialized object.
-	 * @return IllegalStateException if an IOException occurs when reading from the ObjectInputStream or the serialized
-	 *         class cannot be found.
+	 * @return The deserialized Object.
+	 * @throws IllegalStateException if an IOException occurs when reading from the ObjectInputStream or the serialized
+	 *             class cannot be found.
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T deserialize(byte[] objectData) {
