@@ -131,8 +131,8 @@ public class Tree<T> extends AbstractTreeLikeStructure<T, Tree<T>> implements Se
 
 	@Override
 	public Tree<T> setChildren(Iterable<Tree<T>> children) {
-		return new Tree<>(parent, value, List.of(children), TreeTransformer.updateParent(this),
-				TreeTransformer::updateChildren);
+		final List<Tree<T>> childList = List.of(children);
+		return new Tree<>(parent, value, childList, TreeTransformer.updateParent(this), TreeTransformer::updateChildren);
 	}
 
 	// -- operations
