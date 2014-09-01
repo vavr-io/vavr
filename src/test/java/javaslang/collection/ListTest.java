@@ -1042,12 +1042,17 @@ public class ListTest {
 
 	@Test
 	public void shouldCalculateHashCodeOfEmptyList() {
-		assertThat(List.empty().hashCode()).isEqualTo(1);
+		assertThat(List.empty().hashCode() == List.empty().hashCode()).isTrue();
 	}
 
 	@Test
 	public void shouldCalculateHashCodeOfNonEmptyList() {
-		assertThat(List.of(1, 2, 3).hashCode()).isEqualTo(31 * (31 * (31 * 1 + 1) + 2) + 3);
+		assertThat(List.of(1, 2).hashCode() == List.of(1, 2).hashCode()).isTrue();
+	}
+
+	@Test
+	public void shouldCalculateDifferentHashCodesForDifferentLists() {
+		assertThat(List.of(1, 2).hashCode() != List.of(2, 3).hashCode()).isTrue();
 	}
 
 	// -- toString
