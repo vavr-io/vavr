@@ -1090,7 +1090,7 @@ public interface List<E> extends Iterable<E> {
 			int hashCode = 1;
 			for (List<E> list = this; !list.isEmpty(); list = list.tail()) {
 				final E element = list.head();
-				hashCode = 31 * hashCode + (element == null ? 0 : element.hashCode());
+				hashCode = 31 * hashCode + Objects.hashCode(element);
 			}
 			return hashCode;
 		}
