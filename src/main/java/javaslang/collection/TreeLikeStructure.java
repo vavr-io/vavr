@@ -160,9 +160,9 @@ interface TreeLikeStructure<T, TREE extends TreeLikeStructure<T, ?>> {
 		}
 
 		/**
-		 * Returns {@link #toSinglelineLispString()}.
+		 * Returns a String representation of this tree structure by calling {@link #toLispString()}.
 		 * 
-		 * @return this tree like structure in LISP format in a single line.
+		 * @return this tree structure in LISP format in a single line.
 		 */
 		@Override
 		public String toString() {

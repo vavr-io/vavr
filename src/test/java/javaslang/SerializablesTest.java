@@ -25,7 +25,7 @@ public class SerializablesTest {
 
 	@Test
 	public void shouldSerializeDeserializeTargetingAssignmentType() {
-		final String actual = deserialize(serialize(MAGIC_NUMBER));
+		final CharSequence actual = deserialize(serialize(MAGIC_NUMBER));
 		assertThat(actual).isEqualTo(MAGIC_NUMBER);
 	}
 

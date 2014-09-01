@@ -43,12 +43,15 @@ public final class Serializables {
 	 * 
 	 * <pre>
 	 * <code>
-	 * final String s = deserialize(serialize("test"));
+	 * // variable assignment
+	 * final CharSequence s = deserialize(serialize("test"));
 	 * 
+	 * // type casting
 	 * final int i = ((String) deserialize(serialize("test"))).length();
 	 * </code>
 	 * </pre>
 	 * 
+	 * @param <T> Target type the deserialized object will be casted to.
 	 * @param objectData A serialized object.
 	 * @return The deserialized Object.
 	 * @throws IllegalStateException if an IOException occurs when reading from the ObjectInputStream or the serialized
