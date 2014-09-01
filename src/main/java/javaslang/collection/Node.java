@@ -9,6 +9,7 @@ import static javaslang.Requirements.requireNonNull;
 
 import java.io.Serializable;
 
+import javaslang.collection.Tree.TreeTransformer;
 import javaslang.collection.TreeLikeStructure.AbstractTreeLikeStructure;
 
 /**
@@ -26,7 +27,7 @@ public class Node<T> extends AbstractTreeLikeStructure<T, Node<T>> implements Se
 	// -- constructors + factory methods
 
 	public Node(T value) {
-		this(value, List.empty());
+		this(value, List.of());
 	}
 
 	public Node(T value, Iterable<Node<T>> children) {
@@ -110,14 +111,15 @@ public class Node<T> extends AbstractTreeLikeStructure<T, Node<T>> implements Se
 	// -- conversion
 
 	public Tree<T> asTree() {
-		return new Tree<>(null, value, children.stream().map(child -> asTree(child)).collect(List.collector()));
+		return new Tree<>(null, value, children.stream().map(child -> asTree(child)).collect(List.collector()),
+				TreeTransformer::keepParent, TreeTransformer::updateChildren);
 	}
 
-	// omits updating child refs multiple times when calling asTree()
+	// DEV-NOTE: omits updating parent and child refs / builds Tree in O(n)
 	private Tree<T> asTree(Node<T> tree) {
 		return new Tree<>(null, tree.value, tree.children
 				.stream()
 				.map(child -> asTree(child))
-				.collect(List.collector()), null, null);
+				.collect(List.collector()), TreeTransformer::keepParent, TreeTransformer::keepChildren);
 	}
 }

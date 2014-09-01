@@ -8,7 +8,6 @@ package javaslang.collection;
 import static java.util.stream.Collectors.joining;
 
 import java.util.Objects;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import javaslang.Strings;
@@ -98,18 +97,18 @@ interface TreeLikeStructure<T, TREE extends TreeLikeStructure<T, ?>> {
 
 	// TODO: see http://rosettacode.org/wiki/Tree_traversal
 
-	default void traverse(Consumer<TREE> consumer) {
-		// TODO
-	}
-
-	default void traverse(Traversal traversal, Consumer<TREE> consumer) {
-		// TODO
-	}
-
-	static enum Traversal {
-
-		PREORDER, INORDER, POSTORDER, LEVEL_ORDER;
-	}
+	//	default void traverse(Consumer<TREE> consumer) {
+	//		// TODO
+	//	}
+	//
+	//	default void traverse(Traversal traversal, Consumer<TREE> consumer) {
+	//		// TODO
+	//	}
+	//
+	//	static enum Traversal {
+	//
+	//		PREORDER, INORDER, POSTORDER, LEVEL_ORDER;
+	//	}
 
 	// -- streaming 
 

@@ -33,32 +33,30 @@ public class Tree<T> extends AbstractTreeLikeStructure<T, Tree<T>> implements Se
 
 	// -- constructors + factory methods
 
-	// Shortcut for {@code Tree<>(null, value, List.empty())}.
 	public Tree(T value) {
-		this(null, value, List.empty());
+		this(null, value, List.of());
 	}
 
-	// Shortcut for {@code Tree<>(parent, value, List.empty())}.
 	public Tree(Tree<T> parent, T value) {
-		this(parent, value, List.empty());
+		this(parent, value, List.of());
 	}
 
-	// Shortcut for {@code Tree<>(null, value, List.empty())}.
 	public Tree(T value, Iterable<Tree<T>> children) {
 		this(null, value, children);
 	}
 
 	public Tree(Tree<T> parent, T value, Iterable<Tree<T>> children) {
-		this(parent, value, children, TreeTransformer::updateParent, TreeTransformer::updateChildren);
+		this(parent, value, children, TreeTransformer::keepParent, TreeTransformer::updateChildren);
 	}
 
 	Tree(Tree<T> parent, T value, Iterable<Tree<T>> children, TreeTransformer<T> updateParent,
 			TreeTransformer<T> updateChildren) {
 		requireNonNull(children, "children is null");
+		requireNonNull(updateParent, "updateParent is null");
+		requireNonNull(updateChildren, "updateChildren is null");
 		this.value = value;
-		this.parent = (updateParent == null) ? parent : Option.of(parent).map(updateParent.apply(this)).orElse(null);
-		this.children = (updateChildren == null) ? List.of(children) : List.of(children).replaceAll(
-				updateChildren.apply(this));
+		this.parent = Option.of(parent).map(updateParent.apply(this)).orElse(null);
+		this.children = List.of(children).replaceAll(updateChildren.apply(this));
 	}
 
 	/**
@@ -101,7 +99,7 @@ public class Tree<T> extends AbstractTreeLikeStructure<T, Tree<T>> implements Se
 	}
 
 	public Tree<T> setParent(Tree<T> parent) {
-		return new Tree<>(parent, value, children, TreeTransformer::updateParent, TreeTransformer::updateChildren);
+		return new Tree<>(parent, value, children, TreeTransformer.updateParent(this), TreeTransformer::updateChildren);
 	}
 
 	public Tree<T> getRoot() {
@@ -123,7 +121,7 @@ public class Tree<T> extends AbstractTreeLikeStructure<T, Tree<T>> implements Se
 
 	@Override
 	public Tree<T> setValue(T value) {
-		return new Tree<>(parent, value, children);
+		return new Tree<>(parent, value, children, TreeTransformer.updateParent(this), TreeTransformer::updateChildren);
 	}
 
 	@Override
@@ -133,24 +131,26 @@ public class Tree<T> extends AbstractTreeLikeStructure<T, Tree<T>> implements Se
 
 	@Override
 	public Tree<T> setChildren(Iterable<Tree<T>> children) {
-		return new Tree<>(parent, value, children);
+		return new Tree<>(parent, value, children, TreeTransformer.updateParent(this), TreeTransformer::updateChildren);
 	}
 
 	// -- operations
 
 	@Override
 	public Tree<T> attach(Iterable<Tree<T>> trees) {
-		return new Tree<>(parent, value, List.of(trees).prependAll(children));
+		return new Tree<>(parent, value, List.of(trees).prependAll(children), TreeTransformer.updateParent(this),
+				TreeTransformer::updateChildren);
 	}
 
 	@Override
 	public Tree<T> detach(Iterable<Tree<T>> trees) {
-		return new Tree<>(parent, value, children.removeAll(trees));
+		return new Tree<>(parent, value, children.removeAll(trees), TreeTransformer.updateParent(this),
+				TreeTransformer::updateChildren);
 	}
 
 	@Override
 	public Tree<T> subtree() {
-		return new Tree<>(null, value, children);
+		return new Tree<>(null, value, children, TreeTransformer::keepParent, TreeTransformer::updateChildren);
 	}
 
 	// -- conversion
@@ -166,29 +166,56 @@ public class Tree<T> extends AbstractTreeLikeStructure<T, Tree<T>> implements Se
 	 * 
 	 * @param <T>
 	 */
-	private static interface TreeTransformer<T> extends Function<Tree<T>, UnaryOperator<Tree<T>>> {
+	static interface TreeTransformer<T> extends Function<Tree<T>, UnaryOperator<Tree<T>>> {
 
-		// use-case: tree tells parent how to re-create its parent 
-		static <T> UnaryOperator<Tree<T>> updateParent(Tree<T> self) {
-			return parent -> new Tree<>(parent.parent, parent.value, parent.children, TreeTransformer::updateParent,
-					TreeTransformer.substitutePreviousChild(parent));
-		}
-
-		// use-case: existing tree instructs its parent to replace it and re-create the rest of the children
-		static <T> TreeTransformer<T> substitutePreviousChild(Tree<T> prevChild) {
-			return self -> child -> (child == prevChild) ? self : new Tree<>(self, child.value, child.children,
-					TreeTransformer::keepParent, TreeTransformer::updateChildren);
-		}
-
-		// use-case: tree passes itself as parent to its children
-		static <T> UnaryOperator<Tree<T>> keepParent(Tree<T> self) {
-			return parent -> self;
-		}
-
-		// use-case: tree tells its children to re-create all their children without re-creating their parents
+		/**
+		 * Use-case: tree tells its children to re-create all their children without re-creating their parents.
+		 * <p>
+		 * Example: (1 2 3).detach(3)<br>
+		 * 
+		 * <pre>
+		 * <code>
+		 *    1
+		 *   / \
+		 *  2   3
+		 * 
+		 * new1 = Tree(prev1.parent, prev1.value, updateChildren(prev1.children.remove(3)))
+		 * updateChildren(prev2) = new2 = Tree(new1, prev2.value, ())
+		 * 
+		 *    1
+		 *    |
+		 *    2
+		 * </code>
+		 * </pre>
+		 * 
+		 * @param self
+		 * @return
+		 */
 		static <T> UnaryOperator<Tree<T>> updateChildren(Tree<T> self) {
 			return child -> new Tree<>(self, child.value, child.children, TreeTransformer::keepParent,
 					TreeTransformer::updateChildren);
+		}
+
+		// Use-case: tree passes itself as parent to its children
+		static <T> UnaryOperator<Tree<T>> keepParent(Tree<T> self) {
+			return parent -> parent;
+		}
+
+		// Use-case: tree defers decending children, see Node.asTree()
+		static <T> UnaryOperator<Tree<T>> keepChildren(Tree<T> self) {
+			return child -> child;
+		}
+
+		// Use-case: update the whole parent structure but substitute parent.oldChild with this new child
+		static <T> TreeTransformer<T> updateParent(Tree<T> prevChild) {
+			return self -> parent -> new Tree<>(parent.parent, parent.value, parent.children,
+					TreeTransformer.updateParent(parent), TreeTransformer.substitutePreviousChild(prevChild, self));
+		}
+
+		// Use-case: existing tree instructs its parent to replace it and re-create the rest of the children
+		static <T> TreeTransformer<T> substitutePreviousChild(Tree<T> prevChild, Tree<T> newChild) {
+			return self -> child -> (child.equals(prevChild)) ? newChild : new Tree<>(self, child.value,
+					child.children, TreeTransformer::keepParent, TreeTransformer::updateChildren);
 		}
 	}
 }

@@ -8,7 +8,6 @@ package javaslang.collection;
 import static javaslang.collection.Tree.tree;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class TreeTest {
@@ -17,55 +16,60 @@ public class TreeTest {
 
 	@Test
 	public void shouldBeRootWhenCreatedWithValue() {
-		assertThat(new Tree<>(1).isRoot()).isTrue();
+		assertThat(tree(1).isRoot()).isTrue();
 	}
 
 	@Test
 	public void shouldEqualRootWhenCreatedWithValue() {
-		final Tree<Integer> tree = new Tree<>(1);
+		final Tree<Integer> tree = tree(1);
 		assertThat(tree.getRoot()).isEqualTo(tree);
 	}
 
 	@Test
+	public void shouldGetRootOfInnerNode() {
+		final Tree<Integer> tree = tree(1, tree(2, tree(3)));
+		assertThat(tree.getChild(0).getChild(0).getRoot()).isEqualTo(tree);
+	}
+
+	@Test
 	public void shouldHaveNoParentWhenCreatedWithValue() {
-		final Tree<Integer> tree = new Tree<>(1);
+		final Tree<Integer> tree = tree(1);
 		assertThat(tree.getParent().isPresent()).isFalse();
 	}
 
 	@Test
 	public void shouldBeLeafWhenCreatedWithValue() {
-		assertThat(new Tree<>(1).isLeaf()).isTrue();
+		assertThat(tree(1).isLeaf()).isTrue();
 	}
 
 	@Test
 	public void shouldHaveNoChildrenWhenCreatedWithValue() {
-		assertThat(new Tree<>(1).getChildren()).isEqualTo(List.empty());
+		assertThat(tree(1).getChildren()).isEqualTo(List.empty());
 	}
 
 	@Test
 	public void shouldContainCorrectValueWhenCreatedWithValue() {
-		assertThat(new Tree<>(1).getValue()).isEqualTo(1);
+		assertThat(tree(1).getValue()).isEqualTo(1);
 	}
 
 	@Test
 	public void shouldContainCorrectValueWhenSetValue() {
-		assertThat(new Tree<>(1).setValue(2).getValue()).isEqualTo(2);
+		assertThat(tree(1).setValue(2).getValue()).isEqualTo(2);
 	}
 
 	@Test
 	public void shouldCountNoChildren() {
-		assertThat(new Tree<>(1).getChildCount()).isEqualTo(0);
+		assertThat(tree(1).getChildCount()).isEqualTo(0);
 	}
 
 	@Test
 	public void shouldCountSomeChildren() {
-		assertThat(new Tree<>(1).setChildren(List.of(new Tree<>(2), new Tree<>(3))).getChildCount()).isEqualTo(2);
+		assertThat(tree(1).setChildren(List.of(tree(2), tree(3))).getChildCount()).isEqualTo(2);
 	}
 
 	@Test
 	public void shouldSetChildren() {
-		assertThat(new Tree<>(1).setChildren(List.of(new Tree<>(2), new Tree<>(3))).toString())
-				.isEqualTo("Tree(1 2 3)");
+		assertThat(tree(1).setChildren(List.of(tree(2), tree(3))).toString()).isEqualTo("Tree(1 2 3)");
 	}
 
 	// -- tree operations
@@ -85,17 +89,13 @@ public class TreeTest {
 	}
 
 	@Test
-	@Ignore
-	// TODO: fix StackOverflow error
 	public void shouldAttachedTreeShouldHaveSameParentStructure() {
 		final Tree<Integer> tree = tree(0, tree(1, tree(2, tree(3)), tree(4, tree(5))));
 		final Tree<Integer> newTree = tree.getChild(0).getChild(0).attach(tree(6));
-		assertThat(newTree.getRoot().toString()).isEqualTo("Tree(0 (1 (2 3) (4 5))");
+		assertThat(newTree.getRoot().toString()).isEqualTo("Tree(0 (1 (2 3 6) (4 5)))");
 	}
 
 	@Test
-	@Ignore
-	// TODO: fix StackOverflow error
 	public void shouldAttachedTreeShouldHaveSameChildStructure() {
 		final Tree<Integer> tree = tree(0, tree(1, tree(2, tree(3)), tree(4, tree(5))));
 		final Tree<Integer> newTree = tree.getChild(0).getChild(0).attach(tree(6));
@@ -123,17 +123,13 @@ public class TreeTest {
 	}
 
 	@Test
-	@Ignore
-	// TODO: fix StackOverflow error
 	public void shouldDetachedTreeShouldHaveSameParentStructure() {
 		final Tree<Integer> tree = tree(0, tree(1, tree(2, tree(3)), tree(4, tree(5))));
 		final Tree<Integer> newTree = tree.getChild(0).getChild(0).detach(tree(3));
-		assertThat(newTree.getRoot().toString()).isEqualTo("Tree(0 (1 2 (4 5))");
+		assertThat(newTree.getRoot().toString()).isEqualTo("Tree(0 (1 2 (4 5)))");
 	}
 
 	@Test
-	@Ignore
-	// TODO: fix StackOverflow error
 	public void shouldDetachedTreeShouldHaveSameChildStructure() {
 		final Tree<Integer> tree = tree(0, tree(1, tree(2, tree(3)), tree(4, tree(5))));
 		final Tree<Integer> newTree = tree.getChild(0).getChild(0).detach(tree(3));
