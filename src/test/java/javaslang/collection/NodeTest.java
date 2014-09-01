@@ -6,7 +6,9 @@
 package javaslang.collection;
 
 import static javaslang.collection.Node.node;
+import static javaslang.collection.Tree.tree;
 import static org.assertj.core.api.Assertions.assertThat;
+import javaslang.Serializables;
 
 import org.junit.Test;
 
@@ -111,5 +113,86 @@ public class NodeTest {
 				.toString();
 		final String expected = "Tree(\"A\" \"B\" (\"C\" \"D\" (\"E\" (\"F\" \"G\"))))";
 		assertThat(actual).isEqualTo(expected);
+	}
+
+	// -- Object.*
+
+	// equals
+
+	@Test
+	public void shouldEqualSameNodeInstance() {
+		final Node<?> node = node(1);
+		assertThat(node.equals(node)).isTrue();
+	}
+
+	@Test
+	public void shouldNodeNotEqualsNull() {
+		assertThat(node(1).equals(null)).isFalse();
+	}
+
+	@Test
+	public void shouldNodeNotEqualsDifferentType() {
+		assertThat(node(1).equals(tree(1))).isFalse();
+	}
+
+	@Test
+	public void shouldRecognizeEqualityOfNodes() {
+		assertThat(node(1).equals(node(1))).isTrue();
+	}
+
+	@Test
+	public void shouldRecognizeNonEqualityOfDifferentNodesOfSameSize() {
+		assertThat(node(1).equals(node(2))).isFalse();
+	}
+
+	@Test
+	public void shouldRecognizeNonEqualityOfDifferentNodesOfDifferentSize() {
+		assertThat(node(1).equals(node(1, node(2)))).isFalse();
+	}
+
+	// hashCode
+
+	@Test
+	public void shouldCalculateHashCodeOfSingleNodeNode() {
+		assertThat(node(1).hashCode() == node(1).hashCode()).isTrue();
+	}
+
+	@Test
+	public void shouldCalculateHashCodeOfNodeWithChildren() {
+		assertThat(node(1, node(2)).hashCode() == node(1, node(2)).hashCode()).isTrue();
+	}
+
+	@Test
+	public void shouldCalculateDifferentHashCodesForDifferentNodes() {
+		assertThat(node(1, node(2)).hashCode() != node(2, node(3)).hashCode()).isTrue();
+	}
+
+	// toString
+
+	@Test
+	public void shouldConvertNodeToString() {
+		final Node<Integer> node = node(1, node(2, node(3)), node(4));
+		assertThat(node.toString()).isEqualTo("Node(1 (2 3) 4)");
+	}
+
+	@Test
+	public void shouldConvertNodeToSinglelineLispString() {
+		final Node<Integer> node = node(1, node(2, node(3)), node(4));
+		assertThat(node.toLispString()).isEqualTo("Node(1 (2 3) 4)");
+	}
+
+	@Test
+	public void shouldConvertNodeToMultilineLispString() {
+		final Node<Integer> node = node(1, node(2, node(3)), node(4));
+		assertThat(node.toCoffeeScriptString()).isEqualTo("Node:\n1\n  2\n    3\n  4");
+	}
+
+	// -- Serializable
+
+	@Test
+	public void shouldSerializeDeserializeNode() {
+		final Node<Integer> node = node(1, node(2, node(3)), node(4));
+		final Node<Integer> actual = Serializables.deserialize(Serializables.serialize(node));
+		assertThat(actual).isEqualTo(node);
 	}
 }

@@ -8,7 +8,6 @@ package javaslang.collection;
 import static java.util.stream.Collectors.joining;
 
 import java.util.Objects;
-import java.util.function.Supplier;
 
 import javaslang.Strings;
 
@@ -160,53 +159,79 @@ interface TreeLikeStructure<T, TREE extends TreeLikeStructure<T, ?>> {
 			return 31 * getChildren().hashCode() + Objects.hashCode(value);
 		}
 
+		/**
+		 * Returns {@link #toSinglelineLispString()}.
+		 * 
+		 * @return this tree like structure in LISP format in a single line.
+		 */
 		@Override
 		public String toString() {
-			return toString(() -> toLispString());
-		}
-
-		private String toString(Supplier<String> stringifier) {
-			final String string = stringifier.get();
-			return getClass().getSimpleName() + (isLeaf() ? "(" + string + ")" : string);
+			return toLispString();
 		}
 
 		/**
-		 * Prints the complete tree in LISP format {@code ClassName(root child1 .. childN)}, where <em>ClassName</em> is
-		 * {@code Node} or {@code Tree}, depending on the implementation. Prints {@code ClassName(value)} if node is a
-		 * leaf.
+		 * Prints the complete tree in LISP format {@code ClassName(root child1 .. childN)} in a <strong>single
+		 * line</strong>, where <em>ClassName</em> is {@code Node} or {@code Tree}, depending on the implementation.
+		 * Prints {@code ClassName(value)} if node is a leaf.
 		 * 
-		 * @return The string representation of this tree structure in LISP format.
+		 * @return The string representation of this tree structure in LISP format, in a single line.
 		 */
-		private String toLispString() {
-			final String value = Strings.toString(getValue());
+		public String toLispString() {
+			final String string = internalToLispString();
+			return getClass().getSimpleName() + (isLeaf() ? "(" + string + ")" : string);
+		}
+
+		private String internalToLispString() {
+			final String value = Strings.toString(getValue()).replaceAll("\\s+", " ").trim();
 			if (isLeaf()) {
 				return value;
 			} else {
 				final String children = getChildren()
 						.stream()
-						.map(AbstractTreeLikeStructure::toLispString)
+						.map(AbstractTreeLikeStructure::internalToLispString)
 						.collect(joining(" "));
 				return String.format("(%s %s)", value, children);
 			}
 		}
 
-		public String toIndentedString() {
-			return toString(() -> toIndentedString(0));
+		/**
+		 * Prints the complete tree in CoffeeScript format
+		 * 
+		 * <pre>
+		 * <code>
+		 * ClassName:
+		 * root
+		 *   child1
+		 *     child11
+		 *   child2
+		 *     child21
+		 *       child211
+		 *       child212
+		 *   childN
+		 * </code>
+		 * </pre>
+		 * 
+		 * in <strong>multiple indented lines</strong>, where <em>ClassName</em> is {@code Node} or {@code Tree},
+		 * depending on the implementation.
+		 * 
+		 * @return The string representation of this tree structure in CoffeeScript format, in multiple indented lines.
+		 */
+		public String toCoffeeScriptString() {
+			final String string = internalToCoffeeScriptString(0);
+			return getClass().getSimpleName() + ":" + string;
 		}
 
-		protected String toIndentedString(int depth) {
+		protected String internalToCoffeeScriptString(int depth) {
 			final String indent = Strings.repeat(' ', depth * 2);
 			final String value = Strings.toString(getValue()).replaceAll("\\s+", " ").trim();
 			if (isLeaf()) {
-				return indent + value;
+				return "\n" + indent + value;
 			} else {
 				final String children = getChildren()
 						.stream()
-						.map(child -> child.toIndentedString(depth + 1))
-						.reduce((l, r) -> l + ",\n" + r)
-						.map(s -> "\n" + s + "\n" + indent)
-						.orElse("");
-				return String.format("%s(%s %s)", indent, value, children);
+						.map(child -> child.internalToCoffeeScriptString(depth + 1))
+						.collect(joining());
+				return String.format("\n%s%s%s", indent, value, children);
 			}
 		}
 	}

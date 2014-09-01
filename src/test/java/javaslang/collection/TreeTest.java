@@ -5,12 +5,45 @@
  */
 package javaslang.collection;
 
+import static javaslang.collection.Node.node;
 import static javaslang.collection.Tree.tree;
 import static org.assertj.core.api.Assertions.assertThat;
+import javaslang.Serializables;
 
 import org.junit.Test;
 
 public class TreeTest {
+
+	// -- constructors
+
+	@Test
+	public void shouldCreateTreeByValue() {
+		assertThat(new Tree<>(1).toString()).isEqualTo("Tree(1)");
+	}
+
+	@Test
+	public void shouldCreateTreeByValueAndChildren() {
+		final Tree<Integer> tree = new Tree<>(1, List.of(new Tree<>(2)));
+		assertThat(tree.toString()).isEqualTo("Tree(1 2)");
+	}
+
+	@Test
+	public void shouldCreateTreeByParentAndValue() {
+		final Tree<Integer> tree = new Tree<>(new Tree<>(1), 2);
+		assertThat(tree.getRoot().toString()).isEqualTo("Tree(1 2)");
+	}
+
+	@Test
+	public void shouldCreateTreeByParentAndValueAndChildren() {
+		final Tree<Integer> tree = new Tree<>(new Tree<>(1), 2, List.of(new Tree<>(3), new Tree<>(4)));
+		assertThat(tree.getRoot().toString()).isEqualTo("Tree(1 (2 3 4))");
+	}
+
+	@Test
+	public void shouldCreateTreeByFactoryMethod() {
+		final Tree<Integer> tree = tree(1, tree(2, tree(3)), tree(4));
+		assertThat(tree.toString()).isEqualTo("Tree(1 (2 3) 4)");
+	}
 
 	// -- core
 
@@ -35,6 +68,25 @@ public class TreeTest {
 	public void shouldHaveNoParentWhenCreatedWithValue() {
 		final Tree<Integer> tree = tree(1);
 		assertThat(tree.getParent().isPresent()).isFalse();
+	}
+
+	@Test
+	public void shouldSetNewParentWhenParentIsNull() {
+		final Tree<Integer> tree = tree(2).setParent(tree(1));
+		assertThat(tree.getRoot().toString()).isEqualTo("Tree(1 2)");
+	}
+
+	@Test
+	public void shouldSetNewParentWhenParentIsNotNull() {
+		final Tree<Integer> tree = tree(2).setParent(tree(0)).setParent(tree(1));
+		assertThat(tree.getRoot().toString()).isEqualTo("Tree(1 2)");
+	}
+
+	@Test
+	public void shouldSetNewSameParentTwice() {
+		final Tree<Integer> parent = tree(1);
+		final Tree<Integer> tree = tree(2).setParent(parent).setParent(parent);
+		assertThat(tree.getRoot().toString()).isEqualTo("Tree(1 2)");
 	}
 
 	@Test
@@ -80,6 +132,15 @@ public class TreeTest {
 	public void shouldAttachChild() {
 		final Tree<Integer> tree = tree(1, tree(2), tree(3));
 		assertThat(tree.attach(tree(4)).toString()).isEqualTo("Tree(1 2 3 4)");
+	}
+
+	@Test
+	public void shouldAttachSameChildTwiceBecauseOfDuplication() {
+		final Tree<Integer> child = tree(2);
+		final Tree<Integer> tree = tree(1).attach(child).attach(child);
+		assertThat(tree.toString()).isEqualTo("Tree(1 2 2)");
+		assertThat(tree.getChild(0).getParent().get().toString()).isEqualTo("Tree(1 2 2)");
+		assertThat(tree.getChild(1).getParent().get().toString()).isEqualTo("Tree(1 2 2)");
 	}
 
 	@Test
@@ -166,5 +227,86 @@ public class TreeTest {
 				.toString();
 		final String expected = "Node(\"A\" \"B\" (\"C\" \"D\" (\"E\" (\"F\" \"G\"))))";
 		assertThat(actual).isEqualTo(expected);
+	}
+
+	// -- Object.*
+
+	// equals
+
+	@Test
+	public void shouldEqualSameTreeInstance() {
+		final Tree<?> tree = tree(1);
+		assertThat(tree.equals(tree)).isTrue();
+	}
+
+	@Test
+	public void shouldTreeNotEqualsNull() {
+		assertThat(tree(1).equals(null)).isFalse();
+	}
+
+	@Test
+	public void shouldTreeNotEqualsDifferentType() {
+		assertThat(tree(1).equals(node(1))).isFalse();
+	}
+
+	@Test
+	public void shouldRecognizeEqualityOfTrees() {
+		assertThat(tree(1).equals(tree(1))).isTrue();
+	}
+
+	@Test
+	public void shouldRecognizeNonEqualityOfDifferentTreesOfSameSize() {
+		assertThat(tree(1).equals(tree(2))).isFalse();
+	}
+
+	@Test
+	public void shouldRecognizeNonEqualityOfDifferentTreesOfDifferentSize() {
+		assertThat(tree(1).equals(tree(1, tree(2)))).isFalse();
+	}
+
+	// hashCode
+
+	@Test
+	public void shouldCalculateHashCodeOfSingleTreeNode() {
+		assertThat(tree(1).hashCode() == tree(1).hashCode()).isTrue();
+	}
+
+	@Test
+	public void shouldCalculateHashCodeOfTreeWithChildren() {
+		assertThat(tree(1, tree(2)).hashCode() == tree(1, tree(2)).hashCode()).isTrue();
+	}
+
+	@Test
+	public void shouldCalculateDifferentHashCodesForDifferentTrees() {
+		assertThat(tree(1, tree(2)).hashCode() != tree(2, tree(3)).hashCode()).isTrue();
+	}
+
+	// toString
+
+	@Test
+	public void shouldConvertTreeToString() {
+		final Tree<Integer> tree = tree(1, tree(2, tree(3)), tree(4));
+		assertThat(tree.toString()).isEqualTo("Tree(1 (2 3) 4)");
+	}
+
+	@Test
+	public void shouldConvertTreeToSinglelineLispString() {
+		final Tree<Integer> tree = tree(1, tree(2, tree(3)), tree(4));
+		assertThat(tree.toLispString()).isEqualTo("Tree(1 (2 3) 4)");
+	}
+
+	@Test
+	public void shouldConvertTreeToMultilineLispString() {
+		final Tree<Integer> tree = tree(1, tree(2, tree(3)), tree(4));
+		assertThat(tree.toCoffeeScriptString()).isEqualTo("Tree:\n1\n  2\n    3\n  4");
+	}
+
+	// -- Serializable
+
+	@Test
+	public void shouldSerializeDeserializeTree() {
+		final Tree<Integer> tree = tree(1, tree(2, tree(3)), tree(4));
+		final Tree<Integer> actual = Serializables.deserialize(Serializables.serialize(tree));
+		assertThat(actual).isEqualTo(tree);
 	}
 }
