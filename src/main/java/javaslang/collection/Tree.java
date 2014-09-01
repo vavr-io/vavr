@@ -61,6 +61,39 @@ public class Tree<T> extends AbstractTreeLikeStructure<T, Tree<T>> implements Se
 				updateChildren.apply(this));
 	}
 
+	/**
+	 * Factory method for easy tree building.
+	 * <p>
+	 * <strong>Example:</strong>
+	 * <p>
+	 * {@code tree("A", tree("B"), tree("C", tree("D"), tree("E", tree("F", tree("G")))))}
+	 * <p>
+	 * results in:
+	 * 
+	 * <pre>
+	 * <code>
+	 *   A
+	 *  / \
+	 * B   C
+	 *    / \
+	 *   D   E
+	 *       |
+	 *       F
+	 *       |
+	 *       G
+	 * </code>
+	 * </pre>
+	 * 
+	 * @param <T> value type of the result Tree
+	 * @param value The value of the Tree.
+	 * @param children The children of the Tree.
+	 * @return A new Tree instance based on the arguments.
+	 */
+	@SafeVarargs
+	public static <T> Tree<T> tree(T value, Tree<T>... children) {
+		return new Tree<>(value, List.of(children));
+	}
+
 	// -- core
 
 	public Option<Tree<T>> getParent() {

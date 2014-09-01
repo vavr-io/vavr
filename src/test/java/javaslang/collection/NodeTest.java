@@ -12,29 +12,97 @@ import org.junit.Test;
 
 public class NodeTest {
 
-	// -- core (single node properties)
+	// -- core
 
 	@Test
 	public void shouldBeLeafWhenCreatedWithValue() {
-		assertThat(new Node<>(1).isLeaf()).isTrue();
+		assertThat(node(1).isLeaf()).isTrue();
 	}
 
 	@Test
 	public void shouldHaveNoChildrenWhenCreatedWithValue() {
-		assertThat(new Node<>(1).getChildren()).isEqualTo(List.empty());
+		assertThat(node(1).getChildren()).isEqualTo(List.empty());
 	}
 
 	@Test
 	public void shouldContainCorrectValueWhenCreatedWithValue() {
-		assertThat(new Node<>(1).getValue()).isEqualTo(1);
+		assertThat(node(1).getValue()).isEqualTo(1);
 	}
 
 	@Test
 	public void shouldContainCorrectValueWhenSetValue() {
-		assertThat(new Node<>(1).setValue(2).getValue()).isEqualTo(2);
+		assertThat(node(1).setValue(2).getValue()).isEqualTo(2);
 	}
 
-	// -- building trees
+	@Test
+	public void shouldCountNoChildren() {
+		assertThat(node(1).getChildCount()).isEqualTo(0);
+	}
+
+	@Test
+	public void shouldCountSomeChildren() {
+		final Node<?> node = node(1).setChildren(List.of(node(2), node(3)));
+		assertThat(node.getChildCount()).isEqualTo(2);
+	}
+
+	@Test
+	public void shouldSetChildren() {
+		final Node<?> node = node(1).setChildren(List.of(node(2), node(3)));
+		assertThat(node.toString()).isEqualTo("Node(1 2 3)");
+	}
+
+	// -- tree operations
+
+	// attach
+
+	@Test
+	public void shouldAttachChild() {
+		final Node<Integer> node = node(1, node(2), node(3));
+		assertThat(node.attach(node(4)).toString()).isEqualTo("Node(1 2 3 4)");
+	}
+
+	@Test
+	public void shouldAttachChildren() {
+		final Node<Integer> node = node(1, node(2), node(3));
+		assertThat(node.attach(List.of(node(4), node(5))).toString()).isEqualTo("Node(1 2 3 4 5)");
+	}
+
+	// detach
+
+	@Test
+	public void shouldDetachFirstChild() {
+		final Node<Integer> node = node(1, node(2), node(3));
+		assertThat(node.detach(node(2)).toString()).isEqualTo("Node(1 3)");
+	}
+
+	@Test
+	public void shouldDetachLastChild() {
+		final Node<Integer> node = node(1, node(2), node(3));
+		assertThat(node.detach(node(3)).toString()).isEqualTo("Node(1 2)");
+	}
+
+	@Test
+	public void shouldDetachChildren() {
+		final Node<Integer> node = node(1, node(2), node(3), node(4));
+		assertThat(node.detach(List.of(node(2), node(3))).toString()).isEqualTo("Node(1 4)");
+	}
+
+	// subtree
+
+	@Test
+	public void shouldGetChildAsSubtree() {
+		final Node<Integer> node = node(1, node(2, node(3), node(4)), node(5));
+		assertThat(node.getChild(0).subtree().toString()).isEqualTo("Node(2 3 4)");
+	}
+
+	@Test
+	public void shouldNotModifyCurrentParentWhenSubtreeOnChild() {
+		final Node<Integer> node = node(1, node(2, node(3), node(4)), node(5));
+		node.getChild(0).subtree();
+		assertThat(node.toString()).isEqualTo("Node(1 (2 3 4) 5)");
+	}
+
+	// -- conversion
 
 	@Test
 	public void shouldBuildATree() {

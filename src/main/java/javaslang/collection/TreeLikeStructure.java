@@ -37,6 +37,10 @@ interface TreeLikeStructure<T, TREE extends TreeLikeStructure<T, ?>> {
 		return getChildren().size();
 	}
 
+	default TREE getChild(int index) {
+		return getChildren().get(index);
+	}
+
 	TREE setChildren(Iterable<TREE> children);
 
 	default boolean isLeaf() {
@@ -111,6 +115,17 @@ interface TreeLikeStructure<T, TREE extends TreeLikeStructure<T, ?>> {
 
 	// TODO: stream(), parallelStream(), ...
 
+	// -- Object.*
+
+	@Override
+	boolean equals(Object o);
+
+	@Override
+	int hashCode();
+
+	@Override
+	String toString();
+
 	/**
 	 * This class is needed because the interface {@link TreeLikeStructure} cannot use default methods to override
 	 * Object's non-final methods equals, hashCode and toString.
@@ -132,7 +147,8 @@ interface TreeLikeStructure<T, TREE extends TreeLikeStructure<T, ?>> {
 			if (o == null || !(getClass().isAssignableFrom(o.getClass()))) {
 				return false;
 			} else {
-				final Tree<?> that = (Tree<?>) o;
+				@SuppressWarnings("unchecked")
+				final TREE that = (TREE) o;
 				return Objects.equals(getValue(), that.getValue()) && Objects.equals(getChildren(), that.getChildren());
 			}
 		}
