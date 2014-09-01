@@ -106,7 +106,7 @@ public final class Parsers {
 	 * </code>
 	 * </pre>
 	 */
-	static class CharRange implements Parser {
+	static class Range implements Parser {
 
 		final char from;
 		final char to;
@@ -119,7 +119,7 @@ public final class Parsers {
 		 * @param to Last character this range includes.
 		 * @throws UnsatisfiedRequirementException in case of a negative range, i.e. from &gt; to.
 		 */
-		CharRange(char from, char to) {
+		Range(char from, char to) {
 			require(from <= to, "from > to");
 			this.from = from;
 			this.to = to;
@@ -129,7 +129,7 @@ public final class Parsers {
 		@Override
 		public Either<Integer, Node<Token>> parse(String text, int index, boolean combineResults) {
 			if (index < text.length() && isInRange.test(text.charAt(index))) {
-				return new Right<>(new Node<>(new Token("CharRange", index, 1)));
+				return new Right<>(new Node<>(new Token("Range", index, 1)));
 			} else {
 				return new Left<>(index);
 			}
@@ -150,12 +150,12 @@ public final class Parsers {
 	 * </code>
 	 * </pre>
 	 */
-	static class CharSet implements Parser {
+	static class Charset implements Parser {
 
 		/** Matches ranges within char sets. */
 		static final Pattern CHAR_SET_RANGE_PATTERN = Pattern.compile(".-.");
 
-		final String charSetString;
+		final String charsetString;
 		final Predicate<Character> inSet;
 
 		/**
@@ -163,16 +163,16 @@ public final class Parsers {
 		 * 
 		 * @param set A set of characters to include.
 		 */
-		CharSet(String charSetString) {
-			requireNotNullOrEmpty(charSetString, "charSetString is null or empty");
-			this.charSetString = charSetString;
-			this.inSet = parse(charSetString);
+		Charset(String charsetString) {
+			requireNotNullOrEmpty(charsetString, "charsetString is null or empty");
+			this.charsetString = charsetString;
+			this.inSet = parse(charsetString);
 		}
 
 		@Override
 		public Either<Integer, Node<Token>> parse(String text, int index, boolean combineResults) {
 			if (index < text.length() && inSet.test(text.charAt(index))) {
-				return new Right<>(new Node<>(new Token("CharSet", index, 1)));
+				return new Right<>(new Node<>(new Token("Charset", index, 1)));
 			} else {
 				return new Left<>(index);
 			}
@@ -180,7 +180,7 @@ public final class Parsers {
 
 		@Override
 		public String toString() {
-			return charSetString.chars().boxed().map(i -> {
+			return charsetString.chars().boxed().map(i -> {
 				final char c = (char) i.intValue();
 				// TODO: add more special characters. See http://stackoverflow.com/questions/504402/how-to-handle-escape-sequences-in-string-literals-in-antlr-3a
 					switch (c) {
@@ -204,13 +204,13 @@ public final class Parsers {
 		/**
 		 * Parses a char set String which contains sequences of characters and character ranges denoted as {@code a-z}.
 		 * 
-		 * @param charSetString A String defining a char set.
+		 * @param charsetString A String defining a char set.
 		 * @return A Predicate that tests, if a given char is in the char set.
 		 */
-		private Predicate<Character> parse(String charSetString) {
+		private Predicate<Character> parse(String charsetString) {
 
 			final List<Predicate<Character>> predicates = new ArrayList<>();
-			final Matcher matcher = CHAR_SET_RANGE_PATTERN.matcher(charSetString);
+			final Matcher matcher = CHAR_SET_RANGE_PATTERN.matcher(charsetString);
 			final StringBuffer charsBuf = new StringBuffer();
 
 			while (matcher.find()) {

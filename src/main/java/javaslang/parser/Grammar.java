@@ -5,6 +5,8 @@
  */
 package javaslang.parser;
 
+import static javaslang.Requirements.requireNonNull;
+
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -80,9 +82,52 @@ public class Grammar {
 	// TODO: should all parsers initially get the supplied referenced parsers?
 	private final Parsers.Rule startRule;
 
-	protected Grammar(Supplier<Parsers.Rule> startRule) {
-		Requirements.requireNonNull(startRule, "startRule is null");
-		this.startRule = startRule.get();
+	/**
+	 * Creates a grammar. Intended to be used with direct instantiation.
+	 * 
+	 * <pre>
+	 * <code>
+	 * final Parsers.Rule startRule = Grammar.rule("root", Grammar.ANY);
+	 * final Grammar grammar = new Grammar(startRule);
+	 * final Try&lt;Tree&lt;Token&gt;&gt; cst = grammar.parse("text");
+	 * </code>
+	 * </pre>
+	 * 
+	 * @param startRule The start rule of the grammar.
+	 */
+	public Grammar(Parsers.Rule startRule) {
+		requireNonNull(startRule, "startRule is null");
+		this.startRule = startRule;
+	}
+
+	/**
+	 * Creates a grammar. Intended to be used with inheritance and method references.
+	 * 
+	 * <pre>
+	 * <code>
+	 * class MyGrammar extends Grammar {
+	 * 
+	 *     MyGrammar() {
+	 *         super(MyGrammar::startRule);
+	 *     }
+	 *     
+	 *     static Rule startRule() {
+	 *         return rule("root", ANY);
+	 *     }
+	 *     
+	 *     // ...
+	 * 
+	 * }
+	 * 
+	 * final Grammar grammar = new MyGrammar();
+	 * final Try&lt;Tree&lt;Token&gt;&gt; cst = grammar.parse("text");
+	 * </code>
+	 * </pre>
+	 * 
+	 * @param startRuleSupplier Supplies the start rule of the grammar.
+	 */
+	public Grammar(Supplier<Parsers.Rule> startRuleSupplier) {
+		this(requireNonNull(startRuleSupplier, "startRuleSupplier is null").get());
 	}
 
 	/**
@@ -157,24 +202,24 @@ public class Grammar {
 	}
 
 	/**
-	 * Shortcut for {@code new Parsers.CharSet(charset)}.
+	 * Shortcut for {@code new Parsers.Charset(charset)}.
 	 * 
 	 * @param charset A charset String.
-	 * @return A new {@link Parsers.CharSet}.
+	 * @return A new {@link Parsers.Charset}.
 	 */
-	public static Parsers.CharSet charSet(String charset) {
-		return new Parsers.CharSet(charset);
+	public static Parsers.Charset charset(String charset) {
+		return new Parsers.Charset(charset);
 	}
 
 	/**
-	 * Shortcut for {@code new Parsers.CharRange(from, to)}.
+	 * Shortcut for {@code new Parsers.Range(from, to)}.
 	 * 
 	 * @param from Left bound of the range, inclusive.
 	 * @param to Right bound of the range, inclusive.
-	 * @return A new {@link Parsers.CharRange}.
+	 * @return A new {@link Parsers.Range}.
 	 */
-	public static Parsers.CharRange range(char from, char to) {
-		return new Parsers.CharRange(from, to);
+	public static Parsers.Range range(char from, char to) {
+		return new Parsers.Range(from, to);
 	}
 
 	/**

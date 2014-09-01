@@ -25,6 +25,20 @@ public class GrammarTest {
 		assertThat(new JSONGrammar().toString()).isEqualTo(expected);
 	}
 
+	// -- Grammar.parse()
+
+	@Test
+	public void shouldParseTextWhenMatching() {
+		assertThat(new Grammar(Grammar.rule("root", Grammar.EOF)).parse("").toString()).isEqualTo(
+				"Success(Tree(Rule[0,0] EOF[0,0]))");
+	}
+
+	@Test
+	public void shouldParseTextWhenNotMatching() {
+		assertThat(new Grammar(Grammar.rule("root", Grammar.ANY)).parse("").toString()).isEqualTo(
+				"Failure(java.lang.IllegalArgumentException: cannot parse input at (1, 1))");
+	}
+
 	@Test
 	@Ignore
 	// TODO: consider whitespace in parser rules
@@ -41,6 +55,65 @@ public class GrammarTest {
 		final String result = parseTree.map(tree -> tree.toString()).recover(x -> x.getMessage()).get();
 		/* TODO:DELME */System.out.println("Parse tree:\n" + result);
 	}
+
+	// -- factory methods
+
+	@Test
+	public void shouldCreateRule() {
+		assertThat(Grammar.rule("rule", Grammar.EOF).toString()).isEqualTo("rule : EOF ;");
+	}
+
+	@Test
+	public void shouldCreateSubRule() {
+		assertThat(Grammar.subRule(Grammar.ANY, Grammar.EOF).toString()).isEqualTo("( . | EOF )");
+	}
+
+	@Test
+	public void shouldCreateSequence() {
+		assertThat(Grammar.seq(Grammar.ANY, Grammar.EOF).toString()).isEqualTo(". EOF");
+	}
+
+	@Test
+	public void shouldCreateCharset() {
+		assertThat(Grammar.charset("a-zA-Z$_").toString()).isEqualTo("[a-zA-Z$_]");
+	}
+
+	@Test
+	public void shouldCreateRange() {
+		assertThat(Grammar.range('a', 'z').toString()).isEqualTo("'a'..'z'");
+	}
+
+	@Test
+	public void shouldCreateStringLiteral() {
+		assertThat(Grammar.str("text").toString()).isEqualTo("'text'");
+	}
+
+	@Test
+	public void shouldCreateQuantifier0to1() {
+		assertThat(Grammar._0_1(Grammar.ANY).toString()).isEqualTo(".?");
+	}
+
+	@Test
+	public void shouldCreateQuantifier0toN() {
+		assertThat(Grammar._0_n(Grammar.ANY).toString()).isEqualTo(".*");
+	}
+
+	@Test
+	public void shouldCreateQuantifier_1toN() {
+		assertThat(Grammar._1_n(Grammar.ANY).toString()).isEqualTo(".+");
+	}
+
+	@Test
+	public void shouldCreateDelimitedList() {
+		assertThat(Grammar.list(Grammar.ANY, ",").toString()).isEqualTo("( . ( ',' . )* )?");
+	}
+
+	@Test
+	public void shouldCreateDelimitedListWithPrefixAndSuffix() {
+		assertThat(Grammar.list(Grammar.ANY, ",", "{", "}").toString()).isEqualTo("'{' ( . ( ',' . )* )? '}'");
+	}
+
+	// -- example grammars
 
 	static class JSONGrammar extends Grammar {
 
@@ -68,7 +141,7 @@ public class GrammarTest {
 		// STRING : '"' (ESC | ~["\\])* '"' ;
 		static Parser STRING() {
 			// TODO
-			return rule("STRING", _1_n(charSet("a-zA-Z0-9_$")));
+			return rule("STRING", _1_n(charset("a-zA-Z0-9_$")));
 		}
 
 		// fragment ESC : '\\' ( ["\\/bfnrt] | UNICODE ) ;
@@ -80,7 +153,7 @@ public class GrammarTest {
 		}
 
 		static Parser NUMBER() {
-			return rule("NUMBER", _1_n(charSet("0-9")));
+			return rule("NUMBER", _1_n(charset("0-9")));
 		}
 
 		// pair : jsonString ':' json ;

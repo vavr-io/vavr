@@ -33,59 +33,59 @@ public class ParserTest {
 		assertThat(actual).isEqualTo("a");
 	}
 
-	// -- CharRange parser
+	// -- Range parser
 
 	@Test
-	public void shouldConvertCharRangeToString() {
-		assertThat(new Parsers.CharRange('a', 'z').toString()).isEqualTo("'a'..'z'");
+	public void shouldConvertRangeToString() {
+		assertThat(new Parsers.Range('a', 'z').toString()).isEqualTo("'a'..'z'");
 	}
 
 	@Test
-	public void shouldParseCharWithinCharRange() {
-		final String actual = parse(new Parsers.CharRange('a', 'z'), "abc", false);
+	public void shouldParseCharWithinRange() {
+		final String actual = parse(new Parsers.Range('a', 'z'), "abc", false);
 		assertThat(actual).isEqualTo("a");
 	}
 
 	@Test
-	public void shouldNotParseCharNotWithinCharRange() {
-		final CheckedRunnable actual = () -> parse(new Parsers.CharRange('a', 'z'), "@@@", false);
+	public void shouldNotParseCharNotWithinRange() {
+		final CheckedRunnable actual = () -> parse(new Parsers.Range('a', 'z'), "@@@", false);
 		AssertionsExtensions.assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
-	// -- CharSet parser
+	// -- Charset parser
 
 	@Test
-	public void shouldConvertCharSetToString() {
-		assertThat(new Parsers.CharSet("a-z$_A-Z").toString()).isEqualTo("[a-z$_A-Z]");
+	public void shouldConvertCharsetToString() {
+		assertThat(new Parsers.Charset("a-z$_A-Z").toString()).isEqualTo("[a-z$_A-Z]");
 	}
 
 	@Test
-	public void shouldParseCharWithinCharSetWithRange() {
-		final String actual = parse(new Parsers.CharSet("a-z"), "abc", false);
+	public void shouldParseCharWithinCharsetWithRange() {
+		final String actual = parse(new Parsers.Charset("a-z"), "abc", false);
 		assertThat(actual).isEqualTo("a");
 	}
 
 	@Test
-	public void shouldNotParseCharNotWithinCharSetWithRange() {
-		final CheckedRunnable actual = () -> parse(new Parsers.CharSet("a-z"), "@@@", false);
+	public void shouldNotParseCharNotWithinCharsetWithRange() {
+		final CheckedRunnable actual = () -> parse(new Parsers.Charset("a-z"), "@@@", false);
 		AssertionsExtensions.assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
 	@Test
-	public void shouldParseCharWithinFullFledgedCharSetTestingSingleChar() {
-		final String actual = parse(new Parsers.CharSet("a-z$_A-Z"), "$", false);
+	public void shouldParseCharWithinFullFledgedCharsetTestingSingleChar() {
+		final String actual = parse(new Parsers.Charset("a-z$_A-Z"), "$", false);
 		assertThat(actual).isEqualTo("$");
 	}
 
 	@Test
-	public void shouldParseCharWithinFullFledgedCharSetTesting2ndRange() {
-		final String actual = parse(new Parsers.CharSet("a-z$_A-Z"), "D", false);
+	public void shouldParseCharWithinFullFledgedCharsetTesting2ndRange() {
+		final String actual = parse(new Parsers.Charset("a-z$_A-Z"), "D", false);
 		assertThat(actual).isEqualTo("D");
 	}
 
 	@Test
-	public void shouldNotParseChartNotWithinFullFledgedCharSet() {
-		final CheckedRunnable actual = () -> parse(new Parsers.CharSet("a-z$_A-Z"), "@@@", false);
+	public void shouldNotParseChartNotWithinFullFledgedCharset() {
+		final CheckedRunnable actual = () -> parse(new Parsers.Charset("a-z$_A-Z"), "@@@", false);
 		AssertionsExtensions.assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
