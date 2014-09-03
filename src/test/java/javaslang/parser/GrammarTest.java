@@ -123,7 +123,7 @@ public class GrammarTest {
 		}
 
 		// json : object | array | STRING | NUMBER | 'true' | 'false' | 'null' ;
-		static Parsers.Rule json() {
+		static Parser.Rule json() {
 			return rule("json", JSONGrammar::object, JSONGrammar::array, JSONGrammar::STRING, JSONGrammar::NUMBER,
 					str("true"), str("false"), str("null"));
 		}

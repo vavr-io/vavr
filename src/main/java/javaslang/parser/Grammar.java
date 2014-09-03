@@ -76,18 +76,18 @@ import javaslang.monad.Try;
 // DEV-NOTE: Extra class needed because interface cannot override Object#toString()
 public class Grammar {
 
-	public static final Parsers.Any ANY = Parsers.Any.INSTANCE;
-	public static final Parsers.EOF EOF = Parsers.EOF.INSTANCE;
+	public static final Parser.Any ANY = Parser.Any.INSTANCE;
+	public static final Parser.EOF EOF = Parser.EOF.INSTANCE;
 
 	// TODO: should all parsers initially get the supplied referenced parsers?
-	private final Parsers.Rule startRule;
+	private final Parser.Rule startRule;
 
 	/**
 	 * Creates a grammar. Intended to be used with direct instantiation.
 	 * 
 	 * <pre>
 	 * <code>
-	 * final Parsers.Rule startRule = Grammar.rule("root", Grammar.ANY);
+	 * final Parser.Rule startRule = Grammar.rule("root", Grammar.ANY);
 	 * final Grammar grammar = new Grammar(startRule);
 	 * final Try&lt;Tree&lt;Token&gt;&gt; cst = grammar.parse("text");
 	 * </code>
@@ -95,7 +95,7 @@ public class Grammar {
 	 * 
 	 * @param startRule The start rule of the grammar.
 	 */
-	public Grammar(Parsers.Rule startRule) {
+	public Grammar(Parser.Rule startRule) {
 		requireNonNull(startRule, "startRule is null");
 		this.startRule = startRule;
 	}
@@ -126,7 +126,7 @@ public class Grammar {
 	 * 
 	 * @param startRuleSupplier Supplies the start rule of the grammar.
 	 */
-	public Grammar(Supplier<Parsers.Rule> startRuleSupplier) {
+	public Grammar(Supplier<Parser.Rule> startRuleSupplier) {
 		this(requireNonNull(startRuleSupplier, "startRuleSupplier is null").get());
 	}
 
@@ -151,125 +151,124 @@ public class Grammar {
 	@Override
 	public String toString() {
 		// preserving insertion order
-		final LinkedHashSet<Parsers.Rule> rules = new LinkedHashSet<>();
+		final LinkedHashSet<Parser.Rule> rules = new LinkedHashSet<>();
 		findRules(rules, startRule);
 		return rules.stream().map(Object::toString).collect(Collectors.joining("\n\n"));
 	}
 
-	private void findRules(Set<Parsers.Rule> rules, Parsers.Rule rule) {
+	private void findRules(Set<Parser.Rule> rules, Parser.Rule rule) {
 		if (!rules.contains(rule)) {
 			rules.add(rule);
 			Stream.of(rule.alternatives)
-					.filter(parser -> parser.get() instanceof Parsers.Rule)
-					.forEach(ruleRef -> findRules(rules, (Parsers.Rule) ruleRef.get()));
+					.filter(parser -> parser.get() instanceof Parser.Rule)
+					.forEach(ruleRef -> findRules(rules, (Parser.Rule) ruleRef.get()));
 		}
 	}
 
 	// -- atomic shortcuts used in grammar definitions
 
 	/**
-	 * Shortcut for {@code new Parsers.Rule(name, alternatives)}.
+	 * Shortcut for {@code new Parser.Rule(name, alternatives)}.
 	 * 
 	 * @param name Rule name.
 	 * @param alternatives Rule alternatives.
-	 * @return A new {@link Parsers.Rule}.
+	 * @return A new {@link Parser.Rule}.
 	 */
 	@SafeVarargs
-	public static Parsers.Rule rule(String name, Supplier<Parser>... alternatives) {
-		return new Parsers.Rule(name, alternatives);
+	public static Parser.Rule rule(String name, Supplier<Parser>... alternatives) {
+		return new Parser.Rule(name, alternatives);
 	}
 
 	/**
-	 * Shortcut for {@code new Parsers.SubRule(alternatives)}.
+	 * Shortcut for {@code new Parser.SubRule(alternatives)}.
 	 * 
 	 * @param alternatives SubRule alternatives.
-	 * @return A new {@link Parsers.SubRule}.
+	 * @return A new {@link Parser.SubRule}.
 	 */
 	@SafeVarargs
-	public static Parsers.SubRule subRule(Supplier<Parser>... alternatives) {
-		return new Parsers.SubRule(alternatives);
+	public static Parser.SubRule subRule(Supplier<Parser>... alternatives) {
+		return new Parser.SubRule(alternatives);
 	}
 
 	/**
-	 * Shortcut for {@code new Parsers.Sequence(parsers))}.
+	 * Shortcut for {@code new Parser.Sequence(parsers))}.
 	 * 
 	 * @param parsers Sequenced parsers.
-	 * @return A new {@link Parsers.Sequence}.
+	 * @return A new {@link Parser.Sequence}.
 	 */
 	@SafeVarargs
-	public static Parsers.Sequence seq(Supplier<Parser>... parsers) {
-		return new Parsers.Sequence(parsers);
+	public static Parser.Sequence seq(Supplier<Parser>... parsers) {
+		return new Parser.Sequence(parsers);
 	}
 
 	/**
-	 * Shortcut for {@code new Parsers.Charset(charset)}.
+	 * Shortcut for {@code new Parser.Charset(charset)}.
 	 * 
 	 * @param charset A charset String.
-	 * @return A new {@link Parsers.Charset}.
+	 * @return A new {@link Parser.Charset}.
 	 */
-	public static Parsers.Charset charset(String charset) {
-		return new Parsers.Charset(charset);
+	public static Parser.Charset charset(String charset) {
+		return new Parser.Charset(charset);
 	}
 
 	/**
-	 * Shortcut for {@code new Parsers.Range(from, to)}.
+	 * Shortcut for {@code new Parser.Range(from, to)}.
 	 * 
 	 * @param from Left bound of the range, inclusive.
 	 * @param to Right bound of the range, inclusive.
-	 * @return A new {@link Parsers.Range}.
+	 * @return A new {@link Parser.Range}.
 	 */
-	public static Parsers.Range range(char from, char to) {
-		return new Parsers.Range(from, to);
+	public static Parser.Range range(char from, char to) {
+		return new Parser.Range(from, to);
 	}
 
 	/**
-	 * Shortcut for {@code new Parsers.Literal(s)}.
+	 * Shortcut for {@code new Parser.Literal(s)}.
 	 * 
 	 * @param s A string.
-	 * @return A new {@link Parsers.Literal}.
+	 * @return A new {@link Parser.Literal}.
 	 */
-	public static Parsers.Literal str(String s) {
-		return new Parsers.Literal(s);
+	public static Parser.Literal str(String s) {
+		return new Parser.Literal(s);
 	}
 
 	/**
-	 * Shortcut for {@code new Parsers.Quantifier(new Parsers.Sequence(parsers), Parsers.Quantifier.Bounds.ZERO_TO_ONE)}
-	 * .
+	 * Shortcut for {@code new Parser.Quantifier(new Parser.Sequence(parsers), Parser.Quantifier.Bounds.ZERO_TO_ONE)} .
 	 * 
 	 * @param parsers Quantified parsers.
-	 * @return A new {@link Parsers.Quantifier}.
+	 * @return A new {@link Parser.Quantifier}.
 	 */
 	@SafeVarargs
-	public static Parsers.Quantifier _0_1(Supplier<Parser>... parsers) {
-		return quantifier(parsers, Parsers.Quantifier.Bounds.ZERO_TO_ONE);
+	public static Parser.Quantifier _0_1(Supplier<Parser>... parsers) {
+		return quantifier(parsers, Parser.Quantifier.Bounds.ZERO_TO_ONE);
 	}
 
 	/**
-	 * Shortcut for {@code new Parsers.Quantifier(new Parsers.Sequence(parsers), Parsers.Quantifier.Bounds.ZERO_TO_N)}.
+	 * Shortcut for {@code new Parser.Quantifier(new Parser.Sequence(parsers), Parser.Quantifier.Bounds.ZERO_TO_N)}.
 	 * 
 	 * @param parsers Quantified parsers.
-	 * @return A new {@link Parsers.Quantifier}.
+	 * @return A new {@link Parser.Quantifier}.
 	 */
 	@SafeVarargs
-	public static Parsers.Quantifier _0_n(Supplier<Parser>... parsers) {
-		return quantifier(parsers, Parsers.Quantifier.Bounds.ZERO_TO_N);
+	public static Parser.Quantifier _0_n(Supplier<Parser>... parsers) {
+		return quantifier(parsers, Parser.Quantifier.Bounds.ZERO_TO_N);
 	}
 
 	/**
-	 * Shortcut for {@code new Parsers.Quantifier(new Parsers.Sequence(parsers), Parsers.Quantifier.Bounds.ONE_TO_N)}.
+	 * Shortcut for {@code new Parser.Quantifier(new Parser.Sequence(parsers), Parser.Quantifier.Bounds.ONE_TO_N)}.
 	 * 
 	 * @param parsers Quantified parsers.
-	 * @return A new {@link Parsers.Quantifier}.
+	 * @return A new {@link Parser.Quantifier}.
 	 */
 	@SafeVarargs
-	public static Parsers.Quantifier _1_n(Supplier<Parser>... parsers) {
-		return quantifier(parsers, Parsers.Quantifier.Bounds.ONE_TO_N);
+	public static Parser.Quantifier _1_n(Supplier<Parser>... parsers) {
+		return quantifier(parsers, Parser.Quantifier.Bounds.ONE_TO_N);
 	}
 
-	private static Parsers.Quantifier quantifier(Supplier<Parser>[] parsers, Parsers.Quantifier.Bounds bounds) {
+	private static Parser.Quantifier quantifier(Supplier<Parser>[] parsers, Parser.Quantifier.Bounds bounds) {
 		Requirements.requireNotNullOrEmpty(parsers, "parsers is null or empty");
-		final Supplier<Parser> parser = (parsers.length == 1) ? parsers[0] : new Parsers.Sequence(parsers);
-		return new Parsers.Quantifier(parser, bounds);
+		final Supplier<Parser> parser = (parsers.length == 1) ? parsers[0] : new Parser.Sequence(parsers);
+		return new Parser.Quantifier(parser, bounds);
 	}
 
 	// -- composite shortcuts used in grammar definitions
