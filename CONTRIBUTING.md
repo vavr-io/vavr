@@ -76,7 +76,7 @@ private Xxx() {
 ### 3rd party libraries
 
 * Javaslang has no dependencies other than Java.
-* Unit tests depend solely on junit and fest-assert-core.
+* Unit tests depend solely on junit and assertj.
 
 ## SCM
 
