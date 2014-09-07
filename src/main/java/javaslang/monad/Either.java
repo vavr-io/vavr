@@ -41,6 +41,10 @@ import java.util.function.Supplier;
  */
 public interface Either<L, R> {
 
+	boolean isLeft();
+
+	boolean isRight();
+
 	default LeftProjection<L, R> left() {
 		return new LeftProjection<>(this);
 	}
@@ -49,9 +53,45 @@ public interface Either<L, R> {
 		return new RightProjection<>(this);
 	}
 
-	boolean isLeft();
+	// -- delegate to RightProjection by default
 
-	boolean isRight();
+	default R get() {
+		return right().get();
+	}
+
+	default R orElse(R other) {
+		return right().orElse(other);
+	}
+
+	default R orElseGet(Supplier<? extends R> other) {
+		return right().orElseGet(other);
+	}
+
+	default <X extends Throwable> R orElseThrow(Supplier<X> exceptionSupplier) throws X {
+		return right().orElseThrow(exceptionSupplier);
+	}
+
+	default <X extends Throwable> R orElseThrow(Function<L, X> exceptionFunction) throws X {
+		return right().orElseThrow(exceptionFunction);
+	}
+
+	default Option<Either<L, R>> filter(Predicate<? super R> predicate) {
+		return right().filter(predicate);
+	}
+
+	default <U> Either<L, U> flatMap(Function<? super R, Either<L, U>> mapper) {
+		return right().flatMap(mapper);
+	}
+
+	default void forEach(Consumer<? super R> action) {
+		right().forEach(action);
+	}
+
+	default <U> Either<L, U> map(Function<? super R, U> mapper) {
+		return right().map(mapper);
+	}
+
+	// -- Object.*
 
 	@Override
 	boolean equals(Object o);
@@ -61,6 +101,8 @@ public interface Either<L, R> {
 
 	@Override
 	String toString();
+
+	// -- projections
 
 	static class LeftProjection<L, R> {
 
