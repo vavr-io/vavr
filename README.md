@@ -19,11 +19,14 @@ The .jar is available at [Maven Central](http://search.maven.org/#search%7Cga%7C
 Please ensure that the maven .pom targets Java 8 at minimum.
 
 ## Developing Javaslang
-### Maven Goals
+
+### Some Maven Goals
 
 * Executing tests: `mvn clean test`
 * Executing doclint: `mvn javadoc:javadoc`
 * Executing code coverage report: `mvn -P ci clean test jacoco:report`
+* Create -javadoc.jar: `mvn javadoc:jar`
+* Create -source.jar: `mvn source:jar`
 
 ### Release Management
 
@@ -49,27 +52,22 @@ Sonatype-Nexus specific maven configuration: `~/.m2/settings.xml`
 </settings>
 ```
 
-Deploy a snapshot to https://oss.sonatype.org/content/repositories/snapshots/
+#### Deploy a snapshot
 
 ```
 mvn clean deploy
 ```
 
-Create -javadoc.jar and -source.jar
+The snaphot is deployed to https://oss.sonatype.org/content/repositories/snapshots/
 
-```
-mvn javadoc:jar
-mvn source:jar
-```
-
-Prepare a release
+#### Prepare a release
 
 ```
 mvn release:clean
 mvn release:prepare
 ```
 
-Stage a release
+#### Stage a release
 
 ```
 mvn release:perform
