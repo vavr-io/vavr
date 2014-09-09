@@ -8,6 +8,7 @@ package javaslang.parser;
 import static javaslang.Requirements.requireNonNull;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -137,9 +138,10 @@ public class Grammar {
 	 * @return A concrete syntax tree of the text on parse success or a failure if a parse error occured.
 	 */
 	public Try<Tree<Token>> parse(String text) {
-		final Either<Integer, Node<Token>> parseResult = startRule.parse(text, 0, false);
+		final Either<Integer, List<Node<Token>>> parseResult = startRule.parse(text, 0, false);
 		if (parseResult.isRight()) {
-			final Tree<Token> concreteSyntaxTree = parseResult.right().get().asTree();
+			// DEV-NODE: a Rule returns a CST with one node => head() is result
+			final Tree<Token> concreteSyntaxTree = parseResult.get().get(0).asTree();
 			return new Success<>(concreteSyntaxTree);
 		} else {
 			final int index = parseResult.left().get();

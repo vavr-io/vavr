@@ -9,12 +9,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.List;
 
 import javaslang.IO;
+import javaslang.collection.Node;
 import javaslang.collection.Tree;
+import javaslang.monad.Either;
 import javaslang.monad.Try;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class GrammarTest {
@@ -30,7 +32,7 @@ public class GrammarTest {
 	@Test
 	public void shouldParseTextWhenMatching() {
 		assertThat(new Grammar(Grammar.rule("root", Grammar.EOF)).parse("").toString()).isEqualTo(
-				"Success(Tree(Rule[0,0] EOF[0,0]))");
+				"Success(Tree(root[0,0] EOF[0,0]))");
 	}
 
 	@Test
@@ -40,7 +42,15 @@ public class GrammarTest {
 	}
 
 	@Test
-	@Ignore
+	public void shouldParseWhitespace() {
+		final Parser WS = new Parser.Rule("WS", new Parser.Quantifier(new Parser.Charset(" \t\r\n"),
+				Parser.Quantifier.Bounds.ZERO_TO_N));
+		final Either<Integer, List<Node<Token>>> actual = WS.parse("  ", 0, true);
+		final Either<Integer, List<Node<Token>>> expected = Parser.token(0, 2);
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	@Test
 	// TODO: consider whitespace in parser rules
 	public void shouldParseJSON() {
 
@@ -113,7 +123,7 @@ public class GrammarTest {
 		assertThat(Grammar.list(Grammar.ANY, ",", "{", "}").toString()).isEqualTo("'{' ( . ( ',' . )* )? '}'");
 	}
 
-	// -- example grammars
+	// -- Example grammar: JSON
 
 	static class JSONGrammar extends Grammar {
 
@@ -159,6 +169,44 @@ public class GrammarTest {
 		// pair : jsonString ':' json ;
 		static Parser property() {
 			return seq(JSONGrammar::STRING, str(":"), JSONGrammar::json);
+		}
+	}
+
+	// -- Example grammar: Resursive expressions
+
+	static class ExpressionGrammar extends Grammar {
+
+		// define start rule
+		ExpressionGrammar() {
+			super(ExpressionGrammar::expr);
+		}
+
+		/**
+		 * <pre>
+		 * <code>
+		 * expr : expr '*' expr
+		 *      | expr '+' expr
+		 *      | INT
+		 *      ;
+		 * 
+		 * INT : '0'..'9'+ ;
+		 * </code>
+		 * </pre>
+		 */
+		static Parser.Rule expr() {
+			return rule("expr",//
+					seq(ExpressionGrammar::expr, str("*"), ExpressionGrammar::expr),//
+					seq(ExpressionGrammar::expr, str("+"), ExpressionGrammar::expr),//
+					ExpressionGrammar::INT);
+		}
+
+		/**
+		 * A parser for positive natural numbers including zero.
+		 * 
+		 * @return A natural number parser.
+		 */
+		static Parser INT() {
+			return _1_n(range('0', '9'));
 		}
 	}
 }

@@ -5,11 +5,13 @@
  */
 package javaslang.parser;
 
-public class Token {
+import java.util.Objects;
+
+public final class Token {
 
 	final String id;
 	final int index;
-	int length; // TODO: make this final
+	final int length;
 
 	Token(String id, int index, int length) {
 		this.id = id;
@@ -17,12 +19,33 @@ public class Token {
 		this.length = length;
 	}
 
+	int endIndex() {
+		return index + length;
+	}
+
 	String asSubstringOf(String text) {
 		return text.substring(index, index + length);
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		} else if (obj == null || !(obj instanceof Token)) {
+			return false;
+		} else {
+			final Token other = (Token) obj;
+			return Objects.equals(id, other.id) && index == other.index && length == other.length;
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, index, length);
+	}
+
+	@Override
 	public String toString() {
-		return String.format("%s[%s,%s]", id, index, index + length);
+		return String.format("%s[%s,%s]", (id == null) ? "" : id, index, index + length);
 	}
 }

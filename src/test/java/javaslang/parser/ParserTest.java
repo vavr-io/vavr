@@ -7,6 +7,9 @@ package javaslang.parser;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+
+import java.util.stream.Collectors;
+
 import javaslang.AssertionsExtensions;
 import javaslang.AssertionsExtensions.CheckedRunnable;
 
@@ -140,10 +143,16 @@ public class ParserTest {
 	@Test
 	@Ignore
 	public void shouldParseTextUsingRule() {
+		// TODO
 		fail("not implemented");
 	}
 
-	// TODO: shouldParseTextUsingFirstMatchingRule
+	@Test
+	@Ignore
+	public void shouldParseTextUsingFirstMatchingRule() {
+		// TODO
+		fail("not implemented");
+	}
 
 	// -- Sequence parser
 
@@ -151,9 +160,7 @@ public class ParserTest {
 	public void shouldParseTextUsingSequence() {
 		final Parser[] parsers = new Parser[] {
 				new Parser.Literal("one"),
-				Parser.Any.INSTANCE,
 				new Parser.Literal("two"),
-				Parser.Any.INSTANCE,
 				new Parser.Literal("three") };
 		final String actual = parse(new Parser.Sequence(parsers), "one two three...", false);
 		assertThat(actual).isEqualTo("one two three");
@@ -171,38 +178,9 @@ public class ParserTest {
 	private String parse(Parser parser, String text, boolean lexer) {
 		return parser
 				.parse(text, 0, lexer)
-				.right()
 				.orElseThrow(i -> new AssertionError("no match at index " + i))
-				.getValue()
-				.asSubstringOf(text);
-	}
-
-	// -- resolving ambiguities
-
-	/**
-	 * Given an input sequence {@code 'aaa'}, the following {@code LexerRule2} should match.
-	 * 
-	 * <pre>
-	 * <code>
-	 * grammar
-	 *   : LexerRule1
-	 *   | LexerRule2
-	 *   ; // EOF not required
-	 * 
-	 * LexerRule1
-	 *   : 'a'
-	 *   ;
-	 *   
-	 * LexerRule2
-	 *   : 'aa'
-	 *   ;
-	 * </code>
-	 * </pre>
-	 */
-	// TODO: antlr uses the first rule which matches
-	@Test
-	@Ignore
-	public void shouldMatchTheLexerRuleThatRecognizesTheMostInputCharacters() {
-		fail("not implemented");
+				.stream()
+				.map(node -> node.getValue().asSubstringOf(text))
+				.collect(Collectors.joining(" "));
 	}
 }
