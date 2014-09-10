@@ -62,8 +62,13 @@ public class GrammarTest {
 		/* TODO:DELME */System.out.println("Input:\n" + json.get());
 
 		final Try<Tree<Token>> parseTree = json.flatMap(s -> jsonGrammar.parse(s));
-		final String result = parseTree.map(tree -> tree.toCoffeeScriptString()).recover(x -> x.getMessage()).get();
-		/* TODO:DELME */System.out.println("Parse tree:\n" + result);
+		final String coffeeScriptString = parseTree
+				.map(tree -> tree.toCoffeeScriptString())
+				.recover(x -> x.getMessage())
+				.get();
+		final String lispString = parseTree.map(tree -> tree.toLispString()).recover(x -> x.getMessage()).get();
+		/* TODO:DELME */System.out.println("\nParse tree (CoffeeScript-like representation):\n" + coffeeScriptString);
+		/* TODO:DELME */System.out.println("\nParse tree (LISP-like representation):\n" + lispString);
 	}
 
 	// -- factory methods
