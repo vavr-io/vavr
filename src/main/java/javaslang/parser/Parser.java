@@ -104,24 +104,6 @@ interface Parser extends Supplier<Parser> {
 	@Override
 	String toString();
 
-	// -- parse-result factory methods
-
-	static Either<Integer, List<Node<Token>>> token(int index, int length) {
-		return token(null, index, length);
-	}
-
-	static Either<Integer, List<Node<Token>>> token(String id, int index, int length) {
-		return new Right<>(Arrays.asList(new Node<>(new Token(id, index, length))));
-	}
-
-	static Either<Integer, List<Node<Token>>> token(String id, int index, int length, List<Node<Token>> children) {
-		return new Right<>(Arrays.asList(new Node<>(new Token(id, index, length), children)));
-	}
-
-	static Either<Integer, List<Node<Token>>> stoppedAt(int index) {
-		return new Left<>(index);
-	}
-
 	// -- parsers
 
 	/**
@@ -310,6 +292,7 @@ interface Parser extends Supplier<Parser> {
 
 		@Override
 		public Either<Integer, List<Node<Token>>> parse(String text, int index, boolean lex) {
+
 			if (lex) {
 				// combine results
 				return combine(parser.get(), text, index).left().flatMap(endIndex -> {
@@ -453,15 +436,7 @@ interface Parser extends Supplier<Parser> {
 			for (Supplier<Parser> alternative : alternatives) {
 				final Either<Integer, List<Node<Token>>> result = alternative.get().parse(text, index, lexerRule);
 				if (result.isRight()) {
-					if (lex) {
-						// DEV-NODE: directly return terminal nodes
-						return result;
-					} else {
-						final List<Node<Token>> children = result.get();
-						// DEV-NOTE: children cannot be empty because result is a Right
-						final int length = children.get(children.size() - 1).getValue().length;
-						return token(name, index, length, children);
-					}
+					return lex ? result : token(name, index, length(result), result.get());
 				}
 			}
 			return stoppedAt(index);
@@ -487,56 +462,13 @@ interface Parser extends Supplier<Parser> {
 		@Override
 		public String toString() {
 			final String indent = Strings.repeat(' ', name.length());
-			return Stream
-					.of(alternatives)
-					.map(supplier -> {
-						final Parser parser = supplier.get();
-						if (parser instanceof Rule) {
-							return ((Rule) parser).name;
-						} else {
-							return parser.get().toString();
-						}
-					})
-					.collect(
-							Collectors.joining("\n" + indent + " | ", name + " : ", (alternatives.length < 2)
-									? " ;"
-									: "\n" + indent + " ;"));
-		}
-	}
-
-	// TODO: javadoc
-	static class SubRule implements Parser {
-
-		final Supplier<Parser>[] alternatives;
-
-		@SafeVarargs
-		SubRule(Supplier<Parser>... alternatives) {
-			requireNonNull(alternatives, "alternatives is null");
-			require(alternatives.length >= 2, "number of alternatives < 2");
-			this.alternatives = alternatives;
-		}
-
-		@Override
-		public Either<Integer, List<Node<Token>>> parse(String text, int index, boolean lex) {
-			for (Supplier<Parser> alternative : alternatives) {
-				final Either<Integer, List<Node<Token>>> result = alternative.get().parse(text, index, lex);
-				if (result.isRight()) {
-					return result;
-				}
-			}
-			return new Left<>(index);
-		}
-
-		@Override
-		public String toString() {
+			final String delimiter = "\n" + indent + " | ";
+			final String prefix = name + " : ";
+			final String suffix = (alternatives.length < 2) ? " ;" : "\n" + indent + " ;";
 			return Stream.of(alternatives).map(supplier -> {
 				final Parser parser = supplier.get();
-				if (parser instanceof Rule) {
-					return ((Rule) parser).name;
-				} else {
-					return parser.toString();
-				}
-			}).collect(Collectors.joining(" | ", "( ", " )"));
+				return (parser instanceof Rule) ? ((Rule) parser).name : parser.get().toString();
+			}).collect(joining(delimiter, prefix, suffix));
 		}
 	}
 
@@ -600,5 +532,81 @@ interface Parser extends Supplier<Parser> {
 				}
 			}).collect(Collectors.joining(" "));
 		}
+	}
+
+	// TODO: javadoc
+	static class SubRule implements Parser {
+
+		final Supplier<Parser>[] alternatives;
+
+		@SafeVarargs
+		SubRule(Supplier<Parser>... alternatives) {
+			requireNonNull(alternatives, "alternatives is null");
+			require(alternatives.length >= 2, "number of alternatives < 2");
+			this.alternatives = alternatives;
+		}
+
+		@Override
+		public Either<Integer, List<Node<Token>>> parse(String text, int index, boolean lex) {
+			for (Supplier<Parser> alternative : alternatives) {
+				final Either<Integer, List<Node<Token>>> result = alternative.get().parse(text, index, lex);
+				if (result.isRight()) {
+					return result;
+				}
+			}
+			return new Left<>(index);
+		}
+
+		@Override
+		public String toString() {
+			return Stream.of(alternatives).map(supplier -> {
+				final Parser parser = supplier.get();
+				if (parser instanceof Rule) {
+					return ((Rule) parser).name;
+				} else {
+					return parser.toString();
+				}
+			}).collect(Collectors.joining(" | ", "( ", " )"));
+		}
+	}
+
+	// -- parse-result factory methods
+
+	// terminal token
+	static Either<Integer, List<Node<Token>>> token(int index, int length) {
+		return token(null, index, length);
+	}
+
+	// rule
+	static Either<Integer, List<Node<Token>>> token(String id, int index, int length) {
+		return new Right<>(Arrays.asList(new Node<>(new Token(id, index, length))));
+	}
+
+	// rule with children
+	static Either<Integer, List<Node<Token>>> token(String id, int index, int length, List<Node<Token>> children) {
+		return new Right<>(Arrays.asList(new Node<>(new Token(id, index, length), children)));
+	}
+
+	// no match found
+	static Either<Integer, List<Node<Token>>> stoppedAt(int index) {
+		return new Left<>(index);
+	}
+
+	// -- parse-result helpers
+
+	static int endIndex(Either<Integer, List<Node<Token>>> parsed) {
+		return parsed.map(list -> list.isEmpty() ? -1 : list.get(list.size() - 1).getValue().endIndex()).orElse(-1);
+	}
+
+	static int length(Either<Integer, List<Node<Token>>> parsed) {
+		return parsed.map(list -> {
+			if (list.isEmpty()) {
+				return 0;
+			} else {
+				final int startIndex = list.get(0).getValue().index;
+				final int endIndex = list.get(list.size() - 1).getValue().endIndex();
+				return endIndex - startIndex;
+			}
+		}).orElse(0);
 	}
 }

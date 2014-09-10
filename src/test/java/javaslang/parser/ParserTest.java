@@ -31,25 +31,6 @@ public class ParserTest {
 		assertThat(actual).isEqualTo("a");
 	}
 
-	// -- Range parser
-
-	@Test
-	public void shouldConvertRangeToString() {
-		assertThat(new Parser.Range('a', 'z').toString()).isEqualTo("'a'..'z'");
-	}
-
-	@Test
-	public void shouldParseCharWithinRange() {
-		final String actual = parse(new Parser.Range('a', 'z'), "abc", false);
-		assertThat(actual).isEqualTo("a");
-	}
-
-	@Test
-	public void shouldNotParseCharNotWithinRange() {
-		final CheckedRunnable actual = () -> parse(new Parser.Range('a', 'z'), "@@@", false);
-		AssertionsExtensions.assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
-	}
-
 	// -- Charset parser
 
 	@Test
@@ -125,6 +106,29 @@ public class ParserTest {
 		AssertionsExtensions.assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
+	// -- Quantifier parser
+
+	// TODO
+
+	// -- Range parser
+
+	@Test
+	public void shouldConvertRangeToString() {
+		assertThat(new Parser.Range('a', 'z').toString()).isEqualTo("'a'..'z'");
+	}
+
+	@Test
+	public void shouldParseCharWithinRange() {
+		final String actual = parse(new Parser.Range('a', 'z'), "abc", false);
+		assertThat(actual).isEqualTo("a");
+	}
+
+	@Test
+	public void shouldNotParseCharNotWithinRange() {
+		final CheckedRunnable actual = () -> parse(new Parser.Range('a', 'z'), "@@@", false);
+		AssertionsExtensions.assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
+	}
+
 	// -- Rule parser
 
 	@Test
@@ -165,6 +169,10 @@ public class ParserTest {
 		final String actual = parse(new Parser.Sequence(parsers), "one two three...", false);
 		assertThat(actual).isEqualTo("one two three");
 	}
+
+	// -- Subrule parser
+
+	// TODO
 
 	// -- Token
 
