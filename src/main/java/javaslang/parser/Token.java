@@ -10,11 +10,14 @@ import java.util.Objects;
 public final class Token {
 
 	final String id;
+	final String text;
 	final int index;
 	final int length;
 
-	Token(String id, int index, int length) {
+	// DEV-NOTE: defer substring calculation for better performance and memory footprint
+	Token(String id, String text, int index, int length) {
 		this.id = id;
+		this.text = text;
 		this.index = index;
 		this.length = length;
 	}
@@ -23,7 +26,7 @@ public final class Token {
 		return index + length;
 	}
 
-	String asSubstringOf(String text) {
+	String value() {
 		return text.substring(index, index + length);
 	}
 
@@ -46,6 +49,6 @@ public final class Token {
 
 	@Override
 	public String toString() {
-		return String.format("%s[%s,%s]", (id == null) ? "" : id, index, index + length);
+		return (id == null) ? "'" + value() + "'" : id;
 	}
 }

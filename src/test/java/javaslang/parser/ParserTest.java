@@ -178,7 +178,7 @@ public class ParserTest {
 
 	@Test
 	public void shouldConvertTokenToString() {
-		assertThat(new Token("id", 0, 0).toString()).isEqualTo("id[0,0]");
+		assertThat(new Token("id", "", 0, 0).toString()).isEqualTo("id");
 	}
 
 	// -- parse helpers
@@ -188,7 +188,7 @@ public class ParserTest {
 				.parse(text, 0, lexer)
 				.orElseThrow(i -> new AssertionError("no match at index " + i))
 				.stream()
-				.map(node -> node.getValue().asSubstringOf(text))
+				.map(node -> node.getValue().value())
 				.collect(Collectors.joining(" "));
 	}
 }

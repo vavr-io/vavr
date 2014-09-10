@@ -23,7 +23,7 @@ public class GrammarTest {
 
 	@Test
 	public void shouldStringifyGrammar() {
-		final String expected = "json : object\n     | array\n     | STRING\n     | NUMBER\n     | 'true'\n     | 'false'\n     | 'null'\n     ;\n\nobject : '{' ( '\"' STRING '\"' ':' json ( ',' '\"' STRING '\"' ':' json )* )? '}' ;\n\narray : '[' ( json ( ',' json )* )? ']' ;\n\nSTRING : [a-zA-Z0-9_$]+ ;\n\nNUMBER : [0-9]+ ;";
+		final String expected = "json : object\n     | array\n     | STRING\n     | NUMBER\n     | 'true'\n     | 'false'\n     | 'null'\n     ;\n\nobject : '{' ( NAME ':' json ( ',' NAME ':' json )* )? '}' ;\n\nNAME : '\"' STRING '\"' ;\n\nSTRING : [a-zA-Z0-9_$]+ ;\n\narray : '[' ( json ( ',' json )* )? ']' ;\n\nNUMBER : [0-9]+ ;";
 		assertThat(new JSONGrammar().toString()).isEqualTo(expected);
 	}
 
@@ -32,7 +32,7 @@ public class GrammarTest {
 	@Test
 	public void shouldParseTextWhenMatching() {
 		assertThat(new Grammar(Grammar.rule("root", Grammar.EOF)).parse("").toString()).isEqualTo(
-				"Success(Tree(root[0,0] EOF[0,0]))");
+				"Success(Tree(root EOF))");
 	}
 
 	@Test
@@ -46,7 +46,7 @@ public class GrammarTest {
 		final Parser WS = new Parser.Rule("WS", new Parser.Quantifier(new Parser.Charset(" \t\r\n"),
 				Parser.Quantifier.Bounds.ZERO_TO_N));
 		final Either<Integer, List<Node<Token>>> actual = WS.parse("  ", 0, true);
-		final Either<Integer, List<Node<Token>>> expected = Parser.token(0, 2);
+		final Either<Integer, List<Node<Token>>> expected = Parser.token("  ", 0, 2);
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -173,7 +173,7 @@ public class GrammarTest {
 
 		// NAME : '"' STRING '"'
 		static Parser NAME() {
-			return seq(str("\""), JSONGrammar::STRING, str("\""));
+			return rule("NAME", seq(str("\""), JSONGrammar::STRING, str("\"")));
 		}
 	}
 

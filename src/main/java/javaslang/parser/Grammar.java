@@ -7,12 +7,12 @@ package javaslang.parser;
 
 import static javaslang.Requirements.requireNonNull;
 
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javaslang.Requirements;
 import javaslang.Strings;
@@ -22,6 +22,7 @@ import javaslang.monad.Either;
 import javaslang.monad.Failure;
 import javaslang.monad.Success;
 import javaslang.monad.Try;
+import javaslang.parser.Parser.HasChildren;
 
 // TODO: Distinguish between tokenizing (Lexer) and parsing (Parser)
 //       - https://github.com/antlr/grammars-v4/blob/master/antlr4/ANTLRv4Lexer.g4
@@ -153,17 +154,21 @@ public class Grammar {
 	@Override
 	public String toString() {
 		// preserving insertion order
-		final LinkedHashSet<Parser.Rule> rules = new LinkedHashSet<>();
-		findRules(rules, startRule);
+		final Set<Parser.Rule> rules = new LinkedHashSet<>();
+		final Set<Parser> visited = new HashSet<>();
+		findRules(visited, rules, startRule);
 		return rules.stream().map(Object::toString).collect(Collectors.joining("\n\n"));
 	}
 
-	private void findRules(Set<Parser.Rule> rules, Parser.Rule rule) {
-		if (!rules.contains(rule)) {
-			rules.add(rule);
-			Stream.of(rule.alternatives)
-					.filter(parser -> parser.get() instanceof Parser.Rule)
-					.forEach(ruleRef -> findRules(rules, (Parser.Rule) ruleRef.get()));
+	private void findRules(Set<Parser> visited, Set<Parser.Rule> rules, Parser parser) {
+		if (!visited.contains(parser)) {
+			visited.add(parser);
+			if (parser instanceof Parser.Rule) {
+				rules.add((Parser.Rule) parser);
+			}
+			if (parser instanceof HasChildren) {
+				((HasChildren) parser).getChildren().stream().forEach(child -> findRules(visited, rules, child.get()));
+			}
 		}
 	}
 
