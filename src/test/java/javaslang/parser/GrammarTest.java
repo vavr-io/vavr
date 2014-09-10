@@ -23,7 +23,7 @@ public class GrammarTest {
 
 	@Test
 	public void shouldStringifyGrammar() {
-		final String expected = "json : object\n     | array\n     | STRING\n     | NUMBER\n     | 'true'\n     | 'false'\n     | 'null'\n     ;\n\nobject : '{' ( STRING ':' json ( ',' STRING ':' json )* )? '}' ;\n\narray : '[' ( json ( ',' json )* )? ']' ;\n\nSTRING : [a-zA-Z0-9_$]+ ;\n\nNUMBER : [0-9]+ ;";
+		final String expected = "json : object\n     | array\n     | STRING\n     | NUMBER\n     | 'true'\n     | 'false'\n     | 'null'\n     ;\n\nobject : '{' ( '\"' STRING '\"' ':' json ( ',' '\"' STRING '\"' ':' json )* )? '}' ;\n\narray : '[' ( json ( ',' json )* )? ']' ;\n\nSTRING : [a-zA-Z0-9_$]+ ;\n\nNUMBER : [0-9]+ ;";
 		assertThat(new JSONGrammar().toString()).isEqualTo(expected);
 	}
 
@@ -62,7 +62,7 @@ public class GrammarTest {
 		/* TODO:DELME */System.out.println("Input:\n" + json.get());
 
 		final Try<Tree<Token>> parseTree = json.flatMap(s -> jsonGrammar.parse(s));
-		final String result = parseTree.map(tree -> tree.toString()).recover(x -> x.getMessage()).get();
+		final String result = parseTree.map(tree -> tree.toCoffeeScriptString()).recover(x -> x.getMessage()).get();
 		/* TODO:DELME */System.out.println("Parse tree:\n" + result);
 	}
 
@@ -166,9 +166,14 @@ public class GrammarTest {
 			return rule("NUMBER", _1_n(charset("0-9")));
 		}
 
-		// pair : jsonString ':' json ;
+		// property : NAME ':' json ;
 		static Parser property() {
-			return seq(JSONGrammar::STRING, str(":"), JSONGrammar::json);
+			return seq(JSONGrammar::NAME, str(":"), JSONGrammar::json);
+		}
+
+		// NAME : '"' STRING '"'
+		static Parser NAME() {
+			return seq(str("\""), JSONGrammar::STRING, str("\""));
 		}
 	}
 

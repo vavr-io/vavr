@@ -292,33 +292,43 @@ interface Parser extends Supplier<Parser> {
 
 		@Override
 		public Either<Integer, List<Node<Token>>> parse(String text, int index, boolean lex) {
+			final Either<Integer, List<Node<Token>>> parsed = read(parser.get(), text, index, lex);
+			return lex ? combine(parsed, index) : aggregate(parsed, index);
+		}
 
-			if (lex) {
-				// combine results
-				return combine(parser.get(), text, index).left().flatMap(endIndex -> {
-					return (index == endIndex && bounds.required) ? stoppedAt(index) : token(index, endIndex - index);
-				});
+		private Either<Integer, List<Node<Token>>> read(Parser parser, String text, int index, boolean lex) {
+			if (bounds.unbound) {
+				// 0..n, 1..n => read as much as possible
+				final List<Node<Token>> tokens = new ArrayList<>();
+				for (Either<Integer, List<Node<Token>>> parsed = parser.parse(text, index, lex); parsed.isRight(); parsed = parser
+						.parse(text, endIndex(parsed), lex)) {
+					tokens.addAll(parsed.get());
+				}
+				return tokens.isEmpty() ? stoppedAt(index) : new Right<>(tokens);
 			} else {
-				// aggregate results
-				return aggregate(parser.get(), text, index);
+				// 0..1 => read once
+				return parser.parse(text, index, lex);
 			}
 		}
 
-		private Either<Integer, List<Node<Token>>> combine(Parser parser, String text, int index) {
-			final Either<Integer, List<Node<Token>>> result = parser.parse(text, index, true);
-			return result.flatMap(list -> {
-				final Node<Token> lastNode = list.get(list.size() - 1);
-				final Token token = lastNode.getValue();
-				if (token.length > 0) { // DEV-NODE: prevent loops, e.g. empty literal or EOF parsers
-						return combine(parser, text, token.endIndex());
-					} else {
-						return stoppedAt(token.endIndex());
-					}
-				});
+		private Either<Integer, List<Node<Token>>> combine(Either<Integer, List<Node<Token>>> parsed, int index) {
+			if (bounds.required) {
+				// 1..n => no token is not ok
+				return parsed.isLeft() ? stoppedAt(index) : token(index, length(parsed));
+			} else {
+				// 0..1, 0..n => no token is ok and has length 0
+				return token(index, length(parsed));
+			}
 		}
 
-		private Either<Integer, List<Node<Token>>> aggregate(Parser parser, String text, int index) {
-			return null; // TODO
+		private Either<Integer, List<Node<Token>>> aggregate(Either<Integer, List<Node<Token>>> parsed, int index) {
+			if (bounds.required) {
+				// 1..n => no token is not ok
+				return parsed.isLeft() ? stoppedAt(index) : parsed; // TODO: aggregate parsed
+			} else {
+				// 0..1, 0..n => no token is ok and has length 0
+				return parsed.isLeft() ? token(index, 0) : parsed; // TODO: aggregate parsed
+			}
 		}
 
 		@Override
@@ -436,7 +446,7 @@ interface Parser extends Supplier<Parser> {
 			for (Supplier<Parser> alternative : alternatives) {
 				final Either<Integer, List<Node<Token>>> result = alternative.get().parse(text, index, lexerRule);
 				if (result.isRight()) {
-					return lex ? result : token(name, index, length(result), result.get());
+					return lexerRule ? result : token(name, index, length(result), result.get());
 				}
 			}
 			return stoppedAt(index);
@@ -514,7 +524,6 @@ interface Parser extends Supplier<Parser> {
 				}
 			}
 			return new Right<>(result);
-
 		}
 
 		private int skipWhitespace(String text, int index) {
@@ -577,6 +586,11 @@ interface Parser extends Supplier<Parser> {
 		return token(null, index, length);
 	}
 
+	// read ahead tokens (see quantifier)
+	static Either<Integer, List<Node<Token>>> token(int index, int length, List<Node<Token>> children) {
+		return token(null, index, length, children);
+	}
+
 	// rule
 	static Either<Integer, List<Node<Token>>> token(String id, int index, int length) {
 		return new Right<>(Arrays.asList(new Node<>(new Token(id, index, length))));
@@ -608,5 +622,15 @@ interface Parser extends Supplier<Parser> {
 				return endIndex - startIndex;
 			}
 		}).orElse(0);
+	}
+
+	static int length(List<Node<Token>> tokens) {
+		if (tokens.isEmpty()) {
+			return 0;
+		} else {
+			final int startIndex = tokens.get(0).getValue().index;
+			final int endIndex = tokens.get(tokens.size() - 1).getValue().endIndex();
+			return endIndex - startIndex;
+		}
 	}
 }
