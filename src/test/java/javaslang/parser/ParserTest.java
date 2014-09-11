@@ -5,13 +5,23 @@
  */
 package javaslang.parser;
 
+import static java.util.Collections.emptyList;
+import static javaslang.collection.Node.node;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javaslang.AssertionsExtensions;
 import javaslang.AssertionsExtensions.CheckedRunnable;
+import javaslang.collection.Node;
+import javaslang.monad.Either;
+import javaslang.monad.Left;
+import javaslang.monad.Right;
+import javaslang.parser.Parser.Quantifier;
+import javaslang.parser.Parser.Rule;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -108,7 +118,122 @@ public class ParserTest {
 
 	// -- Quantifier parser
 
-	// TODO
+	@Test
+	public void shouldConvertQuantifierWithRuleToString() {
+		final String actual = new Parser.Quantifier(new Rule("rule", Parser.Any.INSTANCE), Quantifier.Bounds.ZERO_TO_N)
+				.toString();
+		assertThat(actual).isEqualTo("rule*");
+	}
+
+	@Test
+	public void shouldConvertQuantifierWithSequenceToString() {
+		final String actual = new Parser.Quantifier(new Parser.Sequence(Parser.Any.INSTANCE, Parser.Any.INSTANCE),
+				Quantifier.Bounds.ZERO_TO_N).toString();
+		assertThat(actual).isEqualTo("( . . )*");
+	}
+
+	// 0..1
+
+	@Test
+	public void shouldConvertZeroToOneQuantifierToString() {
+		final String actual = new Parser.Quantifier(Parser.Any.INSTANCE, Quantifier.Bounds.ZERO_TO_ONE).toString();
+		assertThat(actual).isEqualTo(".?");
+	}
+
+	@Test
+	public void shouldParseNoneOccurrenceWithZeroToOneQuantifier() {
+		final Parser parser = new Parser.Quantifier(Parser.Any.INSTANCE, Quantifier.Bounds.ZERO_TO_ONE);
+		final Either<Integer, List<Node<Token>>> actual = parser.parse("", 0, true);
+		assertThat(actual).isEqualTo(new Right<>(emptyList()));
+	}
+
+	@Test
+	public void shouldParseOneOccurrenceWithZeroToOneQuantifier() {
+		final Parser parser = new Parser.Quantifier(Parser.Any.INSTANCE, Quantifier.Bounds.ZERO_TO_ONE);
+		final String text = " ";
+		final Either<Integer, List<Node<Token>>> actual = parser.parse(text, 0, true);
+		assertThat(actual).isEqualTo(new Right<>(Arrays.asList(node(new Token(null, text, 0, 1)))));
+	}
+
+	// 0..n
+
+	@Test
+	public void shouldConvertZeroToNQuantifierToString() {
+		final String actual = new Parser.Quantifier(Parser.Any.INSTANCE, Quantifier.Bounds.ZERO_TO_N).toString();
+		assertThat(actual).isEqualTo(".*");
+	}
+
+	@Test
+	public void shouldParseNoneOccurrenceWithZeroToNQuantifier() {
+		final Parser parser = new Parser.Quantifier(Parser.Any.INSTANCE, Quantifier.Bounds.ZERO_TO_N);
+		final Either<Integer, List<Node<Token>>> actual = parser.parse("", 0, true);
+		assertThat(actual).isEqualTo(new Right<>(emptyList()));
+	}
+
+	@Test
+	public void shouldParseOneOccurrenceWithZeroToNQuantifier() {
+		final Parser parser = new Parser.Quantifier(Parser.Any.INSTANCE, Quantifier.Bounds.ZERO_TO_N);
+		final String text = " ";
+		final Either<Integer, List<Node<Token>>> actual = parser.parse(text, 0, true);
+		assertThat(actual).isEqualTo(new Right<>(Arrays.asList(node(new Token(null, text, 0, 1)))));
+	}
+
+	@Test
+	public void shouldParseTwoOccurrencesAsCombinedWithZeroToNQuantifier() {
+		final Parser parser = new Parser.Quantifier(Parser.Any.INSTANCE, Quantifier.Bounds.ZERO_TO_N);
+		final String text = "  ";
+		final Either<Integer, List<Node<Token>>> actual = parser.parse(text, 0, true);
+		assertThat(actual).isEqualTo(new Right<>(Arrays.asList(node(new Token(null, text, 0, 2)))));
+	}
+
+	@Test
+	public void shouldParseTwoOccurrencesAsAggregatedWithZeroToNQuantifier() {
+		final Parser parser = new Parser.Quantifier(Parser.Any.INSTANCE, Quantifier.Bounds.ZERO_TO_N);
+		final String text = "  ";
+		final Either<Integer, List<Node<Token>>> actual = parser.parse(text, 0, false);
+		assertThat(actual).isEqualTo(
+				new Right<>(Arrays.asList(node(new Token(null, text, 0, 1)), node(new Token(null, text, 1, 1)))));
+	}
+
+	// 1..n
+
+	@Test
+	public void shouldConvertOneToNQuantifierToString() {
+		final String actual = new Parser.Quantifier(Parser.Any.INSTANCE, Quantifier.Bounds.ONE_TO_N).toString();
+		assertThat(actual).isEqualTo(".+");
+	}
+
+	@Test
+	public void shouldParseNoneOccurrenceWithOneToNQuantifier() {
+		final Parser parser = new Parser.Quantifier(Parser.Any.INSTANCE, Quantifier.Bounds.ONE_TO_N);
+		final Either<Integer, List<Node<Token>>> actual = parser.parse("", 0, true);
+		assertThat(actual).isEqualTo(new Left<>(0));
+	}
+
+	@Test
+	public void shouldParseOneOccurrenceWithOneToNQuantifier() {
+		final Parser parser = new Parser.Quantifier(Parser.Any.INSTANCE, Quantifier.Bounds.ONE_TO_N);
+		final String text = " ";
+		final Either<Integer, List<Node<Token>>> actual = parser.parse(text, 0, true);
+		assertThat(actual).isEqualTo(new Right<>(Arrays.asList(node(new Token(null, text, 0, 1)))));
+	}
+
+	@Test
+	public void shouldParseTwoOccurrencesAsCombinedWithOneToNQuantifier() {
+		final Parser parser = new Parser.Quantifier(Parser.Any.INSTANCE, Quantifier.Bounds.ONE_TO_N);
+		final String text = "  ";
+		final Either<Integer, List<Node<Token>>> actual = parser.parse(text, 0, true);
+		assertThat(actual).isEqualTo(new Right<>(Arrays.asList(node(new Token(null, text, 0, 2)))));
+	}
+
+	@Test
+	public void shouldParseTwoOccurrencesAsAggregatedWithOneToNQuantifier() {
+		final Parser parser = new Parser.Quantifier(Parser.Any.INSTANCE, Quantifier.Bounds.ONE_TO_N);
+		final String text = "  ";
+		final Either<Integer, List<Node<Token>>> actual = parser.parse(text, 0, false);
+		assertThat(actual).isEqualTo(
+				new Right<>(Arrays.asList(node(new Token(null, text, 0, 1)), node(new Token(null, text, 1, 1)))));
+	}
 
 	// -- Range parser
 

@@ -5,6 +5,7 @@
  */
 package javaslang.parser;
 
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.joining;
 import static javaslang.Requirements.require;
 import static javaslang.Requirements.requireNonNull;
@@ -25,6 +26,7 @@ import javaslang.Strings;
 import javaslang.collection.Node;
 import javaslang.monad.Either;
 import javaslang.monad.Left;
+import javaslang.monad.Option;
 import javaslang.monad.Right;
 
 /**
@@ -39,15 +41,15 @@ import javaslang.monad.Right;
 //     |                 # empty alternative
 //     ;
 //
-//- Charset [a-zA-Z]+ is a shorthand for Range ('a'..'z'|'A'..'Z')+ 
-//a-z = 'a'..'z' 
+//- Charset [a-zA-Z]+ is a shorthand for Range ('a'..'z'|'A'..'Z')+
+//a-z = 'a'..'z'
 //[a-zA-Z]+      Multiplicity(1..n)
-//                      | 
-//                   Choice 
-//                    /   \ 
-//                Range   Range 
-//                 / \     / \ 
-//                a   z   A   Z 
+//                      |
+//                   Choice
+//                    /   \
+//                Range   Range
+//                 / \     / \
+//                a   z   A   Z
 //
 //- Whitespace handling
 //* Automatic whitespace handling within parser rules (use reserved word WHITESPACE instead of WS)
@@ -78,7 +80,6 @@ interface Parser extends Supplier<Parser> {
 	 *            are added as children the the actual tree node and whitespace may be ignored.
 	 * @return Either a Left, containing the index of failure or a Right, containing the range (index, length) parsed.
 	 */
-	// TODO: lex vs. lexer/parser rules vs. fragments
 	Either<Integer, List<Node<Token>>> parse(String text, int index, boolean lex);
 
 	/**
@@ -107,7 +108,9 @@ interface Parser extends Supplier<Parser> {
 	// -- parsers
 
 	/**
-	 * Wildcard '.' parser. Matches a single, arbitrary character.
+	 * Wildcard parser: {@code .}
+	 * <p>
+	 * Matches a single, arbitrary character.
 	 */
 	static class Any implements Parser {
 
@@ -130,13 +133,7 @@ interface Parser extends Supplier<Parser> {
 	}
 
 	/**
-	 * Character set parser:
-	 *
-	 * <pre>
-	 * <code>
-	 * [a-zA-Z$_]
-	 * </code>
-	 * </pre>
+	 * Character set parser: {@code [a-zA-Z$_]}
 	 */
 	static class Charset implements Parser {
 
@@ -222,7 +219,9 @@ interface Parser extends Supplier<Parser> {
 	}
 
 	/**
-	 * End-of-file (EOF) parser. Recognized the end of the input.
+	 * End-of-file parser: {@code EOF}.
+	 * <p>
+	 * Recognized the end of the input.
 	 */
 	static class EOF implements Parser {
 
@@ -246,13 +245,7 @@ interface Parser extends Supplier<Parser> {
 	}
 
 	/**
-	 * String literal parser:
-	 * 
-	 * <pre>
-	 * <code>
-	 * 'funky string'
-	 * </code>
-	 * </pre>
+	 * String literal parser: {@code 'funky'}
 	 */
 	static class Literal implements Parser {
 
@@ -277,7 +270,15 @@ interface Parser extends Supplier<Parser> {
 		}
 	}
 
-	// TODO: javadoc
+	/**
+	 * Multiple tokens parser:
+	 * 
+	 * <ul>
+	 * <li>parses X 0..1 times: {@code X?}</li>
+	 * <li>parses X 0..n times: {@code X*}</li>
+	 * <li>parses X 1..n times: {@code X+}</li>
+	 * </ul>
+	 */
 	static class Quantifier implements HasChildren, Parser {
 
 		final Supplier<Parser> parser;
@@ -305,9 +306,10 @@ interface Parser extends Supplier<Parser> {
 			if (bounds.unbound) {
 				// 0..n, 1..n => read as much as possible
 				final List<Node<Token>> tokens = new ArrayList<>();
-				for (Either<Integer, List<Node<Token>>> parsed = parser.parse(text, index, lex); parsed.isRight(); parsed = parser
-						.parse(text, endIndex(parsed), lex)) {
+				Either<Integer, List<Node<Token>>> parsed = parser.parse(text, index, lex);
+				while (parsed.isRight() && length(parsed) > 0) {
 					tokens.addAll(parsed.get());
+					parsed = parser.parse(text, endIndex(parsed).orElse(index), lex);
 				}
 				return tokens.isEmpty() ? stoppedAt(index) : new Right<>(tokens);
 			} else {
@@ -323,7 +325,7 @@ interface Parser extends Supplier<Parser> {
 				return parsed.isLeft() ? stoppedAt(index) : token(text, index, length(parsed));
 			} else {
 				// 0..1, 0..n => no token is ok and has length 0
-				return token(text, index, length(parsed));
+				return parsed.isLeft() ? new Right<>(emptyList()) : token(text, index, length(parsed));
 			}
 		}
 
@@ -331,10 +333,10 @@ interface Parser extends Supplier<Parser> {
 				int index) {
 			if (bounds.required) {
 				// 1..n => no token is not ok
-				return parsed.isLeft() ? stoppedAt(index) : parsed; // TODO: aggregate parsed
+				return parsed.isLeft() ? stoppedAt(index) : parsed;
 			} else {
 				// 0..1, 0..n => no token is ok and has length 0
-				return parsed.isLeft() ? token(text, index, 0) : parsed; // TODO: aggregate parsed
+				return parsed.isLeft() ? new Right<>(emptyList()) : parsed;
 			}
 		}
 
@@ -369,13 +371,7 @@ interface Parser extends Supplier<Parser> {
 	}
 
 	/**
-	 * Character range parser:
-	 *
-	 * <pre>
-	 * <code>
-	 * 'a'..'z'
-	 * </code>
-	 * </pre>
+	 * Character range parser: {@code 'a'..'z'}
 	 */
 	static class Range implements Parser {
 
@@ -453,7 +449,6 @@ interface Parser extends Supplier<Parser> {
 
 		@Override
 		public Either<Integer, List<Node<Token>>> parse(String text, int index, boolean lex) {
-			// TODO: does this check has to be made at parse-time?
 			require(!lex || lexerRule, "parser rule '" + name + "' is referenced by a lexer rule");
 			for (Supplier<Parser> alternative : alternatives) {
 				final Either<Integer, List<Node<Token>>> result = alternative.get().parse(text, index, lexerRule);
@@ -494,7 +489,9 @@ interface Parser extends Supplier<Parser> {
 		}
 	}
 
-	// TODO: javadoc
+	/**
+	 * Sequence parser: {@code X1 ... Xn}, where n >= 2.
+	 */
 	static class Sequence implements HasChildren, Parser {
 
 		// TODO: issue #25: custom whitespace handling
@@ -521,39 +518,32 @@ interface Parser extends Supplier<Parser> {
 		}
 
 		private Either<Integer, List<Node<Token>>> combine(String text, int index) {
-
-			//			final List<Node<Token>> tokens = new ArrayList<>();
-			//			for (Either<Integer, List<Node<Token>>> parsed = parser.parse(text, index, lex); parsed.isRight(); parsed = parser
-			//					.parse(text, endIndex(parsed), lex)) {
-			//				tokens.addAll(parsed.get());
-			//			}
-			//			return tokens.isEmpty() ? stoppedAt(index) : new Right<>(tokens);
 			final Either<Integer, List<Node<Token>>> parsed = Stream.of(parsers).reduce(token(text, index, 0),
 					(current, parser) -> current.flatMap(list -> {
 						final int currentIndex = list.get(list.size() - 1).getValue().endIndex();
 						return parser.get().parse(text, currentIndex, true);
 					}), (t1, t2) -> null);
-			return parsed.isLeft() ? parsed : token(text, index, endIndex(parsed) - index);
+			return parsed.isLeft() ? parsed : token(text, index, endIndex(parsed).orElse(index) - index);
 		}
 
 		private Either<Integer, List<Node<Token>>> aggregate(String text, int index) {
-			final List<Node<Token>> result = new ArrayList<>();
+			final List<Node<Token>> tokens = new ArrayList<>();
 			int currentIndex = index;
 			for (Supplier<Parser> parser : parsers) {
 				final Either<Integer, List<Node<Token>>> parsed = parser.get().parse(text,
 						skipWhitespace(text, currentIndex), false);
 				if (parsed.isRight()) {
-					result.addAll(parsed.get());
-					currentIndex = result.get(result.size() - 1).getValue().endIndex();
+					tokens.addAll(parsed.get());
+					currentIndex = endIndex(tokens).orElse(currentIndex);
 				} else {
-					return parsed; // Left / stoppedAt
+					return parsed;
 				}
 			}
-			return new Right<>(result);
+			return new Right<>(tokens);
 		}
 
 		private int skipWhitespace(String text, int index) {
-			return DEFAULT_WS.parse(text, index, true).map(t -> t.get(0).getValue().endIndex()).orElse(index);
+			return endIndex(DEFAULT_WS.parse(text, index, true)).orElse(index);
 		}
 
 		@Override
@@ -569,7 +559,9 @@ interface Parser extends Supplier<Parser> {
 		}
 	}
 
-	// TODO: javadoc
+	/**
+	 * Sub-rule parser: {@code ( X1 | ... | Xn )}, where n >= 2.
+	 */
 	static class SubRule implements HasChildren, Parser {
 
 		final Supplier<Parser>[] alternatives;
@@ -594,7 +586,7 @@ interface Parser extends Supplier<Parser> {
 					return result;
 				}
 			}
-			return new Left<>(index);
+			return stoppedAt(index);
 		}
 
 		@Override
@@ -639,8 +631,10 @@ interface Parser extends Supplier<Parser> {
 
 	// -- parse-result helpers
 
-	static int endIndex(Either<Integer, List<Node<Token>>> parsed) {
-		return parsed.map(list -> list.isEmpty() ? -1 : list.get(list.size() - 1).getValue().endIndex()).orElse(-1);
+	static Option<Integer> endIndex(Either<Integer, List<Node<Token>>> parsed) {
+		final Integer endIndex = parsed.map(
+				list -> list.isEmpty() ? null : list.get(list.size() - 1).getValue().endIndex()).orElse(null);
+		return Option.of(endIndex);
 	}
 
 	// DEV-NOTE: Caution, the parsed may be a partial result which does not reflect the whole length of child tokens
@@ -654,6 +648,11 @@ interface Parser extends Supplier<Parser> {
 				return endIndex - startIndex;
 			}
 		}).orElse(0);
+	}
+
+	static Option<Integer> endIndex(List<Node<Token>> tokens) {
+		final Integer endIndex = tokens.isEmpty() ? null : tokens.get(tokens.size() - 1).getValue().endIndex();
+		return Option.of(endIndex);
 	}
 
 	// DEV-NOTE: Caution, the list may be a partial result which does not reflect the whole length of child tokens
