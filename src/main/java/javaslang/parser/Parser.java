@@ -560,14 +560,14 @@ interface Parser extends Supplier<Parser> {
 	}
 
 	/**
-	 * Sub-rule parser: {@code ( X1 | ... | Xn )}, where n >= 2.
+	 * Subrule parser: {@code ( X1 | ... | Xn )}, where n >= 2.
 	 */
-	static class SubRule implements HasChildren, Parser {
+	static class Subrule implements HasChildren, Parser {
 
 		final Supplier<Parser>[] alternatives;
 
 		@SafeVarargs
-		SubRule(Supplier<Parser>... alternatives) {
+		Subrule(Supplier<Parser>... alternatives) {
 			requireNonNull(alternatives, "alternatives is null");
 			require(alternatives.length >= 2, "number of alternatives < 2");
 			this.alternatives = alternatives;

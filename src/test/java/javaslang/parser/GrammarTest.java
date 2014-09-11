@@ -79,7 +79,7 @@ public class GrammarTest {
 	}
 
 	@Test
-	public void shouldCreateSubRule() {
+	public void shouldCreateSubrule() {
 		assertThat(Grammar.subRule(Grammar.ANY, Grammar.EOF).toString()).isEqualTo("( . | EOF )");
 	}
 

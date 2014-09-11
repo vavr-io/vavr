@@ -187,14 +187,14 @@ public class Grammar {
 	}
 
 	/**
-	 * Shortcut for {@code new Parser.SubRule(alternatives)}.
+	 * Shortcut for {@code new Parser.Subrule(alternatives)}.
 	 * 
-	 * @param alternatives SubRule alternatives.
-	 * @return A new {@link Parser.SubRule}.
+	 * @param alternatives Subrule alternatives.
+	 * @return A new {@link Parser.Subrule}.
 	 */
 	@SafeVarargs
-	public static Parser.SubRule subRule(Supplier<Parser>... alternatives) {
-		return new Parser.SubRule(alternatives);
+	public static Parser.Subrule subRule(Supplier<Parser>... alternatives) {
+		return new Parser.Subrule(alternatives);
 	}
 
 	/**
