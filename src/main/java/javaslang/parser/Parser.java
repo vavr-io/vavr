@@ -654,15 +654,4 @@ interface Parser extends Supplier<Parser> {
 		final Integer endIndex = tokens.isEmpty() ? null : tokens.get(tokens.size() - 1).getValue().endIndex();
 		return Option.of(endIndex);
 	}
-
-	// DEV-NOTE: Caution, the list may be a partial result which does not reflect the whole length of child tokens
-	static int length(List<Node<Token>> tokens) {
-		if (tokens.isEmpty()) {
-			return 0;
-		} else {
-			final int startIndex = tokens.get(0).getValue().index;
-			final int endIndex = tokens.get(tokens.size() - 1).getValue().endIndex();
-			return endIndex - startIndex;
-		}
-	}
 }
