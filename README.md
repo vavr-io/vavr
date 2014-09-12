@@ -10,7 +10,7 @@ Projects that include Javaslang need to target Java 1.8 at minimum.
 
 ### Maven dependency
 
-The .jar is available at [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cjavaslang).
+The .jar is available at [Maven Central](http://search.maven.org/#search|ga|1|a:"javaslang").
 
 ```xml
 <dependency>
@@ -24,7 +24,7 @@ The .jar is available at [Maven Central](http://search.maven.org/#search%7Cga%7C
 
 Because Javaslang has _no_ dependencies to other libraries you can easily add it as standalone .jar to your classpath.
 
-Javaslang can be downloaded at [Maven Central](http://search.maven.org/#search|ga|1|a:"javaslang").
+Javaslang can be downloaded [here](http://search.maven.org/#search|ga|1|a:"javaslang").
 
 ## Developing Javaslang
 
