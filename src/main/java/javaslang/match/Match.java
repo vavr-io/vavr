@@ -18,9 +18,9 @@ import java.util.function.Supplier;
 
 import javaslang.Requirements.UnsatisfiedRequirementException;
 import javaslang.Tuples.Tuple;
+import javaslang.lambda.Functions.SerializableFunction1;
+import javaslang.lambda.Functions.SerializableFunction2;
 import javaslang.lambda.Lambdas;
-import javaslang.lambda.SerializableBiFunction;
-import javaslang.lambda.SerializableFunction;
 import javaslang.monad.None;
 import javaslang.monad.Option;
 import javaslang.monad.Some;
@@ -168,7 +168,7 @@ public final class Match<R> implements Function<Object, R> {
 		 * @return this, the current instance of Match.
 		 * @throws UnsatisfiedRequirementException if function is null.
 		 */
-		public Builder<R> caze(SerializableFunction<?, R> function) {
+		public Builder<R> caze(SerializableFunction1<?, R> function) {
 			requireNonNull(function, "function is null");
 			cases.add(caze(None.instance(), function));
 			return this;
@@ -187,13 +187,13 @@ public final class Match<R> implements Function<Object, R> {
 		// DEV NOTE: the compiler cannot distinguish between primitive and Object types, e.g.
 		// public Match<R> caze(int prototype, IntFunction<R> function)
 		// Autoboxing does not work here.
-		public <T> Builder<R> caze(T prototype, SerializableFunction<T, R> function) {
+		public <T> Builder<R> caze(T prototype, SerializableFunction1<T, R> function) {
 			requireNonNull(function, "function is null");
 			cases.add(caze(new Some<>(prototype), function));
 			return this;
 		}
 
-		public <T, D extends Tuple> Builder<R> caze(Pattern<T, ?, D> pattern, SerializableBiFunction<T, D, R> function) {
+		public <T, D extends Tuple> Builder<R> caze(Pattern<T, ?, D> pattern, SerializableFunction2<T, D, R> function) {
 			requireNonNull(pattern, "pattern is null");
 			requireNonNull(function, "function is null");
 			final Function<Object, Option<R>> mapping = obj -> {
@@ -346,7 +346,7 @@ public final class Match<R> implements Function<Object, R> {
 			this.defaultOption = defaultOption;
 		}
 
-		private Function<Object, Option<R>> caze(Option<?> prototype, SerializableFunction<?, R> function) {
+		private Function<Object, Option<R>> caze(Option<?> prototype, SerializableFunction1<?, R> function) {
 			return caze(prototype, function, Lambdas.getLambdaSignature(function).get().parameterType(0));
 		}
 

@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 import java.util.function.Function;
 
 import javaslang.AssertionsExtensions;
-import javaslang.lambda.SerializableFunction;
+import javaslang.lambda.Functions.SerializableFunction1;
 import javaslang.monad.Some;
 
 import org.junit.Test;
@@ -411,7 +411,7 @@ public class MatchTest {
 
 	@Test
 	public void shouldPatternMatchLambdaWithSameSignature() {
-		final SerializableFunction<Integer, String> lambda = i -> String.valueOf(i);
+		final SerializableFunction1<Integer, String> lambda = i -> String.valueOf(i);
 		final boolean actual = Matchs
 				.caze(Patterns.Function(Integer.class, String.class), (f, dF) -> true)
 				.orElse(() -> false)
@@ -421,7 +421,7 @@ public class MatchTest {
 
 	@Test
 	public void shouldNotPatternMatchLambdaWithDifferentSignature() {
-		final SerializableFunction<String, String> lambda = s -> s;
+		final SerializableFunction1<String, String> lambda = s -> s;
 		final boolean actual = Matchs
 				.caze(Patterns.Function(Integer.class, String.class), (f, dF) -> false)
 				.orElse(() -> true)

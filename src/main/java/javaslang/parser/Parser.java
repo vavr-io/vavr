@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 import javaslang.Requirements.UnsatisfiedRequirementException;
 import javaslang.Strings;
 import javaslang.collection.Node;
+import javaslang.lambda.Functions.SerializableFunction3;
 import javaslang.monad.Either;
 import javaslang.monad.Left;
 import javaslang.monad.Option;
@@ -284,6 +285,12 @@ interface Parser extends Supplier<Parser> {
 		final Supplier<Parser> parser;
 		final Bounds bounds;
 
+		// aggregates parse results
+		final Transformer AGGREGATOR = (text, index, parsed) -> parsed;
+
+		// combines lex results
+		final Transformer COMBINER = (text, index, parsed) -> token(text, index, length(parsed));
+
 		Quantifier(Supplier<Parser> parser, Bounds bounds) {
 			requireNonNull(parser, "parser is null");
 			requireNonNull(bounds, "bounds is null");
@@ -299,7 +306,12 @@ interface Parser extends Supplier<Parser> {
 		@Override
 		public Either<Integer, List<Node<Token>>> parse(String text, int index, boolean lex) {
 			final Either<Integer, List<Node<Token>>> parsed = read(parser.get(), text, index, lex);
-			return lex ? combine(parsed, text, index) : aggregate(parsed, text, index);
+			if (parsed.isLeft()) {
+				// no token found: 1..n => not ok, 0..1, 0..n => ok (with length 0)
+				return bounds.required ? stoppedAt(index) : new Right<>(emptyList());
+			} else {
+				return (lex ? COMBINER : AGGREGATOR).apply(text, index, parsed);
+			}
 		}
 
 		private Either<Integer, List<Node<Token>>> read(Parser parser, String text, int index, boolean lex) {
@@ -315,28 +327,6 @@ interface Parser extends Supplier<Parser> {
 			} else {
 				// 0..1 => read once
 				return parser.parse(text, index, lex);
-			}
-		}
-
-		private Either<Integer, List<Node<Token>>> combine(Either<Integer, List<Node<Token>>> parsed, String text,
-				int index) {
-			if (bounds.required) {
-				// 1..n => no token is not ok
-				return parsed.isLeft() ? stoppedAt(index) : token(text, index, length(parsed));
-			} else {
-				// 0..1, 0..n => no token is ok and has length 0
-				return parsed.isLeft() ? new Right<>(emptyList()) : token(text, index, length(parsed));
-			}
-		}
-
-		private Either<Integer, List<Node<Token>>> aggregate(Either<Integer, List<Node<Token>>> parsed, String text,
-				int index) {
-			if (bounds.required) {
-				// 1..n => no token is not ok
-				return parsed.isLeft() ? stoppedAt(index) : parsed;
-			} else {
-				// 0..1, 0..n => no token is ok and has length 0
-				return parsed.isLeft() ? new Right<>(emptyList()) : parsed;
 			}
 		}
 
@@ -367,6 +357,12 @@ interface Parser extends Supplier<Parser> {
 				this.required = required;
 				this.unbound = unbound;
 			}
+		}
+
+		// manifest type
+		static interface Transformer
+				extends
+				SerializableFunction3<String, Integer, Either<Integer, List<Node<Token>>>, Either<Integer, List<Node<Token>>>> {
 		}
 	}
 
