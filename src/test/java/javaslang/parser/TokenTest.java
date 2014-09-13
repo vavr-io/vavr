@@ -5,11 +5,11 @@
  */
 package javaslang.parser;
 
-import static javaslang.AssertionsExtensions.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Objects;
 
+import javaslang.AssertionsExtensions;
 import javaslang.Requirements.UnsatisfiedRequirementException;
 
 import org.junit.Test;
@@ -21,31 +21,32 @@ public class TokenTest {
 
 	@Test
 	public void shouldThrowWhenTextIsNull() {
-		assertThat(() -> new Token("id", null, 0, 0)).isThrowing(UnsatisfiedRequirementException.class, "text is null");
+		AssertionsExtensions.assertThat(() -> new Token("id", null, 0, 0)).isThrowing(
+				UnsatisfiedRequirementException.class, "text is null");
 	}
 
 	@Test
 	public void shouldThrowWhenIndexIsNegative() {
-		assertThat(() -> new Token("id", "", -1, 0)).isThrowing(UnsatisfiedRequirementException.class,
-				"index out of bounds: -1");
+		AssertionsExtensions.assertThat(() -> new Token("id", "", -1, 0)).isThrowing(
+				UnsatisfiedRequirementException.class, "index out of bounds: -1");
 	}
 
 	@Test
 	public void shouldThrowWhenIndexExceedsTextLength() {
-		assertThat(() -> new Token("id", "", 1, 0)).isThrowing(UnsatisfiedRequirementException.class,
-				"index out of bounds: 1");
+		AssertionsExtensions.assertThat(() -> new Token("id", "", 1, 0)).isThrowing(
+				UnsatisfiedRequirementException.class, "index out of bounds: 1");
 	}
 
 	@Test
 	public void shouldThrowWhenLengthIsNegative() {
-		assertThat(() -> new Token("id", "", 0, -1)).isThrowing(UnsatisfiedRequirementException.class,
-				"negative length: -1");
+		AssertionsExtensions.assertThat(() -> new Token("id", "", 0, -1)).isThrowing(
+				UnsatisfiedRequirementException.class, "negative length: -1");
 	}
 
 	@Test
 	public void shouldThrowWhenEndIndexExceedsTextLength() {
-		assertThat(() -> new Token("id", "", 0, 1)).isThrowing(UnsatisfiedRequirementException.class,
-				"(index + length) exceeds text: (0 + 1)");
+		AssertionsExtensions.assertThat(() -> new Token("id", "", 0, 1)).isThrowing(
+				UnsatisfiedRequirementException.class, "(index + length) exceeds text: (0 + 1)");
 	}
 
 	// -- getters (oh noes! - thank you code coverage!)
