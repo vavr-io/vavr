@@ -516,9 +516,11 @@ interface Parser extends Supplier<Parser> {
 		private Either<Integer, List<Node<Token>>> combine(String text, int index) {
 			final Either<Integer, List<Node<Token>>> parsed = Stream.of(parsers).reduce(token(text, index, 0),
 					(current, parser) -> current.flatMap(list -> {
-						final int currentIndex = list.get(list.size() - 1).getValue().endIndex();
-						return parser.get().parse(text, currentIndex, true);
-					}), (t1, t2) -> null);
+						// TODO: what if list is empty?
+							final int currentIndex = endIndex(list).orElse(index);
+							/* TODO:DEBUG */System.out.println(currentIndex);
+							return parser.get().parse(text, currentIndex, true);
+						}), (t1, t2) -> null);
 			return parsed.isLeft() ? parsed : token(text, index, endIndex(parsed).orElse(index) - index);
 		}
 
@@ -629,7 +631,7 @@ interface Parser extends Supplier<Parser> {
 
 	static Option<Integer> endIndex(Either<Integer, List<Node<Token>>> parsed) {
 		final Integer endIndex = parsed.map(
-				list -> list.isEmpty() ? null : list.get(list.size() - 1).getValue().endIndex()).orElse(null);
+				list -> list.isEmpty() ? null : list.get(list.size() - 1).getValue().getEndIndex()).orElse(null);
 		return Option.of(endIndex);
 	}
 
@@ -639,15 +641,15 @@ interface Parser extends Supplier<Parser> {
 			if (list.isEmpty()) {
 				return 0;
 			} else {
-				final int startIndex = list.get(0).getValue().index;
-				final int endIndex = list.get(list.size() - 1).getValue().endIndex();
+				final int startIndex = list.get(0).getValue().getStartIndex();
+				final int endIndex = list.get(list.size() - 1).getValue().getEndIndex();
 				return endIndex - startIndex;
 			}
 		}).orElse(0);
 	}
 
 	static Option<Integer> endIndex(List<Node<Token>> tokens) {
-		final Integer endIndex = tokens.isEmpty() ? null : tokens.get(tokens.size() - 1).getValue().endIndex();
+		final Integer endIndex = tokens.isEmpty() ? null : tokens.get(tokens.size() - 1).getValue().getEndIndex();
 		return Option.of(endIndex);
 	}
 }

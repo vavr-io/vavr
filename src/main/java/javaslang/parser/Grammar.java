@@ -138,6 +138,7 @@ public class Grammar {
 	 * @param text A text input to be parsed.
 	 * @return A concrete syntax tree of the text on parse success or a failure if a parse error occured.
 	 */
+	// TODO: return Either instead of Try, where Right is the CST/parse tree and Left is a detailed ParseFailure description
 	public Try<Tree<Token>> parse(String text) {
 		final Either<Integer, List<Node<Token>>> parseResult = startRule.parse(text, 0, false);
 		if (parseResult.isRight()) {

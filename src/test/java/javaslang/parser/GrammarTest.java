@@ -51,6 +51,12 @@ public class GrammarTest {
 	}
 
 	@Test
+	public void shouldParseSimpleSequence() {
+		final Try<Tree<Token>> parseTree = new SimpleSequenceGrammar().parse("abc");
+		assertThat(parseTree.get().toLispString()).isEqualTo("Tree(startRule 'a' 'b' 'c')");
+	}
+
+	@Test
 	// TODO: consider whitespace in parser rules
 	public void shouldParseJSON() {
 
@@ -126,6 +132,19 @@ public class GrammarTest {
 	@Test
 	public void shouldCreateDelimitedListWithPrefixAndSuffix() {
 		assertThat(Grammar.list(Grammar.ANY, ",", "{", "}").toString()).isEqualTo("'{' ( . ( ',' . )* )? '}'");
+	}
+
+	// -- Example grammar: Simple sequence of tokens
+
+	static class SimpleSequenceGrammar extends Grammar {
+
+		SimpleSequenceGrammar() {
+			super(SimpleSequenceGrammar::startRule);
+		}
+
+		static Parser.Rule startRule() {
+			return rule("startRule", seq(str("a"), str("b"), str("c")));
+		}
 	}
 
 	// -- Example grammar: JSON

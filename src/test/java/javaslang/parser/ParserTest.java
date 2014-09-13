@@ -8,7 +8,6 @@ package javaslang.parser;
 import static java.util.Collections.emptyList;
 import static javaslang.collection.Node.node;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,7 +22,6 @@ import javaslang.monad.Right;
 import javaslang.parser.Parser.Quantifier;
 import javaslang.parser.Parser.Rule;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class ParserTest {
@@ -131,6 +129,8 @@ public class ParserTest {
 				Quantifier.Bounds.ZERO_TO_N).toString();
 		assertThat(actual).isEqualTo("( . . )*");
 	}
+
+	// TODO: add Quantifier tests parsing/lexing whitespace
 
 	// 0..1
 
@@ -269,20 +269,6 @@ public class ParserTest {
 				new Parser.Rule("INT", () -> null));
 	}
 
-	@Test
-	@Ignore
-	public void shouldParseTextUsingRule() {
-		// TODO
-		fail("not implemented");
-	}
-
-	@Test
-	@Ignore
-	public void shouldParseTextUsingFirstMatchingRule() {
-		// TODO
-		fail("not implemented");
-	}
-
 	// -- Sequence parser
 
 	@Test
@@ -294,6 +280,27 @@ public class ParserTest {
 		final String actual = parse(new Parser.Sequence(parsers), "one two three...", false);
 		assertThat(actual).isEqualTo("one two three");
 	}
+
+	@Test
+	public void shouldParseSequenceOfTwoParsersIfFirstParserReturnsEmptyResult() {
+		final Parser[] parsers = new Parser[] {
+				new Parser.Quantifier(new Parser.Literal("a"), Quantifier.Bounds.ZERO_TO_ONE),
+				new Parser.Literal("b") };
+		final String actual = parse(new Parser.Sequence(parsers), "b", false);
+		assertThat(actual).isEqualTo("b");
+	}
+
+	@Test
+	public void shouldParseSequenceOfThreeParsersIfSecondParserReturnsEmptyResult() {
+		final Parser[] parsers = new Parser[] {
+				new Parser.Literal("a"),
+				new Parser.Quantifier(new Parser.Literal("b"), Quantifier.Bounds.ZERO_TO_ONE),
+				new Parser.Literal("c") };
+		final String actual = parse(new Parser.Sequence(parsers), "ac", false);
+		assertThat(actual).isEqualTo("a c");
+	}
+
+	// TODO: add Sequence tests parsing/lexing whitespace
 
 	// -- Subrule parser
 
@@ -313,7 +320,7 @@ public class ParserTest {
 				.parse(text, 0, lexer)
 				.orElseThrow(i -> new AssertionError("no match at index " + i))
 				.stream()
-				.map(node -> node.getValue().value())
+				.map(node -> node.getValue().getValue())
 				.collect(Collectors.joining(" "));
 	}
 }
