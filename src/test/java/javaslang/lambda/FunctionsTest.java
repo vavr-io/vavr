@@ -31,7 +31,8 @@ public class FunctionsTest {
 
 	@Test
 	public void shouldGetMethodTypeOfSerializableFunction1() {
-		final SerializableFunction1<?, ?> lambda = o -> o;
+		// TODO: Does not compile with jdk1.8.0_20-b26/mac: final SerializableFunction1<?, ?> lambda = o -> o;
+		final SerializableFunction1<Object, Object> lambda = o -> o;
 		final MethodType actual = Lambdas.getLambdaSignature(lambda).get();
 		final MethodType expected = MethodType.fromMethodDescriptorString("(Ljava/lang/Object;)Ljava/lang/Object;",
 				getClass().getClassLoader());
@@ -40,7 +41,8 @@ public class FunctionsTest {
 
 	@Test
 	public void shouldGetMethodTypeOfCurriedSerializableFunction1() {
-		final SerializableFunction1<?, ?> lambda = o -> o;
+		// TODO: Does not compile with jdk1.8.0_20-b26/mac: final SerializableFunction1<?, ?> lambda = o -> o;
+		final SerializableFunction1<Object, Object> lambda = o -> o;
 		final MethodType actual = Lambdas.getLambdaSignature(lambda.curried()).get();
 		final MethodType expected = MethodType.fromMethodDescriptorString("(Ljava/lang/Object;)Ljava/lang/Object;",
 				getClass().getClassLoader());
@@ -49,7 +51,8 @@ public class FunctionsTest {
 
 	@Test
 	public void shouldGetMethodTypeOfTupledSerializableFunction1() {
-		final SerializableFunction1<?, ?> lambda = o -> o;
+		// TODO: Does not compile with jdk1.8.0_20-b26/mac: final SerializableFunction1<?, ?> lambda = o -> o;
+		final SerializableFunction1<Object, Object> lambda = o -> o;
 		final MethodType actual = Lambdas.getLambdaSignature(lambda.tupled()).get();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
 				"(Ljavaslang/Tuples$Tuple1;)Ljava/lang/Object;", getClass().getClassLoader());
