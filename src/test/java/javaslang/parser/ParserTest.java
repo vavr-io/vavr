@@ -130,7 +130,7 @@ public class ParserTest {
 		assertThat(actual).isEqualTo("( . . )*");
 	}
 
-	// TODO: add Quantifier tests parsing/lexing whitespace
+	// TODO: [issue #23] add Quantifier tests parsing/lexing whitespace
 
 	// 0..1
 
@@ -269,6 +269,41 @@ public class ParserTest {
 				new Parser.Rule("INT", () -> null));
 	}
 
+	// Rule.equals
+
+	@Test
+	public void shouldRuleEqualSameObject() {
+		final Rule rule = expr();
+		assertThat(rule.equals(rule)).isTrue();
+	}
+
+	@Test
+	public void shouldRuleNotEqualNull() {
+		final Rule rule = expr();
+		assertThat(rule.equals(null)).isFalse();
+	}
+
+	@Test
+	public void shouldRuleNotEqualObjectOfDifferentType() {
+		final Rule rule = expr();
+		assertThat(rule.equals(new Object())).isFalse();
+	}
+
+	@Test
+	public void shouldRuleEqualDiffernetObject() {
+		final Rule rule1 = expr();
+		final Rule rule2 = expr();
+		assertThat(rule1.equals(rule2)).isTrue();
+	}
+
+	// Rule.hashCode
+
+	@Test
+	public void shouldRuleHashAsExpected() {
+		final Rule rule = expr();
+		assertThat(rule.hashCode()).isEqualTo(rule.name.hashCode());
+	}
+
 	// -- Sequence parser
 
 	@Test
@@ -310,17 +345,26 @@ public class ParserTest {
 		assertThat(actual).isEqualTo("ac"); // lexer combined tokens
 	}
 
-	// TODO: add Sequence tests parsing/lexing whitespace
+	// TODO: [issue #23] add Sequence tests parsing/lexing whitespace
 
 	// -- Subrule parser
 
-	// TODO
-
-	// -- Token
+	@Test
+	public void shouldConvertSubruleToString() {
+		final Parser.Subrule subrule = new Parser.Subrule(Parser.Any.INSTANCE, Parser.EOF.INSTANCE);
+		assertThat(subrule.toString()).isEqualTo("( . | EOF )");
+	}
 
 	@Test
-	public void shouldConvertTokenToString() {
-		assertThat(new Token("id", "", 0, 0).toString()).isEqualTo("id");
+	public void shouldParseFirstAlternativeUsingSubrule() {
+		final Parser.Subrule subrule = new Parser.Subrule(Parser.Any.INSTANCE, Parser.EOF.INSTANCE);
+		assertThat(subrule.parse("a", 0, false).toString()).isEqualTo("Right([Node('a')])");
+	}
+
+	@Test
+	public void shouldParseSecondAlternativeUsingSubrule() {
+		final Parser.Subrule subrule = new Parser.Subrule(Parser.Any.INSTANCE, Parser.EOF.INSTANCE);
+		assertThat(subrule.parse("", 0, false).toString()).isEqualTo("Right([Node(EOF)])");
 	}
 
 	// -- parse helpers
