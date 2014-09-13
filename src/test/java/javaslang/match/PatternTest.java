@@ -25,8 +25,6 @@ public class PatternTest {
 
 	// -- pattern creation
 
-/* TODO: !!!DO NOT COMMIT!!!
-
 	@Test
 	public void shouldCreatePatternOfArity1() {
 		assertThat(Pattern.of(t -> null, Tuples.of(1))).isNotNull();
@@ -91,7 +89,6 @@ public class PatternTest {
 	public void shouldCreatePatternOfArity13() {
 		assertThat(Pattern.of(t -> null, Tuples.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13))).isNotNull();
 	}
-*/
 	
 	// -- pattern matching
 
