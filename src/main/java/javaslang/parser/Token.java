@@ -5,6 +5,9 @@
  */
 package javaslang.parser;
 
+import static javaslang.Requirements.require;
+import static javaslang.Requirements.requireNonNull;
+
 import java.util.Objects;
 
 public final class Token {
@@ -16,6 +19,11 @@ public final class Token {
 
 	// DEV-NOTE: defer substring calculation to getValue() for better performance and memory footprint
 	Token(String id, String text, int index, int length) {
+		requireNonNull(text, "text is null");
+		require(0 <= index && index <= text.length(), () -> "index out of bounds: " + index);
+		require(0 <= length, () -> "negative length: " + length);
+		require(length + index <= text.length(),
+				() -> String.format("(index + length) exceeds text: (%s + %s)", index, length));
 		this.id = id;
 		this.text = text;
 		this.index = index;
