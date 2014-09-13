@@ -297,7 +297,17 @@ public class ParserTest {
 				new Parser.Quantifier(new Parser.Literal("b"), Quantifier.Bounds.ZERO_TO_ONE),
 				new Parser.Literal("c") };
 		final String actual = parse(new Parser.Sequence(parsers), "ac", false);
-		assertThat(actual).isEqualTo("a c");
+		assertThat(actual).isEqualTo("a c"); // parsed two separate tokens
+	}
+
+	@Test
+	public void shouldLexSequenceOfThreeParsersIfSecondParserReturnsEmptyResult() {
+		final Parser[] parsers = new Parser[] {
+				new Parser.Literal("a"),
+				new Parser.Quantifier(new Parser.Literal("b"), Quantifier.Bounds.ZERO_TO_ONE),
+				new Parser.Literal("c") };
+		final String actual = parse(new Parser.Sequence(parsers), "ac", true);
+		assertThat(actual).isEqualTo("ac"); // lexer combined tokens
 	}
 
 	// TODO: add Sequence tests parsing/lexing whitespace

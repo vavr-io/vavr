@@ -285,12 +285,6 @@ interface Parser extends Supplier<Parser> {
 		final Supplier<Parser> parser;
 		final Bounds bounds;
 
-		// aggregates parse results
-		final Transformer AGGREGATOR = (text, index, parsed) -> parsed;
-
-		// combines lex results
-		final Transformer COMBINER = (text, index, parsed) -> token(text, index, length(parsed));
-
 		Quantifier(Supplier<Parser> parser, Bounds bounds) {
 			requireNonNull(parser, "parser is null");
 			requireNonNull(bounds, "bounds is null");
@@ -310,7 +304,7 @@ interface Parser extends Supplier<Parser> {
 				// no token found: 1..n => not ok, 0..1, 0..n => ok (with length 0)
 				return bounds.required ? stoppedAt(index) : new Right<>(emptyList());
 			} else {
-				return (lex ? COMBINER : AGGREGATOR).apply(text, index, parsed);
+				return (lex ? Transformer.COMBINER : Transformer.AGGREGATOR).apply(text, index, parsed);
 			}
 		}
 
@@ -318,9 +312,11 @@ interface Parser extends Supplier<Parser> {
 			if (bounds.unbound) {
 				// 0..n, 1..n => read as much as possible
 				final List<Node<Token>> tokens = new ArrayList<>();
+				// TODO: issue #23: fix whitespace handling
 				Either<Integer, List<Node<Token>>> parsed = parser.parse(text, index, lex);
 				while (parsed.isRight() && length(parsed) > 0) {
 					tokens.addAll(parsed.get());
+					// TODO: issue #23: fix whitespace handling
 					parsed = parser.parse(text, endIndex(parsed).orElse(index), lex);
 				}
 				return tokens.isEmpty() ? stoppedAt(index) : new Right<>(tokens);
@@ -357,12 +353,6 @@ interface Parser extends Supplier<Parser> {
 				this.required = required;
 				this.unbound = unbound;
 			}
-		}
-
-		// manifest type
-		static interface Transformer
-				extends
-				SerializableFunction3<String, Integer, Either<Integer, List<Node<Token>>>, Either<Integer, List<Node<Token>>>> {
 		}
 	}
 
@@ -490,7 +480,7 @@ interface Parser extends Supplier<Parser> {
 	 */
 	static class Sequence implements HasChildren, Parser {
 
-		// TODO: issue #25: custom whitespace handling
+		// TODO: issue #23: fix whitespace handling
 		static final Parser DEFAULT_WS = new Rule("WS", new Quantifier(new Charset(" \t\r\n"),
 				Quantifier.Bounds.ZERO_TO_N));
 
@@ -510,26 +500,23 @@ interface Parser extends Supplier<Parser> {
 
 		@Override
 		public Either<Integer, List<Node<Token>>> parse(String text, int index, boolean lex) {
-			return lex ? combine(text, index) : aggregate(text, index);
+			final Either<Integer, List<Node<Token>>> parsed = read(text, index, lex);
+			if (parsed.isLeft()) {
+				return parsed;
+			} else {
+				return (lex ? Transformer.COMBINER : Transformer.AGGREGATOR).apply(text, index, parsed);
+			}
 		}
 
-		private Either<Integer, List<Node<Token>>> combine(String text, int index) {
-			final Either<Integer, List<Node<Token>>> parsed = Stream.of(parsers).reduce(token(text, index, 0),
-					(current, parser) -> current.flatMap(list -> {
-						// TODO: what if list is empty?
-							final int currentIndex = endIndex(list).orElse(index);
-							/* TODO:DEBUG */System.out.println(currentIndex);
-							return parser.get().parse(text, currentIndex, true);
-						}), (t1, t2) -> null);
-			return parsed.isLeft() ? parsed : token(text, index, endIndex(parsed).orElse(index) - index);
-		}
-
-		private Either<Integer, List<Node<Token>>> aggregate(String text, int index) {
+		private Either<Integer, List<Node<Token>>> read(String text, int index, boolean lex) {
 			final List<Node<Token>> tokens = new ArrayList<>();
 			int currentIndex = index;
 			for (Supplier<Parser> parser : parsers) {
-				final Either<Integer, List<Node<Token>>> parsed = parser.get().parse(text,
-						skipWhitespace(text, currentIndex), false);
+				// TODO: issue #23: fix whitespace handling
+				if (!lex) {
+					currentIndex = skipWhitespace(text, currentIndex);
+				}
+				final Either<Integer, List<Node<Token>>> parsed = parser.get().parse(text, currentIndex, lex);
 				if (parsed.isRight()) {
 					tokens.addAll(parsed.get());
 					currentIndex = endIndex(tokens).orElse(currentIndex);
@@ -651,5 +638,19 @@ interface Parser extends Supplier<Parser> {
 	static Option<Integer> endIndex(List<Node<Token>> tokens) {
 		final Integer endIndex = tokens.isEmpty() ? null : tokens.get(tokens.size() - 1).getValue().getEndIndex();
 		return Option.of(endIndex);
+	}
+
+	// -- additional types
+
+	// manifest type
+	static interface Transformer
+			extends
+			SerializableFunction3<String, Integer, Either<Integer, List<Node<Token>>>, Either<Integer, List<Node<Token>>>> {
+
+		// aggregates parse results
+		static final Transformer AGGREGATOR = (text, index, parsed) -> parsed;
+
+		// combines lex results
+		static final Transformer COMBINER = (text, index, parsed) -> token(text, index, length(parsed));
 	}
 }
