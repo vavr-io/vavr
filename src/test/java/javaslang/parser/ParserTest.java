@@ -11,6 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javaslang.AssertionsExtensions;
@@ -356,6 +357,13 @@ public class ParserTest {
 	}
 
 	@Test
+	public void shouldGetChildrenOfSubrule() {
+		final Parser.Subrule subrule = new Parser.Subrule(Parser.Any.INSTANCE, Parser.EOF.INSTANCE);
+		final List<Supplier<Parser>> expected = Arrays.asList(Parser.Any.INSTANCE, Parser.EOF.INSTANCE);
+		assertThat(subrule.getChildren()).isEqualTo(expected);
+	}
+
+	@Test
 	public void shouldParseFirstAlternativeUsingSubrule() {
 		final Parser.Subrule subrule = new Parser.Subrule(Parser.Any.INSTANCE, Parser.EOF.INSTANCE);
 		assertThat(subrule.parse("a", 0, false).toString()).isEqualTo("Right([Node('a')])");
@@ -365,6 +373,12 @@ public class ParserTest {
 	public void shouldParseSecondAlternativeUsingSubrule() {
 		final Parser.Subrule subrule = new Parser.Subrule(Parser.Any.INSTANCE, Parser.EOF.INSTANCE);
 		assertThat(subrule.parse("", 0, false).toString()).isEqualTo("Right([Node(EOF)])");
+	}
+
+	@Test
+	public void shouldParseNoMatchUsingSubrule() {
+		final Parser.Subrule subrule = new Parser.Subrule(new Parser.Literal("a"), new Parser.Literal("b"));
+		assertThat(subrule.parse("c", 0, false).toString()).isEqualTo("Left(0)");
 	}
 
 	// -- parse helpers
