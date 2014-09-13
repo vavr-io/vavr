@@ -14,7 +14,7 @@ public final class Token {
 	private final int index;
 	private final int length;
 
-	// DEV-NOTE: defer substring calculation for better performance and memory footprint
+	// DEV-NOTE: defer substring calculation to getValue() for better performance and memory footprint
 	Token(String id, String text, int index, int length) {
 		this.id = id;
 		this.text = text;
