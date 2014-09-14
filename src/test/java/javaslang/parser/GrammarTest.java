@@ -138,17 +138,25 @@ public class GrammarTest {
 	// -- whitespace
 
 	@Test
-	@Ignore
 	public void shouldParseGroupsWithoutWhitespace() {
 		final String actual = new GroupGrammar().parse("(abc)(def ghi)").get().toString();
-		/* TODO:DEBUG */System.out.println(actual);
+		final String expected = "Tree(groups (group '(' 'abc' ')') (group '(' 'def' 'ghi' ')'))";
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldParseGroupsWithWhitespace() {
+		final String actual = new GroupGrammar().parse("( abc ) ( def ghi )").get().toString();
+		final String expected = "Tree(groups (group '(' 'abc' ')') (group '(' 'def' 'ghi' ')'))";
+		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
 	@Ignore
-	public void shouldParseGroupsWithWhitespace() {
-		final String actual = new GroupGrammar().parse("( abc ) ( def ghi )").get().toString();
-		/* TODO:DEBUG */System.out.println(actual);
+	public void shouldParseRichStringWithoutEatingUpWhitespace() {
+		final String actual = new RichStringGrammar().parse("\"\"\" test \"\"\"").get().toString();
+		final String expected = "Tree(richString '\"\"\"' ' test ' '\"\"\"')";
+		assertThat(actual).isEqualTo(expected);
 	}
 
 	// -- Example grammar: Simple sequence of tokens
@@ -248,6 +256,21 @@ public class GrammarTest {
 
 		static Parser.Rule WORD() {
 			return rule("WORD", _1_n(range('a', 'z')));
+		}
+	}
+
+	/**
+	 * {@code richString : '"""' .*? '"""'}
+	 */
+	static class RichStringGrammar extends Grammar {
+
+		RichStringGrammar() {
+			super(RichStringGrammar::richString);
+		}
+
+		static Parser.Rule richString() {
+			// TODO: .*? instead of [ a-z]*
+			return rule("richString", seq(str("\"\"\""), _0_n(charset(" a-z")), str("\"\"\"")));
 		}
 	}
 

@@ -10,6 +10,7 @@ import static javaslang.collection.Node.node;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -180,7 +181,7 @@ public class ParserTest {
 	}
 
 	@Test
-	public void shouldParseTwoOccurrencesAsCombinedWithZeroToNQuantifier() {
+	public void shouldParseTwoOccurrencesOfSpaceWhenCombiningSpacesWithZeroToNQuantifier() {
 		final Parser parser = new Parser.Quantifier(Parser.Any.INSTANCE, Quantifier.Bounds.ZERO_TO_N);
 		final String text = "  ";
 		final Either<Integer, List<Node<Token>>> actual = parser.parse(text, 0, true);
@@ -188,12 +189,11 @@ public class ParserTest {
 	}
 
 	@Test
-	public void shouldParseTwoOccurrencesAsAggregatedWithZeroToNQuantifier() {
+	public void shouldParseEmptyTokenWhenAggregatingSpacesWithZeroToNQuantifier() {
 		final Parser parser = new Parser.Quantifier(Parser.Any.INSTANCE, Quantifier.Bounds.ZERO_TO_N);
 		final String text = "  ";
 		final Either<Integer, List<Node<Token>>> actual = parser.parse(text, 0, false);
-		assertThat(actual).isEqualTo(
-				new Right<>(Arrays.asList(node(new Token(null, text, 0, 1)), node(new Token(null, text, 1, 1)))));
+		assertThat(actual).isEqualTo(new Right<>(Collections.emptyList()));
 	}
 
 	// 1..n
@@ -220,7 +220,7 @@ public class ParserTest {
 	}
 
 	@Test
-	public void shouldParseTwoOccurrencesAsCombinedWithOneToNQuantifier() {
+	public void shouldParseTwoOccurrencesOfSpaceWhenCombiningSpacesWithOneToNQuantifier() {
 		final Parser parser = new Parser.Quantifier(Parser.Any.INSTANCE, Quantifier.Bounds.ONE_TO_N);
 		final String text = "  ";
 		final Either<Integer, List<Node<Token>>> actual = parser.parse(text, 0, true);
@@ -228,12 +228,11 @@ public class ParserTest {
 	}
 
 	@Test
-	public void shouldParseTwoOccurrencesAsAggregatedWithOneToNQuantifier() {
+	public void shouldFailWhenAggregatingSpacesWithOneToNQuantifier() {
 		final Parser parser = new Parser.Quantifier(Parser.Any.INSTANCE, Quantifier.Bounds.ONE_TO_N);
 		final String text = "  ";
 		final Either<Integer, List<Node<Token>>> actual = parser.parse(text, 0, false);
-		assertThat(actual).isEqualTo(
-				new Right<>(Arrays.asList(node(new Token(null, text, 0, 1)), node(new Token(null, text, 1, 1)))));
+		assertThat(actual).isEqualTo(new Left<>(0));
 	}
 
 	// -- Range parser

@@ -308,16 +308,17 @@ interface Parser extends Supplier<Parser> {
 			}
 		}
 
+		// TODO: issue #23: fix whitespace handling
 		private Either<Integer, List<Node<Token>>> read(Parser parser, String text, int index, boolean lex) {
 			if (bounds.unbound) {
 				// 0..n, 1..n => read as much as possible
 				final List<Node<Token>> tokens = new ArrayList<>();
-				// TODO: issue #23: fix whitespace handling
-				Either<Integer, List<Node<Token>>> parsed = parser.parse(text, index, lex);
+				int currentIndex = skipWhitespace(text, index, lex);
+				Either<Integer, List<Node<Token>>> parsed = parser.parse(text, currentIndex, lex);
 				while (parsed.isRight() && length(parsed) > 0) {
 					tokens.addAll(parsed.get());
-					// TODO: issue #23: fix whitespace handling
-					parsed = parser.parse(text, endIndex(parsed).orElse(index), lex);
+					currentIndex = skipWhitespace(text, endIndex(parsed).orElse(currentIndex), lex);
+					parsed = parser.parse(text, currentIndex, lex);
 				}
 				return tokens.isEmpty() ? stoppedAt(index) : new Right<>(tokens);
 			} else {
@@ -485,10 +486,6 @@ interface Parser extends Supplier<Parser> {
 	 */
 	static class Sequence implements HasChildren, Parser {
 
-		// TODO: issue #23: fix whitespace handling
-		static final Parser DEFAULT_WS = new Rule("WS", new Quantifier(new Charset(" \t\r\n"),
-				Quantifier.Bounds.ZERO_TO_N));
-
 		final Supplier<Parser>[] parserSuppliers;
 
 		@SafeVarargs
@@ -513,27 +510,20 @@ interface Parser extends Supplier<Parser> {
 			}
 		}
 
+		// TODO: issue #23: fix whitespace handling
 		private Either<Integer, List<Node<Token>>> read(String text, int index, boolean lex) {
 			final List<Node<Token>> tokens = new ArrayList<>();
 			int currentIndex = index;
 			for (Supplier<Parser> parserSupplier : parserSuppliers) {
-				// TODO: issue #23: fix whitespace handling
-				if (!lex) {
-					currentIndex = skipWhitespace(text, currentIndex);
-				}
+				currentIndex = skipWhitespace(text, endIndex(tokens).orElse(currentIndex), lex);
 				final Either<Integer, List<Node<Token>>> parsed = parserSupplier.get().parse(text, currentIndex, lex);
 				if (parsed.isRight()) {
 					tokens.addAll(parsed.get());
-					currentIndex = endIndex(tokens).orElse(currentIndex);
 				} else {
 					return parsed;
 				}
 			}
 			return new Right<>(tokens);
-		}
-
-		private int skipWhitespace(String text, int index) {
-			return endIndex(DEFAULT_WS.parse(text, index, true)).orElse(index);
 		}
 
 		@Override
@@ -597,6 +587,16 @@ interface Parser extends Supplier<Parser> {
 
 	static interface HasChildren {
 		List<Supplier<Parser>> getChildren();
+	}
+
+	// -- whitespace
+
+	// TODO: issue #23: fix whitespace handling
+	static final Parser DEFAULT_WS = new Rule("WS", new Quantifier(new Charset(" \t\r\n"), Quantifier.Bounds.ONE_TO_N));
+
+	// TODO: issue #23: fix whitespace handling
+	static int skipWhitespace(String text, int index, boolean lex) {
+		return lex ? index : endIndex(DEFAULT_WS.parse(text, index, true)).orElse(index);
 	}
 
 	// -- parse-result factory methods
