@@ -611,11 +611,6 @@ interface Parser extends Supplier<Parser> {
 		return new Right<>(Arrays.asList(new Node<>(new Token(null, text, index, length))));
 	}
 
-	// non-terminal symbol / inner rule of the parse tree / rule
-	static Either<Integer, List<Node<Token>>> symbol(String id, String text, int index, int length) {
-		return new Right<>(Arrays.asList(new Node<>(new Token(id, text, index, length))));
-	}
-
 	// non-terminal symbol / inner rule of the parse tree / rule with children
 	static Either<Integer, List<Node<Token>>> symbol(String id, String text, int index, int length,
 			List<Node<Token>> children) {
