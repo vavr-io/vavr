@@ -372,7 +372,7 @@ public class ParserTest {
 	@Test
 	public void shouldParseSecondAlternativeUsingSubrule() {
 		final Parser.Subrule subrule = new Parser.Subrule(Parser.Any.INSTANCE, Parser.EOF.INSTANCE);
-		assertThat(subrule.parse("", 0, false).toString()).isEqualTo("Right([Node(EOF)])");
+		assertThat(subrule.parse("", 0, false).toString()).isEqualTo("Right([])");
 	}
 
 	@Test

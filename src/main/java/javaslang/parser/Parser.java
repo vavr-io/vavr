@@ -5,7 +5,6 @@
  */
 package javaslang.parser;
 
-import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.joining;
 import static javaslang.Requirements.require;
 import static javaslang.Requirements.requireNonNull;
@@ -13,6 +12,7 @@ import static javaslang.Requirements.requireNotNullOrEmpty;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -236,7 +236,7 @@ interface Parser extends Supplier<Parser> {
 		@Override
 		public Either<Integer, List<Node<Token>>> parse(String text, int index, boolean lex) {
 			final boolean match = (index == text.length());
-			return match ? symbol(EOF, text, index, 0) : stoppedAt(index);
+			return match ? token() : stoppedAt(index);
 		}
 
 		@Override
@@ -282,27 +282,27 @@ interface Parser extends Supplier<Parser> {
 	 */
 	static class Quantifier implements HasChildren, Parser {
 
-		final Supplier<Parser> parser;
+		final Supplier<Parser> parserSupplier;
 		final Bounds bounds;
 
-		Quantifier(Supplier<Parser> parser, Bounds bounds) {
-			requireNonNull(parser, "parser is null");
+		Quantifier(Supplier<Parser> parserSupplier, Bounds bounds) {
+			requireNonNull(parserSupplier, "parserSupplier is null");
 			requireNonNull(bounds, "bounds is null");
-			this.parser = parser;
+			this.parserSupplier = parserSupplier;
 			this.bounds = bounds;
 		}
 
 		@Override
 		public List<Supplier<Parser>> getChildren() {
-			return Arrays.asList(parser);
+			return Arrays.asList(parserSupplier);
 		}
 
 		@Override
 		public Either<Integer, List<Node<Token>>> parse(String text, int index, boolean lex) {
-			final Either<Integer, List<Node<Token>>> parsed = read(parser.get(), text, index, lex);
+			final Either<Integer, List<Node<Token>>> parsed = read(parserSupplier.get(), text, index, lex);
 			if (parsed.isLeft()) {
 				// no token found: 1..n => not ok, 0..1, 0..n => ok (with length 0)
-				return bounds.required ? stoppedAt(index) : new Right<>(emptyList());
+				return bounds.required ? stoppedAt(index) : token();
 			} else {
 				return (lex ? Transformer.COMBINER : Transformer.AGGREGATOR).apply(text, index, parsed);
 			}
@@ -328,7 +328,7 @@ interface Parser extends Supplier<Parser> {
 
 		@Override
 		public String toString() {
-			return toString(parser.get()) + bounds.symbol;
+			return toString(parserSupplier.get()) + bounds.symbol;
 		}
 
 		private String toString(Parser parser) {
@@ -489,18 +489,18 @@ interface Parser extends Supplier<Parser> {
 		static final Parser DEFAULT_WS = new Rule("WS", new Quantifier(new Charset(" \t\r\n"),
 				Quantifier.Bounds.ZERO_TO_N));
 
-		final Supplier<Parser>[] parsers;
+		final Supplier<Parser>[] parserSuppliers;
 
 		@SafeVarargs
-		public Sequence(Supplier<Parser>... parsers) {
-			requireNonNull(parsers, "no parsers");
-			require(parsers.length >= 2, "number of parsers < 2");
-			this.parsers = parsers;
+		public Sequence(Supplier<Parser>... parserSuppliers) {
+			requireNonNull(parserSuppliers, "parserSuppliers is null");
+			require(parserSuppliers.length >= 2, "number of parserSuppliers < 2");
+			this.parserSuppliers = parserSuppliers;
 		}
 
 		@Override
 		public List<Supplier<Parser>> getChildren() {
-			return Arrays.asList(parsers);
+			return Arrays.asList(parserSuppliers);
 		}
 
 		@Override
@@ -516,12 +516,12 @@ interface Parser extends Supplier<Parser> {
 		private Either<Integer, List<Node<Token>>> read(String text, int index, boolean lex) {
 			final List<Node<Token>> tokens = new ArrayList<>();
 			int currentIndex = index;
-			for (Supplier<Parser> parser : parsers) {
+			for (Supplier<Parser> parserSupplier : parserSuppliers) {
 				// TODO: issue #23: fix whitespace handling
 				if (!lex) {
 					currentIndex = skipWhitespace(text, currentIndex);
 				}
-				final Either<Integer, List<Node<Token>>> parsed = parser.get().parse(text, currentIndex, lex);
+				final Either<Integer, List<Node<Token>>> parsed = parserSupplier.get().parse(text, currentIndex, lex);
 				if (parsed.isRight()) {
 					tokens.addAll(parsed.get());
 					currentIndex = endIndex(tokens).orElse(currentIndex);
@@ -538,7 +538,7 @@ interface Parser extends Supplier<Parser> {
 
 		@Override
 		public String toString() {
-			return Stream.of(parsers).map(supplier -> {
+			return Stream.of(parserSuppliers).map(supplier -> {
 				final Parser parser = supplier.get();
 				if (parser instanceof Rule) {
 					return ((Rule) parser).name;
@@ -600,6 +600,11 @@ interface Parser extends Supplier<Parser> {
 	}
 
 	// -- parse-result factory methods
+
+	// represents empty token having no nodes / no text
+	static Either<Integer, List<Node<Token>>> token() {
+		return new Right<>(Collections.emptyList());
+	}
 
 	// terminal token / leaf of the parse tree
 	static Either<Integer, List<Node<Token>>> token(String text, int index, int length) {

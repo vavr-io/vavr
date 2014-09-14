@@ -17,6 +17,7 @@ import javaslang.collection.Tree;
 import javaslang.monad.Either;
 import javaslang.monad.Try;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class GrammarTest {
@@ -31,8 +32,8 @@ public class GrammarTest {
 
 	@Test
 	public void shouldParseTextWhenMatching() {
-		assertThat(new Grammar(Grammar.rule("root", Grammar.EOF)).parse("").toString()).isEqualTo(
-				"Success(Tree(root EOF))");
+		assertThat(new Grammar(Grammar.rule("root", Grammar.EOF)).parse("").toString())
+				.isEqualTo("Success(Tree(root))");
 	}
 
 	@Test
@@ -134,6 +135,22 @@ public class GrammarTest {
 		assertThat(Grammar.list(Grammar.ANY, ",", "{", "}").toString()).isEqualTo("'{' ( . ( ',' . )* )? '}'");
 	}
 
+	// -- whitespace
+
+	@Test
+	@Ignore
+	public void shouldParseGroupsWithoutWhitespace() {
+		final String actual = new GroupGrammar().parse("(abc)(def ghi)").get().toString();
+		/* TODO:DEBUG */System.out.println(actual);
+	}
+
+	@Test
+	@Ignore
+	public void shouldParseGroupsWithWhitespace() {
+		final String actual = new GroupGrammar().parse("( abc ) ( def ghi )").get().toString();
+		/* TODO:DEBUG */System.out.println(actual);
+	}
+
 	// -- Example grammar: Simple sequence of tokens
 
 	static class SimpleSequenceGrammar extends Grammar {
@@ -201,8 +218,42 @@ public class GrammarTest {
 		}
 	}
 
+	/**
+	 * Grammar for groups of words.
+	 * 
+	 * <pre>
+	 * <code>
+	 * groups : group* EOF
+	 * 
+	 * group : '(' WORD+ ')'
+	 * 
+	 * WORD : 'a'..'z'+
+	 * </code>
+	 * </pre>
+	 */
+	// TODO: test issue #23 "[parser] Fix whitespace handling" - https://github.com/rocketscience-projects/javaslang/issues/23
+	static class GroupGrammar extends Grammar {
+		// define start rule
+		GroupGrammar() {
+			super(GroupGrammar::groups);
+		}
+
+		static Parser.Rule groups() {
+			return rule("groups", seq(_0_n(GroupGrammar::group), EOF));
+		}
+
+		static Parser.Rule group() {
+			return rule("group", seq(str("("), _1_n(GroupGrammar::WORD), str(")")));
+		}
+
+		static Parser.Rule WORD() {
+			return rule("WORD", _1_n(range('a', 'z')));
+		}
+	}
+
 	// -- Example grammar: Resursive expressions
 
+	// TODO: test issue #32 "[parser] Support direct and indirect recursion" - https://github.com/rocketscience-projects/javaslang/issues/32
 	static class ExpressionGrammar extends Grammar {
 
 		// define start rule
