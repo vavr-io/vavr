@@ -328,15 +328,17 @@ interface Parser extends Supplier<Parser> {
 
 		@Override
 		public String toString() {
-			final String parserString;
+			return toString(parser.get()) + bounds.symbol;
+		}
+
+		private String toString(Parser parser) {
 			if (parser instanceof Rule) {
-				parserString = ((Rule) parser).name;
+				return ((Rule) parser).name;
 			} else if (parser instanceof Sequence) {
-				parserString = "( " + parser.toString() + " )";
+				return "( " + parser.toString() + " )";
 			} else {
-				parserString = parser.toString();
+				return parser.toString();
 			}
-			return parserString + bounds.symbol;
 		}
 
 		static enum Bounds {
@@ -436,13 +438,16 @@ interface Parser extends Supplier<Parser> {
 		@Override
 		public Either<Integer, List<Node<Token>>> parse(String text, int index, boolean lex) {
 			require(!lex || lexerRule, "parser rule '" + name + "' is referenced by a lexer rule");
+			int failedIndex = index;
 			for (Supplier<Parser> alternative : alternatives) {
 				final Either<Integer, List<Node<Token>>> result = alternative.get().parse(text, index, lexerRule);
 				if (result.isRight()) {
 					return lexerRule ? result : symbol(name, text, index, length(result), result.get());
+				} else {
+					failedIndex = Math.max(failedIndex, result.left().get());
 				}
 			}
-			return stoppedAt(index);
+			return stoppedAt(failedIndex);
 		}
 
 		@Override
@@ -565,13 +570,16 @@ interface Parser extends Supplier<Parser> {
 
 		@Override
 		public Either<Integer, List<Node<Token>>> parse(String text, int index, boolean lex) {
+			int failedIndex = index;
 			for (Supplier<Parser> alternative : alternatives) {
 				final Either<Integer, List<Node<Token>>> result = alternative.get().parse(text, index, lex);
 				if (result.isRight()) {
 					return result;
+				} else {
+					failedIndex = Math.max(failedIndex, result.left().get());
 				}
 			}
-			return stoppedAt(index);
+			return stoppedAt(failedIndex);
 		}
 
 		@Override
