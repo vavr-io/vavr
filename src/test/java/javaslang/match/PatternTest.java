@@ -19,7 +19,7 @@ import org.junit.Test;
 public class PatternTest {
 
 	@Test
-	public void shouldNotInstantiable() {
+	public void shouldNotBeInstantiable() {
 		AssertionsExtensions.assertThat(Patterns.class).isNotInstantiable();
 	}
 
