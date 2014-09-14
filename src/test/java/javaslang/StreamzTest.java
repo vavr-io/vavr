@@ -25,7 +25,7 @@ public class StreamzTest {
 	private static final String[] I_WILL_BE_BACK = { "I", "will", "be", "back!" };
 
 	@Test
-	public void shouldNotInstantiable() {
+	public void shouldNotBeInstantiable() {
 		AssertionsExtensions.assertThat(Streamz.class).isNotInstantiable();
 	}
 

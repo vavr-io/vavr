@@ -20,7 +20,7 @@ import org.junit.Test;
 public class MatchTest {
 
 	@Test
-	public void shouldNotInstantiable() {
+	public void shouldNotBeInstantiable() {
 		AssertionsExtensions.assertThat(Matchs.class).isNotInstantiable();
 	}
 

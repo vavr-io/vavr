@@ -15,7 +15,7 @@ import org.junit.Test;
 public class ArrayzTest {
 
 	@Test
-	public void shouldNotInstantiable() {
+	public void shouldNotBeInstantiable() {
 		AssertionsExtensions.assertThat(Arrayz.class).isNotInstantiable();
 	}
 

@@ -13,7 +13,7 @@ import org.junit.Test;
 public class RequirementsTest {
 
 	@Test
-	public void shouldNotInstantiable() {
+	public void shouldNotBeInstantiable() {
 		AssertionsExtensions.assertThat(Requirements.class).isNotInstantiable();
 	}
 
@@ -200,15 +200,17 @@ public class RequirementsTest {
 	@Test
 	public void shouldThrowOnRequireNotNullOrEmptyForCharSequenceWithMessageSupplierWhenNull() {
 		final CharSequence charSequence = null;
-		AssertionsExtensions.assertThat(() -> Requirements.requireNotNullOrEmpty(charSequence, () -> "null")).isThrowing(
-				UnsatisfiedRequirementException.class, "null");
+		AssertionsExtensions
+				.assertThat(() -> Requirements.requireNotNullOrEmpty(charSequence, () -> "null"))
+				.isThrowing(UnsatisfiedRequirementException.class, "null");
 	}
 
 	@Test
 	public void shouldThrowOnRequireNotNullOrEmptyForCharSequenceWithMessageSupplierWhenEmpty() {
 		final CharSequence charSequence = "";
-		AssertionsExtensions.assertThat(() -> Requirements.requireNotNullOrEmpty(charSequence, () -> "empty")).isThrowing(
-				UnsatisfiedRequirementException.class, "empty");
+		AssertionsExtensions
+				.assertThat(() -> Requirements.requireNotNullOrEmpty(charSequence, () -> "empty"))
+				.isThrowing(UnsatisfiedRequirementException.class, "empty");
 	}
 
 	@Test
@@ -251,8 +253,9 @@ public class RequirementsTest {
 	@Test
 	public void shouldThrowOnRequireNotNullOrEmptyTrimmedForCharSequenceWithMessageWhenNull() {
 		final CharSequence charSequence = null;
-		AssertionsExtensions.assertThat(() -> Requirements.requireNotNullOrEmptyTrimmed(charSequence, "null")).isThrowing(
-				UnsatisfiedRequirementException.class, "null");
+		AssertionsExtensions
+				.assertThat(() -> Requirements.requireNotNullOrEmptyTrimmed(charSequence, "null"))
+				.isThrowing(UnsatisfiedRequirementException.class, "null");
 	}
 
 	@Test

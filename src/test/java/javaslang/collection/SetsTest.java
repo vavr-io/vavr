@@ -16,7 +16,7 @@ import org.junit.Test;
 public class SetsTest {
 
 	@Test
-	public void shouldNotInstantiable() {
+	public void shouldNotBeInstantiable() {
 		AssertionsExtensions.assertThat(Sets.class).isNotInstantiable();
 	}
 

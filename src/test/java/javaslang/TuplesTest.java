@@ -34,7 +34,7 @@ public class TuplesTest {
 	// -- requirements on instantiation
 
 	@Test
-	public void shouldNotInstantiable() {
+	public void shouldNotBeInstantiable() {
 		AssertionsExtensions.assertThat(Tuples.class).isNotInstantiable();
 	}
 

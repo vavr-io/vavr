@@ -20,7 +20,7 @@ import org.junit.Test;
 public class IOTest {
 
 	@Test
-	public void shouldNotInstantiable() {
+	public void shouldNotBeInstantiable() {
 		AssertionsExtensions.assertThat(IO.class).isNotInstantiable();
 	}
 

@@ -19,7 +19,7 @@ public class SerializablesTest {
 	private static final String MAGIC_NUMBER = "0xCAFEBABE";
 
 	@Test
-	public void shouldNotInstantiable() {
+	public void shouldNotBeInstantiable() {
 		AssertionsExtensions.assertThat(Serializables.class).isNotInstantiable();
 	}
 

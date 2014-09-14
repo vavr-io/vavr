@@ -18,7 +18,7 @@ import org.junit.Test;
 public class LambdasTest {
 
 	@Test
-	public void shouldNotInstantiable() {
+	public void shouldNotBeInstantiable() {
 		AssertionsExtensions.assertThat(Lambdas.class).isNotInstantiable();
 	}
 
