@@ -158,9 +158,7 @@ public class Grammar {
 
 	@Override
 	public String toString() {
-		// two parsers are considered equal if they have the save *reference*
 		final Set<Parser> visited = new HashSet<>();
-		// two rules are considered equal if they have the same *name*
 		final Set<Parser.Rule> rules = new LinkedHashSet<>();
 		findRules(visited, rules, startRule);
 		return rules.stream().map(Object::toString).collect(Collectors.joining("\n\n"));
