@@ -6,23 +6,26 @@
 package javaslang.parser;
 
 import static javaslang.Requirements.requireNonNull;
+import static javaslang.parser.Parser.Quantifier.UNBOUNDED;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javaslang.Requirements;
 import javaslang.Strings;
-import javaslang.collection.Node;
 import javaslang.collection.Tree;
 import javaslang.monad.Either;
 import javaslang.monad.Failure;
 import javaslang.monad.Success;
 import javaslang.monad.Try;
 import javaslang.parser.Parser.HasChildren;
+import javaslang.parser.Parser.ParseResult;
+import javaslang.parser.Parser.Rule;
+import javaslang.parser.Parser.RulePart;
 
 // TODO: Distinguish between tokenizing (Lexer) and parsing (Parser)
 //       - https://github.com/antlr/grammars-v4/blob/master/antlr4/ANTLRv4Lexer.g4
@@ -140,10 +143,11 @@ public class Grammar {
 	 */
 	// TODO: return Either instead of Try, where Right is the CST/parse tree and Left is a detailed ParseFailure description
 	public Try<Tree<Token>> parse(String text) {
-		final Either<Integer, List<Node<Token>>> parseResult = startRule.parse(text, 0, false);
+		// TODO: simplify API: List<Node<Token>> vs ParseResult
+		final Either<Integer, ParseResult> parseResult = startRule.parse(text, 0, false);
 		if (parseResult.isRight()) {
 			// DEV-NODE: a Rule returns a CST with one node => head() is result
-			final Tree<Token> concreteSyntaxTree = parseResult.get().get(0).asTree();
+			final Tree<Token> concreteSyntaxTree = parseResult.get().tokens.get(0).asTree();
 			return new Success<>(concreteSyntaxTree);
 		} else {
 			final int index = parseResult.left().get();
@@ -154,9 +158,10 @@ public class Grammar {
 
 	@Override
 	public String toString() {
-		// preserving insertion order
-		final Set<Parser.Rule> rules = new LinkedHashSet<>();
+		// two parsers are considered equal if they have the save *reference*
 		final Set<Parser> visited = new HashSet<>();
+		// two rules are considered equal if they have the same *name*
+		final Set<Parser.Rule> rules = new LinkedHashSet<>();
 		findRules(visited, rules, startRule);
 		return rules.stream().map(Object::toString).collect(Collectors.joining("\n\n"));
 	}
@@ -164,16 +169,27 @@ public class Grammar {
 	private void findRules(Set<Parser> visited, Set<Parser.Rule> rules, Parser parser) {
 		if (!visited.contains(parser)) {
 			visited.add(parser);
-			if (parser instanceof Parser.Rule) {
-				rules.add((Parser.Rule) parser);
+			if (parser instanceof Rule) {
+				rules.add((Rule) parser);
 			}
 			if (parser instanceof HasChildren) {
-				((HasChildren) parser).getChildren().stream().forEach(child -> findRules(visited, rules, child.get()));
+				final HasChildren hasChildren = (HasChildren) parser;
+				Stream.of(hasChildren.getChildren()).forEach(child -> findRules(visited, rules, child));
 			}
 		}
 	}
 
 	// -- atomic shortcuts used in grammar definitions
+
+	/**
+	 * Shortcut for {@code new Parser.RuleRef(ruleSupplier)}.
+	 * 
+	 * @param ruleSupplier A rule supplier.
+	 * @return A new {@link Parser.RuleRef}.
+	 */
+	public static Parser.RuleRef ref(Supplier<Parser.Rule> ruleSupplier) {
+		return new Parser.RuleRef(ruleSupplier);
+	}
 
 	/**
 	 * Shortcut for {@code new Parser.Rule(name, alternatives)}.
@@ -183,7 +199,7 @@ public class Grammar {
 	 * @return A new {@link Parser.Rule}.
 	 */
 	@SafeVarargs
-	public static Parser.Rule rule(String name, Supplier<Parser>... alternatives) {
+	public static Parser.Rule rule(String name, RulePart... alternatives) {
 		return new Parser.Rule(name, alternatives);
 	}
 
@@ -194,7 +210,7 @@ public class Grammar {
 	 * @return A new {@link Parser.Subrule}.
 	 */
 	@SafeVarargs
-	public static Parser.Subrule subRule(Supplier<Parser>... alternatives) {
+	public static Parser.Subrule subRule(RulePart... alternatives) {
 		return new Parser.Subrule(alternatives);
 	}
 
@@ -205,7 +221,7 @@ public class Grammar {
 	 * @return A new {@link Parser.Sequence}.
 	 */
 	@SafeVarargs
-	public static Parser.Sequence seq(Supplier<Parser>... parsers) {
+	public static Parser.Sequence seq(RulePart... parsers) {
 		return new Parser.Sequence(parsers);
 	}
 
@@ -241,42 +257,54 @@ public class Grammar {
 	}
 
 	/**
-	 * Shortcut for {@code new Parser.Quantifier(new Parser.Sequence(parsers), Parser.Quantifier.Bounds.ZERO_TO_ONE)} .
+	 * Shortcut for
+	 * {@code new Parser.Quantifier((parsers.length == 1) ? parsers[0] : new Parser.Sequence(parsers), 0, 1)} .
 	 * 
 	 * @param parsers Quantified parsers.
 	 * @return A new {@link Parser.Quantifier}.
 	 */
-	@SafeVarargs
-	public static Parser.Quantifier _0_1(Supplier<Parser>... parsers) {
-		return quantifier(parsers, Parser.Quantifier.Bounds.ZERO_TO_ONE);
+	public static Parser.Quantifier _0_1(RulePart... parsers) {
+		return mul(0, 1, parsers);
 	}
 
 	/**
-	 * Shortcut for {@code new Parser.Quantifier(new Parser.Sequence(parsers), Parser.Quantifier.Bounds.ZERO_TO_N)}.
+	 * Shortcut for
+	 * {@code new Parser.Quantifier((parsers.length == 1) ? parsers[0] : new Parser.Sequence(parsers), 0, Parser.Quantifier.UNBOUNDED)}
+	 * .
 	 * 
 	 * @param parsers Quantified parsers.
 	 * @return A new {@link Parser.Quantifier}.
 	 */
-	@SafeVarargs
-	public static Parser.Quantifier _0_n(Supplier<Parser>... parsers) {
-		return quantifier(parsers, Parser.Quantifier.Bounds.ZERO_TO_N);
+	public static Parser.Quantifier _0_n(RulePart... parsers) {
+		return mul(0, UNBOUNDED, parsers);
 	}
 
 	/**
-	 * Shortcut for {@code new Parser.Quantifier(new Parser.Sequence(parsers), Parser.Quantifier.Bounds.ONE_TO_N)}.
+	 * Shortcut for
+	 * {@code new Parser.Quantifier((parsers.length == 1) ? parsers[0] : new Parser.Sequence(parsers), 1, Parser.Quantifier.UNBOUNDED)}
+	 * .
 	 * 
 	 * @param parsers Quantified parsers.
 	 * @return A new {@link Parser.Quantifier}.
 	 */
-	@SafeVarargs
-	public static Parser.Quantifier _1_n(Supplier<Parser>... parsers) {
-		return quantifier(parsers, Parser.Quantifier.Bounds.ONE_TO_N);
+	public static Parser.Quantifier _1_n(RulePart... parsers) {
+		return mul(1, UNBOUNDED, parsers);
 	}
 
-	private static Parser.Quantifier quantifier(Supplier<Parser>[] parsers, Parser.Quantifier.Bounds bounds) {
+	/**
+	 * Shortcut for
+	 * {@code new Parser.Quantifier((parsers.length == 1) ? parsers[0] : new Parser.Sequence(parsers), 1, Parser.Quantifier.UNBOUNDED)}
+	 * .
+	 * 
+	 * @param lowerBound Number of required matches.
+	 * @param upperBound Number of allowed matches. Infinite, if {@code Quantifier.UNBOUNDED} is given.
+	 * @param parsers Quantified / multiplied parsers.
+	 * @return A new {@link Parser.Quantifier}.
+	 */
+	public static Parser.Quantifier mul(int lowerBound, int upperBound, RulePart... parsers) {
 		Requirements.requireNotNullOrEmpty(parsers, "parsers is null or empty");
-		final Supplier<Parser> parser = (parsers.length == 1) ? parsers[0] : new Parser.Sequence(parsers);
-		return new Parser.Quantifier(parser, bounds);
+		final RulePart parser = (parsers.length == 1) ? parsers[0] : new Parser.Sequence(parsers);
+		return new Parser.Quantifier(parser, lowerBound, upperBound);
 	}
 
 	// -- composite shortcuts used in grammar definitions
@@ -298,11 +326,11 @@ public class Grammar {
 	 * @param delimiter A delimiter.
 	 * @return A Parser which recognizes {@code ( P ( ',' P )* )?}.
 	 */
-	public static Parser list(Supplier<Parser> parser, String delimiter) {
+	public static Parser.RulePart list(RulePart parser, String delimiter) {
 		return _0_1(parser, _0_n(str(delimiter), parser));
 	}
 
-	public static Parser list(Supplier<Parser> parser, String delimiter, String prefix, String suffix) {
+	public static Parser.RulePart list(RulePart parser, String delimiter, String prefix, String suffix) {
 		return seq(str(prefix), _0_1(parser, _0_n(str(delimiter), parser)), str(suffix));
 	}
 }

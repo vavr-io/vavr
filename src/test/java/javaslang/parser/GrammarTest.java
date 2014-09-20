@@ -5,19 +5,18 @@
  */
 package javaslang.parser;
 
+import static javaslang.parser.Parser.Quantifier.UNBOUNDED;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.List;
 
 import javaslang.IO;
-import javaslang.collection.Node;
 import javaslang.collection.Tree;
 import javaslang.monad.Either;
 import javaslang.monad.Try;
+import javaslang.parser.Parser.RulePart;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class GrammarTest {
@@ -44,10 +43,9 @@ public class GrammarTest {
 
 	@Test
 	public void shouldParseWhitespace() {
-		final Parser WS = new Parser.Rule("WS", new Parser.Quantifier(new Parser.Charset(" \t\r\n"),
-				Parser.Quantifier.Bounds.ZERO_TO_N));
-		final Either<Integer, List<Node<Token>>> actual = WS.parse("  ", 0, true);
-		final Either<Integer, List<Node<Token>>> expected = Parser.token("  ", 0, 2);
+		final Parser WS = new Parser.Rule("WS", new Parser.Quantifier(new Parser.Charset(" \t\r\n"), 0, UNBOUNDED));
+		final Either<Integer, Parser.ParseResult> actual = WS.parse("  ", 0, true);
+		final Either<Integer, Parser.ParseResult> expected = Parser.token("  ", 0, 2);
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -152,7 +150,6 @@ public class GrammarTest {
 	}
 
 	@Test
-	@Ignore
 	public void shouldParseRichStringWithoutEatingUpWhitespace() {
 		final String actual = new RichStringGrammar().parse("\"\"\" test \"\"\"").get().toString();
 		final String expected = "Tree(richString '\"\"\"' ' test ' '\"\"\"')";
@@ -183,22 +180,22 @@ public class GrammarTest {
 
 		// json : object | array | STRING | NUMBER | 'true' | 'false' | 'null' ;
 		static Parser.Rule json() {
-			return rule("json", JSONGrammar::object, JSONGrammar::array, JSONGrammar::STRING, JSONGrammar::NUMBER,
-					str("true"), str("false"), str("null"));
+			return rule("json", ref(JSONGrammar::object), ref(JSONGrammar::array), ref(JSONGrammar::STRING),
+					ref(JSONGrammar::NUMBER), str("true"), str("false"), str("null"));
 		}
 
 		// object : '{' ( property ( ',' property )* )? '}' ;
-		static Parser object() {
-			return rule("object", list(JSONGrammar::property, ",", "{", "}"));
+		static Parser.Rule object() {
+			return rule("object", list(property(), ",", "{", "}"));
 		}
 
 		// array : '[' ( json ( ',' json )* )? ']'
-		static Parser array() {
-			return rule("array", list(JSONGrammar::json, ",", "[", "]"));
+		static Parser.Rule array() {
+			return rule("array", list(ref(JSONGrammar::json), ",", "[", "]"));
 		}
 
 		// STRING : '"' (ESC | ~["\\])* '"' ;
-		static Parser STRING() {
+		static Parser.Rule STRING() {
 			// TODO
 			return rule("STRING", _1_n(charset("a-zA-Z0-9_$")));
 		}
@@ -211,18 +208,18 @@ public class GrammarTest {
 			return null;
 		}
 
-		static Parser NUMBER() {
+		static Parser.Rule NUMBER() {
 			return rule("NUMBER", _1_n(charset("0-9")));
 		}
 
 		// property : NAME ':' json ;
-		static Parser property() {
-			return seq(JSONGrammar::NAME, str(":"), JSONGrammar::json);
+		static Parser.RulePart property() {
+			return seq(ref(JSONGrammar::NAME), str(":"), ref(JSONGrammar::json));
 		}
 
 		// NAME : '"' STRING '"'
-		static Parser NAME() {
-			return rule("NAME", seq(str("\""), JSONGrammar::STRING, str("\"")));
+		static Parser.Rule NAME() {
+			return rule("NAME", seq(str("\""), ref(JSONGrammar::STRING), str("\"")));
 		}
 	}
 
@@ -247,11 +244,11 @@ public class GrammarTest {
 		}
 
 		static Parser.Rule groups() {
-			return rule("groups", seq(_0_n(GroupGrammar::group), EOF));
+			return rule("groups", seq(_0_n(ref(GroupGrammar::group)), EOF));
 		}
 
 		static Parser.Rule group() {
-			return rule("group", seq(str("("), _1_n(GroupGrammar::WORD), str(")")));
+			return rule("group", seq(str("("), _1_n(ref(GroupGrammar::WORD)), str(")")));
 		}
 
 		static Parser.Rule WORD() {
@@ -298,9 +295,9 @@ public class GrammarTest {
 		 */
 		static Parser.Rule expr() {
 			return rule("expr",//
-					seq(ExpressionGrammar::expr, str("*"), ExpressionGrammar::expr),//
-					seq(ExpressionGrammar::expr, str("+"), ExpressionGrammar::expr),//
-					ExpressionGrammar::INT);
+					seq(ref(ExpressionGrammar::expr), str("*"), ref(ExpressionGrammar::expr)),//
+					seq(ref(ExpressionGrammar::expr), str("+"), ref(ExpressionGrammar::expr)),//
+					INT());
 		}
 
 		/**
@@ -308,7 +305,7 @@ public class GrammarTest {
 		 * 
 		 * @return A natural number parser.
 		 */
-		static Parser INT() {
+		static RulePart INT() {
 			return _1_n(range('0', '9'));
 		}
 	}
