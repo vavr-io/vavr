@@ -207,6 +207,15 @@ public final class Match<R> implements Function<Object, R> {
 			return this;
 		}
 
+		// TODO(Issue #36): Support Consumer / void return value
+		//		public <T> Builder<R> caze(SerializableConsumer<T> consumer) {
+		//			requireNonNull(consumer, "consumer is null");
+		//			cases.add(caze(None.instance(), (T t) -> {
+		//				consumer.accept(t);
+		//			}, Void.class));
+		//			return this;
+		//		}
+
 		/**
 		 * Use this method to match by boolean. An object o matches this case, if {@code o != null &&
 		 * o.getClass() == Boolean.class}.
