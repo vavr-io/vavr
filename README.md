@@ -38,7 +38,7 @@ Javaslang can be downloaded [here](http://search.maven.org/#search|ga|1|a:"javas
 
 ### Release Management
 
-See https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide
+See http://central.sonatype.org/pages/ossrh-guide.html
 
 
 Sonatype-Nexus specific maven configuration: `~/.m2/settings.xml`
