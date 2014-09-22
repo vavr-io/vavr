@@ -27,7 +27,6 @@ import java.util.stream.Stream;
 import javaslang.Requirements.UnsatisfiedRequirementException;
 import javaslang.Strings;
 import javaslang.collection.Node;
-import javaslang.lambda.Functions;
 import javaslang.monad.Either;
 import javaslang.monad.Left;
 import javaslang.monad.Right;
@@ -243,7 +242,6 @@ interface Parser extends Serializable {
 
 		private static final long serialVersionUID = 727834629856776708L;
 
-		static final String EOF = "EOF";
 		static final EOF INSTANCE = new EOF();
 
 		// hidden
@@ -263,7 +261,7 @@ interface Parser extends Serializable {
 
 		@Override
 		public String toString() {
-			return EOF;
+			return "EOF";
 		}
 
 		// -- Serializable implementation
@@ -374,15 +372,16 @@ interface Parser extends Serializable {
 					} else {
 						// TODO: remove code duplication
 						// TODO: lex => isLexical(). Therefor lex is unnesessary
-						return (lex || isLexical() ? Transformer.COMBINER : Transformer.AGGREGATOR).apply(new Right<>(
-								new ParseResult(tokens, index, currentIndex)));
+						final Either<Integer, ParseResult> result = new Right<>(new ParseResult(tokens, index,
+								currentIndex));
+						return (lex || isLexical()) ? result.flatMap(ParseResult::combine) : result;
 					}
 				}
 			}
 
 			// TODO: remove code duplication
-			return (lex || isLexical() ? Transformer.COMBINER : Transformer.AGGREGATOR).apply(new Right<>(
-					new ParseResult(tokens, index, currentIndex)));
+			final Either<Integer, ParseResult> result = new Right<>(new ParseResult(tokens, index, currentIndex));
+			return (lex || isLexical()) ? result.flatMap(ParseResult::combine) : result;
 		}
 
 		@Override
@@ -595,7 +594,7 @@ interface Parser extends Serializable {
 		}
 
 		private Rule getRule() {
-			// no need to make this thread safe
+			// no need to make this thread-safe
 			if (rule == null) {
 				rule = ruleSupplier.get();
 			}
@@ -652,18 +651,12 @@ interface Parser extends Serializable {
 				}
 			}
 			final Either<Integer, ParseResult> parsed = new Right<>(new ParseResult(tokens, index, currentIndex));
-			return (lex ? Transformer.COMBINER : Transformer.AGGREGATOR).apply(parsed);
+			return lex ? parsed.flatMap(ParseResult::combine) : parsed;
 		}
 
 		@Override
 		public String toString() {
-			return Stream.of(parsers).map(parser -> {
-				if (parser instanceof Rule) {
-					return ((Rule) parser).name;
-				} else {
-					return parser.toString();
-				}
-			}).collect(Collectors.joining(" "));
+			return Stream.of(parsers).map(Object::toString).collect(Collectors.joining(" "));
 		}
 	}
 
@@ -710,13 +703,7 @@ interface Parser extends Serializable {
 
 		@Override
 		public String toString() {
-			return Stream.of(alternatives).map(parser -> {
-				if (parser instanceof Rule) {
-					return ((Rule) parser).name;
-				} else {
-					return parser.toString();
-				}
-			}).collect(Collectors.joining(" | ", "( ", " )"));
+			return Stream.of(alternatives).map(Object::toString).collect(Collectors.joining(" | ", "( ", " )"));
 		}
 	}
 
@@ -772,7 +759,7 @@ interface Parser extends Serializable {
 			this.endIndex = endIndex;
 		}
 
-		Either<Integer, ParseResult> toToken() {
+		Either<Integer, ParseResult> combine() {
 			if (tokens.isEmpty()) {
 				return new Right<>(this);
 			} else {
@@ -804,16 +791,5 @@ interface Parser extends Serializable {
 		public String toString() {
 			return tokens.toString();
 		}
-	}
-
-	// manifest type
-	static interface Transformer extends
-			Functions.SerializableFunction1<Either<Integer, ParseResult>, Either<Integer, ParseResult>> {
-
-		// aggregates parse results
-		static final Transformer AGGREGATOR = parsed -> parsed;
-
-		// combines lex results
-		static final Transformer COMBINER = parsed -> parsed.isLeft() ? parsed : parsed.get().toToken();
 	}
 }
