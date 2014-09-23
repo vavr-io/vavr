@@ -9,6 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.invoke.MethodType;
 
+import javaslang.lambda.Functions.Function0;
 import javaslang.lambda.Functions.Function1;
 import javaslang.lambda.Functions.Function10;
 import javaslang.lambda.Functions.Function11;
@@ -26,6 +27,35 @@ import javaslang.lambda.Functions.Function9;
 import org.junit.Test;
 
 public class FunctionsTest {
+
+	// -- Function0
+
+	@Test
+	public void shouldGetMethodTypeOfFunction0() {
+		final Function0<?> lambda = () -> null;
+		final MethodType actual = Lambdas.getLambdaSignature(lambda).get();
+		final MethodType expected = MethodType.fromMethodDescriptorString("()Ljava/lang/Object;", getClass()
+				.getClassLoader());
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldGetMethodTypeOfCurriedFunction0() {
+		final Function0<?> lambda = () -> null;
+		final MethodType actual = Lambdas.getLambdaSignature(lambda.curried()).get();
+		final MethodType expected = MethodType.fromMethodDescriptorString("()Ljava/lang/Object;", getClass()
+				.getClassLoader());
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldGetMethodTypeOfTupledFunction0() {
+		final Function0<?> lambda = () -> null;
+		final MethodType actual = Lambdas.getLambdaSignature(lambda.tupled()).get();
+		final MethodType expected = MethodType.fromMethodDescriptorString("()Ljava/lang/Object;", getClass()
+				.getClassLoader());
+		assertThat(actual).isEqualTo(expected);
+	}
 
 	// -- Function1
 
