@@ -101,7 +101,7 @@ interface Parser extends Serializable {
 	 * <p>
 	 * Matches a single, arbitrary character.
 	 */
-	static class Any implements RulePart {
+	static class Any implements NegatableRulePart {
 
 		private static final long serialVersionUID = -4429256043627772276L;
 
@@ -117,9 +117,13 @@ interface Parser extends Serializable {
 		}
 
 		@Override
-		public Either<Integer, ParseResult> parse(String text, int index, boolean lex) {
-			final boolean match = index < text.length();
-			return match ? token(text, index, 1) : stoppedAt(index);
+		public Either<Integer, ParseResult> parse(String text, int index, boolean lex, boolean negated) {
+			if (negated) {
+				return EOF.INSTANCE.parse(text, index, lex, false);
+			} else {
+				final boolean match = index < text.length();
+				return match ? token(text, index, 1) : stoppedAt(index);
+			}
 		}
 
 		@Override
@@ -143,7 +147,7 @@ interface Parser extends Serializable {
 	/**
 	 * Character set parser: {@code [a-zA-Z$_]}
 	 */
-	static class Charset implements RulePart {
+	static class Charset implements NegatableRulePart {
 
 		private static final long serialVersionUID = -8608573218872232679L;
 
@@ -170,8 +174,8 @@ interface Parser extends Serializable {
 		}
 
 		@Override
-		public Either<Integer, ParseResult> parse(String text, int index, boolean lex) {
-			final boolean match = index < text.length() && inSet.test(text.charAt(index));
+		public Either<Integer, ParseResult> parse(String text, int index, boolean lex, boolean negated) {
+			final boolean match = index < text.length() && (inSet.test(text.charAt(index)) ^ negated);
 			return match ? token(text, index, 1) : stoppedAt(index);
 		}
 
@@ -238,7 +242,7 @@ interface Parser extends Serializable {
 	 * <p>
 	 * Recognized the end of the input.
 	 */
-	static class EOF implements RulePart {
+	static class EOF implements NegatableRulePart {
 
 		private static final long serialVersionUID = 727834629856776708L;
 
@@ -254,9 +258,13 @@ interface Parser extends Serializable {
 		}
 
 		@Override
-		public Either<Integer, ParseResult> parse(String text, int index, boolean lex) {
-			final boolean match = (index == text.length());
-			return match ? token(text, index, 0) : stoppedAt(index);
+		public Either<Integer, ParseResult> parse(String text, int index, boolean lex, boolean negated) {
+			if (negated) {
+				return Any.INSTANCE.parse(text, index, lex, false);
+			} else {
+				final boolean match = (index == text.length());
+				return match ? token(text, index, 0) : stoppedAt(index);
+			}
 		}
 
 		@Override
@@ -307,6 +315,36 @@ interface Parser extends Serializable {
 		public String toString() {
 			// TODO: is this escaping sufficient?
 			return "'" + Strings.escape(literal, '\'', '\\') + "'";
+		}
+	}
+
+	/**
+	 * Negation parser: {@code ~T}
+	 */
+	static class Negation implements NegatableRulePart {
+
+		private static final long serialVersionUID = -626637972108117183L;
+
+		final NegatableRulePart parser;
+
+		Negation(NegatableRulePart parser) {
+			requireNonNull(parser, "parser is null");
+			this.parser = parser;
+		}
+
+		@Override
+		public boolean isLexical() {
+			return parser.isLexical();
+		}
+
+		@Override
+		public Either<Integer, ParseResult> parse(String text, int index, boolean lex, boolean negated) {
+			return parser.parse(text, index, lex, !negated);
+		}
+
+		@Override
+		public String toString() {
+			return "~" + parser.toString();
 		}
 	}
 
@@ -415,7 +453,7 @@ interface Parser extends Serializable {
 	/**
 	 * Character range parser: {@code 'a'..'z'}
 	 */
-	static class Range implements RulePart {
+	static class Range implements NegatableRulePart {
 
 		private static final long serialVersionUID = 1254044797785225220L;
 
@@ -443,8 +481,8 @@ interface Parser extends Serializable {
 		}
 
 		@Override
-		public Either<Integer, ParseResult> parse(String text, int index, boolean lex) {
-			final boolean match = index < text.length() && isInRange.test(text.charAt(index));
+		public Either<Integer, ParseResult> parse(String text, int index, boolean lex, boolean negated) {
+			final boolean match = index < text.length() && (isInRange.test(text.charAt(index)) ^ negated);
 			return match ? token(text, index, 1) : stoppedAt(index);
 		}
 
@@ -742,6 +780,16 @@ interface Parser extends Serializable {
 	// -- additional types
 
 	static interface RulePart extends Parser {
+	}
+
+	static interface NegatableRulePart extends RulePart {
+
+		Either<Integer, ParseResult> parse(String text, int index, boolean lex, boolean negated);
+
+		@Override
+		default Either<Integer, ParseResult> parse(String text, int index, boolean lex) {
+			return parse(text, index, lex, false);
+		}
 	}
 
 	static interface HasChildren {
