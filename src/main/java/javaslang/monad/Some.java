@@ -88,7 +88,7 @@ public final class Some<T> implements Option<T>, Serializable {
 		if (obj == this) {
 			return true;
 		}
-		if (obj == null || !(obj instanceof Some)) {
+		if (!(obj instanceof Some)) {
 			return false;
 		}
 		final Some<?> other = (Some<?>) obj;

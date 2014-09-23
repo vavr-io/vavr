@@ -58,7 +58,7 @@ public final class Token {
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
-		} else if (obj == null || !(obj instanceof Token)) {
+		} else if (!(obj instanceof Token)) {
 			return false;
 		} else {
 			final Token other = (Token) obj;

@@ -33,7 +33,7 @@ public final class Left<L, R> implements Either<L, R>, Serializable {
 		if (obj == this) {
 			return true;
 		}
-		if (obj == null || !(obj instanceof Left)) {
+		if (!(obj instanceof Left)) {
 			return false;
 		}
 		final Left<?, ?> other = (Left<?, ?>) obj;

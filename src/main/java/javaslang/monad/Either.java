@@ -183,7 +183,7 @@ public interface Either<L, R> {
 			if (obj == this) {
 				return true;
 			}
-			if (obj == null || !(obj instanceof LeftProjection)) {
+			if (!(obj instanceof LeftProjection)) {
 				return false;
 			}
 			final LeftProjection<?, ?> other = (LeftProjection<?, ?>) obj;
@@ -289,7 +289,7 @@ public interface Either<L, R> {
 			if (obj == this) {
 				return true;
 			}
-			if (obj == null || !(obj instanceof RightProjection)) {
+			if (!(obj instanceof RightProjection)) {
 				return false;
 			}
 			final RightProjection<?, ?> other = (RightProjection<?, ?>) obj;

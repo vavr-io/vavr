@@ -523,7 +523,7 @@ interface Parser extends Serializable {
 		public boolean equals(Object o) {
 			if (o == this) {
 				return true;
-			} else if (o == null || !(o instanceof Rule)) {
+			} else if (!(o instanceof Rule)) {
 				return false;
 			} else {
 				final String thatName = ((Rule) o).name;
@@ -772,7 +772,7 @@ interface Parser extends Serializable {
 		public boolean equals(Object o) {
 			if (o == this) {
 				return true;
-			} else if (o == null || !(o instanceof ParseResult)) {
+			} else if (!(o instanceof ParseResult)) {
 				return false;
 			} else {
 				final ParseResult that = (ParseResult) o;

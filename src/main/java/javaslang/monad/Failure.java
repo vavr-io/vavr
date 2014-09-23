@@ -120,7 +120,7 @@ public final class Failure<T> implements Try<T>, Serializable {
 		if (obj == this) {
 			return true;
 		}
-		if (obj == null || !(obj instanceof Failure)) {
+		if (!(obj instanceof Failure)) {
 			return false;
 		}
 		final Failure<?> failure = (Failure<?>) obj;

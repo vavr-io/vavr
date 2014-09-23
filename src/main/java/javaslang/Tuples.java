@@ -168,7 +168,7 @@ public final class Tuples {
 		public boolean equals(Object o) {
 			if (o == this) {
 				return true;
-			} else if (o == null || !(o instanceof Tuple1)) {
+			} else if (!(o instanceof Tuple1)) {
 				return false;
 			} else {
 				final Tuple1<?> that = (Tuple1<?>) o;
@@ -211,7 +211,7 @@ public final class Tuples {
 		public boolean equals(Object o) {
 			if (o == this) {
 				return true;
-			} else if (o == null || !(o instanceof Tuple2)) {
+			} else if (!(o instanceof Tuple2)) {
 				return false;
 			} else {
 				final Tuple2<?, ?> that = (Tuple2<?, ?>) o;
@@ -256,7 +256,7 @@ public final class Tuples {
 		public boolean equals(Object o) {
 			if (o == this) {
 				return true;
-			} else if (o == null || !(o instanceof Tuple3)) {
+			} else if (!(o instanceof Tuple3)) {
 				return false;
 			} else {
 				final Tuple3<?, ?, ?> that = (Tuple3<?, ?, ?>) o;
@@ -305,7 +305,7 @@ public final class Tuples {
 		public boolean equals(Object o) {
 			if (o == this) {
 				return true;
-			} else if (o == null || !(o instanceof Tuple4)) {
+			} else if (!(o instanceof Tuple4)) {
 				return false;
 			} else {
 				final Tuple4<?, ?, ?, ?> that = (Tuple4<?, ?, ?, ?>) o;
@@ -357,7 +357,7 @@ public final class Tuples {
 		public boolean equals(Object o) {
 			if (o == this) {
 				return true;
-			} else if (o == null || !(o instanceof Tuple5)) {
+			} else if (!(o instanceof Tuple5)) {
 				return false;
 			} else {
 				final Tuple5<?, ?, ?, ?, ?> that = (Tuple5<?, ?, ?, ?, ?>) o;
@@ -412,7 +412,7 @@ public final class Tuples {
 		public boolean equals(Object o) {
 			if (o == this) {
 				return true;
-			} else if (o == null || !(o instanceof Tuple6)) {
+			} else if (!(o instanceof Tuple6)) {
 				return false;
 			} else {
 				final Tuple6<?, ?, ?, ?, ?, ?> that = (Tuple6<?, ?, ?, ?, ?, ?>) o;
@@ -470,7 +470,7 @@ public final class Tuples {
 		public boolean equals(Object o) {
 			if (o == this) {
 				return true;
-			} else if (o == null || !(o instanceof Tuple7)) {
+			} else if (!(o instanceof Tuple7)) {
 				return false;
 			} else {
 				final Tuple7<?, ?, ?, ?, ?, ?, ?> that = (Tuple7<?, ?, ?, ?, ?, ?, ?>) o;
@@ -531,7 +531,7 @@ public final class Tuples {
 		public boolean equals(Object o) {
 			if (o == this) {
 				return true;
-			} else if (o == null || !(o instanceof Tuple8)) {
+			} else if (!(o instanceof Tuple8)) {
 				return false;
 			} else {
 				final Tuple8<?, ?, ?, ?, ?, ?, ?, ?> that = (Tuple8<?, ?, ?, ?, ?, ?, ?, ?>) o;
@@ -595,7 +595,7 @@ public final class Tuples {
 		public boolean equals(Object o) {
 			if (o == this) {
 				return true;
-			} else if (o == null || !(o instanceof Tuple9)) {
+			} else if (!(o instanceof Tuple9)) {
 				return false;
 			} else {
 				final Tuple9<?, ?, ?, ?, ?, ?, ?, ?, ?> that = (Tuple9<?, ?, ?, ?, ?, ?, ?, ?, ?>) o;
@@ -662,7 +662,7 @@ public final class Tuples {
 		public boolean equals(Object o) {
 			if (o == this) {
 				return true;
-			} else if (o == null || !(o instanceof Tuple10)) {
+			} else if (!(o instanceof Tuple10)) {
 				return false;
 			} else {
 				final Tuple10<?, ?, ?, ?, ?, ?, ?, ?, ?, ?> that = (Tuple10<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>) o;
@@ -732,7 +732,7 @@ public final class Tuples {
 		public boolean equals(Object o) {
 			if (o == this) {
 				return true;
-			} else if (o == null || !(o instanceof Tuple11)) {
+			} else if (!(o instanceof Tuple11)) {
 				return false;
 			} else {
 				final Tuple11<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> that = (Tuple11<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>) o;
@@ -805,7 +805,7 @@ public final class Tuples {
 		public boolean equals(Object o) {
 			if (o == this) {
 				return true;
-			} else if (o == null || !(o instanceof Tuple12)) {
+			} else if (!(o instanceof Tuple12)) {
 				return false;
 			} else {
 				final Tuple12<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> that = (Tuple12<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>) o;
@@ -882,7 +882,7 @@ public final class Tuples {
 		public boolean equals(Object o) {
 			if (o == this) {
 				return true;
-			} else if (o == null || !(o instanceof Tuple13)) {
+			} else if (!(o instanceof Tuple13)) {
 				return false;
 			} else {
 				final Tuple13<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> that = (Tuple13<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>) o;

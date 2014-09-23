@@ -1068,7 +1068,7 @@ public interface List<E> extends Iterable<E> {
 			if (o == this) {
 				return true;
 			}
-			if (o == null || !(o instanceof List)) {
+			if (!(o instanceof List)) {
 				return false;
 			} else {
 				List<?> list1 = this;

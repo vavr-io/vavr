@@ -113,7 +113,7 @@ public final class Success<T> implements Try<T>, Serializable {
 		if (obj == this) {
 			return true;
 		}
-		if (obj == null || !(obj instanceof Success)) {
+		if (!(obj instanceof Success)) {
 			return false;
 		}
 		final Success<?> success = (Success<?>) obj;
