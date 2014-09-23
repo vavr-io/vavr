@@ -10,7 +10,7 @@ import java.lang.invoke.MethodType;
 import javaslang.Tuples;
 import javaslang.Tuples.Tuple1;
 import javaslang.Tuples.Tuple2;
-import javaslang.lambda.Functions.SerializableFunction1;
+import javaslang.lambda.Functions.Function1;
 import javaslang.lambda.Lambdas;
 
 public final class Patterns {
@@ -41,9 +41,9 @@ public final class Patterns {
 	 * @return A Pattern which matches functions by argument type and result type.
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T, R> Pattern<SerializableFunction1<T, R>, Tuple2<Class<?>, Class<?>>, Tuple2<Class<T>, Class<R>>> Function(
+	public static <T, R> Pattern<Function1<T, R>, Tuple2<Class<?>, Class<?>>, Tuple2<Class<T>, Class<R>>> Function(
 			Class<T> paramType, Class<R> returnType) {
-		return Pattern.of((SerializableFunction1<T, R> f) -> {
+		return Pattern.of((Function1<T, R> f) -> {
 			final MethodType methodType = Lambdas.getLambdaSignature(f).get();
 			/* if lambda has captured argument, the last parameter is the method argument */
 			final int paramIndex = methodType.parameterCount() - 1;

@@ -83,3 +83,12 @@ private Xxx() {
 * Commits are coarsely granular grouped by feature/change.
 * Commits do not mix change sets of different domains/purpose.
 * Commit messages provide enough detail to extract a changelog for a new release.
+
+## IDE
+
+Using Eclipse, the minimal requirements are
+
+* Eclipse Platform Runtime
+* jdt (Eclipse Java Development Tools)
+* m2e (Maven Integration for Eclipse)
+* git (Eclipse Git Team Provider)

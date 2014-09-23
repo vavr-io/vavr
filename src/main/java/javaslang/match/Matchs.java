@@ -10,8 +10,8 @@ import java.util.function.IntFunction;
 import java.util.function.LongFunction;
 
 import javaslang.Tuples.Tuple;
-import javaslang.lambda.Functions.SerializableFunction1;
-import javaslang.lambda.Functions.SerializableFunction2;
+import javaslang.lambda.Functions.Function1;
+import javaslang.lambda.Functions.Function2;
 import javaslang.match.Match.BooleanFunction;
 import javaslang.match.Match.ByteFunction;
 import javaslang.match.Match.CharFunction;
@@ -37,7 +37,7 @@ public final class Matchs {
 	 * @param function A function which is applied to a matched object.
 	 * @return A Match of type T
 	 */
-	public static <R> Match.Builder<R> caze(SerializableFunction1<?, R> function) {
+	public static <R> Match.Builder<R> caze(Function1<?, R> function) {
 		return new Match.Builder<R>().caze(function);
 	}
 
@@ -50,12 +50,11 @@ public final class Matchs {
 	 * @param function A function which is applied to a matched object.
 	 * @return A Match of type T
 	 */
-	public static <T, R> Match.Builder<R> caze(T prototype, SerializableFunction1<T, R> function) {
+	public static <T, R> Match.Builder<R> caze(T prototype, Function1<T, R> function) {
 		return new Match.Builder<R>().caze(prototype, function);
 	}
 
-	public static <T, D extends Tuple, R> Match.Builder<R> caze(Pattern<T, ?, D> pattern,
-			SerializableFunction2<T, D, R> function) {
+	public static <T, D extends Tuple, R> Match.Builder<R> caze(Pattern<T, ?, D> pattern, Function2<T, D, R> function) {
 		return new Match.Builder<R>().caze(pattern, function);
 	}
 

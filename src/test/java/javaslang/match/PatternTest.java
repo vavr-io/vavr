@@ -12,7 +12,7 @@ import java.util.function.Function;
 import javaslang.AssertionsExtensions;
 import javaslang.Tuples;
 import javaslang.Tuples.Tuple2;
-import javaslang.lambda.Functions.SerializableFunction1;
+import javaslang.lambda.Functions.Function1;
 
 import org.junit.Test;
 
@@ -24,7 +24,7 @@ public class PatternTest {
 	}
 
 	// -- pattern creation
-
+	
 	@Test
 	public void shouldCreatePatternOfArity1() {
 		assertThat(Pattern.of(t -> null, Tuples.of(1))).isNotNull();
@@ -100,8 +100,8 @@ public class PatternTest {
 
 	@Test
 	public void shouldMatchFunctionWithoutCapturedArgsBySignature() {
-		final SerializableFunction1<Integer, String> function = i -> String.valueOf(i);
-		final Tuple2<SerializableFunction1<Integer, String>, Tuple2<Class<Integer>, Class<String>>> match = Patterns
+		final Function1<Integer, String> function = i -> String.valueOf(i);
+		final Tuple2<Function1<Integer, String>, Tuple2<Class<Integer>, Class<String>>> match = Patterns
 				.Function(Integer.class, String.class)
 				.apply(function)
 				.get();
@@ -112,8 +112,8 @@ public class PatternTest {
 	@Test
 	public void shouldMatchFunctionWithCapturedArgsBySignature() {
 		final Function<Integer, String> f = i -> String.valueOf(i);
-		final SerializableFunction1<Integer, String> function = i -> f.apply(i);
-		final Tuple2<SerializableFunction1<Integer, String>, Tuple2<Class<Integer>, Class<String>>> match = Patterns
+		final Function1<Integer, String> function = i -> f.apply(i);
+		final Tuple2<Function1<Integer, String>, Tuple2<Class<Integer>, Class<String>>> match = Patterns
 				.Function(Integer.class, String.class)
 				.apply(function)
 				.get();

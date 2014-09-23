@@ -18,8 +18,8 @@ import java.util.function.Supplier;
 
 import javaslang.Requirements.UnsatisfiedRequirementException;
 import javaslang.Tuples.Tuple;
-import javaslang.lambda.Functions.SerializableFunction1;
-import javaslang.lambda.Functions.SerializableFunction2;
+import javaslang.lambda.Functions.Function1;
+import javaslang.lambda.Functions.Function2;
 import javaslang.lambda.Lambdas;
 import javaslang.monad.None;
 import javaslang.monad.Option;
@@ -164,11 +164,11 @@ public final class Match<R> implements Function<Object, R> {
 		 * Use this method to match by object type T. An object o matches this case, if
 		 * {@code o != null && T isAssignableFrom o.getClass()}.
 		 * 
-		 * @param function A SerializableFunction which is applied to a matched object.
+		 * @param function A Function which is applied to a matched object.
 		 * @return this, the current instance of Match.
 		 * @throws UnsatisfiedRequirementException if function is null.
 		 */
-		public Builder<R> caze(SerializableFunction1<?, R> function) {
+		public Builder<R> caze(Function1<?, R> function) {
 			requireNonNull(function, "function is null");
 			cases.add(caze(None.instance(), function));
 			return this;
@@ -180,20 +180,20 @@ public final class Match<R> implements Function<Object, R> {
 		 * 
 		 * @param <T> type of the object to be matched
 		 * @param prototype An object to be matched by equality as defined above.
-		 * @param function A SerializableFunction which is applied to a matched object.
+		 * @param function A Function which is applied to a matched object.
 		 * @return this, the current instance of Match.
 		 * @throws UnsatisfiedRequirementException if function is null.
 		 */
 		// DEV NOTE: the compiler cannot distinguish between primitive and Object types, e.g.
 		// public Match<R> caze(int prototype, IntFunction<R> function)
 		// Autoboxing does not work here.
-		public <T> Builder<R> caze(T prototype, SerializableFunction1<T, R> function) {
+		public <T> Builder<R> caze(T prototype, Function1<T, R> function) {
 			requireNonNull(function, "function is null");
 			cases.add(caze(new Some<>(prototype), function));
 			return this;
 		}
 
-		public <T, D extends Tuple> Builder<R> caze(Pattern<T, ?, D> pattern, SerializableFunction2<T, D, R> function) {
+		public <T, D extends Tuple> Builder<R> caze(Pattern<T, ?, D> pattern, Function2<T, D, R> function) {
 			requireNonNull(pattern, "pattern is null");
 			requireNonNull(function, "function is null");
 			final Function<Object, Option<R>> mapping = obj -> {
@@ -355,7 +355,7 @@ public final class Match<R> implements Function<Object, R> {
 			this.defaultOption = defaultOption;
 		}
 
-		private Function<Object, Option<R>> caze(Option<?> prototype, SerializableFunction1<?, R> function) {
+		private Function<Object, Option<R>> caze(Option<?> prototype, Function1<?, R> function) {
 			return caze(prototype, function, Lambdas.getLambdaSignature(function).get().parameterType(0));
 		}
 
