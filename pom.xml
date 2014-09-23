@@ -8,7 +8,7 @@
 	</parent>
 	<groupId>com.javaslang</groupId>
 	<artifactId>javaslang</artifactId>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Javaslang</name>
 	<description>Javaslang is a Java standard library extension built for Java 8 and above.</description>
@@ -42,7 +42,7 @@
 		<maven.compiler.version>3.1</maven.compiler.version>
 		<maven.coveralls.version>2.2.0</maven.coveralls.version>
 		<maven.gpg.version>1.5</maven.gpg.version>
-		<maven.jacoco.version>0.7.1.201405082137</maven.jacoco.version>
+		<maven.jacoco.version>0.7.2.201409121644</maven.jacoco.version>
 		<maven.release.version>2.5</maven.release.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
