@@ -429,6 +429,15 @@ public class MatchTest {
 		assertThat(actual).isTrue();
 	}
 
+	@Test
+	public void shouldNotPatternMatchNull() {
+		final boolean actual = Matchs
+				.caze(Patterns.Function(Integer.class, String.class), (f, dF) -> false)
+				.orElse(() -> true)
+				.apply(null);
+		assertThat(actual).isTrue();
+	}
+
 	@FunctionalInterface
 	static interface SpecialFunction extends Function<Integer, String> {
 		@Override
