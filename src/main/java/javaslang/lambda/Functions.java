@@ -16,10 +16,6 @@ public interface Functions {
 	@FunctionalInterface
 	static interface Function0<R> extends Supplier<R>, Serializable {
 
-		default R apply() {
-			return get();
-		}
-
 		default Function0<R> curried() {
 			return this;
 		}
