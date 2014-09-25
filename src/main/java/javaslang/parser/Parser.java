@@ -33,6 +33,8 @@ import javaslang.monad.Right;
 
 /**
  * The parser interface.
+ * <p>
+ * Parsers are either rules (see {@linkplain Rule}) or rule parts (see {@linkplain RulePart}).
  */
 interface Parser extends Serializable {
 
@@ -185,7 +187,7 @@ interface Parser extends Serializable {
 	}
 
 	/**
-	 * End-of-file parser: {@code EOF}.
+	 * End-of-file parser: {@code EOF}
 	 * <p>
 	 * Recognized the end of the input.
 	 */
@@ -266,7 +268,7 @@ interface Parser extends Serializable {
 	/**
 	 * Negation parser: {@code ~T}
 	 */
-	static class Negation implements NegatableRulePart {
+	static class Negation implements NegatableRulePart, HasChildren {
 
 		private static final long serialVersionUID = -626637972108117183L;
 
@@ -283,6 +285,11 @@ interface Parser extends Serializable {
 		}
 
 		@Override
+		public Parser[] getChildren() {
+			return new Parser[] { parser };
+		}
+
+		@Override
 		public Either<Integer, ParseResult> parse(String text, int index, boolean lex, boolean negated) {
 			return parser.parse(text, index, lex, !negated);
 		}
@@ -294,14 +301,14 @@ interface Parser extends Serializable {
 	}
 
 	/**
-	 * Multiple tokens parser:
+	 * Quantifier parser:
 	 * 
 	 * <ul>
 	 * <li>parse X 0..1 times: {@code X?}</li>
 	 * <li>parse X 0..n times: {@code X*}</li>
 	 * <li>parse X 1..n times: {@code X+}</li>
-	 * <li>parse X a..b times: X{a,b}</li>
-	 * <li>parse X a times: X{a}</li>
+	 * <li>parse X a..b times: <code>X{a,b}</code></li>
+	 * <li>parse X a times: <code>X{a}</code></li>
 	 * </ul>
 	 */
 	static class Quantifier implements RulePart, HasChildren {
@@ -531,6 +538,9 @@ interface Parser extends Serializable {
 		}
 	}
 
+	/**
+	 * Rule reference parser: {@code rule : ruleRef}
+	 */
 	static class RuleRef implements RulePart, HasChildren {
 
 		private static final long serialVersionUID = 1520214209747690474L;
@@ -595,7 +605,7 @@ interface Parser extends Serializable {
 	}
 
 	/**
-	 * Sequence parser: {@code X1 ... Xn}, where n &gt;= 2.
+	 * Sequence parser: {@code X1 ... Xn}, where {@code n >= 2}.
 	 */
 	static class Sequence implements RulePart, HasChildren {
 
@@ -645,7 +655,7 @@ interface Parser extends Serializable {
 	}
 
 	/**
-	 * Subrule parser: {@code ( X1 | ... | Xn )}, where n &gt;= 2.
+	 * Subrule parser: {@code ( X1 | ... | Xn )}, where {@code n >= 2}.
 	 */
 	static class Subrule implements RulePart, HasChildren {
 
@@ -752,9 +762,37 @@ interface Parser extends Serializable {
 
 	// -- additional types
 
+	/**
+	 * A rule consists of rule parts:
+	 * 
+	 * <pre>
+	 * <code>
+	 * rule : rulePart_1 | ... | rulePart_n
+	 * </code>
+	 * </pre>
+	 * 
+	 * Classes implementing RulePart are:
+	 * <p>
+	 * <ul>
+	 * <li>{@linkplain Any}</li>
+	 * <li>{@linkplain Charset}</li>
+	 * <li>{@linkplain EOF}</li>
+	 * <li>{@linkplain Literal}</li>
+	 * <li>{@linkplain Negation}</li>
+	 * <li>{@linkplain Quantifier}</li>
+	 * <li>{@linkplain Range}</li>
+	 * <li>{@linkplain RuleRef}</li>
+	 * <li>{@linkplain Sequence}</li>
+	 * <li>{@linkplain Subrule}</li>
+	 * </ul>
+	 */
 	static interface RulePart extends Parser {
 	}
 
+	/**
+	 * A {@linkplain Negation} may only negate parsers that implement {@linkplain NegatableRulePart}. This extra
+	 * interface is necessary to transport the negation context which makes double-negation possible.
+	 */
 	static interface NegatableRulePart extends RulePart {
 
 		Either<Integer, ParseResult> parse(String text, int index, boolean lex, boolean negated);
@@ -765,10 +803,17 @@ interface Parser extends Serializable {
 		}
 	}
 
+	/**
+	 * Implemented by all parsers that depend on other parsers.
+	 */
 	static interface HasChildren {
 		Parser[] getChildren();
 	}
 
+	/**
+	 * Represents the positive result a {@link Parser#parse(String, int, boolean)} call.
+	 */
+	// TODO: A ParseResult looks the same as a Token. The list of child tokens is similar to a tree Node. 
 	static class ParseResult {
 		final List<Node<Token>> tokens;
 		final int startIndex;

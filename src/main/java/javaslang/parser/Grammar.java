@@ -6,7 +6,6 @@
 package javaslang.parser;
 
 import static javaslang.Requirements.requireNonNull;
-import static javaslang.parser.Parser.Quantifier.UNBOUNDED;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -15,29 +14,28 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javaslang.Requirements;
 import javaslang.Strings;
 import javaslang.collection.Tree;
 import javaslang.monad.Either;
 import javaslang.monad.Failure;
 import javaslang.monad.Success;
 import javaslang.monad.Try;
+import javaslang.parser.Parser.Any;
+import javaslang.parser.Parser.Charset;
+import javaslang.parser.Parser.EOF;
 import javaslang.parser.Parser.HasChildren;
+import javaslang.parser.Parser.Literal;
+import javaslang.parser.Parser.NegatableRulePart;
+import javaslang.parser.Parser.Negation;
 import javaslang.parser.Parser.ParseResult;
+import javaslang.parser.Parser.Quantifier;
+import javaslang.parser.Parser.Range;
 import javaslang.parser.Parser.Rule;
 import javaslang.parser.Parser.RulePart;
+import javaslang.parser.Parser.RuleRef;
+import javaslang.parser.Parser.Sequence;
+import javaslang.parser.Parser.Subrule;
 
-// TODO: Distinguish between tokenizing (Lexer) and parsing (Parser)
-//       - https://github.com/antlr/grammars-v4/blob/master/antlr4/ANTLRv4Lexer.g4
-//       - https://github.com/antlr/grammars-v4/blob/master/antlr4/ANTLRv4Parser.g4
-// TODO: Make regular expressions first class members of grammar definitions, e.g. fragment DIGITS: '1'..'9' '0'..'9'*;
-//		- '|' <space> * ? + .. \n \r \t etc. (escape reserved symbols, e.g. quote ')
-// TODO: Make grammars compatible to Antlr4 grammars (i.e. parse (and stringify) them - https://github.com/antlr/grammars-v4/blob/master/java8/Java8.g4
-// TODO: Add fragments - http://stackoverflow.com/questions/6487593/what-does-fragment-means-in-antlr
-// TODO: CST to AST transformation (as external DSL within the grammar)
-// TODO: add Regex Parser: "regex" (literal has single quotes 'lll')
-// TODO: unescape literals
-// TODO: remove Branch, Sequence and Multiplicity nodes if they have no name/id
 /**
  * <pre>
  * <code>class JSONGrammar extends Grammar {
@@ -81,18 +79,17 @@ import javaslang.parser.Parser.RulePart;
 // DEV-NOTE: Extra class needed because interface cannot override Object#toString()
 public class Grammar {
 
-	public static final Parser.Any ANY = Parser.Any.INSTANCE;
-	public static final Parser.EOF EOF = Parser.EOF.INSTANCE;
+	public static final Any ANY = Any.INSTANCE;
+	public static final EOF EOF = Parser.EOF.INSTANCE;
 
-	// TODO: should all parsers initially get the supplied referenced parsers?
-	private final Parser.Rule startRule;
+	private final Rule startRule;
 
 	/**
 	 * Creates a grammar. Intended to be used with direct instantiation.
 	 * 
 	 * <pre>
 	 * <code>
-	 * final Parser.Rule startRule = Grammar.rule("root", Grammar.ANY);
+	 * final Rule startRule = Grammar.rule("root", Grammar.ANY);
 	 * final Grammar grammar = new Grammar(startRule);
 	 * final Try&lt;Tree&lt;Token&gt;&gt; cst = grammar.parse("text");
 	 * </code>
@@ -100,7 +97,7 @@ public class Grammar {
 	 * 
 	 * @param startRule The start rule of the grammar.
 	 */
-	public Grammar(Parser.Rule startRule) {
+	public Grammar(Rule startRule) {
 		requireNonNull(startRule, "startRule is null");
 		this.startRule = startRule;
 	}
@@ -131,7 +128,7 @@ public class Grammar {
 	 * 
 	 * @param startRuleSupplier Supplies the start rule of the grammar.
 	 */
-	public Grammar(Supplier<Parser.Rule> startRuleSupplier) {
+	public Grammar(Supplier<Rule> startRuleSupplier) {
 		this(requireNonNull(startRuleSupplier, "startRuleSupplier is null").get());
 	}
 
@@ -143,6 +140,7 @@ public class Grammar {
 	 */
 	// TODO: return Either instead of Try, where Right is the CST/parse tree and Left is a detailed ParseFailure description
 	public Try<Tree<Token>> parse(String text) {
+		requireNonNull(text, "text is null");
 		// TODO: simplify API: List<Node<Token>> vs ParseResult
 		final Either<Integer, ParseResult> parseResult = startRule.parse(text, 0, false);
 		if (parseResult.isRight()) {
@@ -159,12 +157,12 @@ public class Grammar {
 	@Override
 	public String toString() {
 		final Set<Parser> visited = new HashSet<>();
-		final Set<Parser.Rule> rules = new LinkedHashSet<>();
+		final Set<Rule> rules = new LinkedHashSet<>();
 		findRules(visited, rules, startRule);
 		return rules.stream().map(Object::toString).collect(Collectors.joining("\n\n"));
 	}
 
-	private void findRules(Set<Parser> visited, Set<Parser.Rule> rules, Parser parser) {
+	private void findRules(Set<Parser> visited, Set<Rule> rules, Parser parser) {
 		if (!visited.contains(parser)) {
 			visited.add(parser);
 			if (parser instanceof Rule) {
@@ -180,129 +178,146 @@ public class Grammar {
 	// -- atomic shortcuts used in grammar definitions
 
 	/**
-	 * Shortcut for {@code new Parser.RuleRef(ruleSupplier)}.
+	 * Shortcut for {@code new RuleRef(ruleSupplier)}.
 	 * 
 	 * @param ruleSupplier A rule supplier.
-	 * @return A new {@link Parser.RuleRef}.
+	 * @return A new {@link RuleRef}.
 	 */
-	public static Parser.RuleRef ref(Supplier<Parser.Rule> ruleSupplier) {
-		return new Parser.RuleRef(ruleSupplier);
+	public static RuleRef ref(Supplier<Rule> ruleSupplier) {
+		return new RuleRef(ruleSupplier);
 	}
 
 	/**
-	 * Shortcut for {@code new Parser.Rule(name, alternatives)}.
+	 * Shortcut for {@code new Rule(name, alternatives)}.
 	 * 
 	 * @param name Rule name.
 	 * @param alternatives Rule alternatives.
-	 * @return A new {@link Parser.Rule}.
+	 * @return A new {@link Rule}.
 	 */
 	@SafeVarargs
-	public static Parser.Rule rule(String name, RulePart... alternatives) {
-		return new Parser.Rule(name, alternatives);
+	public static Rule rule(String name, RulePart... alternatives) {
+		return new Rule(name, alternatives);
 	}
 
 	/**
-	 * Shortcut for {@code new Parser.Subrule(alternatives)}.
+	 * Shortcut for {@code new Subrule(alternatives)}.
 	 * 
 	 * @param alternatives Subrule alternatives.
-	 * @return A new {@link Parser.Subrule}.
+	 * @return A new {@link Subrule}.
 	 */
 	@SafeVarargs
-	public static Parser.Subrule subRule(RulePart... alternatives) {
-		return new Parser.Subrule(alternatives);
+	public static Subrule subRule(RulePart... alternatives) {
+		return new Subrule(alternatives);
 	}
 
 	/**
-	 * Shortcut for {@code new Parser.Sequence(parsers))}.
+	 * Shortcut for {@code new Sequence(parsers))}.
 	 * 
 	 * @param parsers Sequenced parsers.
-	 * @return A new {@link Parser.Sequence}.
+	 * @return A new {@link Sequence}.
 	 */
 	@SafeVarargs
-	public static Parser.Sequence seq(RulePart... parsers) {
-		return new Parser.Sequence(parsers);
+	public static Sequence seq(RulePart... parsers) {
+		return new Sequence(parsers);
 	}
 
 	/**
-	 * Shortcut for {@code new Parser.Charset(charset)}.
+	 * Shortcut for {@code new Charset(charset)}.
 	 * 
 	 * @param charset A charset String.
-	 * @return A new {@link Parser.Charset}.
+	 * @return A new {@link Charset}.
 	 */
-	public static Parser.Charset charset(String charset) {
-		return new Parser.Charset(charset);
+	public static Charset charset(String charset) {
+		return new Charset(charset);
 	}
 
 	/**
-	 * Shortcut for {@code new Parser.Range(from, to)}.
+	 * Shortcut for {@code new Range(from, to)}.
 	 * 
 	 * @param from Left bound of the range, inclusive.
 	 * @param to Right bound of the range, inclusive.
-	 * @return A new {@link Parser.Range}.
+	 * @return A new {@link Range}.
 	 */
-	public static Parser.Range range(char from, char to) {
-		return new Parser.Range(from, to);
+	public static Range range(char from, char to) {
+		return new Range(from, to);
 	}
 
 	/**
-	 * Shortcut for {@code new Parser.Literal(s)}.
+	 * Shortcut for {@code new Literal(s)}.
 	 * 
 	 * @param s A string.
-	 * @return A new {@link Parser.Literal}.
+	 * @return A new {@link Literal}.
 	 */
-	public static Parser.Literal str(String s) {
-		return new Parser.Literal(s);
+	public static Literal str(String s) {
+		return new Literal(s);
 	}
 
 	/**
-	 * Shortcut for
-	 * {@code new Parser.Quantifier((parsers.length == 1) ? parsers[0] : new Parser.Sequence(parsers), 0, 1)} .
+	 * Shortcut for {@code new Quantifier((parsers.length == 1) ? parsers[0] : new Sequence(parsers), 0, 1)} .
 	 * 
 	 * @param parsers Quantified parsers.
-	 * @return A new {@link Parser.Quantifier}.
+	 * @return A new {@link Quantifier}.
 	 */
-	public static Parser.Quantifier _0_1(RulePart... parsers) {
+	public static Quantifier _0_1(RulePart... parsers) {
 		return mul(0, 1, parsers);
 	}
 
 	/**
 	 * Shortcut for
-	 * {@code new Parser.Quantifier((parsers.length == 1) ? parsers[0] : new Parser.Sequence(parsers), 0, Parser.Quantifier.UNBOUNDED)}
-	 * .
+	 * {@code new Quantifier((parsers.length == 1) ? parsers[0] : new Sequence(parsers), 0, Quantifier.UNBOUNDED)} .
 	 * 
 	 * @param parsers Quantified parsers.
-	 * @return A new {@link Parser.Quantifier}.
+	 * @return A new {@link Quantifier}.
 	 */
-	public static Parser.Quantifier _0_n(RulePart... parsers) {
-		return mul(0, UNBOUNDED, parsers);
+	public static Quantifier _0_n(RulePart... parsers) {
+		return mul(0, Quantifier.UNBOUNDED, parsers);
 	}
 
 	/**
 	 * Shortcut for
-	 * {@code new Parser.Quantifier((parsers.length == 1) ? parsers[0] : new Parser.Sequence(parsers), 1, Parser.Quantifier.UNBOUNDED)}
-	 * .
+	 * {@code new Quantifier((parsers.length == 1) ? parsers[0] : new Sequence(parsers), 1, Quantifier.UNBOUNDED)} .
 	 * 
 	 * @param parsers Quantified parsers.
-	 * @return A new {@link Parser.Quantifier}.
+	 * @return A new {@link Quantifier}.
 	 */
-	public static Parser.Quantifier _1_n(RulePart... parsers) {
-		return mul(1, UNBOUNDED, parsers);
+	public static Quantifier _1_n(RulePart... parsers) {
+		return mul(1, Quantifier.UNBOUNDED, parsers);
+	}
+
+	/**
+	 * Shortcut for {@code new Quantifier((parsers.length == 1) ? parsers[0] : new Sequence(parsers), times, times)} .
+	 * 
+	 * @param times Number of required matches.
+	 * @param parsers Quantified / multiplied parsers.
+	 * @return A new {@link Quantifier}.
+	 */
+	public static Quantifier mul(int times, RulePart... parsers) {
+		final RulePart parser = (parsers.length == 1) ? parsers[0] : new Sequence(parsers);
+		return new Quantifier(parser, times, times);
 	}
 
 	/**
 	 * Shortcut for
-	 * {@code new Parser.Quantifier((parsers.length == 1) ? parsers[0] : new Parser.Sequence(parsers), 1, Parser.Quantifier.UNBOUNDED)}
-	 * .
+	 * {@code new Quantifier((parsers.length == 1) ? parsers[0] : new Sequence(parsers), 1, Quantifier.UNBOUNDED)} .
 	 * 
 	 * @param lowerBound Number of required matches.
 	 * @param upperBound Number of allowed matches. Infinite, if {@code Quantifier.UNBOUNDED} is given.
 	 * @param parsers Quantified / multiplied parsers.
-	 * @return A new {@link Parser.Quantifier}.
+	 * @return A new {@link Quantifier}.
 	 */
-	public static Parser.Quantifier mul(int lowerBound, int upperBound, RulePart... parsers) {
-		Requirements.requireNotNullOrEmpty(parsers, "parsers is null or empty");
-		final RulePart parser = (parsers.length == 1) ? parsers[0] : new Parser.Sequence(parsers);
-		return new Parser.Quantifier(parser, lowerBound, upperBound);
+	public static Quantifier mul(int lowerBound, int upperBound, RulePart... parsers) {
+		final RulePart parser = (parsers.length == 1) ? parsers[0] : new Sequence(parsers);
+		return new Quantifier(parser, lowerBound, upperBound);
+	}
+
+	/**
+	 * Shortcut for {@code new Negation(parser)}.
+	 * 
+	 * @param parser Negated parser.
+	 * @return A new {@link Negation}.
+	 */
+	public static Negation not(NegatableRulePart parser) {
+		return new Negation(parser);
 	}
 
 	// -- composite shortcuts used in grammar definitions
@@ -320,15 +335,15 @@ public class Grammar {
 	 * <p>
 	 * {@code new Quantifier(new Sequence(parser, new Quantifier(new Sequence(new Literal(separator), parser), ZERO_TO_N)), ZERO_TO_ONE)}.
 	 * 
-	 * @param parser A Parser.
+	 * @param parser A
 	 * @param delimiter A delimiter.
 	 * @return A Parser which recognizes {@code ( P ( ',' P )* )?}.
 	 */
-	public static Parser.RulePart list(RulePart parser, String delimiter) {
+	public static RulePart list(RulePart parser, String delimiter) {
 		return _0_1(parser, _0_n(str(delimiter), parser));
 	}
 
-	public static Parser.RulePart list(RulePart parser, String delimiter, String prefix, String suffix) {
+	public static RulePart list(RulePart parser, String delimiter, String prefix, String suffix) {
 		return seq(str(prefix), _0_1(parser, _0_n(str(delimiter), parser)), str(suffix));
 	}
 }
