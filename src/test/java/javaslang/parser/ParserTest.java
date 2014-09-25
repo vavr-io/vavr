@@ -240,6 +240,13 @@ public class ParserTest {
 		assertThat(actual).isEqualTo("a");
 	}
 
+	@Test
+	public void shouldGetChildrenOfNegation() {
+		final Negation negation = new Negation(Any.INSTANCE);
+		final RulePart[] expected = new RulePart[] { Any.INSTANCE };
+		assertThat(negation.getChildren()).isEqualTo(expected);
+	}
+
 	// -- Quantifier parser
 
 	@Test

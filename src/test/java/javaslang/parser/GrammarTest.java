@@ -124,6 +124,21 @@ public class GrammarTest {
 	}
 
 	@Test
+	public void shouldCreateQuantifierFromLowerBoundToUpperBound() {
+		assertThat(Grammar.mul(1, 2, Grammar.ANY).toString()).isEqualTo(".{1,2}");
+	}
+
+	@Test
+	public void shouldCreateQuantifierTimes() {
+		assertThat(Grammar.mul(3, Grammar.ANY).toString()).isEqualTo(".{3}");
+	}
+
+	@Test
+	public void shouldCreateNegation() {
+		assertThat(Grammar.not(Grammar.ANY).toString()).isEqualTo("~.");
+	}
+
+	@Test
 	public void shouldCreateDelimitedList() {
 		assertThat(Grammar.list(Grammar.ANY, ",").toString()).isEqualTo("( . ( ',' . )* )?");
 	}
