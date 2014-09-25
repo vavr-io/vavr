@@ -92,3 +92,4 @@ Using Eclipse, the minimal requirements are
 * jdt (Eclipse Java Development Tools)
 * m2e (Maven Integration for Eclipse)
 * git (Eclipse Git Team Provider)
+* Code Recommenders for Java Developers
