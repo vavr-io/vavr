@@ -754,7 +754,7 @@ interface Parser extends Serializable {
 			case 0x5C:
 				return "\\\\"; // backslash
 			default: {
-				final boolean printable = 32 <= c && c <= 127;
+				final boolean printable = 0x20 <= c && c <= 0x7F;
 				return printable ? String.valueOf(c) : String.format("\\u%04x", (int) c);
 			}
 		}
@@ -813,7 +813,6 @@ interface Parser extends Serializable {
 	/**
 	 * Represents the positive result a {@link Parser#parse(String, int, boolean)} call.
 	 */
-	// TODO: A ParseResult looks the same as a Token. The list of child tokens is similar to a tree Node. 
 	static class ParseResult {
 		final List<Node<Token>> tokens;
 		final int startIndex;
