@@ -196,7 +196,7 @@ public class ParserTest {
 
 	@Test
 	public void shouldConvertLiteralWithSpecialCharsToString() {
-		assertThat(new Literal("\n[']\t\\").toString()).isEqualTo("'\\n[\\']\\t\\\\'");
+		assertThat(new Literal("\b\t\n\f\r\\[']").toString()).isEqualTo("'\\b\\t\\n\\f\\r\\\\[\\']'");
 	}
 
 	@Test
