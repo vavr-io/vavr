@@ -343,11 +343,8 @@ interface Parser extends Serializable {
 
 		@Override
 		public Either<Integer, ParseResult> parse(String text, int index, boolean lex) {
-
 			final List<Node<Token>> tokens = new ArrayList<>();
 			int currentIndex = index;
-
-			// parse until upper bound is satisfied
 			for (int i = 0; i < upperBound; i++) {
 				final Either<Integer, ParseResult> parsed = parser.parse(text, currentIndex, lex);
 				if (parsed.isRight()) {
@@ -356,19 +353,16 @@ interface Parser extends Serializable {
 					currentIndex = parseResult.endIndex;
 				} else {
 					if (i < lowerBound) {
-						// lowerBound not satisfied => quantifier does not match
 						return parsed;
 					} else {
-						// TODO: remove code duplication
-						// TODO: lex => isLexical(). Therefor lex is unnesessary
-						final Either<Integer, ParseResult> result = new Right<>(new ParseResult(tokens, index,
-								currentIndex));
-						return (lex || isLexical()) ? result.flatMap(ParseResult::combine) : result;
+						return right(tokens, index, currentIndex, lex);
 					}
 				}
 			}
+			return right(tokens, index, currentIndex, lex);
+		}
 
-			// TODO: remove code duplication
+		private Either<Integer, ParseResult> right(List<Node<Token>> tokens, int index, int currentIndex, boolean lex) {
 			final Either<Integer, ParseResult> result = new Right<>(new ParseResult(tokens, index, currentIndex));
 			return (lex || isLexical()) ? result.flatMap(ParseResult::combine) : result;
 		}
