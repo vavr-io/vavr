@@ -27,6 +27,7 @@ import javaslang.parser.Parser.Any;
 import javaslang.parser.Parser.Charset;
 import javaslang.parser.Parser.EOF;
 import javaslang.parser.Parser.Literal;
+import javaslang.parser.Parser.Negation;
 import javaslang.parser.Parser.ParseResult;
 import javaslang.parser.Parser.Quantifier;
 import javaslang.parser.Parser.Range;
@@ -56,6 +57,18 @@ public class ParserTest {
 	public void shouldParseCharUsingAny() {
 		final String actual = parse(Any.INSTANCE, "abc", false);
 		assertThat(actual).isEqualTo("a");
+	}
+
+	@Test
+	public void shouldNotParseNonEmptyStringWithNegatedAny() {
+		final CheckedRunnable actual = () -> parse(new Negation(Any.INSTANCE), "abc", false);
+		AssertionsExtensions.assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
+	}
+
+	@Test
+	public void shouldParseEmptyStringWithNegatedAny() {
+		final String actual = parse(new Negation(Any.INSTANCE), "", false);
+		assertThat(actual).isEqualTo("");
 	}
 
 	// serialization
@@ -108,6 +121,18 @@ public class ParserTest {
 		AssertionsExtensions.assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
+	@Test
+	public void shouldParseCharInNegationOfCharset() {
+		final String actual = parse(new Negation(new Charset("a-y")), "z", false);
+		assertThat(actual).isEqualTo("z");
+	}
+
+	@Test
+	public void shouldNotParseCharNotInNegationOfCharset() {
+		final CheckedRunnable actual = () -> parse(new Negation(new Charset("a-y")), "a", false);
+		AssertionsExtensions.assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
+	}
+
 	// -- EOF parser
 
 	@Test
@@ -129,6 +154,18 @@ public class ParserTest {
 	@Test
 	public void shouldRecognizeNotEOF() {
 		final CheckedRunnable actual = () -> parse(EOF.INSTANCE, "abc", false);
+		AssertionsExtensions.assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
+	}
+
+	@Test
+	public void shouldParseNonEmptyStringWithNegatedEOF() {
+		final String actual = parse(new Negation(EOF.INSTANCE), "abc", false);
+		assertThat(actual).isEqualTo("a");
+	}
+
+	@Test
+	public void shouldNotParseEmptyStringWithNegatedAny() {
+		final CheckedRunnable actual = () -> parse(new Negation(EOF.INSTANCE), "", false);
 		AssertionsExtensions.assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
@@ -163,6 +200,27 @@ public class ParserTest {
 		final CheckedRunnable actual = () -> parse(new Literal("no match"), "literal!", false);
 		AssertionsExtensions.assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
+
+	// -- Negation parser
+
+	@Test
+	public void shouldConvertNegationToString() {
+		assertThat(new Negation(Any.INSTANCE).toString()).isEqualTo("~.");
+	}
+
+	@Test
+	public void shouldBeLexicalNegationOfLexical() {
+		final Negation actual = new Negation(Any.INSTANCE);
+		assertThat(actual.isLexical()).isTrue();
+	}
+
+	@Test
+	public void shouldBeIdentityWhenNegatingTheNegation() {
+		final String actual = parse(new Negation(new Negation(Any.INSTANCE)), "a", false);
+		assertThat(actual).isEqualTo("a");
+	}
+
+	// TODO
 
 	// -- Quantifier parser
 
@@ -202,8 +260,6 @@ public class ParserTest {
 		final String actual = new Quantifier(new Sequence(Any.INSTANCE, Any.INSTANCE), 13, 13).toString();
 		assertThat(actual).isEqualTo("( . . ){13}");
 	}
-
-	// TODO: [issue #23] add Quantifier tests parsing/lexing whitespace
 
 	// 0..1
 
@@ -319,6 +375,18 @@ public class ParserTest {
 	@Test
 	public void shouldNotParseCharNotWithinRange() {
 		final CheckedRunnable actual = () -> parse(new Range('a', 'z'), "@@@", false);
+		AssertionsExtensions.assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
+	}
+
+	@Test
+	public void shouldParseCharInNegationOfRange() {
+		final String actual = parse(new Negation(new Range('a', 'y')), "z", false);
+		assertThat(actual).isEqualTo("z");
+	}
+
+	@Test
+	public void shouldNotParseCharNotInNegationOfRange() {
+		final CheckedRunnable actual = () -> parse(new Negation(new Range('a', 'y')), "a", false);
 		AssertionsExtensions.assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
@@ -439,8 +507,6 @@ public class ParserTest {
 		final String actual = parse(new Sequence(parsers), "ac", true);
 		assertThat(actual).isEqualTo("ac"); // lexer combined tokens
 	}
-
-	// TODO: [issue #23] add Sequence tests parsing/lexing whitespace
 
 	// -- Subrule parser
 
