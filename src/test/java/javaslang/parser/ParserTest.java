@@ -87,6 +87,16 @@ public class ParserTest {
 	}
 
 	@Test
+	public void shouldConvertCharsetWithSpecialCharsToString() {
+		assertThat(new Charset("\n[']\t\\").toString()).isEqualTo("[\\n\\['\\]\\t\\\\]");
+	}
+
+	@Test
+	public void shouldConvertCharsetWithUnicodeToString() {
+		assertThat(new Charset("©opyright").toString()).isEqualTo("[\\u00a9opyright]");
+	}
+
+	@Test
 	public void shouldBeLexicalCharset() {
 		assertThat(new Charset("a-z").isLexical()).isTrue();
 	}
@@ -185,6 +195,16 @@ public class ParserTest {
 	}
 
 	@Test
+	public void shouldConvertLiteralWithSpecialCharsToString() {
+		assertThat(new Literal("\n[']\t\\").toString()).isEqualTo("'\\n[\\']\\t\\\\'");
+	}
+
+	@Test
+	public void shouldConvertLiteralWithUnicodeToString() {
+		assertThat(new Literal("©opyright").toString()).isEqualTo("'\\u00a9opyright'");
+	}
+
+	@Test
 	public void shouldBeLexicalLiteral() {
 		assertThat(new Literal("test").isLexical()).isTrue();
 	}
@@ -219,8 +239,6 @@ public class ParserTest {
 		final String actual = parse(new Negation(new Negation(Any.INSTANCE)), "a", false);
 		assertThat(actual).isEqualTo("a");
 	}
-
-	// TODO
 
 	// -- Quantifier parser
 
@@ -359,6 +377,11 @@ public class ParserTest {
 	@Test
 	public void shouldConvertRangeToString() {
 		assertThat(new Range('a', 'z').toString()).isEqualTo("'a'..'z'");
+	}
+
+	@Test
+	public void shouldConvertRangeWithSpecialCharsToString() {
+		assertThat(new Range('\b', '\'').toString()).isEqualTo("'\\b'..'\\''");
 	}
 
 	@Test

@@ -34,42 +34,6 @@ import javaslang.monad.Right;
 /**
  * The parser interface.
  */
-//
-//TODO:
-//- Greedy & non-greedy quantors (?,+,*,??,+?,*?) // Naming: Quantor vs Multiplicity
-//
-//- Empty subrules
-//rule : ( "a" | | "c" ) # empty sub-rule alternative
-//     |                 # empty alternative
-//     ;
-//
-//- Charset [a-zA-Z]+ is a shorthand for Range ('a'..'z'|'A'..'Z')+
-//a-z = 'a'..'z'
-//[a-zA-Z]+      Multiplicity(1..n)
-//                      |
-//                   Choice
-//                    /   \
-//                Range   Range
-//                 / \     / \
-//                a   z   A   Z
-//
-//- Whitespace handling
-//* Automatic whitespace handling within parser rules (use reserved word WHITESPACE instead of WS)
-//* Switch to non-automatic whitespace handling within lexer rules
-//* Leads to no distinction between lexer and parser phase.
-//  Just one phase with context switch.
-//  No switch for Literals in the context of parsers.
-//  Context switch only within referenced lexer rules.
-//
-//Lexer rules 
-//----------- 
-//Charset : '[' (Char | Char '-' Char)+ ']'; // no auto-whitespace between lexer parts! 
-//Char : // Unicode character 
-//
-//Parser rules 
-//------------ 
-//example : Charset*; // whitespace between parser tokens allowed!
-//
 interface Parser extends Serializable {
 
 	boolean isLexical();
@@ -181,25 +145,8 @@ interface Parser extends Serializable {
 
 		@Override
 		public String toString() {
-			return charsetString.chars().boxed().map(i -> {
-				final char c = (char) i.intValue();
-				// TODO: add more special characters. See http://stackoverflow.com/questions/504402/how-to-handle-escape-sequences-in-string-literals-in-antlr-3a
-					switch (c) {
-						case 0x09:
-							return "\\t";
-						case 0x0A:
-							return "\\n";
-						case 0x0D:
-							return "\\r";
-						case 0x0C:
-							return "\\f";
-						case 0x5C:
-							return "\\\\";
-						default:
-							// TODO: unicode chars
-							return String.valueOf(c);
-					}
-				}).collect(joining("", "[", "]"));
+			return String
+					.format("[%s]", stringify(charsetString).replaceAll("\\[", "\\\\[").replaceAll("\\]", "\\\\]"));
 		}
 
 		/**
@@ -296,7 +243,6 @@ interface Parser extends Serializable {
 
 		Literal(String literal) {
 			requireNotNullOrEmpty(literal, "literal is null or empty");
-			// TODO: escape literal? e.g. '\n' -> '\\n'
 			this.literal = literal;
 		}
 
@@ -313,8 +259,7 @@ interface Parser extends Serializable {
 
 		@Override
 		public String toString() {
-			// TODO: is this escaping sufficient?
-			return "'" + Strings.escape(literal, '\'', '\\') + "'";
+			return String.format("'%s'", stringify(literal).replaceAll("'", "\\\\'"));
 		}
 	}
 
@@ -369,7 +314,6 @@ interface Parser extends Serializable {
 		final int lowerBound;
 		final int upperBound;
 
-		// TODO: regarding issue #28 use Quantifier(IntegralParser parserSupplier, int lowerBound, intUpperBound) and initially parse lowerBound times.
 		Quantifier(RulePart parser, int lowerBound, int upperBound) {
 			requireNonNull(parser, "parser is null");
 			require(0 <= lowerBound, "lowerBound < 0");
@@ -488,7 +432,11 @@ interface Parser extends Serializable {
 
 		@Override
 		public String toString() {
-			return String.format("'%s'..'%s'", from, to);
+			return String.format("'%s'..'%s'", toString(from), toString(to));
+		}
+
+		private String toString(char c) {
+			return (c == '\'') ? "\\'" : charToString(c);
 		}
 	}
 
@@ -548,7 +496,6 @@ interface Parser extends Serializable {
 			for (RulePart alternative : alternatives) {
 				final Either<Integer, ParseResult> result = alternative.parse(text, index, lexical);
 				if (result.isRight()) {
-					// TODO: simplify API: List<Node<Token>> vs ParseResult
 					return lexical ? result : symbol(name, text, index, length(result), result.get().tokens);
 				} else {
 					failedIndex = Math.max(failedIndex, result.left().get());
@@ -588,7 +535,7 @@ interface Parser extends Serializable {
 
 		private static final long serialVersionUID = 1520214209747690474L;
 
-		// TODO: issue #23: fix whitespace handling
+		// TODO: issue #48: make whitespace configurable
 		static final Rule DEFAULT_WS = new Rule("WS", new Quantifier(new Charset(" \t\r\n"), 0, UNBOUNDED));
 
 		final Supplier<Rule> ruleSupplier;
@@ -639,7 +586,6 @@ interface Parser extends Serializable {
 			return rule;
 		}
 
-		// TODO: issue #23: fix whitespace handling
 		static int skipWhitespace(String text, int index, boolean lex) {
 			return lex ? index : DEFAULT_WS
 					.parse(text, index, true)
@@ -714,7 +660,7 @@ interface Parser extends Serializable {
 			this.alternatives = alternatives;
 		}
 
-		// TODO: ( RULE | rule ) is lexical in the case RULE matches (but it is not determinable at compiletime)
+		// TODO: issue #37: ( RULE | rule ) is lexical in the case RULE matches (but it is not determinable at compiletime)
 		@Override
 		public boolean isLexical() {
 			return Stream.of(alternatives).map(Parser::isLexical).reduce((b1, b2) -> b1 && b2).orElse(false);
@@ -745,7 +691,7 @@ interface Parser extends Serializable {
 		}
 	}
 
-	//	// -- parse-result factory methods
+	// -- parse-result factory methods
 
 	// terminal token / leaf of the parse tree
 	static Either<Integer, ParseResult> token(String text, int index, int length) {
@@ -770,11 +716,38 @@ interface Parser extends Serializable {
 		return new Left<>(index);
 	}
 
-	//	// -- parse-result helpers
+	// -- parse-result helpers
 
 	// DEV-NOTE: Caution, the parsed may be a partial result which does not reflect the whole length of child tokens
 	static int length(Either<Integer, ParseResult> parsed) {
 		return parsed.right().map(r -> r.endIndex - r.startIndex).orElse(0);
+	}
+
+	// -- character conversion / stringification
+
+	static String stringify(String s) {
+		return s.chars().boxed().map(i -> charToString((char) i.intValue())).collect(joining());
+	}
+
+	static String charToString(char c) {
+		switch (c) {
+			case 0x08:
+				return "\\b"; // backspace
+			case 0x09:
+				return "\\t"; // tab
+			case 0x0A:
+				return "\\n"; // newline
+			case 0x0C:
+				return "\\f"; // formfeed
+			case 0x0D:
+				return "\\r"; // carriage return
+			case 0x5C:
+				return "\\\\"; // backslash
+			default: {
+				final boolean printable = 32 <= c && c <= 127;
+				return printable ? String.valueOf(c) : String.format("\\u%04x", (int) c);
+			}
+		}
 	}
 
 	// -- additional types
