@@ -225,7 +225,7 @@ public class ParserTest {
 
 	@Test
 	public void shouldConvertNegationToString() {
-		assertThat(new Negation(Any.INSTANCE).toString()).isEqualTo("~.");
+		assertThat(new Negation(Any.INSTANCE).toString()).isEqualTo("!.");
 	}
 
 	@Test

@@ -135,7 +135,7 @@ public class GrammarTest {
 
 	@Test
 	public void shouldCreateNegation() {
-		assertThat(Grammar.not(Grammar.ANY).toString()).isEqualTo("~.");
+		assertThat(Grammar.not(Grammar.ANY).toString()).isEqualTo("!.");
 	}
 
 	@Test

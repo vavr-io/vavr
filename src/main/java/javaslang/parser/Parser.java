@@ -296,7 +296,7 @@ interface Parser extends Serializable {
 
 		@Override
 		public String toString() {
-			return "~" + parser.toString();
+			return "!" + parser.toString();
 		}
 	}
 
