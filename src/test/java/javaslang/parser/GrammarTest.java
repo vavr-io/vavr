@@ -5,16 +5,19 @@
  */
 package javaslang.parser;
 
-import static javaslang.parser.Parser.Quantifier.UNBOUNDED;
+import static javaslang.IO.UTF8;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.InputStream;
-import java.nio.charset.Charset;
 
 import javaslang.IO;
 import javaslang.collection.Tree;
 import javaslang.monad.Either;
 import javaslang.monad.Try;
+import javaslang.parser.Parser.Charset;
+import javaslang.parser.Parser.ParseResult;
+import javaslang.parser.Parser.Quantifier;
+import javaslang.parser.Parser.Rule;
 import javaslang.parser.Parser.RulePart;
 
 import org.junit.Test;
@@ -43,9 +46,9 @@ public class GrammarTest {
 
 	@Test
 	public void shouldParseWhitespace() {
-		final Parser WS = new Parser.Rule("WS", new Parser.Quantifier(new Parser.Charset(" \t\r\n"), 0, UNBOUNDED));
-		final Either<Integer, Parser.ParseResult> actual = WS.parse("  ", 0, true);
-		final Either<Integer, Parser.ParseResult> expected = Parser.token("  ", 0, 2);
+		final Parser WS = new Rule("WS", new Quantifier(new Charset(" \t\r\n"), 0, Quantifier.UNBOUNDED));
+		final Either<Integer, ParseResult> actual = WS.parse("  ", 0, true);
+		final Either<Integer, ParseResult> expected = Parser.token("  ", 0, 2);
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -56,14 +59,13 @@ public class GrammarTest {
 	}
 
 	@Test
-	// TODO: consider whitespace in parser rules
 	public void shouldParseJSON() {
 
 		final Grammar jsonGrammar = new JSONGrammar();
 		/* TODO:DELME */System.out.println(jsonGrammar.toString() + "\n");
 
 		final InputStream in = getClass().getResourceAsStream("bootstrap.json");
-		final Try<String> json = IO.toString(in, Charset.forName("UTF-8"));
+		final Try<String> json = IO.toString(in, UTF8);
 		/* TODO:DELME */System.out.println("Input:\n" + json.get());
 
 		final Try<Tree<Token>> parseTree = json.flatMap(s -> jsonGrammar.parse(s));
@@ -85,7 +87,7 @@ public class GrammarTest {
 
 	@Test
 	public void shouldCreateSubrule() {
-		assertThat(Grammar.subRule(Grammar.ANY, Grammar.EOF).toString()).isEqualTo("( . | EOF )");
+		assertThat(Grammar.subrule(Grammar.ANY, Grammar.EOF).toString()).isEqualTo("( . | EOF )");
 	}
 
 	@Test
@@ -171,6 +173,34 @@ public class GrammarTest {
 		assertThat(actual).isEqualTo(expected);
 	}
 
+	// -- direct recursion
+
+	@Test
+	public void shouldSupportDirectRecursionOnMatchingInput() {
+		final Try<Tree<Token>> actual = new ExpressionGrammar().parse("1 + 2 * 3");
+		/* TODO(#32):DEBUG */System.out.println(actual.get().toString());
+	}
+
+	@Test
+	public void shouldSupportDirectRecursionOnNonMatchingInput() {
+		final Try<Tree<Token>> actual = new ExpressionGrammar().parse("1 + 2 *");
+		/* TODO(#32):DEBUG */System.out.println(actual.get().toString());
+	}
+
+	// -- indirect recursion
+
+	@Test
+	public void shouldSupportIndirectRecursionOnMatchingInput() {
+		final Try<Tree<Token>> actual = new IndirectExpressionGrammar().parse("1 + 2 * 3");
+		/* TODO(#32):DEBUG */System.out.println(actual.get().toString());
+	}
+
+	@Test
+	public void shouldSupportIndirectRecursionOnNonMatchingInput() {
+		final Try<Tree<Token>> actual = new IndirectExpressionGrammar().parse("1 + 2 *");
+		/* TODO(#32):DEBUG */System.out.println(actual.get().toString());
+	}
+
 	// -- Example grammar: Simple sequence of tokens
 
 	static class SimpleSequenceGrammar extends Grammar {
@@ -179,7 +209,7 @@ public class GrammarTest {
 			super(SimpleSequenceGrammar::startRule);
 		}
 
-		static Parser.Rule startRule() {
+		static Rule startRule() {
 			return rule("startRule", seq(str("a"), str("b"), str("c")));
 		}
 	}
@@ -194,23 +224,23 @@ public class GrammarTest {
 		}
 
 		// json : object | array | STRING | NUMBER | 'true' | 'false' | 'null' ;
-		static Parser.Rule json() {
+		static Rule json() {
 			return rule("json", ref(JSONGrammar::object), ref(JSONGrammar::array), ref(JSONGrammar::STRING),
 					ref(JSONGrammar::NUMBER), str("true"), str("false"), str("null"));
 		}
 
 		// object : '{' ( property ( ',' property )* )? '}' ;
-		static Parser.Rule object() {
+		static Rule object() {
 			return rule("object", list(property(), ",", "{", "}"));
 		}
 
 		// array : '[' ( json ( ',' json )* )? ']'
-		static Parser.Rule array() {
+		static Rule array() {
 			return rule("array", list(ref(JSONGrammar::json), ",", "[", "]"));
 		}
 
 		// STRING : '"' (ESC | ~["\\])* '"' ;
-		static Parser.Rule STRING() {
+		static Rule STRING() {
 			// TODO
 			return rule("STRING", _1_n(charset("a-zA-Z0-9_$")));
 		}
@@ -223,17 +253,17 @@ public class GrammarTest {
 			return null;
 		}
 
-		static Parser.Rule NUMBER() {
+		static Rule NUMBER() {
 			return rule("NUMBER", _1_n(charset("0-9")));
 		}
 
 		// property : NAME ':' json ;
-		static Parser.RulePart property() {
+		static RulePart property() {
 			return seq(ref(JSONGrammar::NAME), str(":"), ref(JSONGrammar::json));
 		}
 
 		// NAME : '"' STRING '"'
-		static Parser.Rule NAME() {
+		static Rule NAME() {
 			return rule("NAME", seq(str("\""), ref(JSONGrammar::STRING), str("\"")));
 		}
 	}
@@ -251,22 +281,21 @@ public class GrammarTest {
 	 * </code>
 	 * </pre>
 	 */
-	// TODO: test issue #23 "[parser] Fix whitespace handling" - https://github.com/rocketscience-projects/javaslang/issues/23
 	static class GroupGrammar extends Grammar {
 		// define start rule
 		GroupGrammar() {
 			super(GroupGrammar::groups);
 		}
 
-		static Parser.Rule groups() {
+		static Rule groups() {
 			return rule("groups", seq(_0_n(ref(GroupGrammar::group)), EOF));
 		}
 
-		static Parser.Rule group() {
+		static Rule group() {
 			return rule("group", seq(str("("), _1_n(ref(GroupGrammar::WORD)), str(")")));
 		}
 
-		static Parser.Rule WORD() {
+		static Rule WORD() {
 			return rule("WORD", _1_n(range('a', 'z')));
 		}
 	}
@@ -280,15 +309,14 @@ public class GrammarTest {
 			super(RichStringGrammar::richString);
 		}
 
-		static Parser.Rule richString() {
-			// TODO: .*? instead of [ a-z]*
+		static Rule richString() {
+			// TODO: issue #30: .*? instead of [ a-z]*
 			return rule("richString", seq(str("\"\"\""), _0_n(charset(" a-z")), str("\"\"\"")));
 		}
 	}
 
 	// -- Example grammar: Resursive expressions
 
-	// TODO: test issue #32 "[parser] Support direct and indirect recursion" - https://github.com/rocketscience-projects/javaslang/issues/32
 	static class ExpressionGrammar extends Grammar {
 
 		// define start rule
@@ -302,17 +330,16 @@ public class GrammarTest {
 		 * expr : expr '*' expr
 		 *      | expr '+' expr
 		 *      | INT
-		 *      ;
 		 * 
-		 * INT : '0'..'9'+ ;
+		 * INT : '0'..'9'+
 		 * </code>
 		 * </pre>
 		 */
-		static Parser.Rule expr() {
+		static Rule expr() {
 			return rule("expr",//
 					seq(ref(ExpressionGrammar::expr), str("*"), ref(ExpressionGrammar::expr)),//
 					seq(ref(ExpressionGrammar::expr), str("+"), ref(ExpressionGrammar::expr)),//
-					INT());
+					ref(ExpressionGrammar::INT));
 		}
 
 		/**
@@ -320,8 +347,109 @@ public class GrammarTest {
 		 * 
 		 * @return A natural number parser.
 		 */
-		static RulePart INT() {
-			return _1_n(range('0', '9'));
+		static Rule INT() {
+			return rule("INT", _1_n(range('0', '9')));
+		}
+	}
+
+	static class IndirectExpressionGrammar extends Grammar {
+
+		// define start rule
+		IndirectExpressionGrammar() {
+			super(IndirectExpressionGrammar::expr);
+		}
+
+		/**
+		 * <pre>
+		 * <code>
+		 * expr : mul | add | INT
+		 * 
+		 * mul : expr '*' expr
+		 * 
+		 * add : expr '+' expr
+		 * 
+		 * INT : '0'..'9'+
+		 * </code>
+		 * </pre>
+		 */
+		static Rule expr() {
+			return rule("expr", seq(//
+					ref(IndirectExpressionGrammar::mul),//
+					ref(IndirectExpressionGrammar::add),//
+					ref(IndirectExpressionGrammar::INT)));
+		}
+
+		static Rule mul() {
+			return rule("mul",
+					seq(ref(IndirectExpressionGrammar::expr), str("*"), ref(IndirectExpressionGrammar::expr)));
+		}
+
+		static Rule add() {
+			return rule("mul",
+					seq(ref(IndirectExpressionGrammar::expr), str("+"), ref(IndirectExpressionGrammar::expr)));
+		}
+
+		/**
+		 * A parser for positive natural numbers including zero.
+		 * 
+		 * @return A natural number parser.
+		 */
+		static Rule INT() {
+			return rule("INT", _1_n(range('0', '9')));
+		}
+	}
+
+	/**
+	 * <pre>
+	 * <code>
+	 * eat : eat ( '@' | EOF )
+	 * </code>
+	 * </pre>
+	 */
+	static class AheadOfTimeSnakeGrammar extends Grammar {
+
+		AheadOfTimeSnakeGrammar() {
+			super(AheadOfTimeSnakeGrammar::eat);
+		}
+
+		static Rule eat() {
+			return rule("eat", seq(ref(AheadOfTimeSnakeGrammar::eat), subrule(str("@"), EOF)));
+		}
+	}
+
+	/**
+	 * <pre>
+	 * <code>
+	 * eat : '@' ( eat | EOF )
+	 * </code>
+	 * </pre>
+	 */
+	static class HungrySnakeGrammar extends Grammar {
+
+		HungrySnakeGrammar() {
+			super(HungrySnakeGrammar::eat);
+		}
+
+		static Rule eat() {
+			return rule("eat", seq(str("@"), subrule(ref(HungrySnakeGrammar::eat), EOF)));
+		}
+	}
+
+	/**
+	 * <pre>
+	 * <code>
+	 * eat : EOF | '@' eat
+	 * </code>
+	 * </pre>
+	 */
+	static class PrudentSnakeGrammar extends Grammar {
+
+		PrudentSnakeGrammar() {
+			super(PrudentSnakeGrammar::eat);
+		}
+
+		static Rule eat() {
+			return rule("eat", EOF, seq(str("@"), ref(HungrySnakeGrammar::eat)));
 		}
 	}
 }
