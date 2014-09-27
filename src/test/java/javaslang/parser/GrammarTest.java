@@ -407,7 +407,7 @@ public class GrammarTest {
 	/**
 	 * <pre>
 	 * <code>
-	 * eat : eat ( '@' | EOF )
+	 * eat : eat '@' | EOF
 	 * </code>
 	 * </pre>
 	 */
@@ -418,14 +418,14 @@ public class GrammarTest {
 		}
 
 		static Rule eat() {
-			return rule("eat", seq(ref(AheadOfTimeSnakeGrammar::eat), subrule(str("@"), EOF)));
+			return rule("eat", seq(ref(AheadOfTimeSnakeGrammar::eat), str("@")), EOF);
 		}
 	}
 
 	/**
 	 * <pre>
 	 * <code>
-	 * eat : '@' ( eat | EOF )
+	 * eat : '@' eat | EOF
 	 * </code>
 	 * </pre>
 	 */
@@ -436,7 +436,7 @@ public class GrammarTest {
 		}
 
 		static Rule eat() {
-			return rule("eat", seq(str("@"), subrule(ref(HungrySnakeGrammar::eat), EOF)));
+			return rule("eat", seq(str("@"), ref(HungrySnakeGrammar::eat)), EOF);
 		}
 	}
 
