@@ -206,7 +206,7 @@ public class Grammar {
 	 * @return A new {@link Subrule}.
 	 */
 	@SafeVarargs
-	public static Subrule subRule(RulePart... alternatives) {
+	public static Subrule subrule(RulePart... alternatives) {
 		return new Subrule(alternatives);
 	}
 
