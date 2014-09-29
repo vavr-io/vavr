@@ -35,8 +35,8 @@ public class GrammarTest {
 
 	@Test
 	public void shouldParseTextWhenMatching() {
-		assertThat(new Grammar(Grammar.rule("root", Grammar.EOF)).parse("").toString())
-				.isEqualTo("Success(Tree(root))");
+		assertThat(new Grammar(Grammar.rule("root", Grammar.EOF)).parse("").toString()).isEqualTo(
+				"Success(Tree(root <EOF>))");
 	}
 
 	@Test
@@ -156,14 +156,14 @@ public class GrammarTest {
 	@Test
 	public void shouldParseGroupsWithoutWhitespace() {
 		final String actual = new GroupGrammar().parse("(abc)(def ghi)").get().toString();
-		final String expected = "Tree(groups (group '(' 'abc' ')') (group '(' 'def' 'ghi' ')'))";
+		final String expected = "Tree(groups (group '(' 'abc' ')') (group '(' 'def' 'ghi' ')') <EOF>)";
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
 	public void shouldParseGroupsWithWhitespace() {
 		final String actual = new GroupGrammar().parse("( abc ) ( def ghi )").get().toString();
-		final String expected = "Tree(groups (group '(' 'abc' ')') (group '(' 'def' 'ghi' ')'))";
+		final String expected = "Tree(groups (group '(' 'abc' ')') (group '(' 'def' 'ghi' ')') <EOF>)";
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -190,6 +190,12 @@ public class GrammarTest {
 		/* TODO(#32):DEBUG */System.out.println(actual.get().toString());
 	}
 
+	@Test
+	public void shouldMatchRecursivelyWithPrudentSnakeGrammar() {
+		final Try<Tree<Token>> actual = new PrudentSnakeGrammar().parse("@@@");
+		/* TODO(#32):DEBUG */System.out.println(actual.get().toString());
+	}
+
 	// -- indirect recursion
 
 	@Test
@@ -204,6 +210,49 @@ public class GrammarTest {
 	public void shouldSupportIndirectRecursionOnNonMatchingInput() {
 		final Try<Tree<Token>> actual = new IndirectExpressionGrammar().parse("1 + 2 *");
 		/* TODO(#32):DEBUG */System.out.println(actual.get().toString());
+	}
+
+	/**
+	 * If the start rule does not contain an explicit EOF transition, ParserATNSimulator.adaptivePredict may fail to
+	 * return a viable alternative.
+	 * <p>
+	 * Grammar:
+	 * 
+	 * <pre>
+	 * <code>
+	 * start : ID | ID INT ID;
+	 * ID : [a-z]+;
+	 * INT : [0-9]+;
+	 * WS : [ \t]+ -> skip;
+	 * </code>
+	 * </pre>
+	 * 
+	 * Input: {@code x 1}
+	 */
+	@Test
+	public void shouldAntlrIssue118() {
+		final String actual = new AntlrIssue118Grammar().parse("x 1").get().toString();
+		assertThat(actual).isEqualTo("Tree(start 'x')");
+	}
+
+	static class AntlrIssue118Grammar extends Grammar {
+		AntlrIssue118Grammar() {
+			super(AntlrIssue118Grammar::start);
+		}
+
+		static Rule start() {
+			return rule("start",//
+					ref(AntlrIssue118Grammar::ID),//
+					seq(ref(AntlrIssue118Grammar::ID), ref(AntlrIssue118Grammar::INT), ref(AntlrIssue118Grammar::ID)));
+		}
+
+		static Rule ID() {
+			return rule("ID", _1_n(charset("a-z")));
+		}
+
+		static Rule INT() {
+			return rule("INT", _1_n(charset("0-9")));
+		}
 	}
 
 	// -- Example grammar: Simple sequence of tokens

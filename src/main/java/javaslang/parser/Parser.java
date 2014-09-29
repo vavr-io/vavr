@@ -14,7 +14,6 @@ import static javaslang.parser.Parser.Quantifier.UNBOUNDED;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -700,8 +699,7 @@ interface Parser extends Serializable {
 	// terminal token / leaf of the parse tree
 	static Either<Integer, ParseResult> token(String text, int index, int length) {
 		///* DEBUG */System.out.println(String.format("token(%s, %s): %s", index, index + length, text.substring(index, index + length)));
-		final List<Node<Token>> tokens = (length == 0) ? Collections.emptyList() : Arrays.asList(new Node<>(new Token(
-				null, text, index, length)));
+		final List<Node<Token>> tokens = Arrays.asList(new Node<>(new Token(null, text, index, length)));
 		final ParseResult parseResult = new ParseResult(tokens, index, index + length);
 		return new Right<>(parseResult);
 	}
