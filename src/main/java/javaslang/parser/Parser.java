@@ -328,7 +328,7 @@ interface Parser extends Serializable {
 					}
 				}
 			}
-			return right(tokens, index, currentIndex, lex);
+			return right(tokens, index, currentIndex, lex || lexical);
 		}
 
 		private Either<Integer, ParseResult> right(List<Node<Token>> tokens, int index, int currentIndex, boolean lex) {
