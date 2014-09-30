@@ -265,7 +265,7 @@ interface Parser extends Serializable {
 	}
 
 	/**
-	 * Negation parser: {@code ~T}
+	 * Negation parser: {@code !T}
 	 */
 	static class Negation implements NegatableRulePart, HasChildren {
 
@@ -698,7 +698,6 @@ interface Parser extends Serializable {
 
 	// terminal token / leaf of the parse tree
 	static Either<Integer, ParseResult> token(String text, int index, int length) {
-		///* DEBUG */System.out.println(String.format("token(%s, %s): %s", index, index + length, text.substring(index, index + length)));
 		final List<Node<Token>> tokens = Arrays.asList(new Node<>(new Token(null, text, index, length)));
 		final ParseResult parseResult = new ParseResult(tokens, index, index + length);
 		return new Right<>(parseResult);
@@ -706,7 +705,6 @@ interface Parser extends Serializable {
 
 	// non-terminal symbol / inner rule of the parse tree / rule with children
 	static Either<Integer, ParseResult> symbol(String id, String text, int index, int length, List<Node<Token>> children) {
-		///* DEBUG */System.out.println(String.format("symbol(%s, %s, %s): %s", id, index, index + length, text.substring(index, index + length)));
 		final List<Node<Token>> tokens = Arrays.asList(new Node<>(new Token(id, text, index, length), children));
 		final ParseResult parseResult = new ParseResult(tokens, index, index + length);
 		return new Right<>(parseResult);
@@ -714,7 +712,6 @@ interface Parser extends Serializable {
 
 	// no match found
 	static Either<Integer, ParseResult> stoppedAt(int index) {
-		///* DEBUG */System.out.println("stoppedAt " + index);
 		return new Left<>(index);
 	}
 
