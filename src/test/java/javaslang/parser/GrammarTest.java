@@ -49,7 +49,7 @@ public class GrammarTest {
 	public void shouldParseWhitespace() {
 		final Parser WS = new Rule("WS", new Quantifier(new Charset(" \t\r\n"), 0, Quantifier.UNBOUNDED));
 		final Either<Integer, ParseResult> actual = WS.parse("  ", 0, true);
-		final Either<Integer, ParseResult> expected = Parser.token("  ", 0, 2);
+		final Either<Integer, ParseResult> expected = Parser.token("  ", 0, 2, true);
 		assertThat(actual).isEqualTo(expected);
 	}
 

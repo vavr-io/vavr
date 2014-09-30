@@ -37,8 +37,6 @@ import javaslang.monad.Right;
  */
 interface Parser extends Serializable {
 
-	boolean isLexical();
-
 	/**
 	 * Trying to parse a text using the current parser, starting at the given index.
 	 * 
@@ -77,17 +75,12 @@ interface Parser extends Serializable {
 		}
 
 		@Override
-		public boolean isLexical() {
-			return true;
-		}
-
-		@Override
 		public Either<Integer, ParseResult> parse(String text, int index, boolean lex, boolean negated) {
 			if (negated) {
 				return EOF.INSTANCE.parse(text, index, lex, false);
 			} else {
 				final boolean match = index < text.length();
-				return match ? token(text, index, 1) : stoppedAt(index);
+				return match ? token(text, index, 1, true) : stoppedAt(index);
 			}
 		}
 
@@ -134,14 +127,9 @@ interface Parser extends Serializable {
 		}
 
 		@Override
-		public boolean isLexical() {
-			return true;
-		}
-
-		@Override
 		public Either<Integer, ParseResult> parse(String text, int index, boolean lex, boolean negated) {
 			final boolean match = index < text.length() && (inSet.test(text.charAt(index)) ^ negated);
-			return match ? token(text, index, 1) : stoppedAt(index);
+			return match ? token(text, index, 1, true) : stoppedAt(index);
 		}
 
 		@Override
@@ -201,17 +189,12 @@ interface Parser extends Serializable {
 		}
 
 		@Override
-		public boolean isLexical() {
-			return true;
-		}
-
-		@Override
 		public Either<Integer, ParseResult> parse(String text, int index, boolean lex, boolean negated) {
 			if (negated) {
 				return Any.INSTANCE.parse(text, index, lex, false);
 			} else {
 				final boolean match = (index == text.length());
-				return match ? token(text, index, 0) : stoppedAt(index);
+				return match ? token(text, index, 0, true) : stoppedAt(index);
 			}
 		}
 
@@ -248,14 +231,9 @@ interface Parser extends Serializable {
 		}
 
 		@Override
-		public boolean isLexical() {
-			return true;
-		}
-
-		@Override
 		public Either<Integer, ParseResult> parse(String text, int index, boolean lex) {
 			final boolean match = text.startsWith(literal, index);
-			return match ? token(text, index, literal.length()) : stoppedAt(index);
+			return match ? token(text, index, literal.length(), true) : stoppedAt(index);
 		}
 
 		@Override
@@ -276,11 +254,6 @@ interface Parser extends Serializable {
 		Negation(NegatableRulePart parser) {
 			requireNonNull(parser, "parser is null");
 			this.parser = parser;
-		}
-
-		@Override
-		public boolean isLexical() {
-			return parser.isLexical();
 		}
 
 		@Override
@@ -331,11 +304,6 @@ interface Parser extends Serializable {
 		}
 
 		@Override
-		public boolean isLexical() {
-			return parser.isLexical();
-		}
-
-		@Override
 		public Parser[] getChildren() {
 			return new Parser[] { parser };
 		}
@@ -344,17 +312,19 @@ interface Parser extends Serializable {
 		public Either<Integer, ParseResult> parse(String text, int index, boolean lex) {
 			final List<Node<Token>> tokens = new ArrayList<>();
 			int currentIndex = index;
+			boolean lexical = true;
 			for (int i = 0; i < upperBound; i++) {
 				final Either<Integer, ParseResult> parsed = parser.parse(text, currentIndex, lex);
 				if (parsed.isRight()) {
 					final ParseResult parseResult = parsed.right().get();
 					tokens.addAll(parseResult.tokens);
 					currentIndex = parseResult.endIndex;
+					lexical &= parseResult.lexical; // only needed once in fact
 				} else {
 					if (i < lowerBound) {
 						return parsed;
 					} else {
-						return right(tokens, index, currentIndex, lex);
+						return right(tokens, index, currentIndex, lex || lexical);
 					}
 				}
 			}
@@ -362,8 +332,8 @@ interface Parser extends Serializable {
 		}
 
 		private Either<Integer, ParseResult> right(List<Node<Token>> tokens, int index, int currentIndex, boolean lex) {
-			final Either<Integer, ParseResult> result = new Right<>(new ParseResult(tokens, index, currentIndex));
-			return (lex || isLexical()) ? result.flatMap(ParseResult::combine) : result;
+			final Either<Integer, ParseResult> result = new Right<>(new ParseResult(tokens, index, currentIndex, lex));
+			return lex ? result.flatMap(ParseResult::combine) : result;
 		}
 
 		@Override
@@ -420,14 +390,9 @@ interface Parser extends Serializable {
 		}
 
 		@Override
-		public boolean isLexical() {
-			return true;
-		}
-
-		@Override
 		public Either<Integer, ParseResult> parse(String text, int index, boolean lex, boolean negated) {
 			final boolean match = index < text.length() && (isInRange.test(text.charAt(index)) ^ negated);
-			return match ? token(text, index, 1) : stoppedAt(index);
+			return match ? token(text, index, 1, true) : stoppedAt(index);
 		}
 
 		@Override
@@ -477,11 +442,6 @@ interface Parser extends Serializable {
 			this.name = name;
 			this.alternatives = alternatives;
 			this.lexical = Character.isUpperCase(name.charAt(0));
-		}
-
-		@Override
-		public boolean isLexical() {
-			return false;
 		}
 
 		@Override
@@ -549,11 +509,6 @@ interface Parser extends Serializable {
 		}
 
 		@Override
-		public boolean isLexical() {
-			return false;
-		}
-
-		@Override
 		public Parser[] getChildren() {
 			return new Parser[] { getRule() };
 		}
@@ -569,7 +524,7 @@ interface Parser extends Serializable {
 				final int endIndex = parseResult.endIndex;
 				currentIndex = skipWhitespace(text, endIndex, lex);
 				if (currentIndex > endIndex) {
-					return new Right<>(new ParseResult(parseResult.tokens, parseResult.startIndex, currentIndex));
+					return new Right<>(new ParseResult(parseResult.tokens, parseResult.startIndex, currentIndex, false));
 				} else {
 					return parsed;
 				}
@@ -614,11 +569,6 @@ interface Parser extends Serializable {
 		}
 
 		@Override
-		public boolean isLexical() {
-			return Stream.of(parsers).map(Parser::isLexical).reduce((b1, b2) -> b1 && b2).orElse(false);
-		}
-
-		@Override
 		public Parser[] getChildren() {
 			return parsers;
 		}
@@ -627,17 +577,20 @@ interface Parser extends Serializable {
 		public Either<Integer, ParseResult> parse(String text, int index, boolean lex) {
 			final List<Node<Token>> tokens = new ArrayList<>();
 			int currentIndex = index;
+			boolean lexical = true;
 			for (RulePart parser : parsers) {
 				final Either<Integer, ParseResult> parsed = parser.parse(text, currentIndex, lex);
 				if (parsed.isRight()) {
 					final ParseResult parseResult = parsed.get();
 					tokens.addAll(parseResult.tokens);
 					currentIndex = parseResult.endIndex;
+					lexical &= parseResult.lexical;
 				} else {
 					return parsed;
 				}
 			}
-			final Either<Integer, ParseResult> parsed = new Right<>(new ParseResult(tokens, index, currentIndex));
+			final Either<Integer, ParseResult> parsed = new Right<>(new ParseResult(tokens, index, currentIndex,
+					lexical));
 			return lex ? parsed.flatMap(ParseResult::combine) : parsed;
 		}
 
@@ -661,12 +614,6 @@ interface Parser extends Serializable {
 			requireNonNull(alternatives, "alternatives is null");
 			require(alternatives.length >= 2, "number of alternatives < 2");
 			this.alternatives = alternatives;
-		}
-
-		// TODO: issue #37: ( RULE | rule ) is lexical in the case RULE matches (but it is not determinable at compiletime)
-		@Override
-		public boolean isLexical() {
-			return Stream.of(alternatives).map(Parser::isLexical).reduce((b1, b2) -> b1 && b2).orElse(false);
 		}
 
 		@Override
@@ -697,16 +644,16 @@ interface Parser extends Serializable {
 	// -- parse-result factory methods
 
 	// terminal token / leaf of the parse tree
-	static Either<Integer, ParseResult> token(String text, int index, int length) {
+	static Either<Integer, ParseResult> token(String text, int index, int length, boolean lexical) {
 		final List<Node<Token>> tokens = Arrays.asList(new Node<>(new Token(null, text, index, length)));
-		final ParseResult parseResult = new ParseResult(tokens, index, index + length);
+		final ParseResult parseResult = new ParseResult(tokens, index, index + length, lexical);
 		return new Right<>(parseResult);
 	}
 
 	// non-terminal symbol / inner rule of the parse tree / rule with children
 	static Either<Integer, ParseResult> symbol(String id, String text, int index, int length, List<Node<Token>> children) {
 		final List<Node<Token>> tokens = Arrays.asList(new Node<>(new Token(id, text, index, length), children));
-		final ParseResult parseResult = new ParseResult(tokens, index, index + length);
+		final ParseResult parseResult = new ParseResult(tokens, index, index + length, false);
 		return new Right<>(parseResult);
 	}
 
@@ -806,11 +753,13 @@ interface Parser extends Serializable {
 		final List<Node<Token>> tokens;
 		final int startIndex;
 		final int endIndex;
+		final boolean lexical;
 
-		ParseResult(List<Node<Token>> tokens, int startIndex, int endIndex) {
+		ParseResult(List<Node<Token>> tokens, int startIndex, int endIndex, boolean lexical) {
 			this.tokens = tokens;
 			this.startIndex = startIndex;
 			this.endIndex = endIndex;
+			this.lexical = lexical;
 		}
 
 		Either<Integer, ParseResult> combine() {
@@ -818,7 +767,7 @@ interface Parser extends Serializable {
 				return new Right<>(this);
 			} else {
 				final String text = tokens.get(0).getValue().getText();
-				return token(text, startIndex, endIndex - startIndex);
+				return token(text, startIndex, endIndex - startIndex, lexical);
 			}
 		}
 
