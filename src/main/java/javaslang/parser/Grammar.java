@@ -30,9 +30,9 @@ import javaslang.parser.Parser.Negation;
 import javaslang.parser.Parser.ParseResult;
 import javaslang.parser.Parser.Quantifier;
 import javaslang.parser.Parser.Range;
+import javaslang.parser.Parser.Reference;
 import javaslang.parser.Parser.Rule;
 import javaslang.parser.Parser.RulePart;
-import javaslang.parser.Parser.RuleRef;
 import javaslang.parser.Parser.Sequence;
 import javaslang.parser.Parser.Subrule;
 
@@ -178,13 +178,13 @@ public class Grammar {
 	// -- atomic shortcuts used in grammar definitions
 
 	/**
-	 * Shortcut for {@code new RuleRef(ruleSupplier)}.
+	 * Shortcut for {@code new Reference(ruleSupplier)}.
 	 * 
 	 * @param ruleSupplier A rule supplier.
-	 * @return A new {@link RuleRef}.
+	 * @return A new {@link Reference}.
 	 */
-	public static RuleRef ref(Supplier<Rule> ruleSupplier) {
-		return new RuleRef(ruleSupplier);
+	public static Reference ref(Supplier<Rule> ruleSupplier) {
+		return new Reference(ruleSupplier);
 	}
 
 	/**

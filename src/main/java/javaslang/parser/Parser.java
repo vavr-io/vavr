@@ -34,6 +34,21 @@ import javaslang.monad.Right;
  * The parser interface.
  * <p>
  * Parsers are either rules (see {@linkplain Rule}) or rule parts (see {@linkplain RulePart}).
+ * <ul>
+ * <li><strong>Rule definition:</strong> Rule</li>
+ * <li><strong>Atomic rule parts:</strong> Any, Charset, EOF, Literal, Range</li>
+ * <li><strong>Composite rule parts:</strong> Negation, Quantifier, Reference, Subrule, Sequence</li>
+ * </ul>
+ * <p>
+ * <strong>Whitespace handling:</strong>
+ * <ul>
+ * <li>The parser has only on phase and switches modes: parsing, lexing.</li>
+ * <li>Whilespace is consumed in Reference rules parts and handled by lexical scope.</li>
+ * <li>Combination of tokens is handled in Quantifier and Sequence.</li>
+ * <li>When in parsing mode (lexingScope = false) then whitespace splits tokens.</li>
+ * <li>When in lexing mode (lexingScope = true) then whitespace is part of tokens.</li>
+ * <li>When in lexing mode or the child parser is lexical then Quantifiers combine tokens.</li>
+ * </ul>
  */
 interface Parser extends Serializable {
 
@@ -42,12 +57,13 @@ interface Parser extends Serializable {
 	 * 
 	 * @param text The whole text to parse.
 	 * @param index The current index of the parser.
-	 * @param lex Indicates, if the scope is lexing (true) or parsing (false). When in lexing mode, cascaded rules are
-	 *            combined to one and whitespace is not ignored. When in parsing mode, parse-results of cascaded rules
-	 *            are added as children the the actual tree node and whitespace may be ignored.
+	 * @param lexicalScope The lexical scope is defined by a rule. The scope is lexing (true) or parsing (false). When
+	 *            in lexing mode, cascaded rules are combined to one and whitespace is not ignored. When in parsing
+	 *            mode, parse-results of cascaded rules are added as children the the actual tree node and whitespace
+	 *            may be ignored.
 	 * @return Either a Left, containing the index of failure or a Right, containing the range (index, length) parsed.
 	 */
-	Either<Integer, ParseResult> parse(String text, int index, boolean lex);
+	Either<Integer, ParseResult> parse(String text, int index, boolean lexicalScope);
 
 	/**
 	 * Returns a String representation in grammar notation of this parser.
@@ -75,12 +91,12 @@ interface Parser extends Serializable {
 		}
 
 		@Override
-		public Either<Integer, ParseResult> parse(String text, int index, boolean lex, boolean negated) {
+		public Either<Integer, ParseResult> parse(String text, int index, boolean lexicalScope, boolean negated) {
 			if (negated) {
-				return EOF.INSTANCE.parse(text, index, lex, false);
+				return EOF.INSTANCE.parse(text, index, lexicalScope, false);
 			} else {
 				final boolean match = index < text.length();
-				return match ? token(text, index, 1, true) : stoppedAt(index);
+				return match ? token(text, index, 1, false, true) : stoppedAt(index);
 			}
 		}
 
@@ -127,9 +143,9 @@ interface Parser extends Serializable {
 		}
 
 		@Override
-		public Either<Integer, ParseResult> parse(String text, int index, boolean lex, boolean negated) {
+		public Either<Integer, ParseResult> parse(String text, int index, boolean lexicalScope, boolean negated) {
 			final boolean match = index < text.length() && (inSet.test(text.charAt(index)) ^ negated);
-			return match ? token(text, index, 1, true) : stoppedAt(index);
+			return match ? token(text, index, 1, false, true) : stoppedAt(index);
 		}
 
 		@Override
@@ -189,12 +205,12 @@ interface Parser extends Serializable {
 		}
 
 		@Override
-		public Either<Integer, ParseResult> parse(String text, int index, boolean lex, boolean negated) {
+		public Either<Integer, ParseResult> parse(String text, int index, boolean lexicalScope, boolean negated) {
 			if (negated) {
-				return Any.INSTANCE.parse(text, index, lex, false);
+				return Any.INSTANCE.parse(text, index, lexicalScope, false);
 			} else {
 				final boolean match = (index == text.length());
-				return match ? token(text, index, 0, true) : stoppedAt(index);
+				return match ? token(text, index, 0, false, true) : stoppedAt(index);
 			}
 		}
 
@@ -231,9 +247,9 @@ interface Parser extends Serializable {
 		}
 
 		@Override
-		public Either<Integer, ParseResult> parse(String text, int index, boolean lex) {
+		public Either<Integer, ParseResult> parse(String text, int index, boolean lexicalScope) {
 			final boolean match = text.startsWith(literal, index);
-			return match ? token(text, index, literal.length(), true) : stoppedAt(index);
+			return match ? token(text, index, literal.length(), false, true) : stoppedAt(index);
 		}
 
 		@Override
@@ -262,8 +278,8 @@ interface Parser extends Serializable {
 		}
 
 		@Override
-		public Either<Integer, ParseResult> parse(String text, int index, boolean lex, boolean negated) {
-			return parser.parse(text, index, lex, !negated);
+		public Either<Integer, ParseResult> parse(String text, int index, boolean lexicalScope, boolean negated) {
+			return parser.parse(text, index, lexicalScope, !negated);
 		}
 
 		@Override
@@ -309,12 +325,12 @@ interface Parser extends Serializable {
 		}
 
 		@Override
-		public Either<Integer, ParseResult> parse(String text, int index, boolean lex) {
+		public Either<Integer, ParseResult> parse(String text, int index, boolean lexicalScope) {
 			final List<Node<Token>> tokens = new ArrayList<>();
 			int currentIndex = index;
 			boolean lexical = true;
 			for (int i = 0; i < upperBound; i++) {
-				final Either<Integer, ParseResult> parsed = parser.parse(text, currentIndex, lex);
+				final Either<Integer, ParseResult> parsed = parser.parse(text, currentIndex, lexicalScope);
 				if (parsed.isRight()) {
 					final ParseResult parseResult = parsed.right().get();
 					tokens.addAll(parseResult.tokens);
@@ -324,16 +340,16 @@ interface Parser extends Serializable {
 					if (i < lowerBound) {
 						return parsed;
 					} else {
-						return right(tokens, index, currentIndex, lex || lexical);
+						return right(tokens, index, currentIndex, lexicalScope, lexical);
 					}
 				}
 			}
-			return right(tokens, index, currentIndex, lex || lexical);
+			return right(tokens, index, currentIndex, lexicalScope, lexical);
 		}
 
-		private Either<Integer, ParseResult> right(List<Node<Token>> tokens, int index, int currentIndex, boolean lex) {
-			final Either<Integer, ParseResult> result = new Right<>(new ParseResult(tokens, index, currentIndex, lex));
-			return lex ? result.flatMap(ParseResult::combine) : result;
+		private Either<Integer, ParseResult> right(List<Node<Token>> tokens, int index, int currentIndex,
+				boolean lexicalScope, boolean lexical) {
+			return new Right<>(new ParseResult(tokens, index, currentIndex, lexicalScope || lexical, lexical));
 		}
 
 		@Override
@@ -390,9 +406,9 @@ interface Parser extends Serializable {
 		}
 
 		@Override
-		public Either<Integer, ParseResult> parse(String text, int index, boolean lex, boolean negated) {
+		public Either<Integer, ParseResult> parse(String text, int index, boolean lexicalScope, boolean negated) {
 			final boolean match = index < text.length() && (isInRange.test(text.charAt(index)) ^ negated);
-			return match ? token(text, index, 1, true) : stoppedAt(index);
+			return match ? token(text, index, 1, false, true) : stoppedAt(index);
 		}
 
 		@Override
@@ -402,6 +418,57 @@ interface Parser extends Serializable {
 
 		private String toString(char c) {
 			return (c == '\'') ? "\\'" : charToString(c);
+		}
+	}
+
+	/**
+	 * Rule reference parser: {@code rule : ruleRef}
+	 */
+	static class Reference implements RulePart, HasChildren {
+
+		private static final long serialVersionUID = 1520214209747690474L;
+
+		// TODO: issue #48: make whitespace configurable
+		static final Rule DEFAULT_WS = new Rule("WS", new Quantifier(new Charset(" \t\r\n"), 0, UNBOUNDED));
+
+		final Supplier<Rule> ruleSupplier;
+		Rule rule;
+
+		Reference(Supplier<Rule> ruleSupplier) {
+			this.ruleSupplier = ruleSupplier;
+		}
+
+		@Override
+		public Parser[] getChildren() {
+			return new Parser[] { getRule() };
+		}
+
+		@Override
+		public Either<Integer, ParseResult> parse(String text, int index, boolean lexicalScope) {
+			return getRule()//
+					.parse(text, skipWhitespace(text, index, lexicalScope), lexicalScope)
+					.map(p -> lexicalScope ? p : new ParseResult(p.tokens, p.startIndex, skipWhitespace(text,
+							p.endIndex, lexicalScope), lexicalScope, false)); // a rule reference is not lexical 
+		}
+
+		@Override
+		public String toString() {
+			return getRule().name;
+		}
+
+		private Rule getRule() {
+			// no need to make this thread-safe
+			if (rule == null) {
+				rule = ruleSupplier.get();
+			}
+			return rule;
+		}
+
+		static int skipWhitespace(String text, int index, boolean lexicalScope) {
+			return lexicalScope ? index : DEFAULT_WS
+					.parse(text, index, true)
+					.map(parseResult -> parseResult.endIndex)
+					.orElse(index);
 		}
 	}
 
@@ -450,8 +517,8 @@ interface Parser extends Serializable {
 		}
 
 		@Override
-		public Either<Integer, ParseResult> parse(String text, int index, boolean lex) {
-			require(!lex || lexical, "parser rule '" + name + "' is referenced by a lexer rule");
+		public Either<Integer, ParseResult> parse(String text, int index, boolean lexicalScope) {
+			require(!lexicalScope || lexical, "parser rule '" + name + "' is referenced by a lexical rule");
 			int failedIndex = index;
 			for (RulePart alternative : alternatives) {
 				final Either<Integer, ParseResult> result = alternative.parse(text, index, lexical);
@@ -492,67 +559,6 @@ interface Parser extends Serializable {
 	}
 
 	/**
-	 * Rule reference parser: {@code rule : ruleRef}
-	 */
-	static class RuleRef implements RulePart, HasChildren {
-
-		private static final long serialVersionUID = 1520214209747690474L;
-
-		// TODO: issue #48: make whitespace configurable
-		static final Rule DEFAULT_WS = new Rule("WS", new Quantifier(new Charset(" \t\r\n"), 0, UNBOUNDED));
-
-		final Supplier<Rule> ruleSupplier;
-		Rule rule;
-
-		RuleRef(Supplier<Rule> ruleSupplier) {
-			this.ruleSupplier = ruleSupplier;
-		}
-
-		@Override
-		public Parser[] getChildren() {
-			return new Parser[] { getRule() };
-		}
-
-		@Override
-		public Either<Integer, ParseResult> parse(String text, int index, boolean lex) {
-			int currentIndex = skipWhitespace(text, index, lex);
-			final Either<Integer, ParseResult> parsed = getRule().parse(text, currentIndex, lex);
-			if (parsed.isLeft()) {
-				return parsed;
-			} else {
-				final ParseResult parseResult = parsed.get();
-				final int endIndex = parseResult.endIndex;
-				currentIndex = skipWhitespace(text, endIndex, lex);
-				if (currentIndex > endIndex) {
-					return new Right<>(new ParseResult(parseResult.tokens, parseResult.startIndex, currentIndex, false));
-				} else {
-					return parsed;
-				}
-			}
-		}
-
-		@Override
-		public String toString() {
-			return getRule().name;
-		}
-
-		private Rule getRule() {
-			// no need to make this thread-safe
-			if (rule == null) {
-				rule = ruleSupplier.get();
-			}
-			return rule;
-		}
-
-		static int skipWhitespace(String text, int index, boolean lex) {
-			return lex ? index : DEFAULT_WS
-					.parse(text, index, true)
-					.map(parseResult -> parseResult.endIndex)
-					.orElse(index);
-		}
-	}
-
-	/**
 	 * Sequence parser: {@code X1 ... Xn}, where {@code n >= 2}.
 	 */
 	static class Sequence implements RulePart, HasChildren {
@@ -574,12 +580,12 @@ interface Parser extends Serializable {
 		}
 
 		@Override
-		public Either<Integer, ParseResult> parse(String text, int index, boolean lex) {
+		public Either<Integer, ParseResult> parse(String text, int index, boolean lexicalScope) {
 			final List<Node<Token>> tokens = new ArrayList<>();
 			int currentIndex = index;
 			boolean lexical = true;
 			for (RulePart parser : parsers) {
-				final Either<Integer, ParseResult> parsed = parser.parse(text, currentIndex, lex);
+				final Either<Integer, ParseResult> parsed = parser.parse(text, currentIndex, lexicalScope);
 				if (parsed.isRight()) {
 					final ParseResult parseResult = parsed.get();
 					tokens.addAll(parseResult.tokens);
@@ -589,9 +595,7 @@ interface Parser extends Serializable {
 					return parsed;
 				}
 			}
-			final Either<Integer, ParseResult> parsed = new Right<>(new ParseResult(tokens, index, currentIndex,
-					lexical));
-			return lex ? parsed.flatMap(ParseResult::combine) : parsed;
+			return new Right<>(new ParseResult(tokens, index, currentIndex, lexicalScope, lexical));
 		}
 
 		@Override
@@ -622,10 +626,10 @@ interface Parser extends Serializable {
 		}
 
 		@Override
-		public Either<Integer, ParseResult> parse(String text, int index, boolean lex) {
+		public Either<Integer, ParseResult> parse(String text, int index, boolean lexicalScope) {
 			int failedIndex = index;
 			for (RulePart alternative : alternatives) {
-				final Either<Integer, ParseResult> result = alternative.parse(text, index, lex);
+				final Either<Integer, ParseResult> result = alternative.parse(text, index, lexicalScope);
 				if (result.isRight()) {
 					return result;
 				} else {
@@ -644,16 +648,16 @@ interface Parser extends Serializable {
 	// -- parse-result factory methods
 
 	// terminal token / leaf of the parse tree
-	static Either<Integer, ParseResult> token(String text, int index, int length, boolean lexical) {
+	static Either<Integer, ParseResult> token(String text, int index, int length, boolean lexicalScope, boolean lexical) {
 		final List<Node<Token>> tokens = Arrays.asList(new Node<>(new Token(null, text, index, length)));
-		final ParseResult parseResult = new ParseResult(tokens, index, index + length, lexical);
+		final ParseResult parseResult = new ParseResult(tokens, index, index + length, lexicalScope, lexical);
 		return new Right<>(parseResult);
 	}
 
 	// non-terminal symbol / inner rule of the parse tree / rule with children
 	static Either<Integer, ParseResult> symbol(String id, String text, int index, int length, List<Node<Token>> children) {
 		final List<Node<Token>> tokens = Arrays.asList(new Node<>(new Token(id, text, index, length), children));
-		final ParseResult parseResult = new ParseResult(tokens, index, index + length, false);
+		final ParseResult parseResult = new ParseResult(tokens, index, index + length, false, false);
 		return new Right<>(parseResult);
 	}
 
@@ -717,7 +721,7 @@ interface Parser extends Serializable {
 	 * <li>{@linkplain Negation}</li>
 	 * <li>{@linkplain Quantifier}</li>
 	 * <li>{@linkplain Range}</li>
-	 * <li>{@linkplain RuleRef}</li>
+	 * <li>{@linkplain Reference}</li>
 	 * <li>{@linkplain Sequence}</li>
 	 * <li>{@linkplain Subrule}</li>
 	 * </ul>
@@ -731,11 +735,11 @@ interface Parser extends Serializable {
 	 */
 	static interface NegatableRulePart extends RulePart {
 
-		Either<Integer, ParseResult> parse(String text, int index, boolean lex, boolean negated);
+		Either<Integer, ParseResult> parse(String text, int index, boolean lexicalScope, boolean negated);
 
 		@Override
-		default Either<Integer, ParseResult> parse(String text, int index, boolean lex) {
-			return parse(text, index, lex, false);
+		default Either<Integer, ParseResult> parse(String text, int index, boolean lexicalScope) {
+			return parse(text, index, lexicalScope, false);
 		}
 	}
 
@@ -755,20 +759,17 @@ interface Parser extends Serializable {
 		final int endIndex;
 		final boolean lexical;
 
-		ParseResult(List<Node<Token>> tokens, int startIndex, int endIndex, boolean lexical) {
-			this.tokens = tokens;
+		ParseResult(List<Node<Token>> tokens, int startIndex, int endIndex, boolean combine, boolean lexical) {
+			this.tokens = (combine && tokens.size() > 1) ? combine(tokens, startIndex, endIndex) : tokens;
 			this.startIndex = startIndex;
 			this.endIndex = endIndex;
 			this.lexical = lexical;
 		}
 
-		Either<Integer, ParseResult> combine() {
-			if (tokens.isEmpty()) {
-				return new Right<>(this);
-			} else {
-				final String text = tokens.get(0).getValue().getText();
-				return token(text, startIndex, endIndex - startIndex, lexical);
-			}
+		List<Node<Token>> combine(List<Node<Token>> tokens, int index, int endIndex) {
+			final String text = tokens.get(0).getValue().getText();
+			final int length = endIndex - index;
+			return Arrays.asList(new Node<>(new Token(null, text, index, length)));
 		}
 
 		@Override

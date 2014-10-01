@@ -31,9 +31,9 @@ import javaslang.parser.Parser.Negation;
 import javaslang.parser.Parser.ParseResult;
 import javaslang.parser.Parser.Quantifier;
 import javaslang.parser.Parser.Range;
+import javaslang.parser.Parser.Reference;
 import javaslang.parser.Parser.Rule;
 import javaslang.parser.Parser.RulePart;
-import javaslang.parser.Parser.RuleRef;
 import javaslang.parser.Parser.Sequence;
 import javaslang.parser.Parser.Subrule;
 
@@ -255,7 +255,7 @@ public class ParserTest {
 
 	@Test
 	public void shouldConvertQuantifierWithRuleToString() {
-		final String actual = new Quantifier(new RuleRef(() -> new Rule("rule", Any.INSTANCE)), 0, UNBOUNDED)
+		final String actual = new Quantifier(new Reference(() -> new Rule("rule", Any.INSTANCE)), 0, UNBOUNDED)
 				.toString();
 		assertThat(actual).isEqualTo("rule*");
 	}
@@ -425,6 +425,19 @@ public class ParserTest {
 		AssertionsExtensions.assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
+	// -- Reference parser
+
+	@Test
+	public void shouldConvertRuleRefToString() {
+		assertThat(new Reference(() -> expr()).toString()).isEqualTo("expr");
+	}
+
+	@Test
+	public void shouldNotBeLexicalRuleRef() {
+		final ParseResult parseResult = ruleRef().parse("x", 0, false).get();
+		assertThat(parseResult.lexical).isFalse();
+	}
+
 	// -- Rule parser
 
 	@Test
@@ -440,10 +453,10 @@ public class ParserTest {
 
 	// DEV-NOTE: recursive self-reference of the rule
 	static Rule expr() {
-		return new Rule("expr", new Sequence(new RuleRef(ParserTest::expr), new Literal("+"), new RuleRef(
-				ParserTest::expr)), new Sequence(new RuleRef(ParserTest::expr), new Literal("*"), new RuleRef(
-				ParserTest::expr)), new RuleRef(
-				() -> new Rule("INT", new Quantifier(new Range('0', '9'), 1, UNBOUNDED))));
+		return new Rule("expr", new Sequence(new Reference(ParserTest::expr), new Literal("+"), new Reference(
+				ParserTest::expr)), new Sequence(new Reference(ParserTest::expr), new Literal("*"), new Reference(
+				ParserTest::expr)), new Reference(() -> new Rule("INT", new Quantifier(new Range('0', '9'), 1,
+				UNBOUNDED))));
 	}
 
 	// Rule.equals
@@ -479,19 +492,6 @@ public class ParserTest {
 	public void shouldRuleHashAsExpected() {
 		final Rule rule = expr();
 		assertThat(rule.hashCode()).isEqualTo(rule.name.hashCode());
-	}
-
-	// -- RuleRef parser
-
-	@Test
-	public void shouldConvertRuleRefToString() {
-		assertThat(new RuleRef(() -> expr()).toString()).isEqualTo("expr");
-	}
-
-	@Test
-	public void shouldNotBeLexicalRuleRef() {
-		final ParseResult parseResult = ruleRef().parse("x", 0, false).get();
-		assertThat(parseResult.lexical).isFalse();
 	}
 
 	// -- Sequence parser
@@ -609,33 +609,33 @@ public class ParserTest {
 
 	@Test
 	public void shouldConvertParseResultToString() {
-		assertThat(new ParseResult(Collections.emptyList(), 0, 0, true).toString()).isEqualTo("[]");
+		assertThat(new ParseResult(Collections.emptyList(), 0, 0, false, true).toString()).isEqualTo("[]");
 	}
 
 	// ParseResult.equals
 
 	@Test
 	public void shouldParseResultEqualSameObject() {
-		final ParseResult parseResult = new ParseResult(Collections.emptyList(), 0, 0, true);
+		final ParseResult parseResult = new ParseResult(Collections.emptyList(), 0, 0, false, true);
 		assertThat(parseResult.equals(parseResult)).isTrue();
 	}
 
 	@Test
 	public void shouldParseResultNotEqualNull() {
-		final ParseResult parseResult = new ParseResult(Collections.emptyList(), 0, 0, true);
+		final ParseResult parseResult = new ParseResult(Collections.emptyList(), 0, 0, false, true);
 		assertThat(parseResult.equals(null)).isFalse();
 	}
 
 	@Test
 	public void shouldParseResultNotEqualObjectOfDifferentType() {
-		final ParseResult parseResult = new ParseResult(Collections.emptyList(), 0, 0, true);
+		final ParseResult parseResult = new ParseResult(Collections.emptyList(), 0, 0, false, true);
 		assertThat(parseResult.equals(new Object())).isFalse();
 	}
 
 	@Test
 	public void shouldParseResultEqualDiffernetObject() {
-		final ParseResult parseResult1 = new ParseResult(Collections.emptyList(), 0, 0, true);
-		final ParseResult parseResult2 = new ParseResult(Collections.emptyList(), 0, 0, true);
+		final ParseResult parseResult1 = new ParseResult(Collections.emptyList(), 0, 0, false, true);
+		final ParseResult parseResult2 = new ParseResult(Collections.emptyList(), 0, 0, false, true);
 		assertThat(parseResult1.equals(parseResult2)).isTrue();
 	}
 
@@ -643,7 +643,7 @@ public class ParserTest {
 
 	@Test
 	public void shouldParseResultHashAsExpected() {
-		final ParseResult parseResult = new ParseResult(Collections.emptyList(), 0, 0, true);
+		final ParseResult parseResult = new ParseResult(Collections.emptyList(), 0, 0, false, true);
 		assertThat(parseResult.hashCode()).isEqualTo(
 				Objects.hash(parseResult.startIndex, parseResult.endIndex, parseResult.tokens));
 	}
@@ -658,7 +658,7 @@ public class ParserTest {
 	}
 
 	private static Either<Integer, ParseResult> parseResult(List<Node<Token>> tokens, int startIndex, int endIndex) {
-		return new Right<>(new ParseResult(tokens, startIndex, endIndex, true));
+		return new Right<>(new ParseResult(tokens, startIndex, endIndex, false, true));
 	}
 
 	private static Either<Integer, ParseResult> parseResult(String text, int startIndex, int endIndex) {
@@ -667,7 +667,7 @@ public class ParserTest {
 
 	// -- factory methods
 
-	private static RuleRef ruleRef() {
-		return new RuleRef(() -> new Rule("rule", Any.INSTANCE));
+	private static Reference ruleRef() {
+		return new Reference(() -> new Rule("rule", Any.INSTANCE));
 	}
 }
