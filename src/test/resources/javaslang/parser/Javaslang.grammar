@@ -1,0 +1,35 @@
+// TODO:
+///
+// rule : does not return ws and does not combine
+// Rule : returns ws and does not combine
+// RULE : returns ws and combines
+//
+// -rule instead of @fragment rule
+//
+// -rulePart instead of @skip rulePart
+//
+grammar Javaslang
+
+grammar : 'grammar' ID ';'? rule+
+
+rule : ID ':' rulePart ( '|' rulePart )* ';'?
+
+rulePart
+  : ( negatable
+    : ( ANY        : '.' )
+    | ( EOF        : 'EOF' )
+    | ( Charset    : '[' ( CHAR | CHAR '-' CHAR )+ ']' )
+    | ( Literal    : '\'' CHAR* '\'' )
+    | ( Range      : '\'' CHAR '\'' '-' '\'' CHAR '\'' )
+    | ( negation   : '!' negatable )
+    )
+  | ( nonNegatable
+    : ( Reference  : ID )
+    | ( quantifier : rulePart ( '?' | '*' | '+' | '{' INT ',' INT '}' | '{' INT '}' ) )
+    | ( subrule    : ( ID ':' )? ( rulePart | '(' rulePart ( '|' rulePart )* ')' ) )
+    | ( sequence   : rulePart* )
+    )
+
+CHAR : .
+ID   : [a-zA-Z]+
+INT  : [0-9]+
