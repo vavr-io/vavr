@@ -45,7 +45,7 @@ import javaslang.parser.Parser.Subrule;
  *         super("JSON");
  *     }
  *     
- *     @Override
+ *     &#64;Override
  *     protected Rule getStartRule() {
  *         return json();
  *     }
@@ -101,12 +101,14 @@ public abstract class Grammar {
 	 * <pre>
 	 * <code>
 	 * final Rule startRule = Grammar.rule("root", Grammar.ANY);
-	 * final Grammar grammar = Grammar.of(startRule);
+	 * final Grammar grammar = Grammar.of("MyGrammar", startRule);
 	 * final Try&lt;Tree&lt;Token&gt;&gt; cst = grammar.parse("text");
 	 * </code>
 	 * </pre>
 	 * 
+	 * @param name Name of the Grammar.
 	 * @param startRule The start rule of the grammar.
+	 * @return A new Grammar instance.
 	 */
 	public static Grammar of(String name, final Rule startRule) {
 		requireNonNull(name, "name is null");
