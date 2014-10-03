@@ -42,29 +42,34 @@ import javaslang.parser.Parser.Subrule;
  * 
  *     // define start rule
  *     JSONGrammar() {
- *         super(JSONGrammar::json);
+ *         super("JSON");
+ *     }
+ *     
+ *     @Override
+ *     protected Rule getStartRule() {
+ *         return json();
  *     }
  *     
  *     // json : jsonObject | jsonArray | jsonString | jsonNumber | 'true' | 'false' | 'null' ;
- *     static Rule json() {
+ *     Rule json() {
  *         return rule("json",
- *                 JSONGrammar::jsonObject,
- *                 JSONGrammar::jsonArray,
- *                 JSONGrammar::jsonString,
- *                 JSONGrammar::jsonNumber,
+ *                 this::jsonObject,
+ *                 this::jsonArray,
+ *                 this::jsonString,
+ *                 this::jsonNumber,
  *                 str("true"),
  *                 str("false"),
  *                 str("null"));
  *     }
  *     
  *     // jsonObject : '{' ( pair ( ',' pair )* )? '}' ;
- *     static Parser jsonObject() {
- *         return rule("jsonObject", seq(str("{"), list(JSONGrammar::pair, ","), str("}"));
+ *     Parser jsonObject() {
+ *         return rule("jsonObject", seq(str("{"), list(this::pair, ","), str("}"));
  *     }
  *     
  *     // pair : jsonString ':' json ;
- *     static Parser pair() {
- *         return seq(JSONGrammar::jsonString, str(":"), JSONGrammar::json);
+ *     Parser pair() {
+ *         return seq(this::jsonString, str(":"), this::json);
  *     }
  *     
  *     // etc.
@@ -77,60 +82,44 @@ import javaslang.parser.Parser.Subrule;
  *      vs. concrete syntax tree</a>
  */
 // DEV-NOTE: Extra class needed because interface cannot override Object#toString()
-public class Grammar {
+public abstract class Grammar {
 
 	public static final Any ANY = Any.INSTANCE;
 	public static final EOF EOF = Parser.EOF.INSTANCE;
 
-	private final Rule startRule;
+	private final String name;
+
+	// DEV-NOTE: the startRule is not passed to the constructor in order to have non-static references to methods,
+	//           i.e. `this::rule` instead of `Grammar::rule`. 
+	protected Grammar(String name) {
+		this.name = name;
+	}
 
 	/**
-	 * Creates a grammar. Intended to be used with direct instantiation.
+	 * Creates a grammar using a specific start rule.
 	 * 
 	 * <pre>
 	 * <code>
 	 * final Rule startRule = Grammar.rule("root", Grammar.ANY);
-	 * final Grammar grammar = new Grammar(startRule);
+	 * final Grammar grammar = Grammar.of(startRule);
 	 * final Try&lt;Tree&lt;Token&gt;&gt; cst = grammar.parse("text");
 	 * </code>
 	 * </pre>
 	 * 
 	 * @param startRule The start rule of the grammar.
 	 */
-	public Grammar(Rule startRule) {
+	public static Grammar of(String name, final Rule startRule) {
+		requireNonNull(name, "name is null");
 		requireNonNull(startRule, "startRule is null");
-		this.startRule = startRule;
+		return new Grammar(name) {
+			@Override
+			protected Rule getStartRule() {
+				return startRule;
+			}
+		};
 	}
 
-	/**
-	 * Creates a grammar. Intended to be used with inheritance and method references.
-	 * 
-	 * <pre>
-	 * <code>
-	 * class MyGrammar extends Grammar {
-	 * 
-	 *     MyGrammar() {
-	 *         super(MyGrammar::startRule);
-	 *     }
-	 *     
-	 *     static Rule startRule() {
-	 *         return rule("root", ANY);
-	 *     }
-	 *     
-	 *     // ...
-	 * 
-	 * }
-	 * 
-	 * final Grammar grammar = new MyGrammar();
-	 * final Try&lt;Tree&lt;Token&gt;&gt; cst = grammar.parse("text");
-	 * </code>
-	 * </pre>
-	 * 
-	 * @param startRuleSupplier Supplies the start rule of the grammar.
-	 */
-	public Grammar(Supplier<Rule> startRuleSupplier) {
-		this(requireNonNull(startRuleSupplier, "startRuleSupplier is null").get());
-	}
+	protected abstract Rule getStartRule();
 
 	/**
 	 * TODO: javadoc
@@ -142,7 +131,7 @@ public class Grammar {
 	public Try<Tree<Token>> parse(String text) {
 		requireNonNull(text, "text is null");
 		// TODO: simplify API: List<Node<Token>> vs ParseResult
-		final Either<Integer, ParseResult> parseResult = startRule.parse(text, 0, false);
+		final Either<Integer, ParseResult> parseResult = getStartRule().parse(text, 0, false);
 		if (parseResult.isRight()) {
 			// DEV-NODE: a Rule returns a CST with one node => head() is result
 			final Tree<Token> concreteSyntaxTree = parseResult.get().tokens.get(0).asTree();
@@ -158,8 +147,8 @@ public class Grammar {
 	public String toString() {
 		final Set<Parser> visited = new HashSet<>();
 		final Set<Rule> rules = new LinkedHashSet<>();
-		findRules(visited, rules, startRule);
-		return rules.stream().map(Object::toString).collect(Collectors.joining("\n\n"));
+		findRules(visited, rules, getStartRule());
+		return "grammar " + name + " ;\n\n" + rules.stream().map(Object::toString).collect(Collectors.joining("\n\n"));
 	}
 
 	private void findRules(Set<Parser> visited, Set<Rule> rules, Parser parser) {

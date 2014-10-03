@@ -27,7 +27,7 @@ public class GrammarTest {
 
 	@Test
 	public void shouldStringifyGrammar() {
-		final String expected = "json : object\n     | array\n     | STRING\n     | NUMBER\n     | 'true'\n     | 'false'\n     | 'null'\n     ;\n\nobject : '{' ( NAME ':' json ( ',' NAME ':' json )* )? '}' ;\n\nNAME : '\"' STRING '\"' ;\n\nSTRING : [a-zA-Z0-9_$]+ ;\n\narray : '[' ( json ( ',' json )* )? ']' ;\n\nNUMBER : [0-9]+ ;";
+		final String expected = "grammar JSON ;\n\njson : object\n     | array\n     | STRING\n     | NUMBER\n     | 'true'\n     | 'false'\n     | 'null'\n     ;\n\nobject : '{' ( NAME ':' json ( ',' NAME ':' json )* )? '}' ;\n\nNAME : '\"' STRING '\"' ;\n\nSTRING : [a-zA-Z0-9_$]+ ;\n\narray : '[' ( json ( ',' json )* )? ']' ;\n\nNUMBER : [0-9]+ ;";
 		assertThat(new JSONGrammar().toString()).isEqualTo(expected);
 	}
 
@@ -35,13 +35,13 @@ public class GrammarTest {
 
 	@Test
 	public void shouldParseTextWhenMatching() {
-		assertThat(new Grammar(Grammar.rule("root", Grammar.EOF)).parse("").toString()).isEqualTo(
+		assertThat(Grammar.of("test", Grammar.rule("root", Grammar.EOF)).parse("").toString()).isEqualTo(
 				"Success(Tree(root <EOF>))");
 	}
 
 	@Test
 	public void shouldParseTextWhenNotMatching() {
-		assertThat(new Grammar(Grammar.rule("root", Grammar.ANY)).parse("").toString()).isEqualTo(
+		assertThat(Grammar.of("test", Grammar.rule("root", Grammar.ANY)).parse("").toString()).isEqualTo(
 				"Failure(java.lang.IllegalArgumentException: cannot parse input at (1, 1))");
 	}
 
@@ -236,21 +236,25 @@ public class GrammarTest {
 	}
 
 	static class AntlrIssue118Grammar extends Grammar {
+
 		AntlrIssue118Grammar() {
-			super(AntlrIssue118Grammar::start);
+			super("AntlrIssue118");
 		}
 
-		static Rule start() {
-			return rule("start",//
-					ref(AntlrIssue118Grammar::ID),//
-					seq(ref(AntlrIssue118Grammar::ID), ref(AntlrIssue118Grammar::INT), ref(AntlrIssue118Grammar::ID)));
+		@Override
+		protected Rule getStartRule() {
+			return start();
 		}
 
-		static Rule ID() {
+		Rule start() {
+			return rule("start", ref(this::ID), seq(ref(this::ID), ref(this::INT), ref(this::ID)));
+		}
+
+		Rule ID() {
 			return rule("ID", _1_n(charset("a-z")));
 		}
 
-		static Rule INT() {
+		Rule INT() {
 			return rule("INT", _1_n(charset("0-9")));
 		}
 	}
@@ -260,10 +264,15 @@ public class GrammarTest {
 	static class SimpleSequenceGrammar extends Grammar {
 
 		SimpleSequenceGrammar() {
-			super(SimpleSequenceGrammar::startRule);
+			super("SimpleSequence");
 		}
 
-		static Rule startRule() {
+		@Override
+		protected Rule getStartRule() {
+			return startRule();
+		}
+
+		Rule startRule() {
 			return rule("startRule", seq(str("a"), str("b"), str("c")));
 		}
 	}
@@ -272,29 +281,33 @@ public class GrammarTest {
 
 	static class JSONGrammar extends Grammar {
 
-		// define start rule
 		JSONGrammar() {
-			super(JSONGrammar::json);
+			super("JSON");
+		}
+
+		@Override
+		protected Rule getStartRule() {
+			return json();
 		}
 
 		// json : object | array | STRING | NUMBER | 'true' | 'false' | 'null' ;
-		static Rule json() {
-			return rule("json", ref(JSONGrammar::object), ref(JSONGrammar::array), ref(JSONGrammar::STRING),
-					ref(JSONGrammar::NUMBER), str("true"), str("false"), str("null"));
+		Rule json() {
+			return rule("json", ref(this::object), ref(this::array), ref(this::STRING), ref(this::NUMBER), str("true"),
+					str("false"), str("null"));
 		}
 
 		// object : '{' ( property ( ',' property )* )? '}' ;
-		static Rule object() {
+		Rule object() {
 			return rule("object", list(property(), ",", "{", "}"));
 		}
 
 		// array : '[' ( json ( ',' json )* )? ']'
-		static Rule array() {
-			return rule("array", list(ref(JSONGrammar::json), ",", "[", "]"));
+		Rule array() {
+			return rule("array", list(ref(this::json), ",", "[", "]"));
 		}
 
 		// STRING : '"' (ESC | ~["\\])* '"' ;
-		static Rule STRING() {
+		Rule STRING() {
 			// TODO
 			return rule("STRING", _1_n(charset("a-zA-Z0-9_$")));
 		}
@@ -302,23 +315,23 @@ public class GrammarTest {
 		// fragment ESC : '\\' ( ["\\/bfnrt] | UNICODE ) ;
 		// fragment UNICODE : 'u' HEX HEX HEX HEX ;
 		// fragment HEX : [0-9a-fA-F] ;
-		static Parser ESC() {
+		Parser ESC() {
 			// TODO
 			return null;
 		}
 
-		static Rule NUMBER() {
+		Rule NUMBER() {
 			return rule("NUMBER", _1_n(charset("0-9")));
 		}
 
 		// property : NAME ':' json ;
-		static RulePart property() {
-			return seq(ref(JSONGrammar::NAME), str(":"), ref(JSONGrammar::json));
+		RulePart property() {
+			return seq(ref(this::NAME), str(":"), ref(this::json));
 		}
 
 		// NAME : '"' STRING '"'
-		static Rule NAME() {
-			return rule("NAME", seq(str("\""), ref(JSONGrammar::STRING), str("\"")));
+		Rule NAME() {
+			return rule("NAME", seq(str("\""), ref(this::STRING), str("\"")));
 		}
 	}
 
@@ -336,20 +349,25 @@ public class GrammarTest {
 	 * </pre>
 	 */
 	static class GroupGrammar extends Grammar {
-		// define start rule
+
 		GroupGrammar() {
-			super(GroupGrammar::groups);
+			super("Group");
 		}
 
-		static Rule groups() {
-			return rule("groups", seq(_0_n(ref(GroupGrammar::group)), EOF));
+		@Override
+		protected Rule getStartRule() {
+			return groups();
 		}
 
-		static Rule group() {
-			return rule("group", seq(str("("), _1_n(ref(GroupGrammar::WORD)), str(")")));
+		Rule groups() {
+			return rule("groups", seq(_0_n(ref(this::group)), EOF));
 		}
 
-		static Rule WORD() {
+		Rule group() {
+			return rule("group", seq(str("("), _1_n(ref(this::WORD)), str(")")));
+		}
+
+		Rule WORD() {
 			return rule("WORD", _1_n(range('a', 'z')));
 		}
 	}
@@ -360,10 +378,15 @@ public class GrammarTest {
 	static class RichStringGrammar extends Grammar {
 
 		RichStringGrammar() {
-			super(RichStringGrammar::richString);
+			super("RichString");
 		}
 
-		static Rule richString() {
+		@Override
+		protected Rule getStartRule() {
+			return richString();
+		}
+
+		Rule richString() {
 			// TODO: issue #30: .*? instead of [ a-z]*
 			return rule("richString", seq(str("\"\"\""), _0_n(charset(" a-z")), str("\"\"\"")));
 		}
@@ -373,9 +396,13 @@ public class GrammarTest {
 
 	static class ExpressionGrammar extends Grammar {
 
-		// define start rule
 		ExpressionGrammar() {
-			super(ExpressionGrammar::expr);
+			super("Expression");
+		}
+
+		@Override
+		protected Rule getStartRule() {
+			return expr();
 		}
 
 		/**
@@ -389,11 +416,11 @@ public class GrammarTest {
 		 * </code>
 		 * </pre>
 		 */
-		static Rule expr() {
+		Rule expr() {
 			return rule("expr",//
-					seq(ref(ExpressionGrammar::expr), str("*"), ref(ExpressionGrammar::expr)),//
-					seq(ref(ExpressionGrammar::expr), str("+"), ref(ExpressionGrammar::expr)),//
-					ref(ExpressionGrammar::INT));
+					seq(ref(this::expr), str("*"), ref(this::expr)),//
+					seq(ref(this::expr), str("+"), ref(this::expr)),//
+					ref(this::INT));
 		}
 
 		/**
@@ -401,16 +428,20 @@ public class GrammarTest {
 		 * 
 		 * @return A natural number parser.
 		 */
-		static Rule INT() {
+		Rule INT() {
 			return rule("INT", _1_n(range('0', '9')));
 		}
 	}
 
 	static class IndirectExpressionGrammar extends Grammar {
 
-		// define start rule
 		IndirectExpressionGrammar() {
-			super(IndirectExpressionGrammar::expr);
+			super("IndirectExpression");
+		}
+
+		@Override
+		protected Rule getStartRule() {
+			return expr();
 		}
 
 		/**
@@ -426,21 +457,19 @@ public class GrammarTest {
 		 * </code>
 		 * </pre>
 		 */
-		static Rule expr() {
+		Rule expr() {
 			return rule("expr", seq(//
-					ref(IndirectExpressionGrammar::mul),//
-					ref(IndirectExpressionGrammar::add),//
-					ref(IndirectExpressionGrammar::INT)));
+					ref(this::mul),//
+					ref(this::add),//
+					ref(this::INT)));
 		}
 
-		static Rule mul() {
-			return rule("mul",
-					seq(ref(IndirectExpressionGrammar::expr), str("*"), ref(IndirectExpressionGrammar::expr)));
+		Rule mul() {
+			return rule("mul", seq(ref(this::expr), str("*"), ref(this::expr)));
 		}
 
-		static Rule add() {
-			return rule("mul",
-					seq(ref(IndirectExpressionGrammar::expr), str("+"), ref(IndirectExpressionGrammar::expr)));
+		Rule add() {
+			return rule("mul", seq(ref(this::expr), str("+"), ref(this::expr)));
 		}
 
 		/**
@@ -448,7 +477,7 @@ public class GrammarTest {
 		 * 
 		 * @return A natural number parser.
 		 */
-		static Rule INT() {
+		Rule INT() {
 			return rule("INT", _1_n(range('0', '9')));
 		}
 	}
@@ -463,11 +492,16 @@ public class GrammarTest {
 	static class AheadOfTimeSnakeGrammar extends Grammar {
 
 		AheadOfTimeSnakeGrammar() {
-			super(AheadOfTimeSnakeGrammar::eat);
+			super("AheadOfTimeSnake");
 		}
 
-		static Rule eat() {
-			return rule("eat", seq(ref(AheadOfTimeSnakeGrammar::eat), str("@")), EOF);
+		@Override
+		protected Rule getStartRule() {
+			return eat();
+		}
+
+		Rule eat() {
+			return rule("eat", seq(ref(this::eat), str("@")), EOF);
 		}
 	}
 
@@ -481,11 +515,16 @@ public class GrammarTest {
 	static class HungrySnakeGrammar extends Grammar {
 
 		HungrySnakeGrammar() {
-			super(HungrySnakeGrammar::eat);
+			super("HungrySnake");
 		}
 
-		static Rule eat() {
-			return rule("eat", seq(str("@"), ref(HungrySnakeGrammar::eat)), EOF);
+		@Override
+		protected Rule getStartRule() {
+			return eat();
+		}
+
+		Rule eat() {
+			return rule("eat", seq(str("@"), ref(this::eat)), EOF);
 		}
 	}
 
@@ -499,11 +538,16 @@ public class GrammarTest {
 	static class PrudentSnakeGrammar extends Grammar {
 
 		PrudentSnakeGrammar() {
-			super(PrudentSnakeGrammar::eat);
+			super("PrudentSnake");
 		}
 
-		static Rule eat() {
-			return rule("eat", EOF, seq(str("@"), ref(HungrySnakeGrammar::eat)));
+		@Override
+		protected Rule getStartRule() {
+			return eat();
+		}
+
+		Rule eat() {
+			return rule("eat", EOF, seq(str("@"), ref(this::eat)));
 		}
 	}
 }
