@@ -5,9 +5,29 @@
  */
 package javaslang.parser;
 
+import static javaslang.IO.UTF8;
+import javaslang.IO;
+import javaslang.collection.Tree;
+import javaslang.monad.Try;
 import javaslang.parser.Parser.Rule;
 
+import org.junit.Ignore;
+import org.junit.Test;
+
 public class BootstrapTest {
+
+	@Test
+	@Ignore
+	// TODO(#33): FIXME
+	public void shouldBootstrapJavaslangGrammar() {
+		final Grammar grammar = new JavaslangGrammar();
+		/* TODO:DEBUG */System.out.println(grammar);
+		IO.loadResource("javaslang/parser/Javaslang.grammar", UTF8).forEach(input -> {
+			///* TODO:DEBUG */System.out.println(input);
+				final Try<Tree<Token>> parseTree = grammar.parse(input);
+				/* TODO:DEBUG */System.out.println(parseTree.get().toCoffeeScriptString());
+			});
+	}
 
 	static class JavaslangGrammar extends Grammar {
 
@@ -20,15 +40,17 @@ public class BootstrapTest {
 			return grammar();
 		}
 
-		// grammar : 'grammar' ID ';'? rule+
+		// grammar : 'grammar' ID ';'? rule+ EOF
 		Rule grammar() {
-			return rule("grammar", str("grammar"), ref(this::ID), _0_1(str(";")), _1_n(ref(this::rule)));
+			return rule("grammar", seq(str("grammar"), ref(this::ID), _0_1(str(";")), _1_n(ref(this::rule)), EOF));
 		}
 
 		// rule : ID ':' rulePart ( '|' rulePart )* ';'?
 		Rule rule() {
-			return rule("rule", ref(this::ID), str(":"), ref(this::rulePart), _0_n(str("|"), ref(this::rulePart)),
-					_0_1(str(";")));
+			return rule(
+					"rule",
+					seq(ref(this::ID), str(":"), ref(this::rulePart), _0_n(str("|"), ref(this::rulePart)),
+							_0_1(str(";"))));
 		}
 
 		// rulePart
@@ -39,29 +61,29 @@ public class BootstrapTest {
 		//   | subrule
 		//   | sequence
 		Rule rulePart() {
-			return rule("rulePart", ref(this::negatable), ref(this::Reference), ref(this::quantifier),
-					ref(this::subrule), ref(this::sequence));
+			return rule("rulePart", ref(this::negatable), ref(this::Literal), ref(this::Reference),
+					ref(this::quantifier), ref(this::subrule), ref(this::sequence));
 		}
 
 		// negatable
-		//   : ANY
-		//   | EOF
+		//   : Any
+		//   | Eof
 		//   | Charset
 		//   | Range
 		//   | negation
 		Rule negatable() {
-			return rule("negatable", ref(this::ANY), ref(this::EOF), ref(this::Charset), ref(this::Range),
+			return rule("negatable", ref(this::Any), ref(this::Eof), ref(this::Charset), ref(this::Range),
 					ref(this::negation));
 		}
 
-		// ANY : .
-		Rule ANY() {
-			return rule("ANY", ANY);
+		// Any : .
+		Rule Any() {
+			return rule("Any", str("."));
 		}
 
-		// EOF : 'EOF'
-		Rule EOF() {
-			return rule("EOF", str("EOF"));
+		// Eof : 'EOF'
+		Rule Eof() {
+			return rule("Eof", str("EOF"));
 		}
 
 		// Charset : '[' ( CHAR | CHAR '-' CHAR )+ ']'
@@ -78,12 +100,12 @@ public class BootstrapTest {
 
 		// negation : '!' negatable
 		Rule negation() {
-			return rule("negation", str("!"), ref(this::negatable));
+			return rule("negation", seq(str("!"), ref(this::negatable)));
 		}
 
-		// Literal : '\'' CHAR* '\''
+		// Literal : '\'' CHAR+ '\''
 		Rule Literal() {
-			return rule("Literal", seq(str("'"), _0_n(ref(this::CHAR)), str("'")));
+			return rule("Literal", seq(str("'"), _1_n(ref(this::CHAR)), str("'")));
 		}
 
 		// Reference : ID
@@ -95,10 +117,10 @@ public class BootstrapTest {
 		Rule quantifier() {
 			return rule(
 					"quantifier",
-					ref(this::rulePart),
-					subrule(str("?"), str("*"), str("+"),
-							seq(str("{"), ref(this::INT), str(","), ref(this::INT), str("}")),
-							seq(str("{"), ref(this::INT), str("}"))));
+					seq(ref(this::rulePart),
+							subrule(str("?"), str("*"), str("+"),
+									seq(str("{"), ref(this::INT), str(","), ref(this::INT), str("}")),
+									seq(str("{"), ref(this::INT), str("}")))));
 		}
 
 		// subrule : '(' ( ID ':' )? rulePart ( '|' rulePart )* ')'

@@ -1,6 +1,6 @@
 grammar Javaslang
 
-grammar : 'grammar' ID ';'? rule+
+grammar : 'grammar' ID ';'? rule+ EOF
 
 rule : ID ':' rulePart ( '|' rulePart )* ';'?
 
@@ -13,15 +13,19 @@ rulePart
   | sequence
 
 negatable
-  : ANY
-  | EOF
+  : Any
+  | Eof
   | Charset
   | Range
   | negation
 
+Any : '.'
+
+Eof : 'EOF'
+
 Charset : '[' ( CHAR | CHAR '-' CHAR )+ ']'
 
-Literal : '\'' CHAR* '\''
+Literal : '\'' CHAR+ '\''
 
 Range : '\'' CHAR '\'' '-' '\'' CHAR '\''
 
@@ -35,8 +39,6 @@ subrule : '(' ( ID ':' )? rulePart ( '|' rulePart )* ')'
 
 sequence : rulePart*
 
-ANY  : .
-EOF  : 'EOF'
 CHAR : .
 ID   : [a-zA-Z]+
 INT  : '0'..'9'+

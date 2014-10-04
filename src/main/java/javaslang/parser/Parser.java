@@ -52,6 +52,9 @@ import javaslang.monad.Right;
  */
 interface Parser extends Serializable {
 
+	// TODO: issue #48: make whitespace configurable
+	static final Rule DEFAULT_WS = new Rule("WS", new Quantifier(new Charset(" \t\r\n"), 0, UNBOUNDED));
+
 	/**
 	 * Trying to parse a text using the current parser, starting at the given index.
 	 * 
@@ -428,9 +431,6 @@ interface Parser extends Serializable {
 
 		private static final long serialVersionUID = 1520214209747690474L;
 
-		// TODO: issue #48: make whitespace configurable
-		static final Rule DEFAULT_WS = new Rule("WS", new Quantifier(new Charset(" \t\r\n"), 0, UNBOUNDED));
-
 		final Supplier<Rule> ruleSupplier;
 		Rule rule;
 
@@ -462,13 +462,6 @@ interface Parser extends Serializable {
 				rule = ruleSupplier.get();
 			}
 			return rule;
-		}
-
-		static int skipWhitespace(String text, int index, boolean lexicalScope) {
-			return lexicalScope ? index : DEFAULT_WS
-					.parse(text, index, true)
-					.map(parseResult -> parseResult.endIndex)
-					.orElse(index);
 		}
 	}
 
@@ -585,7 +578,9 @@ interface Parser extends Serializable {
 			int currentIndex = index;
 			boolean lexical = true;
 			for (RulePart parser : parsers) {
-				final Either<Integer, ParseResult> parsed = parser.parse(text, currentIndex, lexicalScope);
+				final Either<Integer, ParseResult> parsed = parser.parse(text,
+						skipWhitespace(text, currentIndex, lexicalScope/* TODO(#58): || parser.isLexical() */),
+						lexicalScope);
 				if (parsed.isRight()) {
 					final ParseResult parseResult = parsed.get();
 					tokens.addAll(parseResult.tokens);
@@ -595,7 +590,8 @@ interface Parser extends Serializable {
 					return parsed;
 				}
 			}
-			return new Right<>(new ParseResult(tokens, index, currentIndex, lexicalScope, lexical));
+			return new Right<>(new ParseResult(tokens, index, skipWhitespace(text, currentIndex, lexicalScope),
+					lexicalScope, lexical));
 		}
 
 		@Override
@@ -649,6 +645,7 @@ interface Parser extends Serializable {
 
 	// terminal token / leaf of the parse tree
 	static Either<Integer, ParseResult> token(String text, int index, int length, boolean lexicalScope, boolean lexical) {
+		//		/* DEBUG */System.out.println(String.format("token(%s, %s): %s", index, index + length, text.substring(index, index + length)));
 		final List<Node<Token>> tokens = Arrays.asList(new Node<>(new Token(null, text, index, length)));
 		final ParseResult parseResult = new ParseResult(tokens, index, index + length, lexicalScope, lexical);
 		return new Right<>(parseResult);
@@ -656,6 +653,7 @@ interface Parser extends Serializable {
 
 	// non-terminal symbol / inner rule of the parse tree / rule with children
 	static Either<Integer, ParseResult> symbol(String id, String text, int index, int length, List<Node<Token>> children) {
+		//		/* DEBUG */System.out.println(String.format("symbol(%s, %s, %s): %s", id, index, index + length, text.substring(index, index + length)));
 		final List<Node<Token>> tokens = Arrays.asList(new Node<>(new Token(id, text, index, length), children));
 		final ParseResult parseResult = new ParseResult(tokens, index, index + length, false, false);
 		return new Right<>(parseResult);
@@ -663,6 +661,7 @@ interface Parser extends Serializable {
 
 	// no match found
 	static Either<Integer, ParseResult> stoppedAt(int index) {
+		//		/* DEBUG */System.out.println("stoppedAt " + index);
 		return new Left<>(index);
 	}
 
@@ -698,6 +697,15 @@ interface Parser extends Serializable {
 				return printable ? String.valueOf(c) : String.format("\\u%04x", (int) c);
 			}
 		}
+	}
+
+	// -- whitespace handling
+
+	static int skipWhitespace(String text, int index, boolean lexicalScope) {
+		return lexicalScope ? index : DEFAULT_WS
+				.parse(text, index, true)
+				.map(parseResult -> parseResult.endIndex)
+				.orElse(index);
 	}
 
 	// -- additional types
