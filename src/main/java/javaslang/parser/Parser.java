@@ -567,7 +567,7 @@ interface Parser extends Serializable {
 		@SafeVarargs
 		Sequence(RulePart... parsers) {
 			requireNonNull(parsers, "parsers is null");
-			require(parsers.length >= 2, "number of parsers < 2");
+			require(parsers.length > 0, "no parsers");
 			this.parsers = parsers;
 		}
 

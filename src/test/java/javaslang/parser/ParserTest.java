@@ -37,6 +37,7 @@ import javaslang.parser.Parser.RulePart;
 import javaslang.parser.Parser.Sequence;
 import javaslang.parser.Parser.Subrule;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ParserTest {
@@ -331,6 +332,34 @@ public class ParserTest {
 	public void shouldMatchOneTokenInAParserRuleOnQuantifiedLiteral() {
 		final Parser parser = new Quantifier(new Literal("abc"), 0, UNBOUNDED);
 		final String actual = parser.parse("abcabc", 0, false).toString();
+		assertThat(actual).isEqualTo("Right([Node('abcabc')])");
+	}
+
+	@Test
+	public void shouldMatchOneTokenInAParserRuleOnQuantifiedSequenceOfLexicals() {
+		final Parser parser = new Quantifier(new Sequence(new Literal("a"), new Literal("b"), new Literal("c")), 0,
+				UNBOUNDED);
+		final String actual = parser.parse("abc", 0, false).toString();
+		assertThat(actual).isEqualTo("Right([Node('abc')])");
+	}
+
+	// TODO(#64): rule : ( 'a' 'b' 'c' )* // should not parse " a b c abc "
+	@Test
+	@Ignore
+	public void shouldNotMatchOneTokenInAParserRuleOnQuantifiedSequenceOfLexicalsWithWhitespace() {
+		final Parser parser = new Sequence(new Quantifier(new Sequence(new Literal("a"), new Literal("b"), new Literal(
+				"c")), 0, UNBOUNDED));
+		final String actual = parser.parse(" a b c abc ", 0, false).toString();
+		assertThat(actual).isEqualTo("Right([])");
+	}
+
+	// TODO(#64): rule : ( 'a' 'b' 'c' )* // should parse " abcabc " as Token("abcabc").
+	@Test
+	@Ignore
+	public void shouldMatchOneTokenInAParserRuleOnQuantifiedSequenceOfLexicalsWithSurroundingWhitespace() {
+		final Parser parser = new Sequence(new Quantifier(new Sequence(new Literal("a"), new Literal("b"), new Literal(
+				"c")), 0, UNBOUNDED));
+		final String actual = parser.parse(" abcabc ", 0, false).toString();
 		assertThat(actual).isEqualTo("Right([Node('abcabc')])");
 	}
 
