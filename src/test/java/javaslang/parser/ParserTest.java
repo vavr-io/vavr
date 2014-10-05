@@ -290,6 +290,74 @@ public class ParserTest {
 		assertThat(actual).isEqualTo("( . . ){13}");
 	}
 
+	// whitespace
+
+	@Test
+	public void shouldMatchOneTokenInAParserRuleOnQuantifiedAny() {
+		final Parser parser = new Quantifier(Any.INSTANCE, 0, UNBOUNDED);
+		final String actual = parser.parse("abc", 0, false).toString();
+		assertThat(actual).isEqualTo("Right([Node('abc')])");
+	}
+
+	@Test
+	public void shouldMatchOneTokenInAParserRuleOnQuantifiedCharset() {
+		final Parser parser = new Quantifier(new Charset("a-z"), 0, UNBOUNDED);
+		final String actual = parser.parse("abc", 0, false).toString();
+		assertThat(actual).isEqualTo("Right([Node('abc')])");
+	}
+
+	@Test
+	public void shouldMatchOneTokenInAParserRuleOnQuantifiedNegatedCharset() {
+		final Parser parser = new Quantifier(new Negation(new Charset("a-z")), 0, UNBOUNDED);
+		final String actual = parser.parse("123", 0, false).toString();
+		assertThat(actual).isEqualTo("Right([Node('123')])");
+	}
+
+	@Test
+	public void shouldMatchOneTokenInAParserRuleOnQuantifiedRange() {
+		final Parser parser = new Quantifier(new Range('a', 'z'), 0, UNBOUNDED);
+		final String actual = parser.parse("abc", 0, false).toString();
+		assertThat(actual).isEqualTo("Right([Node('abc')])");
+	}
+
+	@Test
+	public void shouldMatchOneTokenInAParserRuleOnQuantifiedNegatedRange() {
+		final Parser parser = new Quantifier(new Negation(new Range('a', 'z')), 0, UNBOUNDED);
+		final String actual = parser.parse("123", 0, false).toString();
+		assertThat(actual).isEqualTo("Right([Node('123')])");
+	}
+
+	@Test
+	public void shouldMatchOneTokenInAParserRuleOnQuantifiedLiteral() {
+		final Parser parser = new Quantifier(new Literal("abc"), 0, UNBOUNDED);
+		final String actual = parser.parse("abcabc", 0, false).toString();
+		assertThat(actual).isEqualTo("Right([Node('abcabc')])");
+	}
+
+	@Test
+	public void shouldMatchOneTokenInAParserRuleOnQuantifiedSubruleOfLexicals() {
+		final Parser parser = new Quantifier(new Subrule(new Literal("a"), new Literal("b"), new Literal("c")), 0,
+				UNBOUNDED);
+		final String actual = parser.parse("abc", 0, false).toString();
+		assertThat(actual).isEqualTo("Right([Node('abc')])");
+	}
+
+	@Test
+	public void shouldMatchMultipleTokensInAParserRuleOnQuantifiedToken() {
+		final Rule token = new Rule("TOKEN", new Literal("abc"));
+		final Parser parser = new Quantifier(new Reference(() -> token), 0, UNBOUNDED);
+		final String actual = parser.parse("abcabcabc", 0, false).toString();
+		assertThat(actual).isEqualTo("Right([Node('abc'), Node('abc'), Node('abc')])");
+	}
+
+	@Test
+	public void shouldMatchMultipleTokensInAParserRuleOnQuantifiedTokenWithWhitespace() {
+		final Rule token = new Rule("TOKEN", new Literal("abc"));
+		final Parser parser = new Quantifier(new Reference(() -> token), 0, UNBOUNDED);
+		final String actual = parser.parse("abc abc abc", 0, false).toString();
+		assertThat(actual).isEqualTo("Right([Node('abc'), Node('abc'), Node('abc')])");
+	}
+
 	// 0..1
 
 	@Test
@@ -645,7 +713,7 @@ public class ParserTest {
 	public void shouldParseResultHashAsExpected() {
 		final ParseResult parseResult = new ParseResult(Collections.emptyList(), 0, 0, false, true);
 		assertThat(parseResult.hashCode()).isEqualTo(
-				Objects.hash(parseResult.startIndex, parseResult.endIndex, parseResult.tokens));
+				Objects.hash(parseResult.startIndex, parseResult.endIndex, parseResult.lexical, parseResult.tokens));
 	}
 
 	// -- parse helpers

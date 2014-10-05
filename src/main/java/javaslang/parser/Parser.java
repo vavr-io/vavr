@@ -301,6 +301,9 @@ interface Parser extends Serializable {
 	 * <li>parse X a..b times: <code>X{a,b}</code></li>
 	 * <li>parse X a times: <code>X{a}</code></li>
 	 * </ul>
+	 * 
+	 * Whitespace was already skipped if we are within a parser rule (lexicalScope == true), assuming that all rules
+	 * technically have a sequence of parsers as child and the sequence parser does skip whitespace.
 	 */
 	static class Quantifier implements RulePart, HasChildren {
 
@@ -333,7 +336,8 @@ interface Parser extends Serializable {
 			int currentIndex = index;
 			boolean lexical = true;
 			for (int i = 0; i < upperBound; i++) {
-				final Either<Integer, ParseResult> parsed = parser.parse(text, currentIndex, lexicalScope);
+				final Either<Integer, ParseResult> parsed = parser.parse(text,
+						skipWhitespace(text, currentIndex, lexical), lexicalScope);
 				if (parsed.isRight()) {
 					final ParseResult parseResult = parsed.right().get();
 					tokens.addAll(parseResult.tokens);
@@ -343,11 +347,11 @@ interface Parser extends Serializable {
 					if (i < lowerBound) {
 						return parsed;
 					} else {
-						return right(tokens, index, currentIndex, lexicalScope, lexical);
+						return right(tokens, index, skipWhitespace(text, currentIndex, lexical), lexicalScope, lexical);
 					}
 				}
 			}
-			return right(tokens, index, currentIndex, lexicalScope, lexical);
+			return right(tokens, index, skipWhitespace(text, currentIndex, lexical), lexicalScope, lexical);
 		}
 
 		private Either<Integer, ParseResult> right(List<Node<Token>> tokens, int index, int currentIndex,
@@ -446,9 +450,9 @@ interface Parser extends Serializable {
 		@Override
 		public Either<Integer, ParseResult> parse(String text, int index, boolean lexicalScope) {
 			return getRule()//
-					.parse(text, skipWhitespace(text, index, lexicalScope), lexicalScope)
-					.map(p -> lexicalScope ? p : new ParseResult(p.tokens, p.startIndex, skipWhitespace(text,
-							p.endIndex, lexicalScope), lexicalScope, false)); // a rule reference is not lexical 
+					.parse(text, index, lexicalScope)
+					.map(p -> lexicalScope ? p : new ParseResult(p.tokens, p.startIndex, p.endIndex, lexicalScope,
+							false));
 		}
 
 		@Override
@@ -579,8 +583,7 @@ interface Parser extends Serializable {
 			boolean lexical = true;
 			for (RulePart parser : parsers) {
 				final Either<Integer, ParseResult> parsed = parser.parse(text,
-						skipWhitespace(text, currentIndex, lexicalScope/* TODO(#58): || parser.isLexical() */),
-						lexicalScope);
+						skipWhitespace(text, currentIndex, lexicalScope), lexicalScope);
 				if (parsed.isRight()) {
 					final ParseResult parseResult = parsed.get();
 					tokens.addAll(parseResult.tokens);
@@ -790,13 +793,14 @@ interface Parser extends Serializable {
 				final ParseResult that = (ParseResult) o;
 				return this.startIndex == that.startIndex
 						&& this.endIndex == that.endIndex
+						&& this.lexical == that.lexical
 						&& Objects.equals(this.tokens, that.tokens);
 			}
 		}
 
 		@Override
 		public int hashCode() {
-			return Objects.hash(startIndex, endIndex, tokens);
+			return Objects.hash(startIndex, endIndex, lexical, tokens);
 		}
 
 		@Override

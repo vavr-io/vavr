@@ -168,11 +168,9 @@ public class GrammarTest {
 	}
 
 	@Test
-	@Ignore
-	// TODO(#58): FIXME
 	public void shouldParseRichStringWithoutEatingUpWhitespace() {
 		final String actual = new RichStringGrammar().parse("\"\"\" test \"\"\"").get().toString();
-		final String expected = "Tree(richString '\"\"\"' ' test ' '\"\"\"')";
+		final String expected = "Tree('\"\"\" test \"\"\"')";
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -248,14 +246,17 @@ public class GrammarTest {
 			return start();
 		}
 
+		// start : ID | ID INT ID
 		Rule start() {
 			return rule("start", ref(this::ID), seq(ref(this::ID), ref(this::INT), ref(this::ID)));
 		}
 
+		// ID : [a-z]+
 		Rule ID() {
 			return rule("ID", _1_n(charset("a-z")));
 		}
 
+		// INT : [0-9]+
 		Rule INT() {
 			return rule("INT", _1_n(charset("0-9")));
 		}
@@ -274,6 +275,7 @@ public class GrammarTest {
 			return startRule();
 		}
 
+		// startRule : 'a' 'b' 'c'
 		Rule startRule() {
 			return rule("startRule", seq(str("a"), str("b"), str("c")));
 		}
@@ -322,6 +324,7 @@ public class GrammarTest {
 			return null;
 		}
 
+		// NUMBER : [0-9]+
 		Rule NUMBER() {
 			return rule("NUMBER", _1_n(charset("0-9")));
 		}
@@ -361,14 +364,17 @@ public class GrammarTest {
 			return groups();
 		}
 
+		// groups : group* EOF
 		Rule groups() {
 			return rule("groups", seq(_0_n(ref(this::group)), EOF));
 		}
 
+		// group : '(' WORD+ ')'
 		Rule group() {
 			return rule("group", seq(str("("), _1_n(ref(this::WORD)), str(")")));
 		}
 
+		// WORD : 'a'..'z'+
 		Rule WORD() {
 			return rule("WORD", _1_n(range('a', 'z')));
 		}
@@ -385,12 +391,13 @@ public class GrammarTest {
 
 		@Override
 		protected Rule getStartRule() {
-			return richString();
+			return RichString();
 		}
 
-		Rule richString() {
+		// RichString : '"""' [ a-z]* '"""'
+		Rule RichString() {
 			// TODO: issue #30: .*? instead of [ a-z]*
-			return rule("richString", seq(str("\"\"\""), _0_n(charset(" a-z")), str("\"\"\"")));
+			return rule("RichString", seq(str("\"\"\""), _0_n(charset(" a-z")), str("\"\"\"")));
 		}
 	}
 
@@ -407,17 +414,7 @@ public class GrammarTest {
 			return expr();
 		}
 
-		/**
-		 * <pre>
-		 * <code>
-		 * expr : expr '*' expr
-		 *      | expr '+' expr
-		 *      | INT
-		 * 
-		 * INT : '0'..'9'+
-		 * </code>
-		 * </pre>
-		 */
+		// expr : expr '*' expr | expr '+' expr | INT
 		Rule expr() {
 			return rule("expr",//
 					seq(ref(this::expr), str("*"), ref(this::expr)),//
@@ -425,11 +422,7 @@ public class GrammarTest {
 					ref(this::INT));
 		}
 
-		/**
-		 * A parser for positive natural numbers including zero.
-		 * 
-		 * @return A natural number parser.
-		 */
+		// INT : '0'..'9'+
 		Rule INT() {
 			return rule("INT", _1_n(range('0', '9')));
 		}
@@ -446,39 +439,22 @@ public class GrammarTest {
 			return expr();
 		}
 
-		/**
-		 * <pre>
-		 * <code>
-		 * expr : mul | add | INT
-		 * 
-		 * mul : expr '*' expr
-		 * 
-		 * add : expr '+' expr
-		 * 
-		 * INT : '0'..'9'+
-		 * </code>
-		 * </pre>
-		 */
+		// expr : mul | add | INT
 		Rule expr() {
-			return rule("expr", seq(//
-					ref(this::mul),//
-					ref(this::add),//
-					ref(this::INT)));
+			return rule("expr", ref(this::mul), ref(this::add), ref(this::INT));
 		}
 
+		// mul : expr '*' expr
 		Rule mul() {
 			return rule("mul", seq(ref(this::expr), str("*"), ref(this::expr)));
 		}
 
+		// add : expr '+' expr
 		Rule add() {
 			return rule("mul", seq(ref(this::expr), str("+"), ref(this::expr)));
 		}
 
-		/**
-		 * A parser for positive natural numbers including zero.
-		 * 
-		 * @return A natural number parser.
-		 */
+		// INT : '0'..'9'+
 		Rule INT() {
 			return rule("INT", _1_n(range('0', '9')));
 		}
@@ -502,6 +478,7 @@ public class GrammarTest {
 			return eat();
 		}
 
+		// eat : eat '@' | EOF
 		Rule eat() {
 			return rule("eat", seq(ref(this::eat), str("@")), EOF);
 		}
@@ -525,6 +502,7 @@ public class GrammarTest {
 			return eat();
 		}
 
+		// eat : '@' eat | EOF
 		Rule eat() {
 			return rule("eat", seq(str("@"), ref(this::eat)), EOF);
 		}
@@ -548,6 +526,7 @@ public class GrammarTest {
 			return eat();
 		}
 
+		// eat : EOF | '@' eat
 		Rule eat() {
 			return rule("eat", EOF, seq(str("@"), ref(this::eat)));
 		}
