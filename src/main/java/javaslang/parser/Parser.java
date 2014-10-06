@@ -106,7 +106,7 @@ import javaslang.monad.Right;
  * <h3>Lexer rules</h3>
  * 
  * <ul>
- * <li>Lexer rules (short: token) are the leafs of a parse tree.</li>
+ * <li>Lexer rules (short: token) produce the leafs of a parse tree.</li>
  * <li>They consist of a (non-empty) sequence of characters.</li>
  * <li>There is one empty token, {@code EOF}.</li>
  * <li>The name of a tokens is not part of the parse tree.</li>
@@ -119,7 +119,7 @@ import javaslang.monad.Right;
  * <h3>Parser rules</h3>
  * 
  * <ul>
- * <li>Parser rules (short: rule) are the inner nodes of a parse tree.</li>
+ * <li>Parser rules (short: rule) produce the inner nodes of a parse tree.</li>
  * <li>They have a name and a non-empty list of children.</li>
  * <li>The name of a rule and it's children are part of the parse tree.</li>
  * <li>A rule name starts with a lower case character.</li>
