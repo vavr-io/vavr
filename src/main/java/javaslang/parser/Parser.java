@@ -143,6 +143,15 @@ import javaslang.monad.Right;
  * <p>
  * Purely lexical parse results are combined to a token.
  * </p>
+ *
+ * <h2>Whitespace Handling</h2>
+ * 
+ * <ul>
+ * <li>Rule alternatives are wrapped in sequences in order to handle whitespace in each rule.</li>
+ * <li>Therefor quantifiers only have to handle whitespace *between* occurrences.</li>
+ * <li>Tokens and pure lexical rule parts within parser rules do not skip whitespace.</li>
+ * </ul>
+ * 
  */
 interface Parser extends Serializable {
 
@@ -649,7 +658,10 @@ interface Parser extends Serializable {
 			requireNotNullOrEmpty(name, "name is null or empty");
 			requireNotNullOrEmpty(alternatives, "alternatives is null or empty");
 			this.name = name;
-			this.alternatives = alternatives;
+			this.alternatives = Stream // wrap alternatives in sequences beacause of whitespace handling
+					.of(alternatives)
+					.map(alt -> (alt instanceof Sequence) ? alt : new Sequence(alt))
+					.toArray(RulePart[]::new);
 			this.lexical = Character.isUpperCase(name.charAt(0));
 		}
 

@@ -417,6 +417,14 @@ public class ParserTest {
 		assertThat(actual).isEqualTo("Left(8)"); // no viable alternatve at space ' ' behind 'D'
 	}
 
+	@Test
+	public void shouldParseNonPureLiteral() {
+		// rule : 'test'+
+		final Rule rule = new Rule("rule", new Sequence(new Quantifier(new Literal("test"), 1, UNBOUNDED)));
+		final String actual = rule.parse("test test test", 0, false).toString();
+		assertThat(actual).isEqualTo("Right([Node(rule 'test' 'test' 'test')])");
+	}
+
 	// Rule.equals
 
 	@Test
