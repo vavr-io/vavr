@@ -66,6 +66,11 @@ public class ParserTest {
 		assertThat(actual).isEqualTo("");
 	}
 
+	@Test
+	public void shouldBePureAny() {
+		assertThat(Any.INSTANCE.isPure()).isTrue();
+	}
+
 	// serialization
 
 	@Test
@@ -133,6 +138,11 @@ public class ParserTest {
 		AssertionsExtensions.assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
+	@Test
+	public void shouldBePureCharset() {
+		assertThat(new Charset("a").isPure()).isTrue();
+	}
+
 	// -- EOF parser
 
 	@Test
@@ -162,6 +172,11 @@ public class ParserTest {
 	public void shouldNotParseEmptyStringWithNegatedAny() {
 		final CheckedRunnable actual = () -> parse(new Negation(EOF.INSTANCE), "", false);
 		AssertionsExtensions.assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
+	}
+
+	@Test
+	public void shouldBePureEOF() {
+		assertThat(EOF.INSTANCE.isPure()).isTrue();
 	}
 
 	// serialization
@@ -201,6 +216,11 @@ public class ParserTest {
 		AssertionsExtensions.assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
+	@Test
+	public void shouldNotBePureLiteral() {
+		assertThat(new Literal("test").isPure()).isFalse();
+	}
+
 	// -- Negation parser
 
 	@Test
@@ -219,6 +239,11 @@ public class ParserTest {
 		final Negation negation = new Negation(Any.INSTANCE);
 		final RulePart[] expected = new RulePart[] { Any.INSTANCE };
 		assertThat(negation.getChildren()).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldBePureNegationOfPure() {
+		assertThat(new Negation(Any.INSTANCE).isPure()).isTrue();
 	}
 
 	// -- Quantifier parser
@@ -246,6 +271,16 @@ public class ParserTest {
 	public void shouldConvertQuantifierWithSameBoundsToString() {
 		final String actual = new Quantifier(new Sequence(Any.INSTANCE, Any.INSTANCE), 13, 13).toString();
 		assertThat(actual).isEqualTo("( . . ){13}");
+	}
+
+	@Test
+	public void shouldBePureQuantifierOfPure() {
+		assertThat(new Quantifier(Any.INSTANCE, 0, 1).isPure()).isTrue();
+	}
+
+	@Test
+	public void shouldNotBePureQuantifierOfNonPure() {
+		assertThat(new Quantifier(new Literal("test"), 0, 1).isPure()).isFalse();
 	}
 
 	// 0..1
@@ -377,11 +412,21 @@ public class ParserTest {
 		AssertionsExtensions.assertThat(actual).isThrowing(AssertionError.class, "no match at index 0");
 	}
 
+	@Test
+	public void shouldBePureRange() {
+		assertThat(new Range('a', 'z').isPure()).isTrue();
+	}
+
 	// -- Reference parser
 
 	@Test
 	public void shouldConvertRuleRefToString() {
 		assertThat(new Reference(() -> expr()).toString()).isEqualTo("expr");
+	}
+
+	@Test
+	public void shouldNotBePureReference() {
+		assertThat(new Reference(() -> expr()).isPure()).isFalse();
 	}
 
 	// -- Rule parser
@@ -423,6 +468,11 @@ public class ParserTest {
 		final Rule rule = new Rule("rule", new Sequence(new Quantifier(new Literal("test"), 1, UNBOUNDED)));
 		final String actual = rule.parse("test test test", 0, false).toString();
 		assertThat(actual).isEqualTo("Right([Node(rule 'test' 'test' 'test')])");
+	}
+
+	@Test
+	public void shouldNotBePureRule() {
+		assertThat(expr().isPure()).isFalse();
 	}
 
 	// Rule.equals
@@ -496,6 +546,11 @@ public class ParserTest {
 		assertThat(actual).isEqualTo("ac"); // lexer combined tokens
 	}
 
+	@Test
+	public void shouldNotBePureSequence() {
+		assertThat(new Sequence(Any.INSTANCE).isPure()).isFalse();
+	}
+
 	// -- Subrule parser
 
 	@Test
@@ -527,6 +582,11 @@ public class ParserTest {
 	public void shouldParseNoMatchUsingSubrule() {
 		final Subrule subrule = new Subrule(new Literal("a"), new Literal("b"));
 		assertThat(subrule.parse("c", 0, false).toString()).isEqualTo("Left(0)");
+	}
+
+	@Test
+	public void shouldNotBePureSubrule() {
+		assertThat(new Subrule(Any.INSTANCE, EOF.INSTANCE).isPure()).isFalse();
 	}
 
 	// -- ParseResult
