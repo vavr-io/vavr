@@ -50,12 +50,6 @@ public class ParserTest {
 	}
 
 	@Test
-	public void shouldBeLexicalAny() {
-		final ParseResult parseResult = Any.INSTANCE.parse("x", 0, true).get();
-		assertThat(parseResult.lexical).isTrue();
-	}
-
-	@Test
 	public void shouldParseCharUsingAny() {
 		final String actual = parse(Any.INSTANCE, "abc", false);
 		assertThat(actual).isEqualTo("a");
@@ -96,12 +90,6 @@ public class ParserTest {
 	@Test
 	public void shouldConvertCharsetWithUnicodeToString() {
 		assertThat(new Charset("©opyright").toString()).isEqualTo("[\\u00a9opyright]");
-	}
-
-	@Test
-	public void shouldBeLexicalCharset() {
-		final ParseResult parseResult = new Charset("a-z").parse("a", 0, true).get();
-		assertThat(parseResult.lexical).isTrue();
 	}
 
 	@Test
@@ -154,12 +142,6 @@ public class ParserTest {
 	}
 
 	@Test
-	public void shouldBeLexicalEOF() {
-		final ParseResult parseResult = EOF.INSTANCE.parse("", 0, true).get();
-		assertThat(parseResult.lexical).isTrue();
-	}
-
-	@Test
 	public void shouldRecognizeEOF() {
 		final String actual = parse(EOF.INSTANCE, "", false);
 		assertThat(actual).isEqualTo("");
@@ -209,12 +191,6 @@ public class ParserTest {
 	}
 
 	@Test
-	public void shouldBeLexicalLiteral() {
-		final ParseResult parseResult = new Literal("test").parse("test", 0, true).get();
-		assertThat(parseResult.lexical).isTrue();
-	}
-
-	@Test
 	public void shouldParseLiteral() {
 		final String actual = parse(new Literal("literal"), "literal!", false);
 		assertThat(actual).isEqualTo("literal");
@@ -231,12 +207,6 @@ public class ParserTest {
 	@Test
 	public void shouldConvertNegationToString() {
 		assertThat(new Negation(Any.INSTANCE).toString()).isEqualTo("!.");
-	}
-
-	@Test
-	public void shouldBeLexicalNegationOfLexical() {
-		final ParseResult parseResult = new Negation(Any.INSTANCE).parse("", 0, true).get();
-		assertThat(parseResult.lexical).isTrue();
 	}
 
 	@Test
@@ -265,18 +235,6 @@ public class ParserTest {
 	public void shouldConvertQuantifierWithSequenceToString() {
 		final String actual = new Quantifier(new Sequence(Any.INSTANCE, Any.INSTANCE), 0, UNBOUNDED).toString();
 		assertThat(actual).isEqualTo("( . . )*");
-	}
-
-	@Test
-	public void shouldBeLexicalQuantifierOfLexical() {
-		final ParseResult parseResult = new Quantifier(Any.INSTANCE, 0, UNBOUNDED).parse("x", 0, true).get();
-		assertThat(parseResult.lexical).isTrue();
-	}
-
-	@Test
-	public void shouldNotBeLexicalQuantifierOfNonLexical() {
-		final ParseResult actual = new Quantifier(ruleRef(), 0, UNBOUNDED).parse("x", 0, false).get();
-		assertThat(actual.lexical).isFalse();
 	}
 
 	@Test
@@ -493,12 +451,6 @@ public class ParserTest {
 	}
 
 	@Test
-	public void shouldBeLexicalRange() {
-		final ParseResult parseResult = new Range('a', 'z').parse("a", 0, true).get();
-		assertThat(parseResult.lexical).isTrue();
-	}
-
-	@Test
 	public void shouldParseCharWithinRange() {
 		final String actual = parse(new Range('a', 'z'), "abc", false);
 		assertThat(actual).isEqualTo("a");
@@ -529,23 +481,11 @@ public class ParserTest {
 		assertThat(new Reference(() -> expr()).toString()).isEqualTo("expr");
 	}
 
-	@Test
-	public void shouldNotBeLexicalRuleRef() {
-		final ParseResult parseResult = ruleRef().parse("x", 0, false).get();
-		assertThat(parseResult.lexical).isFalse();
-	}
-
 	// -- Rule parser
 
 	@Test
 	public void shouldConvertRuleToString() {
 		assertThat(expr().toString()).isEqualTo("expr : expr '+' expr\n     | expr '*' expr\n     | INT\n     ;");
-	}
-
-	@Test
-	public void shouldNotBeLexicalRule() {
-		final ParseResult parseResult = new Rule("rule", Any.INSTANCE).parse("x", 0, false).get();
-		assertThat(parseResult.lexical).isFalse();
 	}
 
 	// DEV-NOTE: recursive self-reference of the rule
@@ -601,24 +541,6 @@ public class ParserTest {
 	}
 
 	@Test
-	public void shouldBeLexicalSequenceOfLexicalRuleParts() {
-		final ParseResult parseResult = new Sequence(Any.INSTANCE, Any.INSTANCE).parse("xx", 0, false).get();
-		assertThat(parseResult.lexical).isTrue();
-	}
-
-	@Test
-	public void shouldNotBeLexicalSequenceOfMixedRuleParts() {
-		final ParseResult parseResult = new Sequence(Any.INSTANCE, ruleRef()).parse("xx", 0, false).get();
-		assertThat(parseResult.lexical).isFalse();
-	}
-
-	@Test
-	public void shouldNotBeLexicalSequenceOfNonLexicalRuleParts() {
-		final ParseResult parseResult = new Sequence(ruleRef(), ruleRef()).parse("xx", 0, false).get();
-		assertThat(parseResult.lexical).isFalse();
-	}
-
-	@Test
 	public void shouldParseSequenceOfTwoParsersIfFirstParserReturnsEmptyResult() {
 		final RulePart[] parsers = new RulePart[] { new Quantifier(new Literal("a"), 0, 1), new Literal("b") };
 		final String actual = parse(new Sequence(parsers), "b", false);
@@ -654,30 +576,6 @@ public class ParserTest {
 	}
 
 	@Test
-	public void shouldBeLexicalSubruleOfLexicalRuleParts() {
-		final ParseResult parseResult = new Subrule(Any.INSTANCE, Any.INSTANCE).parse("x", 0, false).get();
-		assertThat(parseResult.lexical).isTrue();
-	}
-
-	@Test
-	public void shouldBeLexicalSubruleOfMixedRulePartsAndFirstMatchIsLexical() {
-		final ParseResult parseResult = new Subrule(Any.INSTANCE, ruleRef()).parse("x", 0, false).get();
-		assertThat(parseResult.lexical).isTrue();
-	}
-
-	@Test
-	public void shouldNotBeLexicalSubruleOfMixedRulePartsAndFirstMatchIsNotLexical() {
-		final ParseResult parseResult = new Subrule(ruleRef(), Any.INSTANCE).parse("x", 0, false).get();
-		assertThat(parseResult.lexical).isFalse();
-	}
-
-	@Test
-	public void shouldNotBeLexicalSubruleOfNonLexicalRuleParts() {
-		final ParseResult parseResult = new Subrule(ruleRef(), ruleRef()).parse("x", 0, false).get();
-		assertThat(parseResult.lexical).isFalse();
-	}
-
-	@Test
 	public void shouldGetChildrenOfSubrule() {
 		final Subrule subrule = new Subrule(Any.INSTANCE, EOF.INSTANCE);
 		final RulePart[] expected = new RulePart[] { Any.INSTANCE, EOF.INSTANCE };
@@ -706,33 +604,33 @@ public class ParserTest {
 
 	@Test
 	public void shouldConvertParseResultToString() {
-		assertThat(new ParseResult(Collections.emptyList(), 0, 0, false, true).toString()).isEqualTo("[]");
+		assertThat(new ParseResult(Collections.emptyList(), 0, 0, false).toString()).isEqualTo("[]");
 	}
 
 	// ParseResult.equals
 
 	@Test
 	public void shouldParseResultEqualSameObject() {
-		final ParseResult parseResult = new ParseResult(Collections.emptyList(), 0, 0, false, true);
+		final ParseResult parseResult = new ParseResult(Collections.emptyList(), 0, 0, false);
 		assertThat(parseResult.equals(parseResult)).isTrue();
 	}
 
 	@Test
 	public void shouldParseResultNotEqualNull() {
-		final ParseResult parseResult = new ParseResult(Collections.emptyList(), 0, 0, false, true);
+		final ParseResult parseResult = new ParseResult(Collections.emptyList(), 0, 0, false);
 		assertThat(parseResult.equals(null)).isFalse();
 	}
 
 	@Test
 	public void shouldParseResultNotEqualObjectOfDifferentType() {
-		final ParseResult parseResult = new ParseResult(Collections.emptyList(), 0, 0, false, true);
+		final ParseResult parseResult = new ParseResult(Collections.emptyList(), 0, 0, false);
 		assertThat(parseResult.equals(new Object())).isFalse();
 	}
 
 	@Test
 	public void shouldParseResultEqualDiffernetObject() {
-		final ParseResult parseResult1 = new ParseResult(Collections.emptyList(), 0, 0, false, true);
-		final ParseResult parseResult2 = new ParseResult(Collections.emptyList(), 0, 0, false, true);
+		final ParseResult parseResult1 = new ParseResult(Collections.emptyList(), 0, 0, false);
+		final ParseResult parseResult2 = new ParseResult(Collections.emptyList(), 0, 0, false);
 		assertThat(parseResult1.equals(parseResult2)).isTrue();
 	}
 
@@ -740,9 +638,9 @@ public class ParserTest {
 
 	@Test
 	public void shouldParseResultHashAsExpected() {
-		final ParseResult parseResult = new ParseResult(Collections.emptyList(), 0, 0, false, true);
+		final ParseResult parseResult = new ParseResult(Collections.emptyList(), 0, 0, false);
 		assertThat(parseResult.hashCode()).isEqualTo(
-				Objects.hash(parseResult.startIndex, parseResult.endIndex, parseResult.lexical, parseResult.tokens));
+				Objects.hash(parseResult.startIndex, parseResult.endIndex, parseResult.tokens));
 	}
 
 	// -- parse helpers
@@ -755,16 +653,10 @@ public class ParserTest {
 	}
 
 	private static Either<Integer, ParseResult> parseResult(List<Node<Token>> tokens, int startIndex, int endIndex) {
-		return new Right<>(new ParseResult(tokens, startIndex, endIndex, false, true));
+		return new Right<>(new ParseResult(tokens, startIndex, endIndex, false));
 	}
 
 	private static Either<Integer, ParseResult> parseResult(String text, int startIndex, int endIndex) {
 		return parseResult(Arrays.asList(node(new Token(null, text, startIndex, endIndex))), startIndex, endIndex);
-	}
-
-	// -- factory methods
-
-	private static Reference ruleRef() {
-		return new Reference(() -> new Rule("rule", Any.INSTANCE));
 	}
 }
