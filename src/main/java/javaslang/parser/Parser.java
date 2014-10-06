@@ -31,29 +31,139 @@ import javaslang.monad.Left;
 import javaslang.monad.Right;
 
 /**
- * The parser interface.
  * <p>
- * Parsers are either rules (see {@linkplain Rule}) or rule parts (see {@linkplain RulePart}).
- * <ul>
- * <li><strong>Rule definition:</strong> Rule</li>
- * <li><strong>Atomic rule parts:</strong> Any, Charset, EOF, Literal, Range</li>
- * <li><strong>Composite rule parts:</strong> Negation, Quantifier, Reference, Subrule, Sequence</li>
- * </ul>
+ * The parser interface. Parsers reflect the building parts of a grammar. The core grammar syntax describes a formal
+ * language targeted to parsers of finite character sequences.
+ * </p>
+ * 
+ * <h2>Character Groups</h2>
+ * 
  * <p>
- * <strong>Whitespace handling:</strong>
+ * These are the atomic building parts to match groups of characters:
+ * </p>
+ * 
  * <ul>
- * <li>The parser has only on phase and switches modes: parsing, lexing.</li>
- * <li>Whilespace is consumed in Reference rules parts and handled by lexical scope.</li>
- * <li>Combination of tokens is handled in Quantifier and Sequence.</li>
- * <li>When in parsing mode (lexingScope = false) then whitespace splits tokens.</li>
- * <li>When in lexing mode (lexingScope = true) then whitespace is part of tokens.</li>
- * <li>When in lexing mode or the child parser is lexical then Quantifiers combine tokens.</li>
+ * <li>{@code 'text'} -- a Literal containing one or more characters</li>
+ * <li>{@code .} -- Any, a single character</li>
+ * <li>{@code 'a'..'z'} -- a Range of characters</li>
+ * <li>{@code [a-zA-Z$]} -- a Charset, equals {@code ( 'a'..'z' | 'A'..'Z' | '$' )}</li>
+ * <li>{@code EOF} -- end of file, matches no character</li>
  * </ul>
+ * 
+ * <p>
+ * Single character matchers (Any, Range and Charset) and EOF may be negated:
+ * </p>
+ * 
+ * <ul>
+ * <li>{@code !T} -- negation, character not in {@code T}</li>
+ * </ul>
+ * 
+ * <p>
+ * The following rules hold:
+ * </p>
+ * 
+ * <ul>
+ * <li>{@code !!T} = {@code T}</li>
+ * <li>{@code !.} = {@code EOF}, {@code !EOF} = {@code .}</li>
+ * </ul>
+ * 
+ * <p>
+ * The operator precedence of {@code !} is the highest of all, e.g. {@code !T*} is the same as {@code (!T)*}.
+ * </p>
+ * 
+ * <h2>Rules</h2>
+ * 
+ * <p>
+ * We distinguish between parser rules and lexer rules, which have the same syntax:
+ * </p>
+ * 
+ * <pre>
+ * <code>
+ * rule : alternative_1 | ... | alternative_n
+ * </code>
+ * </pre>
+ * 
+ * <p>
+ * where {@code n > 0} and rule is the name of the rule. The name is unique in the scope of a grammar. The first
+ * matching alternative wins. The alternatives are composed of:
+ * </p>
+ * 
+ * <ul>
+ * <li>{@code ruleRef} -- reference to another rule by name</li>
+ * <li>{@code T?} -- zero or one occurrence of {@code T}</li>
+ * <li>{@code T*} -- zero or more occurrences of {@code T}</li>
+ * <li>{@code T+} -- one or more occurrences of {@code T}</li>
+ * <li><code>T{m,n}</code> -- m to n occurrences of {@code T}</li>
+ * <li><code>T{m}</code> -- same as <code>T{m,m}</code></li>
+ * <li>{@code T1 ... Tn} -- a sequence which matches if all parts match</li>
+ * <li>{@code ( T1 | ... | Tn )} -- a subrule of alternatives, first match wins</li>
+ * </ul>
+ * 
+ * <p>
+ * In the following, the difference between lexer and parser rules is described.
+ * </p>
+ * 
+ * <h3>Lexer rules</h3>
+ * 
+ * <ul>
+ * <li>Lexer rules (short: token) are the leafs of a parse tree.</li>
+ * <li>They consist of a (non-empty) sequence of characters.</li>
+ * <li>There is one empty token, {@code EOF}.</li>
+ * <li>The name of a tokens is not part of the parse tree.</li>
+ * <li>A token name starts with an upper case character.</li>
+ * <li>Whitespace is not parsed automatically within a token rule.</li>
+ * <li>Tokens may contain references to other tokens.</li>
+ * <li>Tokens may not contain references to rules other than tokens.</li>
+ * </ul>
+ * 
+ * <h3>Parser rules</h3>
+ * 
+ * <ul>
+ * <li>Parser rules (short: rule) are the inner nodes of a parse tree.</li>
+ * <li>They have a name and a non-empty list of children.</li>
+ * <li>The name of a rule and it's children are part of the parse tree.</li>
+ * <li>A rule name starts with a lower case character.</li>
+ * <li>Whitespace is parsed automatically within a parser rule.</li>
+ * <li>Rules may contain references to other rules and tokens.</li>
+ * </ul>
+ * 
+ * <h3>Lexical Token Definitions within Parser Rules</h3>
+ * 
+ * <p>
+ * A parser rule part T is purely lexical if it is a combination of the following rule parts:
+ * </p>
+ * 
+ * <ul>
+ * <li>A single character matcher (Any {@code .}, Range {@code 'a'..'z'} or Charset {@code [a-zA-Z$]})</li>
+ * <li>End of file matcher ({@code EOF})</li>
+ * <li>Negation ({@code !T})</li>
+ * <li>Quantification ({@code T?}, {@code T*}, {@code T+}, <code>T{m,n}</code>, <code>T{m}</code>)</li>
+ * </ul>
+ * 
+ * <p>
+ * Purely lexical parse results are combined to a token.
+ * </p>
  */
 interface Parser extends Serializable {
 
 	// TODO: issue #48: make whitespace configurable
 	static final Rule DEFAULT_WS = new Rule("WS", new Quantifier(new Charset(" \t\r\n"), 0, UNBOUNDED));
+
+	/**
+	 * A parser rule part T is purely lexical (short: pure) if it is a combination of the following rule parts:
+	 * 
+	 * <ul>
+	 * <li>A single character matcher Any {@code .}, Range {@code 'a'..'z'} or Charset {@code [a-zA-Z$]}</li>
+	 * <li>End of file matcher {@code EOF}</li>
+	 * <li>Negation {@code !T}</li>
+	 * <li>Quantification {@code T?}, {@code T*}, {@code T+}, <code>T{m,n}</code>, <code>T{m}</code></li>
+	 * </ul>
+	 * 
+	 * Purely lexical parse results are combined to a token.
+	 * 
+	 * @return true, if this parser is pure, false otherwise.
+	 */
+	boolean isPure();
 
 	/**
 	 * Trying to parse a text using the current parser, starting at the given index.
@@ -91,6 +201,11 @@ interface Parser extends Serializable {
 
 		// hidden
 		private Any() {
+		}
+
+		@Override
+		public boolean isPure() {
+			return true;
 		}
 
 		@Override
@@ -143,6 +258,11 @@ interface Parser extends Serializable {
 			requireNotNullOrEmpty(charsetString, "charsetString is null or empty");
 			this.charsetString = charsetString;
 			this.inSet = parse(charsetString);
+		}
+
+		@Override
+		public boolean isPure() {
+			return true;
 		}
 
 		@Override
@@ -208,6 +328,11 @@ interface Parser extends Serializable {
 		}
 
 		@Override
+		public boolean isPure() {
+			return true;
+		}
+
+		@Override
 		public Either<Integer, ParseResult> parse(String text, int index, boolean lexicalScope, boolean negated) {
 			if (negated) {
 				return Any.INSTANCE.parse(text, index, lexicalScope, false);
@@ -250,6 +375,11 @@ interface Parser extends Serializable {
 		}
 
 		@Override
+		public boolean isPure() {
+			return false;
+		}
+
+		@Override
 		public Either<Integer, ParseResult> parse(String text, int index, boolean lexicalScope) {
 			final boolean match = text.startsWith(literal, index);
 			return match ? token(text, index, literal.length(), false) : stoppedAt(index);
@@ -278,6 +408,11 @@ interface Parser extends Serializable {
 		@Override
 		public Parser[] getChildren() {
 			return new Parser[] { parser };
+		}
+
+		@Override
+		public boolean isPure() {
+			return parser.isPure();
 		}
 
 		@Override
@@ -331,25 +466,30 @@ interface Parser extends Serializable {
 		}
 
 		@Override
+		public boolean isPure() {
+			return parser.isPure();
+		}
+
+		@Override
 		public Either<Integer, ParseResult> parse(String text, int index, boolean lexicalScope) {
 			final List<Node<Token>> tokens = new ArrayList<>();
+			final boolean lexical = lexicalScope || isPure();
 			int currentIndex = index;
 			for (int i = 0; i < upperBound; i++) {
-				final Either<Integer, ParseResult> parsed = parser.parse(text,
-						skipWhitespace(text, currentIndex, lexicalScope), lexicalScope);
+				final Either<Integer, ParseResult> parsed = parser.parse(text, currentIndex, lexicalScope);
 				if (parsed.isRight()) {
 					final ParseResult parseResult = parsed.right().get();
 					tokens.addAll(parseResult.tokens);
-					currentIndex = parseResult.endIndex;
+					currentIndex = skipWhitespace(text, parseResult.endIndex, lexical);
 				} else {
 					if (i < lowerBound) {
 						return parsed;
 					} else {
-						return right(tokens, index, skipWhitespace(text, currentIndex, lexicalScope), lexicalScope);
+						return right(tokens, index, currentIndex, lexical);
 					}
 				}
 			}
-			return right(tokens, index, skipWhitespace(text, currentIndex, lexicalScope), lexicalScope);
+			return right(tokens, index, currentIndex, lexical);
 		}
 
 		private Either<Integer, ParseResult> right(List<Node<Token>> tokens, int index, int currentIndex,
@@ -411,6 +551,11 @@ interface Parser extends Serializable {
 		}
 
 		@Override
+		public boolean isPure() {
+			return true;
+		}
+
+		@Override
 		public Either<Integer, ParseResult> parse(String text, int index, boolean lexicalScope, boolean negated) {
 			final boolean match = index < text.length() && (isInRange.test(text.charAt(index)) ^ negated);
 			return match ? token(text, index, 1, false) : stoppedAt(index);
@@ -446,10 +591,13 @@ interface Parser extends Serializable {
 		}
 
 		@Override
+		public boolean isPure() {
+			return false;
+		}
+
+		@Override
 		public Either<Integer, ParseResult> parse(String text, int index, boolean lexicalScope) {
-			return getRule()//
-					.parse(text, index, lexicalScope)
-					.map(p -> lexicalScope ? p : new ParseResult(p.tokens, p.startIndex, p.endIndex, lexicalScope));
+			return getRule().parse(text, index, lexicalScope);
 		}
 
 		@Override
@@ -508,6 +656,11 @@ interface Parser extends Serializable {
 		@Override
 		public Parser[] getChildren() {
 			return alternatives;
+		}
+
+		@Override
+		public boolean isPure() {
+			return false;
 		}
 
 		@Override
@@ -574,6 +727,11 @@ interface Parser extends Serializable {
 		}
 
 		@Override
+		public boolean isPure() {
+			return false;
+		}
+
+		@Override
 		public Either<Integer, ParseResult> parse(String text, int index, boolean lexicalScope) {
 			final List<Node<Token>> tokens = new ArrayList<>();
 			int currentIndex = index;
@@ -617,6 +775,11 @@ interface Parser extends Serializable {
 		@Override
 		public Parser[] getChildren() {
 			return alternatives;
+		}
+
+		@Override
+		public boolean isPure() {
+			return false;
 		}
 
 		@Override

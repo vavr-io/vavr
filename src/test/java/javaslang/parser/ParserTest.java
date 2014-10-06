@@ -307,7 +307,7 @@ public class ParserTest {
 		final Parser parser = new Quantifier(Any.INSTANCE, 0, UNBOUNDED);
 		final String text = "  ";
 		final Either<Integer, ParseResult> actual = parser.parse(text, 0, false);
-		assertThat(actual).isEqualTo(emptyParseResult(0, 2));
+		assertThat(actual).isEqualTo(parseResult(text, 0, 2));
 	}
 
 	// 1..n
@@ -397,6 +397,24 @@ public class ParserTest {
 				ParserTest::expr)), new Sequence(new Reference(ParserTest::expr), new Literal("*"), new Reference(
 				ParserTest::expr)), new Reference(() -> new Rule("INT", new Quantifier(new Range('0', '9'), 1,
 				UNBOUNDED))));
+	}
+
+	@Test
+	public void shouldParsePureRuleParts() {
+		// rule : 'Hello' [a-zA-Z]+ '!'
+		final Rule rule = new Rule("rule", new Sequence(new Literal("Hello"), new Quantifier(new Charset("a-zA-Z"), 1,
+				UNBOUNDED), new Literal("!")));
+		final String actual = rule.parse("Hello Daniel!", 0, false).toString();
+		assertThat(actual).isEqualTo("Right([Node(rule 'Hello' 'Daniel' '!')])");
+	}
+
+	@Test
+	public void shouldParsePureRulePartsWithoutSkippingWhitespace() {
+		// rule : 'Hello' [a-zA-Z]+ '!'
+		final Rule rule = new Rule("rule", new Sequence(new Literal("Hello"), new Quantifier(new Charset("a-zA-Z"), 1,
+				UNBOUNDED), new Literal("!")));
+		final String actual = rule.parse("Hello D a n i e l!", 0, false).toString();
+		assertThat(actual).isEqualTo("Left(8)"); // no viable alternatve at space ' ' behind 'D'
 	}
 
 	// Rule.equals
@@ -561,9 +579,5 @@ public class ParserTest {
 
 	private static Either<Integer, ParseResult> parseResult(String text, int startIndex, int endIndex) {
 		return parseResult(Arrays.asList(node(new Token(null, text, startIndex, endIndex))), startIndex, endIndex);
-	}
-
-	private static Either<Integer, ParseResult> emptyParseResult(int startIndex, int endIndex) {
-		return parseResult(Collections.emptyList(), startIndex, endIndex);
 	}
 }
