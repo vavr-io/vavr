@@ -26,6 +26,7 @@ import javaslang.monad.Right;
 import javaslang.parser.Parser.Any;
 import javaslang.parser.Parser.Charset;
 import javaslang.parser.Parser.EOF;
+import javaslang.parser.Parser.Empty;
 import javaslang.parser.Parser.Literal;
 import javaslang.parser.Parser.Negation;
 import javaslang.parser.Parser.ParseResult;
@@ -141,6 +142,38 @@ public class ParserTest {
 	@Test
 	public void shouldBePureCharset() {
 		assertThat(new Charset("a").isPure()).isTrue();
+	}
+
+	// -- Empty parser
+
+	@Test
+	public void shouldConvertEmptyToString() {
+		assertThat(Empty.INSTANCE.toString()).isEmpty();
+	}
+
+	@Test
+	public void shouldRecognizeEmpty() {
+		final String actual = parse(Empty.INSTANCE, "", false);
+		assertThat(actual).isEqualTo("");
+	}
+
+	@Test
+	public void shouldRecognizeNotEmpty() {
+		final String actual = parse(Empty.INSTANCE, "abc", false);
+		assertThat(actual).isEqualTo("");
+	}
+
+	@Test
+	public void shouldNotBePureEmpty() {
+		assertThat(Empty.INSTANCE.isPure()).isFalse();
+	}
+
+	// serialization
+
+	@Test
+	public void shouldPreserveSingletonWhenDeserializingEmpty() {
+		final Object empty = Serializables.deserialize(Serializables.serialize(Empty.INSTANCE));
+		assertThat(empty == Empty.INSTANCE).isTrue();
 	}
 
 	// -- EOF parser
