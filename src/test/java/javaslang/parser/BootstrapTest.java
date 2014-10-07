@@ -45,11 +45,11 @@ public class BootstrapTest {
 			return rule("grammar", seq(str("grammar"), ref(this::ID), _0_1(str(";")), _1_n(ref(this::rule)), EOF));
 		}
 
-		// rule : ID ':' rulePart ( '|' rulePart )* ';'?
+		// rule : ID ':' rulePart? ( '|' rulePart? )* ';'?
 		Rule rule() {
 			return rule(
 					"rule",
-					seq(ref(this::ID), str(":"), ref(this::rulePart), _0_n(str("|"), ref(this::rulePart)),
+					seq(ref(this::ID), str(":"), _0_1(ref(this::rulePart)), _0_n(str("|"), _0_1(ref(this::rulePart))),
 							_0_1(str(";"))));
 		}
 
@@ -123,12 +123,12 @@ public class BootstrapTest {
 									seq(str("{"), ref(this::INT), str("}")))));
 		}
 
-		// subrule : '(' ( ID ':' )? rulePart ( '|' rulePart )* ')'
+		// subrule : '(' ( ID ':' )? rulePart? ( '|' rulePart? )* ')'
 		Rule subrule() {
 			return rule(
 					"subrule",
-					seq(str("("), _0_1(ref(this::ID), str(":")), ref(this::rulePart),
-							_0_n(str("|"), ref(this::rulePart)), str(")")));
+					seq(str("("), _0_1(ref(this::ID), str(":")), _0_1(ref(this::rulePart)),
+							_0_n(str("|"), _0_1(ref(this::rulePart))), str(")")));
 		}
 
 		// sequence : rulePart*

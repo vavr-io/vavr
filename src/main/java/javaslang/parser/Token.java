@@ -73,6 +73,6 @@ public final class Token {
 
 	@Override
 	public String toString() {
-		return (id != null) ? id : (length > 0) ? "'" + getValue() + "'" : "<EOF>";
+		return (id != null) ? id : (length > 0) ? "'" + getValue() + "'" : (index == text.length()) ? "<EOF>" : "ε";
 	}
 }

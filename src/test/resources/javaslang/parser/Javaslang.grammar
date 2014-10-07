@@ -2,7 +2,7 @@ grammar Javaslang
 
 grammar : 'grammar' ID ';'? rule+ EOF
 
-rule : ID ':' rulePart ( '|' rulePart )* ';'?
+rule : ID ':' rulePart? ( '|' rulePart? )* ';'?
 
 rulePart
   : negatable
@@ -35,7 +35,7 @@ Reference : ID
 
 quantifier : rulePart ( '?' | '*' | '+' | '{' INT ',' INT '}' | '{' INT '}' )
 
-subrule : '(' ( ID ':' )? rulePart ( '|' rulePart )* ')'
+subrule : '(' ( ID ':' )? rulePart? ( '|' rulePart? )* ')'
 
 sequence : rulePart*
 

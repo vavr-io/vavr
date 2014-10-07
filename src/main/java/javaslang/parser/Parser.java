@@ -85,7 +85,8 @@ import javaslang.monad.Right;
  * 
  * <p>
  * where {@code n > 0} and rule is the name of the rule. The name is unique in the scope of a grammar. The first
- * matching alternative wins. The alternatives are composed of:
+ * matching alternative wins. The alternatives are composed of the building parts of character groups as described above
+ * and:
  * </p>
  * 
  * <ul>
@@ -98,6 +99,16 @@ import javaslang.monad.Right;
  * <li>{@code T1 ... Tn} -- a sequence which matches if all parts match</li>
  * <li>{@code ( T1 | ... | Tn )} -- a subrule of alternatives, first match wins</li>
  * </ul>
+ * 
+ * <p>
+ * Additionally there are empty (sub)rule alternatives:
+ * </p>
+ *
+ * <pre>
+ * <code>
+ * rule : ( | alternative1) | | ( alternative2 | )
+ * </code>
+ * </pre>
  * 
  * <p>
  * In the following, the difference between lexer and parser rules is described.
@@ -322,9 +333,52 @@ interface Parser extends Serializable {
 	}
 
 	/**
+	 * Empty alternative parser: {@code ( T | )}
+	 * <p>
+	 * Recognizes literally nothing, i.e. returns an empty token.
+	 */
+	static class Empty implements RulePart {
+
+		private static final long serialVersionUID = 5479444554723545030L;
+
+		static final Empty INSTANCE = new Empty();
+
+		// hidden
+		private Empty() {
+		}
+
+		@Override
+		public boolean isPure() {
+			return false;
+		}
+
+		@Override
+		public Either<Integer, ParseResult> parse(String text, int index, boolean lexicalScope) {
+			return token(text, index, 0, false);
+		}
+
+		@Override
+		public String toString() {
+			return "";
+		}
+
+		// -- Serializable implementation
+
+		/**
+		 * Instance control for object serialization.
+		 * 
+		 * @return The singleton instance of Empty.
+		 * @see java.io.Serializable
+		 */
+		private Object readResolve() {
+			return INSTANCE;
+		}
+	}
+
+	/**
 	 * End-of-file parser: {@code EOF}
 	 * <p>
-	 * Recognized the end of the input.
+	 * Recognizes the end of the input.
 	 */
 	static class EOF implements NegatableRulePart {
 
