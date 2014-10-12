@@ -22,7 +22,7 @@ The .jar is available at [Maven Central](http://search.maven.org/#search|ga|1|a:
 
 ### Standalone
 
-Because Javaslang dot _not_ depend on any libraries (other than the JVM) you can easily add it as standalone .jar to your classpath.
+Because Javaslang does _not_ depend on any libraries (other than the JVM) you can easily add it as standalone .jar to your classpath.
 
 Javaslang can be downloaded [here](http://search.maven.org/#search|ga|1|a:"javaslang").
 
