@@ -7,7 +7,9 @@ package javaslang.collection;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import javaslang.monad.None;
 import javaslang.monad.Option;
@@ -17,6 +19,21 @@ public final class Iterators {
 
 	private Iterators() {
 		throw new AssertionError(Iterators.class.getName() + " is not intended to be instantiated.");
+	}
+
+	public static <T> Iterator<T> of(BooleanSupplier hasNext, Supplier<T> next) {
+		return new Iterator<T>() {
+
+			@Override
+			public boolean hasNext() {
+				return hasNext.getAsBoolean();
+			}
+
+			@Override
+			public T next() {
+				return next.get();
+			}
+		};
 	}
 
 	public static <T> Iterator<T> of(Iterator<T> iterator, Predicate<? super T> whileCondition) {

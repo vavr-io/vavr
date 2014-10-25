@@ -23,6 +23,7 @@ import java.util.function.Supplier;
 import java.util.function.ToDoubleFunction;
 import java.util.function.ToIntFunction;
 import java.util.function.ToLongFunction;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collector;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
@@ -30,6 +31,8 @@ import java.util.stream.LongStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import javaslang.Tuples;
+import javaslang.Tuples.Tuple2;
 import javaslang.collection.Iterators;
 
 /**
@@ -50,6 +53,22 @@ public final class SStream<T> implements Stream<T>, Iterable<T> {
 
 	public SStream<T> limitUntil(Predicate<? super T> predicate) {
 		return SStream.of(Iterators.of(iterator(), predicate.negate()));
+	}
+
+	public SStream<Tuple2<T, Integer>> zipWithIndex() {
+		return zip(SStream.iterate(0, i -> i + 1), (t1, t2) -> Tuples.of(t1, t2));
+	}
+
+	public <U> SStream<Tuple2<T, U>> zip(SStream<U> other) {
+		return zip(other, (t1, t2) -> Tuples.of(t1, t2));
+	}
+
+	public <U, R> SStream<R> zip(SStream<U> other, BiFunction<T, U, R> zipper) {
+		final Iterator<T> left = iterator();
+		final Iterator<U> right = other.iterator();
+		final Iterator<R> zipped = Iterators.of(() -> left.hasNext() && right.hasNext(),
+				() -> zipper.apply(left.next(), right.next()));
+		return SStream.of(zipped);
 	}
 
 	// -- Stream impl (High-Level Stream API)
@@ -307,6 +326,24 @@ public final class SStream<T> implements Stream<T>, Iterable<T> {
 
 	// -- factory methods
 
+	// TODO: provide unboxed version DoubleSStream
+	public static SStream<Double> of(DoubleStream stream) {
+		requireNonNull(stream, "stream is null");
+		return new SStream<>(stream.boxed());
+	}
+
+	// TODO: provide unboxed version IntSStream
+	public static SStream<Integer> of(IntStream stream) {
+		requireNonNull(stream, "stream is null");
+		return new SStream<>(stream.boxed());
+	}
+
+	// TODO: provide unboxed version LongSStream
+	public static SStream<Long> of(LongStream stream) {
+		requireNonNull(stream, "stream is null");
+		return new SStream<>(stream.boxed());
+	}
+
 	public static <T> SStream<T> of(Stream<T> stream) {
 		requireNonNull(stream, "stream is null");
 		return new SStream<>(stream);
@@ -327,5 +364,33 @@ public final class SStream<T> implements Stream<T>, Iterable<T> {
 		return SStream.of(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED));
 	}
 
-	// TODO: more factory methods (see java.util.stream.Stream)
+	public static <T> SStream<T> empty() {
+		return SStream.of(Stream.empty());
+	}
+
+	public static <T> SStream<T> of(T t) {
+		return SStream.of(Stream.of(t));
+	}
+
+	@SafeVarargs
+	public static <T> SStream<T> of(T... values) {
+		requireNonNull(values, "values is null");
+		return SStream.of(Stream.of(values));
+	}
+
+	public static <T> SStream<T> iterate(final T seed, final UnaryOperator<T> f) {
+		requireNonNull(f, "f is null");
+		return SStream.of(Stream.iterate(seed, f));
+	}
+
+	public static <T> SStream<T> generate(Supplier<T> supplier) {
+		requireNonNull(supplier, "supplier is null");
+		return SStream.of(Stream.generate(supplier));
+	}
+
+	public static <T> SStream<T> concat(Stream<? extends T> a, Stream<? extends T> b) {
+		requireNonNull(a, "stream a is null");
+		requireNonNull(b, "stream b is null");
+		return SStream.of(Stream.concat(a, b));
+	}
 }
