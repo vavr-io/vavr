@@ -96,7 +96,7 @@ public class TreeTest {
 
 	@Test
 	public void shouldHaveNoChildrenWhenCreatedWithValue() {
-		assertThat(tree(1).getChildren()).isEqualTo(List.empty());
+		assertThat(tree(1).getChildren()).isEqualTo(List.nil());
 	}
 
 	@Test

@@ -628,7 +628,7 @@ public class TuplesTest {
 	}
 
 	@Test
-	public void shouldSerializeDeserializeNonEmptyList() {
+	public void shouldSerializeDeserializeNonEmptyTuple() {
 		final Object actual = deserialize(serialize(Tuples.of(1, 2, 3)));
 		final Object expected = Tuples.of(1, 2, 3);
 		assertThat(actual).isEqualTo(expected);

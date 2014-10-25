@@ -16,7 +16,7 @@ import javaslang.Serializables;
 
 import org.junit.Test;
 
-public class LinearListTest {
+public class ConsTest {
 
 	@Test
 	public void shouldNotSerializeEnclosingClass() throws Exception {
@@ -25,7 +25,7 @@ public class LinearListTest {
 	}
 
 	@Test
-	public void shouldNotDeserializeLinearListWithSizeLessThanOne() {
+	public void shouldNotDeserializeListWithSizeLessThanOne() {
 		AssertionsExtensions.assertThat(() -> {
 			try {
 				/*

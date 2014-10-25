@@ -20,14 +20,14 @@ import javaslang.collection.List.AbstractList;
  */
 // DEV NOTE: class declared final because of serialization proxy pattern.
 // (see Effective Java, 2nd ed., p. 315)
-public final class LinearList<E> extends AbstractList<E> implements Serializable {
+public final class Cons<E> extends AbstractList<E> implements Serializable {
 
 	private static final long serialVersionUID = 53595355464228669L;
 
 	private final E head;
 	private final List<E> tail;
 
-	public LinearList(E head, List<E> tail) {
+	public Cons(E head, List<E> tail) {
 		this.head = head;
 		this.tail = tail;
 	}
@@ -86,17 +86,17 @@ public final class LinearList<E> extends AbstractList<E> implements Serializable
 		private static final long serialVersionUID = 3851894487210781138L;
 
 		// the instance to be serialized/deserialized
-		private transient LinearList<E> list;
+		private transient Cons<E> list;
 
 		/**
-		 * Constructor for the case of serialization, called by {@link LinearList#writeReplace()}.
+		 * Constructor for the case of serialization, called by {@link Cons#writeReplace()}.
 		 * <p>
 		 * The constructor of a SerializationProxy takes an argument that concisely represents the logical state of an
 		 * instance of the enclosing class.
 		 * 
 		 * @param linearList
 		 */
-		SerializationProxy(LinearList<E> list) {
+		SerializationProxy(Cons<E> list) {
 			this.list = list;
 		}
 
@@ -128,13 +128,13 @@ public final class LinearList<E> extends AbstractList<E> implements Serializable
 			if (size <= 0) {
 				throw new InvalidObjectException("No elements");
 			}
-			List<E> temp = EmptyList.instance();
+			List<E> temp = Nil.instance();
 			for (int i = 0; i < size; i++) {
 				@SuppressWarnings("unchecked")
 				final E element = (E) s.readObject();
 				temp = temp.prepend(element);
 			}
-			list = (LinearList<E>) temp.reverse();
+			list = (Cons<E>) temp.reverse();
 		}
 
 		/**

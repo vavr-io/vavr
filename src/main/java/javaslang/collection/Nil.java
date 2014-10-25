@@ -16,19 +16,19 @@ import javaslang.collection.List.AbstractList;
  * 
  * @param <E> Component type of the List.
  */
-public final class EmptyList<E> extends AbstractList<E> implements Serializable {
+public final class Nil<E> extends AbstractList<E> implements Serializable {
 
 	private static final long serialVersionUID = 809473773619488283L;
 
-	private static final EmptyList<?> INSTANCE = new EmptyList<>();
+	private static final Nil<?> INSTANCE = new Nil<>();
 
 	// hidden
-	private EmptyList() {
+	private Nil() {
 	}
 
-	public static <T> EmptyList<T> instance() {
+	public static <T> Nil<T> instance() {
 		@SuppressWarnings("unchecked")
-		final EmptyList<T> instance = (EmptyList<T>) INSTANCE;
+		final Nil<T> instance = (Nil<T>) INSTANCE;
 		return instance;
 	}
 
@@ -52,7 +52,7 @@ public final class EmptyList<E> extends AbstractList<E> implements Serializable 
 	/**
 	 * Instance control for object serialization.
 	 * 
-	 * @return The singleton instance of EmptyList.
+	 * @return The singleton instance of Nil.
 	 * @see java.io.Serializable
 	 */
 	private Object readResolve() {

@@ -36,14 +36,13 @@ import javaslang.Tuples.Tuple2;
  * <p>
  * There are two implementations of the interface List:
  * <ul>
- * <li>{@link EmptyList}, which represents a List containing no elements.</li>
- * <li>{@link LinearList}, which represents a List containing elements.</li>
+ * <li>{@link Nil}, which represents a List containing no elements.</li>
+ * <li>{@link Cons}, which represents a List containing elements.</li>
  * </ul>
  * <p>
- * Use {@code List.of(1, 2, 3)} instead of
- * {@code new LinearList(1, new LinearList(2, new LinearList(3, EmptyList.instance())))}.
+ * Use {@code List.of(1, 2, 3)} instead of {@code new Cons(1, new Cons(2, new Cons(3, Nil.instance())))}.
  * <p>
- * Use {@code List.empty()} instead of {@code EmptyList.instance()}.
+ * Use {@code List.nil()} instead of {@code Nil.instance()}.
  * <p>
  * In contrast to the mutable List variant {@link java.util.ArrayList}, it does not make sense for immutable Lists to
  * implement the interface {@link java.lang.Cloneable} because of the following conclusion: <blockquote>
@@ -58,7 +57,7 @@ public interface List<E> extends Iterable<E> {
 	 * Returns the first element of this List in O(1).
 	 * 
 	 * @return The head of this List.
-	 * @throws UnsupportedOperationException if this is EmptyList.
+	 * @throws UnsupportedOperationException if this is Nil.
 	 */
 	E head();
 
@@ -66,7 +65,7 @@ public interface List<E> extends Iterable<E> {
 	 * Returns all elements except the first element of this List in O(1).
 	 * 
 	 * @return The tail of this List.
-	 * @throws UnsupportedOperationException if this is EmptyList.
+	 * @throws UnsupportedOperationException if this is Nil.
 	 */
 	List<E> tail();
 
@@ -90,7 +89,7 @@ public interface List<E> extends Iterable<E> {
 	 *        return reverse(reversed.prepend(remaining.head()), remaining.tail());
 	 *     }
 	 * }
-	 * reverse(EmptyList.instance(), this);</code>
+	 * reverse(Nil.instance(), this);</code>
 	 * </pre>
 	 * 
 	 * but implemented without recursion.
@@ -98,7 +97,7 @@ public interface List<E> extends Iterable<E> {
 	 * @return A new List containing the elements of this List in reverse order.
 	 */
 	default List<E> reverse() {
-		List<E> result = EmptyList.instance();
+		List<E> result = Nil.instance();
 		for (List<E> list = this; !list.isEmpty(); list = list.tail()) {
 			result = result.prepend(list.head());
 		}
@@ -129,7 +128,7 @@ public interface List<E> extends Iterable<E> {
 	 */
 	default List<E> append(E element) {
 		if (isEmpty()) {
-			return new LinearList<>(element, this);
+			return new Cons<>(element, this);
 		} else {
 			return reverse().prepend(element).reverse();
 		}
@@ -154,13 +153,13 @@ public interface List<E> extends Iterable<E> {
 	/**
 	 * Prepends an element to this List in O(1).
 	 * <p>
-	 * The result is equivalent to {@code new LinearList<>(element, this)}.
+	 * The result is equivalent to {@code new Cons<>(element, this)}.
 	 * 
 	 * @param element An element.
 	 * @return A new List containing the elements of this list, prepended the given element.
 	 */
 	default List<E> prepend(E element) {
-		return new LinearList<>(element, this);
+		return new Cons<>(element, this);
 	}
 
 	/**
@@ -217,7 +216,7 @@ public interface List<E> extends Iterable<E> {
 		if (index < 0) {
 			throw new IndexOutOfBoundsException("insert(" + index + ", e)");
 		}
-		List<E> preceding = EmptyList.instance();
+		List<E> preceding = Nil.instance();
 		List<E> tail = this;
 		for (int i = index; i > 0; i--, tail = tail.tail()) {
 			if (tail.isEmpty()) {
@@ -253,10 +252,10 @@ public interface List<E> extends Iterable<E> {
 	 *     if (elements.isEmpty()) {
 	 *         return this;
 	 *     } else {
-	 *         return new LinearList(elements.head(), insertAll(0, elements.tail()));
+	 *         return new Cons(elements.head(), insertAll(0, elements.tail()));
 	 *     }
 	 * } else {
-	 *     return new LinearList(head(), tail().insertAll(index - 1, elements));
+	 *     return new Cons(head(), tail().insertAll(index - 1, elements));
 	 * }</code>
 	 * </pre>
 	 * 
@@ -269,7 +268,7 @@ public interface List<E> extends Iterable<E> {
 		if (index < 0) {
 			throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
 		}
-		List<E> preceding = EmptyList.instance();
+		List<E> preceding = Nil.instance();
 		List<E> tail = this;
 		for (int i = index; i > 0; i--, tail = tail.tail()) {
 			if (tail.isEmpty()) {
@@ -297,7 +296,7 @@ public interface List<E> extends Iterable<E> {
 	 * } else if (head().equals(element)) {
 	 *     return tail();
 	 * } else {
-	 *     return new LinearList(head(), tail().remove(element));
+	 *     return new Cons(head(), tail().remove(element));
 	 * }</code>
 	 * </pre>
 	 * 
@@ -308,7 +307,7 @@ public interface List<E> extends Iterable<E> {
 	 *         not part of the list.
 	 */
 	default List<E> remove(E element) {
-		List<E> preceding = List.empty();
+		List<E> preceding = List.nil();
 		List<E> tail = this;
 		boolean found = false;
 		while (!found && !tail.isEmpty()) {
@@ -340,7 +339,7 @@ public interface List<E> extends Iterable<E> {
 	 * } else if (elements.contains(head())) {
 	 *     return tail().removeAll(elements);
 	 * } else {
-	 *     return new LinearList(head(), tail().removeAll(elements));
+	 *     return new Cons(head(), tail().removeAll(elements));
 	 * }</code>
 	 * </pre>
 	 * 
@@ -350,7 +349,7 @@ public interface List<E> extends Iterable<E> {
 	default List<E> removeAll(Iterable<? extends E> elements) {
 		@SuppressWarnings("unchecked")
 		List<E> removed = (List<E>) List.of(elements);
-		List<E> result = List.empty();
+		List<E> result = List.nil();
 		for (E element : this) {
 			if (!removed.contains(element)) {
 				result = result.prepend(element);
@@ -370,7 +369,7 @@ public interface List<E> extends Iterable<E> {
 	 * <code>if (isEmpty())
 	 *     return this;
 	 * } else if (elements.contains(head())) {
-	 *     return new LinearList(head(), tail().retainAll(elements));
+	 *     return new Cons(head(), tail().retainAll(elements));
 	 * } else {
 	 *     return tail().retainAll(elements);
 	 * }</code>
@@ -382,7 +381,7 @@ public interface List<E> extends Iterable<E> {
 	default List<E> retainAll(Iterable<? extends E> elements) {
 		@SuppressWarnings("unchecked")
 		List<E> keeped = (List<E>) List.of(elements);
-		List<E> result = List.empty();
+		List<E> result = List.nil();
 		for (E element : this) {
 			if (keeped.contains(element)) {
 				result = result.prepend(element);
@@ -397,14 +396,14 @@ public interface List<E> extends Iterable<E> {
 	 * Example: {@code List.of(1,2,3,2).replace(2,4)} equals {List.of(1,4,3,2)}.
 	 * <p>
 	 * The result is equivalent to:
-	 * {@code isEmpty() ? this : Objects.equals(head(), currentElement) ? new LinearList(newElement, tail()) : new LinearList(head(), tail().replace(currentElement, newElement))}.
+	 * {@code isEmpty() ? this : Objects.equals(head(), currentElement) ? new Cons(newElement, tail()) : new Cons(head(), tail().replace(currentElement, newElement))}.
 	 * 
 	 * @param currentElement The element to be replaced.
 	 * @param newElement The replacement for currentElement.
 	 * @return A List of elements, where the first occurrence (if exists) of currentElement is replaced with newElement.
 	 */
 	default List<E> replace(E currentElement, E newElement) {
-		List<E> preceding = EmptyList.instance();
+		List<E> preceding = Nil.instance();
 		List<E> tail = this;
 		while (!tail.isEmpty() && !Objects.equals(tail.head(), currentElement)) {
 			preceding = preceding.prepend(tail.head());
@@ -427,7 +426,7 @@ public interface List<E> extends Iterable<E> {
 	 * Example: {@code List.of(1,2,3,2).replaceAll(2,4)} equals {List.of(1,4,3,4)}.
 	 * <p>
 	 * The result is equivalent to:
-	 * {@code isEmpty() ? this : new LinearList(Objects.equals(head(), currentElement) ? newElement : head(), tail().replaceAll(currentElement, newElement))}.
+	 * {@code isEmpty() ? this : new Cons(Objects.equals(head(), currentElement) ? newElement : head(), tail().replaceAll(currentElement, newElement))}.
 	 * 
 	 * @param currentElement The element to be replaced.
 	 * @param newElement The replacement for currentElement.
@@ -435,7 +434,7 @@ public interface List<E> extends Iterable<E> {
 	 */
 
 	default List<E> replaceAll(E currentElement, E newElement) {
-		List<E> result = EmptyList.instance();
+		List<E> result = Nil.instance();
 		for (List<E> list = this; !list.isEmpty(); list = list.tail()) {
 			final E head = list.head();
 			final E elem = Objects.equals(head, currentElement) ? newElement : head;
@@ -451,13 +450,13 @@ public interface List<E> extends Iterable<E> {
 	 * Example: {@code List.of(1,2,3).replaceAll(i -> i + 1)} equals {List.of(2,3,4)}.
 	 * <p>
 	 * The result is equivalent to:
-	 * {@code isEmpty() ? this : new LinearList(operator.apply(head()), tail().replaceAll(operator))}.
+	 * {@code isEmpty() ? this : new Cons(operator.apply(head()), tail().replaceAll(operator))}.
 	 * 
 	 * @param operator An unary operator.
 	 * @return A List of elements transformed by the given operator.
 	 */
 	default List<E> replaceAll(UnaryOperator<E> operator) {
-		List<E> result = EmptyList.instance();
+		List<E> result = Nil.instance();
 		for (E element : this) {
 			result = result.prepend(operator.apply(element));
 		}
@@ -466,12 +465,12 @@ public interface List<E> extends Iterable<E> {
 
 	/**
 	 * Convenience method, well known from java.util collections. It has no effect on the original List, it just returns
-	 * EmptyList.instance().
+	 * Nil.instance().
 	 * 
-	 * @return EmptyList.instance()
+	 * @return Nil.instance()
 	 */
 	default List<E> clear() {
-		return EmptyList.instance();
+		return Nil.instance();
 	}
 
 	/**
@@ -576,8 +575,8 @@ public interface List<E> extends Iterable<E> {
 	 * Replaces the element at the specified index in O(n).
 	 * <p>
 	 * The result is roughly equivalent to
-	 * {@code (index == 0) ? tail().prepend(element) : new LinearList(head(), tail().set(index - 1, element))} but
-	 * implemented without recursion.
+	 * {@code (index == 0) ? tail().prepend(element) : new Cons(head(), tail().set(index - 1, element))} but implemented
+	 * without recursion.
 	 * 
 	 * @param index An index, where 0 &lt;= index &lt; size()
 	 * @param element A new element.
@@ -591,7 +590,7 @@ public interface List<E> extends Iterable<E> {
 		if (index < 0) {
 			throw new IndexOutOfBoundsException("set(" + index + ", e)");
 		}
-		List<E> preceding = EmptyList.instance();
+		List<E> preceding = Nil.instance();
 		List<E> tail = this;
 		for (int i = index; i > 0; i--, tail = tail.tail()) {
 			if (tail.isEmpty()) {
@@ -692,7 +691,7 @@ public interface List<E> extends Iterable<E> {
 			throw new IndexOutOfBoundsException(String.format("sublist(%s, %s) on list of size %s", beginIndex,
 					endIndex, size()));
 		}
-		List<E> result = EmptyList.instance();
+		List<E> result = Nil.instance();
 		List<E> list = this;
 		for (int i = 0; i < endIndex; i++, list = list.tail()) {
 			if (list.isEmpty()) {
@@ -710,7 +709,7 @@ public interface List<E> extends Iterable<E> {
 	 * Drops the first n elements of this list or the whole list, if this size &lt; n. The elements are dropped in O(n).
 	 * <p>
 	 * The result is equivalent to {@code sublist(n)} but does not throw if n &lt; 0 or n &gt; size(). In the case of n
-	 * &lt; 0 this List is returned, in the case of n &gt; size() the EmptyList is returned.
+	 * &lt; 0 this List is returned, in the case of n &gt; size() the Nil is returned.
 	 * 
 	 * @param n The number of elements to drop.
 	 * @return A list consisting of all elements of this list except the first n ones, or else the empty list, if this
@@ -727,13 +726,13 @@ public interface List<E> extends Iterable<E> {
 	 * Takes the first n elements of this list or the whole list, if this size &lt; n. The elements are taken in O(n).
 	 * <p>
 	 * The result is equivalent to {@code sublist(0, n)} but does not throw if n &lt; 0 or n &gt; size(). In the case of
-	 * n &lt; 0 the EmptyList is returned, in the case of n &gt; size() this List is returned.
+	 * n &lt; 0 the Nil is returned, in the case of n &gt; size() this List is returned.
 	 * 
 	 * @param n The number of elements to take.
 	 * @return A list consisting of the first n elements of this list or the whole list, if it has less than n elements.
 	 */
 	default List<E> take(int n) {
-		List<E> result = EmptyList.instance();
+		List<E> result = Nil.instance();
 		List<E> list = this;
 		for (int i = 0; i < n && !list.isEmpty(); i++, list = list.tail()) {
 			result = result.prepend(list.head());
@@ -753,7 +752,7 @@ public interface List<E> extends Iterable<E> {
 	 */
 	default <T> List<Tuple2<E, T>> zip(Iterable<T> that) {
 		requireNonNull(that, "that is null");
-		List<Tuple2<E, T>> result = EmptyList.instance();
+		List<Tuple2<E, T>> result = Nil.instance();
 		List<E> list1 = this;
 		Iterator<T> list2 = that.iterator();
 		while (!list1.isEmpty() && list2.hasNext()) {
@@ -780,7 +779,7 @@ public interface List<E> extends Iterable<E> {
 	 */
 	default <T> List<Tuple2<E, T>> zipAll(Iterable<T> that, E thisElem, T thatElem) {
 		requireNonNull(that, "that is null");
-		List<Tuple2<E, T>> result = EmptyList.instance();
+		List<Tuple2<E, T>> result = Nil.instance();
 		List<E> list1 = this;
 		Iterator<T> list2 = that.iterator();
 		while (!(list1.isEmpty() && !list2.hasNext())) {
@@ -803,7 +802,7 @@ public interface List<E> extends Iterable<E> {
 	 * @return A new List containing all elements of this List paired with their index, starting with 0.
 	 */
 	default List<Tuple2<E, Integer>> zipWithIndex() {
-		List<Tuple2<E, Integer>> result = EmptyList.instance();
+		List<Tuple2<E, Integer>> result = Nil.instance();
 		int index = 0;
 		for (List<E> list = this; !list.isEmpty(); list = list.tail()) {
 			result = result.prepend(Tuples.of(list.head(), index++));
@@ -967,9 +966,9 @@ public interface List<E> extends Iterable<E> {
 	/**
 	 * Returns a String representation of this List.
 	 * <p>
-	 * If this is EmptyList, {@code "()"} is returned.
+	 * If this is Nil, {@code "()"} is returned.
 	 * <p>
-	 * If this is an LinearList containing the elements e1, ..., en, then {@code "(" + Strings.toString(e1)
+	 * If this is an Cons containing the elements e1, ..., en, then {@code "(" + Strings.toString(e1)
 	 * + ", " + ... + ", " + Strings.toString(en) + ")"} is returned.
 	 * 
 	 * @return This List as String.
@@ -978,13 +977,13 @@ public interface List<E> extends Iterable<E> {
 	String toString();
 
 	/**
-	 * Returns the single instance of EmptyList. Convenience method for {@code EmptyList.instance()} .
+	 * Returns the single instance of Nil. Convenience method for {@code Nil.instance()} .
 	 * 
-	 * @param <T> Component type of EmptyList, determined by type inference in the particular context.
+	 * @param <T> Component type of Nil, determined by type inference in the particular context.
 	 * @return The empty list.
 	 */
-	static <T> List<T> empty() {
-		return EmptyList.instance();
+	static <T> List<T> nil() {
+		return Nil.instance();
 	}
 
 	/**
@@ -992,8 +991,8 @@ public interface List<E> extends Iterable<E> {
 	 * 
 	 * <pre>
 	 * <code>  List.of(1, 2, 3, 4)
-	 * = EmptyList.instance().prepend(4).prepend(3).prepend(2).prepend(1)
-	 * = new LinearList(1, new LinearList(2, new LinearList(3, new LinearList(4, EmptyList.instance()))))</code>
+	 * = Nil.instance().prepend(4).prepend(3).prepend(2).prepend(1)
+	 * = new Cons(1, new Cons(2, new Cons(3, new Cons(4, Nil.instance()))))</code>
 	 * </pre>
 	 *
 	 * @param <T> Component type of the List.
@@ -1002,7 +1001,7 @@ public interface List<E> extends Iterable<E> {
 	 */
 	@SafeVarargs
 	static <T> List<T> of(T... elements) {
-		List<T> result = EmptyList.instance();
+		List<T> result = Nil.instance();
 		for (int i = elements.length - 1; i >= 0; i--) {
 			result = result.prepend(elements[i]);
 		}
@@ -1020,7 +1019,7 @@ public interface List<E> extends Iterable<E> {
 		if (elements instanceof List) {
 			return (List<T>) elements;
 		} else {
-			List<T> result = EmptyList.instance();
+			List<T> result = Nil.instance();
 			for (T element : elements) {
 				result = result.prepend(element);
 			}
@@ -1043,7 +1042,7 @@ public interface List<E> extends Iterable<E> {
 			return left;
 		};
 		final Function<ArrayList<T>, List<T>> finisher = elements -> {
-			List<T> result = EmptyList.instance();
+			List<T> result = Nil.instance();
 			for (T element : elements) {
 				result = result.prepend(element);
 			}

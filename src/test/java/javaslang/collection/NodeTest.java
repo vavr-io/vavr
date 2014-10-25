@@ -23,7 +23,7 @@ public class NodeTest {
 
 	@Test
 	public void shouldHaveNoChildrenWhenCreatedWithValue() {
-		assertThat(node(1).getChildren()).isEqualTo(List.empty());
+		assertThat(node(1).getChildren()).isEqualTo(List.nil());
 	}
 
 	@Test

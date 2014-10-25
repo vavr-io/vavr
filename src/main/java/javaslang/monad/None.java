@@ -121,7 +121,7 @@ public final class None<T> implements Option<T>, Serializable {
 	/**
 	 * Instance control for object serialization.
 	 * 
-	 * @return The singleton instance of EmptyList.
+	 * @return The singleton instance of None.
 	 * @see java.io.Serializable
 	 */
 	private Object readResolve() {
