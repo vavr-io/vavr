@@ -11,9 +11,18 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import javaslang.AssertionsExtensions;
+
 import org.junit.Test;
 
 public class IteratorsTest {
+
+	@Test
+	public void shouldNotBeInstantiable() {
+		AssertionsExtensions.assertThat(Iterators.class).isNotInstantiable();
+	}
+
+	// -- of(iterator, while condition)
 
 	@Test
 	public void shouldDetectHasNext() {

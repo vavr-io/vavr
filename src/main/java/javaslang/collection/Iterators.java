@@ -16,7 +16,7 @@ import javaslang.monad.Some;
 public final class Iterators {
 
 	private Iterators() {
-		throw new AssertionError(Iterators.class.getName() + " is not intended to be instatiated.");
+		throw new AssertionError(Iterators.class.getName() + " is not intended to be instantiated.");
 	}
 
 	public static <T> Iterator<T> of(Iterator<T> iterator, Predicate<? super T> whileCondition) {
