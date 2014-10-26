@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javaslang.Tuples.Tuple2;
-import javaslang.stream.SStream;
+import javaslang.stream.IStream;
 
 /**
  * Extension methods for {@link java.lang.String}.
@@ -199,7 +199,7 @@ public final class Strings {
 	public static String join(Iterable<String> strings, char separator, char escape) {
 		requireNonNull(strings, "strings is null");
 		require(separator != escape, "separator equals escape charater");
-		return SStream.of(strings).map(s -> escape(s, separator, escape)).collect(joining(String.valueOf(separator)));
+		return IStream.of(strings).map(s -> escape(s, separator, escape)).collect(joining(String.valueOf(separator)));
 	}
 
 	/**
@@ -307,7 +307,7 @@ public final class Strings {
 		} else if (o.getClass().getName().startsWith("javaslang.")) {
 			return o.toString();
 		} else if (o instanceof Iterable) {
-			return toString(SStream.of((Iterable<?>) o), ", ", o.getClass().getSimpleName() + "(", ")", visited, o);
+			return toString(IStream.of((Iterable<?>) o), ", ", o.getClass().getSimpleName() + "(", ")", visited, o);
 		} else {
 			return o.toString();
 		}

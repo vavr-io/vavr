@@ -36,51 +36,56 @@ import javaslang.Tuples.Tuple2;
 import javaslang.collection.Iterators;
 
 /**
- * A sequential {@linkplain java.util.stream.Stream} implementation.
+ * IStream is an Iterable Stream implementation providing methods which require a guaranteed sequential order of
+ * elements. E.g. in general it is not possible to zipWithIndex the elements of a parallel Stream because their order is
+ * unpredictable.
+ * 
+ * @see java.lang.Iterable
+ * @see java.util.stream.Stream
  */
 // DEV-NOTE: Currently I see no benefit creating an interface for SStream
-public final class SStream<T> implements Stream<T>, Iterable<T> {
+public final class IStream<T> implements Iterable<T>, Stream<T> {
 
 	private final Stream<T> stream;
 
-	private SStream(Stream<T> stream) {
+	private IStream(Stream<T> stream) {
 		this.stream = stream;
 	}
 
-	// -- SStream API
+	// -- IStream API
 
 	// TODO
 
-	public SStream<T> limitUntil(Predicate<? super T> predicate) {
-		return SStream.of(Iterators.of(iterator(), predicate.negate()));
+	public IStream<T> limitUntil(Predicate<? super T> predicate) {
+		return IStream.of(Iterators.of(iterator(), predicate.negate()));
 	}
 
-	public SStream<Tuple2<T, Integer>> zipWithIndex() {
-		return zip(SStream.iterate(0, i -> i + 1), (t1, t2) -> Tuples.of(t1, t2));
+	public IStream<Tuple2<T, Integer>> zipWithIndex() {
+		return zip(IStream.iterate(0, i -> i + 1), (t1, t2) -> Tuples.of(t1, t2));
 	}
 
-	public <U> SStream<Tuple2<T, U>> zip(SStream<U> other) {
+	public <U> IStream<Tuple2<T, U>> zip(IStream<U> other) {
 		return zip(other, (t1, t2) -> Tuples.of(t1, t2));
 	}
 
-	public <U, R> SStream<R> zip(SStream<U> other, BiFunction<T, U, R> zipper) {
+	public <U, R> IStream<R> zip(IStream<U> other, BiFunction<T, U, R> zipper) {
 		final Iterator<T> left = iterator();
 		final Iterator<U> right = other.iterator();
 		final Iterator<R> zipped = Iterators.of(() -> left.hasNext() && right.hasNext(),
 				() -> zipper.apply(left.next(), right.next()));
-		return SStream.of(zipped);
+		return IStream.of(zipped);
 	}
 
 	// -- Stream impl (High-Level Stream API)
 
 	@Override
-	public SStream<T> filter(Predicate<? super T> predicate) {
-		return SStream.of(stream.filter(predicate));
+	public IStream<T> filter(Predicate<? super T> predicate) {
+		return IStream.of(stream.filter(predicate));
 	}
 
 	@Override
-	public <R> SStream<R> map(Function<? super T, ? extends R> mapper) {
-		return SStream.of(stream.map(mapper));
+	public <R> IStream<R> map(Function<? super T, ? extends R> mapper) {
+		return IStream.of(stream.map(mapper));
 	}
 
 	@Override
@@ -99,8 +104,8 @@ public final class SStream<T> implements Stream<T>, Iterable<T> {
 	}
 
 	@Override
-	public <R> SStream<R> flatMap(Function<? super T, ? extends Stream<? extends R>> mapper) {
-		return SStream.of(stream.flatMap(mapper));
+	public <R> IStream<R> flatMap(Function<? super T, ? extends Stream<? extends R>> mapper) {
+		return IStream.of(stream.flatMap(mapper));
 	}
 
 	@Override
@@ -119,33 +124,33 @@ public final class SStream<T> implements Stream<T>, Iterable<T> {
 	}
 
 	@Override
-	public SStream<T> distinct() {
-		return SStream.of(stream.distinct());
+	public IStream<T> distinct() {
+		return IStream.of(stream.distinct());
 	}
 
 	@Override
-	public SStream<T> sorted() {
-		return SStream.of(stream.sorted());
+	public IStream<T> sorted() {
+		return IStream.of(stream.sorted());
 	}
 
 	@Override
-	public SStream<T> sorted(Comparator<? super T> comparator) {
-		return SStream.of(stream.sorted(comparator));
+	public IStream<T> sorted(Comparator<? super T> comparator) {
+		return IStream.of(stream.sorted(comparator));
 	}
 
 	@Override
-	public SStream<T> peek(Consumer<? super T> action) {
-		return SStream.of(stream.peek(action));
+	public IStream<T> peek(Consumer<? super T> action) {
+		return IStream.of(stream.peek(action));
 	}
 
 	@Override
-	public SStream<T> limit(long maxSize) {
-		return SStream.of(stream.limit(maxSize));
+	public IStream<T> limit(long maxSize) {
+		return IStream.of(stream.limit(maxSize));
 	}
 
 	@Override
-	public SStream<T> skip(long n) {
-		return SStream.of(stream.skip(n));
+	public IStream<T> skip(long n) {
+		return IStream.of(stream.skip(n));
 	}
 
 	@Override
@@ -276,8 +281,8 @@ public final class SStream<T> implements Stream<T>, Iterable<T> {
 	 * @see java.util.stream.BaseStream#onClose(Runnable)
 	 */
 	@Override
-	public SStream<T> onClose(Runnable closeHandler) {
-		return SStream.of(stream.onClose(closeHandler));
+	public IStream<T> onClose(Runnable closeHandler) {
+		return IStream.of(stream.onClose(closeHandler));
 	}
 
 	/**
@@ -287,7 +292,7 @@ public final class SStream<T> implements Stream<T>, Iterable<T> {
 	 * @see java.util.stream.BaseStream#parallel()
 	 */
 	@Override
-	public SStream<T> parallel() {
+	public IStream<T> parallel() {
 		return this;
 	}
 
@@ -298,7 +303,7 @@ public final class SStream<T> implements Stream<T>, Iterable<T> {
 	 * @see java.util.stream.BaseStream#sequential()
 	 */
 	@Override
-	public SStream<T> sequential() {
+	public IStream<T> sequential() {
 		return this;
 	}
 
@@ -320,77 +325,77 @@ public final class SStream<T> implements Stream<T>, Iterable<T> {
 	 * @see java.util.stream.BaseStream#unordered()
 	 */
 	@Override
-	public SStream<T> unordered() {
+	public IStream<T> unordered() {
 		return this;
 	}
 
 	// -- factory methods
 
 	// TODO: provide unboxed version DoubleSStream
-	public static SStream<Double> of(DoubleStream stream) {
+	public static IStream<Double> of(DoubleStream stream) {
 		requireNonNull(stream, "stream is null");
-		return new SStream<>(stream.boxed());
+		return new IStream<>(stream.boxed());
 	}
 
 	// TODO: provide unboxed version IntSStream
-	public static SStream<Integer> of(IntStream stream) {
+	public static IStream<Integer> of(IntStream stream) {
 		requireNonNull(stream, "stream is null");
-		return new SStream<>(stream.boxed());
+		return new IStream<>(stream.boxed());
 	}
 
 	// TODO: provide unboxed version LongSStream
-	public static SStream<Long> of(LongStream stream) {
+	public static IStream<Long> of(LongStream stream) {
 		requireNonNull(stream, "stream is null");
-		return new SStream<>(stream.boxed());
+		return new IStream<>(stream.boxed());
 	}
 
-	public static <T> SStream<T> of(Stream<T> stream) {
+	public static <T> IStream<T> of(Stream<T> stream) {
 		requireNonNull(stream, "stream is null");
-		return new SStream<>(stream);
+		return new IStream<>(stream);
 	}
 
-	public static <T> SStream<T> of(Spliterator<T> spliterator) {
+	public static <T> IStream<T> of(Spliterator<T> spliterator) {
 		requireNonNull(spliterator, "spliterator is null");
-		return SStream.of(StreamSupport.stream(spliterator, false));
+		return IStream.of(StreamSupport.stream(spliterator, false));
 	}
 
-	public static <T> SStream<T> of(Iterable<T> iterable) {
+	public static <T> IStream<T> of(Iterable<T> iterable) {
 		requireNonNull(iterable, "iterable is null");
-		return SStream.of(iterable.spliterator());
+		return IStream.of(iterable.spliterator());
 	}
 
-	public static <T> SStream<T> of(Iterator<T> iterator) {
+	public static <T> IStream<T> of(Iterator<T> iterator) {
 		requireNonNull(iterator, "iterator is null");
-		return SStream.of(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED));
+		return IStream.of(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED));
 	}
 
-	public static <T> SStream<T> empty() {
-		return SStream.of(Stream.empty());
+	public static <T> IStream<T> empty() {
+		return IStream.of(Stream.empty());
 	}
 
-	public static <T> SStream<T> of(T t) {
-		return SStream.of(Stream.of(t));
+	public static <T> IStream<T> of(T t) {
+		return IStream.of(Stream.of(t));
 	}
 
 	@SafeVarargs
-	public static <T> SStream<T> of(T... values) {
+	public static <T> IStream<T> of(T... values) {
 		requireNonNull(values, "values is null");
-		return SStream.of(Stream.of(values));
+		return IStream.of(Stream.of(values));
 	}
 
-	public static <T> SStream<T> iterate(final T seed, final UnaryOperator<T> f) {
+	public static <T> IStream<T> iterate(final T seed, final UnaryOperator<T> f) {
 		requireNonNull(f, "f is null");
-		return SStream.of(Stream.iterate(seed, f));
+		return IStream.of(Stream.iterate(seed, f));
 	}
 
-	public static <T> SStream<T> generate(Supplier<T> supplier) {
+	public static <T> IStream<T> generate(Supplier<T> supplier) {
 		requireNonNull(supplier, "supplier is null");
-		return SStream.of(Stream.generate(supplier));
+		return IStream.of(Stream.generate(supplier));
 	}
 
-	public static <T> SStream<T> concat(Stream<? extends T> a, Stream<? extends T> b) {
+	public static <T> IStream<T> concat(Stream<? extends T> a, Stream<? extends T> b) {
 		requireNonNull(a, "stream a is null");
 		requireNonNull(b, "stream b is null");
-		return SStream.of(Stream.concat(a, b));
+		return IStream.of(Stream.concat(a, b));
 	}
 }

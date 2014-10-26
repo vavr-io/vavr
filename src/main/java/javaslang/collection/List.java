@@ -51,6 +51,7 @@ import javaslang.Tuples.Tuple2;
  * 
  * @param <E> Component type of the List.
  */
+// TODO: use SStream.* instead of zipWithIndex, ...
 public interface List<E> extends Iterable<E> {
 
 	/**
@@ -914,12 +915,7 @@ public interface List<E> extends Iterable<E> {
 
 		final class ListIterator implements Iterator<E> {
 
-			List<E> list;
-
-			ListIterator(List<E> list) {
-				requireNonNull(list, "list is null");
-				this.list = list;
-			}
+			List<E> list = List.this;
 
 			@Override
 			public boolean hasNext() {
@@ -938,7 +934,7 @@ public interface List<E> extends Iterable<E> {
 			}
 		}
 
-		return new ListIterator(this);
+		return new ListIterator();
 	}
 
 	/**
