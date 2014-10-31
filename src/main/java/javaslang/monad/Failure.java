@@ -87,15 +87,13 @@ public final class Failure<T> implements Try<T>, Serializable {
 	}
 
 	@Override
-	public Try<T> filter(Predicate<? super T> predicate) {
-		return this;
+	public Try<Throwable> failed() {
+		return new Success<>(cause.getCause());
 	}
 
 	@Override
-	public <U> Try<U> flatMap(Function<? super T, Try<U>> mapper) {
-		@SuppressWarnings("unchecked")
-		final Try<U> result = (Try<U>) this;
-		return result;
+	public Try<T> filter(Predicate<? super T> predicate) {
+		return this;
 	}
 
 	@Override
@@ -111,8 +109,10 @@ public final class Failure<T> implements Try<T>, Serializable {
 	}
 
 	@Override
-	public Try<Throwable> failed() {
-		return new Success<>(cause.getCause());
+	public <U> Try<U> flatMap(Function<? super T, ? extends Try<U>> mapper) {
+		@SuppressWarnings("unchecked")
+		final Try<U> result = (Try<U>) this;
+		return result;
 	}
 
 	@Override

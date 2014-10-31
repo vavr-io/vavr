@@ -69,18 +69,18 @@ public final class Some<T> implements Option<T>, Serializable {
 	}
 
 	@Override
+	public void forEach(Consumer<? super T> action) {
+		action.accept(value);
+	}
+
+	@Override
 	public <U> Option<U> map(Function<? super T, ? extends U> mapper) {
 		return new Some<>(mapper.apply(value));
 	}
 
 	@Override
-	public <U> Option<U> flatMap(Function<? super T, Option<U>> mapper) {
+	public <U> Option<U> flatMap(Function<? super T, ? extends Option<U>> mapper) {
 		return mapper.apply(value);
-	}
-
-	@Override
-	public void forEach(Consumer<? super T> action) {
-		action.accept(value);
 	}
 
 	@Override

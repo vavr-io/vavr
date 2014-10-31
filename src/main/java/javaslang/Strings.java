@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javaslang.Tuples.Tuple2;
-import javaslang.stream.IStream;
+import javaslang.collection.IStream;
 
 /**
  * Extension methods for {@link java.lang.String}.

@@ -87,18 +87,18 @@ public final class None<T> implements Option<T>, Serializable {
 	}
 
 	@Override
+	public void forEach(Consumer<? super T> action) {
+		// nothing to do
+	}
+
+	@Override
 	public <U> Option<U> map(Function<? super T, ? extends U> mapper) {
 		return None.instance();
 	}
 
 	@Override
-	public <U> Option<U> flatMap(Function<? super T, Option<U>> mapper) {
+	public <U> Option<U> flatMap(Function<? super T, ? extends Option<U>> mapper) {
 		return None.instance();
-	}
-
-	@Override
-	public void forEach(Consumer<? super T> action) {
-		// nothing to do
 	}
 
 	@Override

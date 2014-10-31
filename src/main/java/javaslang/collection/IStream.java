@@ -3,7 +3,7 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.stream;
+package javaslang.collection;
 
 import static javaslang.Requirements.requireNonNull;
 
@@ -33,7 +33,6 @@ import java.util.stream.StreamSupport;
 
 import javaslang.Tuples;
 import javaslang.Tuples.Tuple2;
-import javaslang.collection.Iterators;
 
 /**
  * IStream is an Iterable Stream implementation providing methods which require a guaranteed sequential order of
@@ -44,7 +43,7 @@ import javaslang.collection.Iterators;
  * @see java.util.stream.Stream
  */
 // DEV-NOTE: Currently I see no benefit creating an interface for SStream
-public final class IStream<T> implements Iterable<T>, Stream<T> {
+public final class IStream<T> implements Seq<T>, Iterable<T>, Stream<T> {
 
 	private final Stream<T> stream;
 
@@ -56,6 +55,7 @@ public final class IStream<T> implements Iterable<T>, Stream<T> {
 
 	// TODO
 
+	@Override
 	public IStream<T> limitUntil(Predicate<? super T> predicate) {
 		return IStream.of(Iterators.of(iterator(), predicate.negate()));
 	}
@@ -397,5 +397,35 @@ public final class IStream<T> implements Iterable<T>, Stream<T> {
 		requireNonNull(a, "stream a is null");
 		requireNonNull(b, "stream b is null");
 		return IStream.of(Stream.concat(a, b));
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see javaslang.collection.Seq#cons(java.util.Iterator)
+	 */
+	@Override
+	public <U> Seq<U> cons(Iterator<U> iterator) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see javaslang.collection.Seq#cons(java.lang.Object)
+	 */
+	@Override
+	public <U> Seq<U> cons(U element) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see javaslang.collection.Seq#cons(java.lang.Object[])
+	 */
+	@Override
+	public <U> Seq<U> cons(U... elements) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

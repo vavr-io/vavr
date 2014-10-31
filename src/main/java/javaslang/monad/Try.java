@@ -42,15 +42,15 @@ public interface Try<T> {
 
 	Option<T> toOption();
 
-	Try<T> filter(Predicate<? super T> predicate);
+	Try<Throwable> failed();
 
-	<U> Try<U> flatMap(Function<? super T, Try<U>> mapper);
+	Try<T> filter(Predicate<? super T> predicate);
 
 	void forEach(Consumer<? super T> action);
 
 	<U> Try<U> map(Function<? super T, ? extends U> mapper);
 
-	Try<Throwable> failed();
+	<U> Try<U> flatMap(Function<? super T, ? extends Try<U>> mapper);
 
 	@Override
 	boolean equals(Object o);
@@ -76,7 +76,5 @@ public interface Try<T> {
 		 * @throws java.lang.Throwable if an error occurs.
 		 */
 		T get() throws Throwable;
-
 	}
-
 }

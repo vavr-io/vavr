@@ -82,8 +82,9 @@ public class OptionTest {
 
 	@Test
 	public void shouldThrowOnOrElseThrowWhenValueIsNotPresent() {
-		AssertionsExtensions.assertThat(() -> Option.empty().orElseThrow(() -> new RuntimeException("none"))).isThrowing(
-				RuntimeException.class, "none");
+		AssertionsExtensions
+				.assertThat(() -> Option.empty().orElseThrow(() -> new RuntimeException("none")))
+				.isThrowing(RuntimeException.class, "none");
 	}
 
 	// -- isPresent

@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 
 import javaslang.Tuples;
 import javaslang.Tuples.Tuple2;
+import javaslang.collection.IStream;
 
 import org.junit.Test;
 

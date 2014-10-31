@@ -79,16 +79,16 @@ public interface Either<L, R> {
 		return right().filter(predicate);
 	}
 
-	default <U> Either<L, U> flatMap(Function<? super R, Either<L, U>> mapper) {
-		return right().flatMap(mapper);
-	}
-
 	default void forEach(Consumer<? super R> action) {
 		right().forEach(action);
 	}
 
-	default <U> Either<L, U> map(Function<? super R, U> mapper) {
+	default <U> Either<L, U> map(Function<? super R, ? extends U> mapper) {
 		return right().map(mapper);
+	}
+
+	default <U> Either<L, U> flatMap(Function<? super R, ? extends Either<L, U>> mapper) {
+		return right().flatMap(mapper);
 	}
 
 	// -- Object.*
@@ -153,15 +153,6 @@ public interface Either<L, R> {
 			}
 		}
 
-		public <U> Either<U, R> flatMap(Function<? super L, Either<U, R>> mapper) {
-			Objects.requireNonNull(mapper);
-			if (either.isLeft())
-				return mapper.apply(asLeft());
-			else {
-				return new Right<>(asRight());
-			}
-		}
-
 		public void forEach(Consumer<? super L> action) {
 			Objects.requireNonNull(action);
 			if (either.isLeft()) {
@@ -169,11 +160,20 @@ public interface Either<L, R> {
 			}
 		}
 
-		public <U> Either<U, R> map(Function<? super L, U> mapper) {
+		public <U> Either<U, R> map(Function<? super L, ? extends U> mapper) {
 			Objects.requireNonNull(mapper);
 			if (either.isLeft())
 				return new Left<>(mapper.apply(asLeft()));
 			else {
+				return new Right<>(asRight());
+			}
+		}
+
+		public <U> Either<U, R> flatMap(Function<? super L, ? extends Either<U, R>> mapper) {
+			Objects.requireNonNull(mapper);
+			if (either.isLeft()) {
+				return mapper.apply(asLeft());
+			} else {
 				return new Right<>(asRight());
 			}
 		}
@@ -207,7 +207,6 @@ public interface Either<L, R> {
 		private R asRight() {
 			return ((Right<L, R>) either).right;
 		}
-
 	}
 
 	static class RightProjection<L, R> {
@@ -259,15 +258,6 @@ public interface Either<L, R> {
 			}
 		}
 
-		public <U> Either<L, U> flatMap(Function<? super R, Either<L, U>> mapper) {
-			Objects.requireNonNull(mapper);
-			if (either.isRight())
-				return mapper.apply(asRight());
-			else {
-				return new Left<>(asLeft());
-			}
-		}
-
 		public void forEach(Consumer<? super R> action) {
 			Objects.requireNonNull(action);
 			if (either.isRight()) {
@@ -275,10 +265,19 @@ public interface Either<L, R> {
 			}
 		}
 
-		public <U> Either<L, U> map(Function<? super R, U> mapper) {
+		public <U> Either<L, U> map(Function<? super R, ? extends U> mapper) {
 			Objects.requireNonNull(mapper);
 			if (either.isRight())
 				return new Right<>(mapper.apply(asRight()));
+			else {
+				return new Left<>(asLeft());
+			}
+		}
+
+		public <U> Either<L, U> flatMap(Function<? super R, ? extends Either<L, U>> mapper) {
+			Objects.requireNonNull(mapper);
+			if (either.isRight())
+				return mapper.apply(asRight());
 			else {
 				return new Left<>(asLeft());
 			}

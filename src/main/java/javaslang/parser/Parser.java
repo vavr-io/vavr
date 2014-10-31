@@ -712,10 +712,7 @@ interface Parser extends Serializable {
 			requireNotNullOrEmpty(name, "name is null or empty");
 			requireNotNullOrEmpty(alternatives, "alternatives is null or empty");
 			this.name = name;
-			this.alternatives = Stream // wrap alternatives in sequences beacause of whitespace handling
-					.of(alternatives)
-					.map(alt -> (alt instanceof Sequence) ? alt : new Sequence(alt))
-					.toArray(RulePart[]::new);
+			this.alternatives = alternatives;
 			this.lexical = Character.isUpperCase(name.charAt(0));
 		}
 
@@ -732,11 +729,13 @@ interface Parser extends Serializable {
 		@Override
 		public Either<Integer, ParseResult> parse(String text, int index, boolean lexicalScope) {
 			require(!lexicalScope || lexical, "parser rule '" + name + "' is referenced by a lexical rule");
-			int failedIndex = index;
+			final int currentIndex = skipWhitespace(text, index, lexicalScope);
+			int failedIndex = currentIndex;
 			for (RulePart alternative : alternatives) {
-				final Either<Integer, ParseResult> result = alternative.parse(text, index, lexical);
+				final Either<Integer, ParseResult> result = alternative.parse(text, currentIndex, lexical);
 				if (result.isRight()) {
-					return lexical ? result : symbol(name, text, index, length(result), result.get().tokens);
+					final ParseResult p = result.get();
+					return lexical ? result : symbol(name, text, currentIndex, p.endIndex - p.startIndex, p.tokens);
 				} else {
 					failedIndex = Math.max(failedIndex, result.left().get());
 				}
@@ -812,6 +811,9 @@ interface Parser extends Serializable {
 					return parsed;
 				}
 			}
+			/* TODO:DELME */System.out.println(getClass().getSimpleName()
+					+ " : "
+					+ text.substring(index, Math.min(index + 20, text.length())));
 			return new Right<>(new ParseResult(tokens, index, skipWhitespace(text, currentIndex, lexicalScope),
 					lexicalScope));
 		}
@@ -872,7 +874,8 @@ interface Parser extends Serializable {
 
 	// terminal token / leaf of the parse tree
 	static Either<Integer, ParseResult> token(String text, int index, int length, boolean lexicalScope) {
-		//		/* DEBUG */System.out.println(String.format("token(%s, %s): %s", index, index + length, text.substring(index, index + length)));
+		/* TODO:DEBUG */System.out.println(String.format("token(%s, %s): %s", index, index + length,
+				text.substring(index, index + length)));
 		final List<Node<Token>> tokens = Arrays.asList(new Node<>(new Token(null, text, index, length)));
 		final ParseResult parseResult = new ParseResult(tokens, index, index + length, lexicalScope);
 		return new Right<>(parseResult);
@@ -880,7 +883,8 @@ interface Parser extends Serializable {
 
 	// non-terminal symbol / inner rule of the parse tree / rule with children
 	static Either<Integer, ParseResult> symbol(String id, String text, int index, int length, List<Node<Token>> children) {
-		//		/* DEBUG */System.out.println(String.format("symbol(%s, %s, %s): %s", id, index, index + length, text.substring(index, index + length)));
+		/* TODO: DEBUG */System.out.println(String.format("symbol(%s, %s, %s): %s", id, index, index + length,
+				text.substring(index, index + length)));
 		final List<Node<Token>> tokens = Arrays.asList(new Node<>(new Token(id, text, index, length), children));
 		final ParseResult parseResult = new ParseResult(tokens, index, index + length, false);
 		return new Right<>(parseResult);
@@ -888,15 +892,8 @@ interface Parser extends Serializable {
 
 	// no match found
 	static Either<Integer, ParseResult> stoppedAt(int index) {
-		//		/* DEBUG */System.out.println("stoppedAt " + index);
+		/* TODO:DEBUG */System.out.println("stoppedAt " + index);
 		return new Left<>(index);
-	}
-
-	// -- parse-result helpers
-
-	// DEV-NOTE: Caution, the parsed may be a partial result which does not reflect the whole length of child tokens
-	static int length(Either<Integer, ParseResult> parsed) {
-		return parsed.right().map(r -> r.endIndex - r.startIndex).orElse(0);
 	}
 
 	// -- character conversion / stringification

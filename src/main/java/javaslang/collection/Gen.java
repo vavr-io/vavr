@@ -3,11 +3,10 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.test;
+package javaslang.collection;
 
 /**
- * TODO
- *
+ * Is Gen a Monad or a Collection or both or nothing?
  */
 public class Gen {
 

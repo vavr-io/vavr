@@ -23,6 +23,7 @@ import javaslang.monad.Try;
 import javaslang.parser.Parser.Any;
 import javaslang.parser.Parser.Charset;
 import javaslang.parser.Parser.EOF;
+import javaslang.parser.Parser.Empty;
 import javaslang.parser.Parser.HasChildren;
 import javaslang.parser.Parser.Literal;
 import javaslang.parser.Parser.NegatableRulePart;
@@ -86,6 +87,7 @@ public abstract class Grammar {
 
 	public static final Any ANY = Any.INSTANCE;
 	public static final EOF EOF = Parser.EOF.INSTANCE;
+	public static final Empty ε = Empty.INSTANCE;
 
 	private final String name;
 

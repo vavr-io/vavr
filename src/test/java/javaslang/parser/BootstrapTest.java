@@ -45,12 +45,17 @@ public class BootstrapTest {
 			return rule("grammar", seq(str("grammar"), ref(this::ID), _0_1(str(";")), _1_n(ref(this::rule)), EOF));
 		}
 
-		// rule : ID ':' rulePart? ( '|' rulePart? )* ';'?
+		// rule : ID ':' sequence? ( '|' sequence? )* ';'?
 		Rule rule() {
 			return rule(
 					"rule",
-					seq(ref(this::ID), str(":"), _0_1(ref(this::rulePart)), _0_n(str("|"), _0_1(ref(this::rulePart))),
+					seq(ref(this::ID), str(":"), _0_1(ref(this::sequence)), _0_n(str("|"), _0_1(ref(this::sequence))),
 							_0_1(str(";"))));
+		}
+
+		// sequence : rulePart+
+		Rule sequence() {
+			return rule("sequence", _1_n(ref(this::rulePart)));
 		}
 
 		// rulePart
@@ -59,10 +64,9 @@ public class BootstrapTest {
 		//   | Reference
 		//   | quantifier
 		//   | subrule
-		//   | sequence
 		Rule rulePart() {
 			return rule("rulePart", ref(this::negatable), ref(this::Literal), ref(this::Reference),
-					ref(this::quantifier), ref(this::subrule), ref(this::sequence));
+					ref(this::quantifier), ref(this::subrule));
 		}
 
 		// negatable
@@ -123,17 +127,12 @@ public class BootstrapTest {
 									seq(str("{"), ref(this::INT), str("}")))));
 		}
 
-		// subrule : '(' ( ID ':' )? rulePart? ( '|' rulePart? )* ')'
+		// subrule : '(' ( ID ':' )? sequence? ( '|' sequence? )+ ')'
 		Rule subrule() {
 			return rule(
 					"subrule",
-					seq(str("("), _0_1(ref(this::ID), str(":")), _0_1(ref(this::rulePart)),
-							_0_n(str("|"), _0_1(ref(this::rulePart))), str(")")));
-		}
-
-		// sequence : rulePart*
-		Rule sequence() {
-			return rule("sequence", _0_n(ref(this::rulePart)));
+					seq(str("("), _0_1(ref(this::ID), str(":")), _0_1(ref(this::sequence)),
+							_1_n(str("|"), _0_1(ref(this::sequence))), str(")")));
 		}
 
 		// CHAR : .
@@ -143,7 +142,8 @@ public class BootstrapTest {
 
 		// ID : [a-zA-Z]+
 		Rule ID() {
-			return rule("ID", _1_n(charset("a-zA-Z")));
+			//			return rule("ID", _1_n(charset("a-zA-Z")));
+			return rule("ID", _1_n(subrule(range('a', 'z'), range('A', 'Z'))));
 		}
 
 		// INT : '0'..'9'+

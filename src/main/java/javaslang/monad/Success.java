@@ -81,12 +81,8 @@ public final class Success<T> implements Try<T>, Serializable {
 	}
 
 	@Override
-	public <U> Try<U> flatMap(Function<? super T, Try<U>> mapper) {
-		try {
-			return mapper.apply(value);
-		} catch (Throwable t) {
-			return new Failure<>(t);
-		}
+	public Try<Throwable> failed() {
+		return new Failure<>(new UnsupportedOperationException("Success.failed()"));
 	}
 
 	@Override
@@ -104,8 +100,12 @@ public final class Success<T> implements Try<T>, Serializable {
 	}
 
 	@Override
-	public Try<Throwable> failed() {
-		return new Failure<>(new UnsupportedOperationException("Success.failed()"));
+	public <U> Try<U> flatMap(Function<? super T, ? extends Try<U>> mapper) {
+		try {
+			return mapper.apply(value);
+		} catch (Throwable t) {
+			return new Failure<>(t);
+		}
 	}
 
 	@Override

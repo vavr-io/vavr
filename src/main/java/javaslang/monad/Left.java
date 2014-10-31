@@ -49,5 +49,4 @@ public final class Left<L, R> implements Either<L, R>, Serializable {
 	public String toString() {
 		return String.format("Left(%s)", left);
 	}
-
 }

@@ -6,9 +6,9 @@
 package javaslang.test;
 
 import static java.lang.String.format;
-import javaslang.generator._____________Generator;
+import javaslang.generator._____________JavaGenerator;
 
-class _____________PropGenerator extends _____________Generator {
+class _____________PropGenerator extends _____________JavaGenerator {
 
 	static final int N = 13;
 

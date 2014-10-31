@@ -47,11 +47,11 @@ public interface Option<T> {
 
 	Option<T> filter(Predicate<? super T> predicate);
 
+	void forEach(Consumer<? super T> action);
+
 	<U> Option<U> map(Function<? super T, ? extends U> mapper);
 
-	<U> Option<U> flatMap(Function<? super T, Option<U>> mapper);
-
-	void forEach(Consumer<? super T> action);
+	<U> Option<U> flatMap(Function<? super T, ? extends Option<U>> mapper);
 
 	@Override
 	boolean equals(Object o);

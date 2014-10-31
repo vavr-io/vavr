@@ -14,11 +14,25 @@ import java.util.stream.Stream;
 
 import javaslang.Strings;
 
-public abstract class _____________Generator {
+// TODO:
+// - open(s) => depth + 1
+// - close(s) => depth - 1
+// - type("my.package.Class") => simple name and imports handling
+// - new JavaGenerator(fullQualifiedName)
+public abstract class _____________JavaGenerator {
 
 	static final int INDENT = 4; // spaces
 
 	final StringBuilder builder = new StringBuilder();
+
+	// TODO:
+	//	final String javaPackage;
+	//	final String simpleName;
+	//
+	//	protected _____________JavaGenerator(String fullQualifiedName) {
+	//		this.javaPackage = getJavaPackage(fullQualifiedName);
+	//		this.simpleName = getSimpleName(fullQualifiedName);
+	//	}
 
 	public String generate() {
 		gen();
