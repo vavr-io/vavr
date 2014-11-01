@@ -10,6 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Arrays;
 
 import javaslang.Requirements.UnsatisfiedRequirementException;
+import javaslang.collection.Tuple;
 
 import org.junit.Test;
 
@@ -228,37 +229,37 @@ public class StringsTest {
 	@Test
 	public void shouldThrowWhenLineAndColumnOfEmptyString() {
 		final String s = "";
-		assertThat(Strings.lineAndColumn(s, 0)).isEqualTo(Tuples.of(1, 1));
+		assertThat(Strings.lineAndColumn(s, 0)).isEqualTo(Tuple.of(1, 1));
 	}
 
 	@Test
 	public void shouldComputeLineAndColumnForStartOfString() {
 		final String s = "text";
-		assertThat(Strings.lineAndColumn(s, 0)).isEqualTo(Tuples.of(1, 1));
+		assertThat(Strings.lineAndColumn(s, 0)).isEqualTo(Tuple.of(1, 1));
 	}
 
 	@Test
 	public void shouldComputeLineAndColumnForEndOfStringWithoutNewlines() {
 		final String s = "text";
-		assertThat(Strings.lineAndColumn(s, s.length())).isEqualTo(Tuples.of(1, s.length() + 1));
+		assertThat(Strings.lineAndColumn(s, s.length())).isEqualTo(Tuple.of(1, s.length() + 1));
 	}
 
 	@Test
 	public void shouldComputeLineAndColumnForEndOfStringWithNewlines() {
 		final String s = "lorem\nipsum";
-		assertThat(Strings.lineAndColumn(s, s.length())).isEqualTo(Tuples.of(2, 6));
+		assertThat(Strings.lineAndColumn(s, s.length())).isEqualTo(Tuple.of(2, 6));
 	}
 
 	@Test
 	public void shouldComputeLineAndColumnWithinStringAtEndOfLine() {
 		final String s = "lorem\nipsum";
-		assertThat(Strings.lineAndColumn(s, s.indexOf('\n'))).isEqualTo(Tuples.of(1, 6));
+		assertThat(Strings.lineAndColumn(s, s.indexOf('\n'))).isEqualTo(Tuple.of(1, 6));
 	}
 
 	@Test
 	public void shouldComputeLineAndColumnWithinStringWithNewlines() {
 		final String s = "lorem\nipsum";
-		assertThat(Strings.lineAndColumn(s, s.indexOf('\n') + 1)).isEqualTo(Tuples.of(2, 1));
+		assertThat(Strings.lineAndColumn(s, s.indexOf('\n') + 1)).isEqualTo(Tuple.of(2, 1));
 	}
 
 	// isNullOrEmpty

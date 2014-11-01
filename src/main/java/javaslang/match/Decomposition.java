@@ -7,7 +7,7 @@ package javaslang.match;
 
 import java.io.Serializable;
 
-import javaslang.Tuples.Tuple;
+import javaslang.collection.Tuple;
 
 /**
  * Interface for object decomposition, simmilar to Scala's {@code unapply()}. A Tuple serves as container type for the

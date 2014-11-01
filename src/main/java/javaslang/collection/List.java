@@ -31,8 +31,7 @@ import java.util.stream.StreamSupport;
 
 import javaslang.Requirements.UnsatisfiedRequirementException;
 import javaslang.Strings;
-import javaslang.Tuples;
-import javaslang.Tuples.Tuple2;
+import javaslang.collection.Tuple.Tuple2;
 
 /**
  * An immutable List implementation, suitable for concurrent programming.
@@ -762,7 +761,7 @@ public interface List<E> extends Iterable<E> {
 		List<E> list1 = this;
 		Iterator<T> list2 = that.iterator();
 		while (!list1.isEmpty() && list2.hasNext()) {
-			result = result.prepend(Tuples.of(list1.head(), list2.next()));
+			result = result.prepend(Tuple.of(list1.head(), list2.next()));
 			list1 = list1.tail();
 		}
 		return result.reverse();
@@ -797,7 +796,7 @@ public interface List<E> extends Iterable<E> {
 				list1 = list1.tail();
 			}
 			final T elem2 = list2.hasNext() ? list2.next() : thatElem;
-			result = result.prepend(Tuples.of(elem1, elem2));
+			result = result.prepend(Tuple.of(elem1, elem2));
 		}
 		return result.reverse();
 	}
@@ -811,7 +810,7 @@ public interface List<E> extends Iterable<E> {
 		List<Tuple2<E, Integer>> result = Nil.instance();
 		int index = 0;
 		for (List<E> list = this; !list.isEmpty(); list = list.tail()) {
-			result = result.prepend(Tuples.of(list.head(), index++));
+			result = result.prepend(Tuple.of(list.head(), index++));
 		}
 		return result.reverse();
 	}

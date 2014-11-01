@@ -9,21 +9,20 @@ import static javaslang.Requirements.requireNonNull;
 
 import java.lang.invoke.MethodType;
 
-import javaslang.Tuples;
-import javaslang.Tuples.Tuple;
-import javaslang.Tuples.Tuple1;
-import javaslang.Tuples.Tuple10;
-import javaslang.Tuples.Tuple11;
-import javaslang.Tuples.Tuple12;
-import javaslang.Tuples.Tuple13;
-import javaslang.Tuples.Tuple2;
-import javaslang.Tuples.Tuple3;
-import javaslang.Tuples.Tuple4;
-import javaslang.Tuples.Tuple5;
-import javaslang.Tuples.Tuple6;
-import javaslang.Tuples.Tuple7;
-import javaslang.Tuples.Tuple8;
-import javaslang.Tuples.Tuple9;
+import javaslang.collection.Tuple;
+import javaslang.collection.Tuple.Tuple1;
+import javaslang.collection.Tuple.Tuple10;
+import javaslang.collection.Tuple.Tuple11;
+import javaslang.collection.Tuple.Tuple12;
+import javaslang.collection.Tuple.Tuple13;
+import javaslang.collection.Tuple.Tuple2;
+import javaslang.collection.Tuple.Tuple3;
+import javaslang.collection.Tuple.Tuple4;
+import javaslang.collection.Tuple.Tuple5;
+import javaslang.collection.Tuple.Tuple6;
+import javaslang.collection.Tuple.Tuple7;
+import javaslang.collection.Tuple.Tuple8;
+import javaslang.collection.Tuple.Tuple9;
 import javaslang.lambda.Lambdas;
 import javaslang.monad.Option;
 
@@ -88,7 +87,7 @@ public class Pattern<T, P extends Tuple, R extends Tuple> {
 		final T t = (T) obj;
 		final R components = decomposition.unapply(t);
 		if (prototype.equals(components)) {
-			return Option.of(Tuples.of(t, components));
+			return Option.of(Tuple.of(t, components));
 		} else {
 			return Option.empty();
 		}

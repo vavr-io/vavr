@@ -21,8 +21,9 @@ import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 
-import javaslang.Tuples.Tuple2;
 import javaslang.collection.Stream;
+import javaslang.collection.Tuple;
+import javaslang.collection.Tuple.Tuple2;
 import javaslang.match.Match;
 
 /**
@@ -159,7 +160,7 @@ public final class Strings {
 		final String text = requireNonNull(s, "s is null").substring(0, index);
 		final int line = ("$" + text + "$").split("\\r\\n|\\n|\\r").length;
 		final int column = text.length() - Math.max(text.lastIndexOf("\r"), text.lastIndexOf("\n"));
-		return Tuples.of(line, column);
+		return Tuple.of(line, column);
 	}
 
 	/**

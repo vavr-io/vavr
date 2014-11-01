@@ -3,7 +3,7 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang;
+package javaslang.collection;
 
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
@@ -11,38 +11,31 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Objects;
 
-import javaslang.Tuples.Tuple;
-import javaslang.Tuples.Tuple0;
-import javaslang.Tuples.Tuple1;
-import javaslang.Tuples.Tuple10;
-import javaslang.Tuples.Tuple11;
-import javaslang.Tuples.Tuple12;
-import javaslang.Tuples.Tuple13;
-import javaslang.Tuples.Tuple2;
-import javaslang.Tuples.Tuple3;
-import javaslang.Tuples.Tuple4;
-import javaslang.Tuples.Tuple5;
-import javaslang.Tuples.Tuple6;
-import javaslang.Tuples.Tuple7;
-import javaslang.Tuples.Tuple8;
-import javaslang.Tuples.Tuple9;
+import javaslang.Serializables;
+import javaslang.collection.Tuple.Tuple0;
+import javaslang.collection.Tuple.Tuple1;
+import javaslang.collection.Tuple.Tuple10;
+import javaslang.collection.Tuple.Tuple11;
+import javaslang.collection.Tuple.Tuple12;
+import javaslang.collection.Tuple.Tuple13;
+import javaslang.collection.Tuple.Tuple2;
+import javaslang.collection.Tuple.Tuple3;
+import javaslang.collection.Tuple.Tuple4;
+import javaslang.collection.Tuple.Tuple5;
+import javaslang.collection.Tuple.Tuple6;
+import javaslang.collection.Tuple.Tuple7;
+import javaslang.collection.Tuple.Tuple8;
+import javaslang.collection.Tuple.Tuple9;
 
 import org.junit.Test;
 
-public class TuplesTest {
-
-	// -- requirements on instantiation
-
-	@Test
-	public void shouldNotBeInstantiable() {
-		AssertionsExtensions.assertThat(Tuples.class).isNotInstantiable();
-	}
+public class TupleTest {
 
 	// -- Tuple0
 
 	@Test
 	public void shouldCreateEmptyTuple() {
-		assertThat(Tuples.empty().toString()).isEqualTo("()");
+		assertThat(Tuple.empty().toString()).isEqualTo("()");
 	}
 
 	@Test
@@ -597,8 +590,8 @@ public class TuplesTest {
 	@Test
 	public void shouldDetectEqualityOnTupleOfTuples() {
 
-		final Tuple tupleA = Tuples.of(Tuples.of(1), Tuples.of(1));
-		final Tuple tupleB = Tuples.of(Tuples.of(1), Tuples.of(1));
+		final Tuple tupleA = Tuple.of(Tuple.of(1), Tuple.of(1));
+		final Tuple tupleB = Tuple.of(Tuple.of(1), Tuple.of(1));
 
 		assertThat(tupleA.equals(tupleB)).isTrue();
 	}
@@ -606,8 +599,8 @@ public class TuplesTest {
 	@Test
 	public void shouldDetectUnequalityOnTupleOfTuples() {
 
-		final Tuple tupleA = Tuples.of(Tuples.of(1), Tuples.of(1));
-		final Tuple tupleB = Tuples.of(Tuples.of(1), Tuples.of(2));
+		final Tuple tupleA = Tuple.of(Tuple.of(1), Tuple.of(1));
+		final Tuple tupleB = Tuple.of(Tuple.of(1), Tuple.of(2));
 
 		assertThat(tupleA.equals(tupleB)).isFalse();
 	}
@@ -629,66 +622,66 @@ public class TuplesTest {
 
 	@Test
 	public void shouldSerializeDeserializeNonEmptyTuple() {
-		final Object actual = deserialize(serialize(Tuples.of(1, 2, 3)));
-		final Object expected = Tuples.of(1, 2, 3);
+		final Object actual = deserialize(serialize(Tuple.of(1, 2, 3)));
+		final Object expected = Tuple.of(1, 2, 3);
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	// -- helpers
 
 	private Tuple0 tuple0() {
-		return Tuples.empty();
+		return Tuple.empty();
 	}
 
 	private Tuple1<?> tuple1() {
-		return Tuples.of(1);
+		return Tuple.of(1);
 	}
 
 	private Tuple2<?, ?> tuple2() {
-		return Tuples.of(1, 2);
+		return Tuple.of(1, 2);
 	}
 
 	private Tuple3<?, ?, ?> tuple3() {
-		return Tuples.of(1, 2, 3);
+		return Tuple.of(1, 2, 3);
 	}
 
 	private Tuple4<?, ?, ?, ?> tuple4() {
-		return Tuples.of(1, 2, 3, 4);
+		return Tuple.of(1, 2, 3, 4);
 	}
 
 	private Tuple5<?, ?, ?, ?, ?> tuple5() {
-		return Tuples.of(1, 2, 3, 4, 5);
+		return Tuple.of(1, 2, 3, 4, 5);
 	}
 
 	private Tuple6<?, ?, ?, ?, ?, ?> tuple6() {
-		return Tuples.of(1, 2, 3, 4, 5, 6);
+		return Tuple.of(1, 2, 3, 4, 5, 6);
 	}
 
 	private Tuple7<?, ?, ?, ?, ?, ?, ?> tuple7() {
-		return Tuples.of(1, 2, 3, 4, 5, 6, 7);
+		return Tuple.of(1, 2, 3, 4, 5, 6, 7);
 	}
 
 	private Tuple8<?, ?, ?, ?, ?, ?, ?, ?> tuple8() {
-		return Tuples.of(1, 2, 3, 4, 5, 6, 7, 8);
+		return Tuple.of(1, 2, 3, 4, 5, 6, 7, 8);
 	}
 
 	private Tuple9<?, ?, ?, ?, ?, ?, ?, ?, ?> tuple9() {
-		return Tuples.of(1, 2, 3, 4, 5, 6, 7, 8, 9);
+		return Tuple.of(1, 2, 3, 4, 5, 6, 7, 8, 9);
 	}
 
 	private Tuple10<?, ?, ?, ?, ?, ?, ?, ?, ?, ?> tuple10() {
-		return Tuples.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+		return Tuple.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 	}
 
 	private Tuple11<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> tuple11() {
-		return Tuples.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
+		return Tuple.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
 	}
 
 	private Tuple12<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> tuple12() {
-		return Tuples.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+		return Tuple.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
 	}
 
 	private Tuple13<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> tuple13() {
-		return Tuples.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
+		return Tuple.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
 	}
 }

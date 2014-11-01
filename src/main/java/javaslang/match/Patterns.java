@@ -7,9 +7,9 @@ package javaslang.match;
 
 import java.lang.invoke.MethodType;
 
-import javaslang.Tuples;
-import javaslang.Tuples.Tuple1;
-import javaslang.Tuples.Tuple2;
+import javaslang.collection.Tuple;
+import javaslang.collection.Tuple.Tuple1;
+import javaslang.collection.Tuple.Tuple2;
 import javaslang.lambda.Functions.Function1;
 import javaslang.lambda.Lambdas;
 
@@ -18,8 +18,8 @@ public final class Patterns {
 	/**
 	 * The Pattern which macthes any object (including null).
 	 */
-	public static final Pattern<Object, Tuple1<Object>, Tuple1<Object>> ANY = Pattern.of(o -> Tuples.of(o),
-			Tuples.of(new UnaryPrototype(o -> true)));
+	public static final Pattern<Object, Tuple1<Object>, Tuple1<Object>> ANY = Pattern.of(o -> Tuple.of(o),
+			Tuple.of(new UnaryPrototype(o -> true)));
 
 	/**
 	 * This class is not intended to be instantiated.
@@ -49,8 +49,8 @@ public final class Patterns {
 			final int paramIndex = methodType.parameterCount() - 1;
 			final Class<T> currentParamType = (Class<T>) methodType.parameterType(paramIndex);
 			final Class<R> currentReturnType = (Class<R>) methodType.returnType();
-			return Tuples.of(currentParamType, currentReturnType);
-		}, Tuples.of(Integer.class, String.class));
+			return Tuple.of(currentParamType, currentReturnType);
+		}, Tuple.of(Integer.class, String.class));
 	}
 
 	// TODO: define more patterns (Either, Option, Try and other value objects)

@@ -31,8 +31,7 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.StreamSupport;
 
-import javaslang.Tuples;
-import javaslang.Tuples.Tuple2;
+import javaslang.collection.Tuple.Tuple2;
 
 /**
  * IStream is an Iterable Stream implementation providing methods which require a guaranteed sequential order of
@@ -62,11 +61,11 @@ public final class Stream<T> implements Seq<T>, Iterable<T>, java.util.stream.St
 
 	@Override
 	public Stream<Tuple2<T, Integer>> zipWithIndex() {
-		return zip(Stream.iterate(0, i -> i + 1), (t1, t2) -> Tuples.of(t1, t2));
+		return zip(Stream.iterate(0, i -> i + 1), (t1, t2) -> Tuple.of(t1, t2));
 	}
 
 	public <U> Stream<Tuple2<T, U>> zip(Stream<U> other) {
-		return zip(other, (t1, t2) -> Tuples.of(t1, t2));
+		return zip(other, (t1, t2) -> Tuple.of(t1, t2));
 	}
 
 	public <U, R> Stream<R> zip(Stream<U> other, BiFunction<T, U, R> zipper) {

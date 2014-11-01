@@ -17,10 +17,9 @@ import java.util.Spliterator;
 
 import javaslang.AssertionsExtensions;
 import javaslang.Requirements.UnsatisfiedRequirementException;
-import javaslang.Tuples;
-import javaslang.Tuples.Tuple2;
 import javaslang.collection.List.Cons;
 import javaslang.collection.List.Nil;
+import javaslang.collection.Tuple.Tuple2;
 
 import org.junit.Test;
 
@@ -717,21 +716,21 @@ public class ListTest {
 	@Test
 	public void shouldZipNonNilsIfThisIsSmaller() {
 		final List<Tuple2<Integer, String>> actual = List.of(1, 2).zip(List.of("a", "b", "c"));
-		final List<Tuple2<Integer, String>> expected = List.of(Tuples.of(1, "a"), Tuples.of(2, "b"));
+		final List<Tuple2<Integer, String>> expected = List.of(Tuple.of(1, "a"), Tuple.of(2, "b"));
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
 	public void shouldZipNonNilsIfThatIsSmaller() {
 		final List<Tuple2<Integer, String>> actual = List.of(1, 2, 3).zip(List.of("a", "b"));
-		final List<Tuple2<Integer, String>> expected = List.of(Tuples.of(1, "a"), Tuples.of(2, "b"));
+		final List<Tuple2<Integer, String>> expected = List.of(Tuple.of(1, "a"), Tuple.of(2, "b"));
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
 	public void shouldZipNonNilsOfSameSize() {
 		final List<Tuple2<Integer, String>> actual = List.of(1, 2, 3).zip(List.of("a", "b", "c"));
-		final List<Tuple2<Integer, String>> expected = List.of(Tuples.of(1, "a"), Tuples.of(2, "b"), Tuples.of(3, "c"));
+		final List<Tuple2<Integer, String>> expected = List.of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -750,32 +749,32 @@ public class ListTest {
 
 	@Test
 	public void shouldZipAllEmptyAndNonNil() {
-		assertThat(List.nil().zipAll(List.of(1), null, null)).isEqualTo(List.of(Tuples.of(null, 1)));
+		assertThat(List.nil().zipAll(List.of(1), null, null)).isEqualTo(List.of(Tuple.of(null, 1)));
 	}
 
 	@Test
 	public void shouldZipAllNonEmptyAndNil() {
-		assertThat(List.of(1).zipAll(List.nil(), null, null)).isEqualTo(List.of(Tuples.of(1, null)));
+		assertThat(List.of(1).zipAll(List.nil(), null, null)).isEqualTo(List.of(Tuple.of(1, null)));
 	}
 
 	@Test
 	public void shouldZipAllNonNilsIfThisIsSmaller() {
 		final List<Tuple2<Integer, String>> actual = List.of(1, 2).zipAll(List.of("a", "b", "c"), 9, "z");
-		final List<Tuple2<Integer, String>> expected = List.of(Tuples.of(1, "a"), Tuples.of(2, "b"), Tuples.of(9, "c"));
+		final List<Tuple2<Integer, String>> expected = List.of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(9, "c"));
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
 	public void shouldZipAllNonNilsIfThatIsSmaller() {
 		final List<Tuple2<Integer, String>> actual = List.of(1, 2, 3).zipAll(List.of("a", "b"), 9, "z");
-		final List<Tuple2<Integer, String>> expected = List.of(Tuples.of(1, "a"), Tuples.of(2, "b"), Tuples.of(3, "z"));
+		final List<Tuple2<Integer, String>> expected = List.of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "z"));
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
 	public void shouldZipAllNonNilsOfSameSize() {
 		final List<Tuple2<Integer, String>> actual = List.of(1, 2, 3).zipAll(List.of("a", "b", "c"), 9, "z");
-		final List<Tuple2<Integer, String>> expected = List.of(Tuples.of(1, "a"), Tuples.of(2, "b"), Tuples.of(3, "c"));
+		final List<Tuple2<Integer, String>> expected = List.of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -795,7 +794,7 @@ public class ListTest {
 	@Test
 	public void shouldZipNonNilWithIndex() {
 		final List<Tuple2<String, Integer>> actual = List.of("a", "b", "c").zipWithIndex();
-		final List<Tuple2<String, Integer>> expected = List.of(Tuples.of("a", 0), Tuples.of("b", 1), Tuples.of("c", 2));
+		final List<Tuple2<String, Integer>> expected = List.of(Tuple.of("a", 0), Tuple.of("b", 1), Tuple.of("c", 2));
 		assertThat(actual).isEqualTo(expected);
 	}
 

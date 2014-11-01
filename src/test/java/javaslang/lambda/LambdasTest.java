@@ -10,8 +10,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.Serializable;
 
 import javaslang.AssertionsExtensions;
-import javaslang.Tuples;
-import javaslang.Tuples.Tuple3;
+import javaslang.collection.Tuple;
+import javaslang.collection.Tuple.Tuple3;
 
 import org.junit.Test;
 
@@ -150,7 +150,7 @@ public class LambdasTest {
 
 	@Test
 	public void shouldConvertNonTrivialLambdaSignatureToString() {
-		final StringIntegerArrayDoubleArrayToTuple3 lambda = (s, i, d) -> Tuples.of(s, i, d);
+		final StringIntegerArrayDoubleArrayToTuple3 lambda = (s, i, d) -> Tuple.of(s, i, d);
 		final String actual = Lambdas.getLambdaSignature(lambda).get().toString();
 		assertThat(actual).isEqualTo("(String,Integer[][],double[][])Tuple3");
 	}
@@ -166,15 +166,15 @@ public class LambdasTest {
 
 	@Test
 	public void shouldRecognizeNonTrivialEqualLambdaSignatures() {
-		final StringIntegerArrayDoubleArrayToTuple3 lambda1 = (s, i, d) -> Tuples.of(s, i, d);
-		final StringIntegerArrayDoubleArrayToTuple3 lambda2 = (s, i, d) -> Tuples.of(s, i, d);
+		final StringIntegerArrayDoubleArrayToTuple3 lambda1 = (s, i, d) -> Tuple.of(s, i, d);
+		final StringIntegerArrayDoubleArrayToTuple3 lambda2 = (s, i, d) -> Tuple.of(s, i, d);
 		assertThat(Lambdas.getLambdaSignature(lambda1)).isEqualTo(Lambdas.getLambdaSignature(lambda2));
 	}
 
 	@Test
 	public void shouldRecognizeNonTrivialNonEqualLambdaSignatures() {
-		final StringIntegerArrayDoubleArrayToTuple3 lambda1 = (s, i, d) -> Tuples.of(s, i, d);
-		final StringIntArrayDoubleArrayToTuple3 lambda2 = (s, i, d) -> Tuples.of(s, i, d);
+		final StringIntegerArrayDoubleArrayToTuple3 lambda1 = (s, i, d) -> Tuple.of(s, i, d);
+		final StringIntArrayDoubleArrayToTuple3 lambda2 = (s, i, d) -> Tuple.of(s, i, d);
 		assertThat(Lambdas.getLambdaSignature(lambda1)).isNotEqualTo(Lambdas.getLambdaSignature(lambda2));
 	}
 

@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import javaslang.Tuples;
+import javaslang.collection.Tuple;
 
 public interface Functions {
 
@@ -42,7 +42,7 @@ public interface Functions {
 			return t1 -> apply(t1);
 		}
 
-		default Function1<Tuples.Tuple1<T1>, R> tupled() {
+		default Function1<Tuple.Tuple1<T1>, R> tupled() {
 			return t -> apply(t._1);
 		}
 	}
@@ -56,7 +56,7 @@ public interface Functions {
 			return t1 -> t2 -> apply(t1, t2);
 		}
 
-		default Function1<Tuples.Tuple2<T1, T2>, R> tupled() {
+		default Function1<Tuple.Tuple2<T1, T2>, R> tupled() {
 			return t -> apply(t._1, t._2);
 		}
 	}
@@ -70,7 +70,7 @@ public interface Functions {
 			return t1 -> t2 -> t3 -> apply(t1, t2, t3);
 		}
 
-		default Function1<Tuples.Tuple3<T1, T2, T3>, R> tupled() {
+		default Function1<Tuple.Tuple3<T1, T2, T3>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3);
 		}
 	}
@@ -84,7 +84,7 @@ public interface Functions {
 			return t1 -> t2 -> t3 -> t4 -> apply(t1, t2, t3, t4);
 		}
 
-		default Function1<Tuples.Tuple4<T1, T2, T3, T4>, R> tupled() {
+		default Function1<Tuple.Tuple4<T1, T2, T3, T4>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3, t._4);
 		}
 	}
@@ -98,7 +98,7 @@ public interface Functions {
 			return t1 -> t2 -> t3 -> t4 -> t5 -> apply(t1, t2, t3, t4, t5);
 		}
 
-		default Function1<Tuples.Tuple5<T1, T2, T3, T4, T5>, R> tupled() {
+		default Function1<Tuple.Tuple5<T1, T2, T3, T4, T5>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3, t._4, t._5);
 		}
 	}
@@ -112,7 +112,7 @@ public interface Functions {
 			return t1 -> t2 -> t3 -> t4 -> t5 -> t6 -> apply(t1, t2, t3, t4, t5, t6);
 		}
 
-		default Function1<Tuples.Tuple6<T1, T2, T3, T4, T5, T6>, R> tupled() {
+		default Function1<Tuple.Tuple6<T1, T2, T3, T4, T5, T6>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3, t._4, t._5, t._6);
 		}
 	}
@@ -126,7 +126,7 @@ public interface Functions {
 			return t1 -> t2 -> t3 -> t4 -> t5 -> t6 -> t7 -> apply(t1, t2, t3, t4, t5, t6, t7);
 		}
 
-		default Function1<Tuples.Tuple7<T1, T2, T3, T4, T5, T6, T7>, R> tupled() {
+		default Function1<Tuple.Tuple7<T1, T2, T3, T4, T5, T6, T7>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7);
 		}
 	}
@@ -140,7 +140,7 @@ public interface Functions {
 			return t1 -> t2 -> t3 -> t4 -> t5 -> t6 -> t7 -> t8 -> apply(t1, t2, t3, t4, t5, t6, t7, t8);
 		}
 
-		default Function1<Tuples.Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>, R> tupled() {
+		default Function1<Tuple.Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8);
 		}
 	}
@@ -154,7 +154,7 @@ public interface Functions {
 			return t1 -> t2 -> t3 -> t4 -> t5 -> t6 -> t7 -> t8 -> t9 -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9);
 		}
 
-		default Function1<Tuples.Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9>, R> tupled() {
+		default Function1<Tuple.Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9);
 		}
 	}
@@ -169,7 +169,7 @@ public interface Functions {
 					t9, t10);
 		}
 
-		default Function1<Tuples.Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>, R> tupled() {
+		default Function1<Tuple.Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10);
 		}
 	}
@@ -184,7 +184,7 @@ public interface Functions {
 					t7, t8, t9, t10, t11);
 		}
 
-		default Function1<Tuples.Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>, R> tupled() {
+		default Function1<Tuple.Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10, t._11);
 		}
 	}
@@ -199,7 +199,7 @@ public interface Functions {
 					t6, t7, t8, t9, t10, t11, t12);
 		}
 
-		default Function1<Tuples.Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>, R> tupled() {
+		default Function1<Tuple.Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10, t._11, t._12);
 		}
 	}
@@ -214,7 +214,7 @@ public interface Functions {
 					t4, t5, t6, t7, t8, t9, t10, t11, t12, t13);
 		}
 
-		default Function1<Tuples.Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, R> tupled() {
+		default Function1<Tuple.Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10, t._11, t._12, t._13);
 		}
 	}

@@ -17,7 +17,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import javaslang.Requirements.UnsatisfiedRequirementException;
-import javaslang.Tuples.Tuple;
+import javaslang.collection.Tuple;
 import javaslang.lambda.Functions.Function1;
 import javaslang.lambda.Functions.Function2;
 import javaslang.lambda.Lambdas;

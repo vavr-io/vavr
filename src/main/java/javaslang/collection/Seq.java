@@ -17,8 +17,7 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 import javaslang.Requirements;
-import javaslang.Tuples;
-import javaslang.Tuples.Tuple2;
+import javaslang.collection.Tuple.Tuple2;
 
 /**
  * Seq is an Iterable Stream implementation providing methods which require a guaranteed sequential order of elements.
@@ -47,11 +46,11 @@ public interface Seq<T> {
 
 	// TODO
 	default Seq<Tuple2<T, Integer>> zipWithIndex() {
-		return zip(iterate(0, i -> i + 1), (T t1, Integer t2) -> Tuples.of(t1, t2));
+		return zip(iterate(0, i -> i + 1), (T t1, Integer t2) -> Tuple.of(t1, t2));
 	}
 
 	default <U> Seq<Tuple2<T, U>> zip(Seq<U> other) {
-		return zip(other, (t1, t2) -> Tuples.of(t1, t2));
+		return zip(other, (t1, t2) -> Tuple.of(t1, t2));
 	}
 
 	//	// TODO: LazySeq has to provide an intermediate version instead
