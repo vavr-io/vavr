@@ -34,16 +34,17 @@
 		</developer>
 	</developers>
 	<properties>
-		<assertj.core.version>1.6.1</assertj.core.version>
+		<assertj.core.version>1.7.0</assertj.core.version>
 		<eclipse.lifecycle.mapping.version>1.0.0</eclipse.lifecycle.mapping.version>
 		<java.version>1.8</java.version>
 		<javaslang.generated.sources.dir>target/src-gen</javaslang.generated.sources.dir>
-		<junit.version>4.12-beta-1</junit.version>
-		<maven.compiler.version>3.1</maven.compiler.version>
+		<junit.version>4.12-beta-2</junit.version>
+		<maven.compiler.version>3.2</maven.compiler.version>
 		<maven.coveralls.version>2.2.0</maven.coveralls.version>
 		<maven.gpg.version>1.5</maven.gpg.version>
 		<maven.jacoco.version>0.7.2.201409121644</maven.jacoco.version>
-		<maven.release.version>2.5</maven.release.version>
+		<maven.release.version>2.5.1</maven.release.version>
+		<maven.versions.version>2.1</maven.versions.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<build>
@@ -61,6 +62,11 @@
 						<Xlint />
 					</compilerArguments>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>versions-maven-plugin</artifactId>
+				<version>${maven.versions.version}</version>
 			</plugin>
 		</plugins>
 		<pluginManagement>
