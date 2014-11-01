@@ -28,7 +28,7 @@ import javaslang.Tuples.Tuple2;
  * @see java.lang.Iterable
  * @see java.util.stream.Stream
  */
-interface Seq<T> {
+public interface Seq<T> {
 
 	// -- Low-level API
 
