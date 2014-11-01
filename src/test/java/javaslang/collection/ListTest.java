@@ -19,6 +19,8 @@ import javaslang.AssertionsExtensions;
 import javaslang.Requirements.UnsatisfiedRequirementException;
 import javaslang.Tuples;
 import javaslang.Tuples.Tuple2;
+import javaslang.collection.List.Cons;
+import javaslang.collection.List.Nil;
 
 import org.junit.Test;
 
@@ -28,7 +30,7 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowWhenHeadOnNil() {
-		AssertionsExtensions.assertThat(() -> Nil.instance().head()).isThrowing(UnsupportedOperationException.class,
+		AssertionsExtensions.assertThat(() -> List.nil().head()).isThrowing(UnsupportedOperationException.class,
 				"head of empty list");
 	}
 
@@ -42,7 +44,7 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowWhenTailOnNil() {
-		AssertionsExtensions.assertThat(() -> Nil.instance().tail()).isThrowing(UnsupportedOperationException.class,
+		AssertionsExtensions.assertThat(() -> List.nil().tail()).isThrowing(UnsupportedOperationException.class,
 				"tail of empty list");
 	}
 
