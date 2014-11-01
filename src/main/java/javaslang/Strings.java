@@ -6,20 +6,24 @@
 package javaslang;
 
 import static java.util.Arrays.fill;
-import static java.util.stream.Collectors.joining;
 import static javaslang.Requirements.require;
 import static javaslang.Requirements.requireNonNull;
 import static javaslang.Requirements.requireNotNullOrEmpty;
 
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javaslang.Tuples.Tuple2;
-import javaslang.collection.IStream;
+import javaslang.collection.Stream;
+import javaslang.match.Match;
 
 /**
  * Extension methods for {@link java.lang.String}.
@@ -114,10 +118,16 @@ public final class Strings {
 	 * @return The escaped String.
 	 */
 	public static String escape(String s, char character, char escape) {
-		return (s == null) ? null : s.chars().mapToObj(i -> {
-			final char c = (char) i;
-			return (c == character || c == escape) ? ("" + escape + c) : ("" + c);
-		}).collect(Collectors.joining());
+		if (s == null) {
+			return null;
+		} else {
+			final IntFunction<String> escaper = i -> {
+				final char c = (char) i;
+				return (c == character || c == escape) ? ("" + escape + c) : ("" + c);
+			};
+			// TODO: Stream.of(s).map(c -> (c == character || c == escape) ? ("" + escape + c) : ("" + c)).join()
+			return s.chars().mapToObj(escaper).collect(Collectors.joining());
+		}
 	}
 
 	/**
@@ -179,7 +189,10 @@ public final class Strings {
 	public static String join(String[] strings, char separator, char escape) {
 		requireNonNull(strings, "strings is null");
 		require(separator != escape, "separator equals escape charater");
-		return Stream.of(strings).map(s -> escape(s, separator, escape)).collect(joining(String.valueOf(separator)));
+		return Stream
+				.of(strings)
+				.map(s -> escape(s, separator, escape))
+				.collect(Collectors.joining(String.valueOf(separator)));
 	}
 
 	/**
@@ -199,7 +212,10 @@ public final class Strings {
 	public static String join(Iterable<String> strings, char separator, char escape) {
 		requireNonNull(strings, "strings is null");
 		require(separator != escape, "separator equals escape charater");
-		return IStream.of(strings).map(s -> escape(s, separator, escape)).collect(joining(String.valueOf(separator)));
+		return Stream
+				.of(strings)
+				.map(s -> escape(s, separator, escape))
+				.collect(Collectors.joining(String.valueOf(separator)));
 	}
 
 	/**
@@ -303,11 +319,11 @@ public final class Strings {
 		} else if (o instanceof Class) {
 			return toString((Class<?>) o, 0);
 		} else if (o.getClass().isArray()) {
-			return toString(Arrayz.toStream(o), ", ", "Array(", ")", visited, o);
+			return toString(Strings.Arrays.toStream(o), ", ", "Array(", ")", visited, o);
 		} else if (o.getClass().getName().startsWith("javaslang.")) {
 			return o.toString();
 		} else if (o instanceof Iterable) {
-			return toString(IStream.of((Iterable<?>) o), ", ", o.getClass().getSimpleName() + "(", ")", visited, o);
+			return toString(Stream.of((Iterable<?>) o), ", ", o.getClass().getSimpleName() + "(", ")", visited, o);
 		} else {
 			return o.toString();
 		}
@@ -330,4 +346,88 @@ public final class Strings {
 		return result;
 	}
 
+	static interface Arrays {
+
+		static final Match<Stream<?>> ARRAY_TO_STREAM_MATCHER = new Match.Builder<Stream<?>>()
+				.caze((boolean[] a) -> stream(a))
+				.caze((byte[] a) -> stream(a))
+				.caze((char[] a) -> stream(a))
+				.caze((double[] a) -> stream(a))
+				.caze((float[] a) -> stream(a))
+				.caze((int[] a) -> stream(a))
+				.caze((long[] a) -> stream(a))
+				.caze((short[] a) -> stream(a))
+				.caze((Object[] a) -> Stream.of(a))
+				.build();
+
+		public static Stream<?> toStream(Object o) {
+			return ARRAY_TO_STREAM_MATCHER.apply(o);
+		}
+
+		static Stream<Boolean> stream(boolean[] array) {
+			requireNonNull(array, "array is null");
+			return Stream.of(new StreamableList<Boolean>(array.length, i -> array[i]).stream());
+		}
+
+		static Stream<Byte> stream(byte[] array) {
+			requireNonNull(array, "array is null");
+			return Stream.of(new StreamableList<Byte>(array.length, i -> array[i]).stream());
+		}
+
+		static Stream<Character> stream(char[] array) {
+			requireNonNull(array, "array is null");
+			return Stream.of(new StreamableList<Character>(array.length, i -> array[i]).stream());
+		}
+
+		static Stream<Double> stream(double[] array) {
+			requireNonNull(array, "array is null");
+			return Stream.of(new StreamableList<Double>(array.length, i -> array[i]).stream());
+		}
+
+		static Stream<Float> stream(float[] array) {
+			requireNonNull(array, "array is null");
+			return Stream.of(new StreamableList<Float>(array.length, i -> array[i]).stream());
+		}
+
+		static Stream<Integer> stream(int[] array) {
+			requireNonNull(array, "array is null");
+			return Stream.of(new StreamableList<Integer>(array.length, i -> array[i]).stream());
+		}
+
+		static Stream<Long> stream(long[] array) {
+			requireNonNull(array, "array is null");
+			return Stream.of(new StreamableList<Long>(array.length, i -> array[i]).stream());
+		}
+
+		static Stream<Short> stream(short[] array) {
+			requireNonNull(array, "array is null");
+			return Stream.of(new StreamableList<Short>(array.length, i -> array[i]).stream());
+		}
+
+		static class StreamableList<E> extends AbstractList<E> {
+
+			final int size;
+			final Function<Integer, E> getter;
+
+			StreamableList(int size, Function<Integer, E> getter) {
+				this.size = size;
+				this.getter = getter;
+			}
+
+			@Override
+			public int size() {
+				return size;
+			}
+
+			@Override
+			public E get(int index) {
+				return getter.apply(index);
+			}
+
+			@Override
+			public Spliterator<E> spliterator() {
+				return Spliterators.spliterator(this, Spliterator.ORDERED | Spliterator.IMMUTABLE);
+			}
+		}
+	}
 }

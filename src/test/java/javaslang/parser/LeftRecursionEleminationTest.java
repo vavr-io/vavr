@@ -15,9 +15,8 @@ import static javaslang.parser.Grammar.str;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.stream.Stream;
 
-import javaslang.collection.IStream;
+import javaslang.collection.Stream;
 import javaslang.monad.None;
 import javaslang.monad.Option;
 import javaslang.parser.Parser.HasChildren;
@@ -81,7 +80,7 @@ public class LeftRecursionEleminationTest {
 					// with    A  : β1 A' | β2 A' | ... | βm A'
 					//         A' : α1 A' | α2 A' | ... | αn A' | ε
 
-					IStream.of(rule.alternatives).zipWithIndex().map(t -> {
+					Stream.of(rule.alternatives).zipWithIndex().map(t -> {
 						final RulePart rulePart = t._1;
 						final long index = t._2;
 						return null;

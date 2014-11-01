@@ -8,23 +8,17 @@ package javaslang.collection;
 import static javaslang.Requirements.requireNonNull;
 
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.BiFunction;
-import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 import javaslang.Requirements;
 import javaslang.Tuples;
 import javaslang.Tuples.Tuple2;
-import javaslang.monad.None;
-import javaslang.monad.Option;
-import javaslang.monad.Some;
 
 /**
  * Seq is an Iterable Stream implementation providing methods which require a guaranteed sequential order of elements.
@@ -34,7 +28,7 @@ import javaslang.monad.Some;
  * @see java.lang.Iterable
  * @see java.util.stream.Stream
  */
-public interface Seq<T> {
+interface Seq<T> {
 
 	// -- Low-level API
 
@@ -176,50 +170,4 @@ public interface Seq<T> {
 	//		requireNonNull(b, "stream b is null");
 	//		return Seq.of(Stream.concat(a, b));
 	//	}
-
-	static class Iterators {
-
-		private Iterators() {
-			throw new AssertionError(Iterators.class.getName() + " is not intended to be instantiated.");
-		}
-
-		public static <T> Iterator<T> of(BooleanSupplier hasNext, Supplier<T> next) {
-			return new Iterator<T>() {
-
-				@Override
-				public boolean hasNext() {
-					return hasNext.getAsBoolean();
-				}
-
-				@Override
-				public T next() {
-					return next.get();
-				}
-			};
-		}
-
-		public static <T> Iterator<T> of(Iterator<T> iterator, Predicate<? super T> whileCondition) {
-			return new Iterator<T>() {
-
-				Option<T> next = testNext();
-
-				@Override
-				public boolean hasNext() {
-					return next.isPresent();
-				}
-
-				@Override
-				public T next() {
-					final T result = next.orElseThrow(() -> new NoSuchElementException("no more elements"));
-					next = testNext();
-					return result;
-				}
-
-				Option<T> testNext() {
-					return (iterator.hasNext() ? new Some<>(iterator.next()) : None.<T> instance())
-							.filter(whileCondition);
-				}
-			};
-		}
-	}
 }
