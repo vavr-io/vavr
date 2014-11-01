@@ -35,6 +35,8 @@ Javaslang can be downloaded [here](http://search.maven.org/#search|ga|1|a:"javas
 * Executing code coverage report: `mvn -P ci clean test jacoco:report`
 * Create -javadoc.jar: `mvn javadoc:jar`
 * Create -source.jar: `mvn source:jar`
+* Update version properties: `mvn versions:update-properties` 
+* Check for new plugin version: `mvn versions:display-plugin-updates`
 
 ### Release Management
 
