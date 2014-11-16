@@ -57,11 +57,13 @@ public final class Stream<T> implements Iterable<T>, java.util.stream.Stream<T> 
 	}
 
 	public <U, R> Stream<R> zip(Stream<U> other, BiFunction<T, U, R> zipper) {
-		final Iterator<T> left = iterator();
-		final Iterator<U> right = other.iterator();
-		final Iterator<R> zipped = Iterators.of(() -> left.hasNext() && right.hasNext(),
-				() -> zipper.apply(left.next(), right.next()));
-		return Stream.of(zipped);
+		// TODO
+		//		final Iterator<T> left = iterator();
+		//		final Iterator<U> right = other.iterator();
+		//		final Iterator<R> zipped = Iterators.of(() -> left.hasNext() && right.hasNext(),
+		//				() -> zipper.apply(left.next(), right.next()));
+		//		return Stream.of(zipped);
+		return null;
 	}
 
 	// TODO: test joining null values
