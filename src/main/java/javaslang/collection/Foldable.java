@@ -90,9 +90,13 @@ public interface Foldable<A> extends Iterable<A> {
 	 * <li>An associative binary operation {@code op}, such that {@code op(op(x,y),z) == op(x,op(y,z))} for any x,y,z of
 	 * type A.</li>
 	 * </ul>
+	 * 
+	 * Technically a Semigroup is the same as a {@code java.util.function.BiFunction<A,A,A>}. Introducing this new type
+	 * clarifies that the operation {@code op} is associative.
 	 *
 	 * @param <A> A type.
 	 */
+	@FunctionalInterface
 	static interface Semigroup<A> {
 
 		A op(A a1, A a2);
@@ -114,16 +118,28 @@ public interface Foldable<A> extends Iterable<A> {
 
 		A zero();
 
+		/**
+		 * Function composition of one type is an Endo monoid.
+		 * 
+		 * @return The Endo monoid of type A.
+		 */
 		static <A> Monoid<Function<A, A>> endoMonoid() {
 			return Monoid.of(Function.<A> identity(), (f, g) -> f.compose(g));
 		}
 
-		static <A> Monoid<A> of(A zero, BiFunction<A, A, A> op) {
+		/**
+		 * Factory method for monoidsm taking a zero and a Semigroup.
+		 * 
+		 * @param zero The zero of the Monoid.
+		 * @param semigroup Has the associative operation of the Monoid.
+		 * @return a new Monoid
+		 */
+		static <A> Monoid<A> of(A zero, Semigroup<A> semigroup) {
 			return new Monoid<A>() {
 
 				@Override
 				public A op(A a1, A a2) {
-					return op.apply(a1, a2);
+					return semigroup.op(a1, a2);
 				}
 
 				@Override
