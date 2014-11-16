@@ -41,7 +41,7 @@
 		<eclipse.lifecycle.mapping.version>1.0.0</eclipse.lifecycle.mapping.version>
 		<java.version>1.8</java.version>
 		<javaslang.generated.sources.dir>target/src-gen</javaslang.generated.sources.dir>
-		<junit.version>4.12-beta-2</junit.version>
+		<junit.version>4.12-beta-3</junit.version>
 		<maven.compiler.version>3.2</maven.compiler.version>
 		<maven.coveralls.version>3.0.1</maven.coveralls.version>
 		<maven.gpg.version>1.5</maven.gpg.version>
@@ -59,11 +59,11 @@
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
+					<compilerArgs>
+						<arg>-Xlint</arg>
+					</compilerArgs>
 					<showWarnings>true</showWarnings>
 					<showDeprecation>true</showDeprecation>
-					<compilerArguments>
-						<Xlint />
-					</compilerArguments>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -93,7 +93,8 @@
 					<configuration>
 						<lifecycleMappingMetadata>
 							<pluginExecutions>
-								<!-- Elimate the eclipse warning 'maven-enforcer-plugin (goal "enforce") is ignored by m2e' -->
+								<!-- Elimate the eclipse warning 'maven-enforcer-plugin (goal "enforce") 
+									is ignored by m2e' -->
 								<pluginExecution>
 									<pluginExecutionFilter>
 										<groupId>org.apache.maven.plugins</groupId>
