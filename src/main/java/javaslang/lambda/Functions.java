@@ -6,6 +6,8 @@
 package javaslang.lambda;
 
 import java.io.Serializable;
+import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -22,6 +24,11 @@ public interface Functions {
 
 		default Function0<R> tupled() {
 			return this;
+		}
+
+		default <V> Function0<V> andThen(Function<? super R, ? extends V> after) {
+			Objects.requireNonNull(after);
+			return () -> after.apply(get());
 		}
 	}
 
@@ -45,11 +52,28 @@ public interface Functions {
 		default Function1<Tuple.Tuple1<T1>, R> tupled() {
 			return t -> apply(t._1);
 		}
+
+		@Override
+		default <V> Function1<T1, V> andThen(Function<? super R, ? extends V> after) {
+			Objects.requireNonNull(after);
+			return t1 -> after.apply(apply(t1));
+		}
+
+		@Override
+		default <V> Function1<V, R> compose(Function<? super V, ? extends T1> before) {
+			Objects.requireNonNull(before);
+			return (V v) -> apply(before.apply(v));
+		}
+
+		static <T> Function1<T, T> identity() {
+			return t -> t;
+		}
 	}
 
 	@FunctionalInterface
-	static interface Function2<T1, T2, R> extends Serializable {
+	static interface Function2<T1, T2, R> extends BiFunction<T1, T2, R>, Serializable {
 
+		@Override
 		R apply(T1 t1, T2 t2);
 
 		default Function1<T1, Function1<T2, R>> curried() {
@@ -58,6 +82,12 @@ public interface Functions {
 
 		default Function1<Tuple.Tuple2<T1, T2>, R> tupled() {
 			return t -> apply(t._1, t._2);
+		}
+
+		@Override
+		default <V> Function2<T1, T2, V> andThen(Function<? super R, ? extends V> after) {
+			Objects.requireNonNull(after);
+			return (t1, t2) -> after.apply(apply(t1, t2));
 		}
 	}
 
@@ -73,6 +103,11 @@ public interface Functions {
 		default Function1<Tuple.Tuple3<T1, T2, T3>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3);
 		}
+
+		default <V> Function3<T1, T2, T3, V> andThen(Function<? super R, ? extends V> after) {
+			Objects.requireNonNull(after);
+			return (t1, t2, t3) -> after.apply(apply(t1, t2, t3));
+		}
 	}
 
 	@FunctionalInterface
@@ -86,6 +121,11 @@ public interface Functions {
 
 		default Function1<Tuple.Tuple4<T1, T2, T3, T4>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3, t._4);
+		}
+
+		default <V> Function4<T1, T2, T3, T4, V> andThen(Function<? super R, ? extends V> after) {
+			Objects.requireNonNull(after);
+			return (t1, t2, t3, t4) -> after.apply(apply(t1, t2, t3, t4));
 		}
 	}
 
@@ -101,6 +141,11 @@ public interface Functions {
 		default Function1<Tuple.Tuple5<T1, T2, T3, T4, T5>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3, t._4, t._5);
 		}
+
+		default <V> Function5<T1, T2, T3, T4, T5, V> andThen(Function<? super R, ? extends V> after) {
+			Objects.requireNonNull(after);
+			return (t1, t2, t3, t4, t5) -> after.apply(apply(t1, t2, t3, t4, t5));
+		}
 	}
 
 	@FunctionalInterface
@@ -114,6 +159,11 @@ public interface Functions {
 
 		default Function1<Tuple.Tuple6<T1, T2, T3, T4, T5, T6>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3, t._4, t._5, t._6);
+		}
+
+		default <V> Function6<T1, T2, T3, T4, T5, T6, V> andThen(Function<? super R, ? extends V> after) {
+			Objects.requireNonNull(after);
+			return (t1, t2, t3, t4, t5, t6) -> after.apply(apply(t1, t2, t3, t4, t5, t6));
 		}
 	}
 
@@ -129,6 +179,11 @@ public interface Functions {
 		default Function1<Tuple.Tuple7<T1, T2, T3, T4, T5, T6, T7>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7);
 		}
+
+		default <V> Function7<T1, T2, T3, T4, T5, T6, T7, V> andThen(Function<? super R, ? extends V> after) {
+			Objects.requireNonNull(after);
+			return (t1, t2, t3, t4, t5, t6, t7) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7));
+		}
 	}
 
 	@FunctionalInterface
@@ -143,6 +198,11 @@ public interface Functions {
 		default Function1<Tuple.Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8);
 		}
+
+		default <V> Function8<T1, T2, T3, T4, T5, T6, T7, T8, V> andThen(Function<? super R, ? extends V> after) {
+			Objects.requireNonNull(after);
+			return (t1, t2, t3, t4, t5, t6, t7, t8) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8));
+		}
 	}
 
 	@FunctionalInterface
@@ -156,6 +216,11 @@ public interface Functions {
 
 		default Function1<Tuple.Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9);
+		}
+
+		default <V> Function9<T1, T2, T3, T4, T5, T6, T7, T8, T9, V> andThen(Function<? super R, ? extends V> after) {
+			Objects.requireNonNull(after);
+			return (t1, t2, t3, t4, t5, t6, t7, t8, t9) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8, t9));
 		}
 	}
 
@@ -172,6 +237,13 @@ public interface Functions {
 		default Function1<Tuple.Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10);
 		}
+
+		default <V> Function10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, V> andThen(
+				Function<? super R, ? extends V> after) {
+			Objects.requireNonNull(after);
+			return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8, t9,
+					t10));
+		}
 	}
 
 	@FunctionalInterface
@@ -186,6 +258,13 @@ public interface Functions {
 
 		default Function1<Tuple.Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10, t._11);
+		}
+
+		default <V> Function11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, V> andThen(
+				Function<? super R, ? extends V> after) {
+			Objects.requireNonNull(after);
+			return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8,
+					t9, t10, t11));
 		}
 	}
 
@@ -202,6 +281,13 @@ public interface Functions {
 		default Function1<Tuple.Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10, t._11, t._12);
 		}
+
+		default <V> Function12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, V> andThen(
+				Function<? super R, ? extends V> after) {
+			Objects.requireNonNull(after);
+			return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7,
+					t8, t9, t10, t11, t12));
+		}
 	}
 
 	@FunctionalInterface
@@ -216,6 +302,13 @@ public interface Functions {
 
 		default Function1<Tuple.Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10, t._11, t._12, t._13);
+		}
+
+		default <V> Function13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, V> andThen(
+				Function<? super R, ? extends V> after) {
+			Objects.requireNonNull(after);
+			return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) -> after.apply(apply(t1, t2, t3, t4, t5,
+					t6, t7, t8, t9, t10, t11, t12, t13));
 		}
 	}
 }

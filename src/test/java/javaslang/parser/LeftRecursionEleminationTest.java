@@ -21,7 +21,6 @@ import javaslang.monad.None;
 import javaslang.monad.Option;
 import javaslang.parser.Parser.HasChildren;
 import javaslang.parser.Parser.Rule;
-import javaslang.parser.Parser.RulePart;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -80,11 +79,11 @@ public class LeftRecursionEleminationTest {
 					// with    A  : β1 A' | β2 A' | ... | βm A'
 					//         A' : α1 A' | α2 A' | ... | αn A' | ε
 
-					Stream.of(rule.alternatives).zipWithIndex().map(t -> {
-						final RulePart rulePart = t._1;
-						final long index = t._2;
-						return null;
-					});
+					//					Stream.of(rule.alternatives).zipWithIndex().map(t -> {
+					//						final RulePart rulePart = t._1;
+					//						final long index = t._2;
+					//						return null;
+					//					});
 
 					//					final Rule rewrittenRule = rewrite(rule, xxx);
 					//					/* TODO:DEBUG */System.out.println("// Rewritten rule:\n" + rewrittenRule);

@@ -42,7 +42,7 @@ import javaslang.collection.Tuple.Tuple2;
  * @see java.util.stream.Stream
  */
 // DEV-NOTE: Currently I see no benefit creating an interface for SStream
-public final class Stream<T> implements Seq<T>, Iterable<T>, java.util.stream.Stream<T> {
+public final class Stream<T> implements Iterable<T>, java.util.stream.Stream<T> {
 
 	private final java.util.stream.Stream<T> stream;
 
@@ -51,18 +51,6 @@ public final class Stream<T> implements Seq<T>, Iterable<T>, java.util.stream.St
 	}
 
 	// -- new API
-
-	// TODO
-
-	@Override
-	public Stream<T> limitUntil(Predicate<? super T> predicate) {
-		return Stream.of(Iterators.of(iterator(), predicate.negate()));
-	}
-
-	@Override
-	public Stream<Tuple2<T, Integer>> zipWithIndex() {
-		return zip(Stream.iterate(0, i -> i + 1), (t1, t2) -> Tuple.of(t1, t2));
-	}
 
 	public <U> Stream<Tuple2<T, U>> zip(Stream<U> other) {
 		return zip(other, (t1, t2) -> Tuple.of(t1, t2));
@@ -422,35 +410,5 @@ public final class Stream<T> implements Seq<T>, Iterable<T>, java.util.stream.St
 		requireNonNull(a, "stream a is null");
 		requireNonNull(b, "stream b is null");
 		return Stream.of(java.util.stream.Stream.concat(a, b));
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see javaslang.collection.Seq#cons(java.util.Iterator)
-	 */
-	@Override
-	public <U> Seq<U> cons(Iterator<U> iterator) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see javaslang.collection.Seq#cons(java.lang.Object)
-	 */
-	@Override
-	public <U> Seq<U> cons(U element) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see javaslang.collection.Seq#cons(java.lang.Object[])
-	 */
-	@Override
-	public <U> Seq<U> cons(U... elements) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

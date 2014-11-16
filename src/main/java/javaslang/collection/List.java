@@ -23,6 +23,7 @@ import java.util.Spliterators;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collector;
@@ -31,6 +32,7 @@ import java.util.stream.StreamSupport;
 
 import javaslang.Requirements.UnsatisfiedRequirementException;
 import javaslang.Strings;
+import javaslang.collection.Interfaces.Foldable;
 import javaslang.collection.Tuple.Tuple2;
 
 /**
@@ -55,8 +57,7 @@ import javaslang.collection.Tuple.Tuple2;
  * 
  * @param <E> Component type of the List.
  */
-// TODO: use SStream.* instead of zipWithIndex, ...
-public interface List<E> extends Iterable<E> {
+public interface List<E> extends Foldable<E> {
 
 	/**
 	 * Returns the first element of this List in O(1).
@@ -79,7 +80,95 @@ public interface List<E> extends Iterable<E> {
 	 * 
 	 * @return true, if this List is empty, false otherwise.
 	 */
+	@Override
 	boolean isEmpty();
+
+	/**
+	 * Appends an element to this List in O(2n).
+	 * <p>
+	 * The result is equivalent to {@code reverse().prepend(element).reverse()}.
+	 * 
+	 * @param element An element.
+	 * @return A new List containing the elements of this list, appended the given element.
+	 */
+	default List<E> append(E element) {
+		return foldRight(List.of(element), (x, xs) -> xs.prepend(x));
+	}
+
+	/**
+	 * Appends all elements of a given List to this List in O(2n). This implementation returns
+	 * {@code elements.prependAll(this)}.
+	 * <p>
+	 * Example: {@code List.of(1,2,3).appendAll(List.of(4,5,6))} equals {@code List.of(1,2,3,4,5,6)} .
+	 * 
+	 * @param elements Elements to be appended.
+	 * @return A new List containing the given elements appended to this List.
+	 * @throws javaslang.Requirements.UnsatisfiedRequirementException if elements is null
+	 */
+	@SuppressWarnings("unchecked")
+	default List<E> appendAll(Iterable<? extends E> elements) {
+		requireNonNull(elements, "elements is null");
+		return foldRight((List<E>) List.of(elements), (x, xs) -> xs.prepend(x));
+	}
+
+	/**
+	 * Drops the first n elements of this list or the whole list, if this size &lt; n. The elements are dropped in O(n).
+	 * <p>
+	 * The result is equivalent to {@code sublist(n)} but does not throw if n &lt; 0 or n &gt; size(). In the case of n
+	 * &lt; 0 this List is returned, in the case of n &gt; size() the Nil is returned.
+	 * 
+	 * @param n The number of elements to drop.
+	 * @return A list consisting of all elements of this list except the first n ones, or else the empty list, if this
+	 *         list has less than n elements.
+	 */
+	@Override
+	default List<E> drop(int n) {
+		List<E> result = this;
+		for (int i = 0; i < n && !result.isEmpty(); i++, result = result.tail())
+			;
+		return result;
+	}
+
+	@Override
+	default List<E> dropWhile(Predicate<E> predicate) {
+		List<E> result = this;
+		for (; !result.isEmpty() && predicate.test(head()); result = result.tail())
+			;
+		return result;
+	}
+
+	@Override
+	default List<E> filter(Predicate<E> predicate) {
+		return foldRight(nil(), (x, xs) -> predicate.test(x) ? xs.prepend(x) : xs);
+	}
+
+	@Override
+	default <T> List<T> map(Function<E, T> f) {
+		return foldRight(nil(), (x, xs) -> xs.prepend(f.apply(x)));
+	}
+
+	@Override
+	default <T> List<T> flatMap(Function<E, ? extends Foldable<T>> f) {
+		return foldRight(nil(), (x, xs) -> xs.prependAll(f.apply(x)));
+	}
+
+	@Override
+	default E reduceLeft(BinaryOperator<E> op) {
+		if (isEmpty()) {
+			throw new NoSuchElementException("reduceLeft on Nil");
+		} else {
+			return tail().foldLeft(head(), op);
+		}
+	}
+
+	@Override
+	default E reduceRight(BinaryOperator<E> op) {
+		if (isEmpty()) {
+			throw new NoSuchElementException("reduceRight on Nil");
+		} else {
+			return reverse().reduceLeft(op);
+		}
+	}
 
 	/**
 	 * Reverses this List and returns a new List in O(n).
@@ -101,58 +190,111 @@ public interface List<E> extends Iterable<E> {
 	 * 
 	 * @return A new List containing the elements of this List in reverse order.
 	 */
+	@Override
 	default List<E> reverse() {
+		return foldLeft(nil(), (xs, x) -> xs.prepend(x));
+	}
+
+	/**
+	 * Takes the first n elements of this list or the whole list, if this size &lt; n. The elements are taken in O(n).
+	 * <p>
+	 * The result is equivalent to {@code sublist(0, n)} but does not throw if n &lt; 0 or n &gt; size(). In the case of
+	 * n &lt; 0 the Nil is returned, in the case of n &gt; size() this List is returned.
+	 * 
+	 * @param n The number of elements to take.
+	 * @return A list consisting of the first n elements of this list or the whole list, if it has less than n elements.
+	 */
+	@Override
+	default List<E> take(int n) {
 		List<E> result = Nil.instance();
-		for (List<E> list = this; !list.isEmpty(); list = list.tail()) {
+		List<E> list = this;
+		for (int i = 0; i < n && !list.isEmpty(); i++, list = list.tail()) {
 			result = result.prepend(list.head());
 		}
-		return result;
+		return result.reverse();
 	}
 
-	/**
-	 * Calculates the size of a List in O(n).
-	 * <p>
-	 * The result is equivalent to {@code isEmpty() ? 0 : 1 + tail().size()} but implemented without recursion.
-	 * 
-	 * @return The size of this List.
-	 */
-	default int size() {
-		int result = 0;
-		for (List<E> list = this; !list.isEmpty(); list = list.tail(), result++)
-			;
-		return result;
-	}
-
-	/**
-	 * Appends an element to this List in O(2n).
-	 * <p>
-	 * The result is equivalent to {@code reverse().prepend(element).reverse()}.
-	 * 
-	 * @param element An element.
-	 * @return A new List containing the elements of this list, appended the given element.
-	 */
-	default List<E> append(E element) {
-		if (isEmpty()) {
-			return new Cons<>(element, this);
-		} else {
-			return reverse().prepend(element).reverse();
+	@Override
+	default List<E> takeWhile(Predicate<E> predicate) {
+		List<E> result = Nil.instance();
+		List<E> list = this;
+		for (; !list.isEmpty() && predicate.test(head()); list = list.tail()) {
+			result = result.prepend(list.head());
 		}
+		return result.reverse();
 	}
 
 	/**
-	 * Appends all elements of a given List to this List in O(2n). This implementation returns
-	 * {@code elements.prependAll(this)}.
-	 * <p>
-	 * Example: {@code List.of(1,2,3).appendAll(List.of(4,5,6))} equals {@code List.of(1,2,3,4,5,6)} .
+	 * Returns a List formed from this List and another Iterable collection by combining corresponding elements in
+	 * pairs. If one of the two collections is longer than the other, its remaining elements are ignored.
 	 * 
-	 * @param elements Elements to be appended.
-	 * @return A new List containing the given elements appended to this List.
-	 * @throws javaslang.Requirements.UnsatisfiedRequirementException if elements is null
+	 * @param <T> The type of the second half of the returned pairs.
+	 * @param that The Iterable providing the second half of each result pair.
+	 * @return a new List containing pairs consisting of corresponding elements of this list and that. The length of the
+	 *         returned collection is the minimum of the lengths of this List and that.
+	 * @throws UnsatisfiedRequirementException if that is null.
 	 */
-	@SuppressWarnings("unchecked")
-	default List<E> appendAll(Iterable<? extends E> elements) {
-		requireNonNull(elements, "elements is null");
-		return ((List<E>) List.of(elements)).prependAll(this);
+	@Override
+	default <T> List<Tuple2<E, T>> zip(Iterable<T> that) {
+		requireNonNull(that, "that is null");
+		List<Tuple2<E, T>> result = Nil.instance();
+		List<E> list1 = this;
+		Iterator<T> list2 = that.iterator();
+		while (!list1.isEmpty() && list2.hasNext()) {
+			result = result.prepend(Tuple.of(list1.head(), list2.next()));
+			list1 = list1.tail();
+		}
+		return result.reverse();
+	}
+
+	/**
+	 * Returns a List formed from this List and another Iterable collection by combining corresponding elements in
+	 * pairs. If one of the two collections is shorter than the other, placeholder elements are used to extend the
+	 * shorter collection to the length of the longer.
+	 * 
+	 * @param <T> The type of the second half of the returned pairs.
+	 * @param that The Iterable providing the second half of each result pair.
+	 * @param thisElem The element to be used to fill up the result if this List is shorter than that.
+	 * @param thatElem The element to be used to fill up the result if that is shorter than this List.
+	 * @return A new List containing pairs consisting of corresponding elements of this List and that. The length of the
+	 *         returned collection is the maximum of the lengths of this List and that. If this List is shorter than
+	 *         that, thisElem values are used to pad the result. If that is shorter than this List, thatElem values are
+	 *         used to pad the result.
+	 * @throws UnsatisfiedRequirementException if that is null.
+	 */
+	@Override
+	default <T> List<Tuple2<E, T>> zipAll(Iterable<T> that, E thisElem, T thatElem) {
+		requireNonNull(that, "that is null");
+		List<Tuple2<E, T>> result = Nil.instance();
+		List<E> list1 = this;
+		Iterator<T> list2 = that.iterator();
+		while (!(list1.isEmpty() && !list2.hasNext())) {
+			final E elem1;
+			if (list1.isEmpty()) {
+				elem1 = thisElem;
+			} else {
+				elem1 = list1.head();
+				list1 = list1.tail();
+			}
+			final T elem2 = list2.hasNext() ? list2.next() : thatElem;
+			result = result.prepend(Tuple.of(elem1, elem2));
+		}
+		return result.reverse();
+	}
+
+	/**
+	 * Zips this List with its indices.
+	 * 
+	 * @return A new List containing all elements of this List paired with their index, starting with 0.
+	 */
+	@Override
+	default List<Tuple2<E, Integer>> zipWithIndex() {
+		List<Tuple2<E, Integer>> result = Nil.instance();
+		int index = 0;
+		for (List<E> list = this; !list.isEmpty(); list = list.tail()) {
+			result = result.prepend(Tuple.of(list.head(), index++));
+		}
+		return result.reverse();
 	}
 
 	/**
@@ -183,21 +325,9 @@ public interface List<E> extends Iterable<E> {
 	 * @return A new List containing the given elements prepended to this List.
 	 * @throws javaslang.Requirements.UnsatisfiedRequirementException if elements is null
 	 */
-	@SuppressWarnings("unchecked")
 	default List<E> prependAll(Iterable<? extends E> elements) {
 		requireNonNull(elements, "elements is null");
-		final List<? extends E> elementList = List.of(elements);
-		if (isEmpty()) {
-			return (List<E>) elementList;
-		} else if (elementList.isEmpty()) {
-			return this;
-		} else {
-			List<E> result = this;
-			for (List<? extends E> list = elementList.reverse(); !list.isEmpty(); list = list.tail()) {
-				result = result.prepend(list.head());
-			}
-			return result;
-		}
+		return List.of(elements).foldRight(this, (x, xs) -> xs.prepend(x));
 	}
 
 	/**
@@ -706,111 +836,6 @@ public interface List<E> extends Iterable<E> {
 			if (i >= beginIndex) {
 				result = result.prepend(list.head());
 			}
-		}
-		return result.reverse();
-	}
-
-	/**
-	 * Drops the first n elements of this list or the whole list, if this size &lt; n. The elements are dropped in O(n).
-	 * <p>
-	 * The result is equivalent to {@code sublist(n)} but does not throw if n &lt; 0 or n &gt; size(). In the case of n
-	 * &lt; 0 this List is returned, in the case of n &gt; size() the Nil is returned.
-	 * 
-	 * @param n The number of elements to drop.
-	 * @return A list consisting of all elements of this list except the first n ones, or else the empty list, if this
-	 *         list has less than n elements.
-	 */
-	default List<E> drop(int n) {
-		List<E> result = this;
-		for (int i = 0; i < n && !result.isEmpty(); i++, result = result.tail())
-			;
-		return result;
-	}
-
-	/**
-	 * Takes the first n elements of this list or the whole list, if this size &lt; n. The elements are taken in O(n).
-	 * <p>
-	 * The result is equivalent to {@code sublist(0, n)} but does not throw if n &lt; 0 or n &gt; size(). In the case of
-	 * n &lt; 0 the Nil is returned, in the case of n &gt; size() this List is returned.
-	 * 
-	 * @param n The number of elements to take.
-	 * @return A list consisting of the first n elements of this list or the whole list, if it has less than n elements.
-	 */
-	default List<E> take(int n) {
-		List<E> result = Nil.instance();
-		List<E> list = this;
-		for (int i = 0; i < n && !list.isEmpty(); i++, list = list.tail()) {
-			result = result.prepend(list.head());
-		}
-		return result.reverse();
-	}
-
-	/**
-	 * Returns a List formed from this List and another Iterable collection by combining corresponding elements in
-	 * pairs. If one of the two collections is longer than the other, its remaining elements are ignored.
-	 * 
-	 * @param <T> The type of the second half of the returned pairs.
-	 * @param that The Iterable providing the second half of each result pair.
-	 * @return a new List containing pairs consisting of corresponding elements of this list and that. The length of the
-	 *         returned collection is the minimum of the lengths of this List and that.
-	 * @throws UnsatisfiedRequirementException if that is null.
-	 */
-	default <T> List<Tuple2<E, T>> zip(Iterable<T> that) {
-		requireNonNull(that, "that is null");
-		List<Tuple2<E, T>> result = Nil.instance();
-		List<E> list1 = this;
-		Iterator<T> list2 = that.iterator();
-		while (!list1.isEmpty() && list2.hasNext()) {
-			result = result.prepend(Tuple.of(list1.head(), list2.next()));
-			list1 = list1.tail();
-		}
-		return result.reverse();
-	}
-
-	/**
-	 * Returns a List formed from this List and another Iterable collection by combining corresponding elements in
-	 * pairs. If one of the two collections is shorter than the other, placeholder elements are used to extend the
-	 * shorter collection to the length of the longer.
-	 * 
-	 * @param <T> The type of the second half of the returned pairs.
-	 * @param that The Iterable providing the second half of each result pair.
-	 * @param thisElem The element to be used to fill up the result if this List is shorter than that.
-	 * @param thatElem The element to be used to fill up the result if that is shorter than this List.
-	 * @return A new List containing pairs consisting of corresponding elements of this List and that. The length of the
-	 *         returned collection is the maximum of the lengths of this List and that. If this List is shorter than
-	 *         that, thisElem values are used to pad the result. If that is shorter than this List, thatElem values are
-	 *         used to pad the result.
-	 * @throws UnsatisfiedRequirementException if that is null.
-	 */
-	default <T> List<Tuple2<E, T>> zipAll(Iterable<T> that, E thisElem, T thatElem) {
-		requireNonNull(that, "that is null");
-		List<Tuple2<E, T>> result = Nil.instance();
-		List<E> list1 = this;
-		Iterator<T> list2 = that.iterator();
-		while (!(list1.isEmpty() && !list2.hasNext())) {
-			final E elem1;
-			if (list1.isEmpty()) {
-				elem1 = thisElem;
-			} else {
-				elem1 = list1.head();
-				list1 = list1.tail();
-			}
-			final T elem2 = list2.hasNext() ? list2.next() : thatElem;
-			result = result.prepend(Tuple.of(elem1, elem2));
-		}
-		return result.reverse();
-	}
-
-	/**
-	 * Zips this List with its indices.
-	 * 
-	 * @return A new List containing all elements of this List paired with their index, starting with 0.
-	 */
-	default List<Tuple2<E, Integer>> zipWithIndex() {
-		List<Tuple2<E, Integer>> result = Nil.instance();
-		int index = 0;
-		for (List<E> list = this; !list.isEmpty(); list = list.tail()) {
-			result = result.prepend(Tuple.of(list.head(), index++));
 		}
 		return result.reverse();
 	}
