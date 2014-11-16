@@ -134,7 +134,7 @@ interface TreeLikeStructure<T, TREE extends TreeLikeStructure<T, ?>> {
 	 * @param <T> value type of this tree structure
 	 * @param <TREE> type of the tree structure implementation
 	 */
-	static abstract class AbstractTreeLikeStructure<T, TREE extends AbstractTreeLikeStructure<T, ?>> implements
+	static abstract class AbstractTreeLikeStructure<T, TREE extends AbstractTreeLikeStructure<T, TREE>> implements
 			TreeLikeStructure<T, TREE> {
 
 		@Override
@@ -181,14 +181,14 @@ interface TreeLikeStructure<T, TREE extends TreeLikeStructure<T, ?>> {
 			return getClass().getSimpleName() + (isLeaf() ? "(" + string + ")" : string);
 		}
 
-		private String internalToLispString() {
+		protected String internalToLispString() {
 			final String value = Strings.toString(getValue()).replaceAll("\\s+", " ").trim();
 			if (isLeaf()) {
 				return value;
 			} else {
 				final String children = getChildren()
 						.stream()
-						.map(AbstractTreeLikeStructure::internalToLispString)
+						.map(child -> child.internalToLispString())
 						.collect(joining(" "));
 				return String.format("(%s %s)", value, children);
 			}

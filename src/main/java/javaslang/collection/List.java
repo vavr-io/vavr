@@ -32,7 +32,7 @@ import java.util.stream.StreamSupport;
 
 import javaslang.Requirements.UnsatisfiedRequirementException;
 import javaslang.Strings;
-import javaslang.collection.Interfaces.Foldable;
+import javaslang.collection.Iterfaces.Foldable;
 import javaslang.collection.Tuple.Tuple2;
 
 /**

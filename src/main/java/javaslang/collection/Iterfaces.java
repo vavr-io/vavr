@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 
 import javaslang.collection.Tuple.Tuple2;
 
-public interface Interfaces {
+public interface Iterfaces {
 
 	/**
 	 * A Semigroup is an algebraic structure consisting of
@@ -91,7 +91,12 @@ public interface Interfaces {
 		// -- secondary operations, derived from the primary operations
 
 		default int length() {
-			return foldLeft(0, (n, __) -> n + 1);
+			// TODO: jdk compiler bug
+			// return foldLeft(0, (n, __) -> n + 1);
+			int length = 0;
+			for (Iterator<?> iter = iterator(); iter.hasNext(); iter.next(), length++)
+				;
+			return length;
 		}
 
 		Foldable<A> drop(int n);

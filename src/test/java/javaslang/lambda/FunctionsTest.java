@@ -93,7 +93,7 @@ public class FunctionsTest {
 
 	@Test
 	public void shouldGetMethodTypeOfFunction2() {
-		final Function2<?, ?, ?> lambda = (o1, o2) -> o1;
+		final Function2<Object, Object, Object> lambda = (o1, o2) -> o1;
 		final MethodType actual = Lambdas.getLambdaSignature(lambda).get();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
 				"(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", getClass().getClassLoader());
@@ -102,7 +102,7 @@ public class FunctionsTest {
 
 	@Test
 	public void shouldGetMethodTypeOfCurriedFunction2() {
-		final Function2<?, ?, ?> lambda = (o1, o2) -> o1;
+		final Function2<Object, Object, Object> lambda = (o1, o2) -> o1;
 		final MethodType actual = Lambdas.getLambdaSignature(lambda.curried()).get();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
 				"(Ljava/lang/Object;)Ljavaslang/lambda/Functions$Function1;", getClass().getClassLoader());
@@ -111,7 +111,7 @@ public class FunctionsTest {
 
 	@Test
 	public void shouldGetMethodTypeOfTupledFunction2() {
-		final Function2<?, ?, ?> lambda = (o1, o2) -> o1;
+		final Function2<Object, Object, Object> lambda = (o1, o2) -> o1;
 		final MethodType actual = Lambdas.getLambdaSignature(lambda.tupled()).get();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
 				"(Ljavaslang/collection/Tuple$Tuple2;)Ljava/lang/Object;", getClass().getClassLoader());

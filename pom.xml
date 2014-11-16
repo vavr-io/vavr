@@ -59,11 +59,10 @@
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
-					<compilerArgs>
-						<arg>-Xlint</arg>
-					</compilerArgs>
-					<showWarnings>true</showWarnings>
-					<showDeprecation>true</showDeprecation>
+					<configuration>
+						<showDeprecation>true</showDeprecation>
+						<showWarnings>true</showWarnings>
+					</configuration>
 				</configuration>
 			</plugin>
 			<plugin>
