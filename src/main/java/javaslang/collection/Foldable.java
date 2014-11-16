@@ -5,7 +5,6 @@ import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 import javaslang.collection.Tuple.Tuple2;
 
@@ -116,10 +115,10 @@ public interface Foldable<A> extends Iterable<A> {
 		A zero();
 
 		static <A> Monoid<Function<A, A>> endoMonoid() {
-			return Monoid.of(Function::identity, (f, g) -> f.compose(g));
+			return Monoid.of(Function.<A> identity(), (f, g) -> f.compose(g));
 		}
 
-		static <A> Monoid<A> of(Supplier<A> zero, BiFunction<A, A, A> op) {
+		static <A> Monoid<A> of(A zero, BiFunction<A, A, A> op) {
 			return new Monoid<A>() {
 
 				@Override
@@ -129,7 +128,7 @@ public interface Foldable<A> extends Iterable<A> {
 
 				@Override
 				public A zero() {
-					return zero.get();
+					return zero;
 				}
 			};
 		}
