@@ -5,9 +5,8 @@
  */
 package javaslang.match;
 
-import java.io.Serializable;
-
 import javaslang.collection.Tuple;
+import javaslang.lambda.Reflective;
 
 /**
  * Interface for object decomposition, simmilar to Scala's {@code unapply()}. A Tuple serves as container type for the
@@ -18,7 +17,7 @@ import javaslang.collection.Tuple;
  */
 // DEV-NOTE: Serializable & @FunctionalInterface to be compatible with {@link javaslang.Lambdas#getLambdaSignature(Serializable)}
 @FunctionalInterface
-public interface Decomposition<T, R extends Tuple> extends Serializable {
+public interface Decomposition<T, R extends Tuple> extends Reflective {
 
 	/**
 	 * Performs the decomposition.

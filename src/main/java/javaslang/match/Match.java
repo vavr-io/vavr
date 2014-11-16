@@ -18,9 +18,8 @@ import java.util.function.Supplier;
 
 import javaslang.Requirements.UnsatisfiedRequirementException;
 import javaslang.collection.Tuple;
-import javaslang.lambda.Functions.Function1;
-import javaslang.lambda.Functions.Function2;
-import javaslang.lambda.Lambdas;
+import javaslang.lambda.Lambda.λ1;
+import javaslang.lambda.Lambda.λ2;
 import javaslang.monad.None;
 import javaslang.monad.Option;
 import javaslang.monad.Some;
@@ -168,7 +167,7 @@ public final class Match<R> implements Function<Object, R> {
 		 * @return this, the current instance of Match.
 		 * @throws UnsatisfiedRequirementException if function is null.
 		 */
-		public Builder<R> caze(Function1<?, R> function) {
+		public Builder<R> caze(λ1<?, R> function) {
 			requireNonNull(function, "function is null");
 			cases.add(caze(None.instance(), function));
 			return this;
@@ -187,13 +186,13 @@ public final class Match<R> implements Function<Object, R> {
 		// DEV NOTE: the compiler cannot distinguish between primitive and Object types, e.g.
 		// public Match<R> caze(int prototype, IntFunction<R> function)
 		// Autoboxing does not work here.
-		public <T> Builder<R> caze(T prototype, Function1<T, R> function) {
+		public <T> Builder<R> caze(T prototype, λ1<T, R> function) {
 			requireNonNull(function, "function is null");
 			cases.add(caze(new Some<>(prototype), function));
 			return this;
 		}
 
-		public <T, D extends Tuple> Builder<R> caze(Pattern<T, ?, D> pattern, Function2<T, D, R> function) {
+		public <T, D extends Tuple> Builder<R> caze(Pattern<T, ?, D> pattern, λ2<T, D, R> function) {
 			requireNonNull(pattern, "pattern is null");
 			requireNonNull(function, "function is null");
 			final Function<Object, Option<R>> mapping = obj -> {
@@ -355,8 +354,8 @@ public final class Match<R> implements Function<Object, R> {
 			this.defaultOption = defaultOption;
 		}
 
-		private Function<Object, Option<R>> caze(Option<?> prototype, Function1<?, R> function) {
-			return caze(prototype, function, Lambdas.getLambdaSignature(function).get().parameterType(0));
+		private Function<Object, Option<R>> caze(Option<?> prototype, λ1<?, R> function) {
+			return caze(prototype, function, function.getLambdaSignature().parameterType(0));
 		}
 
 		/**

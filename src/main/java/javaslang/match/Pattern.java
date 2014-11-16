@@ -23,7 +23,6 @@ import javaslang.collection.Tuple.Tuple6;
 import javaslang.collection.Tuple.Tuple7;
 import javaslang.collection.Tuple.Tuple8;
 import javaslang.collection.Tuple.Tuple9;
-import javaslang.lambda.Lambdas;
 import javaslang.monad.Option;
 
 /**
@@ -181,7 +180,7 @@ public class Pattern<T, P extends Tuple, R extends Tuple> {
 		requireNonNull(decomposition, "decomposition is null");
 		requireNonNull(prototype, "prototype is null");
 
-		final MethodType methodType = Lambdas.getLambdaSignature(decomposition).get();
+		final MethodType methodType = decomposition.getLambdaSignature();
 		@SuppressWarnings("unchecked")
 		final Class<T> type = (Class<T>) methodType.parameterType(methodType.parameterCount() - 1);
 
