@@ -13,6 +13,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import javaslang.Algebra.Monad;
+
 /**
  * Replacement for {@link java.util.Optional}.
  * <p>
@@ -26,7 +28,7 @@ import java.util.function.Supplier;
  * 
  * @param <T> The type of the optional value.
  */
-public interface Option<T> {
+public interface Option<T> extends Monad<T, Option<?>> {
 
 	static <T> Option<T> of(T value) {
 		return (value == null) ? None.instance() : new Some<>(value);
@@ -52,9 +54,11 @@ public interface Option<T> {
 
 	void forEach(Consumer<? super T> action);
 
+	@Override
 	<U> Option<U> map(Function<? super T, ? extends U> mapper);
 
-	<U> Option<U> flatMap(Function<? super T, ? extends Option<U>> mapper);
+	@Override
+	<U, OPTION extends Monad<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper);
 
 	@Override
 	boolean equals(Object o);
@@ -128,12 +132,13 @@ public interface Option<T> {
 
 		@Override
 		public <U> Option<U> map(Function<? super T, ? extends U> mapper) {
+			//		public <U> Option<U> map(Function<? super T, ? extends U> mapper) {
 			return new Some<>(mapper.apply(value));
 		}
 
 		@Override
-		public <U> Option<U> flatMap(Function<? super T, ? extends Option<U>> mapper) {
-			return mapper.apply(value);
+		public <U, OPTION extends Monad<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper) {
+			return (Option<U>) mapper.apply(value);
 		}
 
 		@Override
@@ -243,7 +248,7 @@ public interface Option<T> {
 		}
 
 		@Override
-		public <U> Option<U> flatMap(Function<? super T, ? extends Option<U>> mapper) {
+		public <U, OPTION extends Monad<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper) {
 			return None.instance();
 		}
 

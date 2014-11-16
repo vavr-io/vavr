@@ -14,6 +14,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import javaslang.Algebra.Monad;
 import javaslang.Requirements.UnsatisfiedRequirementException;
 import javaslang.monad.Option.None;
 import javaslang.monad.Option.Some;
@@ -23,7 +24,7 @@ import javaslang.monad.Option.Some;
  *
  * @param <T> Value type in the case of success.
  */
-public interface Try<T> {
+public interface Try<T> extends Monad<T, Try<?>> {
 
 	static <T> Try<T> of(Try.CheckedSupplier<T> supplier) {
 		try {
@@ -57,9 +58,11 @@ public interface Try<T> {
 
 	void forEach(Consumer<? super T> action);
 
+	@Override
 	<U> Try<U> map(Function<? super T, ? extends U> mapper);
 
-	<U> Try<U> flatMap(Function<? super T, ? extends Try<U>> mapper);
+	@Override
+	<U, TRY extends Monad<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper);
 
 	@Override
 	boolean equals(Object o);
@@ -71,6 +74,125 @@ public interface Try<T> {
 	String toString();
 
 	// -- Try implementations
+
+	public final class Success<T> implements Try<T>, Serializable {
+
+		private static final long serialVersionUID = 9157097743377386892L;
+
+		private T value;
+
+		public Success(T value) {
+			this.value = value;
+		}
+
+		@Override
+		public boolean isFailure() {
+			return false;
+		}
+
+		@Override
+		public boolean isSuccess() {
+			return true;
+		}
+
+		@Override
+		public T get() {
+			return value;
+		}
+
+		@Override
+		public T orElse(T other) {
+			return value;
+		}
+
+		@Override
+		public T orElseGet(Function<Throwable, ? extends T> other) {
+			return value;
+		}
+
+		@Override
+		public <X extends Throwable> T orElseThrow(Function<Throwable, X> exceptionProvider) throws X {
+			return value;
+		}
+
+		@Override
+		public Try<T> recover(Function<Throwable, ? extends T> f) {
+			return this;
+		}
+
+		@Override
+		public Try<T> recoverWith(Function<Throwable, Try<T>> f) {
+			return this;
+		}
+
+		@Override
+		public Option<T> toOption() {
+			return new Some<>(value);
+		}
+
+		@Override
+		public Try<T> filter(Predicate<? super T> predicate) {
+			try {
+				if (predicate.test(value)) {
+					return this;
+				} else {
+					return new Failure<T>(new NoSuchElementException("Predicate does not hold for " + value));
+				}
+			} catch (Throwable t) {
+				return new Failure<>(t);
+			}
+		}
+
+		@Override
+		public Try<Throwable> failed() {
+			return new Failure<>(new UnsupportedOperationException("Success.failed()"));
+		}
+
+		@Override
+		public void forEach(Consumer<? super T> action) {
+			action.accept(value);
+		}
+
+		@Override
+		public <U> Try<U> map(Function<? super T, ? extends U> mapper) {
+			try {
+				return new Success<>(mapper.apply(value));
+			} catch (Throwable t) {
+				return new Failure<>(t);
+			}
+		}
+
+		@Override
+		public <U, TRY extends Monad<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper) {
+			try {
+				return (Try<U>) mapper.apply(value);
+			} catch (Throwable t) {
+				return new Failure<>(t);
+			}
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj == this) {
+				return true;
+			}
+			if (!(obj instanceof Success)) {
+				return false;
+			}
+			final Success<?> success = (Success<?>) obj;
+			return Objects.equals(value, success.value);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hashCode(value);
+		}
+
+		@Override
+		public String toString() {
+			return String.format("Success(%s)", value);
+		}
+	}
 
 	public final class Failure<T> implements Try<T>, Serializable {
 
@@ -166,7 +288,7 @@ public interface Try<T> {
 		}
 
 		@Override
-		public <U> Try<U> flatMap(Function<? super T, ? extends Try<U>> mapper) {
+		public <U, TRY extends Monad<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper) {
 			@SuppressWarnings("unchecked")
 			final Try<U> result = (Try<U>) this;
 			return result;
@@ -292,125 +414,6 @@ public interface Try<T> {
 			public boolean isFatal() {
 				return false;
 			}
-		}
-	}
-
-	public final class Success<T> implements Try<T>, Serializable {
-
-		private static final long serialVersionUID = 9157097743377386892L;
-
-		private T value;
-
-		public Success(T value) {
-			this.value = value;
-		}
-
-		@Override
-		public boolean isFailure() {
-			return false;
-		}
-
-		@Override
-		public boolean isSuccess() {
-			return true;
-		}
-
-		@Override
-		public T get() {
-			return value;
-		}
-
-		@Override
-		public T orElse(T other) {
-			return value;
-		}
-
-		@Override
-		public T orElseGet(Function<Throwable, ? extends T> other) {
-			return value;
-		}
-
-		@Override
-		public <X extends Throwable> T orElseThrow(Function<Throwable, X> exceptionProvider) throws X {
-			return value;
-		}
-
-		@Override
-		public Try<T> recover(Function<Throwable, ? extends T> f) {
-			return this;
-		}
-
-		@Override
-		public Try<T> recoverWith(Function<Throwable, Try<T>> f) {
-			return this;
-		}
-
-		@Override
-		public Option<T> toOption() {
-			return new Some<>(value);
-		}
-
-		@Override
-		public Try<T> filter(Predicate<? super T> predicate) {
-			try {
-				if (predicate.test(value)) {
-					return this;
-				} else {
-					return new Failure<T>(new NoSuchElementException("Predicate does not hold for " + value));
-				}
-			} catch (Throwable t) {
-				return new Failure<>(t);
-			}
-		}
-
-		@Override
-		public Try<Throwable> failed() {
-			return new Failure<>(new UnsupportedOperationException("Success.failed()"));
-		}
-
-		@Override
-		public void forEach(Consumer<? super T> action) {
-			action.accept(value);
-		}
-
-		@Override
-		public <U> Try<U> map(Function<? super T, ? extends U> mapper) {
-			try {
-				return new Success<>(mapper.apply(value));
-			} catch (Throwable t) {
-				return new Failure<>(t);
-			}
-		}
-
-		@Override
-		public <U> Try<U> flatMap(Function<? super T, ? extends Try<U>> mapper) {
-			try {
-				return mapper.apply(value);
-			} catch (Throwable t) {
-				return new Failure<>(t);
-			}
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (obj == this) {
-				return true;
-			}
-			if (!(obj instanceof Success)) {
-				return false;
-			}
-			final Success<?> success = (Success<?>) obj;
-			return Objects.equals(value, success.value);
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hashCode(value);
-		}
-
-		@Override
-		public String toString() {
-			return String.format("Success(%s)", value);
 		}
 	}
 

@@ -72,23 +72,22 @@ public interface Algebra {
 		}
 	}
 
-	// TODO
+	/**
+	 * Defines a Functor.
+	 * 
+	 * @param <A> Component type of this Functor.
+	 */
 	static interface Functor<A> {
-		<B> Functor<B> map(Function<A, B> f);
+		<B> Functor<B> map(Function<? super A, ? extends B> f);
 	}
 
-	// TODO
-	static interface Applicative<A> extends Functor<A> {
-		// TODO: ??? map2(???);
-	}
-
-	// TODO
-	static interface Monad<A> extends Applicative<A> {
-		// TODO: unit
-		// TODO: flatMap
-		// TODO: compose
-		// TODO: join
-		// TODO: map
-		// TODO: filter?
+	/**
+	 * Defines a Monad.
+	 *
+	 * @param <A> Component type of this monad.
+	 * @param <M> Type of Monad implementation.
+	 */
+	static interface Monad<A, M extends Monad<?, M>> extends Functor<A> {
+		<B, MONAD extends Monad<B, M>> M flatMap(Function<? super A, MONAD> f);
 	}
 }

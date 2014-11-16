@@ -43,6 +43,7 @@ import javaslang.monad.Option.Some;
  * @param <L> The type of a Left value of the Either.
  * @param <R> The type of a Right value of the Either.
  */
+// DEV-NOTE: Either is no Monad and no Functor in the sense of javaslang.Algebra.*
 public interface Either<L, R> {
 
 	boolean isLeft();
@@ -55,44 +56,6 @@ public interface Either<L, R> {
 
 	default RightProjection<L, R> right() {
 		return new RightProjection<>(this);
-	}
-
-	// -- delegate to RightProjection by default
-
-	default R get() {
-		return right().get();
-	}
-
-	default R orElse(R other) {
-		return right().orElse(other);
-	}
-
-	default R orElseGet(Supplier<? extends R> other) {
-		return right().orElseGet(other);
-	}
-
-	default <X extends Throwable> R orElseThrow(Supplier<X> exceptionSupplier) throws X {
-		return right().orElseThrow(exceptionSupplier);
-	}
-
-	default <X extends Throwable> R orElseThrow(Function<L, X> exceptionFunction) throws X {
-		return right().orElseThrow(exceptionFunction);
-	}
-
-	default Option<Either<L, R>> filter(Predicate<? super R> predicate) {
-		return right().filter(predicate);
-	}
-
-	default void forEach(Consumer<? super R> action) {
-		right().forEach(action);
-	}
-
-	default <U> Either<L, U> map(Function<? super R, ? extends U> mapper) {
-		return right().map(mapper);
-	}
-
-	default <U> Either<L, U> flatMap(Function<? super R, ? extends Either<L, U>> mapper) {
-		return right().flatMap(mapper);
 	}
 
 	// -- Object.*
