@@ -3,7 +3,7 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.collection;
+package javaslang;
 
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
@@ -11,21 +11,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Objects;
 
-import javaslang.Serializables;
-import javaslang.collection.Tuple.Tuple0;
-import javaslang.collection.Tuple.Tuple1;
-import javaslang.collection.Tuple.Tuple10;
-import javaslang.collection.Tuple.Tuple11;
-import javaslang.collection.Tuple.Tuple12;
-import javaslang.collection.Tuple.Tuple13;
-import javaslang.collection.Tuple.Tuple2;
-import javaslang.collection.Tuple.Tuple3;
-import javaslang.collection.Tuple.Tuple4;
-import javaslang.collection.Tuple.Tuple5;
-import javaslang.collection.Tuple.Tuple6;
-import javaslang.collection.Tuple.Tuple7;
-import javaslang.collection.Tuple.Tuple8;
-import javaslang.collection.Tuple.Tuple9;
+import javaslang.Tuple;
+import javaslang.Tuple.Tuple0;
+import javaslang.Tuple.Tuple1;
+import javaslang.Tuple.Tuple10;
+import javaslang.Tuple.Tuple11;
+import javaslang.Tuple.Tuple12;
+import javaslang.Tuple.Tuple13;
+import javaslang.Tuple.Tuple2;
+import javaslang.Tuple.Tuple3;
+import javaslang.Tuple.Tuple4;
+import javaslang.Tuple.Tuple5;
+import javaslang.Tuple.Tuple6;
+import javaslang.Tuple.Tuple7;
+import javaslang.Tuple.Tuple8;
+import javaslang.Tuple.Tuple9;
 
 import org.junit.Test;
 

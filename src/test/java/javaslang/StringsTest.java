@@ -10,7 +10,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Arrays;
 
 import javaslang.Requirements.UnsatisfiedRequirementException;
-import javaslang.collection.Tuple;
 
 import org.junit.Test;
 

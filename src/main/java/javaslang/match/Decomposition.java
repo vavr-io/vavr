@@ -5,7 +5,7 @@
  */
 package javaslang.match;
 
-import javaslang.collection.Tuple;
+import javaslang.Tuple;
 import javaslang.lambda.Reflective;
 
 /**

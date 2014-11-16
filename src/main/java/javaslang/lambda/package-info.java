@@ -2,4 +2,3 @@
  * TODO
  */
 package javaslang.lambda;
-

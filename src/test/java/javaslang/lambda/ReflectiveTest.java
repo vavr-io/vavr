@@ -6,8 +6,8 @@
 package javaslang.lambda;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import javaslang.collection.Tuple;
-import javaslang.collection.Tuple.Tuple3;
+import javaslang.Tuple;
+import javaslang.Tuple.Tuple3;
 
 import org.junit.Test;
 

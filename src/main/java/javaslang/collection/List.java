@@ -32,7 +32,8 @@ import java.util.stream.StreamSupport;
 
 import javaslang.Requirements.UnsatisfiedRequirementException;
 import javaslang.Strings;
-import javaslang.collection.Tuple.Tuple2;
+import javaslang.Tuple;
+import javaslang.Tuple.Tuple2;
 
 /**
  * An immutable List implementation, suitable for concurrent programming.
@@ -1313,6 +1314,5 @@ public interface List<E> extends Foldable<E> {
 		public String toString() {
 			return stream().map(Strings::toString).collect(joining(", ", "List(", ")"));
 		}
-
 	}
 }

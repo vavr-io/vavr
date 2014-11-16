@@ -12,6 +12,8 @@ import java.util.Objects;
 
 import javaslang.AssertionsExtensions;
 import javaslang.Serializables;
+import javaslang.monad.Option.None;
+import javaslang.monad.Option.Some;
 
 import org.junit.Test;
 

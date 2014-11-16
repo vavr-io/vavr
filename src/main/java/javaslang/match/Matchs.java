@@ -9,7 +9,7 @@ import java.util.function.DoubleFunction;
 import java.util.function.IntFunction;
 import java.util.function.LongFunction;
 
-import javaslang.collection.Tuple;
+import javaslang.Tuple;
 import javaslang.lambda.Lambda.λ1;
 import javaslang.lambda.Lambda.λ2;
 import javaslang.match.Match.BooleanFunction;

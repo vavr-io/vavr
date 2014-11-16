@@ -1,5 +1,4 @@
 /**
- * Contains immutable implementations of List and Tree. Provides extension methods Set.
+ * TODO
  */
 package javaslang.collection;
-

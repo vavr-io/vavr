@@ -10,7 +10,21 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import javaslang.collection.Tuple;
+import javaslang.Tuple;
+import javaslang.Tuple.Tuple0;
+import javaslang.Tuple.Tuple1;
+import javaslang.Tuple.Tuple10;
+import javaslang.Tuple.Tuple11;
+import javaslang.Tuple.Tuple12;
+import javaslang.Tuple.Tuple13;
+import javaslang.Tuple.Tuple2;
+import javaslang.Tuple.Tuple3;
+import javaslang.Tuple.Tuple4;
+import javaslang.Tuple.Tuple5;
+import javaslang.Tuple.Tuple6;
+import javaslang.Tuple.Tuple7;
+import javaslang.Tuple.Tuple8;
+import javaslang.Tuple.Tuple9;
 
 /**
  * The class of reflective lambda functions with a specific return type.
@@ -46,7 +60,7 @@ public interface Lambda<R> extends Reflective {
 		}
 
 		@Override
-		default λ1<Tuple.Tuple0, R> tupled() {
+		default λ1<Tuple0, R> tupled() {
 			return t -> apply();
 		}
 
@@ -81,7 +95,7 @@ public interface Lambda<R> extends Reflective {
 		}
 
 		@Override
-		default λ1<Tuple.Tuple1<T1>, R> tupled() {
+		default λ1<Tuple1<T1>, R> tupled() {
 			return t -> apply(t._1);
 		}
 
@@ -119,7 +133,7 @@ public interface Lambda<R> extends Reflective {
 		}
 
 		@Override
-		default λ1<Tuple.Tuple2<T1, T2>, R> tupled() {
+		default λ1<Tuple2<T1, T2>, R> tupled() {
 			return t -> apply(t._1, t._2);
 		}
 
@@ -146,7 +160,7 @@ public interface Lambda<R> extends Reflective {
 		}
 
 		@Override
-		default λ1<Tuple.Tuple3<T1, T2, T3>, R> tupled() {
+		default λ1<Tuple3<T1, T2, T3>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3);
 		}
 
@@ -173,7 +187,7 @@ public interface Lambda<R> extends Reflective {
 		}
 
 		@Override
-		default λ1<Tuple.Tuple4<T1, T2, T3, T4>, R> tupled() {
+		default λ1<Tuple4<T1, T2, T3, T4>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3, t._4);
 		}
 
@@ -200,7 +214,7 @@ public interface Lambda<R> extends Reflective {
 		}
 
 		@Override
-		default λ1<Tuple.Tuple5<T1, T2, T3, T4, T5>, R> tupled() {
+		default λ1<Tuple5<T1, T2, T3, T4, T5>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3, t._4, t._5);
 		}
 
@@ -227,7 +241,7 @@ public interface Lambda<R> extends Reflective {
 		}
 
 		@Override
-		default λ1<Tuple.Tuple6<T1, T2, T3, T4, T5, T6>, R> tupled() {
+		default λ1<Tuple6<T1, T2, T3, T4, T5, T6>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3, t._4, t._5, t._6);
 		}
 
@@ -254,7 +268,7 @@ public interface Lambda<R> extends Reflective {
 		}
 
 		@Override
-		default λ1<Tuple.Tuple7<T1, T2, T3, T4, T5, T6, T7>, R> tupled() {
+		default λ1<Tuple7<T1, T2, T3, T4, T5, T6, T7>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7);
 		}
 
@@ -281,7 +295,7 @@ public interface Lambda<R> extends Reflective {
 		}
 
 		@Override
-		default λ1<Tuple.Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>, R> tupled() {
+		default λ1<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8);
 		}
 
@@ -308,7 +322,7 @@ public interface Lambda<R> extends Reflective {
 		}
 
 		@Override
-		default λ1<Tuple.Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9>, R> tupled() {
+		default λ1<Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9);
 		}
 
@@ -336,7 +350,7 @@ public interface Lambda<R> extends Reflective {
 		}
 
 		@Override
-		default λ1<Tuple.Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>, R> tupled() {
+		default λ1<Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10);
 		}
 
@@ -365,7 +379,7 @@ public interface Lambda<R> extends Reflective {
 		}
 
 		@Override
-		default λ1<Tuple.Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>, R> tupled() {
+		default λ1<Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10, t._11);
 		}
 
@@ -394,7 +408,7 @@ public interface Lambda<R> extends Reflective {
 		}
 
 		@Override
-		default λ1<Tuple.Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>, R> tupled() {
+		default λ1<Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10, t._11, t._12);
 		}
 
@@ -424,7 +438,7 @@ public interface Lambda<R> extends Reflective {
 		}
 
 		@Override
-		default λ1<Tuple.Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, R> tupled() {
+		default λ1<Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, R> tupled() {
 			return t -> apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10, t._11, t._12, t._13);
 		}
 

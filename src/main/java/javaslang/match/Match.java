@@ -17,12 +17,12 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import javaslang.Requirements.UnsatisfiedRequirementException;
-import javaslang.collection.Tuple;
+import javaslang.Tuple;
 import javaslang.lambda.Lambda.λ1;
 import javaslang.lambda.Lambda.λ2;
-import javaslang.monad.None;
 import javaslang.monad.Option;
-import javaslang.monad.Some;
+import javaslang.monad.Option.None;
+import javaslang.monad.Option.Some;
 
 /**
  * A better switch for Java. A Match...

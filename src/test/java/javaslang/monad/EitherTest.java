@@ -15,7 +15,9 @@ import java.util.Objects;
 
 import javaslang.AssertionsExtensions;
 import javaslang.AssertionsExtensions.CheckedRunnable;
+import javaslang.monad.Either.Left;
 import javaslang.monad.Either.LeftProjection;
+import javaslang.monad.Either.Right;
 import javaslang.monad.Either.RightProjection;
 
 import org.junit.Test;

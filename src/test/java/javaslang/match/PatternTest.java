@@ -10,8 +10,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.function.Function;
 
 import javaslang.AssertionsExtensions;
-import javaslang.collection.Tuple;
-import javaslang.collection.Tuple.Tuple2;
+import javaslang.Tuple;
+import javaslang.Tuple.Tuple2;
 import javaslang.lambda.Lambda.λ1;
 
 import org.junit.Test;

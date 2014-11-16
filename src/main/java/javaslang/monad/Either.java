@@ -5,12 +5,16 @@
  */
 package javaslang.monad;
 
+import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+
+import javaslang.monad.Option.None;
+import javaslang.monad.Option.Some;
 
 /**
  * Either represents a value of two possible types. An Either is either a {@link javaslang.monad.Left} or a
@@ -102,9 +106,97 @@ public interface Either<L, R> {
 	@Override
 	String toString();
 
-	// -- projections
+	// -- Either implementations
 
-	static class LeftProjection<L, R> {
+	static final class Left<L, R> implements Either<L, R>, Serializable {
+
+		private static final long serialVersionUID = 3297057402720487673L;
+
+		final L left;
+
+		public Left(L left) {
+			this.left = left;
+		}
+
+		@Override
+		public boolean isLeft() {
+			return true;
+		}
+
+		@Override
+		public boolean isRight() {
+			return false;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj == this) {
+				return true;
+			}
+			if (!(obj instanceof Left)) {
+				return false;
+			}
+			final Left<?, ?> other = (Left<?, ?>) obj;
+			return Objects.equals(left, other.left);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hashCode(left);
+		}
+
+		@Override
+		public String toString() {
+			return String.format("Left(%s)", left);
+		}
+	}
+
+	static final class Right<L, R> implements Either<L, R>, Serializable {
+
+		private static final long serialVersionUID = 6037923230455552437L;
+
+		final R right;
+
+		public Right(R right) {
+			this.right = right;
+		}
+
+		@Override
+		public boolean isLeft() {
+			return false;
+		}
+
+		@Override
+		public boolean isRight() {
+			return true;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj == this) {
+				return true;
+			}
+			if (!(obj instanceof Right)) {
+				return false;
+			}
+			final Right<?, ?> other = (Right<?, ?>) obj;
+			return Objects.equals(right, other.right);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hashCode(right);
+		}
+
+		@Override
+		public String toString() {
+			return String.format("Right(%s)", right);
+		}
+	}
+
+	// -- Left/Right projections
+
+	static final class LeftProjection<L, R> {
 
 		private final Either<L, R> either;
 
@@ -209,7 +301,7 @@ public interface Either<L, R> {
 		}
 	}
 
-	static class RightProjection<L, R> {
+	static final class RightProjection<L, R> {
 
 		private final Either<L, R> either;
 

@@ -7,9 +7,9 @@ package javaslang.match;
 
 import java.lang.invoke.MethodType;
 
-import javaslang.collection.Tuple;
-import javaslang.collection.Tuple.Tuple1;
-import javaslang.collection.Tuple.Tuple2;
+import javaslang.Tuple;
+import javaslang.Tuple.Tuple1;
+import javaslang.Tuple.Tuple2;
 import javaslang.lambda.Lambda.λ1;
 
 public final class Patterns {

@@ -14,7 +14,8 @@ import java.util.Objects;
 
 import javaslang.AssertionsExtensions;
 import javaslang.Serializables;
-import javaslang.monad.Failure.Cause;
+import javaslang.monad.Try.Failure;
+import javaslang.monad.Try.Success;
 
 import org.junit.Test;
 
@@ -26,13 +27,13 @@ public class TryTest {
 
 	@Test
 	public void shouldDetectFatalException() throws Exception {
-		final Cause cause = Cause.of(new OutOfMemoryError());
+		final Failure.Cause cause = Failure.Cause.of(new OutOfMemoryError());
 		assertThat(cause.isFatal()).isTrue();
 	}
 
 	@Test
 	public void shouldDetectNonFatalException() throws Exception {
-		final Cause cause = Cause.of(new StackOverflowError());
+		final Failure.Cause cause = Failure.Cause.of(new StackOverflowError());
 		assertThat(cause.isFatal()).isFalse();
 	}
 

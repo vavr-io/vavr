@@ -53,7 +53,7 @@ public class LambdaTest {
 		final λ0<?> lambda = () -> null;
 		final MethodType actual = lambda.tupled().getLambdaSignature();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
-				"(Ljavaslang/collection/Tuple$Tuple0;)Ljava/lang/Object;", getClass().getClassLoader());
+				"(Ljavaslang/Tuple$Tuple0;)Ljava/lang/Object;", getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -85,7 +85,7 @@ public class LambdaTest {
 		final λ1<Object, Object> lambda = o -> o;
 		final MethodType actual = lambda.tupled().getLambdaSignature();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
-				"(Ljavaslang/collection/Tuple$Tuple1;)Ljava/lang/Object;", getClass().getClassLoader());
+				"(Ljavaslang/Tuple$Tuple1;)Ljava/lang/Object;", getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -114,7 +114,7 @@ public class LambdaTest {
 		final λ2<Object, Object, Object> lambda = (o1, o2) -> o1;
 		final MethodType actual = lambda.tupled().getLambdaSignature();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
-				"(Ljavaslang/collection/Tuple$Tuple2;)Ljava/lang/Object;", getClass().getClassLoader());
+				"(Ljavaslang/Tuple$Tuple2;)Ljava/lang/Object;", getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -144,7 +144,7 @@ public class LambdaTest {
 		final λ3<?, ?, ?, ?> lambda = (o1, o2, o3) -> o1;
 		final MethodType actual = lambda.tupled().getLambdaSignature();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
-				"(Ljavaslang/collection/Tuple$Tuple3;)Ljava/lang/Object;", getClass().getClassLoader());
+				"(Ljavaslang/Tuple$Tuple3;)Ljava/lang/Object;", getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -174,7 +174,7 @@ public class LambdaTest {
 		final λ4<?, ?, ?, ?, ?> lambda = (o1, o2, o3, o4) -> o1;
 		final MethodType actual = lambda.tupled().getLambdaSignature();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
-				"(Ljavaslang/collection/Tuple$Tuple4;)Ljava/lang/Object;", getClass().getClassLoader());
+				"(Ljavaslang/Tuple$Tuple4;)Ljava/lang/Object;", getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -205,7 +205,7 @@ public class LambdaTest {
 		final λ5<?, ?, ?, ?, ?, ?> lambda = (o1, o2, o3, o4, o5) -> o1;
 		final MethodType actual = lambda.tupled().getLambdaSignature();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
-				"(Ljavaslang/collection/Tuple$Tuple5;)Ljava/lang/Object;", getClass().getClassLoader());
+				"(Ljavaslang/Tuple$Tuple5;)Ljava/lang/Object;", getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -236,7 +236,7 @@ public class LambdaTest {
 		final λ6<?, ?, ?, ?, ?, ?, ?> lambda = (o1, o2, o3, o4, o5, o6) -> o1;
 		final MethodType actual = lambda.tupled().getLambdaSignature();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
-				"(Ljavaslang/collection/Tuple$Tuple6;)Ljava/lang/Object;", getClass().getClassLoader());
+				"(Ljavaslang/Tuple$Tuple6;)Ljava/lang/Object;", getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -267,7 +267,7 @@ public class LambdaTest {
 		final λ7<?, ?, ?, ?, ?, ?, ?, ?> lambda = (o1, o2, o3, o4, o5, o6, o7) -> o1;
 		final MethodType actual = lambda.tupled().getLambdaSignature();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
-				"(Ljavaslang/collection/Tuple$Tuple7;)Ljava/lang/Object;", getClass().getClassLoader());
+				"(Ljavaslang/Tuple$Tuple7;)Ljava/lang/Object;", getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -298,7 +298,7 @@ public class LambdaTest {
 		final λ8<?, ?, ?, ?, ?, ?, ?, ?, ?> lambda = (o1, o2, o3, o4, o5, o6, o7, o8) -> o1;
 		final MethodType actual = lambda.tupled().getLambdaSignature();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
-				"(Ljavaslang/collection/Tuple$Tuple8;)Ljava/lang/Object;", getClass().getClassLoader());
+				"(Ljavaslang/Tuple$Tuple8;)Ljava/lang/Object;", getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -329,7 +329,7 @@ public class LambdaTest {
 		final λ9<?, ?, ?, ?, ?, ?, ?, ?, ?, ?> lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9) -> o1;
 		final MethodType actual = lambda.tupled().getLambdaSignature();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
-				"(Ljavaslang/collection/Tuple$Tuple9;)Ljava/lang/Object;", getClass().getClassLoader());
+				"(Ljavaslang/Tuple$Tuple9;)Ljava/lang/Object;", getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -360,7 +360,7 @@ public class LambdaTest {
 		final λ10<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10) -> o1;
 		final MethodType actual = lambda.tupled().getLambdaSignature();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
-				"(Ljavaslang/collection/Tuple$Tuple10;)Ljava/lang/Object;", getClass().getClassLoader());
+				"(Ljavaslang/Tuple$Tuple10;)Ljava/lang/Object;", getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -391,7 +391,7 @@ public class LambdaTest {
 		final λ11<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11) -> o1;
 		final MethodType actual = lambda.tupled().getLambdaSignature();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
-				"(Ljavaslang/collection/Tuple$Tuple11;)Ljava/lang/Object;", getClass().getClassLoader());
+				"(Ljavaslang/Tuple$Tuple11;)Ljava/lang/Object;", getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -422,7 +422,7 @@ public class LambdaTest {
 		final λ12<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12) -> o1;
 		final MethodType actual = lambda.tupled().getLambdaSignature();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
-				"(Ljavaslang/collection/Tuple$Tuple12;)Ljava/lang/Object;", getClass().getClassLoader());
+				"(Ljavaslang/Tuple$Tuple12;)Ljava/lang/Object;", getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -456,7 +456,7 @@ public class LambdaTest {
 				o12, o13) -> o1;
 		final MethodType actual = lambda.tupled().getLambdaSignature();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
-				"(Ljavaslang/collection/Tuple$Tuple13;)Ljava/lang/Object;", getClass().getClassLoader());
+				"(Ljavaslang/Tuple$Tuple13;)Ljava/lang/Object;", getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 }

@@ -9,20 +9,20 @@ import static javaslang.Requirements.requireNonNull;
 
 import java.lang.invoke.MethodType;
 
-import javaslang.collection.Tuple;
-import javaslang.collection.Tuple.Tuple1;
-import javaslang.collection.Tuple.Tuple10;
-import javaslang.collection.Tuple.Tuple11;
-import javaslang.collection.Tuple.Tuple12;
-import javaslang.collection.Tuple.Tuple13;
-import javaslang.collection.Tuple.Tuple2;
-import javaslang.collection.Tuple.Tuple3;
-import javaslang.collection.Tuple.Tuple4;
-import javaslang.collection.Tuple.Tuple5;
-import javaslang.collection.Tuple.Tuple6;
-import javaslang.collection.Tuple.Tuple7;
-import javaslang.collection.Tuple.Tuple8;
-import javaslang.collection.Tuple.Tuple9;
+import javaslang.Tuple;
+import javaslang.Tuple.Tuple1;
+import javaslang.Tuple.Tuple10;
+import javaslang.Tuple.Tuple11;
+import javaslang.Tuple.Tuple12;
+import javaslang.Tuple.Tuple13;
+import javaslang.Tuple.Tuple2;
+import javaslang.Tuple.Tuple3;
+import javaslang.Tuple.Tuple4;
+import javaslang.Tuple.Tuple5;
+import javaslang.Tuple.Tuple6;
+import javaslang.Tuple.Tuple7;
+import javaslang.Tuple.Tuple8;
+import javaslang.Tuple.Tuple9;
 import javaslang.monad.Option;
 
 /**

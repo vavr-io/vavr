@@ -21,9 +21,8 @@ import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 
+import javaslang.Tuple.Tuple2;
 import javaslang.collection.Stream;
-import javaslang.collection.Tuple;
-import javaslang.collection.Tuple.Tuple2;
 import javaslang.match.Match;
 
 /**

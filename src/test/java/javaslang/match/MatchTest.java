@@ -13,7 +13,7 @@ import java.util.function.Function;
 
 import javaslang.AssertionsExtensions;
 import javaslang.lambda.Lambda.λ1;
-import javaslang.monad.Some;
+import javaslang.monad.Option.Some;
 
 import org.junit.Test;
 

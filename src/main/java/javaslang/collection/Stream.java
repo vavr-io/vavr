@@ -31,7 +31,8 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.StreamSupport;
 
-import javaslang.collection.Tuple.Tuple2;
+import javaslang.Tuple;
+import javaslang.Tuple.Tuple2;
 
 /**
  * IStream is an Iterable Stream implementation providing methods which require a guaranteed sequential order of
