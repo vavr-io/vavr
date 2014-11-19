@@ -6,7 +6,6 @@
 package javaslang.collection;
 
 import static java.util.stream.Collectors.joining;
-import static javaslang.Requirements.requireNonNull;
 
 import java.io.IOException;
 import java.io.InvalidObjectException;
@@ -30,7 +29,8 @@ import java.util.stream.Collector;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import javaslang.Requirements.UnsatisfiedRequirementException;
+import javaslang.Require;
+import javaslang.Require.UnsatisfiedRequirementException;
 import javaslang.Strings;
 import javaslang.Tuple;
 import javaslang.Tuple.Tuple2;
@@ -103,11 +103,11 @@ public interface List<E> extends Foldable<E> {
 	 * 
 	 * @param elements Elements to be appended.
 	 * @return A new List containing the given elements appended to this List.
-	 * @throws javaslang.Requirements.UnsatisfiedRequirementException if elements is null
+	 * @throws javaslang.Require.UnsatisfiedRequirementException if elements is null
 	 */
 	@SuppressWarnings("unchecked")
 	default List<E> appendAll(Iterable<? extends E> elements) {
-		requireNonNull(elements, "elements is null");
+		Require.nonNull(elements, "elements is null");
 		return foldRight((List<E>) List.of(elements), (x, xs) -> xs.prepend(x));
 	}
 
@@ -236,7 +236,7 @@ public interface List<E> extends Foldable<E> {
 	 */
 	@Override
 	default <T> List<Tuple2<E, T>> zip(Iterable<T> that) {
-		requireNonNull(that, "that is null");
+		Require.nonNull(that, "that is null");
 		List<Tuple2<E, T>> result = Nil.instance();
 		List<E> list1 = this;
 		Iterator<T> list2 = that.iterator();
@@ -264,7 +264,7 @@ public interface List<E> extends Foldable<E> {
 	 */
 	@Override
 	default <T> List<Tuple2<E, T>> zipAll(Iterable<T> that, E thisElem, T thatElem) {
-		requireNonNull(that, "that is null");
+		Require.nonNull(that, "that is null");
 		List<Tuple2<E, T>> result = Nil.instance();
 		List<E> list1 = this;
 		Iterator<T> list2 = that.iterator();
@@ -323,10 +323,10 @@ public interface List<E> extends Foldable<E> {
 	 * 
 	 * @param elements Elements to be prepended.
 	 * @return A new List containing the given elements prepended to this List.
-	 * @throws javaslang.Requirements.UnsatisfiedRequirementException if elements is null
+	 * @throws javaslang.Require.UnsatisfiedRequirementException if elements is null
 	 */
 	default List<E> prependAll(Iterable<? extends E> elements) {
-		requireNonNull(elements, "elements is null");
+		Require.nonNull(elements, "elements is null");
 		return List.of(elements).foldRight(this, (x, xs) -> xs.prepend(x));
 	}
 
@@ -629,10 +629,10 @@ public interface List<E> extends Foldable<E> {
 	 * 
 	 * @param elements A List of values of type E.
 	 * @return true, if this List contains all given elements, false otherwise.
-	 * @throws javaslang.Requirements.UnsatisfiedRequirementException if elements is null
+	 * @throws javaslang.Require.UnsatisfiedRequirementException if elements is null
 	 */
 	default boolean containsAll(Iterable<? extends E> elements) {
-		requireNonNull(elements, "elements is null");
+		Require.nonNull(elements, "elements is null");
 		for (E element : elements) {
 			if (!this.contains(element)) {
 				return false;

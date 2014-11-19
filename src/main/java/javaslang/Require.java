@@ -10,13 +10,13 @@ import java.util.function.Supplier;
 /**
  * Runtime checks of requirements.
  */
-public final class Requirements {
+public final class Require {
 
 	/**
 	 * This class is not intended to be instantiated.
 	 */
-	private Requirements() {
-		throw new AssertionError(Requirements.class.getName() + " is not intended to be instantiated.");
+	private Require() {
+		throw new AssertionError(Require.class.getName() + " is not intended to be instantiated.");
 	}
 
 	/**
@@ -26,7 +26,7 @@ public final class Requirements {
 	 * @param message An error message.
 	 * @throws UnsatisfiedRequirementException If condition is false, contains the given message.
 	 */
-	public static void require(boolean condition, String message) {
+	public static void isTrue(boolean condition, String message) {
 		if (!condition) {
 			throw new UnsatisfiedRequirementException(message);
 		}
@@ -40,7 +40,7 @@ public final class Requirements {
 	 * @throws UnsatisfiedRequirementException If the given condition is false, contains the supplied message.
 	 * @throws NullPointerException If messageSupplier is null.
 	 */
-	public static void require(boolean condition, Supplier<String> messageSupplier) {
+	public static void isTrue(boolean condition, Supplier<String> messageSupplier) {
 		if (!condition) {
 			throw new UnsatisfiedRequirementException(messageSupplier.get());
 		}
@@ -54,7 +54,7 @@ public final class Requirements {
 	 * @return obj
 	 * @throws UnsatisfiedRequirementException If the given object is null.
 	 */
-	public static <T> T requireNonNull(T obj) {
+	public static <T> T nonNull(T obj) {
 		if (obj == null) {
 			throw new UnsatisfiedRequirementException("Object is null");
 		}
@@ -70,7 +70,7 @@ public final class Requirements {
 	 * @return obj
 	 * @throws UnsatisfiedRequirementException If the given object is null, contains the given message.
 	 */
-	public static <T> T requireNonNull(T obj, String message) {
+	public static <T> T nonNull(T obj, String message) {
 		if (obj == null) {
 			throw new UnsatisfiedRequirementException(message);
 		}
@@ -87,7 +87,7 @@ public final class Requirements {
 	 * @throws UnsatisfiedRequirementException If the given object is null, contains the supplied message.
 	 * @throws NullPointerException If messageSupplier is null.
 	 */
-	public static <T> T requireNonNull(T obj, Supplier<String> messageSupplier) {
+	public static <T> T nonNull(T obj, Supplier<String> messageSupplier) {
 		if (obj == null) {
 			throw new UnsatisfiedRequirementException(messageSupplier.get());
 		}
@@ -102,8 +102,8 @@ public final class Requirements {
 	 * @return array
 	 * @throws UnsatisfiedRequirementException If the given array is empty.
 	 */
-	public static <T> T[] requireNotNullOrEmpty(T[] array) {
-		if (requireNonNull(array).length == 0) {
+	public static <T> T[] notNullOrEmpty(T[] array) {
+		if (nonNull(array).length == 0) {
 			throw new UnsatisfiedRequirementException("Array is empty");
 		}
 		return array;
@@ -118,8 +118,8 @@ public final class Requirements {
 	 * @return array
 	 * @throws UnsatisfiedRequirementException If the given array is empty, contains the given message.
 	 */
-	public static <T> T[] requireNotNullOrEmpty(T[] array, String message) {
-		if (requireNonNull(array, message).length == 0) {
+	public static <T> T[] notNullOrEmpty(T[] array, String message) {
+		if (nonNull(array, message).length == 0) {
 			throw new UnsatisfiedRequirementException(message);
 		}
 		return array;
@@ -135,8 +135,8 @@ public final class Requirements {
 	 * @throws UnsatisfiedRequirementException If the given array is empty, contains the supplied message.
 	 * @throws NullPointerException If messageSupplier is null.
 	 */
-	public static <T> T[] requireNotNullOrEmpty(T[] array, Supplier<String> messageSupplier) {
-		if (requireNonNull(array, messageSupplier).length == 0) {
+	public static <T> T[] notNullOrEmpty(T[] array, Supplier<String> messageSupplier) {
+		if (nonNull(array, messageSupplier).length == 0) {
 			throw new UnsatisfiedRequirementException(messageSupplier.get());
 		}
 		return array;
@@ -149,8 +149,8 @@ public final class Requirements {
 	 * @return chars
 	 * @throws UnsatisfiedRequirementException If the given CharSequence is empty.
 	 */
-	public static CharSequence requireNotNullOrEmpty(CharSequence chars) {
-		if (requireNonNull(chars).length() == 0) {
+	public static CharSequence notNullOrEmpty(CharSequence chars) {
+		if (nonNull(chars).length() == 0) {
 			throw new UnsatisfiedRequirementException("CharSequence is empty");
 		}
 		return chars;
@@ -164,8 +164,8 @@ public final class Requirements {
 	 * @return chars
 	 * @throws UnsatisfiedRequirementException If the given CharSequence is empty, contains the given message.
 	 */
-	public static CharSequence requireNotNullOrEmpty(CharSequence chars, String message) {
-		if (requireNonNull(chars, message).length() == 0) {
+	public static CharSequence notNullOrEmpty(CharSequence chars, String message) {
+		if (nonNull(chars, message).length() == 0) {
 			throw new UnsatisfiedRequirementException(message);
 		}
 		return chars;
@@ -180,8 +180,8 @@ public final class Requirements {
 	 * @throws UnsatisfiedRequirementException If the given CharSequence is empty, contains the supplied message.
 	 * @throws NullPointerException If messageSupplier is null.
 	 */
-	public static CharSequence requireNotNullOrEmpty(CharSequence chars, Supplier<String> messageSupplier) {
-		if (requireNonNull(chars, messageSupplier).length() == 0) {
+	public static CharSequence notNullOrEmpty(CharSequence chars, Supplier<String> messageSupplier) {
+		if (nonNull(chars, messageSupplier).length() == 0) {
 			throw new UnsatisfiedRequirementException(messageSupplier.get());
 		}
 		return chars;
@@ -195,8 +195,8 @@ public final class Requirements {
 	 * @return chars
 	 * @throws UnsatisfiedRequirementException If the given CharSequence is empty.
 	 */
-	public static CharSequence requireNotNullOrEmptyTrimmed(CharSequence chars) {
-		if (requireNonNull(chars).toString().trim().length() == 0) {
+	public static CharSequence notNullOrEmptyTrimmed(CharSequence chars) {
+		if (nonNull(chars).toString().trim().length() == 0) {
 			throw new UnsatisfiedRequirementException("CharSequence is empty");
 		}
 		return chars;
@@ -211,8 +211,8 @@ public final class Requirements {
 	 * @return chars
 	 * @throws UnsatisfiedRequirementException If the given CharSequence is empty, contains the given message.
 	 */
-	public static CharSequence requireNotNullOrEmptyTrimmed(CharSequence chars, String message) {
-		if (requireNonNull(chars, message).toString().trim().length() == 0) {
+	public static CharSequence notNullOrEmptyTrimmed(CharSequence chars, String message) {
+		if (nonNull(chars, message).toString().trim().length() == 0) {
 			throw new UnsatisfiedRequirementException(message);
 		}
 		return chars;
@@ -228,15 +228,15 @@ public final class Requirements {
 	 * @throws UnsatisfiedRequirementException If the given CharSequence is empty, contains the supplied message.
 	 * @throws NullPointerException If messageSupplier is null.
 	 */
-	public static CharSequence requireNotNullOrEmptyTrimmed(CharSequence chars, Supplier<String> messageSupplier) {
-		if (requireNonNull(chars, messageSupplier).toString().trim().length() == 0) {
+	public static CharSequence notNullOrEmptyTrimmed(CharSequence chars, Supplier<String> messageSupplier) {
+		if (nonNull(chars, messageSupplier).toString().trim().length() == 0) {
 			throw new UnsatisfiedRequirementException(messageSupplier.get());
 		}
 		return chars;
 	}
 
 	/**
-	 * Thrown by the {@linkplain Requirements#require}* methods.
+	 * Thrown by the {@linkplain Require#require}* methods.
 	 */
 	public static class UnsatisfiedRequirementException extends RuntimeException {
 

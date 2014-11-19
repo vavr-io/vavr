@@ -5,10 +5,9 @@
  */
 package javaslang.collection;
 
-import static javaslang.Requirements.requireNonNull;
-
 import java.io.Serializable;
 
+import javaslang.Require;
 import javaslang.collection.Tree.TreeTransformer;
 import javaslang.collection.TreeLikeStructure.AbstractTreeLikeStructure;
 
@@ -31,7 +30,7 @@ public class Node<T> extends AbstractTreeLikeStructure<T, Node<T>> implements Se
 	}
 
 	public Node(T value, Iterable<Node<T>> children) {
-		requireNonNull(children, "children is null");
+		Require.nonNull(children, "children is null");
 		this.value = value;
 		this.children = List.of(children);
 	}

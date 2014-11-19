@@ -5,13 +5,12 @@
  */
 package javaslang.collection;
 
-import static javaslang.Requirements.requireNonNull;
-
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
+import javaslang.Require;
 import javaslang.collection.TreeLikeStructure.AbstractTreeLikeStructure;
 import javaslang.monad.Option;
 
@@ -53,9 +52,9 @@ public class Tree<T> extends AbstractTreeLikeStructure<T, Tree<T>> implements Se
 	// DEV-NOTE: beware of NPEs because this is leaving the constructor
 	Tree(Tree<T> parent, T value, Iterable<Tree<T>> children, TreeTransformer<T> updateParent,
 			TreeTransformer<T> updateChildren) {
-		requireNonNull(children, "children is null");
-		requireNonNull(updateParent, "updateParent is null");
-		requireNonNull(updateChildren, "updateChildren is null");
+		Require.nonNull(children, "children is null");
+		Require.nonNull(updateParent, "updateParent is null");
+		Require.nonNull(updateChildren, "updateChildren is null");
 		this.value = value;
 		this.children = List.of(children).replaceAll(updateChildren.apply(this));
 		this.parent = Option.of(parent).map(updateParent.apply(this)).orElse(null);

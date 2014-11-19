@@ -5,8 +5,6 @@
  */
 package javaslang.collection;
 
-import static javaslang.Requirements.requireNonNull;
-
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Optional;
@@ -31,6 +29,7 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.StreamSupport;
 
+import javaslang.Require;
 import javaslang.Tuple;
 import javaslang.Tuple.Tuple2;
 
@@ -343,45 +342,45 @@ public final class Stream<T> implements Iterable<T>, java.util.stream.Stream<T> 
 
 	// TODO: provide unboxed version DoubleStream
 	public static Stream<Double> of(DoubleStream stream) {
-		requireNonNull(stream, "stream is null");
+		Require.nonNull(stream, "stream is null");
 		return new Stream<>(stream.boxed());
 	}
 
 	// TODO: provide unboxed version IntStream
 	public static Stream<Integer> of(IntStream stream) {
-		requireNonNull(stream, "stream is null");
+		Require.nonNull(stream, "stream is null");
 		return new Stream<>(stream.boxed());
 	}
 
 	// TODO: provide unboxed version LongStream
 	public static Stream<Long> of(LongStream stream) {
-		requireNonNull(stream, "stream is null");
+		Require.nonNull(stream, "stream is null");
 		return new Stream<>(stream.boxed());
 	}
 
 	// TODO: provide unboxed version CharStream
 	public static IntStream of(String s) {
-		requireNonNull(s, "string is null");
+		Require.nonNull(s, "string is null");
 		return s.chars();
 	}
 
 	public static <T> Stream<T> of(java.util.stream.Stream<T> stream) {
-		requireNonNull(stream, "stream is null");
+		Require.nonNull(stream, "stream is null");
 		return new Stream<>(stream);
 	}
 
 	public static <T> Stream<T> of(Spliterator<T> spliterator) {
-		requireNonNull(spliterator, "spliterator is null");
+		Require.nonNull(spliterator, "spliterator is null");
 		return Stream.of(StreamSupport.stream(spliterator, false));
 	}
 
 	public static <T> Stream<T> of(Iterable<T> iterable) {
-		requireNonNull(iterable, "iterable is null");
+		Require.nonNull(iterable, "iterable is null");
 		return Stream.of(iterable.spliterator());
 	}
 
 	public static <T> Stream<T> of(Iterator<T> iterator) {
-		requireNonNull(iterator, "iterator is null");
+		Require.nonNull(iterator, "iterator is null");
 		return Stream.of(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED));
 	}
 
@@ -395,23 +394,23 @@ public final class Stream<T> implements Iterable<T>, java.util.stream.Stream<T> 
 
 	@SafeVarargs
 	public static <T> Stream<T> of(T... values) {
-		requireNonNull(values, "values is null");
+		Require.nonNull(values, "values is null");
 		return Stream.of(java.util.stream.Stream.of(values));
 	}
 
 	public static <T> Stream<T> iterate(final T seed, final UnaryOperator<T> f) {
-		requireNonNull(f, "f is null");
+		Require.nonNull(f, "f is null");
 		return Stream.of(java.util.stream.Stream.iterate(seed, f));
 	}
 
 	public static <T> Stream<T> generate(Supplier<T> supplier) {
-		requireNonNull(supplier, "supplier is null");
+		Require.nonNull(supplier, "supplier is null");
 		return Stream.of(java.util.stream.Stream.generate(supplier));
 	}
 
 	public static <T> Stream<T> concat(java.util.stream.Stream<? extends T> a, java.util.stream.Stream<? extends T> b) {
-		requireNonNull(a, "stream a is null");
-		requireNonNull(b, "stream b is null");
+		Require.nonNull(a, "stream a is null");
+		Require.nonNull(b, "stream b is null");
 		return Stream.of(java.util.stream.Stream.concat(a, b));
 	}
 }

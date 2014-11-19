@@ -5,8 +5,6 @@
  */
 package javaslang.match;
 
-import static javaslang.Requirements.requireNonNull;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.DoubleFunction;
@@ -16,7 +14,8 @@ import java.util.function.LongFunction;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import javaslang.Requirements.UnsatisfiedRequirementException;
+import javaslang.Require;
+import javaslang.Require.UnsatisfiedRequirementException;
 import javaslang.Tuple;
 import javaslang.lambda.Lambda.λ1;
 import javaslang.lambda.Lambda.λ2;
@@ -168,7 +167,7 @@ public final class Match<R> implements Function<Object, R> {
 		 * @throws UnsatisfiedRequirementException if function is null.
 		 */
 		public Builder<R> caze(λ1<?, R> function) {
-			requireNonNull(function, "function is null");
+			Require.nonNull(function, "function is null");
 			cases.add(caze(None.instance(), function));
 			return this;
 		}
@@ -187,14 +186,14 @@ public final class Match<R> implements Function<Object, R> {
 		// public Match<R> caze(int prototype, IntFunction<R> function)
 		// Autoboxing does not work here.
 		public <T> Builder<R> caze(T prototype, λ1<T, R> function) {
-			requireNonNull(function, "function is null");
+			Require.nonNull(function, "function is null");
 			cases.add(caze(new Some<>(prototype), function));
 			return this;
 		}
 
 		public <T, D extends Tuple> Builder<R> caze(Pattern<T, ?, D> pattern, λ2<T, D, R> function) {
-			requireNonNull(pattern, "pattern is null");
-			requireNonNull(function, "function is null");
+			Require.nonNull(pattern, "pattern is null");
+			Require.nonNull(function, "function is null");
 			final Function<Object, Option<R>> mapping = obj -> {
 				if (pattern.isApplicable(obj)) {
 					return pattern.apply(obj).map(d -> function.apply(d._1, d._2));
@@ -224,7 +223,7 @@ public final class Match<R> implements Function<Object, R> {
 		 * @throws UnsatisfiedRequirementException if function is null.
 		 */
 		public Builder<R> caze(BooleanFunction<R> function) {
-			requireNonNull(function, "function is null");
+			Require.nonNull(function, "function is null");
 			cases.add(caze(None.instance(), (Boolean b) -> function.apply(b), Boolean.class));
 			return this;
 		}
@@ -238,7 +237,7 @@ public final class Match<R> implements Function<Object, R> {
 		 * @throws UnsatisfiedRequirementException if function is null.
 		 */
 		public Builder<R> caze(ByteFunction<R> function) {
-			requireNonNull(function, "function is null");
+			Require.nonNull(function, "function is null");
 			cases.add(caze(None.instance(), (Byte b) -> function.apply(b), Byte.class));
 			return this;
 		}
@@ -252,7 +251,7 @@ public final class Match<R> implements Function<Object, R> {
 		 * @throws UnsatisfiedRequirementException if function is null.
 		 */
 		public Builder<R> caze(CharFunction<R> function) {
-			requireNonNull(function, "function is null");
+			Require.nonNull(function, "function is null");
 			cases.add(caze(None.instance(), (Character c) -> function.apply(c), Character.class));
 			return this;
 		}
@@ -266,7 +265,7 @@ public final class Match<R> implements Function<Object, R> {
 		 * @throws UnsatisfiedRequirementException if function is null.
 		 */
 		public Builder<R> caze(DoubleFunction<R> function) {
-			requireNonNull(function, "function is null");
+			Require.nonNull(function, "function is null");
 			cases.add(caze(None.instance(), (Double d) -> function.apply(d), Double.class));
 			return this;
 		}
@@ -280,7 +279,7 @@ public final class Match<R> implements Function<Object, R> {
 		 * @throws UnsatisfiedRequirementException if function is null.
 		 */
 		public Builder<R> caze(FloatFunction<R> function) {
-			requireNonNull(function, "function is null");
+			Require.nonNull(function, "function is null");
 			cases.add(caze(None.instance(), (Float f) -> function.apply(f), Float.class));
 			return this;
 		}
@@ -294,7 +293,7 @@ public final class Match<R> implements Function<Object, R> {
 		 * @throws UnsatisfiedRequirementException if function is null.
 		 */
 		public Builder<R> caze(IntFunction<R> function) {
-			requireNonNull(function, "function is null");
+			Require.nonNull(function, "function is null");
 			cases.add(caze(None.instance(), (Integer i) -> function.apply(i), Integer.class));
 			return this;
 		}
@@ -308,7 +307,7 @@ public final class Match<R> implements Function<Object, R> {
 		 * @throws UnsatisfiedRequirementException if function is null.
 		 */
 		public Builder<R> caze(LongFunction<R> function) {
-			requireNonNull(function, "function is null");
+			Require.nonNull(function, "function is null");
 			cases.add(caze(None.instance(), (Long l) -> function.apply(l), Long.class));
 			return this;
 		}
@@ -322,7 +321,7 @@ public final class Match<R> implements Function<Object, R> {
 		 * @throws UnsatisfiedRequirementException if function is null.
 		 */
 		public Builder<R> caze(ShortFunction<R> function) {
-			requireNonNull(function, "function is null");
+			Require.nonNull(function, "function is null");
 			cases.add(caze(None.instance(), (Short s) -> function.apply(s), Short.class));
 			return this;
 		}
@@ -394,7 +393,7 @@ public final class Match<R> implements Function<Object, R> {
 		 * @return this, the current instance of Match.
 		 */
 		public <T> MatchBuilder<R> orElse(Supplier<R> defaultSupplier) {
-			requireNonNull(defaultSupplier, "defaultSupplier is null");
+			Require.nonNull(defaultSupplier, "defaultSupplier is null");
 			setDefault(Option.of(defaultSupplier));
 			return this;
 		}

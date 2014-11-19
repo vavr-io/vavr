@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 
-import javaslang.Requirements.UnsatisfiedRequirementException;
+import javaslang.Require.UnsatisfiedRequirementException;
 
 import org.junit.Test;
 

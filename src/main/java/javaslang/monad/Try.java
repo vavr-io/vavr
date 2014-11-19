@@ -5,8 +5,6 @@
  */
 package javaslang.monad;
 
-import static javaslang.Requirements.requireNonNull;
-
 import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -15,7 +13,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import javaslang.Algebra.Monad;
-import javaslang.Requirements.UnsatisfiedRequirementException;
+import javaslang.Require;
+import javaslang.Require.UnsatisfiedRequirementException;
 import javaslang.monad.Option.None;
 import javaslang.monad.Option.Some;
 
@@ -207,7 +206,7 @@ public interface Try<T> extends Monad<T, Try<?>> {
 		 * @throws UnsatisfiedRequirementException if t is null.
 		 */
 		public Failure(Throwable t) {
-			requireNonNull(t, "Throwable is null");
+			Require.nonNull(t, "Throwable is null");
 			final Cause cause = Cause.of(t);
 			if (cause.isFatal()) {
 				throw cause;
@@ -371,7 +370,7 @@ public interface Try<T> extends Monad<T, Try<?>> {
 			 * @throws UnsatisfiedRequirementException if t is null.
 			 */
 			public static Cause of(Throwable t) {
-				requireNonNull(t, "Throwable is null");
+				Require.nonNull(t, "Throwable is null");
 				final boolean isFatal = (t instanceof VirtualMachineError && !(t instanceof StackOverflowError))//
 						|| t instanceof ThreadDeath//
 						|| t instanceof InterruptedException//

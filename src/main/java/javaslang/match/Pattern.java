@@ -5,10 +5,9 @@
  */
 package javaslang.match;
 
-import static javaslang.Requirements.requireNonNull;
-
 import java.lang.invoke.MethodType;
 
+import javaslang.Require;
 import javaslang.Tuple;
 import javaslang.Tuple.Tuple1;
 import javaslang.Tuple.Tuple10;
@@ -177,8 +176,8 @@ public class Pattern<T, P extends Tuple, R extends Tuple> {
 
 	private static <T, P extends Tuple, R extends Tuple> Pattern<T, P, R> create(Decomposition<T, R> decomposition,
 			P prototype) {
-		requireNonNull(decomposition, "decomposition is null");
-		requireNonNull(prototype, "prototype is null");
+		Require.nonNull(decomposition, "decomposition is null");
+		Require.nonNull(prototype, "prototype is null");
 
 		final MethodType methodType = decomposition.getLambdaSignature();
 		@SuppressWarnings("unchecked")

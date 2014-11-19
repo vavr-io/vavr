@@ -21,7 +21,7 @@ import java.util.NoSuchElementException;
 import java.util.Spliterator;
 
 import javaslang.AssertionsExtensions;
-import javaslang.Requirements.UnsatisfiedRequirementException;
+import javaslang.Require.UnsatisfiedRequirementException;
 import javaslang.Serializables;
 import javaslang.Tuple;
 import javaslang.Tuple.Tuple2;

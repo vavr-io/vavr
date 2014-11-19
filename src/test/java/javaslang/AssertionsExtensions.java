@@ -67,7 +67,7 @@ public final class AssertionsExtensions {
 		}
 
 		public void isThrowing(Class<? extends Throwable> expectedException, String expectedMessage) {
-			Requirements.requireNonNull(expectedException, "expectedException is null");
+			Require.nonNull(expectedException, "expectedException is null");
 			try {
 				test.run();
 				throw new AssertionError(expectedException.getName() + " not thrown");
