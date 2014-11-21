@@ -8,9 +8,9 @@ package javaslang.match;
 import java.lang.invoke.MethodType;
 
 import javaslang.Tuple;
+import javaslang.Lambda.λ1;
 import javaslang.Tuple.Tuple1;
 import javaslang.Tuple.Tuple2;
-import javaslang.lambda.Lambda.λ1;
 
 public final class Patterns {
 
@@ -43,7 +43,7 @@ public final class Patterns {
 	public static <T, R> Pattern<λ1<T, R>, Tuple2<Class<?>, Class<?>>, Tuple2<Class<T>, Class<R>>> Function(
 			Class<T> paramType, Class<R> returnType) {
 		return Pattern.of((λ1<T, R> f) -> {
-			final MethodType methodType = f.getLambdaSignature();
+			final MethodType methodType = f.getType();
 			/* if lambda has captured argument, the last parameter is the method argument */
 			final int paramIndex = methodType.parameterCount() - 1;
 			final Class<T> currentParamType = (Class<T>) methodType.parameterType(paramIndex);

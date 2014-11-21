@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 import java.util.function.Function;
 
 import javaslang.AssertionsExtensions;
-import javaslang.lambda.Lambda.λ1;
+import javaslang.Lambda.λ1;
 import javaslang.monad.Option.Some;
 
 import org.junit.Test;

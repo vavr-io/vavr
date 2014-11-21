@@ -3,14 +3,16 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.lambda;
+package javaslang;
 
 import java.io.Serializable;
+import java.lang.invoke.MethodType;
+import java.lang.invoke.SerializedLambda;
+import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import javaslang.Tuple;
 import javaslang.Tuple.Tuple0;
 import javaslang.Tuple.Tuple1;
 import javaslang.Tuple.Tuple10;
@@ -25,11 +27,12 @@ import javaslang.Tuple.Tuple6;
 import javaslang.Tuple.Tuple7;
 import javaslang.Tuple.Tuple8;
 import javaslang.Tuple.Tuple9;
+import javaslang.monad.Try;
 
 /**
  * The class of reflective lambda functions with a specific return type.
  */
-public interface Lambda<R> extends Reflective {
+public interface Lambda<R> extends Serializable {
 
 	/**
 	 * @return the numper of arguments of this lambda.
@@ -42,6 +45,10 @@ public interface Lambda<R> extends Reflective {
 	λ1<? extends Tuple, R> tupled();
 
 	<V> Lambda<V> andThen(Function<? super R, ? extends V> after);
+
+	default MethodType getType() {
+		return Lambda.getLambdaSignature(this);
+	}
 
 	@FunctionalInterface
 	static interface λ0<R> extends Lambda<R> {
@@ -449,5 +456,42 @@ public interface Lambda<R> extends Reflective {
 			return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) -> after.apply(apply(t1, t2, t3, t4, t5,
 					t6, t7, t8, t9, t10, t11, t12, t13));
 		}
+	}
+
+	/**
+	 * Serializes this lambda and returns the corresponding {@link java.lang.invoke.SerializedLambda}.
+	 * 
+	 * @return The serialized lambda wrapped in a {@link javaslang.monad.Success}, or a {@link javaslang.monad.Failure}
+	 *         if an exception occurred.
+	 * @see <a
+	 *      href="http://stackoverflow.com/questions/21860875/printing-debug-info-on-errors-with-java-8-lambda-expressions">printing
+	 *      debug info on errors with java 8 lambda expressions</a>
+	 * @see <a href="http://www.slideshare.net/hendersk/method-handles-in-java">Method Handles in Java</a>
+	 */
+	// TODO: Memoization / caching
+	static SerializedLambda getSerializedLambda(Serializable lambda) {
+		return Try.of(() -> {
+			final Method method = lambda.getClass().getDeclaredMethod("writeReplace");
+			method.setAccessible(true);
+			return (SerializedLambda) method.invoke(lambda);
+		}).get();
+	}
+
+	/**
+	 * Gets the runtime method signature of the given lambda instance. Especially this function is handy when the
+	 * functional interface is generic and the parameter and/or return types cannot be determined directly.
+	 * <p>
+	 * Uses internally the {@link java.lang.invoke.SerializedLambda#getImplMethodSignature()} by parsing the JVM field
+	 * types of the method signature. The result is a {@link java.lang.invoke.MethodType} which contains the return type
+	 * and the parameter types of the given lambda.
+	 * 
+	 * @param lambda A serializable lambda.
+	 * @return The signature of the lambda wrapped in a {@link javaslang.monad.Success}, or a
+	 *         {@link javaslang.monad.Failure} if an exception occurred.
+	 */
+	// TODO: Memoization / caching
+	static MethodType getLambdaSignature(Serializable lambda) {
+		final String signature = getSerializedLambda(lambda).getImplMethodSignature();
+		return MethodType.fromMethodDescriptorString(signature, lambda.getClass().getClassLoader());
 	}
 }

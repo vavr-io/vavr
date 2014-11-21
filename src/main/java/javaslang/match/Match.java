@@ -15,10 +15,10 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import javaslang.Require;
+import javaslang.Lambda.λ1;
+import javaslang.Lambda.λ2;
 import javaslang.Require.UnsatisfiedRequirementException;
 import javaslang.Tuple;
-import javaslang.lambda.Lambda.λ1;
-import javaslang.lambda.Lambda.λ2;
 import javaslang.monad.Option;
 import javaslang.monad.Option.None;
 import javaslang.monad.Option.Some;
@@ -354,7 +354,7 @@ public final class Match<R> implements Function<Object, R> {
 		}
 
 		private Function<Object, Option<R>> caze(Option<?> prototype, λ1<?, R> function) {
-			return caze(prototype, function, function.getLambdaSignature().parameterType(0));
+			return caze(prototype, function, function.getType().parameterType(0));
 		}
 
 		/**

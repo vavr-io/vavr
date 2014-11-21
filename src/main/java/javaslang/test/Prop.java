@@ -7,19 +7,19 @@ package javaslang.test;
 
 import java.util.function.BooleanSupplier;
 
-import javaslang.lambda.Lambda.λ1;
-import javaslang.lambda.Lambda.λ10;
-import javaslang.lambda.Lambda.λ11;
-import javaslang.lambda.Lambda.λ12;
-import javaslang.lambda.Lambda.λ13;
-import javaslang.lambda.Lambda.λ2;
-import javaslang.lambda.Lambda.λ3;
-import javaslang.lambda.Lambda.λ4;
-import javaslang.lambda.Lambda.λ5;
-import javaslang.lambda.Lambda.λ6;
-import javaslang.lambda.Lambda.λ7;
-import javaslang.lambda.Lambda.λ8;
-import javaslang.lambda.Lambda.λ9;
+import javaslang.Lambda.λ1;
+import javaslang.Lambda.λ10;
+import javaslang.Lambda.λ11;
+import javaslang.Lambda.λ12;
+import javaslang.Lambda.λ13;
+import javaslang.Lambda.λ2;
+import javaslang.Lambda.λ3;
+import javaslang.Lambda.λ4;
+import javaslang.Lambda.λ5;
+import javaslang.Lambda.λ6;
+import javaslang.Lambda.λ7;
+import javaslang.Lambda.λ8;
+import javaslang.Lambda.λ9;
 
 /**
  * Property-based testing.

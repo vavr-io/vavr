@@ -10,8 +10,8 @@ import java.util.function.IntFunction;
 import java.util.function.LongFunction;
 
 import javaslang.Tuple;
-import javaslang.lambda.Lambda.λ1;
-import javaslang.lambda.Lambda.λ2;
+import javaslang.Lambda.λ1;
+import javaslang.Lambda.λ2;
 import javaslang.match.Match.BooleanFunction;
 import javaslang.match.Match.ByteFunction;
 import javaslang.match.Match.CharFunction;

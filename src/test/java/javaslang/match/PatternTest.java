@@ -11,8 +11,8 @@ import java.util.function.Function;
 
 import javaslang.AssertionsExtensions;
 import javaslang.Tuple;
+import javaslang.Lambda.λ1;
 import javaslang.Tuple.Tuple2;
-import javaslang.lambda.Lambda.λ1;
 
 import org.junit.Test;
 
