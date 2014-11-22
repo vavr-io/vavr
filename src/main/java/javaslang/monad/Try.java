@@ -64,6 +64,9 @@ public interface Try<T> extends Monad<T, Try<?>> {
 	<U, TRY extends Monad<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper);
 
 	@Override
+	<U> Try<U> unit(U u);
+
+	@Override
 	boolean equals(Object o);
 
 	@Override
@@ -168,6 +171,11 @@ public interface Try<T> extends Monad<T, Try<?>> {
 			} catch (Throwable t) {
 				return new Failure<>(t);
 			}
+		}
+
+		@Override
+		public <U> Try<U> unit(U u) {
+			return new Success<>(u);
 		}
 
 		@Override
@@ -288,6 +296,22 @@ public interface Try<T> extends Monad<T, Try<?>> {
 
 		@Override
 		public <U, TRY extends Monad<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper) {
+			@SuppressWarnings("unchecked")
+			final Try<U> result = (Try<U>) this;
+			return result;
+		}
+
+		/**
+		 * {@code Failure<A>.unit(B)} returns {@code Failure<B>} to be consistet with {@code Monad<A>.map(F<A,B>)} which
+		 * is by default {@code flatMap(a -> unit((B) f.apply(a)))}.
+		 * 
+		 * @param u a value of type U
+		 * @return This instance, cast to Failure&lt;U&gt;
+		 *
+		 * @param <U> The type of the new Try.
+		 */
+		@Override
+		public <U> Try<U> unit(U u) {
 			@SuppressWarnings("unchecked")
 			final Try<U> result = (Try<U>) this;
 			return result;

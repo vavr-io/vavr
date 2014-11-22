@@ -19,8 +19,8 @@ import javaslang.Algebra.Monad;
  * Replacement for {@link java.util.Optional}.
  * <p>
  * Option is a <a href="http://stackoverflow.com/questions/13454347/monads-with-java-8">monadic</a> container type which
- * represents an optional value. Instances of Option are either an instance of {@link javaslang.monad.Some} or the
- * singleton {@link javaslang.monad.None}.
+ * represents an optional value. Instances of Option are either an instance of {@link javaslang.monad.Option.Some} or the
+ * singleton {@link javaslang.monad.Option.None}.
  * <p>
  * Most of the API is taken from {@link java.util.Optional}. A similar type can be found in <a
  * href="http://hackage.haskell.org/package/base-4.6.0.1/docs/Data-Maybe.html">Haskell</a> and <a
@@ -59,6 +59,9 @@ public interface Option<T> extends Monad<T, Option<?>> {
 
 	@Override
 	<U, OPTION extends Monad<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper);
+
+	@Override
+	<U> Option<U> unit(U u);
 
 	@Override
 	boolean equals(Object o);
@@ -132,13 +135,17 @@ public interface Option<T> extends Monad<T, Option<?>> {
 
 		@Override
 		public <U> Option<U> map(Function<? super T, ? extends U> mapper) {
-			//		public <U> Option<U> map(Function<? super T, ? extends U> mapper) {
 			return new Some<>(mapper.apply(value));
 		}
 
 		@Override
 		public <U, OPTION extends Monad<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper) {
 			return (Option<U>) mapper.apply(value);
+		}
+
+		@Override
+		public <U> Option<U> unit(U u) {
+			return Option.of(u);
 		}
 
 		@Override
@@ -249,6 +256,20 @@ public interface Option<T> extends Monad<T, Option<?>> {
 
 		@Override
 		public <U, OPTION extends Monad<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper) {
+			return None.instance();
+		}
+
+		/**
+		 * {@code None<A>.unit(B)} returns {@code None<B>} to be consistet with {@code Monad<A>.map(F<A,B>)} which is by
+		 * default {@code flatMap(a -> unit((B) f.apply(a)))}.
+		 * 
+		 * @param u a value of type U
+		 * @return A new instance of Option&lt;U&gt;
+		 *
+		 * @param <U> The type of the new Option's value, if present.
+		 */
+		@Override
+		public <U> Option<U> unit(U u) {
 			return None.instance();
 		}
 

@@ -1,8 +1,19 @@
+# -- Maven
+/target
+/*.versionsBackup
+
+# -- Eclipse
 /.classpath
 /.project
 /.settings
 /bin
-/target
+
+# -- IntelliJ IDEA
+/.idea
+/*.iml
+
+# -- Mac OS
 .DS_Store
+
+# -- Java
 hs_err_pid*
-*.versionsBackup

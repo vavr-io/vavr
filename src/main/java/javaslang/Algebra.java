@@ -82,8 +82,8 @@ public interface Algebra {
 	 * 
 	 * @param <A> Component type of this Functor.
 	 */
-	static interface Functor<A> {
-		<B> Functor<B> map(Function<? super A, ? extends B> f);
+	static interface Functor<A, F extends Functor<?, F>> {
+		<B> Functor<B, F> map(Function<? super A, ? extends B> f);
 	}
 
 	/**
@@ -92,7 +92,15 @@ public interface Algebra {
 	 * @param <A> Component type of this monad.
 	 * @param <M> Type of Monad implementation.
 	 */
-	static interface Monad<A, M extends Monad<?, M>> extends Functor<A> {
-		<B, MONAD extends Monad<B, M>> M flatMap(Function<? super A, MONAD> f);
+	static interface Monad<A, M extends Monad<?, M>> extends Functor<A, M> {
+
+		<B> Monad<B, M> unit(B b);
+
+		<B, MONAD extends Monad<B, M>> Monad<B, M> flatMap(Function<? super A, MONAD> f);
+
+		@Override
+		default <B> Monad<B, M> map(Function<? super A, ? extends B> f) {
+			return flatMap(a -> unit(f.apply(a)));
+		}
 	}
 }
