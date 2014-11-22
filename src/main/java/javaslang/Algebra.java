@@ -13,9 +13,8 @@ public interface Algebra {
 	 * A Semigroup is an algebraic structure consisting of
 	 * 
 	 * <ul>
-	 * <li>Some type A</li>
-	 * <li>An associative binary operation {@code op}, such that {@code op(op(x,y),z) == op(x,op(y,z))} for any x,y,z of
-	 * type A.</li>
+	 *     <li>Some type A</li>
+	 *     <li>An associative binary operation {@code op}, such that {@code op(op(x,y),z) == op(x,op(y,z))} for any x,y,z of type A.</li>
 	 * </ul>
 	 * 
 	 * Technically a Semigroup is the same as a {@code java.util.function.BiFunction<A,A,A>}. Introducing this new type
@@ -25,7 +24,6 @@ public interface Algebra {
 	 */
 	@FunctionalInterface
 	static interface Semigroup<A> {
-
 		A op(A a1, A a2);
 	}
 
@@ -33,10 +31,9 @@ public interface Algebra {
 	 * A Monoid is a Semigroup with an identity element {@code zero}, i.e. it consits of
 	 * 
 	 * <ul>
-	 * <li>Some type A</li>
-	 * <li>An associative binary operation {@code op}, such that {@code op(op(x,y),z) == op(x,op(y,z))} for any x,y,z of
-	 * type A.</li>
-	 * <li>An identity element {@code zero}, such that {@code op(zero(), x) == x == op(x, zero())} for any x of type A.</li>
+	 *     <li>Some type A</li>
+	 *     <li>An associative binary operation {@code op}, such that {@code op(op(x,y),z) == op(x,op(y,z))} for any x,y,z of type A.</li>
+	 *     <li>An identity element {@code zero}, such that {@code op(zero(), x) == x == op(x, zero())} for any x of type A.</li>
 	 * </ul>
 	 * 
 	 * @param <A> A type.
@@ -51,7 +48,7 @@ public interface Algebra {
 		 * @return The Endo monoid of type A.
 		 */
 		static <A> Monoid<Function<A, A>> endoMonoid() {
-			return Monoid.of(a -> a, (f, g) -> f.compose(g));
+			return Monoid.of(a -> a, Function::compose);
 		}
 
 		/**
@@ -63,7 +60,6 @@ public interface Algebra {
 		 */
 		static <A> Monoid<A> of(A zero, Semigroup<A> semigroup) {
 			return new Monoid<A>() {
-
 				@Override
 				public A op(A a1, A a2) {
 					return semigroup.op(a1, a2);
@@ -79,20 +75,34 @@ public interface Algebra {
 
 	/**
 	 * Defines a Functor.
-	 * 
+	 * <p>
+	 * All instances of Functor should obey:
+	 * <ul>
+	 *     <li>{@code fmap id = id}</li>
+	 *     <li>{@code fmap (p . q) = (fmap p) . (fmap q)}</li>
+	 * </ul>
+	 *
 	 * @param <A> Component type of this Functor.
+	 * @see <a href="http://www.haskellforall.com/2012/09/the-functor-design-pattern.html">The functor design pattern</a>
 	 */
-	static interface Functor<A, F extends Functor<?, F>> {
-		<B> Functor<B, F> map(Function<? super A, ? extends B> f);
+	static interface Functor<A> {
+		<B> Functor<B> map(Function<? super A, ? extends B> f);
 	}
 
 	/**
 	 * Defines a Monad.
+	 * <p>
+	 * All instances of the Monad typeclass should obey the three monad laws:
+	 * <ul>
+	 *     <li><strong>Left identity:</strong> {@code unit(a).flatMap(f) ≡ f a}</li>
+	 *     <li><strong>Right identity:</strong> {@code m.flatMap(unit) ≡ m}</li>
+	 *     <li><strong>Associativity:</strong> {@code m.flatMap(f).flatMap(g) ≡ m.flatMap(x -> f.apply(x).flatMap(g)}</li>
+	 * </ul>
 	 *
 	 * @param <A> Component type of this monad.
 	 * @param <M> Type of Monad implementation.
 	 */
-	static interface Monad<A, M extends Monad<?, M>> extends Functor<A, M> {
+	static interface Monad<A, M extends Monad<?, M>> extends Functor<A> {
 
 		<B> Monad<B, M> unit(B b);
 
@@ -101,6 +111,15 @@ public interface Algebra {
 		@Override
 		default <B> Monad<B, M> map(Function<? super A, ? extends B> f) {
 			return flatMap(a -> unit(f.apply(a)));
+		}
+
+		/**
+		 * Monad composition, also known as Kleisli composition.
+		 *
+		 * @see <a href="http://scabl.blogspot.de/2013/03/monads-in-scala-2.html">Monads in Scala Part Two</a>
+		 */
+		default <B, C> Function<A, Monad<C, M>> compose(Function<B, Monad<C,M>> f, Function<A, Monad<B, M>> g) {
+			return a -> g.apply(a).flatMap(f::apply);
 		}
 	}
 }

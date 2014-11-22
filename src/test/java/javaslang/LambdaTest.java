@@ -537,9 +537,7 @@ public class LambdaTest {
 
 	@Test
 	public void shouldParseParameterTypeArrayOfBoolean() {
-		final ParameterTypeArrayOfBoolean lambda = (boolean[] b) -> {
-			return;
-		};
+		final ParameterTypeArrayOfBoolean lambda = (boolean[] b) -> {};
 		final Class<?> actual = Lambda.getLambdaSignature(lambda).parameterType(0);
 		assertThat(actual.getName()).isEqualTo("[Z");
 	}

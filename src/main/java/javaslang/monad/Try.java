@@ -138,7 +138,7 @@ public interface Try<T> extends Monad<T, Try<?>> {
 				if (predicate.test(value)) {
 					return this;
 				} else {
-					return new Failure<T>(new NoSuchElementException("Predicate does not hold for " + value));
+					return new Failure<>(new NoSuchElementException("Predicate does not hold for " + value));
 				}
 			} catch (Throwable t) {
 				return new Failure<>(t);
@@ -164,6 +164,7 @@ public interface Try<T> extends Monad<T, Try<?>> {
 			}
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public <U, TRY extends Monad<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper) {
 			try {
@@ -391,17 +392,16 @@ public interface Try<T> extends Monad<T, Try<?>> {
 			 * 
 			 * @param t A Throwable
 			 * @return A {@link Fatal}, if t is fatal, a {@link NonFatal} otherwise.
-			 * @throws UnsatisfiedRequirementException if t is null.
+			 * @throws javaslang.Require.UnsatisfiedRequirementException
 			 */
 			public static Cause of(Throwable t) {
 				Require.nonNull(t, "Throwable is null");
-				final boolean isFatal = (t instanceof VirtualMachineError && !(t instanceof StackOverflowError))//
-						|| t instanceof ThreadDeath//
-						|| t instanceof InterruptedException//
+				final boolean isFatal = (t instanceof VirtualMachineError && !(t instanceof StackOverflowError))
+						|| t instanceof ThreadDeath
+						|| t instanceof InterruptedException
 						|| t instanceof LinkageError;
 				return isFatal ? new Fatal(t) : new NonFatal(t);
 			}
-
 		}
 
 		/**
@@ -419,7 +419,6 @@ public interface Try<T> extends Monad<T, Try<?>> {
 			public boolean isFatal() {
 				return true;
 			}
-
 		}
 
 		/**

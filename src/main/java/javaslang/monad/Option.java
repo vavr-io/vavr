@@ -138,6 +138,7 @@ public interface Option<T> extends Monad<T, Option<?>> {
 			return new Some<>(mapper.apply(value));
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public <U, OPTION extends Monad<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper) {
 			return (Option<U>) mapper.apply(value);

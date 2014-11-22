@@ -36,7 +36,7 @@ public interface Foldable<A> extends Iterable<A> {
 
 	default <B> B foldRight(B zero, BiFunction<? super A, B, B> f) {
 		final Function<A, Function<B, B>> curried = a -> b -> f.apply(a, b);
-		return foldMap(Algebra.Monoid.<B> endoMonoid(), curried).apply(zero);
+		return foldMap(Algebra.Monoid.endoMonoid(), curried).apply(zero);
 	}
 
 	// -- secondary operations, derived from the primary operations
@@ -85,4 +85,6 @@ public interface Foldable<A> extends Iterable<A> {
 	<B> List<Tuple2<A, B>> zipAll(Iterable<B> that, A thisElem, B thatElem);
 
 	List<Tuple2<A, Integer>> zipWithIndex();
+
+	// TODO: unzip
 }

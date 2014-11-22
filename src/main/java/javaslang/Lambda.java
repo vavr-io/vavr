@@ -36,7 +36,7 @@ public interface Lambda<R> extends Serializable {
 
 	/**
 	 * @return the numper of arguments of this lambda.
-	 * @see http://en.wikipedia.org/wiki/Arity
+	 * @see <a href="http://en.wikipedia.org/wiki/Arity">Arity</a>
 	 */
 	int arity();
 
@@ -80,7 +80,7 @@ public interface Lambda<R> extends Serializable {
 
 	/**
 	 * A function with one argument which implements Serializable in order to obtain runtime type information about the
-	 * lambda via {@link javaslang.lambda.Lambdas#getLambdaSignature(Serializable)}.
+	 * lambda via {@link javaslang.Lambda#getLambdaSignature(Serializable)}.
 	 *
 	 * @param <T1> The parameter type of the function.
 	 * @param <R> The return type of the function.
@@ -461,7 +461,7 @@ public interface Lambda<R> extends Serializable {
 	/**
 	 * Serializes this lambda and returns the corresponding {@link java.lang.invoke.SerializedLambda}.
 	 * 
-	 * @return The serialized lambda wrapped in a {@link javaslang.monad.Success}, or a {@link javaslang.monad.Failure}
+	 * @return The serialized lambda wrapped in a {@link javaslang.monad.Try.Success}, or a {@link javaslang.monad.Try.Failure}
 	 *         if an exception occurred.
 	 * @see <a
 	 *      href="http://stackoverflow.com/questions/21860875/printing-debug-info-on-errors-with-java-8-lambda-expressions">printing
@@ -486,8 +486,7 @@ public interface Lambda<R> extends Serializable {
 	 * and the parameter types of the given lambda.
 	 * 
 	 * @param lambda A serializable lambda.
-	 * @return The signature of the lambda wrapped in a {@link javaslang.monad.Success}, or a
-	 *         {@link javaslang.monad.Failure} if an exception occurred.
+	 * @return The signature of the lambda as {@linkplain java.lang.invoke.MethodType}.
 	 */
 	// TODO: Memoization / caching
 	static MethodType getLambdaSignature(Serializable lambda) {

@@ -236,7 +236,7 @@ public final class Require {
 	}
 
 	/**
-	 * Thrown by the {@linkplain Require#require}* methods.
+	 * Thrown by the Require.* methods.
 	 */
 	public static class UnsatisfiedRequirementException extends RuntimeException {
 
