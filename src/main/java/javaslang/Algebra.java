@@ -48,7 +48,7 @@ public interface Algebra {
 		 * @return The Endo monoid of type A.
 		 */
 		static <A> Monoid<Function<A, A>> endoMonoid() {
-			return Monoid.of(a -> a, Function::compose);
+			return Monoid.of(Function.identity(), Function::compose);
 		}
 
 		/**
@@ -74,12 +74,12 @@ public interface Algebra {
 	}
 
 	/**
-	 * Defines a Functor.
+	 * Defines a Functor by generalizing the map function.
 	 * <p>
-	 * All instances of Functor should obey:
+	 * All instances of the Functor interface should obey the two functor laws:
 	 * <ul>
-	 *     <li>{@code fmap id = id}</li>
-	 *     <li>{@code fmap (p . q) = (fmap p) . (fmap q)}</li>
+	 *     <li>{@code m.map(a -> a) ≡ m}</li>
+	 *     <li>{@code m.map(f.compse(g)) ≡ m.map(g).map(f)}</li>
 	 * </ul>
 	 *
 	 * @param <A> Component type of this Functor.
@@ -90,9 +90,9 @@ public interface Algebra {
 	}
 
 	/**
-	 * Defines a Monad.
+	 * Defines a Monad by generalizing the flatMap and unit functions.
 	 * <p>
-	 * All instances of the Monad typeclass should obey the three monad laws:
+	 * All instances of the Monad interface should obey the three monad laws:
 	 * <ul>
 	 *     <li><strong>Left identity:</strong> {@code unit(a).flatMap(f) ≡ f a}</li>
 	 *     <li><strong>Right identity:</strong> {@code m.flatMap(unit) ≡ m}</li>
