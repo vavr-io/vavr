@@ -59,10 +59,8 @@
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
-					<configuration>
-						<showDeprecation>true</showDeprecation>
-						<showWarnings>true</showWarnings>
-					</configuration>
+					<showDeprecation>true</showDeprecation>
+					<showWarnings>true</showWarnings>
 				</configuration>
 			</plugin>
 			<plugin>
