@@ -29,6 +29,7 @@ import java.util.stream.Collector;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import javaslang.Algebra;
 import javaslang.Require;
 import javaslang.Require.UnsatisfiedRequirementException;
 import javaslang.Strings;
@@ -57,7 +58,7 @@ import javaslang.Tuple.Tuple2;
  * 
  * @param <E> Component type of the List.
  */
-public interface List<E> extends Foldable<E> {
+public interface List<E> extends Foldable<E,List<?>, List<E>> {
 
 	/**
 	 * Returns the first element of this List in O(1).
@@ -78,10 +79,25 @@ public interface List<E> extends Foldable<E> {
 	/**
 	 * Tests whether this List is empty in O(1).
 	 * 
-	 * @return true, if this List is empty, false otherwise.
+	 * @return true, if this List is Nil, false otherwise.
 	 */
 	@Override
 	boolean isEmpty();
+
+	@Override
+	default List<E> zero() {
+		return List.nil();
+	}
+
+	@Override
+	default <T> List<T> unit(T element) {
+		return List.of(element);
+	}
+
+	@Override
+	default List<E> combine(List<E> l1, List<E> l2) {
+		return l2.prependAll(l1);
+	}
 
 	/**
 	 * Appends an element to this List in O(2n).
@@ -142,14 +158,17 @@ public interface List<E> extends Foldable<E> {
 		return foldRight(nil(), (x, xs) -> predicate.test(x) ? xs.prepend(x) : xs);
 	}
 
+	// @see Algebra.Monad.flatMap()
 	@Override
-	default <T> List<T> map(Function<E, T> f) {
-		return foldRight(nil(), (x, xs) -> xs.prepend(f.apply(x)));
+	default <T, LIST extends Algebra.Monad<T, List<?>>> List<T> flatMap(Function<? super E, LIST> mapper) {
+		//noinspection unchecked
+		return foldRight(nil(), (x, xs) -> xs.prependAll((List<T>) mapper.apply(x)));
 	}
 
+	// @see Algebra.Monad.map()
 	@Override
-	default <T> List<T> flatMap(Function<E, ? extends Foldable<T>> f) {
-		return foldRight(nil(), (x, xs) -> xs.prependAll(f.apply(x)));
+	default <T> List<T> map(Function<? super E, ? extends T> mapper) {
+		return foldRight(nil(), (x, xs) -> xs.prepend(mapper.apply(x)));
 	}
 
 	@Override
@@ -192,7 +211,7 @@ public interface List<E> extends Foldable<E> {
 	 */
 	@Override
 	default List<E> reverse() {
-		return foldLeft(nil(), (xs, x) -> xs.prepend(x));
+		return foldLeft(nil(), List::prepend);
 	}
 
 	/**
@@ -1157,7 +1176,7 @@ public interface List<E> extends Foldable<E> {
 			 * The constructor of a SerializationProxy takes an argument that concisely represents the logical state of
 			 * an instance of the enclosing class.
 			 * 
-			 * @param linearList
+			 * @param list
 			 */
 			SerializationProxy(Cons<E> list) {
 				this.list = list;

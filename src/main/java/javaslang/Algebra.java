@@ -14,17 +14,17 @@ public interface Algebra {
 	 * 
 	 * <ul>
 	 *     <li>Some type A</li>
-	 *     <li>An associative binary operation {@code op}, such that {@code op(op(x,y),z) == op(x,op(y,z))} for any x,y,z of type A.</li>
+	 *     <li>An associative binary operation {@code combine}, such that {@code combine(combine(x,y),z) == combine(x,combine(y,z))} for any x,y,z of type A.</li>
 	 * </ul>
 	 * 
 	 * Technically a Semigroup is the same as a {@code java.util.function.BiFunction<A,A,A>}. Introducing this new type
-	 * clarifies that the operation {@code op} is associative.
+	 * clarifies that the operation {@code combine} is associative.
 	 *
 	 * @param <A> A type.
 	 */
 	@FunctionalInterface
 	static interface Semigroup<A> {
-		A op(A a1, A a2);
+		A combine(A a1, A a2);
 	}
 
 	/**
@@ -32,8 +32,8 @@ public interface Algebra {
 	 * 
 	 * <ul>
 	 *     <li>Some type A</li>
-	 *     <li>An associative binary operation {@code op}, such that {@code op(op(x,y),z) == op(x,op(y,z))} for any x,y,z of type A.</li>
-	 *     <li>An identity element {@code zero}, such that {@code op(zero(), x) == x == op(x, zero())} for any x of type A.</li>
+	 *     <li>An associative binary operation {@code combine}, such that {@code combine(combine(x,y),z) == combine(x,combine(y,z))} for any x,y,z of type A.</li>
+	 *     <li>An identity element {@code zero}, such that {@code combine(zero(), x) == x == combine(x, zero())} for any x of type A.</li>
 	 * </ul>
 	 * 
 	 * @param <A> A type.
@@ -61,8 +61,8 @@ public interface Algebra {
 		static <A> Monoid<A> of(A zero, Semigroup<A> semigroup) {
 			return new Monoid<A>() {
 				@Override
-				public A op(A a1, A a2) {
-					return semigroup.op(a1, a2);
+				public A combine(A a1, A a2) {
+					return semigroup.combine(a1, a2);
 				}
 
 				@Override
