@@ -110,13 +110,13 @@ public class Node<T> extends AbstractTreeLikeStructure<T, Node<T>> implements Se
 	// -- conversion
 
 	public Tree<T> asTree() {
-		final List<Tree<T>> treeChildren = children.stream().map(child -> asTree(child)).collect(List.collector());
+		final List<Tree<T>> treeChildren = children.stream().map(this::asTree).collect(List.collector());
 		return new Tree<>(null, value, treeChildren, TreeTransformer::identity, TreeTransformer::updateChildren);
 	}
 
 	// DEV-NOTE: omits updating parent and child refs / builds Tree in O(n)
 	private Tree<T> asTree(Node<T> node) {
-		final List<Tree<T>> treeChildren = node.children.stream().map(child -> asTree(child)).collect(List.collector());
+		final List<Tree<T>> treeChildren = node.children.stream().map(this::asTree).collect(List.collector());
 		return new Tree<>(null, node.value, treeChildren, TreeTransformer::identity, TreeTransformer::identity);
 	}
 }

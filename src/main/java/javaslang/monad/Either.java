@@ -17,8 +17,8 @@ import javaslang.monad.Option.None;
 import javaslang.monad.Option.Some;
 
 /**
- * Either represents a value of two possible types. An Either is either a {@link javaslang.monad.Left} or a
- * {@link javaslang.monad.Right}.
+ * Either represents a value of two possible types. An Either is either a {@link javaslang.monad.Either.Left} or a
+ * {@link javaslang.monad.Either.Right}.
  * <p>
  * It is possible to project an Either to a Left or a Right. Both cases can be further processed with monad operations
  * map, flatMap, filter.

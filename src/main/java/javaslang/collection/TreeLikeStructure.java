@@ -188,7 +188,7 @@ interface TreeLikeStructure<T, TREE extends TreeLikeStructure<T, ?>> {
 			} else {
 				final String children = getChildren()
 						.stream()
-						.map(child -> child.internalToLispString())
+						.map(AbstractTreeLikeStructure::internalToLispString)
 						.collect(joining(" "));
 				return String.format("(%s %s)", value, children);
 			}

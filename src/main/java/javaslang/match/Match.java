@@ -81,7 +81,7 @@ public final class Match<R> implements Function<Object, R> {
 	 * @return The result when applying the given obj to the first matching case. If the case has a consumer, the result
 	 *         is null, otherwise the result of the underlying function or supplier.
 	 * @throws MatchError if no Match case matches the given object and no default is defined via orElse().
-	 * @throws javaslang.monad.Failure.NonFatal if an error occurs executing the matched case.
+	 * @throws javaslang.monad.Try.Failure.NonFatal if an error occurs executing the matched case.
 	 */
 	@Override
 	public R apply(Object obj) {
@@ -420,7 +420,5 @@ public final class Match<R> implements Function<Object, R> {
 		protected abstract Option<Supplier<R>> getDefault();
 
 		protected abstract void setDefault(Option<Supplier<R>> defaultOption);
-
 	}
-
 }

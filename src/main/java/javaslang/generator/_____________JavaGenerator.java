@@ -62,15 +62,15 @@ public abstract class _____________JavaGenerator {
 		}
 
 		public String join(Function<T, String> mapper, String delimiter) {
-			return stream.map(t -> mapper.apply(t)).collect(joining(delimiter));
+			return stream.map(mapper::apply).collect(joining(delimiter));
 		}
 
 		public String join(Function<T, String> mapper, String delimiter, String prefix, String suffix) {
-			return stream.map(t -> mapper.apply(t)).collect(joining(delimiter, prefix, suffix));
+			return stream.map(mapper::apply).collect(joining(delimiter, prefix, suffix));
 		}
 
 		public void forEach(Consumer<T> consumer) {
-			stream.forEach(t -> consumer.accept(t));
+			stream.forEach(consumer::accept);
 		}
 	}
 }
