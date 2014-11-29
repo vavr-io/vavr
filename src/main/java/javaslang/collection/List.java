@@ -58,7 +58,7 @@ import javaslang.Tuple.Tuple2;
  * 
  * @param <E> Component type of the List.
  */
-public interface List<E> extends Foldable<E,List<?>, List<E>> {
+public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E, List<?>>, Algebra.Monoid<List<E>> {
 
 	/**
 	 * Returns the first element of this List in O(1).

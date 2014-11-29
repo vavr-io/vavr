@@ -104,7 +104,7 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
      * @return The number of elements in this Foldable.
      */
     default int length() {
-        // TODO(jdk compiler bug): return foldLeft(0, (n, ignored) -> n + 1);
+        // jdk compiler bug: foldLeft(0, (n, ignored) -> n + 1)
         int length = 0;
         for (A ignored : this) {
             length++;
@@ -171,7 +171,7 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
 
     default SELF filter(Predicate<A> predicate) {
         //noinspection unchecked
-        return foldRight(zero(), (x, xs) -> predicate.test(x) ? ((SELF) unit(x)).concat(xs) : xs);
+        return foldLeft(zero(), (xs, x) -> predicate.test(x) ? ((SELF) unit(x)).concat(xs) : xs);
     }
 
     // @see Algebra.Monad.flatMap()
@@ -180,7 +180,9 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
 
     // @see Algebra.Monad.map()
     @Override
-    <B> Foldable<B, CLASS, ?> map(Function<? super A, ? extends B> mapper);
+    default <B> Foldable<B, CLASS, ?> map(Function<? super A, ? extends B> mapper) {
+        return (Foldable<B, CLASS, ?>) flatMap(a -> (Foldable<B, CLASS, ?>) unit(mapper.apply(a)));
+    }
 
     /**
      * Inserts a between all elements.
@@ -188,8 +190,10 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
      * @param a An element.
      * @return An 'interspersed' version of this Foldable.
      */
-    // TODO
-    // Foldable<A> intersperse(A a);
+    default SELF intersperse(A a) {
+        //noinspection unchecked
+        return foldLeft(zero(), (xs, x) -> xs.isEmpty() ? (SELF) unit(x) : ((SELF) unit(x)).concat((SELF) unit(a)).concat(xs));
+    }
 
     /**
      * Reverses the order of elements.
