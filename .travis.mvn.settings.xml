@@ -9,9 +9,9 @@
 	<pluginGroups />
 	<servers>
 		<server>
-			<id>rocketscience-snapshots</id>
-			<username>${env.CI_DEPLOY_USER}</username>
-			<password>${env.CI_DEPLOY_PASS}</password>
+			<id>sonatype-nexus-snapshots</id>
+			<username>${env.SONATYPE_USER}</username>
+			<password>${env.SONATYPE_PASS}</password>
 		</server>
 	</servers>
 	<mirrors />
