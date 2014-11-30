@@ -285,16 +285,10 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
 	default <T> List<Tuple2<E, T>> zipAll(Iterable<T> that, E thisElem, T thatElem) {
 		Require.nonNull(that, "that is null");
 		List<Tuple2<E, T>> result = Nil.instance();
-		List<E> list1 = this;
+		Iterator<E> list1 = this.iterator();
 		Iterator<T> list2 = that.iterator();
-		while (!(list1.isEmpty() && !list2.hasNext())) {
-			final E elem1;
-			if (list1.isEmpty()) {
-				elem1 = thisElem;
-			} else {
-				elem1 = list1.head();
-				list1 = list1.tail();
-			}
+		while (list1.hasNext() || list2.hasNext()) {
+			final E elem1 = list1.hasNext() ? list1.next() : thisElem;
 			final T elem2 = list2.hasNext() ? list2.next() : thatElem;
 			result = result.prepend(Tuple.of(elem1, elem2));
 		}

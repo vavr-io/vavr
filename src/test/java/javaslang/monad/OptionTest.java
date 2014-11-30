@@ -138,12 +138,12 @@ public class OptionTest {
 
 	@Test
 	public void shouldMapSome() {
-		assertThat(Option.of(1).map(i -> String.valueOf(i))).isEqualTo(Option.of("1"));
+		assertThat(Option.of(1).map(String::valueOf)).isEqualTo(Option.of("1"));
 	}
 
 	@Test
 	public void shouldMapNone() {
-		assertThat(Option.<Integer> empty().map(i -> String.valueOf(i))).isEqualTo(Option.empty());
+		assertThat(Option.<Integer> empty().map(String::valueOf)).isEqualTo(Option.empty());
 	}
 
 	// -- flatMap
@@ -179,23 +179,23 @@ public class OptionTest {
 	@Test
 	public void shouldEqualNoneIfObjectIsSame() {
 		final None<?> none = None.instance();
-		assertThat(none.equals(none)).isTrue();
+		assertThat(none).isEqualTo(none);
 	}
 
 	@Test
 	public void shouldEqualSomeIfObjectIsSame() {
 		final Some<?> some = new Some<>(1);
-		assertThat(some.equals(some)).isTrue();
+		assertThat(some).isEqualTo(some);
 	}
 
 	@Test
 	public void shouldNotEqualNoneIfObjectIsNull() {
-		assertThat(None.instance().equals(null)).isFalse();
+		assertThat(None.instance()).isNotNull();
 	}
 
 	@Test
 	public void shouldNotEqualSomeIfObjectIsNull() {
-		assertThat(new Some<>(1).equals(null)).isFalse();
+		assertThat(new Some<>(1)).isNotNull();
 	}
 
 	@Test

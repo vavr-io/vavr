@@ -309,7 +309,7 @@ public final class Strings {
         } else if (o.getClass().getName().startsWith("javaslang.")) {
             return o.toString();
         } else if (o instanceof Iterable) {
-            return toString(Stream.of((Iterable<?>) o), ", ", o.getClass().getSimpleName() + "(", ")", visited, o);
+            return toString(StreamSupport.stream(((Iterable<?>) o).spliterator(), false), ", ", o.getClass().getSimpleName() + "(", ")", visited, o);
         } else {
             return o.toString();
         }

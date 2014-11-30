@@ -6,9 +6,11 @@
 package javaslang.collection;
 
 import javaslang.Algebra;
+import javaslang.Require;
 import javaslang.Tuple;
 import javaslang.Tuple.Tuple2;
 
+import java.util.Iterator;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -24,6 +26,7 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
     // -- reducing operations
 
     default <B> B foldLeft(B zero, BiFunction<B, ? super A, B> f) {
+        Require.nonNull(f, "function is null");
         B result = zero;
         for (A a : this) {
             result = f.apply(result, a);
@@ -32,12 +35,15 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
     }
 
     default <B> B foldRight(B zero, BiFunction<? super A, B, B> f) {
+        Require.nonNull(f, "function is null");
         final Function<A, Function<B, B>> curried = a -> b -> f.apply(a, b);
         return foldMap(Algebra.Monoid.endoMonoid(), curried).apply(zero);
     }
 
-    default <B> B foldMap(Algebra.Monoid<B> m, Function<A, B> f) {
-        return foldLeft(m.zero(), (b, a) -> m.combine(b, f.apply(a)));
+    default <B> B foldMap(Algebra.Monoid<B> monoid, Function<A, B> mapper) {
+        Require.nonNull(monoid, "monoid is null");
+        Require.nonNull(mapper, "mapper is null");
+        return foldLeft(monoid.zero(), (b, a) -> monoid.combine(b, mapper.apply(a)));
     }
 
     /**
@@ -47,10 +53,11 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
      * @throws UnsupportedOperationException if this Foldable is empty
      */
     default A reduceLeft(BinaryOperator<A> op) {
+        Require.nonNull(op, "operator is null");
         if (isEmpty()) {
             throw new UnsupportedOperationException("reduceLeft on empty " + getClass().getSimpleName());
         } else {
-            return foldLeft(head(), op);
+            return tail().foldLeft(head(), op);
         }
     }
 
@@ -61,10 +68,11 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
      * @throws UnsupportedOperationException if this Foldable is empty
      */
     default A reduceRight(BinaryOperator<A> op) {
+        Require.nonNull(op, "operator is null");
         if (isEmpty()) {
             throw new UnsupportedOperationException("reduceRight on empty " + getClass().getSimpleName());
         } else {
-            return foldRight(head(), op);
+            return tail().foldRight(head(), op);
         }
     }
 
@@ -82,9 +90,10 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
     @Override
     SELF combine(SELF a1, SELF a2);
 
-    default SELF concat(SELF other) {
+    default SELF concat(Foldable<A, ?, SELF> other) {
+        Require.nonNull(other, "other is null");
         //noinspection unchecked
-        return combine((SELF) this, other);
+        return combine((SELF) this, (SELF) other);
     }
 
     // -- basic operations
@@ -159,11 +168,18 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
      * @return A new instance of Foldable containing all elements except the first.
      * @throws UnsupportedOperationException if this Foldable is empty
      */
+    @SuppressWarnings("unchecked")
     default SELF tail() {
         if (isEmpty()) {
             throw new UnsupportedOperationException("tail on empty " + getClass().getSimpleName());
         } else {
-            return drop(1);
+            Foldable xs = zero();
+            final Iterator<A> iter = iterator();
+            iter.next(); // this is not empty
+            while (iter.hasNext()) {
+                xs = xs.concat(unit(iter.next()));
+            }
+            return (SELF) xs;
         }
     }
 
@@ -171,16 +187,27 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
 
     default SELF filter(Predicate<A> predicate) {
         //noinspection unchecked
-        return foldLeft(zero(), (xs, x) -> predicate.test(x) ? ((SELF) unit(x)).concat(xs) : xs);
+        return foldLeft(zero(), (xs, x) -> predicate.test(x) ? xs.concat((SELF) unit(x)) : xs);
     }
 
     // @see Algebra.Monad.flatMap()
+    @SuppressWarnings("unchecked")
     @Override
-    <B, FOLDABLE extends Algebra.Monad<B, CLASS>> Foldable<B, CLASS, ?> flatMap(Function<? super A, FOLDABLE> mapper);
+    default <B, FOLDABLE extends Algebra.Monad<B, CLASS>> Foldable<B, CLASS, ?> flatMap(Function<? super A, FOLDABLE> mapper) {
+        // jdk compiler error: foldLeft((Foldable) zero(), (xs, x) -> xs.concat((Foldable) mapper.apply(x)))
+        Foldable xs = zero();
+        for (A a : this) {
+            final Foldable ys = (Foldable) mapper.apply(a);
+            xs = xs.concat(ys);
+        }
+        return xs;
+    }
 
     // @see Algebra.Monad.map()
     @Override
     default <B> Foldable<B, CLASS, ?> map(Function<? super A, ? extends B> mapper) {
+        // jdk compiler error: foldLeft((Foldable) zero(), (xs, x) -> xs.concat(unit(mapper.apply(x))))
+        //noinspection RedundantCast
         return (Foldable<B, CLASS, ?>) flatMap(a -> (Foldable<B, CLASS, ?>) unit(mapper.apply(a)));
     }
 
@@ -192,7 +219,7 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
      */
     default SELF intersperse(A a) {
         //noinspection unchecked
-        return foldLeft(zero(), (xs, x) -> xs.isEmpty() ? (SELF) unit(x) : ((SELF) unit(x)).concat((SELF) unit(a)).concat(xs));
+        return foldLeft(zero(), (xs, x) -> xs.isEmpty() ? (SELF) unit(x) : xs.concat((SELF) unit(a)).concat((SELF) unit(x)));
     }
 
     /**
@@ -202,7 +229,7 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
      */
     default SELF reverse() {
         //noinspection unchecked
-        return foldMap(this, x -> (SELF) unit(x));
+        return foldLeft(zero(), (xs, x) -> ((SELF) unit(x)).concat(xs));
     }
 
     /**
@@ -225,16 +252,56 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
         return Tuple.of(take(n), drop(n));
     }
 
-    // TODO
-    <B> List<Tuple2<A, B>> zip(Iterable<B> that);
+    @SuppressWarnings("unchecked")
+    default <B> Foldable<Tuple2<A, B>, CLASS, ?> zip(Iterable<B> that) {
+        Require.nonNull(that, "that is null");
+        Foldable xs = zero(); // DEV-NOTE: dirty trick to make concat(xs) work
+        Iterator<A> iter1 = this.iterator();
+        Iterator<B> iter2 = that.iterator();
+        while (iter1.hasNext() && iter2.hasNext()) {
+            final Tuple2<A, B> x = Tuple.of(iter1.next(), iter2.next());
+            xs = xs.concat(unit(x));
+        }
+        return xs;
+    }
 
-    // TODO
-    <B> List<Tuple2<A, B>> zipAll(Iterable<B> that, A thisElem, B thatElem);
+    @SuppressWarnings("unchecked")
+    default <B> Foldable<Tuple2<A, B>, CLASS, ?> zipAll(Iterable<B> that, A thisElem, B thatElem) {
+        Require.nonNull(that, "that is null");
+        Foldable xs = zero(); // DEV-NOTE: dirty trick to make concat(xs) work
+        Iterator<A> iter1 = this.iterator();
+        Iterator<B> iter2 = that.iterator();
+        while (iter1.hasNext() || iter2.hasNext()) {
+            final A elem1 = iter1.hasNext() ? iter1.next() : thisElem;
+            final B elem2 = iter2.hasNext() ? iter2.next() : thatElem;
+            final Tuple2<A, B> x = Tuple.of(elem1, elem2);
+            xs = xs.concat(unit(x));
+        }
+        return xs;
+    }
 
-    // TODO
-    List<Tuple2<A, Integer>> zipWithIndex();
+    @SuppressWarnings("unchecked")
+    default Foldable<Tuple2<A, Integer>, CLASS, ?> zipWithIndex() {
+        Foldable xs = zero(); // DEV-NOTE: dirty trick to make concat(xs) work
+        int i = 0;
+        for (A a : this) {
+            final Tuple2<A, Integer> x = Tuple.of(a, i++);
+            xs = xs.concat(unit(x));
+        }
+        return xs;
+    }
 
-    // TODO: unzip
+    // DEV-NOTE: this is a non-static method because of the generic CLASS parameter
+    @SuppressWarnings("unchecked")
+    default <A1, A2> Tuple2<Foldable<A1, CLASS, ?>, Foldable<A2, CLASS, ?>> unzip(Foldable<Tuple2<A1, A2>, CLASS, ?> foldable) {
+        Foldable xs = zero();
+        Foldable ys = zero();
+        for (Tuple2<A1, A2> t : foldable) {
+            xs = xs.concat(unit(t._1));
+            ys = ys.concat(unit(t._2));
+        }
+        return Tuple.of(xs, ys);
+    }
 
     // -- selection operations
 
