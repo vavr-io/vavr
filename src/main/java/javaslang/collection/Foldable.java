@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.Algebra;
+import javaslang.Manifest;
 import javaslang.Require;
 import javaslang.Tuple;
 import javaslang.Tuple.Tuple2;
@@ -21,7 +22,7 @@ import java.util.function.Predicate;
  *
  * @param <A> A type.
  */
-public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends Foldable<A, ?, SELF>> extends Iterable<A>, Algebra.Monad<A, CLASS>, Algebra.Monoid<SELF> {
+public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends Foldable<A, ?, SELF>> extends Manifest<A, CLASS>, Iterable<A> {
 
     // -- reducing operations
 
@@ -79,15 +80,12 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
     // -- creational operations
 
     // @see Algebra.Monad.unit()
-    @Override
     <B> Foldable<B, CLASS, ?> unit(B b);
 
     // @see Algebra.Monoid.zero()
-    @Override
     SELF zero();
 
     // @see Algebra.Monoid.combine()
-    @Override
     SELF combine(SELF a1, SELF a2);
 
     default SELF concat(Foldable<A, ?, SELF> other) {
@@ -192,8 +190,7 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
 
     // @see Algebra.Monad.flatMap()
     @SuppressWarnings("unchecked")
-    @Override
-    default <B, FOLDABLE extends Algebra.Monad<B, CLASS>> Foldable<B, CLASS, ?> flatMap(Function<? super A, FOLDABLE> mapper) {
+    default <B, FOLDABLE extends Manifest<B, CLASS>> Foldable<B, CLASS, ?> flatMap(Function<? super A, FOLDABLE> mapper) {
         // jdk compiler error: foldLeft((Foldable) zero(), (xs, x) -> xs.concat((Foldable) mapper.apply(x)))
         Foldable xs = zero();
         for (A a : this) {
@@ -204,7 +201,7 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
     }
 
     // @see Algebra.Monad.map()
-    @Override
+    @SuppressWarnings("unchecked")
     default <B> Foldable<B, CLASS, ?> map(Function<? super A, ? extends B> mapper) {
         // jdk compiler error: foldLeft((Foldable) zero(), (xs, x) -> xs.concat(unit(mapper.apply(x))))
         //noinspection RedundantCast

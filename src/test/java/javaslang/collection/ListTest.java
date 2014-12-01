@@ -703,6 +703,28 @@ public class ListTest {
 		assertThat(List.of(1, 2, 3).take(4)).isEqualTo(List.of(1, 2, 3));
 	}
 
+	// -- takeWhile
+
+	@Test
+	public void shouldTakeWhileNoneOnNil() {
+		assertThat(List.nil().takeWhile(x -> true)).isEqualTo(List.nil());
+	}
+
+	@Test
+	public void shouldTakeWhileAllOnFalseCondition() {
+		assertThat(List.of(1, 2, 3).takeWhile(x -> false)).isEqualTo(List.nil());
+	}
+
+	@Test
+	public void shouldTakeWhileAllOnTrueCondition() {
+		assertThat(List.of(1, 2, 3).takeWhile(x -> true)).isEqualTo(List.of(1, 2, 3));
+	}
+
+	@Test
+	public void shouldTakeWhileAsExpected() {
+		assertThat(List.of(2, 4, 5, 6).takeWhile(x -> x % 2 == 0)).isEqualTo(List.of(2, 4));
+	}
+
 	// -- zip
 
 	@Test

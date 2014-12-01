@@ -13,6 +13,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import javaslang.Algebra.Monad;
+import javaslang.Manifest;
 import javaslang.Require;
 import javaslang.Require.UnsatisfiedRequirementException;
 import javaslang.monad.Option.None;
@@ -70,7 +71,7 @@ public interface Try<T> extends Monad<T, Try<?>> {
 	<U> Try<U> map(Function<? super T, ? extends U> mapper);
 
 	@Override
-	<U, TRY extends Monad<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper);
+	<U, TRY extends Manifest<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper);
 
 	@Override
 	<U> Try<U> unit(U u);
@@ -175,7 +176,7 @@ public interface Try<T> extends Monad<T, Try<?>> {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <U, TRY extends Monad<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper) {
+		public <U, TRY extends Manifest<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper) {
 			try {
 				return (Try<U>) mapper.apply(value);
 			} catch (Throwable t) {
@@ -305,7 +306,7 @@ public interface Try<T> extends Monad<T, Try<?>> {
 		}
 
 		@Override
-		public <U, TRY extends Monad<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper) {
+		public <U, TRY extends Manifest<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper) {
 			@SuppressWarnings("unchecked")
 			final Try<U> result = (Try<U>) this;
 			return result;

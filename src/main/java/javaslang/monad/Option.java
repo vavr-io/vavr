@@ -14,6 +14,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import javaslang.Algebra.Monad;
+import javaslang.Manifest;
 
 /**
  * Replacement for {@link java.util.Optional}.
@@ -58,7 +59,7 @@ public interface Option<T> extends Monad<T, Option<?>> {
 	<U> Option<U> map(Function<? super T, ? extends U> mapper);
 
 	@Override
-	<U, OPTION extends Monad<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper);
+	<U, OPTION extends Manifest<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper);
 
 	@Override
 	<U> Option<U> unit(U u);
@@ -140,7 +141,7 @@ public interface Option<T> extends Monad<T, Option<?>> {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <U, OPTION extends Monad<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper) {
+		public <U, OPTION extends Manifest<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper) {
 			return (Option<U>) mapper.apply(value);
 		}
 
@@ -256,7 +257,7 @@ public interface Option<T> extends Monad<T, Option<?>> {
 		}
 
 		@Override
-		public <U, OPTION extends Monad<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper) {
+		public <U, OPTION extends Manifest<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper) {
 			return None.instance();
 		}
 

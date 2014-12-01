@@ -121,7 +121,7 @@ public class TryTest {
 	@Test
 	public void shouldFilterWithExceptionOnFailure() {
 		final Try<String> actual = failure();
-		assertThat(actual.filter(s -> filter(s))).isEqualTo(actual);
+		assertThat(actual.filter(this::filter)).isEqualTo(actual);
 	}
 
 	@Test
@@ -133,13 +133,13 @@ public class TryTest {
 	@Test
 	public void shouldFlatMapWithExceptionOnFailure() {
 		final Try<String> actual = failure();
-		assertThat(actual.flatMap(s -> flatMap(s))).isEqualTo(actual);
+		assertThat(actual.flatMap(this::flatMap)).isEqualTo(actual);
 	}
 
 	@Test
 	public void shouldForEachOnFailure() {
 		final List<String> actual = new ArrayList<>();
-		failure().forEach(s -> actual.add(s));
+		failure().forEach(actual::add);
 		assertThat(actual.isEmpty()).isTrue();
 	}
 
@@ -152,7 +152,7 @@ public class TryTest {
 	@Test
 	public void shouldMapWithExceptionOnFailure() {
 		final Try<String> actual = failure();
-		assertThat(actual.map(s -> map(s))).isEqualTo(actual);
+		assertThat(actual.map(this::map)).isEqualTo(actual);
 	}
 
 	@Test
@@ -160,17 +160,23 @@ public class TryTest {
 		assertThat(failure().failed().get().getClass().getName()).isEqualTo(RuntimeException.class.getName());
 	}
 
+	@Test
+	public void shouldReturnSameFailureWhenUnitIsCalledOnFailure() {
+		final Failure<?> failure = new Failure<>(error());
+		assertThat(failure.unit("1")).isEqualTo(failure);
+	}
+
 	// equals
 
 	@Test
 	public void shouldEqualFailureIfObjectIsSame() {
 		final Failure<?> success = new Failure<>(error());
-		assertThat(success.equals(success)).isTrue();
+		assertThat(success).isEqualTo(success);
 	}
 
 	@Test
 	public void shouldNotEqualFailureIfObjectIsNull() {
-		assertThat(new Failure<>(error()).equals(null)).isFalse();
+		assertThat(new Failure<>(error())).isNotNull();
 	}
 
 	@Test
@@ -210,7 +216,7 @@ public class TryTest {
 
 	@Test
 	public void shouldDetectSuccessOfRunnable() {
-		assertThat(Try.run(() -> { System.out.println("side-effect"); }).isSuccess()).isTrue();
+		assertThat(Try.run(() -> System.out.println("side-effect")).isSuccess()).isTrue();
 	}
 
 	@Test
@@ -291,7 +297,7 @@ public class TryTest {
 	@Test
 	public void shouldForEachOnSuccess() {
 		final List<String> actual = new ArrayList<>();
-		success().forEach(s -> actual.add(s));
+		success().forEach(actual::add);
 		assertThat(actual).isEqualTo(Arrays.asList(OK));
 	}
 
@@ -313,17 +319,22 @@ public class TryTest {
 				"java.lang.UnsupportedOperationException: Success.failed()");
 	}
 
+	@Test
+	public void shouldCreateNewSuccessWhenUnitIsCalledOnSuccess() {
+		assertThat(new Success<>(1).unit("a")).isEqualTo(new Success<>("a"));
+	}
+
 	// equals
 
 	@Test
 	public void shouldEqualSuccessIfObjectIsSame() {
 		final Success<?> success = new Success<>(1);
-		assertThat(success.equals(success)).isTrue();
+		assertThat(success).isEqualTo(success);
 	}
 
 	@Test
 	public void shouldNotEqualSuccessIfObjectIsNull() {
-		assertThat(new Success<>(1).equals(null)).isFalse();
+		assertThat(new Success<>(1)).isNotNull();
 	}
 
 	@Test

@@ -29,11 +29,8 @@ import java.util.stream.Collector;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import javaslang.Algebra;
-import javaslang.Require;
+import javaslang.*;
 import javaslang.Require.UnsatisfiedRequirementException;
-import javaslang.Strings;
-import javaslang.Tuple;
 import javaslang.Tuple.Tuple2;
 
 /**
@@ -160,7 +157,7 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
 
 	// @see Algebra.Monad.flatMap()
 	@Override
-	default <T, LIST extends Algebra.Monad<T, List<?>>> List<T> flatMap(Function<? super E, LIST> mapper) {
+	default <T, LIST extends Manifest<T, List<?>>> List<T> flatMap(Function<? super E, LIST> mapper) {
 		//noinspection unchecked
 		return foldRight(nil(), (x, xs) -> xs.prependAll((List<T>) mapper.apply(x)));
 	}
@@ -236,8 +233,7 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
 	@Override
 	default List<E> takeWhile(Predicate<E> predicate) {
 		List<E> result = Nil.instance();
-		List<E> list = this;
-		for (; !list.isEmpty() && predicate.test(head()); list = list.tail()) {
+		for (List<E> list = this; !list.isEmpty() && predicate.test(list.head()); list = list.tail()) {
 			result = result.prepend(list.head());
 		}
 		return result.reverse();
