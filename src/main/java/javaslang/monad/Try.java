@@ -33,6 +33,15 @@ public interface Try<T> extends Monad<T, Try<?>> {
 		}
 	}
 
+	static <T> Try<Void> run(Try.CheckedRunnable runnable) {
+		try {
+			runnable.run();
+			return new Success<>(null); // null represents the absence of an value, i.e. Void
+		} catch (Throwable t) {
+			return new Failure<>(t);
+		}
+	}
+
 	boolean isFailure();
 
 	boolean isSuccess();
@@ -440,6 +449,20 @@ public interface Try<T> extends Monad<T, Try<?>> {
 	}
 
 	// -- helpers
+
+	/**
+	 * Used to initialize a Try calling {@link Try#run(Try.CheckedRunnable)}.
+	 */
+	@FunctionalInterface
+	static interface CheckedRunnable {
+
+		/**
+		 * Produces side-effects only, i.e. returns no value.
+		 *
+		 * @throws java.lang.Throwable if an error occurs.
+		 */
+		void run() throws Throwable;
+	}
 
 	/**
 	 * Used to initialize a Try calling {@link Try#of(Try.CheckedSupplier)}.

@@ -39,6 +39,11 @@ public class TryTest {
 
 	// -- Failure
 
+	@Test
+	public void shouldDetectFailureOfRunnable() {
+		assertThat(Try.run(() -> { throw new RuntimeException(); }).isFailure()).isTrue();
+	}
+
 	@Test(expected = Failure.Fatal.class)
 	public void shouldPassThroughFatalException() {
 		Try.of(() -> {
@@ -202,6 +207,11 @@ public class TryTest {
 	}
 
 	// -- Success
+
+	@Test
+	public void shouldDetectSuccessOfRunnable() {
+		assertThat(Try.run(() -> { System.out.println("side-effect"); }).isSuccess()).isTrue();
+	}
 
 	@Test
 	public void shouldDetectSuccess() {
