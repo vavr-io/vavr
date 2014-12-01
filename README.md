@@ -12,11 +12,23 @@ Projects that include Javaslang need to target Java 1.8 at minimum.
 
 The .jar is available at [Maven Central](http://search.maven.org/#search|ga|1|a:"javaslang").
 
+The actual release is
+
 ```xml
 <dependency>
     <groupId>com.javaslang</groupId>
     <artifactId>javaslang</artifactId>
     <version>1.0.0</version>
+</dependency>
+```
+
+On every push to github a new snapshot will be deployed to [oss.sonatype.org](https://oss.sonatype.org/content/repositories/snapshots/com/javaslang/javaslang) via [travis-ci.org](https://travis-ci.org/rocketscience-projects/javaslang):
+
+```xml
+<dependency>
+    <groupId>com.javaslang</groupId>
+    <artifactId>javaslang</artifactId>
+    <version>1.1.0-SNAPSHOT</version>
 </dependency>
 ```
 
