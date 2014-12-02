@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.Algebra;
+import javaslang.Manifest;
 import javaslang.Tuple;
 import org.junit.Test;
 
@@ -21,6 +22,8 @@ public class FoldableTest {
 
     // -- reducing operations
 
+    // foldLeft
+
     @Test
     public void shouldFoldLeftEmptyFoldable() {
         final String actual = Seq.<Integer>of().foldLeft("''", (xs, x) -> "(" + xs + " + '" + x + "')");
@@ -32,6 +35,8 @@ public class FoldableTest {
         final String actual = Seq.of(1, 2, 3).foldLeft("''", (xs, x) -> "(" + xs + " + '" + x + "')");
         assertThat(actual).isEqualTo("((('' + '1') + '2') + '3')");
     }
+
+    // foldRight
 
     @Test
     public void shouldFoldRightEmptyFoldable() {
@@ -45,6 +50,8 @@ public class FoldableTest {
         assertThat(actual).isEqualTo("((('' + '3') + '2') + '1')");
     }
 
+    // foldMap
+
     @Test
     public void shouldFoldMapEmptyFoldable() {
         final String actual = Seq.<Integer>of().foldMap(Algebra.Monoid.of("", (s1, s2) -> s1 + s2), String::valueOf);
@@ -57,6 +64,8 @@ public class FoldableTest {
         assertThat(actual).isEqualTo("123");
     }
 
+    // reduceLeft
+
     @Test(expected = UnsupportedOperationException.class)
     public void shouldThrowWhenReduceLeftEmptyFoldable() {
         Seq.<Integer>of().reduceLeft((i1, i2) -> i1 + i2);
@@ -67,6 +76,8 @@ public class FoldableTest {
         final Integer actual = Seq.<Integer>of(1, 2, 3).reduceLeft((i1, i2) -> i1 + i2);
         assertThat(actual).isEqualTo(6);
     }
+
+    // reduceRight
 
     @Test(expected = UnsupportedOperationException.class)
     public void shouldThrowWhenReduceRightEmptyFoldable() {
@@ -81,6 +92,8 @@ public class FoldableTest {
 
     // -- basic operations
 
+    // isEmpty
+
     @Test
     public void shouldBeEmptyGivenEmptyFoldable() {
         assertThat(Seq.of().isEmpty()).isTrue();
@@ -90,6 +103,8 @@ public class FoldableTest {
     public void shouldNotBeEmptyGivenNonEmptyFoldable() {
         assertThat(Seq.of(1).isEmpty()).isFalse();
     }
+
+    // length
 
     @Test
     public void shouldComputeLengthOfEmptyFoldable() {
@@ -101,6 +116,8 @@ public class FoldableTest {
         assertThat(Seq.of(1, 2, 3).length()).isEqualTo(3);
     }
 
+    // size
+
     @Test
     public void shouldComputeSizeOfEmptyFoldable() {
         assertThat(Seq.of().size()).isEqualTo(0);
@@ -110,6 +127,8 @@ public class FoldableTest {
     public void shouldComputeSizeOfNonEmptyFoldable() {
         assertThat(Seq.of(1, 2, 3).size()).isEqualTo(3);
     }
+
+    // head
 
     @Test(expected = UnsupportedOperationException.class)
     public void shouldThrowWhenHeadOfEmptyFoldable() {
@@ -121,6 +140,8 @@ public class FoldableTest {
         assertThat(Seq.of(1, 2, 3).head()).isEqualTo(1);
     }
 
+    // init
+
     @Test(expected = UnsupportedOperationException.class)
     public void shouldThrowWhenInitOfEmptyFoldable() {
         Seq.of().init();
@@ -131,6 +152,8 @@ public class FoldableTest {
         assertThat(Seq.of(1, 2, 3).init()).isEqualTo(Seq.of(1, 2));
     }
 
+    // last
+
     @Test(expected = UnsupportedOperationException.class)
     public void shouldThrowWhenLastOfEmptyFoldable() {
         Seq.of().last();
@@ -140,6 +163,8 @@ public class FoldableTest {
     public void shouldGetLastOfNonEmptyFoldable() {
         assertThat(Seq.of(1, 2, 3).last()).isEqualTo(3);
     }
+
+    // tail
 
     @Test(expected = UnsupportedOperationException.class)
     public void shouldThrowWhenTailOfEmptyFoldable() {
@@ -153,6 +178,8 @@ public class FoldableTest {
 
     // -- filtering & transformations
 
+    // filter
+
     @Test
     public void shouldFilterEmptyFoldable() {
         assertThat(Seq.<Integer>of().filter(i -> i % 2 == 0)).isEqualTo(Seq.of());
@@ -163,32 +190,37 @@ public class FoldableTest {
         assertThat(Seq.<Integer>of(1, 2, 3, 4).filter(i -> i % 2 == 0)).isEqualTo(Seq.of(2, 4));
     }
 
-// TODO
-//    @Test
-//    public void shouldFlatMapEmptyFoldable() {
-//        final Seq<String> actual = Seq.of().flatMap(i -> Seq.of(String.valueOf(i)));
-//        assertThat(actual).isEqualTo(Seq.of());
-//    }
-//
-//    @Test
-//    public void shouldFlatMapNonEmptyFoldable() {
-//        final Seq<String> actual = Seq.of(1,2,3).flatMap(i -> Seq.of(String.valueOf(i)));
-//        final Seq<String> expected = Seq.of("1", "2", "3");
-//        assertThat(actual).isEqualTo(expected);
-//    }
-//
-//    @Test
-//    public void shouldMapEmptyFoldable() {
-//        final Seq<String> actual = Seq.of().map(String::valueOf);
-//        assertThat(actual).isEqualTo(Seq.of());
-//    }
-//
-//    @Test
-//    public void shouldMapNonEmptyFoldable() {
-//        final Seq<String> actual = Seq.of(1,2,3).map(String::valueOf);
-//        final Seq<String> expected = Seq.of("1", "2", "3");
-//        assertThat(actual).isEqualTo(expected);
-//    }
+    // flatMap
+
+    @Test
+    public void shouldFlatMapEmptyFoldable() {
+        final Seq<String> actual = Seq.of().flatMap(i -> Seq.of(String.valueOf(i)));
+        assertThat(actual).isEqualTo(Seq.of());
+    }
+
+    @Test
+    public void shouldFlatMapNonEmptyFoldable() {
+        final Seq<String> actual = Seq.of(1,2,3).flatMap(i -> Seq.of(String.valueOf(i)));
+        final Seq<String> expected = Seq.of("1", "2", "3");
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // map
+
+    @Test
+    public void shouldMapEmptyFoldable() {
+        final Seq<String> actual = Seq.of().map(String::valueOf);
+        assertThat(actual).isEqualTo(Seq.of());
+    }
+
+    @Test
+    public void shouldMapNonEmptyFoldable() {
+        final Seq<String> actual = Seq.of(1,2,3).map(String::valueOf);
+        final Seq<String> expected = Seq.of("1", "2", "3");
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // intersperse
 
     @Test
     public void shouldIntersperseEmptyFoldable() {
@@ -203,6 +235,8 @@ public class FoldableTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    // reverse
+
     @Test
     public void shouldReverseEmptyFoldable() {
         assertThat(Seq.of().reverse()).isEqualTo(Seq.of());
@@ -212,6 +246,8 @@ public class FoldableTest {
     public void shouldReverseNonEmptyFoldable() {
         assertThat(Seq.of(1,2,3).reverse()).isEqualTo(Seq.of(3,2,1));
     }
+
+    // span
 
     @Test
     public void shouldSpanEmptyFoldable() {
@@ -223,6 +259,8 @@ public class FoldableTest {
         assertThat(Seq.of(1, 2, 3, 4).span(i -> i < 3)).isEqualTo(Tuple.of(Seq.of(1, 2), Seq.of(3, 4)));
     }
 
+    // split
+
     @Test
     public void shouldSplitAtEmptyFoldable() {
         assertThat(Seq.of().splitAt(2)).isEqualTo(Tuple.of(Seq.of(), Seq.of()));
@@ -232,6 +270,8 @@ public class FoldableTest {
     public void shouldSplitAtNonEmptyFoldable() {
         assertThat(Seq.of(1, 2, 3, 4).splitAt(2)).isEqualTo(Tuple.of(Seq.of(1, 2), Seq.of(3, 4)));
     }
+
+    // zip
 
     @Test
     public void shouldZipEmptyFoldable() {
@@ -247,96 +287,245 @@ public class FoldableTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    // zipAll
+
     @Test
     public void shouldZipAllEmptyFoldable() {
-        // TODO
+        final Seq<Tuple.Tuple2<Object, Object>> actual = Seq.of().zipAll(Seq.of(), null, null);
+        assertThat(actual).isEqualTo(Seq.of());
     }
 
     @Test
-    public void shouldZipAllNonEmptyFoldable() {
-        // TODO
+    public void shouldZipAllIfFirstIsBigger() {
+        final Seq<Tuple.Tuple2<Integer,String>> actual = Seq.of(1, 2).zipAll(Seq.of("a"), 9, "z");
+        final Seq<Tuple.Tuple2<Integer, String>> expected = Seq.of(Tuple.of(1,"a"), Tuple.of(2, "z"));
+        assertThat(actual).isEqualTo(expected);
     }
+
+    @Test
+    public void shouldZipAllIfSecondIsBigger() {
+        final Seq<Tuple.Tuple2<Integer,String>> actual = Seq.of(1).zipAll(Seq.of("a", "b"), 9, "z");
+        final Seq<Tuple.Tuple2<Integer, String>> expected = Seq.of(Tuple.of(1,"a"), Tuple.of(9, "b"));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldZipAllBothSameSize() {
+        final Seq<Tuple.Tuple2<Integer,String>> actual = Seq.of(1,2).zipAll(Seq.of("a", "b"), 9, "z");
+        final Seq<Tuple.Tuple2<Integer, String>> expected = Seq.of(Tuple.of(1,"a"), Tuple.of(2, "b"));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // zipWithIndex
 
     @Test
     public void shouldZipWithIndexEmptyFoldable() {
-        // TODO
+        assertThat(Seq.of().zipWithIndex()).isEqualTo(Seq.of());
     }
 
     @Test
     public void shouldZipWithIndexNonEmptyFoldable() {
-        // TODO
+        assertThat(Seq.of("a", "b").zipWithIndex()).isEqualTo(Seq.of(Tuple.of("a", 0), Tuple.of("b", 1)));
     }
+
+    // unzip
 
     @Test
     public void shouldUnzipEmptyFoldable() {
-        // TODO
+        final Tuple.Tuple2<Seq<Integer>, Seq<Integer>> actual = Seq.of().unzip(t -> null);
+        final Tuple.Tuple2<Seq<Integer>, Seq<Integer>> expected = Tuple.of(Seq.of(), Seq.of());
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldUnzipNonEmptyFoldable() {
-        // TODO
+        final Tuple.Tuple2<Seq<Integer>, Seq<Integer>> actual = Seq.of(1, 2).unzip(i -> Tuple.of(i / 2, i % 2));
+        final Tuple.Tuple2<Seq<Integer>, Seq<Integer>> expected = Tuple.of(Seq.of(0,1), Seq.of(1,0));
+        assertThat(actual).isEqualTo(expected);
     }
 
     // -- selection operations
 
+    // drop
+
     @Test
     public void shouldDropEmptyFoldable() {
-        // TODO
+        final Seq<?> seq = Seq.of();
+        assertThat(seq.drop(1)).isEqualTo(seq);
+    }
+
+    @Test
+    public void shouldDropOneOfNonEmptyFoldable() {
+        final Seq<?> seq = Seq.of(1, 2);
+        assertThat(seq.drop(1)).isEqualTo(Seq.of(2));
+    }
+
+    @Test
+    public void shouldDropMoreThanContained() {
+        final Seq<?> seq = Seq.of(1, 2);
+        assertThat(seq.drop(3)).isEqualTo(Seq.of());
     }
 
     @Test
     public void shouldDropNonEmptyFoldable() {
-        // TODO
+        final Seq<?> seq = Seq.of(1);
+        assertThat(seq.drop(1)).isEqualTo(Seq.of());
     }
 
     @Test
+    public void shouldDropZeroElements() {
+        final Seq<?> seq = Seq.of(1);
+        assertThat(seq.drop(0)).isEqualTo(seq);
+    }
+
+    @Test
+    public void shouldDropNegativeCount() {
+        final Seq<?> seq = Seq.of(1);
+        assertThat(seq.drop(-1)).isEqualTo(seq);
+    }
+
+    // dropRight
+
+    @Test
     public void shouldDropRightEmptyFoldable() {
-        // TODO
+        final Seq<?> seq = Seq.of();
+        assertThat(seq.dropRight(1)).isEqualTo(seq);
+    }
+
+    @Test
+    public void shouldDropRightOneOfNonEmptyFoldable() {
+        final Seq<?> seq = Seq.of(1, 2);
+        assertThat(seq.dropRight(1)).isEqualTo(Seq.of(1));
+    }
+
+    @Test
+    public void shouldDropRightMoreThanContained() {
+        final Seq<?> seq = Seq.of(1, 2);
+        assertThat(seq.dropRight(3)).isEqualTo(Seq.of());
     }
 
     @Test
     public void shouldDropRightNonEmptyFoldable() {
-        // TODO
+        final Seq<?> seq = Seq.of(1);
+        assertThat(seq.dropRight(1)).isEqualTo(Seq.of());
     }
 
     @Test
+    public void shouldDropRightZeroElements() {
+        final Seq<?> seq = Seq.of(1);
+        assertThat(seq.dropRight(0)).isEqualTo(seq);
+    }
+
+    @Test
+    public void shouldDropRightNegativeCount() {
+        final Seq<?> seq = Seq.of(1);
+        assertThat(seq.dropRight(-1)).isEqualTo(seq);
+    }
+
+    // dropWhile
+
+    @Test
     public void shouldDropWhileEmptyFoldable() {
-        // TODO
+        assertThat(Seq.<Integer> of().dropWhile(i -> i <= 2)).isEqualTo(Seq.of());
     }
 
     @Test
     public void shouldDropWhileNonEmptyFoldable() {
-        // TODO
+        assertThat(Seq.of(1, 2, 3).dropWhile(i -> i <= 2)).isEqualTo(Seq.of(3));
     }
 
     @Test
+    public void shouldDropWhileWhenAlwaysTrue() {
+        assertThat(Seq.of(1, 2, 3).dropWhile(i -> true)).isEqualTo(Seq.of());
+    }
+
+    // take
+
+    @Test
     public void shouldTakeEmptyFoldable() {
-        // TODO
+        final Seq<?> seq = Seq.of();
+        assertThat(seq.take(1)).isEqualTo(seq);
+    }
+
+    @Test
+    public void shouldTakeOneOfNonEmptyFoldable() {
+        final Seq<?> seq = Seq.of(1, 2);
+        assertThat(seq.take(1)).isEqualTo(Seq.of(1));
+    }
+
+    @Test
+    public void shouldTakeMoreThanContained() {
+        final Seq<?> seq = Seq.of(1, 2);
+        assertThat(seq.take(3)).isEqualTo(Seq.of(1, 2));
     }
 
     @Test
     public void shouldTakeNonEmptyFoldable() {
-        // TODO
+        final Seq<?> seq = Seq.of(1);
+        assertThat(seq.take(1)).isEqualTo(Seq.of(1));
     }
 
     @Test
+    public void shouldTakeZeroElements() {
+        assertThat(Seq.of(1).take(0)).isEqualTo(Seq.of());
+    }
+
+    @Test
+    public void shouldTakeNegativeCount() {
+        assertThat(Seq.of(1).take(-1)).isEqualTo(Seq.of());
+    }
+
+    // takeRight
+
+    @Test
     public void shouldTakeRightEmptyFoldable() {
-        // TODO
+        final Seq<?> seq = Seq.of();
+        assertThat(seq.takeRight(1)).isEqualTo(seq);
+    }
+
+    @Test
+    public void shouldTakeRightOneOfNonEmptyFoldable() {
+        final Seq<?> seq = Seq.of(1,2);
+        assertThat(seq.takeRight(1)).isEqualTo(Seq.of(2));
+    }
+
+    @Test
+    public void shouldTakeRightMoreThanContained() {
+        final Seq<?> seq = Seq.of(1,2);
+        assertThat(seq.takeRight(3)).isEqualTo(Seq.of(1, 2));
     }
 
     @Test
     public void shouldTakeRightNonEmptyFoldable() {
-        // TODO
+        final Seq<?> seq = Seq.of(1);
+        assertThat(seq.takeRight(1)).isEqualTo(Seq.of(1));
     }
 
     @Test
+    public void shouldTakeRightZeroElements() {
+        assertThat(Seq.of(1).takeRight(0)).isEqualTo(Seq.of());
+    }
+
+    @Test
+    public void shouldTakeRightNegativeCount() {
+        assertThat(Seq.of(1).takeRight(-1)).isEqualTo(Seq.of());
+    }
+
+    // takeWhile
+
+    @Test
     public void shouldTakeWhileEmptyFoldable() {
-        // TODO
+        assertThat(Seq.<Integer> of().takeWhile(i -> i <= 2)).isEqualTo(Seq.of());
     }
 
     @Test
     public void shouldTakeWhileNonEmptyFoldable() {
-        // TODO
+        assertThat(Seq.of(1, 2, 3).takeWhile(i -> i <= 2)).isEqualTo(Seq.of(1, 2));
+    }
+
+    @Test
+    public void shouldTakeWhileWhenAlwaysTrue() {
+        assertThat(Seq.of(1, 2, 3).takeWhile(i -> true)).isEqualTo(Seq.of(1, 2, 3));
     }
 
     // -- test helpers
@@ -382,23 +571,40 @@ public class FoldableTest {
 
         // -- need to correct return types of Foldable operations
 
-// TODO
-//        @Override
-//        public <U, SEQ extends Algebra.Monad<U, Seq<?>>> Seq<U> flatMap(Function<? super T, SEQ> mapper) {
-//            //noinspection unchecked
-//            return (Seq) Foldable.super.flatMap(mapper::apply);
-//        }
-//
-//        @Override
-//        public <U> Seq<U> map(Function<? super T, ? extends U> mapper) {
-//            //noinspection unchecked
-//            return (Seq) Foldable.super.map(mapper::apply);
-//        }
+        @Override
+        public <U, SEQ extends Manifest<U, Seq<?>>> Seq<U> flatMap(Function<? super T, SEQ> mapper) {
+            //noinspection unchecked
+            return (Seq) Foldable.super.flatMap(mapper::apply);
+        }
+
+        @Override
+        public <U> Seq<U> map(Function<? super T, ? extends U> mapper) {
+            //noinspection unchecked
+            return (Seq) Foldable.super.map(mapper::apply);
+        }
 
         @Override
         public <U> Seq<Tuple.Tuple2<T, U>> zip(Iterable<U> that) {
             //noinspection unchecked
             return (Seq) Foldable.super.zip(that);
+        }
+
+        @Override
+        public <U> Seq<Tuple.Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
+            //noinspection unchecked
+            return (Seq) Foldable.super.zipAll(that, thisElem, thatElem);
+        }
+
+        @Override
+        public Seq<Tuple.Tuple2<T, Integer>> zipWithIndex() {
+            //noinspection unchecked
+            return (Seq) Foldable.super.zipWithIndex();
+        }
+
+        @Override
+        public <T1, T2> Tuple.Tuple2<Seq<T1>, Seq<T2>> unzip(Function<T, Tuple.Tuple2<T1, T2>> unzipper) {
+            //noinspection unchecked
+            return Foldable.super.unzip(unzipper);
         }
 
         // -- equals, hashCode & toString

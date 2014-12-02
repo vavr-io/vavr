@@ -288,12 +288,13 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
         return xs;
     }
 
-    // DEV-NOTE: this is a non-static method because of the generic CLASS parameter
+    // DEV-NOTE: returning raw type Tuple2 is the only possibility for implementations to return an appropriate type
     @SuppressWarnings("unchecked")
-    default <A1, A2> Tuple2<Foldable<A1, CLASS, ?>, Foldable<A2, CLASS, ?>> unzip(Foldable<Tuple2<A1, A2>, CLASS, ?> foldable) {
+    default <A1, A2> Tuple2/*<Foldable<A1, CLASS, ?>, Foldable<A2, CLASS, ?>>*/ unzip(Function<A, Tuple2<A1, A2>> unzipper) {
         Foldable xs = zero();
         Foldable ys = zero();
-        for (Tuple2<A1, A2> t : foldable) {
+        for (A a : this) {
+            final Tuple2<A1, A2> t = unzipper.apply(a);
             xs = xs.concat(unit(t._1));
             ys = ys.concat(unit(t._2));
         }
@@ -312,7 +313,7 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
     }
 
     default SELF dropRight(int n) {
-        return take(Math.max(0, length() - n));
+        return reverse().drop(n).reverse();
     }
 
     default SELF dropWhile(Predicate<A> predicate) {
@@ -329,6 +330,7 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
             //noinspection unchecked
             return (SELF) this;
         } else if (n <= 0) {
+            //noinspection unchecked
             return zero();
         } else {
             //noinspection unchecked
