@@ -729,17 +729,20 @@ public class ListTest {
 
 	@Test
 	public void shouldZipNils() {
-		assertThat(List.nil().zip(List.nil())).isEqualTo(List.nil());
+		final List<?> actual = List.nil().zip(List.nil());
+		assertThat(actual).isEqualTo(List.nil());
 	}
 
 	@Test
 	public void shouldZipEmptyAndNonNil() {
-		assertThat(List.nil().zip(List.of(1))).isEqualTo(List.nil());
+		final List<?> actual = List.nil().zip(List.of(1));
+		assertThat(actual).isEqualTo(List.nil());
 	}
 
 	@Test
 	public void shouldZipNonEmptyAndNil() {
-		assertThat(List.of(1).zip(List.nil())).isEqualTo(List.nil());
+		final List<?> actual = List.of(1).zip(List.nil());
+		assertThat(actual).isEqualTo(List.nil());
 	}
 
 	@Test
@@ -773,17 +776,20 @@ public class ListTest {
 
 	@Test
 	public void shouldZipAllNils() {
-		assertThat(List.nil().zipAll(List.nil(), null, null)).isEqualTo(List.nil());
+		final List<?> actual = List.nil().zipAll(List.nil(), null, null);
+		assertThat(actual).isEqualTo(List.nil());
 	}
 
 	@Test
 	public void shouldZipAllEmptyAndNonNil() {
-		assertThat(List.nil().zipAll(List.of(1), null, null)).isEqualTo(List.of(Tuple.of(null, 1)));
+		final List<?> actual = List.nil().zipAll(List.of(1), null, null);
+		assertThat(actual).isEqualTo(List.of(Tuple.of(null, 1)));
 	}
 
 	@Test
 	public void shouldZipAllNonEmptyAndNil() {
-		assertThat(List.of(1).zipAll(List.nil(), null, null)).isEqualTo(List.of(Tuple.of(1, null)));
+		final List<?> actual = List.of(1).zipAll(List.nil(), null, null);
+		assertThat(actual).isEqualTo(List.of(Tuple.of(1, null)));
 	}
 
 	@Test
@@ -916,24 +922,28 @@ public class ListTest {
 
 	@Test
 	public void shouldStreamAndCollectNil() {
-		assertThat(List.nil().stream().collect(List.collector())).isEqualTo(List.nil());
+		final List<?> actual = List.nil().stream().collect(List.collector());
+		assertThat(actual).isEqualTo(List.nil());
 	}
 
 	@Test
 	public void shouldStreamAndCollectNonNil() {
-		assertThat(List.of(1, 2, 3).stream().collect(List.collector())).isEqualTo(List.of(1, 2, 3));
+		final List<?> actual = List.of(1, 2, 3).stream().collect(List.collector());
+		assertThat(actual).isEqualTo(List.of(1, 2, 3));
 	}
 
 	// -- parallelStream
 
 	@Test
 	public void shouldParallelStreamAndCollectNil() {
-		assertThat(List.nil().parallelStream().collect(List.collector())).isEqualTo(List.nil());
+		final List<?> actual = List.nil().parallelStream().collect(List.collector());
+		assertThat(actual).isEqualTo(List.nil());
 	}
 
 	@Test
 	public void shouldParallelStreamAndCollectNonNil() {
-		assertThat(List.of(1, 2, 3).parallelStream().collect(List.collector())).isEqualTo(List.of(1, 2, 3));
+		final List<?> actual = List.of(1, 2, 3).parallelStream().collect(List.collector());
+		assertThat(actual).isEqualTo(List.of(1, 2, 3));
 	}
 
 	// -- spliterator
@@ -941,14 +951,14 @@ public class ListTest {
 	@Test
 	public void shouldSplitNil() {
 		final java.util.List<Integer> actual = new java.util.ArrayList<>();
-		List.<Integer> nil().spliterator().forEachRemaining(i -> actual.add(i));
+		List.<Integer> nil().spliterator().forEachRemaining(actual::add);
 		assertThat(actual).isEqualTo(Arrays.asList());
 	}
 
 	@Test
 	public void shouldSplitNonNil() {
 		final java.util.List<Integer> actual = new java.util.ArrayList<>();
-		List.of(1, 2, 3).spliterator().forEachRemaining(i -> actual.add(i));
+		List.of(1, 2, 3).spliterator().forEachRemaining(actual::add);
 		assertThat(actual).isEqualTo(Arrays.asList(1, 2, 3));
 	}
 
@@ -993,8 +1003,9 @@ public class ListTest {
 	@Test
 	public void shouldFullyIterateNonNil() {
 		int actual = -1;
-		for (Iterator<Integer> iter = List.of(1, 2, 3).iterator(); iter.hasNext(); actual = iter.next())
-			;
+		for (Integer i : List.of(1, 2, 3)) {
+			actual = i;
+		}
 		assertThat(actual).isEqualTo(3);
 	}
 
@@ -1002,9 +1013,8 @@ public class ListTest {
 
 	@Test
 	public void shouldThrowWhenNilIteratorStartingAtIndex() {
-		AssertionsExtensions.assertThat(() -> {
-			List.nil().iterator(1);
-		}).isThrowing(IndexOutOfBoundsException.class, "sublist(1) on list of size 0");
+		AssertionsExtensions.assertThat(() ->  List.nil().iterator(1))
+				.isThrowing(IndexOutOfBoundsException.class, "sublist(1) on list of size 0");
 	}
 
 	@Test
@@ -1015,8 +1025,9 @@ public class ListTest {
 	@Test
 	public void shouldFullyIterateNonNilStartingAtIndex() {
 		int actual = -1;
-		for (Iterator<Integer> iter = List.of(1, 2, 3).iterator(1); iter.hasNext(); actual = iter.next())
-			;
+		for (Iterator<Integer> iter = List.of(1, 2, 3).iterator(1); iter.hasNext(); ) {
+			actual = iter.next();
+		}
 		assertThat(actual).isEqualTo(3);
 	}
 
@@ -1025,32 +1036,32 @@ public class ListTest {
 	@Test
 	public void shouldEqualSameListInstance() {
 		final List<?> list = List.nil();
-		assertThat(list.equals(list)).isTrue();
+		assertThat(list).isEqualTo(list);
 	}
 
 	@Test
 	public void shouldNilNotEqualsNull() {
-		assertThat(List.nil().equals(null)).isFalse();
+		assertThat(List.nil()).isNotNull();
 	}
 
 	@Test
 	public void shouldNonNilNotEqualsNull() {
-		assertThat(List.of(1).equals(null)).isFalse();
+		assertThat(List.of(1)).isNotNull();
 	}
 
 	@Test
 	public void shouldEmptyNotEqualsDifferentType() {
-		assertThat(List.nil().equals("")).isFalse();
+		assertThat(List.nil()).isNotEqualTo("");
 	}
 
 	@Test
 	public void shouldNonEmptyNotEqualsDifferentType() {
-		assertThat(List.of(1).equals("")).isFalse();
+		assertThat(List.of(1)).isNotEqualTo("");
 	}
 
 	@Test
 	public void shouldRecognizeEqualityOfNils() {
-		assertThat(List.nil().equals(List.nil())).isTrue();
+		assertThat(List.nil()).isEqualTo(List.nil());
 	}
 
 	@Test
