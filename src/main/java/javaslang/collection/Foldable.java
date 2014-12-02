@@ -22,7 +22,7 @@ import java.util.function.Predicate;
  *
  * @param <A> A type.
  */
-public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends Foldable<A, ?, SELF>> extends Manifest<A, CLASS>, Iterable<A> {
+public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends Foldable<A, ?, SELF>> extends Iterable<A>, Manifest<A, CLASS> {
 
     // -- reducing operations
 

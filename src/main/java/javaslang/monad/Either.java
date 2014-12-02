@@ -13,6 +13,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import javaslang.Algebra;
+import javaslang.Manifest;
 import javaslang.monad.Option.None;
 import javaslang.monad.Option.Some;
 
@@ -93,14 +95,7 @@ public interface Either<L, R> {
 
 		@Override
 		public boolean equals(Object obj) {
-			if (obj == this) {
-				return true;
-			}
-			if (!(obj instanceof Left)) {
-				return false;
-			}
-			final Left<?, ?> other = (Left<?, ?>) obj;
-			return Objects.equals(left, other.left);
+			return (obj == this) || (obj instanceof Left && Objects.equals(left, ((Left<?, ?>) obj).left));
 		}
 
 		@Override
@@ -136,14 +131,7 @@ public interface Either<L, R> {
 
 		@Override
 		public boolean equals(Object obj) {
-			if (obj == this) {
-				return true;
-			}
-			if (!(obj instanceof Right)) {
-				return false;
-			}
-			final Right<?, ?> other = (Right<?, ?>) obj;
-			return Objects.equals(right, other.right);
+			return (obj == this) || (obj instanceof Right && Objects.equals(right, ((Right<?, ?>) obj).right));
 		}
 
 		@Override
@@ -220,7 +208,7 @@ public interface Either<L, R> {
 			if (either.isLeft())
 				return new Left<>(mapper.apply(asLeft()));
 			else {
-				return new Right<>(asRight());
+				return (Right<U,R>) either;
 			}
 		}
 
@@ -229,20 +217,13 @@ public interface Either<L, R> {
 			if (either.isLeft()) {
 				return mapper.apply(asLeft());
 			} else {
-				return new Right<>(asRight());
+				return (Right<U,R>) either;
 			}
 		}
 
 		@Override
 		public boolean equals(Object obj) {
-			if (obj == this) {
-				return true;
-			}
-			if (!(obj instanceof LeftProjection)) {
-				return false;
-			}
-			final LeftProjection<?, ?> other = (LeftProjection<?, ?>) obj;
-			return Objects.equals(either, other.either);
+			return (obj == this)|| (obj instanceof LeftProjection && Objects.equals(either, ((LeftProjection<?, ?>) obj).either));
 		}
 
 		@Override
@@ -325,7 +306,7 @@ public interface Either<L, R> {
 			if (either.isRight())
 				return new Right<>(mapper.apply(asRight()));
 			else {
-				return new Left<>(asLeft());
+				return (Left<L, U>) either;
 			}
 		}
 
@@ -334,20 +315,13 @@ public interface Either<L, R> {
 			if (either.isRight())
 				return mapper.apply(asRight());
 			else {
-				return new Left<>(asLeft());
+				return (Left<L, U>) either;
 			}
 		}
 
 		@Override
 		public boolean equals(Object obj) {
-			if (obj == this) {
-				return true;
-			}
-			if (!(obj instanceof RightProjection)) {
-				return false;
-			}
-			final RightProjection<?, ?> other = (RightProjection<?, ?>) obj;
-			return Objects.equals(either, other.either);
+			return (obj == this)|| (obj instanceof RightProjection && Objects.equals(either, ((RightProjection<?, ?>) obj).either));
 		}
 
 		@Override

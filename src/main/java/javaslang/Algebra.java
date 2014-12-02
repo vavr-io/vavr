@@ -102,7 +102,7 @@ public interface Algebra {
 	 * @param <A> Component type of this monad.
 	 * @param <M> Type of Monad implementation.
 	 */
-	static interface Monad<A, M extends Monad<?, M>> extends Manifest<A, M>, Functor<A> {
+	static interface Monad<A, M extends Monad<?, M>> extends Functor<A>, Manifest<A, M> {
 
 		<B> Monad<B, M> unit(B b);
 
