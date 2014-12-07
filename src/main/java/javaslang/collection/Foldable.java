@@ -18,7 +18,13 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
- * An interface for inherently recursive data structures.
+ * An interface for inherently recursive data structures. The order of elements is determined by {@link java.lang.Iterable#iterator()}, which may vary each time it is called.
+ * <p/>
+ * <ul>
+ * <li>unit(a) - constructor, stating that the given element shares all functional properties of this Foldable</li>
+ * <li>zero() - the neutral element of this Foldable, i.e. an empty collection</li>
+ * <li>combine(a,b) - summarizes two elements in a general way, i.e. combines two tree branches to one tree instance</li>
+ * </ul>
  *
  * @param <A> A type.
  */
@@ -184,6 +190,7 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
     // -- filtering & transformations
 
     default SELF filter(Predicate<A> predicate) {
+        Require.nonNull(predicate, "predicate is null");
         //noinspection unchecked
         return foldLeft(zero(), (xs, x) -> predicate.test(x) ? xs.concat((SELF) unit(x)) : xs);
     }
@@ -191,32 +198,28 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
     // @see Algebra.Monad.flatMap()
     @SuppressWarnings("unchecked")
     default <B, FOLDABLE extends Manifest<B, CLASS>> Foldable<B, CLASS, ?> flatMap(Function<? super A, FOLDABLE> mapper) {
-        // jdk compiler error: foldLeft((Foldable) zero(), (xs, x) -> xs.concat((Foldable) mapper.apply(x)))
-        Foldable xs = zero();
-        for (A a : this) {
-            final Foldable ys = (Foldable) mapper.apply(a);
-            xs = xs.concat(ys);
-        }
-        return xs;
+        Require.nonNull(mapper, "mapper is null");
+        // need cast because of jdk 1.8.0_25 compiler error
+        return (Foldable<B, CLASS, ?>) foldLeft((Foldable) zero(), (xs, x) -> xs.concat((Foldable) mapper.apply(x)));
     }
 
     // @see Algebra.Monad.map()
     @SuppressWarnings("unchecked")
     default <B> Foldable<B, CLASS, ?> map(Function<? super A, ? extends B> mapper) {
-        // jdk compiler error: foldLeft((Foldable) zero(), (xs, x) -> xs.concat(unit(mapper.apply(x))))
-        //noinspection RedundantCast
-        return (Foldable<B, CLASS, ?>) flatMap(a -> (Foldable<B, CLASS, ?>) unit(mapper.apply(a)));
+        Require.nonNull(mapper, "mapper is null");
+        // need cast because of jdk 1.8.0_25 compiler error
+        return (Foldable<B, CLASS, ?>) foldLeft((Foldable) zero(), (xs, x) -> xs.concat(unit(mapper.apply(x))));
     }
 
     /**
-     * Inserts a between all elements.
+     * Inserts an element between all elements of this Foldable.
      *
-     * @param a An element.
+     * @param element An element.
      * @return An 'interspersed' version of this Foldable.
      */
-    default SELF intersperse(A a) {
+    default SELF intersperse(A element) {
         //noinspection unchecked
-        return foldLeft(zero(), (xs, x) -> xs.isEmpty() ? (SELF) unit(x) : xs.concat((SELF) unit(a)).concat((SELF) unit(x)));
+        return foldLeft(zero(), (xs, x) -> xs.isEmpty() ? (SELF) unit(x) : xs.concat((SELF) unit(element)).concat((SELF) unit(x)));
     }
 
     /**
@@ -232,11 +235,12 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
     /**
      * Returns a tuple where the first element is the longest prefix of elements that satisfy p and the second element is the remainder.
      *
-     * @param p A predicate.
+     * @param predicate A predicate.
      * @return A Tuple containing the longest prefix of elements that satisfy p and the remainder.
      */
-    default Tuple2<SELF, SELF> span(Predicate<A> p) {
-        return Tuple.of(takeWhile(p), dropWhile(p));
+    default Tuple2<SELF, SELF> span(Predicate<A> predicate) {
+        Require.nonNull(predicate, "predicate is null");
+        return Tuple.of(takeWhile(predicate), dropWhile(predicate));
     }
 
     /**
@@ -291,6 +295,7 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
     // DEV-NOTE: returning raw type Tuple2 is the only possibility for implementations to return an appropriate type
     @SuppressWarnings("unchecked")
     default <A1, A2> Tuple2/*<Foldable<A1, CLASS, ?>, Foldable<A2, CLASS, ?>>*/ unzip(Function<A, Tuple2<A1, A2>> unzipper) {
+        Require.nonNull(unzipper, "unzipper is null");
         Foldable xs = zero();
         Foldable ys = zero();
         for (A a : this) {
@@ -303,13 +308,18 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
 
     // -- selection operations
 
+    /**
+     * Drops the first n elements of this Foldable by successively applying {@link #tail}.
+     * @param n The number of elements to be dropped.
+     * @return A new Foldable based on this, whithout the first n elements.
+     */
     default SELF drop(int n) {
-        if (n <= 0 || isEmpty()) {
-            //noinspection unchecked
-            return (SELF) this;
-        } else {
-            return tail().drop(n - 1);
+        //noinspection unchecked
+        SELF foldable = (SELF) this;
+        for (int i = n; i > 0 && !foldable.isEmpty(); i--) {
+            foldable = foldable.tail();
         }
+        return foldable;
     }
 
     default SELF dropRight(int n) {
@@ -317,25 +327,25 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
     }
 
     default SELF dropWhile(Predicate<A> predicate) {
-        if (isEmpty() || !predicate.test(head())) {
-            //noinspection unchecked
-            return (SELF) this;
-        } else {
-            return tail().dropWhile(predicate);
+        Require.nonNull(predicate, "predicate is null");
+        //noinspection unchecked
+        SELF foldable = (SELF) this;
+        while (!foldable.isEmpty() && predicate.test(foldable.head())) {
+            foldable = foldable.tail();
         }
+        return foldable;
     }
 
     default SELF take(int n) {
-        if (isEmpty()) {
+        SELF result = zero();
+        //noinspection unchecked
+        SELF foldable = (SELF) this;
+        for (int i = n; i > 0 && !foldable.isEmpty(); i--) {
             //noinspection unchecked
-            return (SELF) this;
-        } else if (n <= 0) {
-            //noinspection unchecked
-            return zero();
-        } else {
-            //noinspection unchecked
-            return ((SELF) unit(head())).concat(tail().take(n - 1));
+            result = result.concat((SELF) unit(foldable.head()));
+            foldable = foldable.tail();
         }
+        return result;
     }
 
     default SELF takeRight(int n) {
@@ -343,17 +353,15 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
     }
 
     default SELF takeWhile(Predicate<A> predicate) {
-        if (isEmpty()) {
+        Require.nonNull(predicate, "predicate is null");
+        SELF result = zero();
+        //noinspection unchecked
+        SELF foldable = (SELF) this;
+        while(!foldable.isEmpty() && predicate.test(foldable.head())) {
             //noinspection unchecked
-            return (SELF) this;
-        } else {
-            final A head = head();
-            if (!predicate.test(head)) {
-                return zero();
-            } else {
-                //noinspection unchecked
-                return ((SELF) unit(head)).concat(tail().takeWhile(predicate));
-            }
+            result = result.concat((SELF) unit(foldable.head()));
+            foldable = foldable.tail();
         }
+        return result;
     }
 }
