@@ -10,10 +10,11 @@ import javaslang.Manifest;
 import javaslang.Require;
 import javaslang.Tuple;
 import javaslang.Tuple.Tuple2;
+import javaslang.monad.Option;
 
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -25,6 +26,28 @@ import java.util.function.Predicate;
  * <li>zero() - the neutral element of this Foldable, i.e. an empty collection</li>
  * <li>combine(a,b) - summarizes two elements in a general way, i.e. combines two tree branches to one tree instance</li>
  * </ul>
+ * <p/>
+ * Implementations of Foldable need to provide implementations for the following methods:
+ * <ul>
+ *     <li>{@link #iterator()}</li>
+ *     <li>{@link #unit(Object)}</li>
+ *     <li>{@link #zero()}</li>
+ *     <li>{@link #combine(Foldable, Foldable)}</li>
+ * </ul>
+ * <p/>
+ * Implementations of Foldable should overwrite the following methods in order to provide appropriate return types.
+ * A super-call in conjunction with a cast does the job.
+ * <ul>
+ *     <li>{@link #flatMap(java.util.function.Function)}</li>
+ *     <li>{@link #map(java.util.function.Function)}</li>
+ *     <li>{@link #zip(Iterable)}</li>
+ *     <li>{@link #zipAll(Iterable, Object, Object)}</li>
+ *     <li>{@link #zipWithIndex()}</li>
+ *     <li>{@link #unzip(java.util.function.Function)}</li>
+ * </ul>
+ * <p/>
+ * Additionally it makes sense to provide more efficient implementations for methods where applicable.
+ * I.e. javaslang.collection.List overrides head() and tail() because these are natural operations of a linked list.
  *
  * @param <A> A type.
  */
@@ -32,7 +55,16 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
 
     // -- reducing operations
 
-    default <B> B foldLeft(B zero, BiFunction<B, ? super A, B> f) {
+    /**
+     * Accumulates the elements of this Foldable by successively calling the given function {@code f} from the left,
+     * starting with a value {@code zero} of type B.
+     *
+     * @param zero Value to start the accumulation with.
+     * @param f The accumulator function.
+     * @param <B> Result type of the accumulator.
+     * @return An accumulated version of this.
+     */
+    default <B> B foldLeft(B zero, BiFunction<? super B, ? super A, ? extends B> f) {
         Require.nonNull(f, "function is null");
         B result = zero;
         for (A a : this) {
@@ -41,10 +73,27 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
         return result;
     }
 
-    default <B> B foldRight(B zero, BiFunction<? super A, B, B> f) {
+    /**
+     * Accumulates the elements of this Foldable by successively calling the given function {@code f} from the right,
+     * starting with a value {@code zero} of type B.
+     * <p>
+     * In order to prevent recursive calls, foldRight is implemented based on reverse and foldLeft. A recursive variant
+     * is based on foldMap, using the monoid of function composition (endo monoid).
+     * <pre>
+     * <code>
+     * foldRight = reverse().foldLeft(zero, (b, a) -> f.apply(a, b));
+     * foldRight = foldMap(Algebra.Monoid.endoMonoid(), a -> b -> f.apply(a, b)).apply(zero);
+     * </code>
+     * </pre>
+     *
+     * @param zero Value to start the accumulation with.
+     * @param f The accumulator function.
+     * @param <B> Result type of the accumulator.
+     * @return An accumulated version of this.
+     */
+    default <B> B foldRight(B zero, BiFunction<? super A, ? super B, ? extends B> f) {
         Require.nonNull(f, "function is null");
-        final Function<A, Function<B, B>> curried = a -> b -> f.apply(a, b);
-        return foldMap(Algebra.Monoid.endoMonoid(), curried).apply(zero);
+        return reverse().foldLeft(zero, (b, a) -> f.apply(a, b));
     }
 
     default <B> B foldMap(Algebra.Monoid<B> monoid, Function<A, B> mapper) {
@@ -59,7 +108,7 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
      * @return The reduced value.
      * @throws UnsupportedOperationException if this Foldable is empty
      */
-    default A reduceLeft(BinaryOperator<A> op) {
+    default A reduceLeft(BiFunction<? super A, ? super A, ? extends A> op) {
         Require.nonNull(op, "operator is null");
         if (isEmpty()) {
             throw new UnsupportedOperationException("reduceLeft on empty " + getClass().getSimpleName());
@@ -74,7 +123,7 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
      * @return The reduced value.
      * @throws UnsupportedOperationException if this Foldable is empty
      */
-    default A reduceRight(BinaryOperator<A> op) {
+    default A reduceRight(BiFunction<? super A, ? super A, ? extends A> op) {
         Require.nonNull(op, "operator is null");
         if (isEmpty()) {
             throw new UnsupportedOperationException("reduceRight on empty " + getClass().getSimpleName());
@@ -94,7 +143,7 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
     // @see Algebra.Monoid.combine()
     SELF combine(SELF a1, SELF a2);
 
-    default SELF concat(Foldable<A, ?, SELF> other) {
+    default SELF concat(Foldable<? super A, ?, ? extends SELF> other) {
         Require.nonNull(other, "other is null");
         //noinspection unchecked
         return combine((SELF) this, (SELF) other);
@@ -117,12 +166,9 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
      * @return The number of elements in this Foldable.
      */
     default int length() {
-        // jdk compiler bug: foldLeft(0, (n, ignored) -> n + 1)
-        int length = 0;
-        for (A ignored : this) {
-            length++;
-        }
-        return length;
+        // need cast because of jdk 1.8.0_25 compiler error
+        //noinspection RedundantCast
+        return (int) foldLeft(0, (n, ignored) -> n + 1);
     }
 
     /**
@@ -189,7 +235,12 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
 
     // -- filtering & transformations
 
-    default SELF filter(Predicate<A> predicate) {
+    default SELF distinct() {
+        //noinspection unchecked
+        return foldLeft(zero(), (xs, x) -> xs.contains(x) ? xs : xs.concat((SELF) unit(x)));
+    }
+
+    default SELF filter(Predicate<? super A> predicate) {
         Require.nonNull(predicate, "predicate is null");
         //noinspection unchecked
         return foldLeft(zero(), (xs, x) -> predicate.test(x) ? xs.concat((SELF) unit(x)) : xs);
@@ -238,7 +289,7 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
      * @param predicate A predicate.
      * @return A Tuple containing the longest prefix of elements that satisfy p and the remainder.
      */
-    default Tuple2<SELF, SELF> span(Predicate<A> predicate) {
+    default Tuple2<SELF, SELF> span(Predicate<? super A> predicate) {
         Require.nonNull(predicate, "predicate is null");
         return Tuple.of(takeWhile(predicate), dropWhile(predicate));
     }
@@ -256,7 +307,7 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
     @SuppressWarnings("unchecked")
     default <B> Foldable<Tuple2<A, B>, CLASS, ?> zip(Iterable<B> that) {
         Require.nonNull(that, "that is null");
-        Foldable xs = zero(); // DEV-NOTE: dirty trick to make concat(xs) work
+        Foldable xs = zero(); // DEV-NOTE: untyped to make concat(xs) work
         Iterator<A> iter1 = this.iterator();
         Iterator<B> iter2 = that.iterator();
         while (iter1.hasNext() && iter2.hasNext()) {
@@ -269,7 +320,7 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
     @SuppressWarnings("unchecked")
     default <B> Foldable<Tuple2<A, B>, CLASS, ?> zipAll(Iterable<B> that, A thisElem, B thatElem) {
         Require.nonNull(that, "that is null");
-        Foldable xs = zero(); // DEV-NOTE: dirty trick to make concat(xs) work
+        Foldable xs = zero(); // DEV-NOTE: untyped to make concat(xs) work
         Iterator<A> iter1 = this.iterator();
         Iterator<B> iter2 = that.iterator();
         while (iter1.hasNext() || iter2.hasNext()) {
@@ -283,7 +334,7 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
 
     @SuppressWarnings("unchecked")
     default Foldable<Tuple2<A, Integer>, CLASS, ?> zipWithIndex() {
-        Foldable xs = zero(); // DEV-NOTE: dirty trick to make concat(xs) work
+        Foldable xs = zero(); // DEV-NOTE: untyped to make concat(xs) work
         int i = 0;
         for (A a : this) {
             final Tuple2<A, Integer> x = Tuple.of(a, i++);
@@ -292,9 +343,9 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
         return xs;
     }
 
-    // DEV-NOTE: returning raw type Tuple2 is the only possibility for implementations to return an appropriate type
+    // DEV-NOTE: Need Manifest here in order to overwrite return type of unzip method by sub-classes.
     @SuppressWarnings("unchecked")
-    default <A1, A2> Tuple2/*<Foldable<A1, CLASS, ?>, Foldable<A2, CLASS, ?>>*/ unzip(Function<A, Tuple2<A1, A2>> unzipper) {
+    default <A1, A2> Tuple2<? extends Manifest<A1,CLASS>, ? extends Manifest<A2,CLASS>> unzip(Function<? super A, Tuple2<A1, A2>> unzipper) {
         Require.nonNull(unzipper, "unzipper is null");
         Foldable xs = zero();
         Foldable ys = zero();
@@ -309,9 +360,83 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
     // -- selection operations
 
     /**
-     * Drops the first n elements of this Foldable by successively applying {@link #tail}.
-     * @param n The number of elements to be dropped.
-     * @return A new Foldable based on this, whithout the first n elements.
+     * Tests if this Foldable contains a given value as an element in O(n).
+     *
+     * @param element An Object of type A, may be null.
+     * @return true, if element is in this Foldable, false otherwise.
+     */
+    default boolean contains(A element) {
+        for (A a : this) {
+            if (Objects.equals(a, element)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Tests if this Foldable contains all given elements in O(n*m), where n = length of this and m = length of given elements.
+     * <p/>
+     * The result is equivalent to
+     * {@code elements.isEmpty() ? true : contains(elements.head()) && containsAll(elements.tail())} but implemented
+     * without recursion.
+     *
+     * @param elements A List of values of type E.
+     * @return true, if this List contains all given elements, false otherwise.
+     * @throws javaslang.Require.UnsatisfiedRequirementException if elements is null
+     */
+    default boolean containsAll(Iterable<? extends A> elements) {
+        Require.nonNull(elements, "elements is null");
+        return List.of(elements)
+                .distinct()
+                .findFirst(e -> !this.contains(e))
+                .isNotPresent();
+    }
+
+    /**
+     * Alias for {@link #filter(java.util.function.Predicate)}.
+     *
+     * @param predicate A predicate.
+     * @return All elements of this which satisfy the given predicate.
+     */
+    default SELF findAll(Predicate<? super A> predicate) {
+        return filter(predicate);
+    }
+
+    /**
+     * Returns the first element of this which satisfies the given predicate.
+     *
+     * @param predicate A predicate.
+     * @return Some(element) or None, where element may be null (i.e. {@code List.of(null).findFirst(e -> e == null)}).
+     */
+    default Option<A> findFirst(Predicate<? super A> predicate) {
+        //noinspection unchecked
+        for (A a : this) {
+            if (predicate.test(a)) {
+                return new Option.Some<>(a); // may be Some(null)
+            }
+        }
+        return Option.none();
+    }
+
+    /**
+     * Returns the last element of this which satisfies the given predicate.
+     * <p/>
+     * Same as {@code reverse().findFirst(predicate)}.
+     *
+     * @param predicate A predicate.
+     * @return Some(element) or None, where element may be null (i.e. {@code List.of(null).findFirst(e -> e == null)}).
+     */
+    default Option<A> findLast(Predicate<? super A> predicate) {
+        return reverse().findFirst(predicate);
+    }
+
+    /**
+     * Drops the first n elements of this Foldable or the all elements, if this size &lt; n. The elements are dropped in O(n).
+     *
+     * @param n The number of elements to drop.
+     * @return A Foldable consisting of all elements of this Foldable except the first n ones, or else an empty Foldable, if this
+     * Foldable has less than n elements.
      */
     default SELF drop(int n) {
         //noinspection unchecked
@@ -326,7 +451,7 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
         return reverse().drop(n).reverse();
     }
 
-    default SELF dropWhile(Predicate<A> predicate) {
+    default SELF dropWhile(Predicate<? super A> predicate) {
         Require.nonNull(predicate, "predicate is null");
         //noinspection unchecked
         SELF foldable = (SELF) this;
@@ -352,12 +477,12 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
         return reverse().take(n).reverse();
     }
 
-    default SELF takeWhile(Predicate<A> predicate) {
+    default SELF takeWhile(Predicate<? super A> predicate) {
         Require.nonNull(predicate, "predicate is null");
         SELF result = zero();
         //noinspection unchecked
         SELF foldable = (SELF) this;
-        while(!foldable.isEmpty() && predicate.test(foldable.head())) {
+        while (!foldable.isEmpty() && predicate.test(foldable.head())) {
             //noinspection unchecked
             result = result.concat((SELF) unit(foldable.head()));
             foldable = foldable.tail();

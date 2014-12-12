@@ -47,7 +47,7 @@ public class OptionTest {
 
 	@Test
 	public void shouldThrowOnGetWhenValueIsNotPresent() {
-		AssertionsExtensions.assertThat(() -> Option.empty().get()).isThrowing(NoSuchElementException.class,
+		AssertionsExtensions.assertThat(() -> Option.none().get()).isThrowing(NoSuchElementException.class,
 				"No value present");
 	}
 
@@ -60,7 +60,7 @@ public class OptionTest {
 
 	@Test
 	public void shouldGetAlternativeOnOrElseWhenValueIsNotPresent() {
-		assertThat(Option.empty().orElse(2)).isEqualTo(2);
+		assertThat(Option.none().orElse(2)).isEqualTo(2);
 	}
 
 	// orElseGet
@@ -72,7 +72,7 @@ public class OptionTest {
 
 	@Test
 	public void shouldGetAlternativeOnOrElseGetWhenValueIsNotPresent() {
-		assertThat(Option.empty().orElseGet(() -> 2)).isEqualTo(2);
+		assertThat(Option.none().orElseGet(() -> 2)).isEqualTo(2);
 	}
 
 	// orElseThrow
@@ -85,7 +85,7 @@ public class OptionTest {
 	@Test
 	public void shouldThrowOnOrElseThrowWhenValueIsNotPresent() {
 		AssertionsExtensions
-				.assertThat(() -> Option.empty().orElseThrow(() -> new RuntimeException("none")))
+				.assertThat(() -> Option.none().orElseThrow(() -> new RuntimeException("none")))
 				.isThrowing(RuntimeException.class, "none");
 	}
 
@@ -98,7 +98,7 @@ public class OptionTest {
 
 	@Test
 	public void shouldNotBePresentOnIsPresentWhenValueIsNotPresent() {
-		assertThat(Option.empty().isPresent()).isFalse();
+		assertThat(Option.none().isPresent()).isFalse();
 	}
 
 	// -- ifPresent
@@ -113,7 +113,7 @@ public class OptionTest {
 	@Test
 	public void shouldNotConsumeAnythingOnIsPresentWhenValueIsNotPresent() {
 		final int[] actual = new int[] { -1 };
-		Option.<Integer> empty().ifPresent(i -> actual[0] = i);
+		Option.<Integer> none().ifPresent(i -> actual[0] = i);
 		assertThat(actual[0]).isEqualTo(-1);
 	}
 
@@ -126,12 +126,12 @@ public class OptionTest {
 
 	@Test
 	public void shouldReturnNoneOnFilterWhenValueIsPresentAndPredicateNotMatches() {
-		assertThat(Option.of(1).filter(i -> i == 2)).isEqualTo(Option.empty());
+		assertThat(Option.of(1).filter(i -> i == 2)).isEqualTo(Option.none());
 	}
 
 	@Test
 	public void shouldReturnNoneOnFilterWhenValueIsNotPresentAndPredicateNotMatches() {
-		assertThat(Option.<Integer> empty().filter(i -> i == 1)).isEqualTo(Option.empty());
+		assertThat(Option.<Integer> none().filter(i -> i == 1)).isEqualTo(Option.none());
 	}
 
 	// -- map
@@ -143,7 +143,7 @@ public class OptionTest {
 
 	@Test
 	public void shouldMapNone() {
-		assertThat(Option.<Integer> empty().map(String::valueOf)).isEqualTo(Option.empty());
+		assertThat(Option.<Integer> none().map(String::valueOf)).isEqualTo(Option.none());
 	}
 
 	// -- flatMap
@@ -155,7 +155,7 @@ public class OptionTest {
 
 	@Test
 	public void shouldFlatMapNone() {
-		assertThat(Option.<Integer> empty().flatMap(i -> Option.of(String.valueOf(i)))).isEqualTo(Option.empty());
+		assertThat(Option.<Integer> none().flatMap(i -> Option.of(String.valueOf(i)))).isEqualTo(Option.none());
 	}
 
 	// -- forEach
@@ -170,7 +170,7 @@ public class OptionTest {
 	@Test
 	public void shouldNotConsumeAnythingOnForEachWhenValueIsNotPresent() {
 		final int[] actual = new int[] { -1 };
-		Option.<Integer> empty().forEach(i -> actual[0] = i);
+		Option.<Integer> none().forEach(i -> actual[0] = i);
 		assertThat(actual[0]).isEqualTo(-1);
 	}
 

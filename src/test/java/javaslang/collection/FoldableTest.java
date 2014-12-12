@@ -602,9 +602,9 @@ public class FoldableTest {
         }
 
         @Override
-        public <T1, T2> Tuple.Tuple2<Seq<T1>, Seq<T2>> unzip(Function<T, Tuple.Tuple2<T1, T2>> unzipper) {
+        public <T1, T2> Tuple.Tuple2<Seq<T1>, Seq<T2>> unzip(Function<? super T, Tuple.Tuple2<T1, T2>> unzipper) {
             //noinspection unchecked
-            return Foldable.super.unzip(unzipper);
+            return (Tuple.Tuple2<Seq<T1>, Seq<T2>>) Foldable.super.unzip(unzipper);
         }
 
         // -- equals, hashCode & toString

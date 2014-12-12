@@ -108,8 +108,8 @@ public class ListTest {
 
 	@Test
 	public void shouldAppendElementToNonNil() {
-		final List<Integer> actual = List.of(1).append(2);
-		final List<Integer> expected = List.of(1, 2);
+		final List<Integer> actual = List.of(1, 2).append(3);
+		final List<Integer> expected = List.of(1, 2, 3);
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -160,8 +160,8 @@ public class ListTest {
 
 	@Test
 	public void shouldPrependElementToNonNil() {
-		final List<Integer> actual = List.of(2).prepend(1);
-		final List<Integer> expected = List.of(1, 2);
+		final List<Integer> actual = List.of(2, 3).prepend(1);
+		final List<Integer> expected = List.of(1, 2, 3);
 		assertThat(actual).isEqualTo(expected);
 	}
 

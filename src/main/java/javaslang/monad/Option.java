@@ -35,7 +35,7 @@ public interface Option<T> extends Monad<T, Option<?>> {
 		return (value == null) ? None.instance() : new Some<>(value);
 	}
 
-	static <T> Option<T> empty() {
+	static <T> Option<T> none() {
 		return None.instance();
 	}
 
@@ -48,6 +48,8 @@ public interface Option<T> extends Monad<T, Option<?>> {
 	<X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) throws X;
 
 	boolean isPresent();
+
+	boolean isNotPresent();
 
 	void ifPresent(Consumer<? super T> consumer);
 
@@ -113,6 +115,11 @@ public interface Option<T> extends Monad<T, Option<?>> {
 		@Override
 		public boolean isPresent() {
 			return true;
+		}
+
+		@Override
+		public boolean isNotPresent() {
+			return false;
 		}
 
 		@Override
@@ -233,6 +240,11 @@ public interface Option<T> extends Monad<T, Option<?>> {
 		@Override
 		public boolean isPresent() {
 			return false;
+		}
+
+		@Override
+		public boolean isNotPresent() {
+			return true;
 		}
 
 		@Override

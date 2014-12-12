@@ -156,7 +156,7 @@ public final class Match<R> implements Function<Object, R> {
 	public static class Builder<R> extends OrElseBuilder<R> {
 
 		private final List<Function<Object, Option<R>>> cases = new ArrayList<>();
-		private Option<Supplier<R>> defaultOption = Option.empty();
+		private Option<Supplier<R>> defaultOption = Option.none();
 
 		/**
 		 * Use this method to match by object type T. An object o matches this case, if

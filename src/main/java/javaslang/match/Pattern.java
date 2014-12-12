@@ -88,7 +88,7 @@ public class Pattern<T, P extends Tuple, R extends Tuple> {
 		if (prototype.equals(components)) {
 			return Option.of(Tuple.of(t, components));
 		} else {
-			return Option.empty();
+			return Option.none();
 		}
 	}
 
