@@ -3,22 +3,21 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.test;
+package javaslang.generator;
 
 import static java.lang.String.format;
-import javaslang.generator._____________JavaGenerator;
 
-class _____________PropGenerator extends _____________JavaGenerator {
+class PropGenerator extends JavaGenerator {
 
 	static final int N = 13;
 
-	public static void main(String[] args) {
-		System.out.println(new _____________PropGenerator().generate());
+	protected PropGenerator() {
+		super("javaslang.test.Prop");
 	}
 
 	@Override
 	protected void gen() {
-		generateForAllMethods();
+		// TODO: generateForAllMethods();
 	}
 
 	void generateForAllMethods() {

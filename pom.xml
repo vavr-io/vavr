@@ -1,3 +1,18 @@
+<!--
+
+Default build:
+  - [generate-sources]
+    Compiling code generators javaslang/generator/*.java
+    Running code generators, output in target/generated-sources
+  - ...
+
+Profile 'ci':
+  Used by travis-ci.org in integration builds when reporting code coverage report to coveralls.io.
+
+Profile 'release-sign-artifacts':
+  Used by sonatype to sign artifacts when releasing javaslang to maven central.
+
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
@@ -40,18 +55,39 @@
 		<assertj.core.version>1.7.0</assertj.core.version>
 		<eclipse.lifecycle.mapping.version>1.0.0</eclipse.lifecycle.mapping.version>
 		<java.version>1.8</java.version>
-		<javaslang.generated.sources.dir>target/src-gen</javaslang.generated.sources.dir>
+		<generator.dir>javaslang/generator</generator.dir>
+		<generator.files>${generator.dir}/**/*</generator.files>
+		<generated-sources.dir>${project.build.directory}/generated-sources</generated-sources.dir>
 		<junit.version>4.12-beta-3</junit.version>
+		<maven.build-helper.version>1.9.1</maven.build-helper.version>
 		<maven.compiler.version>3.2</maven.compiler.version>
 		<maven.coveralls.version>3.0.1</maven.coveralls.version>
+		<maven.exec.version>1.3.2</maven.exec.version>
 		<maven.gpg.version>1.5</maven.gpg.version>
 		<maven.jacoco.version>0.7.2.201409121644</maven.jacoco.version>
+		<maven.jar.version>2.5</maven.jar.version>
 		<maven.release.version>2.5.1</maven.release.version>
 		<maven.versions.version>2.1</maven.versions.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>${maven.build-helper.version}</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals><goal>add-source</goal></goals>
+						<configuration>
+							<sources>
+								<source>src/gen/java</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -61,7 +97,81 @@
 					<target>${java.version}</target>
 					<showDeprecation>true</showDeprecation>
 					<showWarnings>true</showWarnings>
+					<!--
+					<compilerArgs>
+						<arg>-Xlint</arg>
+					</compilerArgs>
+					-->
 				</configuration>
+				<executions>
+					<execution>
+						<id>gen-compile</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+						<configuration>
+							<includes>
+								<include>${generator.files}</include>
+							</includes>
+						</configuration>
+					</execution>
+					<execution>
+						<id>default-compile</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+						<configuration>
+							<excludes>
+								<exclude>${generator.files}</exclude>
+							</excludes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>${maven.exec.version}</version>
+				<executions>
+					<execution>
+						<id>exec-generator</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<configuration>
+							<mainClass>javaslang.generator.GeneratorRunner</mainClass>
+							<arguments>
+								<argument>-target=${generated-sources.dir}</argument>
+								<argument>-generator=javaslang.generator.LambdaGenerator</argument>
+								<argument>-generator=javaslang.generator.PropGenerator</argument>
+								<argument>-generator=javaslang.generator.TupleGenerator</argument>
+							</arguments>
+							<sourceRoot>${generated-sources.dir}</sourceRoot>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>${maven.jar.version}</version>
+				<executions>
+					<execution>
+						<id>default-jar</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<excludes>
+								<exclude>${generator.dir}/**</exclude>
+							</excludes>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
