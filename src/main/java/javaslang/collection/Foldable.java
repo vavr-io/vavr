@@ -143,9 +143,9 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
     // @see Algebra.Monoid.combine()
     SELF combine(SELF a1, SELF a2);
 
+    @SuppressWarnings("unchecked")
     default SELF concat(Foldable<? super A, ?, ? extends SELF> other) {
         Require.nonNull(other, "other is null");
-        //noinspection unchecked
         return combine((SELF) this, (SELF) other);
     }
 
@@ -235,14 +235,14 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
 
     // -- filtering & transformations
 
+    @SuppressWarnings("unchecked")
     default SELF distinct() {
-        //noinspection unchecked
         return foldLeft(zero(), (xs, x) -> xs.contains(x) ? xs : xs.concat((SELF) unit(x)));
     }
 
+    @SuppressWarnings("unchecked")
     default SELF filter(Predicate<? super A> predicate) {
         Require.nonNull(predicate, "predicate is null");
-        //noinspection unchecked
         return foldLeft(zero(), (xs, x) -> predicate.test(x) ? xs.concat((SELF) unit(x)) : xs);
     }
 
@@ -268,8 +268,8 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
      * @param element An element.
      * @return An 'interspersed' version of this Foldable.
      */
+    @SuppressWarnings("unchecked")
     default SELF intersperse(A element) {
-        //noinspection unchecked
         return foldLeft(zero(), (xs, x) -> xs.isEmpty() ? (SELF) unit(x) : xs.concat((SELF) unit(element)).concat((SELF) unit(x)));
     }
 
@@ -278,8 +278,8 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
      *
      * @return The reversed elements.
      */
+    @SuppressWarnings("unchecked")
     default SELF reverse() {
-        //noinspection unchecked
         return foldLeft(zero(), (xs, x) -> ((SELF) unit(x)).concat(xs));
     }
 
@@ -410,7 +410,6 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
      * @return Some(element) or None, where element may be null (i.e. {@code List.of(null).findFirst(e -> e == null)}).
      */
     default Option<A> findFirst(Predicate<? super A> predicate) {
-        //noinspection unchecked
         for (A a : this) {
             if (predicate.test(a)) {
                 return new Option.Some<>(a); // may be Some(null)
@@ -439,7 +438,7 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
      * Foldable has less than n elements.
      */
     default SELF drop(int n) {
-        //noinspection unchecked
+        @SuppressWarnings("unchecked")
         SELF foldable = (SELF) this;
         for (int i = n; i > 0 && !foldable.isEmpty(); i--) {
             foldable = foldable.tail();
@@ -453,7 +452,7 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
 
     default SELF dropWhile(Predicate<? super A> predicate) {
         Require.nonNull(predicate, "predicate is null");
-        //noinspection unchecked
+        @SuppressWarnings("unchecked")
         SELF foldable = (SELF) this;
         while (!foldable.isEmpty() && predicate.test(foldable.head())) {
             foldable = foldable.tail();
@@ -461,12 +460,11 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
         return foldable;
     }
 
+    @SuppressWarnings("unchecked")
     default SELF take(int n) {
         SELF result = zero();
-        //noinspection unchecked
         SELF foldable = (SELF) this;
         for (int i = n; i > 0 && !foldable.isEmpty(); i--) {
-            //noinspection unchecked
             result = result.concat((SELF) unit(foldable.head()));
             foldable = foldable.tail();
         }
@@ -477,13 +475,12 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
         return reverse().take(n).reverse();
     }
 
+    @SuppressWarnings("unchecked")
     default SELF takeWhile(Predicate<? super A> predicate) {
         Require.nonNull(predicate, "predicate is null");
         SELF result = zero();
-        //noinspection unchecked
         SELF foldable = (SELF) this;
         while (!foldable.isEmpty() && predicate.test(foldable.head())) {
-            //noinspection unchecked
             result = result.concat((SELF) unit(foldable.head()));
             foldable = foldable.tail();
         }

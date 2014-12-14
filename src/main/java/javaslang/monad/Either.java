@@ -203,21 +203,23 @@ public interface Either<L, R> {
 			}
 		}
 
+		@SuppressWarnings("unchecked")
 		public <U> Either<U, R> map(Function<? super L, ? extends U> mapper) {
 			Objects.requireNonNull(mapper);
 			if (either.isLeft())
 				return new Left<>(mapper.apply(asLeft()));
 			else {
-				return (Right<U,R>) either;
+				return (Either<U,R>) either;
 			}
 		}
 
+		@SuppressWarnings("unchecked")
 		public <U> Either<U, R> flatMap(Function<? super L, ? extends Either<U, R>> mapper) {
 			Objects.requireNonNull(mapper);
 			if (either.isLeft()) {
 				return mapper.apply(asLeft());
 			} else {
-				return (Right<U,R>) either;
+				return (Either<U,R>) either;
 			}
 		}
 
@@ -301,21 +303,23 @@ public interface Either<L, R> {
 			}
 		}
 
+		@SuppressWarnings("unchecked")
 		public <U> Either<L, U> map(Function<? super R, ? extends U> mapper) {
 			Objects.requireNonNull(mapper);
 			if (either.isRight())
 				return new Right<>(mapper.apply(asRight()));
 			else {
-				return (Left<L, U>) either;
+				return (Either<L, U>) either;
 			}
 		}
 
+		@SuppressWarnings("unchecked")
 		public <U> Either<L, U> flatMap(Function<? super R, ? extends Either<L, U>> mapper) {
 			Objects.requireNonNull(mapper);
 			if (either.isRight())
 				return mapper.apply(asRight());
 			else {
-				return (Left<L, U>) either;
+				return (Either<L, U>) either;
 			}
 		}
 

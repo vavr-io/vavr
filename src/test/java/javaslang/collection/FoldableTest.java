@@ -571,39 +571,39 @@ public class FoldableTest {
 
         // -- need to correct return types of Foldable operations
 
+        @SuppressWarnings("unchecked")
         @Override
         public <U, SEQ extends Manifest<U, Seq<?>>> Seq<U> flatMap(Function<? super T, SEQ> mapper) {
-            //noinspection unchecked
             return (Seq) Foldable.super.flatMap(mapper::apply);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public <U> Seq<U> map(Function<? super T, ? extends U> mapper) {
-            //noinspection unchecked
             return (Seq) Foldable.super.map(mapper::apply);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public <U> Seq<Tuple.Tuple2<T, U>> zip(Iterable<U> that) {
-            //noinspection unchecked
             return (Seq) Foldable.super.zip(that);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public <U> Seq<Tuple.Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
-            //noinspection unchecked
             return (Seq) Foldable.super.zipAll(that, thisElem, thatElem);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public Seq<Tuple.Tuple2<T, Integer>> zipWithIndex() {
-            //noinspection unchecked
             return (Seq) Foldable.super.zipWithIndex();
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public <T1, T2> Tuple.Tuple2<Seq<T1>, Seq<T2>> unzip(Function<? super T, Tuple.Tuple2<T1, T2>> unzipper) {
-            //noinspection unchecked
             return (Tuple.Tuple2<Seq<T1>, Seq<T2>>) Foldable.super.unzip(unzipper);
         }
 
