@@ -45,83 +45,6 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
     // -- Core List API
 
     /**
-     * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
-     * {@link Stream#collect(Collector)} to obtain a {@link javaslang.collection.List}.
-     *
-     * @param <T> Component type of the List.
-     * @return A List Collector.
-     */
-    static <T> Collector<T, ArrayList<T>, List<T>> collector() {
-        final Supplier<ArrayList<T>> supplier = ArrayList::new;
-        final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
-        final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
-            left.addAll(right);
-            return left;
-        };
-        final Function<ArrayList<T>, List<T>> finisher = elements -> {
-            List<T> result = Nil.instance();
-            for (T element : elements) {
-                result = result.prepend(element);
-            }
-            return result.reverse();
-        };
-        return Collector.of(supplier, accumulator, combiner, finisher);
-    }
-
-    /**
-     * Returns the single instance of Nil. Convenience method for {@code Nil.instance()} .
-     *
-     * @param <T> Component type of Nil, determined by type inference in the particular context.
-     * @return The empty list.
-     */
-    static <T> List<T> nil() {
-        return Nil.instance();
-    }
-
-    /**
-     * Creates a List of the given elements.
-     * <p/>
-     * <pre>
-     * <code>  List.of(1, 2, 3, 4)
-     * = Nil.instance().prepend(4).prepend(3).prepend(2).prepend(1)
-     * = new Cons(1, new Cons(2, new Cons(3, new Cons(4, Nil.instance()))))</code>
-     * </pre>
-     *
-     * @param <T>      Component type of the List.
-     * @param elements Zero or more elements.
-     * @return A list containing the given elements in the same order.
-     */
-    @SafeVarargs
-    static <T> List<T> of(T... elements) {
-        List<T> result = Nil.instance();
-        for (int i = elements.length - 1; i >= 0; i--) {
-            result = result.prepend(elements[i]);
-        }
-        return result;
-    }
-
-    // -- List API shared by implementations Cons and Nil
-
-    /**
-     * Creates a List of the given elements.
-     *
-     * @param <T>      Component type of the List.
-     * @param elements An Iterable of elements.
-     * @return A list containing the given elements in the same order.
-     */
-    static <T> List<T> of(Iterable<T> elements) {
-        if (elements instanceof List) {
-            return (List<T>) elements;
-        } else {
-            List<T> result = Nil.instance();
-            for (T element : elements) {
-                result = result.prepend(element);
-            }
-            return result.reverse();
-        }
-    }
-
-    /**
      * Returns the first element of this List in O(1).
      *
      * @return The head of this List.
@@ -597,9 +520,6 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
         return result;
     }
 
-
-    // -- List conversion
-
     /**
      * Returns a new List which contains all elements starting at beginIndex (inclusive). The sublist is computed in
      * O(n).
@@ -719,6 +639,8 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
         return stream().sorted(c).collect(List.collector());
     }
 
+    // -- List conversion
+
     /**
      * Returns an array containing all elements of this List in the same order. The array is created in O(2n).
      *
@@ -732,8 +654,6 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
         }
         return result;
     }
-
-    // -- Implementation of interface Foldable
 
     /**
      * Returns the given array filled with this elements in the same order or a new Array containing this elements, if
@@ -773,8 +693,6 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
         return StreamSupport.stream(spliterator(), false);
     }
 
-    // -- List specific optimization of default Foldable interface methods
-
     /**
      * Returns a parallel {@link java.util.stream.Stream} representation of this List.
      * <p/>
@@ -786,10 +704,7 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
         return StreamSupport.stream(spliterator(), true);
     }
 
-    @Override
-    default List<E> zero() {
-        return List.nil();
-    }
+    // -- Implementation of interface Foldable
 
     @Override
     default <T> List<T> unit(T element) {
@@ -797,8 +712,20 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
     }
 
     @Override
+    default List<E> zero() {
+        return List.nil();
+    }
+
+    @Override
     default List<E> combine(List<E> l1, List<E> l2) {
         return l2.prependAll(l1);
+    }
+
+    // -- List specific optimization of default Foldable interface methods
+
+    @Override
+    default List<E> distinct() {
+        return foldRight(nil(), (x, xs) -> xs.contains(x) ? xs : xs.prepend(x));
     }
 
     @Override
@@ -817,6 +744,11 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
     @Override
     default <T> List<T> map(Function<? super E, ? extends T> mapper) {
         return foldRight(nil(), (x, xs) -> xs.prepend(mapper.apply(x)));
+    }
+
+    @Override
+    default List<E> intersperse(E element) {
+        return foldRight(nil(), (x, xs) -> xs.isEmpty() ? xs.prepend(x) : xs.prepend(element).prepend(x));
     }
 
     /**
@@ -845,36 +777,6 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
     }
 
     /**
-     * Takes the first n elements of this list or the whole list, if this size &lt; n. The elements are taken in O(n).
-     * <p/>
-     * The result is equivalent to {@code sublist(0, n)} but does not throw if n &lt; 0 or n &gt; size(). In the case of
-     * n &lt; 0 the Nil is returned, in the case of n &gt; size() this List is returned.
-     *
-     * @param n The number of elements to take.
-     * @return A list consisting of the first n elements of this list or the whole list, if it has less than n elements.
-     */
-    @Override
-    default List<E> take(int n) {
-        List<E> result = Nil.instance();
-        List<E> list = this;
-        for (int i = 0; i < n && !list.isEmpty(); i++, list = list.tail()) {
-            result = result.prepend(list.head());
-        }
-        return result.reverse();
-    }
-
-    // -- Implementation of interface Iterable
-
-    @Override
-    default List<E> takeWhile(Predicate<? super E> predicate) {
-        List<E> result = Nil.instance();
-        for (List<E> list = this; !list.isEmpty() && predicate.test(list.head()); list = list.tail()) {
-            result = result.prepend(list.head());
-        }
-        return result.reverse();
-    }
-
-    /**
      * Returns a List formed from this List and another Iterable collection by combining corresponding elements in
      * pairs. If one of the two collections is longer than the other, its remaining elements are ignored.
      *
@@ -896,8 +798,6 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
         }
         return result.reverse();
     }
-
-    // -- Object equals, hashCode, toString
 
     /**
      * Returns a List formed from this List and another Iterable collection by combining corresponding elements in
@@ -943,6 +843,49 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
         return result.reverse();
     }
 
+    @Override
+    default <E1, E2> Tuple2<List<E1>, List<E2>> unzip(Function<? super E, Tuple2<E1, E2>> unzipper) {
+        Require.nonNull(unzipper, "unzipper is null");
+        List<E1> xs = nil();
+        List<E2> ys = nil();
+        for (E element : this) {
+            final Tuple2<E1, E2> t = unzipper.apply(element);
+            xs = xs.prepend(t._1);
+            ys = ys.prepend(t._2);
+        }
+        return Tuple.of(xs.reverse(), ys.reverse());
+    }
+
+    /**
+     * Takes the first n elements of this list or the whole list, if this size &lt; n. The elements are taken in O(n).
+     * <p/>
+     * The result is equivalent to {@code sublist(0, n)} but does not throw if n &lt; 0 or n &gt; size(). In the case of
+     * n &lt; 0 the Nil is returned, in the case of n &gt; size() this List is returned.
+     *
+     * @param n The number of elements to take.
+     * @return A list consisting of the first n elements of this list or the whole list, if it has less than n elements.
+     */
+    @Override
+    default List<E> take(int n) {
+        List<E> result = Nil.instance();
+        List<E> list = this;
+        for (int i = 0; i < n && !list.isEmpty(); i++, list = list.tail()) {
+            result = result.prepend(list.head());
+        }
+        return result.reverse();
+    }
+
+    @Override
+    default List<E> takeWhile(Predicate<? super E> predicate) {
+        List<E> result = Nil.instance();
+        for (List<E> list = this; !list.isEmpty() && predicate.test(list.head()); list = list.tail()) {
+            result = result.prepend(list.head());
+        }
+        return result.reverse();
+    }
+
+    // -- Implementation of interface Iterable
+
     /*
      * (non-Javadoc)
      * @see java.lang.Iterable#iterator()
@@ -974,8 +917,6 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
         return new ListIterator();
     }
 
-    // -- List providers
-
     /*
      * (non-Javadoc)
      * @see java.lang.Iterable#spliterator()
@@ -985,7 +926,7 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
         return Spliterators.spliterator(iterator(), size(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
     }
 
-    // -- List factory methods
+    // -- Object equals, hashCode, toString
 
     /**
      * Equivalent to {@link java.util.List#equals(Object)}.
@@ -1011,6 +952,86 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
      */
     @Override
     String toString();
+
+
+    // -- List factory methods
+
+    /**
+     * Returns the single instance of Nil. Convenience method for {@code Nil.instance()} .
+     *
+     * @param <T> Component type of Nil, determined by type inference in the particular context.
+     * @return The empty list.
+     */
+    static <T> List<T> nil() {
+        return Nil.instance();
+    }
+
+    /**
+     * Creates a List of the given elements.
+     * <p/>
+     * <pre>
+     * <code>  List.of(1, 2, 3, 4)
+     * = Nil.instance().prepend(4).prepend(3).prepend(2).prepend(1)
+     * = new Cons(1, new Cons(2, new Cons(3, new Cons(4, Nil.instance()))))</code>
+     * </pre>
+     *
+     * @param <T>      Component type of the List.
+     * @param elements Zero or more elements.
+     * @return A list containing the given elements in the same order.
+     */
+    @SafeVarargs
+    static <T> List<T> of(T... elements) {
+        List<T> result = Nil.instance();
+        for (int i = elements.length - 1; i >= 0; i--) {
+            result = result.prepend(elements[i]);
+        }
+        return result;
+    }
+
+    /**
+     * Creates a List of the given elements.
+     *
+     * @param <T>      Component type of the List.
+     * @param elements An Iterable of elements.
+     * @return A list containing the given elements in the same order.
+     */
+    static <T> List<T> of(Iterable<T> elements) {
+        if (elements instanceof List) {
+            return (List<T>) elements;
+        } else {
+            List<T> result = Nil.instance();
+            for (T element : elements) {
+                result = result.prepend(element);
+            }
+            return result.reverse();
+        }
+    }
+
+    // -- List providers
+
+    /**
+     * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
+     * {@link Stream#collect(Collector)} to obtain a {@link javaslang.collection.List}.
+     *
+     * @param <T> Component type of the List.
+     * @return A List Collector.
+     */
+    static <T> Collector<T, ArrayList<T>, List<T>> collector() {
+        final Supplier<ArrayList<T>> supplier = ArrayList::new;
+        final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
+        final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
+            left.addAll(right);
+            return left;
+        };
+        final Function<ArrayList<T>, List<T>> finisher = elements -> {
+            List<T> result = Nil.instance();
+            for (T element : elements) {
+                result = result.prepend(element);
+            }
+            return result.reverse();
+        };
+        return Collector.of(supplier, accumulator, combiner, finisher);
+    }
 
     // -- List implementations
 
@@ -1204,6 +1225,8 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
             return INSTANCE;
         }
     }
+
+    // -- List API shared by implementations Cons and Nil
 
     /**
      * This class is needed because the interface {@link List} cannot use default methods to override Object's non-final
