@@ -132,6 +132,20 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
         }
     }
 
+    default String join() {
+        return join("", "", "");
+    }
+
+    default String join(CharSequence delimiter) {
+        return join(delimiter, "", "");
+    }
+
+    default String join(CharSequence delimiter,
+                        CharSequence prefix,
+                        CharSequence suffix) {
+        return prefix + map(Objects::toString).reduceLeft((s1,s2) -> s1 + delimiter + s2) + suffix;
+    }
+
     // -- creational operations
 
     // @see Algebra.Monad.unit()

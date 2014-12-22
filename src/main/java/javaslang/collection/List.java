@@ -954,7 +954,7 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
     String toString();
 
 
-    // -- List factory methods
+    // -- factory methods
 
     /**
      * Returns the single instance of Nil. Convenience method for {@code Nil.instance()} .
@@ -1103,7 +1103,7 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
          */
         // DEV NOTE: The serialization proxy pattern is not compatible with non-final, i.e. extendable,
         // classes. Also, it may not be compatible with circular object graphs.
-        private static class SerializationProxy<E> implements Serializable {
+        private static final class SerializationProxy<E> implements Serializable {
 
             private static final long serialVersionUID = 3851894487210781138L;
 
