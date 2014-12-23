@@ -13,7 +13,6 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.logging.Logger;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -25,8 +24,6 @@ import static java.util.stream.Collectors.joining;
 // - type("my.package.Class") => simple name and imports handling
 abstract class JavaGenerator {
 
-	static final Logger LOG = Logger.getLogger(JavaGenerator.class.getName());
-
 	private static final int INDENT = 4; // spaces
 
 	protected final String className;
@@ -35,7 +32,6 @@ abstract class JavaGenerator {
 	private final StringBuilder builder = new StringBuilder();
 
 	protected JavaGenerator(String fullQualifiedName) {
-		LOG.info("Generating " + fullQualifiedName);
 		if (fullQualifiedName == null) {
 			throw new IllegalArgumentException("fullQualifiedName is null");
 		}
@@ -45,6 +41,7 @@ abstract class JavaGenerator {
 	}
 
 	public void generate(String target) {
+		System.out.println(String.format("Generating %s.%s", packageName, className));
 		if (target == null) {
 			throw new IllegalArgumentException("target is null");
 		}
@@ -62,6 +59,9 @@ abstract class JavaGenerator {
 		}
 	}
 
+	/**
+	 * Generator implementation, calls #gen, #range, #format etc.
+	 */
 	protected abstract void gen();
 
 	protected void gen(String s, Object... args) {
@@ -70,6 +70,11 @@ abstract class JavaGenerator {
 
 	protected StringGen<Integer> range(int from, int to) {
 		return new StringGen<>(IntStream.rangeClosed(from, to).boxed());
+	}
+
+	// Shortcut for String#format
+	protected String format(String format, Object... args) {
+		return String.format(format, args);
 	}
 
 	protected String indent(int i) {

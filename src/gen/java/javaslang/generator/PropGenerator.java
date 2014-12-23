@@ -5,8 +5,6 @@
  */
 package javaslang.generator;
 
-import static java.lang.String.format;
-
 class PropGenerator extends JavaGenerator {
 
 	static final int N = 13;

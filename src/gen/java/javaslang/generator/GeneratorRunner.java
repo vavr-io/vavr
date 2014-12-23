@@ -8,19 +8,16 @@ package javaslang.generator;
 import java.util.*;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class GeneratorRunner {
-
-    static final Logger LOG = Logger.getLogger(JavaGenerator.class.getName());
 
     private static final String ARG_TARGET = "target";
     private static final String ARG_GENERATOR = "generator";
 
     public static void main(String[] args) {
         final Config config = new Config(args);
-        LOG.info("Running code generator with arguments:\n" + config);
+        System.out.println("Running code generator with arguments:\n" + config);
         final String target = config.getString(ARG_TARGET);
         config.getStrings(ARG_GENERATOR).stream()
                 .distinct()
@@ -42,12 +39,8 @@ public class GeneratorRunner {
 
         Config(String[] args) {
             final Function<String[], String> keyMapper = xs -> xs[0];
-            final Function<String[], List<String>> valueMapper = xs -> {
-                final List<String> values = new ArrayList<>();
-                final String value = (xs.length == 1) ? "true" : xs[1];
-                values.add(value);
-                return values;
-            };
+            final Function<String[], List<String>> valueMapper =
+                    xs -> new ArrayList<String>() {{ add((xs.length == 1) ? "true" : xs[1]); }};
             final BinaryOperator<List<String>> merger = (x,y) -> { x.addAll(y); return x; };
             argMap = Arrays.asList(args).stream()
                     .map(arg -> arg.startsWith("-") ? arg.substring(1).split("=", 2) : null)
