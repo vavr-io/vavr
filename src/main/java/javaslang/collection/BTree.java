@@ -72,7 +72,7 @@ public interface BTree<T> extends Tree<T, BTree<T>> {
     /**
      * Converts an Iterable to a balanced binary tree.
      * <p/>
-     * Example: {@code }BTree.balance(List.of(1,2,3,4,5,6)) = (1 (2 3 4) (5 6))}
+     * Example: {@code BTree.balance(List.of(1,2,3,4,5,6)) = (1 (2 3 4) (5 6))}
      *
      * @param iterable An Iterable
      * @param <T> Element type
@@ -90,6 +90,20 @@ public interface BTree<T> extends Tree<T, BTree<T>> {
             final BTree<T> right = BTree.balance(split._2);
             return BTree.of(left, value, right);
         }
+    }
+
+    /**
+     * Converts the given elements to a balanced binary tree.
+     * <p/>
+     * Example: {@code BTree.balance(1,2,3,4,5,6) = (1 (2 3 4) (5 6))}
+     *
+     * @param elements Elements
+     * @param <T> Element type
+     * @return A balanced tree containing all given elements.
+     */
+    @SafeVarargs
+    static <T> BTree<T> balance(T... elements) {
+        return BTree.balance(List.of(elements));
     }
 
     // -- BTree implementations
