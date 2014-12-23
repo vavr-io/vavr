@@ -123,7 +123,7 @@ public interface Tree<T, SELF extends Tree<T, SELF>> {
             if (o == this) {
                 return true;
             }
-            if (o == null || getClass().isAssignableFrom(o.getClass())) {
+            if (o == null || !getClass().isAssignableFrom(o.getClass())) {
                 return false;
             } else {
                 final Tree<?, ?> that = (Tree<?, ?>) o;
