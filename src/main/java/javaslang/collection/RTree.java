@@ -18,11 +18,16 @@ import java.io.*;
  */
 public interface RTree<T> extends Tree<T, RTree<T>> {
 
+    @Override
+    default String getName() {
+        return "RTree";
+    }
+
     // -- factory methods
 
     @SafeVarargs
     static <T> Node<T> of(T value, RTree<T>... children) {
-        return new Node<>(value, List.of(children));
+        return new Node<>(value, List.of(children).filter(e -> !e.isEmpty()));
     }
 
     static <T> Nil<T> nil() {

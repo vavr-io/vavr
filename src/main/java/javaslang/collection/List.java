@@ -377,6 +377,16 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
         return result.reverse();
     }
 
+    default List<E> removeAll(E removed) {
+        List<E> result = List.nil();
+        for (E element : this) {
+            if (!element.equals(removed)) {
+                result = result.prepend(element);
+            }
+        }
+        return result.reverse();
+    }
+
     /**
      * Replaces the first occurrence (if exists) of the given currentElement with newElement in O(2n).
      * <p/>

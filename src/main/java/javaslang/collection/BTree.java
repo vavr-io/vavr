@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.Require;
+import javaslang.Tuple;
 
 import java.io.*;
 
@@ -33,6 +34,11 @@ import java.io.*;
  */
 public interface BTree<T> extends Tree<T, BTree<T>> {
 
+    @Override
+    default String getName() {
+        return "BTree";
+    }
+
     /**
      * Gets the left branch of this BTree.
      *
@@ -51,6 +57,10 @@ public interface BTree<T> extends Tree<T, BTree<T>> {
 
     // -- factory methods
 
+    static <T> Nil<T> nil() {
+        return Nil.instance();
+    }
+
     static <T> Node<T> of(BTree<T> left, T value, BTree<T> right) {
         return new Node<>(left, value, right);
     }
@@ -59,8 +69,27 @@ public interface BTree<T> extends Tree<T, BTree<T>> {
         return BTree.of(Nil.instance(), value, Nil.instance());
     }
 
-    static <T> Nil<T> nil() {
-        return Nil.instance();
+    /**
+     * Converts an Iterable to a balanced binary tree.
+     * <p/>
+     * Example: {@code }BTree.balance(List.of(1,2,3,4,5,6)) = (1 (2 3 4) (5 6))}
+     *
+     * @param iterable An Iterable
+     * @param <T> Element type
+     * @return A balanced tree containing all elements of the given iterable.
+     */
+    static <T> BTree<T> balance(Iterable<T> iterable) {
+        final List<T> list = List.of(iterable);
+        if (list.isEmpty()) {
+            return BTree.nil();
+        } else {
+            final T value = list.head();
+            // DEV-NOTE: intentionally calling list.size()/2 instead of list.tail().size()/2
+            final Tuple.Tuple2<List<T>, List<T>> split = list.tail().splitAt(list.size() / 2);
+            final BTree<T> left = BTree.balance(split._1);
+            final BTree<T> right = BTree.balance(split._2);
+            return BTree.of(left, value, right);
+        }
     }
 
     // -- BTree implementations
@@ -108,7 +137,7 @@ public interface BTree<T> extends Tree<T, BTree<T>> {
 
         @Override
         public List<BTree<T>> children() {
-            return List.of(left, right);
+            return List.of(left, right).filter(e -> !e.isEmpty());
         }
 
         // -- Serializable implementation

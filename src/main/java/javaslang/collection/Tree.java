@@ -12,6 +12,11 @@ import java.util.Objects;
 public interface Tree<T, SELF extends Tree<T, SELF>> {
 
     /**
+     * Returns the name of the Tree implementation (e.g. BTree, RTree).
+     */
+    String getName();
+
+    /**
      * Gets the value of this tree.
      *
      * @return The value of this tree.
@@ -56,29 +61,29 @@ public interface Tree<T, SELF extends Tree<T, SELF>> {
 
     default String toLispString() {
         class Local {
-            String toLispString(Tree<T, SELF> tree) {
+            String toString(Tree<T, SELF> tree) {
                 if (tree.isEmpty()) {
-                    return "";
+                    return "()";
                 } else {
                     final String value = Strings.toString(tree.get()).replaceAll("\\s+", " ").trim();
                     if (tree.isLeaf()) {
                         return value;
                     } else {
                         final String children = tree.children()
-                                .map(Local.this::toLispString)
+                                .map(Local.this::toString)
                                 .join(" ");
                         return String.format("(%s %s)", value, children);
                     }
                 }
             }
         }
-        final String string = new Local().toLispString(this);
-        return getClass().getSimpleName() + (isLeaf() ? "(" + string + ")" : string);
+        final String string = new Local().toString(this);
+        return getName() + (isLeaf() ? "(" + string + ")" : string);
     }
 
     default String toIndentedString() {
         class Local {
-            String toCoffeeScriptString(Tree<T, SELF> tree, int depth) {
+            String toString(Tree<T, SELF> tree, int depth) {
                 if (tree.isEmpty()) {
                     return "";
                 } else {
@@ -88,15 +93,14 @@ public interface Tree<T, SELF extends Tree<T, SELF>> {
                         return "\n" + indent + value;
                     } else {
                         final String children = tree.children()
-                                .map(child -> toCoffeeScriptString(child, depth + 1))
+                                .map(child -> toString(child, depth + 1))
                                 .join();
                         return String.format("\n%s%s%s", indent, value, children);
                     }
                 }
             }
         }
-        final String string = new Local().toCoffeeScriptString(this, 0);
-        return getClass().getSimpleName() + ":" + string;
+        return getName() + ":" + new Local().toString(this, 0);
     }
 
     // -- Object.*
