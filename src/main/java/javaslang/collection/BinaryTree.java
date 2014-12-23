@@ -10,50 +10,39 @@ import javaslang.Tuple;
 
 import java.io.*;
 
-// TODO: read on updating nested data structures with lenses (http://stackoverflow.com/questions/3900307/cleaner-way-to-update-nested-structures)
-
 /**
- * A binary tree implementation, i.e. a tree with a left and a right branch.
+ * A binary tree implementation where each node keeps a value. See <a href="http://en.wikipedia.org/wiki/Binary_tree">Wikipedia: Binary tree</a>.
  * <p/>
- * In general, there are many different possabilities how to implement a binary tree, e.g.
- * <ul>
- * <li><code>Tree = Nil | Node(left: Tree, value, right: Tree)</code></li>
- * <li><code>Tree = Leaf(value) | Branch(left: Tree, value, right: Tree)</code></li>
- * <li><code>Tree = Leaf(value) | Branch(left: Tree, right: Tree)</code></li>
- * </ul>
- * A natural, algebraic tree representation needs to consider the empty tree which is the neutral element of tree operations.
- * Additionally there is no reason to restrict trees to have values at leaf nodes only. Algorithms which rely on this property
- * have to maintain this state by their own.
- * <p/>
- * Therefore the first tree representation fits best:
+ * A binary tree consists of branches (nodes with children) and leafs (nodes without children). The empty tree is represented by Nil.
  * <pre>
- * <code>Tree = Nil | Node(left: Tree, value, right: Tree)</code>
+ *     <code>BinaryTree = Nil | Leaf(value) | Branch(BinaryTree left, value, BinaryTree right)</code>
  * </pre>
+ * A branch has a left and a right child, at least one child is not Nil.
  *
- * @param <T> the type of a Node's value.
+ * @param <T> the type of a tree node's value.
  */
-public interface BTree<T> extends Tree<T, BTree<T>> {
+public interface BinaryTree<T> extends Tree<T, BinaryTree<T>> {
 
     @Override
     default String getName() {
-        return "BTree";
+        return BinaryTree.class.getSimpleName();
     }
 
     /**
-     * Gets the left branch of this BTree.
+     * Gets the left branch of this BinaryTree.
      *
-     * @return The left branch if this BTree is a Node.
-     * @throws java.lang.UnsupportedOperationException if this BTree is Nil
+     * @return The left branch if this BinaryTree is a Node.
+     * @throws java.lang.UnsupportedOperationException if this BinaryTree is Nil
      */
-    BTree<T> left();
+    BinaryTree<T> left();
 
     /**
-     * Gets the right branch of this BTree.
+     * Gets the right branch of this BinaryTree.
      *
-     * @return The right branch if this BTree is a Node.
-     * @throws java.lang.UnsupportedOperationException if this BTree is Nil
+     * @return The right branch if this BinaryTree is a Node.
+     * @throws java.lang.UnsupportedOperationException if this BinaryTree is Nil
      */
-    BTree<T> right();
+    BinaryTree<T> right();
 
     // -- factory methods
 
@@ -61,76 +50,122 @@ public interface BTree<T> extends Tree<T, BTree<T>> {
         return Nil.instance();
     }
 
-    static <T> Node<T> of(BTree<T> left, T value, BTree<T> right) {
-        return new Node<>(left, value, right);
+    static <T> Leaf<T> of(T value) {
+        return new Leaf<>(value);
     }
 
-    static <T> Node<T> of(T value) {
-        return BTree.of(Nil.instance(), value, Nil.instance());
+    static <T> BinaryTree<T> of(BinaryTree<T> left, T value, BinaryTree<T> right) {
+        if (left.isEmpty() && right.isEmpty()) {
+            return new Leaf<>(value);
+        } else {
+            return new Branch<>(left, value, right);
+        }
     }
 
     /**
      * Converts an Iterable to a balanced binary tree.
      * <p/>
-     * Example: {@code BTree.balance(List.of(1,2,3,4,5,6)) = (1 (2 3 4) (5 6))}
+     * Example: {@code BinaryTree.balance(List.of(1,2,3,4,5,6)) = (1 (2 3 4) (5 6))}
      *
      * @param iterable An Iterable
      * @param <T> Element type
      * @return A balanced tree containing all elements of the given iterable.
      */
-    static <T> BTree<T> balance(Iterable<T> iterable) {
+    static <T> BinaryTree<T> balance(Iterable<T> iterable) {
         final List<T> list = List.of(iterable);
         if (list.isEmpty()) {
-            return BTree.nil();
+            return BinaryTree.nil();
         } else {
             final T value = list.head();
             // DEV-NOTE: intentionally calling list.size()/2 instead of list.tail().size()/2
-            final Tuple.Tuple2<List<T>, List<T>> split = list.tail().splitAt(list.size() / 2);
-            final BTree<T> left = BTree.balance(split._1);
-            final BTree<T> right = BTree.balance(split._2);
-            return BTree.of(left, value, right);
+            final Tuple.Tuple2<List<T>, List<T>> split = list.tail().splitAt(list.length() / 2);
+            final BinaryTree<T> left = BinaryTree.balance(split._1);
+            final BinaryTree<T> right = BinaryTree.balance(split._2);
+            return BinaryTree.of(left, value, right);
         }
     }
 
     /**
      * Converts the given elements to a balanced binary tree.
      * <p/>
-     * Example: {@code BTree.balance(1,2,3,4,5,6) = (1 (2 3 4) (5 6))}
+     * Example: {@code BinaryTree.balance(1,2,3,4,5,6) = (1 (2 3 4) (5 6))}
      *
      * @param elements Elements
      * @param <T> Element type
      * @return A balanced tree containing all given elements.
      */
     @SafeVarargs
-    static <T> BTree<T> balance(T... elements) {
-        return BTree.balance(List.of(elements));
+    static <T> BinaryTree<T> balance(T... elements) {
+        return BinaryTree.balance(List.of(elements));
     }
 
-    // -- BTree implementations
+    // -- BinaryTree implementations
 
-    static final class Node<T> extends AbstractTree<T, BTree<T>> implements BTree<T>, Serializable {
+    static final class Leaf<T> extends AbstractTree<T, BinaryTree<T>> implements BinaryTree<T>, Serializable {
+
+        private static final long serialVersionUID = -189719611914095083L;
+
+        private final T value;
+
+        public Leaf(T value) {
+            this.value = value;
+        }
+
+        @Override
+        public BinaryTree<T> left() {
+            throw new UnsupportedOperationException("left of Leaf");
+        }
+
+        @Override
+        public BinaryTree<T> right() {
+            throw new UnsupportedOperationException("right of Leaf");
+        }
+
+        @Override
+        public T get() {
+            return value;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return false;
+        }
+
+        @Override
+        public boolean isLeaf() {
+            return true;
+        }
+
+        @Override
+        public List<BinaryTree<T>> children() {
+            throw new UnsupportedOperationException("children of Leaf");
+        }
+    }
+
+    static final class Branch<T> extends AbstractTree<T, BinaryTree<T>> implements BinaryTree<T>, Serializable {
 
         private static final long serialVersionUID = -1368274890360703478L;
 
-        private final BTree<T> left;
-        private final BTree<T> right;
+        private final BinaryTree<T> left;
+        private final BinaryTree<T> right;
         private final T value;
 
-        public Node(BTree<T> left, T value, BTree<T> right) {
+        public Branch(BinaryTree<T> left, T value, BinaryTree<T> right) {
             Require.nonNull(left, "left is null");
             Require.nonNull(right, "right is null");
+            Require.isFalse(left.isEmpty() && right.isEmpty(), "left and right are Nil");
             this.left = left;
             this.right = right;
             this.value = value;
         }
 
         @Override
-        public BTree<T> left() {
+        public BinaryTree<T> left() {
             return left;
         }
 
         @Override
-        public BTree<T> right() {
+        public BinaryTree<T> right() {
             return right;
         }
 
@@ -146,12 +181,12 @@ public interface BTree<T> extends Tree<T, BTree<T>> {
 
         @Override
         public boolean isLeaf() {
-            return left.isEmpty() && right.isEmpty();
+            return false;
         }
 
         @Override
-        public List<BTree<T>> children() {
-            return List.of(left, right).filter(e -> !e.isEmpty());
+        public List<BinaryTree<T>> children() {
+            return List.of(left, right).filter(tree -> !tree.isEmpty());
         }
 
         // -- Serializable implementation
@@ -193,18 +228,18 @@ public interface BTree<T> extends Tree<T, BTree<T>> {
             private static final long serialVersionUID = -8789880233113465837L;
 
             // the instance to be serialized/deserialized
-            private transient Node<T> node;
+            private transient Branch<T> branch;
 
             /**
-             * Constructor for the case of serialization, called by {@link Node#writeReplace()}.
+             * Constructor for the case of serialization, called by {@link BinaryTree.Branch#writeReplace()}.
              * <p/>
              * The constructor of a SerializationProxy takes an argument that concisely represents the logical state of
              * an instance of the enclosing class.
              *
-             * @param node a Node
+             * @param branch a Branch
              */
-            SerializationProxy(Node<T> node) {
-                this.node = node;
+            SerializationProxy(Branch<T> branch) {
+                this.branch = branch;
             }
 
             /**
@@ -215,9 +250,9 @@ public interface BTree<T> extends Tree<T, BTree<T>> {
              */
             private void writeObject(ObjectOutputStream s) throws IOException {
                 s.defaultWriteObject();
-                s.writeObject(node.value);
-                s.writeObject(node.left);
-                s.writeObject(node.right);
+                s.writeObject(branch.value);
+                s.writeObject(branch.left);
+                s.writeObject(branch.right);
             }
 
             /**
@@ -231,9 +266,9 @@ public interface BTree<T> extends Tree<T, BTree<T>> {
             private void readObject(ObjectInputStream s) throws ClassNotFoundException, IOException {
                 s.defaultReadObject();
                 final T value = (T) s.readObject();
-                final BTree<T> left = (BTree<T>) s.readObject();
-                final BTree<T> right = (BTree<T>) s.readObject();
-                node = new Node<>(left, value, right);
+                final BinaryTree<T> left = (BinaryTree<T>) s.readObject();
+                final BinaryTree<T> right = (BinaryTree<T>) s.readObject();
+                branch = new Branch<>(left, value, right);
             }
 
             /**
@@ -246,12 +281,12 @@ public interface BTree<T> extends Tree<T, BTree<T>> {
              * @return A deserialized instance of the enclosing class.
              */
             private Object readResolve() {
-                return node;
+                return branch;
             }
         }
     }
 
-    static final class Nil<T> extends AbstractTree<T, BTree<T>> implements BTree<T>, Serializable {
+    static final class Nil<T> extends AbstractTree<T, BinaryTree<T>> implements BinaryTree<T>, Serializable {
 
         private static final long serialVersionUID = 4966576338736993154L;
 
@@ -268,18 +303,18 @@ public interface BTree<T> extends Tree<T, BTree<T>> {
         }
 
         @Override
-        public BTree<T> left() {
-            throw new UnsupportedOperationException("left of empty binary tree");
+        public BinaryTree<T> left() {
+            throw new UnsupportedOperationException("left of Nil");
         }
 
         @Override
-        public BTree<T> right() {
-            throw new UnsupportedOperationException("right of empty binary tree");
+        public BinaryTree<T> right() {
+            throw new UnsupportedOperationException("right of Nil");
         }
 
         @Override
         public T get() {
-            throw new UnsupportedOperationException("get value of empty binary tree");
+            throw new UnsupportedOperationException("get of Nil");
         }
 
         @Override
@@ -293,8 +328,8 @@ public interface BTree<T> extends Tree<T, BTree<T>> {
         }
 
         @Override
-        public List<BTree<T>> children() {
-            throw new UnsupportedOperationException("children of empty binary tree");
+        public List<BinaryTree<T>> children() {
+            throw new UnsupportedOperationException("children of Nil");
         }
 
         // -- Serializable implementation

@@ -114,7 +114,7 @@ public interface Tree<T, SELF extends Tree<T, SELF>> {
     @Override
     String toString();
 
-    // -- RTree API shared by implementations Node and Nil
+    // -- Tree API shared by implementations
 
     static abstract class AbstractTree<T, SELF extends Tree<T, SELF>> implements Tree<T, SELF> {
 

@@ -9,42 +9,85 @@ import javaslang.Require;
 
 import java.io.*;
 
-// TODO: consider updating tree structures with lenses (http://stackoverflow.com/questions/3900307/cleaner-way-to-update-nested-structures)
-
 /**
- * A rose tree implementation, i.e. a tree with an arbitrary number of children.
+ * A rose tree implementation, i.e. a tree with an arbitrary number of children, where each node keeps a value.
+ * See <a href="http://en.wikipedia.org/wiki/Rose_tree">Wikipedia: Rose tree</a>.
  *
  * @param <T> the type of a Node's value.
  */
-public interface RTree<T> extends Tree<T, RTree<T>> {
+public interface RoseTree<T> extends Tree<T, RoseTree<T>> {
 
     @Override
     default String getName() {
-        return "RTree";
+        return RoseTree.class.getSimpleName();
     }
 
     // -- factory methods
-
-    @SafeVarargs
-    static <T> Node<T> of(T value, RTree<T>... children) {
-        return new Node<>(value, List.of(children).filter(e -> !e.isEmpty()));
-    }
 
     static <T> Nil<T> nil() {
         return Nil.instance();
     }
 
-    // -- RTree implementations
+    static <T> Leaf<T> of(T value) {
+        return new Leaf<>(value);
+    }
 
-    static final class Node<T> extends AbstractTree<T, RTree<T>> implements RTree<T>, Serializable {
+    @SafeVarargs
+    static <T> Branch<T> of(T value, NonNil<T> child1, NonNil<T>... children) {
+        Require.nonNull(children, "children is null");
+        return new Branch<>(value, List.of(children).prepend(child1));
+    }
+
+    // -- RoseTree implementations
+
+    /**
+     * Implementors of this tagging interface indicate that they are not Nil.
+     * @param <T> Component type of the rose tree.
+     */
+    static interface NonNil<T> extends RoseTree<T> {
+    }
+
+    static final class Leaf<T> extends AbstractTree<T, RoseTree<T>> implements NonNil<T>, Serializable {
+
+        private static final long serialVersionUID = -6301673452872179894L;
+
+        private final T value;
+
+        public Leaf(T value) {
+            this.value = value;
+        }
+
+        @Override
+        public T get() {
+            return value;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return false;
+        }
+
+        @Override
+        public boolean isLeaf() {
+            return true;
+        }
+
+        @Override
+        public List<RoseTree<T>> children() {
+            throw new UnsupportedOperationException("children of Leaf");
+        }
+    }
+
+    static final class Branch<T> extends AbstractTree<T, RoseTree<T>> implements NonNil<T>, Serializable {
 
         private static final long serialVersionUID = -1368274890360703478L;
 
-        private final List<RTree<T>> children;
+        private final List<? extends RoseTree<T>> children;
         private final T value;
 
-        public Node(T value, List<RTree<T>> children) {
+        public Branch(T value, List<NonNil<T>> children) {
             Require.nonNull(children, "children is null");
+            Require.isFalse(children.isEmpty(), "no children");
             this.children = children;
             this.value = value;
         }
@@ -61,12 +104,14 @@ public interface RTree<T> extends Tree<T, RTree<T>> {
 
         @Override
         public boolean isLeaf() {
-            return children.isEmpty();
+            return false;
         }
 
         @Override
-        public List<RTree<T>> children() {
-            return children;
+        public List<RoseTree<T>> children() {
+            @SuppressWarnings("unchecked")
+            final List<RoseTree<T>> cast = (List<RoseTree<T>>) children;
+            return cast;
         }
 
         // -- Serializable implementation
@@ -108,18 +153,18 @@ public interface RTree<T> extends Tree<T, RTree<T>> {
             private static final long serialVersionUID = -1169723642575166947L;
 
             // the instance to be serialized/deserialized
-            private transient Node<T> node;
+            private transient Branch<T> branch;
 
             /**
-             * Constructor for the case of serialization, called by {@link Node#writeReplace()}.
+             * Constructor for the case of serialization, called by {@link Branch#writeReplace()}.
              * <p/>
              * The constructor of a SerializationProxy takes an argument that concisely represents the logical state of
              * an instance of the enclosing class.
              *
-             * @param node a Node
+             * @param branch a Branch
              */
-            SerializationProxy(Node<T> node) {
-                this.node = node;
+            SerializationProxy(Branch<T> branch) {
+                this.branch = branch;
             }
 
             /**
@@ -130,8 +175,8 @@ public interface RTree<T> extends Tree<T, RTree<T>> {
              */
             private void writeObject(ObjectOutputStream s) throws IOException {
                 s.defaultWriteObject();
-                s.writeObject(node.value);
-                s.writeObject(node.children);
+                s.writeObject(branch.value);
+                s.writeObject(branch.children);
             }
 
             /**
@@ -145,8 +190,8 @@ public interface RTree<T> extends Tree<T, RTree<T>> {
             private void readObject(ObjectInputStream s) throws ClassNotFoundException, IOException {
                 s.defaultReadObject();
                 final T value = (T) s.readObject();
-                final List<RTree<T>> children = (List<RTree<T>>) s.readObject();
-                node = new Node<>(value, children);
+                final List<NonNil<T>> children = (List<NonNil<T>>) s.readObject();
+                branch = new Branch<>(value, children);
             }
 
             /**
@@ -159,12 +204,12 @@ public interface RTree<T> extends Tree<T, RTree<T>> {
              * @return A deserialized instance of the enclosing class.
              */
             private Object readResolve() {
-                return node;
+                return branch;
             }
         }
     }
 
-    static final class Nil<T> extends AbstractTree<T, RTree<T>> implements RTree<T>, Serializable {
+    static final class Nil<T> extends AbstractTree<T, RoseTree<T>> implements RoseTree<T>, Serializable {
 
         private static final long serialVersionUID = 4966576338736993154L;
 
@@ -182,7 +227,7 @@ public interface RTree<T> extends Tree<T, RTree<T>> {
 
         @Override
         public T get() {
-            throw new UnsupportedOperationException("get value of empty rose tree");
+            throw new UnsupportedOperationException("get of Nil");
         }
 
         @Override
@@ -196,8 +241,8 @@ public interface RTree<T> extends Tree<T, RTree<T>> {
         }
 
         @Override
-        public List<RTree<T>> children() {
-            throw new UnsupportedOperationException("children of empty rose tree");
+        public List<RoseTree<T>> children() {
+            throw new UnsupportedOperationException("children of Nil");
         }
 
         // -- Serializable implementation

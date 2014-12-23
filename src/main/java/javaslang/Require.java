@@ -33,8 +33,31 @@ public final class Require {
 	}
 
 	/**
-	 * Runtime check which throws an UnsatisfiedRequirementException if the given condition is false.
+	 * Runtime check which throws an UnsatisfiedRequirementException if the given condition is true.
 	 * 
+	 * @param condition A boolean.
+	 * @param messageSupplier An error message, computed lazily.
+	 * @throws UnsatisfiedRequirementException If the given condition is true, contains the supplied message.
+	 * @throws NullPointerException If messageSupplier is null.
+	 */
+	public static void isFalse(boolean condition, Supplier<String> messageSupplier) {
+		Require.isTrue(!condition, messageSupplier);
+	}
+
+	/**
+	 * Runtime check which throws an UnsatisfiedRequirementException if the given condition is true.
+	 *
+	 * @param condition A boolean.
+	 * @param message An error message.
+	 * @throws UnsatisfiedRequirementException If condition is true, contains the given message.
+	 */
+	public static void isFalse(boolean condition, String message) {
+		Require.isTrue(!condition, message);
+	}
+
+	/**
+	 * Runtime check which throws an UnsatisfiedRequirementException if the given condition is false.
+	 *
 	 * @param condition A boolean.
 	 * @param messageSupplier An error message, computed lazily.
 	 * @throws UnsatisfiedRequirementException If the given condition is false, contains the supplied message.
