@@ -107,6 +107,15 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
     }
 
     /**
+     * Checks, if this list contains the given element.
+     * @param element An element.
+     * @return true, if this list contains the given element, false otherwise.
+     */
+    default boolean contains(E element) {
+        return indexOf(element) != -1;
+    }
+
+    /**
      * Returns the element of this List at the specified index in O(n).
      * <p/>
      * The result is roughly equivalent to {@code (index == 0) ? head() : tail().get(index - 1)} but implemented without

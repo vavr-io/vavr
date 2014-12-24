@@ -46,20 +46,27 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<T>> {
 
     // -- factory methods
 
-    static <T> Nil<T> nil() {
-        return Nil.instance();
-    }
-
-    static <T> Leaf<T> of(T value) {
-        return new Leaf<>(value);
-    }
-
     static <T> BinaryTree<T> of(BinaryTree<T> left, T value, BinaryTree<T> right) {
         if (left.isEmpty() && right.isEmpty()) {
             return new Leaf<>(value);
         } else {
             return new Branch<>(left, value, right);
         }
+    }
+
+    /**
+     * Throws if left and right are Nil - if in doubt, use BinaryTree.of(left, value, right) instead.
+     */
+    static <T> Branch<T> Branch(BinaryTree<T> left, T value, BinaryTree<T> right) {
+        return new Branch<>(left, value, right);
+    }
+
+    static <T> Leaf<T> Leaf(T value) {
+        return new Leaf<>(value);
+    }
+
+    static <T> Nil<T> Nil() {
+        return Nil.instance();
     }
 
     /**
@@ -74,7 +81,7 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<T>> {
     static <T> BinaryTree<T> balance(Iterable<T> iterable) {
         final List<T> list = List.of(iterable);
         if (list.isEmpty()) {
-            return BinaryTree.nil();
+            return Nil();
         } else {
             final T value = list.head();
             // DEV-NOTE: intentionally calling list.size()/2 instead of list.tail().size()/2
@@ -138,7 +145,7 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<T>> {
 
         @Override
         public List<BinaryTree<T>> children() {
-            throw new UnsupportedOperationException("children of Leaf");
+            return List.nil();
         }
     }
 
@@ -329,7 +336,7 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<T>> {
 
         @Override
         public List<BinaryTree<T>> children() {
-            throw new UnsupportedOperationException("children of Nil");
+            return List.nil();
         }
 
         // -- Serializable implementation

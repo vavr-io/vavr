@@ -24,18 +24,18 @@ public interface RoseTree<T> extends Tree<T, RoseTree<T>> {
 
     // -- factory methods
 
-    static <T> Nil<T> nil() {
-        return Nil.instance();
+    @SafeVarargs
+    static <T> Branch<T> Branch(T value, NonNil<T> child1, NonNil<T>... children) {
+        Require.nonNull(children, "children is null");
+        return new Branch<>(value, List.of(children).prepend(child1));
     }
 
-    static <T> Leaf<T> of(T value) {
+    static <T> Leaf<T> Leaf(T value) {
         return new Leaf<>(value);
     }
 
-    @SafeVarargs
-    static <T> Branch<T> of(T value, NonNil<T> child1, NonNil<T>... children) {
-        Require.nonNull(children, "children is null");
-        return new Branch<>(value, List.of(children).prepend(child1));
+    static <T> Nil<T> Nil() {
+        return Nil.instance();
     }
 
     // -- RoseTree implementations
