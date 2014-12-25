@@ -7,7 +7,9 @@ package javaslang.collection;
 
 import javaslang.Strings;
 
+import java.util.LinkedList;
 import java.util.Objects;
+import java.util.Queue;
 
 public interface Tree<T, SELF extends Tree<T, SELF>> {
 
@@ -153,8 +155,15 @@ public interface Tree<T, SELF extends Tree<T, SELF>> {
                 return tree.children().foldLeft(List.<T> nil(), (acc, child) -> acc.appendAll(postOrder(child))).append(tree.get());
             }
             List<T> levelOrder(Tree<T,SELF> tree) {
-                // TODO: flatten levelOrder
-                throw new UnsupportedOperationException("flatten levelOrder");
+                List<T> result = List.nil();
+                final Queue<Tree<T,SELF>> queue = new LinkedList<Tree<T,SELF>>();
+                queue.add(tree);
+                while (!queue.isEmpty()) {
+                    Tree<T,SELF> next = queue.remove();
+                    result = result.prepend(next.get());
+                    queue.addAll(next.children().toArrayList());
+                }
+                return result.reverse();
             }
         }
         if (isEmpty()) {
