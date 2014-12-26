@@ -6,15 +6,13 @@
 package javaslang.collection;
 
 import javaslang.Algebra.Functor;
-import javaslang.Manifest;
 import javaslang.Strings;
 
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Queue;
-import java.util.function.Function;
 
-public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?, SELF>> extends Functor<T>, Manifest<T, CLASS> {
+public interface Tree<T, SELF extends Tree<T, SELF>> extends Functor<T> {
 
     /**
      * Returns the name of the Tree implementation (e.g. BTree, RTree).
@@ -122,7 +120,7 @@ public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?
         } else if (Objects.equals(getValue(), element)) {
             return true;
         } else {
-            for (Tree<T, ?, SELF> child : getChildren()) {
+            for (Tree<T, SELF> child : getChildren()) {
                 if (child.contains(element)) {
                     return true;
                 }
@@ -141,11 +139,11 @@ public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?
 
     default List<T> flatten(Traversal traversal) {
         class Flatten {
-            List<T> preOrder(Tree<T,?, SELF> tree) {
+            List<T> preOrder(Tree<T, SELF> tree) {
                 return tree.getChildren()
                         .foldLeft(List.of(tree.getValue()), (acc, child) -> acc.appendAll(preOrder(child)));
             }
-            List<T> inOrder(Tree<T, ?, SELF> tree) {
+            List<T> inOrder(Tree<T, SELF> tree) {
                 if (tree.isLeaf()) {
                     return List.of(tree.getValue());
                 } else {
@@ -155,17 +153,17 @@ public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?
                             .prependAll(inOrder(children.head()));
                 }
             }
-            List<T> postOrder(Tree<T, ?, SELF> tree) {
+            List<T> postOrder(Tree<T, SELF> tree) {
                 return tree.getChildren()
                         .foldLeft(List.<T> nil(), (acc, child) -> acc.appendAll(postOrder(child)))
                         .append(tree.getValue());
             }
-            List<T> levelOrder(Tree<T, ?, SELF> tree) {
+            List<T> levelOrder(Tree<T, SELF> tree) {
                 List<T> result = List.nil();
-                final Queue<Tree<T, ?, SELF>> queue = new LinkedList<>();
+                final Queue<Tree<T, SELF>> queue = new LinkedList<>();
                 queue.add(tree);
                 while (!queue.isEmpty()) {
-                    final Tree<T, ?, SELF> next = queue.remove();
+                    final Tree<T, SELF> next = queue.remove();
                     result = result.prepend(next.getValue());
                     queue.addAll(next.getChildren().toArrayList());
                 }
@@ -193,7 +191,7 @@ public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?
 
     default String toLispString() {
         class Local {
-            String toString(Tree<T, ?, SELF> tree) {
+            String toString(Tree<T, SELF> tree) {
                 if (tree.isEmpty()) {
                     return "()";
                 } else {
@@ -215,7 +213,7 @@ public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?
 
     default String toIndentedString() {
         class Local {
-            String toString(Tree<T, ?, SELF> tree, int depth) {
+            String toString(Tree<T, SELF> tree, int depth) {
                 if (tree.isEmpty()) {
                     return "";
                 } else {
@@ -246,31 +244,9 @@ public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?
     @Override
     String toString();
 
-    // -- Functor implementation
-
-    <U> Tree<U, CLASS, ?> unit(U value);
-
-    <U, TREE extends Manifest<U, CLASS>> Tree<U, CLASS, ?> unit(U value, List<TREE> children);
-
-    @Override
-    default <U> Tree<U, CLASS, ?> map(Function<? super T, ? extends U> f) {
-        if (isEmpty()) {
-            //noinspection unchecked
-            return (Tree<U, CLASS, ?>) this;
-        } else if (isLeaf()) {
-            //noinspection RedundantCast
-            return (Tree<U, CLASS, ?>) unit(f.apply(getValue()));
-        } else {
-            final U value = f.apply(getValue());
-            final List<Tree> children = getChildren().map(tree -> tree.map(f::apply));
-            //noinspection RedundantCast
-            return (Tree<U, CLASS, ?>) unit(value, children);
-        }
-    }
-
     // -- Tree API shared by implementations
 
-    static abstract class AbstractTree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?, SELF>> implements Tree<T, CLASS, SELF> {
+    static abstract class AbstractTree<T, SELF extends Tree<T, SELF>> implements Tree<T, SELF> {
 
         @Override
         public boolean equals(Object o) {

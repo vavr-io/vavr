@@ -5,10 +5,10 @@
  */
 package javaslang.collection;
 
-import javaslang.Manifest;
 import javaslang.Require;
 
 import java.io.*;
+import java.util.function.Function;
 
 /**
  * A rose tree implementation, i.e. a tree with an arbitrary number of children, where each node keeps a value.
@@ -16,26 +16,30 @@ import java.io.*;
  *
  * @param <T> the type of a Node's value.
  */
-public interface RoseTree<T> extends Tree<T, RoseTree.NonNil<?>, RoseTree.NonNil<T>> {
+public interface RoseTree<T> extends Tree<T, RoseTree.NonNil<T>> {
 
     @Override
     default String getName() {
         return RoseTree.class.getSimpleName();
     }
 
-    // -- Tree implementation
-
-    @Override
-    default <U> NonNil<U> unit(U value) {
-        return new Leaf<>(value);
-    }
+    // -- Functor implementation
 
     @SuppressWarnings("unchecked")
     @Override
-    default <U, TREE extends Manifest<U, NonNil<?>>> NonNil<U> unit(U value, List<TREE> children) {
-        if (children.isEmpty()) {
-            return new Leaf<>(value);
+    default <U> RoseTree<U> map(Function<? super T, ? extends U> f) {
+        if (isEmpty()) {
+            return Nil.instance();
+        } else if (isLeaf()) {
+            return new Leaf<>(f.apply(getValue()));
         } else {
+            final U value = f.apply(getValue());
+            final List children = getChildren().map(tree -> tree.map(f));
+            /*
+             * DEV-NOTE: The constructor of Branch and the factory method RoseTree.of
+             * expect NonNil children. With the implementation if map this implies that
+             * the result of the method getChildren().map is of type List<NonNil>.
+             */
             return new Branch<>(value, (List<NonNil<U>>) children);
         }
     }
@@ -76,7 +80,7 @@ public interface RoseTree<T> extends Tree<T, RoseTree.NonNil<?>, RoseTree.NonNil
     static interface NonNil<T> extends RoseTree<T> {
     }
 
-    static final class Leaf<T> extends AbstractTree<T, NonNil<?>, NonNil<T>> implements NonNil<T>, Serializable {
+    static final class Leaf<T> extends AbstractTree<T, NonNil<T>> implements NonNil<T>, Serializable {
 
         private static final long serialVersionUID = -6301673452872179894L;
 
@@ -107,7 +111,7 @@ public interface RoseTree<T> extends Tree<T, RoseTree.NonNil<?>, RoseTree.NonNil
         }
     }
 
-    static final class Branch<T> extends AbstractTree<T, NonNil<?>, NonNil<T>> implements NonNil<T>, Serializable {
+    static final class Branch<T> extends AbstractTree<T, NonNil<T>> implements NonNil<T>, Serializable {
 
         private static final long serialVersionUID = -1368274890360703478L;
 
@@ -236,7 +240,7 @@ public interface RoseTree<T> extends Tree<T, RoseTree.NonNil<?>, RoseTree.NonNil
         }
     }
 
-    static final class Nil<T> extends AbstractTree<T, NonNil<?>, NonNil<T>> implements RoseTree<T>, Serializable {
+    static final class Nil<T> extends AbstractTree<T, NonNil<T>> implements RoseTree<T>, Serializable {
 
         private static final long serialVersionUID = 4966576338736993154L;
 

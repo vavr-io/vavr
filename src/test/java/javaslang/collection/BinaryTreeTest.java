@@ -5,11 +5,12 @@
  */
 package javaslang.collection;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import static javaslang.collection.BinaryTree.*;
 
-public class TreeTest {
+import static javaslang.collection.BinaryTree.*;
+import static org.assertj.core.api.Assertions.*;
+
+public class BinaryTreeTest {
 
     // -- flatten
 
@@ -30,29 +31,28 @@ public class TreeTest {
 
     @Test
     public void shouldFlattenTreeUsingPreOrder() {
-        Assertions.assertThat(tree.flatten(Traversal.PRE_ORDER)).isEqualTo(List.of(1, 2, 4, 7, 5, 3, 6, 8, 9));
+        assertThat(tree.flatten(Traversal.PRE_ORDER)).isEqualTo(List.of(1, 2, 4, 7, 5, 3, 6, 8, 9));
     }
 
     @Test
     public void shouldFlattenTreeUsingInOrder() {
-        Assertions.assertThat(tree.flatten(Traversal.IN_ORDER)).isEqualTo(List.of(7, 4, 2, 5, 1, 8, 6, 9, 3));
+        assertThat(tree.flatten(Traversal.IN_ORDER)).isEqualTo(List.of(7, 4, 2, 5, 1, 8, 6, 9, 3));
     }
 
     @Test
     public void shouldFlattenTreeUsingPostOrder() {
-        Assertions.assertThat(tree.flatten(Traversal.POST_ORDER)).isEqualTo(List.of(7, 4, 5, 2, 8, 9, 6, 3, 1));
+        assertThat(tree.flatten(Traversal.POST_ORDER)).isEqualTo(List.of(7, 4, 5, 2, 8, 9, 6, 3, 1));
     }
 
     @Test
     public void shouldFlattenTreeUsingLevelOrder() {
-        Assertions.assertThat(tree.flatten(Traversal.LEVEL_ORDER)).isEqualTo(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
+        assertThat(tree.flatten(Traversal.LEVEL_ORDER)).isEqualTo(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
     }
 
     // -- map
 
     @Test
     public void shouldMapTree() {
-        final Tree<Character, BinaryTree<?>, ?> t = (Tree<Character, BinaryTree<?>, ?>) tree.map(i -> (char) (i + 64));
-        System.out.println(t);
+        assertThat(tree.map(i -> (char) (i + 64)).toString()).isEqualTo("BinaryTree(A (B (D G) E) (C (F H I)))");
     }
 }

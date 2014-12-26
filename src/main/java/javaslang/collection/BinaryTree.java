@@ -5,7 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.Manifest;
 import javaslang.Require;
 import javaslang.Tuple;
 
@@ -23,7 +22,7 @@ import java.util.function.Function;
  *
  * @param <T> the type of a tree node's value.
  */
-public interface BinaryTree<T> extends Tree<T, BinaryTree<?>, BinaryTree<T>> {
+public interface BinaryTree<T> extends Tree<T, BinaryTree<T>> {
 
     @Override
     default String getName() {
@@ -46,22 +45,16 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<?>, BinaryTree<T>> {
      */
     BinaryTree<T> right();
 
-    // -- Tree implementation
+    // -- Functor implementation
 
     @Override
-    default <U> BinaryTree<U> unit(U value) {
-        return new Leaf<>(value);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U, TREE extends Manifest<U, BinaryTree<?>>> BinaryTree<U> unit(U value, List<TREE> children) {
-        if (children.isEmpty()) {
-            return new Leaf<>(value);
+    default <U> BinaryTree<U> map(Function<? super T, ? extends U> f) {
+        if (isEmpty()) {
+            return Nil.instance();
+        } else if (isLeaf()) {
+            return new Leaf<>(f.apply(getValue()));
         } else {
-            final BinaryTree<U> left = (BinaryTree<U>) children.head();
-            final BinaryTree<U> right = children.tail().isEmpty() ? Nil.instance() : (BinaryTree<U>) children.tail().head();
-            return new Branch<>(left, value, right);
+            return new Branch<>(left().map(f), f.apply(getValue()), right().map(f));
         }
     }
 
@@ -133,7 +126,7 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<?>, BinaryTree<T>> {
 
     // -- BinaryTree implementations
 
-    static final class Leaf<T> extends AbstractTree<T, BinaryTree<?>, BinaryTree<T>> implements BinaryTree<T>, Serializable {
+    static final class Leaf<T> extends AbstractTree<T, BinaryTree<T>> implements BinaryTree<T>, Serializable {
 
         private static final long serialVersionUID = -189719611914095083L;
 
@@ -174,7 +167,7 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<?>, BinaryTree<T>> {
         }
     }
 
-    static final class Branch<T> extends AbstractTree<T, BinaryTree<?>, BinaryTree<T>> implements BinaryTree<T>, Serializable {
+    static final class Branch<T> extends AbstractTree<T, BinaryTree<T>> implements BinaryTree<T>, Serializable {
 
         private static final long serialVersionUID = -1368274890360703478L;
 
@@ -318,7 +311,7 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<?>, BinaryTree<T>> {
         }
     }
 
-    static final class Nil<T> extends AbstractTree<T, BinaryTree<?>, BinaryTree<T>> implements BinaryTree<T>, Serializable {
+    static final class Nil<T> extends AbstractTree<T, BinaryTree<T>> implements BinaryTree<T>, Serializable {
 
         private static final long serialVersionUID = 4966576338736993154L;
 
