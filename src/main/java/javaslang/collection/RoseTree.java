@@ -25,7 +25,18 @@ public interface RoseTree<T> extends Tree<T, RoseTree<T>> {
     // -- factory methods
 
     @SafeVarargs
+    static <T> RoseTree<T> of(T value, NonNil<T>... children) {
+        Require.nonNull(children, "children is null");
+        if (children.length == 0) {
+            return new Leaf<>(value);
+        } else {
+            return new Branch<>(value, List.of(children));
+        }
+    }
+
+    @SafeVarargs
     static <T> Branch<T> Branch(T value, NonNil<T> child1, NonNil<T>... children) {
+        Require.nonNull(children, "child1 is null");
         Require.nonNull(children, "children is null");
         return new Branch<>(value, List.of(children).prepend(child1));
     }

@@ -1000,6 +1000,7 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
      */
     @SafeVarargs
     static <T> List<T> of(T... elements) {
+        Require.nonNull(elements, "elements is null");
         List<T> result = Nil.instance();
         for (int i = elements.length - 1; i >= 0; i--) {
             result = result.prepend(elements[i]);
@@ -1015,6 +1016,7 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
      * @return A list containing the given elements in the same order.
      */
     static <T> List<T> of(Iterable<T> elements) {
+        Require.nonNull(elements, "elements is null");
         if (elements instanceof List) {
             return (List<T>) elements;
         } else {

@@ -63,13 +63,13 @@ public interface Tree<T, SELF extends Tree<T, SELF>> {
      *
      * @return The number of branches of this tree.
      */
-    default int branches() {
+    default int branchCount() {
         if (isEmpty() || isLeaf()) {
             return 0;
         } else {
             // need cast because of jdk 1.8.0_25 compiler error
             //noinspection RedundantCast
-            return (int) children().foldLeft(1, (count, child) -> count + child.branches());
+            return (int) children().foldLeft(1, (count, child) -> count + child.branchCount());
         }
     }
 
@@ -78,7 +78,7 @@ public interface Tree<T, SELF extends Tree<T, SELF>> {
      *
      * @return The number of leaves of this tree.
      */
-    default int leaves() {
+    default int leafCount() {
         if (isEmpty()) {
             return 0;
         } else if (isLeaf()) {
@@ -86,7 +86,7 @@ public interface Tree<T, SELF extends Tree<T, SELF>> {
         } else {
             // need cast because of jdk 1.8.0_25 compiler error
             //noinspection RedundantCast
-            return (int) children().foldLeft(0, (count, child) -> count + child.leaves());
+            return (int) children().foldLeft(0, (count, child) -> count + child.leafCount());
         }
     }
 
@@ -95,7 +95,7 @@ public interface Tree<T, SELF extends Tree<T, SELF>> {
      *
      * @return The number of nodes of this tree.
      */
-    default int nodes() {
+    default int nodeCount() {
         if (isEmpty()) {
             return 0;
         } else if (isLeaf()) {
@@ -103,7 +103,7 @@ public interface Tree<T, SELF extends Tree<T, SELF>> {
         } else {
             // need cast because of jdk 1.8.0_25 compiler error
             //noinspection RedundantCast
-            return (int) children().foldLeft(1, (count, child) -> count + child.nodes());
+            return (int) children().foldLeft(1, (count, child) -> count + child.nodeCount());
         }
     }
 
@@ -139,7 +139,8 @@ public interface Tree<T, SELF extends Tree<T, SELF>> {
     default List<T> flatten(Traversal traversal) {
         class Flatten {
             List<T> preOrder(Tree<T,SELF> tree) {
-                return tree.children().foldLeft(List.of(tree.get()), (acc, child) -> acc.appendAll(preOrder(child)));
+                return tree.children()
+                        .foldLeft(List.of(tree.get()), (acc, child) -> acc.appendAll(preOrder(child)));
             }
             List<T> inOrder(Tree<T,SELF> tree) {
                 if (tree.isLeaf()) {
@@ -152,14 +153,16 @@ public interface Tree<T, SELF extends Tree<T, SELF>> {
                 }
             }
             List<T> postOrder(Tree<T,SELF> tree) {
-                return tree.children().foldLeft(List.<T> nil(), (acc, child) -> acc.appendAll(postOrder(child))).append(tree.get());
+                return tree.children()
+                        .foldLeft(List.<T> nil(), (acc, child) -> acc.appendAll(postOrder(child)))
+                        .append(tree.get());
             }
             List<T> levelOrder(Tree<T,SELF> tree) {
                 List<T> result = List.nil();
-                final Queue<Tree<T,SELF>> queue = new LinkedList<Tree<T,SELF>>();
+                final Queue<Tree<T,SELF>> queue = new LinkedList<>();
                 queue.add(tree);
                 while (!queue.isEmpty()) {
-                    Tree<T,SELF> next = queue.remove();
+                    final Tree<T,SELF> next = queue.remove();
                     result = result.prepend(next.get());
                     queue.addAll(next.children().toArrayList());
                 }
@@ -295,7 +298,7 @@ public interface Tree<T, SELF extends Tree<T, SELF>> {
      */
     static enum Traversal {
 
-        // 1 2 4 7 5 3 6 8 9
+        // 1 2 4 7 5 3 6 8 9 (= depth-first)
         PRE_ORDER,
 
         // 7 4 2 5 1 8 6 9 3
@@ -304,7 +307,7 @@ public interface Tree<T, SELF extends Tree<T, SELF>> {
         // 7 4 5 2 8 9 6 3 1
         POST_ORDER,
 
-        // 1 2 3 4 5 6 7 8 9
+        // 1 2 3 4 5 6 7 8 9 (= breadth-first)
         LEVEL_ORDER
     }
 }

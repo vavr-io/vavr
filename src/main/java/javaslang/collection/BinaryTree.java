@@ -47,6 +47,8 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<T>> {
     // -- factory methods
 
     static <T> BinaryTree<T> of(BinaryTree<T> left, T value, BinaryTree<T> right) {
+        Require.nonNull(left, "left is null");
+        Require.nonNull(right, "right is null");
         if (left.isEmpty() && right.isEmpty()) {
             return new Leaf<>(value);
         } else {
@@ -58,6 +60,7 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<T>> {
      * Throws if left and right are Nil - if in doubt, use BinaryTree.of(left, value, right) instead.
      */
     static <T> Branch<T> Branch(BinaryTree<T> left, T value, BinaryTree<T> right) {
+        Require.nonNull(left, "left is null");
         return new Branch<>(left, value, right);
     }
 
@@ -160,7 +163,7 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<T>> {
         public Branch(BinaryTree<T> left, T value, BinaryTree<T> right) {
             Require.nonNull(left, "left is null");
             Require.nonNull(right, "right is null");
-            Require.isFalse(left.isEmpty() && right.isEmpty(), "left and right are Nil");
+            Require.isFalse(left.isEmpty() && right.isEmpty(), "left and right are Nil - use Leaf instead of Branch");
             this.left = left;
             this.right = right;
             this.value = value;
