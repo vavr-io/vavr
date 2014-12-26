@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Manifest;
 import javaslang.Require;
 
 import java.io.*;
@@ -15,17 +16,34 @@ import java.io.*;
  *
  * @param <T> the type of a Node's value.
  */
-public interface RoseTree<T> extends Tree<T, RoseTree<T>> {
+public interface RoseTree<T> extends Tree<T, RoseTree.NonNil<?>, RoseTree.NonNil<T>> {
 
     @Override
     default String getName() {
         return RoseTree.class.getSimpleName();
     }
 
+    // -- Tree implementation
+
+    @Override
+    default <U> NonNil<U> unit(U value) {
+        return new Leaf<>(value);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U, TREE extends Manifest<U, NonNil<?>>> NonNil<U> unit(U value, List<TREE> children) {
+        if (children.isEmpty()) {
+            return new Leaf<>(value);
+        } else {
+            return new Branch<>(value, (List<NonNil<U>>) children);
+        }
+    }
+
     // -- factory methods
 
     @SafeVarargs
-    static <T> RoseTree<T> of(T value, NonNil<T>... children) {
+    static <T> NonNil<T> of(T value, NonNil<T>... children) {
         Require.nonNull(children, "children is null");
         if (children.length == 0) {
             return new Leaf<>(value);
@@ -58,7 +76,7 @@ public interface RoseTree<T> extends Tree<T, RoseTree<T>> {
     static interface NonNil<T> extends RoseTree<T> {
     }
 
-    static final class Leaf<T> extends AbstractTree<T, RoseTree<T>> implements NonNil<T>, Serializable {
+    static final class Leaf<T> extends AbstractTree<T, NonNil<?>, NonNil<T>> implements NonNil<T>, Serializable {
 
         private static final long serialVersionUID = -6301673452872179894L;
 
@@ -84,16 +102,16 @@ public interface RoseTree<T> extends Tree<T, RoseTree<T>> {
         }
 
         @Override
-        public List<RoseTree<T>> children() {
-            throw new UnsupportedOperationException("children of Leaf");
+        public List<NonNil<T>> children() {
+            return List.nil();
         }
     }
 
-    static final class Branch<T> extends AbstractTree<T, RoseTree<T>> implements NonNil<T>, Serializable {
+    static final class Branch<T> extends AbstractTree<T, NonNil<?>, NonNil<T>> implements NonNil<T>, Serializable {
 
         private static final long serialVersionUID = -1368274890360703478L;
 
-        private final List<? extends RoseTree<T>> children;
+        private final List<NonNil<T>> children;
         private final T value;
 
         public Branch(T value, List<NonNil<T>> children) {
@@ -119,10 +137,8 @@ public interface RoseTree<T> extends Tree<T, RoseTree<T>> {
         }
 
         @Override
-        public List<RoseTree<T>> children() {
-            @SuppressWarnings("unchecked")
-            final List<RoseTree<T>> cast = (List<RoseTree<T>>) children;
-            return cast;
+        public List<NonNil<T>> children() {
+            return children;
         }
 
         // -- Serializable implementation
@@ -220,7 +236,7 @@ public interface RoseTree<T> extends Tree<T, RoseTree<T>> {
         }
     }
 
-    static final class Nil<T> extends AbstractTree<T, RoseTree<T>> implements RoseTree<T>, Serializable {
+    static final class Nil<T> extends AbstractTree<T, NonNil<?>, NonNil<T>> implements RoseTree<T>, Serializable {
 
         private static final long serialVersionUID = 4966576338736993154L;
 
@@ -252,8 +268,8 @@ public interface RoseTree<T> extends Tree<T, RoseTree<T>> {
         }
 
         @Override
-        public List<RoseTree<T>> children() {
-            throw new UnsupportedOperationException("children of Nil");
+        public List<NonNil<T>> children() {
+            return List.nil();
         }
 
         // -- Serializable implementation

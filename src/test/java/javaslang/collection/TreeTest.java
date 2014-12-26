@@ -11,6 +11,8 @@ import static javaslang.collection.BinaryTree.*;
 
 public class TreeTest {
 
+    // -- flatten
+
     /**
      *         1
      *        / \
@@ -24,7 +26,7 @@ public class TreeTest {
      *
      *
      */
-    final Tree tree = Branch(Branch(Branch(Leaf(7), 4, Nil()), 2, Leaf(5)), 1, Branch(Branch(Leaf(8), 6, Leaf(9)), 3, Nil()));
+    final BinaryTree<Integer> tree = Branch(Branch(Branch(Leaf(7), 4, Nil()), 2, Leaf(5)), 1, Branch(Branch(Leaf(8), 6, Leaf(9)), 3, Nil()));
 
     @Test
     public void shouldFlattenTreeUsingPreOrder() {
@@ -44,5 +46,13 @@ public class TreeTest {
     @Test
     public void shouldFlattenTreeUsingLevelOrder() {
         Assertions.assertThat(tree.flatten(Traversal.LEVEL_ORDER)).isEqualTo(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
+    }
+
+    // -- map
+
+    @Test
+    public void shouldMapTree() {
+        final Tree<Character, BinaryTree<?>, ?> t = (Tree<Character, BinaryTree<?>, ?>) tree.map(i -> (char) (i + 64));
+        System.out.println(t);
     }
 }
