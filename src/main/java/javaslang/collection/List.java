@@ -752,14 +752,12 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
         return foldRight(nil(), (x, xs) -> predicate.test(x) ? xs.prepend(x) : xs);
     }
 
-    // @see Algebra.Monad.flatMap()
     @Override
     default <T, LIST extends Manifest<T, List<?>>> List<T> flatMap(Function<? super E, LIST> mapper) {
         //noinspection unchecked
         return foldRight(nil(), (x, xs) -> xs.prependAll((List<T>) mapper.apply(x)));
     }
 
-    // @see Algebra.Monad.map()
     @Override
     default <T> List<T> map(Function<? super E, ? extends T> mapper) {
         return foldRight(nil(), (x, xs) -> xs.prepend(mapper.apply(x)));
@@ -1264,8 +1262,7 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
         public boolean equals(Object o) {
             if (o == this) {
                 return true;
-            }
-            if (!(o instanceof List)) {
+            } else if (!(o instanceof List)) {
                 return false;
             } else {
                 List<?> list1 = this;

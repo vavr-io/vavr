@@ -5,9 +5,12 @@
  */
 package javaslang.collection;
 
+import javaslang.Manifest;
 import javaslang.Require;
 
 import java.io.*;
+import java.util.Iterator;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -16,33 +19,88 @@ import java.util.function.Function;
  *
  * @param <T> the type of a Node's value.
  */
-public interface RoseTree<T> extends Tree<T, RoseTree.NonNil<T>> {
+public interface RoseTree<T> extends Tree<T, RoseTree<?>, RoseTree<T>> {
 
     @Override
     default String getName() {
         return RoseTree.class.getSimpleName();
     }
 
-    // -- Functor implementation
+    @Override
+    List<NonNil<T>> getChildren();
+
+    // -- Foldable implementation
+
+    @Override
+    default Iterator<T> iterator() {
+        // TODO: create an iterator based on an Ordering which is part of the Tree instance
+        return flatten().iterator();
+    }
+
+    @Override
+    default <U> RoseTree<U> unit(U element) {
+        return new Leaf<>(element);
+    }
+
+    @Override
+    default RoseTree<T> zero() {
+        return Nil.instance();
+    }
+
+    @Override
+    default RoseTree<T> combine(RoseTree<T> tree1, RoseTree<T> tree2) {
+        if (tree1.isEmpty()) {
+            return tree2;
+        } else if (tree2.isEmpty()) {
+            return tree1;
+        } else {
+            return new Branch<>(tree1.getValue(), tree1.getChildren().prepend((NonNil<T>) tree2));
+        }
+    }
 
     @SuppressWarnings("unchecked")
     @Override
-    default <U> RoseTree<U> map(Function<? super T, ? extends U> f) {
+    default <U, TREE extends Manifest<U, RoseTree<?>>> RoseTree<U> flatMap(Function<? super T, TREE> mapper) {
         if (isEmpty()) {
             return Nil.instance();
         } else if (isLeaf()) {
-            return new Leaf<>(f.apply(getValue()));
+            return (RoseTree<U>) mapper.apply(getValue());
         } else {
-            final U value = f.apply(getValue());
-            final List children = getChildren().map(tree -> tree.map(f));
+            final RoseTree<U> tree = (RoseTree<U>) mapper.apply(getValue());
+            final List children = getChildren().map(child -> child.flatMap(mapper));
             /*
              * DEV-NOTE: The constructor of Branch and the factory method RoseTree.of
-             * expect NonNil children. With the implementation if map this implies that
+             * expect NonNil children. With the implementation of flatMap this implies that
+             * the result of the method getChildren().map is of type List<NonNil>.
+             */
+            return new Branch<>(tree.getValue(), tree.getChildren().appendAll(children));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> RoseTree<U> map(Function<? super T, ? extends U> mapper) {
+        if (isEmpty()) {
+            return Nil.instance();
+        } else if (isLeaf()) {
+            return new Leaf<>(mapper.apply(getValue()));
+        } else {
+            final U value = mapper.apply(getValue());
+            final List children = getChildren().map(tree -> tree.map(mapper));
+            /*
+             * DEV-NOTE: The constructor of Branch and the factory method RoseTree.of
+             * expect NonNil children. With the implementation of map this implies that
              * the result of the method getChildren().map is of type List<NonNil>.
              */
             return new Branch<>(value, (List<NonNil<U>>) children);
         }
     }
+
+// TODO
+//    zip(Iterable)
+//    zipAll(Iterable, Object, Object)
+//    zipWithIndex()
+//    unzip(java.util.function.Function)
 
     // -- factory methods
 
@@ -80,7 +138,7 @@ public interface RoseTree<T> extends Tree<T, RoseTree.NonNil<T>> {
     static interface NonNil<T> extends RoseTree<T> {
     }
 
-    static final class Leaf<T> extends AbstractTree<T, NonNil<T>> implements NonNil<T>, Serializable {
+    static final class Leaf<T> extends AbstractRoseTree<T> implements NonNil<T>, Serializable {
 
         private static final long serialVersionUID = -6301673452872179894L;
 
@@ -111,7 +169,7 @@ public interface RoseTree<T> extends Tree<T, RoseTree.NonNil<T>> {
         }
     }
 
-    static final class Branch<T> extends AbstractTree<T, NonNil<T>> implements NonNil<T>, Serializable {
+    static final class Branch<T> extends AbstractRoseTree<T> implements NonNil<T>, Serializable {
 
         private static final long serialVersionUID = -1368274890360703478L;
 
@@ -240,7 +298,7 @@ public interface RoseTree<T> extends Tree<T, RoseTree.NonNil<T>> {
         }
     }
 
-    static final class Nil<T> extends AbstractTree<T, NonNil<T>> implements RoseTree<T>, Serializable {
+    static final class Nil<T> extends AbstractRoseTree<T> implements Serializable {
 
         private static final long serialVersionUID = 4966576338736993154L;
 
@@ -286,6 +344,41 @@ public interface RoseTree<T> extends Tree<T, RoseTree.NonNil<T>> {
          */
         private Object readResolve() {
             return INSTANCE;
+        }
+    }
+
+    // -- Tree API shared by implementations
+
+    static abstract class AbstractRoseTree<T> implements RoseTree<T> {
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            } else if (!(o instanceof RoseTree)) {
+                return false;
+            } else {
+                final RoseTree that = (RoseTree) o;
+                return (this.isEmpty() && that.isEmpty()) || (!this.isEmpty() && !that.isEmpty()
+                        && Objects.equals(this.getValue(), that.getValue())
+                        && this.getChildren().equals(that.getChildren()));
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            if (isEmpty()) {
+                return 1;
+            } else {
+                // need cast because of jdk 1.8.0_25 compiler error
+                //noinspection RedundantCast
+                return (int) getChildren().map(Objects::hashCode).foldLeft(31 + Objects.hashCode(getValue()), (i,j) -> i * 31 + j);
+            }
+        }
+
+        @Override
+        public String toString() {
+            return toLispString();
         }
     }
 }

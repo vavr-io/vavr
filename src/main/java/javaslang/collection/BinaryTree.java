@@ -5,10 +5,13 @@
  */
 package javaslang.collection;
 
+import javaslang.Manifest;
 import javaslang.Require;
 import javaslang.Tuple;
 
 import java.io.*;
+import java.util.Iterator;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -22,12 +25,15 @@ import java.util.function.Function;
  *
  * @param <T> the type of a tree node's value.
  */
-public interface BinaryTree<T> extends Tree<T, BinaryTree<T>> {
+public interface BinaryTree<T> extends Tree<T, BinaryTree<?>, BinaryTree<T>> {
 
     @Override
     default String getName() {
         return BinaryTree.class.getSimpleName();
     }
+
+    @Override
+    List<BinaryTree<T>> getChildren();
 
     /**
      * Gets the left branch of this BinaryTree.
@@ -45,18 +51,68 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<T>> {
      */
     BinaryTree<T> right();
 
-    // -- Functor implementation
+    // -- Foldable implementation
 
     @Override
-    default <U> BinaryTree<U> map(Function<? super T, ? extends U> f) {
+    default Iterator<T> iterator() {
+        // TODO: create an iterator based on an Ordering which is part of the Tree instance
+        return flatten().iterator();
+    }
+
+    @Override
+    default <U> BinaryTree<U> unit(U element) {
+        return new Leaf<>(element);
+    }
+
+    @Override
+    default BinaryTree<T> zero() {
+        return Nil.instance();
+    }
+
+    @Override
+    default BinaryTree<T> combine(BinaryTree<T> tree1, BinaryTree<T> tree2) {
+        if (tree1.isEmpty()) {
+            return tree2;
+        } else if (tree2.isEmpty()) {
+            return tree1;
+        } else if (tree1.isLeaf()) {
+            return new Branch<>(tree2, tree1.getValue(), Nil.instance());
+        } else {
+            return new Branch<>(combine(tree1.left(), tree2), tree1.getValue(), tree1.right());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U, TREE extends Manifest<U, BinaryTree<?>>> BinaryTree<U> flatMap(Function<? super T, TREE> mapper) {
         if (isEmpty()) {
             return Nil.instance();
         } else if (isLeaf()) {
-            return new Leaf<>(f.apply(getValue()));
+            return (BinaryTree<U>) mapper.apply(getValue());
         } else {
-            return new Branch<>(left().map(f), f.apply(getValue()), right().map(f));
+            final BinaryTree<U> tree = (BinaryTree<U>) mapper.apply(getValue());
+            final BinaryTree<U> left = left().flatMap(mapper).concat(tree.left());
+            final BinaryTree<U> right = right().flatMap(mapper).concat(tree.right());
+            return BinaryTree.of(left, tree.getValue(), right);
         }
     }
+
+    @Override
+    default <U> BinaryTree<U> map(Function<? super T, ? extends U> mapper) {
+        if (isEmpty()) {
+            return Nil.instance();
+        } else if (isLeaf()) {
+            return new Leaf<>(mapper.apply(getValue()));
+        } else {
+            return BinaryTree.of(left().map(mapper), mapper.apply(getValue()), right().map(mapper));
+        }
+    }
+
+// TODO
+//    zip(Iterable)
+//    zipAll(Iterable, Object, Object)
+//    zipWithIndex()
+//    unzip(java.util.function.Function)
 
     // -- factory methods
 
@@ -126,7 +182,7 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<T>> {
 
     // -- BinaryTree implementations
 
-    static final class Leaf<T> extends AbstractTree<T, BinaryTree<T>> implements BinaryTree<T>, Serializable {
+    static final class Leaf<T> extends AbstractBinaryTree<T> implements Serializable {
 
         private static final long serialVersionUID = -189719611914095083L;
 
@@ -167,7 +223,7 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<T>> {
         }
     }
 
-    static final class Branch<T> extends AbstractTree<T, BinaryTree<T>> implements BinaryTree<T>, Serializable {
+    static final class Branch<T> extends AbstractBinaryTree<T> implements Serializable {
 
         private static final long serialVersionUID = -1368274890360703478L;
 
@@ -211,7 +267,8 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<T>> {
 
         @Override
         public List<BinaryTree<T>> getChildren() {
-            return List.of(left, right).filter(tree -> !tree.isEmpty());
+            // IntelliJ error: List.of(left, right).filter(tree -> !tree.isEmpty());
+            return List.<BinaryTree<T>> nil().prepend(right).prepend(left).filter(tree -> !tree.isEmpty());
         }
 
         // -- Serializable implementation
@@ -311,7 +368,7 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<T>> {
         }
     }
 
-    static final class Nil<T> extends AbstractTree<T, BinaryTree<T>> implements BinaryTree<T>, Serializable {
+    static final class Nil<T> extends AbstractBinaryTree<T> implements Serializable {
 
         private static final long serialVersionUID = 4966576338736993154L;
 
@@ -367,6 +424,41 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<T>> {
          */
         private Object readResolve() {
             return INSTANCE;
+        }
+    }
+
+    // -- Tree API shared by implementations
+
+    static abstract class AbstractBinaryTree<T> implements BinaryTree<T> {
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            } else if (!(o instanceof BinaryTree)) {
+                return false;
+            } else {
+                final BinaryTree that = (BinaryTree) o;
+                return (this.isEmpty() && that.isEmpty()) || (!this.isEmpty() && !that.isEmpty()
+                        && Objects.equals(this.getValue(), that.getValue())
+                        && this.getChildren().equals(that.getChildren()));
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            if (isEmpty()) {
+                return 1;
+            } else {
+                // need cast because of jdk 1.8.0_25 compiler error
+                //noinspection RedundantCast
+                return (int) getChildren().map(Objects::hashCode).foldLeft(31 + Objects.hashCode(getValue()), (i,j) -> i * 31 + j);
+            }
+        }
+
+        @Override
+        public String toString() {
+            return toLispString();
         }
     }
 }
