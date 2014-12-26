@@ -53,17 +53,17 @@ public interface RoseTree<T> extends Tree<T, RoseTree.NonNil<?>, RoseTree.NonNil
     }
 
     @SafeVarargs
-    static <T> Branch<T> Branch(T value, NonNil<T> child1, NonNil<T>... children) {
+    static <T> Branch<T> branch(T value, NonNil<T> child1, NonNil<T>... children) {
         Require.nonNull(children, "child1 is null");
         Require.nonNull(children, "children is null");
         return new Branch<>(value, List.of(children).prepend(child1));
     }
 
-    static <T> Leaf<T> Leaf(T value) {
+    static <T> Leaf<T> leaf(T value) {
         return new Leaf<>(value);
     }
 
-    static <T> Nil<T> Nil() {
+    static <T> Nil<T> nil() {
         return Nil.instance();
     }
 
@@ -87,7 +87,7 @@ public interface RoseTree<T> extends Tree<T, RoseTree.NonNil<?>, RoseTree.NonNil
         }
 
         @Override
-        public T get() {
+        public T getValue() {
             return value;
         }
 
@@ -102,7 +102,7 @@ public interface RoseTree<T> extends Tree<T, RoseTree.NonNil<?>, RoseTree.NonNil
         }
 
         @Override
-        public List<NonNil<T>> children() {
+        public List<NonNil<T>> getChildren() {
             return List.nil();
         }
     }
@@ -122,7 +122,7 @@ public interface RoseTree<T> extends Tree<T, RoseTree.NonNil<?>, RoseTree.NonNil
         }
 
         @Override
-        public T get() {
+        public T getValue() {
             return value;
         }
 
@@ -137,7 +137,7 @@ public interface RoseTree<T> extends Tree<T, RoseTree.NonNil<?>, RoseTree.NonNil
         }
 
         @Override
-        public List<NonNil<T>> children() {
+        public List<NonNil<T>> getChildren() {
             return children;
         }
 
@@ -253,8 +253,8 @@ public interface RoseTree<T> extends Tree<T, RoseTree.NonNil<?>, RoseTree.NonNil
         }
 
         @Override
-        public T get() {
-            throw new UnsupportedOperationException("get of Nil");
+        public T getValue() {
+            throw new UnsupportedOperationException("getValue of Nil");
         }
 
         @Override
@@ -268,7 +268,7 @@ public interface RoseTree<T> extends Tree<T, RoseTree.NonNil<?>, RoseTree.NonNil
         }
 
         @Override
-        public List<NonNil<T>> children() {
+        public List<NonNil<T>> getChildren() {
             return List.nil();
         }
 

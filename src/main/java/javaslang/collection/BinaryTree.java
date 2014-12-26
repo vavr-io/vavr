@@ -80,16 +80,16 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<?>, BinaryTree<T>> {
     /**
      * Throws if left and right are Nil - if in doubt, use BinaryTree.of(left, value, right) instead.
      */
-    static <T> Branch<T> Branch(BinaryTree<T> left, T value, BinaryTree<T> right) {
+    static <T> Branch<T> branch(BinaryTree<T> left, T value, BinaryTree<T> right) {
         Require.nonNull(left, "left is null");
         return new Branch<>(left, value, right);
     }
 
-    static <T> Leaf<T> Leaf(T value) {
+    static <T> Leaf<T> leaf(T value) {
         return new Leaf<>(value);
     }
 
-    static <T> Nil<T> Nil() {
+    static <T> Nil<T> nil() {
         return Nil.instance();
     }
 
@@ -105,13 +105,14 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<?>, BinaryTree<T>> {
     static <T> BinaryTree<T> balance(Iterable<T> iterable) {
         final List<T> list = List.of(iterable);
         if (list.isEmpty()) {
-            return Nil();
+            return Nil.instance();
         } else {
             final T value = list.head();
             // DEV-NOTE: intentionally calling list.size()/2 instead of list.tail().size()/2
             final Tuple.Tuple2<List<T>, List<T>> split = list.tail().splitAt(list.length() / 2);
             final BinaryTree<T> left = BinaryTree.balance(split._1);
             final BinaryTree<T> right = BinaryTree.balance(split._2);
+            // DEV-NOTE: result may be a Leaf or a Branch
             return BinaryTree.of(left, value, right);
         }
     }
@@ -153,7 +154,7 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<?>, BinaryTree<T>> {
         }
 
         @Override
-        public T get() {
+        public T getValue() {
             return value;
         }
 
@@ -168,7 +169,7 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<?>, BinaryTree<T>> {
         }
 
         @Override
-        public List<BinaryTree<T>> children() {
+        public List<BinaryTree<T>> getChildren() {
             return List.nil();
         }
     }
@@ -201,7 +202,7 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<?>, BinaryTree<T>> {
         }
 
         @Override
-        public T get() {
+        public T getValue() {
             return value;
         }
 
@@ -216,7 +217,7 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<?>, BinaryTree<T>> {
         }
 
         @Override
-        public List<BinaryTree<T>> children() {
+        public List<BinaryTree<T>> getChildren() {
             return List.of(left, right).filter(tree -> !tree.isEmpty());
         }
 
@@ -344,8 +345,8 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<?>, BinaryTree<T>> {
         }
 
         @Override
-        public T get() {
-            throw new UnsupportedOperationException("get of Nil");
+        public T getValue() {
+            throw new UnsupportedOperationException("getValue of Nil");
         }
 
         @Override
@@ -359,7 +360,7 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<?>, BinaryTree<T>> {
         }
 
         @Override
-        public List<BinaryTree<T>> children() {
+        public List<BinaryTree<T>> getChildren() {
             return List.nil();
         }
 

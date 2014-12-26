@@ -26,7 +26,7 @@ public class TreeTest {
      *
      *
      */
-    final BinaryTree<Integer> tree = Branch(Branch(Branch(Leaf(7), 4, Nil()), 2, Leaf(5)), 1, Branch(Branch(Leaf(8), 6, Leaf(9)), 3, Nil()));
+    final BinaryTree<Integer> tree = branch(branch(branch(leaf(7), 4, nil()), 2, leaf(5)), 1, branch(branch(leaf(8), 6, leaf(9)), 3, nil()));
 
     @Test
     public void shouldFlattenTreeUsingPreOrder() {

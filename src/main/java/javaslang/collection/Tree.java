@@ -27,7 +27,7 @@ public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?
      * @return The value of this tree.
      * @throws java.lang.UnsupportedOperationException if this tree is empty
      */
-    T get();
+    T getValue();
 
     /**
      * Checks if this tree is the empty tree.
@@ -59,7 +59,7 @@ public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?
      *
      * @return The empty list, if this is the empty tree or a leaf, otherwise the non-empty list of children.
      */
-    List<SELF> children();
+    List<SELF> getChildren();
 
     /**
      * Counts the number of branches of this tree. The empty tree and a leaf have no branches.
@@ -72,7 +72,7 @@ public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?
         } else {
             // need cast because of jdk 1.8.0_25 compiler error
             //noinspection RedundantCast
-            return (int) children().foldLeft(1, (count, child) -> count + child.branchCount());
+            return (int) getChildren().foldLeft(1, (count, child) -> count + child.branchCount());
         }
     }
 
@@ -89,7 +89,7 @@ public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?
         } else {
             // need cast because of jdk 1.8.0_25 compiler error
             //noinspection RedundantCast
-            return (int) children().foldLeft(0, (count, child) -> count + child.leafCount());
+            return (int) getChildren().foldLeft(0, (count, child) -> count + child.leafCount());
         }
     }
 
@@ -106,7 +106,7 @@ public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?
         } else {
             // need cast because of jdk 1.8.0_25 compiler error
             //noinspection RedundantCast
-            return (int) children().foldLeft(1, (count, child) -> count + child.nodeCount());
+            return (int) getChildren().foldLeft(1, (count, child) -> count + child.nodeCount());
         }
     }
 
@@ -119,10 +119,10 @@ public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?
     default boolean contains(T element) {
         if (isEmpty()) {
             return false;
-        } else if (Objects.equals(get(), element)) {
+        } else if (Objects.equals(getValue(), element)) {
             return true;
         } else {
-            for (Tree<T, ?, SELF> child : children()) {
+            for (Tree<T, ?, SELF> child : getChildren()) {
                 if (child.contains(element)) {
                     return true;
                 }
@@ -142,23 +142,23 @@ public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?
     default List<T> flatten(Traversal traversal) {
         class Flatten {
             List<T> preOrder(Tree<T,?, SELF> tree) {
-                return tree.children()
-                        .foldLeft(List.of(tree.get()), (acc, child) -> acc.appendAll(preOrder(child)));
+                return tree.getChildren()
+                        .foldLeft(List.of(tree.getValue()), (acc, child) -> acc.appendAll(preOrder(child)));
             }
             List<T> inOrder(Tree<T, ?, SELF> tree) {
                 if (tree.isLeaf()) {
-                    return List.of(tree.get());
+                    return List.of(tree.getValue());
                 } else {
-                    final List<SELF> children = tree.children();
+                    final List<SELF> children = tree.getChildren();
                     return children.tail().foldLeft(List.<T>nil(), (acc, child) -> acc.appendAll(inOrder(child)))
-                            .prepend(tree.get())
+                            .prepend(tree.getValue())
                             .prependAll(inOrder(children.head()));
                 }
             }
             List<T> postOrder(Tree<T, ?, SELF> tree) {
-                return tree.children()
+                return tree.getChildren()
                         .foldLeft(List.<T> nil(), (acc, child) -> acc.appendAll(postOrder(child)))
-                        .append(tree.get());
+                        .append(tree.getValue());
             }
             List<T> levelOrder(Tree<T, ?, SELF> tree) {
                 List<T> result = List.nil();
@@ -166,8 +166,8 @@ public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?
                 queue.add(tree);
                 while (!queue.isEmpty()) {
                     final Tree<T, ?, SELF> next = queue.remove();
-                    result = result.prepend(next.get());
-                    queue.addAll(next.children().toArrayList());
+                    result = result.prepend(next.getValue());
+                    queue.addAll(next.getChildren().toArrayList());
                 }
                 return result.reverse();
             }
@@ -197,11 +197,11 @@ public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?
                 if (tree.isEmpty()) {
                     return "()";
                 } else {
-                    final String value = Strings.toString(tree.get()).replaceAll("\\s+", " ").trim();
+                    final String value = Strings.toString(tree.getValue()).replaceAll("\\s+", " ").trim();
                     if (tree.isLeaf()) {
                         return value;
                     } else {
-                        final String children = tree.children()
+                        final String children = tree.getChildren()
                                 .map(Local.this::toString)
                                 .join(" ");
                         return String.format("(%s %s)", value, children);
@@ -220,11 +220,11 @@ public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?
                     return "";
                 } else {
                     final String indent = Strings.repeat(' ', depth * 2);
-                    final String value = Strings.toString(tree.get()).replaceAll("\\s+", " ").trim();
+                    final String value = Strings.toString(tree.getValue()).replaceAll("\\s+", " ").trim();
                     if (tree.isLeaf()) {
                         return "\n" + indent + value;
                     } else {
-                        final String children = tree.children()
+                        final String children = tree.getChildren()
                                 .map(child -> toString(child, depth + 1))
                                 .join();
                         return String.format("\n%s%s%s", indent, value, children);
@@ -259,10 +259,10 @@ public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?
             return (Tree<U, CLASS, ?>) this;
         } else if (isLeaf()) {
             //noinspection RedundantCast
-            return (Tree<U, CLASS, ?>) unit(f.apply(get()));
+            return (Tree<U, CLASS, ?>) unit(f.apply(getValue()));
         } else {
-            final U value = f.apply(get());
-            final List<Tree> children = children().map(tree -> tree.map(f::apply));
+            final U value = f.apply(getValue());
+            final List<Tree> children = getChildren().map(tree -> tree.map(f::apply));
             //noinspection RedundantCast
             return (Tree<U, CLASS, ?>) unit(value, children);
         }
@@ -282,8 +282,8 @@ public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?
             } else {
                 final Tree that = (Tree) o;
                 return (this.isEmpty() && that.isEmpty()) || (!this.isEmpty() && !that.isEmpty()
-                        && Objects.equals(this.get(), that.get())
-                        && this.children().equals(that.children()));
+                        && Objects.equals(this.getValue(), that.getValue())
+                        && this.getChildren().equals(that.getChildren()));
             }
         }
 
@@ -294,7 +294,7 @@ public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?
             } else {
                 // need cast because of jdk 1.8.0_25 compiler error
                 //noinspection RedundantCast
-                return (int) children().map(Objects::hashCode).foldLeft(31 + Objects.hashCode(get()), (i,j) -> i * 31 + j);
+                return (int) getChildren().map(Objects::hashCode).foldLeft(31 + Objects.hashCode(getValue()), (i,j) -> i * 31 + j);
             }
         }
 
