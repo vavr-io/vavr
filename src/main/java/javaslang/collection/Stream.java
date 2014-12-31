@@ -351,7 +351,7 @@ public interface Stream<E> extends Foldable<E, Stream<?>, Stream<E>>, Algebra.Mo
      * @return A Stream containing all of this elements except the given elements.
      */
     default Stream<E> removeAll(Iterable<? extends E> elements) {
-        final Stream<? extends E> distinct = Stream.of(elements).distinct();
+        final Stream<E> distinct = Stream.of(elements).distinct();
         return filter(distinct::contains);
     }
 
