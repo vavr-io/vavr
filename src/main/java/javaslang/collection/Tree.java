@@ -132,6 +132,27 @@ public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?
         }
     }
 
+    // -- tree order and traversal
+
+// TODO:
+//    Order getOrder();
+//
+//    Tree<T, CLASS, SELF> setOrder(Order order);
+
+    // TODO: traverse(Consumer<T>), traverse(Consumer<T>, Traversal)
+    // TODO: traverse(Predicate<T>)/*true = go on*/, traverse(Predicate<T>, Traversal)
+
+    // -- tree conversion
+
+    /**
+     * Shortcut for {@code tree.foldRight(List.nil(), (x,xs) -> xs.prepend(x))}.
+     *
+     * @return A List of the elements of this Tree, preserving the current order.
+     */
+    default List<T> toList() {
+        return foldRight(List.nil(), (x,xs) -> xs.prepend(x));
+    }
+
     /**
      * Flattens the Tree to a List, traversing the tree in preorder.
      * @return A List containing all elements of this tree, which is List.Nil if this tree is empty.
@@ -186,9 +207,6 @@ public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?
             }
         }
     }
-
-    // TODO: traverse(Consumer<T>), traverse(Consumer<T>, Traversal)
-    // TODO: traverse(Predicate<T>)/*true = go on*/, traverse(Predicate<T>, Traversal)
 
     // -- toString
 

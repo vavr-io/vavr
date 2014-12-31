@@ -16,8 +16,6 @@ import java.util.stream.Collector;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static java.util.stream.Collectors.joining;
-
 /**
  * An immutable List implementation, suitable for concurrent programming.
  * <p/>
@@ -490,8 +488,7 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
      * @return A List containing all of this elements which are also in the given elements.
      */
     default List<E> retainAll(Iterable<? extends E> elements) {
-        @SuppressWarnings("unchecked")
-        List<E> keeped = (List<E>) List.of(elements);
+        final List<E> keeped = List.of(elements).distinct();
         List<E> result = List.nil();
         for (E element : this) {
             if (keeped.contains(element)) {
@@ -744,6 +741,7 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
 
     @Override
     default List<E> distinct() {
+        // TODO: optimize (-> set/red-black-tree)
         return foldRight(nil(), (x, xs) -> xs.contains(x) ? xs : xs.prepend(x));
     }
 
@@ -752,12 +750,14 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
         return foldRight(nil(), (x, xs) -> predicate.test(x) ? xs.prepend(x) : xs);
     }
 
+    // @see Algebra.Monad.flatMap()
     @Override
     default <T, LIST extends Manifest<T, List<?>>> List<T> flatMap(Function<? super E, LIST> mapper) {
         //noinspection unchecked
         return foldRight(nil(), (x, xs) -> xs.prependAll((List<T>) mapper.apply(x)));
     }
 
+    // @see Algebra.Monad.map()
     @Override
     default <T> List<T> map(Function<? super E, ? extends T> mapper) {
         return foldRight(nil(), (x, xs) -> xs.prepend(mapper.apply(x)));
@@ -1013,10 +1013,12 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
      * @param elements An Iterable of elements.
      * @return A list containing the given elements in the same order.
      */
-    static <T> List<T> of(Iterable<T> elements) {
+    static <T> List<T> of(Iterable<? extends T> elements) {
         Require.nonNull(elements, "elements is null");
         if (elements instanceof List) {
-            return (List<T>) elements;
+            @SuppressWarnings("unchecked")
+            final List<T> list = (List<T>) elements;
+            return list;
         } else {
             List<T> result = Nil.instance();
             for (T element : elements) {
@@ -1291,7 +1293,7 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
 
         @Override
         public String toString() {
-            return stream().map(Strings::toString).collect(joining(", ", "List(", ")"));
+            return map(Strings::toString).join(", ", "List(", ")");
         }
     }
 }

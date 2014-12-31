@@ -104,15 +104,40 @@ public interface Algebra {
 	 */
 	static interface Monad<A, M extends Monad<?, M>> extends Functor<A>, Manifest<A, M> {
 
+		// -- first-class monad operations: unit() and flatMap()
+
 		<B> Monad<B, M> unit(B b);
 
+		// flatten may be expressed
 		<B, MONAD extends Manifest<B, M>> Monad<B, M> flatMap(Function<? super A, MONAD> f);
 
+		// -- additional operations which fit into the monad interface: map, flatten, filter
+
+		/**
+		 *
+		 *
+		 * @param f
+		 * @param <B>
+		 * @return
+		 */
 		@Override
 		default <B> Monad<B, M> map(Function<? super A, ? extends B> f) {
 			//noinspection unchecked
 			return flatMap(a -> unit(f.apply(a)));
 		}
+
+// TODO: flatten
+//		/**
+//		 * Implementation should satisfy the following equation:
+//		 *
+//		 * <pre>
+//		 *     <code>flatMap(f) = flatten(map(f))</code>
+//		 * </pre>
+//		 */
+//		default <B> Monad<B, M> flatten() {
+//			final Function f = Function.identity();
+//			return flatMap(f);
+//		}
 
 		/**
 		 * Monad composition, also known as Kleisli composition.
