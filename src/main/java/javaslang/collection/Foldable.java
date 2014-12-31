@@ -143,7 +143,8 @@ public interface Foldable<A, CLASS extends Foldable<?, CLASS, ?>, SELF extends F
     default String join(CharSequence delimiter,
                         CharSequence prefix,
                         CharSequence suffix) {
-        return prefix + map(Objects::toString).reduceLeft((s1,s2) -> s1 + delimiter + s2) + suffix;
+        final Foldable<String, ?, ?> mapped = map(Objects::toString);
+        return prefix + (mapped.isEmpty() ? "" : mapped.reduceLeft((s1,s2) -> s1 + delimiter + s2)) + suffix;
     }
 
     // -- creational operations
