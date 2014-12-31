@@ -37,7 +37,7 @@ import java.util.stream.StreamSupport;
  *
  * @param <E> Component type of the Stream.
  */
-public interface Stream<E> extends Foldable<E, Stream<?>, Stream<E>>, Algebra.Monad<E, Stream<?>>, Algebra.Monoid<Stream<E>> {
+public interface Stream<E> extends Seq<E>, Algebra.Monad<E, Stream<?>>, Algebra.Monoid<Stream<E>> {
 
     // -- Core Stream API
 
@@ -1017,7 +1017,7 @@ public interface Stream<E> extends Foldable<E, Stream<?>, Stream<E>>, Algebra.Mo
      */
     // DEV NOTE: class declared final because of serialization proxy pattern.
     // (see Effective Java, 2nd ed., p. 315)
-    static final class Cons<E> extends AbstractStream<E> implements Serializable {
+    static final class Cons<E> extends AbstractStream<E> implements ValueObject {
 
         private static final long serialVersionUID = 53595355464228669L;
 
@@ -1042,6 +1042,13 @@ public interface Stream<E> extends Foldable<E, Stream<?>, Stream<E>>, Algebra.Mo
         @Override
         public boolean isEmpty() {
             return false;
+        }
+
+        // -- ValueObject implementation
+
+        @Override
+        public Tuple2<E, Stream<E>> unapply() {
+            return Tuple.of(head, tail());
         }
 
         // -- Serializable implementation
@@ -1105,7 +1112,7 @@ public interface Stream<E> extends Foldable<E, Stream<?>, Stream<E>>, Algebra.Mo
              */
             private void writeObject(ObjectOutputStream s) throws IOException {
                 s.defaultWriteObject();
-                s.writeInt(stream.size());
+                s.writeInt(stream.length());
                 for (Stream<E> l = stream; !l.isEmpty(); l = l.tail()) {
                     s.writeObject(l.head());
                 }
@@ -1159,7 +1166,7 @@ public interface Stream<E> extends Foldable<E, Stream<?>, Stream<E>>, Algebra.Mo
      *
      * @param <E> Component type of the Stream.
      */
-    static final class Nil<E> extends AbstractStream<E> implements Serializable {
+    static final class Nil<E> extends AbstractStream<E> implements ValueObject {
 
         private static final long serialVersionUID = 809473773619488283L;
 
@@ -1188,6 +1195,13 @@ public interface Stream<E> extends Foldable<E, Stream<?>, Stream<E>>, Algebra.Mo
         @Override
         public boolean isEmpty() {
             return true;
+        }
+
+        // -- ValueObject implementation
+
+        @Override
+        public Tuple.Tuple0 unapply() {
+            return Tuple.empty();
         }
 
         // -- Serializable implementation

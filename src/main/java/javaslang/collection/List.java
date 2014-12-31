@@ -38,61 +38,7 @@ import java.util.stream.StreamSupport;
  *
  * @param <E> Component type of the List.
  */
-public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E, List<?>>, Algebra.Monoid<List<E>> {
-
-    // -- Core List API
-
-    /**
-     * Returns the first element of this List in O(1).
-     *
-     * @return The head of this List.
-     * @throws UnsupportedOperationException if this is Nil.
-     */
-    E head();
-
-    /**
-     * Returns all elements except the first element of this List in O(1).
-     *
-     * @return The tail of this List.
-     * @throws UnsupportedOperationException if this is Nil.
-     */
-    List<E> tail();
-
-    /**
-     * Tests whether this List is empty in O(1).
-     *
-     * @return true, if this List is Nil, false otherwise.
-     */
-    @Override
-    boolean isEmpty();
-
-    /**
-     * Appends an element to this List in O(2n).
-     * <p/>
-     * The result is equivalent to {@code reverse().prepend(element).reverse()}.
-     *
-     * @param element An element.
-     * @return A new List containing the elements of this list, appended the given element.
-     */
-    default List<E> append(E element) {
-        return foldRight(List.of(element), (x, xs) -> xs.prepend(x));
-    }
-
-    /**
-     * Appends all elements of a given List to this List in O(2n). This implementation returns
-     * {@code elements.prependAll(this)}.
-     * <p/>
-     * Example: {@code List.of(1, 2, 3).appendAll(List.of(4, 5, 6))} equals {@code List.of(1, 2, 3, 4, 5, 6)} .
-     *
-     * @param elements Elements to be appended.
-     * @return A new List containing the given elements appended to this List.
-     * @throws javaslang.Require.UnsatisfiedRequirementException if elements is null
-     */
-    @SuppressWarnings("unchecked")
-    default List<E> appendAll(Iterable<? extends E> elements) {
-        Require.nonNull(elements, "elements is null");
-        return foldRight((List<E>) List.of(elements), (x, xs) -> xs.prepend(x));
-    }
+public interface List<E> extends Seq<E>, Algebra.Monad<E, List<?>>, Algebra.Monoid<List<E>> {
 
     /**
      * Convenience method, well known from java.util collections. It has no effect on the original List, it just returns
@@ -100,29 +46,17 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
      *
      * @return Nil.instance()
      */
+    @Override
     default List<E> clear() {
         return Nil.instance();
     }
 
-    /**
-     * Checks, if this list contains the given element.
-     * @param element An element.
-     * @return true, if this list contains the given element, false otherwise.
-     */
+    @Override
     default boolean contains(E element) {
         return indexOf(element) != -1;
     }
 
-    /**
-     * Returns the element of this List at the specified index in O(n).
-     * <p/>
-     * The result is roughly equivalent to {@code (index == 0) ? head() : tail().get(index - 1)} but implemented without
-     * recursion.
-     *
-     * @param index An index, where 0 &lt;= index &lt; size()
-     * @return The element at the specified index.
-     * @throws IndexOutOfBoundsException if this List is empty, index &lt; 0 or index &gt;= size of this List.
-     */
+    @Override
     default E get(int index) {
         if (isEmpty()) {
             throw new IndexOutOfBoundsException("get(" + index + ") on empty list");
@@ -140,15 +74,7 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
         return list.head();
     }
 
-    /**
-     * Returns the index of the given element in O(n). The result is -1, if the element is not contained.
-     * <p/>
-     * The result is equivalent to {@code head().equals(element) ? 0 : 1 + tail().indexOf(element)} but implemented
-     * without recursion.
-     *
-     * @param element An Object of type E, may be null.
-     * @return The index of element or -1.
-     */
+    @Override
     default int indexOf(E element) {
         int index = 0;
         for (List<E> list = this; !list.isEmpty(); list = list.tail(), index++) {
@@ -159,23 +85,7 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
         return -1;
     }
 
-    /**
-     * Inserts the given element at the specified index into this List in O(n).
-     * <p/>
-     * Examples:
-     * <p/>
-     * <pre>
-     * <code>().insert(0, 1) = (1)
-     * (4).insert(0, 1) = (1,4)
-     * (4).insert(1, 1) = (4,1)
-     * (1,2,3).insert(2, 4) = (1,2,4,3)</code>
-     * </pre>
-     *
-     * @param index   The insertion index.
-     * @param element An element to be inserted.
-     * @return This List with the given element inserted at the given index.
-     * @throws IndexOutOfBoundsException if the index &lt; 0 or index &gt; size()
-     */
+    @Override
     default List<E> insert(int index, E element) {
         if (index < 0) {
             throw new IndexOutOfBoundsException("insert(" + index + ", e)");
@@ -195,39 +105,7 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
         return result;
     }
 
-    /**
-     * Inserts all of the given elements at the specified index into this List in O(n).
-     * <p/>
-     * Examples:
-     * <p/>
-     * <pre>
-     * <code>().insertAll(0, (1,2,3)) = (1,2,3)
-     * (4).insertAll(0, (1,2,3)) = (1,2,3,4)
-     * (4).insertAll(1, (1,2,3)) = (4,1,2,3)
-     * (1,2,3).insertAll(2, (4,5)) = (1,2,4,5,3)</code>
-     * </pre>
-     * <p/>
-     * The result is roughly (without bounds check) equivalent to
-     * <p/>
-     * <pre>
-     * <code>if (isEmpty()) {
-     *     return elements;
-     * } else if (index == 0) {
-     *     if (elements.isEmpty()) {
-     *         return this;
-     *     } else {
-     *         return new Cons(elements.head(), insertAll(0, elements.tail()));
-     *     }
-     * } else {
-     *     return new Cons(head(), tail().insertAll(index - 1, elements));
-     * }</code>
-     * </pre>
-     *
-     * @param index    The insertion index.
-     * @param elements The elements to be inserted.
-     * @return This List with the given elements inserted at the given index.
-     * @throws IndexOutOfBoundsException if the index &lt; 0 or index &gt; size()
-     */
+    @Override
     default List<E> insertAll(int index, Iterable<? extends E> elements) {
         if (index < 0) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
@@ -247,25 +125,12 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
         return result;
     }
 
-    /**
-     * Shortcut for {@code sublist(index).iterator()}.
-     *
-     * @param index The start index of the iterator.
-     * @return An iterator, starting at the given index.
-     */
+    @Override
     default Iterator<E> iterator(int index) {
         return sublist(index).iterator();
     }
 
-    /**
-     * Returns the last index of the given element in O(n). The result is -1, if the element is not contained.
-     * <p/>
-     * The result is equivalent to {@code (reverse().indexOf(element) == -1) ? -1 : size() - reverse().indexOf(element)}
-     * but implemented without recursion.
-     *
-     * @param element An Object of type E, may be null.
-     * @return The index of element or -1.
-     */
+    @Override
     default int lastIndexOf(E element) {
         int result = -1, index = 0;
         for (List<E> list = this; !list.isEmpty(); list = list.tail(), index++) {
@@ -276,62 +141,18 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
         return result;
     }
 
-    /**
-     * Prepends an element to this List in O(1).
-     * <p/>
-     * The result is equivalent to {@code new Cons<>(element, this)}.
-     *
-     * @param element An element.
-     * @return A new List containing the elements of this list, prepended the given element.
-     */
+    @Override
     default List<E> prepend(E element) {
         return new Cons<>(element, this);
     }
 
-    /**
-     * Prepends all elements of a given List to this List in O(2n).
-     * <p/>
-     * If this.isEmpty(), elements is returned. If elements.isEmpty(), this is returned. Otherwise elements are
-     * prepended to this.
-     * <p/>
-     * Example: {@code List.of(4, 5, 6).prependAll(List.of(1, 2, 3))} equals {@code List.of(1, 2, 3, 4, 5, 6)}.
-     * <p/>
-     * The result is equivalent to
-     * {@code elements.isEmpty() ? this : prependAll(elements.tail()).prepend(elements.head())} but implemented without
-     * recursion.
-     *
-     * @param elements Elements to be prepended.
-     * @return A new List containing the given elements prepended to this List.
-     * @throws javaslang.Require.UnsatisfiedRequirementException if elements is null
-     */
+    @Override
     default List<E> prependAll(Iterable<? extends E> elements) {
         Require.nonNull(elements, "elements is null");
         return List.of(elements).foldRight(this, (x, xs) -> xs.prepend(x));
     }
 
-    /**
-     * Removes the first occurrence of the given element from this list if it is present in O(n).
-     * <p/>
-     * Example: {@code List.of(1, 2, 3).remove(2)} equals {@code List.of(1, 3)}.
-     * <p/>
-     * The result is equivalent to
-     * <p/>
-     * <pre>
-     * <code>if (isEmpty()) {
-     *     return this;
-     * } else if (head().equals(element)) {
-     *     return tail();
-     * } else {
-     *     return new Cons(head(), tail().remove(element));
-     * }</code>
-     * </pre>
-     * <p/>
-     * but implemented without recursion.
-     *
-     * @param element An element to be removed from this List.
-     * @return A new list where the first occurrence of the element is removed or the same list, if the given element is
-     * not part of the list.
-     */
+    @Override
     default List<E> remove(E element) {
         List<E> preceding = List.nil();
         List<E> tail = this;
@@ -352,38 +173,7 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
         return result;
     }
 
-    /**
-     * Removes all occurrences of the given elements from this List in O(n^2).
-     * <p/>
-     * Example: {@code List.of(1, 2, 3, 1, 2, 3).removeAll(List.of(1, 2))} is equal to {@code List.of(3, 3)}.
-     * <p/>
-     * The result is equivalent to
-     * <p/>
-     * <pre>
-     * <code>if (isEmpty())
-     *     return this;
-     * } else if (elements.contains(head())) {
-     *     return tail().removeAll(elements);
-     * } else {
-     *     return new Cons(head(), tail().removeAll(elements));
-     * }</code>
-     * </pre>
-     *
-     * @param elements Elements to be removed.
-     * @return A List containing all of this elements except the given elements.
-     */
-    default List<E> removeAll(Iterable<? extends E> elements) {
-        @SuppressWarnings("unchecked")
-        List<E> removed = (List<E>) List.of(elements);
-        List<E> result = List.nil();
-        for (E element : this) {
-            if (!removed.contains(element)) {
-                result = result.prepend(element);
-            }
-        }
-        return result.reverse();
-    }
-
+    @Override
     default List<E> removeAll(E removed) {
         List<E> result = List.nil();
         for (E element : this) {
@@ -394,18 +184,19 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
         return result.reverse();
     }
 
-    /**
-     * Replaces the first occurrence (if exists) of the given currentElement with newElement in O(2n).
-     * <p/>
-     * Example: {@code List.of(1, 2, 3, 2).replace(2, 4)} equals {List.of(1,4,3,2)}.
-     * <p/>
-     * The result is equivalent to:
-     * {@code isEmpty() ? this : Objects.equals(head(), currentElement) ? new Cons(newElement, tail()) : new Cons(head(), tail().replace(currentElement, newElement))}.
-     *
-     * @param currentElement The element to be replaced.
-     * @param newElement     The replacement for currentElement.
-     * @return A List of elements, where the first occurrence (if exists) of currentElement is replaced with newElement.
-     */
+    @Override
+    default List<E> removeAll(Iterable<? extends E> elements) {
+        List<E> removed = List.of(elements);
+        List<E> result = List.nil();
+        for (E element : this) {
+            if (!removed.contains(element)) {
+                result = result.prepend(element);
+            }
+        }
+        return result.reverse();
+    }
+
+    @Override
     default List<E> replace(E currentElement, E newElement) {
         List<E> preceding = Nil.instance();
         List<E> tail = this;
@@ -424,19 +215,7 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
         return result;
     }
 
-    /**
-     * Replaces all occurrences (if any) of the given currentElement with newElement in O(2n).
-     * <p/>
-     * Example: {@code List.of(1, 2, 3, 2).replaceAll(2, 4)} equals {List.of(1,4,3,4)}.
-     * <p/>
-     * The result is equivalent to:
-     * {@code isEmpty() ? this : new Cons(Objects.equals(head(), currentElement) ? newElement : head(), tail().replaceAll(currentElement, newElement))}.
-     *
-     * @param currentElement The element to be replaced.
-     * @param newElement     The replacement for currentElement.
-     * @return A List of elements, where all occurrences (if any) of currentElement are replaced with newElement.
-     */
-
+    @Override
     default List<E> replaceAll(E currentElement, E newElement) {
         List<E> result = Nil.instance();
         for (List<E> list = this; !list.isEmpty(); list = list.tail()) {
@@ -447,18 +226,7 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
         return result.reverse();
     }
 
-    /**
-     * Applies an {@link java.util.function.UnaryOperator} to all elements of this List and returns the result as new
-     * List (of same order) in O(2n).
-     * <p/>
-     * Example: {@code List.of(1, 2, 3).replaceAll(i -> i + 1)} equals {List.of(2,3,4)}.
-     * <p/>
-     * The result is equivalent to:
-     * {@code isEmpty() ? this : new Cons(operator.apply(head()), tail().replaceAll(operator))}.
-     *
-     * @param operator An unary operator.
-     * @return A List of elements transformed by the given operator.
-     */
+    @Override
     default List<E> replaceAll(UnaryOperator<E> operator) {
         List<E> result = Nil.instance();
         for (E element : this) {
@@ -467,26 +235,7 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
         return result.reverse();
     }
 
-    /**
-     * Keeps all occurrences of the given elements from this List in O(n^2).
-     * <p/>
-     * Example: {@code List.of(1, 2, 3, 1, 2, 3).retainAll(List.of(1, 2))} is equal to {@code List.of(1, 2, 1, 2)}.
-     * <p/>
-     * The result is equivalent to
-     * <p/>
-     * <pre>
-     * <code>if (isEmpty())
-     *     return this;
-     * } else if (elements.contains(head())) {
-     *     return new Cons(head(), tail().retainAll(elements));
-     * } else {
-     *     return tail().retainAll(elements);
-     * }</code>
-     * </pre>
-     *
-     * @param elements Elements to be retained.
-     * @return A List containing all of this elements which are also in the given elements.
-     */
+    @Override
     default List<E> retainAll(Iterable<? extends E> elements) {
         final List<E> keeped = List.of(elements).distinct();
         List<E> result = List.nil();
@@ -498,18 +247,7 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
         return result.reverse();
     }
 
-    /**
-     * Replaces the element at the specified index in O(n).
-     * <p/>
-     * The result is roughly equivalent to
-     * {@code (index == 0) ? tail().prepend(element) : new Cons(head(), tail().set(index - 1, element))} but implemented
-     * without recursion.
-     *
-     * @param index   An index, where 0 &lt;= index &lt; size()
-     * @param element A new element.
-     * @return A list containing all of the elements of this List but the given element at the given index.
-     * @throws IndexOutOfBoundsException if this List is empty, index &lt; 0 or index &gt;= size of this List.
-     */
+    @Override
     default List<E> set(int index, E element) {
         if (isEmpty()) {
             throw new IndexOutOfBoundsException("set(" + index + ", e) on empty list");
@@ -536,37 +274,8 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
         return result;
     }
 
-    /**
-     * Returns a new List which contains all elements starting at beginIndex (inclusive). The sublist is computed in
-     * O(n).
-     * <p/>
-     * Examples:
-     * <ul>
-     * <li>{@code List.empty().sublist(0)} returns {@code List.empty()}</li>
-     * <li>{@code List.of(1).sublist(0)} returns {@code List.of(1)}</li>
-     * <li>{@code List.of(1).sublist(1)} returns {@code List.empty()}</li>
-     * <li>{@code List.of(1, 2, 3).sublist(1)} returns {@code List.of(2, 3)}</li>
-     * <li>{@code List.of(1, 2, 3).sublist(3)} returns {@code List.empty()}</li>
-     * </ul>
-     * <p/>
-     * The following calls are illegal:
-     * <ul>
-     * <li>{@code List.empty().sublist(1)} throws</li>
-     * <li>{@code List.of(1, 2, 3).sublist(-1)} throws}</li>
-     * <li>{@code List.of(1, 2, 3).sublist(4)} throws}</li>
-     * </ul>
-     * <p/>
-     * The result is equivalent to {@code (index == 0) ? this : tail().sublist(index - 1)} but implemented without
-     * recursion.
-     * <p/>
-     * If you do not want the bounds to be checked, use the fail-safe variant {@code drop(beginIndex)} instead.
-     *
-     * @param beginIndex Start index of the sublist, where 0 &lt;= beginIndex &lt;= size()
-     * @return The sublist of the List, starting at beginIndex (inclusive).
-     * @see #drop(int)
-     * @see #take(int)
-     */
-    default List<E> sublist(int beginIndex) {
+    @Override
+    default List<E> subsequence(int beginIndex) {
         if (beginIndex < 0) {
             throw new IndexOutOfBoundsException("sublist(" + beginIndex + ")");
         }
@@ -579,40 +288,7 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
         return result;
     }
 
-    /**
-     * Returns a new List which contains the elements from beginIndex (inclusive) to endIndex (exclusive) of this List.
-     * The sublist is computed in O(2n).
-     * <p/>
-     * Examples:
-     * <ul>
-     * <li>{@code List.empty().sublist(0, 0)} returns {@code List.empty()}</li>
-     * <li>{@code List.of(1).sublist(0, 0)} returns {@code List.empty()}</li>
-     * <li>{@code List.of(1).sublist(0, 1)} returns {@code List.of(1)}</li>
-     * <li>{@code List.of(1).sublist(1, 1)} returns {@code List.empty()}</li>
-     * <li>{@code List.of(1, 2, 3).sublist(1, 3)} returns {@code List.of(2, 3)}</li>
-     * <li>{@code List.of(1, 2, 3).sublist(3, 3)} returns {@code List.empty()}</li>
-     * </ul>
-     * <p/>
-     * The following calls are illegal:
-     * <ul>
-     * <li>{@code List.of(1, 2, 3).sublist(1, 0)} throws}</li>
-     * <li>{@code List.of(1, 2, 3).sublist(-1, 2)} throws}</li>
-     * <li>{@code List.of(1, 2, 3).sublist(1, 4)} throws}</li>
-     * </ul>
-     * <p/>
-     * The result is equivalent to
-     * {@code (beginIndex == 0) ? reverse().sublist(size() - endIndex).reverse() : tail().sublist(beginIndex - 1, endIndex)}
-     * but implemented without recursion.
-     * <p/>
-     * If you do not want the bounds to be checked, use the fail-safe variant
-     * {@code drop(beginIndex).take(endIndex - beginIndex)} instead.
-     *
-     * @param beginIndex Start index of the sublist, where 0 &lt;= beginIndex &lt;= size()
-     * @param endIndex   End index of the sublist, where beginIndex &lt;= endIndex &lt;= size()
-     * @return The sublist of the List, starting at beginIndex (inclusive) and ending at endIndex (exclusive).
-     * @see #drop(int)
-     * @see #take(int)
-     */
+    @Override
     default List<E> sublist(int beginIndex, int endIndex) {
         if (beginIndex < 0 || endIndex - beginIndex < 0) {
             throw new IndexOutOfBoundsException(String.format("sublist(%s, %s) on list of size %s", beginIndex,
@@ -632,25 +308,12 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
         return result.reverse();
     }
 
-    /**
-     * Sorts the elements of this List according to their natural order.
-     * <p/>
-     * This call is equivalent to {@code stream().sorted().collect(List.collector())}.
-     *
-     * @return An ordered List.
-     */
+    @Override
     default List<E> sort() {
         return stream().sorted().collect(List.collector());
     }
 
-    /**
-     * Sorts the elements of this List according to the provided {@link java.util.Comparator}.
-     * <p/>
-     * This call is equivalent to {@code stream().sorted(c).collect(List.collector())}.
-     *
-     * @param c An element Comparator.
-     * @return An ordered List.
-     */
+    @Override
     default List<E> sort(Comparator<? super E> c) {
         return stream().sorted(c).collect(List.collector());
     }
@@ -1063,7 +726,7 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
      */
     // DEV NOTE: class declared final because of serialization proxy pattern.
     // (see Effective Java, 2nd ed., p. 315)
-    static final class Cons<E> extends AbstractList<E> implements Serializable {
+    static final class Cons<E> extends AbstractList<E> implements ValueObject {
 
         private static final long serialVersionUID = 53595355464228669L;
 
@@ -1203,7 +866,7 @@ public interface List<E> extends Foldable<E, List<?>, List<E>>, Algebra.Monad<E,
      *
      * @param <E> Component type of the List.
      */
-    static final class Nil<E> extends AbstractList<E> implements Serializable {
+    static final class Nil<E> extends AbstractList<E> implements ValueObject {
 
         private static final long serialVersionUID = 809473773619488283L;
 
