@@ -5,7 +5,6 @@
  */
 package javaslang.monad;
 
-import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -16,6 +15,8 @@ import javaslang.Algebra.Monad;
 import javaslang.Manifest;
 import javaslang.Require;
 import javaslang.Require.UnsatisfiedRequirementException;
+import javaslang.Tuple;
+import javaslang.ValueObject;
 import javaslang.monad.Option.None;
 import javaslang.monad.Option.Some;
 
@@ -74,9 +75,6 @@ public interface Try<T> extends Monad<T, Try<?>> {
 	<U, TRY extends Manifest<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper);
 
 	@Override
-	<U> Try<U> unit(U u);
-
-	@Override
 	boolean equals(Object o);
 
 	@Override
@@ -87,7 +85,7 @@ public interface Try<T> extends Monad<T, Try<?>> {
 
 	// -- Try implementations
 
-	public final class Success<T> implements Try<T>, Serializable {
+	public final class Success<T> implements Try<T>, ValueObject {
 
 		private static final long serialVersionUID = 9157097743377386892L;
 
@@ -185,8 +183,8 @@ public interface Try<T> extends Monad<T, Try<?>> {
 		}
 
 		@Override
-		public <U> Try<U> unit(U u) {
-			return new Success<>(u);
+		public Tuple.Tuple1<T> unapply() {
+			return Tuple.of(value);
 		}
 
 		@Override
@@ -212,7 +210,7 @@ public interface Try<T> extends Monad<T, Try<?>> {
 		}
 	}
 
-	public final class Failure<T> implements Try<T>, Serializable {
+	public final class Failure<T> implements Try<T>, ValueObject {
 
 		private static final long serialVersionUID = 2836756728630414146L;
 
@@ -244,6 +242,7 @@ public interface Try<T> extends Monad<T, Try<?>> {
 			return false;
 		}
 
+		// Throws NonFatal instead of Throwable because it is a RuntimeException which does not need to be checked.
 		@Override
 		public T get() throws NonFatal {
 			throw cause;
@@ -312,20 +311,9 @@ public interface Try<T> extends Monad<T, Try<?>> {
 			return result;
 		}
 
-		/**
-		 * {@code Failure<A>.unit(B)} returns {@code Failure<B>} to be consistet with {@code Monad<A>.map(F<A,B>)} which
-		 * is by default {@code flatMap(a -> unit((B) f.apply(a)))}.
-		 * 
-		 * @param u a value of type U
-		 * @return This instance, cast to Failure&lt;U&gt;
-		 *
-		 * @param <U> The type of the new Try.
-		 */
 		@Override
-		public <U> Try<U> unit(U u) {
-			@SuppressWarnings("unchecked")
-			final Try<U> result = (Try<U>) this;
-			return result;
+		public Tuple.Tuple1<Throwable> unapply() {
+			return Tuple.of(cause.getCause());
 		}
 
 		@Override
@@ -417,7 +405,7 @@ public interface Try<T> extends Monad<T, Try<?>> {
 		/**
 		 * Use {@link Cause#of(Throwable)} to create instances of {@link Fatal} and {@link NonFatal}.
 		 */
-		public static final class Fatal extends Cause implements Serializable {
+		public static final class Fatal extends Cause implements ValueObject {
 
 			private static final long serialVersionUID = 7927552082244515502L;
 
@@ -429,12 +417,17 @@ public interface Try<T> extends Monad<T, Try<?>> {
 			public boolean isFatal() {
 				return true;
 			}
+
+			@Override
+			public Tuple.Tuple1<Throwable> unapply() {
+				return Tuple.of(super.getCause());
+			}
 		}
 
 		/**
 		 * Use {@link Cause#of(Throwable)} to create instances of {@link Fatal} and {@link NonFatal}.
 		 */
-		public static final class NonFatal extends Cause implements Serializable {
+		public static final class NonFatal extends Cause implements ValueObject {
 
 			private static final long serialVersionUID = -1643015386682564223L;
 
@@ -445,6 +438,11 @@ public interface Try<T> extends Monad<T, Try<?>> {
 			@Override
 			public boolean isFatal() {
 				return false;
+			}
+
+			@Override
+			public Tuple.Tuple1<Throwable> unapply() {
+				return Tuple.of(super.getCause());
 			}
 		}
 	}

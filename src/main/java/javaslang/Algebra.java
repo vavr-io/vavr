@@ -5,18 +5,20 @@
  */
 package javaslang;
 
+import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public interface Algebra {
 
 	/**
 	 * A Semigroup is an algebraic structure consisting of
-	 * 
+	 *
 	 * <ul>
 	 *     <li>Some type A</li>
 	 *     <li>An associative binary operation {@code combine}, such that {@code combine(combine(x,y),z) == combine(x,combine(y,z))} for any x,y,z of type A.</li>
 	 * </ul>
-	 * 
+	 *
 	 * Technically a Semigroup is the same as a {@code java.util.function.BiFunction<A,A,A>}. Introducing this new type
 	 * clarifies that the operation {@code combine} is associative.
 	 *
@@ -29,13 +31,13 @@ public interface Algebra {
 
 	/**
 	 * A Monoid is a Semigroup with an identity element {@code zero}, i.e. it consits of
-	 * 
+	 *
 	 * <ul>
 	 *     <li>Some type A</li>
 	 *     <li>An associative binary operation {@code combine}, such that {@code combine(combine(x,y),z) == combine(x,combine(y,z))} for any x,y,z of type A.</li>
 	 *     <li>An identity element {@code zero}, such that {@code combine(zero(), x) == x == combine(x, zero())} for any x of type A.</li>
 	 * </ul>
-	 * 
+	 *
 	 * @param <A> A type.
 	 */
 	static interface Monoid<A> extends Semigroup<A> {
@@ -44,7 +46,7 @@ public interface Algebra {
 
 		/**
 		 * Function composition of one type is an Endo monoid.
-		 * 
+		 *
 		 * @return The Endo monoid of type A.
 		 */
 		static <A> Monoid<Function<A, A>> endoMonoid() {
@@ -53,7 +55,7 @@ public interface Algebra {
 
 		/**
 		 * Factory method for monoidsm taking a zero and a Semigroup.
-		 * 
+		 *
 		 * @param zero The zero of the Monoid.
 		 * @param semigroup Has the associative operation of the Monoid.
 		 * @return a new Monoid
@@ -98,54 +100,24 @@ public interface Algebra {
 	 *     <li><strong>Right identity:</strong> {@code m.flatMap(unit) ≡ m}</li>
 	 *     <li><strong>Associativity:</strong> {@code m.flatMap(f).flatMap(g) ≡ m.flatMap(x -> f.apply(x).flatMap(g)}</li>
 	 * </ul>
+     * <p>
 	 *
 	 * @param <A> Component type of this monad.
-	 * @param <M> Type of Monad implementation.
 	 */
-	static interface Monad<A, M extends Monad<?, M>> extends Functor<A>, Manifest<A, M> {
+	static interface Monad<A, M extends Manifest<?, M>> extends Functor<A>, Manifest<A, M> {
 
-		// -- first-class monad operations: unit() and flatMap()
+        /**
+         * Monad composition, also known as Kleisli composition.
+         *
+         * @see <a href="http://scabl.blogspot.de/2013/03/monads-in-scala-2.html">Monads in Scala Part Two</a>
+         */
+        default <B, C> Function<? super A, Monad<C, M>> compose(Function<? super B, Monad<C, M>> f, Function<? super A, Monad<B, M>> g) {
+            return a -> g.apply(a).flatMap(f::apply);
+        }
 
-		<B> Monad<B, M> unit(B b);
+        // congruent to java.util.Iterable#forEach(Consumer)
+		void forEach(Consumer<? super A> action);
 
-		// flatten may be expressed
-		<B, MONAD extends Manifest<B, M>> Monad<B, M> flatMap(Function<? super A, MONAD> f);
-
-		// -- additional operations which fit into the monad interface: map, flatten, filter
-
-		/**
-		 *
-		 *
-		 * @param f
-		 * @param <B>
-		 * @return
-		 */
-		@Override
-		default <B> Monad<B, M> map(Function<? super A, ? extends B> f) {
-			//noinspection unchecked
-			return flatMap(a -> unit(f.apply(a)));
-		}
-
-// TODO: flatten
-//		/**
-//		 * Implementation should satisfy the following equation:
-//		 *
-//		 * <pre>
-//		 *     <code>flatMap(f) = flatten(map(f))</code>
-//		 * </pre>
-//		 */
-//		default <B> Monad<B, M> flatten() {
-//			final Function f = Function.identity();
-//			return flatMap(f);
-//		}
-
-		/**
-		 * Monad composition, also known as Kleisli composition.
-		 *
-		 * @see <a href="http://scabl.blogspot.de/2013/03/monads-in-scala-2.html">Monads in Scala Part Two</a>
-		 */
-		default <B, C> Function<A, Monad<C, M>> compose(Function<B, Monad<C,M>> f, Function<A, Monad<B, M>> g) {
-			return a -> g.apply(a).flatMap(f::apply);
-		}
+        <B, MONAD extends Manifest<B, M>> Monad<B, M> flatMap(Function<? super A, MONAD> f);
 	}
 }

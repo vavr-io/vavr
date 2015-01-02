@@ -5,7 +5,6 @@
  */
 package javaslang.monad;
 
-import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -15,6 +14,9 @@ import java.util.function.Supplier;
 
 import javaslang.Algebra.Monad;
 import javaslang.Manifest;
+import javaslang.Tuple;
+import javaslang.Tuple.*;
+import javaslang.ValueObject;
 
 /**
  * Replacement for {@link java.util.Optional}.
@@ -64,9 +66,6 @@ public interface Option<T> extends Monad<T, Option<?>> {
 	<U, OPTION extends Manifest<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper);
 
 	@Override
-	<U> Option<U> unit(U u);
-
-	@Override
 	boolean equals(Object o);
 
 	@Override
@@ -82,7 +81,7 @@ public interface Option<T> extends Monad<T, Option<?>> {
 	 *
 	 * @param <T> The type of the optional value.
 	 */
-	static final class Some<T> implements Option<T>, Serializable {
+	static final class Some<T> implements Option<T>, ValueObject {
 
 		private static final long serialVersionUID = 8703728987837576700L;
 
@@ -153,8 +152,8 @@ public interface Option<T> extends Monad<T, Option<?>> {
 		}
 
 		@Override
-		public <U> Option<U> unit(U u) {
-			return Option.of(u);
+		public Tuple1<T> unapply() {
+			return Tuple.of(value);
 		}
 
 		@Override
@@ -186,7 +185,7 @@ public interface Option<T> extends Monad<T, Option<?>> {
 	 *
 	 * @param <T> The type of the optional value.
 	 */
-	static final class None<T> implements Option<T>, Serializable {
+	static final class None<T> implements Option<T>, ValueObject {
 
 		private static final long serialVersionUID = -7265680402159660165L;
 
@@ -273,18 +272,9 @@ public interface Option<T> extends Monad<T, Option<?>> {
 			return None.instance();
 		}
 
-		/**
-		 * {@code None<A>.unit(B)} returns {@code None<B>} to be consistet with {@code Monad<A>.map(F<A,B>)} which is by
-		 * default {@code flatMap(a -> unit((B) f.apply(a)))}.
-		 * 
-		 * @param u a value of type U
-		 * @return A new instance of Option&lt;U&gt;
-		 *
-		 * @param <U> The type of the new Option's value, if present.
-		 */
 		@Override
-		public <U> Option<U> unit(U u) {
-			return None.instance();
+		public Tuple0 unapply() {
+			return Tuple.empty();
 		}
 
 		@Override

@@ -5,10 +5,9 @@
  */
 package javaslang;
 
-import java.io.Serializable;
 import java.util.Objects;
 
-public interface Tuple extends Serializable {
+public interface Tuple {
 
 	/**
 	 * Returns the number of elements of this tuple.
@@ -115,7 +114,7 @@ public interface Tuple extends Serializable {
 	/**
 	 * Implementation of an empty tuple, a tuple containing no elements.
 	 */
-	public static final class Tuple0 implements Tuple {
+	public static final class Tuple0 implements Tuple, ValueObject {
 
 		private static final long serialVersionUID = -8715576573413569748L;
 
@@ -142,6 +141,11 @@ public interface Tuple extends Serializable {
 		@Override
 		public int arity() {
 			return 0;
+		}
+
+		@Override
+		public Tuple0 unapply() {
+			return this;
 		}
 
 		@Override
@@ -175,7 +179,7 @@ public interface Tuple extends Serializable {
 	/**
 	 * Implementation of a single, a tuple containing 1 element.
 	 */
-	public static final class Tuple1<T> implements Tuple {
+	public static final class Tuple1<T> implements Tuple, ValueObject {
 
 		private static final long serialVersionUID = -8005498887610699234L;
 
@@ -188,6 +192,11 @@ public interface Tuple extends Serializable {
 		@Override
 		public int arity() {
 			return 1;
+		}
+
+		@Override
+		public Tuple1<T> unapply() {
+			return this;
 		}
 
 		@Override
@@ -216,7 +225,7 @@ public interface Tuple extends Serializable {
 	/**
 	 * Implementation of a pair, a tuple containing 2 elements.
 	 */
-	public static final class Tuple2<T1, T2> implements Tuple {
+	public static final class Tuple2<T1, T2> implements Tuple, ValueObject {
 
 		private static final long serialVersionUID = -1359843718617881431L;
 
@@ -231,6 +240,11 @@ public interface Tuple extends Serializable {
 		@Override
 		public int arity() {
 			return 2;
+		}
+
+		@Override
+		public Tuple2 unapply() {
+			return this;
 		}
 
 		@Override
@@ -259,7 +273,7 @@ public interface Tuple extends Serializable {
 	/**
 	 * Implementation of a triple, a tuple containing 3 elements.
 	 */
-	public static final class Tuple3<T1, T2, T3> implements Tuple {
+	public static final class Tuple3<T1, T2, T3> implements Tuple, ValueObject {
 
 		private static final long serialVersionUID = 1353320010987934190L;
 
@@ -276,6 +290,11 @@ public interface Tuple extends Serializable {
 		@Override
 		public int arity() {
 			return 3;
+		}
+
+		@Override
+		public Tuple3 unapply() {
+			return this;
 		}
 
 		@Override
@@ -306,7 +325,7 @@ public interface Tuple extends Serializable {
 	/**
 	 * Implementation of a quadruple, a tuple containing 4 elements.
 	 */
-	public static final class Tuple4<T1, T2, T3, T4> implements Tuple {
+	public static final class Tuple4<T1, T2, T3, T4> implements Tuple, ValueObject {
 
 		private static final long serialVersionUID = -835853771811712181L;
 
@@ -325,6 +344,11 @@ public interface Tuple extends Serializable {
 		@Override
 		public int arity() {
 			return 4;
+		}
+
+		@Override
+		public Tuple4 unapply() {
+			return this;
 		}
 
 		@Override
@@ -356,7 +380,7 @@ public interface Tuple extends Serializable {
 	/**
 	 * Implementation of a quintuple, a tuple containing 5 elements.
 	 */
-	public static final class Tuple5<T1, T2, T3, T4, T5> implements Tuple {
+	public static final class Tuple5<T1, T2, T3, T4, T5> implements Tuple, ValueObject {
 
 		private static final long serialVersionUID = 8365094604388856720L;
 
@@ -377,6 +401,11 @@ public interface Tuple extends Serializable {
 		@Override
 		public int arity() {
 			return 5;
+		}
+
+		@Override
+		public Tuple5 unapply() {
+			return this;
 		}
 
 		@Override
@@ -409,7 +438,7 @@ public interface Tuple extends Serializable {
 	/**
 	 * Implementation of a sextuple, a tuple containing 6 elements.
 	 */
-	public static final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple {
+	public static final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, ValueObject {
 
 		private static final long serialVersionUID = -5282391675740552818L;
 
@@ -432,6 +461,11 @@ public interface Tuple extends Serializable {
 		@Override
 		public int arity() {
 			return 6;
+		}
+
+		@Override
+		public Tuple6 unapply() {
+			return this;
 		}
 
 		@Override
@@ -465,7 +499,7 @@ public interface Tuple extends Serializable {
 	/**
 	 * Implementation of a septuple, a tuple containing 7 elements.
 	 */
-	public static final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple {
+	public static final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, ValueObject {
 
 		private static final long serialVersionUID = 6913366542759921153L;
 
@@ -490,6 +524,11 @@ public interface Tuple extends Serializable {
 		@Override
 		public int arity() {
 			return 7;
+		}
+
+		@Override
+		public Tuple7 unapply() {
+			return this;
 		}
 
 		@Override
@@ -524,7 +563,7 @@ public interface Tuple extends Serializable {
 	/**
 	 * Implementation of a octuple, a tuple containing 8 elements.
 	 */
-	public static final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple {
+	public static final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, ValueObject {
 
 		private static final long serialVersionUID = 117641715065938183L;
 
@@ -551,6 +590,11 @@ public interface Tuple extends Serializable {
 		@Override
 		public int arity() {
 			return 8;
+		}
+
+		@Override
+		public Tuple8 unapply() {
+			return this;
 		}
 
 		@Override
@@ -586,7 +630,7 @@ public interface Tuple extends Serializable {
 	/**
 	 * Implementation of a nonuple, a tuple containing 9 elements.
 	 */
-	public static final class Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9> implements Tuple {
+	public static final class Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9> implements Tuple, ValueObject {
 
 		private static final long serialVersionUID = -1578540921124551840L;
 
@@ -615,6 +659,11 @@ public interface Tuple extends Serializable {
 		@Override
 		public int arity() {
 			return 9;
+		}
+
+		@Override
+		public Tuple9 unapply() {
+			return this;
 		}
 
 		@Override
@@ -651,7 +700,7 @@ public interface Tuple extends Serializable {
 	/**
 	 * Implementation of a decuple, a tuple containing 10 elements.
 	 */
-	public static final class Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> implements Tuple {
+	public static final class Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> implements Tuple, ValueObject {
 
 		private static final long serialVersionUID = 7991284808329690986L;
 
@@ -682,6 +731,11 @@ public interface Tuple extends Serializable {
 		@Override
 		public int arity() {
 			return 10;
+		}
+
+		@Override
+		public Tuple10 unapply() {
+			return this;
 		}
 
 		@Override
@@ -719,7 +773,7 @@ public interface Tuple extends Serializable {
 	/**
 	 * Implementation of a undecuple, a tuple containing 11 elements.
 	 */
-	public static final class Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> implements Tuple {
+	public static final class Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> implements Tuple, ValueObject {
 
 		private static final long serialVersionUID = 3493688489700741360L;
 
@@ -752,6 +806,11 @@ public interface Tuple extends Serializable {
 		@Override
 		public int arity() {
 			return 11;
+		}
+
+		@Override
+		public Tuple11 unapply() {
+			return this;
 		}
 
 		@Override
@@ -791,7 +850,7 @@ public interface Tuple extends Serializable {
 	/**
 	 * Implementation of a duodecuple, a tuple containing 12 elements.
 	 */
-	public static final class Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> implements Tuple {
+	public static final class Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> implements Tuple, ValueObject {
 
 		private static final long serialVersionUID = -175212910367376967L;
 
@@ -826,6 +885,11 @@ public interface Tuple extends Serializable {
 		@Override
 		public int arity() {
 			return 12;
+		}
+
+		@Override
+		public Tuple12 unapply() {
+			return this;
 		}
 
 		@Override
@@ -866,7 +930,7 @@ public interface Tuple extends Serializable {
 	/**
 	 * Implementation of a tredecuple, a tuple containing 13 elements.
 	 */
-	public static final class Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> implements Tuple {
+	public static final class Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> implements Tuple, ValueObject {
 
 		private static final long serialVersionUID = 2027952127515234777L;
 
@@ -903,6 +967,11 @@ public interface Tuple extends Serializable {
 		@Override
 		public int arity() {
 			return 13;
+		}
+
+		@Override
+		public Tuple13 unapply() {
+			return this;
 		}
 
 		@Override

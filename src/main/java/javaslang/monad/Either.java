@@ -5,7 +5,6 @@
  */
 package javaslang.monad;
 
-import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -13,8 +12,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import javaslang.Algebra;
-import javaslang.Manifest;
+import javaslang.Tuple;
+import javaslang.ValueObject;
 import javaslang.monad.Option.None;
 import javaslang.monad.Option.Some;
 
@@ -73,7 +72,7 @@ public interface Either<L, R> {
 
 	// -- Either implementations
 
-	static final class Left<L, R> implements Either<L, R>, Serializable {
+	static final class Left<L, R> implements Either<L, R>, ValueObject {
 
 		private static final long serialVersionUID = 3297057402720487673L;
 
@@ -94,6 +93,11 @@ public interface Either<L, R> {
 		}
 
 		@Override
+		public Tuple.Tuple1<L> unapply() {
+			return Tuple.of(left);
+		}
+
+		@Override
 		public boolean equals(Object obj) {
 			return (obj == this) || (obj instanceof Left && Objects.equals(left, ((Left<?, ?>) obj).left));
 		}
@@ -109,7 +113,7 @@ public interface Either<L, R> {
 		}
 	}
 
-	static final class Right<L, R> implements Either<L, R>, Serializable {
+	static final class Right<L, R> implements Either<L, R>, ValueObject {
 
 		private static final long serialVersionUID = 6037923230455552437L;
 
@@ -127,6 +131,11 @@ public interface Either<L, R> {
 		@Override
 		public boolean isRight() {
 			return true;
+		}
+
+		@Override
+		public Tuple.Tuple1<R> unapply() {
+			return Tuple.of(right);
 		}
 
 		@Override
