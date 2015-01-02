@@ -262,12 +262,6 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
         return reverse().foldLeft(zero, (b, a) -> f.apply(a, b));
     }
 
-    default void forEach(Consumer<? super T> action) {
-        for (T t : this) {
-            action.accept(t);
-        }
-    }
-
     /**
      * Returns the first element of a non-empty Traversable.
      *

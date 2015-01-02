@@ -177,12 +177,6 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
         return result.reverse();
     }
 
-    // Foldable and Monad have defined forEach
-    @Override
-    default void forEach(Consumer<? super T> action) {
-        Seq.super.forEach(action);
-    }
-
     @Override
     default T get(int index) {
         if (isEmpty()) {

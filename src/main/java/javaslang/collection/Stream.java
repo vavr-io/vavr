@@ -180,12 +180,6 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         }
     }
 
-    // Foldable and Monad have defined forEach
-    @Override
-    default void forEach(Consumer<? super T> action) {
-        Seq.super.forEach(action);
-    }
-
     @Override
     default T get(int index) {
         if (isEmpty()) {

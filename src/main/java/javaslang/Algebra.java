@@ -5,7 +5,6 @@
  */
 package javaslang;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -114,9 +113,6 @@ public interface Algebra {
         default <B, C> Function<? super A, Monad<C, M>> compose(Function<? super B, Monad<C, M>> f, Function<? super A, Monad<B, M>> g) {
             return a -> g.apply(a).flatMap(f::apply);
         }
-
-        // congruent to java.util.Iterable#forEach(Consumer)
-		void forEach(Consumer<? super A> action);
 
         <B, MONAD extends Manifest<B, M>> Monad<B, M> flatMap(Function<? super A, MONAD> f);
 	}
