@@ -16,7 +16,7 @@ import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class FoldableTest {
+public class TraversableTest {
 
     // -- NOTE: creational operations are not tested because they are implemented by the Testee 'Seq'
 
@@ -535,7 +535,7 @@ public class FoldableTest {
      *
      * @param <T> Component type of the sequence.
      */
-    static class Seq<T> implements Foldable<T, Seq<?>, Seq<T>> {
+    static class Seq<T> implements Traversable<T, Seq<?>, Seq<T>> {
 
         private final java.util.List<T> data = new java.util.ArrayList<>();
 
@@ -574,37 +574,37 @@ public class FoldableTest {
         @SuppressWarnings("unchecked")
         @Override
         public <U, SEQ extends Manifest<U, Seq<?>>> Seq<U> flatMap(Function<? super T, SEQ> mapper) {
-            return (Seq) Foldable.super.flatMap(mapper::apply);
+            return (Seq) Traversable.super.flatMap(mapper::apply);
         }
 
         @SuppressWarnings("unchecked")
         @Override
         public <U> Seq<U> map(Function<? super T, ? extends U> mapper) {
-            return (Seq) Foldable.super.map(mapper::apply);
+            return (Seq) Traversable.super.map(mapper::apply);
         }
 
         @SuppressWarnings("unchecked")
         @Override
         public <U> Seq<Tuple.Tuple2<T, U>> zip(Iterable<U> that) {
-            return (Seq) Foldable.super.zip(that);
+            return (Seq) Traversable.super.zip(that);
         }
 
         @SuppressWarnings("unchecked")
         @Override
         public <U> Seq<Tuple.Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
-            return (Seq) Foldable.super.zipAll(that, thisElem, thatElem);
+            return (Seq) Traversable.super.zipAll(that, thisElem, thatElem);
         }
 
         @SuppressWarnings("unchecked")
         @Override
         public Seq<Tuple.Tuple2<T, Integer>> zipWithIndex() {
-            return (Seq) Foldable.super.zipWithIndex();
+            return (Seq) Traversable.super.zipWithIndex();
         }
 
         @SuppressWarnings("unchecked")
         @Override
         public <T1, T2> Tuple.Tuple2<Seq<T1>, Seq<T2>> unzip(Function<? super T, Tuple.Tuple2<T1, T2>> unzipper) {
-            return (Tuple.Tuple2<Seq<T1>, Seq<T2>>) Foldable.super.unzip(unzipper);
+            return (Tuple.Tuple2<Seq<T1>, Seq<T2>>) Traversable.super.unzip(unzipper);
         }
 
         // -- equals, hashCode & toString

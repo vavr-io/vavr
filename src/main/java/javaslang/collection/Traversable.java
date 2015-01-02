@@ -95,27 +95,27 @@ import java.util.function.*;
  *
  * @param <T> Component type.
  */
-public interface Foldable<T> extends Iterable<T>, Manifest<T, Foldable<?>> {
+public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>> {
 
     /**
-     * Returns an empty version of this foldable, i.e. {@code this.clear().isEmpty() == true}.
+     * Returns an empty version of this traversable, i.e. {@code this.clear().isEmpty() == true}.
      *
-     * @return An empty Foldable.
+     * @return An empty Traversable.
      */
-    Foldable<T> clear();
+    Traversable<T> clear();
 
     /**
-     * Tests if this Foldable contains a given value as an element in O(n).
+     * Tests if this Traversable contains a given value.
      *
      * @param element An Object of type A, may be null.
-     * @return true, if element is in this Foldable, false otherwise.
+     * @return true, if element is in this Traversable, false otherwise.
      */
     default boolean contains(T element) {
         return findFirst(e -> java.util.Objects.equals(e, element)).isPresent();
     }
 
     /**
-     * Tests if this Foldable contains all given elements in O(n*m), where n = length of this and m = length of given elements.
+     * Tests if this Traversable contains all given elements.
      * <p/>
      * The result is equivalent to
      * {@code elements.isEmpty() ? true : contains(elements.head()) && containsAll(elements.tail())} but implemented
@@ -133,37 +133,37 @@ public interface Foldable<T> extends Iterable<T>, Manifest<T, Foldable<?>> {
                 .isNotPresent();
     }
 
-    Foldable<T> distinct();
+    Traversable<T> distinct();
 
     /**
-     * Drops the first n elements of this Foldable or the all elements, if this size &lt; n. The elements are dropped in O(n).
+     * Drops the first n elements of this Traversable or the all elements, if this length &lt; n.
      *
      * @param n The number of elements to drop.
-     * @return A Foldable consisting of all elements of this Foldable except the first n ones, or else an empty Foldable, if this
-     * Foldable has less than n elements.
+     * @return A Traversable consisting of all elements of this Traversable except the first n ones, or else an empty Traversable, if this
+     * Traversable has less than n elements.
      */
-    default Foldable<T> drop(int n) {
-        Foldable<T> foldable = this;
-        for (int i = n; i > 0 && !foldable.isEmpty(); i--) {
-            foldable = foldable.tail();
+    default Traversable<T> drop(int n) {
+        Traversable<T> traversable = this;
+        for (int i = n; i > 0 && !traversable.isEmpty(); i--) {
+            traversable = traversable.tail();
         }
-        return foldable;
+        return traversable;
     }
 
-    default Foldable<T> dropRight(int n) {
+    default Traversable<T> dropRight(int n) {
         return reverse().drop(n).reverse();
     }
 
-    default Foldable<T> dropWhile(Predicate<? super T> predicate) {
+    default Traversable<T> dropWhile(Predicate<? super T> predicate) {
         Require.nonNull(predicate, "predicate is null");
-        Foldable<T> foldable = this;
-        while (!foldable.isEmpty() && predicate.test(foldable.head())) {
-            foldable = foldable.tail();
+        Traversable<T> traversable = this;
+        while (!traversable.isEmpty() && predicate.test(traversable.head())) {
+            traversable = traversable.tail();
         }
-        return foldable;
+        return traversable;
     }
 
-    Foldable<T> filter(Predicate<? super T> predicate);
+    Traversable<T> filter(Predicate<? super T> predicate);
 
     /**
      * Essentially the same as {@link #filter(java.util.function.Predicate)} but the result type may differ,
@@ -172,7 +172,7 @@ public interface Foldable<T> extends Iterable<T>, Manifest<T, Foldable<?>> {
      * @param predicate A predicate.
      * @return All elements of this which satisfy the given predicate.
      */
-    default Foldable<T> findAll(Predicate<? super T> predicate) {
+    default Traversable<T> findAll(Predicate<? super T> predicate) {
         return filter(predicate);
     }
 
@@ -203,10 +203,10 @@ public interface Foldable<T> extends Iterable<T>, Manifest<T, Foldable<?>> {
         return reverse().findFirst(predicate);
     }
 
-    <U, FOLDABLE extends Manifest<U, Foldable<?>>> Foldable<U> flatMap(Function<? super T, FOLDABLE> mapper);
+    <U, TRAVERSABLE extends Manifest<U, Traversable<?>>> Traversable<U> flatMap(Function<? super T, TRAVERSABLE> mapper);
 
     /**
-     * Accumulates the elements of this Foldable by successively calling the given function {@code f} from the left,
+     * Accumulates the elements of this Traversable by successively calling the given function {@code f} from the left,
      * starting with a value {@code zero} of type B.
      *
      * @param zero Value to start the accumulation with.
@@ -239,7 +239,7 @@ public interface Foldable<T> extends Iterable<T>, Manifest<T, Foldable<?>> {
     }
 
     /**
-     * Accumulates the elements of this Foldable by successively calling the given function {@code f} from the right,
+     * Accumulates the elements of this Traversable by successively calling the given function {@code f} from the right,
      * starting with a value {@code zero} of type B.
      * <p/>
      * In order to prevent recursive calls, foldRight is implemented based on reverse and foldLeft. A recursive variant
@@ -269,28 +269,28 @@ public interface Foldable<T> extends Iterable<T>, Manifest<T, Foldable<?>> {
     }
 
     /**
-     * Returns the first element of a non-empty Foldable.
+     * Returns the first element of a non-empty Traversable.
      *
-     * @return The first element of this Foldable.
-     * @throws UnsupportedOperationException if this Foldable is empty
+     * @return The first element of this Traversable.
+     * @throws UnsupportedOperationException if this Traversable is empty
      */
     T head();
 
     // dual of tail regarding reversed order
-    Foldable<T> init();
+    Traversable<T> init();
 
     /**
-     * Inserts an element between all elements of this Foldable.
+     * Inserts an element between all elements of this Traversable.
      *
      * @param element An element.
-     * @return An 'interspersed' version of this Foldable.
+     * @return An 'interspersed' version of this Traversable.
      */
-    Foldable<T> intersperse(T element);
+    Traversable<T> intersperse(T element);
 
     /**
-     * Checks if this Foldable is empty.
+     * Checks if this Traversable is empty.
      *
-     * @return true, if this Foldable contains no elements, falso otherwise.
+     * @return true, if this Traversable contains no elements, falso otherwise.
      */
     boolean isEmpty();
 
@@ -313,23 +313,23 @@ public interface Foldable<T> extends Iterable<T>, Manifest<T, Foldable<?>> {
     // dual of head regarding reversed order
     default T last() {
         if (isEmpty()) {
-            throw new UnsupportedOperationException("last of empty Foldable");
+            throw new UnsupportedOperationException("last of empty Traversable");
         } else {
-            Foldable<T> foldable = this;
+            Traversable<T> traversable = this;
             { // don't let escape tail
-                Foldable<T> tail;
-                while (!(tail = foldable.tail()).isEmpty()) {
-                    foldable = tail;
+                Traversable<T> tail;
+                while (!(tail = traversable.tail()).isEmpty()) {
+                    traversable = tail;
                 }
             }
-            return foldable.head();
+            return traversable.head();
         }
     }
 
     /**
-     * Computes the number of elements in this Foldable.
+     * Computes the number of elements in this Traversable.
      *
-     * @return The number of elements in this Foldable.
+     * @return The number of elements in this Traversable.
      */
     @SuppressWarnings("RedundantCast")
     default int length() {
@@ -338,54 +338,54 @@ public interface Foldable<T> extends Iterable<T>, Manifest<T, Foldable<?>> {
     }
 
     /**
-     * Maps the elements of this foldable to elements of a new type preserving their order, if any.
+     * Maps the elements of this traversable to elements of a new type preserving their order, if any.
      *
      * @param mapper A mapper.
-     * @param <U>    Component type of the target Foldable
-     * @return A mapped Foldable
+     * @param <U>    Component type of the target Traversable
+     * @return A mapped Traversable
      * @see javaslang.Algebra.Monad#map(Function)
      */
-    <U> Foldable<U> map(Function<? super T, ? extends U> mapper);
+    <U> Traversable<U> map(Function<? super T, ? extends U> mapper);
 
     /**
      * Removes the first occurrence of the given element.
      *
-     * @param element An element to be removed from this Foldable.
-     * @return A Foldable containing all elements of this without the first occurrence of the given element.
+     * @param element An element to be removed from this Traversable.
+     * @return A Traversable containing all elements of this without the first occurrence of the given element.
      */
-    Foldable<T> remove(T element);
+    Traversable<T> remove(T element);
 
 
     /**
      * Removes all occurrences of the given element.
      *
-     * @param element An element to be removed from this Foldable.
-     * @return A Foldable containing all elements of this but not the given element.
+     * @param element An element to be removed from this Traversable.
+     * @return A Traversable containing all elements of this but not the given element.
      */
-    Foldable<T> removeAll(T element);
+    Traversable<T> removeAll(T element);
 
     /**
      * Removes all occurrences of the given elements.
      *
-     * @param elements Elements to be removed from this Foldable.
-     * @return A Foldable containing all elements of this but none of the given elements.
+     * @param elements Elements to be removed from this Traversable.
+     * @return A Traversable containing all elements of this but none of the given elements.
      */
-    Foldable<T> removeAll(Iterable<? extends T> elements);
+    Traversable<T> removeAll(Iterable<? extends T> elements);
 
     /**
-     * Accumulates the elements of this Foldable by successively calling the given operation {@code op} from the left.
+     * Accumulates the elements of this Traversable by successively calling the given operation {@code op} from the left.
      *
      * @return The reduced value.
-     * @throws UnsupportedOperationException                     if this Foldable is empty
+     * @throws UnsupportedOperationException                     if this Traversable is empty
      * @throws javaslang.Require.UnsatisfiedRequirementException if op is null
      */
     T reduceLeft(BiFunction<? super T, ? super T, ? extends T> op);
 
     /**
-     * Accumulates the elements of this Foldable by successively calling the given operation {@code op} from the right.
+     * Accumulates the elements of this Traversable by successively calling the given operation {@code op} from the right.
      *
      * @return The reduced value.
-     * @throws UnsupportedOperationException                     if this Foldable is empty
+     * @throws UnsupportedOperationException                     if this Traversable is empty
      * @throws javaslang.Require.UnsatisfiedRequirementException if op is null
      */
     T reduceRight(BiFunction<? super T, ? super T, ? extends T> op);
@@ -395,42 +395,42 @@ public interface Foldable<T> extends Iterable<T>, Manifest<T, Foldable<?>> {
      *
      * @param currentElement An element to be substituted.
      * @param newElement     A replacement for currentElement.
-     * @return A Foldable containing all elements of this where the first occurrence of currentElement is replaced with newELement.
+     * @return A Traversable containing all elements of this where the first occurrence of currentElement is replaced with newELement.
      */
-    Foldable<T> replace(T currentElement, T newElement);
+    Traversable<T> replace(T currentElement, T newElement);
 
     /**
      * Replaces all occurrences of the given currentElement with newElement.
      *
      * @param currentElement An element to be substituted.
      * @param newElement     A replacement for currentElement.
-     * @return A Foldable containing all elements of this where all occurrences of currentElement are replaced with newELement.
+     * @return A Traversable containing all elements of this where all occurrences of currentElement are replaced with newELement.
      */
-    Foldable<T> replaceAll(T currentElement, T newElement);
+    Traversable<T> replaceAll(T currentElement, T newElement);
 
     /**
-     * Replaces all occurrences of this Foldable by applying the given operator to the elements, which is
+     * Replaces all occurrences of this Traversable by applying the given operator to the elements, which is
      * essentially a special case of {@link #map(java.util.function.Function)}.
      *
      * @param operator An operator.
-     * @return A Foldable containing all elements of this transformed within the same domain.
+     * @return A Traversable containing all elements of this transformed within the same domain.
      */
-    Foldable<T> replaceAll(UnaryOperator<T> operator);
+    Traversable<T> replaceAll(UnaryOperator<T> operator);
 
     /**
      * Keeps all occurrences of the given elements from this.
      *
      * @param elements Elements to be kept.
-     * @return A Foldable containing all occurreces of the given elements.
+     * @return A Traversable containing all occurreces of the given elements.
      */
-    Foldable<T> retainAll(Iterable<? extends T> elements);
+    Traversable<T> retainAll(Iterable<? extends T> elements);
 
     /**
      * Reverses the order of elements.
      *
      * @return The reversed elements.
      */
-    Foldable<T> reverse();
+    Traversable<T> reverse();
 
     /**
      * Returns a tuple where the first element is the longest prefix of elements that satisfy p and the second element is the remainder.
@@ -438,40 +438,40 @@ public interface Foldable<T> extends Iterable<T>, Manifest<T, Foldable<?>> {
      * @param predicate A predicate.
      * @return A Tuple containing the longest prefix of elements that satisfy p and the remainder.
      */
-    Tuple2<? extends Foldable<T>, ? extends Foldable<T>> span(Predicate<? super T> predicate);
+    Tuple2<? extends Traversable<T>, ? extends Traversable<T>> span(Predicate<? super T> predicate);
 
     /**
-     * Splits a Foldable at the specified intex.
+     * Splits a Traversable at the specified intex.
      *
      * @param n An index.
      * @return A Tuple containing the first n and the remaining elements.
      */
-    Tuple2<? extends Foldable<T>, ? extends Foldable<T>> splitAt(int n);
+    Tuple2<? extends Traversable<T>, ? extends Traversable<T>> splitAt(int n);
 
     /**
-     * Drops the first element of a non-empty Foldable.
+     * Drops the first element of a non-empty Traversable.
      *
-     * @return A new instance of Foldable containing all elements except the first.
-     * @throws UnsupportedOperationException if this Foldable is empty
+     * @return A new instance of Traversable containing all elements except the first.
+     * @throws UnsupportedOperationException if this Traversable is empty
      */
-    Foldable<T> tail();
+    Traversable<T> tail();
 
     /**
-     * Takes the first n elements of this Foldable or all elements, if this length &lt; n.
+     * Takes the first n elements of this Traversable or all elements, if this length &lt; n.
      * <p/>
-     * The result is equivalent to {@code sublist(0, n)} but does not throw if n &lt; 0 or n &gt; size(). In the case of
-     * n &lt; 0 the empty Foldable is returned, in the case of n &gt; size() this Foldable is returned.
+     * The result is equivalent to {@code sublist(0, n)} but does not throw if n &lt; 0 or n &gt; length(). In the case of
+     * n &lt; 0 the empty Traversable is returned, in the case of n &gt; length() this Traversable is returned.
      *
      * @param n The number of elements to take.
-     * @return A Foldable consisting of the first n elements of this Foldable or all elements, if it has less than n elements.
+     * @return A Traversable consisting of the first n elements of this Traversable or all elements, if it has less than n elements.
      */
-    Foldable<T> take(int n);
+    Traversable<T> take(int n);
 
-    default Foldable<T> takeRight(int n) {
+    default Traversable<T> takeRight(int n) {
         return reverse().take(n).reverse();
     }
 
-    Foldable<T> takeWhile(Predicate<? super T> predicate);
+    Traversable<T> takeWhile(Predicate<? super T> predicate);
 
     default T[] toJavaArray(Class<T> componentType) {
         final java.util.List<T> list = toJavaList();
@@ -509,41 +509,41 @@ public interface Foldable<T> extends Iterable<T>, Manifest<T, Foldable<?>> {
         return toJavaList().stream();
     }
 
-    <T1, T2> Tuple2<? extends Foldable<T1>, ? extends Foldable<T2>> unzip(Function<? super T, Tuple2<T1, T2>> unzipper);
+    <T1, T2> Tuple2<? extends Traversable<T1>, ? extends Traversable<T2>> unzip(Function<? super T, Tuple2<T1, T2>> unzipper);
 
     /**
-     * Returns a Foldable formed from this Foldable and another Iterable collection by combining corresponding elements
-     * in pairs. If one of the two Foldables is longer than the other, its remaining elements are ignored.
+     * Returns a Traversable formed from this Traversable and another Iterable collection by combining corresponding elements
+     * in pairs. If one of the two Traversables is longer than the other, its remaining elements are ignored.
      *
      * @param <U>  The type of the second half of the returned pairs.
      * @param that The Iterable providing the second half of each result pair.
-     * @return a new Foldable containing pairs consisting of corresponding elements of this list and that.
-     * The length of the returned collection is the minimum of the lengths of this Foldable and that.
+     * @return a new Traversable containing pairs consisting of corresponding elements of this list and that.
+     * The length of the returned collection is the minimum of the lengths of this Traversable and that.
      * @throws javaslang.Require.UnsatisfiedRequirementException if that is null.
      */
-    <U> Foldable<Tuple2<T, U>> zip(Iterable<U> that);
+    <U> Traversable<Tuple2<T, U>> zip(Iterable<U> that);
 
     /**
-     * Returns a Foldable formed from this Foldable and another Iterable by combining corresponding elements in
+     * Returns a Traversable formed from this Traversable and another Iterable by combining corresponding elements in
      * pairs. If one of the two collections is shorter than the other, placeholder elements are used to extend the
      * shorter collection to the length of the longer.
      *
      * @param <U>      The type of the second half of the returned pairs.
      * @param that     The Iterable providing the second half of each result pair.
-     * @param thisElem The element to be used to fill up the result if this Foldable is shorter than that.
-     * @param thatElem The element to be used to fill up the result if that is shorter than this Foldable.
-     * @return A new Foldable containing pairs consisting of corresponding elements of this Foldable and that.
-     * The length of the returned Foldable is the maximum of the lengths of this Foldable and that.
-     * If this Foldable is shorter than that, thisElem values are used to fill the result.
-     * If that is shorter than this Foldable, thatElem values are used to fill the result.
+     * @param thisElem The element to be used to fill up the result if this Traversable is shorter than that.
+     * @param thatElem The element to be used to fill up the result if that is shorter than this Traversable.
+     * @return A new Traversable containing pairs consisting of corresponding elements of this Traversable and that.
+     * The length of the returned Traversable is the maximum of the lengths of this Traversable and that.
+     * If this Traversable is shorter than that, thisElem values are used to fill the result.
+     * If that is shorter than this Traversable, thatElem values are used to fill the result.
      * @throws javaslang.Require.UnsatisfiedRequirementException if that is null.
      */
-    <U> Foldable<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
+    <U> Traversable<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
 
     /**
      * Zips this List with its indices.
      *
      * @return A new List containing all elements of this List paired with their index, starting with 0.
      */
-    Foldable<Tuple2<T, Integer>> zipWithIndex();
+    Traversable<Tuple2<T, Integer>> zipWithIndex();
 }

@@ -32,7 +32,7 @@ import java.util.stream.Collector;
  *
  * @param <T> Component type of the List.
  */
-public interface List<T> extends Seq<T>, Monad<T, Foldable<?>>, Monoid<List<T>> {
+public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T>> {
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
@@ -167,12 +167,12 @@ public interface List<T> extends Seq<T>, Monad<T, Foldable<?>>, Monoid<List<T>> 
     }
 
     @Override
-    default <U, FOLDABLE extends Manifest<U, Foldable<?>>> List<U> flatMap(Function<? super T, FOLDABLE> mapper) {
+    default <U, TRAVERSABLE extends Manifest<U, Traversable<?>>> List<U> flatMap(Function<? super T, TRAVERSABLE> mapper) {
         List<U> result = Nil.instance();
         for (T t : this) {
             @SuppressWarnings("unchecked")
-            final Foldable<U> foldable = (Foldable<U>) mapper.apply(t);
-            foldable.forEach(result::prepend);
+            final Traversable<U> traversable = (Traversable<U>) mapper.apply(t);
+            traversable.forEach(result::prepend);
         }
         return result.reverse();
     }

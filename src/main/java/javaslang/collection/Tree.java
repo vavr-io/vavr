@@ -15,7 +15,7 @@ import java.util.Queue;
 import java.util.function.Function;
 
 public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?, SELF>>
-        extends Foldable<T, CLASS, SELF>, Algebra.Monad<T, CLASS>, Algebra.Monoid<SELF> {
+        extends Traversable<T, CLASS, SELF>, Algebra.Monad<T, CLASS>, Algebra.Monoid<SELF> {
 
     /**
      * Returns the name of the Tree implementation (e.g. BTree, RTree).

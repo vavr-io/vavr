@@ -8,7 +8,7 @@ package javaslang.collection;
 import java.util.Comparator;
 import java.util.Iterator;
 
-public interface Seq<T> extends Foldable<T> {
+public interface Seq<T> extends Traversable<T> {
 
     Seq<T> append(T element);
 

@@ -5,7 +5,7 @@
  */
 package javaslang.collection;
 
-public interface Set<T> extends Foldable<T> {
+public interface Set<T> extends Traversable<T> {
 
     Set<T> add(T element);
 

@@ -14,7 +14,7 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
-public interface Stream<T> extends Seq<T>, Monad<T, Foldable<?>>, Monoid<Stream<T>> {
+public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stream<T>> {
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
@@ -169,13 +169,13 @@ public interface Stream<T> extends Seq<T>, Monad<T, Foldable<?>>, Monoid<Stream<
     }
 
     @Override
-    default <U, FOLDABLE extends Manifest<U, Foldable<?>>> Stream<U> flatMap(Function<? super T, FOLDABLE> mapper) {
+    default <U, TRAVERSABLE extends Manifest<U, Traversable<?>>> Stream<U> flatMap(Function<? super T, TRAVERSABLE> mapper) {
         Require.nonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return Nil.instance();
         } else {
             @SuppressWarnings("unchecked")
-            final Foldable<U> mapped = (Foldable<U>) mapper.apply(head());
+            final Traversable<U> mapped = (Traversable<U>) mapper.apply(head());
             return Nil.<U> instance().appendAll(mapped).appendAll(tail().flatMap(mapper));
         }
     }
