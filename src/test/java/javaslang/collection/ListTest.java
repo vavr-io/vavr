@@ -85,16 +85,16 @@ public class ListTest {
 		assertThat(List.of(1, 2, 3).reverse()).isEqualTo(List.of(3, 2, 1));
 	}
 
-	// -- size
+	// -- length
 
 	@Test
-	public void shouldComputeSizeOfNil() {
-		assertThat(List.nil().size()).isEqualTo(0);
+	public void shouldComputeLengthOfNil() {
+		assertThat(List.nil().length()).isEqualTo(0);
 	}
 
 	@Test
-	public void shouldComputeSizeOfNonNil() {
-		assertThat(List.of(1, 2, 3).size()).isEqualTo(3);
+	public void shouldComputeLengthOfNonNil() {
+		assertThat(List.of(1, 2, 3).length()).isEqualTo(3);
 	}
 
 	// -- append
@@ -240,7 +240,7 @@ public class ListTest {
 	@Test
 	public void shouldThrowOnInsertWhenExceedingUpperBound() {
 		AssertionsExtensions.assertThat(() -> List.nil().insert(1, null)).isThrowing(IndexOutOfBoundsException.class,
-				"insert(1, e) on list of size 0");
+				"insert(1, e) on list of length 0");
 	}
 
 	// -- insertAll
@@ -288,7 +288,7 @@ public class ListTest {
 	@Test
 	public void shouldThrowOnInsertAllWhenExceedingUpperBound() {
 		AssertionsExtensions.assertThat(() -> List.nil().insertAll(1, List.nil())).isThrowing(
-				IndexOutOfBoundsException.class, "insertAll(1, elements) on list of size 0");
+				IndexOutOfBoundsException.class, "insertAll(1, elements) on list of length 0");
 	}
 
 	// -- remove
@@ -498,7 +498,7 @@ public class ListTest {
 	@Test
 	public void shouldThrowWhenGetWithTooBigIndexOnNonNil() {
 		AssertionsExtensions.assertThat(() -> List.of(1).get(1)).isThrowing(IndexOutOfBoundsException.class,
-				"get(1) on list of size 1");
+				"get(1) on list of length 1");
 	}
 
 	@Test
@@ -534,13 +534,13 @@ public class ListTest {
 	@Test
 	public void shouldThrowWhenSetWithIndexExceedingByOneOnNonNil() {
 		AssertionsExtensions.assertThat(() -> List.of(1).set(1, 2)).isThrowing(IndexOutOfBoundsException.class,
-				"set(1, e) on list of size 1");
+				"set(1, e) on list of length 1");
 	}
 
 	@Test
 	public void shouldThrowWhenSetWithIndexExceedingByTwoOnNonNil() {
 		AssertionsExtensions.assertThat(() -> List.of(1).set(2, 2)).isThrowing(IndexOutOfBoundsException.class,
-				"set(2, e) on list of size 1");
+				"set(2, e) on list of length 1");
 	}
 
 	@Test
@@ -553,110 +553,110 @@ public class ListTest {
 		assertThat(List.of(1, 2, 3).set(2, 4)).isEqualTo(List.of(1, 2, 4));
 	}
 
-	// -- sublist(beginIndex)
+	// -- subsequence(beginIndex)
 
 	@Test
 	public void shouldReturnNilWhenSublistFrom0OnNil() {
-		final List<Integer> actual = List.<Integer> nil().sublist(0);
+		final List<Integer> actual = List.<Integer> nil().subsequence(0);
 		assertThat(actual).isEqualTo(List.nil());
 	}
 
 	@Test
 	public void shouldReturnIdentityWhenSublistFrom0OnNonNil() {
-		final List<Integer> actual = List.of(1).sublist(0);
+		final List<Integer> actual = List.of(1).subsequence(0);
 		assertThat(actual).isEqualTo(List.of(1));
 	}
 
 	@Test
 	public void shouldReturnNilWhenSublistFrom1OnListOf1() {
-		final List<Integer> actual = List.of(1).sublist(1);
+		final List<Integer> actual = List.of(1).subsequence(1);
 		assertThat(actual).isEqualTo(List.nil());
 	}
 
 	@Test
 	public void shouldReturnSublistWhenIndexIsWithinRange() {
-		final List<Integer> actual = List.of(1, 2, 3).sublist(1);
+		final List<Integer> actual = List.of(1, 2, 3).subsequence(1);
 		assertThat(actual).isEqualTo(List.of(2, 3));
 	}
 
 	@Test
 	public void shouldReturnNilWhenSublistBeginningWithSize() {
-		final List<Integer> actual = List.of(1, 2, 3).sublist(3);
+		final List<Integer> actual = List.of(1, 2, 3).subsequence(3);
 		assertThat(actual).isEqualTo(List.nil());
 	}
 
 	@Test
 	public void shouldThrowWhenSublist0OnNil() {
-		AssertionsExtensions.assertThat(() -> List.<Integer> nil().sublist(1)).isThrowing(
-				IndexOutOfBoundsException.class, "sublist(1) on list of size 0");
+		AssertionsExtensions.assertThat(() -> List.<Integer> nil().subsequence(1)).isThrowing(
+				IndexOutOfBoundsException.class, "subsequence(1) on list of length 0");
 	}
 
 	@Test
 	public void shouldThrowWhenSublistWithOutOfLowerBound() {
-		AssertionsExtensions.assertThat(() -> List.of(1, 2, 3).sublist(-1)).isThrowing(IndexOutOfBoundsException.class,
-				"sublist(-1)");
+		AssertionsExtensions.assertThat(() -> List.of(1, 2, 3).subsequence(-1)).isThrowing(IndexOutOfBoundsException.class,
+				"subsequence(-1)");
 	}
 
 	@Test
 	public void shouldThrowWhenSublistWithOutOfUpperBound() {
-		AssertionsExtensions.assertThat(() -> List.of(1, 2, 3).sublist(4)).isThrowing(IndexOutOfBoundsException.class,
-				"sublist(4) on list of size 3");
+		AssertionsExtensions.assertThat(() -> List.of(1, 2, 3).subsequence(4)).isThrowing(IndexOutOfBoundsException.class,
+				"subsequence(4) on list of length 3");
 	}
 
-	// -- sublist(beginIndex, endIndex)
+	// -- subsequence(beginIndex, endIndex)
 
 	@Test
 	public void shouldReturnNilWhenSublistFrom0To0OnNil() {
-		final List<Integer> actual = List.<Integer> nil().sublist(0, 0);
+		final List<Integer> actual = List.<Integer> nil().subsequence(0, 0);
 		assertThat(actual).isEqualTo(List.nil());
 	}
 
 	@Test
 	public void shouldReturnNilWhenSublistFrom0To0OnNonNil() {
-		final List<Integer> actual = List.of(1).sublist(0, 0);
+		final List<Integer> actual = List.of(1).subsequence(0, 0);
 		assertThat(actual).isEqualTo(List.nil());
 	}
 
 	@Test
 	public void shouldReturnListWithFirstElementWhenSublistFrom0To1OnNonNil() {
-		final List<Integer> actual = List.of(1).sublist(0, 1);
+		final List<Integer> actual = List.of(1).subsequence(0, 1);
 		assertThat(actual).isEqualTo(List.of(1));
 	}
 
 	@Test
 	public void shouldReturnNilWhenSublistFrom1To1OnNonNil() {
-		final List<Integer> actual = List.of(1).sublist(1, 1);
+		final List<Integer> actual = List.of(1).subsequence(1, 1);
 		assertThat(actual).isEqualTo(List.nil());
 	}
 
 	@Test
 	public void shouldReturnSublistWhenIndicesAreWithinRange() {
-		final List<Integer> actual = List.of(1, 2, 3).sublist(1, 3);
+		final List<Integer> actual = List.of(1, 2, 3).subsequence(1, 3);
 		assertThat(actual).isEqualTo(List.of(2, 3));
 	}
 
 	@Test
 	public void shouldReturnNilWhenIndicesBothAreUpperBound() {
-		final List<Integer> actual = List.of(1, 2, 3).sublist(3, 3);
+		final List<Integer> actual = List.of(1, 2, 3).subsequence(3, 3);
 		assertThat(actual).isEqualTo(List.nil());
 	}
 
 	@Test
 	public void shouldThrowOnSublistWhenEndIndexIsGreaterThanBeginIndex() {
-		AssertionsExtensions.assertThat(() -> List.of(1, 2, 3).sublist(1, 0)).isThrowing(
-				IndexOutOfBoundsException.class, "sublist(1, 0) on list of size 3");
+		AssertionsExtensions.assertThat(() -> List.of(1, 2, 3).subsequence(1, 0)).isThrowing(
+				IndexOutOfBoundsException.class, "subsequence(1, 0) on list of length 3");
 	}
 
 	@Test
 	public void shouldThrowOnSublistWhenBeginIndexExceedsLowerBound() {
-		AssertionsExtensions.assertThat(() -> List.of(1, 2, 3).sublist(-1, 2)).isThrowing(
-				IndexOutOfBoundsException.class, "sublist(-1, 2) on list of size 3");
+		AssertionsExtensions.assertThat(() -> List.of(1, 2, 3).subsequence(-1, 2)).isThrowing(
+				IndexOutOfBoundsException.class, "subsequence(-1, 2) on list of length 3");
 	}
 
 	@Test
 	public void shouldThrowOnSublistWhenEndIndexExceedsUpperBound() {
-		AssertionsExtensions.assertThat(() -> List.of(1, 2, 3).sublist(1, 4)).isThrowing(
-				IndexOutOfBoundsException.class, "sublist(1, 4) on list of size 3");
+		AssertionsExtensions.assertThat(() -> List.of(1, 2, 3).subsequence(1, 4)).isThrowing(
+				IndexOutOfBoundsException.class, "subsequence(1, 4) on list of length 3");
 	}
 
 	// -- drop
@@ -833,52 +833,19 @@ public class ListTest {
 		assertThat(actual).isEqualTo(expected);
 	}
 
-	// -- toArray
+	// -- toArray(Class)
 
 	@Test
-	public void shouldConvertNilToArray() {
-		assertThat(List.<Integer> nil().toArray()).isEqualTo(new Integer[] {});
-	}
-
-	@Test
-	public void shouldConvertNonNilToArray() {
-		assertThat(List.of(1, 2, 3).toArray()).isEqualTo(new Integer[] { 1, 2, 3 });
-	}
-
-	// -- toArray(E[])
-
-	@Test
-	public void shouldConvertNilGivenEmptyArray() {
-		final Integer[] actual = List.<Integer> nil().toArray(new Integer[] {});
+	public void shouldConvertNilToJavaArray() {
+		final Integer[] actual = List.<Integer> nil().toJavaArray(Integer.class);
 		final Integer[] expected = new Integer[] {};
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
-	public void shouldConvertNilGivenNonEmptyArray() {
-		final Integer[] array = List.<Integer> nil().toArray(new Integer[] { 9, 9, 9 });
-		final Integer[] expected = new Integer[] { null, 9, 9 };
-		assertThat(array).isEqualTo(expected);
-	}
-
-	@Test
-	public void shouldConvertNonNilToGivenArrayIfSizeIsSmaller() {
-		final Integer[] array = List.of(1, 2).toArray(new Integer[] { 9, 9, 9 });
-		final Integer[] expected = new Integer[] { 1, 2, null };
-		assertThat(array).isEqualTo(expected);
-	}
-
-	@Test
-	public void shouldConvertNonNilToGivenArrayIfSizeIsEqual() {
-		final Integer[] actual = List.of(1, 2, 3).toArray(new Integer[] { 9, 9, 9 });
-		final Integer[] expected = new Integer[] { 1, 2, 3 };
-		assertThat(actual).isEqualTo(expected);
-	}
-
-	@Test
-	public void shouldConvertNonNilToGivenArrayIfSizeIsBigger() {
-		final Integer[] array = List.of(1, 2, 3, 4).toArray(new Integer[] { 9, 9, 9 });
-		final Integer[] expected = new Integer[] { 1, 2, 3, 4 };
+	public void shouldConvertNonNilToJavaArray() {
+		final Integer[] array = List.of(1, 2).toJavaArray(Integer.class);
+		final Integer[] expected = new Integer[] { 1, 2 };
 		assertThat(array).isEqualTo(expected);
 	}
 
@@ -886,12 +853,12 @@ public class ListTest {
 
 	@Test
 	public void shouldConvertNilToArrayList() {
-		assertThat(List.<Integer> nil().toArrayList()).isEqualTo(new ArrayList<Integer>());
+		assertThat(List.<Integer> nil().toJavaList()).isEqualTo(new ArrayList<Integer>());
 	}
 
 	@Test
 	public void shouldConvertNonNilToArrayList() {
-		assertThat(List.of(1, 2, 3).toArrayList()).isEqualTo(Arrays.asList(1, 2, 3));
+		assertThat(List.of(1, 2, 3).toJavaList()).isEqualTo(Arrays.asList(1, 2, 3));
 	}
 
 	// -- sort
@@ -922,27 +889,13 @@ public class ListTest {
 
 	@Test
 	public void shouldStreamAndCollectNil() {
-		final List<?> actual = List.nil().stream().collect(List.collector());
+		final List<?> actual = List.nil().toJavaStream().collect(List.collector());
 		assertThat(actual).isEqualTo(List.nil());
 	}
 
 	@Test
 	public void shouldStreamAndCollectNonNil() {
-		final List<?> actual = List.of(1, 2, 3).stream().collect(List.collector());
-		assertThat(actual).isEqualTo(List.of(1, 2, 3));
-	}
-
-	// -- parallelStream
-
-	@Test
-	public void shouldParallelStreamAndCollectNil() {
-		final List<?> actual = List.nil().parallelStream().collect(List.collector());
-		assertThat(actual).isEqualTo(List.nil());
-	}
-
-	@Test
-	public void shouldParallelStreamAndCollectNonNil() {
-		final List<?> actual = List.of(1, 2, 3).parallelStream().collect(List.collector());
+		final List<?> actual = List.of(1, 2, 3).toJavaStream().collect(List.collector());
 		assertThat(actual).isEqualTo(List.of(1, 2, 3));
 	}
 
@@ -1014,7 +967,7 @@ public class ListTest {
 	@Test
 	public void shouldThrowWhenNilIteratorStartingAtIndex() {
 		AssertionsExtensions.assertThat(() ->  List.nil().iterator(1))
-				.isThrowing(IndexOutOfBoundsException.class, "sublist(1) on list of size 0");
+				.isThrowing(IndexOutOfBoundsException.class, "subsequence(1) on list of length 0");
 	}
 
 	@Test
@@ -1119,8 +1072,8 @@ public class ListTest {
 
 	@Test
 	public void shouldCreateListOfElements() {
-		final List<Object> actual = List.of(1, 2);
-		final List<Object> expected = new Cons<>(1, new Cons<>(2, Nil.instance()));
+		final List<Integer> actual = List.of(1, 2);
+		final List<Integer> expected = new Cons<>(1, new Cons<>(2, Nil.instance()));
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -1167,7 +1120,7 @@ public class ListTest {
 		AssertionsExtensions.assertThat(() -> {
 			try {
 				/*
-				 * This implementation is stable regarding jvm impl changes of object serialization The index of the
+				 * This implementation is stable regarding jvm impl changes of object serialization. The index of the
 				 * number of List elements is gathered dynamically.
 				 */
 				final byte[] listWithOneElement = Serializables.serialize(List.of(0));
@@ -1183,6 +1136,9 @@ public class ListTest {
 							index = i;
 						}
 					}
+				}
+				if (index == -1) {
+					throw new IllegalStateException("Hack incomplete - index not found");
 				}
 				/*
 				 * Hack the serialized data and fake zero elements.

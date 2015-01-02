@@ -5,8 +5,10 @@
  */
 package javaslang.collection;
 
-import javaslang.Manifest;
 import javaslang.Require;
+import javaslang.Tuple;
+import javaslang.Tuple.*;
+import javaslang.ValueObject;
 
 import java.io.*;
 import java.util.Iterator;
@@ -19,90 +21,7 @@ import java.util.function.Function;
  *
  * @param <T> the type of a Node's value.
  */
-public interface RoseTree<T> extends Tree<T, RoseTree<?>, RoseTree<T>> {
-
-    @Override
-    default String getName() {
-        return RoseTree.class.getSimpleName();
-    }
-
-    @Override
-    List<NonNil<T>> getChildren();
-
-    // -- Foldable implementation
-
-    @Override
-    default Iterator<T> iterator() {
-        // TODO: create an iterator based on an Ordering which is part of the Tree instance
-        return flatten().iterator();
-    }
-
-    @Override
-    default <U> RoseTree<U> unit(U element) {
-        return new Leaf<>(element);
-    }
-
-    @Override
-    default RoseTree<T> zero() {
-        return Nil.instance();
-    }
-
-    @Override
-    default RoseTree<T> combine(RoseTree<T> tree1, RoseTree<T> tree2) {
-        if (tree1.isEmpty()) {
-            return tree2;
-        } else if (tree2.isEmpty()) {
-            return tree1;
-        } else {
-            return new Branch<>(tree1.getValue(), tree1.getChildren().prepend((NonNil<T>) tree2));
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U, TREE extends Manifest<U, RoseTree<?>>> RoseTree<U> flatMap(Function<? super T, TREE> mapper) {
-        if (isEmpty()) {
-            return Nil.instance();
-        } else if (isLeaf()) {
-            return (RoseTree<U>) mapper.apply(getValue());
-        } else {
-            final RoseTree<U> tree = (RoseTree<U>) mapper.apply(getValue());
-            final List children = getChildren().map(child -> child.flatMap(mapper));
-            /*
-             * DEV-NOTE: The constructor of Branch and the factory method RoseTree.of
-             * expect NonNil children. With the implementation of flatMap this implies that
-             * the result of the method getChildren().map is of type List<NonNil>.
-             */
-            return new Branch<>(tree.getValue(), tree.getChildren().appendAll(children));
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> RoseTree<U> map(Function<? super T, ? extends U> mapper) {
-        if (isEmpty()) {
-            return Nil.instance();
-        } else if (isLeaf()) {
-            return new Leaf<>(mapper.apply(getValue()));
-        } else {
-            final U value = mapper.apply(getValue());
-            final List children = getChildren().map(tree -> tree.map(mapper));
-            /*
-             * DEV-NOTE: The constructor of Branch and the factory method RoseTree.of
-             * expect NonNil children. With the implementation of map this implies that
-             * the result of the method getChildren().map is of type List<NonNil>.
-             */
-            return new Branch<>(value, (List<NonNil<U>>) children);
-        }
-    }
-
-// TODO
-//    zip(Iterable)
-//    zipAll(Iterable, Object, Object)
-//    zipWithIndex()
-//    unzip(java.util.function.Function)
-
-    // -- factory methods
+public interface RoseTree<T> extends Tree<T> {
 
     @SafeVarargs
     static <T> NonNil<T> of(T value, NonNil<T>... children) {
@@ -129,16 +48,43 @@ public interface RoseTree<T> extends Tree<T, RoseTree<?>, RoseTree<T>> {
         return Nil.instance();
     }
 
-    // -- RoseTree implementations
+    @Override
+    List<NonNil<T>> getChildren();
+
+    @Override
+    default Iterator<T> iterator() {
+        // TODO: create an iterator based on an Ordering which is part of the Tree instance
+        return flatten().iterator();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> RoseTree<U> map(Function<? super T, ? extends U> mapper) {
+        if (isEmpty()) {
+            return Nil.instance();
+        } else if (isLeaf()) {
+            return new Leaf<>(mapper.apply(getValue()));
+        } else {
+            final U value = mapper.apply(getValue());
+            final List children = getChildren().map(tree -> tree.map(mapper));
+            /*
+             * DEV-NOTE: The constructor of Branch and the factory method RoseTree.of
+             * expect NonNil children. With the implementation of map this implies that
+             * the result of the method getChildren().map is of type List<NonNil>.
+             */
+            return new Branch<>(value, (List<NonNil<U>>) children);
+        }
+    }
 
     /**
      * Implementors of this tagging interface indicate that they are not Nil.
+     *
      * @param <T> Component type of the rose tree.
      */
     static interface NonNil<T> extends RoseTree<T> {
     }
 
-    static final class Leaf<T> extends AbstractRoseTree<T> implements NonNil<T>, Serializable {
+    static final class Leaf<T> extends AbstractRoseTree<T> implements NonNil<T>, ValueObject {
 
         private static final long serialVersionUID = -6301673452872179894L;
 
@@ -167,9 +113,14 @@ public interface RoseTree<T> extends Tree<T, RoseTree<?>, RoseTree<T>> {
         public List<NonNil<T>> getChildren() {
             return List.nil();
         }
+
+        @Override
+        public Tuple1<T> unapply() {
+            return Tuple.of(value);
+        }
     }
 
-    static final class Branch<T> extends AbstractRoseTree<T> implements NonNil<T>, Serializable {
+    static final class Branch<T> extends AbstractRoseTree<T> implements NonNil<T>, ValueObject {
 
         private static final long serialVersionUID = -1368274890360703478L;
 
@@ -201,6 +152,11 @@ public interface RoseTree<T> extends Tree<T, RoseTree<?>, RoseTree<T>> {
         @Override
         public List<NonNil<T>> getChildren() {
             return children;
+        }
+
+        @Override
+        public Tuple2<T, List<NonNil<T>>> unapply() {
+            return Tuple.of(value, children);
         }
 
         // -- Serializable implementation
@@ -298,7 +254,7 @@ public interface RoseTree<T> extends Tree<T, RoseTree<?>, RoseTree<T>> {
         }
     }
 
-    static final class Nil<T> extends AbstractRoseTree<T> implements Serializable {
+    static final class Nil<T> extends AbstractRoseTree<T> implements ValueObject {
 
         private static final long serialVersionUID = 4966576338736993154L;
 
@@ -334,6 +290,11 @@ public interface RoseTree<T> extends Tree<T, RoseTree<?>, RoseTree<T>> {
             return List.nil();
         }
 
+        @Override
+        public Tuple0 unapply() {
+            return Tuple0.instance();
+        }
+
         // -- Serializable implementation
 
         /**
@@ -346,8 +307,6 @@ public interface RoseTree<T> extends Tree<T, RoseTree<?>, RoseTree<T>> {
             return INSTANCE;
         }
     }
-
-    // -- Tree API shared by implementations
 
     static abstract class AbstractRoseTree<T> implements RoseTree<T> {
 
@@ -372,13 +331,13 @@ public interface RoseTree<T> extends Tree<T, RoseTree<?>, RoseTree<T>> {
             } else {
                 // need cast because of jdk 1.8.0_25 compiler error
                 //noinspection RedundantCast
-                return (int) getChildren().map(Objects::hashCode).foldLeft(31 + Objects.hashCode(getValue()), (i,j) -> i * 31 + j);
+                return (int) getChildren().map(Objects::hashCode).foldLeft(31 + Objects.hashCode(getValue()), (i, j) -> i * 31 + j);
             }
         }
 
         @Override
         public String toString() {
-            return toLispString();
+            return RoseTree.class.getSimpleName() + toLispString();
         }
     }
 }

@@ -5,22 +5,15 @@
  */
 package javaslang.collection;
 
-import javaslang.Algebra;
-import javaslang.Manifest;
+import javaslang.Algebra.*;
 import javaslang.Strings;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Queue;
-import java.util.function.Function;
 
-public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?, SELF>>
-        extends Traversable<T, CLASS, SELF>, Algebra.Monad<T, CLASS>, Algebra.Monoid<SELF> {
-
-    /**
-     * Returns the name of the Tree implementation (e.g. BTree, RTree).
-     */
-    String getName();
+public interface Tree<T> extends Functor<T> {
 
     /**
      * Gets the value of this tree.
@@ -60,7 +53,7 @@ public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?
      *
      * @return The empty list, if this is the empty tree or a leaf, otherwise the non-empty list of children.
      */
-    List<? extends Tree<T, ?, ?>> getChildren();
+    List<? extends Tree<T>> getChildren();
 
     /**
      * Counts the number of branches of this tree. The empty tree and a leaf have no branches.
@@ -102,12 +95,10 @@ public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?
     default int nodeCount() {
         if (isEmpty()) {
             return 0;
-        } else if (isLeaf()) {
-            return 1;
         } else {
             // need cast because of jdk 1.8.0_25 compiler error
             //noinspection RedundantCast
-            return (int) getChildren().foldLeft(1, (count, child) -> count + child.nodeCount());
+            return 1 + getChildren().foldLeft(0, (count, child) -> count + child.nodeCount());
         }
     }
 
@@ -123,7 +114,7 @@ public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?
         } else if (Objects.equals(getValue(), element)) {
             return true;
         } else {
-            for (Tree<T, ?, ?> child : getChildren()) {
+            for (Tree<T> child : getChildren()) {
                 if (child.contains(element)) {
                     return true;
                 }
@@ -132,25 +123,17 @@ public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?
         }
     }
 
-    // -- tree order and traversal
-
-// TODO:
-//    Order getOrder();
-//
-//    Tree<T, CLASS, SELF> setOrder(Order order);
-
-    // TODO: traverse(Consumer<T>), traverse(Consumer<T>, Traversal)
-    // TODO: traverse(Predicate<T>)/*true = go on*/, traverse(Predicate<T>, Traversal)
-
-    // -- tree conversion
-
-    /**
-     * Shortcut for {@code tree.foldRight(List.nil(), (x,xs) -> xs.prepend(x))}.
-     *
-     * @return A List of the elements of this Tree, preserving the current order.
-     */
-    default List<T> toList() {
-        return foldRight(List.nil(), (x,xs) -> xs.prepend(x));
+    default Iterator<T> iterator() {
+        if (isEmpty()) {
+            return List.<T> nil().iterator();
+        } else {
+            class Local {
+                Stream<T> preOrder(Tree<T> tree) {
+                    return new Stream.Cons<>(tree.getValue(), () -> Stream.of(tree.getChildren()).flatMap(Local.this::preOrder));
+                }
+            }
+            return new Local().preOrder(this).iterator();
+        }
     }
 
     /**
@@ -163,33 +146,33 @@ public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?
 
     default List<T> flatten(Order order) {
         class Flatten {
-            List<T> preOrder(Tree<T, ?, ?> tree) {
+            List<T> preOrder(Tree<T> tree) {
                 return tree.getChildren()
                         .foldLeft(List.of(tree.getValue()), (acc, child) -> acc.appendAll(preOrder(child)));
             }
-            List<T> inOrder(Tree<T, ?, ?> tree) {
+            List<T> inOrder(Tree<T> tree) {
                 if (tree.isLeaf()) {
                     return List.of(tree.getValue());
                 } else {
-                    final List<? extends Tree<T, ?, ?>> children = tree.getChildren();
+                    final List<? extends Tree<T>> children = tree.getChildren();
                     return children.tail().foldLeft(List.<T>nil(), (acc, child) -> acc.appendAll(inOrder(child)))
                             .prepend(tree.getValue())
                             .prependAll(inOrder(children.head()));
                 }
             }
-            List<T> postOrder(Tree<T, ?, ?> tree) {
+            List<T> postOrder(Tree<T> tree) {
                 return tree.getChildren()
                         .foldLeft(List.<T> nil(), (acc, child) -> acc.appendAll(postOrder(child)))
                         .append(tree.getValue());
             }
-            List<T> levelOrder(Tree<T, ?, ?> tree) {
+            List<T> levelOrder(Tree<T> tree) {
                 List<T> result = List.nil();
-                final Queue<Tree<T, ?, ?>> queue = new LinkedList<>();
+                final Queue<Tree<T>> queue = new LinkedList<>();
                 queue.add(tree);
                 while (!queue.isEmpty()) {
-                    final Tree<T, ?, ?> next = queue.remove();
+                    final Tree<T> next = queue.remove();
                     result = result.prepend(next.getValue());
-                    queue.addAll(next.getChildren().toArrayList());
+                    queue.addAll(next.getChildren().toJavaList());
                 }
                 return result.reverse();
             }
@@ -208,11 +191,9 @@ public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?
         }
     }
 
-    // -- toString
-
     default String toLispString() {
         class Local {
-            String toString(Tree<T, ?, ?> tree) {
+            String toString(Tree<T> tree) {
                 if (tree.isEmpty()) {
                     return "()";
                 } else {
@@ -229,12 +210,12 @@ public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?
             }
         }
         final String string = new Local().toString(this);
-        return getName() + (isLeaf() ? "(" + string + ")" : string);
+        return isLeaf() ? "(" + string + ")" : string;
     }
 
     default String toIndentedString() {
         class Local {
-            String toString(Tree<T, ?, ?> tree, int depth) {
+            String toString(Tree<T> tree, int depth) {
                 if (tree.isEmpty()) {
                     return "";
                 } else {
@@ -251,36 +232,8 @@ public interface Tree<T, CLASS extends Tree<?, CLASS, ?>, SELF extends Tree<T, ?
                 }
             }
         }
-        return getName() + ":" + new Local().toString(this, 0);
+        return new Local().toString(this, 0);
     }
-
-    // -- Object.*
-
-    @Override
-    boolean equals(Object o);
-
-    @Override
-    int hashCode();
-
-    @Override
-    String toString();
-
-    // -- Foldable interface
-
-    @Override
-    <U> Tree<U, CLASS, ?> unit(U element);
-
-    @Override
-    SELF zero();
-
-    @Override
-    SELF combine(SELF t1, SELF t2);
-
-    <U, TREE extends Manifest<U, CLASS>> Tree<U, CLASS, ?> flatMap(Function<? super T, TREE> mapper);
-
-    <U> Tree<U, CLASS, ?> map(Function<? super T, ? extends U> mapper);
-
-    // -- types
 
     /*
      * See http://en.wikipedia.org/wiki/Tree_traversal, http://rosettacode.org/wiki/Tree_traversal,

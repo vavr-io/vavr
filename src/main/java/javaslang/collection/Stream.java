@@ -97,7 +97,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         }
     }
 
-    static Stream<Integer> of(int from, int to) {
+    static Stream<Integer> range(int from, int to) {
         Require.isTrue(from <= to, String.format("from %s > to %s", from, to));
         return Stream.of(() -> new Iterator<Integer>() {
             int i = from;
@@ -825,7 +825,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
 
         @Override
         public String toString() {
-            return map(Strings::toString).join(", ", "Stream(", ")");
+            return Stream.class.getSimpleName() + join(", ", "(", ")");
         }
     }
 }

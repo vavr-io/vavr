@@ -61,8 +61,6 @@ public class BinaryTreeTest {
     public void shouldZipWithIndex() {
         System.out.println(tree);
         System.out.println(tree.flatten());
-        System.out.println(tree.zipWithIndex());
-        System.out.println(tree.take(5));
         // broken: System.out.println(tree.flatMap(i -> leaf(i+10)));
     }
 }

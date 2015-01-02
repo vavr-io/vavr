@@ -107,7 +107,7 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
         }
     }
 
-    static List<Integer> of(int from, int to) {
+    static List<Integer> range(int from, int to) {
         Require.isTrue(from <= to, String.format("from %s > to %s", from, to));
         List<Integer> result = Nil.instance();
         for (int i = to; i >= from; i--) {
@@ -848,7 +848,7 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
 
         @Override
         public String toString() {
-            return map(Strings::toString).join(", ", "List(", ")");
+            return List.class.getSimpleName() + join(", ", "(", ")");
         }
     }
 }

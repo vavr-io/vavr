@@ -5,12 +5,12 @@
  */
 package javaslang.collection;
 
-import javaslang.Manifest;
 import javaslang.Require;
 import javaslang.Tuple;
+import javaslang.Tuple.*;
+import javaslang.ValueObject;
 
 import java.io.*;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -25,11 +25,76 @@ import java.util.function.Function;
  *
  * @param <T> the type of a tree node's value.
  */
-public interface BinaryTree<T> extends Tree<T, BinaryTree<?>, BinaryTree<T>> {
+public interface BinaryTree<T> extends Tree<T> {
 
-    @Override
-    default String getName() {
-        return BinaryTree.class.getSimpleName();
+    static <T> BinaryTree<T> of(BinaryTree<T> left, T value, BinaryTree<T> right) {
+        Require.nonNull(left, "left is null");
+        Require.nonNull(right, "right is null");
+        if (left.isEmpty() && right.isEmpty()) {
+            return new Leaf<>(value);
+        } else {
+            return new Branch<>(left, value, right);
+        }
+    }
+
+    /**
+     * Throws if left and right are Nil - if in doubt, use BinaryTree.of(left, value, right) instead.
+     */
+    static <T> Branch<T> branch(BinaryTree<T> left, T value, BinaryTree<T> right) {
+        Require.nonNull(left, "left is null");
+        Require.nonNull(right, "right is null");
+        Require.isFalse(left.isEmpty() && right.isEmpty(), "left and right are Nil - use BinaryTree.of(left, value, right) if in doubt.");
+        return new Branch<>(left, value, right);
+    }
+
+    static <T> Leaf<T> leaf(T value) {
+        return new Leaf<>(value);
+    }
+
+    static <T> Nil<T> nil() {
+        return Nil.instance();
+    }
+
+    /**
+     * Converts an Iterable to a balanced binary tree.
+     * <p/>
+     * Example: {@code BinaryTree.balance(List.of(1, 2, 3, 4, 5, 6)) = (1 (2 3 4) (5 6))}
+     *
+     * @param iterable An Iterable
+     * @param <T>      Element type
+     * @return A balanced tree containing all elements of the given iterable.
+     */
+    static <T> BinaryTree<T> balance(Iterable<T> iterable) {
+        final List<T> list = List.of(iterable);
+        if (list.isEmpty()) {
+            return Nil.instance();
+        } else {
+            final T value = list.head();
+            // DEV-NOTE: intentionally calling list.length()/2 instead of list.tail().length()/2
+            final Tuple2<List<T>, List<T>> split = list.tail().splitAt(list.length() / 2);
+            final BinaryTree<T> left = BinaryTree.balance(split._1);
+            final BinaryTree<T> right = BinaryTree.balance(split._2);
+            // DEV-NOTE: result may be a Leaf or a Branch
+            return BinaryTree.of(left, value, right);
+        }
+    }
+
+    /**
+     * Converts the given elements to a balanced binary tree.
+     * <p/>
+     * Example: {@code BinaryTree.balance(1, 2, 3, 4, 5, 6) = (1 (2 3 4) (5 6))}
+     *
+     * @param elements Elements
+     * @param <T>      Element type
+     * @return A balanced tree containing all given elements.
+     */
+    @SafeVarargs
+    static <T> BinaryTree<T> balance(T... elements) {
+        return BinaryTree.balance(List.of(elements));
+    }
+
+    default BinaryTree<T> balance() {
+        return BinaryTree.balance(flatten());
     }
 
     @Override
@@ -51,138 +116,16 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<?>, BinaryTree<T>> {
      */
     BinaryTree<T> right();
 
-    // -- Foldable implementation
-
-    @Override
-    default Iterator<T> iterator() {
-        // TODO: create an iterator based on an Ordering which is part of the Tree instance
-        return flatten().iterator();
-    }
-
-    @Override
-    default <U> BinaryTree<U> unit(U element) {
-        return new Leaf<>(element);
-    }
-
-    @Override
-    default BinaryTree<T> zero() {
-        return Nil.instance();
-    }
-
-    @Override
-    default BinaryTree<T> combine(BinaryTree<T> tree1, BinaryTree<T> tree2) {
-        if (tree1.isEmpty()) {
-            return tree2;
-        } else if (tree2.isEmpty()) {
-            return tree1;
-        } else if (tree1.isLeaf()) {
-            return new Branch<>(tree2, tree1.getValue(), Nil.instance());
-        } else {
-            return new Branch<>(combine(tree1.left(), tree2), tree1.getValue(), tree1.right());
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U, TREE extends Manifest<U, BinaryTree<?>>> BinaryTree<U> flatMap(Function<? super T, TREE> mapper) {
-        if (isEmpty()) {
-            return Nil.instance();
-        } else if (isLeaf()) {
-            return (BinaryTree<U>) mapper.apply(getValue());
-        } else {
-            final BinaryTree<U> tree = (BinaryTree<U>) mapper.apply(getValue());
-            final BinaryTree<U> left = left().flatMap(mapper).concat(tree.left());
-            final BinaryTree<U> right = right().flatMap(mapper).concat(tree.right());
-            return BinaryTree.of(left, tree.getValue(), right);
-        }
-    }
-
     @Override
     default <U> BinaryTree<U> map(Function<? super T, ? extends U> mapper) {
         if (isEmpty()) {
             return Nil.instance();
-        } else if (isLeaf()) {
-            return new Leaf<>(mapper.apply(getValue()));
         } else {
             return BinaryTree.of(left().map(mapper), mapper.apply(getValue()), right().map(mapper));
         }
     }
 
-// TODO
-//    zip(Iterable)
-//    zipAll(Iterable, Object, Object)
-//    zipWithIndex()
-//    unzip(java.util.function.Function)
-
-    // -- factory methods
-
-    static <T> BinaryTree<T> of(BinaryTree<T> left, T value, BinaryTree<T> right) {
-        Require.nonNull(left, "left is null");
-        Require.nonNull(right, "right is null");
-        if (left.isEmpty() && right.isEmpty()) {
-            return new Leaf<>(value);
-        } else {
-            return new Branch<>(left, value, right);
-        }
-    }
-
-    /**
-     * Throws if left and right are Nil - if in doubt, use BinaryTree.of(left, value, right) instead.
-     */
-    static <T> Branch<T> branch(BinaryTree<T> left, T value, BinaryTree<T> right) {
-        Require.nonNull(left, "left is null");
-        return new Branch<>(left, value, right);
-    }
-
-    static <T> Leaf<T> leaf(T value) {
-        return new Leaf<>(value);
-    }
-
-    static <T> Nil<T> nil() {
-        return Nil.instance();
-    }
-
-    /**
-     * Converts an Iterable to a balanced binary tree.
-     * <p/>
-     * Example: {@code BinaryTree.balance(List.of(1,2,3,4,5,6)) = (1 (2 3 4) (5 6))}
-     *
-     * @param iterable An Iterable
-     * @param <T> Element type
-     * @return A balanced tree containing all elements of the given iterable.
-     */
-    static <T> BinaryTree<T> balance(Iterable<T> iterable) {
-        final List<T> list = List.of(iterable);
-        if (list.isEmpty()) {
-            return Nil.instance();
-        } else {
-            final T value = list.head();
-            // DEV-NOTE: intentionally calling list.size()/2 instead of list.tail().size()/2
-            final Tuple.Tuple2<List<T>, List<T>> split = list.tail().splitAt(list.length() / 2);
-            final BinaryTree<T> left = BinaryTree.balance(split._1);
-            final BinaryTree<T> right = BinaryTree.balance(split._2);
-            // DEV-NOTE: result may be a Leaf or a Branch
-            return BinaryTree.of(left, value, right);
-        }
-    }
-
-    /**
-     * Converts the given elements to a balanced binary tree.
-     * <p/>
-     * Example: {@code BinaryTree.balance(1,2,3,4,5,6) = (1 (2 3 4) (5 6))}
-     *
-     * @param elements Elements
-     * @param <T> Element type
-     * @return A balanced tree containing all given elements.
-     */
-    @SafeVarargs
-    static <T> BinaryTree<T> balance(T... elements) {
-        return BinaryTree.balance(List.of(elements));
-    }
-
-    // -- BinaryTree implementations
-
-    static final class Leaf<T> extends AbstractBinaryTree<T> implements Serializable {
+    static final class Leaf<T> extends AbstractBinaryTree<T> implements ValueObject {
 
         private static final long serialVersionUID = -189719611914095083L;
 
@@ -194,12 +137,12 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<?>, BinaryTree<T>> {
 
         @Override
         public BinaryTree<T> left() {
-            throw new UnsupportedOperationException("left of Leaf");
+            return BinaryTree.nil();
         }
 
         @Override
         public BinaryTree<T> right() {
-            throw new UnsupportedOperationException("right of Leaf");
+            return BinaryTree.nil();
         }
 
         @Override
@@ -221,9 +164,14 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<?>, BinaryTree<T>> {
         public List<BinaryTree<T>> getChildren() {
             return List.nil();
         }
+
+        @Override
+        public Tuple1<T> unapply() {
+            return Tuple.of(value);
+        }
     }
 
-    static final class Branch<T> extends AbstractBinaryTree<T> implements Serializable {
+    static final class Branch<T> extends AbstractBinaryTree<T> implements ValueObject {
 
         private static final long serialVersionUID = -1368274890360703478L;
 
@@ -268,7 +216,12 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<?>, BinaryTree<T>> {
         @Override
         public List<BinaryTree<T>> getChildren() {
             // IntelliJ error: List.of(left, right).filter(tree -> !tree.isEmpty());
-            return List.<BinaryTree<T>> nil().prepend(right).prepend(left).filter(tree -> !tree.isEmpty());
+            return List.<BinaryTree<T>>nil().prepend(right).prepend(left).filter(tree -> !tree.isEmpty());
+        }
+
+        @Override
+        public Tuple3<BinaryTree<T>, T, BinaryTree<T>> unapply() {
+            return Tuple.of(left, value, right);
         }
 
         // -- Serializable implementation
@@ -368,7 +321,7 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<?>, BinaryTree<T>> {
         }
     }
 
-    static final class Nil<T> extends AbstractBinaryTree<T> implements Serializable {
+    static final class Nil<T> extends AbstractBinaryTree<T> implements ValueObject {
 
         private static final long serialVersionUID = 4966576338736993154L;
 
@@ -414,6 +367,11 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<?>, BinaryTree<T>> {
             return List.nil();
         }
 
+        @Override
+        public Tuple0 unapply() {
+            return Tuple0.instance();
+        }
+
         // -- Serializable implementation
 
         /**
@@ -426,8 +384,6 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<?>, BinaryTree<T>> {
             return INSTANCE;
         }
     }
-
-    // -- Tree API shared by implementations
 
     static abstract class AbstractBinaryTree<T> implements BinaryTree<T> {
 
@@ -452,13 +408,13 @@ public interface BinaryTree<T> extends Tree<T, BinaryTree<?>, BinaryTree<T>> {
             } else {
                 // need cast because of jdk 1.8.0_25 compiler error
                 //noinspection RedundantCast
-                return (int) getChildren().map(Objects::hashCode).foldLeft(31 + Objects.hashCode(getValue()), (i,j) -> i * 31 + j);
+                return (int) getChildren().map(Objects::hashCode).foldLeft(31 + Objects.hashCode(getValue()), (i, j) -> i * 31 + j);
             }
         }
 
         @Override
         public String toString() {
-            return toLispString();
+            return BinaryTree.class.getSimpleName() + toLispString();
         }
     }
 }

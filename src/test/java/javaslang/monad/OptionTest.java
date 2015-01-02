@@ -174,18 +174,6 @@ public class OptionTest {
 		assertThat(actual[0]).isEqualTo(-1);
 	}
 
-	// -- unit
-
-	@Test
-	public void shouldReturnNoneWhenCallingUnitOnNone() {
-		assertThat(None.instance().unit(1)).isEqualTo(None.instance());
-	}
-
-	@Test
-	public void shouldReturnNewSomeWhenCallingUnitOnSome() {
-		assertThat(new Some<>(1).unit("a")).isEqualTo(new Some<>("a"));
-	}
-
 	// -- equals
 
 	@Test

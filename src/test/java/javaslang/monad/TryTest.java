@@ -160,12 +160,6 @@ public class TryTest {
 		assertThat(failure().failed().get().getClass().getName()).isEqualTo(RuntimeException.class.getName());
 	}
 
-	@Test
-	public void shouldReturnSameFailureWhenUnitIsCalledOnFailure() {
-		final Failure<?> failure = new Failure<>(error());
-		assertThat(failure.unit("1")).isEqualTo(failure);
-	}
-
 	// equals
 
 	@Test
@@ -317,11 +311,6 @@ public class TryTest {
 	public void shouldThrowWhenCallingFailedOnSuccess() {
 		AssertionsExtensions.assertThat(() -> success().failed().get()).isThrowing(Failure.NonFatal.class,
 				"java.lang.UnsupportedOperationException: Success.failed()");
-	}
-
-	@Test
-	public void shouldCreateNewSuccessWhenUnitIsCalledOnSuccess() {
-		assertThat(new Success<>(1).unit("a")).isEqualTo(new Success<>("a"));
 	}
 
 	// equals

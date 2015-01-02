@@ -8,19 +8,7 @@ package javaslang;
 import java.io.Serializable;
 
 /**
- * Definition of the category of Value Objects, i.e. immutable, decomposable objects with an identity based on their
- * type and encapsulated values.
- * <p/>
- * This interface should be implemented by concrete classes only rather than extending it by other interfaces due to
- * its Serializable nature.
- * <p/>
- * By default a Value Object is not cloneable because of the following conclusion:
- * <blockquote>
- * "[...] , it doesn’t make sense for immutable classes to support object copying, because copies would be virtually indistinguishable from the original."
- * </blockquote>
- * <em>(see Effective Java, 2nd ed., p. 61)</em>.
- * <p/>
- * Other methods than {@link #unapply()} do not define new API rather than specifying the behavior of standard Java API.
+ * Value Objects are immutable, decomposable objects with an identity based on their type and encapsulated values.
  * <p/>
  * In particular the identity of a Value Object should be defined by its content by implementing
  * {@linkplain Object#equals(Object)}, {@linkplain Object#hashCode()} and {@linkplain Object#toString()}
@@ -28,6 +16,15 @@ import java.io.Serializable;
  * <p/>
  * The {@link #unapply()} method decomposes an Object by unwrapping it. This comes handy when using the
  * {@link javaslang.match.Match} API.
+ * <p/>
+ * This interface should be implemented by concrete classes rather than extending it by other interfaces due to
+ * its Serializable nature.
+ * <p/>
+ * Please note that a Value Object is not cloneable because of the following conclusion:
+ * <blockquote>
+ * "[...] , it doesn’t make sense for immutable classes to support object copying, because copies would be virtually indistinguishable from the original."
+ * </blockquote>
+ * <em>(see Effective Java, 2nd ed., p. 61)</em>.
  */
 public interface ValueObject extends Serializable {
 
@@ -77,17 +74,4 @@ public interface ValueObject extends Serializable {
      */
     @Override
     String toString();
-
-    // -- Clonable
-
-    /**
-     * Without loss of generality there is no need to clone immutable objects.
-     * If an object is a singleton instance, it is not allowed to be cloned.
-     *
-     * @return nothing
-     * @throws CloneNotSupportedException always
-     */
-    default Object clone() throws CloneNotSupportedException {
-        throw new CloneNotSupportedException("Immutable objects and singletons are not intended to be cloned.");
-    }
 }

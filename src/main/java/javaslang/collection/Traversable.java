@@ -31,7 +31,6 @@ import java.util.function.*;
  * <li>{@link #clear()}</li>
  * <li>{@link #contains(Object)}</li>
  * <li>{@link #containsAll(Iterable)}</li>
- * <li>{@link #forEach(Consumer)}</li>
  * <li>{@link #head()}</li>
  * <li>{@link #init()}</li>
  * <li>{@link #isEmpty()}</li>
@@ -300,7 +299,7 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
                         CharSequence prefix,
                         CharSequence suffix) {
         final StringBuilder builder = new StringBuilder(prefix);
-        map(Strings::toString).intersperse(String.valueOf(delimiter)).forEach(builder::append);
+        map(String::valueOf).intersperse(String.valueOf(delimiter)).forEach(builder::append);
         return builder.append(suffix).toString();
     }
 
