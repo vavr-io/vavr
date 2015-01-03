@@ -108,12 +108,23 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
     }
 
     static List<Integer> range(int from, int to) {
-        Require.isTrue(from <= to, String.format("from %s > to %s", from, to));
-        List<Integer> result = Nil.instance();
-        for (int i = to; i >= from; i--) {
-            result = result.prepend(i);
+        if (from == Integer.MIN_VALUE && to == Integer.MIN_VALUE) {
+            return List.of(Integer.MIN_VALUE);
+        } else {
+            List<Integer> result = Nil.instance();
+            for (int i = to; i >= from; i--) {
+                result = result.prepend(i);
+            }
+            return result;
         }
-        return result;
+    }
+
+    static List<Integer> until(int from, int to) {
+        if (to == Integer.MIN_VALUE) {
+            return Nil.instance();
+        } else {
+            return List.range(from, to - 1);
+        }
     }
 
     @Override

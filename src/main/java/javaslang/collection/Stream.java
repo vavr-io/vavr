@@ -5,11 +5,15 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
 import javaslang.Algebra.Monad;
 import javaslang.Algebra.Monoid;
+import javaslang.Manifest;
+import javaslang.Require;
+import javaslang.Tuple;
+import javaslang.ValueObject;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
@@ -32,6 +36,47 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         };
         final Function<ArrayList<T>, Stream<T>> finisher = Stream::of;
         return Collector.of(supplier, accumulator, combiner, finisher);
+    }
+
+    static Stream<Integer> gen(int from) {
+        return Stream.of(new Iterator<Integer>() {
+            int i = from;
+            boolean hasNext = true;
+
+            @Override
+            public boolean hasNext() {
+                return hasNext;
+            }
+
+            @Override
+            public Integer next() {
+                if (!hasNext) {
+                    throw new NoSuchElementException();
+                }
+                if (i == Integer.MAX_VALUE) {
+                    hasNext = false;
+                }
+                return i++;
+            }
+        });
+    }
+
+    static Stream<BigInteger> gen(BigInteger from) {
+        return Stream.of(new Iterator<BigInteger>() {
+            BigInteger i = from;
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public BigInteger next() {
+                final BigInteger value = i;
+                i = i.add(BigInteger.ONE);
+                return value;
+            }
+        });
     }
 
     /**
@@ -62,10 +107,12 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         Require.nonNull(elements, "elements is null");
         return Stream.of(new Iterator<T>() {
             int i = 0;
+
             @Override
             public boolean hasNext() {
                 return i < elements.length;
             }
+
             @Override
             public T next() {
                 return elements[i++];
@@ -91,6 +138,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         }
     }
 
+    // providing this method to save resources creating a Stream - makes no sense for collections in general
     static <T> Stream<T> of(Iterator<? extends T> iterator) {
         Require.nonNull(iterator, "iterator is null");
         if (iterator.hasNext()) {
@@ -101,18 +149,33 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
     }
 
     static Stream<Integer> range(int from, int to) {
-        Require.isTrue(from <= to, String.format("from %s > to %s", from, to));
-        return Stream.of(new Iterator<Integer>() {
-            int i = from;
-            @Override
-            public boolean hasNext() {
-                return i <= to;
-            }
-            @Override
-            public Integer next() {
-                return i++;
-            }
-        });
+        if (from > to) {
+            return Nil.instance();
+        } else if (from == Integer.MIN_VALUE && to == Integer.MIN_VALUE) {
+            return Stream.of(Integer.MIN_VALUE);
+        } else {
+            return Stream.of(new Iterator<Integer>() {
+                int i = from;
+
+                @Override
+                public boolean hasNext() {
+                    return i <= to;
+                }
+
+                @Override
+                public Integer next() {
+                    return i++;
+                }
+            });
+        }
+    }
+
+    static Stream<Integer> until(int from, int to) {
+        if (to == Integer.MIN_VALUE) {
+            return Nil.instance();
+        } else {
+            return Stream.range(from, to - 1);
+        }
     }
 
     @Override
@@ -179,7 +242,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         } else {
             @SuppressWarnings("unchecked")
             final Traversable<U> mapped = (Traversable<U>) mapper.apply(head());
-            return Nil.<U> instance().appendAll(mapped).appendAll(tail().flatMap(mapper));
+            return Nil.<U>instance().appendAll(mapped).appendAll(tail().flatMap(mapper));
         }
     }
 
@@ -564,7 +627,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
             final T head1 = isThisEmpty ? thisElem : this.head();
             final U head2 = isThatEmpty ? thatElem : that.head();
             final Stream<T> tail1 = isThisEmpty ? this : this.tail();
-            final Stream<U>  tail2 = isThatEmpty ? that : that.tail();
+            final Stream<U> tail2 = isThatEmpty ? that : that.tail();
             return new Cons<>(Tuple.of(head1, head2), () -> tail1.zipAll(tail2, thisElem, thatElem));
         }
     }

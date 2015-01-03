@@ -8,11 +8,13 @@ package javaslang.collection;
 import javaslang.Algebra.Monoid;
 import javaslang.Manifest;
 import javaslang.Require;
-import javaslang.Strings;
 import javaslang.Tuple.Tuple2;
 import javaslang.monad.Option;
 
-import java.util.function.*;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 
 /**
  * An interface for inherently recursive data structures. The order of elements is determined by {@link java.lang.Iterable#iterator()}, which may vary each time it is called.
