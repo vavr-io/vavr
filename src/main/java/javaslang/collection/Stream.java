@@ -60,7 +60,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
     @SafeVarargs
     static <T> Stream<T> of(T... elements) {
         Require.nonNull(elements, "elements is null");
-        return Stream.of(() -> new Iterator<T>() {
+        return Stream.of(new Iterator<T>() {
             int i = 0;
             @Override
             public boolean hasNext() {
@@ -87,19 +87,22 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
             final Stream<T> stream = (Stream<T>) elements;
             return stream;
         } else {
-            @SuppressWarnings("unchecked")
-            final Iterator<T> iterator = (Iterator<T>) elements.iterator();
-            if (iterator.hasNext()) {
-                return new Cons<>(iterator.next(), () -> Stream.of(() -> iterator));
-            } else {
-                return Nil.instance();
-            }
+            return Stream.of(elements.iterator());
+        }
+    }
+
+    static <T> Stream<T> of(Iterator<? extends T> iterator) {
+        Require.nonNull(iterator, "iterator is null");
+        if (iterator.hasNext()) {
+            return new Cons<>(iterator.next(), () -> Stream.of(iterator));
+        } else {
+            return Nil.instance();
         }
     }
 
     static Stream<Integer> range(int from, int to) {
         Require.isTrue(from <= to, String.format("from %s > to %s", from, to));
-        return Stream.of(() -> new Iterator<Integer>() {
+        return Stream.of(new Iterator<Integer>() {
             int i = from;
             @Override
             public boolean hasNext() {
