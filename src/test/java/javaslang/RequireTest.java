@@ -10,40 +10,66 @@ import javaslang.Require.UnsatisfiedRequirementException;
 
 import org.junit.Test;
 
-public class RequirementsTest {
+public class RequireTest {
 
 	@Test
 	public void shouldNotBeInstantiable() {
 		AssertionsExtensions.assertThat(Require.class).isNotInstantiable();
 	}
 
-	// -- require(condition, message)
+	// -- Require.isFalse(condition, message)
 
 	@Test
-	public void shouldThrowOnRequireWithMessageWhenConditionIsFalse() {
+	public void shouldThrowOnRequireIsFalseWithMessageWhenConditionIsTrue() {
+		AssertionsExtensions.assertThat(() -> Require.isFalse(true, "true")).isThrowing(
+				UnsatisfiedRequirementException.class, "true");
+	}
+
+	@Test
+	public void shouldPassOnRequireIsFalseWithMessageWhenConditionIsFalse() {
+		Require.isFalse(false, "");
+	}
+
+	// -- Require.isFalse(condition, () -> message)
+
+	@Test
+	public void shouldThrowOnRequireIsFalseWithMessageSupplierWhenConditionIsTrue() {
+		AssertionsExtensions.assertThat(() -> Require.isFalse(true, () -> "true")).isThrowing(
+				UnsatisfiedRequirementException.class, "true");
+	}
+
+	@Test
+	public void shouldPassOnRequireIsFalseWithMessageSupplierWhenConditionIsTrue() {
+		Require.isFalse(false, () -> "");
+	}
+
+	// -- Require.isTrue(condition, message)
+
+	@Test
+	public void shouldThrowOnRequireIsTrueWithMessageWhenConditionIsFalse() {
 		AssertionsExtensions.assertThat(() -> Require.isTrue(false, "false")).isThrowing(
 				UnsatisfiedRequirementException.class, "false");
 	}
 
 	@Test
-	public void shouldPassOnRequireWithMessageWhenConditionIsTrue() {
+	public void shouldPassOnRequireIsTrueWithMessageWhenConditionIsTrue() {
 		Require.isTrue(true, "");
 	}
 
-	// -- require(condition, () -> message)
+	// -- Require.isTrue(condition, () -> message)
 
 	@Test
-	public void shouldThrowOnRequireWithMessageSupplierWhenConditionIsFalse() {
+	public void shouldThrowOnRequireIsTrueWithMessageSupplierWhenConditionIsFalse() {
 		AssertionsExtensions.assertThat(() -> Require.isTrue(false, () -> "false")).isThrowing(
 				UnsatisfiedRequirementException.class, "false");
 	}
 
 	@Test
-	public void shouldPassOnRequireWithMessageSupplierWhenConditionIsTrue() {
+	public void shouldPassOnRequireIsTrueWithMessageSupplierWhenConditionIsTrue() {
 		Require.isTrue(true, () -> "");
 	}
 
-	// -- requireNonNull(obj)
+	// -- Require.nonNull(obj)
 
 	@Test
 	public void shouldRequireNonNullOnNonNull() {
@@ -57,7 +83,7 @@ public class RequirementsTest {
 				UnsatisfiedRequirementException.class, "Object is null");
 	}
 
-	// -- requireNonNull(obj, message)
+	// -- Require.nonNull(obj, message)
 
 	@Test
 	public void shouldRequireNonNullOnNonNullWithMessage() {
@@ -71,7 +97,7 @@ public class RequirementsTest {
 				UnsatisfiedRequirementException.class, "null");
 	}
 
-	// -- requireNonNull(obj, () -> message)
+	// -- Require.nonNull(obj, () -> message)
 
 	@Test
 	public void shouldRequireNonNullOnNonNullWithMessageSupplier() {
@@ -85,7 +111,7 @@ public class RequirementsTest {
 				UnsatisfiedRequirementException.class, "null");
 	}
 
-	// -- requireNotNullOrEmpty(array)
+	// -- Require.notNullOrEmpty(array)
 
 	@Test
 	public void shouldThrowOnRequireNotNullOrEmptyForArrayWhenNull() {
@@ -107,7 +133,7 @@ public class RequirementsTest {
 		assertThat(Require.notNullOrEmpty(array) == array).isTrue();
 	}
 
-	// -- requireNotNullOrEmpty(array, message)
+	// -- Require.notNullOrEmpty(array, message)
 
 	@Test
 	public void shouldThrowOnRequireNotNullOrEmptyForArrayWithMessageWhenNull() {
@@ -129,7 +155,7 @@ public class RequirementsTest {
 		assertThat(Require.notNullOrEmpty(array, "") == array).isTrue();
 	}
 
-	// -- requireNotNullOrEmpty(array, () -> message)
+	// -- Require.notNullOrEmpty(array, () -> message)
 
 	@Test
 	public void shouldThrowOnRequireNotNullOrEmptyForArrayWithMessageSupplierWhenNull() {
@@ -151,7 +177,7 @@ public class RequirementsTest {
 		assertThat(Require.notNullOrEmpty(array, () -> "") == array).isTrue();
 	}
 
-	// -- requireNotNullOrEmpty(charSequence)
+	// -- Require.notNullOrEmpty(charSequence)
 
 	@Test
 	public void shouldThrowOnRequireNotNullOrEmptyForCharSequenceWhenNull() {
@@ -173,7 +199,7 @@ public class RequirementsTest {
 		assertThat(Require.notNullOrEmpty(charSequence) == charSequence).isTrue();
 	}
 
-	// -- requireNotNullOrEmpty(array, message)
+	// -- Require.notNullOrEmpty(array, message)
 
 	@Test
 	public void shouldThrowOnRequireNotNullOrEmptyForCharSequenceWithMessageWhenNull() {
@@ -195,7 +221,7 @@ public class RequirementsTest {
 		assertThat(Require.notNullOrEmpty(charSequence, "") == charSequence).isTrue();
 	}
 
-	// -- requireNotNullOrEmpty(charSequence, () -> message)
+	// -- Require.notNullOrEmpty(charSequence, () -> message)
 
 	@Test
 	public void shouldThrowOnRequireNotNullOrEmptyForCharSequenceWithMessageSupplierWhenNull() {
@@ -219,7 +245,7 @@ public class RequirementsTest {
 		assertThat(Require.notNullOrEmpty(charSequence, () -> "") == charSequence).isTrue();
 	}
 
-	// -- requireNotNullOrEmptyTrimmed(charSequence)
+	// -- Require.notNullOrEmptyTrimmed(charSequence)
 
 	@Test
 	public void shouldThrowOnRequireNotNullOrEmptyTrimmedForCharSequenceWhenNull() {
@@ -248,7 +274,7 @@ public class RequirementsTest {
 		assertThat(Require.notNullOrEmptyTrimmed(charSequence) == charSequence).isTrue();
 	}
 
-	// -- requireNotNullOrEmptyTrimmed(array, message)
+	// -- Require.notNullOrEmptyTrimmed(array, message)
 
 	@Test
 	public void shouldThrowOnRequireNotNullOrEmptyTrimmedForCharSequenceWithMessageWhenNull() {
@@ -280,7 +306,7 @@ public class RequirementsTest {
 		assertThat(Require.notNullOrEmptyTrimmed(charSequence, "") == charSequence).isTrue();
 	}
 
-	// -- requireNotNullOrEmptyTrimmed(charSequence, () -> message)
+	// -- Require.notNullOrEmptyTrimmed(charSequence, () -> message)
 
 	@Test
 	public void shouldThrowOnRequireNotNullOrEmptyTrimmedForCharSequenceWithMessageSupplierWhenNull() {

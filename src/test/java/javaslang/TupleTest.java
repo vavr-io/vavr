@@ -49,6 +49,12 @@ public class TupleTest {
 	}
 
 	@Test
+	public void shouldUnapplyTuple0() {
+		final Tuple tuple = Tuple.empty();
+		assertThat(tuple.unapply()).isEqualTo(tuple);
+	}
+
+	@Test
 	public void shouldEqualSameTuple0Instances() {
 		final Tuple0 t = tuple0();
 		assertThat(t.equals(t)).isTrue();
@@ -94,6 +100,12 @@ public class TupleTest {
 	}
 
 	@Test
+	public void shouldUnapplyTuple1() {
+		final Tuple tuple = Tuple.of(1);
+		assertThat(tuple.unapply()).isEqualTo(tuple);
+	}
+
+	@Test
 	public void shouldEqualSameTuple1Instances() {
 		final Tuple1<?> t = tuple1();
 		assertThat(t.equals(t)).isTrue();
@@ -130,6 +142,12 @@ public class TupleTest {
 	@Test
 	public void shouldReturnCorrectArityOfTuple2() {
 		assertThat(tuple2().arity()).isEqualTo(2);
+	}
+
+	@Test
+	public void shouldUnapplyTuple2() {
+		final Tuple tuple = Tuple.of(1, 2);
+		assertThat(tuple.unapply()).isEqualTo(tuple);
 	}
 
 	@Test
@@ -172,6 +190,12 @@ public class TupleTest {
 	}
 
 	@Test
+	public void shouldUnapplyTuple3() {
+		final Tuple tuple = Tuple.of(1, 2, 3);
+		assertThat(tuple.unapply()).isEqualTo(tuple);
+	}
+
+	@Test
 	public void shouldEqualSameTuple3Instances() {
 		final Tuple3<?, ?, ?> t = tuple3();
 		assertThat(t.equals(t)).isTrue();
@@ -208,6 +232,12 @@ public class TupleTest {
 	@Test
 	public void shouldReturnCorrectArityOfTuple4() {
 		assertThat(tuple4().arity()).isEqualTo(4);
+	}
+
+	@Test
+	public void shouldUnapplyTuple4() {
+		final Tuple tuple = Tuple.of(1, 2, 3, 4);
+		assertThat(tuple.unapply()).isEqualTo(tuple);
 	}
 
 	@Test
@@ -250,6 +280,12 @@ public class TupleTest {
 	}
 
 	@Test
+	public void shouldUnapplyTuple5() {
+		final Tuple tuple = Tuple.of(1, 2, 3, 4, 5);
+		assertThat(tuple.unapply()).isEqualTo(tuple);
+	}
+
+	@Test
 	public void shouldEqualSameTuple5Instances() {
 		final Tuple5<?, ?, ?, ?, ?> t = tuple5();
 		assertThat(t.equals(t)).isTrue();
@@ -286,6 +322,12 @@ public class TupleTest {
 	@Test
 	public void shouldReturnCorrectArityOfTuple6() {
 		assertThat(tuple6().arity()).isEqualTo(6);
+	}
+
+	@Test
+	public void shouldUnapplyTuple6() {
+		final Tuple tuple = Tuple.of(1, 2, 3, 4, 5, 6);
+		assertThat(tuple.unapply()).isEqualTo(tuple);
 	}
 
 	@Test
@@ -328,6 +370,12 @@ public class TupleTest {
 	}
 
 	@Test
+	public void shouldUnapplyTuple7() {
+		final Tuple tuple = Tuple.of(1, 2, 3, 4, 5, 6, 7);
+		assertThat(tuple.unapply()).isEqualTo(tuple);
+	}
+
+	@Test
 	public void shouldEqualSameTuple7Instances() {
 		final Tuple7<?, ?, ?, ?, ?, ?, ?> t = tuple7();
 		assertThat(t.equals(t)).isTrue();
@@ -364,6 +412,12 @@ public class TupleTest {
 	@Test
 	public void shouldReturnCorrectArityOfTuple8() {
 		assertThat(tuple8().arity()).isEqualTo(8);
+	}
+
+	@Test
+	public void shouldUnapplyTuple8() {
+		final Tuple tuple = Tuple.of(1, 2, 3, 4, 5, 6, 7, 8);
+		assertThat(tuple.unapply()).isEqualTo(tuple);
 	}
 
 	@Test
@@ -406,6 +460,12 @@ public class TupleTest {
 	}
 
 	@Test
+	public void shouldUnapplyTuple9() {
+		final Tuple tuple = Tuple.of(1, 2, 3, 4, 5, 6, 7, 8, 9);
+		assertThat(tuple.unapply()).isEqualTo(tuple);
+	}
+
+	@Test
 	public void shouldEqualSameTuple9Instances() {
 		final Tuple9<?, ?, ?, ?, ?, ?, ?, ?, ?> t = tuple9();
 		assertThat(t.equals(t)).isTrue();
@@ -442,6 +502,12 @@ public class TupleTest {
 	@Test
 	public void shouldReturnCorrectArityOfTuple10() {
 		assertThat(tuple10().arity()).isEqualTo(10);
+	}
+
+	@Test
+	public void shouldUnapplyTuple10() {
+		final Tuple tuple = Tuple.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+		assertThat(tuple.unapply()).isEqualTo(tuple);
 	}
 
 	@Test
@@ -485,6 +551,12 @@ public class TupleTest {
 	}
 
 	@Test
+	public void shouldUnapplyTuple11() {
+		final Tuple tuple = Tuple.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
+		assertThat(tuple.unapply()).isEqualTo(tuple);
+	}
+
+	@Test
 	public void shouldEqualSameTuple11Instances() {
 		final Tuple11<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> t = tuple11();
 		assertThat(t.equals(t)).isTrue();
@@ -525,6 +597,12 @@ public class TupleTest {
 	}
 
 	@Test
+	public void shouldUnapplyTuple12() {
+		final Tuple tuple = Tuple.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+		assertThat(tuple.unapply()).isEqualTo(tuple);
+	}
+
+	@Test
 	public void shouldEqualSameTuple12Instances() {
 		final Tuple12<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> t = tuple12();
 		assertThat(t.equals(t)).isTrue();
@@ -562,6 +640,12 @@ public class TupleTest {
 	@Test
 	public void shouldReturnCorrectArityOfTuple13() {
 		assertThat(tuple13().arity()).isEqualTo(13);
+	}
+
+	@Test
+	public void shouldUnapplyTuple13() {
+		final Tuple tuple = Tuple.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
+		assertThat(tuple.unapply()).isEqualTo(tuple);
 	}
 
 	@Test

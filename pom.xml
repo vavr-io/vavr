@@ -56,7 +56,6 @@ Profile 'release-sign-artifacts':
 		<eclipse.lifecycle.mapping.version>1.0.0</eclipse.lifecycle.mapping.version>
 		<java.version>1.8</java.version>
 		<generator.dir>javaslang/generator</generator.dir>
-		<generator.files>${generator.dir}/**/*</generator.files>
 		<generated-sources.dir>${project.build.directory}/generated-sources</generated-sources.dir>
 		<junit.version>4.12-beta-3</junit.version>
 		<maven.build-helper.version>1.9.1</maven.build-helper.version>
@@ -112,7 +111,7 @@ Profile 'release-sign-artifacts':
 						</goals>
 						<configuration>
 							<includes>
-								<include>${generator.files}</include>
+								<include>${generator.dir}/**/*</include>
 							</includes>
 						</configuration>
 					</execution>
@@ -124,7 +123,7 @@ Profile 'release-sign-artifacts':
 						</goals>
 						<configuration>
 							<excludes>
-								<exclude>${generator.files}</exclude>
+								<exclude>${generator.dir}/**/*</exclude>
 							</excludes>
 						</configuration>
 					</execution>
@@ -167,7 +166,7 @@ Profile 'release-sign-artifacts':
 						</goals>
 						<configuration>
 							<excludes>
-								<exclude>${generator.dir}/**</exclude>
+								<exclude>${generator.dir}/**/*</exclude>
 							</excludes>
 						</configuration>
 					</execution>
@@ -251,6 +250,11 @@ Profile 'release-sign-artifacts':
 						<groupId>org.jacoco</groupId>
 						<artifactId>jacoco-maven-plugin</artifactId>
 						<version>${maven.jacoco.version}</version>
+						<configuration>
+							<excludes>
+								<exclude>${generator.dir}/**</exclude>
+							</excludes>
+						</configuration>
 						<executions>
 							<execution>
 								<id>prepare-agent</id>

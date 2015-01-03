@@ -15,6 +15,7 @@ import java.util.Objects;
 
 import javaslang.AssertionsExtensions;
 import javaslang.AssertionsExtensions.CheckedRunnable;
+import javaslang.Tuple;
 import javaslang.monad.Either.Left;
 import javaslang.monad.Either.LeftProjection;
 import javaslang.monad.Either.Right;
@@ -34,6 +35,13 @@ public class EitherTest {
 	@Test
 	public void shouldReturnFalseWhenCallingIsRightOnLeft() {
 		assertThat(new Left<>(1).isRight()).isFalse();
+	}
+
+	// unapply
+
+	@Test
+	public void shouldUnapplyLeft() {
+		assertThat(new Left<>(1).unapply()).isEqualTo(Tuple.of(1));
 	}
 
 	// equals
@@ -294,6 +302,13 @@ public class EitherTest {
 	@Test
 	public void shouldReturnFalseWhenCallingIsLeftOnRight() {
 		assertThat(new Right<>(1).isLeft()).isFalse();
+	}
+
+	// unapply
+
+	@Test
+	public void shouldUnapplyRight() {
+		assertThat(new Right<>(1).unapply()).isEqualTo(Tuple.of(1));
 	}
 
 	// equals

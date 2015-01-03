@@ -12,6 +12,7 @@ import java.util.Objects;
 
 import javaslang.AssertionsExtensions;
 import javaslang.Serializables;
+import javaslang.Tuple;
 import javaslang.monad.Option.None;
 import javaslang.monad.Option.Some;
 
@@ -172,6 +173,18 @@ public class OptionTest {
 		final int[] actual = new int[] { -1 };
 		Option.<Integer> none().forEach(i -> actual[0] = i);
 		assertThat(actual[0]).isEqualTo(-1);
+	}
+
+	// -- unapply
+
+	@Test
+	public void shouldUnapplyNone() {
+		assertThat(None.instance().unapply()).isEqualTo(Tuple.empty());
+	}
+
+	@Test
+	public void shouldUnapplySome() {
+		assertThat(new Some<>(1).unapply()).isEqualTo(Tuple.of(1));
 	}
 
 	// -- equals

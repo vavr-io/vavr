@@ -14,6 +14,7 @@ import java.util.Objects;
 
 import javaslang.AssertionsExtensions;
 import javaslang.Serializables;
+import javaslang.Tuple;
 import javaslang.monad.Try.Failure;
 import javaslang.monad.Try.Success;
 
@@ -35,6 +36,12 @@ public class TryTest {
 	public void shouldDetectNonFatalException() throws Exception {
 		final Failure.Cause cause = Failure.Cause.of(new StackOverflowError());
 		assertThat(cause.isFatal()).isFalse();
+	}
+
+	@Test
+	public void shouldUnapplyCause() {
+		final Exception exception = new Exception();
+		assertThat(Failure.Cause.of(exception).unapply()).isEqualTo(Tuple.of(exception));
 	}
 
 	// -- Failure
@@ -158,6 +165,14 @@ public class TryTest {
 	@Test
 	public void shouldCreateFailureOnNonFatalException() {
 		assertThat(failure().failed().get().getClass().getName()).isEqualTo(RuntimeException.class.getName());
+	}
+
+	// unapply
+
+	@Test
+	public void shouldUnapplyFailure() {
+		final Try<?> failure = failure();
+		assertThat(failure.unapply()).isEqualTo(Tuple.of(failure.failed().get()));
 	}
 
 	// equals
@@ -311,6 +326,13 @@ public class TryTest {
 	public void shouldThrowWhenCallingFailedOnSuccess() {
 		AssertionsExtensions.assertThat(() -> success().failed().get()).isThrowing(Failure.NonFatal.class,
 				"java.lang.UnsupportedOperationException: Success.failed()");
+	}
+
+	// unapply
+
+	@Test
+	public void shouldUnapplySuccess() {
+		assertThat(success().unapply()).isEqualTo(Tuple.of(success().get()));
 	}
 
 	// equals
