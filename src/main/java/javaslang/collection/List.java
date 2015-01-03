@@ -32,7 +32,7 @@ import java.util.stream.Collector;
  *
  * @param <T> Component type of the List.
  */
-public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T>> {
+public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T>>, ValueObject {
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
@@ -626,7 +626,7 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
      */
     // DEV NOTE: class declared final because of serialization proxy pattern.
     // (see Effective Java, 2nd ed., p. 315)
-    static final class Cons<T> extends AbstractList<T> implements ValueObject {
+    static final class Cons<T> extends AbstractList<T> {
 
         private static final long serialVersionUID = 53595355464228669L;
 
@@ -768,7 +768,7 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
      *
      * @param <T> Component type of the List.
      */
-    static final class Nil<T> extends AbstractList<T> implements ValueObject {
+    static final class Nil<T> extends AbstractList<T> {
 
         private static final long serialVersionUID = 809473773619488283L;
 
@@ -825,6 +825,8 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
      * @param <T> Component type of the List.
      */
     static abstract class AbstractList<T> implements List<T> {
+
+        private static final long serialVersionUID = -2982070502699296498L;
 
         @Override
         public boolean equals(Object o) {

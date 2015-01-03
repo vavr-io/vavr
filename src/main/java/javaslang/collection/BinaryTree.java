@@ -125,7 +125,7 @@ public interface BinaryTree<T> extends Tree<T> {
         }
     }
 
-    static final class Leaf<T> extends AbstractBinaryTree<T> implements ValueObject {
+    static final class Leaf<T> extends AbstractBinaryTree<T> {
 
         private static final long serialVersionUID = -189719611914095083L;
 
@@ -171,7 +171,7 @@ public interface BinaryTree<T> extends Tree<T> {
         }
     }
 
-    static final class Branch<T> extends AbstractBinaryTree<T> implements ValueObject {
+    static final class Branch<T> extends AbstractBinaryTree<T> {
 
         private static final long serialVersionUID = -1368274890360703478L;
 
@@ -321,7 +321,7 @@ public interface BinaryTree<T> extends Tree<T> {
         }
     }
 
-    static final class Nil<T> extends AbstractBinaryTree<T> implements ValueObject {
+    static final class Nil<T> extends AbstractBinaryTree<T> {
 
         private static final long serialVersionUID = 4966576338736993154L;
 
@@ -386,6 +386,8 @@ public interface BinaryTree<T> extends Tree<T> {
     }
 
     static abstract class AbstractBinaryTree<T> implements BinaryTree<T> {
+
+        private static final long serialVersionUID = -4266172093004605495L;
 
         @Override
         public boolean equals(Object o) {

@@ -18,7 +18,7 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
-public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stream<T>> {
+public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stream<T>>, ValueObject {
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
@@ -226,11 +226,15 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
     @Override
     default Stream<T> filter(Predicate<? super T> predicate) {
         Require.nonNull(predicate, "predicate is null");
-        final T head = head();
-        if (predicate.test(head)) {
-            return new Cons<>(head, () -> tail().filter(predicate));
+        if (isEmpty()) {
+            return Nil.instance();
         } else {
-            return tail().filter(predicate);
+            final T head = head();
+            if (predicate.test(head)) {
+                return new Cons<>(head, () -> tail().filter(predicate));
+            } else {
+                return tail().filter(predicate);
+            }
         }
     }
 
@@ -656,7 +660,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
      */
     // DEV NOTE: class declared final because of serialization proxy pattern.
     // (see Effective Java, 2nd ed., p. 315)
-    static final class Cons<T> extends AbstractStream<T> implements ValueObject {
+    static final class Cons<T> extends AbstractStream<T> {
 
         private static final long serialVersionUID = 53595355464228669L;
 
@@ -800,7 +804,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
      *
      * @param <T> Component type of the Stream.
      */
-    static final class Nil<T> extends AbstractStream<T> implements ValueObject {
+    static final class Nil<T> extends AbstractStream<T> {
 
         private static final long serialVersionUID = 809473773619488283L;
 
@@ -857,6 +861,8 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
      * @param <T> Component type of the Stream.
      */
     static abstract class AbstractStream<T> implements Stream<T> {
+
+        private static final long serialVersionUID = 5433763348296234013L;
 
         @Override
         public boolean equals(Object o) {

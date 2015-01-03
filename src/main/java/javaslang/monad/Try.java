@@ -25,7 +25,7 @@ import javaslang.monad.Option.Some;
  *
  * @param <T> Value type in the case of success.
  */
-public interface Try<T> extends Monad<T, Try<?>> {
+public interface Try<T> extends Monad<T, Try<?>>, ValueObject {
 
 	static <T> Try<T> of(Try.CheckedSupplier<T> supplier) {
 		try {
@@ -85,7 +85,7 @@ public interface Try<T> extends Monad<T, Try<?>> {
 
 	// -- Try implementations
 
-	public final class Success<T> implements Try<T>, ValueObject {
+	public final class Success<T> implements Try<T> {
 
 		private static final long serialVersionUID = 9157097743377386892L;
 
@@ -210,7 +210,7 @@ public interface Try<T> extends Monad<T, Try<?>> {
 		}
 	}
 
-	public final class Failure<T> implements Try<T>, ValueObject {
+	public final class Failure<T> implements Try<T> {
 
 		private static final long serialVersionUID = 2836756728630414146L;
 
@@ -358,7 +358,7 @@ public interface Try<T> extends Monad<T, Try<?>> {
 		 * <p>
 		 * {@link #isFatal()} states, if this Cause is considered to be non-recoverable.
 		 */
-		public static abstract class Cause extends RuntimeException {
+		public static abstract class Cause extends RuntimeException implements ValueObject {
 
 			private static final long serialVersionUID = 1905549717320100279L;
 
@@ -373,6 +373,11 @@ public interface Try<T> extends Monad<T, Try<?>> {
 			 * @return true, if this instance is Fatal, false otherwise.
 			 */
 			public abstract boolean isFatal();
+
+			@Override
+			public Tuple.Tuple1<Throwable> unapply() {
+				return Tuple.of(super.getCause());
+			}
 
 			/**
 			 * Wraps t in a Cause which is either a {@link Fatal} or a {@link NonFatal}. The given Throwable t is
@@ -405,7 +410,7 @@ public interface Try<T> extends Monad<T, Try<?>> {
 		/**
 		 * Use {@link Cause#of(Throwable)} to create instances of {@link Fatal} and {@link NonFatal}.
 		 */
-		public static final class Fatal extends Cause implements ValueObject {
+		public static final class Fatal extends Cause {
 
 			private static final long serialVersionUID = 7927552082244515502L;
 
@@ -417,17 +422,12 @@ public interface Try<T> extends Monad<T, Try<?>> {
 			public boolean isFatal() {
 				return true;
 			}
-
-			@Override
-			public Tuple.Tuple1<Throwable> unapply() {
-				return Tuple.of(super.getCause());
-			}
 		}
 
 		/**
 		 * Use {@link Cause#of(Throwable)} to create instances of {@link Fatal} and {@link NonFatal}.
 		 */
-		public static final class NonFatal extends Cause implements ValueObject {
+		public static final class NonFatal extends Cause {
 
 			private static final long serialVersionUID = -1643015386682564223L;
 
@@ -438,11 +438,6 @@ public interface Try<T> extends Monad<T, Try<?>> {
 			@Override
 			public boolean isFatal() {
 				return false;
-			}
-
-			@Override
-			public Tuple.Tuple1<Throwable> unapply() {
-				return Tuple.of(super.getCause());
 			}
 		}
 	}

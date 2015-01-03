@@ -7,7 +7,7 @@ package javaslang;
 
 import java.util.Objects;
 
-public interface Tuple {
+public interface Tuple extends ValueObject {
 
 	/**
 	 * Returns the number of elements of this tuple.
@@ -15,36 +15,6 @@ public interface Tuple {
 	 * @return The number of elements.
 	 */
 	int arity();
-
-	/**
-	 * Tests if an object is equal to this Tuple.
-	 * <p>
-	 * An object equals this Tuple, if it is not null, of the same type and all elements are pair-wise equal calling
-	 * {@link java.util.Objects#equals(Object, Object)}.
-	 * 
-	 * @param obj An object.
-	 * @return true, if obj is equal to this in the sense described above, false otherwise.
-	 */
-	@Override
-	boolean equals(Object obj);
-
-	/**
-	 * Computes the hashCode of this Tuple by calling {@link java.util.Objects#hash(Object...)}, passing all elements of
-	 * this Tuple in the order of occurrence.
-	 * 
-	 * @return The hashCode of this Tuple in the sense described above.
-	 */
-	@Override
-	int hashCode();
-
-	/**
-	 * Returns the String representation of this Tuple. The result starts with '(', ends with ')' and contains the
-	 * String representations of the Tuple elements in their order of occurrence, separated by ', '.
-	 * 
-	 * @return This Tuple as String.
-	 */
-	@Override
-	String toString();
 
 	// -- factory methods
 
@@ -114,7 +84,7 @@ public interface Tuple {
 	/**
 	 * Implementation of an empty tuple, a tuple containing no elements.
 	 */
-	public static final class Tuple0 implements Tuple, ValueObject {
+	public static final class Tuple0 implements Tuple {
 
 		private static final long serialVersionUID = -8715576573413569748L;
 
@@ -179,7 +149,7 @@ public interface Tuple {
 	/**
 	 * Implementation of a single, a tuple containing 1 element.
 	 */
-	public static final class Tuple1<T> implements Tuple, ValueObject {
+	public static final class Tuple1<T> implements Tuple {
 
 		private static final long serialVersionUID = -8005498887610699234L;
 
@@ -225,7 +195,7 @@ public interface Tuple {
 	/**
 	 * Implementation of a pair, a tuple containing 2 elements.
 	 */
-	public static final class Tuple2<T1, T2> implements Tuple, ValueObject {
+	public static final class Tuple2<T1, T2> implements Tuple {
 
 		private static final long serialVersionUID = -1359843718617881431L;
 
@@ -273,7 +243,7 @@ public interface Tuple {
 	/**
 	 * Implementation of a triple, a tuple containing 3 elements.
 	 */
-	public static final class Tuple3<T1, T2, T3> implements Tuple, ValueObject {
+	public static final class Tuple3<T1, T2, T3> implements Tuple {
 
 		private static final long serialVersionUID = 1353320010987934190L;
 
@@ -325,7 +295,7 @@ public interface Tuple {
 	/**
 	 * Implementation of a quadruple, a tuple containing 4 elements.
 	 */
-	public static final class Tuple4<T1, T2, T3, T4> implements Tuple, ValueObject {
+	public static final class Tuple4<T1, T2, T3, T4> implements Tuple {
 
 		private static final long serialVersionUID = -835853771811712181L;
 
@@ -380,7 +350,7 @@ public interface Tuple {
 	/**
 	 * Implementation of a quintuple, a tuple containing 5 elements.
 	 */
-	public static final class Tuple5<T1, T2, T3, T4, T5> implements Tuple, ValueObject {
+	public static final class Tuple5<T1, T2, T3, T4, T5> implements Tuple {
 
 		private static final long serialVersionUID = 8365094604388856720L;
 
@@ -438,7 +408,7 @@ public interface Tuple {
 	/**
 	 * Implementation of a sextuple, a tuple containing 6 elements.
 	 */
-	public static final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, ValueObject {
+	public static final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple {
 
 		private static final long serialVersionUID = -5282391675740552818L;
 
@@ -499,7 +469,7 @@ public interface Tuple {
 	/**
 	 * Implementation of a septuple, a tuple containing 7 elements.
 	 */
-	public static final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, ValueObject {
+	public static final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple {
 
 		private static final long serialVersionUID = 6913366542759921153L;
 
@@ -563,7 +533,7 @@ public interface Tuple {
 	/**
 	 * Implementation of a octuple, a tuple containing 8 elements.
 	 */
-	public static final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, ValueObject {
+	public static final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple {
 
 		private static final long serialVersionUID = 117641715065938183L;
 
@@ -630,7 +600,7 @@ public interface Tuple {
 	/**
 	 * Implementation of a nonuple, a tuple containing 9 elements.
 	 */
-	public static final class Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9> implements Tuple, ValueObject {
+	public static final class Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9> implements Tuple {
 
 		private static final long serialVersionUID = -1578540921124551840L;
 
@@ -700,7 +670,7 @@ public interface Tuple {
 	/**
 	 * Implementation of a decuple, a tuple containing 10 elements.
 	 */
-	public static final class Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> implements Tuple, ValueObject {
+	public static final class Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> implements Tuple {
 
 		private static final long serialVersionUID = 7991284808329690986L;
 
@@ -773,7 +743,7 @@ public interface Tuple {
 	/**
 	 * Implementation of a undecuple, a tuple containing 11 elements.
 	 */
-	public static final class Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> implements Tuple, ValueObject {
+	public static final class Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> implements Tuple {
 
 		private static final long serialVersionUID = 3493688489700741360L;
 
@@ -850,7 +820,7 @@ public interface Tuple {
 	/**
 	 * Implementation of a duodecuple, a tuple containing 12 elements.
 	 */
-	public static final class Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> implements Tuple, ValueObject {
+	public static final class Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> implements Tuple {
 
 		private static final long serialVersionUID = -175212910367376967L;
 
@@ -930,7 +900,7 @@ public interface Tuple {
 	/**
 	 * Implementation of a tredecuple, a tuple containing 13 elements.
 	 */
-	public static final class Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> implements Tuple, ValueObject {
+	public static final class Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> implements Tuple {
 
 		private static final long serialVersionUID = 2027952127515234777L;
 

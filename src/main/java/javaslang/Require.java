@@ -20,21 +20,19 @@ public final class Require {
 	}
 
 	/**
-	 * Runtime check which throws an UnsatisfiedRequirementException if the given condition is false.
-	 * 
+	 * Runtime check which throws an UnsatisfiedRequirementException if the given condition is true.
+	 *
 	 * @param condition A boolean.
 	 * @param message An error message.
-	 * @throws UnsatisfiedRequirementException If condition is false, contains the given message.
+	 * @throws UnsatisfiedRequirementException If condition is true, contains the given message.
 	 */
-	public static void isTrue(boolean condition, String message) {
-		if (!condition) {
-			throw new UnsatisfiedRequirementException(message);
-		}
+	public static void isFalse(boolean condition, String message) {
+		Require.isTrue(!condition, message);
 	}
 
 	/**
 	 * Runtime check which throws an UnsatisfiedRequirementException if the given condition is true.
-	 * 
+	 *
 	 * @param condition A boolean.
 	 * @param messageSupplier An error message, computed lazily.
 	 * @throws UnsatisfiedRequirementException If the given condition is true, contains the supplied message.
@@ -45,14 +43,16 @@ public final class Require {
 	}
 
 	/**
-	 * Runtime check which throws an UnsatisfiedRequirementException if the given condition is true.
+	 * Runtime check which throws an UnsatisfiedRequirementException if the given condition is false.
 	 *
 	 * @param condition A boolean.
 	 * @param message An error message.
-	 * @throws UnsatisfiedRequirementException If condition is true, contains the given message.
+	 * @throws UnsatisfiedRequirementException If condition is false, contains the given message.
 	 */
-	public static void isFalse(boolean condition, String message) {
-		Require.isTrue(!condition, message);
+	public static void isTrue(boolean condition, String message) {
+		if (!condition) {
+			throw new UnsatisfiedRequirementException(message);
+		}
 	}
 
 	/**

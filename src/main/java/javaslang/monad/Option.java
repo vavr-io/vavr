@@ -31,7 +31,7 @@ import javaslang.ValueObject;
  * 
  * @param <T> The type of the optional value.
  */
-public interface Option<T> extends Monad<T, Option<?>> {
+public interface Option<T> extends Monad<T, Option<?>>, ValueObject {
 
 	static <T> Option<T> of(T value) {
 		return (value == null) ? None.instance() : new Some<>(value);
@@ -81,7 +81,7 @@ public interface Option<T> extends Monad<T, Option<?>> {
 	 *
 	 * @param <T> The type of the optional value.
 	 */
-	static final class Some<T> implements Option<T>, ValueObject {
+	static final class Some<T> implements Option<T> {
 
 		private static final long serialVersionUID = 8703728987837576700L;
 
@@ -185,7 +185,7 @@ public interface Option<T> extends Monad<T, Option<?>> {
 	 *
 	 * @param <T> The type of the optional value.
 	 */
-	static final class None<T> implements Option<T>, ValueObject {
+	static final class None<T> implements Option<T> {
 
 		private static final long serialVersionUID = -7265680402159660165L;
 

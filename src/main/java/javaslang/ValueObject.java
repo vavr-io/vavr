@@ -17,9 +17,6 @@ import java.io.Serializable;
  * The {@link #unapply()} method decomposes an Object by unwrapping it. This comes handy when using the
  * {@link javaslang.match.Match} API.
  * <p/>
- * This interface should be implemented by concrete classes rather than extending it by other interfaces due to
- * its Serializable nature.
- * <p/>
  * Please note that a Value Object is not cloneable because of the following conclusion:
  * <blockquote>
  * "[...] , it doesn’t make sense for immutable classes to support object copying, because copies would be virtually indistinguishable from the original."

@@ -84,7 +84,7 @@ public interface RoseTree<T> extends Tree<T> {
     static interface NonNil<T> extends RoseTree<T> {
     }
 
-    static final class Leaf<T> extends AbstractRoseTree<T> implements NonNil<T>, ValueObject {
+    static final class Leaf<T> extends AbstractRoseTree<T> implements NonNil<T> {
 
         private static final long serialVersionUID = -6301673452872179894L;
 
@@ -120,7 +120,7 @@ public interface RoseTree<T> extends Tree<T> {
         }
     }
 
-    static final class Branch<T> extends AbstractRoseTree<T> implements NonNil<T>, ValueObject {
+    static final class Branch<T> extends AbstractRoseTree<T> implements NonNil<T> {
 
         private static final long serialVersionUID = -1368274890360703478L;
 
@@ -254,7 +254,7 @@ public interface RoseTree<T> extends Tree<T> {
         }
     }
 
-    static final class Nil<T> extends AbstractRoseTree<T> implements ValueObject {
+    static final class Nil<T> extends AbstractRoseTree<T> {
 
         private static final long serialVersionUID = 4966576338736993154L;
 
@@ -309,6 +309,8 @@ public interface RoseTree<T> extends Tree<T> {
     }
 
     static abstract class AbstractRoseTree<T> implements RoseTree<T> {
+
+        private static final long serialVersionUID = -8001420483694263100L;
 
         @Override
         public boolean equals(Object o) {

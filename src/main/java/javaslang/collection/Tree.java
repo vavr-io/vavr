@@ -7,13 +7,14 @@ package javaslang.collection;
 
 import javaslang.Algebra.*;
 import javaslang.Strings;
+import javaslang.ValueObject;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Queue;
 
-public interface Tree<T> extends Functor<T> {
+public interface Tree<T> extends Functor<T>, ValueObject {
 
     /**
      * Gets the value of this tree.

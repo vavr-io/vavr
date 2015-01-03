@@ -45,7 +45,7 @@ import javaslang.monad.Option.Some;
  * @param <R> The type of a Right value of the Either.
  */
 // DEV-NOTE: Either is no Monad and no Functor in the sense of javaslang.Algebra.*
-public interface Either<L, R> {
+public interface Either<L, R> extends ValueObject {
 
 	boolean isLeft();
 
@@ -72,7 +72,7 @@ public interface Either<L, R> {
 
 	// -- Either implementations
 
-	static final class Left<L, R> implements Either<L, R>, ValueObject {
+	static final class Left<L, R> implements Either<L, R> {
 
 		private static final long serialVersionUID = 3297057402720487673L;
 
@@ -113,7 +113,7 @@ public interface Either<L, R> {
 		}
 	}
 
-	static final class Right<L, R> implements Either<L, R>, ValueObject {
+	static final class Right<L, R> implements Either<L, R> {
 
 		private static final long serialVersionUID = 6037923230455552437L;
 
