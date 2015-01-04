@@ -848,6 +848,27 @@ public abstract class AbstractTraversableTest {
         assertThat(this.of(1, 2, 2, 3).toJavaSet()).isEqualTo(expected);
     }
 
+    // -- unzip
+
+    @Test
+    public void shouldUnzipNil() {
+        assertThat(this.nil().unzip(x -> Tuple.of(x, x))).isEqualTo(Tuple.of(this.nil(), this.nil()));
+    }
+
+    @Test
+    public void shouldUnzipNonNil() {
+        final Tuple actual = this.of(0, 1).unzip(i -> Tuple.of(i, (char) ((short) 'a' + i)));
+        final Tuple expected = Tuple.of(this.of(0, 1), this.<Character> of('a', 'b'));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // -- zero // Monoid
+
+    @Test
+    public void shouldDefineZeroAsNil() {
+        assertThat(this.zero().equals(this.nil()));
+    }
+
     // -- zip
 
     @Test

@@ -37,7 +37,7 @@ public class ListTest extends AbstractSeqTest {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected <T, U extends Traversable<T>> Monoid<U> zero() {
-		return (Monoid<U>) (Monoid) List.nil();
+		return (Monoid<U>) (Monoid) List.nil().zero();
 	}
 
 	// -- static collector()
@@ -132,6 +132,18 @@ public class ListTest extends AbstractSeqTest {
 	@Test
 	public void shouldCreateListOfUntilWhereFromEqualsToEqualsInteger_MIN_VALUE() {
 		assertThat(List.until(Integer.MIN_VALUE, Integer.MIN_VALUE)).isEqualTo(List.nil());
+	}
+
+	// -- unapply
+
+	@Test
+	public void shouldUnapplyNil() {
+		assertThat(Nil.instance().unapply()).isEqualTo(Tuple.empty());
+	}
+
+	@Test
+	public void shouldUnapplyCons() {
+		assertThat(List.of(1, 2, 3).unapply()).isEqualTo(Tuple.of(1, List.of(2, 3)));
 	}
 
 	// -- toString

@@ -19,11 +19,5 @@ public class StreamTest /*extends AbstractSeqTest*/ {
 //    protected <T> Seq<T> of(T... elements) {
 //        return Stream.of(elements);
 //    }
-//
-//    @SuppressWarnings("unchecked")
-//    @Override
-//    protected <T> Monoid<Seq<T>> zero() {
-//        return (Monoid<Seq<T>>) (Monoid) Stream.nil();
-//    }
 
 }

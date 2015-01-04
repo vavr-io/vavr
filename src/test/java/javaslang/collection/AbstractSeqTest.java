@@ -16,9 +16,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
+    @Override
     abstract protected <T> Seq<T> nil();
 
     @SuppressWarnings("unchecked")
+    @Override
     abstract protected <T> Seq<T> of(T... elements);
 
     // -- append
