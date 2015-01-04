@@ -52,7 +52,7 @@ public class BinaryTreeTest {
 
     @Test
     public void shouldMapTree() {
-        assertThat(tree.map(i -> (char) (i + 64)).toString()).isEqualTo("BinaryTree(A (B (D G) E) (C (F H I)))");
+        assertThat(tree.map(i -> (char) (i + 64)).toString()).isEqualTo("BinaryTree('A' ('B' ('D' 'G') 'E') ('C' ('F' 'H' 'I')))");
     }
 
     // -- zip

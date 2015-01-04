@@ -300,6 +300,8 @@ public final class Strings {
             return "null";
         } else if (visited.contains(o)) {
             return "...";
+        } else if (o instanceof Character) {
+            return "'" + o.toString() + "'";
         } else if (o instanceof CharSequence) {
             return '"' + o.toString() + '"';
         } else if (o instanceof Class) {

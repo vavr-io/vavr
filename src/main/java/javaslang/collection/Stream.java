@@ -5,12 +5,9 @@
  */
 package javaslang.collection;
 
+import javaslang.*;
 import javaslang.Algebra.Monad;
 import javaslang.Algebra.Monoid;
-import javaslang.Manifest;
-import javaslang.Require;
-import javaslang.Tuple;
-import javaslang.ValueObject;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -417,6 +414,11 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
     }
 
     @Override
+    default T reduce(BiFunction<? super T, ? super T, ? extends T> op) {
+        return reduceLeft(op);
+    }
+
+    @Override
     default T reduceLeft(BiFunction<? super T, ? super T, ? extends T> op) {
         Require.nonNull(op, "operator is null");
         if (isEmpty()) {
@@ -432,7 +434,8 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         if (isEmpty()) {
             throw new UnsupportedOperationException("reduceRight on empty Stream");
         } else {
-            return tail().foldRight(head(), op);
+            final Seq<T> reversed = reverse();
+            return reversed.tail().foldLeft(reversed.head(), op);
         }
     }
 
@@ -896,7 +899,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
 
         @Override
         public String toString() {
-            return Stream.class.getSimpleName() + join(", ", "(", ")");
+            return Stream.class.getSimpleName() + map(Strings::toString).join(", ", "(", ")");
         }
     }
 }

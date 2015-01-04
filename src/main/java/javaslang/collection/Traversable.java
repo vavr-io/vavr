@@ -365,7 +365,18 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
      * @param elements Elements to be removed from this Traversable.
      * @return A Traversable containing all elements of this but none of the given elements.
      */
+    // TODO: Does this clash with removeAll(T) for recursive data types Traversable<T> = Traversable<Traversable<T>>. If yes then rename it to subtract(Iterable)
     Traversable<T> removeAll(Iterable<? extends T> elements);
+
+    /**
+     * Accumulates the elements of this Traversable by successively calling the given operation {@code op}.
+     * The order of element iteration is undetermined.
+     *
+     * @return The reduced value.
+     * @throws UnsupportedOperationException                     if this Traversable is empty
+     * @throws javaslang.Require.UnsatisfiedRequirementException if op is null
+     */
+    T reduce(BiFunction<? super T, ? super T, ? extends T> op);
 
     /**
      * Accumulates the elements of this Traversable by successively calling the given operation {@code op} from the left.
@@ -436,7 +447,8 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
     Tuple2<? extends Traversable<T>, ? extends Traversable<T>> span(Predicate<? super T> predicate);
 
     /**
-     * Splits a Traversable at the specified intex.
+     * Splits a Traversable at the specified index. The result of {@code splitAt(n)} is equivalent to
+     * {@code Tuple.of(take(n), drop(n))}.
      *
      * @param n An index.
      * @return A Tuple containing the first n and the remaining elements.

@@ -364,6 +364,11 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
     }
 
     @Override
+    default T reduce(BiFunction<? super T, ? super T, ? extends T> op) {
+        return reduceLeft(op);
+    }
+
+    @Override
     default T reduceLeft(BiFunction<? super T, ? super T, ? extends T> op) {
         Require.nonNull(op, "operator is null");
         if (isEmpty()) {
@@ -379,7 +384,8 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
         if (isEmpty()) {
             throw new UnsupportedOperationException("reduceRight on empty List");
         } else {
-            return tail().foldRight(head(), op);
+            final Seq<T> reversed = reverse();
+            return reversed.tail().foldLeft(reversed.head(), op);
         }
     }
 
@@ -855,7 +861,7 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
 
         @Override
         public String toString() {
-            return List.class.getSimpleName() + join(", ", "(", ")");
+            return List.class.getSimpleName() + map(Strings::toString).join(", ", "(", ")");
         }
     }
 }
