@@ -14,6 +14,9 @@ import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Tests all methods defined in {@link javaslang.collection.Seq}.
+ */
 public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Override

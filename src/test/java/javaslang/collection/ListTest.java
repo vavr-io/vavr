@@ -24,13 +24,13 @@ import org.junit.Test;
 public class ListTest extends AbstractSeqTest {
 
 	@Override
-	protected <T> Seq<T> nil() {
+	protected <T> List<T> nil() {
 		return List.nil();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected <T> Seq<T> of(T... elements) {
+	protected <T> List<T> of(T... elements) {
 		return List.of(elements);
 	}
 

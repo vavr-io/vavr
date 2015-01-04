@@ -18,6 +18,10 @@ import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Tests all methods defined in {@link javaslang.collection.Traversable} (plus some of {@link javaslang.Algebra.Monoid},
+ * {@link java.lang.Object} and {@link java.io.Serializable}, for the sake of simplicity).
+ */
 public abstract class AbstractTraversableTest {
 
     abstract protected <T> Traversable<T> nil();

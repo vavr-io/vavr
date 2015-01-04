@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.*;
+import javaslang.Memoizer.Memoizer0;
 import javaslang.Algebra.Monad;
 import javaslang.Algebra.Monoid;
 
@@ -672,11 +673,11 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         private static final long serialVersionUID = 53595355464228669L;
 
         private final T head;
-        private final Supplier<Stream<T>> tail;
+        private final Memoizer0<Stream<T>> tail;
 
         public Cons(T head, Supplier<Stream<T>> tail) {
             this.head = head;
-            this.tail = tail;
+            this.tail = Memoizer.of(tail);
         }
 
         @Override
@@ -686,7 +687,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
 
         @Override
         public Stream<T> tail() {
-            return tail.get();
+            return tail.apply();
         }
 
         @Override
