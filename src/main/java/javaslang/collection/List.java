@@ -183,6 +183,11 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
     }
 
     @Override
+    default T fold(T zero, BiFunction<? super T, ? super T, ? extends T> op) {
+        return foldLeft(zero, op);
+    }
+
+    @Override
     default T get(int index) {
         if (isEmpty()) {
             throw new IndexOutOfBoundsException("get(" + index + ") on empty list");
@@ -385,7 +390,7 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
             throw new UnsupportedOperationException("reduceRight on empty List");
         } else {
             final Seq<T> reversed = reverse();
-            return reversed.tail().foldLeft(reversed.head(), op);
+            return reversed.tail().foldLeft(reversed.head(), (xs, x) -> op.apply(x, xs));
         }
     }
 
@@ -551,7 +556,7 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
 
     @Override
     default List<T> takeRight(int n) {
-        return reverse().take(n).reverse();
+        return (List<T>) Seq.super.takeRight(n);
     }
 
     @Override

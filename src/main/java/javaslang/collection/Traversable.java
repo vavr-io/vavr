@@ -52,12 +52,14 @@ import java.util.function.UnaryOperator;
  * <p/>
  * <p>Reduction:</p>
  * <ul>
+ * <li>{@link #fold(Object, java.util.function.BiFunction)}</li>
  * <li>{@link #foldLeft(Object, java.util.function.BiFunction)}</li>
  * <li>{@link #foldRight(Object, java.util.function.BiFunction)}</li>
  * <li>{@link #foldMap(javaslang.Algebra.Monoid, java.util.function.Function)}</li>
  * <li>{@link #join()}</li>
  * <li>{@link #join(CharSequence)}</li>
  * <li>{@link #join(CharSequence, CharSequence, CharSequence)}</li>
+ * <li>{@link #reduce(java.util.function.BiFunction)}</li>
  * <li>{@link #reduceLeft(java.util.function.BiFunction)}</li>
  * <li>{@link #reduceRight(java.util.function.BiFunction)}</li>
  * </ul>
@@ -86,7 +88,6 @@ import java.util.function.UnaryOperator;
  * <li>{@link #replaceAll(Object, Object)}</li>
  * <li>{@link #replaceAll(java.util.function.UnaryOperator)}</li>
  * <li>{@link #reverse()}</li>
- * <li>{@link #splitAt(int)}</li>
  * <li>{@link #span(java.util.function.Predicate)}</li>
  * <li>{@link #unzip(java.util.function.Function)}</li>
  * <li>{@link #zip(Iterable)}</li>
@@ -207,8 +208,21 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
     <U, TRAVERSABLE extends Manifest<U, Traversable<?>>> Traversable<U> flatMap(Function<? super T, TRAVERSABLE> mapper);
 
     /**
+     * Accumulates the elements of this Traversable by successively calling the given operator {@code op}.
+     * <p/>
+     * Example: {@code List("a", "b", "c").fold("", (a, b) -> a + b) = "abc"}
+     *
+     * @param zero Value to start the accumulation with.
+     * @param op    The accumulator operator.
+     * @return An accumulated version of this.
+     */
+    T fold(T zero, BiFunction<? super T, ? super T, ? extends T> op);
+
+    /**
      * Accumulates the elements of this Traversable by successively calling the given function {@code f} from the left,
      * starting with a value {@code zero} of type B.
+     * <p/>
+     * Example: {@code List.of("a", "b", "c").foldLeft("", (xs, x) -> xs + x) = "abc"}
      *
      * @param zero Value to start the accumulation with.
      * @param f    The accumulator function.
@@ -225,7 +239,10 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
     }
 
     /**
-     * Maps this elements to a Monoid and applies foldLeft, starting with monoid.zero().
+     * Maps this elements to a Monoid and applies foldLeft, starting with monoid.zero():
+     * <pre>
+     * <code>foldLeft(monoid.zero(), (ys, x) -> monoid.combine(ys, mapper.apply(x)))</code>
+     * </pre>
      *
      * @param monoid A Monoid
      * @param mapper A mapper
@@ -236,12 +253,14 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
     default <U> U foldMap(Monoid<U> monoid, Function<T, U> mapper) {
         Require.nonNull(monoid, "monoid is null");
         Require.nonNull(mapper, "mapper is null");
-        return foldLeft(monoid.zero(), (b, a) -> monoid.combine(b, mapper.apply(a)));
+        return foldLeft(monoid.zero(), (ys, x) -> monoid.combine(ys, mapper.apply(x)));
     }
 
     /**
      * Accumulates the elements of this Traversable by successively calling the given function {@code f} from the right,
      * starting with a value {@code zero} of type B.
+     * <p/>
+     * Example: {@code List.of("a", "b", "c").foldRight("", (x, xs) -> x + xs) = "abc"}
      * <p/>
      * In order to prevent recursive calls, foldRight is implemented based on reverse and foldLeft. A recursive variant
      * is based on foldMap, using the monoid of function composition (endo monoid).
@@ -445,15 +464,6 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
      * @return A Tuple containing the longest prefix of elements that satisfy p and the remainder.
      */
     Tuple2<? extends Traversable<T>, ? extends Traversable<T>> span(Predicate<? super T> predicate);
-
-    /**
-     * Splits a Traversable at the specified index. The result of {@code splitAt(n)} is equivalent to
-     * {@code Tuple.of(take(n), drop(n))}.
-     *
-     * @param n An index.
-     * @return A Tuple containing the first n and the remaining elements.
-     */
-    Tuple2<? extends Traversable<T>, ? extends Traversable<T>> splitAt(int n);
 
     /**
      * Drops the first element of a non-empty Traversable.

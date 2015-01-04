@@ -5,6 +5,8 @@
  */
 package javaslang.collection;
 
+import javaslang.Tuple;
+
 import java.util.Comparator;
 import java.util.Iterator;
 
@@ -37,6 +39,15 @@ public interface Seq<T> extends Traversable<T> {
     Seq<T> sort();
 
     Seq<T> sort(Comparator<? super T> c);
+
+    /**
+     * Splits a Traversable at the specified index. The result of {@code splitAt(n)} is equivalent to
+     * {@code Tuple.of(take(n), drop(n))}.
+     *
+     * @param n An index.
+     * @return A Tuple containing the first n and the remaining elements.
+     */
+    Tuple.Tuple2<? extends Traversable<T>, ? extends Traversable<T>> splitAt(int n);
 
     Seq<T> subsequence(int beginIndex);
 

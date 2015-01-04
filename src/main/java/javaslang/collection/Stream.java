@@ -247,6 +247,11 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
     }
 
     @Override
+    default T fold(T zero, BiFunction<? super T, ? super T, ? extends T> op) {
+        return foldLeft(zero, op);
+    }
+
+    @Override
     default T get(int index) {
         if (isEmpty()) {
             throw new IndexOutOfBoundsException("get(" + index + ") on empty stream");
@@ -581,7 +586,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
 
     @Override
     default Stream<T> takeRight(int n) {
-        return reverse().take(n).reverse();
+        return (Stream<T>) Seq.super.takeRight(n);
     }
 
     @Override

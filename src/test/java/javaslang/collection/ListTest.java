@@ -36,8 +36,8 @@ public class ListTest extends AbstractSeqTest {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected <T> Monoid<Seq<T>> zero() {
-		return (Monoid<Seq<T>>) (Monoid) List.nil();
+	protected <T, U extends Traversable<T>> Monoid<U> zero() {
+		return (Monoid<U>) (Monoid) List.nil();
 	}
 
 	// -- static collector()
@@ -66,14 +66,14 @@ public class ListTest extends AbstractSeqTest {
 		assertThat(actual).isEqualTo(List.of(1, 2, 3));
 	}
 
-	// -- List.nil()
+	// -- static nil()
 
 	@Test
 	public void shouldCreateNil() {
 		assertThat(List.nil()).isEqualTo(Nil.instance());
 	}
 
-	// -- List.of(T...)
+	// -- static of(T...)
 
 	@Test
 	public void shouldCreateListOfElements() {
@@ -82,7 +82,7 @@ public class ListTest extends AbstractSeqTest {
 		assertThat(actual).isEqualTo(expected);
 	}
 
-	// -- List.of(Iterable)
+	// -- static of(Iterable)
 
 	@Test
 	public void shouldCreateListOfIterable() {
@@ -90,7 +90,7 @@ public class ListTest extends AbstractSeqTest {
 		assertThat(List.of(arrayList)).isEqualTo(List.of(1, 2, 3));
 	}
 
-	// -- List.range(int, int)
+	// -- static range(int, int)
 
 	@Test
 	public void shouldCreateListOfRangeWhereFromIsGreaterThanTo() {
@@ -112,7 +112,7 @@ public class ListTest extends AbstractSeqTest {
 		assertThat(List.range(Integer.MIN_VALUE, Integer.MIN_VALUE)).isEqualTo(List.of(Integer.MIN_VALUE));
 	}
 
-	// -- List.until(int, int)
+	// -- static until(int, int)
 
 	@Test
 	public void shouldCreateListOfUntilWhereFromIsGreaterThanTo() {
