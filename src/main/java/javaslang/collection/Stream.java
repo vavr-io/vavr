@@ -214,12 +214,11 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
 
     @Override
     default Stream<T> dropRight(int n) {
-        return reverse().drop(n).reverse();
+        return (Stream<T>) Seq.super.dropRight(n);
     }
 
     @Override
     default Stream<T> dropWhile(Predicate<? super T> predicate) {
-        Require.nonNull(predicate, "predicate is null");
         return (Stream<T>) Seq.super.dropWhile(predicate);
     }
 

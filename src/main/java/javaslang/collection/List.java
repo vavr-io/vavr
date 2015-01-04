@@ -162,12 +162,11 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
 
     @Override
     default List<T> dropRight(int n) {
-        return reverse().drop(n).reverse();
+        return (List<T>) Seq.super.dropRight(n);
     }
 
     @Override
     default List<T> dropWhile(Predicate<? super T> predicate) {
-        Require.nonNull(predicate, "predicate is null");
         return (List<T>) Seq.super.dropWhile(predicate);
     }
 
