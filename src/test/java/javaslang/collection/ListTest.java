@@ -20,17 +20,135 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Spliterator;
 
-import javaslang.AssertionsExtensions;
+import javaslang.*;
+import javaslang.Algebra.Monoid;
 import javaslang.Require.UnsatisfiedRequirementException;
-import javaslang.Serializables;
-import javaslang.Tuple;
 import javaslang.Tuple.Tuple2;
 import javaslang.collection.List.Cons;
 import javaslang.collection.List.Nil;
 
 import org.junit.Test;
 
-public class ListTest {
+public class ListTest extends AbstractSeqTest {
+
+	@Override
+	protected <T> Seq<T> nil() {
+		return List.nil();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	protected <T> Seq<T> of(T... elements) {
+		return List.of(elements);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	protected <T> Monoid<Seq<T>> zero() {
+		return (Monoid<Seq<T>>) (Monoid) List.nil();
+	}
+
+	// -- static collector()
+
+	@Test
+	public void shouldStreamAndCollectNil() {
+		final List<?> actual = List.nil().toJavaStream().collect(List.collector());
+		assertThat(actual).isEqualTo(List.nil());
+	}
+
+	@Test
+	public void shouldStreamAndCollectNonNil() {
+		final List<?> actual = List.of(1, 2, 3).toJavaStream().collect(List.collector());
+		assertThat(actual).isEqualTo(List.of(1, 2, 3));
+	}
+
+	@Test
+	public void shouldParallelStreamAndCollectNil() {
+		final List<?> actual = List.nil().toJavaStream().parallel().collect(List.collector());
+		assertThat(actual).isEqualTo(List.nil());
+	}
+
+	@Test
+	public void shouldParallelStreamAndCollectNonNil() {
+		final List<?> actual = List.of(1, 2, 3).toJavaStream().parallel().collect(List.collector());
+		assertThat(actual).isEqualTo(List.of(1, 2, 3));
+	}
+
+	// -- List.nil()
+
+	@Test
+	public void shouldCreateNil() {
+		assertThat(List.nil()).isEqualTo(Nil.instance());
+	}
+
+	// -- List.of(T...)
+
+	@Test
+	public void shouldCreateListOfElements() {
+		final List<Integer> actual = List.of(1, 2);
+		final List<Integer> expected = new Cons<>(1, new Cons<>(2, Nil.instance()));
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	// -- List.of(Iterable)
+
+	@Test
+	public void shouldCreateListOfIterable() {
+		final java.util.List<Integer> arrayList = Arrays.asList(1, 2, 3);
+		assertThat(List.of(arrayList)).isEqualTo(List.of(1, 2, 3));
+	}
+
+	// -- List.range(int, int)
+
+	@Test
+	public void shouldCreateListOfRangeWhereFromIsGreaterThanTo() {
+		assertThat(List.range(1, 0)).isEqualTo(List.nil());
+	}
+
+	@Test
+	public void shouldCreateListOfRangeWhereFromEqualsTo() {
+		assertThat(List.range(0, 0)).isEqualTo(List.of(0));
+	}
+
+	@Test
+	public void shouldCreateListOfRangeWhereFromIsLessThanTo() {
+		assertThat(List.range(1, 3)).isEqualTo(List.of(1, 2, 3));
+	}
+
+	@Test
+	public void shouldCreateListOfRangeWhereFromEqualsToEqualsInteger_MIN_VALUE() {
+		assertThat(List.range(Integer.MIN_VALUE, Integer.MIN_VALUE)).isEqualTo(List.of(Integer.MIN_VALUE));
+	}
+
+	// -- List.until(int, int)
+
+	@Test
+	public void shouldCreateListOfUntilWhereFromIsGreaterThanTo() {
+		assertThat(List.until(1, 0)).isEqualTo(List.nil());
+	}
+
+	@Test
+	public void shouldCreateListOfUntilWhereFromEqualsTo() {
+		assertThat(List.until(0, 0)).isEqualTo(List.nil());
+	}
+
+	@Test
+	public void shouldCreateListOfUntilWhereFromIsLessThanTo() {
+		assertThat(List.until(1, 3)).isEqualTo(List.of(1, 2));
+	}
+
+	@Test
+	public void shouldCreateListOfUntilWhereFromEqualsToEqualsInteger_MIN_VALUE() {
+		assertThat(List.until(Integer.MIN_VALUE, Integer.MIN_VALUE)).isEqualTo(List.nil());
+	}
+
+
+
+
+
+
+
+
 
 	// -- head
 
@@ -97,58 +215,6 @@ public class ListTest {
 		assertThat(List.of(1, 2, 3).length()).isEqualTo(3);
 	}
 
-	// -- append
-
-	@Test
-	public void shouldAppendElementToNil() {
-		final List<Integer> actual = List.<Integer> nil().append(1);
-		final List<Integer> expected = List.of(1);
-		assertThat(actual).isEqualTo(expected);
-	}
-
-	@Test
-	public void shouldAppendElementToNonNil() {
-		final List<Integer> actual = List.of(1, 2).append(3);
-		final List<Integer> expected = List.of(1, 2, 3);
-		assertThat(actual).isEqualTo(expected);
-	}
-
-	// -- appendAll
-
-	@Test
-	public void shouldThrowOnAppendAllOfNull() {
-		AssertionsExtensions.assertThat(() -> List.nil().appendAll(null)).isThrowing(
-				UnsatisfiedRequirementException.class, "elements is null");
-	}
-
-	@Test
-	public void shouldAppendAllNilToNil() {
-		final List<Object> actual = List.nil().appendAll(List.nil());
-		final List<Object> expected = List.nil();
-		assertThat(actual).isEqualTo(expected);
-	}
-
-	@Test
-	public void shouldAppendAllNonNilToNil() {
-		final List<Integer> actual = List.<Integer> nil().appendAll(List.of(1, 2, 3));
-		final List<Integer> expected = List.of(1, 2, 3);
-		assertThat(actual).isEqualTo(expected);
-	}
-
-	@Test
-	public void shouldAppendAllNilToNonNil() {
-		final List<Integer> actual = List.of(1, 2, 3).appendAll(List.nil());
-		final List<Integer> expected = List.of(1, 2, 3);
-		assertThat(actual).isEqualTo(expected);
-	}
-
-	@Test
-	public void shouldAppendAllNonNilToNonNil() {
-		final List<Integer> actual = List.of(1, 2, 3).appendAll(List.of(4, 5, 6));
-		final List<Integer> expected = List.of(1, 2, 3, 4, 5, 6);
-		assertThat(actual).isEqualTo(expected);
-	}
-
 	// -- prepend
 
 	@Test
@@ -201,95 +267,7 @@ public class ListTest {
 		assertThat(actual).isEqualTo(expected);
 	}
 
-	// -- insert
 
-	@Test
-	public void shouldInsertIntoNil() {
-		final List<Integer> actual = List.<Integer> nil().insert(0, 1);
-		final List<Integer> expected = List.of(1);
-		assertThat(actual).isEqualTo(expected);
-	}
-
-	@Test
-	public void shouldInsertInFrontOfElement() {
-		final List<Integer> actual = List.of(4).insert(0, 1);
-		final List<Integer> expected = List.of(1, 4);
-		assertThat(actual).isEqualTo(expected);
-	}
-
-	@Test
-	public void shouldInsertBehindOfElement() {
-		final List<Integer> actual = List.of(4).insert(1, 1);
-		final List<Integer> expected = List.of(4, 1);
-		assertThat(actual).isEqualTo(expected);
-	}
-
-	@Test
-	public void shouldInsertIntoList() {
-		final List<Integer> actual = List.of(1, 2, 3).insert(2, 4);
-		final List<Integer> expected = List.of(1, 2, 4, 3);
-		assertThat(actual).isEqualTo(expected);
-	}
-
-	@Test
-	public void shouldThrowOnInsertWithNegativeIndex() {
-		AssertionsExtensions.assertThat(() -> List.nil().insert(-1, null)).isThrowing(IndexOutOfBoundsException.class,
-				"insert(-1, e)");
-	}
-
-	@Test
-	public void shouldThrowOnInsertWhenExceedingUpperBound() {
-		AssertionsExtensions.assertThat(() -> List.nil().insert(1, null)).isThrowing(IndexOutOfBoundsException.class,
-				"insert(1, e) on list of length 0");
-	}
-
-	// -- insertAll
-
-	@Test
-	public void shouldInserAlltIntoNil() {
-		final List<Integer> actual = List.<Integer> nil().insertAll(0, List.of(1, 2, 3));
-		final List<Integer> expected = List.of(1, 2, 3);
-		assertThat(actual).isEqualTo(expected);
-	}
-
-	@Test
-	public void shouldInsertAllInFrontOfElement() {
-		final List<Integer> actual = List.of(4).insertAll(0, List.of(1, 2, 3));
-		final List<Integer> expected = List.of(1, 2, 3, 4);
-		assertThat(actual).isEqualTo(expected);
-	}
-
-	@Test
-	public void shouldInsertAllBehindOfElement() {
-		final List<Integer> actual = List.of(4).insertAll(1, List.of(1, 2, 3));
-		final List<Integer> expected = List.of(4, 1, 2, 3);
-		assertThat(actual).isEqualTo(expected);
-	}
-
-	@Test
-	public void shouldInsertAllIntoList() {
-		final List<Integer> actual = List.of(1, 2, 3).insertAll(2, List.of(4, 5));
-		final List<Integer> expected = List.of(1, 2, 4, 5, 3);
-		assertThat(actual).isEqualTo(expected);
-	}
-
-	@Test
-	public void shouldThrowOnInsertAllWithNil() {
-		AssertionsExtensions.assertThat(() -> List.nil().insertAll(0, null)).isThrowing(
-				UnsatisfiedRequirementException.class, "elements is null");
-	}
-
-	@Test
-	public void shouldThrowOnInsertAllWithNegativeIndex() {
-		AssertionsExtensions.assertThat(() -> List.nil().insertAll(-1, List.nil())).isThrowing(
-				IndexOutOfBoundsException.class, "insertAll(-1, elements)");
-	}
-
-	@Test
-	public void shouldThrowOnInsertAllWhenExceedingUpperBound() {
-		AssertionsExtensions.assertThat(() -> List.nil().insertAll(1, List.nil())).isThrowing(
-				IndexOutOfBoundsException.class, "insertAll(1, elements) on list of length 0");
-	}
 
 	// -- remove
 
@@ -388,80 +366,6 @@ public class ListTest {
 		assertThat(List.of(1, 2, 3).replaceAll(i -> i + 1)).isEqualTo(List.of(2, 3, 4));
 	}
 
-	// -- clear
-
-	@Test
-	public void shouldClearNil() {
-		assertThat(List.nil().clear()).isEqualTo(List.nil());
-	}
-
-	@Test
-	public void shouldClearNonNil() {
-		assertThat(List.of(1, 2, 3).clear()).isEqualTo(List.nil());
-	}
-
-	// -- contains
-
-	@Test
-	public void shouldRecognizeNilContainsNoElement() {
-		final boolean actual = List.nil().contains(null);
-		assertThat(actual).isFalse();
-	}
-
-	@Test
-	public void shouldRecognizeNonNilDoesNotContainElement() {
-		final boolean actual = List.of(1, 2, 3).contains(0);
-		assertThat(actual).isFalse();
-	}
-
-	@Test
-	public void shouldRecognizeNonNilDoesContainElement() {
-		final boolean actual = List.of(1, 2, 3).contains(2);
-		assertThat(actual).isTrue();
-	}
-
-	// -- containsAll
-
-	@Test
-	public void shouldRecognizeNilNotContainsAllElements() {
-		final boolean actual = List.nil().containsAll(List.of(1, 2, 3));
-		assertThat(actual).isFalse();
-	}
-
-	@Test
-	public void shouldRecognizeNonNilNotContainsAllOverlappingElements() {
-		final boolean actual = List.of(1, 2, 3).containsAll(List.of(2, 3, 4));
-		assertThat(actual).isFalse();
-	}
-
-	@Test
-	public void shouldRecognizeNonNilContainsAllOnSelf() {
-		final boolean actual = List.of(1, 2, 3).containsAll(List.of(1, 2, 3));
-		assertThat(actual).isTrue();
-	}
-
-	// -- indexOf
-
-	@Test
-	public void shouldNotFindIndexOfElementWhenListIsEmpty() {
-		assertThat(List.nil().indexOf(1)).isEqualTo(-1);
-	}
-
-	@Test
-	public void shouldFindIndexOfFirstElement() {
-		assertThat(List.of(1, 2, 3).indexOf(1)).isEqualTo(0);
-	}
-
-	@Test
-	public void shouldFindIndexOfInnerElement() {
-		assertThat(List.of(1, 2, 3).indexOf(2)).isEqualTo(1);
-	}
-
-	@Test
-	public void shouldFindIndexOfLastElement() {
-		assertThat(List.of(1, 2, 3).indexOf(3)).isEqualTo(2);
-	}
-
 	// -- lastIndexOf
 
 	@Test
@@ -472,43 +376,6 @@ public class ListTest {
 	@Test
 	public void shouldFindLastIndexOfElement() {
 		assertThat(List.of(1, 2, 3, 1, 2, 3).lastIndexOf(1)).isEqualTo(3);
-	}
-
-	// -- get
-
-	@Test
-	public void shouldThrowWhenGetWithNegativeIndexOnNil() {
-		AssertionsExtensions.assertThat(() -> List.nil().get(-1)).isThrowing(IndexOutOfBoundsException.class,
-				"get(-1) on empty list");
-	}
-
-	@Test
-	public void shouldThrowWhenGetWithNegativeIndexOnNonNil() {
-		AssertionsExtensions
-				.assertThat(() -> List.of(1).get(-1))
-				.isThrowing(IndexOutOfBoundsException.class, "get(-1)");
-	}
-
-	@Test
-	public void shouldThrowWhenGetOnNil() {
-		AssertionsExtensions.assertThat(() -> List.nil().get(0)).isThrowing(IndexOutOfBoundsException.class,
-				"get(0) on empty list");
-	}
-
-	@Test
-	public void shouldThrowWhenGetWithTooBigIndexOnNonNil() {
-		AssertionsExtensions.assertThat(() -> List.of(1).get(1)).isThrowing(IndexOutOfBoundsException.class,
-				"get(1) on list of length 1");
-	}
-
-	@Test
-	public void shouldGetFirstElement() {
-		assertThat(List.of(1, 2, 3).get(0)).isEqualTo(1);
-	}
-
-	@Test
-	public void shouldGetLastElement() {
-		assertThat(List.of(1, 2, 3).get(2)).isEqualTo(3);
 	}
 
 	// -- set
@@ -657,28 +524,6 @@ public class ListTest {
 	public void shouldThrowOnSublistWhenEndIndexExceedsUpperBound() {
 		AssertionsExtensions.assertThat(() -> List.of(1, 2, 3).subsequence(1, 4)).isThrowing(
 				IndexOutOfBoundsException.class, "subsequence(1, 4) on list of length 3");
-	}
-
-	// -- drop
-
-	@Test
-	public void shouldDropNoneOnNil() {
-		assertThat(List.nil().drop(1)).isEqualTo(List.nil());
-	}
-
-	@Test
-	public void shouldDropNoneIfCountIsNegative() {
-		assertThat(List.of(1, 2, 3).drop(-1)).isEqualTo(List.of(1, 2, 3));
-	}
-
-	@Test
-	public void shouldDropAsExpectedIfCountIsLessThanSize() {
-		assertThat(List.of(1, 2, 3).drop(2)).isEqualTo(List.of(3));
-	}
-
-	@Test
-	public void shouldDropAllIfCountExceedsSize() {
-		assertThat(List.of(1, 2, 3).drop(4)).isEqualTo(List.nil());
 	}
 
 	// -- take
@@ -885,20 +730,6 @@ public class ListTest {
 		assertThat(List.of(3, 4, 1, 2).sort((i, j) -> j - i)).isEqualTo(List.of(4, 3, 2, 1));
 	}
 
-	// -- stream
-
-	@Test
-	public void shouldStreamAndCollectNil() {
-		final List<?> actual = List.nil().toJavaStream().collect(List.collector());
-		assertThat(actual).isEqualTo(List.nil());
-	}
-
-	@Test
-	public void shouldStreamAndCollectNonNil() {
-		final List<?> actual = List.of(1, 2, 3).toJavaStream().collect(List.collector());
-		assertThat(actual).isEqualTo(List.of(1, 2, 3));
-	}
-
 	// -- spliterator
 
 	@Test
@@ -934,6 +765,10 @@ public class ListTest {
 	public void shouldReturnSizeWhenSpliterator() {
 		assertThat(List.of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(3);
 	}
+
+	// -- forEach
+
+	// TODO: forEach
 
 	// -- iterator
 
@@ -1059,30 +894,6 @@ public class ListTest {
 	@Test
 	public void shouldStringifyNonNil() {
 		assertThat(List.of(1, 2, 3).toString()).isEqualTo("List(1, 2, 3)");
-	}
-
-	// -- List.empty()
-
-	@Test
-	public void shouldCreateNil() {
-		assertThat(List.nil()).isEqualTo(Nil.instance());
-	}
-
-	// -- List.of(T, T...)
-
-	@Test
-	public void shouldCreateListOfElements() {
-		final List<Integer> actual = List.of(1, 2);
-		final List<Integer> expected = new Cons<>(1, new Cons<>(2, Nil.instance()));
-		assertThat(actual).isEqualTo(expected);
-	}
-
-	// -- List.of(Iterable)
-
-	@Test
-	public void shouldCreateListOfIterable() {
-		final java.util.List<Integer> arrayList = Arrays.asList(1, 2, 3);
-		assertThat(List.of(arrayList)).isEqualTo(List.of(1, 2, 3));
 	}
 
 	// -- Serializable interface

@@ -435,6 +435,48 @@ public class StringsTest {
 		assertThat(actual).isEqualTo(new String[] { "\\^", "\\^\\" });
 	}
 
+	// ArrayExtensions
+
+	@Test
+	public void shouldStreamPrimitiveBooleanArray() {
+		assertThat(Strings.ArrayExtensions.toStream(new boolean[] {})).isNotNull();
+	}
+
+	@Test
+	public void shouldStreamPrimitiveByteArray() {
+		assertThat(Strings.ArrayExtensions.toStream(new byte[] {})).isNotNull();
+	}
+
+	@Test
+	public void shouldStreamPrimitiveCharArray() {
+		assertThat(Strings.ArrayExtensions.toStream(new char[] {})).isNotNull();
+	}
+
+	@Test
+	public void shouldStreamPrimitiveDoubleArray() {
+		assertThat(Strings.ArrayExtensions.toStream(new double[] {})).isNotNull();
+	}
+
+	@Test
+	public void shouldStreamPrimitiveFloatArray() {
+		assertThat(Strings.ArrayExtensions.toStream(new float[] {})).isNotNull();
+	}
+
+	@Test
+	public void shouldStreamPrimitiveIntArray() {
+		assertThat(Strings.ArrayExtensions.toStream(new int[] {})).isNotNull();
+	}
+
+	@Test
+	public void shouldStreamPrimitiveLongArray() {
+		assertThat(Strings.ArrayExtensions.toStream(new long[] {})).isNotNull();
+	}
+
+	@Test
+	public void shouldStreamPrimitiveShortArray() {
+		assertThat(Strings.ArrayExtensions.toStream(new short[] {})).isNotNull();
+	}
+
 	static class CharSequenceImpl implements CharSequence {
 
 		final CharSequence delegate;

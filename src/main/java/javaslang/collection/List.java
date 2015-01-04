@@ -177,15 +177,10 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
         return foldRight(nil(), (x, xs) -> predicate.test(x) ? xs.prepend(x) : xs);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     default <U, TRAVERSABLE extends Manifest<U, Traversable<?>>> List<U> flatMap(Function<? super T, TRAVERSABLE> mapper) {
-        List<U> result = Nil.instance();
-        for (T t : this) {
-            @SuppressWarnings("unchecked")
-            final Traversable<U> traversable = (Traversable<U>) mapper.apply(t);
-            traversable.forEach(result::prepend);
-        }
-        return result.reverse();
+        return foldLeft(Nil.<U> instance(), (List<U> xs, T x) -> xs.prependAll((Traversable<U>) mapper.apply(x))).reverse();
     }
 
     @Override
