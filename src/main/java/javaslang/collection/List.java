@@ -369,32 +369,6 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
     }
 
     @Override
-    default T reduce(BiFunction<? super T, ? super T, ? extends T> op) {
-        return reduceLeft(op);
-    }
-
-    @Override
-    default T reduceLeft(BiFunction<? super T, ? super T, ? extends T> op) {
-        Require.nonNull(op, "operator is null");
-        if (isEmpty()) {
-            throw new UnsupportedOperationException("reduceLeft on empty List");
-        } else {
-            return tail().foldLeft(head(), op);
-        }
-    }
-
-    @Override
-    default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
-        Require.nonNull(op, "operator is null");
-        if (isEmpty()) {
-            throw new UnsupportedOperationException("reduceRight on empty List");
-        } else {
-            final Seq<T> reversed = reverse();
-            return reversed.tail().foldLeft(reversed.head(), (xs, x) -> op.apply(x, xs));
-        }
-    }
-
-    @Override
     default List<T> replace(T currentElement, T newElement) {
         List<T> preceding = Nil.instance();
         List<T> tail = this;

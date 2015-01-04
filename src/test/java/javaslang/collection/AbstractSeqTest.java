@@ -471,6 +471,6 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowOnSubsequenceWhenEndIndexExceedsUpperBound() {
-        this.of(1, 2, 3).subsequence(1, 4);
+        this.of(1, 2, 3).subsequence(1, 4).join(); // force computation of last element, e.g. because Stream is lazy
     }
 }

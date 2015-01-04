@@ -150,7 +150,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         if (from > to) {
             return Nil.instance();
         } else if (from == Integer.MIN_VALUE && to == Integer.MIN_VALUE) {
-            return Stream.of(Integer.MIN_VALUE);
+            return new Cons<>(Integer.MIN_VALUE, Nil::instance);
         } else {
             return Stream.of(new Iterator<Integer>() {
                 int i = from;
@@ -178,7 +178,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
 
     @Override
     default Stream<T> append(T element) {
-        return isEmpty() ? Stream.of(element) : new Cons<>(head(), () -> tail().append(element));
+        return isEmpty() ? new Cons<>(element, Nil::instance) : new Cons<>(head(), () -> tail().append(element));
     }
 
     @Override
@@ -306,7 +306,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         if (index == 0) {
             return new Cons<>(element, () -> this);
         } else {
-            return new Cons<>(head(), () -> this.insert(index - 1, element));
+            return new Cons<>(head(), () -> tail().insert(index - 1, element));
         }
     }
 
@@ -322,7 +322,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         if (index == 0) {
             return Stream.of(elements).appendAll(this);
         } else {
-            return new Cons<>(head(), () -> this.insertAll(index - 1, elements));
+            return new Cons<>(head(), () -> tail().insertAll(index - 1, elements));
         }
     }
 
@@ -416,33 +416,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
     default Stream<T> removeAll(Iterable<? extends T> elements) {
         Require.nonNull(elements, "elements is null");
         final Stream<T> distinct = Stream.of(elements).distinct();
-        return filter(distinct::contains);
-    }
-
-    @Override
-    default T reduce(BiFunction<? super T, ? super T, ? extends T> op) {
-        return reduceLeft(op);
-    }
-
-    @Override
-    default T reduceLeft(BiFunction<? super T, ? super T, ? extends T> op) {
-        Require.nonNull(op, "operator is null");
-        if (isEmpty()) {
-            throw new UnsupportedOperationException("reduceLeft on empty Stream");
-        } else {
-            return tail().foldLeft(head(), op);
-        }
-    }
-
-    @Override
-    default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
-        Require.nonNull(op, "operator is null");
-        if (isEmpty()) {
-            throw new UnsupportedOperationException("reduceRight on empty Stream");
-        } else {
-            final Seq<T> reversed = reverse();
-            return reversed.tail().foldLeft(reversed.head(), op);
-        }
+        return filter(e -> !distinct.contains(e));
     }
 
     @Override
@@ -466,7 +440,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         } else {
             final T head = head();
             final T newHead = Objects.equals(head, currentElement) ? newElement : head;
-            return new Cons<>(newHead, () -> tail().replace(currentElement, newElement));
+            return new Cons<>(newHead, () -> tail().replaceAll(currentElement, newElement));
         }
     }
 
@@ -510,7 +484,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
             throw new IndexOutOfBoundsException("set(" + index + ", e) on stream of size " + length());
         }
         // skip the current head element because it is replaced
-        return preceding.appendAll(tail.tail().prepend(element));
+        return preceding.reverse().appendAll(tail.tail().prepend(element));
     }
 
     @Override
@@ -578,8 +552,10 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
 
     @Override
     default Stream<T> take(int n) {
-        if (n < 1 || isEmpty()) {
+        if (isEmpty()) {
             return this;
+        } else if (n < 1) {
+            return Nil.instance();
         } else {
             return new Cons<>(head(), () -> tail().take(n - 1));
         }

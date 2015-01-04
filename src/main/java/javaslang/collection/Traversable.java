@@ -231,11 +231,11 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
      */
     default <U> U foldLeft(U zero, BiFunction<? super U, ? super T, ? extends U> f) {
         Require.nonNull(f, "function is null");
-        U result = zero;
-        for (T a : this) {
-            result = f.apply(result, a);
+        U xs = zero;
+        for (T x : this) {
+            xs = f.apply(xs, x);
         }
-        return result;
+        return xs;
     }
 
     /**
@@ -279,7 +279,7 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
      */
     default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Require.nonNull(f, "function is null");
-        return reverse().foldLeft(zero, (b, a) -> f.apply(a, b));
+        return reverse().foldLeft(zero, (xs, x) -> f.apply(x, xs));
     }
 
     /**
@@ -395,7 +395,9 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
      * @throws UnsupportedOperationException                     if this Traversable is empty
      * @throws javaslang.Require.UnsatisfiedRequirementException if op is null
      */
-    T reduce(BiFunction<? super T, ? super T, ? extends T> op);
+    default T reduce(BiFunction<? super T, ? super T, ? extends T> op) {
+        return reduceLeft(op);
+    }
 
     /**
      * Accumulates the elements of this Traversable by successively calling the given operation {@code op} from the left.
@@ -404,7 +406,14 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
      * @throws UnsupportedOperationException                     if this Traversable is empty
      * @throws javaslang.Require.UnsatisfiedRequirementException if op is null
      */
-    T reduceLeft(BiFunction<? super T, ? super T, ? extends T> op);
+    default T reduceLeft(BiFunction<? super T, ? super T, ? extends T> op) {
+        Require.nonNull(op, "operator is null");
+        if (isEmpty()) {
+            throw new UnsupportedOperationException("reduceLeft on Nil");
+        } else {
+            return tail().foldLeft(head(), op);
+        }
+    }
 
     /**
      * Accumulates the elements of this Traversable by successively calling the given operation {@code op} from the right.
@@ -413,7 +422,15 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
      * @throws UnsupportedOperationException                     if this Traversable is empty
      * @throws javaslang.Require.UnsatisfiedRequirementException if op is null
      */
-    T reduceRight(BiFunction<? super T, ? super T, ? extends T> op);
+    default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
+        Require.nonNull(op, "operator is null");
+        if (isEmpty()) {
+            throw new UnsupportedOperationException("reduceRight on empty List");
+        } else {
+            final Traversable<T> reversed = reverse();
+            return reversed.tail().foldLeft(reversed.head(), (xs, x) -> op.apply(x, xs));
+        }
+    }
 
     /**
      * Replaces the first occurrence (if exists) of the given currentElement with newElement.
