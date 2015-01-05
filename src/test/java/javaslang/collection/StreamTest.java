@@ -87,6 +87,13 @@ public class StreamTest extends AbstractSeqTest {
         assertThat(Stream.gen(BigInteger.ZERO.subtract(BigInteger.ONE)).map(BigInteger::intValue).take(3)).isEqualTo(Stream.of(-1, 0, 1));
     }
 
+    // -- static gen(BigInteger)
+
+    @Test
+    public void shouldGenerateInfiniteStreamBasedOnSupplier() {
+        assertThat(Stream.gen(() -> 1).take(13).reduce((i, j) -> i + j)).isEqualTo(13);
+    }
+
     // -- static nil()
 
     @Test

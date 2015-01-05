@@ -5,10 +5,10 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
-import javaslang.Memoizer.Memoizer0;
 import javaslang.Algebra.Monad;
 import javaslang.Algebra.Monoid;
+import javaslang.*;
+import javaslang.Memoizer.Memoizer0;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -70,6 +70,21 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
                 final BigInteger value = i;
                 i = i.add(BigInteger.ONE);
                 return value;
+            }
+        });
+    }
+
+    // Supplier is not referential transparent in general. Example: Stream.gen(Math::random).take(10)
+    static <T> Stream<T> gen(Supplier<T> supplier) {
+        return Stream.of(new Iterator<T>() {
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public T next() {
+                return supplier.get();
             }
         });
     }
