@@ -11,6 +11,7 @@ import javaslang.Require;
 import javaslang.Tuple.Tuple2;
 import javaslang.monad.Option;
 
+import java.util.Iterator;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -75,6 +76,11 @@ import java.util.function.UnaryOperator;
  * <li>{@link #take(int)}</li>
  * <li>{@link #takeRight(int)}</li>
  * <li>{@link #takeWhile(java.util.function.Predicate)}</li>
+ * </ul>
+ * <p/>
+ * <p>Side-effects:</p>
+ * <ul>
+ * <li>{@link #out()}</li>
  * </ul>
  * <p/>
  * <p>Transformation:</p>
@@ -360,6 +366,10 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
      * @see javaslang.Algebra.Monad#map(Function)
      */
     <U> Traversable<U> map(Function<? super T, ? extends U> mapper);
+
+    default void out() {
+        forEach(System.out::println);
+    }
 
     /**
      * Removes the first occurrence of the given element.

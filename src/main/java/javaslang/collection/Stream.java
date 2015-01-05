@@ -9,6 +9,7 @@ import javaslang.Algebra.Monad;
 import javaslang.Algebra.Monoid;
 import javaslang.*;
 import javaslang.Memoizer.Memoizer0;
+import javaslang.monad.Try;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -85,6 +86,24 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
             @Override
             public T next() {
                 return supplier.get();
+            }
+        });
+    }
+
+    static Stream<String> in() {
+        return Stream.of(new Iterator<String>() {
+            final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            String next;
+
+            @Override
+            public boolean hasNext() {
+                next = Try.of(reader::readLine).get();
+                return next != null;
+            }
+
+            @Override
+            public String next() {
+                return next;
             }
         });
     }
@@ -355,11 +374,12 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
 
         final class StreamIterator implements Iterator<T> {
 
-            Stream<T> stream = Stream.this;
+            Supplier<Stream<T>> streamSupplier = () -> Stream.this;
+            Stream<T> stream;
 
             @Override
             public boolean hasNext() {
-                return !stream.isEmpty();
+                return !(stream = streamSupplier.get()).isEmpty();
             }
 
             @Override
@@ -367,9 +387,9 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
                 if (stream.isEmpty()) {
                     throw new NoSuchElementException();
                 } else {
-                    final T result = stream.head();
-                    stream = stream.tail();
-                    return result;
+                    // defer computation of stream = stream.tail() because computation of new head may be blocking!
+                    streamSupplier = stream::tail;
+                    return stream.head();
                 }
             }
         }
