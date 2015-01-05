@@ -75,6 +75,11 @@ public class StreamTest extends AbstractSeqTest {
         assertThat(Stream.gen(-1).take(3)).isEqualTo(Stream.of(-1, 0, 1));
     }
 
+    @Test
+    public void shouldGenerateTerminatingIntStream() {
+        assertThat(Stream.gen(Integer.MAX_VALUE).take(2)).isEqualTo(Stream.of(Integer.MAX_VALUE));
+    }
+
     // -- static gen(BigInteger)
 
     @Test
