@@ -12,6 +12,7 @@ import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import javaslang.Tuple.Tuple0;
 import javaslang.Tuple.Tuple1;
@@ -51,9 +52,14 @@ public interface Lambda<R> extends Serializable {
 	}
 
 	@FunctionalInterface
-	static interface λ0<R> extends Lambda<R> {
+	static interface λ0<R> extends Lambda<R>, Supplier<R> {
 
 		R apply();
+
+		@Override
+		default R get() {
+			return apply();
+		}
 
 		@Override
 		default int arity() {
