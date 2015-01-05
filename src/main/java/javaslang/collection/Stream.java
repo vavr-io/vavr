@@ -48,9 +48,6 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
 
             @Override
             public Integer next() {
-                if (!hasNext) {
-                    throw new NoSuchElementException();
-                }
                 if (i == Integer.MAX_VALUE) {
                     hasNext = false;
                 }
