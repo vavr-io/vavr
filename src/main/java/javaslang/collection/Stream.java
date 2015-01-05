@@ -93,16 +93,17 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
     static Stream<String> in() {
         return Stream.of(new Iterator<String>() {
             final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            String next;
+            boolean hasNext = true;
 
             @Override
             public boolean hasNext() {
-                next = Try.of(reader::readLine).get();
-                return next != null;
+                return hasNext;
             }
 
             @Override
             public String next() {
+                final String next = Try.of(reader::readLine).get();
+                boolean hasNext = next != null;
                 return next;
             }
         });
@@ -375,15 +376,15 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         final class StreamIterator implements Iterator<T> {
 
             Supplier<Stream<T>> streamSupplier = () -> Stream.this;
-            Stream<T> stream;
 
             @Override
             public boolean hasNext() {
-                return !(stream = streamSupplier.get()).isEmpty();
+                return !streamSupplier.get().isEmpty();
             }
 
             @Override
             public T next() {
+                final Stream<T> stream = streamSupplier.get();
                 if (stream.isEmpty()) {
                     throw new NoSuchElementException();
                 } else {
