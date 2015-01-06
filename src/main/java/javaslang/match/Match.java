@@ -387,6 +387,18 @@ public final class Match<R> implements Function<Object, R> {
 
 		/**
 		 * Defines the default return value.
+		 *
+		 * @param <T> (super-)type of the object to be matched
+		 * @param defaultValue The default return value of this Match.
+		 * @return this, the current instance of Match.
+		 */
+		public <T> MatchBuilder<R> orElse(R defaultValue) {
+			setDefault(Option.of(() -> defaultValue));
+			return this;
+		}
+
+		/**
+		 * Defines the supplier of the default return value.
 		 * 
 		 * @param <T> (super-)type of the object to be matched
 		 * @param defaultSupplier Supplier of the default return value of this Match.
