@@ -15,7 +15,6 @@ import javaslang.monad.Try;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Iterator;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -229,7 +228,7 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
      * Example: {@code List("a", "b", "c").fold("", (a, b) -> a + b) = "abc"}
      *
      * @param zero Value to start the accumulation with.
-     * @param op    The accumulator operator.
+     * @param op   The accumulator operator.
      * @return An accumulated version of this.
      */
     T fold(T zero, BiFunction<? super T, ? super T, ? extends T> op);
@@ -383,6 +382,7 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
 
     /**
      * Calculates the product of this elements.
+     *
      * @return The product of this elements.
      * @throws java.lang.UnsupportedOperationException if the elements are not numeric.
      */
@@ -396,7 +396,8 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
                     .get();
         } else {
             T head = head();
-            return Matchs  .<T> caze((boolean t) -> (T) ((Traversable<Boolean>) this).reduce((i, j) -> i && j))
+            return Matchs
+                    .<T>caze((boolean t) -> (T) ((Traversable<Boolean>) this).reduce((i, j) -> i && j))
                     .caze((byte t) -> (T) ((Traversable<Byte>) this).foldLeft((int) 0, (i, j) -> i * j))
                     .caze((char t) -> (T) ((Traversable<Character>) this).foldLeft((int) 0, (xs, x) -> xs * (char) x))
                     .caze((double t) -> (T) ((Traversable<Double>) this).reduce((i, j) -> i * j))
@@ -407,7 +408,8 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
                     .caze((BigInteger t) -> (T) ((Traversable<BigInteger>) this).reduce(BigInteger::multiply))
                     .caze((BigDecimal t) -> (T) ((Traversable<BigDecimal>) this).reduce(BigDecimal::multiply))
                     .orElse(() -> {
-                        throw new UnsupportedOperationException("not numeric"); })
+                        throw new UnsupportedOperationException("not numeric");
+                    })
                     .apply(head);
         }
     }
@@ -535,6 +537,7 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
 
     /**
      * Calculates the sum of this elements.
+     *
      * @return The sum of this elements.
      * @throws java.lang.UnsupportedOperationException if the elements are not numeric.
      */
@@ -548,7 +551,8 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
                     .get();
         } else {
             T head = head();
-            return Matchs  .<T> caze((boolean t) -> (T) ((Traversable<Boolean>) this).reduce((i, j) -> i || j))
+            return Matchs
+                    .<T>caze((boolean t) -> (T) ((Traversable<Boolean>) this).reduce((i, j) -> i || j))
                     .caze((byte t) -> (T) ((Traversable<Byte>) this).foldLeft((int) 0, (i, j) -> i + j))
                     .caze((char t) -> (T) ((Traversable<Character>) this).foldLeft((int) 0, (xs, x) -> xs + (char) x))
                     .caze((double t) -> (T) ((Traversable<Double>) this).reduce((i, j) -> i + j))
@@ -559,7 +563,8 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
                     .caze((BigInteger t) -> (T) ((Traversable<BigInteger>) this).reduce(BigInteger::add))
                     .caze((BigDecimal t) -> (T) ((Traversable<BigDecimal>) this).reduce(BigDecimal::add))
                     .orElse(() -> {
-                        throw new UnsupportedOperationException("not numeric"); })
+                        throw new UnsupportedOperationException("not numeric");
+                    })
                     .apply(head);
         }
     }
