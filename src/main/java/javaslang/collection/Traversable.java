@@ -11,8 +11,10 @@ import javaslang.Require;
 import javaslang.Tuple.Tuple2;
 import javaslang.match.Matchs;
 import javaslang.monad.Option;
-import javaslang.monad.Try;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.function.BiFunction;
@@ -376,8 +378,18 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
      */
     <U> Traversable<U> map(Function<? super T, ? extends U> mapper);
 
+    // See also http://stackoverflow.com/questions/3643939/java-process-with-input-output-stream.
+    @SuppressWarnings("InfiniteLoopStatement")
     default void out() {
-        forEach(System.out::println);
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.out))) {
+            for (T t : this) {
+                writer.write(String.valueOf(t));
+                writer.newLine();
+                writer.flush(); // need to flush for blocking streams to see results
+            }
+        } catch (IOException x) {
+            throw new IllegalStateException("Error writing to std out", x);
+        }
     }
 
     /**
