@@ -9,8 +9,12 @@ import javaslang.Algebra.Monoid;
 import javaslang.Manifest;
 import javaslang.Require;
 import javaslang.Tuple.Tuple2;
+import javaslang.match.Matchs;
 import javaslang.monad.Option;
+import javaslang.monad.Try;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Iterator;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -49,6 +53,12 @@ import java.util.function.UnaryOperator;
  * <li>{@link #removeAll(Object)}</li>
  * <li>{@link #removeAll(Iterable)}</li>
  * <li>{@link #retainAll(Iterable)}</li>
+ * </ul>
+ * <p/>
+ * <p>Numeric operations:</p>
+ * <ul>
+ * <li>{@link #product()}</li>
+ * <li>{@link #sum()}</li>
  * </ul>
  * <p/>
  * <p>Reduction:</p>
@@ -372,6 +382,37 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
     }
 
     /**
+     * Calculates the product of this elements.
+     * @return The product of this elements.
+     * @throws java.lang.UnsupportedOperationException if the elements are not numeric.
+     */
+    @SuppressWarnings("unchecked")
+    default T product() {
+        if (isEmpty()) {
+            return Try.of(() -> (T) Integer.valueOf(0))
+                    .recoverWith(classCastException -> {
+                        throw new UnsupportedOperationException("not numeric");
+                    })
+                    .get();
+        } else {
+            T head = head();
+            return Matchs  .<T> caze((boolean t) -> (T) ((Traversable<Boolean>) this).reduce((i, j) -> i && j))
+                    .caze((byte t) -> (T) ((Traversable<Byte>) this).foldLeft((int) 0, (i, j) -> i * j))
+                    .caze((char t) -> (T) ((Traversable<Character>) this).foldLeft((int) 0, (xs, x) -> xs * (char) x))
+                    .caze((double t) -> (T) ((Traversable<Double>) this).reduce((i, j) -> i * j))
+                    .caze((float t) -> (T) ((Traversable<Float>) this).reduce((i, j) -> i * j))
+                    .caze((int t) -> (T) ((Traversable<Integer>) this).reduce((i, j) -> i * j))
+                    .caze((long t) -> (T) ((Traversable<Long>) this).reduce((i, j) -> i * j))
+                    .caze((short t) -> (T) ((Traversable<Short>) this).foldLeft((int) 0, (xs, x) -> xs * x))
+                    .caze((BigInteger t) -> (T) ((Traversable<BigInteger>) this).reduce(BigInteger::multiply))
+                    .caze((BigDecimal t) -> (T) ((Traversable<BigDecimal>) this).reduce(BigDecimal::multiply))
+                    .orElse(() -> {
+                        throw new UnsupportedOperationException("not numeric"); })
+                    .apply(head);
+        }
+    }
+
+    /**
      * Removes the first occurrence of the given element.
      *
      * @param element An element to be removed from this Traversable.
@@ -491,6 +532,37 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
      * @return A Tuple containing the longest prefix of elements that satisfy p and the remainder.
      */
     Tuple2<? extends Traversable<T>, ? extends Traversable<T>> span(Predicate<? super T> predicate);
+
+    /**
+     * Calculates the sum of this elements.
+     * @return The sum of this elements.
+     * @throws java.lang.UnsupportedOperationException if the elements are not numeric.
+     */
+    @SuppressWarnings("unchecked")
+    default T sum() {
+        if (isEmpty()) {
+            return Try.of(() -> (T) Integer.valueOf(0))
+                    .recoverWith(classCastException -> {
+                        throw new UnsupportedOperationException("not numeric");
+                    })
+                    .get();
+        } else {
+            T head = head();
+            return Matchs  .<T> caze((boolean t) -> (T) ((Traversable<Boolean>) this).reduce((i, j) -> i || j))
+                    .caze((byte t) -> (T) ((Traversable<Byte>) this).foldLeft((int) 0, (i, j) -> i + j))
+                    .caze((char t) -> (T) ((Traversable<Character>) this).foldLeft((int) 0, (xs, x) -> xs + (char) x))
+                    .caze((double t) -> (T) ((Traversable<Double>) this).reduce((i, j) -> i + j))
+                    .caze((float t) -> (T) ((Traversable<Float>) this).reduce((i, j) -> i + j))
+                    .caze((int t) -> (T) ((Traversable<Integer>) this).reduce((i, j) -> i + j))
+                    .caze((long t) -> (T) ((Traversable<Long>) this).reduce((i, j) -> i + j))
+                    .caze((short t) -> (T) ((Traversable<Short>) this).foldLeft((int) 0, (xs, x) -> xs + x))
+                    .caze((BigInteger t) -> (T) ((Traversable<BigInteger>) this).reduce(BigInteger::add))
+                    .caze((BigDecimal t) -> (T) ((Traversable<BigDecimal>) this).reduce(BigDecimal::add))
+                    .orElse(() -> {
+                        throw new UnsupportedOperationException("not numeric"); })
+                    .apply(head);
+        }
+    }
 
     /**
      * Drops the first element of a non-empty Traversable.

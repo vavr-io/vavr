@@ -107,23 +107,23 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
         }
     }
 
-    static List<Integer> range(int from, int to) {
-        if (from == Integer.MIN_VALUE && to == Integer.MIN_VALUE) {
-            return List.of(Integer.MIN_VALUE);
+    static List<Integer> range(int from, int toExclusive) {
+        if (toExclusive == Integer.MIN_VALUE) {
+            return Nil.instance();
         } else {
-            List<Integer> result = Nil.instance();
-            for (int i = to; i >= from; i--) {
-                result = result.prepend(i);
-            }
-            return result;
+            return List.rangeClosed(from, toExclusive - 1);
         }
     }
 
-    static List<Integer> until(int from, int to) {
-        if (to == Integer.MIN_VALUE) {
-            return Nil.instance();
+    static List<Integer> rangeClosed(int from, int toInclusive) {
+        if (from == Integer.MIN_VALUE && toInclusive == Integer.MIN_VALUE) {
+            return List.of(Integer.MIN_VALUE);
         } else {
-            return List.range(from, to - 1);
+            List<Integer> result = Nil.instance();
+            for (int i = toInclusive; i >= from; i--) {
+                result = result.prepend(i);
+            }
+            return result;
         }
     }
 

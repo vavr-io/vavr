@@ -90,48 +90,48 @@ public class ListTest extends AbstractSeqTest {
 		assertThat(List.of(arrayList)).isEqualTo(List.of(1, 2, 3));
 	}
 
-	// -- static range(int, int)
+	// -- static rangeClosed(int, int)
 
 	@Test
 	public void shouldCreateListOfRangeWhereFromIsGreaterThanTo() {
-		assertThat(List.range(1, 0)).isEqualTo(List.nil());
+		assertThat(List.rangeClosed(1, 0)).isEqualTo(List.nil());
 	}
 
 	@Test
 	public void shouldCreateListOfRangeWhereFromEqualsTo() {
-		assertThat(List.range(0, 0)).isEqualTo(List.of(0));
+		assertThat(List.rangeClosed(0, 0)).isEqualTo(List.of(0));
 	}
 
 	@Test
 	public void shouldCreateListOfRangeWhereFromIsLessThanTo() {
-		assertThat(List.range(1, 3)).isEqualTo(List.of(1, 2, 3));
+		assertThat(List.rangeClosed(1, 3)).isEqualTo(List.of(1, 2, 3));
 	}
 
 	@Test
 	public void shouldCreateListOfRangeWhereFromEqualsToEqualsInteger_MIN_VALUE() {
-		assertThat(List.range(Integer.MIN_VALUE, Integer.MIN_VALUE)).isEqualTo(List.of(Integer.MIN_VALUE));
+		assertThat(List.rangeClosed(Integer.MIN_VALUE, Integer.MIN_VALUE)).isEqualTo(List.of(Integer.MIN_VALUE));
 	}
 
-	// -- static until(int, int)
+	// -- static range(int, int)
 
 	@Test
 	public void shouldCreateListOfUntilWhereFromIsGreaterThanTo() {
-		assertThat(List.until(1, 0)).isEqualTo(List.nil());
+		assertThat(List.range(1, 0)).isEqualTo(List.nil());
 	}
 
 	@Test
 	public void shouldCreateListOfUntilWhereFromEqualsTo() {
-		assertThat(List.until(0, 0)).isEqualTo(List.nil());
+		assertThat(List.range(0, 0)).isEqualTo(List.nil());
 	}
 
 	@Test
 	public void shouldCreateListOfUntilWhereFromIsLessThanTo() {
-		assertThat(List.until(1, 3)).isEqualTo(List.of(1, 2));
+		assertThat(List.range(1, 3)).isEqualTo(List.of(1, 2));
 	}
 
 	@Test
 	public void shouldCreateListOfUntilWhereFromEqualsToEqualsInteger_MIN_VALUE() {
-		assertThat(List.until(Integer.MIN_VALUE, Integer.MIN_VALUE)).isEqualTo(List.nil());
+		assertThat(List.range(Integer.MIN_VALUE, Integer.MIN_VALUE)).isEqualTo(List.nil());
 	}
 
 	// -- unapply

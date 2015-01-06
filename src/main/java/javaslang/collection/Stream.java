@@ -90,20 +90,20 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         });
     }
 
+
     static Stream<String> in() {
         return Stream.of(new Iterator<String>() {
             final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            boolean hasNext = true;
+            String next;
 
             @Override
             public boolean hasNext() {
-                return hasNext;
+                return (next = Try.of(reader::readLine).get()) != null;
             }
 
             @Override
             public String next() {
-                final String next = Try.of(reader::readLine).get();
-                boolean hasNext = next != null;
+                // user can never call this Iterator.next() directly => no check of hasNext here
                 return next;
             }
         });
@@ -178,10 +178,18 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         }
     }
 
-    static Stream<Integer> range(int from, int to) {
-        if (from > to) {
+    static Stream<Integer> range(int from, int toExclusive) {
+        if (toExclusive == Integer.MIN_VALUE) {
             return Nil.instance();
-        } else if (from == Integer.MIN_VALUE && to == Integer.MIN_VALUE) {
+        } else {
+            return Stream.rangeClosed(from, toExclusive - 1);
+        }
+    }
+
+    static Stream<Integer> rangeClosed(int from, int toInclusive) {
+        if (from > toInclusive) {
+            return Nil.instance();
+        } else if (from == Integer.MIN_VALUE && toInclusive == Integer.MIN_VALUE) {
             return new Cons<>(Integer.MIN_VALUE, Nil::instance);
         } else {
             return Stream.of(new Iterator<Integer>() {
@@ -189,7 +197,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
 
                 @Override
                 public boolean hasNext() {
-                    return i <= to;
+                    return i <= toInclusive;
                 }
 
                 @Override
@@ -197,14 +205,6 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
                     return i++;
                 }
             });
-        }
-    }
-
-    static Stream<Integer> until(int from, int to) {
-        if (to == Integer.MIN_VALUE) {
-            return Nil.instance();
-        } else {
-            return Stream.range(from, to - 1);
         }
     }
 

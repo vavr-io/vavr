@@ -126,48 +126,48 @@ public class StreamTest extends AbstractSeqTest {
         assertThat(Stream.of(iterator)).isEqualTo(Stream.of(1, 2, 3));
     }
 
-    // -- static range(int, int)
+    // -- static rangeClosed(int, int)
 
     @Test
     public void shouldCreateStreamOfRangeWhereFromIsGreaterThanTo() {
-        assertThat(Stream.range(1, 0)).isEqualTo(Stream.nil());
+        assertThat(Stream.rangeClosed(1, 0)).isEqualTo(Stream.nil());
     }
 
     @Test
     public void shouldCreateStreamOfRangeWhereFromEqualsTo() {
-        assertThat(Stream.range(0, 0)).isEqualTo(Stream.of(0));
+        assertThat(Stream.rangeClosed(0, 0)).isEqualTo(Stream.of(0));
     }
 
     @Test
     public void shouldCreateStreamOfRangeWhereFromIsLessThanTo() {
-        assertThat(Stream.range(1, 3)).isEqualTo(Stream.of(1, 2, 3));
+        assertThat(Stream.rangeClosed(1, 3)).isEqualTo(Stream.of(1, 2, 3));
     }
 
     @Test
     public void shouldCreateStreamOfRangeWhereFromEqualsToEqualsInteger_MIN_VALUE() {
-        assertThat(Stream.range(Integer.MIN_VALUE, Integer.MIN_VALUE)).isEqualTo(Stream.of(Integer.MIN_VALUE));
+        assertThat(Stream.rangeClosed(Integer.MIN_VALUE, Integer.MIN_VALUE)).isEqualTo(Stream.of(Integer.MIN_VALUE));
     }
 
-    // -- static until(int, int)
+    // -- static range(int, int)
 
     @Test
     public void shouldCreateStreamOfUntilWhereFromIsGreaterThanTo() {
-        assertThat(Stream.until(1, 0)).isEqualTo(Stream.nil());
+        assertThat(Stream.range(1, 0)).isEqualTo(Stream.nil());
     }
 
     @Test
     public void shouldCreateStreamOfUntilWhereFromEqualsTo() {
-        assertThat(Stream.until(0, 0)).isEqualTo(Stream.nil());
+        assertThat(Stream.range(0, 0)).isEqualTo(Stream.nil());
     }
 
     @Test
     public void shouldCreateStreamOfUntilWhereFromIsLessThanTo() {
-        assertThat(Stream.until(1, 3)).isEqualTo(Stream.of(1, 2));
+        assertThat(Stream.range(1, 3)).isEqualTo(Stream.of(1, 2));
     }
 
     @Test
     public void shouldCreateStreamOfUntilWhereFromEqualsToEqualsInteger_MIN_VALUE() {
-        assertThat(Stream.until(Integer.MIN_VALUE, Integer.MIN_VALUE)).isEqualTo(Stream.nil());
+        assertThat(Stream.range(Integer.MIN_VALUE, Integer.MIN_VALUE)).isEqualTo(Stream.nil());
     }
 
     // -- unapply
