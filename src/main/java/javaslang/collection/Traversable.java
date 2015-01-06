@@ -384,21 +384,17 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
      * Calculates the product of this elements.
      *
      * @return The product of this elements.
-     * @throws java.lang.UnsupportedOperationException if the elements are not numeric.
+     * @throws java.lang.UnsupportedOperationException if no elements are present or the elements are not numeric
      */
     @SuppressWarnings("unchecked")
     default T product() {
         if (isEmpty()) {
-            return Try.of(() -> (T) Integer.valueOf(0))
-                    .recoverWith(classCastException -> {
-                        throw new UnsupportedOperationException("not numeric");
-                    })
-                    .get();
+            throw new UnsupportedOperationException("product of nothing");
         } else {
             T head = head();
             return Matchs
                     .<T>caze((boolean t) -> (T) ((Traversable<Boolean>) this).reduce((i, j) -> i && j))
-                    .caze((byte t) -> (T) ((Traversable<Byte>) this).foldLeft((int) 0, (i, j) -> i * j))
+                    .<T>caze((byte t) -> (T) ((Traversable<Byte>) this).foldLeft((int) 0, (i, j) -> i * j))
                     .caze((char t) -> (T) ((Traversable<Character>) this).foldLeft((int) 0, (xs, x) -> xs * (char) x))
                     .caze((double t) -> (T) ((Traversable<Double>) this).reduce((i, j) -> i * j))
                     .caze((float t) -> (T) ((Traversable<Float>) this).reduce((i, j) -> i * j))
@@ -539,16 +535,12 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
      * Calculates the sum of this elements.
      *
      * @return The sum of this elements.
-     * @throws java.lang.UnsupportedOperationException if the elements are not numeric.
+     * @throws java.lang.UnsupportedOperationException if no elements are present or the elements are not numeric
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked"})
     default T sum() {
         if (isEmpty()) {
-            return Try.of(() -> (T) Integer.valueOf(0))
-                    .recoverWith(classCastException -> {
-                        throw new UnsupportedOperationException("not numeric");
-                    })
-                    .get();
+            throw new UnsupportedOperationException("sum of nothing");
         } else {
             T head = head();
             return Matchs
