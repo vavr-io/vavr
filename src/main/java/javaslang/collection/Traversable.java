@@ -406,7 +406,7 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
             T head = head();
             return Matchs
                     .<T>caze((boolean t) -> (T) ((Traversable<Boolean>) this).reduce((i, j) -> i && j))
-                    .<T>caze((byte t) -> (T) ((Traversable<Byte>) this).foldLeft((int) 0, (i, j) -> i * j))
+                    .caze((byte t) -> (T) ((Traversable<Byte>) this).foldLeft((int) 0, (i, j) -> i * j))
                     .caze((char t) -> (T) ((Traversable<Character>) this).foldLeft((int) 0, (xs, x) -> xs * (char) x))
                     .caze((double t) -> (T) ((Traversable<Double>) this).reduce((i, j) -> i * j))
                     .caze((float t) -> (T) ((Traversable<Float>) this).reduce((i, j) -> i * j))
