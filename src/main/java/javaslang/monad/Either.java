@@ -193,6 +193,13 @@ public interface Either<L, R> extends ValueObject {
 		}
 
 		@Override
+		public void orElseRun(Consumer<? super R> action) {
+			if (either.isRight()) {
+				action.accept(asRight());
+			}
+		}
+
+		@Override
 		public <X extends Throwable> L orElseThrow(Supplier<X> exceptionSupplier) throws X {
 			if (either.isLeft()) {
 				return asLeft();
@@ -317,6 +324,13 @@ public interface Either<L, R> extends ValueObject {
 				return asRight();
 			} else {
 				return other.apply(asLeft());
+			}
+		}
+
+		@Override
+		public void orElseRun(Consumer<? super L> action) {
+			if (either.isLeft()) {
+				action.accept(asLeft());
 			}
 		}
 

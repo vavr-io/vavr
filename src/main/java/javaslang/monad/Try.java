@@ -118,6 +118,11 @@ public interface Try<T> extends Monad<T, Try<?>>, ValueObject, Bivalent<T, Throw
 		}
 
 		@Override
+		public void orElseRun(Consumer<? super Throwable> action) {
+			// nothing to do
+		}
+
+		@Override
 		public <X extends Throwable> T orElseThrow(Supplier<X> exceptionSupplier) throws X {
 			return value;
 		}
@@ -268,6 +273,11 @@ public interface Try<T> extends Monad<T, Try<?>>, ValueObject, Bivalent<T, Throw
 		@Override
 		public T orElseGet(Function<? super Throwable, ? extends T> other) {
 			return other.apply(cause.getCause());
+		}
+
+		@Override
+		public void orElseRun(Consumer<? super Throwable> action) {
+			action.accept(cause.getCause());
 		}
 
 		@Override

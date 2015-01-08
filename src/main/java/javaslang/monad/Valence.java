@@ -5,6 +5,7 @@
  */
 package javaslang.monad;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -28,6 +29,8 @@ public interface Valence {
     static interface Bivalent<T, U> extends Univalent<T> {
 
         T orElseGet(Function<? super U, ? extends T> other);
+
+        void orElseRun(Consumer<? super U> action);
 
         <X extends Throwable> T orElseThrow(Function<? super U, X> exceptionProvider) throws X;
 
