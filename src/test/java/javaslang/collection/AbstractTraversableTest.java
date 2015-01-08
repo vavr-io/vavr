@@ -1063,7 +1063,6 @@ public abstract class AbstractTraversableTest {
     }
 
     @Test
-    @Ignore
     public void shouldSerializeDeserializeNonNil() {
         final Object actual = deserialize(serialize(this.of(1, 2, 3)));
         final Object expected = this.of(1, 2, 3);

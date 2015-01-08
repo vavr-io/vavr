@@ -21,7 +21,6 @@ import javaslang.Algebra.Monoid;
 import javaslang.collection.Stream.Cons;
 import javaslang.collection.Stream.Nil;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class StreamTest extends AbstractSeqTest {
@@ -107,7 +106,7 @@ public class StreamTest extends AbstractSeqTest {
     @Test
     public void shouldCreateStreamOfElements() {
         final Stream<Integer> actual = Stream.of(1, 2);
-        final Stream<Integer> expected = new Cons<>(() -> 1, () -> new Cons<>(() -> 2, Nil::instance));
+        final Stream<Integer> expected = new Cons<>(1, () -> new Cons<>(2, Nil::instance));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -198,14 +197,12 @@ public class StreamTest extends AbstractSeqTest {
     // -- Cons test
 
     @Test
-    @Ignore
     public void shouldNotSerializeEnclosingClass() throws Exception {
         AssertionsExtensions.assertThat(() -> callReadObject(Stream.of(1))).isThrowing(InvalidObjectException.class,
-                "Proxy required");
+                "No direct serialization");
     }
 
     @Test
-    @Ignore
     public void shouldNotDeserializeStreamWithSizeLessThanOne() {
         AssertionsExtensions.assertThat(() -> {
             try {

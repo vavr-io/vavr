@@ -130,7 +130,7 @@ public interface Tree<T> extends Functor<T>, ValueObject {
         } else {
             class Local {
                 Stream<T> preOrder(Tree<T> tree) {
-                    return new Stream.Cons<>(tree::getValue, () -> Stream.of(tree.getChildren()).flatMap(Local.this::preOrder));
+                    return new Stream.Cons<>(getValue(), () -> Stream.of(tree.getChildren()).flatMap(Local.this::preOrder));
                 }
             }
             return new Local().preOrder(this).iterator();

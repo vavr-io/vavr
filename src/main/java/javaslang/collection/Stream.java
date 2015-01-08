@@ -97,8 +97,12 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
     }
 
     static Stream<String> lines(InputStream in) {
+        return lines(in, Charset.defaultCharset());
+    }
+
+    static Stream<String> lines(InputStream in, Charset charset) {
         return Stream.of(new Iterator<String>() {
-            final BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            final BufferedReader reader = new BufferedReader(new InputStreamReader(in, charset));
             String next;
 
             @Override
@@ -229,7 +233,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         Require.nonNull(iterator, "iterator is null");
         return new Deferred<>(() -> {
             if (iterator.hasNext()) {
-                return new Cons<>(iterator::next, () -> Stream.of(iterator));
+                return new Cons<>(iterator.next(), () -> Stream.of(iterator));
             } else {
                 return Nil.instance();
             }
@@ -248,7 +252,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         if (from > toInclusive) {
             return Nil.instance();
         } else if (from == Integer.MIN_VALUE && toInclusive == Integer.MIN_VALUE) {
-            return new Cons<>(() -> Integer.MIN_VALUE, Nil::instance);
+            return new Cons<>(Integer.MIN_VALUE, Nil::instance);
         } else {
             return Stream.of(new Iterator<Integer>() {
                 int i = from;
@@ -268,13 +272,13 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
 
     @Override
     default Stream<T> append(T element) {
-        return isEmpty() ? new Cons<>(() -> element, Nil::instance) : new Cons<>(this::head, () -> tail().append(element));
+        return isEmpty() ? new Cons<>(element, Nil::instance) : new Cons<>(head(), () -> tail().append(element));
     }
 
     @Override
     default Stream<T> appendAll(Iterable<? extends T> elements) {
         Require.nonNull(elements, "elements is null");
-        return isEmpty() ? Stream.of(elements) : new Cons<>(this::head, () -> tail().appendAll(elements));
+        return isEmpty() ? Stream.of(elements) : new Cons<>(head(), () -> tail().appendAll(elements));
     }
 
     @Override
@@ -318,7 +322,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         } else {
             final T head = head();
             if (predicate.test(head)) {
-                return new Cons<>(() -> head, () -> tail().filter(predicate));
+                return new Cons<>(head, () -> tail().filter(predicate));
             } else {
                 return tail().filter(predicate);
             }
@@ -380,7 +384,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
             if (tail.isEmpty()) {
                 return Nil.instance();
             } else {
-                return new Cons<>(this::head, tail::init);
+                return new Cons<>(head(), tail::init);
             }
         }
     }
@@ -394,9 +398,9 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
             throw new IndexOutOfBoundsException("insert(" + index + ", e) on empty stream");
         }
         if (index == 0) {
-            return new Cons<>(() -> element, () -> this);
+            return new Cons<>(element, () -> this);
         } else {
-            return new Cons<>(this::head, () -> tail().insert(index - 1, element));
+            return new Cons<>(head(), () -> tail().insert(index - 1, element));
         }
     }
 
@@ -412,7 +416,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         if (index == 0) {
             return Stream.of(elements).appendAll(this);
         } else {
-            return new Cons<>(this::head, () -> tail().insertAll(index - 1, elements));
+            return new Cons<>(head(), () -> tail().insertAll(index - 1, elements));
         }
     }
 
@@ -421,9 +425,9 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         if (isEmpty()) {
             return Nil.instance();
         } else {
-            return new Cons<>(this::head, () -> {
+            return new Cons<>(head(), () -> {
                 final Stream<T> tail = tail();
-                return tail.isEmpty() ? tail : new Cons<>(() -> element, () -> tail.intersperse(element));
+                return tail.isEmpty() ? tail : new Cons<>(element, () -> tail.intersperse(element));
             });
         }
     }
@@ -473,13 +477,13 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         if (isEmpty()) {
             return Nil.instance();
         } else {
-            return new Cons<>(() -> mapper.apply(head()), () -> tail().map(mapper));
+            return new Cons<>(mapper.apply(head()), () -> tail().map(mapper));
         }
     }
 
     @Override
     default Stream<T> prepend(T element) {
-        return new Cons<>(() -> element, () -> this);
+        return new Cons<>(element, () -> this);
     }
 
     @Override
@@ -494,7 +498,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
             return this;
         } else {
             final T head = head();
-            return Objects.equals(head, element) ? tail() : new Cons<>(() -> head, () -> tail().remove(element));
+            return Objects.equals(head, element) ? tail() : new Cons<>(head, () -> tail().remove(element));
         }
     }
 
@@ -517,9 +521,9 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         } else {
             final T head = head();
             if (Objects.equals(head, currentElement)) {
-                return new Cons<>(() -> newElement, this::tail);
+                return new Cons<>(newElement, this::tail);
             } else {
-                return new Cons<>(() -> head, () -> tail().replace(currentElement, newElement));
+                return new Cons<>(head, () -> tail().replace(currentElement, newElement));
             }
         }
     }
@@ -531,7 +535,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         } else {
             final T head = head();
             final T newHead = Objects.equals(head, currentElement) ? newElement : head;
-            return new Cons<>(() -> newHead, () -> tail().replaceAll(currentElement, newElement));
+            return new Cons<>(newHead, () -> tail().replaceAll(currentElement, newElement));
         }
     }
 
@@ -540,7 +544,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         if (isEmpty()) {
             return this;
         } else {
-            return new Cons<>(() -> operator.apply(head()), () -> tail().replaceAll(operator));
+            return new Cons<>(operator.apply(head()), () -> tail().replaceAll(operator));
         }
     }
 
@@ -632,7 +636,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
             throw new IndexOutOfBoundsException("subsequence of empty stream");
         }
         if (beginIndex == 0) {
-            return new Cons<>(() -> head(), () -> tail().subsequence(0, endIndex - 1));
+            return new Cons<>(head(), () -> tail().subsequence(0, endIndex - 1));
         } else {
             return tail().subsequence(beginIndex - 1, endIndex - 1);
         }
@@ -648,7 +652,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         } else if (n < 1) {
             return Nil.instance();
         } else {
-            return new Cons<>(() -> head(), () -> tail().take(n - 1));
+            return new Cons<>(head(), () -> tail().take(n - 1));
         }
     }
 
@@ -664,7 +668,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         } else {
             final T head = head();
             if (predicate.test(head)) {
-                return new Cons<>(() -> head, () -> tail().takeWhile(predicate));
+                return new Cons<>(head, () -> tail().takeWhile(predicate));
             } else {
                 return Nil.instance();
             }
@@ -690,7 +694,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         if (this.isEmpty() || that.isEmpty()) {
             return Nil.instance();
         } else {
-            return new Cons<>(() -> Tuple.of(this.head(), that.head()), () -> this.tail().zip(that.tail()));
+            return new Cons<>(Tuple.of(this.head(), that.head()), () -> this.tail().zip(that.tail()));
         }
     }
 
@@ -707,7 +711,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
             final U head2 = isThatEmpty ? thatElem : that.head();
             final Stream<T> tail1 = isThisEmpty ? this : this.tail();
             final Stream<U> tail2 = isThatEmpty ? that : that.tail();
-            return new Cons<>(() -> Tuple.of(head1, head2), () -> tail1.zipAll(tail2, thisElem, thatElem));
+            return new Cons<>(Tuple.of(head1, head2), () -> tail1.zipAll(tail2, thisElem, thatElem));
         }
     }
 
@@ -739,20 +743,22 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
 
         private static final long serialVersionUID = 53595355464228669L;
 
-        private final Memoizer0<Tuple.Tuple2<T, Memoizer0<Stream<T>>>> data;
+        private final T head;
+        private final Memoizer0<Stream<T>> tail;
 
-        public Cons(Supplier<T> head, Supplier<Stream<T>> tail) {
-            this.data = Memoizer.of(() -> Tuple.of(head.get(), Memoizer.of(tail)));
+        public Cons(T head, Supplier<Stream<T>> tail) {
+            this.head = head;
+            this.tail = Memoizer.of(tail);
         }
 
         @Override
         public T head() {
-            return data.apply()._1;
+            return head;
         }
 
         @Override
         public Stream<T> tail() {
-            return data.apply()._2.apply();
+            return tail.apply();
         }
 
         @Override
@@ -954,8 +960,29 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
             return Tuple.of(head(), tail());
         }
 
-        // TODO: Serializable
+        /**
+         * {@code writeReplace} method for serializing wrapped Stream.
+         * <p/>
+         * The presence of this method causes the serialization system to delegate tp the wrapped Stream instance
+         * instead of an instance of the enclosing class.
+         *
+         * @return A SerialiationProxy for this enclosing class.
+         */
+        private Object writeReplace() {
+            return stream.apply();
+        }
 
+        /**
+         * {@code readObject} method for preventing serialization of the enclosing class.
+         * <p/>
+         * Guarantees that the serialization system will never generate a serialized instance of the enclosing class.
+         *
+         * @param stream An object serialization stream.
+         * @throws java.io.InvalidObjectException This method will throw with the message "Not deserializable".
+         */
+        private void readObject(ObjectInputStream stream) throws InvalidObjectException {
+            throw new InvalidObjectException("No direct serialization");
+        }
     }
 
     /**
