@@ -96,6 +96,10 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         return lines(System.in);
     }
 
+    static Stream<String> stdin(Charset charset) {
+        return lines(System.in, charset);
+    }
+
     static Stream<String> lines(InputStream in) {
         return lines(in, Charset.defaultCharset());
     }

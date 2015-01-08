@@ -233,7 +233,6 @@ public class StreamTest extends AbstractSeqTest {
                 listWithOneElement[index] = 0;
                 Serializables.deserialize(listWithOneElement);
             } catch (IllegalStateException x) {
-                x.printStackTrace();
                 throw (x.getCause() != null) ? x.getCause() : x;
             }
         }).isThrowing(InvalidObjectException.class, "No elements");
