@@ -934,6 +934,11 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         }
     }
 
+    /**
+     * Deferred Stream for lazy evaluation of blocking input.
+     *
+     * @param <T> Component type of the Stream.
+     */
     static final class Deferred<T> extends AbstractStream<T> {
 
         private static final long serialVersionUID = -8478757773471498399L;
