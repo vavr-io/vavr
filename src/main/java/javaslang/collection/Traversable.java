@@ -91,7 +91,8 @@ import java.util.function.UnaryOperator;
  * <p/>
  * <p>Side-effects:</p>
  * <ul>
- * <li>{@link #out()}</li>
+ * <li>{@link #stderr()}</li>
+ * <li>{@link #stdout()}</li>
  * </ul>
  * <p/>
  * <p>Transformation:</p>
