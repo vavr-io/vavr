@@ -16,6 +16,7 @@ import javaslang.Tuple;
 import javaslang.ValueObject;
 import javaslang.monad.Option.None;
 import javaslang.monad.Option.Some;
+import javaslang.monad.Valence.Bivalent;
 
 /**
  * Either represents a value of two possible types. An Either is either a {@link javaslang.monad.Either.Left} or a
@@ -156,7 +157,7 @@ public interface Either<L, R> extends ValueObject {
 
 	// -- Left/Right projections
 
-	static final class LeftProjection<L, R> {
+	static final class LeftProjection<L, R> implements Bivalent<L, R> {
 
 		private final Either<L, R> either;
 
@@ -172,14 +173,26 @@ public interface Either<L, R> extends ValueObject {
 			}
 		}
 
+		@Override
 		public L orElse(L other) {
 			return either.isLeft() ? asLeft() : other;
 		}
 
+		@Override
 		public L orElseGet(Supplier<? extends L> other) {
 			return either.isLeft() ? asLeft() : other.get();
 		}
 
+		@Override
+		public L orElseGet(Function<? super R, ? extends L> other) {
+			if (either.isLeft()) {
+				return asLeft();
+			} else {
+				return other.apply(asRight());
+			}
+		}
+
+		@Override
 		public <X extends Throwable> L orElseThrow(Supplier<X> exceptionSupplier) throws X {
 			if (either.isLeft()) {
 				return asLeft();
@@ -188,12 +201,27 @@ public interface Either<L, R> extends ValueObject {
 			}
 		}
 
-		public <X extends Throwable> L orElseThrow(Function<R, X> exceptionFunction) throws X {
+		@Override
+		public <X extends Throwable> L orElseThrow(Function<? super R, X> exceptionFunction) throws X {
 			if (either.isLeft()) {
 				return asLeft();
 			} else {
 				throw exceptionFunction.apply(asRight());
 			}
+		}
+
+		@Override
+		public Option<L> toOption() {
+			if (either.isLeft()) {
+				return new Some<>(asLeft());
+			} else {
+				return None.instance();
+			}
+		}
+
+		@Override
+		public Either<L, R> toEither() {
+			return either;
 		}
 
 		public Option<Either<L, R>> filter(Predicate<? super L> predicate) {
@@ -256,7 +284,7 @@ public interface Either<L, R> extends ValueObject {
 		}
 	}
 
-	static final class RightProjection<L, R> {
+	static final class RightProjection<L, R> implements Bivalent<R, L> {
 
 		private final Either<L, R> either;
 
@@ -264,6 +292,7 @@ public interface Either<L, R> extends ValueObject {
 			this.either = either;
 		}
 
+		@Override
 		public R get() {
 			if (either.isRight()) {
 				return asRight();
@@ -272,14 +301,26 @@ public interface Either<L, R> extends ValueObject {
 			}
 		}
 
+		@Override
 		public R orElse(R other) {
 			return either.isRight() ? asRight() : other;
 		}
 
+		@Override
 		public R orElseGet(Supplier<? extends R> other) {
 			return either.isRight() ? asRight() : other.get();
 		}
 
+		@Override
+		public R orElseGet(Function<? super L, ? extends R> other) {
+			if (either.isRight()) {
+				return asRight();
+			} else {
+				return other.apply(asLeft());
+			}
+		}
+
+		@Override
 		public <X extends Throwable> R orElseThrow(Supplier<X> exceptionSupplier) throws X {
 			if (either.isRight()) {
 				return asRight();
@@ -288,12 +329,27 @@ public interface Either<L, R> extends ValueObject {
 			}
 		}
 
-		public <X extends Throwable> R orElseThrow(Function<L, X> exceptionFunction) throws X {
+		@Override
+		public <X extends Throwable> R orElseThrow(Function<? super L, X> exceptionFunction) throws X {
 			if (either.isRight()) {
 				return asRight();
 			} else {
 				throw exceptionFunction.apply(asLeft());
 			}
+		}
+
+		@Override
+		public Option<R> toOption() {
+			if (either.isLeft()) {
+				return new Some<>(asRight());
+			} else {
+				return None.instance();
+			}
+		}
+
+		@Override
+		public Either<L, R> toEither() {
+			return either;
 		}
 
 		public Option<Either<L, R>> filter(Predicate<? super R> predicate) {

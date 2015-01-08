@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import javaslang.Algebra.Monad;
 import javaslang.Manifest;
@@ -19,13 +20,14 @@ import javaslang.Tuple;
 import javaslang.ValueObject;
 import javaslang.monad.Option.None;
 import javaslang.monad.Option.Some;
+import javaslang.monad.Valence.Bivalent;
 
 /**
  * An implementation similar to Scala's Try monad.
  *
  * @param <T> Value type in the case of success.
  */
-public interface Try<T> extends Monad<T, Try<?>>, ValueObject {
+public interface Try<T> extends Monad<T, Try<?>>, ValueObject, Bivalent<T, Throwable> {
 
 	static <T> Try<T> of(Try.CheckedSupplier<T> supplier) {
 		try {
@@ -48,19 +50,9 @@ public interface Try<T> extends Monad<T, Try<?>>, ValueObject {
 
 	boolean isSuccess();
 
-	T get() throws Failure.NonFatal;
-
-	T orElse(T other);
-
-	T orElseGet(Function<Throwable, ? extends T> other);
-
-	<X extends Throwable> T orElseThrow(Function<Throwable, X> exceptionProvider) throws X;
-
 	Try<T> recover(Function<Throwable, ? extends T> f);
 
 	Try<T> recoverWith(Function<Throwable, Try<T>> f);
-
-	Option<T> toOption();
 
 	Try<Throwable> failed();
 
@@ -116,12 +108,22 @@ public interface Try<T> extends Monad<T, Try<?>>, ValueObject {
 		}
 
 		@Override
-		public T orElseGet(Function<Throwable, ? extends T> other) {
+		public T orElseGet(Supplier<? extends T> other) {
 			return value;
 		}
 
 		@Override
-		public <X extends Throwable> T orElseThrow(Function<Throwable, X> exceptionProvider) throws X {
+		public T orElseGet(Function<? super Throwable, ? extends T> other) {
+			return value;
+		}
+
+		@Override
+		public <X extends Throwable> T orElseThrow(Supplier<X> exceptionSupplier) throws X {
+			return value;
+		}
+
+		@Override
+		public <X extends Throwable> T orElseThrow(Function<? super Throwable, X> exceptionProvider) throws X {
 			return value;
 		}
 
@@ -138,6 +140,11 @@ public interface Try<T> extends Monad<T, Try<?>>, ValueObject {
 		@Override
 		public Option<T> toOption() {
 			return new Some<>(value);
+		}
+
+		@Override
+		public Either<Throwable, T> toEither() {
+			return new Either.Right<>(value);
 		}
 
 		@Override
@@ -254,12 +261,22 @@ public interface Try<T> extends Monad<T, Try<?>>, ValueObject {
 		}
 
 		@Override
-		public T orElseGet(Function<Throwable, ? extends T> other) {
+		public T orElseGet(Supplier<? extends T> other) {
+			return other.get();
+		}
+
+		@Override
+		public T orElseGet(Function<? super Throwable, ? extends T> other) {
 			return other.apply(cause.getCause());
 		}
 
 		@Override
-		public <X extends Throwable> T orElseThrow(Function<Throwable, X> exceptionProvider) throws X {
+		public <X extends Throwable> T orElseThrow(Supplier<X> exceptionSupplier) throws X {
+			throw exceptionSupplier.get();
+		}
+
+		@Override
+		public <X extends Throwable> T orElseThrow(Function<? super Throwable, X> exceptionProvider) throws X {
 			throw exceptionProvider.apply(cause.getCause());
 		}
 
@@ -280,6 +297,11 @@ public interface Try<T> extends Monad<T, Try<?>>, ValueObject {
 		@Override
 		public Option<T> toOption() {
 			return None.instance();
+		}
+
+		@Override
+		public Either<Throwable, T> toEither() {
+			return new Either.Left<>(cause.getCause());
 		}
 
 		@Override
