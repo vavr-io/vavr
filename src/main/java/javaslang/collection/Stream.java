@@ -235,16 +235,13 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
     // providing this method to save resources creating a Stream - makes no sense for collections in general
     static <T> Stream<T> of(Iterator<? extends T> iterator) {
         Require.nonNull(iterator, "iterator is null");
-        class Local {
-            Stream<T> of(Iterator<? extends T> iterator) {
-                if (iterator.hasNext()) {
-                    return new Cons<>(iterator.next(), () -> Local.this.of(iterator));
-                } else {
-                    return Nil.instance();
-                }
+        return new Deferred<>(() -> {
+            if (iterator.hasNext()) {
+                return new Cons<>(iterator.next(), () -> Stream.of(iterator));
+            } else {
+                return Nil.instance();
             }
-        }
-        return new Deferred<>(() -> new Local().of(iterator));
+        });
     }
 
     static Stream<Integer> range(int from, int toExclusive) {
