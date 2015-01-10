@@ -5,8 +5,8 @@
  */
 package javaslang.collection;
 
+import javaslang.Algebra;
 import javaslang.Algebra.Monoid;
-import javaslang.Manifest;
 import javaslang.Tuple.Tuple2;
 import javaslang.match.Matchs;
 import javaslang.monad.Option;
@@ -115,7 +115,7 @@ import java.util.function.UnaryOperator;
  *
  * @param <T> Component type.
  */
-public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>> {
+public interface Traversable<T> extends Iterable<T>, Algebra.HigherKinded<T, Traversable<?>> {
 
     /**
      * Returns an empty version of this traversable, i.e. {@code this.clear().isEmpty() == true}.
@@ -223,7 +223,7 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
         return reverse().findFirst(predicate);
     }
 
-    <U, TRAVERSABLE extends Manifest<U, Traversable<?>>> Traversable<U> flatMap(Function<? super T, TRAVERSABLE> mapper);
+    <U, TRAVERSABLE extends Algebra.HigherKinded<U, Traversable<?>>> Traversable<U> flatMap(Function<? super T, TRAVERSABLE> mapper);
 
     /**
      * Accumulates the elements of this Traversable by successively calling the given operator {@code op}.

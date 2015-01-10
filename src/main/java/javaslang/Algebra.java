@@ -102,7 +102,7 @@ public interface Algebra {
 	 *
 	 * @param <A> Component type of this monad.
 	 */
-	static interface Monad<A, M extends Manifest<?, M>> extends Functor<A>, Manifest<A, M> {
+	static interface Monad<A, M extends HigherKinded<?, M>> extends Functor<A>, HigherKinded<A, M> {
 
         /**
          * Monad composition, also known as Kleisli composition.
@@ -113,6 +113,24 @@ public interface Algebra {
             return a -> g.apply(a).flatMap(f::apply);
         }
 
-        <B, MONAD extends Manifest<B, M>> Monad<B, M> flatMap(Function<? super A, MONAD> f);
+        <B, MONAD extends HigherKinded<B, M>> Monad<B, M> flatMap(Function<? super A, MONAD> f);
 	}
+
+	/**
+	 * A type <em>HigherKinded</em> declares a generic type constructor, which consists of an inner type (component type)
+	 * and an outer type (container type).
+	 * <p/>
+	 * HigherKinded is needed to (partially) simulate Higher-Kinded/Higher-Order Types, which  are not part of the Java
+	 * language but needed for generic type constructors.
+	 * <p/>
+	 * Example: {@link javaslang.Algebra.Monad#flatMap(java.util.function.Function)}
+	 *
+	 * @param <A> Component type of the type to be constructed.
+	 * @param <TYPE> Container type of the type to be constructed.
+	 */
+    interface HigherKinded<A, TYPE extends HigherKinded<?, TYPE>> {
+
+        // used for type declaration only
+
+    }
 }

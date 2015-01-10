@@ -12,8 +12,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import javaslang.Algebra;
 import javaslang.Algebra.Monad;
-import javaslang.Manifest;
 import javaslang.Tuple;
 import javaslang.ValueObject;
 import javaslang.monad.Option.None;
@@ -62,7 +62,7 @@ public interface Try<T> extends Monad<T, Try<?>>, ValueObject, Bivalent<T, Throw
 	<U> Try<U> map(Function<? super T, ? extends U> mapper);
 
 	@Override
-	<U, TRY extends Manifest<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper);
+	<U, TRY extends Algebra.HigherKinded<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper);
 
 	@Override
 	boolean equals(Object o);
@@ -184,7 +184,7 @@ public interface Try<T> extends Monad<T, Try<?>>, ValueObject, Bivalent<T, Throw
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <U, TRY extends Manifest<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper) {
+		public <U, TRY extends Algebra.HigherKinded<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper) {
 			try {
 				return (Try<U>) mapper.apply(value);
 			} catch (Throwable t) {
@@ -335,7 +335,7 @@ public interface Try<T> extends Monad<T, Try<?>>, ValueObject, Bivalent<T, Throw
 		}
 
 		@Override
-		public <U, TRY extends Manifest<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper) {
+		public <U, TRY extends Algebra.HigherKinded<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper) {
 			@SuppressWarnings("unchecked")
 			final Try<U> result = (Try<U>) this;
 			return result;

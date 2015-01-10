@@ -5,8 +5,8 @@
  */
 package javaslang.monad;
 
+import javaslang.Algebra;
 import javaslang.Algebra.Monad;
-import javaslang.Manifest;
 import javaslang.Tuple;
 import javaslang.Tuple.Tuple0;
 import javaslang.Tuple.Tuple1;
@@ -57,7 +57,7 @@ public interface Option<T> extends Monad<T, Option<?>>, ValueObject, Univalent<T
     <U> Option<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
-    <U, OPTION extends Manifest<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper);
+    <U, OPTION extends Algebra.HigherKinded<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper);
 
     @Override
     boolean equals(Object o);
@@ -141,7 +141,7 @@ public interface Option<T> extends Monad<T, Option<?>>, ValueObject, Univalent<T
 
         @SuppressWarnings("unchecked")
         @Override
-        public <U, OPTION extends Manifest<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper) {
+        public <U, OPTION extends Algebra.HigherKinded<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper) {
             return (Option<U>) mapper.apply(value);
         }
 
@@ -267,7 +267,7 @@ public interface Option<T> extends Monad<T, Option<?>>, ValueObject, Univalent<T
         }
 
         @Override
-        public <U, OPTION extends Manifest<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper) {
+        public <U, OPTION extends Algebra.HigherKinded<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper) {
             return None.instance();
         }
 
