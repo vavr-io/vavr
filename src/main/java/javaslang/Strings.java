@@ -17,6 +17,8 @@ import java.util.stream.StreamSupport;
 
 /**
  * Extension methods for {@link java.lang.String}.
+ * <p/>
+ * This class is not intended to be extended.
  */
 public final class Strings {
 

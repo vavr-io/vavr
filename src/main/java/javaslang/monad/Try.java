@@ -18,7 +18,7 @@ import javaslang.Tuple;
 import javaslang.ValueObject;
 import javaslang.monad.Option.None;
 import javaslang.monad.Option.Some;
-import javaslang.monad.Valence.Bivalent;
+import javaslang.monad.Valences.Bivalent;
 
 /**
  * An implementation similar to Scala's Try monad.

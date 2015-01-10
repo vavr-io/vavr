@@ -56,6 +56,8 @@ import javaslang.monad.Option.Some;
  * <li>{@code new Match.Builder<R>.caze(...).apply(obj)}</li>
  * <li>{@code Matchs.caze(...).apply(obj)}</li>
  * </ul>
+ *
+ * This class is not intended to be extended.
  * 
  * @param <R> The result type of the Match expression.
  * 

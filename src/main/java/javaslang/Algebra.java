@@ -7,7 +7,17 @@ package javaslang;
 
 import java.util.function.Function;
 
-public interface Algebra {
+/**
+ * This class is not intended to be extended.
+ */
+public final class Algebra {
+
+	/**
+	 * This class is not intended to be instantiated.
+	 */
+	private Algebra() {
+		throw new AssertionError(Algebra.class.getName() + " is not intended to be instantiated.");
+	}
 
 	/**
 	 * A Semigroup is an algebraic structure consisting of
@@ -23,7 +33,7 @@ public interface Algebra {
 	 * @param <A> A type.
 	 */
 	@FunctionalInterface
-	static interface Semigroup<A> {
+	public static interface Semigroup<A> {
 		A combine(A a1, A a2);
 	}
 
@@ -38,7 +48,7 @@ public interface Algebra {
 	 *
 	 * @param <A> A type.
 	 */
-	static interface Monoid<A> extends Semigroup<A> {
+	public static interface Monoid<A> extends Semigroup<A> {
 
 		A zero();
 
@@ -85,7 +95,7 @@ public interface Algebra {
 	 * @param <A> Component type of this Functor.
 	 * @see <a href="http://www.haskellforall.com/2012/09/the-functor-design-pattern.html">The functor design pattern</a>
 	 */
-	static interface Functor<A> {
+	public static interface Functor<A> {
 		<B> Functor<B> map(Function<? super A, ? extends B> f);
 	}
 
@@ -102,7 +112,7 @@ public interface Algebra {
 	 *
 	 * @param <A> Component type of this monad.
 	 */
-	static interface Monad<A, M extends HigherKinded<?, M>> extends Functor<A>, HigherKinded<A, M> {
+	public static interface Monad<A, M extends HigherKinded<?, M>> extends Functor<A>, HigherKinded<A, M> {
 
         /**
          * Monad composition, also known as Kleisli composition.
@@ -128,7 +138,7 @@ public interface Algebra {
 	 * @param <A> Component type of the type to be constructed.
 	 * @param <TYPE> Container type of the type to be constructed.
 	 */
-    interface HigherKinded<A, TYPE extends HigherKinded<?, TYPE>> {
+    public interface HigherKinded<A, TYPE extends HigherKinded<?, TYPE>> {
 
         // used for type declaration only
 

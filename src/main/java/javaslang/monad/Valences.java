@@ -9,7 +9,17 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public interface Valence {
+/**
+ * This class is not intended to be extended nor it is intended to be public API.
+ */
+final class Valences {
+
+    /**
+     * This class is not intended to be instantiated.
+     */
+    private Valences() {
+        throw new AssertionError(Valences.class.getName() + " is not intended to be instantiated.");
+    }
 
     // has one (primary) value
     static interface Univalent<T> {

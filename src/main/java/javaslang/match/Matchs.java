@@ -18,6 +18,8 @@ import javaslang.match.Match.ShortFunction;
 
 /**
  * Extension methods for {@link Match}.
+ * <p/>
+ * This class is not intended to be extended.
  */
 public final class Matchs {
 

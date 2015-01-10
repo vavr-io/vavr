@@ -11,7 +11,7 @@ import javaslang.Tuple;
 import javaslang.Tuple.Tuple0;
 import javaslang.Tuple.Tuple1;
 import javaslang.ValueObject;
-import javaslang.monad.Valence.Univalent;
+import javaslang.monad.Valences.Univalent;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
