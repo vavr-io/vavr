@@ -17,7 +17,7 @@ public interface Memoizer {
     }
 
     // TODO: memory footprint vs. impl of ValueObject (=> use cases?)
-    static class Memoizer0<T> implements Lambda.λ0 {
+    static class Memoizer0<T> implements Function.Function0 {
 
         private static final long serialVersionUID = -8603286927231794237L;
 

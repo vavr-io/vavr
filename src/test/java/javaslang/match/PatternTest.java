@@ -11,7 +11,7 @@ import java.util.function.Function;
 
 import javaslang.AssertionsExtensions;
 import javaslang.Tuple;
-import javaslang.Lambda.λ1;
+import javaslang.Function.Function1;
 import javaslang.Tuple.Tuple2;
 
 import org.junit.Test;
@@ -63,8 +63,8 @@ public class PatternTest {
 
 	@Test
 	public void shouldMatchFunctionWithoutCapturedArgsBySignature() {
-		final λ1<Integer, String> function = i -> String.valueOf(i);
-		final Tuple2<λ1<Integer, String>, Tuple2<Class<Integer>, Class<String>>> match = Patterns
+		final Function1<Integer, String> function = i -> String.valueOf(i);
+		final Tuple2<Function1<Integer, String>, Tuple2<Class<Integer>, Class<String>>> match = Patterns
 				.Function(Integer.class, String.class)
 				.apply(function)
 				.get();
@@ -75,8 +75,8 @@ public class PatternTest {
 	@Test
 	public void shouldMatchFunctionWithCapturedArgsBySignature() {
 		final Function<Integer, String> f = i -> String.valueOf(i);
-		final λ1<Integer, String> function = i -> f.apply(i);
-		final Tuple2<λ1<Integer, String>, Tuple2<Class<Integer>, Class<String>>> match = Patterns
+		final Function1<Integer, String> function = i -> f.apply(i);
+		final Tuple2<Function1<Integer, String>, Tuple2<Class<Integer>, Class<String>>> match = Patterns
 				.Function(Integer.class, String.class)
 				.apply(function)
 				.get();

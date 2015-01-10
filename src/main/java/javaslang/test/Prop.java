@@ -7,19 +7,7 @@ package javaslang.test;
 
 import java.util.function.BooleanSupplier;
 
-import javaslang.Lambda.λ1;
-import javaslang.Lambda.λ10;
-import javaslang.Lambda.λ11;
-import javaslang.Lambda.λ12;
-import javaslang.Lambda.λ13;
-import javaslang.Lambda.λ2;
-import javaslang.Lambda.λ3;
-import javaslang.Lambda.λ4;
-import javaslang.Lambda.λ5;
-import javaslang.Lambda.λ6;
-import javaslang.Lambda.λ7;
-import javaslang.Lambda.λ8;
-import javaslang.Lambda.λ9;
+import javaslang.Function.*;
 
 /**
  * Property-based testing.
@@ -65,7 +53,7 @@ public class Prop {
 			this.t1s = t1s;
 		}
 
-		public Prop suchThat(λ1<T1, Boolean> predicate) {
+		public Prop suchThat(Function1<T1, Boolean> predicate) {
 			return new Prop(() -> {
 				for (T1 t1 : t1s) {
 					if (!predicate.apply(t1)) {
@@ -90,7 +78,7 @@ public class Prop {
 			this.t2s = t2s;
 		}
 
-		public Prop suchThat(λ2<T1, T2, Boolean> predicate) {
+		public Prop suchThat(Function2<T1, T2, Boolean> predicate) {
 			return new Prop(() -> {
 				for (T1 t1 : t1s) {
 					for (T2 t2 : t2s) {
@@ -119,7 +107,7 @@ public class Prop {
 			this.t3s = t3s;
 		}
 
-		public Prop suchThat(λ3<T1, T2, T3, Boolean> predicate) {
+		public Prop suchThat(Function3<T1, T2, T3, Boolean> predicate) {
 			return new Prop(() -> {
 				for (T1 t1 : t1s) {
 					for (T2 t2 : t2s) {
@@ -152,7 +140,7 @@ public class Prop {
 			this.t4s = t4s;
 		}
 
-		public Prop suchThat(λ4<T1, T2, T3, T4, Boolean> predicate) {
+		public Prop suchThat(Function4<T1, T2, T3, T4, Boolean> predicate) {
 			return new Prop(() -> {
 				for (T1 t1 : t1s) {
 					for (T2 t2 : t2s) {
@@ -189,7 +177,7 @@ public class Prop {
 			this.t5s = t5s;
 		}
 
-		public Prop suchThat(λ5<T1, T2, T3, T4, T5, Boolean> predicate) {
+		public Prop suchThat(Function5<T1, T2, T3, T4, T5, Boolean> predicate) {
 			return new Prop(() -> {
 				for (T1 t1 : t1s) {
 					for (T2 t2 : t2s) {
@@ -231,7 +219,7 @@ public class Prop {
 			this.t6s = t6s;
 		}
 
-		public Prop suchThat(λ6<T1, T2, T3, T4, T5, T6, Boolean> predicate) {
+		public Prop suchThat(Function6<T1, T2, T3, T4, T5, T6, Boolean> predicate) {
 			return new Prop(() -> {
 				for (T1 t1 : t1s) {
 					for (T2 t2 : t2s) {
@@ -277,7 +265,7 @@ public class Prop {
 			this.t7s = t7s;
 		}
 
-		public Prop suchThat(λ7<T1, T2, T3, T4, T5, T6, T7, Boolean> predicate) {
+		public Prop suchThat(Function7<T1, T2, T3, T4, T5, T6, T7, Boolean> predicate) {
 			return new Prop(() -> {
 				for (T1 t1 : t1s) {
 					for (T2 t2 : t2s) {
@@ -327,7 +315,7 @@ public class Prop {
 			this.t8s = t8s;
 		}
 
-		public Prop suchThat(λ8<T1, T2, T3, T4, T5, T6, T7, T8, Boolean> predicate) {
+		public Prop suchThat(Function8<T1, T2, T3, T4, T5, T6, T7, T8, Boolean> predicate) {
 			return new Prop(() -> {
 				for (T1 t1 : t1s) {
 					for (T2 t2 : t2s) {
@@ -381,7 +369,7 @@ public class Prop {
 			this.t9s = t9s;
 		}
 
-		public Prop suchThat(λ9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Boolean> predicate) {
+		public Prop suchThat(Function9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Boolean> predicate) {
 			return new Prop(() -> {
 				for (T1 t1 : t1s) {
 					for (T2 t2 : t2s) {
@@ -439,7 +427,7 @@ public class Prop {
 			this.t10s = t10s;
 		}
 
-		public Prop suchThat(λ10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Boolean> predicate) {
+		public Prop suchThat(Function10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Boolean> predicate) {
 			return new Prop(() -> {
 				for (T1 t1 : t1s) {
 					for (T2 t2 : t2s) {
@@ -502,7 +490,7 @@ public class Prop {
 			this.t11s = t11s;
 		}
 
-		public Prop suchThat(λ11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Boolean> predicate) {
+		public Prop suchThat(Function11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Boolean> predicate) {
 			return new Prop(() -> {
 				for (T1 t1 : t1s) {
 					for (T2 t2 : t2s) {
@@ -570,7 +558,7 @@ public class Prop {
 			this.t12s = t12s;
 		}
 
-		public Prop suchThat(λ12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Boolean> predicate) {
+		public Prop suchThat(Function12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Boolean> predicate) {
 			return new Prop(() -> {
 				for (T1 t1 : t1s) {
 					for (T2 t2 : t2s) {
@@ -642,7 +630,7 @@ public class Prop {
 			this.t13s = t13s;
 		}
 
-		public Prop suchThat(λ13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Boolean> predicate) {
+		public Prop suchThat(Function13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Boolean> predicate) {
 			return new Prop(() -> {
 				for (T1 t1 : t1s) {
 					for (T2 t2 : t2s) {

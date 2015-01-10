@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 import java.util.function.Function;
 
 import javaslang.AssertionsExtensions;
-import javaslang.Lambda.λ1;
+import javaslang.Function.Function1;
 import javaslang.monad.Option.Some;
 
 import org.junit.Test;
@@ -34,7 +34,7 @@ public class MatchTest {
 
 	@Test(expected = MatchError.class)
 	public void shouldNotMatchNullAsType() {
-		Matchs.caze((int i) -> false).caze((Integer i) -> true).apply((Integer) null);
+		Matchs.caze((int i) -> false).caze((Integer i) -> true).apply(null);
 	}
 
 	// -- no match
@@ -411,7 +411,7 @@ public class MatchTest {
 
 	@Test
 	public void shouldPatternMatchLambdaWithSameSignature() {
-		final λ1<Integer, String> lambda = i -> String.valueOf(i);
+		final Function1<Integer, String> lambda = i -> String.valueOf(i);
 		final boolean actual = Matchs
 				.caze(Patterns.Function(Integer.class, String.class), (f, dF) -> true)
 				.orElse(() -> false)
@@ -421,7 +421,7 @@ public class MatchTest {
 
 	@Test
 	public void shouldNotPatternMatchLambdaWithDifferentSignature() {
-		final λ1<String, String> lambda = s -> s;
+		final Function1<String, String> lambda = s -> s;
 		final boolean actual = Matchs
 				.caze(Patterns.Function(Integer.class, String.class), (f, dF) -> false)
 				.orElse(() -> true)

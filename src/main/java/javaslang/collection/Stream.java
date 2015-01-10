@@ -7,8 +7,9 @@ package javaslang.collection;
 
 import javaslang.Algebra.Monad;
 import javaslang.Algebra.Monoid;
-import javaslang.*;
 import javaslang.Memoizer.Memoizer0;
+import javaslang.*;
+import javaslang.Tuple.*;
 import javaslang.monad.Try;
 
 import java.io.*;
@@ -16,6 +17,7 @@ import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.function.*;
+import java.util.function.Function;
 import java.util.stream.Collector;
 
 public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stream<T>>, ValueObject {
@@ -169,6 +171,27 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
             public Byte next() {
                 // user can never call this Iterator.next() directly => no check of hasNext here
                 return (byte) next;
+            }
+        });
+    }
+
+    static Stream<Integer> ints(InputStream in) {
+        return Stream.of(new Iterator<Integer>() {
+            int next;
+
+            @Override
+            public boolean hasNext() {
+                final boolean hasNext = (next = Try.of(in::read).orElse(-1)) != -1;
+                if (!hasNext) {
+                    Try.run(in::close);
+                }
+                return hasNext;
+            }
+
+            @Override
+            public Integer next() {
+                // user can never call this Iterator.next() directly => no check of hasNext here
+                return next;
             }
         });
     }
@@ -598,13 +621,13 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
     }
 
     @Override
-    default Tuple.Tuple2<Stream<T>, Stream<T>> span(Predicate<? super T> predicate) {
+    default Tuple2<Stream<T>, Stream<T>> span(Predicate<? super T> predicate) {
         Require.nonNull(predicate, "predicate is null");
             return Tuple.of(takeWhile(predicate), dropWhile(predicate));
     }
 
     @Override
-    default Tuple.Tuple2<Stream<T>, Stream<T>> splitAt ( int n){
+    default Tuple2<Stream<T>, Stream<T>> splitAt ( int n){
             return Tuple.of(take(n), drop(n));
     }
 
@@ -680,9 +703,9 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
     }
 
     @Override
-    default <T1, T2> Tuple.Tuple2<Stream<T1>, Stream<T2>> unzip(Function<? super T, Tuple.Tuple2<T1, T2>> unzipper) {
+    default <T1, T2> Tuple2<Stream<T1>, Stream<T2>> unzip(Function<? super T, Tuple2<T1, T2>> unzipper) {
         Require.nonNull(unzipper, "unzipper is null");
-        final Stream<Tuple.Tuple2<T1, T2>> stream = map(unzipper);
+        final Stream<Tuple2<T1, T2>> stream = map(unzipper);
         return Tuple.of(stream.map(t -> t._1), stream.map(t -> t._2));
     }
 
@@ -692,7 +715,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
     }
 
     @Override
-    default <U> Stream<Tuple.Tuple2<T, U>> zip(Iterable<U> iterable) {
+    default <U> Stream<Tuple2<T, U>> zip(Iterable<U> iterable) {
         Require.nonNull(iterable, "iterable is null");
             final Stream<U> that = Stream.of(iterable);
         if (this.isEmpty() || that.isEmpty()) {
@@ -703,7 +726,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
     }
 
     @Override
-    default <U> Stream<Tuple.Tuple2<T, U>> zipAll(Iterable<U> iterable, T thisElem, U thatElem) {
+    default <U> Stream<Tuple2<T, U>> zipAll(Iterable<U> iterable, T thisElem, U thatElem) {
         Require.nonNull(iterable, "iterable is null");
         final Stream<U> that = Stream.of(iterable);
         final boolean isThisEmpty = this.isEmpty();
@@ -720,7 +743,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
     }
 
     @Override
-    default Stream<Tuple.Tuple2<T, Integer>> zipWithIndex() {
+    default Stream<Tuple2<T, Integer>> zipWithIndex() {
         return zip(() -> new Iterator<Integer>() {
             int i = 0;
 
@@ -771,7 +794,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         }
 
         @Override
-        public Tuple.Tuple2<T, Stream<T>> unapply() {
+        public Tuple2<T, Stream<T>> unapply() {
             return Tuple.of(head(), tail());
         }
 
@@ -919,7 +942,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         }
 
         @Override
-        public Tuple.Tuple0 unapply() {
+        public Tuple0 unapply() {
             return Tuple.empty();
         }
 
@@ -965,7 +988,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         }
 
         @Override
-        public Tuple.Tuple2<T, Stream<T>> unapply() {
+        public Tuple2<T, Stream<T>> unapply() {
             return Tuple.of(head(), tail());
         }
 
