@@ -3,35 +3,34 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014-2015 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang;
+package javaslang.collection;
 
+import javaslang.Function;
 import javaslang.monad.Option;
 import javaslang.monad.Option.Some;
 
 import java.util.function.Supplier;
 
-public interface Memoizer {
+// internal class - subject to disappear in a future release
+class Lazy {
 
-    static <T> Memoizer0<T> of(Supplier<T> supplier) {
-        return new Memoizer0<>(supplier);
+    static <T> Lazy0<T> of(Supplier<T> supplier) {
+        return new Lazy0<>(supplier);
     }
 
-    // TODO: memory footprint vs. impl of ValueObject (=> use cases?)
-    static class Memoizer0<T> implements Function.Function0 {
-
-        private static final long serialVersionUID = -8603286927231794237L;
+    static class Lazy0<T> implements Supplier<T> {
 
         private Supplier<T> supplier;
 
         // read http://javarevisited.blogspot.de/2014/05/double-checked-locking-on-singleton-in-java.html
         private volatile Option<T> value = Option.none();
 
-        public Memoizer0(Supplier<T> supplier) {
+        public Lazy0(Supplier<T> supplier) {
             this.supplier = supplier;
         }
 
         @Override
-        public T apply() {
+        public T get() {
             if (!value.isPresent()) {
                 synchronized(this) {
                     if (!value.isPresent()) {
@@ -43,6 +42,4 @@ public interface Memoizer {
             return value.get();
         }
     }
-
-    // TODO: Memoizer1..Memoizer13
 }

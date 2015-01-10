@@ -7,7 +7,7 @@ package javaslang.collection;
 
 import javaslang.Algebra.Monad;
 import javaslang.Algebra.Monoid;
-import javaslang.Memoizer.Memoizer0;
+import javaslang.collection.Lazy.Lazy0;
 import javaslang.*;
 import javaslang.Tuple.*;
 import javaslang.monad.Try;
@@ -771,11 +771,11 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         private static final long serialVersionUID = 53595355464228669L;
 
         private final T head;
-        private final Memoizer0<Stream<T>> tail;
+        private final Lazy0<Stream<T>> tail;
 
         public Cons(T head, Supplier<Stream<T>> tail) {
             this.head = head;
-            this.tail = Memoizer.of(tail);
+            this.tail = Lazy.of(tail);
         }
 
         @Override
@@ -785,7 +785,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
 
         @Override
         public Stream<T> tail() {
-            return tail.apply();
+            return tail.get();
         }
 
         @Override
@@ -966,25 +966,25 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
 
         private static final long serialVersionUID = -8478757773471498399L;
 
-        private final Memoizer0<Stream<T>> stream;
+        private final Lazy0<Stream<T>> stream;
 
         public Deferred(Supplier<Stream<T>> streamSupplier) {
-            this.stream = Memoizer.of(streamSupplier);
+            this.stream = Lazy.of(streamSupplier);
         }
 
         @Override
         public T head() {
-            return stream.apply().head();
+            return stream.get().head();
         }
 
         @Override
         public Stream<T> tail() {
-            return stream.apply().tail();
+            return stream.get().tail();
         }
 
         @Override
         public boolean isEmpty() {
-            return stream.apply().isEmpty();
+            return stream.get().isEmpty();
         }
 
         @Override
@@ -1001,7 +1001,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
          * @return A SerialiationProxy for this enclosing class.
          */
         private Object writeReplace() {
-            return stream.apply();
+            return stream.get();
         }
 
         /**
