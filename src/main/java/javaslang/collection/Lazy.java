@@ -5,14 +5,24 @@
  */
 package javaslang.collection;
 
-import javaslang.Function;
 import javaslang.monad.Option;
 import javaslang.monad.Option.Some;
 
 import java.util.function.Supplier;
 
-// internal class - subject to disappear in a future release
-class Lazy {
+/**
+ * Internal class - subject to disappear in a future release.
+ * <p/>
+ * This class is not intended to be extended nor it is intended to be public API.
+ */
+final class Lazy {
+
+    /**
+     * This class is not intended to be instantiated.
+     */
+    private Lazy() {
+        throw new AssertionError(Lazy.class.getName() + " is not intended to be instantiated.");
+    }
 
     static <T> Lazy0<T> of(Supplier<T> supplier) {
         return new Lazy0<>(supplier);
