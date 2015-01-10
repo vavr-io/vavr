@@ -9,7 +9,7 @@ import java.util.function.DoubleFunction;
 import java.util.function.IntFunction;
 import java.util.function.LongFunction;
 
-import javaslang.Function.Function1;
+import javaslang.Functions.λ1;
 import javaslang.match.Match.BooleanFunction;
 import javaslang.match.Match.ByteFunction;
 import javaslang.match.Match.CharFunction;
@@ -37,7 +37,7 @@ public final class Matchs {
 	 * @param function A function which is applied to a matched object.
 	 * @return A Match of type T
 	 */
-	public static <R> Match.Builder<R> caze(Function1<?, R> function) {
+	public static <R> Match.Builder<R> caze(λ1<?, R> function) {
 		return new Match.Builder<R>().caze(function);
 	}
 
@@ -50,7 +50,7 @@ public final class Matchs {
 	 * @param function A function which is applied to a matched object.
 	 * @return A Match of type T
 	 */
-	public static <T, R> Match.Builder<R> caze(T prototype, Function1<T, R> function) {
+	public static <T, R> Match.Builder<R> caze(T prototype, λ1<T, R> function) {
 		return new Match.Builder<R>().caze(prototype, function);
 	}
 

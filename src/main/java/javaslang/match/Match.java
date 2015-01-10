@@ -15,7 +15,7 @@ import java.util.function.LongFunction;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import javaslang.Function.Function1;
+import javaslang.Functions.λ1;
 import javaslang.monad.Option;
 import javaslang.monad.Option.None;
 import javaslang.monad.Option.Some;
@@ -165,7 +165,7 @@ public final class Match<R> implements Function<Object, R> {
 		 * @return this, the current instance of Match.
 		 * @throws NullPointerException if function is null.
 		 */
-		public Builder<R> caze(Function1<?, R> function) {
+		public Builder<R> caze(λ1<?, R> function) {
 			Objects.requireNonNull(function, "function is null");
 			cases.add(caze(None.instance(), function));
 			return this;
@@ -184,7 +184,7 @@ public final class Match<R> implements Function<Object, R> {
 		// DEV NOTE: the compiler cannot distinguish between primitive and Object types, e.g.
 		// public Match<R> caze(int prototype, IntFunction<R> function)
 		// Autoboxing does not work here.
-		public <T> Builder<R> caze(T prototype, Function1<T, R> function) {
+		public <T> Builder<R> caze(T prototype, λ1<T, R> function) {
 			Objects.requireNonNull(function, "function is null");
 			cases.add(caze(new Some<>(prototype), function));
 			return this;
@@ -338,7 +338,7 @@ public final class Match<R> implements Function<Object, R> {
 			this.defaultOption = defaultOption;
 		}
 
-		private Function<Object, Option<R>> caze(Option<?> prototype, Function1<?, R> function) {
+		private Function<Object, Option<R>> caze(Option<?> prototype, λ1<?, R> function) {
 			return caze(prototype, function, function.getType().parameterType(0));
 		}
 
