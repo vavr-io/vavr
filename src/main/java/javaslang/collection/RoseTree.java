@@ -5,10 +5,8 @@
  */
 package javaslang.collection;
 
-import javaslang.Require;
 import javaslang.Tuple;
 import javaslang.Tuple.*;
-import javaslang.ValueObject;
 
 import java.io.*;
 import java.util.Iterator;
@@ -21,11 +19,12 @@ import java.util.function.Function;
  *
  * @param <T> the type of a Node's value.
  */
+// TODO: Implement ValueObject
 public interface RoseTree<T> extends Tree<T> {
 
     @SafeVarargs
     static <T> NonNil<T> of(T value, NonNil<T>... children) {
-        Require.nonNull(children, "children is null");
+        Objects.requireNonNull(children, "children is null");
         if (children.length == 0) {
             return new Leaf<>(value);
         } else {
@@ -35,8 +34,8 @@ public interface RoseTree<T> extends Tree<T> {
 
     @SafeVarargs
     static <T> Branch<T> branch(T value, NonNil<T> child1, NonNil<T>... children) {
-        Require.nonNull(children, "child1 is null");
-        Require.nonNull(children, "children is null");
+        Objects.requireNonNull(children, "child1 is null");
+        Objects.requireNonNull(children, "children is null");
         return new Branch<>(value, List.of(children).prepend(child1));
     }
 
@@ -128,8 +127,10 @@ public interface RoseTree<T> extends Tree<T> {
         private final T value;
 
         public Branch(T value, List<NonNil<T>> children) {
-            Require.nonNull(children, "children is null");
-            Require.isFalse(children.isEmpty(), "no children");
+            Objects.requireNonNull(children, "children is null");
+            if (children.isEmpty()) {
+                throw new IllegalArgumentException("no children");
+            }
             this.children = children;
             this.value = value;
         }

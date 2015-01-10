@@ -6,10 +6,8 @@
 package javaslang.collection;
 
 import javaslang.Algebra.Monoid;
-import javaslang.Require.UnsatisfiedRequirementException;
 import javaslang.Tuple;
 import javaslang.monad.Option;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.*;
@@ -101,12 +99,12 @@ public abstract class AbstractTraversableTest {
         assertThat(this.zero().combine(this.of(1), this.nil())).isEqualTo(this.of(1));
     }
 
-    @Test(expected = UnsatisfiedRequirementException.class)
+    @Test(expected = NullPointerException.class)
     public void shouldThrowWhenCombiningAndFirstArgIsNull() {
         this.zero().combine(null, this.nil());
     }
 
-    @Test(expected = UnsatisfiedRequirementException.class)
+    @Test(expected = NullPointerException.class)
     public void shouldThrowWhenCombiningAndSecondArgIsNull() {
         this.zero().combine(this.nil(), null);
     }
@@ -256,7 +254,7 @@ public abstract class AbstractTraversableTest {
         assertThat(this.<String> nil().fold("", (a, b) -> a + b)).isEqualTo("");
     }
 
-    @Test(expected = UnsatisfiedRequirementException.class)
+    @Test(expected = NullPointerException.class)
     public void shouldThrowWhenFoldNullOperator() {
         this.<String> nil().fold(null, null);
     }
@@ -273,7 +271,7 @@ public abstract class AbstractTraversableTest {
         assertThat(this.<String> nil().foldLeft("", (xs, x) -> xs + x)).isEqualTo("");
     }
 
-    @Test(expected = UnsatisfiedRequirementException.class)
+    @Test(expected = NullPointerException.class)
     public void shouldThrowWhenFoldLeftNullOperator() {
         this.<String> nil().foldLeft(null, null);
     }
@@ -285,12 +283,12 @@ public abstract class AbstractTraversableTest {
 
     // -- foldMap
 
-    @Test(expected = UnsatisfiedRequirementException.class)
+    @Test(expected = NullPointerException.class)
     public void shouldThrowWhenFoldMapAndMonoidIsNull() {
         this.nil().foldMap(null, String::valueOf);
     }
 
-    @Test(expected = UnsatisfiedRequirementException.class)
+    @Test(expected = NullPointerException.class)
     public void shouldThrowWhenFoldMapAndMapperIsNull() {
         this.nil().foldMap(Monoid.endoMonoid(), null);
     }
@@ -326,7 +324,7 @@ public abstract class AbstractTraversableTest {
         assertThat(this.<String> nil().foldRight("", (x, xs) -> x + xs)).isEqualTo("");
     }
 
-    @Test(expected = UnsatisfiedRequirementException.class)
+    @Test(expected = NullPointerException.class)
     public void shouldThrowWhenFoldRightNullOperator() {
         this.<String> nil().foldRight(null, null);
     }
@@ -496,7 +494,7 @@ public abstract class AbstractTraversableTest {
         this.<String> nil().reduce((a, b) -> a + b);
     }
 
-    @Test(expected = UnsatisfiedRequirementException.class)
+    @Test(expected = NullPointerException.class)
     public void shouldThrowWhenReduceNullOperator() {
         this.<String> nil().reduce(null);
     }
@@ -513,7 +511,7 @@ public abstract class AbstractTraversableTest {
         this.<String> nil().reduceLeft((a, b) -> a + b);
     }
 
-    @Test(expected = UnsatisfiedRequirementException.class)
+    @Test(expected = NullPointerException.class)
     public void shouldThrowWhenReduceLeftNullOperator() {
         this.<String> nil().reduceLeft(null);
     }
@@ -530,7 +528,7 @@ public abstract class AbstractTraversableTest {
         this.<String> nil().reduceRight((a, b) -> a + b);
     }
 
-    @Test(expected = UnsatisfiedRequirementException.class)
+    @Test(expected = NullPointerException.class)
     public void shouldThrowWhenReduceRightNullOperator() {
         this.<String> nil().reduceRight(null);
     }
@@ -915,7 +913,7 @@ public abstract class AbstractTraversableTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test(expected = UnsatisfiedRequirementException.class)
+    @Test(expected = NullPointerException.class)
     public void shouldThrowIfZipWithThatIsNull() {
         this.nil().zip(null);
     }
@@ -961,7 +959,7 @@ public abstract class AbstractTraversableTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test(expected = UnsatisfiedRequirementException.class)
+    @Test(expected = NullPointerException.class)
     public void shouldThrowIfZipAllWithThatIsNull() {
         this.nil().zipAll(null, null, null);
     }

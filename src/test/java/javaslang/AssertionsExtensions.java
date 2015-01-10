@@ -7,6 +7,7 @@ package javaslang;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Objects;
 
 // TODO: replace fest-assertions with javaslang.Assertions using Match API in a future release of Javaslang
 public final class AssertionsExtensions {
@@ -67,7 +68,7 @@ public final class AssertionsExtensions {
 		}
 
 		public void isThrowing(Class<? extends Throwable> expectedException, String expectedMessage) {
-			Require.nonNull(expectedException, "expectedException is null");
+			Objects.requireNonNull(expectedException, "expectedException is null");
 			try {
 				test.run();
 				throw new AssertionError(expectedException.getName() + " not thrown");

@@ -6,8 +6,8 @@
 package javaslang.match;
 
 import java.lang.invoke.MethodType;
+import java.util.Objects;
 
-import javaslang.Require;
 import javaslang.Tuple;
 import javaslang.Function.Function1;
 import javaslang.Tuple.Tuple1;
@@ -175,8 +175,8 @@ public class Pattern<T, P extends Tuple, R extends Tuple> {
 	}
 
 	private static <T, P extends Tuple, R extends Tuple> Pattern<T, P, R> create(Function1<T, R> decomposition, P prototype) {
-		Require.nonNull(decomposition, "decomposition is null");
-		Require.nonNull(prototype, "prototype is null");
+		Objects.requireNonNull(decomposition, "decomposition is null");
+		Objects.requireNonNull(prototype, "prototype is null");
 
 		final MethodType methodType = decomposition.getType();
 		@SuppressWarnings("unchecked")

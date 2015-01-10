@@ -221,7 +221,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
      */
     @SafeVarargs
     static <T> Stream<T> of(T... elements) {
-        Require.nonNull(elements, "elements is null");
+        Objects.requireNonNull(elements, "elements is null");
         return Stream.of(new Iterator<T>() {
             int i = 0;
 
@@ -245,7 +245,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
      * @return A list containing the given elements in the same order.
      */
     static <T> Stream<T> of(Iterable<? extends T> elements) {
-        Require.nonNull(elements, "elements is null");
+        Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof Stream) {
             @SuppressWarnings("unchecked")
             final Stream<T> stream = (Stream<T>) elements;
@@ -257,7 +257,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
 
     // providing this method to save resources creating a Stream - makes no sense for collections in general
     static <T> Stream<T> of(Iterator<? extends T> iterator) {
-        Require.nonNull(iterator, "iterator is null");
+        Objects.requireNonNull(iterator, "iterator is null");
         return new Deferred<>(() -> {
             if (iterator.hasNext()) {
                 return new Cons<>(iterator.next(), () -> Stream.of(iterator));
@@ -304,7 +304,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
 
     @Override
     default Stream<T> appendAll(Iterable<? extends T> elements) {
-        Require.nonNull(elements, "elements is null");
+        Objects.requireNonNull(elements, "elements is null");
         return isEmpty() ? Stream.of(elements) : new Cons<>(head(), () -> tail().appendAll(elements));
     }
 
@@ -315,8 +315,8 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
 
     @Override
     default Stream<T> combine(Stream<T> list1, Stream<T> list2) {
-        Require.nonNull(list1, "list1 is null");
-        Require.nonNull(list2, "list2 is null");
+        Objects.requireNonNull(list1, "list1 is null");
+        Objects.requireNonNull(list2, "list2 is null");
         return list1.appendAll(list2);
     }
 
@@ -343,7 +343,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
 
     @Override
     default Stream<T> filter(Predicate<? super T> predicate) {
-        Require.nonNull(predicate, "predicate is null");
+        Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {
             return Nil.instance();
         } else {
@@ -358,7 +358,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
 
     @Override
     default <U, TRAVERSABLE extends Manifest<U, Traversable<?>>> Stream<U> flatMap(Function<? super T, TRAVERSABLE> mapper) {
-        Require.nonNull(mapper, "mapper is null");
+        Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return Nil.instance();
         } else {
@@ -433,7 +433,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
 
     @Override
     default Stream<T> insertAll(int index, Iterable<? extends T> elements) {
-        Require.nonNull(elements, "elements is null");
+        Objects.requireNonNull(elements, "elements is null");
         if (index < 0) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
         }
@@ -500,7 +500,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
 
     @Override
     default <U> Stream<U> map(Function<? super T, ? extends U> mapper) {
-        Require.nonNull(mapper, "mapper is null");
+        Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return Nil.instance();
         } else {
@@ -515,7 +515,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
 
     @Override
     default Stream<T> prependAll(Iterable<? extends T> elements) {
-        Require.nonNull(elements, "elements is null");
+        Objects.requireNonNull(elements, "elements is null");
         return Stream.of(elements).appendAll(this);
     }
 
@@ -536,7 +536,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
 
     @Override
     default Stream<T> removeAll(Iterable<? extends T> elements) {
-        Require.nonNull(elements, "elements is null");
+        Objects.requireNonNull(elements, "elements is null");
         final Stream<T> distinct = Stream.of(elements).distinct();
         return filter(e -> !distinct.contains(e));
     }
@@ -616,13 +616,13 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
 
     @Override
     default Stream<T> sort(Comparator<? super T> c) {
-        Require.nonNull(c, "comparator is null");
+        Objects.requireNonNull(c, "comparator is null");
             return toJavaStream().sorted(c).collect(Stream.collector());
     }
 
     @Override
     default Tuple2<Stream<T>, Stream<T>> span(Predicate<? super T> predicate) {
-        Require.nonNull(predicate, "predicate is null");
+        Objects.requireNonNull(predicate, "predicate is null");
             return Tuple.of(takeWhile(predicate), dropWhile(predicate));
     }
 
@@ -704,7 +704,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
 
     @Override
     default <T1, T2> Tuple2<Stream<T1>, Stream<T2>> unzip(Function<? super T, Tuple2<T1, T2>> unzipper) {
-        Require.nonNull(unzipper, "unzipper is null");
+        Objects.requireNonNull(unzipper, "unzipper is null");
         final Stream<Tuple2<T1, T2>> stream = map(unzipper);
         return Tuple.of(stream.map(t -> t._1), stream.map(t -> t._2));
     }
@@ -716,7 +716,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
 
     @Override
     default <U> Stream<Tuple2<T, U>> zip(Iterable<U> iterable) {
-        Require.nonNull(iterable, "iterable is null");
+        Objects.requireNonNull(iterable, "iterable is null");
             final Stream<U> that = Stream.of(iterable);
         if (this.isEmpty() || that.isEmpty()) {
             return Nil.instance();
@@ -727,7 +727,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
 
     @Override
     default <U> Stream<Tuple2<T, U>> zipAll(Iterable<U> iterable, T thisElem, U thatElem) {
-        Require.nonNull(iterable, "iterable is null");
+        Objects.requireNonNull(iterable, "iterable is null");
         final Stream<U> that = Stream.of(iterable);
         final boolean isThisEmpty = this.isEmpty();
         final boolean isThatEmpty = that.isEmpty();

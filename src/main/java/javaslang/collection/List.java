@@ -75,10 +75,11 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
      * @param <T>      Component type of the List.
      * @param elements Zero or more elements.
      * @return A list containing the given elements in the same order.
+     * @throws NullPointerException if elements is null
      */
     @SafeVarargs
     static <T> List<T> of(T... elements) {
-        Require.nonNull(elements, "elements is null");
+        Objects.requireNonNull(elements, "elements is null");
         List<T> result = Nil.<T>instance();
         for (int i = elements.length - 1; i >= 0; i--) {
             result = result.prepend(elements[i]);
@@ -94,7 +95,7 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
      * @return A list containing the given elements in the same order.
      */
     static <T> List<T> of(Iterable<? extends T> elements) {
-        Require.nonNull(elements, "elements is null");
+        Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof List) {
             @SuppressWarnings("unchecked")
             final List<T> list = (List<T>) elements;
@@ -135,7 +136,7 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
 
     @Override
     default List<T> appendAll(Iterable<? extends T> elements) {
-        Require.nonNull(elements, "elements is null");
+        Objects.requireNonNull(elements, "elements is null");
         return foldRight(List.of(elements), (x, xs) -> xs.prepend(x));
     }
 
@@ -146,8 +147,8 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
 
     @Override
     default List<T> combine(List<T> list1, List<T> list2) {
-        Require.nonNull(list1, "list1 is null");
-        Require.nonNull(list2, "list2 is null");
+        Objects.requireNonNull(list1, "list1 is null");
+        Objects.requireNonNull(list2, "list2 is null");
         return list2.prependAll(list1);
     }
 
@@ -173,7 +174,7 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
 
     @Override
     default List<T> filter(Predicate<? super T> predicate) {
-        Require.nonNull(predicate, "predicate is null");
+        Objects.requireNonNull(predicate, "predicate is null");
         return foldRight(nil(), (x, xs) -> predicate.test(x) ? xs.prepend(x) : xs);
     }
 
@@ -248,7 +249,7 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
 
     @Override
     default List<T> insertAll(int index, Iterable<? extends T> elements) {
-        Require.nonNull(elements, "elements is null");
+        Objects.requireNonNull(elements, "elements is null");
         if (index < 0) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
         }
@@ -309,7 +310,7 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
 
     @Override
     default <U> List<U> map(Function<? super T, ? extends U> mapper) {
-        Require.nonNull(mapper, "mapper is null");
+        Objects.requireNonNull(mapper, "mapper is null");
         return foldRight(nil(), (x, xs) -> xs.prepend(mapper.apply(x)));
     }
 
@@ -320,7 +321,7 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
 
     @Override
     default List<T> prependAll(Iterable<? extends T> elements) {
-        Require.nonNull(elements, "elements is null");
+        Objects.requireNonNull(elements, "elements is null");
         return List.of(elements).reverse().foldLeft(this, List::prepend);
     }
 
@@ -358,7 +359,7 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
 
     @Override
     default List<T> removeAll(Iterable<? extends T> elements) {
-        Require.nonNull(elements, "elements is null");
+        Objects.requireNonNull(elements, "elements is null");
         List<T> removed = List.of(elements).distinct();
         List<T> result = Nil.instance();
         for (T element : this) {
@@ -401,7 +402,7 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
 
     @Override
     default List<T> replaceAll(UnaryOperator<T> operator) {
-        Require.nonNull(operator, "operator is null");
+        Objects.requireNonNull(operator, "operator is null");
         List<T> result = Nil.instance();
         for (T element : this) {
             result = result.prepend(operator.apply(element));
@@ -411,7 +412,7 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
 
     @Override
     default List<T> retainAll(Iterable<? extends T> elements) {
-        Require.nonNull(elements, "elements is null");
+        Objects.requireNonNull(elements, "elements is null");
         final List<T> keeped = List.of(elements).distinct();
         List<T> result = Nil.instance();
         for (T element : this) {
@@ -461,13 +462,13 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
 
     @Override
     default List<T> sort(Comparator<? super T> c) {
-        Require.nonNull(c, "comparator is null");
+        Objects.requireNonNull(c, "comparator is null");
         return toJavaStream().sorted(c).collect(List.collector());
     }
 
     @Override
     default Tuple2<List<T>, List<T>> span(Predicate<? super T> predicate) {
-        Require.nonNull(predicate, "predicate is null");
+        Objects.requireNonNull(predicate, "predicate is null");
         return Tuple.of(takeWhile(predicate), dropWhile(predicate));
     }
 
@@ -536,7 +537,7 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
 
     @Override
     default List<T> takeWhile(Predicate<? super T> predicate) {
-        Require.nonNull(predicate, "predicate is null");
+        Objects.requireNonNull(predicate, "predicate is null");
         List<T> result = Nil.instance();
         for (List<T> list = this; !list.isEmpty() && predicate.test(list.head()); list = list.tail()) {
             result = result.prepend(list.head());
@@ -546,7 +547,7 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
 
     @Override
     default <T1, T2> Tuple2<List<T1>, List<T2>> unzip(Function<? super T, Tuple2<T1, T2>> unzipper) {
-        Require.nonNull(unzipper, "unzipper is null");
+        Objects.requireNonNull(unzipper, "unzipper is null");
         List<T1> xs = nil();
         List<T2> ys = nil();
         for (T element : this) {
@@ -564,7 +565,7 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
 
     @Override
     default <U> List<Tuple2<T, U>> zip(Iterable<U> that) {
-        Require.nonNull(that, "that is null");
+        Objects.requireNonNull(that, "that is null");
         List<Tuple2<T, U>> result = Nil.instance();
         List<T> list1 = this;
         Iterator<U> list2 = that.iterator();
@@ -577,7 +578,7 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
 
     @Override
     default <U> List<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
-        Require.nonNull(that, "that is null");
+        Objects.requireNonNull(that, "that is null");
         List<Tuple2<T, U>> result = Nil.instance();
         Iterator<T> list1 = this.iterator();
         Iterator<U> list2 = that.iterator();

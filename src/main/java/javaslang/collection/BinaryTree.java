@@ -5,10 +5,8 @@
  */
 package javaslang.collection;
 
-import javaslang.Require;
 import javaslang.Tuple;
 import javaslang.Tuple.*;
-import javaslang.ValueObject;
 
 import java.io.*;
 import java.util.Objects;
@@ -25,11 +23,12 @@ import java.util.function.Function;
  *
  * @param <T> the type of a tree node's value.
  */
+// TODO: Implement ValueObject
 public interface BinaryTree<T> extends Tree<T> {
 
     static <T> BinaryTree<T> of(BinaryTree<T> left, T value, BinaryTree<T> right) {
-        Require.nonNull(left, "left is null");
-        Require.nonNull(right, "right is null");
+        Objects.requireNonNull(left, "left is null");
+        Objects.requireNonNull(right, "right is null");
         if (left.isEmpty() && right.isEmpty()) {
             return new Leaf<>(value);
         } else {
@@ -41,9 +40,11 @@ public interface BinaryTree<T> extends Tree<T> {
      * Throws if left and right are Nil - if in doubt, use BinaryTree.of(left, value, right) instead.
      */
     static <T> Branch<T> branch(BinaryTree<T> left, T value, BinaryTree<T> right) {
-        Require.nonNull(left, "left is null");
-        Require.nonNull(right, "right is null");
-        Require.isFalse(left.isEmpty() && right.isEmpty(), "left and right are Nil - use BinaryTree.of(left, value, right) if in doubt.");
+        Objects.requireNonNull(left, "left is null");
+        Objects.requireNonNull(right, "right is null");
+        if (left.isEmpty() && right.isEmpty()) {
+            throw new IllegalArgumentException("left and right are Nil - use BinaryTree.of(left, value, right) if in doubt.");
+        }
         return new Branch<>(left, value, right);
     }
 
@@ -180,9 +181,11 @@ public interface BinaryTree<T> extends Tree<T> {
         private final T value;
 
         public Branch(BinaryTree<T> left, T value, BinaryTree<T> right) {
-            Require.nonNull(left, "left is null");
-            Require.nonNull(right, "right is null");
-            Require.isFalse(left.isEmpty() && right.isEmpty(), "left and right are Nil - use Leaf instead of Branch");
+            Objects.requireNonNull(left, "left is null");
+            Objects.requireNonNull(right, "right is null");
+            if (left.isEmpty() && right.isEmpty()) {
+                throw new IllegalArgumentException("left and right are Nil - use Leaf instead of Branch");
+            }
             this.left = left;
             this.right = right;
             this.value = value;

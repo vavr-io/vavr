@@ -7,7 +7,6 @@ package javaslang.collection;
 
 import javaslang.Algebra.Monoid;
 import javaslang.Manifest;
-import javaslang.Require;
 import javaslang.Tuple.Tuple2;
 import javaslang.match.Matchs;
 import javaslang.monad.Option;
@@ -17,6 +16,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -143,10 +143,10 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
      *
      * @param elements A List of values of type E.
      * @return true, if this List contains all given elements, false otherwise.
-     * @throws javaslang.Require.UnsatisfiedRequirementException if elements is null
+     * @throws NullPointerException if elements is null
      */
     default boolean containsAll(Iterable<? extends T> elements) {
-        Require.nonNull(elements, "elements is null");
+        Objects.requireNonNull(elements, "elements is null");
         return List.of(elements)
                 .distinct()
                 .findFirst(e -> !this.contains(e))
@@ -175,7 +175,7 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
     }
 
     default Traversable<T> dropWhile(Predicate<? super T> predicate) {
-        Require.nonNull(predicate, "predicate is null");
+        Objects.requireNonNull(predicate, "predicate is null");
         Traversable<T> traversable = this;
         while (!traversable.isEmpty() && predicate.test(traversable.head())) {
             traversable = traversable.tail();
@@ -248,7 +248,7 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
      * @return An accumulated version of this.
      */
     default <U> U foldLeft(U zero, BiFunction<? super U, ? super T, ? extends U> f) {
-        Require.nonNull(f, "function is null");
+        Objects.requireNonNull(f, "function is null");
         U xs = zero;
         for (T x : this) {
             xs = f.apply(xs, x);
@@ -269,8 +269,8 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
      * @throws javaslang.Require.UnsatisfiedRequirementException if monoid or mapper is null
      */
     default <U> U foldMap(Monoid<U> monoid, Function<T, U> mapper) {
-        Require.nonNull(monoid, "monoid is null");
-        Require.nonNull(mapper, "mapper is null");
+        Objects.requireNonNull(monoid, "monoid is null");
+        Objects.requireNonNull(mapper, "mapper is null");
         return foldLeft(monoid.zero(), (ys, x) -> monoid.combine(ys, mapper.apply(x)));
     }
 
@@ -296,7 +296,7 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
      * @throws javaslang.Require.UnsatisfiedRequirementException if f is null
      */
     default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
-        Require.nonNull(f, "function is null");
+        Objects.requireNonNull(f, "function is null");
         return reverse().foldLeft(zero, (xs, x) -> f.apply(x, xs));
     }
 
@@ -469,7 +469,7 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
      * @throws javaslang.Require.UnsatisfiedRequirementException if op is null
      */
     default T reduceLeft(BiFunction<? super T, ? super T, ? extends T> op) {
-        Require.nonNull(op, "operator is null");
+        Objects.requireNonNull(op, "operator is null");
         if (isEmpty()) {
             throw new UnsupportedOperationException("reduceLeft on Nil");
         } else {
@@ -485,7 +485,7 @@ public interface Traversable<T> extends Iterable<T>, Manifest<T, Traversable<?>>
      * @throws javaslang.Require.UnsatisfiedRequirementException if op is null
      */
     default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
-        Require.nonNull(op, "operator is null");
+        Objects.requireNonNull(op, "operator is null");
         if (isEmpty()) {
             throw new UnsupportedOperationException("reduceRight on empty List");
         } else {

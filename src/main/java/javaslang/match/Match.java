@@ -7,6 +7,7 @@ package javaslang.match;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.DoubleFunction;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -14,10 +15,8 @@ import java.util.function.LongFunction;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import javaslang.Require;
 import javaslang.Function.Function1;
 import javaslang.Function.Function2;
-import javaslang.Require.UnsatisfiedRequirementException;
 import javaslang.Tuple;
 import javaslang.monad.Option;
 import javaslang.monad.Option.None;
@@ -164,10 +163,10 @@ public final class Match<R> implements Function<Object, R> {
 		 * 
 		 * @param function A Function which is applied to a matched object.
 		 * @return this, the current instance of Match.
-		 * @throws UnsatisfiedRequirementException if function is null.
+		 * @throws NullPointerException if function is null.
 		 */
 		public Builder<R> caze(Function1<?, R> function) {
-			Require.nonNull(function, "function is null");
+			Objects.requireNonNull(function, "function is null");
 			cases.add(caze(None.instance(), function));
 			return this;
 		}
@@ -180,20 +179,20 @@ public final class Match<R> implements Function<Object, R> {
 		 * @param prototype An object to be matched by equality as defined above.
 		 * @param function A Function which is applied to a matched object.
 		 * @return this, the current instance of Match.
-		 * @throws UnsatisfiedRequirementException if function is null.
+		 * @throws NullPointerException if function is null.
 		 */
 		// DEV NOTE: the compiler cannot distinguish between primitive and Object types, e.g.
 		// public Match<R> caze(int prototype, IntFunction<R> function)
 		// Autoboxing does not work here.
 		public <T> Builder<R> caze(T prototype, Function1<T, R> function) {
-			Require.nonNull(function, "function is null");
+			Objects.requireNonNull(function, "function is null");
 			cases.add(caze(new Some<>(prototype), function));
 			return this;
 		}
 
 		public <T, D extends Tuple> Builder<R> caze(Pattern<T, ?, D> pattern, Function2<T, D, R> function) {
-			Require.nonNull(pattern, "pattern is null");
-			Require.nonNull(function, "function is null");
+			Objects.requireNonNull(pattern, "pattern is null");
+			Objects.requireNonNull(function, "function is null");
 			final Function<Object, Option<R>> mapping = obj -> {
 				if (pattern.isApplicable(obj)) {
 					return pattern.apply(obj).map(d -> function.apply(d._1, d._2));
@@ -220,10 +219,10 @@ public final class Match<R> implements Function<Object, R> {
 		 * 
 		 * @param function A BooleanFunction which is applied to a matched object.
 		 * @return this, the current instance of Match.
-		 * @throws UnsatisfiedRequirementException if function is null.
+		 * @throws NullPointerException if function is null.
 		 */
 		public Builder<R> caze(BooleanFunction<R> function) {
-			Require.nonNull(function, "function is null");
+			Objects.requireNonNull(function, "function is null");
 			cases.add(caze(None.instance(), (Boolean b) -> function.apply(b), Boolean.class));
 			return this;
 		}
@@ -234,10 +233,10 @@ public final class Match<R> implements Function<Object, R> {
 		 * 
 		 * @param function A ByteFunction which is applied to a matched object.
 		 * @return this, the current instance of Match.
-		 * @throws UnsatisfiedRequirementException if function is null.
+		 * @throws NullPointerException if function is null.
 		 */
 		public Builder<R> caze(ByteFunction<R> function) {
-			Require.nonNull(function, "function is null");
+			Objects.requireNonNull(function, "function is null");
 			cases.add(caze(None.instance(), (Byte b) -> function.apply(b), Byte.class));
 			return this;
 		}
@@ -248,10 +247,10 @@ public final class Match<R> implements Function<Object, R> {
 		 * 
 		 * @param function A CharFunction which is applied to a matched object.
 		 * @return this, the current instance of Match.
-		 * @throws UnsatisfiedRequirementException if function is null.
+		 * @throws NullPointerException if function is null.
 		 */
 		public Builder<R> caze(CharFunction<R> function) {
-			Require.nonNull(function, "function is null");
+			Objects.requireNonNull(function, "function is null");
 			cases.add(caze(None.instance(), (Character c) -> function.apply(c), Character.class));
 			return this;
 		}
@@ -262,10 +261,10 @@ public final class Match<R> implements Function<Object, R> {
 		 * 
 		 * @param function A DoubleFunction which is applied to a matched object.
 		 * @return this, the current instance of Match.
-		 * @throws UnsatisfiedRequirementException if function is null.
+		 * @throws NullPointerException if function is null.
 		 */
 		public Builder<R> caze(DoubleFunction<R> function) {
-			Require.nonNull(function, "function is null");
+			Objects.requireNonNull(function, "function is null");
 			cases.add(caze(None.instance(), (Double d) -> function.apply(d), Double.class));
 			return this;
 		}
@@ -276,10 +275,10 @@ public final class Match<R> implements Function<Object, R> {
 		 * 
 		 * @param function A FloatFunction which is applied to a matched object.
 		 * @return this, the current instance of Match.
-		 * @throws UnsatisfiedRequirementException if function is null.
+		 * @throws NullPointerException if function is null.
 		 */
 		public Builder<R> caze(FloatFunction<R> function) {
-			Require.nonNull(function, "function is null");
+			Objects.requireNonNull(function, "function is null");
 			cases.add(caze(None.instance(), (Float f) -> function.apply(f), Float.class));
 			return this;
 		}
@@ -290,10 +289,10 @@ public final class Match<R> implements Function<Object, R> {
 		 * 
 		 * @param function A IntFunction which is applied to a matched object.
 		 * @return this, the current instance of Match.
-		 * @throws UnsatisfiedRequirementException if function is null.
+		 * @throws NullPointerException if function is null.
 		 */
 		public Builder<R> caze(IntFunction<R> function) {
-			Require.nonNull(function, "function is null");
+			Objects.requireNonNull(function, "function is null");
 			cases.add(caze(None.instance(), (Integer i) -> function.apply(i), Integer.class));
 			return this;
 		}
@@ -304,10 +303,10 @@ public final class Match<R> implements Function<Object, R> {
 		 * 
 		 * @param function A LongFunction which is applied to a matched object.
 		 * @return this, the current instance of Match.
-		 * @throws UnsatisfiedRequirementException if function is null.
+		 * @throws NullPointerException if function is null.
 		 */
 		public Builder<R> caze(LongFunction<R> function) {
-			Require.nonNull(function, "function is null");
+			Objects.requireNonNull(function, "function is null");
 			cases.add(caze(None.instance(), (Long l) -> function.apply(l), Long.class));
 			return this;
 		}
@@ -318,10 +317,10 @@ public final class Match<R> implements Function<Object, R> {
 		 * 
 		 * @param function A ShortFunction which is applied to a matched object.
 		 * @return this, the current instance of Match.
-		 * @throws UnsatisfiedRequirementException if function is null.
+		 * @throws NullPointerException if function is null.
 		 */
 		public Builder<R> caze(ShortFunction<R> function) {
-			Require.nonNull(function, "function is null");
+			Objects.requireNonNull(function, "function is null");
 			cases.add(caze(None.instance(), (Short s) -> function.apply(s), Short.class));
 			return this;
 		}
@@ -405,7 +404,7 @@ public final class Match<R> implements Function<Object, R> {
 		 * @return this, the current instance of Match.
 		 */
 		public <T> MatchBuilder<R> orElse(Supplier<R> defaultSupplier) {
-			Require.nonNull(defaultSupplier, "defaultSupplier is null");
+			Objects.requireNonNull(defaultSupplier, "defaultSupplier is null");
 			setDefault(Option.of(defaultSupplier));
 			return this;
 		}

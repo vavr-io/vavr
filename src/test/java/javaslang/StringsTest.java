@@ -9,8 +9,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 
-import javaslang.Require.UnsatisfiedRequirementException;
-
 import org.junit.Test;
 
 public class StringsTest {
@@ -219,10 +217,9 @@ public class StringsTest {
 
 	// lineAndColumn
 
-	@Test
+	@Test(expected = NullPointerException.class)
 	public void shouldThrowWhenLineAndColumnOfNullString() {
-		AssertionsExtensions.assertThat(() -> Strings.lineAndColumn(null, 0)).isThrowing(
-				UnsatisfiedRequirementException.class, "s is null");
+		Strings.lineAndColumn(null, 0);
 	}
 
 	@Test

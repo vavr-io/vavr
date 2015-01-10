@@ -5,8 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.AssertionsExtensions;
-import javaslang.Require.UnsatisfiedRequirementException;
 import javaslang.Tuple;
 import org.junit.Test;
 
@@ -44,7 +42,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     // -- appendAll
 
-    @Test(expected = UnsatisfiedRequirementException.class)
+    @Test(expected = NullPointerException.class)
     public void shouldThrowOnAppendAllOfNull() {
         this.nil().appendAll(null);
     }
@@ -201,7 +199,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test(expected = UnsatisfiedRequirementException.class)
+    @Test(expected = NullPointerException.class)
     public void shouldThrowOnInsertAllWithNil() {
         this.nil().insertAll(0, null);
     }
@@ -267,10 +265,9 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     // -- prependAll
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void shouldThrowOnPrependAllOfNull() {
-        AssertionsExtensions.assertThat(() -> this.nil().prependAll(null)).isThrowing(
-                UnsatisfiedRequirementException.class, "elements is null");
+        this.nil().prependAll(null);
     }
 
     @Test

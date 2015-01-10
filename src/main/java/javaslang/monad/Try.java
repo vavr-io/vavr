@@ -14,8 +14,6 @@ import java.util.function.Supplier;
 
 import javaslang.Algebra.Monad;
 import javaslang.Manifest;
-import javaslang.Require;
-import javaslang.Require.UnsatisfiedRequirementException;
 import javaslang.Tuple;
 import javaslang.ValueObject;
 import javaslang.monad.Option.None;
@@ -232,10 +230,10 @@ public interface Try<T> extends Monad<T, Try<?>>, ValueObject, Bivalent<T, Throw
 		 * Constructs a Failure.
 		 * 
 		 * @param t A cause of type Throwable, may not be null.
-		 * @throws UnsatisfiedRequirementException if t is null.
+		 * @throws NullPointerException if t is null
 		 */
 		public Failure(Throwable t) {
-			Require.nonNull(t, "Throwable is null");
+			Objects.requireNonNull(t, "Throwable is null");
 			final Cause cause = Cause.of(t);
 			if (cause.isFatal()) {
 				throw cause;
@@ -430,7 +428,7 @@ public interface Try<T> extends Monad<T, Try<?>>, ValueObject, Bivalent<T, Throw
 			 * @throws javaslang.Require.UnsatisfiedRequirementException
 			 */
 			public static Cause of(Throwable t) {
-				Require.nonNull(t, "Throwable is null");
+				Objects.requireNonNull(t, "Throwable is null");
 				final boolean isFatal = (t instanceof VirtualMachineError && !(t instanceof StackOverflowError))
 						|| t instanceof ThreadDeath
 						|| t instanceof InterruptedException

@@ -146,7 +146,7 @@ public final class Strings {
      * @return {@code new int[] line, column }
      */
     public static Tuple2<Integer, Integer> lineAndColumn(String s, int index) {
-        final String text = Require.nonNull(s, "s is null").substring(0, index);
+        final String text = Objects.requireNonNull(s, "s is null").substring(0, index);
         final int line = ("$" + text + "$").split("\\r\\n|\\n|\\r").length;
         final int column = text.length() - Math.max(text.lastIndexOf("\r"), text.lastIndexOf("\n"));
         return Tuple.of(line, column);
@@ -176,8 +176,10 @@ public final class Strings {
      * @throws NullPointerException     If strings is null.
      */
     public static String join(String[] strings, char separator, char escape) {
-        Require.nonNull(strings, "strings is null");
-        Require.isTrue(separator != escape, "separator equals escape charater");
+        Objects.requireNonNull(strings, "strings is null");
+        if (separator == escape) {
+            throw new IllegalArgumentException("separator equals escape charater");
+        }
         return Stream
                 .of(strings)
                 .map(s -> escape(s, separator, escape))
@@ -198,8 +200,10 @@ public final class Strings {
      * @throws NullPointerException     If strings is null.
      */
     public static String join(Iterable<String> strings, char separator, char escape) {
-        Require.nonNull(strings, "strings is null");
-        Require.isTrue(separator != escape, "separator equals escape charater");
+        Objects.requireNonNull(strings, "strings is null");
+        if (separator == escape) {
+            throw new IllegalArgumentException("separator equals escape charater");
+        }
         return StreamSupport.stream(strings.spliterator(), false)
                 .map(s -> escape(s, separator, escape))
                 .collect(Collectors.joining(String.valueOf(separator)));
@@ -223,9 +227,12 @@ public final class Strings {
      * @return The tokens contained in string, without separators.
      */
     public static String[] split(String string, String separator) {
-        Require.nonNull(string, "string is null");
-        Require.notNullOrEmpty(separator, "separator is empty");
-        final List<String> tokens = new ArrayList<String>();
+        Objects.requireNonNull(string, "string is null");
+        Objects.requireNonNull(separator, "separator is null");
+        if ("".equals(separator)) {
+            return new String[] { string };
+        }
+        final List<String> tokens = new ArrayList<>();
         int fromIndex = 0;
         int index;
         while ((index = string.indexOf(separator, fromIndex)) != -1) {
@@ -251,8 +258,10 @@ public final class Strings {
      * @throws NullPointerException     If strings is null.
      */
     public static String[] split(String string, char separator, char escape) {
-        Require.nonNull(string, "string is null");
-        Require.isTrue(separator != escape, "separator equals escape charater");
+        Objects.requireNonNull(string, "string is null");
+        if (separator == escape) {
+            throw new IllegalArgumentException("separator equals escape charater");
+        }
         final List<String> tokens = new ArrayList<String>();
         final StringBuilder buf = new StringBuilder();
         int fromIndex = 0;
@@ -353,42 +362,42 @@ public final class Strings {
         }
 
         static Stream<Boolean> stream(boolean[] array) {
-            Require.nonNull(array, "array is null");
+            Objects.requireNonNull(array, "array is null");
             return new StreamableList<>(array.length, i -> array[i]).stream();
         }
 
         static Stream<Byte> stream(byte[] array) {
-            Require.nonNull(array, "array is null");
+            Objects.requireNonNull(array, "array is null");
             return new StreamableList<>(array.length, i -> array[i]).stream();
         }
 
         static Stream<Character> stream(char[] array) {
-            Require.nonNull(array, "array is null");
+            Objects.requireNonNull(array, "array is null");
             return new StreamableList<>(array.length, i -> array[i]).stream();
         }
 
         static Stream<Double> stream(double[] array) {
-            Require.nonNull(array, "array is null");
+            Objects.requireNonNull(array, "array is null");
             return new StreamableList<>(array.length, i -> array[i]).stream();
         }
 
         static Stream<Float> stream(float[] array) {
-            Require.nonNull(array, "array is null");
+            Objects.requireNonNull(array, "array is null");
             return new StreamableList<>(array.length, i -> array[i]).stream();
         }
 
         static Stream<Integer> stream(int[] array) {
-            Require.nonNull(array, "array is null");
+            Objects.requireNonNull(array, "array is null");
             return new StreamableList<>(array.length, i -> array[i]).stream();
         }
 
         static Stream<Long> stream(long[] array) {
-            Require.nonNull(array, "array is null");
+            Objects.requireNonNull(array, "array is null");
             return new StreamableList<>(array.length, i -> array[i]).stream();
         }
 
         static Stream<Short> stream(short[] array) {
-            Require.nonNull(array, "array is null");
+            Objects.requireNonNull(array, "array is null");
             return new StreamableList<>(array.length, i -> array[i]).stream();
         }
 
