@@ -196,15 +196,13 @@ public class StreamTest extends AbstractSeqTest {
 
     // -- Cons test
 
-    @Test
-    public void shouldNotSerializeEnclosingClass() throws Exception {
-        AssertionsExtensions.assertThat(() -> callReadObject(Stream.of(1))).isThrowing(InvalidObjectException.class,
-                "No direct serialization");
+    @Test(expected = InvalidObjectException.class)
+    public void shouldNotSerializeEnclosingClass() throws Throwable {
+        callReadObject(Stream.of(1));
     }
 
-    @Test
-    public void shouldNotDeserializeStreamWithSizeLessThanOne() {
-        AssertionsExtensions.assertThat(() -> {
+    @Test(expected = InvalidObjectException.class)
+    public void shouldNotDeserializeStreamWithSizeLessThanOne() throws Throwable {
             try {
 				/*
 				 * This implementation is stable regarding jvm impl changes of object serialization. The index of the
@@ -235,7 +233,6 @@ public class StreamTest extends AbstractSeqTest {
             } catch (IllegalStateException x) {
                 throw (x.getCause() != null) ? x.getCause() : x;
             }
-        }).isThrowing(InvalidObjectException.class, "No elements");
     }
 
     private void callReadObject(Object o) throws Throwable {

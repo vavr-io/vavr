@@ -46,10 +46,9 @@ public class OptionTest {
 		assertThat(Option.of(1).get()).isEqualTo(1);
 	}
 
-	@Test
+	@Test(expected = NoSuchElementException.class)
 	public void shouldThrowOnGetWhenValueIsNotPresent() {
-		AssertionsExtensions.assertThat(() -> Option.none().get()).isThrowing(NoSuchElementException.class,
-				"No value present");
+		Option.none().get();
 	}
 
 	// -- orElse
@@ -83,11 +82,9 @@ public class OptionTest {
 		assertThat(Option.of(1).orElseThrow(() -> new RuntimeException("none"))).isEqualTo(1);
 	}
 
-	@Test
+	@Test(expected = RuntimeException.class)
 	public void shouldThrowOnOrElseThrowWhenValueIsNotPresent() {
-		AssertionsExtensions
-				.assertThat(() -> Option.none().orElseThrow(() -> new RuntimeException("none")))
-				.isThrowing(RuntimeException.class, "none");
+		Option.none().orElseThrow(() -> new RuntimeException("none"));
 	}
 
 	// -- isPresent

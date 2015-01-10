@@ -68,10 +68,9 @@ public class TryTest {
 		assertThat(failure().isSuccess()).isFalse();
 	}
 
-	@Test
+	@Test(expected = Failure.NonFatal.class)
 	public void shouldThrowWhenGetOnFailure() {
-		AssertionsExtensions.assertThat(() -> failure().get()).isThrowing(Failure.NonFatal.class,
-				"java.lang.RuntimeException");
+		failure().get();
 	}
 
 	@Test
@@ -84,10 +83,9 @@ public class TryTest {
 		assertThat(failure().orElseGet(x -> OK)).isEqualTo(OK);
 	}
 
-	@Test
+	@Test(expected = IllegalStateException.class)
 	public void shouldThrowOtherWhenOrElseThrowOnFailure() {
-		AssertionsExtensions.assertThat(() -> failure().orElseThrow(x -> new IllegalStateException(OK))).isThrowing(
-				IllegalStateException.class, OK);
+		failure().orElseThrow(x -> new IllegalStateException(OK));
 	}
 
 	@Test
@@ -278,17 +276,14 @@ public class TryTest {
 		assertThat(success().filter(s -> true).get()).isEqualTo(OK);
 	}
 
-	@Test
+	@Test(expected = Failure.NonFatal.class)
 	public void shouldFilterNonMatchingPredicateOnSuccess() {
-		AssertionsExtensions.assertThat(() -> success().filter(s -> false).get()).isThrowing(Failure.NonFatal.class,
-				"java.util.NoSuchElementException: Predicate does not hold for " + OK);
+		success().filter(s -> false).get();
 	}
 
-	@Test
+	@Test(expected = RuntimeException.class)
 	public void shouldFilterWithExceptionOnSuccess() {
-		AssertionsExtensions.assertThat(() -> success().filter(s -> {
-			throw new RuntimeException("xxx");
-		}).get()).isThrowing(Failure.NonFatal.class, "java.lang.RuntimeException: xxx");
+		success().filter(s -> { throw new RuntimeException("xxx"); }).get();
 	}
 
 	@Test
@@ -296,11 +291,9 @@ public class TryTest {
 		assertThat(success().flatMap(s -> Try.of(() -> s + "!")).get()).isEqualTo(OK + "!");
 	}
 
-	@Test
+	@Test(expected = RuntimeException.class)
 	public void shouldFlatMapWithExceptionOnSuccess() {
-		AssertionsExtensions.assertThat(() -> success().flatMap(s -> {
-			throw new RuntimeException("xxx");
-		}).get()).isThrowing(Failure.NonFatal.class, "java.lang.RuntimeException: xxx");
+		success().flatMap(s -> { throw new RuntimeException("xxx"); }).get();
 	}
 
 	@Test
@@ -315,17 +308,16 @@ public class TryTest {
 		assertThat(success().map(s -> s + "!").get()).isEqualTo(OK + "!");
 	}
 
-	@Test
+	@Test(expected = Failure.NonFatal.class)
 	public void shouldMapWithExceptionOnSuccess() {
-		AssertionsExtensions.assertThat(() -> success().map(s -> {
+		success().map(s -> {
 			throw new RuntimeException("xxx");
-		}).get()).isThrowing(Failure.NonFatal.class, "java.lang.RuntimeException: xxx");
+		}).get();
 	}
 
-	@Test
+	@Test(expected = Failure.NonFatal.class)
 	public void shouldThrowWhenCallingFailedOnSuccess() {
-		AssertionsExtensions.assertThat(() -> success().failed().get()).isThrowing(Failure.NonFatal.class,
-				"java.lang.UnsupportedOperationException: Success.failed()");
+		success().failed().get();
 	}
 
 	// unapply

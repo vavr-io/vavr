@@ -85,10 +85,9 @@ public class EitherTest {
 
 	// get
 
-	@Test
+	@Test(expected = NoSuchElementException.class)
 	public void shouldThrowOnGetOnLeftProjectionOfRight() {
-		AssertionsExtensions.assertThat((() -> new Right<>(1).left().get())).isThrowing(NoSuchElementException.class,
-				"Either.left().get() on Right");
+		new Right<>(1).left().get();
 	}
 
 	@Test
@@ -132,11 +131,9 @@ public class EitherTest {
 		assertThat(actual).isEqualTo(1);
 	}
 
-	@Test
+	@Test(expected = RuntimeException.class)
 	public void shouldThrowWhenOrElseThrowWithSupplierOnLeftProjectionOfRight() {
-		final CheckedRunnable actual = () -> new Right<Integer, String>("1").left().orElseThrow(
-				() -> new RuntimeException("x"));
-		AssertionsExtensions.assertThat(actual).isThrowing(RuntimeException.class, "x");
+		new Right<Integer, String>("1").left().orElseThrow(() -> new RuntimeException("x"));
 	}
 
 	// orElseThrow(Function)
@@ -147,11 +144,9 @@ public class EitherTest {
 		assertThat(actual).isEqualTo(1);
 	}
 
-	@Test
+	@Test(expected = RuntimeException.class)
 	public void shouldThrowWhenOrElseThrowWithFunctionOnLeftProjectionOfRight() {
-		final CheckedRunnable actual = () -> new Right<Integer, String>("1").left().orElseThrow(
-				str -> new RuntimeException(str));
-		AssertionsExtensions.assertThat(actual).isThrowing(RuntimeException.class, "1");
+		new Right<Integer, String>("1").left().orElseThrow(str -> new RuntimeException(str));
 	}
 
 	// filter
@@ -352,10 +347,9 @@ public class EitherTest {
 
 	// get
 
-	@Test
+	@Test(expected = NoSuchElementException.class)
 	public void shouldThrowOnGetOnRightProjectionOfLeft() {
-		AssertionsExtensions.assertThat((() -> new Left<>(1).right().get())).isThrowing(NoSuchElementException.class,
-				"Either.right().get() on Left");
+		new Left<>(1).right().get();
 	}
 
 	@Test
@@ -399,11 +393,9 @@ public class EitherTest {
 		assertThat(actual).isEqualTo(1);
 	}
 
-	@Test
+	@Test(expected = RuntimeException.class)
 	public void shouldThrowWhenOrElseThrowWithSupplierOnRightProjectionOfLeft() {
-		final CheckedRunnable actual = () -> new Left<String, Integer>("1").right().orElseThrow(
-				() -> new RuntimeException("x"));
-		AssertionsExtensions.assertThat(actual).isThrowing(RuntimeException.class, "x");
+		new Left<String, Integer>("1").right().orElseThrow(() -> new RuntimeException("x"));
 	}
 
 	// orElseThrow(Function)
@@ -414,11 +406,9 @@ public class EitherTest {
 		assertThat(actual).isEqualTo(1);
 	}
 
-	@Test
+	@Test(expected = RuntimeException.class)
 	public void shouldThrowWhenOrElseThrowWithFunctionOnRightProjectionOfLeft() {
-		final CheckedRunnable actual = () -> new Left<String, Integer>("1").right().orElseThrow(
-				str -> new RuntimeException(str));
-		AssertionsExtensions.assertThat(actual).isThrowing(RuntimeException.class, "1");
+		new Left<String, Integer>("1").right().orElseThrow(str -> new RuntimeException(str));
 	}
 
 	// filter

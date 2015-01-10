@@ -7,7 +7,6 @@ package javaslang;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Objects;
 
 // TODO: replace fest-assertions with javaslang.Assertions using Match API in a future release of Javaslang
 public final class AssertionsExtensions {
@@ -21,10 +20,6 @@ public final class AssertionsExtensions {
 
 	public static ClassAssert assertThat(Class<?> clazz) {
 		return new ClassAssert(clazz);
-	}
-
-	public static RunnableAssert assertThat(CheckedRunnable test) {
-		return new RunnableAssert(test);
 	}
 
 	@FunctionalInterface
@@ -55,43 +50,6 @@ public final class AssertionsExtensions {
 				}
 			} catch (Exception x) {
 				throw new RuntimeException("Error instantiating " + clazz.getName(), x);
-			}
-		}
-	}
-
-	public static class RunnableAssert {
-
-		final CheckedRunnable test;
-
-		RunnableAssert(CheckedRunnable test) {
-			this.test = test;
-		}
-
-		public void isThrowing(Class<? extends Throwable> expectedException, String expectedMessage) {
-			Objects.requireNonNull(expectedException, "expectedException is null");
-			try {
-				test.run();
-				throw new AssertionError(expectedException.getName() + " not thrown");
-			} catch (Throwable x) {
-				if (!expectedException.isAssignableFrom(x.getClass())) {
-					throw new AssertionError("Expected exception assignable to type "
-							+ expectedException.getName()
-							+ " but was "
-							+ x.getClass().getName()
-							+ " with message "
-							+ Strings.toString(x.getMessage())
-							+ ".");
-				}
-				final String actualMessage = x.getMessage();
-				final boolean isOk = (actualMessage == null) ? (expectedMessage == null) : actualMessage
-						.equals(expectedMessage);
-				if (!isOk) {
-					throw new AssertionError("Expected exception message "
-							+ Strings.toString(expectedMessage)
-							+ " but was "
-							+ Strings.toString(actualMessage)
-							+ ".");
-				}
 			}
 		}
 	}

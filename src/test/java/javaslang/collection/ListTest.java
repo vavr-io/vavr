@@ -160,15 +160,13 @@ public class ListTest extends AbstractSeqTest {
 
 	// -- Cons test
 
-	@Test
-	public void shouldNotSerializeEnclosingClass() throws Exception {
-		AssertionsExtensions.assertThat(() -> callReadObject(List.of(1))).isThrowing(InvalidObjectException.class,
-				"Proxy required");
+	@Test(expected = InvalidObjectException.class)
+	public void shouldNotSerializeEnclosingClass() throws Throwable {
+		callReadObject(List.of(1));
 	}
 
-	@Test
-	public void shouldNotDeserializeListWithSizeLessThanOne() {
-		AssertionsExtensions.assertThat(() -> {
+	@Test(expected = InvalidObjectException.class)
+	public void shouldNotDeserializeListWithSizeLessThanOne() throws Throwable {
 			try {
 				/*
 				 * This implementation is stable regarding jvm impl changes of object serialization. The index of the
@@ -199,7 +197,6 @@ public class ListTest extends AbstractSeqTest {
 			} catch (IllegalStateException x) {
 				throw (x.getCause() != null) ? x.getCause() : x;
 			}
-		}).isThrowing(InvalidObjectException.class, "No elements");
 	}
 
 	private void callReadObject(Object o) throws Throwable {
