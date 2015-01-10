@@ -16,8 +16,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import javaslang.Function.Function1;
-import javaslang.Function.Function2;
-import javaslang.Tuple;
 import javaslang.monad.Option;
 import javaslang.monad.Option.None;
 import javaslang.monad.Option.Some;
@@ -187,20 +185,6 @@ public final class Match<R> implements Function<Object, R> {
 		public <T> Builder<R> caze(T prototype, Function1<T, R> function) {
 			Objects.requireNonNull(function, "function is null");
 			cases.add(caze(new Some<>(prototype), function));
-			return this;
-		}
-
-		public <T, D extends Tuple> Builder<R> caze(Pattern<T, ?, D> pattern, Function2<T, D, R> function) {
-			Objects.requireNonNull(pattern, "pattern is null");
-			Objects.requireNonNull(function, "function is null");
-			final Function<Object, Option<R>> mapping = obj -> {
-				if (pattern.isApplicable(obj)) {
-					return pattern.apply(obj).map(d -> function.apply(d._1, d._2));
-				} else {
-					return None.instance();
-				}
-			};
-			cases.add(mapping);
 			return this;
 		}
 

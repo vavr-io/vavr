@@ -9,9 +9,7 @@ import java.util.function.DoubleFunction;
 import java.util.function.IntFunction;
 import java.util.function.LongFunction;
 
-import javaslang.Tuple;
 import javaslang.Function.Function1;
-import javaslang.Function.Function2;
 import javaslang.match.Match.BooleanFunction;
 import javaslang.match.Match.ByteFunction;
 import javaslang.match.Match.CharFunction;
@@ -52,10 +50,6 @@ public final class Matchs {
 	 */
 	public static <T, R> Match.Builder<R> caze(T prototype, Function1<T, R> function) {
 		return new Match.Builder<R>().caze(prototype, function);
-	}
-
-	public static <T, D extends Tuple, R> Match.Builder<R> caze(Pattern<T, ?, D> pattern, Function2<T, D, R> function) {
-		return new Match.Builder<R>().caze(pattern, function);
 	}
 
 	public static <R> Match.Builder<R> caze(BooleanFunction<R> function) {

@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 import java.util.function.Function;
 
 import javaslang.AssertionsExtensions;
-import javaslang.Function.Function1;
 import javaslang.monad.Option.Some;
 
 import org.junit.Test;
@@ -405,37 +404,6 @@ public class MatchTest {
 				.caze((Function<Integer, String> f) -> f.apply(2))
 				.apply(lambda);
 		assertThat(actual).isEqualTo("2");
-	}
-
-	// -- pattern matching
-
-	@Test
-	public void shouldPatternMatchLambdaWithSameSignature() {
-		final Function1<Integer, String> lambda = i -> String.valueOf(i);
-		final boolean actual = Matchs
-				.caze(Patterns.Function(Integer.class, String.class), (f, dF) -> true)
-				.orElse(() -> false)
-				.apply(lambda);
-		assertThat(actual).isTrue();
-	}
-
-	@Test
-	public void shouldNotPatternMatchLambdaWithDifferentSignature() {
-		final Function1<String, String> lambda = s -> s;
-		final boolean actual = Matchs
-				.caze(Patterns.Function(Integer.class, String.class), (f, dF) -> false)
-				.orElse(() -> true)
-				.apply(lambda);
-		assertThat(actual).isTrue();
-	}
-
-	@Test
-	public void shouldNotPatternMatchNull() {
-		final boolean actual = Matchs
-				.caze(Patterns.Function(Integer.class, String.class), (f, dF) -> false)
-				.orElse(() -> true)
-				.apply(null);
-		assertThat(actual).isTrue();
 	}
 
 	@FunctionalInterface
