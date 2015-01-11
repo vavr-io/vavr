@@ -105,8 +105,6 @@ public final class Functions {
          */
         <V> λ<V> andThen(X1<? super R, ? extends V> after);
 
-        <V> λ<V> andThen(java.util.function.Function<? super R, ? extends V> after);
-
         default MethodType getType() {
             return Functions.getLambdaSignature(this);
         }
@@ -138,12 +136,6 @@ public final class Functions {
             Objects.requireNonNull(after);
             return () -> after.apply(apply());
         }
-
-        @Override
-        default <V> CheckedFunction0<V> andThen(java.util.function.Function<? super R, ? extends V> after) {
-            Objects.requireNonNull(after);
-            return () -> after.apply(apply());
-        }
     }
 
     /**
@@ -172,12 +164,6 @@ public final class Functions {
         @Override
         default Function1<Tuple0, R> tupled() {
             return t -> apply();
-        }
-
-        @Override
-        default <V> Function0<V> andThen(java.util.function.Function<? super R, ? extends V> after) {
-            Objects.requireNonNull(after);
-            return () -> after.apply(apply());
         }
     }
 
@@ -226,18 +212,7 @@ public final class Functions {
             return t1 -> after.apply(apply(t1));
         }
 
-        @Override
-        default <V> CheckedFunction1<T1, V> andThen(java.util.function.Function<? super R, ? extends V> after) {
-            Objects.requireNonNull(after);
-            return t1 -> after.apply(apply(t1));
-        }
-
         default <V> CheckedFunction1<V, R> compose(X1<? super V, ? extends T1> before) {
-            Objects.requireNonNull(before);
-            return v -> apply(before.apply(v));
-        }
-
-        default <V> CheckedFunction1<V, R> compose(java.util.function.Function<? super V, ? extends T1> before) {
             Objects.requireNonNull(before);
             return v -> apply(before.apply(v));
         }
@@ -276,14 +251,15 @@ public final class Functions {
         }
 
         @Override
-        default <V> Function1<T1, V> andThen(java.util.function.Function<? super R, ? extends V> after) {
+        default <V> Function1<T1, V> andThen(X1<? super R, ? extends V> after) {
             Objects.requireNonNull(after);
-            return t1 -> after.apply(apply(t1));
+            return t1 -> Try.of(() -> after.apply(apply(t1))).orElseThrow(x -> new RuntimeException(x));
         }
 
-        default <V> Function1<V, R> compose(java.util.function.Function<? super V, ? extends T1> before) {
+        @Override
+        default <V> Function1<V, R> compose(X1<? super V, ? extends T1> before) {
             Objects.requireNonNull(before);
-            return (V v) -> apply(before.apply(v));
+            return v -> Try.of(() -> apply(before.apply(v))).orElseThrow(x -> new RuntimeException(x));
         }
     }
 
@@ -323,12 +299,6 @@ public final class Functions {
             Objects.requireNonNull(after);
             return (t1, t2) -> after.apply(apply(t1, t2));
         }
-
-        @Override
-        default <V> CheckedFunction2<T1, T2, V> andThen(java.util.function.Function<? super R, ? extends V> after) {
-            Objects.requireNonNull(after);
-            return (t1, t2) -> after.apply(apply(t1, t2));
-        }
     }
 
     /**
@@ -355,9 +325,9 @@ public final class Functions {
         }
 
         @Override
-        default <V> Function2<T1, T2, V> andThen(java.util.function.Function<? super R, ? extends V> after) {
+        default <V> Function2<T1, T2, V> andThen(X1<? super R, ? extends V> after) {
             Objects.requireNonNull(after);
-            return (t1, t2) -> after.apply(apply(t1, t2));
+            return (t1, t2) -> Try.of(() -> after.apply(apply(t1, t2))).orElseThrow(x -> new RuntimeException(x));
         }
     }
 
@@ -393,12 +363,6 @@ public final class Functions {
             Objects.requireNonNull(after);
             return (t1, t2, t3) -> after.apply(apply(t1, t2, t3));
         }
-
-        @Override
-        default <V> CheckedFunction3<T1, T2, T3, V> andThen(java.util.function.Function<? super R, ? extends V> after) {
-            Objects.requireNonNull(after);
-            return (t1, t2, t3) -> after.apply(apply(t1, t2, t3));
-        }
     }
 
     /**
@@ -425,9 +389,9 @@ public final class Functions {
         }
 
         @Override
-        default <V> Function3<T1, T2, T3, V> andThen(java.util.function.Function<? super R, ? extends V> after) {
+        default <V> Function3<T1, T2, T3, V> andThen(X1<? super R, ? extends V> after) {
             Objects.requireNonNull(after);
-            return (t1, t2, t3) -> after.apply(apply(t1, t2, t3));
+            return (t1, t2, t3) -> Try.of(() -> after.apply(apply(t1, t2, t3))).orElseThrow(x -> new RuntimeException(x));
         }
     }
 
@@ -463,12 +427,6 @@ public final class Functions {
             Objects.requireNonNull(after);
             return (t1, t2, t3, t4) -> after.apply(apply(t1, t2, t3, t4));
         }
-
-        @Override
-        default <V> CheckedFunction4<T1, T2, T3, T4, V> andThen(java.util.function.Function<? super R, ? extends V> after) {
-            Objects.requireNonNull(after);
-            return (t1, t2, t3, t4) -> after.apply(apply(t1, t2, t3, t4));
-        }
     }
 
     /**
@@ -495,9 +453,9 @@ public final class Functions {
         }
 
         @Override
-        default <V> Function4<T1, T2, T3, T4, V> andThen(java.util.function.Function<? super R, ? extends V> after) {
+        default <V> Function4<T1, T2, T3, T4, V> andThen(X1<? super R, ? extends V> after) {
             Objects.requireNonNull(after);
-            return (t1, t2, t3, t4) -> after.apply(apply(t1, t2, t3, t4));
+            return (t1, t2, t3, t4) -> Try.of(() -> after.apply(apply(t1, t2, t3, t4))).orElseThrow(x -> new RuntimeException(x));
         }
     }
 
@@ -533,12 +491,6 @@ public final class Functions {
             Objects.requireNonNull(after);
             return (t1, t2, t3, t4, t5) -> after.apply(apply(t1, t2, t3, t4, t5));
         }
-
-        @Override
-        default <V> CheckedFunction5<T1, T2, T3, T4, T5, V> andThen(java.util.function.Function<? super R, ? extends V> after) {
-            Objects.requireNonNull(after);
-            return (t1, t2, t3, t4, t5) -> after.apply(apply(t1, t2, t3, t4, t5));
-        }
     }
 
     /**
@@ -565,9 +517,9 @@ public final class Functions {
         }
 
         @Override
-        default <V> Function5<T1, T2, T3, T4, T5, V> andThen(java.util.function.Function<? super R, ? extends V> after) {
+        default <V> Function5<T1, T2, T3, T4, T5, V> andThen(X1<? super R, ? extends V> after) {
             Objects.requireNonNull(after);
-            return (t1, t2, t3, t4, t5) -> after.apply(apply(t1, t2, t3, t4, t5));
+            return (t1, t2, t3, t4, t5) -> Try.of(() -> after.apply(apply(t1, t2, t3, t4, t5))).orElseThrow(x -> new RuntimeException(x));
         }
     }
 
@@ -603,12 +555,6 @@ public final class Functions {
             Objects.requireNonNull(after);
             return (t1, t2, t3, t4, t5, t6) -> after.apply(apply(t1, t2, t3, t4, t5, t6));
         }
-
-        @Override
-        default <V> CheckedFunction6<T1, T2, T3, T4, T5, T6, V> andThen(java.util.function.Function<? super R, ? extends V> after) {
-            Objects.requireNonNull(after);
-            return (t1, t2, t3, t4, t5, t6) -> after.apply(apply(t1, t2, t3, t4, t5, t6));
-        }
     }
 
     /**
@@ -635,9 +581,9 @@ public final class Functions {
         }
 
         @Override
-        default <V> Function6<T1, T2, T3, T4, T5, T6, V> andThen(java.util.function.Function<? super R, ? extends V> after) {
+        default <V> Function6<T1, T2, T3, T4, T5, T6, V> andThen(X1<? super R, ? extends V> after) {
             Objects.requireNonNull(after);
-            return (t1, t2, t3, t4, t5, t6) -> after.apply(apply(t1, t2, t3, t4, t5, t6));
+            return (t1, t2, t3, t4, t5, t6) -> Try.of(() -> after.apply(apply(t1, t2, t3, t4, t5, t6))).orElseThrow(x -> new RuntimeException(x));
         }
     }
 
@@ -673,12 +619,6 @@ public final class Functions {
             Objects.requireNonNull(after);
             return (t1, t2, t3, t4, t5, t6, t7) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7));
         }
-
-        @Override
-        default <V> CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, V> andThen(java.util.function.Function<? super R, ? extends V> after) {
-            Objects.requireNonNull(after);
-            return (t1, t2, t3, t4, t5, t6, t7) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7));
-        }
     }
 
     /**
@@ -705,9 +645,9 @@ public final class Functions {
         }
 
         @Override
-        default <V> Function7<T1, T2, T3, T4, T5, T6, T7, V> andThen(java.util.function.Function<? super R, ? extends V> after) {
+        default <V> Function7<T1, T2, T3, T4, T5, T6, T7, V> andThen(X1<? super R, ? extends V> after) {
             Objects.requireNonNull(after);
-            return (t1, t2, t3, t4, t5, t6, t7) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7));
+            return (t1, t2, t3, t4, t5, t6, t7) -> Try.of(() -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7))).orElseThrow(x -> new RuntimeException(x));
         }
     }
 
@@ -743,12 +683,6 @@ public final class Functions {
             Objects.requireNonNull(after);
             return (t1, t2, t3, t4, t5, t6, t7, t8) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8));
         }
-
-        @Override
-        default <V> CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, V> andThen(java.util.function.Function<? super R, ? extends V> after) {
-            Objects.requireNonNull(after);
-            return (t1, t2, t3, t4, t5, t6, t7, t8) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8));
-        }
     }
 
     /**
@@ -775,9 +709,9 @@ public final class Functions {
         }
 
         @Override
-        default <V> Function8<T1, T2, T3, T4, T5, T6, T7, T8, V> andThen(java.util.function.Function<? super R, ? extends V> after) {
+        default <V> Function8<T1, T2, T3, T4, T5, T6, T7, T8, V> andThen(X1<? super R, ? extends V> after) {
             Objects.requireNonNull(after);
-            return (t1, t2, t3, t4, t5, t6, t7, t8) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8));
+            return (t1, t2, t3, t4, t5, t6, t7, t8) -> Try.of(() -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8))).orElseThrow(x -> new RuntimeException(x));
         }
     }
 
@@ -813,12 +747,6 @@ public final class Functions {
             Objects.requireNonNull(after);
             return (t1, t2, t3, t4, t5, t6, t7, t8, t9) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8, t9));
         }
-
-        @Override
-        default <V> CheckedFunction9<T1, T2, T3, T4, T5, T6, T7, T8, T9, V> andThen(java.util.function.Function<? super R, ? extends V> after) {
-            Objects.requireNonNull(after);
-            return (t1, t2, t3, t4, t5, t6, t7, t8, t9) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8, t9));
-        }
     }
 
     /**
@@ -845,9 +773,9 @@ public final class Functions {
         }
 
         @Override
-        default <V> Function9<T1, T2, T3, T4, T5, T6, T7, T8, T9, V> andThen(java.util.function.Function<? super R, ? extends V> after) {
+        default <V> Function9<T1, T2, T3, T4, T5, T6, T7, T8, T9, V> andThen(X1<? super R, ? extends V> after) {
             Objects.requireNonNull(after);
-            return (t1, t2, t3, t4, t5, t6, t7, t8, t9) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8, t9));
+            return (t1, t2, t3, t4, t5, t6, t7, t8, t9) -> Try.of(() -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8, t9))).orElseThrow(x -> new RuntimeException(x));
         }
     }
 
@@ -884,13 +812,6 @@ public final class Functions {
             Objects.requireNonNull(after);
             return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10));
         }
-
-        @Override
-        default <V> CheckedFunction10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, V> andThen(java.util.function.Function<? super R, ? extends V> after) {
-            Objects.requireNonNull(after);
-            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8, t9,
-                    t10));
-        }
     }
 
     /**
@@ -918,10 +839,9 @@ public final class Functions {
         }
 
         @Override
-        default <V> Function10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, V> andThen(java.util.function.Function<? super R, ? extends V> after) {
+        default <V> Function10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, V> andThen(X1<? super R, ? extends V> after) {
             Objects.requireNonNull(after);
-            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8, t9,
-                    t10));
+            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) -> Try.of(() -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10))).orElseThrow(x -> new RuntimeException(x));
         }
     }
 
@@ -958,13 +878,6 @@ public final class Functions {
             Objects.requireNonNull(after);
             return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11));
         }
-
-        @Override
-        default <V> CheckedFunction11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, V> andThen(java.util.function.Function<? super R, ? extends V> after) {
-            Objects.requireNonNull(after);
-            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8,
-                    t9, t10, t11));
-        }
     }
 
     /**
@@ -992,10 +905,9 @@ public final class Functions {
         }
 
         @Override
-        default <V> Function11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, V> andThen(java.util.function.Function<? super R, ? extends V> after) {
+        default <V> Function11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, V> andThen(X1<? super R, ? extends V> after) {
             Objects.requireNonNull(after);
-            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8,
-                    t9, t10, t11));
+            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) -> Try.of(() -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11))).orElseThrow(x -> new RuntimeException(x));
         }
     }
 
@@ -1032,14 +944,6 @@ public final class Functions {
             Objects.requireNonNull(after);
             return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12));
         }
-
-        @Override
-        default <V> CheckedFunction12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, V> andThen(
-                java.util.function.Function<? super R, ? extends V> after) {
-            Objects.requireNonNull(after);
-            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7,
-                    t8, t9, t10, t11, t12));
-        }
     }
 
     @FunctionalInterface
@@ -1060,11 +964,9 @@ public final class Functions {
         }
 
         @Override
-        default <V> Function12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, V> andThen(
-                java.util.function.Function<? super R, ? extends V> after) {
+        default <V> Function12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, V> andThen(X1<? super R, ? extends V> after) {
             Objects.requireNonNull(after);
-            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7,
-                    t8, t9, t10, t11, t12));
+            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) -> Try.of(() -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12))).orElseThrow(x -> new RuntimeException(x));
         }
     }
 
@@ -1108,14 +1010,6 @@ public final class Functions {
             Objects.requireNonNull(after);
             return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13));
         }
-
-        @Override
-        default <V> CheckedFunction13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, V> andThen(
-                java.util.function.Function<? super R, ? extends V> after) {
-            Objects.requireNonNull(after);
-            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) -> after.apply(apply(t1, t2, t3, t4, t5,
-                    t6, t7, t8, t9, t10, t11, t12, t13));
-        }
     }
 
     /**
@@ -1143,11 +1037,9 @@ public final class Functions {
         }
 
         @Override
-        default <V> Function13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, V> andThen(
-                java.util.function.Function<? super R, ? extends V> after) {
+        default <V> Function13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, V> andThen(X1<? super R, ? extends V> after) {
             Objects.requireNonNull(after);
-            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) -> after.apply(apply(t1, t2, t3, t4, t5,
-                    t6, t7, t8, t9, t10, t11, t12, t13));
+            return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) -> Try.of(() -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13))).orElseThrow(x -> new RuntimeException(x));
         }
     }
 
