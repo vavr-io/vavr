@@ -352,7 +352,7 @@ public interface Either<L, R> extends ValueObject {
 
 		@Override
 		public Option<R> toOption() {
-			if (either.isLeft()) {
+			if (either.isRight()) {
 				return new Some<>(asRight());
 			} else {
 				return None.instance();

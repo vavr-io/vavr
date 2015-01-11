@@ -379,20 +379,6 @@ public interface Traversable<T> extends Iterable<T>, Algebra.HigherKinded<T, Tra
      */
     <U> Traversable<U> map(Function<? super T, ? extends U> mapper);
 
-    // See also http://stackoverflow.com/questions/3643939/java-process-with-input-output-stream.
-    @SuppressWarnings("InfiniteLoopStatement")
-    default void out() {
-        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.out))) {
-            for (T t : this) {
-                writer.write(String.valueOf(t));
-                writer.newLine();
-                writer.flush(); // need to flush for blocking streams to see results
-            }
-        } catch (IOException x) {
-            throw new IllegalStateException("Error writing to std out", x);
-        }
-    }
-
     /**
      * Calculates the product of this elements.
      *
@@ -571,6 +557,32 @@ public interface Traversable<T> extends Iterable<T>, Algebra.HigherKinded<T, Tra
                         throw new UnsupportedOperationException("not numeric");
                     })
                     .apply(head);
+        }
+    }
+
+    default void stderr() {
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.err))) {
+            for (T t : this) {
+                writer.write(String.valueOf(t));
+                writer.newLine();
+                writer.flush(); // need to flush for blocking streams to see results
+            }
+        } catch (IOException x) {
+            throw new IllegalStateException("Error writing to stderr", x);
+        }
+    }
+
+    // See also http://stackoverflow.com/questions/3643939/java-process-with-input-output-stream.
+    @SuppressWarnings("InfiniteLoopStatement")
+    default void stdout() {
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.out))) {
+            for (T t : this) {
+                writer.write(String.valueOf(t));
+                writer.newLine();
+                writer.flush(); // need to flush for blocking streams to see results
+            }
+        } catch (IOException x) {
+            throw new IllegalStateException("Error writing to stdout", x);
         }
     }
 

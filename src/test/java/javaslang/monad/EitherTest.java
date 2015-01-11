@@ -109,18 +109,52 @@ public class EitherTest {
 		assertThat(actual).isEqualTo(2);
 	}
 
-	// orElseGet
+	// orElseGet(Supplier)
 
 	@Test
-	public void shouldReturnLeftWhenOrElseGetOnLeftProjectionOfLeft() {
+	public void shouldReturnLeftWhenOrElseGetGivenSupplierOnLeftProjectionOfLeft() {
 		final Integer actual = new Left<Integer, String>(1).left().orElseGet(() -> 2);
 		assertThat(actual).isEqualTo(1);
 	}
 
 	@Test
-	public void shouldReturnOtherWhenOrElseGetOnLeftProjectionOfRight() {
+	public void shouldReturnOtherWhenOrElseGetGivenSupplierOnLeftProjectionOfRight() {
 		final Integer actual = new Right<Integer, String>("1").left().orElseGet(() -> 2);
 		assertThat(actual).isEqualTo(2);
+	}
+
+	// orElseGet(Function)
+
+	@Test
+	public void shouldReturnLeftWhenOrElseGetGivenFunctionOnLeftProjectionOfLeft() {
+		final Integer actual = new Left<Integer, String>(1).left().orElseGet(r -> 2);
+		assertThat(actual).isEqualTo(1);
+	}
+
+	@Test
+	public void shouldReturnOtherWhenOrElseGetGivenFunctionOnLeftProjectionOfRight() {
+		final Integer actual = new Right<Integer, String>("1").left().orElseGet(r -> 2);
+		assertThat(actual).isEqualTo(2);
+	}
+
+	// orElseRun
+
+	@Test
+	public void shouldReturnLeftWhenOrElseRunOnLeftProjectionOfLeft() {
+		final boolean[] actual = new boolean[] { true };
+		new Left<Integer, String>(1).left().orElseRun(s -> {
+			actual[0] = false;
+		});
+		assertThat(actual[0]).isTrue();
+	}
+
+	@Test
+	public void shouldReturnOtherWhenOrElseRunOnLeftProjectionOfRight() {
+		final boolean[] actual = new boolean[] { false };
+		new Right<Integer, String>("1").left().orElseRun(s -> {
+			actual[0] = true;
+		});
+		assertThat(actual[0]).isTrue();
 	}
 
 	// orElseThrow(Supplier)
@@ -147,6 +181,32 @@ public class EitherTest {
 	@Test(expected = RuntimeException.class)
 	public void shouldThrowWhenOrElseThrowWithFunctionOnLeftProjectionOfRight() {
 		new Right<Integer, String>("1").left().orElseThrow(str -> new RuntimeException(str));
+	}
+
+	// toOption
+
+	@Test
+	public void shouldConvertLeftProjectionOfLeftToSome() {
+		assertThat(new Left<Integer, String>(1).left().toOption()).isEqualTo(Option.of(1));
+	}
+
+	@Test
+	public void shouldConvertLeftProjectionOfRightToNone() {
+		assertThat(new Right<Integer, String>("x").left().toOption()).isEqualTo(Option.none());
+	}
+
+	// toEither
+
+	@Test
+	public void shouldConvertLeftProjectionOfLeftToEither() {
+		final Either<Integer, String> self = new Left<>(1);
+		assertThat(self.left().toEither()).isEqualTo(self);
+	}
+
+	@Test
+	public void shouldConvertLeftProjectionOfRightToEither() {
+		final Either<Integer, String> self = new Right<>("1");
+		assertThat(self.left().toEither()).isEqualTo(self);
 	}
 
 	// filter
@@ -371,18 +431,48 @@ public class EitherTest {
 		assertThat(actual).isEqualTo(2);
 	}
 
-	// orElseGet
+	// orElseGet(Supplier)
 
 	@Test
-	public void shouldReturnRightWhenOrElseGetOnRightProjectionOfRight() {
+	public void shouldReturnRightWhenOrElseGetGivenSupplierOnRightProjectionOfRight() {
 		final Integer actual = new Right<String, Integer>(1).right().orElseGet(() -> 2);
 		assertThat(actual).isEqualTo(1);
 	}
 
 	@Test
-	public void shouldReturnOtherWhenOrElseGetOnRightProjectionOfLeft() {
+	public void shouldReturnOtherWhenOrElseGetGivenSupplierOnRightProjectionOfLeft() {
 		final Integer actual = new Left<String, Integer>("1").right().orElseGet(() -> 2);
 		assertThat(actual).isEqualTo(2);
+	}
+
+	// orElseGet(Function)
+
+	@Test
+	public void shouldReturnRightWhenOrElseGetGivenFunctionOnRightProjectionOfRight() {
+		final Integer actual = new Right<String, Integer>(1).right().orElseGet(l -> 2);
+		assertThat(actual).isEqualTo(1);
+	}
+
+	@Test
+	public void shouldReturnOtherWhenOrElseGetGivenFunctionOnRightProjectionOfLeft() {
+		final Integer actual = new Left<String, Integer>("1").right().orElseGet(l -> 2);
+		assertThat(actual).isEqualTo(2);
+	}
+
+	// orElseRun
+
+	@Test
+	public void shouldReturnRightWhenOrElseRunOnRightProjectionOfRight() {
+		final boolean[] actual = new boolean[] { true };
+		new Right<String, Integer>(1).right().orElseRun(s -> { actual[0] = false; });
+		assertThat(actual[0]).isTrue();
+	}
+
+	@Test
+	public void shouldReturnOtherWhenOrElseRunOnRightProjectionOfLeft() {
+		final boolean[] actual = new boolean[] { false };
+		new Left<String, Integer>("1").right().orElseRun(s -> { actual[0] = true; });
+		assertThat(actual[0]).isTrue();
 	}
 
 	// orElseThrow(Supplier)
@@ -409,6 +499,32 @@ public class EitherTest {
 	@Test(expected = RuntimeException.class)
 	public void shouldThrowWhenOrElseThrowWithFunctionOnRightProjectionOfLeft() {
 		new Left<String, Integer>("1").right().orElseThrow(str -> new RuntimeException(str));
+	}
+
+	// toOption
+
+	@Test
+	public void shouldConvertRightProjectionOfLeftToNone() {
+		assertThat(new Left<Integer, String>(0).right().toOption()).isEqualTo(Option.none());
+	}
+
+	@Test
+	public void shouldConvertRightProjectionOfRightToSome() {
+		assertThat(new Right<Integer, String>("1").right().toOption()).isEqualTo(Option.of("1"));
+	}
+
+	// toEither
+
+	@Test
+	public void shouldConvertRightProjectionOfLeftToEither() {
+		final Either<Integer, String> self = new Left<>(1);
+		assertThat(self.right().toEither()).isEqualTo(self);
+	}
+
+	@Test
+	public void shouldConvertRightProjectionOfRightToEither() {
+		final Either<Integer, String> self = new Right<>("1");
+		assertThat(self.right().toEither()).isEqualTo(self);
 	}
 
 	// filter

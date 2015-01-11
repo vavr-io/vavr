@@ -487,6 +487,18 @@ public abstract class AbstractTraversableTest {
         assertThat(this.of(1, 2, 3).map(i -> i + 1)).isEqualTo(this.of(2, 3, 4));
     }
 
+    // -- product
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldNotGetProductOfNil() {
+        nil().product();
+    }
+
+    @Test
+    public void shouldGetProductOfNonNil() {
+        assertThat(of(2, 3).product()).isEqualTo(6);
+    }
+
     // -- reduce
 
     @Test(expected = UnsupportedOperationException.class)
@@ -710,6 +722,32 @@ public abstract class AbstractTraversableTest {
     @Test
     public void shouldReturnSizeWhenSpliterator() {
         assertThat(this.of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(3);
+    }
+
+    // -- stderr
+
+    @Test
+    public void shouldWriteToStderr() {
+        of(1, 2, 3).stderr();
+    }
+
+    // -- stdout
+
+    @Test
+    public void shouldWriteToStdout() {
+        of(1, 2, 3).stdout();
+    }
+
+    // -- sum
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldNotSumNil() {
+        nil().sum();
+    }
+
+    @Test
+    public void shouldSumNonNil() {
+        assertThat(of(2, 3).sum()).isEqualTo(5);
     }
 
     // -- take
