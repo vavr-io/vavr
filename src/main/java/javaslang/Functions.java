@@ -17,7 +17,7 @@ import java.util.Objects;
 /**
  * The class of reflective checked and unchecked functions with a specific return types.
  * <p/>
- * The internal type <strong>Λ</strong> is the mother of all functions.
+ * The type <strong>λ</strong> 'lambda' is the mother of all functions.
  * <p/>
  * There are checked functions {@linkplain CheckedFunction0} to {@linkplain CheckedFunction13}, short: {@linkplain X0} to {@linkplain X13}
  * (<em>Note: X stands for 'eXception'. The lambda symbol λ is hidden in X, just leave out the upper right line</em>).
@@ -39,7 +39,7 @@ public final class Functions {
     }
 
     /**
-     * Serializes this lambda and returns the corresponding {@link java.lang.invoke.SerializedLambda}.
+     * Serializes a lambda and returns the corresponding {@link java.lang.invoke.SerializedLambda}.
      *
      * @return The serialized lambda wrapped in a {@link javaslang.monad.Try.Success}, or a {@link javaslang.monad.Try.Failure}
      * if an exception occurred.
@@ -73,7 +73,7 @@ public final class Functions {
     }
 
     /**
-     * This is an internal, general definition of a checked function of unknown parameters and a return value of type R.
+     * This is a general definition of a checked function of unknown parameters and a return value of type R.
      * A checked function may throw an exception. The exception type is not a generic type parameter because
      * when composing functions, we cannot say anything else about the resulting type of exception than that it is
      * a Throwable.
@@ -82,7 +82,7 @@ public final class Functions {
      *
      * @param <R> Return type of the checked function.
      */
-    static interface Λ<R> extends Serializable {
+    public static interface λ<R> extends Serializable {
 
         /**
          * @return the numper of function arguments.
@@ -103,9 +103,9 @@ public final class Functions {
          * @param <V>
          * @return
          */
-        <V> Λ<V> andThen(X1<? super R, ? extends V> after);
+        <V> λ<V> andThen(X1<? super R, ? extends V> after);
 
-        <V> Λ<V> andThen(java.util.function.Function<? super R, ? extends V> after);
+        <V> λ<V> andThen(java.util.function.Function<? super R, ? extends V> after);
 
         default MethodType getType() {
             return Functions.getLambdaSignature(this);
@@ -113,7 +113,7 @@ public final class Functions {
     }
 
     @FunctionalInterface
-    public static interface X0<R> extends Λ<R> {
+    public static interface X0<R> extends λ<R> {
 
         R apply() throws Throwable;
 
@@ -149,6 +149,7 @@ public final class Functions {
     /**
      * Alias for {@link X0}.
      */
+    @FunctionalInterface
     public static interface CheckedFunction0<R> extends X0<R> {
     }
 
@@ -183,6 +184,7 @@ public final class Functions {
     /**
      * Alias for {@link λ0}.
      */
+    @FunctionalInterface
     public static interface Function0<R> extends λ0<R> {
     }
 
@@ -194,7 +196,7 @@ public final class Functions {
      * @param <R>  The return type of the function.
      */
     @FunctionalInterface
-    public static interface X1<T1, R> extends Λ<R> {
+    public static interface X1<T1, R> extends λ<R> {
 
         static <T> CheckedFunction1<T, T> identity() {
             return t -> t;
@@ -244,6 +246,7 @@ public final class Functions {
     /**
      * Alias for {@link X1}.
      */
+    @FunctionalInterface
     public static interface CheckedFunction1<T1, R> extends X1<T1, R> {
 
         static <T> CheckedFunction1<T, T> identity() {
@@ -251,6 +254,7 @@ public final class Functions {
         }
     }
 
+    @FunctionalInterface
     public static interface λ1<T1, R> extends CheckedFunction1<T1, R>, java.util.function.Function<T1, R> {
 
         static <T> Function1<T, T> identity() {
@@ -286,6 +290,7 @@ public final class Functions {
     /**
      * Alias for {@link λ1}.
      */
+    @FunctionalInterface
     public static interface Function1<T1, R> extends λ1<T1, R> {
 
         static <T> Function1<T, T> identity() {
@@ -294,7 +299,7 @@ public final class Functions {
     }
 
     @FunctionalInterface
-    public static interface X2<T1, T2, R> extends Λ<R> {
+    public static interface X2<T1, T2, R> extends λ<R> {
 
         R apply(T1 t1, T2 t2) throws Throwable;
 
@@ -329,9 +334,11 @@ public final class Functions {
     /**
      * Alias for {@link X2}.
      */
+    @FunctionalInterface
     public static interface CheckedFunction2<T1, T2, R> extends X2<T1, T2, R> {
     }
 
+    @FunctionalInterface
     public static interface λ2<T1, T2, R> extends CheckedFunction2<T1, T2, R>, java.util.function.BiFunction<T1, T2, R> {
 
         @Override
@@ -357,11 +364,12 @@ public final class Functions {
     /**
      * Alias for {@link λ2}.
      */
+    @FunctionalInterface
     public static interface Function2<T1, T2, R> extends λ2<T1, T2, R> {
     }
 
     @FunctionalInterface
-    public static interface X3<T1, T2, T3, R> extends Λ<R> {
+    public static interface X3<T1, T2, T3, R> extends λ<R> {
 
         R apply(T1 t1, T2 t2, T3 t3) throws Throwable;
 
@@ -396,9 +404,11 @@ public final class Functions {
     /**
      * Alias for {@link X3}.
      */
+    @FunctionalInterface
     public static interface CheckedFunction3<T1, T2, T3, R> extends X3<T1, T2, T3, R> {
     }
 
+    @FunctionalInterface
     public static interface λ3<T1, T2, T3, R> extends CheckedFunction3<T1, T2, T3, R> {
 
         @Override
@@ -424,11 +434,12 @@ public final class Functions {
     /**
      * Alias for {@link λ3}.
      */
+    @FunctionalInterface
     public static interface Function3<T1, T2, T3, R> extends λ3<T1, T2, T3, R> {
     }
 
     @FunctionalInterface
-    public static interface X4<T1, T2, T3, T4, R> extends Λ<R> {
+    public static interface X4<T1, T2, T3, T4, R> extends λ<R> {
 
         R apply(T1 t1, T2 t2, T3 t3, T4 t4) throws Throwable;
 
@@ -463,9 +474,11 @@ public final class Functions {
     /**
      * Alias for {@link X4}.
      */
+    @FunctionalInterface
     public static interface CheckedFunction4<T1, T2, T3, T4, R> extends X4<T1, T2, T3, T4, R> {
     }
 
+    @FunctionalInterface
     public static interface λ4<T1, T2, T3, T4, R> extends CheckedFunction4<T1, T2, T3, T4, R> {
 
         @Override
@@ -491,11 +504,12 @@ public final class Functions {
     /**
      * Alias for {@link λ4}.
      */
+    @FunctionalInterface
     public static interface Function4<T1, T2, T3, T4, R> extends λ4<T1, T2, T3, T4, R> {
     }
 
     @FunctionalInterface
-    public static interface X5<T1, T2, T3, T4, T5, R> extends Λ<R> {
+    public static interface X5<T1, T2, T3, T4, T5, R> extends λ<R> {
 
         R apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) throws Throwable;
 
@@ -530,9 +544,11 @@ public final class Functions {
     /**
      * Alias for {@link X5}.
      */
+    @FunctionalInterface
     public static interface CheckedFunction5<T1, T2, T3, T4, T5, R> extends X5<T1, T2, T3, T4, T5, R> {
     }
 
+    @FunctionalInterface
     public static interface λ5<T1, T2, T3, T4, T5, R> extends CheckedFunction5<T1, T2, T3, T4, T5, R> {
 
         @Override
@@ -558,11 +574,12 @@ public final class Functions {
     /**
      * Alias for {@link λ5}.
      */
+    @FunctionalInterface
     public static interface Function5<T1, T2, T3, T4, T5, R> extends λ5<T1, T2, T3, T4, T5, R> {
     }
 
     @FunctionalInterface
-    public static interface X6<T1, T2, T3, T4, T5, T6, R> extends Λ<R> {
+    public static interface X6<T1, T2, T3, T4, T5, T6, R> extends λ<R> {
 
         R apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6) throws Throwable;
 
@@ -597,9 +614,11 @@ public final class Functions {
     /**
      * Alias for {@link X6}.
      */
+    @FunctionalInterface
     public static interface CheckedFunction6<T1, T2, T3, T4, T5, T6, R> extends X6<T1, T2, T3, T4, T5, T6, R> {
     }
 
+    @FunctionalInterface
     public static interface λ6<T1, T2, T3, T4, T5, T6, R> extends CheckedFunction6<T1, T2, T3, T4, T5, T6, R> {
 
         @Override
@@ -625,11 +644,12 @@ public final class Functions {
     /**
      * Alias for {@link λ6}.
      */
+    @FunctionalInterface
     public static interface Function6<T1, T2, T3, T4, T5, T6, R> extends λ6<T1, T2, T3, T4, T5, T6, R> {
     }
 
     @FunctionalInterface
-    public static interface X7<T1, T2, T3, T4, T5, T6, T7, R> extends Λ<R> {
+    public static interface X7<T1, T2, T3, T4, T5, T6, T7, R> extends λ<R> {
 
         R apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7) throws Throwable;
 
@@ -664,9 +684,11 @@ public final class Functions {
     /**
      * Alias for {@link X7}.
      */
+    @FunctionalInterface
     public static interface CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> extends X7<T1, T2, T3, T4, T5, T6, T7, R> {
     }
 
+    @FunctionalInterface
     public static interface λ7<T1, T2, T3, T4, T5, T6, T7, R> extends CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> {
 
         @Override
@@ -692,11 +714,12 @@ public final class Functions {
     /**
      * Alias for {@link λ7}.
      */
+    @FunctionalInterface
     public static interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends λ7<T1, T2, T3, T4, T5, T6, T7, R> {
     }
 
     @FunctionalInterface
-    public static interface X8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends Λ<R> {
+    public static interface X8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<R> {
 
         R apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8) throws Throwable;
 
@@ -731,9 +754,11 @@ public final class Functions {
     /**
      * Alias for {@link X8}.
      */
+    @FunctionalInterface
     public static interface CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends X8<T1, T2, T3, T4, T5, T6, T7, T8, R> {
     }
 
+    @FunctionalInterface
     public static interface λ8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> {
 
         @Override
@@ -759,11 +784,12 @@ public final class Functions {
     /**
      * Alias for {@link λ8}.
      */
+    @FunctionalInterface
     public static interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ8<T1, T2, T3, T4, T5, T6, T7, T8, R> {
     }
 
     @FunctionalInterface
-    public static interface X9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> extends Λ<R> {
+    public static interface X9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> extends λ<R> {
 
         R apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9) throws Throwable;
 
@@ -798,9 +824,11 @@ public final class Functions {
     /**
      * Alias for {@link X9}.
      */
+    @FunctionalInterface
     public static interface CheckedFunction9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> extends X9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> {
     }
 
+    @FunctionalInterface
     public static interface λ9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> extends CheckedFunction9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> {
 
         @Override
@@ -826,11 +854,12 @@ public final class Functions {
     /**
      * Alias for {@link λ9}.
      */
+    @FunctionalInterface
     public static interface Function9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> extends λ9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> {
     }
 
     @FunctionalInterface
-    public static interface X10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> extends Λ<R> {
+    public static interface X10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> extends λ<R> {
 
         R apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10) throws Throwable;
 
@@ -867,9 +896,11 @@ public final class Functions {
     /**
      * Alias for {@link X10}.
      */
+    @FunctionalInterface
     public static interface CheckedFunction10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> extends X10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> {
     }
 
+    @FunctionalInterface
     public static interface λ10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> extends CheckedFunction10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> {
 
         @Override
@@ -897,11 +928,12 @@ public final class Functions {
     /**
      * Alias for {@link λ10}.
      */
+    @FunctionalInterface
     public static interface Function10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> extends λ10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> {
     }
 
     @FunctionalInterface
-    public static interface X11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, R> extends Λ<R> {
+    public static interface X11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, R> extends λ<R> {
 
         R apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11) throws Throwable;
 
@@ -938,9 +970,11 @@ public final class Functions {
     /**
      * Alias for {@link X11}.
      */
+    @FunctionalInterface
     public static interface CheckedFunction11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, R> extends X11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, R> {
     }
 
+    @FunctionalInterface
     public static interface λ11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, R> extends CheckedFunction11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, R> {
 
         @Override
@@ -968,11 +1002,12 @@ public final class Functions {
     /**
      * Alias for {@link λ11}.
      */
+    @FunctionalInterface
     public static interface Function11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, R> extends λ11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, R> {
     }
 
     @FunctionalInterface
-    public static interface X12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, R> extends Λ<R> {
+    public static interface X12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, R> extends λ<R> {
 
         R apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12) throws Throwable;
 
@@ -1007,6 +1042,7 @@ public final class Functions {
         }
     }
 
+    @FunctionalInterface
     public static interface λ12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, R> extends CheckedFunction12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, R> {
 
         @Override
@@ -1035,17 +1071,19 @@ public final class Functions {
     /**
      * Alias for {@link λ12}.
      */
+    @FunctionalInterface
     public static interface Function12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, R> extends λ12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, R> {
     }
 
     /**
      * Alias for {@link X12}.
      */
+    @FunctionalInterface
     public static interface CheckedFunction12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, R> extends X12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, R> {
     }
 
     @FunctionalInterface
-    public static interface X13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, R> extends Λ<R> {
+    public static interface X13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, R> extends λ<R> {
 
         R apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13) throws Throwable;
 
@@ -1083,9 +1121,11 @@ public final class Functions {
     /**
      * Alias for {@link X13}.
      */
+    @FunctionalInterface
     public static interface CheckedFunction13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, R> extends X13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, R> {
     }
 
+    @FunctionalInterface
     public static interface λ13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, R> extends CheckedFunction13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, R> {
 
         @Override
@@ -1114,6 +1154,7 @@ public final class Functions {
     /**
      * Alias for {@link λ13}.
      */
+    @FunctionalInterface
     public static interface Function13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, R> extends λ13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, R> {
     }
 
@@ -1125,7 +1166,7 @@ public final class Functions {
      * @param <U> Second argument type
      */
     @FunctionalInterface
-    public static interface CheckedBiConsumer<T, U> {
+    public static interface CheckedBiConsumer<T, U> extends Serializable {
 
         void accept(T t, U u) throws Throwable;
 
@@ -1168,7 +1209,7 @@ public final class Functions {
      * @param <U> Second argument type
      */
     @FunctionalInterface
-    public static interface CheckedBiPredicate<T, U> {
+    public static interface CheckedBiPredicate<T, U> extends Serializable {
 
         boolean test(T t, U u) throws Throwable;
 
@@ -1192,7 +1233,7 @@ public final class Functions {
      * Essentially the same as {@code CheckedFunction0<Boolean>}, or short {@code X0<Boolean>}.
      */
     @FunctionalInterface
-    public static interface CheckedBooleanSupplier {
+    public static interface CheckedBooleanSupplier extends Serializable {
 
         boolean getAsBoolean() throws Throwable;
     }
@@ -1204,7 +1245,7 @@ public final class Functions {
      * @param <T> Argument type
      */
     @FunctionalInterface
-    public static interface CheckedConsumer<T> {
+    public static interface CheckedConsumer<T> extends Serializable {
 
         void accept(T t) throws Throwable;
 
@@ -1219,7 +1260,7 @@ public final class Functions {
      * Essentially the same as {@code CheckedFunction2<Double, Double, Double>}, or short {@code X2<Double, Double, Double>}.
      */
     @FunctionalInterface
-    public static interface CheckedDoubleBinaryOperator {
+    public static interface CheckedDoubleBinaryOperator extends Serializable {
 
         double applyAsDouble(double left, double right) throws Throwable;
     }
@@ -1229,7 +1270,7 @@ public final class Functions {
      * Essentially the same as {@code CheckedFunction1<Double, Void>}, or short {@code X1<Double, Void>}.
      */
     @FunctionalInterface
-    public static interface CheckedDoubleConsumer {
+    public static interface CheckedDoubleConsumer extends Serializable {
 
         void accept(double value) throws Throwable;
 
@@ -1246,7 +1287,7 @@ public final class Functions {
      * @param <R> Return value type
      */
     @FunctionalInterface
-    public static interface CheckedDoubleFunction<R> {
+    public static interface CheckedDoubleFunction<R> extends Serializable {
 
         R apply(double value) throws Throwable;
     }
@@ -1256,7 +1297,7 @@ public final class Functions {
      * Essentially the same as {@code CheckedFunction1<Double, Boolean>}, or short {@code X1<Double, Boolean>}.
      */
     @FunctionalInterface
-    public static interface CheckedDoublePredicate {
+    public static interface CheckedDoublePredicate extends Serializable {
 
         boolean test(double value) throws Throwable;
 
@@ -1280,7 +1321,7 @@ public final class Functions {
      * Essentially the same as {@code CheckedFunction0<Double>}, or short {@code X0<Double>}.
      */
     @FunctionalInterface
-    public static interface CheckedDoubleSupplier {
+    public static interface CheckedDoubleSupplier extends Serializable {
 
         double getAsDouble() throws Throwable;
     }
@@ -1290,7 +1331,7 @@ public final class Functions {
      * Essentially the same as {@code CheckedFunction1<Double, Integer>}, or short {@code X1<Double, Integer>}.
      */
     @FunctionalInterface
-    public static interface CheckedDoubleToIntFunction {
+    public static interface CheckedDoubleToIntFunction extends Serializable {
 
         int applyAsInt(double value) throws Throwable;
     }
@@ -1300,7 +1341,7 @@ public final class Functions {
      * Essentially the same as {@code CheckedFunction1<Double, Long>}, or short {@code X1<Double, Long>}.
      */
     @FunctionalInterface
-    public static interface CheckedDoubleToLongFunction {
+    public static interface CheckedDoubleToLongFunction extends Serializable {
 
         long applyAsLong(double value) throws Throwable;
     }
@@ -1310,7 +1351,7 @@ public final class Functions {
      * Essentially the same as {@code CheckedFunction1<Double, Double>}, or short {@code X1<Double, Double>}.
      */
     @FunctionalInterface
-    public static interface CheckedDoubleUnaryOperator {
+    public static interface CheckedDoubleUnaryOperator extends Serializable {
 
         double applyAsDouble(double operand) throws Throwable;
 
@@ -1349,7 +1390,7 @@ public final class Functions {
      * Essentially the same as {@code CheckedFunction2<Integer, Integer, Integer>}, or short {@code X2<Integer, Integer, Integer>}.
      */
     @FunctionalInterface
-    public static interface CheckedIntBinaryOperator {
+    public static interface CheckedIntBinaryOperator extends Serializable {
 
         int applyAsInt(int left, int right) throws Throwable;
     }
@@ -1359,7 +1400,7 @@ public final class Functions {
      * Essentially the same as {@code CheckedFunction1<Integer, Void>}, or short {@code X1<Integer, Void>}.
      */
     @FunctionalInterface
-    public static interface CheckedIntConsumer {
+    public static interface CheckedIntConsumer extends Serializable {
 
         void accept(int value) throws Throwable;
 
@@ -1376,7 +1417,7 @@ public final class Functions {
      * @param <R> Return value type
      */
     @FunctionalInterface
-    public static interface CheckedIntFunction<R> {
+    public static interface CheckedIntFunction<R> extends Serializable {
 
         R apply(int value) throws Throwable;
     }
@@ -1386,7 +1427,7 @@ public final class Functions {
      * Essentially the same as {@code CheckedFunction1<Integer, Boolean>}, or short {@code X1<Integer, Boolean>}.
      */
     @FunctionalInterface
-    public static interface CheckedIntPredicate {
+    public static interface CheckedIntPredicate extends Serializable {
 
         boolean test(int value) throws Throwable;
 
@@ -1410,7 +1451,7 @@ public final class Functions {
      * Essentially the same as {@code CheckedFunction0<Integer>}, or short {@code X0<Integer>}.
      */
     @FunctionalInterface
-    public static interface CheckedIntSupplier {
+    public static interface CheckedIntSupplier extends Serializable {
 
         int getAsInt() throws Throwable;
     }
@@ -1420,7 +1461,7 @@ public final class Functions {
      * Essentially the same as {@code CheckedFunction1<Integer, Double>}, or short {@code X1<Integer, Double>}.
      */
     @FunctionalInterface
-    public static interface CheckedIntToDoubleFunction {
+    public static interface CheckedIntToDoubleFunction extends Serializable {
 
         double applyAsDouble(int value) throws Throwable;
     }
@@ -1430,7 +1471,7 @@ public final class Functions {
      * Essentially the same as {@code CheckedFunction1<Integer, Long>}, or short {@code X1<Integer, Long>}.
      */
     @FunctionalInterface
-    public static interface CheckedIntToLongFunction {
+    public static interface CheckedIntToLongFunction extends Serializable {
 
         long applyAsLong(int value) throws Throwable;
     }
@@ -1440,7 +1481,7 @@ public final class Functions {
      * Essentially the same as {@code CheckedFunction1<Integer, Integer>}, or short {@code X1<Integer, Integer>}.
      */
     @FunctionalInterface
-    public static interface CheckedIntUnaryOperator {
+    public static interface CheckedIntUnaryOperator extends Serializable {
 
         int applyAsInt(int operand) throws Throwable;
 
@@ -1464,7 +1505,7 @@ public final class Functions {
      * Essentially the same as {@code CheckedFunction2<Long, Long, Long>}, or short {@code X2<Long, Long, Long>}.
      */
     @FunctionalInterface
-    public static interface CheckedLongBinaryOperator {
+    public static interface CheckedLongBinaryOperator extends Serializable {
 
         long applyAsInt(long left, long right) throws Throwable;
     }
@@ -1474,7 +1515,7 @@ public final class Functions {
      * Essentially the same as {@code CheckedFunction1<Long, Void>}, or short {@code X1<Long, Void>}.
      */
     @FunctionalInterface
-    public static interface CheckedLongConsumer {
+    public static interface CheckedLongConsumer extends Serializable {
 
         void accept(long value) throws Throwable;
 
@@ -1491,7 +1532,7 @@ public final class Functions {
      * @param <R> Return value type
      */
     @FunctionalInterface
-    public static interface CheckedLongFunction<R> {
+    public static interface CheckedLongFunction<R> extends Serializable {
 
         R apply(long value) throws Throwable;
     }
@@ -1501,7 +1542,7 @@ public final class Functions {
      * Essentially the same as {@code CheckedFunction1<Long, Boolean>}, or short {@code X1<Long, Boolean>}.
      */
     @FunctionalInterface
-    public static interface CheckedLongPredicate {
+    public static interface CheckedLongPredicate extends Serializable {
 
         boolean test(long value) throws Throwable;
 
@@ -1525,7 +1566,7 @@ public final class Functions {
      * Essentially the same as {@code CheckedFunction0<Long>}, or short {@code X0<Long>}.
      */
     @FunctionalInterface
-    public static interface CheckedLongSupplier {
+    public static interface CheckedLongSupplier extends Serializable {
 
         long getAsLong() throws Throwable;
     }
@@ -1535,7 +1576,7 @@ public final class Functions {
      * Essentially the same as {@code CheckedFunction1<Long, Double>}, or short {@code X1<Long, Double>}.
      */
     @FunctionalInterface
-    public static interface CheckedLongToDoubleFunction {
+    public static interface CheckedLongToDoubleFunction extends Serializable {
 
         double applyAsDouble(long value) throws Throwable;
     }
@@ -1545,7 +1586,7 @@ public final class Functions {
      * Essentially the same as {@code CheckedFunction1<Long, Integer>}, or short {@code X1<Long, Integer>}.
      */
     @FunctionalInterface
-    public static interface CheckedLongToIntFunction {
+    public static interface CheckedLongToIntFunction extends Serializable {
 
         int applyAsInt(long value) throws Throwable;
     }
@@ -1555,7 +1596,7 @@ public final class Functions {
      * Essentially the same as {@code CheckedFunction1<Long, Long>}, or short {@code X1<Long, Long>}.
      */
     @FunctionalInterface
-    public static interface CheckedLongUnaryOperator {
+    public static interface CheckedLongUnaryOperator extends Serializable {
 
         long applyAsLong(long operand) throws Throwable;
 
@@ -1581,7 +1622,7 @@ public final class Functions {
      * @param <T> Argument type
      */
     @FunctionalInterface
-    public static interface CheckedObjDoubleConsumer<T> {
+    public static interface CheckedObjDoubleConsumer<T> extends Serializable {
 
         void accept(T t, double value) throws Throwable;
     }
@@ -1593,7 +1634,7 @@ public final class Functions {
      * @param <T> Argument type
      */
     @FunctionalInterface
-    public static interface CheckedObjIntConsumer<T> {
+    public static interface CheckedObjIntConsumer<T> extends Serializable {
 
         void accept(T t, int value) throws Throwable;
     }
@@ -1605,7 +1646,7 @@ public final class Functions {
      * @param <T> Argument type
      */
     @FunctionalInterface
-    public static interface CheckedObjLongConsumer<T> {
+    public static interface CheckedObjLongConsumer<T> extends Serializable {
 
         void accept(T t, long value) throws Throwable;
     }
@@ -1617,7 +1658,7 @@ public final class Functions {
      * @param <T> Argument type
      */
     @FunctionalInterface
-    public static interface CheckedPredicate<T> {
+    public static interface CheckedPredicate<T> extends Serializable {
 
         static <T> CheckedPredicate<T> isEqual(Object targetRef) {
             return (null == targetRef)
@@ -1649,7 +1690,7 @@ public final class Functions {
      * @param <R> Return type
      */
     @FunctionalInterface
-    public static interface CheckedSupplier<R> {
+    public static interface CheckedSupplier<R> extends Serializable {
 
         R get() throws Throwable;
     }
@@ -1662,7 +1703,7 @@ public final class Functions {
      * @param <U> Second argument type
      */
     @FunctionalInterface
-    public static interface CheckedToDoubleBiFunction<T, U> {
+    public static interface CheckedToDoubleBiFunction<T, U> extends Serializable {
 
         double applyAsDouble(T t, U u) throws Throwable;
     }
@@ -1674,7 +1715,7 @@ public final class Functions {
      * @param <T> Argument type
      */
     @FunctionalInterface
-    public static interface CheckedToDoubleFunction<T> {
+    public static interface CheckedToDoubleFunction<T> extends Serializable {
 
         double applyAsDouble(T value) throws Throwable;
     }
@@ -1687,7 +1728,7 @@ public final class Functions {
      * @param <U> Second argument type
      */
     @FunctionalInterface
-    public static interface CheckedToIntBiFunction<T, U> {
+    public static interface CheckedToIntBiFunction<T, U> extends Serializable {
 
         int applyAsInt(T t, U u) throws Throwable;
     }
@@ -1699,7 +1740,7 @@ public final class Functions {
      * @param <T> Argument type
      */
     @FunctionalInterface
-    public static interface CheckedToIntFunction<T> {
+    public static interface CheckedToIntFunction<T> extends Serializable {
 
         int applyAsInt(T value) throws Throwable;
     }
@@ -1712,7 +1753,7 @@ public final class Functions {
      * @param <U> Second argument type
      */
     @FunctionalInterface
-    public static interface CheckedToLongBiFunction<T, U> {
+    public static interface CheckedToLongBiFunction<T, U> extends Serializable {
 
         long applyAsLong(T t, U u) throws Throwable;
     }
@@ -1724,7 +1765,7 @@ public final class Functions {
      * @param <T> Argument type
      */
     @FunctionalInterface
-    public static interface CheckedToLongFunction<T> {
+    public static interface CheckedToLongFunction<T> extends Serializable {
 
         long applyAsLong(T value) throws Throwable;
     }
@@ -1748,7 +1789,7 @@ public final class Functions {
      * Essentially the same as {@code CheckedFunction0<Void>}, or short {@code X0<Void>}.
      */
     @FunctionalInterface
-    public static interface CheckedRunnable {
+    public static interface CheckedRunnable extends Serializable {
 
         void run() throws Throwable;
     }
@@ -1760,7 +1801,7 @@ public final class Functions {
      * @param <R> Return value type
      */
     @FunctionalInterface
-    public static interface BooleanFunction<R> {
+    public static interface BooleanFunction<R> extends Serializable {
 
         R apply(boolean b);
     }
@@ -1772,7 +1813,7 @@ public final class Functions {
      * @param <R> Return value type
      */
     @FunctionalInterface
-    public static interface CheckedBooleanFunction<R> {
+    public static interface CheckedBooleanFunction<R> extends Serializable {
 
         R apply(boolean b) throws Throwable;
     }
@@ -1784,7 +1825,7 @@ public final class Functions {
      * @param <R> Return value type
      */
     @FunctionalInterface
-    public static interface ByteFunction<R> {
+    public static interface ByteFunction<R> extends Serializable {
 
         R apply(byte b);
     }
@@ -1796,7 +1837,7 @@ public final class Functions {
      * @param <R> Return value type
      */
     @FunctionalInterface
-    public static interface CheckedByteFunction<R> {
+    public static interface CheckedByteFunction<R> extends Serializable {
 
         R apply(boolean b) throws Throwable;
     }
@@ -1808,7 +1849,7 @@ public final class Functions {
      * @param <R> Return value type
      */
     @FunctionalInterface
-    public static interface CharFunction<R> {
+    public static interface CharFunction<R> extends Serializable {
 
         R apply(char c);
     }
@@ -1820,7 +1861,7 @@ public final class Functions {
      * @param <R> Return value type
      */
     @FunctionalInterface
-    public static interface CheckedCharFunction<R> {
+    public static interface CheckedCharFunction<R> extends Serializable {
 
         R apply(char c) throws Throwable;
     }
@@ -1832,7 +1873,7 @@ public final class Functions {
      * @param <R> Return value type
      */
     @FunctionalInterface
-    public static interface FloatFunction<R> {
+    public static interface FloatFunction<R> extends Serializable {
         R apply(float f);
     }
 
@@ -1843,7 +1884,7 @@ public final class Functions {
      * @param <R> Return value type
      */
     @FunctionalInterface
-    public static interface CheckedFloatFunction<R> {
+    public static interface CheckedFloatFunction<R> extends Serializable {
 
         R apply(float f) throws Throwable;
     }
@@ -1855,7 +1896,7 @@ public final class Functions {
      * @param <R> Return value type
      */
     @FunctionalInterface
-    public static interface ShortFunction<R> {
+    public static interface ShortFunction<R> extends Serializable {
         R apply(short s);
     }
 
@@ -1866,7 +1907,7 @@ public final class Functions {
      * @param <R> Return value type
      */
     @FunctionalInterface
-    public static interface CheckedShortFunction<R> {
+    public static interface CheckedShortFunction<R> extends Serializable {
 
         R apply(short s) throws Throwable;
     }
