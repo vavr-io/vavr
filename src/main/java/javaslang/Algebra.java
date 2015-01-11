@@ -114,15 +114,6 @@ public final class Algebra {
 	 */
 	public static interface Monad<A, M extends HigherKinded<?, M>> extends Functor<A>, HigherKinded<A, M> {
 
-        /**
-         * Monad composition, also known as Kleisli composition.
-         *
-         * @see <a href="http://scabl.blogspot.de/2013/03/monads-in-scala-2.html">Monads in Scala Part Two</a>
-         */
-        default <B, C> Function<? super A, Monad<C, M>> compose(Function<? super B, Monad<C, M>> f, Function<? super A, Monad<B, M>> g) {
-            return a -> g.apply(a).flatMap(f::apply);
-        }
-
         <B, MONAD extends HigherKinded<B, M>> Monad<B, M> flatMap(Function<? super A, MONAD> f);
 	}
 
