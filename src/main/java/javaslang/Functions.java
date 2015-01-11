@@ -17,7 +17,8 @@ import java.util.Objects;
 /**
  * The class of reflective checked and unchecked functions with a specific return types.
  * <p/>
- * The type <strong>Λ</strong> is the mother of all functions here.<br/>
+ * The internal type <strong>Λ</strong> is the mother of all functions.
+ * <p/>
  * There are checked functions {@linkplain CheckedFunction0} to {@linkplain CheckedFunction13}, short: {@linkplain X0} to {@linkplain X13}
  * (<em>Note: X stands for 'eXception'. The lambda symbol λ is hidden in X, just leave out the upper right line</em>).
  * Checked functions throw Throwable.<br/>
@@ -72,13 +73,16 @@ public final class Functions {
     }
 
     /**
-     * This is a general definition of a checked function of unknown parameters and a return value of type R.
-     * A checked function may throw an exception. The exception type cannot be a generic type parameter because
-     * when composing functions, we cannot say anything about the resulting exception.
+     * This is an internal, general definition of a checked function of unknown parameters and a return value of type R.
+     * A checked function may throw an exception. The exception type is not a generic type parameter because
+     * when composing functions, we cannot say anything else about the resulting type of exception than that it is
+     * a Throwable.
+     * <p/>
+     * This class is intended to be used internally.
      *
      * @param <R> Return type of the checked function.
      */
-    public static interface Λ<R> extends Serializable {
+    static interface Λ<R> extends Serializable {
 
         /**
          * @return the numper of function arguments.
