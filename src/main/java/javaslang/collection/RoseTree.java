@@ -9,7 +9,6 @@ import javaslang.Tuple;
 import javaslang.Tuple.*;
 
 import java.io.*;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -49,12 +48,6 @@ public interface RoseTree<T> extends Tree<T> {
 
     @Override
     List<NonNil<T>> getChildren();
-
-    @Override
-    default Iterator<T> iterator() {
-        // TODO: create an iterator based on an Ordering which is part of the Tree instance
-        return flatten().iterator();
-    }
 
     @SuppressWarnings("unchecked")
     @Override

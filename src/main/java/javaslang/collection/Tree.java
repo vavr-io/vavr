@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Queue;
+import java.util.function.Function;
 
 public interface Tree<T> extends Functor<T>, ValueObject {
 
@@ -130,7 +131,7 @@ public interface Tree<T> extends Functor<T>, ValueObject {
         } else {
             class Local {
                 Stream<T> preOrder(Tree<T> tree) {
-                    return new Stream.Cons<>(getValue(), () -> Stream.of(tree.getChildren()).flatMap(Local.this::preOrder));
+                    return new Stream.Cons<>(tree.getValue(), () -> Stream.of(tree.getChildren()).flatMap(Local.this::preOrder));
                 }
             }
             return new Local().preOrder(this).iterator();
@@ -191,6 +192,9 @@ public interface Tree<T> extends Functor<T>, ValueObject {
             }
         }
     }
+
+    @Override
+    <U> Tree<U> map(Function<? super T, ? extends U> mapper);
 
     default String toLispString() {
         class Local {

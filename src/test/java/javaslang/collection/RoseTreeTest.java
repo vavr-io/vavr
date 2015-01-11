@@ -5,8 +5,22 @@
  */
 package javaslang.collection;
 
-public class RoseTreeTest {
+public class RoseTreeTest extends AbstractTreeTest {
 
-    // TODO
+    final RoseTree<Integer> tree = RoseTree.branch(1, RoseTree.branch(2, RoseTree.branch(4, RoseTree.leaf(7)), RoseTree.leaf(5)), RoseTree.branch(3, RoseTree.branch(6, RoseTree.leaf(8), RoseTree.leaf(9))));
 
+    @Override
+    protected RoseTree<Integer> nil() {
+        return RoseTree.nil();
+    }
+
+    @Override
+    protected RoseTree<Integer> leaf() {
+        return RoseTree.leaf(0);
+    }
+
+    @Override
+    protected RoseTree<Integer> tree() {
+        return tree;
+    }
 }
