@@ -7,12 +7,10 @@ package javaslang.monad;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.function.*;
 
 import javaslang.Tuple;
+import javaslang.Tuple.*;
 import javaslang.ValueObject;
 import javaslang.monad.Option.None;
 import javaslang.monad.Option.Some;
@@ -94,7 +92,7 @@ public interface Either<L, R> extends ValueObject {
 		}
 
 		@Override
-		public Tuple.Tuple1<L> unapply() {
+		public Tuple1<L> unapply() {
 			return Tuple.of(left);
 		}
 
@@ -135,7 +133,7 @@ public interface Either<L, R> extends ValueObject {
 		}
 
 		@Override
-		public Tuple.Tuple1<R> unapply() {
+		public Tuple1<R> unapply() {
 			return Tuple.of(right);
 		}
 

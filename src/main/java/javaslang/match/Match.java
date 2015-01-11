@@ -15,7 +15,7 @@ import java.util.function.LongFunction;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import javaslang.Functions.λ1;
+import javaslang.Functions.*;
 import javaslang.monad.Option;
 import javaslang.monad.Option.None;
 import javaslang.monad.Option.Some;
@@ -92,65 +92,6 @@ public final class Match<R> implements Function<Object, R> {
 		}
 		return defaultOption.orElseThrow(() -> new MatchError(obj)).get();
 	}
-
-	// -- lambda types for cases
-
-	/**
-	 * Represents a function that accepts a boolean-valued argument and produces a result. This is the {@code boolean}
-	 * -consuming primitive specialization for {@link Function}.
-	 *
-	 * @param <R> the type of the result of the function
-	 */
-	@FunctionalInterface
-	public static interface BooleanFunction<R> {
-		R apply(boolean b);
-	}
-
-	/**
-	 * Represents a function that accepts a byte-valued argument and produces a result. This is the {@code byte}
-	 * -consuming primitive specialization for {@link Function}.
-	 *
-	 * @param <R> the type of the result of the function
-	 */
-	@FunctionalInterface
-	public static interface ByteFunction<R> {
-		R apply(byte b);
-	}
-
-	/**
-	 * Represents a function that accepts a char-valued argument and produces a result. This is the {@code char}
-	 * -consuming primitive specialization for {@link Function}.
-	 *
-	 * @param <R> the type of the result of the function
-	 */
-	@FunctionalInterface
-	public static interface CharFunction<R> {
-		R apply(char c);
-	}
-
-	/**
-	 * Represents a function that accepts a float-valued argument and produces a result. This is the {@code float}
-	 * -consuming primitive specialization for {@link Function}.
-	 *
-	 * @param <R> the type of the result of the function
-	 */
-	@FunctionalInterface
-	public static interface FloatFunction<R> {
-		R apply(float f);
-	}
-
-	/**
-	 * Represents a function that accepts a short-valued argument and produces a result. This is the {@code short}
-	 * -consuming primitive specialization for {@link Function}.
-	 *
-	 * @param <R> the type of the result of the function
-	 */
-	@FunctionalInterface
-	public static interface ShortFunction<R> {
-		R apply(short s);
-	}
-
-	// -- builder
 
 	public static class Builder<R> extends OrElseBuilder<R> {
 

@@ -5,16 +5,9 @@
  */
 package javaslang.match;
 
-import java.util.function.DoubleFunction;
-import java.util.function.IntFunction;
-import java.util.function.LongFunction;
+import java.util.function.*;
 
-import javaslang.Functions.λ1;
-import javaslang.match.Match.BooleanFunction;
-import javaslang.match.Match.ByteFunction;
-import javaslang.match.Match.CharFunction;
-import javaslang.match.Match.FloatFunction;
-import javaslang.match.Match.ShortFunction;
+import javaslang.Functions.*;
 
 /**
  * Extension methods for {@link Match}.

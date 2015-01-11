@@ -1752,4 +1752,122 @@ public final class Functions {
 
         void run() throws Throwable;
     }
+
+    /**
+     * Unchecked boolean to R function.
+     * Essentially the same as {@code Function1<Boolean, R>}, or short {@code λ1<Boolean, R>}.
+     *
+     * @param <R> Return value type
+     */
+    @FunctionalInterface
+    public static interface BooleanFunction<R> {
+
+        R apply(boolean b);
+    }
+
+    /**
+     * Checked version of java.util.function.BooleanFunction.
+     * Essentially the same as {@code CheckedFunction1<Boolean, R>}, or short {@code X1<Boolean, R>}.
+     *
+     * @param <R> Return value type
+     */
+    @FunctionalInterface
+    public static interface CheckedBooleanFunction<R> {
+
+        R apply(boolean b) throws Throwable;
+    }
+
+    /**
+     * Unchecked byte to R function.
+     * Essentially the same as {@code Function1<Byte, R>}, or short {@code λ1<Byte, R>}.
+     *
+     * @param <R> Return value type
+     */
+    @FunctionalInterface
+    public static interface ByteFunction<R> {
+
+        R apply(byte b);
+    }
+
+    /**
+     * Checked version of java.util.function.ByteFunction.
+     * Essentially the same as {@code CheckedFunction1<Byte, R>}, or short {@code X1<Byte, R>}.
+     *
+     * @param <R> Return value type
+     */
+    @FunctionalInterface
+    public static interface CheckedByteFunction<R> {
+
+        R apply(boolean b) throws Throwable;
+    }
+
+    /**
+     * Unchecked char to R function.
+     * Essentially the same as {@code Function1<Character, R>}, or short {@code λ1<Character, R>}.
+     *
+     * @param <R> Return value type
+     */
+    @FunctionalInterface
+    public static interface CharFunction<R> {
+
+        R apply(char c);
+    }
+
+    /**
+     * Checked version of java.util.function.CharFunction.
+     * Essentially the same as {@code CheckedFunction1<Character, R>}, or short {@code X1<Character, R>}.
+     *
+     * @param <R> Return value type
+     */
+    @FunctionalInterface
+    public static interface CheckedCharFunction<R> {
+
+        R apply(char c) throws Throwable;
+    }
+
+    /**
+     * Unchecked float to R function.
+     * Essentially the same as {@code Function1<Float, R>}, or short {@code λ1<Float, R>}.
+     *
+     * @param <R> Return value type
+     */
+    @FunctionalInterface
+    public static interface FloatFunction<R> {
+        R apply(float f);
+    }
+
+    /**
+     * Checked version of java.util.function.FloatFunction.
+     * Essentially the same as {@code CheckedFunction1<Float, R>}, or short {@code X1<Float, R>}.
+     *
+     * @param <R> Return value type
+     */
+    @FunctionalInterface
+    public static interface CheckedFloatFunction<R> {
+
+        R apply(float f) throws Throwable;
+    }
+
+    /**
+     * Unchecked short to R function.
+     * Essentially the same as {@code Function1<Short, R>}, or short {@code λ1<Short, R>}.
+     *
+     * @param <R> Return value type
+     */
+    @FunctionalInterface
+    public static interface ShortFunction<R> {
+        R apply(short s);
+    }
+
+    /**
+     * Checked version of java.util.function.ShortFunction.
+     * Essentially the same as {@code CheckedFunction1<Short, R>}, or short {@code X1<Short, R>}.
+     *
+     * @param <R> Return value type
+     */
+    @FunctionalInterface
+    public static interface CheckedShortFunction<R> {
+
+        R apply(short s) throws Throwable;
+    }
 }

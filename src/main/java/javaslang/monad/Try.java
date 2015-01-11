@@ -7,14 +7,12 @@ package javaslang.monad;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.function.*;
 
-import javaslang.Algebra;
-import javaslang.Algebra.Monad;
+import javaslang.Algebra.*;
+import javaslang.Functions.*;
 import javaslang.Tuple;
+import javaslang.Tuple.*;
 import javaslang.ValueObject;
 import javaslang.monad.Option.None;
 import javaslang.monad.Option.Some;
@@ -27,7 +25,7 @@ import javaslang.monad.Valences.Bivalent;
  */
 public interface Try<T> extends Monad<T, Try<?>>, ValueObject, Bivalent<T, Throwable> {
 
-	static <T> Try<T> of(Try.CheckedSupplier<T> supplier) {
+	static <T> Try<T> of(CheckedSupplier<T> supplier) {
 		try {
 			return new Success<>(supplier.get());
 		} catch (Throwable t) {
@@ -35,7 +33,7 @@ public interface Try<T> extends Monad<T, Try<?>>, ValueObject, Bivalent<T, Throw
 		}
 	}
 
-	static <T> Try<Void> run(Try.CheckedRunnable runnable) {
+	static <T> Try<Void> run(CheckedRunnable runnable) {
 		try {
 			runnable.run();
 			return new Success<>(null); // null represents the absence of an value, i.e. Void
@@ -62,7 +60,7 @@ public interface Try<T> extends Monad<T, Try<?>>, ValueObject, Bivalent<T, Throw
 	<U> Try<U> map(Function<? super T, ? extends U> mapper);
 
 	@Override
-	<U, TRY extends Algebra.HigherKinded<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper);
+	<U, TRY extends HigherKinded<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper);
 
 	@Override
 	boolean equals(Object o);
@@ -184,7 +182,7 @@ public interface Try<T> extends Monad<T, Try<?>>, ValueObject, Bivalent<T, Throw
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <U, TRY extends Algebra.HigherKinded<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper) {
+		public <U, TRY extends HigherKinded<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper) {
 			try {
 				return (Try<U>) mapper.apply(value);
 			} catch (Throwable t) {
@@ -193,7 +191,7 @@ public interface Try<T> extends Monad<T, Try<?>>, ValueObject, Bivalent<T, Throw
 		}
 
 		@Override
-		public Tuple.Tuple1<T> unapply() {
+		public Tuple1<T> unapply() {
 			return Tuple.of(value);
 		}
 
@@ -335,14 +333,14 @@ public interface Try<T> extends Monad<T, Try<?>>, ValueObject, Bivalent<T, Throw
 		}
 
 		@Override
-		public <U, TRY extends Algebra.HigherKinded<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper) {
+		public <U, TRY extends HigherKinded<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper) {
 			@SuppressWarnings("unchecked")
 			final Try<U> result = (Try<U>) this;
 			return result;
 		}
 
 		@Override
-		public Tuple.Tuple1<Throwable> unapply() {
+		public Tuple1<Throwable> unapply() {
 			return Tuple.of(cause.getCause());
 		}
 
@@ -405,7 +403,7 @@ public interface Try<T> extends Monad<T, Try<?>>, ValueObject, Bivalent<T, Throw
 			public abstract boolean isFatal();
 
 			@Override
-			public Tuple.Tuple1<Throwable> unapply() {
+			public Tuple1<Throwable> unapply() {
 				return Tuple.of(super.getCause());
 			}
 
@@ -425,7 +423,7 @@ public interface Try<T> extends Monad<T, Try<?>>, ValueObject, Bivalent<T, Throw
 			 * 
 			 * @param t A Throwable
 			 * @return A {@link Fatal}, if t is fatal, a {@link NonFatal} otherwise.
-			 * @throws javaslang.Require.UnsatisfiedRequirementException
+			 * @throws java.lang.NullPointerException if t is null
 			 */
 			public static Cause of(Throwable t) {
 				Objects.requireNonNull(t, "Throwable is null");
@@ -470,38 +468,5 @@ public interface Try<T> extends Monad<T, Try<?>>, ValueObject, Bivalent<T, Throw
 				return false;
 			}
 		}
-	}
-
-	// -- helpers
-
-	/**
-	 * Used to initialize a Try calling {@link Try#run(Try.CheckedRunnable)}.
-	 */
-	@FunctionalInterface
-	static interface CheckedRunnable {
-
-		/**
-		 * Produces side-effects only, i.e. returns no value.
-		 *
-		 * @throws java.lang.Throwable if an error occurs.
-		 */
-		void run() throws Throwable;
-	}
-
-	/**
-	 * Used to initialize a Try calling {@link Try#of(Try.CheckedSupplier)}.
-	 *
-	 * @param <T> Type of supplied object.
-	 */
-	@FunctionalInterface
-	static interface CheckedSupplier<T> {
-
-		/**
-		 * Gets a result or throws a Throwable.
-		 *
-		 * @return a result
-		 * @throws java.lang.Throwable if an error occurs.
-		 */
-		T get() throws Throwable;
 	}
 }
