@@ -10,6 +10,8 @@ import org.junit.Test;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
+import static javaslang.Serializables.deserialize;
+import static javaslang.Serializables.serialize;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -225,6 +227,11 @@ public abstract class AbstractTreeTest {
     // -- map
 
     @Test
+    public void shouldMapNil() {
+        assertThat(nil().map(i -> i)).isEqualTo(nil());
+    }
+
+    @Test
     public void shouldMapTree() {
         assertThat(tree().map(i -> (char) (i + 64)).toLispString()).isEqualTo("('A' ('B' ('D' 'G') 'E') ('C' ('F' 'H' 'I')))");
     }
@@ -251,5 +258,27 @@ public abstract class AbstractTreeTest {
     @Test
     public void shouldConvertNonNilToIndentedString() {
         assertThat(tree().toIndentedString().replaceAll("\\r", "")).isEqualTo("\n1\n  2\n    4\n      7\n    5\n  3\n    6\n      8\n      9");
+    }
+
+    // -- Serializable interface
+
+    @Test
+    public void shouldSerializeDeserializeNil() {
+        final Object actual = deserialize(serialize(nil()));
+        final Object expected = nil();
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldPreserveSingletonInstanceOnDeserialization() {
+        final boolean actual = deserialize(serialize(nil())) == nil();
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void shouldSerializeDeserializeNonNil() {
+        final Object actual = deserialize(serialize(tree()));
+        final Object expected = tree();
+        assertThat(actual).isEqualTo(expected);
     }
 }
