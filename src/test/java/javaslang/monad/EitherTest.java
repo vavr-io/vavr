@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-import javaslang.AssertionsExtensions;
-import javaslang.AssertionsExtensions.CheckedRunnable;
 import javaslang.Tuple;
 import javaslang.monad.Either.Left;
 import javaslang.monad.Either.LeftProjection;
@@ -109,20 +107,6 @@ public class EitherTest {
 		assertThat(actual).isEqualTo(2);
 	}
 
-	// orElseGet(Supplier)
-
-	@Test
-	public void shouldReturnLeftWhenOrElseGetGivenSupplierOnLeftProjectionOfLeft() {
-		final Integer actual = new Left<Integer, String>(1).left().orElseGet(() -> 2);
-		assertThat(actual).isEqualTo(1);
-	}
-
-	@Test
-	public void shouldReturnOtherWhenOrElseGetGivenSupplierOnLeftProjectionOfRight() {
-		final Integer actual = new Right<Integer, String>("1").left().orElseGet(() -> 2);
-		assertThat(actual).isEqualTo(2);
-	}
-
 	// orElseGet(Function)
 
 	@Test
@@ -155,19 +139,6 @@ public class EitherTest {
 			actual[0] = true;
 		});
 		assertThat(actual[0]).isTrue();
-	}
-
-	// orElseThrow(Supplier)
-
-	@Test
-	public void shouldReturnLeftWhenOrElseThrowWithSupplierOnLeftProjectionOfLeft() {
-		final Integer actual = new Left<Integer, String>(1).left().orElseThrow(() -> new RuntimeException("x"));
-		assertThat(actual).isEqualTo(1);
-	}
-
-	@Test(expected = RuntimeException.class)
-	public void shouldThrowWhenOrElseThrowWithSupplierOnLeftProjectionOfRight() {
-		new Right<Integer, String>("1").left().orElseThrow(() -> new RuntimeException("x"));
 	}
 
 	// orElseThrow(Function)
@@ -431,20 +402,6 @@ public class EitherTest {
 		assertThat(actual).isEqualTo(2);
 	}
 
-	// orElseGet(Supplier)
-
-	@Test
-	public void shouldReturnRightWhenOrElseGetGivenSupplierOnRightProjectionOfRight() {
-		final Integer actual = new Right<String, Integer>(1).right().orElseGet(() -> 2);
-		assertThat(actual).isEqualTo(1);
-	}
-
-	@Test
-	public void shouldReturnOtherWhenOrElseGetGivenSupplierOnRightProjectionOfLeft() {
-		final Integer actual = new Left<String, Integer>("1").right().orElseGet(() -> 2);
-		assertThat(actual).isEqualTo(2);
-	}
-
 	// orElseGet(Function)
 
 	@Test
@@ -473,19 +430,6 @@ public class EitherTest {
 		final boolean[] actual = new boolean[] { false };
 		new Left<String, Integer>("1").right().orElseRun(s -> { actual[0] = true; });
 		assertThat(actual[0]).isTrue();
-	}
-
-	// orElseThrow(Supplier)
-
-	@Test
-	public void shouldReturnRightWhenOrElseThrowWithSupplierOnRightProjectionOfRight() {
-		final Integer actual = new Right<String, Integer>(1).right().orElseThrow(() -> new RuntimeException("x"));
-		assertThat(actual).isEqualTo(1);
-	}
-
-	@Test(expected = RuntimeException.class)
-	public void shouldThrowWhenOrElseThrowWithSupplierOnRightProjectionOfLeft() {
-		new Left<String, Integer>("1").right().orElseThrow(() -> new RuntimeException("x"));
 	}
 
 	// orElseThrow(Function)

@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import javaslang.AssertionsExtensions;
 import javaslang.Serializables;
 import javaslang.Tuple;
 import javaslang.monad.Try.Failure;

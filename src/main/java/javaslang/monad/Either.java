@@ -177,11 +177,6 @@ public interface Either<L, R> extends ValueObject {
 		}
 
 		@Override
-		public L orElseGet(Supplier<? extends L> other) {
-			return either.isLeft() ? asLeft() : other.get();
-		}
-
-		@Override
 		public L orElseGet(Function<? super R, ? extends L> other) {
 			if (either.isLeft()) {
 				return asLeft();
@@ -194,15 +189,6 @@ public interface Either<L, R> extends ValueObject {
 		public void orElseRun(Consumer<? super R> action) {
 			if (either.isRight()) {
 				action.accept(asRight());
-			}
-		}
-
-		@Override
-		public <X extends Throwable> L orElseThrow(Supplier<X> exceptionSupplier) throws X {
-			if (either.isLeft()) {
-				return asLeft();
-			} else {
-				throw exceptionSupplier.get();
 			}
 		}
 
@@ -312,11 +298,6 @@ public interface Either<L, R> extends ValueObject {
 		}
 
 		@Override
-		public R orElseGet(Supplier<? extends R> other) {
-			return either.isRight() ? asRight() : other.get();
-		}
-
-		@Override
 		public R orElseGet(Function<? super L, ? extends R> other) {
 			if (either.isRight()) {
 				return asRight();
@@ -329,15 +310,6 @@ public interface Either<L, R> extends ValueObject {
 		public void orElseRun(Consumer<? super L> action) {
 			if (either.isLeft()) {
 				action.accept(asLeft());
-			}
-		}
-
-		@Override
-		public <X extends Throwable> R orElseThrow(Supplier<X> exceptionSupplier) throws X {
-			if (either.isRight()) {
-				return asRight();
-			} else {
-				throw exceptionSupplier.get();
 			}
 		}
 
