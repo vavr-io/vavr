@@ -25,7 +25,7 @@ Profile 'release-sign-artifacts':
 	</parent>
 	<groupId>com.javaslang</groupId>
 	<artifactId>javaslang</artifactId>
-	<version>1.1.1-SNAPSHOT</version>
+	<version>1.2.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Javaslang</name>
 	<description>Javaslang is a Java standard library extension built for Java 8 and above.</description>
@@ -51,12 +51,12 @@ Profile 'release-sign-artifacts':
 		</developer>
 	</developers>
 	<properties>
-		<assertj.core.version>1.7.0</assertj.core.version>
+		<assertj.core.version>1.7.1</assertj.core.version>
 		<eclipse.lifecycle.mapping.version>1.0.0</eclipse.lifecycle.mapping.version>
 		<java.version>1.8</java.version>
 		<generator.dir>javaslang/generator</generator.dir>
 		<generated-sources.dir>${project.build.directory}/generated-sources</generated-sources.dir>
-		<junit.version>4.12-beta-3</junit.version>
+		<junit.version>4.12</junit.version>
 		<maven.build-helper.version>1.9.1</maven.build-helper.version>
 		<maven.compiler.version>3.2</maven.compiler.version>
 		<maven.coveralls.version>3.0.1</maven.coveralls.version>
