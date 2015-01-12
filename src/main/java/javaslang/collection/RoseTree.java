@@ -156,8 +156,9 @@ public interface RoseTree<T> extends Tree<T> {
         // -- Serializable implementation
 
         /**
+         * <p>
          * {@code writeReplace} method for the serialization proxy pattern.
-         * <p/>
+         * </p>
          * The presence of this method causes the serialization system to emit a SerializationProxy instance instead of
          * an instance of the enclosing class.
          *
@@ -168,8 +169,9 @@ public interface RoseTree<T> extends Tree<T> {
         }
 
         /**
+         * <p>
          * {@code readObject} method for the serialization proxy pattern.
-         * <p/>
+         * </p>
          * Guarantees that the serialization system will never generate a serialized instance of the enclosing class.
          *
          * @param stream An object serialization stream.
@@ -234,8 +236,9 @@ public interface RoseTree<T> extends Tree<T> {
             }
 
             /**
+             * <p>
              * {@code readResolve} method for the serialization proxy pattern.
-             * <p/>
+             * </p>
              * Returns a logically equivalent instance of the enclosing class. The presence of this method causes the
              * serialization system to translate the serialization proxy back into an instance of the enclosing class
              * upon deserialization.

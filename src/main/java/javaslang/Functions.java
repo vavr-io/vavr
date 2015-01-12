@@ -16,18 +16,22 @@ import java.util.Objects;
 import java.util.function.Function;
 
 /**
+ * <p>
  * The class of reflective checked and unchecked functions with a specific return types.
- * <p/>
+ * </p>
+ * <p>
  * The type <strong>λ</strong> 'lambda' is the mother of all functions.
- * <p/>
+ * </p>
+ * <p>
  * There are checked functions {@linkplain CheckedFunction0} to {@linkplain CheckedFunction13}, short: {@linkplain X0} to {@linkplain X13}
  * (<em>Note: X stands for 'eXception'. The lambda symbol λ is hidden in X, just leave out the upper right line</em>).
- * Checked functions throw Throwable.<br/>
+ * Checked functions throw Throwable.<br>
  * And there are unchecked functions {@linkplain Function0} to {@linkplain Function13}, short: {@linkplain λ0} to {@linkplain λ13}.
  * Unchecked functions are special checked functions, they throw a RuntimeException instead of Throwable.
- * <p/>
+ * </p>
+ * <p>
  * Additionally to that there are checked versions of all functions located in the Java package java.util.function.
- * <p/>
+ * </p>
  * This class is not intended to be extended.
  */
 public final class Functions {
@@ -42,6 +46,7 @@ public final class Functions {
     /**
      * Serializes a lambda and returns the corresponding {@link java.lang.invoke.SerializedLambda}.
      *
+     * @param lambda A serializable lambda
      * @return The serialized lambda wrapped in a {@link javaslang.monad.Try.Success}, or a {@link javaslang.monad.Try.Failure}
      * if an exception occurred.
      * @see <a
@@ -58,12 +63,15 @@ public final class Functions {
     }
 
     /**
+     * <p>
      * Gets the runtime method signature of the given lambda instance. Especially this function is handy when the
      * functional interface is generic and the parameter and/or return types cannot be determined directly.
-     * <p/>
+     * </p>
+     * <p>
      * Uses internally the {@link java.lang.invoke.SerializedLambda#getImplMethodSignature()} by parsing the JVM field
      * types of the method signature. The result is a {@link java.lang.invoke.MethodType} which contains the return type
      * and the parameter types of the given lambda.
+     * </p>
      *
      * @param lambda A serializable lambda.
      * @return The signature of the lambda as {@linkplain java.lang.invoke.MethodType}.
@@ -74,12 +82,15 @@ public final class Functions {
     }
 
     /**
+     * <p>
      * This is a general definition of a checked function of unknown parameters and a return value of type R.
      * A checked function may throw an exception. The exception type is not a generic type parameter because
      * when composing functions, we cannot say anything else about the resulting type of exception than that it is
      * a Throwable.
-     * <p/>
+     * </p>
+     * <p>
      * This class is intended to be used internally.
+     * </p>
      *
      * @param <R> Return type of the checked function.
      */
@@ -100,9 +111,9 @@ public final class Functions {
          * In an ideal world we could denote the appropriate bound of both exception types (this and after).
          * This is the reason why CheckedFunction throws a Throwable instead of a concrete exception.
          *
-         * @param after
-         * @param <V>
-         * @return
+         * @param after Functions applied after this
+         * @param <V> Return value of after
+         * @return A Function composed of this and after
          */
         <V> λ<V> andThen(Function<? super R, ? extends V> after);
 
@@ -141,6 +152,7 @@ public final class Functions {
 
     /**
      * Alias for {@link X0}.
+     * @param <R> Return type
      */
     @FunctionalInterface
     public static interface CheckedFunction0<R> extends X0<R> {
@@ -170,6 +182,7 @@ public final class Functions {
 
     /**
      * Alias for {@link λ0}.
+     * @param <R> Return type
      */
     @FunctionalInterface
     public static interface Function0<R> extends λ0<R> {
@@ -221,6 +234,8 @@ public final class Functions {
 
     /**
      * Alias for {@link X1}.
+     * @param <T1> Argument type 1
+     * @param <R> Return type
      */
     @FunctionalInterface
     public static interface CheckedFunction1<T1, R> extends X1<T1, R> {
@@ -266,6 +281,8 @@ public final class Functions {
 
     /**
      * Alias for {@link λ1}.
+     * @param <T1> Argument type 1
+     * @param <R> Return type
      */
     @FunctionalInterface
     public static interface Function1<T1, R> extends λ1<T1, R> {
@@ -304,6 +321,9 @@ public final class Functions {
 
     /**
      * Alias for {@link X2}.
+     * @param <T1> Argument type 1
+     * @param <T2> Argument type 2
+     * @param <R> Return type
      */
     @FunctionalInterface
     public static interface CheckedFunction2<T1, T2, R> extends X2<T1, T2, R> {
@@ -334,6 +354,9 @@ public final class Functions {
 
     /**
      * Alias for {@link λ2}.
+     * @param <T1> Argument type 1
+     * @param <T2> Argument type 2
+     * @param <R> Return type
      */
     @FunctionalInterface
     public static interface Function2<T1, T2, R> extends λ2<T1, T2, R> {
@@ -368,6 +391,10 @@ public final class Functions {
 
     /**
      * Alias for {@link X3}.
+     * @param <T1> Argument type 1
+     * @param <T2> Argument type 2
+     * @param <T3> Argument type 3
+     * @param <R> Return type
      */
     @FunctionalInterface
     public static interface CheckedFunction3<T1, T2, T3, R> extends X3<T1, T2, T3, R> {
@@ -398,6 +425,10 @@ public final class Functions {
 
     /**
      * Alias for {@link λ3}.
+     * @param <T1> Argument type 1
+     * @param <T2> Argument type 2
+     * @param <T3> Argument type 3
+     * @param <R> Return type
      */
     @FunctionalInterface
     public static interface Function3<T1, T2, T3, R> extends λ3<T1, T2, T3, R> {
@@ -432,6 +463,11 @@ public final class Functions {
 
     /**
      * Alias for {@link X4}.
+     * @param <T1> Argument type 1
+     * @param <T2> Argument type 2
+     * @param <T3> Argument type 3
+     * @param <T4> Argument type 4
+     * @param <R> Return type
      */
     @FunctionalInterface
     public static interface CheckedFunction4<T1, T2, T3, T4, R> extends X4<T1, T2, T3, T4, R> {
@@ -462,6 +498,11 @@ public final class Functions {
 
     /**
      * Alias for {@link λ4}.
+     * @param <T1> Argument type 1
+     * @param <T2> Argument type 2
+     * @param <T3> Argument type 3
+     * @param <T4> Argument type 4
+     * @param <R> Return type
      */
     @FunctionalInterface
     public static interface Function4<T1, T2, T3, T4, R> extends λ4<T1, T2, T3, T4, R> {
@@ -496,6 +537,12 @@ public final class Functions {
 
     /**
      * Alias for {@link X5}.
+     * @param <T1> Argument type 1
+     * @param <T2> Argument type 2
+     * @param <T3> Argument type 3
+     * @param <T4> Argument type 4
+     * @param <T5> Argument type 5
+     * @param <R> Return type
      */
     @FunctionalInterface
     public static interface CheckedFunction5<T1, T2, T3, T4, T5, R> extends X5<T1, T2, T3, T4, T5, R> {
@@ -526,6 +573,12 @@ public final class Functions {
 
     /**
      * Alias for {@link λ5}.
+     * @param <T1> Argument type 1
+     * @param <T2> Argument type 2
+     * @param <T3> Argument type 3
+     * @param <T4> Argument type 4
+     * @param <T5> Argument type 5
+     * @param <R> Return type
      */
     @FunctionalInterface
     public static interface Function5<T1, T2, T3, T4, T5, R> extends λ5<T1, T2, T3, T4, T5, R> {
@@ -560,6 +613,13 @@ public final class Functions {
 
     /**
      * Alias for {@link X6}.
+     * @param <T1> Argument type 1
+     * @param <T2> Argument type 2
+     * @param <T3> Argument type 3
+     * @param <T4> Argument type 4
+     * @param <T5> Argument type 5
+     * @param <T6> Argument type 6
+     * @param <R> Return type
      */
     @FunctionalInterface
     public static interface CheckedFunction6<T1, T2, T3, T4, T5, T6, R> extends X6<T1, T2, T3, T4, T5, T6, R> {
@@ -590,6 +650,13 @@ public final class Functions {
 
     /**
      * Alias for {@link λ6}.
+     * @param <T1> Argument type 1
+     * @param <T2> Argument type 2
+     * @param <T3> Argument type 3
+     * @param <T4> Argument type 4
+     * @param <T5> Argument type 5
+     * @param <T6> Argument type 6
+     * @param <R> Return type
      */
     @FunctionalInterface
     public static interface Function6<T1, T2, T3, T4, T5, T6, R> extends λ6<T1, T2, T3, T4, T5, T6, R> {
@@ -624,6 +691,14 @@ public final class Functions {
 
     /**
      * Alias for {@link X7}.
+     * @param <T1> Argument type 1
+     * @param <T2> Argument type 2
+     * @param <T3> Argument type 3
+     * @param <T4> Argument type 4
+     * @param <T5> Argument type 5
+     * @param <T6> Argument type 6
+     * @param <T7> Argument type 7
+     * @param <R> Return type
      */
     @FunctionalInterface
     public static interface CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> extends X7<T1, T2, T3, T4, T5, T6, T7, R> {
@@ -654,6 +729,14 @@ public final class Functions {
 
     /**
      * Alias for {@link λ7}.
+     * @param <T1> Argument type 1
+     * @param <T2> Argument type 2
+     * @param <T3> Argument type 3
+     * @param <T4> Argument type 4
+     * @param <T5> Argument type 5
+     * @param <T6> Argument type 6
+     * @param <T7> Argument type 7
+     * @param <R> Return type
      */
     @FunctionalInterface
     public static interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends λ7<T1, T2, T3, T4, T5, T6, T7, R> {
@@ -688,6 +771,15 @@ public final class Functions {
 
     /**
      * Alias for {@link X8}.
+     * @param <T1> Argument type 1
+     * @param <T2> Argument type 2
+     * @param <T3> Argument type 3
+     * @param <T4> Argument type 4
+     * @param <T5> Argument type 5
+     * @param <T6> Argument type 6
+     * @param <T7> Argument type 7
+     * @param <T8> Argument type 8
+     * @param <R> Return type
      */
     @FunctionalInterface
     public static interface CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends X8<T1, T2, T3, T4, T5, T6, T7, T8, R> {
@@ -718,6 +810,15 @@ public final class Functions {
 
     /**
      * Alias for {@link λ8}.
+     * @param <T1> Argument type 1
+     * @param <T2> Argument type 2
+     * @param <T3> Argument type 3
+     * @param <T4> Argument type 4
+     * @param <T5> Argument type 5
+     * @param <T6> Argument type 6
+     * @param <T7> Argument type 7
+     * @param <T8> Argument type 8
+     * @param <R> Return type
      */
     @FunctionalInterface
     public static interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ8<T1, T2, T3, T4, T5, T6, T7, T8, R> {
@@ -752,6 +853,16 @@ public final class Functions {
 
     /**
      * Alias for {@link X9}.
+     * @param <T1> Argument type 1
+     * @param <T2> Argument type 2
+     * @param <T3> Argument type 3
+     * @param <T4> Argument type 4
+     * @param <T5> Argument type 5
+     * @param <T6> Argument type 6
+     * @param <T7> Argument type 7
+     * @param <T8> Argument type 8
+     * @param <T9> Argument type 9
+     * @param <R> Return type
      */
     @FunctionalInterface
     public static interface CheckedFunction9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> extends X9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> {
@@ -782,6 +893,16 @@ public final class Functions {
 
     /**
      * Alias for {@link λ9}.
+     * @param <T1> Argument type 1
+     * @param <T2> Argument type 2
+     * @param <T3> Argument type 3
+     * @param <T4> Argument type 4
+     * @param <T5> Argument type 5
+     * @param <T6> Argument type 6
+     * @param <T7> Argument type 7
+     * @param <T8> Argument type 8
+     * @param <T9> Argument type 9
+     * @param <R> Return type
      */
     @FunctionalInterface
     public static interface Function9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> extends λ9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> {
@@ -817,6 +938,17 @@ public final class Functions {
 
     /**
      * Alias for {@link X10}.
+     * @param <T1> Argument type 1
+     * @param <T2> Argument type 2
+     * @param <T3> Argument type 3
+     * @param <T4> Argument type 4
+     * @param <T5> Argument type 5
+     * @param <T6> Argument type 6
+     * @param <T7> Argument type 7
+     * @param <T8> Argument type 8
+     * @param <T9> Argument type 9
+     * @param <T10> Argument type 10
+     * @param <R> Return type
      */
     @FunctionalInterface
     public static interface CheckedFunction10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> extends X10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> {
@@ -848,6 +980,17 @@ public final class Functions {
 
     /**
      * Alias for {@link λ10}.
+     * @param <T1> Argument type 1
+     * @param <T2> Argument type 2
+     * @param <T3> Argument type 3
+     * @param <T4> Argument type 4
+     * @param <T5> Argument type 5
+     * @param <T6> Argument type 6
+     * @param <T7> Argument type 7
+     * @param <T8> Argument type 8
+     * @param <T9> Argument type 9
+     * @param <T10> Argument type 10
+     * @param <R> Return type
      */
     @FunctionalInterface
     public static interface Function10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> extends λ10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> {
@@ -883,6 +1026,18 @@ public final class Functions {
 
     /**
      * Alias for {@link X11}.
+     * @param <T1> Argument type 1
+     * @param <T2> Argument type 2
+     * @param <T3> Argument type 3
+     * @param <T4> Argument type 4
+     * @param <T5> Argument type 5
+     * @param <T6> Argument type 6
+     * @param <T7> Argument type 7
+     * @param <T8> Argument type 8
+     * @param <T9> Argument type 9
+     * @param <T10> Argument type 10
+     * @param <T11> Argument type 11
+     * @param <R> Return type
      */
     @FunctionalInterface
     public static interface CheckedFunction11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, R> extends X11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, R> {
@@ -914,6 +1069,18 @@ public final class Functions {
 
     /**
      * Alias for {@link λ11}.
+     * @param <T1> Argument type 1
+     * @param <T2> Argument type 2
+     * @param <T3> Argument type 3
+     * @param <T4> Argument type 4
+     * @param <T5> Argument type 5
+     * @param <T6> Argument type 6
+     * @param <T7> Argument type 7
+     * @param <T8> Argument type 8
+     * @param <T9> Argument type 9
+     * @param <T10> Argument type 10
+     * @param <T11> Argument type 11
+     * @param <R> Return type
      */
     @FunctionalInterface
     public static interface Function11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, R> extends λ11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, R> {
@@ -973,6 +1140,19 @@ public final class Functions {
 
     /**
      * Alias for {@link λ12}.
+     * @param <T1> Argument type 1
+     * @param <T2> Argument type 2
+     * @param <T3> Argument type 3
+     * @param <T4> Argument type 4
+     * @param <T5> Argument type 5
+     * @param <T6> Argument type 6
+     * @param <T7> Argument type 7
+     * @param <T8> Argument type 8
+     * @param <T9> Argument type 9
+     * @param <T10> Argument type 10
+     * @param <T11> Argument type 11
+     * @param <T12> Argument type 12
+     * @param <R> Return type
      */
     @FunctionalInterface
     public static interface Function12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, R> extends λ12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, R> {
@@ -980,6 +1160,19 @@ public final class Functions {
 
     /**
      * Alias for {@link X12}.
+     * @param <T1> Argument type 1
+     * @param <T2> Argument type 2
+     * @param <T3> Argument type 3
+     * @param <T4> Argument type 4
+     * @param <T5> Argument type 5
+     * @param <T6> Argument type 6
+     * @param <T7> Argument type 7
+     * @param <T8> Argument type 8
+     * @param <T9> Argument type 9
+     * @param <T10> Argument type 10
+     * @param <T11> Argument type 11
+     * @param <T12> Argument type 12
+     * @param <R> Return type
      */
     @FunctionalInterface
     public static interface CheckedFunction12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, R> extends X12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, R> {
@@ -1015,6 +1208,20 @@ public final class Functions {
 
     /**
      * Alias for {@link X13}.
+     * @param <T1> Argument type 1
+     * @param <T2> Argument type 2
+     * @param <T3> Argument type 3
+     * @param <T4> Argument type 4
+     * @param <T5> Argument type 5
+     * @param <T6> Argument type 6
+     * @param <T7> Argument type 7
+     * @param <T8> Argument type 8
+     * @param <T9> Argument type 9
+     * @param <T10> Argument type 10
+     * @param <T11> Argument type 11
+     * @param <T12> Argument type 12
+     * @param <T13> Argument type 13
+     * @param <R> Return type
      */
     @FunctionalInterface
     public static interface CheckedFunction13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, R> extends X13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, R> {
@@ -1046,6 +1253,20 @@ public final class Functions {
 
     /**
      * Alias for {@link λ13}.
+     * @param <T1> Argument type 1
+     * @param <T2> Argument type 2
+     * @param <T3> Argument type 3
+     * @param <T4> Argument type 4
+     * @param <T5> Argument type 5
+     * @param <T6> Argument type 6
+     * @param <T7> Argument type 7
+     * @param <T8> Argument type 8
+     * @param <T9> Argument type 9
+     * @param <T10> Argument type 10
+     * @param <T11> Argument type 11
+     * @param <T12> Argument type 12
+     * @param <T13> Argument type 13
+     * @param <R> Return type
      */
     @FunctionalInterface
     public static interface Function13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, R> extends λ13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, R> {

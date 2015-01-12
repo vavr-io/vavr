@@ -10,8 +10,9 @@ import java.util.function.*;
 import javaslang.Functions.*;
 
 /**
+ * <p>
  * Extension methods for {@link Match}.
- * <p/>
+ * </p>
  * This class is not intended to be extended.
  */
 public final class Matchs {

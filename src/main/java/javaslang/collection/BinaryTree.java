@@ -13,9 +13,12 @@ import java.util.Objects;
 import java.util.function.Function;
 
 /**
+ * <p>
  * A binary tree implementation where each node keeps a value. See <a href="http://en.wikipedia.org/wiki/Binary_tree">Wikipedia: Binary tree</a>.
- * <p/>
+ * </p>
+ * <p>
  * A binary tree consists of branches (nodes with children) and leafs (nodes without children). The empty tree is represented by Nil.
+ * </p>
  * <pre>
  *     <code>BinaryTree = Nil | Leaf(value) | Branch(BinaryTree left, value, BinaryTree right)</code>
  * </pre>
@@ -38,6 +41,12 @@ public interface BinaryTree<T> extends Tree<T> {
 
     /**
      * Throws if left and right are Nil - if in doubt, use BinaryTree.of(left, value, right) instead.
+     *
+     * @param left Left tree
+     * @param value Value
+     * @param right Right tree
+     * @param <T> Component type
+     * @return A new Branch consisting of the given values.
      */
     static <T> Branch<T> branch(BinaryTree<T> left, T value, BinaryTree<T> right) {
         Objects.requireNonNull(left, "left is null");
@@ -57,9 +66,12 @@ public interface BinaryTree<T> extends Tree<T> {
     }
 
     /**
+     * <p>
      * Converts an Iterable to a balanced binary tree.
-     * <p/>
+     * </p>
+     * <p>
      * Example: {@code BinaryTree.balance(List.of(1, 2, 3, 4, 5, 6)) = (1 (2 3 4) (5 6))}
+     * </p>
      *
      * @param iterable An Iterable
      * @param <T>      Element type
@@ -81,9 +93,12 @@ public interface BinaryTree<T> extends Tree<T> {
     }
 
     /**
+     * <p>
      * Converts the given elements to a balanced binary tree.
-     * <p/>
+     * </p>
+     * <p>
      * Example: {@code BinaryTree.balance(1, 2, 3, 4, 5, 6) = (1 (2 3 4) (5 6))}
+     * </p>
      *
      * @param elements Elements
      * @param <T>      Element type
@@ -230,8 +245,9 @@ public interface BinaryTree<T> extends Tree<T> {
         // -- Serializable implementation
 
         /**
+         * <p>
          * {@code writeReplace} method for the serialization proxy pattern.
-         * <p/>
+         * </p>
          * The presence of this method causes the serialization system to emit a SerializationProxy instance instead of
          * an instance of the enclosing class.
          *
@@ -242,8 +258,9 @@ public interface BinaryTree<T> extends Tree<T> {
         }
 
         /**
+         * <p>
          * {@code readObject} method for the serialization proxy pattern.
-         * <p/>
+         * </p>
          * Guarantees that the serialization system will never generate a serialized instance of the enclosing class.
          *
          * @param stream An object serialization stream.

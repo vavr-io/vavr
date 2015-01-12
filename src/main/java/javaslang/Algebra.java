@@ -55,6 +55,7 @@ public final class Algebra {
 		/**
 		 * Function composition of one type is an Endo monoid.
 		 *
+		 * @param <A> Value type
 		 * @return The Endo monoid of type A.
 		 */
 		static <A> Monoid<Function<A, A>> endoMonoid() {
@@ -64,6 +65,7 @@ public final class Algebra {
 		/**
 		 * Factory method for monoidsm taking a zero and a Semigroup.
 		 *
+		 * @param <A> Component type
 		 * @param zero The zero of the Monoid.
 		 * @param semigroup Has the associative operation of the Monoid.
 		 * @return a new Monoid
@@ -118,13 +120,17 @@ public final class Algebra {
 	}
 
 	/**
+	 * <p>
 	 * A type <em>HigherKinded</em> declares a generic type constructor, which consists of an inner type (component type)
 	 * and an outer type (container type).
-	 * <p/>
+	 * </p>
+	 * <p>
 	 * HigherKinded is needed to (partially) simulate Higher-Kinded/Higher-Order Types, which  are not part of the Java
 	 * language but needed for generic type constructors.
-	 * <p/>
+	 * </p>
+	 * <p>
 	 * Example: {@link javaslang.Algebra.Monad#flatMap(java.util.function.Function)}
+	 * </p>
 	 *
 	 * @param <A> Component type of the type to be constructed.
 	 * @param <TYPE> Container type of the type to be constructed.

@@ -17,12 +17,14 @@ import java.util.Objects;
 import java.util.function.*;
 
 /**
+ * <p>
  * Replacement for {@link java.util.Optional}.
- * <p/>
+ * </p>
+ * <p>
  * Option is a <a href="http://stackoverflow.com/questions/13454347/monads-with-java-8">monadic</a> container type which
  * represents an optional value. Instances of Option are either an instance of {@link javaslang.monad.Option.Some} or the
  * singleton {@link javaslang.monad.Option.None}.
- * <p/>
+ * </p>
  * Most of the API is taken from {@link java.util.Optional}. A similar type can be found in <a
  * href="http://hackage.haskell.org/package/base-4.6.0.1/docs/Data-Maybe.html">Haskell</a> and <a
  * href="http://www.scala-lang.org/api/current/#scala.Option">Scala</a>.
@@ -196,8 +198,9 @@ public interface Option<T> extends Monad<T, Option<?>>, ValueObject, Univalent<T
         }
 
         /**
+         * <p>
          * Returns the singleton instance of None as {@code None<T>} in the context of a type {@code <T>}, e.g.
-         * <p/>
+         * </p>
          * <pre>
          * <code>final Option&lt;Integer&gt; o = None.instance(); // o is of type None&lt;Integer&gt;</code>
          * </pre>

@@ -8,15 +8,18 @@ package javaslang;
 import java.io.Serializable;
 
 /**
+ * <p>
  * Value Objects are immutable, decomposable objects with an identity based on their type and encapsulated values.
- * <p/>
+ * </p>
+ * <p>
  * In particular the identity of a Value Object should be defined by its content by implementing
  * {@linkplain Object#equals(Object)}, {@linkplain Object#hashCode()} and {@linkplain Object#toString()}
  * appropriately.
- * <p/>
+ * </p>
+ * <p>
  * The {@link #unapply()} method decomposes an Object by unwrapping it. This comes handy when using the
  * {@link javaslang.match.Match} API.
- * <p/>
+ * </p>
  * Please note that a Value Object is not cloneable because of the following conclusion:
  * <blockquote>
  * "[...] , it doesn’t make sense for immutable classes to support object copying, because copies would be virtually indistinguishable from the original."

@@ -24,7 +24,6 @@ import java.util.function.UnaryOperator;
 
 /**
  * An interface for inherently recursive data structures. The order of elements is determined by {@link java.lang.Iterable#iterator()}, which may vary each time it is called.
- * <p/>
  * <p>Conversion:</p>
  * <ul>
  * <li>{@link #toJavaArray(Class)}</li>
@@ -33,7 +32,6 @@ import java.util.function.UnaryOperator;
  * <li>{@link #toJavaSet()}</li>
  * <li>{@link #toJavaStream()}</li>
  * </ul>
- * <p/>
  * <p>Basic operations:</p>
  * <ul>
  * <li>{@link #clear()}</li>
@@ -46,7 +44,6 @@ import java.util.function.UnaryOperator;
  * <li>{@link #length()}</li>
  * <li>{@link #tail()}</li>
  * </ul>
- * <p/>
  * <p>Filtering</p>
  * <ul>
  * <li>{@link #filter(java.util.function.Predicate)}</li>
@@ -55,13 +52,11 @@ import java.util.function.UnaryOperator;
  * <li>{@link #removeAll(Iterable)}</li>
  * <li>{@link #retainAll(Iterable)}</li>
  * </ul>
- * <p/>
  * <p>Numeric operations:</p>
  * <ul>
  * <li>{@link #product()}</li>
  * <li>{@link #sum()}</li>
  * </ul>
- * <p/>
  * <p>Reduction:</p>
  * <ul>
  * <li>{@link #fold(Object, java.util.function.BiFunction)}</li>
@@ -75,7 +70,6 @@ import java.util.function.UnaryOperator;
  * <li>{@link #reduceLeft(java.util.function.BiFunction)}</li>
  * <li>{@link #reduceRight(java.util.function.BiFunction)}</li>
  * </ul>
- * <p/>
  * <p>Selection:</p>
  * <ul>
  * <li>{@link #drop(int)}</li>
@@ -88,13 +82,11 @@ import java.util.function.UnaryOperator;
  * <li>{@link #takeRight(int)}</li>
  * <li>{@link #takeWhile(java.util.function.Predicate)}</li>
  * </ul>
- * <p/>
  * <p>Side-effects:</p>
  * <ul>
  * <li>{@link #stderr()}</li>
  * <li>{@link #stdout()}</li>
  * </ul>
- * <p/>
  * <p>Transformation:</p>
  * <ul>
  * <li>{@link #distinct()}</li>
@@ -135,11 +127,14 @@ public interface Traversable<T> extends Iterable<T>, Algebra.HigherKinded<T, Tra
     }
 
     /**
+     * <p>
      * Tests if this Traversable contains all given elements.
-     * <p/>
+     * </p>
+     * <p>
      * The result is equivalent to
      * {@code elements.isEmpty() ? true : contains(elements.head()) && containsAll(elements.tail())} but implemented
      * without recursion.
+     * </p>
      *
      * @param elements A List of values of type E.
      * @return true, if this List contains all given elements, false otherwise.
@@ -212,9 +207,12 @@ public interface Traversable<T> extends Iterable<T>, Algebra.HigherKinded<T, Tra
     }
 
     /**
+     * <p>
      * Returns the last element of this which satisfies the given predicate.
-     * <p/>
+     * </p>
+     * <p>
      * Same as {@code reverse().findFirst(predicate)}.
+     * </p>
      *
      * @param predicate A predicate.
      * @return Some(element) or None, where element may be null (i.e. {@code List.of(null).findFirst(e -> e == null)}).
@@ -226,9 +224,12 @@ public interface Traversable<T> extends Iterable<T>, Algebra.HigherKinded<T, Tra
     <U, TRAVERSABLE extends Algebra.HigherKinded<U, Traversable<?>>> Traversable<U> flatMap(Function<? super T, TRAVERSABLE> mapper);
 
     /**
+     * <p>
      * Accumulates the elements of this Traversable by successively calling the given operator {@code op}.
-     * <p/>
-     * Example: {@code List("a", "b", "c").fold("", (a, b) -> a + b) = "abc"}
+     * </p>
+     * <p>
+     * Example: {@code List("a", "b", "c").fold("", (a, b) -&gt; a + b) = "abc"}
+     * </p>
      *
      * @param zero Value to start the accumulation with.
      * @param op   The accumulator operator.
@@ -237,10 +238,13 @@ public interface Traversable<T> extends Iterable<T>, Algebra.HigherKinded<T, Tra
     T fold(T zero, BiFunction<? super T, ? super T, ? extends T> op);
 
     /**
+     * <p>
      * Accumulates the elements of this Traversable by successively calling the given function {@code f} from the left,
      * starting with a value {@code zero} of type B.
-     * <p/>
-     * Example: {@code List.of("a", "b", "c").foldLeft("", (xs, x) -> xs + x) = "abc"}
+     * </p>
+     * <p>
+     * Example: {@code List.of("a", "b", "c").foldLeft("", (xs, x) -&gt; xs + x) = "abc"}
+     * </p>
      *
      * @param zero Value to start the accumulation with.
      * @param f    The accumulator function.
@@ -259,14 +263,14 @@ public interface Traversable<T> extends Iterable<T>, Algebra.HigherKinded<T, Tra
     /**
      * Maps this elements to a Monoid and applies foldLeft, starting with monoid.zero():
      * <pre>
-     * <code>foldLeft(monoid.zero(), (ys, x) -> monoid.combine(ys, mapper.apply(x)))</code>
+     * <code>foldLeft(monoid.zero(), (ys, x) -&gt; monoid.combine(ys, mapper.apply(x)))</code>
      * </pre>
      *
      * @param monoid A Monoid
      * @param mapper A mapper
      * @param <U>    Component type of the given monoid.
      * @return The folded monoid value.
-     * @throws javaslang.Require.UnsatisfiedRequirementException if monoid or mapper is null
+     * @throws java.lang.NullPointerException if monoid or mapper is null
      */
     default <U> U foldMap(Monoid<U> monoid, Function<T, U> mapper) {
         Objects.requireNonNull(monoid, "monoid is null");
@@ -275,17 +279,21 @@ public interface Traversable<T> extends Iterable<T>, Algebra.HigherKinded<T, Tra
     }
 
     /**
+     * <p>
      * Accumulates the elements of this Traversable by successively calling the given function {@code f} from the right,
      * starting with a value {@code zero} of type B.
-     * <p/>
-     * Example: {@code List.of("a", "b", "c").foldRight("", (x, xs) -> x + xs) = "abc"}
-     * <p/>
+     * </p>
+     * <p>
+     * Example: {@code List.of("a", "b", "c").foldRight("", (x, xs) -&gt; x + xs) = "abc"}
+     * </p>
+     * <p>
      * In order to prevent recursive calls, foldRight is implemented based on reverse and foldLeft. A recursive variant
      * is based on foldMap, using the monoid of function composition (endo monoid).
+     * </p>
      * <pre>
      * <code>
-     * foldRight = reverse().foldLeft(zero, (b, a) -> f.apply(a, b));
-     * foldRight = foldMap(Algebra.Monoid.endoMonoid(), a -> b -> f.apply(a, b)).apply(zero);
+     * foldRight = reverse().foldLeft(zero, (b, a) -&gt; f.apply(a, b));
+     * foldRight = foldMap(Algebra.Monoid.endoMonoid(), a -&gt; b -&gt; f.apply(a, b)).apply(zero);
      * </code>
      * </pre>
      *
@@ -293,7 +301,7 @@ public interface Traversable<T> extends Iterable<T>, Algebra.HigherKinded<T, Tra
      * @param f    The accumulator function.
      * @param <U>  Result type of the accumulator.
      * @return An accumulated version of this.
-     * @throws javaslang.Require.UnsatisfiedRequirementException if f is null
+     * @throws java.lang.NullPointerException if f is null
      */
     default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "function is null");
@@ -439,9 +447,10 @@ public interface Traversable<T> extends Iterable<T>, Algebra.HigherKinded<T, Tra
      * Accumulates the elements of this Traversable by successively calling the given operation {@code op}.
      * The order of element iteration is undetermined.
      *
+     * @param op A BiFunction of type T
      * @return The reduced value.
-     * @throws UnsupportedOperationException                     if this Traversable is empty
-     * @throws javaslang.Require.UnsatisfiedRequirementException if op is null
+     * @throws UnsupportedOperationException  if this Traversable is empty
+     * @throws java.lang.NullPointerException if op is null
      */
     default T reduce(BiFunction<? super T, ? super T, ? extends T> op) {
         return reduceLeft(op);
@@ -450,9 +459,10 @@ public interface Traversable<T> extends Iterable<T>, Algebra.HigherKinded<T, Tra
     /**
      * Accumulates the elements of this Traversable by successively calling the given operation {@code op} from the left.
      *
+     * @param op A BiFunction of type T
      * @return The reduced value.
-     * @throws UnsupportedOperationException                     if this Traversable is empty
-     * @throws javaslang.Require.UnsatisfiedRequirementException if op is null
+     * @throws UnsupportedOperationException  if this Traversable is empty
+     * @throws java.lang.NullPointerException if op is null
      */
     default T reduceLeft(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "operator is null");
@@ -466,9 +476,10 @@ public interface Traversable<T> extends Iterable<T>, Algebra.HigherKinded<T, Tra
     /**
      * Accumulates the elements of this Traversable by successively calling the given operation {@code op} from the right.
      *
+     * @param op An operation of type T
      * @return The reduced value.
-     * @throws UnsupportedOperationException                     if this Traversable is empty
-     * @throws javaslang.Require.UnsatisfiedRequirementException if op is null
+     * @throws UnsupportedOperationException  if this Traversable is empty
+     * @throws java.lang.NullPointerException if op is null
      */
     default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "operator is null");
@@ -595,10 +606,13 @@ public interface Traversable<T> extends Iterable<T>, Algebra.HigherKinded<T, Tra
     Traversable<T> tail();
 
     /**
+     * <p>
      * Takes the first n elements of this Traversable or all elements, if this length &lt; n.
-     * <p/>
+     * </p>
+     * <p>
      * The result is equivalent to {@code sublist(0, n)} but does not throw if n &lt; 0 or n &gt; length(). In the case of
      * n &lt; 0 the empty Traversable is returned, in the case of n &gt; length() this Traversable is returned.
+     * </p>
      *
      * @param n The number of elements to take.
      * @return A Traversable consisting of the first n elements of this Traversable or all elements, if it has less than n elements.
@@ -657,7 +671,7 @@ public interface Traversable<T> extends Iterable<T>, Algebra.HigherKinded<T, Tra
      * @param that The Iterable providing the second half of each result pair.
      * @return a new Traversable containing pairs consisting of corresponding elements of this list and that.
      * The length of the returned collection is the minimum of the lengths of this Traversable and that.
-     * @throws javaslang.Require.UnsatisfiedRequirementException if that is null.
+     * @throws java.lang.NullPointerException if that is null.
      */
     <U> Traversable<Tuple2<T, U>> zip(Iterable<U> that);
 
@@ -674,7 +688,7 @@ public interface Traversable<T> extends Iterable<T>, Algebra.HigherKinded<T, Tra
      * The length of the returned Traversable is the maximum of the lengths of this Traversable and that.
      * If this Traversable is shorter than that, thisElem values are used to fill the result.
      * If that is shorter than this Traversable, thatElem values are used to fill the result.
-     * @throws javaslang.Require.UnsatisfiedRequirementException if that is null.
+     * @throws java.lang.NullPointerException if that is null.
      */
     <U> Traversable<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
 

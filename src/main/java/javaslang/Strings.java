@@ -16,8 +16,9 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
+ * <p>
  * Extension methods for {@link java.lang.String}.
- * <p/>
+ * </p>
  * This class is not intended to be extended.
  */
 public final class Strings {
@@ -123,15 +124,15 @@ public final class Strings {
     }
 
     /**
+     * <p>
      * Computes line and column of index within a given text.
-     * <p/>
+     * </p>
      * Line breaks:
      * <ul>
      * <li>{@code \r\n (Windows, DOS, OS/2, CP/M, TOS (Atari))}</li>
      * <li>{@code \n} (Unix, Linux, Android, Mac OS X, AmigaOS, BSD, etc.)</li>
      * <li>{@code \r} ((Mac OS up to Version 9, Apple II, C64))</li>
      * </ul>
-     * <p/>
      * Examples:
      * <ul>
      * <li>{@code lineAndColumn(null, 0)} throws 's is null'</li>
@@ -212,9 +213,10 @@ public final class Strings {
     }
 
     /**
+     * <p>
      * Splits a string using a specific separator. By definition, a separator separates two string. This leads to the
      * following:
-     * <p/>
+     * </p>
      * <ul>
      * <li>split("", "#") = [""]</li>
      * <li>split("#", "#") = ["", ""]</li>
@@ -291,7 +293,6 @@ public final class Strings {
 
     /**
      * Computes the index of the first occurrence of separator or escape within s starting at position fromIndex.
-     * <p/>
      * Returns -1 only, and only if both of separator and escape are not found.
      *
      * @param s         A String.
