@@ -54,7 +54,7 @@ public final class Functions {
      * debug info on errors with java 8 lambda expressions</a>
      * @see <a href="http://www.slideshare.net/hendersk/method-handles-in-java">Method Handles in Java</a>
      */
-    public static SerializedLambda getSerializedFunction(Serializable lambda) {
+    public static SerializedLambda getSerializedLambda(Serializable lambda) {
         return Try.of(() -> {
             final Method method = lambda.getClass().getDeclaredMethod("writeReplace");
             method.setAccessible(true);
@@ -77,7 +77,7 @@ public final class Functions {
      * @return The signature of the lambda as {@linkplain java.lang.invoke.MethodType}.
      */
     public static MethodType getLambdaSignature(Serializable lambda) {
-        final String signature = getSerializedFunction(lambda).getImplMethodSignature();
+        final String signature = getSerializedLambda(lambda).getImplMethodSignature();
         return MethodType.fromMethodDescriptorString(signature, lambda.getClass().getClassLoader());
     }
 
