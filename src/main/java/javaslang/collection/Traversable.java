@@ -8,7 +8,7 @@ package javaslang.collection;
 import javaslang.Algebra;
 import javaslang.Algebra.Monoid;
 import javaslang.Tuple.Tuple2;
-import javaslang.match.Matchs;
+import javaslang.match.Match;
 import javaslang.monad.Option;
 
 import java.io.BufferedWriter;
@@ -399,7 +399,7 @@ public interface Traversable<T> extends Iterable<T>, Algebra.HigherKinded<T, Tra
             throw new UnsupportedOperationException("product of nothing");
         } else {
             T head = head();
-            return Matchs
+            return Match
                     .<T>caze((boolean t) -> (T) ((Traversable<Boolean>) this).reduce((i, j) -> i && j))
                     .caze((byte t) -> (T) ((Traversable<Byte>) this).foldLeft((int) 0, (i, j) -> i * j))
                     .caze((char t) -> (T) ((Traversable<Character>) this).foldLeft((int) 0, (xs, x) -> xs * (char) x))
@@ -553,7 +553,7 @@ public interface Traversable<T> extends Iterable<T>, Algebra.HigherKinded<T, Tra
             throw new UnsupportedOperationException("sum of nothing");
         } else {
             T head = head();
-            return Matchs
+            return Match
                     .<T>caze((boolean t) -> (T) ((Traversable<Boolean>) this).reduce((i, j) -> i || j))
                     .caze((byte t) -> (T) ((Traversable<Byte>) this).foldLeft((int) 0, (i, j) -> i + j))
                     .caze((char t) -> (T) ((Traversable<Character>) this).foldLeft((int) 0, (xs, x) -> xs + (char) x))
