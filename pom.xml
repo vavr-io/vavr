@@ -1,17 +1,14 @@
 <!--
-
 Default build:
   - [generate-sources]
     Compiling code generators javaslang/generator/*.java
     Running code generators, output in target/generated-sources
-  - ...
 
 Profile 'ci':
   Used by travis-ci.org in integration builds when reporting code coverage report to coveralls.io.
 
 Profile 'release-sign-artifacts':
   Used by sonatype to sign artifacts when releasing javaslang to maven central.
-
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
@@ -51,25 +48,40 @@ Profile 'release-sign-artifacts':
 		</developer>
 	</developers>
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<assertj.core.version>1.7.1</assertj.core.version>
 		<eclipse.lifecycle.mapping.version>1.0.0</eclipse.lifecycle.mapping.version>
 		<java.version>1.8</java.version>
-		<generator.dir>javaslang/generator</generator.dir>
-		<generated-sources.dir>${project.build.directory}/generated-sources</generated-sources.dir>
 		<junit.version>4.12</junit.version>
 		<maven.build-helper.version>1.9.1</maven.build-helper.version>
 		<maven.compiler.version>3.2</maven.compiler.version>
 		<maven.coveralls.version>3.0.1</maven.coveralls.version>
-		<maven.exec.version>1.3.2</maven.exec.version>
 		<maven.gpg.version>1.5</maven.gpg.version>
 		<maven.jacoco.version>0.7.2.201409121644</maven.jacoco.version>
-		<maven.jar.version>2.5</maven.jar.version>
 		<maven.release.version>2.5.1</maven.release.version>
 		<maven.versions.version>2.1</maven.versions.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<scala.maven.version>3.2.0</scala.maven.version>
+		<scala.version>2.11.5</scala.version>
 	</properties>
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>net.alchim31.maven</groupId>
+				<artifactId>scala-maven-plugin</artifactId>
+				<version>${scala.maven.version}</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>script</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<scalaVersion>${scala.version}</scalaVersion>
+					<scriptFile>generator/Generator.scala</scriptFile>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
@@ -80,7 +92,7 @@ Profile 'release-sign-artifacts':
 						<goals><goal>add-source</goal></goals>
 						<configuration>
 							<sources>
-								<source>src/gen/java</source>
+								<source>${project.build.directory}/generated-sources</source>
 							</sources>
 						</configuration>
 					</execution>
@@ -101,75 +113,6 @@ Profile 'release-sign-artifacts':
 					</compilerArgs>
 					-->
 				</configuration>
-				<executions>
-					<execution>
-						<id>gen-compile</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>compile</goal>
-						</goals>
-						<configuration>
-							<includes>
-								<include>${generator.dir}/**/*</include>
-							</includes>
-						</configuration>
-					</execution>
-					<execution>
-						<id>default-compile</id>
-						<phase>compile</phase>
-						<goals>
-							<goal>compile</goal>
-						</goals>
-						<configuration>
-							<excludes>
-								<exclude>${generator.dir}/**/*</exclude>
-							</excludes>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>${maven.exec.version}</version>
-				<executions>
-					<execution>
-						<id>exec-generator</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>java</goal>
-						</goals>
-						<configuration>
-							<mainClass>javaslang.generator.GeneratorRunner</mainClass>
-							<arguments>
-								<argument>-target=${generated-sources.dir}</argument>
-								<argument>-generator=javaslang.generator.LambdaGenerator</argument>
-								<argument>-generator=javaslang.generator.PropGenerator</argument>
-								<argument>-generator=javaslang.generator.TupleGenerator</argument>
-							</arguments>
-							<sourceRoot>${generated-sources.dir}</sourceRoot>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>${maven.jar.version}</version>
-				<executions>
-					<execution>
-						<id>default-jar</id>
-						<phase>package</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<configuration>
-							<excludes>
-								<exclude>${generator.dir}/**/*</exclude>
-							</excludes>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -249,11 +192,6 @@ Profile 'release-sign-artifacts':
 						<groupId>org.jacoco</groupId>
 						<artifactId>jacoco-maven-plugin</artifactId>
 						<version>${maven.jacoco.version}</version>
-						<configuration>
-							<excludes>
-								<exclude>${generator.dir}/**</exclude>
-							</excludes>
-						</configuration>
 						<executions>
 							<execution>
 								<id>prepare-agent</id>
