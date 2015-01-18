@@ -221,7 +221,8 @@ def classHeader() = xs"""
   """
 
 /**
- * (C)opyright by Daniel Dietrich
+ * Indentation of cascaded rich strings.
+ * @see https://gist.github.com/danieldietrich/5174348
  */
 object StringContextImplicits {
 
