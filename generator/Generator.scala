@@ -3,42 +3,215 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014-2015 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
+
+import java.nio.charset.{Charset, StandardCharsets}
+import java.nio.file.StandardOpenOption
+
 import StringContextImplicits._
 
 import scala.util.Properties.lineSeparator
 
+val N = 13
+val TARGET = "target/generated-sources"
+
 // entry point
 def run() {
 
-  // lazy due forward reference
-  //  lazy val output = gen("Person", Seq("name" -> 'String, "age" -> 'Int))
-  //  println(output)
-
-  println(genTuple())
+  genJavaFile("javaslang", "Tuple.java")(genTuple)
 
 }
 
-def genTuple() = xs"""
-  ${classHeader()}
+def genTuple(): String = {
+
+  def genFactoryMethod(i: Int) = {
+    val generics = gen(1 to i)(j => s"T$j")(", ")
+    val paramsDecl = gen(1 to i)(j => s"T$j t$j")(", ")
+    val params = gen(1 to i)(j => s"t$j")(", ")
+    xs"""
+    static <$generics> Tuple$i<$generics> of($paramsDecl) {
+        return new Tuple$i<>($params);
+    }
+    """
+  }
+
+  def genInnerTupleClass(i: Int) = {
+    val generics = gen(1 to i)(j => s"T$j")(", ")
+    val paramsDecl = gen(1 to i)(j => s"T$j t$j")(", ")
+    xs"""
+    /**
+     * Implementation of a pair, a tuple containing $i elements.
+     */
+    static class Tuple$i<$generics> implements Tuple {
+
+        private static final long serialVersionUID = 1L;
+
+        ${gen(1 to i)(j => s"public final T$j _$j;")("\n")}
+
+        public Tuple$i($paramsDecl) {
+            ${gen(1 to i)(j => s"this._$j = t$j;")("\n")}
+        }
+
+        @Override
+        public int arity() {
+            return $i;
+        }
+
+        @Override
+        public Tuple$i<$generics> unapply() {
+            return this;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            } else if (!(o instanceof Tuple$i)) {
+                return false;
+            } else {
+                final Tuple$i that = (Tuple$i) o;
+                return ${gen(1 to i)(j => s"Objects.equals(this._$j, that._$j)")("\n                         && ")};
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(${gen(1 to i)(j => s"_$j")(", ")});
+        }
+
+        @Override
+        public String toString() {
+            return String.format("(${gen(1 to i)(_ => s"%s")(", ")})", ${gen(1 to i)(j => s"_$j")(", ")});
+        }
+    }
+    """
+  }
+
+  xs"""
   package javaslang;
 
   import java.util.Objects;
 
   public interface Tuple extends ValueObject {
 
-    int arity();
+      /**
+       * Returns the number of elements of this tuple.
+       *
+       * @return The number of elements.
+       */
+      int arity();
 
-    // -- factory methods
+      // -- factory methods
 
-    static Tuple0 empty() {
-      return Tuple0.instance();
-    }
+      static Tuple0 empty() {
+          return Tuple0.instance();
+      }
 
-    ${(1 to 13).map(i => xs"""TODO:genOf($i)""") mkString "\n\n"}
+      ${gen(1 to N)(genFactoryMethod)("\n\n")}
 
-    }
+      /**
+       * Implementation of an empty tuple, a tuple containing no elements.
+       */
+      public static final class Tuple0 implements Tuple {
+
+          private static final long serialVersionUID = 1L;
+
+          /**
+           * The singleton instance of Tuple0.
+           */
+          private static final Tuple0 INSTANCE = new Tuple0();
+
+          /**
+           * Hidden constructor.
+           */
+          private Tuple0() {
+          }
+
+          /**
+           * Returns the singleton instance of Tuple0.
+           *
+           * @return The singleton instance of Tuple0.
+           */
+          public static Tuple0 instance() {
+              return INSTANCE;
+          }
+
+          @Override
+          public int arity() {
+              return 0;
+          }
+
+          @Override
+          public Tuple0 unapply() {
+              return this;
+          }
+
+          @Override
+          public boolean equals(Object o) {
+              return o == this;
+          }
+
+          @Override
+          public int hashCode() {
+              return Objects.hash();
+          }
+
+          @Override
+          public String toString() {
+              return "()";
+          }
+
+          // -- Serializable implementation
+
+          /**
+           * Instance control for object serialization.
+           *
+           * @return The singleton instance of Tuple0.
+           * @see java.io.Serializable
+           */
+          private Object readResolve() {
+              return INSTANCE;
+          }
+      }
+
+      ${gen(1 to N)(genInnerTupleClass)("\n\n")}
+  }
+  """
+}
+
+/**
+ * Generates a Java file.
+ * @param pkg A path of the java package
+ * @param fileName A file name, may contain path segments.
+ * @param gen A generator which produces a String.
+ */
+def genJavaFile(pkg: String, fileName: String)(gen: () => String)(implicit charset: Charset = StandardCharsets.UTF_8): Unit = {
+
+  val fileContents =   xs"""
+    ${classHeader()}
+    ${gen.apply()}
   """
 
+  import java.nio.file.{Paths, Files}
+
+  Files.write(
+    Files.createDirectories(Paths.get(TARGET, pkg)).resolve(fileName),
+    fileContents.getBytes(charset),
+    StandardOpenOption.CREATE, StandardOpenOption.WRITE)
+}
+
+/**
+ * Applies f for a range of Ints using delimiter to mkString the output.
+ * @param range A range of Ints
+ * @param f A generator which takes an Int and produces a String
+ * @param delimiter The delimiter of the strings parts
+ * @return Generated String
+ */
+def gen(range: Range)(f: Int => String)(implicit delimiter: String = "") = range.map(i => f.apply(i)) mkString delimiter
+
+/**
+ * The header for Java files.
+ * @return A header as String
+ */
 def classHeader() = xs"""
   /**    / \\____  _    ______   _____ / \\____   ____  _____
    *    /  \\__  \\/ \\  / \\__  \\ /  __//  \\__  \\ /    \\/ __  \\   Javaslang
@@ -46,50 +219,6 @@ def classHeader() = xs"""
    * /___/ \\_____/\\____/\\_____/____/\\___\\_____/_/  \\_/____/    Licensed under the Apache License, Version 2.0
    */
   """
-
-def gen(name: String, params: Seq[(String, Symbol)]) = xs"""
-      package model
-
-      case class $name(${genParams(params)}, id: Option[Long] = None)
-
-      trait ${name}Component { self: Profile =>
-
-        import driver.simple._
-        import Database.threadLocalSession
-
-        object $name extends Table[$name]("${name.toUpperCase}") {
-
-          def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
-          ${genColumns(params)}
-
-          def * = ${params.map(_._1).mkString(" ~ ")} ~ id.? <> ($name, $name.unapply)
-
-          def delete(id: Long) = db withSession {
-            Query(this).where(_.id is id).delete
-          }
-
-          def findById(id: Long) = db withSession {
-            Query(this).where(_.id is id).firstOption
-          }
-
-          def save(${name.toLowerCase}: $name) = db withSession {
-            ${name.toLowerCase}.id.fold {
-              this.insert(${name.toLowerCase})
-            }{ id =>
-              Query(this).where(_.id is id).update(${name.toLowerCase})
-            }
-          }
-        }
-      }
-  """
-
-def genParams(params: Seq[(String, Symbol)]) = params map {
-  case (name, _type) => name + ": " + _type.name
-} mkString ", "
-
-def genColumns(params: Seq[(String, Symbol)]) = params map {
-  case (name, _type) => xs"""def ${name.toLowerCase} = column[${_type.name}]("${name.toUpperCase}")"""
-} mkString "\n"
 
 /**
  * (C)opyright by Daniel Dietrich
