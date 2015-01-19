@@ -1206,7 +1206,7 @@ def genJavaFile(pkg: String, fileName: String)(gen: () => String)(implicit chars
 
   println(s"Generating $pkg/$fileName")
 
-  val fileContents =   xs"""
+  val fileContents = xs"""
     ${classHeader()}
     ${gen.apply()}
   """
