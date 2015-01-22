@@ -625,6 +625,12 @@ public interface Traversable<T> extends Iterable<T>, Algebra.HigherKinded<T, Tra
 
     Traversable<T> takeWhile(Predicate<? super T> predicate);
 
+    /**
+     * Tip: Given a {@code Traversable&lt;M&lt;T&gt;&gt; t} use {@code t.toJavaArray((Class&lt;M&lt;T&gt;&gt;) (Class) M.class)}.
+     *
+     * @param componentType Type of resulting array's elements.
+     * @return An array containing this elements
+     */
     default T[] toJavaArray(Class<T> componentType) {
         final java.util.List<T> list = toJavaList();
         @SuppressWarnings("unchecked")
