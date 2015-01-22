@@ -5,8 +5,20 @@
  */
 package javaslang.test;
 
-public class Arbitrary {
+/**
+ * Represents an arbitrary object of type T.
+ *
+ * @param <T> The type of the arbitrary object.
+ */
+@FunctionalInterface
+public interface Arbitrary<T> {
 
-    // TODO: add factory methods based on Gen.* to provide arbitrary objects
+    /**
+     * Use {@link Gen} to generate arbitrary objects.
+     *
+     * @param size A size parameter which may be interpreted idividually and is constant for all arbitrary objects regarding one property check.
+     * @return A generator for objects of type T.
+     */
+    Gen<T> arbitrary(int size);
 
 }

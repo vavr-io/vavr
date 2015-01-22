@@ -14,15 +14,19 @@ import javaslang.Functions.*;
  *
  * <pre>
  * <code>
- * // VxE!y(x + y = 0)
+ * // Vx E!y : (x + y == 0) => (y + x == 0) & E!z : (x + y + z) == 0
  * final Iterable<Integer> ns = List.of(-3, -2, -1, 0, 1, 2, 3);
- * Props.forAll(ns).existsUnique(ns).suchThat((x,y) -> x + y == 0).test();
+ *
+ * Property p1 = Props.forAll(ns).existsUnique(ns).suchThat((x,y) -> x + y == 0).implies((x,y) -> y + x == 0)
+ * Property p2 = .and().existsUnique(ns).suchThat((x,y,zero) -> x + y + zero == 0).test();
  * </code>
  * </pre>
  */
+// TODO: unfinished
 // TODO: generate this file
 public class Prop {
 
+    // TODO: Function<Integer, Boolean>
     private final BooleanSupplier test;
 
     Prop(BooleanSupplier test) {

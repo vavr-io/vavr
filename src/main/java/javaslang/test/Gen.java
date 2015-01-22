@@ -5,7 +5,8 @@
  */
 package javaslang.test;
 
-import javaslang.Algebra.*;
+import javaslang.Algebra.HigherKinded;
+import javaslang.Algebra.Monad;
 import javaslang.Tuple.Tuple2;
 import javaslang.collection.List;
 
@@ -17,21 +18,39 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- * Generators are the basis for providing arbitrary objects.
+ * Generators are the building blocks for providing arbitrary objects.
  *
  * @param <T> type of generated objects
  */
 @FunctionalInterface
 public interface Gen<T> extends Supplier<T>, Monad<T, Gen<?>> {
 
-    // @see http://javarevisited.blogspot.co.uk/2013/05/how-to-generate-random-numbers-in-java-between-range.html
+    /**
+     * A thread-safe
+     * <a href="http://javarevisited.blogspot.co.uk/2013/05/how-to-generate-random-numbers-in-java-between-range.html">
+     * random number generator</a> used internally by Gen.
+     */
     static Supplier<Random> RND = ThreadLocalRandom::current;
 
-    static <T> Gen<T> constant(T t) {
+    /**
+     * A generator which returns t.
+     *
+     * @param t   A value.
+     * @param <T> Type of t.
+     * @return A new generator which constantly generates t.
+     */
+    static <T> Gen<T> of(T t) {
         return () -> t;
     }
 
-    static <T> Gen<Integer> choose(int min, int max) {
+    /**
+     * Chooses a number between min and max (inclusive), equally distributed.
+     *
+     * @param min lower bound
+     * @param max upper bound
+     * @return A new generator which generates numbers between min and max.
+     */
+    static Gen<Integer> choose(int min, int max) {
         if (min > max) {
             throw new IllegalArgumentException(String.format("min > max: %s > %s", min, max));
         }
@@ -39,7 +58,9 @@ public interface Gen<T> extends Supplier<T>, Monad<T, Gen<?>> {
     }
 
     static <T> Gen<T> fail(String message) {
-        return () -> { throw new RuntimeException(message); };
+        return () -> {
+            throw new RuntimeException(message);
+        };
     }
 
     @SafeVarargs
@@ -56,7 +77,7 @@ public interface Gen<T> extends Supplier<T>, Monad<T, Gen<?>> {
                     return fail("frequency of nil");
                 } else {
                     final int k = list.head()._1;
-                    return (n <= k) ? list.head()._2 : Frequency.this.gen(n - k, list.tail());
+                    return (n <= k) ? list.head()._2 : gen(n - k, list.tail());
                 }
             }
         }
