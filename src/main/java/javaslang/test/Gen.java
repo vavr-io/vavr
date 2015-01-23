@@ -8,7 +8,8 @@ package javaslang.test;
 import javaslang.Algebra.HigherKinded;
 import javaslang.Algebra.Monad;
 import javaslang.Tuple.Tuple2;
-import javaslang.collection.List;
+import javaslang.collection.Stream;
+import javaslang.collection.Traversable;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -43,53 +44,144 @@ import java.util.function.Supplier;
 public interface Gen<T> extends Supplier<T>, Monad<T, Gen<?>>, Iterable<T> {
 
     /**
-     * A thread-safe
-     * <a href="http://javarevisited.blogspot.co.uk/2013/05/how-to-generate-random-numbers-in-java-between-range.html">
-     * random number generator</a> used by Gen.
+     * A thread-safe, equally distributed random number generator.
      */
-    static Supplier<Random> RND = ThreadLocalRandom::current;
+    static Supplier<Random> RNG = ThreadLocalRandom::current;
 
     /**
-     * A generator which returns t.
+     * A generator which constantly returns t.
      *
      * @param t   A value.
      * @param <T> Type of t.
-     * @return A new generator which constantly generates t.
+     * @return A new T generator
      */
     static <T> Gen<T> of(T t) {
         return () -> t;
     }
 
     /**
-     * Chooses a number between min and max (inclusive), equally distributed.
+     * Chooses an int between min and max, bounds inclusive and numbers equally distributed.
      *
      * @param min lower bound
      * @param max upper bound
-     * @return A new generator which generates numbers between min and max.
+     * @return A new int generator
+     * @throw IllegalArgumentException if min > max
      */
     static Gen<Integer> choose(int min, int max) {
         if (min > max) {
             throw new IllegalArgumentException(String.format("min > max: %s > %s", min, max));
         }
-        return () -> RND.get().nextInt(Math.abs(max - min) + 1) + min;
+        if (min == max) {
+            return () -> min;
+        } else {
+            return () -> RNG.get().nextInt(Math.abs(max - min) + 1) + min;
+        }
     }
 
+    /**
+     * Chooses a long between min and max, bounds inclusive and numbers equally distributed.
+     *
+     * @param min lower bound
+     * @param max upper bound
+     * @return A new long generator
+     * @throw IllegalArgumentException if min > max
+     */
+    static Gen<Long> choose(long min, long max) {
+        if (min > max) {
+            throw new IllegalArgumentException(String.format("min > max: %s > %s", min, max));
+        }
+        if (min == max) {
+            return () -> min;
+        } else {
+            return () -> {
+                final double d = RNG.get().nextDouble();
+                return (long) ((d * max) + ((1.0 - d) * min) + d);
+            };
+        }
+    }
+
+    /**
+     * Chooses a double between min and max, bounds inclusive and numbers equally distributed.
+     *
+     * @param min lower bound
+     * @param max upper bound
+     * @return A new double generator
+     * @throw IllegalArgumentException if min > max, min or max is infinite, min or max is not a number (NaN)
+     */
+    static Gen<Double> choose(double min, double max) {
+        if (min > max) {
+            throw new IllegalArgumentException(String.format("min > max: %s > %s", min, max));
+        }
+        if (Double.isInfinite(min)) {
+            throw new IllegalArgumentException("min is infinite");
+        }
+        if (Double.isInfinite(max)) {
+            throw new IllegalArgumentException("max is infinite");
+        }
+        if (Double.isNaN(min)) {
+            throw new IllegalArgumentException("min is not a number (NaN)");
+        }
+        if (Double.isNaN(max)) {
+            throw new IllegalArgumentException("max is not a number (NaN)");
+        }
+        if (min == max) {
+            return () -> min;
+        } else {
+            return () -> {
+                final double d = RNG.get().nextDouble();
+                return d * max + (1.0 - d) * min;
+            };
+        }
+    }
+
+    /**
+     * A failing generator which throws a RuntimeException on {@link #get()}.
+     *
+     * @param message Message thrown.
+     * @param <T>     Type of values theoretically generated.
+     * @return A new generator which always fails with the given message
+     */
     static <T> Gen<T> fail(String message) {
         return () -> {
             throw new RuntimeException(message);
         };
     }
 
+    /**
+     * Chooses one of the given generators according to their frequency.
+     *
+     * @param generators A non-empty array of Tuples (frequency, generator)
+     * @param <T>        Type to be generated
+     * @return A new T generator
+     * @throws java.lang.NullPointerException     if generators is null
+     * @throws java.lang.IllegalArgumentException if generators is empty
+     */
     @SafeVarargs
-    static <T> Gen<T> frequency(Tuple2<Integer, Gen<T>>... ts) {
-        Objects.requireNonNull(ts, "ts is null");
-        return frequency(List.of(ts));
+    static <T> Gen<T> frequency(Tuple2<Integer, Gen<T>>... generators) {
+        Objects.requireNonNull(generators, "generators is null");
+        if (generators.length == 0) {
+            throw new IllegalArgumentException("generators is empty");
+        }
+        return frequency(Stream.of(generators));
     }
 
-    static <T> Gen<T> frequency(List<Tuple2<Integer, Gen<T>>> ts) {
-        Objects.requireNonNull(ts, "ts is null");
+    /**
+     * Chooses one of the given generators according to their frequency.
+     *
+     * @param generators A non-empty traversable of Tuples (frequency, generator)
+     * @param <T>        Type to be generated
+     * @return A new T generator
+     * @throws java.lang.NullPointerException     if generators is null
+     * @throws java.lang.IllegalArgumentException if generators is empty
+     */
+    static <T> Gen<T> frequency(Iterable<Tuple2<Integer, Gen<T>>> generators) {
+        Objects.requireNonNull(generators, "generators is null");
+        final Traversable<Tuple2<Integer, Gen<T>>> traversable = Traversable.of(generators);
+        if (traversable.isEmpty()) {
+            throw new IllegalArgumentException("generators is empty");
+        }
         final class Frequency {
-            Gen<T> gen(int n, List<Tuple2<Integer, Gen<T>>> list) {
+            Gen<T> gen(int n, Traversable<Tuple2<Integer, Gen<T>>> list) {
                 if (list.isEmpty()) {
                     return fail("frequency of nil");
                 } else {
@@ -98,35 +190,88 @@ public interface Gen<T> extends Supplier<T>, Monad<T, Gen<?>>, Iterable<T> {
                 }
             }
         }
-        final int size = ts.map(t -> t._1).sum();
-        return choose(1, size).flatMap(n -> new Frequency().gen(n, ts));
+        final int size = traversable.map(t -> t._1).sum();
+        return choose(1, size).flatMap(n -> new Frequency().gen(n, traversable));
     }
 
+    /**
+     * Randomly chooses one of the given generators.
+     *
+     * @param generators A non-empty array of generators
+     * @param <T>        Type to be generated
+     * @return A new T generator
+     * @throws java.lang.NullPointerException     if generators is null
+     * @throws java.lang.IllegalArgumentException if generators is empty
+     */
     @SafeVarargs
-    static <T> Gen<T> oneOf(Gen<T>... ts) {
-        return choose(0, ts.length - 1).flatMap(i -> ts[i]);
+    static <T> Gen<T> oneOf(Gen<T>... generators) {
+        Objects.requireNonNull(generators, "generators is null");
+        if (generators.length == 0) {
+            throw new IllegalArgumentException("generators is empty");
+        }
+        return choose(0, generators.length - 1).flatMap(i -> generators[i]);
     }
 
-    static <T> Gen<T> oneOf(Iterable<Gen<T>> ts) {
+    /**
+     * Randomly chooses one of the given generators.
+     *
+     * @param generators A non-empty Iterable of generators
+     * @param <T>        Type to be generated
+     * @return A new T generator
+     * @throws java.lang.NullPointerException     if generators is null
+     * @throws java.lang.IllegalArgumentException if generators is empty
+     */
+    static <T> Gen<T> oneOf(Iterable<Gen<T>> generators) {
+        Objects.requireNonNull(generators, "generators is null");
+        final Traversable<Gen<T>> traversable = Traversable.of(generators);
+        if (traversable.isEmpty()) {
+            throw new IllegalArgumentException("generators is empty");
+        }
         //noinspection unchecked
-        return oneOf(List.of(ts).toJavaArray((Class<Gen<T>>) (Class) Gen.class));
+        return oneOf(traversable.toJavaArray((Class<Gen<T>>) (Class) Gen.class));
     }
 
+    /**
+     * Functional interface of this generator, inherited by {@link java.util.function.Supplier}.
+     *
+     * @return A generated value of type T.
+     */
     @Override
     T get();
 
+    /**
+     * Returns a generator based on this generator that generates value of type U.
+     *
+     * @param mapper A function that maps a generated value of this generator to another value.
+     * @param <U>    Type of the mapped value
+     * @return A new generator
+     */
     @Override
-    default <U> Gen<U> map(Function<? super T, ? extends U> f) {
-        return () -> f.apply(get());
+    default <U> Gen<U> map(Function<? super T, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return () -> mapper.apply(get());
     }
 
+    /**
+     * Returns a generator based on this generator that generates value of type U.
+     *
+     * @param mapper A function that maps a generated value of this generator to a new generator which generates values of type U.
+     * @param <U>    Type of generated values of the new generator
+     * @return A new generator
+     */
     @SuppressWarnings("unchecked")
     @Override
-    default <U, GEN extends HigherKinded<U, Gen<?>>> Gen<U> flatMap(Function<? super T, GEN> f) {
+    default <U, GEN extends HigherKinded<U, Gen<?>>> Gen<U> flatMap(Function<? super T, GEN> mapper) {
         //noinspection Convert2MethodRef
-        return () -> ((Gen<U>) f.apply(get())).get();
+        return () -> ((Gen<U>) mapper.apply(get())).get();
     }
 
+    /**
+     * Returns a generator based on this generator which produces values that fulfil the given predicate.
+     *
+     * @param predicate A predicate
+     * @return A new generator
+     */
     default Gen<T> filter(Predicate<T> predicate) {
         return () -> {
             int count = 0;
@@ -142,6 +287,7 @@ public interface Gen<T> extends Supplier<T>, Monad<T, Gen<?>>, Iterable<T> {
 
     /**
      * An infinite number of random objects of type T generated by this.
+     *
      * @return A new iterator.
      */
     @Override

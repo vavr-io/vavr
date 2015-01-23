@@ -5,7 +5,8 @@
  */
 package javaslang.collection;
 
-import javaslang.Algebra.*;
+import javaslang.Algebra.HigherKinded;
+import javaslang.Algebra.Monoid;
 import javaslang.Tuple.Tuple2;
 import javaslang.match.Match;
 import javaslang.monad.Option;
@@ -53,6 +54,7 @@ import java.util.function.UnaryOperator;
  * </ul>
  * <p>Numeric operations:</p>
  * <ul>
+ * <li>TODO: average</li>
  * <li>TODO: max</li>
  * <li>TODO: min</li>
  * <li>{@link #product()}</li>
@@ -88,6 +90,12 @@ import java.util.function.UnaryOperator;
  * <li>{@link #stderr()}</li>
  * <li>{@link #stdout()}</li>
  * </ul>
+ * <p>Tests:</p>
+ * <ul>
+ * <li>TODO: boolean forAll(Predicate)</li>
+ * <li>TODO: boolean exists(Predicate)</li>
+ * <li>TODO: boolean existsUnique(Predicate)</li>
+ * </ul>
  * <p>Transformation:</p>
  * <ul>
  * <li>{@link #distinct()}</li>
@@ -109,6 +117,25 @@ import java.util.function.UnaryOperator;
  * @param <T> Component type.
  */
 public interface Traversable<T> extends Iterable<T>, HigherKinded<T, Traversable<?>> {
+
+    /**
+     * Returns a Traversable based on an Iterable. Returns the given Iterable, if it is already a Traversable,
+     * otherwise {@link Stream#of(Iterable)}.
+     *
+     * @param iterable An Iterable.
+     * @param <T>      Component type
+     * @return A Traversable
+     */
+    static <T> Traversable<T> of(Iterable<? extends T> iterable) {
+        Objects.requireNonNull(iterable, "iterable is null");
+        if (iterable instanceof Traversable) {
+            @SuppressWarnings("unchecked")
+            final Traversable<T> traversable = (Traversable<T>) iterable;
+            return traversable;
+        } else {
+            return Stream.of(iterable);
+        }
+    }
 
     /**
      * Returns an empty version of this traversable, i.e. {@code this.clear().isEmpty() == true}.

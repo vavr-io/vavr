@@ -9,8 +9,28 @@ import javaslang.Tuple;
 
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Objects;
 
 public interface Seq<T> extends Traversable<T> {
+
+    /**
+     * Returns a Seq based on an Iterable. Returns the given Iterable, if it is already a Seq,
+     * otherwise {@link Stream#of(Iterable)}.
+     *
+     * @param iterable An Iterable.
+     * @param <T>      Component type
+     * @return A Seq
+     */
+    static <T> Traversable<T> of(Iterable<? extends T> iterable) {
+        Objects.requireNonNull(iterable, "iterable is null");
+        if (iterable instanceof Seq) {
+            @SuppressWarnings("unchecked")
+            final Seq<T> seq = (Seq<T>) iterable;
+            return seq;
+        } else {
+            return Stream.of(iterable);
+        }
+    }
 
     Seq<T> append(T element);
 
