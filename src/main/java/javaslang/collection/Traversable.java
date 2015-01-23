@@ -53,6 +53,8 @@ import java.util.function.UnaryOperator;
  * </ul>
  * <p>Numeric operations:</p>
  * <ul>
+ * <li>TODO: max</li>
+ * <li>TODO: min</li>
  * <li>{@link #product()}</li>
  * <li>{@link #sum()}</li>
  * </ul>
