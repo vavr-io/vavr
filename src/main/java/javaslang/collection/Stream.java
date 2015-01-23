@@ -20,6 +20,7 @@ import java.util.function.*;
 import java.util.function.Function;
 import java.util.stream.Collector;
 
+// DEV-NOTE: Beware of serializing IO streams.
 public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stream<T>>, ValueObject {
 
     /**
