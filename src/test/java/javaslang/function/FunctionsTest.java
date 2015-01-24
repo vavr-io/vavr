@@ -633,91 +633,91 @@ public class FunctionsTest {
 	public void shouldParseReturnTypeVoid() {
 		final ReturnTypeVoid lambda = () -> {
 		};
-		final Class<?> actual = λ.getLambdaSignature(lambda).returnType();
+		final Class<?> actual = Lambda.getLambdaSignature(lambda).returnType();
 		assertThat(actual.getName()).isEqualTo("void");
 	}
 
 	@Test
 	public void shouldParseReturnTypeBoolean() {
 		final ReturnTypeBoolean lambda = () -> true;
-		final Class<?> actual = λ.getLambdaSignature(lambda).returnType();
+		final Class<?> actual = Lambda.getLambdaSignature(lambda).returnType();
 		assertThat(actual.getName()).isEqualTo("boolean");
 	}
 
 	@Test
 	public void shouldParseReturnTypeByte() {
 		final ReturnTypeByte lambda = () -> (byte) 1;
-		final Class<?> actual = λ.getLambdaSignature(lambda).returnType();
+		final Class<?> actual = Lambda.getLambdaSignature(lambda).returnType();
 		assertThat(actual.getName()).isEqualTo("byte");
 	}
 
 	@Test
 	public void shouldParseReturnTypeChar() {
 		final ReturnTypeChar lambda = () -> '@';
-		final Class<?> actual = λ.getLambdaSignature(lambda).returnType();
+		final Class<?> actual = Lambda.getLambdaSignature(lambda).returnType();
 		assertThat(actual.getName()).isEqualTo("char");
 	}
 
 	@Test
 	public void shouldParseReturnTypeDouble() {
 		final ReturnTypeDouble lambda = () -> 1.0d;
-		final Class<?> actual = λ.getLambdaSignature(lambda).returnType();
+		final Class<?> actual = Lambda.getLambdaSignature(lambda).returnType();
 		assertThat(actual.getName()).isEqualTo("double");
 	}
 
 	@Test
 	public void shouldParseReturnTypeFloat() {
 		final ReturnTypeFloat lambda = () -> 1.0f;
-		final Class<?> actual = λ.getLambdaSignature(lambda).returnType();
+		final Class<?> actual = Lambda.getLambdaSignature(lambda).returnType();
 		assertThat(actual.getName()).isEqualTo("float");
 	}
 
 	@Test
 	public void shouldParseReturnTypeInt() {
 		final ReturnTypeInt lambda = () -> 1;
-		final Class<?> actual = λ.getLambdaSignature(lambda).returnType();
+		final Class<?> actual = Lambda.getLambdaSignature(lambda).returnType();
 		assertThat(actual.getName()).isEqualTo("int");
 	}
 
 	@Test
 	public void shouldParseReturnTypeLong() {
 		final ReturnTypeLong lambda = () -> 1L;
-		final Class<?> actual = λ.getLambdaSignature(lambda).returnType();
+		final Class<?> actual = Lambda.getLambdaSignature(lambda).returnType();
 		assertThat(actual.getName()).isEqualTo("long");
 	}
 
 	@Test
 	public void shouldParseReturnTypeShort() {
 		final ReturnTypeShort lambda = () -> (short) 1;
-		final Class<?> actual = λ.getLambdaSignature(lambda).returnType();
+		final Class<?> actual = Lambda.getLambdaSignature(lambda).returnType();
 		assertThat(actual.getName()).isEqualTo("short");
 	}
 
 	@Test
 	public void shouldParseReturnTypeArrayOfInt() {
 		final ReturnTypeArrayOfInt lambda = () -> new int[] {};
-		final Class<?> actual = λ.getLambdaSignature(lambda).returnType();
+		final Class<?> actual = Lambda.getLambdaSignature(lambda).returnType();
 		assertThat(actual.getName()).isEqualTo("[I");
 	}
 
 	@Test
 	public void shouldParseParameterTypeArrayOfBoolean() {
 		final ParameterTypeArrayOfBoolean lambda = (boolean[] b) -> {};
-		final Class<?> actual = λ.getLambdaSignature(lambda).parameterType(0);
+		final Class<?> actual = Lambda.getLambdaSignature(lambda).parameterType(0);
 		assertThat(actual.getName()).isEqualTo("[Z");
 	}
 
 	@Test
 	public void shouldParseReturnTypeArrayOfArrayReference() {
 		final ReturnTypeArrayOfArrayOfString lambda = () -> new String[][] {};
-		final Class<?> actual = λ.getLambdaSignature(lambda).returnType();
+		final Class<?> actual = Lambda.getLambdaSignature(lambda).returnType();
 		assertThat(actual.getName()).isEqualTo("[[Ljava.lang.String;");
 	}
 
 	@Test
 	public void shouldParseReturnTypeClassReference() {
 		final ReturnTypeClassReference lambda = () -> "hi";
-		final Class<?> actual = λ.getLambdaSignature(lambda).returnType();
+		final Class<?> actual = Lambda.getLambdaSignature(lambda).returnType();
 		assertThat(actual.getName()).isEqualTo("java.lang.String");
 	}
 
@@ -725,7 +725,7 @@ public class FunctionsTest {
 	public void shouldParseNoParameterTypes() {
 		final NoParameterTypes lambda = () -> {
 		};
-		final Class<?>[] actual = λ.getLambdaSignature(lambda).parameterArray();
+		final Class<?>[] actual = Lambda.getLambdaSignature(lambda).parameterArray();
 		assertThat(actual).isEmpty();
 	}
 
@@ -733,7 +733,7 @@ public class FunctionsTest {
 	public void shouldParseOneParameterType() {
 		final OneParameterType lambda = (int i) -> {
 		};
-		final Class<?>[] actual = λ.getLambdaSignature(lambda).parameterArray();
+		final Class<?>[] actual = Lambda.getLambdaSignature(lambda).parameterArray();
 		assertThat(actual).containsExactly(int.class);
 	}
 
@@ -741,7 +741,7 @@ public class FunctionsTest {
 	public void shouldParseTwoParameterTypes() throws ClassNotFoundException {
 		final TwoParameterTypes lambda = (String s, byte[][] bytes) -> {
 		};
-		final Class<?>[] actual = λ.getLambdaSignature(lambda).parameterArray();
+		final Class<?>[] actual = Lambda.getLambdaSignature(lambda).parameterArray();
 		assertThat(actual).containsExactly(String.class, Class.forName("[[B"));
 	}
 
@@ -749,14 +749,14 @@ public class FunctionsTest {
 	public void shouldConvertUnitLambdaSignatureToString() {
 		final Unit lambda = () -> {
 		};
-		final String actual = λ.getLambdaSignature(lambda).toString();
+		final String actual = Lambda.getLambdaSignature(lambda).toString();
 		assertThat(actual).isEqualTo("()void");
 	}
 
 	@Test
 	public void shouldConvertNonTrivialLambdaSignatureToString() {
 		final StringIntegerArrayDoubleArrayToTuple3 lambda = (s, i, d) -> Tuple.of(s, i, d);
-		final String actual = λ.getLambdaSignature(lambda).toString();
+		final String actual = Lambda.getLambdaSignature(lambda).toString();
 		assertThat(actual).isEqualTo("(String,Integer[][],double[][])Tuple3");
 	}
 
@@ -766,21 +766,21 @@ public class FunctionsTest {
 		};
 		final Unit lambda2 = () -> {
 		};
-		assertThat(λ.getLambdaSignature(lambda1)).isEqualTo(λ.getLambdaSignature(lambda2));
+		assertThat(Lambda.getLambdaSignature(lambda1)).isEqualTo(Lambda.getLambdaSignature(lambda2));
 	}
 
 	@Test
 	public void shouldRecognizeNonTrivialEqualLambdaSignatures() {
 		final StringIntegerArrayDoubleArrayToTuple3 lambda1 = (s, i, d) -> Tuple.of(s, i, d);
 		final StringIntegerArrayDoubleArrayToTuple3 lambda2 = (s, i, d) -> Tuple.of(s, i, d);
-		assertThat(λ.getLambdaSignature(lambda1)).isEqualTo(λ.getLambdaSignature(lambda2));
+		assertThat(Lambda.getLambdaSignature(lambda1)).isEqualTo(Lambda.getLambdaSignature(lambda2));
 	}
 
 	@Test
 	public void shouldRecognizeNonTrivialNonEqualLambdaSignatures() {
 		final StringIntegerArrayDoubleArrayToTuple3 lambda1 = (s, i, d) -> Tuple.of(s, i, d);
 		final StringIntArrayDoubleArrayToTuple3 lambda2 = (s, i, d) -> Tuple.of(s, i, d);
-		assertThat(λ.getLambdaSignature(lambda1)).isNotEqualTo(λ.getLambdaSignature(lambda2));
+		assertThat(Lambda.getLambdaSignature(lambda1)).isNotEqualTo(Lambda.getLambdaSignature(lambda2));
 	}
 
 	@FunctionalInterface

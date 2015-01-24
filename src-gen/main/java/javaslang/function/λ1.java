@@ -12,7 +12,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 @FunctionalInterface
-public interface λ1<T1, R> extends λ<R>, java.util.function.Function<T1, R> {
+public interface λ1<T1, R> extends Lambda<R>, java.util.function.Function<T1, R> {
 
     static <T> λ1<T, T> identity() {
         return t -> t;

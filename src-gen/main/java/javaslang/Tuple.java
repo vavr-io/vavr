@@ -6,8 +6,6 @@
 // @@ GENERATED FILE - DO NOT MODIFY @@
 package javaslang;
 
-import java.util.Objects;
-
 public interface Tuple extends ValueObject {
 
     /**

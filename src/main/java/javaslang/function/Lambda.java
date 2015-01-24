@@ -26,7 +26,7 @@ import java.util.function.Function;
  *
  * @param <R> Return type of the checked function.
  */
-public interface λ<R> extends Serializable {
+public interface Lambda<R> extends Serializable {
 
     /**
      * Serializes a lambda and returns the corresponding {@link java.lang.invoke.SerializedLambda}.
@@ -77,21 +77,21 @@ public interface λ<R> extends Serializable {
      *
      * @return A curried function equivalent to this.
      */
-    λ curried();
+    Lambda curried();
 
     /**
      * Returns a tupled version of this function.
      *
      * @return A tupled function equivalent to this.
      */
-    λ<R> tupled();
+    Lambda<R> tupled();
 
     /**
      * Returns a reversed version of this function.
      *
      * @return A reversed function equivalent to this.
      */
-    λ<R> reversed();
+    Lambda<R> reversed();
 
     /**
      * There can be nothing said about the type of exception (in Java), if the Function arg is also a checked function.
@@ -102,9 +102,9 @@ public interface λ<R> extends Serializable {
      * @param <V> Return value of after
      * @return A Function composed of this and after
      */
-    <V> λ<V> andThen(Function<? super R, ? extends V> after);
+    <V> Lambda<V> andThen(Function<? super R, ? extends V> after);
 
     default MethodType getType() {
-        return λ.getLambdaSignature(this);
+        return Lambda.getLambdaSignature(this);
     }
 }

@@ -65,7 +65,7 @@ def genFunctions(): Unit = {
     import java.util.function.Function;
 
     @FunctionalInterface
-    public interface $name$i<${if (i > 0) s"$generics, " else ""}R> extends λ<R>${additionalInterfaces(i, checked)} {
+    public interface $name$i<${if (i > 0) s"$generics, " else ""}R> extends Lambda<R>${additionalInterfaces(i, checked)} {
 
         ${if (i == 1) xs"""
         static <T> ${name}1<T, T> identity() {
@@ -269,8 +269,6 @@ def genTuples(): Unit = {
 
   def genBaseTuple(): String = xs"""
   package javaslang;
-
-  import java.util.Objects;
 
   public interface Tuple extends ValueObject {
 

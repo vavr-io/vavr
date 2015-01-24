@@ -12,7 +12,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 @FunctionalInterface
-public interface X0<R> extends λ<R> {
+public interface X0<R> extends Lambda<R> {
 
     R apply() throws Throwable;
 

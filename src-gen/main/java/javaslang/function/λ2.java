@@ -12,7 +12,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 @FunctionalInterface
-public interface λ2<T1, T2, R> extends λ<R>, java.util.function.BiFunction<T1, T2, R> {
+public interface λ2<T1, T2, R> extends Lambda<R>, java.util.function.BiFunction<T1, T2, R> {
 
     R apply(T1 t1, T2 t2);
 

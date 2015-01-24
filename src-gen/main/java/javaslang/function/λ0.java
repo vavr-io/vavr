@@ -12,7 +12,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 @FunctionalInterface
-public interface λ0<R> extends λ<R>, java.util.function.Supplier<R> {
+public interface λ0<R> extends Lambda<R>, java.util.function.Supplier<R> {
 
     R apply();
 
