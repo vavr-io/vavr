@@ -5,8 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple;
-import javaslang.Tuple.*;
+import javaslang.*;
 
 import java.io.*;
 import java.util.Objects;

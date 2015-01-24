@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.lang.invoke.MethodType;
 
 import javaslang.Tuple;
-import javaslang.Tuple.Tuple3;
+import javaslang.Tuple3;
 
 import javaslang.control.Try;
 import org.assertj.core.api.Assertions;
@@ -44,7 +44,7 @@ public class FunctionsTest {
 		final Function0 lambda = () -> null;
 		final MethodType actual = lambda.tupled().getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
-				"(Ljavaslang/Tuple$Tuple0;)Ljava/lang/Object;", getClass().getClassLoader());
+				"(Ljavaslang/Tuple0;)Ljava/lang/Object;", getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -92,7 +92,7 @@ public class FunctionsTest {
 		final Function1 lambda = o -> o;
 		final MethodType actual = lambda.tupled().getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
-				"(Ljavaslang/Tuple$Tuple1;)Ljava/lang/Object;", getClass().getClassLoader());
+				"(Ljavaslang/Tuple1;)Ljava/lang/Object;", getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -149,7 +149,7 @@ public class FunctionsTest {
 		final Function2 lambda = (o1, o2) -> o1;
 		final MethodType actual = lambda.tupled().getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
-				"(Ljavaslang/Tuple$Tuple2;)Ljava/lang/Object;", getClass().getClassLoader());
+				"(Ljavaslang/Tuple2;)Ljava/lang/Object;", getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -189,7 +189,7 @@ public class FunctionsTest {
 		final Function3 lambda = (o1, o2, o3) -> o1;
 		final MethodType actual = lambda.tupled().getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
-				"(Ljavaslang/Tuple$Tuple3;)Ljava/lang/Object;", getClass().getClassLoader());
+				"(Ljavaslang/Tuple3;)Ljava/lang/Object;", getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -229,7 +229,7 @@ public class FunctionsTest {
 		final Function4 lambda = (o1, o2, o3, o4) -> o1;
 		final MethodType actual = lambda.tupled().getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
-				"(Ljavaslang/Tuple$Tuple4;)Ljava/lang/Object;", getClass().getClassLoader());
+				"(Ljavaslang/Tuple4;)Ljava/lang/Object;", getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -270,7 +270,7 @@ public class FunctionsTest {
 		final Function5 lambda = (o1, o2, o3, o4, o5) -> o1;
 		final MethodType actual = lambda.tupled().getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
-				"(Ljavaslang/Tuple$Tuple5;)Ljava/lang/Object;", getClass().getClassLoader());
+				"(Ljavaslang/Tuple5;)Ljava/lang/Object;", getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -311,7 +311,7 @@ public class FunctionsTest {
 		final Function6 lambda = (o1, o2, o3, o4, o5, o6) -> o1;
 		final MethodType actual = lambda.tupled().getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
-				"(Ljavaslang/Tuple$Tuple6;)Ljava/lang/Object;", getClass().getClassLoader());
+				"(Ljavaslang/Tuple6;)Ljava/lang/Object;", getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -352,7 +352,7 @@ public class FunctionsTest {
 		final Function7 lambda = (o1, o2, o3, o4, o5, o6, o7) -> o1;
 		final MethodType actual = lambda.tupled().getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
-				"(Ljavaslang/Tuple$Tuple7;)Ljava/lang/Object;", getClass().getClassLoader());
+				"(Ljavaslang/Tuple7;)Ljava/lang/Object;", getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -394,7 +394,7 @@ public class FunctionsTest {
 		final Function8 lambda = (o1, o2, o3, o4, o5, o6, o7, o8) -> o1;
 		final MethodType actual = lambda.tupled().getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
-				"(Ljavaslang/Tuple$Tuple8;)Ljava/lang/Object;", getClass().getClassLoader());
+				"(Ljavaslang/Tuple8;)Ljava/lang/Object;", getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -436,7 +436,7 @@ public class FunctionsTest {
 		final Function9 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9) -> o1;
 		final MethodType actual = lambda.tupled().getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
-				"(Ljavaslang/Tuple$Tuple9;)Ljava/lang/Object;", getClass().getClassLoader());
+				"(Ljavaslang/Tuple9;)Ljava/lang/Object;", getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -479,7 +479,7 @@ public class FunctionsTest {
 		final Function10 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10) -> o1;
 		final MethodType actual = lambda.tupled().getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
-				"(Ljavaslang/Tuple$Tuple10;)Ljava/lang/Object;", getClass().getClassLoader());
+				"(Ljavaslang/Tuple10;)Ljava/lang/Object;", getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -522,7 +522,7 @@ public class FunctionsTest {
 		final Function11 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11) -> o1;
 		final MethodType actual = lambda.tupled().getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
-				"(Ljavaslang/Tuple$Tuple11;)Ljava/lang/Object;", getClass().getClassLoader());
+				"(Ljavaslang/Tuple11;)Ljava/lang/Object;", getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -565,7 +565,7 @@ public class FunctionsTest {
 		final Function12 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12) -> o1;
 		final MethodType actual = lambda.tupled().getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
-				"(Ljavaslang/Tuple$Tuple12;)Ljava/lang/Object;", getClass().getClassLoader());
+				"(Ljavaslang/Tuple12;)Ljava/lang/Object;", getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -611,7 +611,7 @@ public class FunctionsTest {
 				o12, o13) -> o1;
 		final MethodType actual = lambda.tupled().getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
-				"(Ljavaslang/Tuple$Tuple13;)Ljava/lang/Object;", getClass().getClassLoader());
+				"(Ljavaslang/Tuple13;)Ljava/lang/Object;", getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 

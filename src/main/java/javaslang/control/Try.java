@@ -9,9 +9,9 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.*;
 
+import javaslang.Tuple1;
 import javaslang.algebra.*;
 import javaslang.Tuple;
-import javaslang.Tuple.*;
 import javaslang.ValueObject;
 import javaslang.function.CheckedRunnable;
 import javaslang.function.CheckedSupplier;

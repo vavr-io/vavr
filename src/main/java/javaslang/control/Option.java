@@ -7,8 +7,8 @@ package javaslang.control;
 
 import javaslang.algebra.*;
 import javaslang.Tuple;
-import javaslang.Tuple.Tuple0;
-import javaslang.Tuple.Tuple1;
+import javaslang.Tuple0;
+import javaslang.Tuple1;
 import javaslang.ValueObject;
 import javaslang.control.Valences.Univalent;
 

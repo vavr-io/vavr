@@ -6,7 +6,7 @@
 package javaslang.collection;
 
 import javaslang.algebra.*;
-import javaslang.Tuple.Tuple2;
+import javaslang.Tuple2;
 import javaslang.control.Match;
 import javaslang.control.Option;
 

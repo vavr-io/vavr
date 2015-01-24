@@ -6,7 +6,7 @@
 // @@ GENERATED FILE - DO NOT MODIFY @@
 package javaslang.function;
 
-import javaslang.Tuple.*;
+import javaslang.Tuple1;
 
 import java.util.Objects;
 import java.util.function.Function;

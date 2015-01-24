@@ -11,22 +11,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Objects;
 
-import javaslang.Tuple;
-import javaslang.Tuple.Tuple0;
-import javaslang.Tuple.Tuple1;
-import javaslang.Tuple.Tuple10;
-import javaslang.Tuple.Tuple11;
-import javaslang.Tuple.Tuple12;
-import javaslang.Tuple.Tuple13;
-import javaslang.Tuple.Tuple2;
-import javaslang.Tuple.Tuple3;
-import javaslang.Tuple.Tuple4;
-import javaslang.Tuple.Tuple5;
-import javaslang.Tuple.Tuple6;
-import javaslang.Tuple.Tuple7;
-import javaslang.Tuple.Tuple8;
-import javaslang.Tuple.Tuple9;
-
 import org.junit.Test;
 
 public class TupleTest {

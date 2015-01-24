@@ -18,8 +18,7 @@ val TARGET = "src-gen/main/java"
 def run() {
 
   genFunctions()
-  genJavaFile("javaslang", "Tuple.java")(genTuple)
-
+  genTuples()
 }
 
 def genFunctions(): Unit = {
@@ -60,7 +59,7 @@ def genFunctions(): Unit = {
     def genFunction(name: String, checked: Boolean): String = xs"""
     package javaslang.function;
 
-    import javaslang.Tuple.*;
+    import javaslang.Tuple$i;
 
     import java.util.Objects;
     import java.util.function.Function;
@@ -126,7 +125,7 @@ def genFunctions(): Unit = {
 
 }
 
-def genTuple(): String = {
+def genTuples(): Unit = {
 
   def genFactoryMethod(i: Int) = {
     val generics = gen(1 to i)(j => s"T$j")(", ")
@@ -139,14 +138,89 @@ def genTuple(): String = {
     """
   }
 
-  def genInnerTupleClass(i: Int) = {
+  def genTuple0(): String = xs"""
+    package javaslang;
+
+    import java.util.Objects;
+
+    /**
+     * Implementation of an empty tuple, a tuple containing no elements.
+     */
+    public final class Tuple0 implements Tuple {
+
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * The singleton instance of Tuple0.
+         */
+        private static final Tuple0 INSTANCE = new Tuple0();
+
+        /**
+         * Hidden constructor.
+         */
+        private Tuple0() {
+        }
+
+        /**
+         * Returns the singleton instance of Tuple0.
+         *
+         * @return The singleton instance of Tuple0.
+         */
+        public static Tuple0 instance() {
+            return INSTANCE;
+        }
+
+        @Override
+        public int arity() {
+            return 0;
+        }
+
+        @Override
+        public Tuple0 unapply() {
+            return this;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return o == this;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash();
+        }
+
+        @Override
+        public String toString() {
+            return "()";
+        }
+
+        // -- Serializable implementation
+
+        /**
+         * Instance control for object serialization.
+         *
+         * @return The singleton instance of Tuple0.
+         * @see java.io.Serializable
+         */
+        private Object readResolve() {
+            return INSTANCE;
+        }
+    }
+  """
+
+  def genTuple(i: Int): Unit = {
     val generics = gen(1 to i)(j => s"T$j")(", ")
     val paramsDecl = gen(1 to i)(j => s"T$j t$j")(", ")
-    xs"""
+    val tuple = xs"""
+    package javaslang;
+
+    import java.util.Objects;
+
     /**
      * Implementation of a pair, a tuple containing $i elements.
      */
-    static class Tuple$i<$generics> implements Tuple {
+    public class Tuple$i<$generics> implements Tuple {
 
         private static final long serialVersionUID = 1L;
 
@@ -189,9 +263,11 @@ def genTuple(): String = {
         }
     }
     """
+
+    genJavaFile("javaslang", s"Tuple$i.java")(() => tuple)
   }
 
-  xs"""
+  def genBaseTuple(): String = xs"""
   package javaslang;
 
   import java.util.Objects;
@@ -212,75 +288,13 @@ def genTuple(): String = {
       }
 
       ${gen(1 to N)(genFactoryMethod)("\n\n")}
-
-      /**
-       * Implementation of an empty tuple, a tuple containing no elements.
-       */
-      public static final class Tuple0 implements Tuple {
-
-          private static final long serialVersionUID = 1L;
-
-          /**
-           * The singleton instance of Tuple0.
-           */
-          private static final Tuple0 INSTANCE = new Tuple0();
-
-          /**
-           * Hidden constructor.
-           */
-          private Tuple0() {
-          }
-
-          /**
-           * Returns the singleton instance of Tuple0.
-           *
-           * @return The singleton instance of Tuple0.
-           */
-          public static Tuple0 instance() {
-              return INSTANCE;
-          }
-
-          @Override
-          public int arity() {
-              return 0;
-          }
-
-          @Override
-          public Tuple0 unapply() {
-              return this;
-          }
-
-          @Override
-          public boolean equals(Object o) {
-              return o == this;
-          }
-
-          @Override
-          public int hashCode() {
-              return Objects.hash();
-          }
-
-          @Override
-          public String toString() {
-              return "()";
-          }
-
-          // -- Serializable implementation
-
-          /**
-           * Instance control for object serialization.
-           *
-           * @return The singleton instance of Tuple0.
-           * @see java.io.Serializable
-           */
-          private Object readResolve() {
-              return INSTANCE;
-          }
-      }
-
-      ${gen(1 to N)(genInnerTupleClass)("\n\n")}
   }
   """
+
+  genJavaFile("javaslang", "Tuple.java")(genBaseTuple)
+  genJavaFile("javaslang", "Tuple0.java")(genTuple0)
+
+  (1 to N).foreach(genTuple)
 }
 
 /**

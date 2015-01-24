@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.Tuple;
+import javaslang.Tuple2;
 
 import java.util.Comparator;
 import java.util.Iterator;
@@ -67,7 +68,7 @@ public interface Seq<T> extends Traversable<T> {
      * @param n An index.
      * @return A Tuple containing the first n and the remaining elements.
      */
-    Tuple.Tuple2<? extends Traversable<T>, ? extends Traversable<T>> splitAt(int n);
+    Tuple2<? extends Traversable<T>, ? extends Traversable<T>> splitAt(int n);
 
     Seq<T> subsequence(int beginIndex);
 

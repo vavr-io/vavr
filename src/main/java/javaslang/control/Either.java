@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.function.*;
 
 import javaslang.Tuple;
-import javaslang.Tuple.*;
+import javaslang.Tuple1;
 import javaslang.ValueObject;
 import javaslang.control.Option.None;
 import javaslang.control.Option.Some;

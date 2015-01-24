@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Tuple2;
 import javaslang.algebra.Monoid;
 import javaslang.Tuple;
 import javaslang.control.Option;
@@ -932,22 +933,22 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldZipNonNilsIfThisIsSmaller() {
-        final Traversable<Tuple.Tuple2<Integer, String>> actual = this.of(1, 2).zip(this.of("a", "b", "c"));
-        final Traversable<Tuple.Tuple2<Integer, String>> expected = this.of(Tuple.of(1, "a"), Tuple.of(2, "b"));
+        final Traversable<Tuple2<Integer, String>> actual = this.of(1, 2).zip(this.of("a", "b", "c"));
+        final Traversable<Tuple2<Integer, String>> expected = this.of(Tuple.of(1, "a"), Tuple.of(2, "b"));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipNonNilsIfThatIsSmaller() {
-        final Traversable<Tuple.Tuple2<Integer, String>> actual = this.of(1, 2, 3).zip(this.of("a", "b"));
-        final Traversable<Tuple.Tuple2<Integer, String>> expected = this.of(Tuple.of(1, "a"), Tuple.of(2, "b"));
+        final Traversable<Tuple2<Integer, String>> actual = this.of(1, 2, 3).zip(this.of("a", "b"));
+        final Traversable<Tuple2<Integer, String>> expected = this.of(Tuple.of(1, "a"), Tuple.of(2, "b"));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipNonNilsOfSameSize() {
-        final Traversable<Tuple.Tuple2<Integer, String>> actual = this.of(1, 2, 3).zip(this.of("a", "b", "c"));
-        final Traversable<Tuple.Tuple2<Integer, String>> expected = this.of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
+        final Traversable<Tuple2<Integer, String>> actual = this.of(1, 2, 3).zip(this.of("a", "b", "c"));
+        final Traversable<Tuple2<Integer, String>> expected = this.of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -978,22 +979,22 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldZipAllNonNilsIfThisIsSmaller() {
-        final Traversable<Tuple.Tuple2<Integer, String>> actual = this.of(1, 2).zipAll(this.of("a", "b", "c"), 9, "z");
-        final Traversable<Tuple.Tuple2<Integer, String>> expected = this.of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(9, "c"));
+        final Traversable<Tuple2<Integer, String>> actual = this.of(1, 2).zipAll(this.of("a", "b", "c"), 9, "z");
+        final Traversable<Tuple2<Integer, String>> expected = this.of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(9, "c"));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipAllNonNilsIfThatIsSmaller() {
-        final Traversable<Tuple.Tuple2<Integer, String>> actual = this.of(1, 2, 3).zipAll(this.of("a", "b"), 9, "z");
-        final Traversable<Tuple.Tuple2<Integer, String>> expected = this.of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "z"));
+        final Traversable<Tuple2<Integer, String>> actual = this.of(1, 2, 3).zipAll(this.of("a", "b"), 9, "z");
+        final Traversable<Tuple2<Integer, String>> expected = this.of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "z"));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipAllNonNilsOfSameSize() {
-        final Traversable<Tuple.Tuple2<Integer, String>> actual = this.of(1, 2, 3).zipAll(this.of("a", "b", "c"), 9, "z");
-        final Traversable<Tuple.Tuple2<Integer, String>> expected = this.of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
+        final Traversable<Tuple2<Integer, String>> actual = this.of(1, 2, 3).zipAll(this.of("a", "b", "c"), 9, "z");
+        final Traversable<Tuple2<Integer, String>> expected = this.of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -1006,13 +1007,13 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldZipNilWithIndex() {
-        assertThat(this.<String> nil().zipWithIndex()).isEqualTo(this.<Tuple.Tuple2<String, Integer>> nil());
+        assertThat(this.<String> nil().zipWithIndex()).isEqualTo(this.<Tuple2<String, Integer>> nil());
     }
 
     @Test
     public void shouldZipNonNilWithIndex() {
-        final Traversable<Tuple.Tuple2<String, Integer>> actual = this.of("a", "b", "c").zipWithIndex();
-        final Traversable<Tuple.Tuple2<String, Integer>> expected = this.of(Tuple.of("a", 0), Tuple.of("b", 1), Tuple.of("c", 2));
+        final Traversable<Tuple2<String, Integer>> actual = this.of("a", "b", "c").zipWithIndex();
+        final Traversable<Tuple2<String, Integer>> expected = this.of(Tuple.of("a", 0), Tuple.of("b", 1), Tuple.of("c", 2));
         assertThat(actual).isEqualTo(expected);
     }
 
