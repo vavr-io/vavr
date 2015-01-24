@@ -13,15 +13,13 @@ import org.junit.Test;
 public class PropertyTest {
 
     @Test
-    @Ignore
     public void shouldCheckPythagoras() {
 
-        // Aa,b Ec : a^2 + b^2 == c^2
+        final Arbitrary<Double> real = n -> Gen.choose(0, (double) n).filter(d -> d > .0d);
 
-        final Arbitrary<Double> real = n -> Gen.choose((double) -n, (double) n);
+        // (∀a,b ∈ ℝ+ ∃c ∈ ℝ+ : a²+b²=c²) ≡ (∀a,b ∈ ℝ+ : a²+b² ∈ ℝ+)
+        final Property property = Property.forAll(real, real).suchThat((a, b) -> a * a + b * b > .0d);
 
-        final boolean check = Property.forAll(real, real).exists(real).suchThat((a, b, c) -> a * a + b * b == c * c);
-
-        assertThat(check).isTrue();
+        assertThat(property.test()).isTrue();
     }
 }
