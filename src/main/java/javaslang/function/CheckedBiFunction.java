@@ -14,5 +14,5 @@ package javaslang.function;
  * @param <R> Return value type
  */
 @FunctionalInterface
-public interface CheckedBiFunction<T, U, R> extends CheckedFunction2<T, U, R> {
+public interface CheckedBiFunction<T, U, R> extends CheckedLambda2<T, U, R> {
 }

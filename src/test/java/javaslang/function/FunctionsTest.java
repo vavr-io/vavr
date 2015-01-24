@@ -19,11 +19,11 @@ import org.junit.Test;
 
 public class FunctionsTest {
 
-	// -- Function0
+	// -- Lambda0
 
 	@Test
-	public void shouldGetMethodTypeOfFunction0() {
-		final Function0 lambda = () -> null;
+	public void shouldGetMethodTypeOfLambda0() {
+		final Lambda0 lambda = () -> null;
 		final MethodType actual = lambda.getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString("()Ljava/lang/Object;", getClass()
 				.getClassLoader());
@@ -31,8 +31,8 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldGetMethodTypeOfCurriedFunction0() {
-		final Function0 lambda = () -> null;
+	public void shouldGetMethodTypeOfCurriedLambda0() {
+		final Lambda0 lambda = () -> null;
 		final MethodType actual = lambda.curried().getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString("(Ljava/lang/Void;)Ljava/lang/Object;",
 				getClass().getClassLoader());
@@ -40,8 +40,8 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldGetMethodTypeOfTupledFunction0() {
-		final Function0 lambda = () -> null;
+	public void shouldGetMethodTypeOfTupledLambda0() {
+		final Lambda0 lambda = () -> null;
 		final MethodType actual = lambda.tupled().getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
 				"(Ljavaslang/Tuple0;)Ljava/lang/Object;", getClass().getClassLoader());
@@ -50,7 +50,7 @@ public class FunctionsTest {
 
 	@Test
 	public void shouldEnsureThatX0ImplementsTheλInterface() {
-		final X0<Integer> x0 = () -> 1;
+		final χ0<Integer> x0 = () -> 1;
 		Assertions.assertThat(Try.of(x0::apply).get()).isEqualTo(1);
 		assertThat(x0.andThen(i -> i + 1).getType().toString()).isEqualTo("(Function)Object");
 		assertThat(x0.arity()).isEqualTo(0);
@@ -64,12 +64,12 @@ public class FunctionsTest {
 		assertThat(λ0.get()).isEqualTo(1);
 	}
 
-	// -- Function1
+	// -- Lambda1
 
 	@Test
-	public void shouldGetMethodTypeOfFunction1() {
-		// TODO: Does not compile with jdk1.8.0_20-b26/mac: final Function1<?, ?> lambda = o -> o;
-		final Function1 lambda = o -> o;
+	public void shouldGetMethodTypeOfLambda1() {
+		// TODO: Does not compile with jdk1.8.0_20-b26/mac: final Lambda1<?, ?> lambda = o -> o;
+		final Lambda1 lambda = o -> o;
 		final MethodType actual = lambda.getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString("(Ljava/lang/Object;)Ljava/lang/Object;",
 				getClass().getClassLoader());
@@ -77,9 +77,9 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldGetMethodTypeOfCurriedFunction1() {
-		// TODO: Does not compile with jdk1.8.0_20-b26/mac: final Function1<?, ?> lambda = o -> o;
-		final Function1 lambda = o -> o;
+	public void shouldGetMethodTypeOfCurriedLambda1() {
+		// TODO: Does not compile with jdk1.8.0_20-b26/mac: final Lambda1<?, ?> lambda = o -> o;
+		final Lambda1 lambda = o -> o;
 		final MethodType actual = lambda.curried().getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString("(Ljava/lang/Object;)Ljava/lang/Object;",
 				getClass().getClassLoader());
@@ -87,9 +87,9 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldGetMethodTypeOfTupledFunction1() {
-		// TODO: Does not compile with jdk1.8.0_20-b26/mac: final Function1<?, ?> lambda = o -> o;
-		final Function1 lambda = o -> o;
+	public void shouldGetMethodTypeOfTupledLambda1() {
+		// TODO: Does not compile with jdk1.8.0_20-b26/mac: final Lambda1<?, ?> lambda = o -> o;
+		final Lambda1 lambda = o -> o;
 		final MethodType actual = lambda.tupled().getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
 				"(Ljavaslang/Tuple1;)Ljava/lang/Object;", getClass().getClassLoader());
@@ -98,19 +98,19 @@ public class FunctionsTest {
 
 	@Test
 	public void shouldEnsureThatX1ImplementsTheλInterface() {
-		final X1<Integer, Integer> x1 = i -> i + 1;
+		final χ1<Integer, Integer> x1 = i -> i + 1;
 		Assertions.assertThat(Try.of(() -> x1.apply(1)).get()).isEqualTo(2);
 		assertThat(x1.andThen(i -> i + 1).getType().toString()).isEqualTo("(Function,Object)Object");
 		assertThat(x1.arity()).isEqualTo(1);
 		assertThat(x1.curried().getType().toString()).isEqualTo("(Object)Object");
 		assertThat(x1.tupled().getType().toString()).isEqualTo("(Tuple1)Object");
 		Assertions.assertThat(Try.of(() -> x1.compose(o -> Integer.parseInt(o.toString())).apply("1")).get()).isEqualTo(2);
-		assertThat(Try.of(() -> X1.identity().apply(1)).get()).isEqualTo(1);
+		assertThat(Try.of(() -> χ1.identity().apply(1)).get()).isEqualTo(1);
 	}
 
 	@Test
-	public void shouldEnsureThatCheckedFunction1ImplementsTheλInterface() {
-		assertThat(Try.of(() -> CheckedFunction1.identity().apply(1)).get()).isEqualTo(1);
+	public void shouldEnsureThatCheckedLambda1ImplementsTheλInterface() {
+		assertThat(Try.of(() -> CheckedLambda1.identity().apply(1)).get()).isEqualTo(1);
 	}
 
 	@Test
@@ -120,15 +120,15 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldEnsureThatFunction1ImplementsTheλInterface() {
-		assertThat(Try.of(() -> Function1.identity().apply(1)).get()).isEqualTo(1);
+	public void shouldEnsureThatLambda1ImplementsTheλInterface() {
+		assertThat(Try.of(() -> Lambda1.identity().apply(1)).get()).isEqualTo(1);
 	}
 
-	// -- Function2
+	// -- Lambda2
 
 	@Test
-	public void shouldGetMethodTypeOfFunction2() {
-		final Function2 lambda = (o1, o2) -> o1;
+	public void shouldGetMethodTypeOfLambda2() {
+		final Lambda2 lambda = (o1, o2) -> o1;
 		final MethodType actual = lambda.getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
 				"(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", getClass().getClassLoader());
@@ -136,17 +136,17 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldGetMethodTypeOfCurriedFunction2() {
-		final Function2 lambda = (o1, o2) -> o1;
+	public void shouldGetMethodTypeOfCurriedLambda2() {
+		final Lambda2 lambda = (o1, o2) -> o1;
 		final MethodType actual = lambda.curried().getType();
-		final MethodType expected = MethodType.fromMethodDescriptorString("(Ljava/lang/Object;)Ljavaslang/function/Function1;",
+		final MethodType expected = MethodType.fromMethodDescriptorString("(Ljava/lang/Object;)Ljavaslang/function/Lambda1;",
 				getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
-	public void shouldGetMethodTypeOfTupledFunction2() {
-		final Function2 lambda = (o1, o2) -> o1;
+	public void shouldGetMethodTypeOfTupledLambda2() {
+		final Lambda2 lambda = (o1, o2) -> o1;
 		final MethodType actual = lambda.tupled().getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
 				"(Ljavaslang/Tuple2;)Ljava/lang/Object;", getClass().getClassLoader());
@@ -155,19 +155,19 @@ public class FunctionsTest {
 
 	@Test
 	public void shouldEnsureThatX2ImplementsTheλInterface() {
-		final X2<Integer, Integer, Integer> x2 = (i, j) -> i + j;
+		final χ2<Integer, Integer, Integer> x2 = (i, j) -> i + j;
 		Assertions.assertThat(Try.of(() -> x2.apply(1, 1)).get()).isEqualTo(2);
 		assertThat(x2.andThen(i -> i + 1).getType().toString()).isEqualTo("(Function,Object,Object)Object");
 		assertThat(x2.arity()).isEqualTo(2);
-		assertThat(x2.curried().getType().toString()).isEqualTo("(Object)X1");
+		assertThat(x2.curried().getType().toString()).isEqualTo("(Object)χ1");
 		assertThat(x2.tupled().getType().toString()).isEqualTo("(Tuple2)Object");
 	}
 
-	// -- Function3
+	// -- Lambda3
 
 	@Test
-	public void shouldGetMethodTypeOfFunction3() {
-		final Function3 lambda = (o1, o2, o3) -> o1;
+	public void shouldGetMethodTypeOfLambda3() {
+		final Lambda3 lambda = (o1, o2, o3) -> o1;
 		final MethodType actual = lambda.getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
 				"(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", getClass()
@@ -176,17 +176,17 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldGetMethodTypeOfCurriedFunction3() {
-		final Function3 lambda = (o1, o2, o3) -> o1;
+	public void shouldGetMethodTypeOfCurriedLambda3() {
+		final Lambda3 lambda = (o1, o2, o3) -> o1;
 		final MethodType actual = lambda.curried().getType();
-		final MethodType expected = MethodType.fromMethodDescriptorString("(Ljava/lang/Object;)Ljavaslang/function/Function1;",
+		final MethodType expected = MethodType.fromMethodDescriptorString("(Ljava/lang/Object;)Ljavaslang/function/Lambda1;",
 				getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
-	public void shouldGetMethodTypeOfTupledFunction3() {
-		final Function3 lambda = (o1, o2, o3) -> o1;
+	public void shouldGetMethodTypeOfTupledLambda3() {
+		final Lambda3 lambda = (o1, o2, o3) -> o1;
 		final MethodType actual = lambda.tupled().getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
 				"(Ljavaslang/Tuple3;)Ljava/lang/Object;", getClass().getClassLoader());
@@ -195,19 +195,19 @@ public class FunctionsTest {
 
 	@Test
 	public void shouldEnsureThatX3ImplementsTheλInterface() {
-		final X3<Integer, Integer, Integer, Integer> x3 = (i1, i2, i3) -> i1 + i2 + i3;
+		final χ3<Integer, Integer, Integer, Integer> x3 = (i1, i2, i3) -> i1 + i2 + i3;
 		Assertions.assertThat(Try.of(() -> x3.apply(1, 1, 1)).get()).isEqualTo(3);
 		assertThat(x3.andThen(i -> i + 1).getType().toString()).isEqualTo("(Function,Object,Object,Object)Object");
 		assertThat(x3.arity()).isEqualTo(3);
-		assertThat(x3.curried().getType().toString()).isEqualTo("(Object)X1");
+		assertThat(x3.curried().getType().toString()).isEqualTo("(Object)χ1");
 		assertThat(x3.tupled().getType().toString()).isEqualTo("(Tuple3)Object");
 	}
 
-	// -- Function4
+	// -- Lambda4
 
 	@Test
-	public void shouldGetMethodTypeOfFunction4() {
-		final Function4 lambda = (o1, o2, o3, o4) -> o1;
+	public void shouldGetMethodTypeOfLambda4() {
+		final Lambda4 lambda = (o1, o2, o3, o4) -> o1;
 		final MethodType actual = lambda.getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
 				"(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
@@ -216,17 +216,17 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldGetMethodTypeOfCurriedFunction4() {
-		final Function4 lambda = (o1, o2, o3, o4) -> o1;
+	public void shouldGetMethodTypeOfCurriedLambda4() {
+		final Lambda4 lambda = (o1, o2, o3, o4) -> o1;
 		final MethodType actual = lambda.curried().getType();
-		final MethodType expected = MethodType.fromMethodDescriptorString("(Ljava/lang/Object;)Ljavaslang/function/Function1;",
+		final MethodType expected = MethodType.fromMethodDescriptorString("(Ljava/lang/Object;)Ljavaslang/function/Lambda1;",
 				getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
-	public void shouldGetMethodTypeOfTupledFunction4() {
-		final Function4 lambda = (o1, o2, o3, o4) -> o1;
+	public void shouldGetMethodTypeOfTupledLambda4() {
+		final Lambda4 lambda = (o1, o2, o3, o4) -> o1;
 		final MethodType actual = lambda.tupled().getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
 				"(Ljavaslang/Tuple4;)Ljava/lang/Object;", getClass().getClassLoader());
@@ -235,19 +235,19 @@ public class FunctionsTest {
 
 	@Test
 	public void shouldEnsureThatX4ImplementsTheλInterface() {
-		final X4<Integer, Integer, Integer, Integer, Integer> x = (i1, i2, i3, i4) -> i1 + i2 + i3 + i4;
+		final χ4<Integer, Integer, Integer, Integer, Integer> x = (i1, i2, i3, i4) -> i1 + i2 + i3 + i4;
 		Assertions.assertThat(Try.of(() -> x.apply(1, 1, 1, 1)).get()).isEqualTo(4);
 		assertThat(x.andThen(i -> i + 1).getType().toString()).isEqualTo("(Function,Object,Object,Object,Object)Object");
 		assertThat(x.arity()).isEqualTo(4);
-		assertThat(x.curried().getType().toString()).isEqualTo("(Object)X1");
+		assertThat(x.curried().getType().toString()).isEqualTo("(Object)χ1");
 		assertThat(x.tupled().getType().toString()).isEqualTo("(Tuple4)Object");
 	}
 
-	// -- Function5
+	// -- Lambda5
 
 	@Test
-	public void shouldGetMethodTypeOfFunction5() {
-		final Function5 lambda = (o1, o2, o3, o4, o5) -> o1;
+	public void shouldGetMethodTypeOfLambda5() {
+		final Lambda5 lambda = (o1, o2, o3, o4, o5) -> o1;
 		final MethodType actual = lambda.getType();
 		final MethodType expected = MethodType
 				.fromMethodDescriptorString(
@@ -257,17 +257,17 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldGetMethodTypeOfCurriedFunction5() {
-		final Function5 lambda = (o1, o2, o3, o4, o5) -> o1;
+	public void shouldGetMethodTypeOfCurriedLambda5() {
+		final Lambda5 lambda = (o1, o2, o3, o4, o5) -> o1;
 		final MethodType actual = lambda.curried().getType();
-		final MethodType expected = MethodType.fromMethodDescriptorString("(Ljava/lang/Object;)Ljavaslang/function/Function1;",
+		final MethodType expected = MethodType.fromMethodDescriptorString("(Ljava/lang/Object;)Ljavaslang/function/Lambda1;",
 				getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
-	public void shouldGetMethodTypeOfTupledFunction5() {
-		final Function5 lambda = (o1, o2, o3, o4, o5) -> o1;
+	public void shouldGetMethodTypeOfTupledLambda5() {
+		final Lambda5 lambda = (o1, o2, o3, o4, o5) -> o1;
 		final MethodType actual = lambda.tupled().getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
 				"(Ljavaslang/Tuple5;)Ljava/lang/Object;", getClass().getClassLoader());
@@ -276,19 +276,19 @@ public class FunctionsTest {
 
 	@Test
 	public void shouldEnsureThatX5ImplementsTheλInterface() {
-		final X5<Integer, Integer, Integer, Integer, Integer, Integer> x = (i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5;
+		final χ5<Integer, Integer, Integer, Integer, Integer, Integer> x = (i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5;
 		Assertions.assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1)).get()).isEqualTo(5);
 		assertThat(x.andThen(i -> i + 1).getType().toString()).isEqualTo("(Function,Object,Object,Object,Object,Object)Object");
 		assertThat(x.arity()).isEqualTo(5);
-		assertThat(x.curried().getType().toString()).isEqualTo("(Object)X1");
+		assertThat(x.curried().getType().toString()).isEqualTo("(Object)χ1");
 		assertThat(x.tupled().getType().toString()).isEqualTo("(Tuple5)Object");
 	}
 
-	// -- Function6
+	// -- Lambda6
 
 	@Test
-	public void shouldGetMethodTypeOfFunction6() {
-		final Function6 lambda = (o1, o2, o3, o4, o5, o6) -> o1;
+	public void shouldGetMethodTypeOfLambda6() {
+		final Lambda6 lambda = (o1, o2, o3, o4, o5, o6) -> o1;
 		final MethodType actual = lambda.getType();
 		final MethodType expected = MethodType
 				.fromMethodDescriptorString(
@@ -298,17 +298,17 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldGetMethodTypeOfCurriedFunction6() {
-		final Function6 lambda = (o1, o2, o3, o4, o5, o6) -> o1;
+	public void shouldGetMethodTypeOfCurriedLambda6() {
+		final Lambda6 lambda = (o1, o2, o3, o4, o5, o6) -> o1;
 		final MethodType actual = lambda.curried().getType();
-		final MethodType expected = MethodType.fromMethodDescriptorString("(Ljava/lang/Object;)Ljavaslang/function/Function1;",
+		final MethodType expected = MethodType.fromMethodDescriptorString("(Ljava/lang/Object;)Ljavaslang/function/Lambda1;",
 				getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
-	public void shouldGetMethodTypeOfTupledFunction6() {
-		final Function6 lambda = (o1, o2, o3, o4, o5, o6) -> o1;
+	public void shouldGetMethodTypeOfTupledLambda6() {
+		final Lambda6 lambda = (o1, o2, o3, o4, o5, o6) -> o1;
 		final MethodType actual = lambda.tupled().getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
 				"(Ljavaslang/Tuple6;)Ljava/lang/Object;", getClass().getClassLoader());
@@ -317,19 +317,19 @@ public class FunctionsTest {
 
 	@Test
 	public void shouldEnsureThatX6ImplementsTheλInterface() {
-		final X6<Integer, Integer, Integer, Integer, Integer, Integer, Integer> x = (i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6;
+		final χ6<Integer, Integer, Integer, Integer, Integer, Integer, Integer> x = (i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6;
 		Assertions.assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1)).get()).isEqualTo(6);
 		assertThat(x.andThen(i -> i + 1).getType().toString()).isEqualTo("(Function,Object,Object,Object,Object,Object,Object)Object");
 		assertThat(x.arity()).isEqualTo(6);
-		assertThat(x.curried().getType().toString()).isEqualTo("(Object)X1");
+		assertThat(x.curried().getType().toString()).isEqualTo("(Object)χ1");
 		assertThat(x.tupled().getType().toString()).isEqualTo("(Tuple6)Object");
 	}
 
-	// -- Function7
+	// -- Lambda7
 
 	@Test
-	public void shouldGetMethodTypeOfFunction7() {
-		final Function7 lambda = (o1, o2, o3, o4, o5, o6, o7) -> o1;
+	public void shouldGetMethodTypeOfLambda7() {
+		final Lambda7 lambda = (o1, o2, o3, o4, o5, o6, o7) -> o1;
 		final MethodType actual = lambda.getType();
 		final MethodType expected = MethodType
 				.fromMethodDescriptorString(
@@ -339,17 +339,17 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldGetMethodTypeOfCurriedFunction7() {
-		final Function7 lambda = (o1, o2, o3, o4, o5, o6, o7) -> o1;
+	public void shouldGetMethodTypeOfCurriedLambda7() {
+		final Lambda7 lambda = (o1, o2, o3, o4, o5, o6, o7) -> o1;
 		final MethodType actual = lambda.curried().getType();
-		final MethodType expected = MethodType.fromMethodDescriptorString("(Ljava/lang/Object;)Ljavaslang/function/Function1;",
+		final MethodType expected = MethodType.fromMethodDescriptorString("(Ljava/lang/Object;)Ljavaslang/function/Lambda1;",
 				getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
-	public void shouldGetMethodTypeOfTupledFunction7() {
-		final Function7 lambda = (o1, o2, o3, o4, o5, o6, o7) -> o1;
+	public void shouldGetMethodTypeOfTupledLambda7() {
+		final Lambda7 lambda = (o1, o2, o3, o4, o5, o6, o7) -> o1;
 		final MethodType actual = lambda.tupled().getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
 				"(Ljavaslang/Tuple7;)Ljava/lang/Object;", getClass().getClassLoader());
@@ -358,20 +358,20 @@ public class FunctionsTest {
 
 	@Test
 	public void shouldEnsureThatX7ImplementsTheλInterface() {
-		final X7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
+		final χ7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
 				(i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7;
 		Assertions.assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1, 1)).get()).isEqualTo(7);
 		assertThat(x.andThen(i -> i + 1).getType().toString()).isEqualTo("(Function,Object,Object,Object,Object,Object,Object,Object)Object");
 		assertThat(x.arity()).isEqualTo(7);
-		assertThat(x.curried().getType().toString()).isEqualTo("(Object)X1");
+		assertThat(x.curried().getType().toString()).isEqualTo("(Object)χ1");
 		assertThat(x.tupled().getType().toString()).isEqualTo("(Tuple7)Object");
 	}
 
-	// -- Function8
+	// -- Lambda8
 
 	@Test
-	public void shouldGetMethodTypeOfFunction8() {
-		final Function8 lambda = (o1, o2, o3, o4, o5, o6, o7, o8) -> o1;
+	public void shouldGetMethodTypeOfLambda8() {
+		final Lambda8 lambda = (o1, o2, o3, o4, o5, o6, o7, o8) -> o1;
 		final MethodType actual = lambda.getType();
 		final MethodType expected = MethodType
 				.fromMethodDescriptorString(
@@ -381,17 +381,17 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldGetMethodTypeOfCurriedFunction8() {
-		final Function8 lambda = (o1, o2, o3, o4, o5, o6, o7, o8) -> o1;
+	public void shouldGetMethodTypeOfCurriedLambda8() {
+		final Lambda8 lambda = (o1, o2, o3, o4, o5, o6, o7, o8) -> o1;
 		final MethodType actual = lambda.curried().getType();
-		final MethodType expected = MethodType.fromMethodDescriptorString("(Ljava/lang/Object;)Ljavaslang/function/Function1;",
+		final MethodType expected = MethodType.fromMethodDescriptorString("(Ljava/lang/Object;)Ljavaslang/function/Lambda1;",
 				getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
-	public void shouldGetMethodTypeOfTupledFunction8() {
-		final Function8 lambda = (o1, o2, o3, o4, o5, o6, o7, o8) -> o1;
+	public void shouldGetMethodTypeOfTupledLambda8() {
+		final Lambda8 lambda = (o1, o2, o3, o4, o5, o6, o7, o8) -> o1;
 		final MethodType actual = lambda.tupled().getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
 				"(Ljavaslang/Tuple8;)Ljava/lang/Object;", getClass().getClassLoader());
@@ -400,20 +400,20 @@ public class FunctionsTest {
 
 	@Test
 	public void shouldEnsureThatX8ImplementsTheλInterface() {
-		final X8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
+		final χ8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
 				(i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8;
 		Assertions.assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1, 1, 1)).get()).isEqualTo(8);
 		assertThat(x.andThen(i -> i + 1).getType().toString()).isEqualTo("(Function,Object,Object,Object,Object,Object,Object,Object,Object)Object");
 		assertThat(x.arity()).isEqualTo(8);
-		assertThat(x.curried().getType().toString()).isEqualTo("(Object)X1");
+		assertThat(x.curried().getType().toString()).isEqualTo("(Object)χ1");
 		assertThat(x.tupled().getType().toString()).isEqualTo("(Tuple8)Object");
 	}
 
-	// -- Function9
+	// -- Lambda9
 
 	@Test
-	public void shouldGetMethodTypeOfFunction9() {
-		final Function9 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9) -> o1;
+	public void shouldGetMethodTypeOfLambda9() {
+		final Lambda9 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9) -> o1;
 		final MethodType actual = lambda.getType();
 		final MethodType expected = MethodType
 				.fromMethodDescriptorString(
@@ -423,17 +423,17 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldGetMethodTypeOfCurriedFunction9() {
-		final Function9 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9) -> o1;
+	public void shouldGetMethodTypeOfCurriedLambda9() {
+		final Lambda9 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9) -> o1;
 		final MethodType actual = lambda.curried().getType();
-		final MethodType expected = MethodType.fromMethodDescriptorString("(Ljava/lang/Object;)Ljavaslang/function/Function1;",
+		final MethodType expected = MethodType.fromMethodDescriptorString("(Ljava/lang/Object;)Ljavaslang/function/Lambda1;",
 				getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
-	public void shouldGetMethodTypeOfTupledFunction9() {
-		final Function9 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9) -> o1;
+	public void shouldGetMethodTypeOfTupledLambda9() {
+		final Lambda9 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9) -> o1;
 		final MethodType actual = lambda.tupled().getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
 				"(Ljavaslang/Tuple9;)Ljava/lang/Object;", getClass().getClassLoader());
@@ -442,21 +442,21 @@ public class FunctionsTest {
 
 	@Test
 	public void shouldEnsureThatX9ImplementsTheλInterface() {
-		final X9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
+		final χ9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
 				(i1, i2, i3, i4, i5, i6, i7, i8, i9) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8 + i9;
 		Assertions.assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1, 1, 1, 1)).get()).isEqualTo(9);
 		assertThat(x.andThen(i -> i + 1).getType().toString())
 				.isEqualTo("(Function,Object,Object,Object,Object,Object,Object,Object,Object,Object)Object");
 		assertThat(x.arity()).isEqualTo(9);
-		assertThat(x.curried().getType().toString()).isEqualTo("(Object)X1");
+		assertThat(x.curried().getType().toString()).isEqualTo("(Object)χ1");
 		assertThat(x.tupled().getType().toString()).isEqualTo("(Tuple9)Object");
 	}
 
-	// -- Function10
+	// -- Lambda10
 
 	@Test
-	public void shouldGetMethodTypeOfFunction10() {
-		final Function10 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10) -> o1;
+	public void shouldGetMethodTypeOfLambda10() {
+		final Lambda10 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10) -> o1;
 		final MethodType actual = lambda.getType();
 		final MethodType expected = MethodType
 				.fromMethodDescriptorString(
@@ -466,17 +466,17 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldGetMethodTypeOfCurriedFunction10() {
-		final Function10 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10) -> o1;
+	public void shouldGetMethodTypeOfCurriedLambda10() {
+		final Lambda10 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10) -> o1;
 		final MethodType actual = lambda.curried().getType();
-		final MethodType expected = MethodType.fromMethodDescriptorString("(Ljava/lang/Object;)Ljavaslang/function/Function1;",
+		final MethodType expected = MethodType.fromMethodDescriptorString("(Ljava/lang/Object;)Ljavaslang/function/Lambda1;",
 				getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
-	public void shouldGetMethodTypeOfTupledFunction10() {
-		final Function10 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10) -> o1;
+	public void shouldGetMethodTypeOfTupledLambda10() {
+		final Lambda10 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10) -> o1;
 		final MethodType actual = lambda.tupled().getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
 				"(Ljavaslang/Tuple10;)Ljava/lang/Object;", getClass().getClassLoader());
@@ -485,21 +485,21 @@ public class FunctionsTest {
 
 	@Test
 	public void shouldEnsureThatX10ImplementsTheλInterface() {
-		final X10<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
+		final χ10<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
 				(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8 + i9 + i10;
 		Assertions.assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1, 1, 1, 1, 1)).get()).isEqualTo(10);
 		assertThat(x.andThen(i -> i + 1).getType().toString())
 				.isEqualTo("(Function,Object,Object,Object,Object,Object,Object,Object,Object,Object,Object)Object");
 		assertThat(x.arity()).isEqualTo(10);
-		assertThat(x.curried().getType().toString()).isEqualTo("(Object)X1");
+		assertThat(x.curried().getType().toString()).isEqualTo("(Object)χ1");
 		assertThat(x.tupled().getType().toString()).isEqualTo("(Tuple10)Object");
 	}
 
-	// -- Function11
+	// -- Lambda11
 
 	@Test
-	public void shouldGetMethodTypeOfFunction11() {
-		final Function11 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11) -> o1;
+	public void shouldGetMethodTypeOfLambda11() {
+		final Lambda11 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11) -> o1;
 		final MethodType actual = lambda.getType();
 		final MethodType expected = MethodType
 				.fromMethodDescriptorString(
@@ -509,17 +509,17 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldGetMethodTypeOfCurriedFunction11() {
-		final Function11 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11) -> o1;
+	public void shouldGetMethodTypeOfCurriedLambda11() {
+		final Lambda11 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11) -> o1;
 		final MethodType actual = lambda.curried().getType();
-		final MethodType expected = MethodType.fromMethodDescriptorString("(Ljava/lang/Object;)Ljavaslang/function/Function1;",
+		final MethodType expected = MethodType.fromMethodDescriptorString("(Ljava/lang/Object;)Ljavaslang/function/Lambda1;",
 				getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
-	public void shouldGetMethodTypeOfTupledFunction11() {
-		final Function11 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11) -> o1;
+	public void shouldGetMethodTypeOfTupledLambda11() {
+		final Lambda11 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11) -> o1;
 		final MethodType actual = lambda.tupled().getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
 				"(Ljavaslang/Tuple11;)Ljava/lang/Object;", getClass().getClassLoader());
@@ -528,21 +528,21 @@ public class FunctionsTest {
 
 	@Test
 	public void shouldEnsureThatX11ImplementsTheλInterface() {
-		final X11<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
+		final χ11<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
 				(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8 + i9 + i10 + i11;
 		Assertions.assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)).get()).isEqualTo(11);
 		assertThat(x.andThen(i -> i + 1).getType().toString())
 				.isEqualTo("(Function,Object,Object,Object,Object,Object,Object,Object,Object,Object,Object,Object)Object");
 		assertThat(x.arity()).isEqualTo(11);
-		assertThat(x.curried().getType().toString()).isEqualTo("(Object)X1");
+		assertThat(x.curried().getType().toString()).isEqualTo("(Object)χ1");
 		assertThat(x.tupled().getType().toString()).isEqualTo("(Tuple11)Object");
 	}
 
-	// -- Function12
+	// -- Lambda12
 
 	@Test
-	public void shouldGetMethodTypeOfFunction12() {
-		final Function12 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12) -> o1;
+	public void shouldGetMethodTypeOfLambda12() {
+		final Lambda12 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12) -> o1;
 		final MethodType actual = lambda.getType();
 		final MethodType expected = MethodType
 				.fromMethodDescriptorString(
@@ -552,17 +552,17 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldGetMethodTypeOfCurriedFunction12() {
-		final Function12 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12) -> o1;
+	public void shouldGetMethodTypeOfCurriedLambda12() {
+		final Lambda12 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12) -> o1;
 		final MethodType actual = lambda.curried().getType();
-		final MethodType expected = MethodType.fromMethodDescriptorString("(Ljava/lang/Object;)Ljavaslang/function/Function1;",
+		final MethodType expected = MethodType.fromMethodDescriptorString("(Ljava/lang/Object;)Ljavaslang/function/Lambda1;",
 				getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
-	public void shouldGetMethodTypeOfTupledFunction12() {
-		final Function12 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12) -> o1;
+	public void shouldGetMethodTypeOfTupledLambda12() {
+		final Lambda12 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12) -> o1;
 		final MethodType actual = lambda.tupled().getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
 				"(Ljavaslang/Tuple12;)Ljava/lang/Object;", getClass().getClassLoader());
@@ -571,21 +571,21 @@ public class FunctionsTest {
 
 	@Test
 	public void shouldEnsureThatX12ImplementsTheλInterface() {
-		final X12<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
+		final χ12<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
 				(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8 + i9 + i10 + i11 + i12;
 		Assertions.assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)).get()).isEqualTo(12);
 		assertThat(x.andThen(i -> i + 1).getType().toString())
 				.isEqualTo("(Function,Object,Object,Object,Object,Object,Object,Object,Object,Object,Object,Object,Object)Object");
 		assertThat(x.arity()).isEqualTo(12);
-		assertThat(x.curried().getType().toString()).isEqualTo("(Object)X1");
+		assertThat(x.curried().getType().toString()).isEqualTo("(Object)χ1");
 		assertThat(x.tupled().getType().toString()).isEqualTo("(Tuple12)Object");
 	}
 
-	// -- Function13
+	// -- Lambda13
 
 	@Test
-	public void shouldGetMethodTypeOfFunction13() {
-		final Function13 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11,
+	public void shouldGetMethodTypeOfLambda13() {
+		final Lambda13 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11,
 				o12, o13) -> o1;
 		final MethodType actual = lambda.getType();
 		final MethodType expected = MethodType
@@ -596,18 +596,18 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldGetMethodTypeOfCurriedFunction13() {
-		final Function13 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11,
+	public void shouldGetMethodTypeOfCurriedLambda13() {
+		final Lambda13 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11,
 				o12, o13) -> o1;
 		final MethodType actual = lambda.curried().getType();
-		final MethodType expected = MethodType.fromMethodDescriptorString("(Ljava/lang/Object;)Ljavaslang/function/Function1;",
+		final MethodType expected = MethodType.fromMethodDescriptorString("(Ljava/lang/Object;)Ljavaslang/function/Lambda1;",
 				getClass().getClassLoader());
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
-	public void shouldGetMethodTypeOfTupledFunction13() {
-		final Function13 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11,
+	public void shouldGetMethodTypeOfTupledLambda13() {
+		final Lambda13 lambda = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11,
 				o12, o13) -> o1;
 		final MethodType actual = lambda.tupled().getType();
 		final MethodType expected = MethodType.fromMethodDescriptorString(
@@ -617,13 +617,13 @@ public class FunctionsTest {
 
 	@Test
 	public void shouldEnsureThatX13ImplementsTheλInterface() {
-		final X13<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
+		final χ13<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
 				(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12, i13) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8 + i9 + i10 + i11 + i12 + i13;
 		Assertions.assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)).get()).isEqualTo(13);
 		assertThat(x.andThen(i -> i + 1).getType().toString())
 				.isEqualTo("(Function,Object,Object,Object,Object,Object,Object,Object,Object,Object,Object,Object,Object,Object)Object");
 		assertThat(x.arity()).isEqualTo(13);
-		assertThat(x.curried().getType().toString()).isEqualTo("(Object)X1");
+		assertThat(x.curried().getType().toString()).isEqualTo("(Object)χ1");
 		assertThat(x.tupled().getType().toString()).isEqualTo("(Tuple13)Object");
 	}
 

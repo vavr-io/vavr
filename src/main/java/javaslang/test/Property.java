@@ -74,7 +74,7 @@ public interface Property {
             return new Property2<>(test1, Test.forAll(a2));
         }
 
-        public boolean suchThat(Function1<T1, Boolean> predicate) {
+        public boolean suchThat(Lambda1<T1, Boolean> predicate) {
             throw new UnsupportedOperationException("TODO");
         }
     }
@@ -101,7 +101,7 @@ public interface Property {
         }
 
 
-        public boolean suchThat(Function2<T1, T2, Boolean> predicate) {
+        public boolean suchThat(Lambda2<T1, T2, Boolean> predicate) {
             throw new UnsupportedOperationException("TODO");
         }
     }

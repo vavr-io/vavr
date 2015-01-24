@@ -13,7 +13,7 @@ package javaslang.function;
  * @param <R> Return value type
  */
 @FunctionalInterface
-public interface CheckedFunction<T, R> extends CheckedFunction1<T, R> {
+public interface CheckedFunction<T, R> extends CheckedLambda1<T, R> {
 
     static <T> CheckedFunction<T, T> identity() {
         return t -> t;

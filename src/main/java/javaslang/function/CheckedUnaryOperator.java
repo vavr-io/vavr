@@ -12,7 +12,7 @@ package javaslang.function;
  * @param <T> Operand type
  */
 @FunctionalInterface
-public interface CheckedUnaryOperator<T> extends CheckedFunction1<T, T> {
+public interface CheckedUnaryOperator<T> extends CheckedLambda1<T, T> {
 
     static <T> CheckedUnaryOperator<T> identity() {
         return t -> t;
