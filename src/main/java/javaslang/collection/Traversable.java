@@ -64,7 +64,7 @@ import java.util.function.UnaryOperator;
  * <li>{@link #fold(Object, java.util.function.BiFunction)}</li>
  * <li>{@link #foldLeft(Object, java.util.function.BiFunction)}</li>
  * <li>{@link #foldRight(Object, java.util.function.BiFunction)}</li>
- * <li>{@link #foldMap(javaslang.Algebra.Monoid, java.util.function.Function)}</li>
+ * <li>{@link #foldMap(javaslang.algebra.Monoid, java.util.function.Function)}</li>
  * <li>{@link #join()}</li>
  * <li>{@link #join(CharSequence)}</li>
  * <li>{@link #join(CharSequence, CharSequence, CharSequence)}</li>
@@ -492,7 +492,7 @@ public interface Traversable<T> extends Iterable<T>, HigherKinded<T, Traversable
      * @param mapper A mapper.
      * @param <U>    Component type of the target Traversable
      * @return A mapped Traversable
-     * @see javaslang.Algebra.Monad#map(Function)
+     * @see javaslang.algebra.Monad#map(Function)
      */
     <U> Traversable<U> map(Function<? super T, ? extends U> mapper);
 
