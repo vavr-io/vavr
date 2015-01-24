@@ -179,7 +179,7 @@ public interface Lambda<R> extends Serializable {
             return t -> t;
         }""" else ""}
 
-        ${if (i == 1 && !checked) "@Override" else ""}
+        ${if ((i == 1 || i == 2) && !checked) "@Override" else ""}
         R apply($paramsDecl)${if (checked) " throws Throwable" else ""};
 
         ${if (i == 0 && !checked) xs"""
@@ -222,10 +222,10 @@ public interface Lambda<R> extends Serializable {
     }
     """
 
-    genJavaFile("javaslang/function", s"X$i.java")(() => genFunction("X", checked = true))
-    genJavaFile("javaslang/function", s"CheckedFunction$i.java")(() => genFunction("CheckedFunction", checked = true))
+    genJavaFile("javaslang/function", s"χ$i.java")(() => genFunction("χ", checked = true))
+    genJavaFile("javaslang/function", s"CheckedLambda$i.java")(() => genFunction("CheckedLambda", checked = true))
     genJavaFile("javaslang/function", s"λ$i.java")(() => genFunction("λ", checked = false))
-    genJavaFile("javaslang/function", s"Function$i.java")(() => genFunction("Function", checked = false))
+    genJavaFile("javaslang/function", s"Lambda$i.java")(() => genFunction("Lambda", checked = false))
   }
 
   genJavaFile("javaslang/function", "Lambda.java")(genLambda)

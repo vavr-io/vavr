@@ -6,41 +6,40 @@
 // @@ GENERATED FILE - DO NOT MODIFY @@
 package javaslang.function;
 
-import javaslang.Tuple2;
+import javaslang.Tuple4;
 
 import java.util.Objects;
 import java.util.function.Function;
 
 @FunctionalInterface
-public interface λ2<T1, T2, R> extends Lambda<R>, java.util.function.BiFunction<T1, T2, R> {
+public interface χ4<T1, T2, T3, T4, R> extends Lambda<R> {
 
-    @Override
-    R apply(T1 t1, T2 t2);
+    R apply(T1 t1, T2 t2, T3 t3, T4 t4) throws Throwable;
 
     @Override
     default int arity() {
-        return 2;
+        return 4;
     }
 
     @Override
-    default λ1<T1, λ1<T2, R>> curried() {
-        return t1 -> t2 -> apply(t1, t2);
+    default χ1<T1, χ1<T2, χ1<T3, χ1<T4, R>>>> curried() {
+        return t1 -> t2 -> t3 -> t4 -> apply(t1, t2, t3, t4);
     }
 
     @Override
-    default λ1<Tuple2<T1, T2>, R> tupled() {
-        return t -> apply(t._1, t._2);
+    default χ1<Tuple4<T1, T2, T3, T4>, R> tupled() {
+        return t -> apply(t._1, t._2, t._3, t._4);
     }
 
     @Override
-    default λ2<T2, T1, R> reversed() {
-        return (t2, t1) -> apply(t1, t2);
+    default χ4<T4, T3, T2, T1, R> reversed() {
+        return (t4, t3, t2, t1) -> apply(t1, t2, t3, t4);
     }
 
     @Override
-    default <V> λ2<T1, T2, V> andThen(Function<? super R, ? extends V> after) {
+    default <V> χ4<T1, T2, T3, T4, V> andThen(Function<? super R, ? extends V> after) {
         Objects.requireNonNull(after);
-        return (t1, t2) -> after.apply(apply(t1, t2));
+        return (t1, t2, t3, t4) -> after.apply(apply(t1, t2, t3, t4));
     }
 
 }

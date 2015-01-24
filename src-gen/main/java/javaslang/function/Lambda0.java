@@ -6,41 +6,45 @@
 // @@ GENERATED FILE - DO NOT MODIFY @@
 package javaslang.function;
 
-import javaslang.Tuple2;
+import javaslang.Tuple0;
 
 import java.util.Objects;
 import java.util.function.Function;
 
 @FunctionalInterface
-public interface λ2<T1, T2, R> extends Lambda<R>, java.util.function.BiFunction<T1, T2, R> {
+public interface Lambda0<R> extends Lambda<R>, java.util.function.Supplier<R> {
+
+    R apply();
 
     @Override
-    R apply(T1 t1, T2 t2);
+    default R get() {
+        return apply();
+    }
 
     @Override
     default int arity() {
-        return 2;
+        return 0;
     }
 
     @Override
-    default λ1<T1, λ1<T2, R>> curried() {
-        return t1 -> t2 -> apply(t1, t2);
+    default Lambda1<Void, R> curried() {
+        return v -> apply();
     }
 
     @Override
-    default λ1<Tuple2<T1, T2>, R> tupled() {
-        return t -> apply(t._1, t._2);
+    default Lambda1<Tuple0, R> tupled() {
+        return t -> apply();
     }
 
     @Override
-    default λ2<T2, T1, R> reversed() {
-        return (t2, t1) -> apply(t1, t2);
+    default Lambda0<R> reversed() {
+        return () -> apply();
     }
 
     @Override
-    default <V> λ2<T1, T2, V> andThen(Function<? super R, ? extends V> after) {
+    default <V> Lambda0<V> andThen(Function<? super R, ? extends V> after) {
         Objects.requireNonNull(after);
-        return (t1, t2) -> after.apply(apply(t1, t2));
+        return () -> after.apply(apply());
     }
 
 }
