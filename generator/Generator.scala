@@ -539,11 +539,11 @@ def gen(range: Range)(f: Int => String)(implicit delimiter: String = "") = range
  * The header for Java files.
  * @return A header as String
  */
-def classHeader() = xs"""
-  /**    / \\____  _    ______   _____ / \\____   ____  _____
-   *    /  \\__  \\/ \\  / \\__  \\ /  __//  \\__  \\ /    \\/ __  \\   Javaslang
-   *  _/  // _\\  \\  \\/  / _\\  \\\\_  \\/  // _\\  \\  /\\  \\__/  /   Copyright 2014-2015 Daniel Dietrich
-   * /___/ \\_____/\\____/\\_____/____/\\___\\_____/_/  \\_/____/    Licensed under the Apache License, Version 2.0
+def classHeader() = xraw"""
+  /**    / \____  _    ______   _____ / \____   ____  _____
+   *    /  \__  \/ \  / \__  \ /  __//  \__  \ /    \/ __  \   Javaslang
+   *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014-2015 Daniel Dietrich
+   * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
    */
   """
 
