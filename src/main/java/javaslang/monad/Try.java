@@ -10,10 +10,11 @@ import java.util.Objects;
 import java.util.function.*;
 
 import javaslang.Algebra.*;
-import javaslang.Functions.*;
 import javaslang.Tuple;
 import javaslang.Tuple.*;
 import javaslang.ValueObject;
+import javaslang.function.CheckedRunnable;
+import javaslang.function.CheckedSupplier;
 import javaslang.monad.Option.None;
 import javaslang.monad.Option.Some;
 import javaslang.monad.Valences.Bivalent;

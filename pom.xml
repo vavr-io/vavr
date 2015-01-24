@@ -92,7 +92,7 @@ Profile 'release-sign-artifacts':
 						<goals><goal>add-source</goal></goals>
 						<configuration>
 							<sources>
-								<source>${project.build.directory}/generated-sources</source>
+								<source>src-gen/main/java</source>
 							</sources>
 						</configuration>
 					</execution>

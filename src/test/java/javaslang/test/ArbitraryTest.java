@@ -11,6 +11,8 @@ import javaslang.collection.Stream;
 
 public class ArbitraryTest {
 
+    // TODO: unit tests
+
     public static void main(String[] args) {
 
         // represents arbitrary binary trees of a certain depth n

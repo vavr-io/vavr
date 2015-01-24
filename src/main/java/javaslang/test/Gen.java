@@ -30,7 +30,7 @@ import java.util.function.Supplier;
  * <pre>
  * <code>
  * // random trees
- * final Gen<BinaryTree<Integer>> treeGen = ...;
+ * final Gen&lt;BinaryTree&lt;Integer&gt;&gt; treeGen = ...;
  *
  * // stream sum of tree node values to console for 100 trees
  * Stream.of(treeGen).map(Tree::sum).take(100).stdout();
@@ -65,7 +65,7 @@ public interface Gen<T> extends Supplier<T>, Monad<T, Gen<?>>, Iterable<T> {
      * @param min lower bound
      * @param max upper bound
      * @return A new int generator
-     * @throw IllegalArgumentException if min > max
+     * @throws IllegalArgumentException if min &gt; max
      */
     static Gen<Integer> choose(int min, int max) {
         if (min > max) {
@@ -84,7 +84,7 @@ public interface Gen<T> extends Supplier<T>, Monad<T, Gen<?>>, Iterable<T> {
      * @param min lower bound
      * @param max upper bound
      * @return A new long generator
-     * @throw IllegalArgumentException if min > max
+     * @throws IllegalArgumentException if min &gt; max
      */
     static Gen<Long> choose(long min, long max) {
         if (min > max) {
@@ -106,7 +106,7 @@ public interface Gen<T> extends Supplier<T>, Monad<T, Gen<?>>, Iterable<T> {
      * @param min lower bound
      * @param max upper bound
      * @return A new double generator
-     * @throw IllegalArgumentException if min > max, min or max is infinite, min or max is not a number (NaN)
+     * @throws IllegalArgumentException if min &gt; max, min or max is infinite, min or max is not a number (NaN)
      */
     static Gen<Double> choose(double min, double max) {
         if (min > max) {
@@ -239,11 +239,15 @@ public interface Gen<T> extends Supplier<T>, Monad<T, Gen<?>>, Iterable<T> {
     @Override
     T get();
 
+    default Arbitrary<T> arbitrary() {
+        return n -> this;
+    }
+
     /**
-     * Returns a generator based on this generator that generates value of type U.
+     * Maps generated Ts to Us.
      *
-     * @param mapper A function that maps a generated value of this generator to another value.
-     * @param <U>    Type of the mapped value
+     * @param mapper A function that maps a generated T to an object of type U.
+     * @param <U>    Type of the mapped object
      * @return A new generator
      */
     @Override
@@ -253,10 +257,10 @@ public interface Gen<T> extends Supplier<T>, Monad<T, Gen<?>>, Iterable<T> {
     }
 
     /**
-     * Returns a generator based on this generator that generates value of type U.
+     * Maps generated Ts to Us.
      *
-     * @param mapper A function that maps a generated value of this generator to a new generator which generates values of type U.
-     * @param <U>    Type of generated values of the new generator
+     * @param mapper A function that maps a generated T to a new generator which generates objects of type U.
+     * @param <U>    Type of generated objects of the new generator
      * @return A new generator
      */
     @SuppressWarnings("unchecked")
@@ -267,7 +271,7 @@ public interface Gen<T> extends Supplier<T>, Monad<T, Gen<?>>, Iterable<T> {
     }
 
     /**
-     * Returns a generator based on this generator which produces values that fulfil the given predicate.
+     * Returns a generator based on this generator which produces values that fulfill the given predicate.
      *
      * @param predicate A predicate
      * @return A new generator

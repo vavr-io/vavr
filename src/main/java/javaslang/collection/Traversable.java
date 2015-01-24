@@ -54,9 +54,9 @@ import java.util.function.UnaryOperator;
  * </ul>
  * <p>Numeric operations:</p>
  * <ul>
- * <li>TODO: average</li>
- * <li>TODO: max</li>
- * <li>TODO: min</li>
+ * <li>{@link #average()}</li>
+ * <li>{@link #max()}</li>
+ * <li>{@link #min()}</li>
  * <li>{@link #product()}</li>
  * <li>{@link #sum()}</li>
  * </ul>
@@ -92,9 +92,9 @@ import java.util.function.UnaryOperator;
  * </ul>
  * <p>Tests:</p>
  * <ul>
- * <li>TODO: boolean forAll(Predicate)</li>
- * <li>TODO: boolean exists(Predicate)</li>
- * <li>TODO: boolean existsUnique(Predicate)</li>
+ * <li>{@link #exists(java.util.function.Predicate)}</li>
+ * <li>{@link #existsUnique(java.util.function.Predicate)}</li>
+ * <li>{@link #forAll(java.util.function.Predicate)}</li>
  * </ul>
  * <p>Transformation:</p>
  * <ul>
@@ -103,6 +103,7 @@ import java.util.function.UnaryOperator;
  * <li>TODO: groupBy</li>
  * <li>{@link #intersperse(Object)}</li>
  * <li>{@link #map(java.util.function.Function)}</li>
+ * <li>TODO: partition (generalization of groupBy)</li>
  * <li>{@link #replace(Object, Object)}</li>
  * <li>{@link #replaceAll(Object, Object)}</li>
  * <li>{@link #replaceAll(java.util.function.UnaryOperator)}</li>
@@ -134,6 +135,37 @@ public interface Traversable<T> extends Iterable<T>, HigherKinded<T, Traversable
             return traversable;
         } else {
             return Stream.of(iterable);
+        }
+    }
+
+    /**
+     * Calculates the average of this elements.
+     *
+     * @return The average of this elements.
+     * @throws java.lang.UnsupportedOperationException if no elements are present or the elements are not numeric
+     */
+    @SuppressWarnings("unchecked")
+    default T average() {
+        if (isEmpty()) {
+            throw new UnsupportedOperationException("average of nothing");
+        } else {
+            T head = head();
+            int n = length();
+            return Match
+                    .<T>caze((boolean t) -> (T) (Boolean) (((Traversable<Boolean>) this).filter(b -> b == true).length() >= n / 2))
+                    .caze((byte t) -> (T) (Byte) (byte) (((Traversable<Byte>) this).foldLeft((int) 0, (i, j) -> i + j) / n))
+                    .caze((char t) -> (T) (Character) (char) (((Traversable<Character>) this).foldLeft((int) 0, (i, j) -> i + j) / n))
+                    .caze((double t) -> (T) (Double) (((Traversable<Double>) this).foldLeft((double) 0, (i, j) -> i + j) / n))
+                    .caze((float t) -> (T) (Float) (float) (((Traversable<Float>) this).foldLeft((double) 0, (i, j) -> i + j) / n))
+                    .caze((int t) -> (T) (Integer) (int) (((Traversable<Integer>) this).foldLeft((long) 0, (i, j) -> i + j) / n))
+                    .caze((long t) -> (T) (Long) (((Traversable<Integer>) this).foldLeft((long) 0, (i, j) -> i + j) / n))
+                    .caze((short t) -> (T) (Short) (short) (((Traversable<Short>) this).foldLeft((int) 0, (i, j) -> i + j) / n))
+                    .caze((BigInteger t) -> (T) ((Traversable<BigInteger>) this).reduce(BigInteger::add).divide(BigInteger.valueOf(n)))
+                    .caze((BigDecimal t) -> (T) ((Traversable<BigDecimal>) this).reduce(BigDecimal::add).divide(BigDecimal.valueOf(n), BigDecimal.ROUND_HALF_EVEN))
+                    .orElse(() -> {
+                        throw new UnsupportedOperationException("not numeric");
+                    })
+                    .apply(head);
         }
     }
 
@@ -337,6 +369,56 @@ public interface Traversable<T> extends Iterable<T>, HigherKinded<T, Traversable
     }
 
     /**
+     * Checks, if at least one element exists such that the predicate holds.
+     *
+     * @param predicate A Predicate
+     * @return true, if predicate holds for an element of this, false otherwise
+     */
+    default boolean exists(Predicate<T> predicate) {
+        for (T t : this) {
+            if (predicate.test(t)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks, if a unique elements exists such that the predicate holds.
+     *
+     * @param predicate A Predicate
+     * @return true, if predicate holds for a unique element of this, false otherwise
+     */
+    default boolean existsUnique(Predicate<T> predicate) {
+        boolean exists = false;
+        for (T t : this) {
+            if (predicate.test(t)) {
+                if (exists) {
+                    return false;
+                } else {
+                    exists = true;
+                }
+            }
+        }
+        return exists;
+    }
+
+    /**
+     * Checks, if the given predicate holds for all elements of this.
+     *
+     * @param predicate A Predicate
+     * @return true, if the predicate holds for all elements of this, false otherwise
+     */
+    default boolean forAll(Predicate<T> predicate) {
+        for (T t : this) {
+            if (!predicate.test(t)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Returns the first element of a non-empty Traversable.
      *
      * @return The first element of this Traversable.
@@ -414,6 +496,66 @@ public interface Traversable<T> extends Iterable<T>, HigherKinded<T, Traversable
      * @see javaslang.Algebra.Monad#map(Function)
      */
     <U> Traversable<U> map(Function<? super T, ? extends U> mapper);
+
+    /**
+     * Calculates the maximum of this elements.
+     *
+     * @return The maximum of this elements.
+     * @throws java.lang.UnsupportedOperationException if no elements are present or the elements are not numeric
+     */
+    @SuppressWarnings("unchecked")
+    default T max() {
+        if (isEmpty()) {
+            throw new UnsupportedOperationException("max of nothing");
+        } else {
+            T head = head();
+            return Match
+                    .<T>caze((boolean t) -> (T) ((Traversable<Boolean>) this).reduce((i, j) -> i || j))
+                    .caze((byte t) -> (T) ((Traversable<Byte>) this).reduce((i, j) -> (i > j) ? i : j))
+                    .caze((char t) -> (T) ((Traversable<Character>) this).reduce((i, j) -> (i > j) ? i : j))
+                    .caze((double t) -> (T) ((Traversable<Double>) this).reduce((i, j) -> (i > j) ? i : j))
+                    .caze((float t) -> (T) ((Traversable<Float>) this).reduce((i, j) -> (i > j) ? i : j))
+                    .caze((int t) -> (T) ((Traversable<Integer>) this).reduce((i, j) -> (i > j) ? i : j))
+                    .caze((long t) -> (T) ((Traversable<Long>) this).reduce((i, j) -> (i > j) ? i : j))
+                    .caze((short t) -> (T) ((Traversable<Short>) this).reduce((i, j) -> (i > j) ? i : j))
+                    .caze((BigInteger t) -> (T) ((Traversable<BigInteger>) this).reduce(BigInteger::max))
+                    .caze((BigDecimal t) -> (T) ((Traversable<BigDecimal>) this).reduce(BigDecimal::max))
+                    .orElse(() -> {
+                        throw new UnsupportedOperationException("not numeric");
+                    })
+                    .apply(head);
+        }
+    }
+
+    /**
+     * Calculates the minimum of this elements.
+     *
+     * @return The minimum of this elements.
+     * @throws java.lang.UnsupportedOperationException if no elements are present or the elements are not numeric
+     */
+    @SuppressWarnings("unchecked")
+    default T min() {
+        if (isEmpty()) {
+            throw new UnsupportedOperationException("min of nothing");
+        } else {
+            T head = head();
+            return Match
+                    .<T>caze((boolean t) -> (T) ((Traversable<Boolean>) this).reduce((i, j) -> i && j))
+                    .caze((byte t) -> (T) ((Traversable<Byte>) this).reduce((i, j) -> (i < j) ? i : j))
+                    .caze((char t) -> (T) ((Traversable<Character>) this).reduce((i, j) -> (i < j) ? i : j))
+                    .caze((double t) -> (T) ((Traversable<Double>) this).reduce((i, j) -> (i < j) ? i : j))
+                    .caze((float t) -> (T) ((Traversable<Float>) this).reduce((i, j) -> (i < j) ? i : j))
+                    .caze((int t) -> (T) ((Traversable<Integer>) this).reduce((i, j) -> (i < j) ? i : j))
+                    .caze((long t) -> (T) ((Traversable<Long>) this).reduce((i, j) -> (i < j) ? i : j))
+                    .caze((short t) -> (T) ((Traversable<Short>) this).reduce((i, j) -> (i < j) ? i : j))
+                    .caze((BigInteger t) -> (T) ((Traversable<BigInteger>) this).reduce(BigInteger::min))
+                    .caze((BigDecimal t) -> (T) ((Traversable<BigDecimal>) this).reduce(BigDecimal::min))
+                    .orElse(() -> {
+                        throw new UnsupportedOperationException("not numeric");
+                    })
+                    .apply(head);
+        }
+    }
 
     /**
      * Calculates the product of this elements.

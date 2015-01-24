@@ -15,7 +15,7 @@ import java.util.function.LongFunction;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import javaslang.Functions.*;
+import javaslang.function.*;
 import javaslang.monad.Option;
 import javaslang.monad.Option.None;
 import javaslang.monad.Option.Some;
