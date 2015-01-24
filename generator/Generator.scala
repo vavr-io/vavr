@@ -4,6 +4,7 @@
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
 
+import java.io.File
 import java.nio.charset.{Charset, StandardCharsets}
 import java.nio.file.StandardOpenOption
 
@@ -11,21 +12,116 @@ import StringContextImplicits._
 
 import scala.util.Properties.lineSeparator
 
-val N = 13
+val N = 26
 val TARGET = "src-gen/main/java"
 
 // entry point
 def run() {
 
   genFunctions()
+  genPropertyChecks()
   genTuples()
+}
+
+def genPropertyChecks(): Unit = {
+
+  def genProperty(packageName: String, className: String): String = {
+    xs"""
+import javaslang.function.*;
+
+public interface $className {
+
+    boolean test(int n);
+
+    default boolean test() {
+        return test(100);
+    }
+
+    ${gen(1 to N)(i => {
+        val generics = gen(1 to i)(j => s"T$j")(", ")
+        val parameters = gen(1 to i)(j => s"a$j")(", ")
+        val parametersDecl = gen(1 to i)(j => s"Arbitrary<T$j> a$j")(", ")
+        xs"""
+            static <$generics> ForAll$i<$generics> forAll($parametersDecl) {
+                return new ForAll$i<>($parameters);
+            }
+        """
+    })("\n\n")}
+
+    ${gen(1 to N)(i => {
+        val generics = gen(1 to i)(j => s"T$j")(", ")
+        val parametersDecl = gen(1 to i)(j => s"Arbitrary<T$j> a$j")(", ")
+        xs"""
+            static class ForAll$i<$generics> {
+
+                ${gen(1 to i)(j => xs"""
+                    final Arbitrary<T$j> a$j;
+                """)("\n")}
+
+                ForAll$i($parametersDecl) {
+                    ${gen(1 to i)(j => xs"""
+                        this.a$j = a$j;
+                    """)("\n")}
+                }
+
+                ${gen(i+1 to N)(j => {
+                    val missingGenerics = gen(i+1 to j)(k => s"T$k")(", ")
+                    val allGenerics = gen(1 to j)(k => s"T$k")(", ")
+                    val missingParametersDecl = gen(i+1 to j)(k => s"Arbitrary<T$k> a$k")(", ")
+                    val allParameters = gen(1 to j)(k => s"a$k")(", ")
+                    xs"""
+                        public <$missingGenerics> ForAll$j<$allGenerics> forAll($missingParametersDecl) {
+                            return new ForAll$j<>($allParameters);
+                        }
+                    """
+                })("\n\n")}
+
+                public Property suchThat(Lambda$i<$generics, Boolean> predicate) {
+                    return new SuchThat$i<>(${gen(1 to i)(j => s"a$j")(", ")}, predicate);
+                }
+            }
+        """
+    })("\n\n")}
+
+    ${gen(1 to N)(i => {
+        val generics = gen(1 to i)(j => s"T$j")(", ")
+        val parametersDecl = gen(1 to i)(j => s"Arbitrary<T$j> a$j")(", ")
+        xs"""
+            static class SuchThat$i<$generics> implements Property {
+
+                ${gen(1 to i)(j => xs"""
+                    final Arbitrary<T$j> a$j;
+                """)("\n")}
+                final Lambda$i<$generics, Boolean> predicate;
+
+                SuchThat$i($parametersDecl, Lambda$i<$generics, Boolean> predicate) {
+                    ${gen(1 to i)(j => xs"""
+                        this.a$j = a$j;
+                    """)("\n")}
+                    this.predicate = predicate;
+                }
+
+                @Override
+                public boolean test(int n) {
+                    ${gen(1 to i)(j => xs"""
+                        final Gen<T$j> gen$j = a$j.apply(n);
+                    """)("\n")}
+                    // TODO: loop this m times (default: 1000) and return a CheckResult containing detailed informations
+                    return predicate.apply(${gen(1 to i)(j => s"""gen$j.get()""")(", ")});
+                }
+            }
+        """
+    })("\n\n")}
+}
+  """
+  }
+
+  genJavaFile("javaslang.test", "Property")(genProperty)
 }
 
 def genFunctions(): Unit = {
 
-  def genLambda(): String = xs"""
-package javaslang.function;
-
+  def genLambda(packageName: String, className: String): String = xs"""
 import javaslang.control.Try;
 
 import java.io.Serializable;
@@ -47,7 +143,7 @@ import java.util.function.Function;
  *
  * @param <R> Return type of the checked function.
  */
-public interface Lambda<R> extends Serializable {
+public interface $className<R> extends Serializable {
 
     /**
      * Serializes a lambda and returns the corresponding {@link java.lang.invoke.SerializedLambda}.
@@ -98,21 +194,21 @@ public interface Lambda<R> extends Serializable {
      *
      * @return A curried function equivalent to this.
      */
-    Lambda curried();
+    $className curried();
 
     /**
      * Returns a tupled version of this function.
      *
      * @return A tupled function equivalent to this.
      */
-    Lambda<R> tupled();
+    $className<R> tupled();
 
     /**
      * Returns a reversed version of this function.
      *
      * @return A reversed function equivalent to this.
      */
-    Lambda<R> reversed();
+    $className<R> reversed();
 
     /**
      * There can be nothing said about the type of exception (in Java), if the Function arg is also a checked function.
@@ -123,10 +219,10 @@ public interface Lambda<R> extends Serializable {
      * @param <V> Return value of after
      * @return A Function composed of this and after
      */
-    <V> Lambda<V> andThen(Function<? super R, ? extends V> after);
+    <V> $className<V> andThen(Function<? super R, ? extends V> after);
 
     default MethodType getType() {
-        return Lambda.getLambdaSignature(this);
+        return $className.getLambdaSignature(this);
     }
 }"""
 
@@ -163,16 +259,14 @@ public interface Lambda<R> extends Serializable {
       }
     }
 
-    def genFunction(name: String, checked: Boolean): String = xs"""
-    package javaslang.function;
-
+    def genFunction(name: String, checked: Boolean)(packageName: String, className: String): String = xs"""
     import javaslang.Tuple$i;
 
     import java.util.Objects;
     import java.util.function.Function;
 
     @FunctionalInterface
-    public interface $name$i<${if (i > 0) s"$generics, " else ""}R> extends Lambda<R>${additionalInterfaces(i, checked)} {
+    public interface $className<${if (i > 0) s"$generics, " else ""}R> extends Lambda<R>${additionalInterfaces(i, checked)} {
 
         ${if (i == 1) xs"""
         static <T> ${name}1<T, T> identity() {
@@ -204,12 +298,12 @@ public interface Lambda<R> extends Serializable {
         }
 
         @Override
-        default $name$i<${genericsReversedFunction}R> reversed() {
+        default $className<${genericsReversedFunction}R> reversed() {
             return ($paramsReversed) -> apply($params);
         }
 
         @Override
-        default <V> $name$i<${genericsFunction}V> andThen(Function<? super R, ? extends V> after) {
+        default <V> $className<${genericsFunction}V> andThen(Function<? super R, ? extends V> after) {
             Objects.requireNonNull(after);
             return ($params) -> after.apply(apply($params));
         }
@@ -222,59 +316,46 @@ public interface Lambda<R> extends Serializable {
     }
     """
 
-    genJavaFile("javaslang/function", s"χ$i.java")(() => genFunction("χ", checked = true))
-    genJavaFile("javaslang/function", s"CheckedLambda$i.java")(() => genFunction("CheckedLambda", checked = true))
-    genJavaFile("javaslang/function", s"λ$i.java")(() => genFunction("λ", checked = false))
-    genJavaFile("javaslang/function", s"Lambda$i.java")(() => genFunction("Lambda", checked = false))
+    genJavaFile("javaslang.function", s"χ$i")(genFunction("χ", checked = true))
+    genJavaFile("javaslang.function", s"CheckedLambda$i")(genFunction("CheckedLambda", checked = true))
+    genJavaFile("javaslang.function", s"λ$i")(genFunction("λ", checked = false))
+    genJavaFile("javaslang.function", s"Lambda$i")(genFunction("Lambda", checked = false))
   }
 
-  genJavaFile("javaslang/function", "Lambda.java")(genLambda)
+  genJavaFile("javaslang.function", "Lambda")(genLambda)
 
   (0 to N).foreach(genFunctions)
 }
 
 def genTuples(): Unit = {
 
-  def genFactoryMethod(i: Int) = {
-    val generics = gen(1 to i)(j => s"T$j")(", ")
-    val paramsDecl = gen(1 to i)(j => s"T$j t$j")(", ")
-    val params = gen(1 to i)(j => s"t$j")(", ")
-    xs"""
-    static <$generics> Tuple$i<$generics> of($paramsDecl) {
-        return new Tuple$i<>($params);
-    }
-    """
-  }
-
-  def genTuple0(): String = xs"""
-    package javaslang;
-
+  def genTuple0(packageName: String, className: String): String = xs"""
     import java.util.Objects;
 
     /**
      * Implementation of an empty tuple, a tuple containing no elements.
      */
-    public final class Tuple0 implements Tuple {
+    public final class $className implements Tuple {
 
         private static final long serialVersionUID = 1L;
 
         /**
-         * The singleton instance of Tuple0.
+         * The singleton instance of $className.
          */
-        private static final Tuple0 INSTANCE = new Tuple0();
+        private static final $className INSTANCE = new $className();
 
         /**
          * Hidden constructor.
          */
-        private Tuple0() {
+        private $className() {
         }
 
         /**
-         * Returns the singleton instance of Tuple0.
+         * Returns the singleton instance of $className.
          *
-         * @return The singleton instance of Tuple0.
+         * @return The singleton instance of $className.
          */
-        public static Tuple0 instance() {
+        public static $className instance() {
             return INSTANCE;
         }
 
@@ -284,7 +365,7 @@ def genTuples(): Unit = {
         }
 
         @Override
-        public Tuple0 unapply() {
+        public $className unapply() {
             return this;
         }
 
@@ -308,7 +389,7 @@ def genTuples(): Unit = {
         /**
          * Instance control for object serialization.
          *
-         * @return The singleton instance of Tuple0.
+         * @return The singleton instance of $className.
          * @see java.io.Serializable
          */
         private Object readResolve() {
@@ -317,24 +398,22 @@ def genTuples(): Unit = {
     }
   """
 
-  def genTuple(i: Int): Unit = {
+  def genTuple(i: Int)(packageName: String, className: String): String = {
     val generics = gen(1 to i)(j => s"T$j")(", ")
     val paramsDecl = gen(1 to i)(j => s"T$j t$j")(", ")
-    val tuple = xs"""
-    package javaslang;
-
+    xs"""
     import java.util.Objects;
 
     /**
      * Implementation of a pair, a tuple containing $i elements.
      */
-    public class Tuple$i<$generics> implements Tuple {
+    public class $className<$generics> implements Tuple {
 
         private static final long serialVersionUID = 1L;
 
         ${gen(1 to i)(j => s"public final T$j _$j;")("\n")}
 
-        public Tuple$i($paramsDecl) {
+        public $className($paramsDecl) {
             ${gen(1 to i)(j => s"this._$j = t$j;")("\n")}
         }
 
@@ -344,7 +423,7 @@ def genTuples(): Unit = {
         }
 
         @Override
-        public Tuple$i<$generics> unapply() {
+        public $className<$generics> unapply() {
             return this;
         }
 
@@ -352,10 +431,10 @@ def genTuples(): Unit = {
         public boolean equals(Object o) {
             if (o == this) {
                 return true;
-            } else if (!(o instanceof Tuple$i)) {
+            } else if (!(o instanceof $className)) {
                 return false;
             } else {
-                final Tuple$i that = (Tuple$i) o;
+                final $className that = ($className) o;
                 return ${gen(1 to i)(j => s"Objects.equals(this._$j, that._$j)")("\n                         && ")};
             }
         }
@@ -371,57 +450,78 @@ def genTuples(): Unit = {
         }
     }
     """
-
-    genJavaFile("javaslang", s"Tuple$i.java")(() => tuple)
   }
 
-  def genBaseTuple(): String = xs"""
-  package javaslang;
+  def genBaseTuple(packageName: String, className: String): String = {
 
-  public interface Tuple extends ValueObject {
+    def genFactoryMethod(i: Int) = {
+      val generics = gen(1 to i)(j => s"T$j")(", ")
+      val paramsDecl = gen(1 to i)(j => s"T$j t$j")(", ")
+      val params = gen(1 to i)(j => s"t$j")(", ")
+      xs"""
+      static <$generics> Tuple$i<$generics> of($paramsDecl) {
+          return new Tuple$i<>($params);
+      }"""
+    }
 
-      /**
-       * Returns the number of elements of this tuple.
-       *
-       * @return The number of elements.
-       */
-      int arity();
+    xs"""
+    public interface $className extends ValueObject {
 
-      // -- factory methods
+        /**
+         * Returns the number of elements of this tuple.
+         *
+         * @return The number of elements.
+         */
+        int arity();
 
-      static Tuple0 empty() {
-          return Tuple0.instance();
-      }
+        // -- factory methods
 
-      ${gen(1 to N)(genFactoryMethod)("\n\n")}
+        static Tuple0 empty() {
+            return Tuple0.instance();
+        }
+
+        ${gen(1 to N)(genFactoryMethod)("\n\n")}
+    }"""
   }
-  """
 
-  genJavaFile("javaslang", "Tuple.java")(genBaseTuple)
-  genJavaFile("javaslang", "Tuple0.java")(genTuple0)
+  genJavaFile("javaslang", "Tuple")(genBaseTuple)
 
-  (1 to N).foreach(genTuple)
+  genJavaFile("javaslang", "Tuple0")(genTuple0)
+
+  (1 to N).foreach { i =>
+    genJavaFile("javaslang", s"Tuple$i")(genTuple(i))
+  }
 }
 
 /**
  * Generates a Java file.
- * @param pkg A path of the java package
- * @param fileName A file name, may contain path segments.
+ * @param packageName Java package name
+ * @param className Simple java class name
  * @param gen A generator which produces a String.
  */
-def genJavaFile(pkg: String, fileName: String)(gen: () => String)(implicit charset: Charset = StandardCharsets.UTF_8): Unit = {
+def genJavaFile(packageName: String, className: String)(gen: (String, String) => String)(implicit charset: Charset = StandardCharsets.UTF_8): Unit = {
 
-  println(s"Generating $pkg/$fileName")
+  println(s"Generating $packageName.$className")
 
+  val contents = gen.apply(packageName, className) // TODO: pass a mutable ImportManager
   val fileContents = xs"""
     ${classHeader()}
-    ${gen.apply()}
+    package $packageName;
+
+    //
+    // *-- GENERATED FILE - DO NOT MODIFY --*
+    //
+
+    $contents
   """
 
   import java.nio.file.{Paths, Files}
 
+  val filePackage = packageName.replaceAll("\\.", File.separator)
+  val fileName = className + ".java"
+
   Files.write(
-    Files.createDirectories(Paths.get(TARGET, pkg)).resolve(fileName),
+    Files.createDirectories(Paths.get(TARGET, filePackage)).resolve(fileName),
     fileContents.getBytes(charset),
     StandardOpenOption.CREATE, StandardOpenOption.WRITE)
 }
@@ -445,7 +545,6 @@ def classHeader() = xs"""
    *  _/  // _\\  \\  \\/  / _\\  \\\\_  \\/  // _\\  \\  /\\  \\__/  /   Copyright 2014-2015 Daniel Dietrich
    * /___/ \\_____/\\____/\\_____/____/\\___\\_____/_/  \\_/____/    Licensed under the Apache License, Version 2.0
    */
-  // @@ GENERATED FILE - DO NOT MODIFY @@
   """
 
 /**

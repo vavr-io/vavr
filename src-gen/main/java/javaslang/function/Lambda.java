@@ -3,8 +3,11 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014-2015 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-// @@ GENERATED FILE - DO NOT MODIFY @@
 package javaslang.function;
+
+//
+// *-- GENERATED FILE - DO NOT MODIFY --*
+//
 
 import javaslang.control.Try;
 
