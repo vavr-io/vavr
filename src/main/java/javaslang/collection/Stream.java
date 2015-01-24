@@ -5,12 +5,11 @@
  */
 package javaslang.collection;
 
-import javaslang.Algebra.Monad;
-import javaslang.Algebra.Monoid;
+import javaslang.algebra.*;
 import javaslang.collection.Lazy.Lazy0;
 import javaslang.*;
 import javaslang.Tuple.*;
-import javaslang.monad.Try;
+import javaslang.control.Try;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -359,7 +358,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
     }
 
     @Override
-    default <U, TRAVERSABLE extends Algebra.HigherKinded<U, Traversable<?>>> Stream<U> flatMap(Function<? super T, TRAVERSABLE> mapper) {
+    default <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Stream<U> flatMap(Function<? super T, TRAVERSABLE> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return Nil.instance();

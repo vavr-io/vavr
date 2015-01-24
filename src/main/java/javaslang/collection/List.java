@@ -6,8 +6,7 @@
 package javaslang.collection;
 
 import javaslang.*;
-import javaslang.Algebra.Monad;
-import javaslang.Algebra.Monoid;
+import javaslang.algebra.*;
 import javaslang.Tuple.*;
 
 import java.io.*;
@@ -185,7 +184,7 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
 
     @SuppressWarnings("unchecked")
     @Override
-    default <U, TRAVERSABLE extends Algebra.HigherKinded<U, Traversable<?>>> List<U> flatMap(Function<? super T, TRAVERSABLE> mapper) {
+    default <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> List<U> flatMap(Function<? super T, TRAVERSABLE> mapper) {
         return foldLeft(Nil.<U> instance(), (List<U> xs, T x) -> xs.prependAll((Traversable<U>) mapper.apply(x))).reverse();
     }
 

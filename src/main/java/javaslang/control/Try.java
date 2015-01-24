@@ -3,24 +3,24 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014-2015 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.monad;
+package javaslang.control;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.*;
 
-import javaslang.Algebra.*;
+import javaslang.algebra.*;
 import javaslang.Tuple;
 import javaslang.Tuple.*;
 import javaslang.ValueObject;
 import javaslang.function.CheckedRunnable;
 import javaslang.function.CheckedSupplier;
-import javaslang.monad.Option.None;
-import javaslang.monad.Option.Some;
-import javaslang.monad.Valences.Bivalent;
+import javaslang.control.Option.None;
+import javaslang.control.Option.Some;
+import javaslang.control.Valences.Bivalent;
 
 /**
- * An implementation similar to Scala's Try monad.
+ * An implementation similar to Scala's Try control.
  *
  * @param <T> Value type in the case of success.
  */

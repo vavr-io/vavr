@@ -5,8 +5,8 @@
  */
 package javaslang.collection;
 
-import javaslang.monad.Option;
-import javaslang.monad.Option.Some;
+import javaslang.control.Option;
+import javaslang.control.Option.Some;
 
 import java.util.function.Supplier;
 

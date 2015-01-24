@@ -3,14 +3,14 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014-2015 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.monad;
+package javaslang.control;
 
-import javaslang.Algebra.*;
+import javaslang.algebra.*;
 import javaslang.Tuple;
 import javaslang.Tuple.Tuple0;
 import javaslang.Tuple.Tuple1;
 import javaslang.ValueObject;
-import javaslang.monad.Valences.Univalent;
+import javaslang.control.Valences.Univalent;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -22,8 +22,8 @@ import java.util.function.*;
  * </p>
  * <p>
  * Option is a <a href="http://stackoverflow.com/questions/13454347/monads-with-java-8">monadic</a> container type which
- * represents an optional value. Instances of Option are either an instance of {@link javaslang.monad.Option.Some} or the
- * singleton {@link javaslang.monad.Option.None}.
+ * represents an optional value. Instances of Option are either an instance of {@link javaslang.control.Option.Some} or the
+ * singleton {@link javaslang.control.Option.None}.
  * </p>
  * Most of the API is taken from {@link java.util.Optional}. A similar type can be found in <a
  * href="http://hackage.haskell.org/package/base-4.6.0.1/docs/Data-Maybe.html">Haskell</a> and <a
@@ -67,7 +67,7 @@ public interface Option<T> extends Monad<T, Option<?>>, ValueObject, Univalent<T
     String toString();
 
     /**
-     * Some represents a defined {@link javaslang.monad.Option}. It contains a value which may be null. However, to
+     * Some represents a defined {@link javaslang.control.Option}. It contains a value which may be null. However, to
      * create an Option containing null, {@code new Some(null)} has to be called. In all other cases
      * {@link Option#of(Object)} is sufficient.
      *
@@ -177,7 +177,7 @@ public interface Option<T> extends Monad<T, Option<?>>, ValueObject, Univalent<T
     }
 
     /**
-     * None is a singleton representation of the undefined {@link javaslang.monad.Option}. The instance is obtained by
+     * None is a singleton representation of the undefined {@link javaslang.control.Option}. The instance is obtained by
      * calling {@link #instance()}.
      *
      * @param <T> The type of the optional value.

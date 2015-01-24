@@ -3,7 +3,7 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014-2015 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.monad;
+package javaslang.control;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,8 +14,8 @@ import java.util.Objects;
 
 import javaslang.Serializables;
 import javaslang.Tuple;
-import javaslang.monad.Try.Failure;
-import javaslang.monad.Try.Success;
+import javaslang.control.Try.Failure;
+import javaslang.control.Try.Success;
 
 import org.junit.Test;
 

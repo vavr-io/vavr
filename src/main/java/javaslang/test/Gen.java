@@ -5,8 +5,7 @@
  */
 package javaslang.test;
 
-import javaslang.Algebra.HigherKinded;
-import javaslang.Algebra.Monad;
+import javaslang.algebra.*;
 import javaslang.Tuple.Tuple2;
 import javaslang.collection.Stream;
 import javaslang.collection.Traversable;

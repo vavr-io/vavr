@@ -6,7 +6,7 @@
 package javaslang;
 
 import javaslang.Tuple.Tuple2;
-import javaslang.match.Match;
+import javaslang.control.Match;
 
 import java.util.*;
 import java.util.function.Function;

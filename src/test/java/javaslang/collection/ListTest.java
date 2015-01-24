@@ -15,7 +15,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 
 import javaslang.*;
-import javaslang.Algebra.Monoid;
+import javaslang.algebra.Monoid;
 import javaslang.collection.List.Cons;
 import javaslang.collection.List.Nil;
 

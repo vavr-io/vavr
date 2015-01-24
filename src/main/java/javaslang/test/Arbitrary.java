@@ -5,8 +5,7 @@
  */
 package javaslang.test;
 
-import javaslang.Algebra.HigherKinded;
-import javaslang.Algebra.Monad;
+import javaslang.algebra.*;
 
 import java.util.Objects;
 import java.util.function.Function;

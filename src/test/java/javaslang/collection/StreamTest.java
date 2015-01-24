@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import javaslang.*;
-import javaslang.Algebra.Monoid;
+import javaslang.algebra.Monoid;
 import javaslang.collection.Stream.Cons;
 import javaslang.collection.Stream.Nil;
 

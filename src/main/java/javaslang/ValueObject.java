@@ -18,7 +18,7 @@ import java.io.Serializable;
  * </p>
  * <p>
  * The {@link #unapply()} method decomposes an Object by unwrapping it. This comes handy when using the
- * {@link javaslang.match.Match} API.
+ * {@link javaslang.control.Match} API.
  * </p>
  * Please note that a Value Object is not cloneable because of the following conclusion:
  * <blockquote>

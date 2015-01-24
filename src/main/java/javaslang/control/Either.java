@@ -3,7 +3,7 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014-2015 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.monad;
+package javaslang.control;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -12,15 +12,15 @@ import java.util.function.*;
 import javaslang.Tuple;
 import javaslang.Tuple.*;
 import javaslang.ValueObject;
-import javaslang.monad.Option.None;
-import javaslang.monad.Option.Some;
-import javaslang.monad.Valences.Bivalent;
+import javaslang.control.Option.None;
+import javaslang.control.Option.Some;
+import javaslang.control.Valences.Bivalent;
 
 /**
- * Either represents a value of two possible types. An Either is either a {@link javaslang.monad.Either.Left} or a
- * {@link javaslang.monad.Either.Right}.
+ * Either represents a value of two possible types. An Either is either a {@link javaslang.control.Either.Left} or a
+ * {@link javaslang.control.Either.Right}.
  * <p>
- * It is possible to project an Either to a Left or a Right. Both cases can be further processed with monad operations
+ * It is possible to project an Either to a Left or a Right. Both cases can be further processed with control operations
  * map, flatMap, filter.
  * <p>
  * If the given Either is a Right and projected to a Left, the Left operations have no effect on the Right value.<br>

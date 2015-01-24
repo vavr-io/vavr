@@ -3,7 +3,7 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014-2015 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.monad;
+package javaslang.control;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,10 +14,10 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 
 import javaslang.Tuple;
-import javaslang.monad.Either.Left;
-import javaslang.monad.Either.LeftProjection;
-import javaslang.monad.Either.Right;
-import javaslang.monad.Either.RightProjection;
+import javaslang.control.Either.Left;
+import javaslang.control.Either.LeftProjection;
+import javaslang.control.Either.Right;
+import javaslang.control.Either.RightProjection;
 
 import org.junit.Test;
 

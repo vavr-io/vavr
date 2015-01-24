@@ -5,7 +5,7 @@
  */
 package javaslang.function;
 
-import javaslang.monad.Try;
+import javaslang.control.Try;
 
 import java.io.Serializable;
 import java.lang.invoke.MethodType;
@@ -32,7 +32,7 @@ public interface λ<R> extends Serializable {
      * Serializes a lambda and returns the corresponding {@link java.lang.invoke.SerializedLambda}.
      *
      * @param lambda A serializable lambda
-     * @return The serialized lambda wrapped in a {@link javaslang.monad.Try.Success}, or a {@link javaslang.monad.Try.Failure}
+     * @return The serialized lambda wrapped in a {@link javaslang.control.Try.Success}, or a {@link javaslang.control.Try.Failure}
      * if an exception occurred.
      * @see <a
      * href="http://stackoverflow.com/questions/21860875/printing-debug-info-on-errors-with-java-8-lambda-expressions">printing

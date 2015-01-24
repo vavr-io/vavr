@@ -5,9 +5,9 @@
  */
 package javaslang.collection;
 
-import javaslang.Algebra.Monoid;
+import javaslang.algebra.Monoid;
 import javaslang.Tuple;
-import javaslang.monad.Option;
+import javaslang.control.Option;
 import org.junit.Test;
 
 import java.util.*;
@@ -18,7 +18,7 @@ import static javaslang.Serializables.serialize;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests all methods defined in {@link javaslang.collection.Traversable} (plus some of {@link javaslang.Algebra.Monoid},
+ * Tests all methods defined in {@link javaslang.collection.Traversable} (plus some of {@link javaslang.algebra.Monoid},
  * {@link java.lang.Object} and {@link java.io.Serializable}, for the sake of simplicity).
  */
 public abstract class AbstractTraversableTest {

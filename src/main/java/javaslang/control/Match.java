@@ -3,7 +3,7 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014-2015 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.match;
+package javaslang.control;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +16,8 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import javaslang.function.*;
-import javaslang.monad.Option;
-import javaslang.monad.Option.None;
-import javaslang.monad.Option.Some;
+import javaslang.control.Option.None;
+import javaslang.control.Option.Some;
 
 /**
  * A better switch for Java. A Match...
@@ -134,7 +133,7 @@ public final class Match<R> implements Function<Object, R> {
 	 * @return The result when applying the given obj to the first matching case. If the case has a consumer, the result
 	 *         is null, otherwise the result of the underlying function or supplier.
 	 * @throws MatchError if no Match case matches the given object and no default is defined via orElse().
-	 * @throws javaslang.monad.Try.Failure.NonFatal if an error occurs executing the matched case.
+	 * @throws javaslang.control.Try.Failure.NonFatal if an error occurs executing the matched case.
 	 */
 	@Override
 	public R apply(Object obj) {
@@ -308,7 +307,7 @@ public final class Match<R> implements Function<Object, R> {
 
 		/*
 		 * (non-Javadoc)
-		 * @see javaslang.match.Match.MatchBuilder#getCases()
+		 * @see javaslang.control.Match.MatchBuilder#getCases()
 		 */
 		@Override
 		protected List<Function<Object, Option<R>>> getCases() {
@@ -317,7 +316,7 @@ public final class Match<R> implements Function<Object, R> {
 
 		/*
 		 * (non-Javadoc)
-		 * @see javaslang.match.Match.MatchBuilder#getDefault()
+		 * @see javaslang.control.Match.MatchBuilder#getDefault()
 		 */
 		@Override
 		protected Option<Supplier<R>> getDefault() {
@@ -326,7 +325,7 @@ public final class Match<R> implements Function<Object, R> {
 
 		/*
 		 * (non-Javadoc)
-		 * @see javaslang.match.Match.MatchBuilder#setDefault(javaslang.option.Option)
+		 * @see javaslang.control.Match.MatchBuilder#setDefault(javaslang.option.Option)
 		 */
 		@Override
 		protected void setDefault(Option<Supplier<R>> defaultOption) {

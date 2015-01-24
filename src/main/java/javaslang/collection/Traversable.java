@@ -5,11 +5,10 @@
  */
 package javaslang.collection;
 
-import javaslang.Algebra.HigherKinded;
-import javaslang.Algebra.Monoid;
+import javaslang.algebra.*;
 import javaslang.Tuple.Tuple2;
-import javaslang.match.Match;
-import javaslang.monad.Option;
+import javaslang.control.Match;
+import javaslang.control.Option;
 
 import java.io.BufferedWriter;
 import java.io.IOException;

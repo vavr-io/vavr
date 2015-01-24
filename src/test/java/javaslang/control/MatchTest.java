@@ -3,7 +3,7 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014-2015 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.match;
+package javaslang.control;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -11,8 +11,9 @@ import static org.assertj.core.api.Assertions.fail;
 import java.math.BigDecimal;
 import java.util.function.Function;
 
-import javaslang.AssertionsExtensions;
-import javaslang.monad.Option.Some;
+import javaslang.control.Match;
+import javaslang.control.MatchError;
+import javaslang.control.Option.Some;
 
 import org.junit.Test;
 
