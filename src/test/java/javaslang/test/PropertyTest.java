@@ -19,7 +19,8 @@ public class PropertyTest {
 
         // (∀a,b ∈ ℝ+ ∃c ∈ ℝ+ : a²+b²=c²) ≡ (∀a,b ∈ ℝ+ : a²+b² ∈ ℝ+)
         final Property property = Property.forAll(real, real).suchThat((a, b) -> a * a + b * b > .0d);
+        final CheckResult checkResult = property.check();
 
-        assertThat(property.test()).isTrue();
+        assertThat(checkResult.isSatisfied()).isTrue();
     }
 }
