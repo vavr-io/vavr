@@ -121,7 +121,7 @@ public interface $className {
   """
   }
 
-  genJavaFile("javaslang.test", "Property")(genProperty)
+  genJavaslangFile("javaslang.test", "Property")(genProperty)
 }
 
 /**
@@ -219,10 +219,10 @@ def genFunctions(): Unit = {
     }
     """
 
-    genJavaFile("javaslang.function", s"χ$i")(genFunction("χ", checked = true))
-    genJavaFile("javaslang.function", s"CheckedLambda$i")(genFunction("CheckedLambda", checked = true))
-    genJavaFile("javaslang.function", s"λ$i")(genFunction("λ", checked = false))
-    genJavaFile("javaslang.function", s"Lambda$i")(genFunction("Lambda", checked = false))
+    genJavaslangFile("javaslang.function", s"χ$i")(genFunction("χ", checked = true))
+    genJavaslangFile("javaslang.function", s"CheckedLambda$i")(genFunction("CheckedLambda", checked = true))
+    genJavaslangFile("javaslang.function", s"λ$i")(genFunction("λ", checked = false))
+    genJavaslangFile("javaslang.function", s"Lambda$i")(genFunction("Lambda", checked = false))
   }
 
   (0 to N).foreach(genFunctions)
@@ -398,14 +398,29 @@ def genTuples(): Unit = {
     }"""
   }
 
-  genJavaFile("javaslang", "Tuple")(genBaseTuple)
+  genJavaslangFile("javaslang", "Tuple")(genBaseTuple)
 
-  genJavaFile("javaslang", "Tuple0")(genTuple0)
+  genJavaslangFile("javaslang", "Tuple0")(genTuple0)
 
   (1 to N).foreach { i =>
-    genJavaFile("javaslang", s"Tuple$i")(genTuple(i))
+    genJavaslangFile("javaslang", s"Tuple$i")(genTuple(i))
   }
 }
+
+/**
+ * Adds the Javaslang header to generated classes.
+ * @param packageName Java package name
+ * @param className Simple java class name
+ * @param gen A generator which produces a String.
+ */
+def genJavaslangFile(packageName: String, className: String)(gen: (String, String) => String) =
+  genJavaFile(packageName, className)(xraw"""
+  /**    / \____  _    ______   _____ / \____   ____  _____
+   *    /  \__  \/ \  / \__  \ /  __//  \__  \ /    \/ __  \   Javaslang
+   *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014-2015 Daniel Dietrich
+   * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
+   */
+  """)(gen)//(StandardCharsets.UTF_8)
 
 /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*\
      J A V A   G E N E R A T O R   F R A M E W O R K
@@ -415,36 +430,25 @@ def genTuples(): Unit = {
  * Generates a Java file.
  * @param packageName Java package name
  * @param className Simple java class name
+ * @param classHeader A class file header
  * @param gen A generator which produces a String.
  */
-def genJavaFile(packageName: String, className: String)(gen: (String, String) => String)(implicit charset: Charset = StandardCharsets.UTF_8): Unit = {
+def genJavaFile(packageName: String, className: String)(classHeader: String)(gen: (String, String) => String)(implicit charset: Charset = StandardCharsets.UTF_8): Unit = {
 
   val dirName = packageName.replaceAll("\\.", File.separator)
   val fileName = className + ".java"
 
   genFile(dirName, fileName)(xraw"""
-    ${classHeader()}
+    $classHeader
     package $packageName;
 
-    /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*\
-         G E N E R A T O R   C R A F T E D
-    \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
+    /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*\
+       G E N E R A T O R   C R A F T E D
+    \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
     ${gen.apply(packageName, className)}
   """) // TODO: pass a mutable ImportManager to gen
 }
-
-/**
- * The header for Java files.
- * @return A header as String
- */
-def classHeader() = xraw"""
-  /**    / \____  _    ______   _____ / \____   ____  _____
-   *    /  \__  \/ \  / \__  \ /  __//  \__  \ /    \/ __  \   Javaslang
-   *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014-2015 Daniel Dietrich
-   * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
-   */
-  """
 
 /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*\
      C O R E   G E N E R A T O R   F R A M E W O R K
@@ -463,134 +467,160 @@ def genFile(dirName: String, fileName: String)(contents: => String)(implicit cha
 }
 
 /**
- * Indentation of cascaded rich strings.
- * @see https://gist.github.com/danieldietrich/5174348
+ * Core generator API
  */
 object GeneratorImplicits {
 
+  /**
+   * Generates a String based on ints within a specific range.
+   * {{{
+   * (1 to 3).gen(i => s"x$i")(", ") // x1, x2, x3
+   * (1 to 3).reverse.gen(i -> s"x$i")(", ") // x3, x2, x1
+   * }}}
+   * @param range A Range
+   */
   implicit class RangeExtensions(range: Range) {
-    def gen(f: Int => String)(delimiter: String = ""): String =
+    def gen(f: Int => String = String.valueOf)(delimiter: String = ""): String =
     range map f mkString delimiter
   }
 
+  /**
+   * Generates a String based on a sequence of objects. Objects are converted to Strings via toString.
+   * {{{
+   * // val a = "A"
+   * // val b = "B"
+   * // val c = "C"
+   * Seq("a", "b", "c").gen(s => raw"""val $s = "${s.toUpperCase}"""")("\n")
+   * }}}
+   * @param seq A Seq
+   */
   implicit class SeqExtensions(seq: Seq[Any]) {
-    def gen(f: String => String)(delimiter: String = ""): String =
+    def gen(f: String => String = identity)(delimiter: String = ""): String =
       seq.map(x => f.apply(x.toString)) mkString delimiter
   }
 
   implicit class Tuple1Extensions(tuple: Tuple1[Any]) {
-    def gen(f: String => String)(delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+    def gen(f: String => String = identity)(delimiter: String = ""): String =
+      f.apply(tuple._1.toString) mkString delimiter
   }
 
   implicit class Tuple2Extensions(tuple: (Any, Any)) {
-    def gen(f: String => String)(delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple3Extensions(tuple: (Any, Any, Any)) {
-    def gen(f: String => String)(delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple4Extensions(tuple: (Any, Any, Any, Any)) {
-    def gen(f: String => String)(delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple5Extensions(tuple: (Any, Any, Any, Any, Any)) {
-    def gen(f: String => String)(delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple6Extensions(tuple: (Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String)(delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple7Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String)(delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple8Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String)(delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple9Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String)(delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple10Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String)(delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple11Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String)(delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple12Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String)(delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple13Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String)(delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple14Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String)(delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple15Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String)(delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple16Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String)(delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple17Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String)(delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple18Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String)(delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple19Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String)(delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple20Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String)(delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple21Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String)(delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple22Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String)(delimiter: String = ""): String =
+    def gen(f: String => String = identity)(delimiter: String = ""): String =
       tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
   }
 
   /**
-   * Provides StringContext extensions.
+   * Generates a String based on a tuple of objects. Objects are converted to Strings via toString.
+   * {{{
+   * // val seq = Seq("a", "1", "true")
+   * s"val seq = Seq(${("a", 1, true).gen(s => s""""$s"""")(", ")})"
+   * }}}
+   * @param tuple A Tuple
+   */
+  implicit class Tuple3Extensions(tuple: (Any, Any, Any)) {
+    def gen(f: String => String = identity)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple4Extensions(tuple: (Any, Any, Any, Any)) {
+    def gen(f: String => String = identity)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple5Extensions(tuple: (Any, Any, Any, Any, Any)) {
+    def gen(f: String => String = identity)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple6Extensions(tuple: (Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String = identity)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple7Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String = identity)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple8Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String = identity)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple9Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String = identity)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple10Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String = identity)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple11Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String = identity)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple12Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String = identity)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple13Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String = identity)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple14Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String = identity)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple15Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String = identity)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple16Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String = identity)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple17Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String = identity)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple18Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String = identity)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple19Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String = identity)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple20Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String = identity)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple21Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String = identity)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple22Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String = identity)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  /**
+   * Provides StringContext extensions, e.g. indentation of cascaded rich strings.
    * @param sc Current StringContext
+   * @see <a href="https://gist.github.com/danieldietrich/5174348">this gist</a>
    */
   implicit class StringContextExtensions(sc: StringContext) {
 
@@ -612,7 +642,7 @@ object GeneratorImplicits {
      * Indenting a rich string, removing first and last newline.
      * A rich string consists of arguments surrounded by text parts.
      */
-    private def align(interpolator: Seq[Any] => String, args: Seq[Any]) = {
+    private def align(interpolator: Seq[Any] => String, args: Seq[Any]): String = {
 
       // indent embedded strings, invariant: parts.length = args.length + 1
       val indentedArgs = for {
