@@ -8,14 +8,16 @@ import java.io.File
 import java.nio.charset.{Charset, StandardCharsets}
 import java.nio.file.StandardOpenOption
 
-import StringContextImplicits._
+import GeneratorImplicits._
 
 import scala.util.Properties.lineSeparator
 
 val N = 26
 val TARGET = "src-gen/main/java"
 
-// entry point
+/**
+ * ENTRY POINT
+ */
 def run() {
 
   genFunctions()
@@ -23,6 +25,9 @@ def run() {
   genTuples()
 }
 
+/**
+ * Generator of javaslang.test.Property
+ */
 def genPropertyChecks(): Unit = {
 
   def genProperty(packageName: String, className: String): String = {
@@ -37,10 +42,10 @@ public interface $className {
         return test(100);
     }
 
-    ${gen(1 to N)(i => {
-        val generics = gen(1 to i)(j => s"T$j")(", ")
-        val parameters = gen(1 to i)(j => s"a$j")(", ")
-        val parametersDecl = gen(1 to i)(j => s"Arbitrary<T$j> a$j")(", ")
+    ${(1 to N).gen(i => {
+        val generics = (1 to i).gen(j => s"T$j")(", ")
+        val parameters = (1 to i).gen(j => s"a$j")(", ")
+        val parametersDecl = (1 to i).gen(j => s"Arbitrary<T$j> a$j")(", ")
         xs"""
             static <$generics> ForAll$i<$generics> forAll($parametersDecl) {
                 return new ForAll$i<>($parameters);
@@ -48,27 +53,27 @@ public interface $className {
         """
     })("\n\n")}
 
-    ${gen(1 to N)(i => {
-        val generics = gen(1 to i)(j => s"T$j")(", ")
-        val parametersDecl = gen(1 to i)(j => s"Arbitrary<T$j> a$j")(", ")
+    ${(1 to N).gen(i => {
+        val generics = (1 to i).gen(j => s"T$j")(", ")
+        val parametersDecl = (1 to i).gen(j => s"Arbitrary<T$j> a$j")(", ")
         xs"""
             static class ForAll$i<$generics> {
 
-                ${gen(1 to i)(j => xs"""
+                ${(1 to i).gen(j => xs"""
                     final Arbitrary<T$j> a$j;
                 """)("\n")}
 
                 ForAll$i($parametersDecl) {
-                    ${gen(1 to i)(j => xs"""
+                    ${(1 to i).gen(j => xs"""
                         this.a$j = a$j;
                     """)("\n")}
                 }
 
-                ${gen(i+1 to N)(j => {
-                    val missingGenerics = gen(i+1 to j)(k => s"T$k")(", ")
-                    val allGenerics = gen(1 to j)(k => s"T$k")(", ")
-                    val missingParametersDecl = gen(i+1 to j)(k => s"Arbitrary<T$k> a$k")(", ")
-                    val allParameters = gen(1 to j)(k => s"a$k")(", ")
+                ${(i+1 to N).gen(j => {
+                    val missingGenerics = (i+1 to j).gen(k => s"T$k")(", ")
+                    val allGenerics = (1 to j).gen(k => s"T$k")(", ")
+                    val missingParametersDecl = (i+1 to j).gen(k => s"Arbitrary<T$k> a$k")(", ")
+                    val allParameters = (1 to j).gen(k => s"a$k")(", ")
                     xs"""
                         public <$missingGenerics> ForAll$j<$allGenerics> forAll($missingParametersDecl) {
                             return new ForAll$j<>($allParameters);
@@ -77,25 +82,25 @@ public interface $className {
                 })("\n\n")}
 
                 public Property suchThat(Lambda$i<$generics, Boolean> predicate) {
-                    return new SuchThat$i<>(${gen(1 to i)(j => s"a$j")(", ")}, predicate);
+                    return new SuchThat$i<>(${(1 to i).gen(j => s"a$j")(", ")}, predicate);
                 }
             }
         """
     })("\n\n")}
 
-    ${gen(1 to N)(i => {
-        val generics = gen(1 to i)(j => s"T$j")(", ")
-        val parametersDecl = gen(1 to i)(j => s"Arbitrary<T$j> a$j")(", ")
+    ${(1 to N).gen(i => {
+        val generics = (1 to i).gen(j => s"T$j")(", ")
+        val parametersDecl = (1 to i).gen(j => s"Arbitrary<T$j> a$j")(", ")
         xs"""
             static class SuchThat$i<$generics> implements Property {
 
-                ${gen(1 to i)(j => xs"""
+                ${(1 to i).gen(j => xs"""
                     final Arbitrary<T$j> a$j;
                 """)("\n")}
                 final Lambda$i<$generics, Boolean> predicate;
 
                 SuchThat$i($parametersDecl, Lambda$i<$generics, Boolean> predicate) {
-                    ${gen(1 to i)(j => xs"""
+                    ${(1 to i).gen(j => xs"""
                         this.a$j = a$j;
                     """)("\n")}
                     this.predicate = predicate;
@@ -103,11 +108,11 @@ public interface $className {
 
                 @Override
                 public boolean test(int n) {
-                    ${gen(1 to i)(j => xs"""
+                    ${(1 to i).gen(j => xs"""
                         final Gen<T$j> gen$j = a$j.apply(n);
                     """)("\n")}
                     // TODO: loop this m times (default: 1000) and return a CheckResult containing detailed informations
-                    return predicate.apply(${gen(1 to i)(j => s"""gen$j.get()""")(", ")});
+                    return predicate.apply(${(1 to i).gen(j => s"""gen$j.get()""")(", ")});
                 }
             }
         """
@@ -119,125 +124,23 @@ public interface $className {
   genJavaFile("javaslang.test", "Property")(genProperty)
 }
 
-def genFunctions(): Unit = {
-
-  def genLambda(packageName: String, className: String): String = xs"""
-import javaslang.control.Try;
-
-import java.io.Serializable;
-import java.lang.invoke.MethodType;
-import java.lang.invoke.SerializedLambda;
-import java.lang.reflect.Method;
-import java.util.function.Function;
-
 /**
- * <p>
- * This is a general definition of a checked function of unknown parameters and a return value of type R.
- * A checked function may throw an exception. The exception type is not a generic type parameter because
- * when composing functions, we cannot say anything else about the resulting type of exception than that it is
- * a Throwable.
- * </p>
- * <p>
- * This class is intended to be used internally.
- * </p>
- *
- * @param <R> Return type of the checked function.
+ * Generator of javaslang.function.*
  */
-public interface $className<R> extends Serializable {
-
-    /**
-     * Serializes a lambda and returns the corresponding {@link java.lang.invoke.SerializedLambda}.
-     *
-     * @param lambda A serializable lambda
-     * @return The serialized lambda wrapped in a {@link javaslang.control.Try.Success}, or a {@link javaslang.control.Try.Failure}
-     * if an exception occurred.
-     * @see <a
-     * href="http://stackoverflow.com/questions/21860875/printing-debug-info-on-errors-with-java-8-lambda-expressions">printing
-     * debug info on errors with java 8 lambda expressions</a>
-     * @see <a href="http://www.slideshare.net/hendersk/method-handles-in-java">Method Handles in Java</a>
-     */
-    static SerializedLambda getSerializedLambda(Serializable lambda) {
-        return Try.of(() -> {
-            final Method method = lambda.getClass().getDeclaredMethod("writeReplace");
-            method.setAccessible(true);
-            return (SerializedLambda) method.invoke(lambda);
-        }).get();
-    }
-
-    /**
-     * <p>
-     * Gets the runtime method signature of the given lambda instance. Especially this function is handy when the
-     * functional interface is generic and the parameter and/or return types cannot be determined directly.
-     * </p>
-     * <p>
-     * Uses internally the {@link java.lang.invoke.SerializedLambda#getImplMethodSignature()} by parsing the JVM field
-     * types of the method signature. The result is a {@link java.lang.invoke.MethodType} which contains the return type
-     * and the parameter types of the given lambda.
-     * </p>
-     *
-     * @param lambda A serializable lambda.
-     * @return The signature of the lambda as {@linkplain java.lang.invoke.MethodType}.
-     */
-    static MethodType getLambdaSignature(Serializable lambda) {
-        final String signature = getSerializedLambda(lambda).getImplMethodSignature();
-        return MethodType.fromMethodDescriptorString(signature, lambda.getClass().getClassLoader());
-    }
-
-    /**
-     * @return the numper of function arguments.
-     * @see <a href="http://en.wikipedia.org/wiki/Arity">Arity</a>
-     */
-    int arity();
-
-    /**
-     * Returns a curried version of this function.
-     *
-     * @return A curried function equivalent to this.
-     */
-    $className curried();
-
-    /**
-     * Returns a tupled version of this function.
-     *
-     * @return A tupled function equivalent to this.
-     */
-    $className<R> tupled();
-
-    /**
-     * Returns a reversed version of this function.
-     *
-     * @return A reversed function equivalent to this.
-     */
-    $className<R> reversed();
-
-    /**
-     * There can be nothing said about the type of exception (in Java), if the Function arg is also a checked function.
-     * In an ideal world we could denote the appropriate bound of both exception types (this and after).
-     * This is the reason why CheckedFunction throws a Throwable instead of a concrete exception.
-     *
-     * @param after Functions applied after this
-     * @param <V> Return value of after
-     * @return A Function composed of this and after
-     */
-    <V> $className<V> andThen(Function<? super R, ? extends V> after);
-
-    default MethodType getType() {
-        return $className.getLambdaSignature(this);
-    }
-}"""
+def genFunctions(): Unit = {
 
   def genFunctions(i: Int): Unit = {
 
-    val generics = gen(1 to i)(j => s"T$j")(", ")
-    val genericsReversed = gen((1 to i).reverse)(j => s"T$j")(", ")
+    val generics = (1 to i).gen(j => s"T$j")(", ")
+    val genericsReversed = (1 to i).reverse.gen(j => s"T$j")(", ")
     val genericsTuple = if (i > 0) s"<$generics>" else ""
     val genericsFunction = if (i > 0) s"$generics, " else ""
     val genericsReversedFunction = if (i > 0) s"$genericsReversed, " else ""
-    val curried = if (i == 0) "v" else gen(1 to i)(j => s"t$j")(" -> ")
-    val paramsDecl = gen(1 to i)(j => s"T$j t$j")(", ")
-    val params = gen(1 to i)(j => s"t$j")(", ")
-    val paramsReversed = gen((1 to i).reverse)(j => s"t$j")(", ")
-    val tupled = gen(1 to i)(j => s"t._$j")(", ")
+    val curried = if (i == 0) "v" else (1 to i).gen(j => s"t$j")(" -> ")
+    val paramsDecl = (1 to i).gen(j => s"T$j t$j")(", ")
+    val params = (1 to i).gen(j => s"t$j")(", ")
+    val paramsReversed = (1 to i).reverse.gen(j => s"t$j")(", ")
+    val tupled = (1 to i).gen(j => s"t._$j")(", ")
 
     def additionalInterfaces(arity: Int, checked: Boolean): String = (arity, checked) match {
       case (0, false) => s", java.util.function.Supplier<R>"
@@ -322,13 +225,18 @@ public interface $className<R> extends Serializable {
     genJavaFile("javaslang.function", s"Lambda$i")(genFunction("Lambda", checked = false))
   }
 
-  genJavaFile("javaslang.function", "Lambda")(genLambda)
-
   (0 to N).foreach(genFunctions)
+  ("A", "B", "C").gen(s => s)("")
 }
 
+/**
+ * Generator of javaslang.Tuple*
+ */
 def genTuples(): Unit = {
 
+  /*
+   * Generates Tuple0
+   */
   def genTuple0(packageName: String, className: String): String = xs"""
     import java.util.Objects;
 
@@ -398,9 +306,12 @@ def genTuples(): Unit = {
     }
   """
 
+  /*
+   * Generates Tuple1..N
+   */
   def genTuple(i: Int)(packageName: String, className: String): String = {
-    val generics = gen(1 to i)(j => s"T$j")(", ")
-    val paramsDecl = gen(1 to i)(j => s"T$j t$j")(", ")
+    val generics = (1 to i).gen(j => s"T$j")(", ")
+    val paramsDecl = (1 to i).gen(j => s"T$j t$j")(", ")
     xs"""
     import java.util.Objects;
 
@@ -411,10 +322,10 @@ def genTuples(): Unit = {
 
         private static final long serialVersionUID = 1L;
 
-        ${gen(1 to i)(j => s"public final T$j _$j;")("\n")}
+        ${(1 to i).gen(j => s"public final T$j _$j;")("\n")}
 
         public $className($paramsDecl) {
-            ${gen(1 to i)(j => s"this._$j = t$j;")("\n")}
+            ${(1 to i).gen(j => s"this._$j = t$j;")("\n")}
         }
 
         @Override
@@ -435,29 +346,32 @@ def genTuples(): Unit = {
                 return false;
             } else {
                 final $className that = ($className) o;
-                return ${gen(1 to i)(j => s"Objects.equals(this._$j, that._$j)")("\n                         && ")};
+                return ${(1 to i).gen(j => s"Objects.equals(this._$j, that._$j)")("\n                         && ")};
             }
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(${gen(1 to i)(j => s"_$j")(", ")});
+            return Objects.hash(${(1 to i).gen(j => s"_$j")(", ")});
         }
 
         @Override
         public String toString() {
-            return String.format("(${gen(1 to i)(_ => s"%s")(", ")})", ${gen(1 to i)(j => s"_$j")(", ")});
+            return String.format("(${(1 to i).gen(_ => s"%s")(", ")})", ${(1 to i).gen(j => s"_$j")(", ")});
         }
     }
     """
   }
 
+  /*
+   * Generates Tuple
+   */
   def genBaseTuple(packageName: String, className: String): String = {
 
     def genFactoryMethod(i: Int) = {
-      val generics = gen(1 to i)(j => s"T$j")(", ")
-      val paramsDecl = gen(1 to i)(j => s"T$j t$j")(", ")
-      val params = gen(1 to i)(j => s"t$j")(", ")
+      val generics = (1 to i).gen(j => s"T$j")(", ")
+      val paramsDecl = (1 to i).gen(j => s"T$j t$j")(", ")
+      val params = (1 to i).gen(j => s"t$j")(", ")
       xs"""
       static <$generics> Tuple$i<$generics> of($paramsDecl) {
           return new Tuple$i<>($params);
@@ -480,7 +394,7 @@ def genTuples(): Unit = {
             return Tuple0.instance();
         }
 
-        ${gen(1 to N)(genFactoryMethod)("\n\n")}
+        ${(1 to N).gen(genFactoryMethod)("\n\n")}
     }"""
   }
 
@@ -493,6 +407,10 @@ def genTuples(): Unit = {
   }
 }
 
+/*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*\
+     J A V A   G E N E R A T O R   F R A M E W O R K
+\*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
+
 /**
  * Generates a Java file.
  * @param packageName Java package name
@@ -501,39 +419,20 @@ def genTuples(): Unit = {
  */
 def genJavaFile(packageName: String, className: String)(gen: (String, String) => String)(implicit charset: Charset = StandardCharsets.UTF_8): Unit = {
 
-  println(s"Generating $packageName.$className")
+  val dirName = packageName.replaceAll("\\.", File.separator)
+  val fileName = className + ".java"
 
-  val contents = gen.apply(packageName, className) // TODO: pass a mutable ImportManager
-  val fileContents = xs"""
+  genFile(dirName, fileName)(xraw"""
     ${classHeader()}
     package $packageName;
 
-    //
-    // *-- GENERATED FILE - DO NOT MODIFY --*
-    //
+    /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*\
+         G E N E R A T O R   C R A F T E D
+    \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-    $contents
-  """
-
-  import java.nio.file.{Paths, Files}
-
-  val filePackage = packageName.replaceAll("\\.", File.separator)
-  val fileName = className + ".java"
-
-  Files.write(
-    Files.createDirectories(Paths.get(TARGET, filePackage)).resolve(fileName),
-    fileContents.getBytes(charset),
-    StandardOpenOption.CREATE, StandardOpenOption.WRITE)
+    ${gen.apply(packageName, className)}
+  """) // TODO: pass a mutable ImportManager to gen
 }
-
-/**
- * Applies f for a range of Ints using delimiter to mkString the output.
- * @param range A range of Ints
- * @param f A generator which takes an Int and produces a String
- * @param delimiter The delimiter of the strings parts
- * @return Generated String
- */
-def gen(range: Range)(f: Int => String)(implicit delimiter: String = "") = range.map(i => f.apply(i)) mkString delimiter
 
 /**
  * The header for Java files.
@@ -547,16 +446,166 @@ def classHeader() = xraw"""
    */
   """
 
+/*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*\
+     C O R E   G E N E R A T O R   F R A M E W O R K
+\*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
+
+def genFile(dirName: String, fileName: String)(contents: => String)(implicit charset: Charset = StandardCharsets.UTF_8): Unit = {
+
+  println(s"Generating $dirName${File.separator}$fileName")
+
+  import java.nio.file.{Paths, Files}
+
+  Files.write(
+    Files.createDirectories(Paths.get(TARGET, dirName)).resolve(fileName),
+    contents.getBytes(charset),
+    StandardOpenOption.CREATE, StandardOpenOption.WRITE)
+}
+
 /**
  * Indentation of cascaded rich strings.
  * @see https://gist.github.com/danieldietrich/5174348
  */
-object StringContextImplicits {
+object GeneratorImplicits {
 
-  implicit class StringContextExtension(sc: StringContext) {
+  implicit class RangeExtensions(range: Range) {
+    def gen(f: Int => String)(delimiter: String = ""): String =
+    range map f mkString delimiter
+  }
 
+  implicit class SeqExtensions(seq: Seq[Any]) {
+    def gen(f: String => String)(delimiter: String = ""): String =
+      seq.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple1Extensions(tuple: Tuple1[Any]) {
+    def gen(f: String => String)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple2Extensions(tuple: (Any, Any)) {
+    def gen(f: String => String)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple3Extensions(tuple: (Any, Any, Any)) {
+    def gen(f: String => String)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple4Extensions(tuple: (Any, Any, Any, Any)) {
+    def gen(f: String => String)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple5Extensions(tuple: (Any, Any, Any, Any, Any)) {
+    def gen(f: String => String)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple6Extensions(tuple: (Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple7Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple8Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple9Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple10Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple11Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple12Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple13Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple14Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple15Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple16Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple17Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple18Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple19Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple20Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple21Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  implicit class Tuple22Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
+    def gen(f: String => String)(delimiter: String = ""): String =
+      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+  }
+
+  /**
+   * Provides StringContext extensions.
+   * @param sc Current StringContext
+   */
+  implicit class StringContextExtensions(sc: StringContext) {
+
+    /**
+     * Formats escaped strings.
+     * @param args StringContext parts
+     * @return An aligned String
+     */
     def xs(args: Any*): String = align(sc.s, args)
 
+    /**
+     * Formats raw/unescaped strings.
+     * @param args StringContext parts
+     * @return An aligned String
+     */
     def xraw(args: Any*): String = align(sc.raw, args)
 
     /**
@@ -601,5 +650,4 @@ object StringContextImplicits {
       aligned.replaceAll("""[ \t]*\r?\n ([ \t]*\r?\n)+""", lineSeparator * 2)
     }
   }
-
 }

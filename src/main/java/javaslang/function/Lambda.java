@@ -5,10 +5,6 @@
  */
 package javaslang.function;
 
-//
-// *-- GENERATED FILE - DO NOT MODIFY --*
-//
-
 import javaslang.control.Try;
 
 import java.io.Serializable;
@@ -19,16 +15,16 @@ import java.util.function.Function;
 
 /**
  * <p>
- * This is a general definition of a checked function of unknown parameters and a return value of type R.
- * A checked function may throw an exception. The exception type is not a generic type parameter because
- * when composing functions, we cannot say anything else about the resulting type of exception than that it is
- * a Throwable.
+ * This is a general definition of a (checked/unchecked) function of unknown parameters and a return type R.
+ * Lambda extends Serializable in order to be able to get runtime type information via {@link #getLambdaSignature(java.io.Serializable)}
+ * and {@link #getSerializedLambda(java.io.Serializable)}.
  * </p>
  * <p>
- * This class is intended to be used internally.
+ * A checked function may throw an exception. The exception type cannot be expressed as a generic type parameter
+ * because Java cannot calculate type bounds on function composition.
  * </p>
  *
- * @param <R> Return type of the checked function.
+ * @param <R> Return type of the function.
  */
 public interface Lambda<R> extends Serializable {
 
@@ -91,7 +87,7 @@ public interface Lambda<R> extends Serializable {
     Lambda<R> tupled();
 
     /**
-     * Returns a reversed version of this function.
+     * Returns a reversed version of this function. This may be useful in a recursive context.
      *
      * @return A reversed function equivalent to this.
      */
@@ -103,11 +99,16 @@ public interface Lambda<R> extends Serializable {
      * This is the reason why CheckedFunction throws a Throwable instead of a concrete exception.
      *
      * @param after Functions applied after this
-     * @param <V> Return value of after
+     * @param <V>   Return value of after
      * @return A Function composed of this and after
      */
     <V> Lambda<V> andThen(Function<? super R, ? extends V> after);
 
+    /**
+     * Get reflective type information about lambda parameters and return type.
+     *
+     * @return A {@link java.lang.invoke.MethodType}
+     */
     default MethodType getType() {
         return Lambda.getLambdaSignature(this);
     }

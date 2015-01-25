@@ -5,9 +5,9 @@
  */
 package javaslang.test;
 
-//
-// *-- GENERATED FILE - DO NOT MODIFY --*
-//
+/*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*\
+     G E N E R A T O R   C R A F T E D
+\*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import javaslang.function.*;
 
