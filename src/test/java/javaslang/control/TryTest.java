@@ -5,19 +5,16 @@
  */
 package javaslang.control;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import javaslang.Serializables;
+import javaslang.Tuple;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import javaslang.Serializables;
-import javaslang.Tuple;
-import javaslang.control.Try.Failure;
-import javaslang.control.Try.Success;
-
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TryTest {
 

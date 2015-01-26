@@ -5,17 +5,13 @@
  */
 package javaslang.control;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.function.Function;
 
-import javaslang.control.Match;
-import javaslang.control.MatchError;
-import javaslang.control.Option.Some;
-
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 public class MatchTest {
 

@@ -5,21 +5,14 @@
  */
 package javaslang.control;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-
 import javaslang.Tuple;
-import javaslang.control.Either.Left;
 import javaslang.control.Either.LeftProjection;
-import javaslang.control.Either.Right;
 import javaslang.control.Either.RightProjection;
-
 import org.junit.Test;
+
+import java.util.*;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class EitherTest {
 

@@ -9,6 +9,7 @@ import javaslang.algebra.*;
 import javaslang.Tuple2;
 import javaslang.control.Match;
 import javaslang.control.Option;
+import javaslang.control.Some;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -259,7 +260,7 @@ public interface Traversable<T> extends Iterable<T>, HigherKinded<T, Traversable
     default Option<T> findFirst(Predicate<? super T> predicate) {
         for (T a : this) {
             if (predicate.test(a)) {
-                return new Option.Some<>(a); // may be Some(null)
+                return new Some<>(a); // may be Some(null)
             }
         }
         return Option.none();

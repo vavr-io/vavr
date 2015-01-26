@@ -6,7 +6,7 @@
 package javaslang.collection;
 
 import javaslang.control.Option;
-import javaslang.control.Option.Some;
+import javaslang.control.Some;
 
 import java.util.function.Supplier;
 

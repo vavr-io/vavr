@@ -5,17 +5,14 @@
  */
 package javaslang.control;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import javaslang.Serializables;
+import javaslang.Tuple;
+import org.junit.Test;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-import javaslang.Serializables;
-import javaslang.Tuple;
-import javaslang.control.Option.None;
-import javaslang.control.Option.Some;
-
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class OptionTest {
 

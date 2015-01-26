@@ -5,19 +5,12 @@
  */
 package javaslang.control;
 
+import javaslang.function.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.DoubleFunction;
-import java.util.function.Function;
-import java.util.function.IntFunction;
-import java.util.function.LongFunction;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-
-import javaslang.function.*;
-import javaslang.control.Option.None;
-import javaslang.control.Option.Some;
+import java.util.function.*;
 
 /**
  * A better switch for Java. A Match...
@@ -133,7 +126,7 @@ public final class Match<R> implements Function<Object, R> {
 	 * @return The result when applying the given obj to the first matching case. If the case has a consumer, the result
 	 *         is null, otherwise the result of the underlying function or supplier.
 	 * @throws MatchError if no Match case matches the given object and no default is defined via orElse().
-	 * @throws javaslang.control.Try.Failure.NonFatal if an error occurs executing the matched case.
+	 * @throws javaslang.control.Failure.NonFatal if an error occurs executing the matched case.
 	 */
 	@Override
 	public R apply(Object obj) {

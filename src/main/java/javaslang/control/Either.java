@@ -5,20 +5,18 @@
  */
 package javaslang.control;
 
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.function.*;
-
-import javaslang.Tuple;
-import javaslang.Tuple1;
 import javaslang.ValueObject;
-import javaslang.control.Option.None;
-import javaslang.control.Option.Some;
 import javaslang.control.Valences.Bivalent;
 
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+
 /**
- * Either represents a value of two possible types. An Either is either a {@link javaslang.control.Either.Left} or a
- * {@link javaslang.control.Either.Right}.
+ * Either represents a value of two possible types. An Either is either a {@link javaslang.control.Left} or a
+ * {@link javaslang.control.Right}.
  * <p>
  * It is possible to project an Either to a Left or a Right. Both cases can be further processed with control operations
  * map, flatMap, filter.
@@ -68,90 +66,6 @@ public interface Either<L, R> extends ValueObject {
 
 	@Override
 	String toString();
-
-	// -- Either implementations
-
-	static final class Left<L, R> implements Either<L, R> {
-
-		private static final long serialVersionUID = 3297057402720487673L;
-
-		final L left;
-
-		public Left(L left) {
-			this.left = left;
-		}
-
-		@Override
-		public boolean isLeft() {
-			return true;
-		}
-
-		@Override
-		public boolean isRight() {
-			return false;
-		}
-
-		@Override
-		public Tuple1<L> unapply() {
-			return Tuple.of(left);
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			return (obj == this) || (obj instanceof Left && Objects.equals(left, ((Left<?, ?>) obj).left));
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hashCode(left);
-		}
-
-		@Override
-		public String toString() {
-			return String.format("Left(%s)", left);
-		}
-	}
-
-	static final class Right<L, R> implements Either<L, R> {
-
-		private static final long serialVersionUID = 6037923230455552437L;
-
-		final R right;
-
-		public Right(R right) {
-			this.right = right;
-		}
-
-		@Override
-		public boolean isLeft() {
-			return false;
-		}
-
-		@Override
-		public boolean isRight() {
-			return true;
-		}
-
-		@Override
-		public Tuple1<R> unapply() {
-			return Tuple.of(right);
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			return (obj == this) || (obj instanceof Right && Objects.equals(right, ((Right<?, ?>) obj).right));
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hashCode(right);
-		}
-
-		@Override
-		public String toString() {
-			return String.format("Right(%s)", right);
-		}
-	}
 
 	// -- Left/Right projections
 
