@@ -2425,6 +2425,8 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple1<T1>> check(int size, int tries) {
+            return null; // TODO
+            /*
             final Try<CheckResult<Tuple1<T1>>> overallCheckResult =
                 Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).map((Gen<T1> gen1) -> {
                     for (int i = 1; i < tries; i++) {
@@ -2449,6 +2451,7 @@ public interface Property {
                     return CheckResult.satisfied(size);
                 });
             return overallCheckResult.recover(x -> CheckResult.<Tuple1<T1>>erroneous(0, (Error) x)).get();
+            */
         }
     }
 
@@ -2466,6 +2469,8 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple2<T1, T2>> check(int size, int tries) {
+            return null; // TODO
+            /*
             final Try<CheckResult<Tuple2<T1, T2>>> overallCheckResult =
                 Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
                 Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).map((Gen<T2> gen2) -> {
@@ -2492,6 +2497,7 @@ public interface Property {
                     return CheckResult.satisfied(size);
                 }));
             return overallCheckResult.recover(x -> CheckResult.<Tuple2<T1, T2>>erroneous(0, (Error) x)).get();
+            */
         }
     }
 
@@ -2511,6 +2517,8 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple3<T1, T2, T3>> check(int size, int tries) {
+            return null; // TODO
+            /*
             final Try<CheckResult<Tuple3<T1, T2, T3>>> overallCheckResult =
                 Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
                 Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
@@ -2539,6 +2547,7 @@ public interface Property {
                     return CheckResult.satisfied(size);
                 })));
             return overallCheckResult.recover(x -> CheckResult.<Tuple3<T1, T2, T3>>erroneous(0, (Error) x)).get();
+            */
         }
     }
 
@@ -2560,6 +2569,8 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple4<T1, T2, T3, T4>> check(int size, int tries) {
+            return null; // TODO
+            /*
             final Try<CheckResult<Tuple4<T1, T2, T3, T4>>> overallCheckResult =
                 Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
                 Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
@@ -2590,6 +2601,7 @@ public interface Property {
                     return CheckResult.satisfied(size);
                 }))));
             return overallCheckResult.recover(x -> CheckResult.<Tuple4<T1, T2, T3, T4>>erroneous(0, (Error) x)).get();
+            */
         }
     }
 
@@ -2613,6 +2625,8 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple5<T1, T2, T3, T4, T5>> check(int size, int tries) {
+            return null; // TODO
+            /*
             final Try<CheckResult<Tuple5<T1, T2, T3, T4, T5>>> overallCheckResult =
                 Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
                 Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
@@ -2645,6 +2659,7 @@ public interface Property {
                     return CheckResult.satisfied(size);
                 })))));
             return overallCheckResult.recover(x -> CheckResult.<Tuple5<T1, T2, T3, T4, T5>>erroneous(0, (Error) x)).get();
+            */
         }
     }
 
@@ -2670,6 +2685,8 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple6<T1, T2, T3, T4, T5, T6>> check(int size, int tries) {
+            return null; // TODO
+            /*
             final Try<CheckResult<Tuple6<T1, T2, T3, T4, T5, T6>>> overallCheckResult =
                 Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
                 Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
@@ -2704,6 +2721,7 @@ public interface Property {
                     return CheckResult.satisfied(size);
                 }))))));
             return overallCheckResult.recover(x -> CheckResult.<Tuple6<T1, T2, T3, T4, T5, T6>>erroneous(0, (Error) x)).get();
+            */
         }
     }
 
@@ -2731,6 +2749,8 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple7<T1, T2, T3, T4, T5, T6, T7>> check(int size, int tries) {
+            return null; // TODO
+            /*
             final Try<CheckResult<Tuple7<T1, T2, T3, T4, T5, T6, T7>>> overallCheckResult =
                 Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
                 Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
@@ -2767,6 +2787,7 @@ public interface Property {
                     return CheckResult.satisfied(size);
                 })))))));
             return overallCheckResult.recover(x -> CheckResult.<Tuple7<T1, T2, T3, T4, T5, T6, T7>>erroneous(0, (Error) x)).get();
+            */
         }
     }
 
@@ -2796,6 +2817,8 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> check(int size, int tries) {
+            return null; // TODO
+            /*
             final Try<CheckResult<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>>> overallCheckResult =
                 Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
                 Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
@@ -2834,6 +2857,7 @@ public interface Property {
                     return CheckResult.satisfied(size);
                 }))))))));
             return overallCheckResult.recover(x -> CheckResult.<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>>erroneous(0, (Error) x)).get();
+            */
         }
     }
 
@@ -2865,6 +2889,8 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9>> check(int size, int tries) {
+            return null; // TODO
+            /*
             final Try<CheckResult<Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9>>> overallCheckResult =
                 Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
                 Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
@@ -2905,6 +2931,7 @@ public interface Property {
                     return CheckResult.satisfied(size);
                 })))))))));
             return overallCheckResult.recover(x -> CheckResult.<Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9>>erroneous(0, (Error) x)).get();
+            */
         }
     }
 
@@ -2938,6 +2965,8 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>> check(int size, int tries) {
+            return null; // TODO
+            /*
             final Try<CheckResult<Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>>> overallCheckResult =
                 Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
                 Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
@@ -2980,6 +3009,7 @@ public interface Property {
                     return CheckResult.satisfied(size);
                 }))))))))));
             return overallCheckResult.recover(x -> CheckResult.<Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>>erroneous(0, (Error) x)).get();
+            */
         }
     }
 
@@ -3015,6 +3045,8 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>> check(int size, int tries) {
+            return null; // TODO
+            /*
             final Try<CheckResult<Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>>> overallCheckResult =
                 Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
                 Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
@@ -3059,6 +3091,7 @@ public interface Property {
                     return CheckResult.satisfied(size);
                 })))))))))));
             return overallCheckResult.recover(x -> CheckResult.<Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>>erroneous(0, (Error) x)).get();
+            */
         }
     }
 
@@ -3096,6 +3129,8 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>> check(int size, int tries) {
+            return null; // TODO
+            /*
             final Try<CheckResult<Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>>> overallCheckResult =
                 Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
                 Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
@@ -3142,6 +3177,7 @@ public interface Property {
                     return CheckResult.satisfied(size);
                 }))))))))))));
             return overallCheckResult.recover(x -> CheckResult.<Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>>erroneous(0, (Error) x)).get();
+            */
         }
     }
 
@@ -3181,6 +3217,8 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>> check(int size, int tries) {
+            return null; // TODO
+            /*
             final Try<CheckResult<Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>>> overallCheckResult =
                 Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
                 Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
@@ -3229,6 +3267,7 @@ public interface Property {
                     return CheckResult.satisfied(size);
                 })))))))))))));
             return overallCheckResult.recover(x -> CheckResult.<Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>>erroneous(0, (Error) x)).get();
+            */
         }
     }
 
@@ -3270,6 +3309,8 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>> check(int size, int tries) {
+            return null; // TODO
+            /*
             final Try<CheckResult<Tuple14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>>> overallCheckResult =
                 Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
                 Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
@@ -3320,6 +3361,7 @@ public interface Property {
                     return CheckResult.satisfied(size);
                 }))))))))))))));
             return overallCheckResult.recover(x -> CheckResult.<Tuple14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>>erroneous(0, (Error) x)).get();
+            */
         }
     }
 
@@ -3363,6 +3405,8 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>> check(int size, int tries) {
+            return null; // TODO
+            /*
             final Try<CheckResult<Tuple15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>>> overallCheckResult =
                 Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
                 Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
@@ -3415,6 +3459,7 @@ public interface Property {
                     return CheckResult.satisfied(size);
                 })))))))))))))));
             return overallCheckResult.recover(x -> CheckResult.<Tuple15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>>erroneous(0, (Error) x)).get();
+            */
         }
     }
 
@@ -3460,6 +3505,8 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>> check(int size, int tries) {
+            return null; // TODO
+            /*
             final Try<CheckResult<Tuple16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>>> overallCheckResult =
                 Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
                 Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
@@ -3514,6 +3561,7 @@ public interface Property {
                     return CheckResult.satisfied(size);
                 }))))))))))))))));
             return overallCheckResult.recover(x -> CheckResult.<Tuple16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>>erroneous(0, (Error) x)).get();
+            */
         }
     }
 
@@ -3561,6 +3609,8 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>> check(int size, int tries) {
+            return null; // TODO
+            /*
             final Try<CheckResult<Tuple17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>>> overallCheckResult =
                 Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
                 Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
@@ -3617,6 +3667,7 @@ public interface Property {
                     return CheckResult.satisfied(size);
                 })))))))))))))))));
             return overallCheckResult.recover(x -> CheckResult.<Tuple17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>>erroneous(0, (Error) x)).get();
+            */
         }
     }
 
@@ -3666,6 +3717,8 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>> check(int size, int tries) {
+            return null; // TODO
+            /*
             final Try<CheckResult<Tuple18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>>> overallCheckResult =
                 Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
                 Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
@@ -3724,6 +3777,7 @@ public interface Property {
                     return CheckResult.satisfied(size);
                 }))))))))))))))))));
             return overallCheckResult.recover(x -> CheckResult.<Tuple18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>>erroneous(0, (Error) x)).get();
+            */
         }
     }
 
@@ -3775,6 +3829,8 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>> check(int size, int tries) {
+            return null; // TODO
+            /*
             final Try<CheckResult<Tuple19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>>> overallCheckResult =
                 Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
                 Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
@@ -3835,6 +3891,7 @@ public interface Property {
                     return CheckResult.satisfied(size);
                 })))))))))))))))))));
             return overallCheckResult.recover(x -> CheckResult.<Tuple19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>>erroneous(0, (Error) x)).get();
+            */
         }
     }
 
@@ -3888,6 +3945,8 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>> check(int size, int tries) {
+            return null; // TODO
+            /*
             final Try<CheckResult<Tuple20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>>> overallCheckResult =
                 Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
                 Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
@@ -3950,6 +4009,7 @@ public interface Property {
                     return CheckResult.satisfied(size);
                 }))))))))))))))))))));
             return overallCheckResult.recover(x -> CheckResult.<Tuple20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>>erroneous(0, (Error) x)).get();
+            */
         }
     }
 
@@ -4005,6 +4065,8 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>> check(int size, int tries) {
+            return null; // TODO
+            /*
             final Try<CheckResult<Tuple21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>>> overallCheckResult =
                 Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
                 Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
@@ -4069,6 +4131,7 @@ public interface Property {
                     return CheckResult.satisfied(size);
                 })))))))))))))))))))));
             return overallCheckResult.recover(x -> CheckResult.<Tuple21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>>erroneous(0, (Error) x)).get();
+            */
         }
     }
 
@@ -4126,6 +4189,8 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>> check(int size, int tries) {
+            return null; // TODO
+            /*
             final Try<CheckResult<Tuple22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>>> overallCheckResult =
                 Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
                 Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
@@ -4192,6 +4257,7 @@ public interface Property {
                     return CheckResult.satisfied(size);
                 }))))))))))))))))))))));
             return overallCheckResult.recover(x -> CheckResult.<Tuple22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>>erroneous(0, (Error) x)).get();
+            */
         }
     }
 
@@ -4251,6 +4317,8 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>> check(int size, int tries) {
+            return null; // TODO
+            /*
             final Try<CheckResult<Tuple23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>>> overallCheckResult =
                 Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
                 Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
@@ -4319,6 +4387,7 @@ public interface Property {
                     return CheckResult.satisfied(size);
                 })))))))))))))))))))))));
             return overallCheckResult.recover(x -> CheckResult.<Tuple23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>>erroneous(0, (Error) x)).get();
+            */
         }
     }
 
@@ -4380,6 +4449,8 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>> check(int size, int tries) {
+            return null; // TODO
+            /*
             final Try<CheckResult<Tuple24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>>> overallCheckResult =
                 Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
                 Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
@@ -4450,6 +4521,7 @@ public interface Property {
                     return CheckResult.satisfied(size);
                 }))))))))))))))))))))))));
             return overallCheckResult.recover(x -> CheckResult.<Tuple24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>>erroneous(0, (Error) x)).get();
+            */
         }
     }
 
@@ -4513,6 +4585,8 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>> check(int size, int tries) {
+            return null; // TODO
+            /*
             final Try<CheckResult<Tuple25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>>> overallCheckResult =
                 Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
                 Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
@@ -4585,6 +4659,7 @@ public interface Property {
                     return CheckResult.satisfied(size);
                 })))))))))))))))))))))))));
             return overallCheckResult.recover(x -> CheckResult.<Tuple25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>>erroneous(0, (Error) x)).get();
+            */
         }
     }
 
@@ -4650,6 +4725,8 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>> check(int size, int tries) {
+            return null; // TODO
+            /*
             final Try<CheckResult<Tuple26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>>> overallCheckResult =
                 Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
                 Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
@@ -4724,6 +4801,7 @@ public interface Property {
                     return CheckResult.satisfied(size);
                 }))))))))))))))))))))))))));
             return overallCheckResult.recover(x -> CheckResult.<Tuple26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>>erroneous(0, (Error) x)).get();
+            */
         }
     }
 }

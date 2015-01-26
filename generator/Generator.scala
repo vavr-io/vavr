@@ -110,6 +110,8 @@ public interface $className {
 
                 @Override
                 public CheckResult<Tuple$i<$generics>> check(int size, int tries) {
+                    return null; // TODO
+                    /*
                     final Try<CheckResult<Tuple$i<$generics>>> overallCheckResult =
                         ${(1 to i).gen(j => {
                             val mapper = if (i == j) "map" else "flatMap"
@@ -140,6 +142,7 @@ public interface $className {
                             return CheckResult.satisfied(size);
                         }${(1 to i).gen(j => ")")};
                     return overallCheckResult.recover(x -> CheckResult.<Tuple$i<$generics>>erroneous(0, (Error) x)).get();
+                    */
                 }
             }
         """

@@ -13,6 +13,7 @@ import org.junit.Test;
 public class PropertyTest {
 
     @Test
+    @Ignore
     public void shouldCheckPythagoras() {
 
         final Arbitrary<Double> real = n -> Gen.choose(0, (double) n).filter(d -> d > .0d);
