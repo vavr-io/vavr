@@ -7,13 +7,13 @@ package javaslang.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import javaslang.Tuple;
 import org.junit.Ignore;
 import org.junit.Test;
 
 public class PropertyTest {
 
     @Test
-    @Ignore
     public void shouldCheckPythagoras() {
 
         final Arbitrary<Double> real = n -> Gen.choose(0, (double) n).filter(d -> d > .0d);
@@ -23,5 +23,36 @@ public class PropertyTest {
         final CheckResult checkResult = property.check();
 
         assertThat(checkResult.isSatisfied()).isTrue();
+    }
+
+    @Test
+    public void shouldRecognizeArbitraryError() {
+        final Arbitrary<?> arbitrary = n -> { throw new RuntimeException("woops"); };
+        final CheckResult result = Property.forAll(arbitrary).suchThat(ignored -> true).check();
+        assertThat(result.isErroneous());
+        assertThat(result.count()).isEqualTo(0);
+        assertThat(result.sample().isNotPresent()).isTrue();
+    }
+
+    @Test
+    public void shouldRecognizeGenError() {
+        final Arbitrary<?> arbitrary = Gen.fail("woops").arbitrary();
+        final CheckResult result = Property.forAll(arbitrary).suchThat(ignored -> true).check();
+        assertThat(result.isErroneous());
+        assertThat(result.count()).isEqualTo(1);
+        assertThat(result.sample().isNotPresent()).isTrue();
+    }
+
+    @Test
+    public void shouldRecognizePropertyError() {
+        final Arbitrary<Integer> a1 = n -> () -> 1;
+        final Arbitrary<Integer> a2 = n -> () -> 2;
+        final CheckResult result = Property.forAll(a1, a2).suchThat((a, b) -> {
+            throw new RuntimeException("woops");
+        }).check();
+        assertThat(result.isErroneous());
+        assertThat(result.count()).isEqualTo(1);
+        assertThat(result.sample().isPresent()).isTrue();
+        assertThat(result.sample().get()).isEqualTo(Tuple.of(1, 2));
     }
 }

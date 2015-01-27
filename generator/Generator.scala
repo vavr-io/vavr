@@ -30,126 +30,116 @@ def run() {
  */
 def genPropertyChecks(): Unit = {
 
-  def genProperty(packageName: String, className: String): String = {
-    xs"""
-import javaslang.*;
-import javaslang.control.*;
-import javaslang.function.*;
+  def genProperty(packageName: String, className: String): String = xs"""
+    import javaslang.*;
+    import javaslang.control.*;
+    import javaslang.function.*;
 
-public interface $className {
+    public interface $className {
 
-    CheckResult check(int size, int tries);
+        CheckResult check(int size, int tries);
 
-    default CheckResult check() {
-        return check(100, 1000);
-    }
+        default CheckResult check() {
+            return check(100, 1000);
+        }
 
-    ${(1 to N).gen(i => {
-        val generics = (1 to i).gen(j => s"T$j")(", ")
-        val parameters = (1 to i).gen(j => s"a$j")(", ")
-        val parametersDecl = (1 to i).gen(j => s"Arbitrary<T$j> a$j")(", ")
-        xs"""
-            static <$generics> ForAll$i<$generics> forAll($parametersDecl) {
-                return new ForAll$i<>($parameters);
-            }
-        """
-    })("\n\n")}
+        ${(1 to N).gen(i => {
+            val generics = (1 to i).gen(j => s"T$j")(", ")
+            val parameters = (1 to i).gen(j => s"a$j")(", ")
+            val parametersDecl = (1 to i).gen(j => s"Arbitrary<T$j> a$j")(", ")
+            xs"""
+                static <$generics> ForAll$i<$generics> forAll($parametersDecl) {
+                    return new ForAll$i<>($parameters);
+                }
+            """
+        })("\n\n")}
 
-    ${(1 to N).gen(i => {
-        val generics = (1 to i).gen(j => s"T$j")(", ")
-        val parametersDecl = (1 to i).gen(j => s"Arbitrary<T$j> a$j")(", ")
-        xs"""
-            static class ForAll$i<$generics> {
+        ${(1 to N).gen(i => {
+            val generics = (1 to i).gen(j => s"T$j")(", ")
+            val parametersDecl = (1 to i).gen(j => s"Arbitrary<T$j> a$j")(", ")
+            xs"""
+                static class ForAll$i<$generics> {
 
-                ${(1 to i).gen(j => xs"""
-                    private final Arbitrary<T$j> a$j;
-                """)("\n")}
-
-                ForAll$i($parametersDecl) {
                     ${(1 to i).gen(j => xs"""
-                        this.a$j = a$j;
+                        private final Arbitrary<T$j> a$j;
                     """)("\n")}
+
+                    ForAll$i($parametersDecl) {
+                        ${(1 to i).gen(j => xs"""
+                            this.a$j = a$j;
+                        """)("\n")}
+                    }
+
+                    ${(i+1 to N).gen(j => {
+                        val missingGenerics = (i+1 to j).gen(k => s"T$k")(", ")
+                        val allGenerics = (1 to j).gen(k => s"T$k")(", ")
+                        val missingParametersDecl = (i+1 to j).gen(k => s"Arbitrary<T$k> a$k")(", ")
+                        val allParameters = (1 to j).gen(k => s"a$k")(", ")
+                        xs"""
+                            public <$missingGenerics> ForAll$j<$allGenerics> forAll($missingParametersDecl) {
+                                return new ForAll$j<>($allParameters);
+                            }
+                        """
+                    })("\n\n")}
+
+                    public Property suchThat(CheckedLambda$i<$generics, Boolean> predicate) {
+                        return new SuchThat$i<>(${(1 to i).gen(j => s"a$j")(", ")}, predicate);
+                    }
                 }
+            """
+        })("\n\n")}
 
-                ${(i+1 to N).gen(j => {
-                    val missingGenerics = (i+1 to j).gen(k => s"T$k")(", ")
-                    val allGenerics = (1 to j).gen(k => s"T$k")(", ")
-                    val missingParametersDecl = (i+1 to j).gen(k => s"Arbitrary<T$k> a$k")(", ")
-                    val allParameters = (1 to j).gen(k => s"a$k")(", ")
-                    xs"""
-                        public <$missingGenerics> ForAll$j<$allGenerics> forAll($missingParametersDecl) {
-                            return new ForAll$j<>($allParameters);
-                        }
-                    """
-                })("\n\n")}
+        ${(1 to N).gen(i => {
+            val generics = (1 to i).gen(j => s"T$j")(", ")
+            val parametersDecl = (1 to i).gen(j => s"Arbitrary<T$j> a$j")(", ")
+            xs"""
+                static class SuchThat$i<$generics> implements Property {
 
-                public Property suchThat(CheckedLambda$i<$generics, Boolean> predicate) {
-                    return new SuchThat$i<>(${(1 to i).gen(j => s"a$j")(", ")}, predicate);
-                }
-            }
-        """
-    })("\n\n")}
-
-    ${(1 to N).gen(i => {
-        val generics = (1 to i).gen(j => s"T$j")(", ")
-        val parametersDecl = (1 to i).gen(j => s"Arbitrary<T$j> a$j")(", ")
-        xs"""
-            static class SuchThat$i<$generics> implements Property {
-
-                ${(1 to i).gen(j => xs"""
-                    private final Arbitrary<T$j> a$j;
-                """)("\n")}
-                final CheckedLambda$i<$generics, Boolean> predicate;
-
-                SuchThat$i($parametersDecl, CheckedLambda$i<$generics, Boolean> predicate) {
                     ${(1 to i).gen(j => xs"""
-                        this.a$j = a$j;
+                        private final Arbitrary<T$j> a$j;
                     """)("\n")}
-                    this.predicate = predicate;
-                }
+                    final CheckedLambda$i<$generics, Boolean> predicate;
 
-                @Override
-                public CheckResult<Tuple$i<$generics>> check(int size, int tries) {
-                    return null; // TODO
-                    /*
-                    final Try<CheckResult<Tuple$i<$generics>>> overallCheckResult =
-                        ${(1 to i).gen(j => {
-                            val mapper = if (i == j) "map" else "flatMap"
-                            xs"""Try.of(() -> a$j.apply(size)).recover(x -> { throw Errors.arbitraryError($j, size, x); }).$mapper((Gen<T$j> gen$j) ->"""
-                        })("\n")} {
-                            for (int i = 1; i < tries; i++) {
-                                final int count = i;
-                                final Try<CheckResult<Tuple$i<$generics>>> partialCheckResult =
+                    SuchThat$i($parametersDecl, CheckedLambda$i<$generics, Boolean> predicate) {
+                        ${(1 to i).gen(j => xs"""
+                            this.a$j = a$j;
+                        """)("\n")}
+                        this.predicate = predicate;
+                    }
+
+                    @Override
+                    public CheckResult<Tuple$i<$generics>> check(int size, int tries) {
+                        try {
+                            ${(1 to i).gen(j => {
+                                s"""final Gen<T$j> gen$j = Try.of(() -> a$j.apply(size)).recover(x -> { throw Errors.arbitraryError($j, size, x); }).get();"""
+                            })("\n")}
+                            for (int i = 1; i <= tries; i++) {
+                                try {
                                     ${(1 to i).gen(j => {
-                                        val mapper = if (i == j) "map" else "flatMap"
-                                        xs"""Try.of(() -> gen$j.get()).recover(x -> { throw Errors.genError($j, size, x); }).$mapper((T$j val$j) ->"""
-                                    })("\n")} {
-                                        try {
-                                            final boolean test = predicate.apply(${(1 to i).gen(j => s"val$j")(", ")});
-                                            if (test) {
-                                                return CheckResult.satisfied(count);
-                                            } else {
-                                                return CheckResult.falsified(count, Tuple.of(${(1 to i).gen(j => s"val$j")(", ")}));
-                                            }
-                                        } catch (Throwable x) {
-                                            return CheckResult.erroneous(count, Errors.predicateError(x));
+                                      s"""final T$j val$j = Try.of(() -> gen$j.get()).recover(x -> { throw Errors.genError($j, size, x); }).get();"""
+                                    })("\n")}
+                                    try {
+                                        final boolean test = Try.of(() -> predicate.apply(${(1 to i).gen(j => s"val$j")(", ")})).recover(x -> { throw Errors.predicateError(x); }).get();
+                                        if (!test) {
+                                            return CheckResult.falsified(i, Tuple.of(${(1 to i).gen(j => s"val$j")(", ")}));
                                         }
-                                    }${(1 to i).gen(j => ")")};
-                                if (!partialCheckResult.get().isSatisfied()) {
-                                    return partialCheckResult.get();
+                                    } catch(Failure.NonFatal nonFatal) {
+                                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(${(1 to i).gen(j => s"val$j")(", ")})));
+                                    }
+                                } catch(Failure.NonFatal nonFatal) {
+                                    return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                                 }
                             }
-                            return CheckResult.satisfied(size);
-                        }${(1 to i).gen(j => ")")};
-                    return overallCheckResult.recover(x -> CheckResult.<Tuple$i<$generics>>erroneous(0, (Error) x)).get();
-                    */
+                            return CheckResult.satisfied(tries);
+                        } catch(Failure.NonFatal nonFatal) {
+                            return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+                        }
+                    }
                 }
-            }
-        """
-    })("\n\n")}
-}
+            """
+        })("\n\n")}
+    }
   """
-  }
 
   genJavaslangFile("javaslang.test", "Property")(genProperty)
 }
@@ -193,60 +183,60 @@ def genFunctions(): Unit = {
     }
 
     def genFunction(name: String, checked: Boolean)(packageName: String, className: String): String = xs"""
-    import javaslang.Tuple$i;
+      import javaslang.Tuple$i;
 
-    import java.util.Objects;
-    import java.util.function.Function;
+      import java.util.Objects;
+      import java.util.function.Function;
 
-    @FunctionalInterface
-    public interface $className<${if (i > 0) s"$generics, " else ""}R> extends Lambda<R>${additionalInterfaces(i, checked)} {
+      @FunctionalInterface
+      public interface $className<${if (i > 0) s"$generics, " else ""}R> extends Lambda<R>${additionalInterfaces(i, checked)} {
 
-        ${if (i == 1) xs"""
-        static <T> ${name}1<T, T> identity() {
-            return t -> t;
-        }""" else ""}
+          ${if (i == 1) xs"""
+          static <T> ${name}1<T, T> identity() {
+              return t -> t;
+          }""" else ""}
 
-        ${if ((i == 1 || i == 2) && !checked) "@Override" else ""}
-        R apply($paramsDecl)${if (checked) " throws Throwable" else ""};
+          ${if ((i == 1 || i == 2) && !checked) "@Override" else ""}
+          R apply($paramsDecl)${if (checked) " throws Throwable" else ""};
 
-        ${if (i == 0 && !checked) xs"""
-        @Override
-        default R get() {
-            return apply();
-        }""" else ""}
+          ${if (i == 0 && !checked) xs"""
+          @Override
+          default R get() {
+              return apply();
+          }""" else ""}
 
-        @Override
-        default int arity() {
-            return $i;
-        }
+          @Override
+          default int arity() {
+              return $i;
+          }
 
-        @Override
-        default ${returnType(i, name)} curried() {
-            return $curried -> apply($params);
-        }
+          @Override
+          default ${returnType(i, name)} curried() {
+              return $curried -> apply($params);
+          }
 
-        @Override
-        default ${name}1<Tuple$i$genericsTuple, R> tupled() {
-            return t -> apply($tupled);
-        }
+          @Override
+          default ${name}1<Tuple$i$genericsTuple, R> tupled() {
+              return t -> apply($tupled);
+          }
 
-        @Override
-        default $className<${genericsReversedFunction}R> reversed() {
-            return ($paramsReversed) -> apply($params);
-        }
+          @Override
+          default $className<${genericsReversedFunction}R> reversed() {
+              return ($paramsReversed) -> apply($params);
+          }
 
-        @Override
-        default <V> $className<${genericsFunction}V> andThen(Function<? super R, ? extends V> after) {
-            Objects.requireNonNull(after);
-            return ($params) -> after.apply(apply($params));
-        }
+          @Override
+          default <V> $className<${genericsFunction}V> andThen(Function<? super R, ? extends V> after) {
+              Objects.requireNonNull(after);
+              return ($params) -> after.apply(apply($params));
+          }
 
-        ${if (i == 1) xs"""
-        default <V> ${name}1<V, R> compose(Function<? super V, ? extends T1> before) {
-            Objects.requireNonNull(before);
-            return v -> apply(before.apply(v));
-        }""" else ""}
-    }
+          ${if (i == 1) xs"""
+          default <V> ${name}1<V, R> compose(Function<? super V, ? extends T1> before) {
+              Objects.requireNonNull(before);
+              return v -> apply(before.apply(v));
+          }""" else ""}
+      }
     """
 
     genJavaslangFile("javaslang.function", s"χ$i")(genFunction("χ", checked = true))
@@ -256,7 +246,6 @@ def genFunctions(): Unit = {
   }
 
   (0 to N).foreach(genFunctions)
-  ("A", "B", "C").gen(s => s)("")
 }
 
 /**
@@ -343,53 +332,53 @@ def genTuples(): Unit = {
     val generics = (1 to i).gen(j => s"T$j")(", ")
     val paramsDecl = (1 to i).gen(j => s"T$j t$j")(", ")
     xs"""
-    import java.util.Objects;
+      import java.util.Objects;
 
-    /**
-     * Implementation of a pair, a tuple containing $i elements.
-     */
-    public class $className<$generics> implements Tuple {
+      /**
+       * Implementation of a pair, a tuple containing $i elements.
+       */
+      public class $className<$generics> implements Tuple {
 
-        private static final long serialVersionUID = 1L;
+          private static final long serialVersionUID = 1L;
 
-        ${(1 to i).gen(j => s"public final T$j _$j;")("\n")}
+          ${(1 to i).gen(j => s"public final T$j _$j;")("\n")}
 
-        public $className($paramsDecl) {
-            ${(1 to i).gen(j => s"this._$j = t$j;")("\n")}
-        }
+          public $className($paramsDecl) {
+              ${(1 to i).gen(j => s"this._$j = t$j;")("\n")}
+          }
 
-        @Override
-        public int arity() {
-            return $i;
-        }
+          @Override
+          public int arity() {
+              return $i;
+          }
 
-        @Override
-        public $className<$generics> unapply() {
-            return this;
-        }
+          @Override
+          public $className<$generics> unapply() {
+              return this;
+          }
 
-        @Override
-        public boolean equals(Object o) {
-            if (o == this) {
-                return true;
-            } else if (!(o instanceof $className)) {
-                return false;
-            } else {
-                final $className that = ($className) o;
-                return ${(1 to i).gen(j => s"Objects.equals(this._$j, that._$j)")("\n                         && ")};
-            }
-        }
+          @Override
+          public boolean equals(Object o) {
+              if (o == this) {
+                  return true;
+              } else if (!(o instanceof $className)) {
+                  return false;
+              } else {
+                  final $className that = ($className) o;
+                  return ${(1 to i).gen(j => s"Objects.equals(this._$j, that._$j)")("\n                         && ")};
+              }
+          }
 
-        @Override
-        public int hashCode() {
-            return Objects.hash(${(1 to i).gen(j => s"_$j")(", ")});
-        }
+          @Override
+          public int hashCode() {
+              return Objects.hash(${(1 to i).gen(j => s"_$j")(", ")});
+          }
 
-        @Override
-        public String toString() {
-            return String.format("(${(1 to i).gen(_ => s"%s")(", ")})", ${(1 to i).gen(j => s"_$j")(", ")});
-        }
-    }
+          @Override
+          public String toString() {
+              return String.format("(${(1 to i).gen(_ => s"%s")(", ")})", ${(1 to i).gen(j => s"_$j")(", ")});
+          }
+      }
     """
   }
 
@@ -403,33 +392,34 @@ def genTuples(): Unit = {
       val paramsDecl = (1 to i).gen(j => s"T$j t$j")(", ")
       val params = (1 to i).gen(j => s"t$j")(", ")
       xs"""
-      static <$generics> Tuple$i<$generics> of($paramsDecl) {
-          return new Tuple$i<>($params);
-      }"""
+        static <$generics> Tuple$i<$generics> of($paramsDecl) {
+            return new Tuple$i<>($params);
+        }
+      """
     }
 
     xs"""
-    public interface $className extends ValueObject {
+      public interface $className extends ValueObject {
 
-        /**
-         * Returns the number of elements of this tuple.
-         *
-         * @return The number of elements.
-         */
-        int arity();
+          /**
+           * Returns the number of elements of this tuple.
+           *
+           * @return The number of elements.
+           */
+          int arity();
 
-        // -- factory methods
+          // -- factory methods
 
-        static Tuple0 empty() {
-            return Tuple0.instance();
-        }
+          static Tuple0 empty() {
+              return Tuple0.instance();
+          }
 
-        ${(1 to N).gen(genFactoryMethod)("\n\n")}
-    }"""
+          ${(1 to N).gen(genFactoryMethod)("\n\n")}
+      }
+    """
   }
 
   genJavaslangFile("javaslang", "Tuple")(genBaseTuple)
-
   genJavaslangFile("javaslang", "Tuple0")(genTuple0)
 
   (1 to N).foreach { i =>
@@ -445,11 +435,11 @@ def genTuples(): Unit = {
  */
 def genJavaslangFile(packageName: String, className: String)(gen: (String, String) => String) =
   genJavaFile(packageName, className)(xraw"""
-  /**    / \____  _    ______   _____ / \____   ____  _____
-   *    /  \__  \/ \  / \__  \ /  __//  \__  \ /    \/ __  \   Javaslang
-   *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014-2015 Daniel Dietrich
-   * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
-   */
+    /**    / \____  _    ______   _____ / \____   ____  _____
+     *    /  \__  \/ \  / \__  \ /  __//  \__  \ /    \/ __  \   Javaslang
+     *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014-2015 Daniel Dietrich
+     * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
+     */
   """)(gen)//(StandardCharsets.UTF_8)
 
 /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*\

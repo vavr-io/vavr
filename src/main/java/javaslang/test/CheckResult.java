@@ -6,6 +6,9 @@
 package javaslang.test;
 
 import javaslang.Tuple;
+import javaslang.control.None;
+import javaslang.control.Option;
+import javaslang.control.Some;
 
 // TODO: ValueObject (unapply, equals, hashCode, toString)
 public interface CheckResult<T extends Tuple> {
@@ -14,12 +17,12 @@ public interface CheckResult<T extends Tuple> {
         return new Satisfied<>(count);
     }
 
-    static <T extends Tuple> Falsified<T> falsified(int count, T counterExample) {
-        return new Falsified<>(count, counterExample);
+    static <T extends Tuple> Falsified<T> falsified(int count, T sample) {
+        return new Falsified<>(count, sample);
     }
 
-    static <T extends Tuple> Erroneous<T> erroneous(int count, Error error) {
-        return new Erroneous<>(count, error);
+    static <T extends Tuple> Erroneous<T> erroneous(int count, Error error, Option<T> sample) {
+        return new Erroneous<>(count, error, sample);
     }
 
     boolean isSatisfied();
@@ -30,9 +33,9 @@ public interface CheckResult<T extends Tuple> {
 
     int count();
 
-    T counterExample();
+    Option<T> sample();
 
-    Error error();
+    Option<Error> error();
 
     /**
      * Represents a satisfied property check.
@@ -67,13 +70,13 @@ public interface CheckResult<T extends Tuple> {
         }
 
         @Override
-        public T counterExample() {
-            throw new UnsupportedOperationException("Satisfied.counterExcample()");
+        public Option<T> sample() {
+            return None.instance();
         }
 
         @Override
-        public Error error() {
-            throw new UnsupportedOperationException("Satisfied.error()");
+        public Option<Error> error() {
+            return None.instance();
         }
     }
 
@@ -83,12 +86,12 @@ public interface CheckResult<T extends Tuple> {
      */
     static class Falsified<T extends Tuple> implements CheckResult<T> {
 
-        final int count;
-        final T counterExample;
+        private final int count;
+        private final Some<T> sample;
 
-        Falsified(int count, T counterExample) {
+        Falsified(int count, T sample) {
             this.count = count;
-            this.counterExample = counterExample;
+            this.sample = new Some<>(sample);
         }
 
         @Override
@@ -112,13 +115,13 @@ public interface CheckResult<T extends Tuple> {
         }
 
         @Override
-        public T counterExample() {
-            return counterExample;
+        public Option<T> sample() {
+            return sample;
         }
 
         @Override
-        public Error error() {
-            throw new UnsupportedOperationException("Falsified.error()");
+        public Option<Error> error() {
+            return None.instance();
         }
     }
 
@@ -128,12 +131,14 @@ public interface CheckResult<T extends Tuple> {
      */
     static class Erroneous<T extends Tuple> implements CheckResult<T> {
 
-        final int count;
-        final Error error;
+        private final int count;
+        private final Some<Error> error;
+        private final Option<T> sample;
 
-        Erroneous(int count, Error error) {
+        Erroneous(int count, Error error, Option<T> sample) {
             this.count = count;
-            this.error = error;
+            this.error = new Some<>(error);
+            this.sample = sample;
         }
 
         @Override
@@ -157,12 +162,12 @@ public interface CheckResult<T extends Tuple> {
         }
 
         @Override
-        public T counterExample() {
-            throw new UnsupportedOperationException("Erroneous.counterExcample()");
+        public Option<T> sample() {
+            return sample;
         }
 
         @Override
-        public Error error() {
+        public Option<Error> error() {
             return error;
         }
     }

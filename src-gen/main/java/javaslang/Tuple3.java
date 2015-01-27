@@ -47,8 +47,8 @@ public class Tuple3<T1, T2, T3> implements Tuple {
         } else {
             final Tuple3 that = (Tuple3) o;
             return Objects.equals(this._1, that._1)
-                    && Objects.equals(this._2, that._2)
-                    && Objects.equals(this._3, that._3);
+                  && Objects.equals(this._2, that._2)
+                  && Objects.equals(this._3, that._3);
         }
     }
 

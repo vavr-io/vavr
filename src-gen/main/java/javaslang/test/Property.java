@@ -2425,33 +2425,27 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple1<T1>> check(int size, int tries) {
-            return null; // TODO
-            /*
-            final Try<CheckResult<Tuple1<T1>>> overallCheckResult =
-                Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).map((Gen<T1> gen1) -> {
-                    for (int i = 1; i < tries; i++) {
-                        final int count = i;
-                        final Try<CheckResult<Tuple1<T1>>> partialCheckResult =
-                            Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).map((T1 val1) -> {
-                                try {
-                                    final boolean test = predicate.apply(val1);
-                                    if (test) {
-                                        return CheckResult.satisfied(count);
-                                    } else {
-                                        return CheckResult.falsified(count, Tuple.of(val1));
-                                    }
-                                } catch (Throwable x) {
-                                    return CheckResult.erroneous(count, Errors.predicateError(x));
-                                }
-                            });
-                        if (!partialCheckResult.get().isSatisfied()) {
-                            return partialCheckResult.get();
+            try {
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                for (int i = 1; i <= tries; i++) {
+                    try {
+                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        try {
+                            final boolean test = Try.of(() -> predicate.apply(val1)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (!test) {
+                                return CheckResult.falsified(i, Tuple.of(val1));
+                            }
+                        } catch(Failure.NonFatal nonFatal) {
+                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1)));
                         }
+                    } catch(Failure.NonFatal nonFatal) {
+                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
-                    return CheckResult.satisfied(size);
-                });
-            return overallCheckResult.recover(x -> CheckResult.<Tuple1<T1>>erroneous(0, (Error) x)).get();
-            */
+                }
+                return CheckResult.satisfied(tries);
+            } catch(Failure.NonFatal nonFatal) {
+                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+            }
         }
     }
 
@@ -2469,35 +2463,29 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple2<T1, T2>> check(int size, int tries) {
-            return null; // TODO
-            /*
-            final Try<CheckResult<Tuple2<T1, T2>>> overallCheckResult =
-                Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
-                Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).map((Gen<T2> gen2) -> {
-                    for (int i = 1; i < tries; i++) {
-                        final int count = i;
-                        final Try<CheckResult<Tuple2<T1, T2>>> partialCheckResult =
-                            Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).flatMap((T1 val1) ->
-                            Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).map((T2 val2) -> {
-                                try {
-                                    final boolean test = predicate.apply(val1, val2);
-                                    if (test) {
-                                        return CheckResult.satisfied(count);
-                                    } else {
-                                        return CheckResult.falsified(count, Tuple.of(val1, val2));
-                                    }
-                                } catch (Throwable x) {
-                                    return CheckResult.erroneous(count, Errors.predicateError(x));
-                                }
-                            }));
-                        if (!partialCheckResult.get().isSatisfied()) {
-                            return partialCheckResult.get();
+            try {
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
+                for (int i = 1; i <= tries; i++) {
+                    try {
+                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        try {
+                            final boolean test = Try.of(() -> predicate.apply(val1, val2)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (!test) {
+                                return CheckResult.falsified(i, Tuple.of(val1, val2));
+                            }
+                        } catch(Failure.NonFatal nonFatal) {
+                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2)));
                         }
+                    } catch(Failure.NonFatal nonFatal) {
+                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
-                    return CheckResult.satisfied(size);
-                }));
-            return overallCheckResult.recover(x -> CheckResult.<Tuple2<T1, T2>>erroneous(0, (Error) x)).get();
-            */
+                }
+                return CheckResult.satisfied(tries);
+            } catch(Failure.NonFatal nonFatal) {
+                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+            }
         }
     }
 
@@ -2517,37 +2505,31 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple3<T1, T2, T3>> check(int size, int tries) {
-            return null; // TODO
-            /*
-            final Try<CheckResult<Tuple3<T1, T2, T3>>> overallCheckResult =
-                Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
-                Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
-                Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).map((Gen<T3> gen3) -> {
-                    for (int i = 1; i < tries; i++) {
-                        final int count = i;
-                        final Try<CheckResult<Tuple3<T1, T2, T3>>> partialCheckResult =
-                            Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).flatMap((T1 val1) ->
-                            Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).flatMap((T2 val2) ->
-                            Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).map((T3 val3) -> {
-                                try {
-                                    final boolean test = predicate.apply(val1, val2, val3);
-                                    if (test) {
-                                        return CheckResult.satisfied(count);
-                                    } else {
-                                        return CheckResult.falsified(count, Tuple.of(val1, val2, val3));
-                                    }
-                                } catch (Throwable x) {
-                                    return CheckResult.erroneous(count, Errors.predicateError(x));
-                                }
-                            })));
-                        if (!partialCheckResult.get().isSatisfied()) {
-                            return partialCheckResult.get();
+            try {
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
+                for (int i = 1; i <= tries; i++) {
+                    try {
+                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        try {
+                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (!test) {
+                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3));
+                            }
+                        } catch(Failure.NonFatal nonFatal) {
+                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3)));
                         }
+                    } catch(Failure.NonFatal nonFatal) {
+                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
-                    return CheckResult.satisfied(size);
-                })));
-            return overallCheckResult.recover(x -> CheckResult.<Tuple3<T1, T2, T3>>erroneous(0, (Error) x)).get();
-            */
+                }
+                return CheckResult.satisfied(tries);
+            } catch(Failure.NonFatal nonFatal) {
+                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+            }
         }
     }
 
@@ -2569,39 +2551,33 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple4<T1, T2, T3, T4>> check(int size, int tries) {
-            return null; // TODO
-            /*
-            final Try<CheckResult<Tuple4<T1, T2, T3, T4>>> overallCheckResult =
-                Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
-                Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
-                Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).flatMap((Gen<T3> gen3) ->
-                Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).map((Gen<T4> gen4) -> {
-                    for (int i = 1; i < tries; i++) {
-                        final int count = i;
-                        final Try<CheckResult<Tuple4<T1, T2, T3, T4>>> partialCheckResult =
-                            Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).flatMap((T1 val1) ->
-                            Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).flatMap((T2 val2) ->
-                            Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).flatMap((T3 val3) ->
-                            Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).map((T4 val4) -> {
-                                try {
-                                    final boolean test = predicate.apply(val1, val2, val3, val4);
-                                    if (test) {
-                                        return CheckResult.satisfied(count);
-                                    } else {
-                                        return CheckResult.falsified(count, Tuple.of(val1, val2, val3, val4));
-                                    }
-                                } catch (Throwable x) {
-                                    return CheckResult.erroneous(count, Errors.predicateError(x));
-                                }
-                            }))));
-                        if (!partialCheckResult.get().isSatisfied()) {
-                            return partialCheckResult.get();
+            try {
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
+                for (int i = 1; i <= tries; i++) {
+                    try {
+                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        try {
+                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (!test) {
+                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4));
+                            }
+                        } catch(Failure.NonFatal nonFatal) {
+                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4)));
                         }
+                    } catch(Failure.NonFatal nonFatal) {
+                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
-                    return CheckResult.satisfied(size);
-                }))));
-            return overallCheckResult.recover(x -> CheckResult.<Tuple4<T1, T2, T3, T4>>erroneous(0, (Error) x)).get();
-            */
+                }
+                return CheckResult.satisfied(tries);
+            } catch(Failure.NonFatal nonFatal) {
+                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+            }
         }
     }
 
@@ -2625,41 +2601,35 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple5<T1, T2, T3, T4, T5>> check(int size, int tries) {
-            return null; // TODO
-            /*
-            final Try<CheckResult<Tuple5<T1, T2, T3, T4, T5>>> overallCheckResult =
-                Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
-                Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
-                Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).flatMap((Gen<T3> gen3) ->
-                Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).flatMap((Gen<T4> gen4) ->
-                Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).map((Gen<T5> gen5) -> {
-                    for (int i = 1; i < tries; i++) {
-                        final int count = i;
-                        final Try<CheckResult<Tuple5<T1, T2, T3, T4, T5>>> partialCheckResult =
-                            Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).flatMap((T1 val1) ->
-                            Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).flatMap((T2 val2) ->
-                            Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).flatMap((T3 val3) ->
-                            Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).flatMap((T4 val4) ->
-                            Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).map((T5 val5) -> {
-                                try {
-                                    final boolean test = predicate.apply(val1, val2, val3, val4, val5);
-                                    if (test) {
-                                        return CheckResult.satisfied(count);
-                                    } else {
-                                        return CheckResult.falsified(count, Tuple.of(val1, val2, val3, val4, val5));
-                                    }
-                                } catch (Throwable x) {
-                                    return CheckResult.erroneous(count, Errors.predicateError(x));
-                                }
-                            })))));
-                        if (!partialCheckResult.get().isSatisfied()) {
-                            return partialCheckResult.get();
+            try {
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
+                for (int i = 1; i <= tries; i++) {
+                    try {
+                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        try {
+                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (!test) {
+                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5));
+                            }
+                        } catch(Failure.NonFatal nonFatal) {
+                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5)));
                         }
+                    } catch(Failure.NonFatal nonFatal) {
+                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
-                    return CheckResult.satisfied(size);
-                })))));
-            return overallCheckResult.recover(x -> CheckResult.<Tuple5<T1, T2, T3, T4, T5>>erroneous(0, (Error) x)).get();
-            */
+                }
+                return CheckResult.satisfied(tries);
+            } catch(Failure.NonFatal nonFatal) {
+                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+            }
         }
     }
 
@@ -2685,43 +2655,37 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple6<T1, T2, T3, T4, T5, T6>> check(int size, int tries) {
-            return null; // TODO
-            /*
-            final Try<CheckResult<Tuple6<T1, T2, T3, T4, T5, T6>>> overallCheckResult =
-                Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
-                Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
-                Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).flatMap((Gen<T3> gen3) ->
-                Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).flatMap((Gen<T4> gen4) ->
-                Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).flatMap((Gen<T5> gen5) ->
-                Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).map((Gen<T6> gen6) -> {
-                    for (int i = 1; i < tries; i++) {
-                        final int count = i;
-                        final Try<CheckResult<Tuple6<T1, T2, T3, T4, T5, T6>>> partialCheckResult =
-                            Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).flatMap((T1 val1) ->
-                            Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).flatMap((T2 val2) ->
-                            Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).flatMap((T3 val3) ->
-                            Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).flatMap((T4 val4) ->
-                            Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).flatMap((T5 val5) ->
-                            Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).map((T6 val6) -> {
-                                try {
-                                    final boolean test = predicate.apply(val1, val2, val3, val4, val5, val6);
-                                    if (test) {
-                                        return CheckResult.satisfied(count);
-                                    } else {
-                                        return CheckResult.falsified(count, Tuple.of(val1, val2, val3, val4, val5, val6));
-                                    }
-                                } catch (Throwable x) {
-                                    return CheckResult.erroneous(count, Errors.predicateError(x));
-                                }
-                            }))))));
-                        if (!partialCheckResult.get().isSatisfied()) {
-                            return partialCheckResult.get();
+            try {
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
+                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
+                for (int i = 1; i <= tries; i++) {
+                    try {
+                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        try {
+                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (!test) {
+                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6));
+                            }
+                        } catch(Failure.NonFatal nonFatal) {
+                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6)));
                         }
+                    } catch(Failure.NonFatal nonFatal) {
+                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
-                    return CheckResult.satisfied(size);
-                }))))));
-            return overallCheckResult.recover(x -> CheckResult.<Tuple6<T1, T2, T3, T4, T5, T6>>erroneous(0, (Error) x)).get();
-            */
+                }
+                return CheckResult.satisfied(tries);
+            } catch(Failure.NonFatal nonFatal) {
+                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+            }
         }
     }
 
@@ -2749,45 +2713,39 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple7<T1, T2, T3, T4, T5, T6, T7>> check(int size, int tries) {
-            return null; // TODO
-            /*
-            final Try<CheckResult<Tuple7<T1, T2, T3, T4, T5, T6, T7>>> overallCheckResult =
-                Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
-                Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
-                Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).flatMap((Gen<T3> gen3) ->
-                Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).flatMap((Gen<T4> gen4) ->
-                Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).flatMap((Gen<T5> gen5) ->
-                Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).flatMap((Gen<T6> gen6) ->
-                Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).map((Gen<T7> gen7) -> {
-                    for (int i = 1; i < tries; i++) {
-                        final int count = i;
-                        final Try<CheckResult<Tuple7<T1, T2, T3, T4, T5, T6, T7>>> partialCheckResult =
-                            Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).flatMap((T1 val1) ->
-                            Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).flatMap((T2 val2) ->
-                            Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).flatMap((T3 val3) ->
-                            Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).flatMap((T4 val4) ->
-                            Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).flatMap((T5 val5) ->
-                            Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).flatMap((T6 val6) ->
-                            Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).map((T7 val7) -> {
-                                try {
-                                    final boolean test = predicate.apply(val1, val2, val3, val4, val5, val6, val7);
-                                    if (test) {
-                                        return CheckResult.satisfied(count);
-                                    } else {
-                                        return CheckResult.falsified(count, Tuple.of(val1, val2, val3, val4, val5, val6, val7));
-                                    }
-                                } catch (Throwable x) {
-                                    return CheckResult.erroneous(count, Errors.predicateError(x));
-                                }
-                            })))))));
-                        if (!partialCheckResult.get().isSatisfied()) {
-                            return partialCheckResult.get();
+            try {
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
+                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
+                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).get();
+                for (int i = 1; i <= tries; i++) {
+                    try {
+                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        try {
+                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (!test) {
+                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7));
+                            }
+                        } catch(Failure.NonFatal nonFatal) {
+                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7)));
                         }
+                    } catch(Failure.NonFatal nonFatal) {
+                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
-                    return CheckResult.satisfied(size);
-                })))))));
-            return overallCheckResult.recover(x -> CheckResult.<Tuple7<T1, T2, T3, T4, T5, T6, T7>>erroneous(0, (Error) x)).get();
-            */
+                }
+                return CheckResult.satisfied(tries);
+            } catch(Failure.NonFatal nonFatal) {
+                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+            }
         }
     }
 
@@ -2817,47 +2775,41 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> check(int size, int tries) {
-            return null; // TODO
-            /*
-            final Try<CheckResult<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>>> overallCheckResult =
-                Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
-                Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
-                Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).flatMap((Gen<T3> gen3) ->
-                Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).flatMap((Gen<T4> gen4) ->
-                Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).flatMap((Gen<T5> gen5) ->
-                Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).flatMap((Gen<T6> gen6) ->
-                Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).flatMap((Gen<T7> gen7) ->
-                Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).map((Gen<T8> gen8) -> {
-                    for (int i = 1; i < tries; i++) {
-                        final int count = i;
-                        final Try<CheckResult<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>>> partialCheckResult =
-                            Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).flatMap((T1 val1) ->
-                            Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).flatMap((T2 val2) ->
-                            Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).flatMap((T3 val3) ->
-                            Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).flatMap((T4 val4) ->
-                            Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).flatMap((T5 val5) ->
-                            Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).flatMap((T6 val6) ->
-                            Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).flatMap((T7 val7) ->
-                            Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).map((T8 val8) -> {
-                                try {
-                                    final boolean test = predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8);
-                                    if (test) {
-                                        return CheckResult.satisfied(count);
-                                    } else {
-                                        return CheckResult.falsified(count, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8));
-                                    }
-                                } catch (Throwable x) {
-                                    return CheckResult.erroneous(count, Errors.predicateError(x));
-                                }
-                            }))))))));
-                        if (!partialCheckResult.get().isSatisfied()) {
-                            return partialCheckResult.get();
+            try {
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
+                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
+                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).get();
+                final Gen<T8> gen8 = Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).get();
+                for (int i = 1; i <= tries; i++) {
+                    try {
+                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        try {
+                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (!test) {
+                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8));
+                            }
+                        } catch(Failure.NonFatal nonFatal) {
+                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8)));
                         }
+                    } catch(Failure.NonFatal nonFatal) {
+                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
-                    return CheckResult.satisfied(size);
-                }))))))));
-            return overallCheckResult.recover(x -> CheckResult.<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>>erroneous(0, (Error) x)).get();
-            */
+                }
+                return CheckResult.satisfied(tries);
+            } catch(Failure.NonFatal nonFatal) {
+                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+            }
         }
     }
 
@@ -2889,49 +2841,43 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9>> check(int size, int tries) {
-            return null; // TODO
-            /*
-            final Try<CheckResult<Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9>>> overallCheckResult =
-                Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
-                Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
-                Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).flatMap((Gen<T3> gen3) ->
-                Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).flatMap((Gen<T4> gen4) ->
-                Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).flatMap((Gen<T5> gen5) ->
-                Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).flatMap((Gen<T6> gen6) ->
-                Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).flatMap((Gen<T7> gen7) ->
-                Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).flatMap((Gen<T8> gen8) ->
-                Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).map((Gen<T9> gen9) -> {
-                    for (int i = 1; i < tries; i++) {
-                        final int count = i;
-                        final Try<CheckResult<Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9>>> partialCheckResult =
-                            Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).flatMap((T1 val1) ->
-                            Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).flatMap((T2 val2) ->
-                            Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).flatMap((T3 val3) ->
-                            Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).flatMap((T4 val4) ->
-                            Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).flatMap((T5 val5) ->
-                            Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).flatMap((T6 val6) ->
-                            Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).flatMap((T7 val7) ->
-                            Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).flatMap((T8 val8) ->
-                            Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).map((T9 val9) -> {
-                                try {
-                                    final boolean test = predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9);
-                                    if (test) {
-                                        return CheckResult.satisfied(count);
-                                    } else {
-                                        return CheckResult.falsified(count, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9));
-                                    }
-                                } catch (Throwable x) {
-                                    return CheckResult.erroneous(count, Errors.predicateError(x));
-                                }
-                            })))))))));
-                        if (!partialCheckResult.get().isSatisfied()) {
-                            return partialCheckResult.get();
+            try {
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
+                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
+                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).get();
+                final Gen<T8> gen8 = Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).get();
+                final Gen<T9> gen9 = Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).get();
+                for (int i = 1; i <= tries; i++) {
+                    try {
+                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        try {
+                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (!test) {
+                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9));
+                            }
+                        } catch(Failure.NonFatal nonFatal) {
+                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9)));
                         }
+                    } catch(Failure.NonFatal nonFatal) {
+                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
-                    return CheckResult.satisfied(size);
-                })))))))));
-            return overallCheckResult.recover(x -> CheckResult.<Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9>>erroneous(0, (Error) x)).get();
-            */
+                }
+                return CheckResult.satisfied(tries);
+            } catch(Failure.NonFatal nonFatal) {
+                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+            }
         }
     }
 
@@ -2965,51 +2911,45 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>> check(int size, int tries) {
-            return null; // TODO
-            /*
-            final Try<CheckResult<Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>>> overallCheckResult =
-                Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
-                Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
-                Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).flatMap((Gen<T3> gen3) ->
-                Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).flatMap((Gen<T4> gen4) ->
-                Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).flatMap((Gen<T5> gen5) ->
-                Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).flatMap((Gen<T6> gen6) ->
-                Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).flatMap((Gen<T7> gen7) ->
-                Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).flatMap((Gen<T8> gen8) ->
-                Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).flatMap((Gen<T9> gen9) ->
-                Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).map((Gen<T10> gen10) -> {
-                    for (int i = 1; i < tries; i++) {
-                        final int count = i;
-                        final Try<CheckResult<Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>>> partialCheckResult =
-                            Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).flatMap((T1 val1) ->
-                            Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).flatMap((T2 val2) ->
-                            Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).flatMap((T3 val3) ->
-                            Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).flatMap((T4 val4) ->
-                            Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).flatMap((T5 val5) ->
-                            Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).flatMap((T6 val6) ->
-                            Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).flatMap((T7 val7) ->
-                            Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).flatMap((T8 val8) ->
-                            Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).flatMap((T9 val9) ->
-                            Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).map((T10 val10) -> {
-                                try {
-                                    final boolean test = predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10);
-                                    if (test) {
-                                        return CheckResult.satisfied(count);
-                                    } else {
-                                        return CheckResult.falsified(count, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10));
-                                    }
-                                } catch (Throwable x) {
-                                    return CheckResult.erroneous(count, Errors.predicateError(x));
-                                }
-                            }))))))))));
-                        if (!partialCheckResult.get().isSatisfied()) {
-                            return partialCheckResult.get();
+            try {
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
+                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
+                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).get();
+                final Gen<T8> gen8 = Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).get();
+                final Gen<T9> gen9 = Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).get();
+                final Gen<T10> gen10 = Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).get();
+                for (int i = 1; i <= tries; i++) {
+                    try {
+                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        try {
+                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (!test) {
+                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10));
+                            }
+                        } catch(Failure.NonFatal nonFatal) {
+                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10)));
                         }
+                    } catch(Failure.NonFatal nonFatal) {
+                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
-                    return CheckResult.satisfied(size);
-                }))))))))));
-            return overallCheckResult.recover(x -> CheckResult.<Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>>erroneous(0, (Error) x)).get();
-            */
+                }
+                return CheckResult.satisfied(tries);
+            } catch(Failure.NonFatal nonFatal) {
+                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+            }
         }
     }
 
@@ -3045,53 +2985,47 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>> check(int size, int tries) {
-            return null; // TODO
-            /*
-            final Try<CheckResult<Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>>> overallCheckResult =
-                Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
-                Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
-                Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).flatMap((Gen<T3> gen3) ->
-                Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).flatMap((Gen<T4> gen4) ->
-                Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).flatMap((Gen<T5> gen5) ->
-                Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).flatMap((Gen<T6> gen6) ->
-                Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).flatMap((Gen<T7> gen7) ->
-                Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).flatMap((Gen<T8> gen8) ->
-                Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).flatMap((Gen<T9> gen9) ->
-                Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).flatMap((Gen<T10> gen10) ->
-                Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).map((Gen<T11> gen11) -> {
-                    for (int i = 1; i < tries; i++) {
-                        final int count = i;
-                        final Try<CheckResult<Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>>> partialCheckResult =
-                            Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).flatMap((T1 val1) ->
-                            Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).flatMap((T2 val2) ->
-                            Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).flatMap((T3 val3) ->
-                            Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).flatMap((T4 val4) ->
-                            Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).flatMap((T5 val5) ->
-                            Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).flatMap((T6 val6) ->
-                            Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).flatMap((T7 val7) ->
-                            Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).flatMap((T8 val8) ->
-                            Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).flatMap((T9 val9) ->
-                            Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).flatMap((T10 val10) ->
-                            Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).map((T11 val11) -> {
-                                try {
-                                    final boolean test = predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11);
-                                    if (test) {
-                                        return CheckResult.satisfied(count);
-                                    } else {
-                                        return CheckResult.falsified(count, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11));
-                                    }
-                                } catch (Throwable x) {
-                                    return CheckResult.erroneous(count, Errors.predicateError(x));
-                                }
-                            })))))))))));
-                        if (!partialCheckResult.get().isSatisfied()) {
-                            return partialCheckResult.get();
+            try {
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
+                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
+                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).get();
+                final Gen<T8> gen8 = Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).get();
+                final Gen<T9> gen9 = Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).get();
+                final Gen<T10> gen10 = Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).get();
+                final Gen<T11> gen11 = Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).get();
+                for (int i = 1; i <= tries; i++) {
+                    try {
+                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        try {
+                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (!test) {
+                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11));
+                            }
+                        } catch(Failure.NonFatal nonFatal) {
+                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11)));
                         }
+                    } catch(Failure.NonFatal nonFatal) {
+                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
-                    return CheckResult.satisfied(size);
-                })))))))))));
-            return overallCheckResult.recover(x -> CheckResult.<Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>>erroneous(0, (Error) x)).get();
-            */
+                }
+                return CheckResult.satisfied(tries);
+            } catch(Failure.NonFatal nonFatal) {
+                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+            }
         }
     }
 
@@ -3129,55 +3063,49 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>> check(int size, int tries) {
-            return null; // TODO
-            /*
-            final Try<CheckResult<Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>>> overallCheckResult =
-                Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
-                Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
-                Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).flatMap((Gen<T3> gen3) ->
-                Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).flatMap((Gen<T4> gen4) ->
-                Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).flatMap((Gen<T5> gen5) ->
-                Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).flatMap((Gen<T6> gen6) ->
-                Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).flatMap((Gen<T7> gen7) ->
-                Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).flatMap((Gen<T8> gen8) ->
-                Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).flatMap((Gen<T9> gen9) ->
-                Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).flatMap((Gen<T10> gen10) ->
-                Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).flatMap((Gen<T11> gen11) ->
-                Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).map((Gen<T12> gen12) -> {
-                    for (int i = 1; i < tries; i++) {
-                        final int count = i;
-                        final Try<CheckResult<Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>>> partialCheckResult =
-                            Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).flatMap((T1 val1) ->
-                            Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).flatMap((T2 val2) ->
-                            Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).flatMap((T3 val3) ->
-                            Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).flatMap((T4 val4) ->
-                            Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).flatMap((T5 val5) ->
-                            Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).flatMap((T6 val6) ->
-                            Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).flatMap((T7 val7) ->
-                            Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).flatMap((T8 val8) ->
-                            Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).flatMap((T9 val9) ->
-                            Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).flatMap((T10 val10) ->
-                            Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).flatMap((T11 val11) ->
-                            Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).map((T12 val12) -> {
-                                try {
-                                    final boolean test = predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12);
-                                    if (test) {
-                                        return CheckResult.satisfied(count);
-                                    } else {
-                                        return CheckResult.falsified(count, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12));
-                                    }
-                                } catch (Throwable x) {
-                                    return CheckResult.erroneous(count, Errors.predicateError(x));
-                                }
-                            }))))))))))));
-                        if (!partialCheckResult.get().isSatisfied()) {
-                            return partialCheckResult.get();
+            try {
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
+                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
+                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).get();
+                final Gen<T8> gen8 = Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).get();
+                final Gen<T9> gen9 = Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).get();
+                final Gen<T10> gen10 = Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).get();
+                final Gen<T11> gen11 = Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).get();
+                final Gen<T12> gen12 = Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).get();
+                for (int i = 1; i <= tries; i++) {
+                    try {
+                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T12 val12 = Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).get();
+                        try {
+                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (!test) {
+                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12));
+                            }
+                        } catch(Failure.NonFatal nonFatal) {
+                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12)));
                         }
+                    } catch(Failure.NonFatal nonFatal) {
+                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
-                    return CheckResult.satisfied(size);
-                }))))))))))));
-            return overallCheckResult.recover(x -> CheckResult.<Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>>erroneous(0, (Error) x)).get();
-            */
+                }
+                return CheckResult.satisfied(tries);
+            } catch(Failure.NonFatal nonFatal) {
+                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+            }
         }
     }
 
@@ -3217,57 +3145,51 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>> check(int size, int tries) {
-            return null; // TODO
-            /*
-            final Try<CheckResult<Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>>> overallCheckResult =
-                Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
-                Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
-                Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).flatMap((Gen<T3> gen3) ->
-                Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).flatMap((Gen<T4> gen4) ->
-                Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).flatMap((Gen<T5> gen5) ->
-                Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).flatMap((Gen<T6> gen6) ->
-                Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).flatMap((Gen<T7> gen7) ->
-                Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).flatMap((Gen<T8> gen8) ->
-                Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).flatMap((Gen<T9> gen9) ->
-                Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).flatMap((Gen<T10> gen10) ->
-                Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).flatMap((Gen<T11> gen11) ->
-                Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).flatMap((Gen<T12> gen12) ->
-                Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).map((Gen<T13> gen13) -> {
-                    for (int i = 1; i < tries; i++) {
-                        final int count = i;
-                        final Try<CheckResult<Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>>> partialCheckResult =
-                            Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).flatMap((T1 val1) ->
-                            Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).flatMap((T2 val2) ->
-                            Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).flatMap((T3 val3) ->
-                            Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).flatMap((T4 val4) ->
-                            Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).flatMap((T5 val5) ->
-                            Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).flatMap((T6 val6) ->
-                            Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).flatMap((T7 val7) ->
-                            Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).flatMap((T8 val8) ->
-                            Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).flatMap((T9 val9) ->
-                            Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).flatMap((T10 val10) ->
-                            Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).flatMap((T11 val11) ->
-                            Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).flatMap((T12 val12) ->
-                            Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).map((T13 val13) -> {
-                                try {
-                                    final boolean test = predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13);
-                                    if (test) {
-                                        return CheckResult.satisfied(count);
-                                    } else {
-                                        return CheckResult.falsified(count, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13));
-                                    }
-                                } catch (Throwable x) {
-                                    return CheckResult.erroneous(count, Errors.predicateError(x));
-                                }
-                            })))))))))))));
-                        if (!partialCheckResult.get().isSatisfied()) {
-                            return partialCheckResult.get();
+            try {
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
+                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
+                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).get();
+                final Gen<T8> gen8 = Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).get();
+                final Gen<T9> gen9 = Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).get();
+                final Gen<T10> gen10 = Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).get();
+                final Gen<T11> gen11 = Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).get();
+                final Gen<T12> gen12 = Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).get();
+                final Gen<T13> gen13 = Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).get();
+                for (int i = 1; i <= tries; i++) {
+                    try {
+                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T12 val12 = Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).get();
+                        final T13 val13 = Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).get();
+                        try {
+                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (!test) {
+                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13));
+                            }
+                        } catch(Failure.NonFatal nonFatal) {
+                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13)));
                         }
+                    } catch(Failure.NonFatal nonFatal) {
+                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
-                    return CheckResult.satisfied(size);
-                })))))))))))));
-            return overallCheckResult.recover(x -> CheckResult.<Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>>erroneous(0, (Error) x)).get();
-            */
+                }
+                return CheckResult.satisfied(tries);
+            } catch(Failure.NonFatal nonFatal) {
+                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+            }
         }
     }
 
@@ -3309,59 +3231,53 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>> check(int size, int tries) {
-            return null; // TODO
-            /*
-            final Try<CheckResult<Tuple14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>>> overallCheckResult =
-                Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
-                Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
-                Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).flatMap((Gen<T3> gen3) ->
-                Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).flatMap((Gen<T4> gen4) ->
-                Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).flatMap((Gen<T5> gen5) ->
-                Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).flatMap((Gen<T6> gen6) ->
-                Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).flatMap((Gen<T7> gen7) ->
-                Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).flatMap((Gen<T8> gen8) ->
-                Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).flatMap((Gen<T9> gen9) ->
-                Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).flatMap((Gen<T10> gen10) ->
-                Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).flatMap((Gen<T11> gen11) ->
-                Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).flatMap((Gen<T12> gen12) ->
-                Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).flatMap((Gen<T13> gen13) ->
-                Try.of(() -> a14.apply(size)).recover(x -> { throw Errors.arbitraryError(14, size, x); }).map((Gen<T14> gen14) -> {
-                    for (int i = 1; i < tries; i++) {
-                        final int count = i;
-                        final Try<CheckResult<Tuple14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>>> partialCheckResult =
-                            Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).flatMap((T1 val1) ->
-                            Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).flatMap((T2 val2) ->
-                            Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).flatMap((T3 val3) ->
-                            Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).flatMap((T4 val4) ->
-                            Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).flatMap((T5 val5) ->
-                            Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).flatMap((T6 val6) ->
-                            Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).flatMap((T7 val7) ->
-                            Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).flatMap((T8 val8) ->
-                            Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).flatMap((T9 val9) ->
-                            Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).flatMap((T10 val10) ->
-                            Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).flatMap((T11 val11) ->
-                            Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).flatMap((T12 val12) ->
-                            Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).flatMap((T13 val13) ->
-                            Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).map((T14 val14) -> {
-                                try {
-                                    final boolean test = predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14);
-                                    if (test) {
-                                        return CheckResult.satisfied(count);
-                                    } else {
-                                        return CheckResult.falsified(count, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14));
-                                    }
-                                } catch (Throwable x) {
-                                    return CheckResult.erroneous(count, Errors.predicateError(x));
-                                }
-                            }))))))))))))));
-                        if (!partialCheckResult.get().isSatisfied()) {
-                            return partialCheckResult.get();
+            try {
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
+                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
+                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).get();
+                final Gen<T8> gen8 = Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).get();
+                final Gen<T9> gen9 = Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).get();
+                final Gen<T10> gen10 = Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).get();
+                final Gen<T11> gen11 = Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).get();
+                final Gen<T12> gen12 = Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).get();
+                final Gen<T13> gen13 = Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).get();
+                final Gen<T14> gen14 = Try.of(() -> a14.apply(size)).recover(x -> { throw Errors.arbitraryError(14, size, x); }).get();
+                for (int i = 1; i <= tries; i++) {
+                    try {
+                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T12 val12 = Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).get();
+                        final T13 val13 = Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).get();
+                        final T14 val14 = Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).get();
+                        try {
+                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (!test) {
+                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14));
+                            }
+                        } catch(Failure.NonFatal nonFatal) {
+                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14)));
                         }
+                    } catch(Failure.NonFatal nonFatal) {
+                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
-                    return CheckResult.satisfied(size);
-                }))))))))))))));
-            return overallCheckResult.recover(x -> CheckResult.<Tuple14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>>erroneous(0, (Error) x)).get();
-            */
+                }
+                return CheckResult.satisfied(tries);
+            } catch(Failure.NonFatal nonFatal) {
+                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+            }
         }
     }
 
@@ -3405,61 +3321,55 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>> check(int size, int tries) {
-            return null; // TODO
-            /*
-            final Try<CheckResult<Tuple15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>>> overallCheckResult =
-                Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
-                Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
-                Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).flatMap((Gen<T3> gen3) ->
-                Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).flatMap((Gen<T4> gen4) ->
-                Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).flatMap((Gen<T5> gen5) ->
-                Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).flatMap((Gen<T6> gen6) ->
-                Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).flatMap((Gen<T7> gen7) ->
-                Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).flatMap((Gen<T8> gen8) ->
-                Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).flatMap((Gen<T9> gen9) ->
-                Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).flatMap((Gen<T10> gen10) ->
-                Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).flatMap((Gen<T11> gen11) ->
-                Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).flatMap((Gen<T12> gen12) ->
-                Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).flatMap((Gen<T13> gen13) ->
-                Try.of(() -> a14.apply(size)).recover(x -> { throw Errors.arbitraryError(14, size, x); }).flatMap((Gen<T14> gen14) ->
-                Try.of(() -> a15.apply(size)).recover(x -> { throw Errors.arbitraryError(15, size, x); }).map((Gen<T15> gen15) -> {
-                    for (int i = 1; i < tries; i++) {
-                        final int count = i;
-                        final Try<CheckResult<Tuple15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>>> partialCheckResult =
-                            Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).flatMap((T1 val1) ->
-                            Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).flatMap((T2 val2) ->
-                            Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).flatMap((T3 val3) ->
-                            Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).flatMap((T4 val4) ->
-                            Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).flatMap((T5 val5) ->
-                            Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).flatMap((T6 val6) ->
-                            Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).flatMap((T7 val7) ->
-                            Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).flatMap((T8 val8) ->
-                            Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).flatMap((T9 val9) ->
-                            Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).flatMap((T10 val10) ->
-                            Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).flatMap((T11 val11) ->
-                            Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).flatMap((T12 val12) ->
-                            Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).flatMap((T13 val13) ->
-                            Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).flatMap((T14 val14) ->
-                            Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).map((T15 val15) -> {
-                                try {
-                                    final boolean test = predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15);
-                                    if (test) {
-                                        return CheckResult.satisfied(count);
-                                    } else {
-                                        return CheckResult.falsified(count, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15));
-                                    }
-                                } catch (Throwable x) {
-                                    return CheckResult.erroneous(count, Errors.predicateError(x));
-                                }
-                            })))))))))))))));
-                        if (!partialCheckResult.get().isSatisfied()) {
-                            return partialCheckResult.get();
+            try {
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
+                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
+                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).get();
+                final Gen<T8> gen8 = Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).get();
+                final Gen<T9> gen9 = Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).get();
+                final Gen<T10> gen10 = Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).get();
+                final Gen<T11> gen11 = Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).get();
+                final Gen<T12> gen12 = Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).get();
+                final Gen<T13> gen13 = Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).get();
+                final Gen<T14> gen14 = Try.of(() -> a14.apply(size)).recover(x -> { throw Errors.arbitraryError(14, size, x); }).get();
+                final Gen<T15> gen15 = Try.of(() -> a15.apply(size)).recover(x -> { throw Errors.arbitraryError(15, size, x); }).get();
+                for (int i = 1; i <= tries; i++) {
+                    try {
+                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T12 val12 = Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).get();
+                        final T13 val13 = Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).get();
+                        final T14 val14 = Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).get();
+                        final T15 val15 = Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).get();
+                        try {
+                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (!test) {
+                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15));
+                            }
+                        } catch(Failure.NonFatal nonFatal) {
+                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15)));
                         }
+                    } catch(Failure.NonFatal nonFatal) {
+                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
-                    return CheckResult.satisfied(size);
-                })))))))))))))));
-            return overallCheckResult.recover(x -> CheckResult.<Tuple15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>>erroneous(0, (Error) x)).get();
-            */
+                }
+                return CheckResult.satisfied(tries);
+            } catch(Failure.NonFatal nonFatal) {
+                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+            }
         }
     }
 
@@ -3505,63 +3415,57 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>> check(int size, int tries) {
-            return null; // TODO
-            /*
-            final Try<CheckResult<Tuple16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>>> overallCheckResult =
-                Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
-                Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
-                Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).flatMap((Gen<T3> gen3) ->
-                Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).flatMap((Gen<T4> gen4) ->
-                Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).flatMap((Gen<T5> gen5) ->
-                Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).flatMap((Gen<T6> gen6) ->
-                Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).flatMap((Gen<T7> gen7) ->
-                Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).flatMap((Gen<T8> gen8) ->
-                Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).flatMap((Gen<T9> gen9) ->
-                Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).flatMap((Gen<T10> gen10) ->
-                Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).flatMap((Gen<T11> gen11) ->
-                Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).flatMap((Gen<T12> gen12) ->
-                Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).flatMap((Gen<T13> gen13) ->
-                Try.of(() -> a14.apply(size)).recover(x -> { throw Errors.arbitraryError(14, size, x); }).flatMap((Gen<T14> gen14) ->
-                Try.of(() -> a15.apply(size)).recover(x -> { throw Errors.arbitraryError(15, size, x); }).flatMap((Gen<T15> gen15) ->
-                Try.of(() -> a16.apply(size)).recover(x -> { throw Errors.arbitraryError(16, size, x); }).map((Gen<T16> gen16) -> {
-                    for (int i = 1; i < tries; i++) {
-                        final int count = i;
-                        final Try<CheckResult<Tuple16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>>> partialCheckResult =
-                            Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).flatMap((T1 val1) ->
-                            Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).flatMap((T2 val2) ->
-                            Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).flatMap((T3 val3) ->
-                            Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).flatMap((T4 val4) ->
-                            Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).flatMap((T5 val5) ->
-                            Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).flatMap((T6 val6) ->
-                            Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).flatMap((T7 val7) ->
-                            Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).flatMap((T8 val8) ->
-                            Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).flatMap((T9 val9) ->
-                            Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).flatMap((T10 val10) ->
-                            Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).flatMap((T11 val11) ->
-                            Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).flatMap((T12 val12) ->
-                            Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).flatMap((T13 val13) ->
-                            Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).flatMap((T14 val14) ->
-                            Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).flatMap((T15 val15) ->
-                            Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).map((T16 val16) -> {
-                                try {
-                                    final boolean test = predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16);
-                                    if (test) {
-                                        return CheckResult.satisfied(count);
-                                    } else {
-                                        return CheckResult.falsified(count, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16));
-                                    }
-                                } catch (Throwable x) {
-                                    return CheckResult.erroneous(count, Errors.predicateError(x));
-                                }
-                            }))))))))))))))));
-                        if (!partialCheckResult.get().isSatisfied()) {
-                            return partialCheckResult.get();
+            try {
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
+                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
+                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).get();
+                final Gen<T8> gen8 = Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).get();
+                final Gen<T9> gen9 = Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).get();
+                final Gen<T10> gen10 = Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).get();
+                final Gen<T11> gen11 = Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).get();
+                final Gen<T12> gen12 = Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).get();
+                final Gen<T13> gen13 = Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).get();
+                final Gen<T14> gen14 = Try.of(() -> a14.apply(size)).recover(x -> { throw Errors.arbitraryError(14, size, x); }).get();
+                final Gen<T15> gen15 = Try.of(() -> a15.apply(size)).recover(x -> { throw Errors.arbitraryError(15, size, x); }).get();
+                final Gen<T16> gen16 = Try.of(() -> a16.apply(size)).recover(x -> { throw Errors.arbitraryError(16, size, x); }).get();
+                for (int i = 1; i <= tries; i++) {
+                    try {
+                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T12 val12 = Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).get();
+                        final T13 val13 = Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).get();
+                        final T14 val14 = Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).get();
+                        final T15 val15 = Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).get();
+                        final T16 val16 = Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).get();
+                        try {
+                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (!test) {
+                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16));
+                            }
+                        } catch(Failure.NonFatal nonFatal) {
+                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16)));
                         }
+                    } catch(Failure.NonFatal nonFatal) {
+                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
-                    return CheckResult.satisfied(size);
-                }))))))))))))))));
-            return overallCheckResult.recover(x -> CheckResult.<Tuple16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>>erroneous(0, (Error) x)).get();
-            */
+                }
+                return CheckResult.satisfied(tries);
+            } catch(Failure.NonFatal nonFatal) {
+                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+            }
         }
     }
 
@@ -3609,65 +3513,59 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>> check(int size, int tries) {
-            return null; // TODO
-            /*
-            final Try<CheckResult<Tuple17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>>> overallCheckResult =
-                Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
-                Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
-                Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).flatMap((Gen<T3> gen3) ->
-                Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).flatMap((Gen<T4> gen4) ->
-                Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).flatMap((Gen<T5> gen5) ->
-                Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).flatMap((Gen<T6> gen6) ->
-                Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).flatMap((Gen<T7> gen7) ->
-                Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).flatMap((Gen<T8> gen8) ->
-                Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).flatMap((Gen<T9> gen9) ->
-                Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).flatMap((Gen<T10> gen10) ->
-                Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).flatMap((Gen<T11> gen11) ->
-                Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).flatMap((Gen<T12> gen12) ->
-                Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).flatMap((Gen<T13> gen13) ->
-                Try.of(() -> a14.apply(size)).recover(x -> { throw Errors.arbitraryError(14, size, x); }).flatMap((Gen<T14> gen14) ->
-                Try.of(() -> a15.apply(size)).recover(x -> { throw Errors.arbitraryError(15, size, x); }).flatMap((Gen<T15> gen15) ->
-                Try.of(() -> a16.apply(size)).recover(x -> { throw Errors.arbitraryError(16, size, x); }).flatMap((Gen<T16> gen16) ->
-                Try.of(() -> a17.apply(size)).recover(x -> { throw Errors.arbitraryError(17, size, x); }).map((Gen<T17> gen17) -> {
-                    for (int i = 1; i < tries; i++) {
-                        final int count = i;
-                        final Try<CheckResult<Tuple17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>>> partialCheckResult =
-                            Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).flatMap((T1 val1) ->
-                            Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).flatMap((T2 val2) ->
-                            Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).flatMap((T3 val3) ->
-                            Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).flatMap((T4 val4) ->
-                            Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).flatMap((T5 val5) ->
-                            Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).flatMap((T6 val6) ->
-                            Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).flatMap((T7 val7) ->
-                            Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).flatMap((T8 val8) ->
-                            Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).flatMap((T9 val9) ->
-                            Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).flatMap((T10 val10) ->
-                            Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).flatMap((T11 val11) ->
-                            Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).flatMap((T12 val12) ->
-                            Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).flatMap((T13 val13) ->
-                            Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).flatMap((T14 val14) ->
-                            Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).flatMap((T15 val15) ->
-                            Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).flatMap((T16 val16) ->
-                            Try.of(() -> gen17.get()).recover(x -> { throw Errors.genError(17, size, x); }).map((T17 val17) -> {
-                                try {
-                                    final boolean test = predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17);
-                                    if (test) {
-                                        return CheckResult.satisfied(count);
-                                    } else {
-                                        return CheckResult.falsified(count, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17));
-                                    }
-                                } catch (Throwable x) {
-                                    return CheckResult.erroneous(count, Errors.predicateError(x));
-                                }
-                            })))))))))))))))));
-                        if (!partialCheckResult.get().isSatisfied()) {
-                            return partialCheckResult.get();
+            try {
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
+                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
+                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).get();
+                final Gen<T8> gen8 = Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).get();
+                final Gen<T9> gen9 = Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).get();
+                final Gen<T10> gen10 = Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).get();
+                final Gen<T11> gen11 = Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).get();
+                final Gen<T12> gen12 = Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).get();
+                final Gen<T13> gen13 = Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).get();
+                final Gen<T14> gen14 = Try.of(() -> a14.apply(size)).recover(x -> { throw Errors.arbitraryError(14, size, x); }).get();
+                final Gen<T15> gen15 = Try.of(() -> a15.apply(size)).recover(x -> { throw Errors.arbitraryError(15, size, x); }).get();
+                final Gen<T16> gen16 = Try.of(() -> a16.apply(size)).recover(x -> { throw Errors.arbitraryError(16, size, x); }).get();
+                final Gen<T17> gen17 = Try.of(() -> a17.apply(size)).recover(x -> { throw Errors.arbitraryError(17, size, x); }).get();
+                for (int i = 1; i <= tries; i++) {
+                    try {
+                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T12 val12 = Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).get();
+                        final T13 val13 = Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).get();
+                        final T14 val14 = Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).get();
+                        final T15 val15 = Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).get();
+                        final T16 val16 = Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).get();
+                        final T17 val17 = Try.of(() -> gen17.get()).recover(x -> { throw Errors.genError(17, size, x); }).get();
+                        try {
+                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (!test) {
+                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17));
+                            }
+                        } catch(Failure.NonFatal nonFatal) {
+                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17)));
                         }
+                    } catch(Failure.NonFatal nonFatal) {
+                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
-                    return CheckResult.satisfied(size);
-                })))))))))))))))));
-            return overallCheckResult.recover(x -> CheckResult.<Tuple17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>>erroneous(0, (Error) x)).get();
-            */
+                }
+                return CheckResult.satisfied(tries);
+            } catch(Failure.NonFatal nonFatal) {
+                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+            }
         }
     }
 
@@ -3717,67 +3615,61 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>> check(int size, int tries) {
-            return null; // TODO
-            /*
-            final Try<CheckResult<Tuple18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>>> overallCheckResult =
-                Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
-                Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
-                Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).flatMap((Gen<T3> gen3) ->
-                Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).flatMap((Gen<T4> gen4) ->
-                Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).flatMap((Gen<T5> gen5) ->
-                Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).flatMap((Gen<T6> gen6) ->
-                Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).flatMap((Gen<T7> gen7) ->
-                Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).flatMap((Gen<T8> gen8) ->
-                Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).flatMap((Gen<T9> gen9) ->
-                Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).flatMap((Gen<T10> gen10) ->
-                Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).flatMap((Gen<T11> gen11) ->
-                Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).flatMap((Gen<T12> gen12) ->
-                Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).flatMap((Gen<T13> gen13) ->
-                Try.of(() -> a14.apply(size)).recover(x -> { throw Errors.arbitraryError(14, size, x); }).flatMap((Gen<T14> gen14) ->
-                Try.of(() -> a15.apply(size)).recover(x -> { throw Errors.arbitraryError(15, size, x); }).flatMap((Gen<T15> gen15) ->
-                Try.of(() -> a16.apply(size)).recover(x -> { throw Errors.arbitraryError(16, size, x); }).flatMap((Gen<T16> gen16) ->
-                Try.of(() -> a17.apply(size)).recover(x -> { throw Errors.arbitraryError(17, size, x); }).flatMap((Gen<T17> gen17) ->
-                Try.of(() -> a18.apply(size)).recover(x -> { throw Errors.arbitraryError(18, size, x); }).map((Gen<T18> gen18) -> {
-                    for (int i = 1; i < tries; i++) {
-                        final int count = i;
-                        final Try<CheckResult<Tuple18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>>> partialCheckResult =
-                            Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).flatMap((T1 val1) ->
-                            Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).flatMap((T2 val2) ->
-                            Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).flatMap((T3 val3) ->
-                            Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).flatMap((T4 val4) ->
-                            Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).flatMap((T5 val5) ->
-                            Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).flatMap((T6 val6) ->
-                            Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).flatMap((T7 val7) ->
-                            Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).flatMap((T8 val8) ->
-                            Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).flatMap((T9 val9) ->
-                            Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).flatMap((T10 val10) ->
-                            Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).flatMap((T11 val11) ->
-                            Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).flatMap((T12 val12) ->
-                            Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).flatMap((T13 val13) ->
-                            Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).flatMap((T14 val14) ->
-                            Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).flatMap((T15 val15) ->
-                            Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).flatMap((T16 val16) ->
-                            Try.of(() -> gen17.get()).recover(x -> { throw Errors.genError(17, size, x); }).flatMap((T17 val17) ->
-                            Try.of(() -> gen18.get()).recover(x -> { throw Errors.genError(18, size, x); }).map((T18 val18) -> {
-                                try {
-                                    final boolean test = predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18);
-                                    if (test) {
-                                        return CheckResult.satisfied(count);
-                                    } else {
-                                        return CheckResult.falsified(count, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18));
-                                    }
-                                } catch (Throwable x) {
-                                    return CheckResult.erroneous(count, Errors.predicateError(x));
-                                }
-                            }))))))))))))))))));
-                        if (!partialCheckResult.get().isSatisfied()) {
-                            return partialCheckResult.get();
+            try {
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
+                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
+                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).get();
+                final Gen<T8> gen8 = Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).get();
+                final Gen<T9> gen9 = Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).get();
+                final Gen<T10> gen10 = Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).get();
+                final Gen<T11> gen11 = Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).get();
+                final Gen<T12> gen12 = Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).get();
+                final Gen<T13> gen13 = Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).get();
+                final Gen<T14> gen14 = Try.of(() -> a14.apply(size)).recover(x -> { throw Errors.arbitraryError(14, size, x); }).get();
+                final Gen<T15> gen15 = Try.of(() -> a15.apply(size)).recover(x -> { throw Errors.arbitraryError(15, size, x); }).get();
+                final Gen<T16> gen16 = Try.of(() -> a16.apply(size)).recover(x -> { throw Errors.arbitraryError(16, size, x); }).get();
+                final Gen<T17> gen17 = Try.of(() -> a17.apply(size)).recover(x -> { throw Errors.arbitraryError(17, size, x); }).get();
+                final Gen<T18> gen18 = Try.of(() -> a18.apply(size)).recover(x -> { throw Errors.arbitraryError(18, size, x); }).get();
+                for (int i = 1; i <= tries; i++) {
+                    try {
+                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T12 val12 = Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).get();
+                        final T13 val13 = Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).get();
+                        final T14 val14 = Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).get();
+                        final T15 val15 = Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).get();
+                        final T16 val16 = Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).get();
+                        final T17 val17 = Try.of(() -> gen17.get()).recover(x -> { throw Errors.genError(17, size, x); }).get();
+                        final T18 val18 = Try.of(() -> gen18.get()).recover(x -> { throw Errors.genError(18, size, x); }).get();
+                        try {
+                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (!test) {
+                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18));
+                            }
+                        } catch(Failure.NonFatal nonFatal) {
+                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18)));
                         }
+                    } catch(Failure.NonFatal nonFatal) {
+                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
-                    return CheckResult.satisfied(size);
-                }))))))))))))))))));
-            return overallCheckResult.recover(x -> CheckResult.<Tuple18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>>erroneous(0, (Error) x)).get();
-            */
+                }
+                return CheckResult.satisfied(tries);
+            } catch(Failure.NonFatal nonFatal) {
+                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+            }
         }
     }
 
@@ -3829,69 +3721,63 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>> check(int size, int tries) {
-            return null; // TODO
-            /*
-            final Try<CheckResult<Tuple19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>>> overallCheckResult =
-                Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
-                Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
-                Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).flatMap((Gen<T3> gen3) ->
-                Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).flatMap((Gen<T4> gen4) ->
-                Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).flatMap((Gen<T5> gen5) ->
-                Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).flatMap((Gen<T6> gen6) ->
-                Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).flatMap((Gen<T7> gen7) ->
-                Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).flatMap((Gen<T8> gen8) ->
-                Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).flatMap((Gen<T9> gen9) ->
-                Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).flatMap((Gen<T10> gen10) ->
-                Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).flatMap((Gen<T11> gen11) ->
-                Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).flatMap((Gen<T12> gen12) ->
-                Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).flatMap((Gen<T13> gen13) ->
-                Try.of(() -> a14.apply(size)).recover(x -> { throw Errors.arbitraryError(14, size, x); }).flatMap((Gen<T14> gen14) ->
-                Try.of(() -> a15.apply(size)).recover(x -> { throw Errors.arbitraryError(15, size, x); }).flatMap((Gen<T15> gen15) ->
-                Try.of(() -> a16.apply(size)).recover(x -> { throw Errors.arbitraryError(16, size, x); }).flatMap((Gen<T16> gen16) ->
-                Try.of(() -> a17.apply(size)).recover(x -> { throw Errors.arbitraryError(17, size, x); }).flatMap((Gen<T17> gen17) ->
-                Try.of(() -> a18.apply(size)).recover(x -> { throw Errors.arbitraryError(18, size, x); }).flatMap((Gen<T18> gen18) ->
-                Try.of(() -> a19.apply(size)).recover(x -> { throw Errors.arbitraryError(19, size, x); }).map((Gen<T19> gen19) -> {
-                    for (int i = 1; i < tries; i++) {
-                        final int count = i;
-                        final Try<CheckResult<Tuple19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>>> partialCheckResult =
-                            Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).flatMap((T1 val1) ->
-                            Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).flatMap((T2 val2) ->
-                            Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).flatMap((T3 val3) ->
-                            Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).flatMap((T4 val4) ->
-                            Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).flatMap((T5 val5) ->
-                            Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).flatMap((T6 val6) ->
-                            Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).flatMap((T7 val7) ->
-                            Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).flatMap((T8 val8) ->
-                            Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).flatMap((T9 val9) ->
-                            Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).flatMap((T10 val10) ->
-                            Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).flatMap((T11 val11) ->
-                            Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).flatMap((T12 val12) ->
-                            Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).flatMap((T13 val13) ->
-                            Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).flatMap((T14 val14) ->
-                            Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).flatMap((T15 val15) ->
-                            Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).flatMap((T16 val16) ->
-                            Try.of(() -> gen17.get()).recover(x -> { throw Errors.genError(17, size, x); }).flatMap((T17 val17) ->
-                            Try.of(() -> gen18.get()).recover(x -> { throw Errors.genError(18, size, x); }).flatMap((T18 val18) ->
-                            Try.of(() -> gen19.get()).recover(x -> { throw Errors.genError(19, size, x); }).map((T19 val19) -> {
-                                try {
-                                    final boolean test = predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19);
-                                    if (test) {
-                                        return CheckResult.satisfied(count);
-                                    } else {
-                                        return CheckResult.falsified(count, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19));
-                                    }
-                                } catch (Throwable x) {
-                                    return CheckResult.erroneous(count, Errors.predicateError(x));
-                                }
-                            })))))))))))))))))));
-                        if (!partialCheckResult.get().isSatisfied()) {
-                            return partialCheckResult.get();
+            try {
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
+                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
+                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).get();
+                final Gen<T8> gen8 = Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).get();
+                final Gen<T9> gen9 = Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).get();
+                final Gen<T10> gen10 = Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).get();
+                final Gen<T11> gen11 = Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).get();
+                final Gen<T12> gen12 = Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).get();
+                final Gen<T13> gen13 = Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).get();
+                final Gen<T14> gen14 = Try.of(() -> a14.apply(size)).recover(x -> { throw Errors.arbitraryError(14, size, x); }).get();
+                final Gen<T15> gen15 = Try.of(() -> a15.apply(size)).recover(x -> { throw Errors.arbitraryError(15, size, x); }).get();
+                final Gen<T16> gen16 = Try.of(() -> a16.apply(size)).recover(x -> { throw Errors.arbitraryError(16, size, x); }).get();
+                final Gen<T17> gen17 = Try.of(() -> a17.apply(size)).recover(x -> { throw Errors.arbitraryError(17, size, x); }).get();
+                final Gen<T18> gen18 = Try.of(() -> a18.apply(size)).recover(x -> { throw Errors.arbitraryError(18, size, x); }).get();
+                final Gen<T19> gen19 = Try.of(() -> a19.apply(size)).recover(x -> { throw Errors.arbitraryError(19, size, x); }).get();
+                for (int i = 1; i <= tries; i++) {
+                    try {
+                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T12 val12 = Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).get();
+                        final T13 val13 = Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).get();
+                        final T14 val14 = Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).get();
+                        final T15 val15 = Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).get();
+                        final T16 val16 = Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).get();
+                        final T17 val17 = Try.of(() -> gen17.get()).recover(x -> { throw Errors.genError(17, size, x); }).get();
+                        final T18 val18 = Try.of(() -> gen18.get()).recover(x -> { throw Errors.genError(18, size, x); }).get();
+                        final T19 val19 = Try.of(() -> gen19.get()).recover(x -> { throw Errors.genError(19, size, x); }).get();
+                        try {
+                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (!test) {
+                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19));
+                            }
+                        } catch(Failure.NonFatal nonFatal) {
+                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19)));
                         }
+                    } catch(Failure.NonFatal nonFatal) {
+                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
-                    return CheckResult.satisfied(size);
-                })))))))))))))))))));
-            return overallCheckResult.recover(x -> CheckResult.<Tuple19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>>erroneous(0, (Error) x)).get();
-            */
+                }
+                return CheckResult.satisfied(tries);
+            } catch(Failure.NonFatal nonFatal) {
+                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+            }
         }
     }
 
@@ -3945,71 +3831,65 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>> check(int size, int tries) {
-            return null; // TODO
-            /*
-            final Try<CheckResult<Tuple20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>>> overallCheckResult =
-                Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
-                Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
-                Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).flatMap((Gen<T3> gen3) ->
-                Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).flatMap((Gen<T4> gen4) ->
-                Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).flatMap((Gen<T5> gen5) ->
-                Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).flatMap((Gen<T6> gen6) ->
-                Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).flatMap((Gen<T7> gen7) ->
-                Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).flatMap((Gen<T8> gen8) ->
-                Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).flatMap((Gen<T9> gen9) ->
-                Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).flatMap((Gen<T10> gen10) ->
-                Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).flatMap((Gen<T11> gen11) ->
-                Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).flatMap((Gen<T12> gen12) ->
-                Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).flatMap((Gen<T13> gen13) ->
-                Try.of(() -> a14.apply(size)).recover(x -> { throw Errors.arbitraryError(14, size, x); }).flatMap((Gen<T14> gen14) ->
-                Try.of(() -> a15.apply(size)).recover(x -> { throw Errors.arbitraryError(15, size, x); }).flatMap((Gen<T15> gen15) ->
-                Try.of(() -> a16.apply(size)).recover(x -> { throw Errors.arbitraryError(16, size, x); }).flatMap((Gen<T16> gen16) ->
-                Try.of(() -> a17.apply(size)).recover(x -> { throw Errors.arbitraryError(17, size, x); }).flatMap((Gen<T17> gen17) ->
-                Try.of(() -> a18.apply(size)).recover(x -> { throw Errors.arbitraryError(18, size, x); }).flatMap((Gen<T18> gen18) ->
-                Try.of(() -> a19.apply(size)).recover(x -> { throw Errors.arbitraryError(19, size, x); }).flatMap((Gen<T19> gen19) ->
-                Try.of(() -> a20.apply(size)).recover(x -> { throw Errors.arbitraryError(20, size, x); }).map((Gen<T20> gen20) -> {
-                    for (int i = 1; i < tries; i++) {
-                        final int count = i;
-                        final Try<CheckResult<Tuple20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>>> partialCheckResult =
-                            Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).flatMap((T1 val1) ->
-                            Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).flatMap((T2 val2) ->
-                            Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).flatMap((T3 val3) ->
-                            Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).flatMap((T4 val4) ->
-                            Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).flatMap((T5 val5) ->
-                            Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).flatMap((T6 val6) ->
-                            Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).flatMap((T7 val7) ->
-                            Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).flatMap((T8 val8) ->
-                            Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).flatMap((T9 val9) ->
-                            Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).flatMap((T10 val10) ->
-                            Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).flatMap((T11 val11) ->
-                            Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).flatMap((T12 val12) ->
-                            Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).flatMap((T13 val13) ->
-                            Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).flatMap((T14 val14) ->
-                            Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).flatMap((T15 val15) ->
-                            Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).flatMap((T16 val16) ->
-                            Try.of(() -> gen17.get()).recover(x -> { throw Errors.genError(17, size, x); }).flatMap((T17 val17) ->
-                            Try.of(() -> gen18.get()).recover(x -> { throw Errors.genError(18, size, x); }).flatMap((T18 val18) ->
-                            Try.of(() -> gen19.get()).recover(x -> { throw Errors.genError(19, size, x); }).flatMap((T19 val19) ->
-                            Try.of(() -> gen20.get()).recover(x -> { throw Errors.genError(20, size, x); }).map((T20 val20) -> {
-                                try {
-                                    final boolean test = predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20);
-                                    if (test) {
-                                        return CheckResult.satisfied(count);
-                                    } else {
-                                        return CheckResult.falsified(count, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20));
-                                    }
-                                } catch (Throwable x) {
-                                    return CheckResult.erroneous(count, Errors.predicateError(x));
-                                }
-                            }))))))))))))))))))));
-                        if (!partialCheckResult.get().isSatisfied()) {
-                            return partialCheckResult.get();
+            try {
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
+                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
+                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).get();
+                final Gen<T8> gen8 = Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).get();
+                final Gen<T9> gen9 = Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).get();
+                final Gen<T10> gen10 = Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).get();
+                final Gen<T11> gen11 = Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).get();
+                final Gen<T12> gen12 = Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).get();
+                final Gen<T13> gen13 = Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).get();
+                final Gen<T14> gen14 = Try.of(() -> a14.apply(size)).recover(x -> { throw Errors.arbitraryError(14, size, x); }).get();
+                final Gen<T15> gen15 = Try.of(() -> a15.apply(size)).recover(x -> { throw Errors.arbitraryError(15, size, x); }).get();
+                final Gen<T16> gen16 = Try.of(() -> a16.apply(size)).recover(x -> { throw Errors.arbitraryError(16, size, x); }).get();
+                final Gen<T17> gen17 = Try.of(() -> a17.apply(size)).recover(x -> { throw Errors.arbitraryError(17, size, x); }).get();
+                final Gen<T18> gen18 = Try.of(() -> a18.apply(size)).recover(x -> { throw Errors.arbitraryError(18, size, x); }).get();
+                final Gen<T19> gen19 = Try.of(() -> a19.apply(size)).recover(x -> { throw Errors.arbitraryError(19, size, x); }).get();
+                final Gen<T20> gen20 = Try.of(() -> a20.apply(size)).recover(x -> { throw Errors.arbitraryError(20, size, x); }).get();
+                for (int i = 1; i <= tries; i++) {
+                    try {
+                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T12 val12 = Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).get();
+                        final T13 val13 = Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).get();
+                        final T14 val14 = Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).get();
+                        final T15 val15 = Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).get();
+                        final T16 val16 = Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).get();
+                        final T17 val17 = Try.of(() -> gen17.get()).recover(x -> { throw Errors.genError(17, size, x); }).get();
+                        final T18 val18 = Try.of(() -> gen18.get()).recover(x -> { throw Errors.genError(18, size, x); }).get();
+                        final T19 val19 = Try.of(() -> gen19.get()).recover(x -> { throw Errors.genError(19, size, x); }).get();
+                        final T20 val20 = Try.of(() -> gen20.get()).recover(x -> { throw Errors.genError(20, size, x); }).get();
+                        try {
+                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (!test) {
+                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20));
+                            }
+                        } catch(Failure.NonFatal nonFatal) {
+                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20)));
                         }
+                    } catch(Failure.NonFatal nonFatal) {
+                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
-                    return CheckResult.satisfied(size);
-                }))))))))))))))))))));
-            return overallCheckResult.recover(x -> CheckResult.<Tuple20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>>erroneous(0, (Error) x)).get();
-            */
+                }
+                return CheckResult.satisfied(tries);
+            } catch(Failure.NonFatal nonFatal) {
+                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+            }
         }
     }
 
@@ -4065,73 +3945,67 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>> check(int size, int tries) {
-            return null; // TODO
-            /*
-            final Try<CheckResult<Tuple21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>>> overallCheckResult =
-                Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
-                Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
-                Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).flatMap((Gen<T3> gen3) ->
-                Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).flatMap((Gen<T4> gen4) ->
-                Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).flatMap((Gen<T5> gen5) ->
-                Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).flatMap((Gen<T6> gen6) ->
-                Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).flatMap((Gen<T7> gen7) ->
-                Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).flatMap((Gen<T8> gen8) ->
-                Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).flatMap((Gen<T9> gen9) ->
-                Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).flatMap((Gen<T10> gen10) ->
-                Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).flatMap((Gen<T11> gen11) ->
-                Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).flatMap((Gen<T12> gen12) ->
-                Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).flatMap((Gen<T13> gen13) ->
-                Try.of(() -> a14.apply(size)).recover(x -> { throw Errors.arbitraryError(14, size, x); }).flatMap((Gen<T14> gen14) ->
-                Try.of(() -> a15.apply(size)).recover(x -> { throw Errors.arbitraryError(15, size, x); }).flatMap((Gen<T15> gen15) ->
-                Try.of(() -> a16.apply(size)).recover(x -> { throw Errors.arbitraryError(16, size, x); }).flatMap((Gen<T16> gen16) ->
-                Try.of(() -> a17.apply(size)).recover(x -> { throw Errors.arbitraryError(17, size, x); }).flatMap((Gen<T17> gen17) ->
-                Try.of(() -> a18.apply(size)).recover(x -> { throw Errors.arbitraryError(18, size, x); }).flatMap((Gen<T18> gen18) ->
-                Try.of(() -> a19.apply(size)).recover(x -> { throw Errors.arbitraryError(19, size, x); }).flatMap((Gen<T19> gen19) ->
-                Try.of(() -> a20.apply(size)).recover(x -> { throw Errors.arbitraryError(20, size, x); }).flatMap((Gen<T20> gen20) ->
-                Try.of(() -> a21.apply(size)).recover(x -> { throw Errors.arbitraryError(21, size, x); }).map((Gen<T21> gen21) -> {
-                    for (int i = 1; i < tries; i++) {
-                        final int count = i;
-                        final Try<CheckResult<Tuple21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>>> partialCheckResult =
-                            Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).flatMap((T1 val1) ->
-                            Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).flatMap((T2 val2) ->
-                            Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).flatMap((T3 val3) ->
-                            Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).flatMap((T4 val4) ->
-                            Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).flatMap((T5 val5) ->
-                            Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).flatMap((T6 val6) ->
-                            Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).flatMap((T7 val7) ->
-                            Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).flatMap((T8 val8) ->
-                            Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).flatMap((T9 val9) ->
-                            Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).flatMap((T10 val10) ->
-                            Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).flatMap((T11 val11) ->
-                            Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).flatMap((T12 val12) ->
-                            Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).flatMap((T13 val13) ->
-                            Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).flatMap((T14 val14) ->
-                            Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).flatMap((T15 val15) ->
-                            Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).flatMap((T16 val16) ->
-                            Try.of(() -> gen17.get()).recover(x -> { throw Errors.genError(17, size, x); }).flatMap((T17 val17) ->
-                            Try.of(() -> gen18.get()).recover(x -> { throw Errors.genError(18, size, x); }).flatMap((T18 val18) ->
-                            Try.of(() -> gen19.get()).recover(x -> { throw Errors.genError(19, size, x); }).flatMap((T19 val19) ->
-                            Try.of(() -> gen20.get()).recover(x -> { throw Errors.genError(20, size, x); }).flatMap((T20 val20) ->
-                            Try.of(() -> gen21.get()).recover(x -> { throw Errors.genError(21, size, x); }).map((T21 val21) -> {
-                                try {
-                                    final boolean test = predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21);
-                                    if (test) {
-                                        return CheckResult.satisfied(count);
-                                    } else {
-                                        return CheckResult.falsified(count, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21));
-                                    }
-                                } catch (Throwable x) {
-                                    return CheckResult.erroneous(count, Errors.predicateError(x));
-                                }
-                            })))))))))))))))))))));
-                        if (!partialCheckResult.get().isSatisfied()) {
-                            return partialCheckResult.get();
+            try {
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
+                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
+                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).get();
+                final Gen<T8> gen8 = Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).get();
+                final Gen<T9> gen9 = Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).get();
+                final Gen<T10> gen10 = Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).get();
+                final Gen<T11> gen11 = Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).get();
+                final Gen<T12> gen12 = Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).get();
+                final Gen<T13> gen13 = Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).get();
+                final Gen<T14> gen14 = Try.of(() -> a14.apply(size)).recover(x -> { throw Errors.arbitraryError(14, size, x); }).get();
+                final Gen<T15> gen15 = Try.of(() -> a15.apply(size)).recover(x -> { throw Errors.arbitraryError(15, size, x); }).get();
+                final Gen<T16> gen16 = Try.of(() -> a16.apply(size)).recover(x -> { throw Errors.arbitraryError(16, size, x); }).get();
+                final Gen<T17> gen17 = Try.of(() -> a17.apply(size)).recover(x -> { throw Errors.arbitraryError(17, size, x); }).get();
+                final Gen<T18> gen18 = Try.of(() -> a18.apply(size)).recover(x -> { throw Errors.arbitraryError(18, size, x); }).get();
+                final Gen<T19> gen19 = Try.of(() -> a19.apply(size)).recover(x -> { throw Errors.arbitraryError(19, size, x); }).get();
+                final Gen<T20> gen20 = Try.of(() -> a20.apply(size)).recover(x -> { throw Errors.arbitraryError(20, size, x); }).get();
+                final Gen<T21> gen21 = Try.of(() -> a21.apply(size)).recover(x -> { throw Errors.arbitraryError(21, size, x); }).get();
+                for (int i = 1; i <= tries; i++) {
+                    try {
+                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T12 val12 = Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).get();
+                        final T13 val13 = Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).get();
+                        final T14 val14 = Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).get();
+                        final T15 val15 = Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).get();
+                        final T16 val16 = Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).get();
+                        final T17 val17 = Try.of(() -> gen17.get()).recover(x -> { throw Errors.genError(17, size, x); }).get();
+                        final T18 val18 = Try.of(() -> gen18.get()).recover(x -> { throw Errors.genError(18, size, x); }).get();
+                        final T19 val19 = Try.of(() -> gen19.get()).recover(x -> { throw Errors.genError(19, size, x); }).get();
+                        final T20 val20 = Try.of(() -> gen20.get()).recover(x -> { throw Errors.genError(20, size, x); }).get();
+                        final T21 val21 = Try.of(() -> gen21.get()).recover(x -> { throw Errors.genError(21, size, x); }).get();
+                        try {
+                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (!test) {
+                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21));
+                            }
+                        } catch(Failure.NonFatal nonFatal) {
+                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21)));
                         }
+                    } catch(Failure.NonFatal nonFatal) {
+                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
-                    return CheckResult.satisfied(size);
-                })))))))))))))))))))));
-            return overallCheckResult.recover(x -> CheckResult.<Tuple21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>>erroneous(0, (Error) x)).get();
-            */
+                }
+                return CheckResult.satisfied(tries);
+            } catch(Failure.NonFatal nonFatal) {
+                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+            }
         }
     }
 
@@ -4189,75 +4063,69 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>> check(int size, int tries) {
-            return null; // TODO
-            /*
-            final Try<CheckResult<Tuple22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>>> overallCheckResult =
-                Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
-                Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
-                Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).flatMap((Gen<T3> gen3) ->
-                Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).flatMap((Gen<T4> gen4) ->
-                Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).flatMap((Gen<T5> gen5) ->
-                Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).flatMap((Gen<T6> gen6) ->
-                Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).flatMap((Gen<T7> gen7) ->
-                Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).flatMap((Gen<T8> gen8) ->
-                Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).flatMap((Gen<T9> gen9) ->
-                Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).flatMap((Gen<T10> gen10) ->
-                Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).flatMap((Gen<T11> gen11) ->
-                Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).flatMap((Gen<T12> gen12) ->
-                Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).flatMap((Gen<T13> gen13) ->
-                Try.of(() -> a14.apply(size)).recover(x -> { throw Errors.arbitraryError(14, size, x); }).flatMap((Gen<T14> gen14) ->
-                Try.of(() -> a15.apply(size)).recover(x -> { throw Errors.arbitraryError(15, size, x); }).flatMap((Gen<T15> gen15) ->
-                Try.of(() -> a16.apply(size)).recover(x -> { throw Errors.arbitraryError(16, size, x); }).flatMap((Gen<T16> gen16) ->
-                Try.of(() -> a17.apply(size)).recover(x -> { throw Errors.arbitraryError(17, size, x); }).flatMap((Gen<T17> gen17) ->
-                Try.of(() -> a18.apply(size)).recover(x -> { throw Errors.arbitraryError(18, size, x); }).flatMap((Gen<T18> gen18) ->
-                Try.of(() -> a19.apply(size)).recover(x -> { throw Errors.arbitraryError(19, size, x); }).flatMap((Gen<T19> gen19) ->
-                Try.of(() -> a20.apply(size)).recover(x -> { throw Errors.arbitraryError(20, size, x); }).flatMap((Gen<T20> gen20) ->
-                Try.of(() -> a21.apply(size)).recover(x -> { throw Errors.arbitraryError(21, size, x); }).flatMap((Gen<T21> gen21) ->
-                Try.of(() -> a22.apply(size)).recover(x -> { throw Errors.arbitraryError(22, size, x); }).map((Gen<T22> gen22) -> {
-                    for (int i = 1; i < tries; i++) {
-                        final int count = i;
-                        final Try<CheckResult<Tuple22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>>> partialCheckResult =
-                            Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).flatMap((T1 val1) ->
-                            Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).flatMap((T2 val2) ->
-                            Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).flatMap((T3 val3) ->
-                            Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).flatMap((T4 val4) ->
-                            Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).flatMap((T5 val5) ->
-                            Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).flatMap((T6 val6) ->
-                            Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).flatMap((T7 val7) ->
-                            Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).flatMap((T8 val8) ->
-                            Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).flatMap((T9 val9) ->
-                            Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).flatMap((T10 val10) ->
-                            Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).flatMap((T11 val11) ->
-                            Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).flatMap((T12 val12) ->
-                            Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).flatMap((T13 val13) ->
-                            Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).flatMap((T14 val14) ->
-                            Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).flatMap((T15 val15) ->
-                            Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).flatMap((T16 val16) ->
-                            Try.of(() -> gen17.get()).recover(x -> { throw Errors.genError(17, size, x); }).flatMap((T17 val17) ->
-                            Try.of(() -> gen18.get()).recover(x -> { throw Errors.genError(18, size, x); }).flatMap((T18 val18) ->
-                            Try.of(() -> gen19.get()).recover(x -> { throw Errors.genError(19, size, x); }).flatMap((T19 val19) ->
-                            Try.of(() -> gen20.get()).recover(x -> { throw Errors.genError(20, size, x); }).flatMap((T20 val20) ->
-                            Try.of(() -> gen21.get()).recover(x -> { throw Errors.genError(21, size, x); }).flatMap((T21 val21) ->
-                            Try.of(() -> gen22.get()).recover(x -> { throw Errors.genError(22, size, x); }).map((T22 val22) -> {
-                                try {
-                                    final boolean test = predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22);
-                                    if (test) {
-                                        return CheckResult.satisfied(count);
-                                    } else {
-                                        return CheckResult.falsified(count, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22));
-                                    }
-                                } catch (Throwable x) {
-                                    return CheckResult.erroneous(count, Errors.predicateError(x));
-                                }
-                            }))))))))))))))))))))));
-                        if (!partialCheckResult.get().isSatisfied()) {
-                            return partialCheckResult.get();
+            try {
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
+                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
+                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).get();
+                final Gen<T8> gen8 = Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).get();
+                final Gen<T9> gen9 = Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).get();
+                final Gen<T10> gen10 = Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).get();
+                final Gen<T11> gen11 = Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).get();
+                final Gen<T12> gen12 = Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).get();
+                final Gen<T13> gen13 = Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).get();
+                final Gen<T14> gen14 = Try.of(() -> a14.apply(size)).recover(x -> { throw Errors.arbitraryError(14, size, x); }).get();
+                final Gen<T15> gen15 = Try.of(() -> a15.apply(size)).recover(x -> { throw Errors.arbitraryError(15, size, x); }).get();
+                final Gen<T16> gen16 = Try.of(() -> a16.apply(size)).recover(x -> { throw Errors.arbitraryError(16, size, x); }).get();
+                final Gen<T17> gen17 = Try.of(() -> a17.apply(size)).recover(x -> { throw Errors.arbitraryError(17, size, x); }).get();
+                final Gen<T18> gen18 = Try.of(() -> a18.apply(size)).recover(x -> { throw Errors.arbitraryError(18, size, x); }).get();
+                final Gen<T19> gen19 = Try.of(() -> a19.apply(size)).recover(x -> { throw Errors.arbitraryError(19, size, x); }).get();
+                final Gen<T20> gen20 = Try.of(() -> a20.apply(size)).recover(x -> { throw Errors.arbitraryError(20, size, x); }).get();
+                final Gen<T21> gen21 = Try.of(() -> a21.apply(size)).recover(x -> { throw Errors.arbitraryError(21, size, x); }).get();
+                final Gen<T22> gen22 = Try.of(() -> a22.apply(size)).recover(x -> { throw Errors.arbitraryError(22, size, x); }).get();
+                for (int i = 1; i <= tries; i++) {
+                    try {
+                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T12 val12 = Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).get();
+                        final T13 val13 = Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).get();
+                        final T14 val14 = Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).get();
+                        final T15 val15 = Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).get();
+                        final T16 val16 = Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).get();
+                        final T17 val17 = Try.of(() -> gen17.get()).recover(x -> { throw Errors.genError(17, size, x); }).get();
+                        final T18 val18 = Try.of(() -> gen18.get()).recover(x -> { throw Errors.genError(18, size, x); }).get();
+                        final T19 val19 = Try.of(() -> gen19.get()).recover(x -> { throw Errors.genError(19, size, x); }).get();
+                        final T20 val20 = Try.of(() -> gen20.get()).recover(x -> { throw Errors.genError(20, size, x); }).get();
+                        final T21 val21 = Try.of(() -> gen21.get()).recover(x -> { throw Errors.genError(21, size, x); }).get();
+                        final T22 val22 = Try.of(() -> gen22.get()).recover(x -> { throw Errors.genError(22, size, x); }).get();
+                        try {
+                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (!test) {
+                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22));
+                            }
+                        } catch(Failure.NonFatal nonFatal) {
+                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22)));
                         }
+                    } catch(Failure.NonFatal nonFatal) {
+                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
-                    return CheckResult.satisfied(size);
-                }))))))))))))))))))))));
-            return overallCheckResult.recover(x -> CheckResult.<Tuple22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>>erroneous(0, (Error) x)).get();
-            */
+                }
+                return CheckResult.satisfied(tries);
+            } catch(Failure.NonFatal nonFatal) {
+                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+            }
         }
     }
 
@@ -4317,77 +4185,71 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>> check(int size, int tries) {
-            return null; // TODO
-            /*
-            final Try<CheckResult<Tuple23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>>> overallCheckResult =
-                Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
-                Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
-                Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).flatMap((Gen<T3> gen3) ->
-                Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).flatMap((Gen<T4> gen4) ->
-                Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).flatMap((Gen<T5> gen5) ->
-                Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).flatMap((Gen<T6> gen6) ->
-                Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).flatMap((Gen<T7> gen7) ->
-                Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).flatMap((Gen<T8> gen8) ->
-                Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).flatMap((Gen<T9> gen9) ->
-                Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).flatMap((Gen<T10> gen10) ->
-                Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).flatMap((Gen<T11> gen11) ->
-                Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).flatMap((Gen<T12> gen12) ->
-                Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).flatMap((Gen<T13> gen13) ->
-                Try.of(() -> a14.apply(size)).recover(x -> { throw Errors.arbitraryError(14, size, x); }).flatMap((Gen<T14> gen14) ->
-                Try.of(() -> a15.apply(size)).recover(x -> { throw Errors.arbitraryError(15, size, x); }).flatMap((Gen<T15> gen15) ->
-                Try.of(() -> a16.apply(size)).recover(x -> { throw Errors.arbitraryError(16, size, x); }).flatMap((Gen<T16> gen16) ->
-                Try.of(() -> a17.apply(size)).recover(x -> { throw Errors.arbitraryError(17, size, x); }).flatMap((Gen<T17> gen17) ->
-                Try.of(() -> a18.apply(size)).recover(x -> { throw Errors.arbitraryError(18, size, x); }).flatMap((Gen<T18> gen18) ->
-                Try.of(() -> a19.apply(size)).recover(x -> { throw Errors.arbitraryError(19, size, x); }).flatMap((Gen<T19> gen19) ->
-                Try.of(() -> a20.apply(size)).recover(x -> { throw Errors.arbitraryError(20, size, x); }).flatMap((Gen<T20> gen20) ->
-                Try.of(() -> a21.apply(size)).recover(x -> { throw Errors.arbitraryError(21, size, x); }).flatMap((Gen<T21> gen21) ->
-                Try.of(() -> a22.apply(size)).recover(x -> { throw Errors.arbitraryError(22, size, x); }).flatMap((Gen<T22> gen22) ->
-                Try.of(() -> a23.apply(size)).recover(x -> { throw Errors.arbitraryError(23, size, x); }).map((Gen<T23> gen23) -> {
-                    for (int i = 1; i < tries; i++) {
-                        final int count = i;
-                        final Try<CheckResult<Tuple23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>>> partialCheckResult =
-                            Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).flatMap((T1 val1) ->
-                            Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).flatMap((T2 val2) ->
-                            Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).flatMap((T3 val3) ->
-                            Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).flatMap((T4 val4) ->
-                            Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).flatMap((T5 val5) ->
-                            Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).flatMap((T6 val6) ->
-                            Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).flatMap((T7 val7) ->
-                            Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).flatMap((T8 val8) ->
-                            Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).flatMap((T9 val9) ->
-                            Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).flatMap((T10 val10) ->
-                            Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).flatMap((T11 val11) ->
-                            Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).flatMap((T12 val12) ->
-                            Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).flatMap((T13 val13) ->
-                            Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).flatMap((T14 val14) ->
-                            Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).flatMap((T15 val15) ->
-                            Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).flatMap((T16 val16) ->
-                            Try.of(() -> gen17.get()).recover(x -> { throw Errors.genError(17, size, x); }).flatMap((T17 val17) ->
-                            Try.of(() -> gen18.get()).recover(x -> { throw Errors.genError(18, size, x); }).flatMap((T18 val18) ->
-                            Try.of(() -> gen19.get()).recover(x -> { throw Errors.genError(19, size, x); }).flatMap((T19 val19) ->
-                            Try.of(() -> gen20.get()).recover(x -> { throw Errors.genError(20, size, x); }).flatMap((T20 val20) ->
-                            Try.of(() -> gen21.get()).recover(x -> { throw Errors.genError(21, size, x); }).flatMap((T21 val21) ->
-                            Try.of(() -> gen22.get()).recover(x -> { throw Errors.genError(22, size, x); }).flatMap((T22 val22) ->
-                            Try.of(() -> gen23.get()).recover(x -> { throw Errors.genError(23, size, x); }).map((T23 val23) -> {
-                                try {
-                                    final boolean test = predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23);
-                                    if (test) {
-                                        return CheckResult.satisfied(count);
-                                    } else {
-                                        return CheckResult.falsified(count, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23));
-                                    }
-                                } catch (Throwable x) {
-                                    return CheckResult.erroneous(count, Errors.predicateError(x));
-                                }
-                            })))))))))))))))))))))));
-                        if (!partialCheckResult.get().isSatisfied()) {
-                            return partialCheckResult.get();
+            try {
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
+                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
+                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).get();
+                final Gen<T8> gen8 = Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).get();
+                final Gen<T9> gen9 = Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).get();
+                final Gen<T10> gen10 = Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).get();
+                final Gen<T11> gen11 = Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).get();
+                final Gen<T12> gen12 = Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).get();
+                final Gen<T13> gen13 = Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).get();
+                final Gen<T14> gen14 = Try.of(() -> a14.apply(size)).recover(x -> { throw Errors.arbitraryError(14, size, x); }).get();
+                final Gen<T15> gen15 = Try.of(() -> a15.apply(size)).recover(x -> { throw Errors.arbitraryError(15, size, x); }).get();
+                final Gen<T16> gen16 = Try.of(() -> a16.apply(size)).recover(x -> { throw Errors.arbitraryError(16, size, x); }).get();
+                final Gen<T17> gen17 = Try.of(() -> a17.apply(size)).recover(x -> { throw Errors.arbitraryError(17, size, x); }).get();
+                final Gen<T18> gen18 = Try.of(() -> a18.apply(size)).recover(x -> { throw Errors.arbitraryError(18, size, x); }).get();
+                final Gen<T19> gen19 = Try.of(() -> a19.apply(size)).recover(x -> { throw Errors.arbitraryError(19, size, x); }).get();
+                final Gen<T20> gen20 = Try.of(() -> a20.apply(size)).recover(x -> { throw Errors.arbitraryError(20, size, x); }).get();
+                final Gen<T21> gen21 = Try.of(() -> a21.apply(size)).recover(x -> { throw Errors.arbitraryError(21, size, x); }).get();
+                final Gen<T22> gen22 = Try.of(() -> a22.apply(size)).recover(x -> { throw Errors.arbitraryError(22, size, x); }).get();
+                final Gen<T23> gen23 = Try.of(() -> a23.apply(size)).recover(x -> { throw Errors.arbitraryError(23, size, x); }).get();
+                for (int i = 1; i <= tries; i++) {
+                    try {
+                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T12 val12 = Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).get();
+                        final T13 val13 = Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).get();
+                        final T14 val14 = Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).get();
+                        final T15 val15 = Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).get();
+                        final T16 val16 = Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).get();
+                        final T17 val17 = Try.of(() -> gen17.get()).recover(x -> { throw Errors.genError(17, size, x); }).get();
+                        final T18 val18 = Try.of(() -> gen18.get()).recover(x -> { throw Errors.genError(18, size, x); }).get();
+                        final T19 val19 = Try.of(() -> gen19.get()).recover(x -> { throw Errors.genError(19, size, x); }).get();
+                        final T20 val20 = Try.of(() -> gen20.get()).recover(x -> { throw Errors.genError(20, size, x); }).get();
+                        final T21 val21 = Try.of(() -> gen21.get()).recover(x -> { throw Errors.genError(21, size, x); }).get();
+                        final T22 val22 = Try.of(() -> gen22.get()).recover(x -> { throw Errors.genError(22, size, x); }).get();
+                        final T23 val23 = Try.of(() -> gen23.get()).recover(x -> { throw Errors.genError(23, size, x); }).get();
+                        try {
+                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (!test) {
+                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23));
+                            }
+                        } catch(Failure.NonFatal nonFatal) {
+                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23)));
                         }
+                    } catch(Failure.NonFatal nonFatal) {
+                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
-                    return CheckResult.satisfied(size);
-                })))))))))))))))))))))));
-            return overallCheckResult.recover(x -> CheckResult.<Tuple23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>>erroneous(0, (Error) x)).get();
-            */
+                }
+                return CheckResult.satisfied(tries);
+            } catch(Failure.NonFatal nonFatal) {
+                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+            }
         }
     }
 
@@ -4449,79 +4311,73 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>> check(int size, int tries) {
-            return null; // TODO
-            /*
-            final Try<CheckResult<Tuple24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>>> overallCheckResult =
-                Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
-                Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
-                Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).flatMap((Gen<T3> gen3) ->
-                Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).flatMap((Gen<T4> gen4) ->
-                Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).flatMap((Gen<T5> gen5) ->
-                Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).flatMap((Gen<T6> gen6) ->
-                Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).flatMap((Gen<T7> gen7) ->
-                Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).flatMap((Gen<T8> gen8) ->
-                Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).flatMap((Gen<T9> gen9) ->
-                Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).flatMap((Gen<T10> gen10) ->
-                Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).flatMap((Gen<T11> gen11) ->
-                Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).flatMap((Gen<T12> gen12) ->
-                Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).flatMap((Gen<T13> gen13) ->
-                Try.of(() -> a14.apply(size)).recover(x -> { throw Errors.arbitraryError(14, size, x); }).flatMap((Gen<T14> gen14) ->
-                Try.of(() -> a15.apply(size)).recover(x -> { throw Errors.arbitraryError(15, size, x); }).flatMap((Gen<T15> gen15) ->
-                Try.of(() -> a16.apply(size)).recover(x -> { throw Errors.arbitraryError(16, size, x); }).flatMap((Gen<T16> gen16) ->
-                Try.of(() -> a17.apply(size)).recover(x -> { throw Errors.arbitraryError(17, size, x); }).flatMap((Gen<T17> gen17) ->
-                Try.of(() -> a18.apply(size)).recover(x -> { throw Errors.arbitraryError(18, size, x); }).flatMap((Gen<T18> gen18) ->
-                Try.of(() -> a19.apply(size)).recover(x -> { throw Errors.arbitraryError(19, size, x); }).flatMap((Gen<T19> gen19) ->
-                Try.of(() -> a20.apply(size)).recover(x -> { throw Errors.arbitraryError(20, size, x); }).flatMap((Gen<T20> gen20) ->
-                Try.of(() -> a21.apply(size)).recover(x -> { throw Errors.arbitraryError(21, size, x); }).flatMap((Gen<T21> gen21) ->
-                Try.of(() -> a22.apply(size)).recover(x -> { throw Errors.arbitraryError(22, size, x); }).flatMap((Gen<T22> gen22) ->
-                Try.of(() -> a23.apply(size)).recover(x -> { throw Errors.arbitraryError(23, size, x); }).flatMap((Gen<T23> gen23) ->
-                Try.of(() -> a24.apply(size)).recover(x -> { throw Errors.arbitraryError(24, size, x); }).map((Gen<T24> gen24) -> {
-                    for (int i = 1; i < tries; i++) {
-                        final int count = i;
-                        final Try<CheckResult<Tuple24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>>> partialCheckResult =
-                            Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).flatMap((T1 val1) ->
-                            Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).flatMap((T2 val2) ->
-                            Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).flatMap((T3 val3) ->
-                            Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).flatMap((T4 val4) ->
-                            Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).flatMap((T5 val5) ->
-                            Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).flatMap((T6 val6) ->
-                            Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).flatMap((T7 val7) ->
-                            Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).flatMap((T8 val8) ->
-                            Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).flatMap((T9 val9) ->
-                            Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).flatMap((T10 val10) ->
-                            Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).flatMap((T11 val11) ->
-                            Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).flatMap((T12 val12) ->
-                            Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).flatMap((T13 val13) ->
-                            Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).flatMap((T14 val14) ->
-                            Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).flatMap((T15 val15) ->
-                            Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).flatMap((T16 val16) ->
-                            Try.of(() -> gen17.get()).recover(x -> { throw Errors.genError(17, size, x); }).flatMap((T17 val17) ->
-                            Try.of(() -> gen18.get()).recover(x -> { throw Errors.genError(18, size, x); }).flatMap((T18 val18) ->
-                            Try.of(() -> gen19.get()).recover(x -> { throw Errors.genError(19, size, x); }).flatMap((T19 val19) ->
-                            Try.of(() -> gen20.get()).recover(x -> { throw Errors.genError(20, size, x); }).flatMap((T20 val20) ->
-                            Try.of(() -> gen21.get()).recover(x -> { throw Errors.genError(21, size, x); }).flatMap((T21 val21) ->
-                            Try.of(() -> gen22.get()).recover(x -> { throw Errors.genError(22, size, x); }).flatMap((T22 val22) ->
-                            Try.of(() -> gen23.get()).recover(x -> { throw Errors.genError(23, size, x); }).flatMap((T23 val23) ->
-                            Try.of(() -> gen24.get()).recover(x -> { throw Errors.genError(24, size, x); }).map((T24 val24) -> {
-                                try {
-                                    final boolean test = predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24);
-                                    if (test) {
-                                        return CheckResult.satisfied(count);
-                                    } else {
-                                        return CheckResult.falsified(count, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24));
-                                    }
-                                } catch (Throwable x) {
-                                    return CheckResult.erroneous(count, Errors.predicateError(x));
-                                }
-                            }))))))))))))))))))))))));
-                        if (!partialCheckResult.get().isSatisfied()) {
-                            return partialCheckResult.get();
+            try {
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
+                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
+                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).get();
+                final Gen<T8> gen8 = Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).get();
+                final Gen<T9> gen9 = Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).get();
+                final Gen<T10> gen10 = Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).get();
+                final Gen<T11> gen11 = Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).get();
+                final Gen<T12> gen12 = Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).get();
+                final Gen<T13> gen13 = Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).get();
+                final Gen<T14> gen14 = Try.of(() -> a14.apply(size)).recover(x -> { throw Errors.arbitraryError(14, size, x); }).get();
+                final Gen<T15> gen15 = Try.of(() -> a15.apply(size)).recover(x -> { throw Errors.arbitraryError(15, size, x); }).get();
+                final Gen<T16> gen16 = Try.of(() -> a16.apply(size)).recover(x -> { throw Errors.arbitraryError(16, size, x); }).get();
+                final Gen<T17> gen17 = Try.of(() -> a17.apply(size)).recover(x -> { throw Errors.arbitraryError(17, size, x); }).get();
+                final Gen<T18> gen18 = Try.of(() -> a18.apply(size)).recover(x -> { throw Errors.arbitraryError(18, size, x); }).get();
+                final Gen<T19> gen19 = Try.of(() -> a19.apply(size)).recover(x -> { throw Errors.arbitraryError(19, size, x); }).get();
+                final Gen<T20> gen20 = Try.of(() -> a20.apply(size)).recover(x -> { throw Errors.arbitraryError(20, size, x); }).get();
+                final Gen<T21> gen21 = Try.of(() -> a21.apply(size)).recover(x -> { throw Errors.arbitraryError(21, size, x); }).get();
+                final Gen<T22> gen22 = Try.of(() -> a22.apply(size)).recover(x -> { throw Errors.arbitraryError(22, size, x); }).get();
+                final Gen<T23> gen23 = Try.of(() -> a23.apply(size)).recover(x -> { throw Errors.arbitraryError(23, size, x); }).get();
+                final Gen<T24> gen24 = Try.of(() -> a24.apply(size)).recover(x -> { throw Errors.arbitraryError(24, size, x); }).get();
+                for (int i = 1; i <= tries; i++) {
+                    try {
+                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T12 val12 = Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).get();
+                        final T13 val13 = Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).get();
+                        final T14 val14 = Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).get();
+                        final T15 val15 = Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).get();
+                        final T16 val16 = Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).get();
+                        final T17 val17 = Try.of(() -> gen17.get()).recover(x -> { throw Errors.genError(17, size, x); }).get();
+                        final T18 val18 = Try.of(() -> gen18.get()).recover(x -> { throw Errors.genError(18, size, x); }).get();
+                        final T19 val19 = Try.of(() -> gen19.get()).recover(x -> { throw Errors.genError(19, size, x); }).get();
+                        final T20 val20 = Try.of(() -> gen20.get()).recover(x -> { throw Errors.genError(20, size, x); }).get();
+                        final T21 val21 = Try.of(() -> gen21.get()).recover(x -> { throw Errors.genError(21, size, x); }).get();
+                        final T22 val22 = Try.of(() -> gen22.get()).recover(x -> { throw Errors.genError(22, size, x); }).get();
+                        final T23 val23 = Try.of(() -> gen23.get()).recover(x -> { throw Errors.genError(23, size, x); }).get();
+                        final T24 val24 = Try.of(() -> gen24.get()).recover(x -> { throw Errors.genError(24, size, x); }).get();
+                        try {
+                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (!test) {
+                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24));
+                            }
+                        } catch(Failure.NonFatal nonFatal) {
+                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24)));
                         }
+                    } catch(Failure.NonFatal nonFatal) {
+                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
-                    return CheckResult.satisfied(size);
-                }))))))))))))))))))))))));
-            return overallCheckResult.recover(x -> CheckResult.<Tuple24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>>erroneous(0, (Error) x)).get();
-            */
+                }
+                return CheckResult.satisfied(tries);
+            } catch(Failure.NonFatal nonFatal) {
+                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+            }
         }
     }
 
@@ -4585,81 +4441,75 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>> check(int size, int tries) {
-            return null; // TODO
-            /*
-            final Try<CheckResult<Tuple25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>>> overallCheckResult =
-                Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
-                Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
-                Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).flatMap((Gen<T3> gen3) ->
-                Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).flatMap((Gen<T4> gen4) ->
-                Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).flatMap((Gen<T5> gen5) ->
-                Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).flatMap((Gen<T6> gen6) ->
-                Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).flatMap((Gen<T7> gen7) ->
-                Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).flatMap((Gen<T8> gen8) ->
-                Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).flatMap((Gen<T9> gen9) ->
-                Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).flatMap((Gen<T10> gen10) ->
-                Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).flatMap((Gen<T11> gen11) ->
-                Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).flatMap((Gen<T12> gen12) ->
-                Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).flatMap((Gen<T13> gen13) ->
-                Try.of(() -> a14.apply(size)).recover(x -> { throw Errors.arbitraryError(14, size, x); }).flatMap((Gen<T14> gen14) ->
-                Try.of(() -> a15.apply(size)).recover(x -> { throw Errors.arbitraryError(15, size, x); }).flatMap((Gen<T15> gen15) ->
-                Try.of(() -> a16.apply(size)).recover(x -> { throw Errors.arbitraryError(16, size, x); }).flatMap((Gen<T16> gen16) ->
-                Try.of(() -> a17.apply(size)).recover(x -> { throw Errors.arbitraryError(17, size, x); }).flatMap((Gen<T17> gen17) ->
-                Try.of(() -> a18.apply(size)).recover(x -> { throw Errors.arbitraryError(18, size, x); }).flatMap((Gen<T18> gen18) ->
-                Try.of(() -> a19.apply(size)).recover(x -> { throw Errors.arbitraryError(19, size, x); }).flatMap((Gen<T19> gen19) ->
-                Try.of(() -> a20.apply(size)).recover(x -> { throw Errors.arbitraryError(20, size, x); }).flatMap((Gen<T20> gen20) ->
-                Try.of(() -> a21.apply(size)).recover(x -> { throw Errors.arbitraryError(21, size, x); }).flatMap((Gen<T21> gen21) ->
-                Try.of(() -> a22.apply(size)).recover(x -> { throw Errors.arbitraryError(22, size, x); }).flatMap((Gen<T22> gen22) ->
-                Try.of(() -> a23.apply(size)).recover(x -> { throw Errors.arbitraryError(23, size, x); }).flatMap((Gen<T23> gen23) ->
-                Try.of(() -> a24.apply(size)).recover(x -> { throw Errors.arbitraryError(24, size, x); }).flatMap((Gen<T24> gen24) ->
-                Try.of(() -> a25.apply(size)).recover(x -> { throw Errors.arbitraryError(25, size, x); }).map((Gen<T25> gen25) -> {
-                    for (int i = 1; i < tries; i++) {
-                        final int count = i;
-                        final Try<CheckResult<Tuple25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>>> partialCheckResult =
-                            Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).flatMap((T1 val1) ->
-                            Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).flatMap((T2 val2) ->
-                            Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).flatMap((T3 val3) ->
-                            Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).flatMap((T4 val4) ->
-                            Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).flatMap((T5 val5) ->
-                            Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).flatMap((T6 val6) ->
-                            Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).flatMap((T7 val7) ->
-                            Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).flatMap((T8 val8) ->
-                            Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).flatMap((T9 val9) ->
-                            Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).flatMap((T10 val10) ->
-                            Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).flatMap((T11 val11) ->
-                            Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).flatMap((T12 val12) ->
-                            Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).flatMap((T13 val13) ->
-                            Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).flatMap((T14 val14) ->
-                            Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).flatMap((T15 val15) ->
-                            Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).flatMap((T16 val16) ->
-                            Try.of(() -> gen17.get()).recover(x -> { throw Errors.genError(17, size, x); }).flatMap((T17 val17) ->
-                            Try.of(() -> gen18.get()).recover(x -> { throw Errors.genError(18, size, x); }).flatMap((T18 val18) ->
-                            Try.of(() -> gen19.get()).recover(x -> { throw Errors.genError(19, size, x); }).flatMap((T19 val19) ->
-                            Try.of(() -> gen20.get()).recover(x -> { throw Errors.genError(20, size, x); }).flatMap((T20 val20) ->
-                            Try.of(() -> gen21.get()).recover(x -> { throw Errors.genError(21, size, x); }).flatMap((T21 val21) ->
-                            Try.of(() -> gen22.get()).recover(x -> { throw Errors.genError(22, size, x); }).flatMap((T22 val22) ->
-                            Try.of(() -> gen23.get()).recover(x -> { throw Errors.genError(23, size, x); }).flatMap((T23 val23) ->
-                            Try.of(() -> gen24.get()).recover(x -> { throw Errors.genError(24, size, x); }).flatMap((T24 val24) ->
-                            Try.of(() -> gen25.get()).recover(x -> { throw Errors.genError(25, size, x); }).map((T25 val25) -> {
-                                try {
-                                    final boolean test = predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24, val25);
-                                    if (test) {
-                                        return CheckResult.satisfied(count);
-                                    } else {
-                                        return CheckResult.falsified(count, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24, val25));
-                                    }
-                                } catch (Throwable x) {
-                                    return CheckResult.erroneous(count, Errors.predicateError(x));
-                                }
-                            })))))))))))))))))))))))));
-                        if (!partialCheckResult.get().isSatisfied()) {
-                            return partialCheckResult.get();
+            try {
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
+                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
+                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).get();
+                final Gen<T8> gen8 = Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).get();
+                final Gen<T9> gen9 = Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).get();
+                final Gen<T10> gen10 = Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).get();
+                final Gen<T11> gen11 = Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).get();
+                final Gen<T12> gen12 = Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).get();
+                final Gen<T13> gen13 = Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).get();
+                final Gen<T14> gen14 = Try.of(() -> a14.apply(size)).recover(x -> { throw Errors.arbitraryError(14, size, x); }).get();
+                final Gen<T15> gen15 = Try.of(() -> a15.apply(size)).recover(x -> { throw Errors.arbitraryError(15, size, x); }).get();
+                final Gen<T16> gen16 = Try.of(() -> a16.apply(size)).recover(x -> { throw Errors.arbitraryError(16, size, x); }).get();
+                final Gen<T17> gen17 = Try.of(() -> a17.apply(size)).recover(x -> { throw Errors.arbitraryError(17, size, x); }).get();
+                final Gen<T18> gen18 = Try.of(() -> a18.apply(size)).recover(x -> { throw Errors.arbitraryError(18, size, x); }).get();
+                final Gen<T19> gen19 = Try.of(() -> a19.apply(size)).recover(x -> { throw Errors.arbitraryError(19, size, x); }).get();
+                final Gen<T20> gen20 = Try.of(() -> a20.apply(size)).recover(x -> { throw Errors.arbitraryError(20, size, x); }).get();
+                final Gen<T21> gen21 = Try.of(() -> a21.apply(size)).recover(x -> { throw Errors.arbitraryError(21, size, x); }).get();
+                final Gen<T22> gen22 = Try.of(() -> a22.apply(size)).recover(x -> { throw Errors.arbitraryError(22, size, x); }).get();
+                final Gen<T23> gen23 = Try.of(() -> a23.apply(size)).recover(x -> { throw Errors.arbitraryError(23, size, x); }).get();
+                final Gen<T24> gen24 = Try.of(() -> a24.apply(size)).recover(x -> { throw Errors.arbitraryError(24, size, x); }).get();
+                final Gen<T25> gen25 = Try.of(() -> a25.apply(size)).recover(x -> { throw Errors.arbitraryError(25, size, x); }).get();
+                for (int i = 1; i <= tries; i++) {
+                    try {
+                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T12 val12 = Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).get();
+                        final T13 val13 = Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).get();
+                        final T14 val14 = Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).get();
+                        final T15 val15 = Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).get();
+                        final T16 val16 = Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).get();
+                        final T17 val17 = Try.of(() -> gen17.get()).recover(x -> { throw Errors.genError(17, size, x); }).get();
+                        final T18 val18 = Try.of(() -> gen18.get()).recover(x -> { throw Errors.genError(18, size, x); }).get();
+                        final T19 val19 = Try.of(() -> gen19.get()).recover(x -> { throw Errors.genError(19, size, x); }).get();
+                        final T20 val20 = Try.of(() -> gen20.get()).recover(x -> { throw Errors.genError(20, size, x); }).get();
+                        final T21 val21 = Try.of(() -> gen21.get()).recover(x -> { throw Errors.genError(21, size, x); }).get();
+                        final T22 val22 = Try.of(() -> gen22.get()).recover(x -> { throw Errors.genError(22, size, x); }).get();
+                        final T23 val23 = Try.of(() -> gen23.get()).recover(x -> { throw Errors.genError(23, size, x); }).get();
+                        final T24 val24 = Try.of(() -> gen24.get()).recover(x -> { throw Errors.genError(24, size, x); }).get();
+                        final T25 val25 = Try.of(() -> gen25.get()).recover(x -> { throw Errors.genError(25, size, x); }).get();
+                        try {
+                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24, val25)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (!test) {
+                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24, val25));
+                            }
+                        } catch(Failure.NonFatal nonFatal) {
+                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24, val25)));
                         }
+                    } catch(Failure.NonFatal nonFatal) {
+                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
-                    return CheckResult.satisfied(size);
-                })))))))))))))))))))))))));
-            return overallCheckResult.recover(x -> CheckResult.<Tuple25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>>erroneous(0, (Error) x)).get();
-            */
+                }
+                return CheckResult.satisfied(tries);
+            } catch(Failure.NonFatal nonFatal) {
+                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+            }
         }
     }
 
@@ -4725,83 +4575,77 @@ public interface Property {
 
         @Override
         public CheckResult<Tuple26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>> check(int size, int tries) {
-            return null; // TODO
-            /*
-            final Try<CheckResult<Tuple26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>>> overallCheckResult =
-                Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).flatMap((Gen<T1> gen1) ->
-                Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).flatMap((Gen<T2> gen2) ->
-                Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).flatMap((Gen<T3> gen3) ->
-                Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).flatMap((Gen<T4> gen4) ->
-                Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).flatMap((Gen<T5> gen5) ->
-                Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).flatMap((Gen<T6> gen6) ->
-                Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).flatMap((Gen<T7> gen7) ->
-                Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).flatMap((Gen<T8> gen8) ->
-                Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).flatMap((Gen<T9> gen9) ->
-                Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).flatMap((Gen<T10> gen10) ->
-                Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).flatMap((Gen<T11> gen11) ->
-                Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).flatMap((Gen<T12> gen12) ->
-                Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).flatMap((Gen<T13> gen13) ->
-                Try.of(() -> a14.apply(size)).recover(x -> { throw Errors.arbitraryError(14, size, x); }).flatMap((Gen<T14> gen14) ->
-                Try.of(() -> a15.apply(size)).recover(x -> { throw Errors.arbitraryError(15, size, x); }).flatMap((Gen<T15> gen15) ->
-                Try.of(() -> a16.apply(size)).recover(x -> { throw Errors.arbitraryError(16, size, x); }).flatMap((Gen<T16> gen16) ->
-                Try.of(() -> a17.apply(size)).recover(x -> { throw Errors.arbitraryError(17, size, x); }).flatMap((Gen<T17> gen17) ->
-                Try.of(() -> a18.apply(size)).recover(x -> { throw Errors.arbitraryError(18, size, x); }).flatMap((Gen<T18> gen18) ->
-                Try.of(() -> a19.apply(size)).recover(x -> { throw Errors.arbitraryError(19, size, x); }).flatMap((Gen<T19> gen19) ->
-                Try.of(() -> a20.apply(size)).recover(x -> { throw Errors.arbitraryError(20, size, x); }).flatMap((Gen<T20> gen20) ->
-                Try.of(() -> a21.apply(size)).recover(x -> { throw Errors.arbitraryError(21, size, x); }).flatMap((Gen<T21> gen21) ->
-                Try.of(() -> a22.apply(size)).recover(x -> { throw Errors.arbitraryError(22, size, x); }).flatMap((Gen<T22> gen22) ->
-                Try.of(() -> a23.apply(size)).recover(x -> { throw Errors.arbitraryError(23, size, x); }).flatMap((Gen<T23> gen23) ->
-                Try.of(() -> a24.apply(size)).recover(x -> { throw Errors.arbitraryError(24, size, x); }).flatMap((Gen<T24> gen24) ->
-                Try.of(() -> a25.apply(size)).recover(x -> { throw Errors.arbitraryError(25, size, x); }).flatMap((Gen<T25> gen25) ->
-                Try.of(() -> a26.apply(size)).recover(x -> { throw Errors.arbitraryError(26, size, x); }).map((Gen<T26> gen26) -> {
-                    for (int i = 1; i < tries; i++) {
-                        final int count = i;
-                        final Try<CheckResult<Tuple26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>>> partialCheckResult =
-                            Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).flatMap((T1 val1) ->
-                            Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).flatMap((T2 val2) ->
-                            Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).flatMap((T3 val3) ->
-                            Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).flatMap((T4 val4) ->
-                            Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).flatMap((T5 val5) ->
-                            Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).flatMap((T6 val6) ->
-                            Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).flatMap((T7 val7) ->
-                            Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).flatMap((T8 val8) ->
-                            Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).flatMap((T9 val9) ->
-                            Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).flatMap((T10 val10) ->
-                            Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).flatMap((T11 val11) ->
-                            Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).flatMap((T12 val12) ->
-                            Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).flatMap((T13 val13) ->
-                            Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).flatMap((T14 val14) ->
-                            Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).flatMap((T15 val15) ->
-                            Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).flatMap((T16 val16) ->
-                            Try.of(() -> gen17.get()).recover(x -> { throw Errors.genError(17, size, x); }).flatMap((T17 val17) ->
-                            Try.of(() -> gen18.get()).recover(x -> { throw Errors.genError(18, size, x); }).flatMap((T18 val18) ->
-                            Try.of(() -> gen19.get()).recover(x -> { throw Errors.genError(19, size, x); }).flatMap((T19 val19) ->
-                            Try.of(() -> gen20.get()).recover(x -> { throw Errors.genError(20, size, x); }).flatMap((T20 val20) ->
-                            Try.of(() -> gen21.get()).recover(x -> { throw Errors.genError(21, size, x); }).flatMap((T21 val21) ->
-                            Try.of(() -> gen22.get()).recover(x -> { throw Errors.genError(22, size, x); }).flatMap((T22 val22) ->
-                            Try.of(() -> gen23.get()).recover(x -> { throw Errors.genError(23, size, x); }).flatMap((T23 val23) ->
-                            Try.of(() -> gen24.get()).recover(x -> { throw Errors.genError(24, size, x); }).flatMap((T24 val24) ->
-                            Try.of(() -> gen25.get()).recover(x -> { throw Errors.genError(25, size, x); }).flatMap((T25 val25) ->
-                            Try.of(() -> gen26.get()).recover(x -> { throw Errors.genError(26, size, x); }).map((T26 val26) -> {
-                                try {
-                                    final boolean test = predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24, val25, val26);
-                                    if (test) {
-                                        return CheckResult.satisfied(count);
-                                    } else {
-                                        return CheckResult.falsified(count, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24, val25, val26));
-                                    }
-                                } catch (Throwable x) {
-                                    return CheckResult.erroneous(count, Errors.predicateError(x));
-                                }
-                            }))))))))))))))))))))))))));
-                        if (!partialCheckResult.get().isSatisfied()) {
-                            return partialCheckResult.get();
+            try {
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
+                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
+                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).get();
+                final Gen<T8> gen8 = Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).get();
+                final Gen<T9> gen9 = Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).get();
+                final Gen<T10> gen10 = Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).get();
+                final Gen<T11> gen11 = Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).get();
+                final Gen<T12> gen12 = Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).get();
+                final Gen<T13> gen13 = Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).get();
+                final Gen<T14> gen14 = Try.of(() -> a14.apply(size)).recover(x -> { throw Errors.arbitraryError(14, size, x); }).get();
+                final Gen<T15> gen15 = Try.of(() -> a15.apply(size)).recover(x -> { throw Errors.arbitraryError(15, size, x); }).get();
+                final Gen<T16> gen16 = Try.of(() -> a16.apply(size)).recover(x -> { throw Errors.arbitraryError(16, size, x); }).get();
+                final Gen<T17> gen17 = Try.of(() -> a17.apply(size)).recover(x -> { throw Errors.arbitraryError(17, size, x); }).get();
+                final Gen<T18> gen18 = Try.of(() -> a18.apply(size)).recover(x -> { throw Errors.arbitraryError(18, size, x); }).get();
+                final Gen<T19> gen19 = Try.of(() -> a19.apply(size)).recover(x -> { throw Errors.arbitraryError(19, size, x); }).get();
+                final Gen<T20> gen20 = Try.of(() -> a20.apply(size)).recover(x -> { throw Errors.arbitraryError(20, size, x); }).get();
+                final Gen<T21> gen21 = Try.of(() -> a21.apply(size)).recover(x -> { throw Errors.arbitraryError(21, size, x); }).get();
+                final Gen<T22> gen22 = Try.of(() -> a22.apply(size)).recover(x -> { throw Errors.arbitraryError(22, size, x); }).get();
+                final Gen<T23> gen23 = Try.of(() -> a23.apply(size)).recover(x -> { throw Errors.arbitraryError(23, size, x); }).get();
+                final Gen<T24> gen24 = Try.of(() -> a24.apply(size)).recover(x -> { throw Errors.arbitraryError(24, size, x); }).get();
+                final Gen<T25> gen25 = Try.of(() -> a25.apply(size)).recover(x -> { throw Errors.arbitraryError(25, size, x); }).get();
+                final Gen<T26> gen26 = Try.of(() -> a26.apply(size)).recover(x -> { throw Errors.arbitraryError(26, size, x); }).get();
+                for (int i = 1; i <= tries; i++) {
+                    try {
+                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T12 val12 = Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).get();
+                        final T13 val13 = Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).get();
+                        final T14 val14 = Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).get();
+                        final T15 val15 = Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).get();
+                        final T16 val16 = Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).get();
+                        final T17 val17 = Try.of(() -> gen17.get()).recover(x -> { throw Errors.genError(17, size, x); }).get();
+                        final T18 val18 = Try.of(() -> gen18.get()).recover(x -> { throw Errors.genError(18, size, x); }).get();
+                        final T19 val19 = Try.of(() -> gen19.get()).recover(x -> { throw Errors.genError(19, size, x); }).get();
+                        final T20 val20 = Try.of(() -> gen20.get()).recover(x -> { throw Errors.genError(20, size, x); }).get();
+                        final T21 val21 = Try.of(() -> gen21.get()).recover(x -> { throw Errors.genError(21, size, x); }).get();
+                        final T22 val22 = Try.of(() -> gen22.get()).recover(x -> { throw Errors.genError(22, size, x); }).get();
+                        final T23 val23 = Try.of(() -> gen23.get()).recover(x -> { throw Errors.genError(23, size, x); }).get();
+                        final T24 val24 = Try.of(() -> gen24.get()).recover(x -> { throw Errors.genError(24, size, x); }).get();
+                        final T25 val25 = Try.of(() -> gen25.get()).recover(x -> { throw Errors.genError(25, size, x); }).get();
+                        final T26 val26 = Try.of(() -> gen26.get()).recover(x -> { throw Errors.genError(26, size, x); }).get();
+                        try {
+                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24, val25, val26)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (!test) {
+                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24, val25, val26));
+                            }
+                        } catch(Failure.NonFatal nonFatal) {
+                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24, val25, val26)));
                         }
+                    } catch(Failure.NonFatal nonFatal) {
+                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
-                    return CheckResult.satisfied(size);
-                }))))))))))))))))))))))))));
-            return overallCheckResult.recover(x -> CheckResult.<Tuple26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>>erroneous(0, (Error) x)).get();
-            */
+                }
+                return CheckResult.satisfied(tries);
+            } catch(Failure.NonFatal nonFatal) {
+                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+            }
         }
     }
 }
