@@ -20,9 +20,17 @@ public class PropertyTest {
 
         // (∀a,b ∈ ℝ+ ∃c ∈ ℝ+ : a²+b²=c²) ≡ (∀a,b ∈ ℝ+ : a²+b² ∈ ℝ+)
         final Property property = Property.forAll(real, real).suchThat((a, b) -> a * a + b * b > .0d);
-        final CheckResult checkResult = property.check();
+        final CheckResult result = property.check();
 
-        assertThat(checkResult.isSatisfied()).isTrue();
+        assertThat(result.isSatisfied()).isTrue();
+    }
+
+    @Test
+    public void shouldFalsifyFalseProperty() {
+        final Arbitrary<Integer> ones = n -> () -> 1;
+        final CheckResult result = Property.forAll(ones).suchThat(one -> one == 2).check();
+        assertThat(result.isFalsified()).isTrue();
+        assertThat(result.count()).isEqualTo(1);
     }
 
     @Test
