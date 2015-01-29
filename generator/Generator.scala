@@ -35,12 +35,58 @@ def genPropertyChecks(): Unit = {
     import javaslang.control.*;
     import javaslang.function.*;
 
+    import java.util.Random;
+    import java.util.concurrent.ThreadLocalRandom;
+    import java.util.function.Supplier;
+
+    @FunctionalInterface
     public interface $className {
 
-        CheckResult check(int size, int tries);
+        /**
+         * A thread-safe, equally distributed random number generator.
+         */
+        Supplier<Random> RNG = ThreadLocalRandom::current;
+
+        /**
+         * Default size hint for generators.
+         */
+        int DEFAULT_SIZE = 100;
+
+        /**
+         * Default tries to check a property.
+         */
+        int DEFAULT_TRIES = 1000;
+
+        CheckResult check(Random randomNumberGenerator, int size, int tries);
+
+        default CheckResult check(int size, int tries) {
+            return check(RNG.get(), size, tries);
+        }
 
         default CheckResult check() {
-            return check(100, 1000);
+            return check(RNG.get(), DEFAULT_SIZE, DEFAULT_TRIES);
+        }
+
+        default Property and(Property property) {
+            return (rng, size, tries) -> {
+                final CheckResult result = check(rng, size, tries);
+                if (result.isSatisfied()) {
+                    return property.check(rng, size, tries);
+                } else {
+                    return result;
+                }
+            };
+        }
+
+        default Property or(Property property) {
+            return (rng, size, tries) -> {
+                final CheckResult result = check(rng, size, tries);
+                if (result.isSatisfied()) {
+                    return result;
+                } else {
+                    return property.check(rng, size, tries);
+                }
+            };
         }
 
         ${(1 to N).gen(i => {
@@ -56,6 +102,7 @@ def genPropertyChecks(): Unit = {
 
         ${(1 to N).gen(i => {
             val generics = (1 to i).gen(j => s"T$j")(", ")
+            val params = (name: String) => (1 to i).gen(j => s"$name$j")(", ")
             val parametersDecl = (1 to i).gen(j => s"Arbitrary<T$j> a$j")(", ")
             xs"""
                 static class ForAll$i<$generics> {
@@ -70,20 +117,9 @@ def genPropertyChecks(): Unit = {
                         """)("\n")}
                     }
 
-                    ${(i+1 to N).gen(j => {
-                        val missingGenerics = (i+1 to j).gen(k => s"T$k")(", ")
-                        val allGenerics = (1 to j).gen(k => s"T$k")(", ")
-                        val missingParametersDecl = (i+1 to j).gen(k => s"Arbitrary<T$k> a$k")(", ")
-                        val allParameters = (1 to j).gen(k => s"a$k")(", ")
-                        xs"""
-                            public <$missingGenerics> ForAll$j<$allGenerics> forAll($missingParametersDecl) {
-                                return new ForAll$j<>($allParameters);
-                            }
-                        """
-                    })("\n\n")}
-
-                    public Property suchThat(CheckedLambda$i<$generics, Boolean> predicate) {
-                        return new SuchThat$i<>(${(1 to i).gen(j => s"a$j")(", ")}, predicate);
+                    public Property$i<$generics> suchThat(CheckedLambda$i<$generics, Boolean> predicate) {
+                        final CheckedLambda$i<$generics, Condition> proposition = (${params("t")}) -> new Condition(true, predicate.apply(${params("t")}));
+                        return new Property$i<>(${params("a")}, proposition);
                     }
                 }
             """
@@ -91,37 +127,55 @@ def genPropertyChecks(): Unit = {
 
         ${(1 to N).gen(i => {
             val generics = (1 to i).gen(j => s"T$j")(", ")
+            val params = (paramName: String) => (1 to i).gen(j => s"$paramName$j")(", ")
             val parametersDecl = (1 to i).gen(j => s"Arbitrary<T$j> a$j")(", ")
             xs"""
-                static class SuchThat$i<$generics> implements Property {
+                static class Property$i<$generics> implements Property {
 
                     ${(1 to i).gen(j => xs"""
                         private final Arbitrary<T$j> a$j;
                     """)("\n")}
-                    final CheckedLambda$i<$generics, Boolean> predicate;
+                    final CheckedLambda$i<$generics, Condition> predicate;
 
-                    SuchThat$i($parametersDecl, CheckedLambda$i<$generics, Boolean> predicate) {
+                    Property$i($parametersDecl, CheckedLambda$i<$generics, Condition> predicate) {
                         ${(1 to i).gen(j => xs"""
                             this.a$j = a$j;
                         """)("\n")}
                         this.predicate = predicate;
                     }
 
+                    public Property implies(CheckedLambda$i<$generics, Boolean> postcondition) {
+                        final CheckedLambda$i<$generics, Condition> implication = (${params("t")}) -> {
+                            final Condition precondition = predicate.apply(${params("t")});
+                            if (precondition.isFalse()) {
+                                // ex falso quodlibet
+                                return new Condition(false, true);
+                            } else {
+                                return new Condition(true, postcondition.apply(${params("t")}));
+                            }
+                        };
+                        return new Property$i<>(${params("a")}, implication);
+                    }
+
                     @Override
-                    public CheckResult<Tuple$i<$generics>> check(int size, int tries) {
+                    public CheckResult<Tuple$i<$generics>> check(Random random, int size, int tries) {
                         try {
                             ${(1 to i).gen(j => {
                                 s"""final Gen<T$j> gen$j = Try.of(() -> a$j.apply(size)).recover(x -> { throw Errors.arbitraryError($j, size, x); }).get();"""
                             })("\n")}
+                            boolean exhausted = true;
                             for (int i = 1; i <= tries; i++) {
                                 try {
                                     ${(1 to i).gen(j => {
-                                      s"""final T$j val$j = Try.of(() -> gen$j.get()).recover(x -> { throw Errors.genError($j, size, x); }).get();"""
+                                      s"""final T$j val$j = Try.of(() -> gen$j.apply(random)).recover(x -> { throw Errors.genError($j, size, x); }).get();"""
                                     })("\n")}
                                     try {
-                                        final boolean test = Try.of(() -> predicate.apply(${(1 to i).gen(j => s"val$j")(", ")})).recover(x -> { throw Errors.predicateError(x); }).get();
-                                        if (!test) {
-                                            return CheckResult.falsified(i, Tuple.of(${(1 to i).gen(j => s"val$j")(", ")}));
+                                        final Condition condition = Try.of(() -> predicate.apply(${(1 to i).gen(j => s"val$j")(", ")})).recover(x -> { throw Errors.predicateError(x); }).get();
+                                        if (condition.precondition) {
+                                            exhausted = false;
+                                            if (!condition.postcondition) {
+                                                return CheckResult.falsified(i, Tuple.of(${(1 to i).gen(j => s"val$j")(", ")}));
+                                            }
                                         }
                                     } catch(Failure.NonFatal nonFatal) {
                                         return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(${(1 to i).gen(j => s"val$j")(", ")})));
@@ -130,7 +184,7 @@ def genPropertyChecks(): Unit = {
                                     return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                                 }
                             }
-                            return CheckResult.satisfied(tries);
+                            return CheckResult.satisfied(tries, exhausted);
                         } catch(Failure.NonFatal nonFatal) {
                             return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
                         }
@@ -138,6 +192,22 @@ def genPropertyChecks(): Unit = {
                 }
             """
         })("\n\n")}
+
+        static class Condition {
+
+            final boolean precondition;
+            final boolean postcondition;
+
+            Condition(boolean precondition, boolean postcondition) {
+                this.precondition = precondition;
+                this.postcondition = postcondition;
+            }
+
+            // ¬(p => q) ≡ ¬(¬p ∨ q) ≡ p ∧ ¬q
+            boolean isFalse() {
+                return precondition && !postcondition;
+            }
+        }
     }
   """
 

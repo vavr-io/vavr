@@ -50,7 +50,7 @@ public interface Arbitrary<T> extends IntFunction<Gen<T>>, Function<Integer, Gen
      * final Gen&lt;BinaryTree&lt;Integer&gt;&gt; treeGen = new ArbitraryTree().apply(10);
      *
      * // stream sum of tree node values to console for 100 arbitrary trees
-     * Stream.of(treeGen).map(Tree::sum).take(100).stdout();
+     * Stream.of(() -> treeGen.apply(RNG.get())).map(Tree::sum).take(100).stdout();
      * </code>
      * </pre>
      *
@@ -84,7 +84,7 @@ public interface Arbitrary<T> extends IntFunction<Gen<T>>, Function<Integer, Gen
         Objects.requireNonNull(mapper, "mapper is null");
         return n -> {
             final Gen<T> generator = apply(n);
-            return () -> mapper.apply(generator.get());
+            return random -> mapper.apply(generator.apply(random));
         };
     }
 
@@ -100,7 +100,7 @@ public interface Arbitrary<T> extends IntFunction<Gen<T>>, Function<Integer, Gen
     default <U, ARBITRARY extends HigherKinded<U, Arbitrary<?>>> Arbitrary<U> flatMap(Function<? super T, ARBITRARY> mapper) {
         return n -> {
             final Gen<T> generator = apply(n);
-            return ((Arbitrary<U>) mapper.apply(generator.get())).apply(n);
+            return random -> ((Arbitrary<U>) mapper.apply(generator.apply(random))).apply(n).apply(random);
         };
     }
 

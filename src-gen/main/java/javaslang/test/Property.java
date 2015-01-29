@@ -13,12 +13,58 @@ import javaslang.*;
 import javaslang.control.*;
 import javaslang.function.*;
 
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Supplier;
+
+@FunctionalInterface
 public interface Property {
 
-    CheckResult check(int size, int tries);
+    /**
+     * A thread-safe, equally distributed random number generator.
+     */
+    Supplier<Random> RNG = ThreadLocalRandom::current;
+
+    /**
+     * Default size hint for generators.
+     */
+    int DEFAULT_SIZE = 100;
+
+    /**
+     * Default tries to check a property.
+     */
+    int DEFAULT_TRIES = 1000;
+
+    CheckResult check(Random randomNumberGenerator, int size, int tries);
+
+    default CheckResult check(int size, int tries) {
+        return check(RNG.get(), size, tries);
+    }
 
     default CheckResult check() {
-        return check(100, 1000);
+        return check(RNG.get(), DEFAULT_SIZE, DEFAULT_TRIES);
+    }
+
+    default Property and(Property property) {
+        return (rng, size, tries) -> {
+            final CheckResult result = check(rng, size, tries);
+            if (result.isSatisfied()) {
+                return property.check(rng, size, tries);
+            } else {
+                return result;
+            }
+        };
+    }
+
+    default Property or(Property property) {
+        return (rng, size, tries) -> {
+            final CheckResult result = check(rng, size, tries);
+            if (result.isSatisfied()) {
+                return result;
+            } else {
+                return property.check(rng, size, tries);
+            }
+        };
     }
 
     static <T1> ForAll1<T1> forAll(Arbitrary<T1> a1) {
@@ -133,108 +179,9 @@ public interface Property {
             this.a1 = a1;
         }
 
-        public <T2> ForAll2<T1, T2> forAll(Arbitrary<T2> a2) {
-            return new ForAll2<>(a1, a2);
-        }
-
-        public <T2, T3> ForAll3<T1, T2, T3> forAll(Arbitrary<T2> a2, Arbitrary<T3> a3) {
-            return new ForAll3<>(a1, a2, a3);
-        }
-
-        public <T2, T3, T4> ForAll4<T1, T2, T3, T4> forAll(Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4) {
-            return new ForAll4<>(a1, a2, a3, a4);
-        }
-
-        public <T2, T3, T4, T5> ForAll5<T1, T2, T3, T4, T5> forAll(Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5) {
-            return new ForAll5<>(a1, a2, a3, a4, a5);
-        }
-
-        public <T2, T3, T4, T5, T6> ForAll6<T1, T2, T3, T4, T5, T6> forAll(Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6) {
-            return new ForAll6<>(a1, a2, a3, a4, a5, a6);
-        }
-
-        public <T2, T3, T4, T5, T6, T7> ForAll7<T1, T2, T3, T4, T5, T6, T7> forAll(Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7) {
-            return new ForAll7<>(a1, a2, a3, a4, a5, a6, a7);
-        }
-
-        public <T2, T3, T4, T5, T6, T7, T8> ForAll8<T1, T2, T3, T4, T5, T6, T7, T8> forAll(Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8) {
-            return new ForAll8<>(a1, a2, a3, a4, a5, a6, a7, a8);
-        }
-
-        public <T2, T3, T4, T5, T6, T7, T8, T9> ForAll9<T1, T2, T3, T4, T5, T6, T7, T8, T9> forAll(Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9) {
-            return new ForAll9<>(a1, a2, a3, a4, a5, a6, a7, a8, a9);
-        }
-
-        public <T2, T3, T4, T5, T6, T7, T8, T9, T10> ForAll10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> forAll(Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10) {
-            return new ForAll10<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10);
-        }
-
-        public <T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> ForAll11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> forAll(Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11) {
-            return new ForAll11<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11);
-        }
-
-        public <T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> ForAll12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> forAll(Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12) {
-            return new ForAll12<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12);
-        }
-
-        public <T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> ForAll13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> forAll(Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13) {
-            return new ForAll13<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13);
-        }
-
-        public <T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> ForAll14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> forAll(Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14) {
-            return new ForAll14<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14);
-        }
-
-        public <T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> ForAll15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> forAll(Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15) {
-            return new ForAll15<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15);
-        }
-
-        public <T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> ForAll16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> forAll(Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16) {
-            return new ForAll16<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16);
-        }
-
-        public <T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> ForAll17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> forAll(Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17) {
-            return new ForAll17<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17);
-        }
-
-        public <T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> ForAll18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> forAll(Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18) {
-            return new ForAll18<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18);
-        }
-
-        public <T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> ForAll19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> forAll(Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19) {
-            return new ForAll19<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19);
-        }
-
-        public <T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> ForAll20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> forAll(Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20) {
-            return new ForAll20<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20);
-        }
-
-        public <T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> ForAll21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> forAll(Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21) {
-            return new ForAll21<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21);
-        }
-
-        public <T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> ForAll22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> forAll(Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22) {
-            return new ForAll22<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22);
-        }
-
-        public <T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> ForAll23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> forAll(Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23) {
-            return new ForAll23<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23);
-        }
-
-        public <T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> ForAll24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> forAll(Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24) {
-            return new ForAll24<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24);
-        }
-
-        public <T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> ForAll25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> forAll(Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25) {
-            return new ForAll25<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25);
-        }
-
-        public <T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> forAll(Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26) {
-            return new ForAll26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26);
-        }
-
-        public Property suchThat(CheckedLambda1<T1, Boolean> predicate) {
-            return new SuchThat1<>(a1, predicate);
+        public Property1<T1> suchThat(CheckedLambda1<T1, Boolean> predicate) {
+            final CheckedLambda1<T1, Condition> proposition = (t1) -> new Condition(true, predicate.apply(t1));
+            return new Property1<>(a1, proposition);
         }
     }
 
@@ -248,104 +195,9 @@ public interface Property {
             this.a2 = a2;
         }
 
-        public <T3> ForAll3<T1, T2, T3> forAll(Arbitrary<T3> a3) {
-            return new ForAll3<>(a1, a2, a3);
-        }
-
-        public <T3, T4> ForAll4<T1, T2, T3, T4> forAll(Arbitrary<T3> a3, Arbitrary<T4> a4) {
-            return new ForAll4<>(a1, a2, a3, a4);
-        }
-
-        public <T3, T4, T5> ForAll5<T1, T2, T3, T4, T5> forAll(Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5) {
-            return new ForAll5<>(a1, a2, a3, a4, a5);
-        }
-
-        public <T3, T4, T5, T6> ForAll6<T1, T2, T3, T4, T5, T6> forAll(Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6) {
-            return new ForAll6<>(a1, a2, a3, a4, a5, a6);
-        }
-
-        public <T3, T4, T5, T6, T7> ForAll7<T1, T2, T3, T4, T5, T6, T7> forAll(Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7) {
-            return new ForAll7<>(a1, a2, a3, a4, a5, a6, a7);
-        }
-
-        public <T3, T4, T5, T6, T7, T8> ForAll8<T1, T2, T3, T4, T5, T6, T7, T8> forAll(Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8) {
-            return new ForAll8<>(a1, a2, a3, a4, a5, a6, a7, a8);
-        }
-
-        public <T3, T4, T5, T6, T7, T8, T9> ForAll9<T1, T2, T3, T4, T5, T6, T7, T8, T9> forAll(Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9) {
-            return new ForAll9<>(a1, a2, a3, a4, a5, a6, a7, a8, a9);
-        }
-
-        public <T3, T4, T5, T6, T7, T8, T9, T10> ForAll10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> forAll(Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10) {
-            return new ForAll10<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10);
-        }
-
-        public <T3, T4, T5, T6, T7, T8, T9, T10, T11> ForAll11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> forAll(Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11) {
-            return new ForAll11<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11);
-        }
-
-        public <T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> ForAll12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> forAll(Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12) {
-            return new ForAll12<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12);
-        }
-
-        public <T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> ForAll13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> forAll(Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13) {
-            return new ForAll13<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13);
-        }
-
-        public <T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> ForAll14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> forAll(Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14) {
-            return new ForAll14<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14);
-        }
-
-        public <T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> ForAll15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> forAll(Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15) {
-            return new ForAll15<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15);
-        }
-
-        public <T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> ForAll16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> forAll(Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16) {
-            return new ForAll16<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16);
-        }
-
-        public <T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> ForAll17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> forAll(Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17) {
-            return new ForAll17<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17);
-        }
-
-        public <T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> ForAll18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> forAll(Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18) {
-            return new ForAll18<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18);
-        }
-
-        public <T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> ForAll19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> forAll(Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19) {
-            return new ForAll19<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19);
-        }
-
-        public <T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> ForAll20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> forAll(Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20) {
-            return new ForAll20<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20);
-        }
-
-        public <T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> ForAll21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> forAll(Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21) {
-            return new ForAll21<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21);
-        }
-
-        public <T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> ForAll22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> forAll(Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22) {
-            return new ForAll22<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22);
-        }
-
-        public <T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> ForAll23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> forAll(Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23) {
-            return new ForAll23<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23);
-        }
-
-        public <T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> ForAll24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> forAll(Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24) {
-            return new ForAll24<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24);
-        }
-
-        public <T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> ForAll25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> forAll(Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25) {
-            return new ForAll25<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25);
-        }
-
-        public <T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> forAll(Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26) {
-            return new ForAll26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26);
-        }
-
-        public Property suchThat(CheckedLambda2<T1, T2, Boolean> predicate) {
-            return new SuchThat2<>(a1, a2, predicate);
+        public Property2<T1, T2> suchThat(CheckedLambda2<T1, T2, Boolean> predicate) {
+            final CheckedLambda2<T1, T2, Condition> proposition = (t1, t2) -> new Condition(true, predicate.apply(t1, t2));
+            return new Property2<>(a1, a2, proposition);
         }
     }
 
@@ -361,100 +213,9 @@ public interface Property {
             this.a3 = a3;
         }
 
-        public <T4> ForAll4<T1, T2, T3, T4> forAll(Arbitrary<T4> a4) {
-            return new ForAll4<>(a1, a2, a3, a4);
-        }
-
-        public <T4, T5> ForAll5<T1, T2, T3, T4, T5> forAll(Arbitrary<T4> a4, Arbitrary<T5> a5) {
-            return new ForAll5<>(a1, a2, a3, a4, a5);
-        }
-
-        public <T4, T5, T6> ForAll6<T1, T2, T3, T4, T5, T6> forAll(Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6) {
-            return new ForAll6<>(a1, a2, a3, a4, a5, a6);
-        }
-
-        public <T4, T5, T6, T7> ForAll7<T1, T2, T3, T4, T5, T6, T7> forAll(Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7) {
-            return new ForAll7<>(a1, a2, a3, a4, a5, a6, a7);
-        }
-
-        public <T4, T5, T6, T7, T8> ForAll8<T1, T2, T3, T4, T5, T6, T7, T8> forAll(Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8) {
-            return new ForAll8<>(a1, a2, a3, a4, a5, a6, a7, a8);
-        }
-
-        public <T4, T5, T6, T7, T8, T9> ForAll9<T1, T2, T3, T4, T5, T6, T7, T8, T9> forAll(Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9) {
-            return new ForAll9<>(a1, a2, a3, a4, a5, a6, a7, a8, a9);
-        }
-
-        public <T4, T5, T6, T7, T8, T9, T10> ForAll10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> forAll(Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10) {
-            return new ForAll10<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10);
-        }
-
-        public <T4, T5, T6, T7, T8, T9, T10, T11> ForAll11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> forAll(Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11) {
-            return new ForAll11<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11);
-        }
-
-        public <T4, T5, T6, T7, T8, T9, T10, T11, T12> ForAll12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> forAll(Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12) {
-            return new ForAll12<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12);
-        }
-
-        public <T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> ForAll13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> forAll(Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13) {
-            return new ForAll13<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13);
-        }
-
-        public <T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> ForAll14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> forAll(Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14) {
-            return new ForAll14<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14);
-        }
-
-        public <T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> ForAll15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> forAll(Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15) {
-            return new ForAll15<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15);
-        }
-
-        public <T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> ForAll16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> forAll(Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16) {
-            return new ForAll16<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16);
-        }
-
-        public <T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> ForAll17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> forAll(Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17) {
-            return new ForAll17<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17);
-        }
-
-        public <T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> ForAll18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> forAll(Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18) {
-            return new ForAll18<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18);
-        }
-
-        public <T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> ForAll19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> forAll(Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19) {
-            return new ForAll19<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19);
-        }
-
-        public <T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> ForAll20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> forAll(Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20) {
-            return new ForAll20<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20);
-        }
-
-        public <T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> ForAll21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> forAll(Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21) {
-            return new ForAll21<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21);
-        }
-
-        public <T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> ForAll22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> forAll(Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22) {
-            return new ForAll22<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22);
-        }
-
-        public <T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> ForAll23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> forAll(Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23) {
-            return new ForAll23<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23);
-        }
-
-        public <T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> ForAll24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> forAll(Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24) {
-            return new ForAll24<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24);
-        }
-
-        public <T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> ForAll25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> forAll(Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25) {
-            return new ForAll25<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25);
-        }
-
-        public <T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> forAll(Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26) {
-            return new ForAll26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26);
-        }
-
-        public Property suchThat(CheckedLambda3<T1, T2, T3, Boolean> predicate) {
-            return new SuchThat3<>(a1, a2, a3, predicate);
+        public Property3<T1, T2, T3> suchThat(CheckedLambda3<T1, T2, T3, Boolean> predicate) {
+            final CheckedLambda3<T1, T2, T3, Condition> proposition = (t1, t2, t3) -> new Condition(true, predicate.apply(t1, t2, t3));
+            return new Property3<>(a1, a2, a3, proposition);
         }
     }
 
@@ -472,96 +233,9 @@ public interface Property {
             this.a4 = a4;
         }
 
-        public <T5> ForAll5<T1, T2, T3, T4, T5> forAll(Arbitrary<T5> a5) {
-            return new ForAll5<>(a1, a2, a3, a4, a5);
-        }
-
-        public <T5, T6> ForAll6<T1, T2, T3, T4, T5, T6> forAll(Arbitrary<T5> a5, Arbitrary<T6> a6) {
-            return new ForAll6<>(a1, a2, a3, a4, a5, a6);
-        }
-
-        public <T5, T6, T7> ForAll7<T1, T2, T3, T4, T5, T6, T7> forAll(Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7) {
-            return new ForAll7<>(a1, a2, a3, a4, a5, a6, a7);
-        }
-
-        public <T5, T6, T7, T8> ForAll8<T1, T2, T3, T4, T5, T6, T7, T8> forAll(Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8) {
-            return new ForAll8<>(a1, a2, a3, a4, a5, a6, a7, a8);
-        }
-
-        public <T5, T6, T7, T8, T9> ForAll9<T1, T2, T3, T4, T5, T6, T7, T8, T9> forAll(Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9) {
-            return new ForAll9<>(a1, a2, a3, a4, a5, a6, a7, a8, a9);
-        }
-
-        public <T5, T6, T7, T8, T9, T10> ForAll10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> forAll(Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10) {
-            return new ForAll10<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10);
-        }
-
-        public <T5, T6, T7, T8, T9, T10, T11> ForAll11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> forAll(Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11) {
-            return new ForAll11<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11);
-        }
-
-        public <T5, T6, T7, T8, T9, T10, T11, T12> ForAll12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> forAll(Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12) {
-            return new ForAll12<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12);
-        }
-
-        public <T5, T6, T7, T8, T9, T10, T11, T12, T13> ForAll13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> forAll(Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13) {
-            return new ForAll13<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13);
-        }
-
-        public <T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> ForAll14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> forAll(Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14) {
-            return new ForAll14<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14);
-        }
-
-        public <T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> ForAll15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> forAll(Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15) {
-            return new ForAll15<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15);
-        }
-
-        public <T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> ForAll16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> forAll(Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16) {
-            return new ForAll16<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16);
-        }
-
-        public <T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> ForAll17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> forAll(Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17) {
-            return new ForAll17<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17);
-        }
-
-        public <T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> ForAll18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> forAll(Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18) {
-            return new ForAll18<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18);
-        }
-
-        public <T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> ForAll19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> forAll(Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19) {
-            return new ForAll19<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19);
-        }
-
-        public <T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> ForAll20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> forAll(Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20) {
-            return new ForAll20<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20);
-        }
-
-        public <T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> ForAll21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> forAll(Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21) {
-            return new ForAll21<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21);
-        }
-
-        public <T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> ForAll22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> forAll(Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22) {
-            return new ForAll22<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22);
-        }
-
-        public <T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> ForAll23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> forAll(Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23) {
-            return new ForAll23<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23);
-        }
-
-        public <T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> ForAll24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> forAll(Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24) {
-            return new ForAll24<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24);
-        }
-
-        public <T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> ForAll25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> forAll(Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25) {
-            return new ForAll25<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25);
-        }
-
-        public <T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> forAll(Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26) {
-            return new ForAll26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26);
-        }
-
-        public Property suchThat(CheckedLambda4<T1, T2, T3, T4, Boolean> predicate) {
-            return new SuchThat4<>(a1, a2, a3, a4, predicate);
+        public Property4<T1, T2, T3, T4> suchThat(CheckedLambda4<T1, T2, T3, T4, Boolean> predicate) {
+            final CheckedLambda4<T1, T2, T3, T4, Condition> proposition = (t1, t2, t3, t4) -> new Condition(true, predicate.apply(t1, t2, t3, t4));
+            return new Property4<>(a1, a2, a3, a4, proposition);
         }
     }
 
@@ -581,92 +255,9 @@ public interface Property {
             this.a5 = a5;
         }
 
-        public <T6> ForAll6<T1, T2, T3, T4, T5, T6> forAll(Arbitrary<T6> a6) {
-            return new ForAll6<>(a1, a2, a3, a4, a5, a6);
-        }
-
-        public <T6, T7> ForAll7<T1, T2, T3, T4, T5, T6, T7> forAll(Arbitrary<T6> a6, Arbitrary<T7> a7) {
-            return new ForAll7<>(a1, a2, a3, a4, a5, a6, a7);
-        }
-
-        public <T6, T7, T8> ForAll8<T1, T2, T3, T4, T5, T6, T7, T8> forAll(Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8) {
-            return new ForAll8<>(a1, a2, a3, a4, a5, a6, a7, a8);
-        }
-
-        public <T6, T7, T8, T9> ForAll9<T1, T2, T3, T4, T5, T6, T7, T8, T9> forAll(Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9) {
-            return new ForAll9<>(a1, a2, a3, a4, a5, a6, a7, a8, a9);
-        }
-
-        public <T6, T7, T8, T9, T10> ForAll10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> forAll(Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10) {
-            return new ForAll10<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10);
-        }
-
-        public <T6, T7, T8, T9, T10, T11> ForAll11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> forAll(Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11) {
-            return new ForAll11<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11);
-        }
-
-        public <T6, T7, T8, T9, T10, T11, T12> ForAll12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> forAll(Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12) {
-            return new ForAll12<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12);
-        }
-
-        public <T6, T7, T8, T9, T10, T11, T12, T13> ForAll13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> forAll(Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13) {
-            return new ForAll13<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13);
-        }
-
-        public <T6, T7, T8, T9, T10, T11, T12, T13, T14> ForAll14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> forAll(Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14) {
-            return new ForAll14<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14);
-        }
-
-        public <T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> ForAll15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> forAll(Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15) {
-            return new ForAll15<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15);
-        }
-
-        public <T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> ForAll16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> forAll(Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16) {
-            return new ForAll16<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16);
-        }
-
-        public <T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> ForAll17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> forAll(Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17) {
-            return new ForAll17<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17);
-        }
-
-        public <T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> ForAll18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> forAll(Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18) {
-            return new ForAll18<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18);
-        }
-
-        public <T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> ForAll19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> forAll(Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19) {
-            return new ForAll19<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19);
-        }
-
-        public <T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> ForAll20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> forAll(Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20) {
-            return new ForAll20<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20);
-        }
-
-        public <T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> ForAll21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> forAll(Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21) {
-            return new ForAll21<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21);
-        }
-
-        public <T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> ForAll22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> forAll(Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22) {
-            return new ForAll22<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22);
-        }
-
-        public <T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> ForAll23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> forAll(Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23) {
-            return new ForAll23<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23);
-        }
-
-        public <T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> ForAll24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> forAll(Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24) {
-            return new ForAll24<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24);
-        }
-
-        public <T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> ForAll25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> forAll(Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25) {
-            return new ForAll25<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25);
-        }
-
-        public <T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> forAll(Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26) {
-            return new ForAll26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26);
-        }
-
-        public Property suchThat(CheckedLambda5<T1, T2, T3, T4, T5, Boolean> predicate) {
-            return new SuchThat5<>(a1, a2, a3, a4, a5, predicate);
+        public Property5<T1, T2, T3, T4, T5> suchThat(CheckedLambda5<T1, T2, T3, T4, T5, Boolean> predicate) {
+            final CheckedLambda5<T1, T2, T3, T4, T5, Condition> proposition = (t1, t2, t3, t4, t5) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5));
+            return new Property5<>(a1, a2, a3, a4, a5, proposition);
         }
     }
 
@@ -688,88 +279,9 @@ public interface Property {
             this.a6 = a6;
         }
 
-        public <T7> ForAll7<T1, T2, T3, T4, T5, T6, T7> forAll(Arbitrary<T7> a7) {
-            return new ForAll7<>(a1, a2, a3, a4, a5, a6, a7);
-        }
-
-        public <T7, T8> ForAll8<T1, T2, T3, T4, T5, T6, T7, T8> forAll(Arbitrary<T7> a7, Arbitrary<T8> a8) {
-            return new ForAll8<>(a1, a2, a3, a4, a5, a6, a7, a8);
-        }
-
-        public <T7, T8, T9> ForAll9<T1, T2, T3, T4, T5, T6, T7, T8, T9> forAll(Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9) {
-            return new ForAll9<>(a1, a2, a3, a4, a5, a6, a7, a8, a9);
-        }
-
-        public <T7, T8, T9, T10> ForAll10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> forAll(Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10) {
-            return new ForAll10<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10);
-        }
-
-        public <T7, T8, T9, T10, T11> ForAll11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> forAll(Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11) {
-            return new ForAll11<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11);
-        }
-
-        public <T7, T8, T9, T10, T11, T12> ForAll12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> forAll(Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12) {
-            return new ForAll12<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12);
-        }
-
-        public <T7, T8, T9, T10, T11, T12, T13> ForAll13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> forAll(Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13) {
-            return new ForAll13<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13);
-        }
-
-        public <T7, T8, T9, T10, T11, T12, T13, T14> ForAll14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> forAll(Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14) {
-            return new ForAll14<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14);
-        }
-
-        public <T7, T8, T9, T10, T11, T12, T13, T14, T15> ForAll15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> forAll(Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15) {
-            return new ForAll15<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15);
-        }
-
-        public <T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> ForAll16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> forAll(Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16) {
-            return new ForAll16<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16);
-        }
-
-        public <T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> ForAll17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> forAll(Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17) {
-            return new ForAll17<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17);
-        }
-
-        public <T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> ForAll18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> forAll(Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18) {
-            return new ForAll18<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18);
-        }
-
-        public <T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> ForAll19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> forAll(Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19) {
-            return new ForAll19<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19);
-        }
-
-        public <T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> ForAll20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> forAll(Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20) {
-            return new ForAll20<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20);
-        }
-
-        public <T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> ForAll21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> forAll(Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21) {
-            return new ForAll21<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21);
-        }
-
-        public <T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> ForAll22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> forAll(Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22) {
-            return new ForAll22<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22);
-        }
-
-        public <T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> ForAll23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> forAll(Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23) {
-            return new ForAll23<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23);
-        }
-
-        public <T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> ForAll24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> forAll(Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24) {
-            return new ForAll24<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24);
-        }
-
-        public <T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> ForAll25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> forAll(Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25) {
-            return new ForAll25<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25);
-        }
-
-        public <T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> forAll(Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26) {
-            return new ForAll26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26);
-        }
-
-        public Property suchThat(CheckedLambda6<T1, T2, T3, T4, T5, T6, Boolean> predicate) {
-            return new SuchThat6<>(a1, a2, a3, a4, a5, a6, predicate);
+        public Property6<T1, T2, T3, T4, T5, T6> suchThat(CheckedLambda6<T1, T2, T3, T4, T5, T6, Boolean> predicate) {
+            final CheckedLambda6<T1, T2, T3, T4, T5, T6, Condition> proposition = (t1, t2, t3, t4, t5, t6) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6));
+            return new Property6<>(a1, a2, a3, a4, a5, a6, proposition);
         }
     }
 
@@ -793,84 +305,9 @@ public interface Property {
             this.a7 = a7;
         }
 
-        public <T8> ForAll8<T1, T2, T3, T4, T5, T6, T7, T8> forAll(Arbitrary<T8> a8) {
-            return new ForAll8<>(a1, a2, a3, a4, a5, a6, a7, a8);
-        }
-
-        public <T8, T9> ForAll9<T1, T2, T3, T4, T5, T6, T7, T8, T9> forAll(Arbitrary<T8> a8, Arbitrary<T9> a9) {
-            return new ForAll9<>(a1, a2, a3, a4, a5, a6, a7, a8, a9);
-        }
-
-        public <T8, T9, T10> ForAll10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> forAll(Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10) {
-            return new ForAll10<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10);
-        }
-
-        public <T8, T9, T10, T11> ForAll11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> forAll(Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11) {
-            return new ForAll11<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11);
-        }
-
-        public <T8, T9, T10, T11, T12> ForAll12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> forAll(Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12) {
-            return new ForAll12<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12);
-        }
-
-        public <T8, T9, T10, T11, T12, T13> ForAll13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> forAll(Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13) {
-            return new ForAll13<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13);
-        }
-
-        public <T8, T9, T10, T11, T12, T13, T14> ForAll14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> forAll(Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14) {
-            return new ForAll14<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14);
-        }
-
-        public <T8, T9, T10, T11, T12, T13, T14, T15> ForAll15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> forAll(Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15) {
-            return new ForAll15<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15);
-        }
-
-        public <T8, T9, T10, T11, T12, T13, T14, T15, T16> ForAll16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> forAll(Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16) {
-            return new ForAll16<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16);
-        }
-
-        public <T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> ForAll17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> forAll(Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17) {
-            return new ForAll17<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17);
-        }
-
-        public <T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> ForAll18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> forAll(Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18) {
-            return new ForAll18<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18);
-        }
-
-        public <T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> ForAll19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> forAll(Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19) {
-            return new ForAll19<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19);
-        }
-
-        public <T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> ForAll20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> forAll(Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20) {
-            return new ForAll20<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20);
-        }
-
-        public <T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> ForAll21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> forAll(Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21) {
-            return new ForAll21<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21);
-        }
-
-        public <T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> ForAll22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> forAll(Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22) {
-            return new ForAll22<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22);
-        }
-
-        public <T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> ForAll23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> forAll(Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23) {
-            return new ForAll23<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23);
-        }
-
-        public <T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> ForAll24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> forAll(Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24) {
-            return new ForAll24<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24);
-        }
-
-        public <T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> ForAll25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> forAll(Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25) {
-            return new ForAll25<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25);
-        }
-
-        public <T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> forAll(Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26) {
-            return new ForAll26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26);
-        }
-
-        public Property suchThat(CheckedLambda7<T1, T2, T3, T4, T5, T6, T7, Boolean> predicate) {
-            return new SuchThat7<>(a1, a2, a3, a4, a5, a6, a7, predicate);
+        public Property7<T1, T2, T3, T4, T5, T6, T7> suchThat(CheckedLambda7<T1, T2, T3, T4, T5, T6, T7, Boolean> predicate) {
+            final CheckedLambda7<T1, T2, T3, T4, T5, T6, T7, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7));
+            return new Property7<>(a1, a2, a3, a4, a5, a6, a7, proposition);
         }
     }
 
@@ -896,80 +333,9 @@ public interface Property {
             this.a8 = a8;
         }
 
-        public <T9> ForAll9<T1, T2, T3, T4, T5, T6, T7, T8, T9> forAll(Arbitrary<T9> a9) {
-            return new ForAll9<>(a1, a2, a3, a4, a5, a6, a7, a8, a9);
-        }
-
-        public <T9, T10> ForAll10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> forAll(Arbitrary<T9> a9, Arbitrary<T10> a10) {
-            return new ForAll10<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10);
-        }
-
-        public <T9, T10, T11> ForAll11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> forAll(Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11) {
-            return new ForAll11<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11);
-        }
-
-        public <T9, T10, T11, T12> ForAll12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> forAll(Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12) {
-            return new ForAll12<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12);
-        }
-
-        public <T9, T10, T11, T12, T13> ForAll13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> forAll(Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13) {
-            return new ForAll13<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13);
-        }
-
-        public <T9, T10, T11, T12, T13, T14> ForAll14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> forAll(Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14) {
-            return new ForAll14<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14);
-        }
-
-        public <T9, T10, T11, T12, T13, T14, T15> ForAll15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> forAll(Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15) {
-            return new ForAll15<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15);
-        }
-
-        public <T9, T10, T11, T12, T13, T14, T15, T16> ForAll16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> forAll(Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16) {
-            return new ForAll16<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16);
-        }
-
-        public <T9, T10, T11, T12, T13, T14, T15, T16, T17> ForAll17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> forAll(Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17) {
-            return new ForAll17<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17);
-        }
-
-        public <T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> ForAll18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> forAll(Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18) {
-            return new ForAll18<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18);
-        }
-
-        public <T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> ForAll19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> forAll(Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19) {
-            return new ForAll19<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19);
-        }
-
-        public <T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> ForAll20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> forAll(Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20) {
-            return new ForAll20<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20);
-        }
-
-        public <T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> ForAll21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> forAll(Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21) {
-            return new ForAll21<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21);
-        }
-
-        public <T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> ForAll22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> forAll(Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22) {
-            return new ForAll22<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22);
-        }
-
-        public <T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> ForAll23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> forAll(Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23) {
-            return new ForAll23<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23);
-        }
-
-        public <T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> ForAll24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> forAll(Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24) {
-            return new ForAll24<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24);
-        }
-
-        public <T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> ForAll25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> forAll(Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25) {
-            return new ForAll25<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25);
-        }
-
-        public <T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> forAll(Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26) {
-            return new ForAll26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26);
-        }
-
-        public Property suchThat(CheckedLambda8<T1, T2, T3, T4, T5, T6, T7, T8, Boolean> predicate) {
-            return new SuchThat8<>(a1, a2, a3, a4, a5, a6, a7, a8, predicate);
+        public Property8<T1, T2, T3, T4, T5, T6, T7, T8> suchThat(CheckedLambda8<T1, T2, T3, T4, T5, T6, T7, T8, Boolean> predicate) {
+            final CheckedLambda8<T1, T2, T3, T4, T5, T6, T7, T8, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8));
+            return new Property8<>(a1, a2, a3, a4, a5, a6, a7, a8, proposition);
         }
     }
 
@@ -997,76 +363,9 @@ public interface Property {
             this.a9 = a9;
         }
 
-        public <T10> ForAll10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> forAll(Arbitrary<T10> a10) {
-            return new ForAll10<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10);
-        }
-
-        public <T10, T11> ForAll11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> forAll(Arbitrary<T10> a10, Arbitrary<T11> a11) {
-            return new ForAll11<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11);
-        }
-
-        public <T10, T11, T12> ForAll12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> forAll(Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12) {
-            return new ForAll12<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12);
-        }
-
-        public <T10, T11, T12, T13> ForAll13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> forAll(Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13) {
-            return new ForAll13<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13);
-        }
-
-        public <T10, T11, T12, T13, T14> ForAll14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> forAll(Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14) {
-            return new ForAll14<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14);
-        }
-
-        public <T10, T11, T12, T13, T14, T15> ForAll15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> forAll(Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15) {
-            return new ForAll15<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15);
-        }
-
-        public <T10, T11, T12, T13, T14, T15, T16> ForAll16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> forAll(Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16) {
-            return new ForAll16<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16);
-        }
-
-        public <T10, T11, T12, T13, T14, T15, T16, T17> ForAll17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> forAll(Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17) {
-            return new ForAll17<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17);
-        }
-
-        public <T10, T11, T12, T13, T14, T15, T16, T17, T18> ForAll18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> forAll(Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18) {
-            return new ForAll18<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18);
-        }
-
-        public <T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> ForAll19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> forAll(Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19) {
-            return new ForAll19<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19);
-        }
-
-        public <T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> ForAll20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> forAll(Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20) {
-            return new ForAll20<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20);
-        }
-
-        public <T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> ForAll21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> forAll(Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21) {
-            return new ForAll21<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21);
-        }
-
-        public <T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> ForAll22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> forAll(Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22) {
-            return new ForAll22<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22);
-        }
-
-        public <T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> ForAll23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> forAll(Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23) {
-            return new ForAll23<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23);
-        }
-
-        public <T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> ForAll24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> forAll(Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24) {
-            return new ForAll24<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24);
-        }
-
-        public <T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> ForAll25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> forAll(Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25) {
-            return new ForAll25<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25);
-        }
-
-        public <T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> forAll(Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26) {
-            return new ForAll26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26);
-        }
-
-        public Property suchThat(CheckedLambda9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Boolean> predicate) {
-            return new SuchThat9<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, predicate);
+        public Property9<T1, T2, T3, T4, T5, T6, T7, T8, T9> suchThat(CheckedLambda9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Boolean> predicate) {
+            final CheckedLambda9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9));
+            return new Property9<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, proposition);
         }
     }
 
@@ -1096,72 +395,9 @@ public interface Property {
             this.a10 = a10;
         }
 
-        public <T11> ForAll11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> forAll(Arbitrary<T11> a11) {
-            return new ForAll11<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11);
-        }
-
-        public <T11, T12> ForAll12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> forAll(Arbitrary<T11> a11, Arbitrary<T12> a12) {
-            return new ForAll12<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12);
-        }
-
-        public <T11, T12, T13> ForAll13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> forAll(Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13) {
-            return new ForAll13<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13);
-        }
-
-        public <T11, T12, T13, T14> ForAll14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> forAll(Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14) {
-            return new ForAll14<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14);
-        }
-
-        public <T11, T12, T13, T14, T15> ForAll15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> forAll(Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15) {
-            return new ForAll15<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15);
-        }
-
-        public <T11, T12, T13, T14, T15, T16> ForAll16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> forAll(Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16) {
-            return new ForAll16<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16);
-        }
-
-        public <T11, T12, T13, T14, T15, T16, T17> ForAll17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> forAll(Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17) {
-            return new ForAll17<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17);
-        }
-
-        public <T11, T12, T13, T14, T15, T16, T17, T18> ForAll18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> forAll(Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18) {
-            return new ForAll18<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18);
-        }
-
-        public <T11, T12, T13, T14, T15, T16, T17, T18, T19> ForAll19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> forAll(Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19) {
-            return new ForAll19<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19);
-        }
-
-        public <T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> ForAll20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> forAll(Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20) {
-            return new ForAll20<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20);
-        }
-
-        public <T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> ForAll21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> forAll(Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21) {
-            return new ForAll21<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21);
-        }
-
-        public <T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> ForAll22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> forAll(Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22) {
-            return new ForAll22<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22);
-        }
-
-        public <T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> ForAll23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> forAll(Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23) {
-            return new ForAll23<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23);
-        }
-
-        public <T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> ForAll24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> forAll(Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24) {
-            return new ForAll24<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24);
-        }
-
-        public <T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> ForAll25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> forAll(Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25) {
-            return new ForAll25<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25);
-        }
-
-        public <T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> forAll(Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26) {
-            return new ForAll26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26);
-        }
-
-        public Property suchThat(CheckedLambda10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Boolean> predicate) {
-            return new SuchThat10<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, predicate);
+        public Property10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> suchThat(CheckedLambda10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Boolean> predicate) {
+            final CheckedLambda10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10));
+            return new Property10<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, proposition);
         }
     }
 
@@ -1193,68 +429,9 @@ public interface Property {
             this.a11 = a11;
         }
 
-        public <T12> ForAll12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> forAll(Arbitrary<T12> a12) {
-            return new ForAll12<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12);
-        }
-
-        public <T12, T13> ForAll13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> forAll(Arbitrary<T12> a12, Arbitrary<T13> a13) {
-            return new ForAll13<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13);
-        }
-
-        public <T12, T13, T14> ForAll14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> forAll(Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14) {
-            return new ForAll14<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14);
-        }
-
-        public <T12, T13, T14, T15> ForAll15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> forAll(Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15) {
-            return new ForAll15<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15);
-        }
-
-        public <T12, T13, T14, T15, T16> ForAll16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> forAll(Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16) {
-            return new ForAll16<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16);
-        }
-
-        public <T12, T13, T14, T15, T16, T17> ForAll17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> forAll(Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17) {
-            return new ForAll17<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17);
-        }
-
-        public <T12, T13, T14, T15, T16, T17, T18> ForAll18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> forAll(Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18) {
-            return new ForAll18<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18);
-        }
-
-        public <T12, T13, T14, T15, T16, T17, T18, T19> ForAll19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> forAll(Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19) {
-            return new ForAll19<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19);
-        }
-
-        public <T12, T13, T14, T15, T16, T17, T18, T19, T20> ForAll20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> forAll(Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20) {
-            return new ForAll20<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20);
-        }
-
-        public <T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> ForAll21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> forAll(Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21) {
-            return new ForAll21<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21);
-        }
-
-        public <T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> ForAll22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> forAll(Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22) {
-            return new ForAll22<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22);
-        }
-
-        public <T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> ForAll23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> forAll(Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23) {
-            return new ForAll23<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23);
-        }
-
-        public <T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> ForAll24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> forAll(Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24) {
-            return new ForAll24<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24);
-        }
-
-        public <T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> ForAll25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> forAll(Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25) {
-            return new ForAll25<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25);
-        }
-
-        public <T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> forAll(Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26) {
-            return new ForAll26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26);
-        }
-
-        public Property suchThat(CheckedLambda11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Boolean> predicate) {
-            return new SuchThat11<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, predicate);
+        public Property11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> suchThat(CheckedLambda11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Boolean> predicate) {
+            final CheckedLambda11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11));
+            return new Property11<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, proposition);
         }
     }
 
@@ -1288,64 +465,9 @@ public interface Property {
             this.a12 = a12;
         }
 
-        public <T13> ForAll13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> forAll(Arbitrary<T13> a13) {
-            return new ForAll13<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13);
-        }
-
-        public <T13, T14> ForAll14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> forAll(Arbitrary<T13> a13, Arbitrary<T14> a14) {
-            return new ForAll14<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14);
-        }
-
-        public <T13, T14, T15> ForAll15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> forAll(Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15) {
-            return new ForAll15<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15);
-        }
-
-        public <T13, T14, T15, T16> ForAll16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> forAll(Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16) {
-            return new ForAll16<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16);
-        }
-
-        public <T13, T14, T15, T16, T17> ForAll17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> forAll(Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17) {
-            return new ForAll17<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17);
-        }
-
-        public <T13, T14, T15, T16, T17, T18> ForAll18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> forAll(Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18) {
-            return new ForAll18<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18);
-        }
-
-        public <T13, T14, T15, T16, T17, T18, T19> ForAll19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> forAll(Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19) {
-            return new ForAll19<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19);
-        }
-
-        public <T13, T14, T15, T16, T17, T18, T19, T20> ForAll20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> forAll(Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20) {
-            return new ForAll20<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20);
-        }
-
-        public <T13, T14, T15, T16, T17, T18, T19, T20, T21> ForAll21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> forAll(Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21) {
-            return new ForAll21<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21);
-        }
-
-        public <T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> ForAll22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> forAll(Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22) {
-            return new ForAll22<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22);
-        }
-
-        public <T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> ForAll23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> forAll(Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23) {
-            return new ForAll23<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23);
-        }
-
-        public <T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> ForAll24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> forAll(Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24) {
-            return new ForAll24<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24);
-        }
-
-        public <T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> ForAll25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> forAll(Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25) {
-            return new ForAll25<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25);
-        }
-
-        public <T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> forAll(Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26) {
-            return new ForAll26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26);
-        }
-
-        public Property suchThat(CheckedLambda12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Boolean> predicate) {
-            return new SuchThat12<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, predicate);
+        public Property12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> suchThat(CheckedLambda12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Boolean> predicate) {
+            final CheckedLambda12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12));
+            return new Property12<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, proposition);
         }
     }
 
@@ -1381,60 +503,9 @@ public interface Property {
             this.a13 = a13;
         }
 
-        public <T14> ForAll14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> forAll(Arbitrary<T14> a14) {
-            return new ForAll14<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14);
-        }
-
-        public <T14, T15> ForAll15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> forAll(Arbitrary<T14> a14, Arbitrary<T15> a15) {
-            return new ForAll15<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15);
-        }
-
-        public <T14, T15, T16> ForAll16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> forAll(Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16) {
-            return new ForAll16<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16);
-        }
-
-        public <T14, T15, T16, T17> ForAll17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> forAll(Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17) {
-            return new ForAll17<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17);
-        }
-
-        public <T14, T15, T16, T17, T18> ForAll18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> forAll(Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18) {
-            return new ForAll18<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18);
-        }
-
-        public <T14, T15, T16, T17, T18, T19> ForAll19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> forAll(Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19) {
-            return new ForAll19<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19);
-        }
-
-        public <T14, T15, T16, T17, T18, T19, T20> ForAll20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> forAll(Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20) {
-            return new ForAll20<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20);
-        }
-
-        public <T14, T15, T16, T17, T18, T19, T20, T21> ForAll21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> forAll(Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21) {
-            return new ForAll21<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21);
-        }
-
-        public <T14, T15, T16, T17, T18, T19, T20, T21, T22> ForAll22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> forAll(Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22) {
-            return new ForAll22<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22);
-        }
-
-        public <T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> ForAll23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> forAll(Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23) {
-            return new ForAll23<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23);
-        }
-
-        public <T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> ForAll24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> forAll(Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24) {
-            return new ForAll24<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24);
-        }
-
-        public <T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> ForAll25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> forAll(Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25) {
-            return new ForAll25<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25);
-        }
-
-        public <T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> forAll(Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26) {
-            return new ForAll26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26);
-        }
-
-        public Property suchThat(CheckedLambda13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Boolean> predicate) {
-            return new SuchThat13<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, predicate);
+        public Property13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> suchThat(CheckedLambda13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Boolean> predicate) {
+            final CheckedLambda13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13));
+            return new Property13<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, proposition);
         }
     }
 
@@ -1472,56 +543,9 @@ public interface Property {
             this.a14 = a14;
         }
 
-        public <T15> ForAll15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> forAll(Arbitrary<T15> a15) {
-            return new ForAll15<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15);
-        }
-
-        public <T15, T16> ForAll16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> forAll(Arbitrary<T15> a15, Arbitrary<T16> a16) {
-            return new ForAll16<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16);
-        }
-
-        public <T15, T16, T17> ForAll17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> forAll(Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17) {
-            return new ForAll17<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17);
-        }
-
-        public <T15, T16, T17, T18> ForAll18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> forAll(Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18) {
-            return new ForAll18<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18);
-        }
-
-        public <T15, T16, T17, T18, T19> ForAll19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> forAll(Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19) {
-            return new ForAll19<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19);
-        }
-
-        public <T15, T16, T17, T18, T19, T20> ForAll20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> forAll(Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20) {
-            return new ForAll20<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20);
-        }
-
-        public <T15, T16, T17, T18, T19, T20, T21> ForAll21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> forAll(Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21) {
-            return new ForAll21<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21);
-        }
-
-        public <T15, T16, T17, T18, T19, T20, T21, T22> ForAll22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> forAll(Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22) {
-            return new ForAll22<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22);
-        }
-
-        public <T15, T16, T17, T18, T19, T20, T21, T22, T23> ForAll23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> forAll(Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23) {
-            return new ForAll23<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23);
-        }
-
-        public <T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> ForAll24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> forAll(Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24) {
-            return new ForAll24<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24);
-        }
-
-        public <T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> ForAll25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> forAll(Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25) {
-            return new ForAll25<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25);
-        }
-
-        public <T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> forAll(Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26) {
-            return new ForAll26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26);
-        }
-
-        public Property suchThat(CheckedLambda14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Boolean> predicate) {
-            return new SuchThat14<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, predicate);
+        public Property14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> suchThat(CheckedLambda14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Boolean> predicate) {
+            final CheckedLambda14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14));
+            return new Property14<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, proposition);
         }
     }
 
@@ -1561,52 +585,9 @@ public interface Property {
             this.a15 = a15;
         }
 
-        public <T16> ForAll16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> forAll(Arbitrary<T16> a16) {
-            return new ForAll16<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16);
-        }
-
-        public <T16, T17> ForAll17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> forAll(Arbitrary<T16> a16, Arbitrary<T17> a17) {
-            return new ForAll17<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17);
-        }
-
-        public <T16, T17, T18> ForAll18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> forAll(Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18) {
-            return new ForAll18<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18);
-        }
-
-        public <T16, T17, T18, T19> ForAll19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> forAll(Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19) {
-            return new ForAll19<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19);
-        }
-
-        public <T16, T17, T18, T19, T20> ForAll20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> forAll(Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20) {
-            return new ForAll20<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20);
-        }
-
-        public <T16, T17, T18, T19, T20, T21> ForAll21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> forAll(Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21) {
-            return new ForAll21<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21);
-        }
-
-        public <T16, T17, T18, T19, T20, T21, T22> ForAll22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> forAll(Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22) {
-            return new ForAll22<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22);
-        }
-
-        public <T16, T17, T18, T19, T20, T21, T22, T23> ForAll23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> forAll(Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23) {
-            return new ForAll23<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23);
-        }
-
-        public <T16, T17, T18, T19, T20, T21, T22, T23, T24> ForAll24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> forAll(Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24) {
-            return new ForAll24<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24);
-        }
-
-        public <T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> ForAll25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> forAll(Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25) {
-            return new ForAll25<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25);
-        }
-
-        public <T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> forAll(Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26) {
-            return new ForAll26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26);
-        }
-
-        public Property suchThat(CheckedLambda15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Boolean> predicate) {
-            return new SuchThat15<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, predicate);
+        public Property15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> suchThat(CheckedLambda15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Boolean> predicate) {
+            final CheckedLambda15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15));
+            return new Property15<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, proposition);
         }
     }
 
@@ -1648,48 +629,9 @@ public interface Property {
             this.a16 = a16;
         }
 
-        public <T17> ForAll17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> forAll(Arbitrary<T17> a17) {
-            return new ForAll17<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17);
-        }
-
-        public <T17, T18> ForAll18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> forAll(Arbitrary<T17> a17, Arbitrary<T18> a18) {
-            return new ForAll18<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18);
-        }
-
-        public <T17, T18, T19> ForAll19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> forAll(Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19) {
-            return new ForAll19<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19);
-        }
-
-        public <T17, T18, T19, T20> ForAll20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> forAll(Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20) {
-            return new ForAll20<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20);
-        }
-
-        public <T17, T18, T19, T20, T21> ForAll21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> forAll(Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21) {
-            return new ForAll21<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21);
-        }
-
-        public <T17, T18, T19, T20, T21, T22> ForAll22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> forAll(Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22) {
-            return new ForAll22<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22);
-        }
-
-        public <T17, T18, T19, T20, T21, T22, T23> ForAll23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> forAll(Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23) {
-            return new ForAll23<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23);
-        }
-
-        public <T17, T18, T19, T20, T21, T22, T23, T24> ForAll24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> forAll(Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24) {
-            return new ForAll24<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24);
-        }
-
-        public <T17, T18, T19, T20, T21, T22, T23, T24, T25> ForAll25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> forAll(Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25) {
-            return new ForAll25<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25);
-        }
-
-        public <T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> forAll(Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26) {
-            return new ForAll26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26);
-        }
-
-        public Property suchThat(CheckedLambda16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Boolean> predicate) {
-            return new SuchThat16<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, predicate);
+        public Property16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> suchThat(CheckedLambda16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Boolean> predicate) {
+            final CheckedLambda16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16));
+            return new Property16<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, proposition);
         }
     }
 
@@ -1733,44 +675,9 @@ public interface Property {
             this.a17 = a17;
         }
 
-        public <T18> ForAll18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> forAll(Arbitrary<T18> a18) {
-            return new ForAll18<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18);
-        }
-
-        public <T18, T19> ForAll19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> forAll(Arbitrary<T18> a18, Arbitrary<T19> a19) {
-            return new ForAll19<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19);
-        }
-
-        public <T18, T19, T20> ForAll20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> forAll(Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20) {
-            return new ForAll20<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20);
-        }
-
-        public <T18, T19, T20, T21> ForAll21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> forAll(Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21) {
-            return new ForAll21<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21);
-        }
-
-        public <T18, T19, T20, T21, T22> ForAll22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> forAll(Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22) {
-            return new ForAll22<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22);
-        }
-
-        public <T18, T19, T20, T21, T22, T23> ForAll23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> forAll(Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23) {
-            return new ForAll23<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23);
-        }
-
-        public <T18, T19, T20, T21, T22, T23, T24> ForAll24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> forAll(Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24) {
-            return new ForAll24<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24);
-        }
-
-        public <T18, T19, T20, T21, T22, T23, T24, T25> ForAll25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> forAll(Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25) {
-            return new ForAll25<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25);
-        }
-
-        public <T18, T19, T20, T21, T22, T23, T24, T25, T26> ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> forAll(Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26) {
-            return new ForAll26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26);
-        }
-
-        public Property suchThat(CheckedLambda17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, Boolean> predicate) {
-            return new SuchThat17<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, predicate);
+        public Property17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> suchThat(CheckedLambda17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, Boolean> predicate) {
+            final CheckedLambda17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17));
+            return new Property17<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, proposition);
         }
     }
 
@@ -1816,40 +723,9 @@ public interface Property {
             this.a18 = a18;
         }
 
-        public <T19> ForAll19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> forAll(Arbitrary<T19> a19) {
-            return new ForAll19<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19);
-        }
-
-        public <T19, T20> ForAll20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> forAll(Arbitrary<T19> a19, Arbitrary<T20> a20) {
-            return new ForAll20<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20);
-        }
-
-        public <T19, T20, T21> ForAll21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> forAll(Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21) {
-            return new ForAll21<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21);
-        }
-
-        public <T19, T20, T21, T22> ForAll22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> forAll(Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22) {
-            return new ForAll22<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22);
-        }
-
-        public <T19, T20, T21, T22, T23> ForAll23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> forAll(Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23) {
-            return new ForAll23<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23);
-        }
-
-        public <T19, T20, T21, T22, T23, T24> ForAll24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> forAll(Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24) {
-            return new ForAll24<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24);
-        }
-
-        public <T19, T20, T21, T22, T23, T24, T25> ForAll25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> forAll(Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25) {
-            return new ForAll25<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25);
-        }
-
-        public <T19, T20, T21, T22, T23, T24, T25, T26> ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> forAll(Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26) {
-            return new ForAll26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26);
-        }
-
-        public Property suchThat(CheckedLambda18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, Boolean> predicate) {
-            return new SuchThat18<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, predicate);
+        public Property18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> suchThat(CheckedLambda18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, Boolean> predicate) {
+            final CheckedLambda18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18));
+            return new Property18<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, proposition);
         }
     }
 
@@ -1897,36 +773,9 @@ public interface Property {
             this.a19 = a19;
         }
 
-        public <T20> ForAll20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> forAll(Arbitrary<T20> a20) {
-            return new ForAll20<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20);
-        }
-
-        public <T20, T21> ForAll21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> forAll(Arbitrary<T20> a20, Arbitrary<T21> a21) {
-            return new ForAll21<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21);
-        }
-
-        public <T20, T21, T22> ForAll22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> forAll(Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22) {
-            return new ForAll22<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22);
-        }
-
-        public <T20, T21, T22, T23> ForAll23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> forAll(Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23) {
-            return new ForAll23<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23);
-        }
-
-        public <T20, T21, T22, T23, T24> ForAll24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> forAll(Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24) {
-            return new ForAll24<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24);
-        }
-
-        public <T20, T21, T22, T23, T24, T25> ForAll25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> forAll(Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25) {
-            return new ForAll25<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25);
-        }
-
-        public <T20, T21, T22, T23, T24, T25, T26> ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> forAll(Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26) {
-            return new ForAll26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26);
-        }
-
-        public Property suchThat(CheckedLambda19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, Boolean> predicate) {
-            return new SuchThat19<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, predicate);
+        public Property19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> suchThat(CheckedLambda19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, Boolean> predicate) {
+            final CheckedLambda19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19));
+            return new Property19<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, proposition);
         }
     }
 
@@ -1976,32 +825,9 @@ public interface Property {
             this.a20 = a20;
         }
 
-        public <T21> ForAll21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> forAll(Arbitrary<T21> a21) {
-            return new ForAll21<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21);
-        }
-
-        public <T21, T22> ForAll22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> forAll(Arbitrary<T21> a21, Arbitrary<T22> a22) {
-            return new ForAll22<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22);
-        }
-
-        public <T21, T22, T23> ForAll23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> forAll(Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23) {
-            return new ForAll23<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23);
-        }
-
-        public <T21, T22, T23, T24> ForAll24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> forAll(Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24) {
-            return new ForAll24<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24);
-        }
-
-        public <T21, T22, T23, T24, T25> ForAll25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> forAll(Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25) {
-            return new ForAll25<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25);
-        }
-
-        public <T21, T22, T23, T24, T25, T26> ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> forAll(Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26) {
-            return new ForAll26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26);
-        }
-
-        public Property suchThat(CheckedLambda20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, Boolean> predicate) {
-            return new SuchThat20<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, predicate);
+        public Property20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> suchThat(CheckedLambda20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, Boolean> predicate) {
+            final CheckedLambda20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20));
+            return new Property20<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, proposition);
         }
     }
 
@@ -2053,28 +879,9 @@ public interface Property {
             this.a21 = a21;
         }
 
-        public <T22> ForAll22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> forAll(Arbitrary<T22> a22) {
-            return new ForAll22<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22);
-        }
-
-        public <T22, T23> ForAll23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> forAll(Arbitrary<T22> a22, Arbitrary<T23> a23) {
-            return new ForAll23<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23);
-        }
-
-        public <T22, T23, T24> ForAll24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> forAll(Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24) {
-            return new ForAll24<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24);
-        }
-
-        public <T22, T23, T24, T25> ForAll25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> forAll(Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25) {
-            return new ForAll25<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25);
-        }
-
-        public <T22, T23, T24, T25, T26> ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> forAll(Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26) {
-            return new ForAll26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26);
-        }
-
-        public Property suchThat(CheckedLambda21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, Boolean> predicate) {
-            return new SuchThat21<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, predicate);
+        public Property21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> suchThat(CheckedLambda21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, Boolean> predicate) {
+            final CheckedLambda21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21));
+            return new Property21<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, proposition);
         }
     }
 
@@ -2128,24 +935,9 @@ public interface Property {
             this.a22 = a22;
         }
 
-        public <T23> ForAll23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> forAll(Arbitrary<T23> a23) {
-            return new ForAll23<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23);
-        }
-
-        public <T23, T24> ForAll24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> forAll(Arbitrary<T23> a23, Arbitrary<T24> a24) {
-            return new ForAll24<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24);
-        }
-
-        public <T23, T24, T25> ForAll25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> forAll(Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25) {
-            return new ForAll25<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25);
-        }
-
-        public <T23, T24, T25, T26> ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> forAll(Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26) {
-            return new ForAll26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26);
-        }
-
-        public Property suchThat(CheckedLambda22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, Boolean> predicate) {
-            return new SuchThat22<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, predicate);
+        public Property22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> suchThat(CheckedLambda22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, Boolean> predicate) {
+            final CheckedLambda22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22));
+            return new Property22<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, proposition);
         }
     }
 
@@ -2201,20 +993,9 @@ public interface Property {
             this.a23 = a23;
         }
 
-        public <T24> ForAll24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> forAll(Arbitrary<T24> a24) {
-            return new ForAll24<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24);
-        }
-
-        public <T24, T25> ForAll25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> forAll(Arbitrary<T24> a24, Arbitrary<T25> a25) {
-            return new ForAll25<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25);
-        }
-
-        public <T24, T25, T26> ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> forAll(Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26) {
-            return new ForAll26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26);
-        }
-
-        public Property suchThat(CheckedLambda23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, Boolean> predicate) {
-            return new SuchThat23<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, predicate);
+        public Property23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> suchThat(CheckedLambda23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, Boolean> predicate) {
+            final CheckedLambda23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23));
+            return new Property23<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, proposition);
         }
     }
 
@@ -2272,16 +1053,9 @@ public interface Property {
             this.a24 = a24;
         }
 
-        public <T25> ForAll25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> forAll(Arbitrary<T25> a25) {
-            return new ForAll25<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25);
-        }
-
-        public <T25, T26> ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> forAll(Arbitrary<T25> a25, Arbitrary<T26> a26) {
-            return new ForAll26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26);
-        }
-
-        public Property suchThat(CheckedLambda24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, Boolean> predicate) {
-            return new SuchThat24<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, predicate);
+        public Property24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> suchThat(CheckedLambda24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, Boolean> predicate) {
+            final CheckedLambda24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24));
+            return new Property24<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, proposition);
         }
     }
 
@@ -2341,12 +1115,9 @@ public interface Property {
             this.a25 = a25;
         }
 
-        public <T26> ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> forAll(Arbitrary<T26> a26) {
-            return new ForAll26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26);
-        }
-
-        public Property suchThat(CheckedLambda25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, Boolean> predicate) {
-            return new SuchThat25<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, predicate);
+        public Property25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> suchThat(CheckedLambda25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, Boolean> predicate) {
+            final CheckedLambda25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25));
+            return new Property25<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, proposition);
         }
     }
 
@@ -2408,32 +1179,50 @@ public interface Property {
             this.a26 = a26;
         }
 
-        public Property suchThat(CheckedLambda26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, Boolean> predicate) {
-            return new SuchThat26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26, predicate);
+        public Property26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> suchThat(CheckedLambda26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, Boolean> predicate) {
+            final CheckedLambda26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26));
+            return new Property26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26, proposition);
         }
     }
 
-    static class SuchThat1<T1> implements Property {
+    static class Property1<T1> implements Property {
 
         private final Arbitrary<T1> a1;
-        final CheckedLambda1<T1, Boolean> predicate;
+        final CheckedLambda1<T1, Condition> predicate;
 
-        SuchThat1(Arbitrary<T1> a1, CheckedLambda1<T1, Boolean> predicate) {
+        Property1(Arbitrary<T1> a1, CheckedLambda1<T1, Condition> predicate) {
             this.a1 = a1;
             this.predicate = predicate;
         }
 
+        public Property implies(CheckedLambda1<T1, Boolean> postcondition) {
+            final CheckedLambda1<T1, Condition> implication = (t1) -> {
+                final Condition precondition = predicate.apply(t1);
+                if (precondition.isFalse()) {
+                    // ex falso quodlibet
+                    return new Condition(false, true);
+                } else {
+                    return new Condition(true, postcondition.apply(t1));
+                }
+            };
+            return new Property1<>(a1, implication);
+        }
+
         @Override
-        public CheckResult<Tuple1<T1>> check(int size, int tries) {
+        public CheckResult<Tuple1<T1>> check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
                         try {
-                            final boolean test = Try.of(() -> predicate.apply(val1)).recover(x -> { throw Errors.predicateError(x); }).get();
-                            if (!test) {
-                                return CheckResult.falsified(i, Tuple.of(val1));
+                            final Condition condition = Try.of(() -> predicate.apply(val1)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (condition.precondition) {
+                                exhausted = false;
+                                if (!condition.postcondition) {
+                                    return CheckResult.falsified(i, Tuple.of(val1));
+                                }
                             }
                         } catch(Failure.NonFatal nonFatal) {
                             return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1)));
@@ -2442,38 +1231,55 @@ public interface Property {
                         return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries);
+                return CheckResult.satisfied(tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
                 return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class SuchThat2<T1, T2> implements Property {
+    static class Property2<T1, T2> implements Property {
 
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
-        final CheckedLambda2<T1, T2, Boolean> predicate;
+        final CheckedLambda2<T1, T2, Condition> predicate;
 
-        SuchThat2(Arbitrary<T1> a1, Arbitrary<T2> a2, CheckedLambda2<T1, T2, Boolean> predicate) {
+        Property2(Arbitrary<T1> a1, Arbitrary<T2> a2, CheckedLambda2<T1, T2, Condition> predicate) {
             this.a1 = a1;
             this.a2 = a2;
             this.predicate = predicate;
         }
 
+        public Property implies(CheckedLambda2<T1, T2, Boolean> postcondition) {
+            final CheckedLambda2<T1, T2, Condition> implication = (t1, t2) -> {
+                final Condition precondition = predicate.apply(t1, t2);
+                if (precondition.isFalse()) {
+                    // ex falso quodlibet
+                    return new Condition(false, true);
+                } else {
+                    return new Condition(true, postcondition.apply(t1, t2));
+                }
+            };
+            return new Property2<>(a1, a2, implication);
+        }
+
         @Override
-        public CheckResult<Tuple2<T1, T2>> check(int size, int tries) {
+        public CheckResult<Tuple2<T1, T2>> check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
+                boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
                         try {
-                            final boolean test = Try.of(() -> predicate.apply(val1, val2)).recover(x -> { throw Errors.predicateError(x); }).get();
-                            if (!test) {
-                                return CheckResult.falsified(i, Tuple.of(val1, val2));
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (condition.precondition) {
+                                exhausted = false;
+                                if (!condition.postcondition) {
+                                    return CheckResult.falsified(i, Tuple.of(val1, val2));
+                                }
                             }
                         } catch(Failure.NonFatal nonFatal) {
                             return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2)));
@@ -2482,42 +1288,59 @@ public interface Property {
                         return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries);
+                return CheckResult.satisfied(tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
                 return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class SuchThat3<T1, T2, T3> implements Property {
+    static class Property3<T1, T2, T3> implements Property {
 
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
-        final CheckedLambda3<T1, T2, T3, Boolean> predicate;
+        final CheckedLambda3<T1, T2, T3, Condition> predicate;
 
-        SuchThat3(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, CheckedLambda3<T1, T2, T3, Boolean> predicate) {
+        Property3(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, CheckedLambda3<T1, T2, T3, Condition> predicate) {
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
             this.predicate = predicate;
         }
 
+        public Property implies(CheckedLambda3<T1, T2, T3, Boolean> postcondition) {
+            final CheckedLambda3<T1, T2, T3, Condition> implication = (t1, t2, t3) -> {
+                final Condition precondition = predicate.apply(t1, t2, t3);
+                if (precondition.isFalse()) {
+                    // ex falso quodlibet
+                    return new Condition(false, true);
+                } else {
+                    return new Condition(true, postcondition.apply(t1, t2, t3));
+                }
+            };
+            return new Property3<>(a1, a2, a3, implication);
+        }
+
         @Override
-        public CheckResult<Tuple3<T1, T2, T3>> check(int size, int tries) {
+        public CheckResult<Tuple3<T1, T2, T3>> check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
                 final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
+                boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
                         try {
-                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3)).recover(x -> { throw Errors.predicateError(x); }).get();
-                            if (!test) {
-                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3));
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (condition.precondition) {
+                                exhausted = false;
+                                if (!condition.postcondition) {
+                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3));
+                                }
                             }
                         } catch(Failure.NonFatal nonFatal) {
                             return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3)));
@@ -2526,22 +1349,22 @@ public interface Property {
                         return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries);
+                return CheckResult.satisfied(tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
                 return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class SuchThat4<T1, T2, T3, T4> implements Property {
+    static class Property4<T1, T2, T3, T4> implements Property {
 
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
         private final Arbitrary<T4> a4;
-        final CheckedLambda4<T1, T2, T3, T4, Boolean> predicate;
+        final CheckedLambda4<T1, T2, T3, T4, Condition> predicate;
 
-        SuchThat4(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, CheckedLambda4<T1, T2, T3, T4, Boolean> predicate) {
+        Property4(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, CheckedLambda4<T1, T2, T3, T4, Condition> predicate) {
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -2549,23 +1372,40 @@ public interface Property {
             this.predicate = predicate;
         }
 
+        public Property implies(CheckedLambda4<T1, T2, T3, T4, Boolean> postcondition) {
+            final CheckedLambda4<T1, T2, T3, T4, Condition> implication = (t1, t2, t3, t4) -> {
+                final Condition precondition = predicate.apply(t1, t2, t3, t4);
+                if (precondition.isFalse()) {
+                    // ex falso quodlibet
+                    return new Condition(false, true);
+                } else {
+                    return new Condition(true, postcondition.apply(t1, t2, t3, t4));
+                }
+            };
+            return new Property4<>(a1, a2, a3, a4, implication);
+        }
+
         @Override
-        public CheckResult<Tuple4<T1, T2, T3, T4>> check(int size, int tries) {
+        public CheckResult<Tuple4<T1, T2, T3, T4>> check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
                 final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
                 final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
+                boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
                         try {
-                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4)).recover(x -> { throw Errors.predicateError(x); }).get();
-                            if (!test) {
-                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4));
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (condition.precondition) {
+                                exhausted = false;
+                                if (!condition.postcondition) {
+                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4));
+                                }
                             }
                         } catch(Failure.NonFatal nonFatal) {
                             return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4)));
@@ -2574,23 +1414,23 @@ public interface Property {
                         return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries);
+                return CheckResult.satisfied(tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
                 return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class SuchThat5<T1, T2, T3, T4, T5> implements Property {
+    static class Property5<T1, T2, T3, T4, T5> implements Property {
 
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
         private final Arbitrary<T4> a4;
         private final Arbitrary<T5> a5;
-        final CheckedLambda5<T1, T2, T3, T4, T5, Boolean> predicate;
+        final CheckedLambda5<T1, T2, T3, T4, T5, Condition> predicate;
 
-        SuchThat5(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, CheckedLambda5<T1, T2, T3, T4, T5, Boolean> predicate) {
+        Property5(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, CheckedLambda5<T1, T2, T3, T4, T5, Condition> predicate) {
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -2599,25 +1439,42 @@ public interface Property {
             this.predicate = predicate;
         }
 
+        public Property implies(CheckedLambda5<T1, T2, T3, T4, T5, Boolean> postcondition) {
+            final CheckedLambda5<T1, T2, T3, T4, T5, Condition> implication = (t1, t2, t3, t4, t5) -> {
+                final Condition precondition = predicate.apply(t1, t2, t3, t4, t5);
+                if (precondition.isFalse()) {
+                    // ex falso quodlibet
+                    return new Condition(false, true);
+                } else {
+                    return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5));
+                }
+            };
+            return new Property5<>(a1, a2, a3, a4, a5, implication);
+        }
+
         @Override
-        public CheckResult<Tuple5<T1, T2, T3, T4, T5>> check(int size, int tries) {
+        public CheckResult<Tuple5<T1, T2, T3, T4, T5>> check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
                 final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
                 final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
                 final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
+                boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
                         try {
-                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5)).recover(x -> { throw Errors.predicateError(x); }).get();
-                            if (!test) {
-                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5));
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (condition.precondition) {
+                                exhausted = false;
+                                if (!condition.postcondition) {
+                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5));
+                                }
                             }
                         } catch(Failure.NonFatal nonFatal) {
                             return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5)));
@@ -2626,14 +1483,14 @@ public interface Property {
                         return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries);
+                return CheckResult.satisfied(tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
                 return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class SuchThat6<T1, T2, T3, T4, T5, T6> implements Property {
+    static class Property6<T1, T2, T3, T4, T5, T6> implements Property {
 
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
@@ -2641,9 +1498,9 @@ public interface Property {
         private final Arbitrary<T4> a4;
         private final Arbitrary<T5> a5;
         private final Arbitrary<T6> a6;
-        final CheckedLambda6<T1, T2, T3, T4, T5, T6, Boolean> predicate;
+        final CheckedLambda6<T1, T2, T3, T4, T5, T6, Condition> predicate;
 
-        SuchThat6(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, CheckedLambda6<T1, T2, T3, T4, T5, T6, Boolean> predicate) {
+        Property6(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, CheckedLambda6<T1, T2, T3, T4, T5, T6, Condition> predicate) {
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -2653,8 +1510,21 @@ public interface Property {
             this.predicate = predicate;
         }
 
+        public Property implies(CheckedLambda6<T1, T2, T3, T4, T5, T6, Boolean> postcondition) {
+            final CheckedLambda6<T1, T2, T3, T4, T5, T6, Condition> implication = (t1, t2, t3, t4, t5, t6) -> {
+                final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6);
+                if (precondition.isFalse()) {
+                    // ex falso quodlibet
+                    return new Condition(false, true);
+                } else {
+                    return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6));
+                }
+            };
+            return new Property6<>(a1, a2, a3, a4, a5, a6, implication);
+        }
+
         @Override
-        public CheckResult<Tuple6<T1, T2, T3, T4, T5, T6>> check(int size, int tries) {
+        public CheckResult<Tuple6<T1, T2, T3, T4, T5, T6>> check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -2662,18 +1532,22 @@ public interface Property {
                 final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
                 final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
                 final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
+                boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
-                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw Errors.genError(6, size, x); }).get();
                         try {
-                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6)).recover(x -> { throw Errors.predicateError(x); }).get();
-                            if (!test) {
-                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6));
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (condition.precondition) {
+                                exhausted = false;
+                                if (!condition.postcondition) {
+                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6));
+                                }
                             }
                         } catch(Failure.NonFatal nonFatal) {
                             return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6)));
@@ -2682,14 +1556,14 @@ public interface Property {
                         return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries);
+                return CheckResult.satisfied(tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
                 return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class SuchThat7<T1, T2, T3, T4, T5, T6, T7> implements Property {
+    static class Property7<T1, T2, T3, T4, T5, T6, T7> implements Property {
 
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
@@ -2698,9 +1572,9 @@ public interface Property {
         private final Arbitrary<T5> a5;
         private final Arbitrary<T6> a6;
         private final Arbitrary<T7> a7;
-        final CheckedLambda7<T1, T2, T3, T4, T5, T6, T7, Boolean> predicate;
+        final CheckedLambda7<T1, T2, T3, T4, T5, T6, T7, Condition> predicate;
 
-        SuchThat7(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, CheckedLambda7<T1, T2, T3, T4, T5, T6, T7, Boolean> predicate) {
+        Property7(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, CheckedLambda7<T1, T2, T3, T4, T5, T6, T7, Condition> predicate) {
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -2711,8 +1585,21 @@ public interface Property {
             this.predicate = predicate;
         }
 
+        public Property implies(CheckedLambda7<T1, T2, T3, T4, T5, T6, T7, Boolean> postcondition) {
+            final CheckedLambda7<T1, T2, T3, T4, T5, T6, T7, Condition> implication = (t1, t2, t3, t4, t5, t6, t7) -> {
+                final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7);
+                if (precondition.isFalse()) {
+                    // ex falso quodlibet
+                    return new Condition(false, true);
+                } else {
+                    return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7));
+                }
+            };
+            return new Property7<>(a1, a2, a3, a4, a5, a6, a7, implication);
+        }
+
         @Override
-        public CheckResult<Tuple7<T1, T2, T3, T4, T5, T6, T7>> check(int size, int tries) {
+        public CheckResult<Tuple7<T1, T2, T3, T4, T5, T6, T7>> check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -2721,19 +1608,23 @@ public interface Property {
                 final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
                 final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
                 final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).get();
+                boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
-                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
-                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> { throw Errors.genError(7, size, x); }).get();
                         try {
-                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7)).recover(x -> { throw Errors.predicateError(x); }).get();
-                            if (!test) {
-                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7));
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (condition.precondition) {
+                                exhausted = false;
+                                if (!condition.postcondition) {
+                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7));
+                                }
                             }
                         } catch(Failure.NonFatal nonFatal) {
                             return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7)));
@@ -2742,14 +1633,14 @@ public interface Property {
                         return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries);
+                return CheckResult.satisfied(tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
                 return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class SuchThat8<T1, T2, T3, T4, T5, T6, T7, T8> implements Property {
+    static class Property8<T1, T2, T3, T4, T5, T6, T7, T8> implements Property {
 
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
@@ -2759,9 +1650,9 @@ public interface Property {
         private final Arbitrary<T6> a6;
         private final Arbitrary<T7> a7;
         private final Arbitrary<T8> a8;
-        final CheckedLambda8<T1, T2, T3, T4, T5, T6, T7, T8, Boolean> predicate;
+        final CheckedLambda8<T1, T2, T3, T4, T5, T6, T7, T8, Condition> predicate;
 
-        SuchThat8(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, CheckedLambda8<T1, T2, T3, T4, T5, T6, T7, T8, Boolean> predicate) {
+        Property8(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, CheckedLambda8<T1, T2, T3, T4, T5, T6, T7, T8, Condition> predicate) {
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -2773,8 +1664,21 @@ public interface Property {
             this.predicate = predicate;
         }
 
+        public Property implies(CheckedLambda8<T1, T2, T3, T4, T5, T6, T7, T8, Boolean> postcondition) {
+            final CheckedLambda8<T1, T2, T3, T4, T5, T6, T7, T8, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8) -> {
+                final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8);
+                if (precondition.isFalse()) {
+                    // ex falso quodlibet
+                    return new Condition(false, true);
+                } else {
+                    return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8));
+                }
+            };
+            return new Property8<>(a1, a2, a3, a4, a5, a6, a7, a8, implication);
+        }
+
         @Override
-        public CheckResult<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> check(int size, int tries) {
+        public CheckResult<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -2784,20 +1688,24 @@ public interface Property {
                 final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
                 final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).get();
                 final Gen<T8> gen8 = Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).get();
+                boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
-                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
-                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
-                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.apply(random)).recover(x -> { throw Errors.genError(8, size, x); }).get();
                         try {
-                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8)).recover(x -> { throw Errors.predicateError(x); }).get();
-                            if (!test) {
-                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8));
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (condition.precondition) {
+                                exhausted = false;
+                                if (!condition.postcondition) {
+                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8));
+                                }
                             }
                         } catch(Failure.NonFatal nonFatal) {
                             return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8)));
@@ -2806,14 +1714,14 @@ public interface Property {
                         return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries);
+                return CheckResult.satisfied(tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
                 return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class SuchThat9<T1, T2, T3, T4, T5, T6, T7, T8, T9> implements Property {
+    static class Property9<T1, T2, T3, T4, T5, T6, T7, T8, T9> implements Property {
 
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
@@ -2824,9 +1732,9 @@ public interface Property {
         private final Arbitrary<T7> a7;
         private final Arbitrary<T8> a8;
         private final Arbitrary<T9> a9;
-        final CheckedLambda9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Boolean> predicate;
+        final CheckedLambda9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Condition> predicate;
 
-        SuchThat9(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, CheckedLambda9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Boolean> predicate) {
+        Property9(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, CheckedLambda9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Condition> predicate) {
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -2839,8 +1747,21 @@ public interface Property {
             this.predicate = predicate;
         }
 
+        public Property implies(CheckedLambda9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Boolean> postcondition) {
+            final CheckedLambda9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9) -> {
+                final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9);
+                if (precondition.isFalse()) {
+                    // ex falso quodlibet
+                    return new Condition(false, true);
+                } else {
+                    return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9));
+                }
+            };
+            return new Property9<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, implication);
+        }
+
         @Override
-        public CheckResult<Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9>> check(int size, int tries) {
+        public CheckResult<Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9>> check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -2851,21 +1772,25 @@ public interface Property {
                 final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).get();
                 final Gen<T8> gen8 = Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).get();
                 final Gen<T9> gen9 = Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).get();
+                boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
-                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
-                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
-                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
-                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.apply(random)).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.apply(random)).recover(x -> { throw Errors.genError(9, size, x); }).get();
                         try {
-                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9)).recover(x -> { throw Errors.predicateError(x); }).get();
-                            if (!test) {
-                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9));
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (condition.precondition) {
+                                exhausted = false;
+                                if (!condition.postcondition) {
+                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9));
+                                }
                             }
                         } catch(Failure.NonFatal nonFatal) {
                             return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9)));
@@ -2874,14 +1799,14 @@ public interface Property {
                         return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries);
+                return CheckResult.satisfied(tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
                 return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class SuchThat10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> implements Property {
+    static class Property10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> implements Property {
 
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
@@ -2893,9 +1818,9 @@ public interface Property {
         private final Arbitrary<T8> a8;
         private final Arbitrary<T9> a9;
         private final Arbitrary<T10> a10;
-        final CheckedLambda10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Boolean> predicate;
+        final CheckedLambda10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Condition> predicate;
 
-        SuchThat10(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, CheckedLambda10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Boolean> predicate) {
+        Property10(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, CheckedLambda10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Condition> predicate) {
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -2909,8 +1834,21 @@ public interface Property {
             this.predicate = predicate;
         }
 
+        public Property implies(CheckedLambda10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Boolean> postcondition) {
+            final CheckedLambda10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) -> {
+                final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10);
+                if (precondition.isFalse()) {
+                    // ex falso quodlibet
+                    return new Condition(false, true);
+                } else {
+                    return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10));
+                }
+            };
+            return new Property10<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, implication);
+        }
+
         @Override
-        public CheckResult<Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>> check(int size, int tries) {
+        public CheckResult<Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>> check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -2922,22 +1860,26 @@ public interface Property {
                 final Gen<T8> gen8 = Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).get();
                 final Gen<T9> gen9 = Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).get();
                 final Gen<T10> gen10 = Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).get();
+                boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
-                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
-                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
-                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
-                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
-                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.apply(random)).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.apply(random)).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.apply(random)).recover(x -> { throw Errors.genError(10, size, x); }).get();
                         try {
-                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10)).recover(x -> { throw Errors.predicateError(x); }).get();
-                            if (!test) {
-                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10));
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (condition.precondition) {
+                                exhausted = false;
+                                if (!condition.postcondition) {
+                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10));
+                                }
                             }
                         } catch(Failure.NonFatal nonFatal) {
                             return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10)));
@@ -2946,14 +1888,14 @@ public interface Property {
                         return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries);
+                return CheckResult.satisfied(tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
                 return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class SuchThat11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> implements Property {
+    static class Property11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> implements Property {
 
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
@@ -2966,9 +1908,9 @@ public interface Property {
         private final Arbitrary<T9> a9;
         private final Arbitrary<T10> a10;
         private final Arbitrary<T11> a11;
-        final CheckedLambda11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Boolean> predicate;
+        final CheckedLambda11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Condition> predicate;
 
-        SuchThat11(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, CheckedLambda11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Boolean> predicate) {
+        Property11(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, CheckedLambda11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Condition> predicate) {
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -2983,8 +1925,21 @@ public interface Property {
             this.predicate = predicate;
         }
 
+        public Property implies(CheckedLambda11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Boolean> postcondition) {
+            final CheckedLambda11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) -> {
+                final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11);
+                if (precondition.isFalse()) {
+                    // ex falso quodlibet
+                    return new Condition(false, true);
+                } else {
+                    return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11));
+                }
+            };
+            return new Property11<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, implication);
+        }
+
         @Override
-        public CheckResult<Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>> check(int size, int tries) {
+        public CheckResult<Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>> check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -2997,23 +1952,27 @@ public interface Property {
                 final Gen<T9> gen9 = Try.of(() -> a9.apply(size)).recover(x -> { throw Errors.arbitraryError(9, size, x); }).get();
                 final Gen<T10> gen10 = Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).get();
                 final Gen<T11> gen11 = Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).get();
+                boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
-                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
-                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
-                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
-                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
-                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
-                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.apply(random)).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.apply(random)).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.apply(random)).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.apply(random)).recover(x -> { throw Errors.genError(11, size, x); }).get();
                         try {
-                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11)).recover(x -> { throw Errors.predicateError(x); }).get();
-                            if (!test) {
-                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11));
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (condition.precondition) {
+                                exhausted = false;
+                                if (!condition.postcondition) {
+                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11));
+                                }
                             }
                         } catch(Failure.NonFatal nonFatal) {
                             return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11)));
@@ -3022,14 +1981,14 @@ public interface Property {
                         return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries);
+                return CheckResult.satisfied(tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
                 return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class SuchThat12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> implements Property {
+    static class Property12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> implements Property {
 
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
@@ -3043,9 +2002,9 @@ public interface Property {
         private final Arbitrary<T10> a10;
         private final Arbitrary<T11> a11;
         private final Arbitrary<T12> a12;
-        final CheckedLambda12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Boolean> predicate;
+        final CheckedLambda12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Condition> predicate;
 
-        SuchThat12(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, CheckedLambda12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Boolean> predicate) {
+        Property12(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, CheckedLambda12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Condition> predicate) {
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -3061,8 +2020,21 @@ public interface Property {
             this.predicate = predicate;
         }
 
+        public Property implies(CheckedLambda12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Boolean> postcondition) {
+            final CheckedLambda12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) -> {
+                final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12);
+                if (precondition.isFalse()) {
+                    // ex falso quodlibet
+                    return new Condition(false, true);
+                } else {
+                    return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12));
+                }
+            };
+            return new Property12<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, implication);
+        }
+
         @Override
-        public CheckResult<Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>> check(int size, int tries) {
+        public CheckResult<Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>> check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -3076,24 +2048,28 @@ public interface Property {
                 final Gen<T10> gen10 = Try.of(() -> a10.apply(size)).recover(x -> { throw Errors.arbitraryError(10, size, x); }).get();
                 final Gen<T11> gen11 = Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).get();
                 final Gen<T12> gen12 = Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).get();
+                boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
-                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
-                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
-                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
-                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
-                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
-                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
-                        final T12 val12 = Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.apply(random)).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.apply(random)).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.apply(random)).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.apply(random)).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T12 val12 = Try.of(() -> gen12.apply(random)).recover(x -> { throw Errors.genError(12, size, x); }).get();
                         try {
-                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12)).recover(x -> { throw Errors.predicateError(x); }).get();
-                            if (!test) {
-                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12));
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (condition.precondition) {
+                                exhausted = false;
+                                if (!condition.postcondition) {
+                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12));
+                                }
                             }
                         } catch(Failure.NonFatal nonFatal) {
                             return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12)));
@@ -3102,14 +2078,14 @@ public interface Property {
                         return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries);
+                return CheckResult.satisfied(tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
                 return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class SuchThat13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> implements Property {
+    static class Property13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> implements Property {
 
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
@@ -3124,9 +2100,9 @@ public interface Property {
         private final Arbitrary<T11> a11;
         private final Arbitrary<T12> a12;
         private final Arbitrary<T13> a13;
-        final CheckedLambda13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Boolean> predicate;
+        final CheckedLambda13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Condition> predicate;
 
-        SuchThat13(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, CheckedLambda13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Boolean> predicate) {
+        Property13(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, CheckedLambda13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Condition> predicate) {
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -3143,8 +2119,21 @@ public interface Property {
             this.predicate = predicate;
         }
 
+        public Property implies(CheckedLambda13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Boolean> postcondition) {
+            final CheckedLambda13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) -> {
+                final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13);
+                if (precondition.isFalse()) {
+                    // ex falso quodlibet
+                    return new Condition(false, true);
+                } else {
+                    return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13));
+                }
+            };
+            return new Property13<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, implication);
+        }
+
         @Override
-        public CheckResult<Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>> check(int size, int tries) {
+        public CheckResult<Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>> check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -3159,25 +2148,29 @@ public interface Property {
                 final Gen<T11> gen11 = Try.of(() -> a11.apply(size)).recover(x -> { throw Errors.arbitraryError(11, size, x); }).get();
                 final Gen<T12> gen12 = Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).get();
                 final Gen<T13> gen13 = Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).get();
+                boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
-                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
-                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
-                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
-                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
-                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
-                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
-                        final T12 val12 = Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).get();
-                        final T13 val13 = Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.apply(random)).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.apply(random)).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.apply(random)).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.apply(random)).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T12 val12 = Try.of(() -> gen12.apply(random)).recover(x -> { throw Errors.genError(12, size, x); }).get();
+                        final T13 val13 = Try.of(() -> gen13.apply(random)).recover(x -> { throw Errors.genError(13, size, x); }).get();
                         try {
-                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13)).recover(x -> { throw Errors.predicateError(x); }).get();
-                            if (!test) {
-                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13));
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (condition.precondition) {
+                                exhausted = false;
+                                if (!condition.postcondition) {
+                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13));
+                                }
                             }
                         } catch(Failure.NonFatal nonFatal) {
                             return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13)));
@@ -3186,14 +2179,14 @@ public interface Property {
                         return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries);
+                return CheckResult.satisfied(tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
                 return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class SuchThat14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> implements Property {
+    static class Property14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> implements Property {
 
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
@@ -3209,9 +2202,9 @@ public interface Property {
         private final Arbitrary<T12> a12;
         private final Arbitrary<T13> a13;
         private final Arbitrary<T14> a14;
-        final CheckedLambda14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Boolean> predicate;
+        final CheckedLambda14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Condition> predicate;
 
-        SuchThat14(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, CheckedLambda14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Boolean> predicate) {
+        Property14(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, CheckedLambda14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Condition> predicate) {
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -3229,8 +2222,21 @@ public interface Property {
             this.predicate = predicate;
         }
 
+        public Property implies(CheckedLambda14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Boolean> postcondition) {
+            final CheckedLambda14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) -> {
+                final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
+                if (precondition.isFalse()) {
+                    // ex falso quodlibet
+                    return new Condition(false, true);
+                } else {
+                    return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14));
+                }
+            };
+            return new Property14<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, implication);
+        }
+
         @Override
-        public CheckResult<Tuple14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>> check(int size, int tries) {
+        public CheckResult<Tuple14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>> check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -3246,26 +2252,30 @@ public interface Property {
                 final Gen<T12> gen12 = Try.of(() -> a12.apply(size)).recover(x -> { throw Errors.arbitraryError(12, size, x); }).get();
                 final Gen<T13> gen13 = Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).get();
                 final Gen<T14> gen14 = Try.of(() -> a14.apply(size)).recover(x -> { throw Errors.arbitraryError(14, size, x); }).get();
+                boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
-                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
-                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
-                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
-                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
-                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
-                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
-                        final T12 val12 = Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).get();
-                        final T13 val13 = Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).get();
-                        final T14 val14 = Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.apply(random)).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.apply(random)).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.apply(random)).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.apply(random)).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T12 val12 = Try.of(() -> gen12.apply(random)).recover(x -> { throw Errors.genError(12, size, x); }).get();
+                        final T13 val13 = Try.of(() -> gen13.apply(random)).recover(x -> { throw Errors.genError(13, size, x); }).get();
+                        final T14 val14 = Try.of(() -> gen14.apply(random)).recover(x -> { throw Errors.genError(14, size, x); }).get();
                         try {
-                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14)).recover(x -> { throw Errors.predicateError(x); }).get();
-                            if (!test) {
-                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14));
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (condition.precondition) {
+                                exhausted = false;
+                                if (!condition.postcondition) {
+                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14));
+                                }
                             }
                         } catch(Failure.NonFatal nonFatal) {
                             return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14)));
@@ -3274,14 +2284,14 @@ public interface Property {
                         return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries);
+                return CheckResult.satisfied(tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
                 return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class SuchThat15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> implements Property {
+    static class Property15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> implements Property {
 
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
@@ -3298,9 +2308,9 @@ public interface Property {
         private final Arbitrary<T13> a13;
         private final Arbitrary<T14> a14;
         private final Arbitrary<T15> a15;
-        final CheckedLambda15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Boolean> predicate;
+        final CheckedLambda15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Condition> predicate;
 
-        SuchThat15(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, CheckedLambda15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Boolean> predicate) {
+        Property15(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, CheckedLambda15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Condition> predicate) {
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -3319,8 +2329,21 @@ public interface Property {
             this.predicate = predicate;
         }
 
+        public Property implies(CheckedLambda15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Boolean> postcondition) {
+            final CheckedLambda15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) -> {
+                final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15);
+                if (precondition.isFalse()) {
+                    // ex falso quodlibet
+                    return new Condition(false, true);
+                } else {
+                    return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15));
+                }
+            };
+            return new Property15<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, implication);
+        }
+
         @Override
-        public CheckResult<Tuple15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>> check(int size, int tries) {
+        public CheckResult<Tuple15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>> check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -3337,27 +2360,31 @@ public interface Property {
                 final Gen<T13> gen13 = Try.of(() -> a13.apply(size)).recover(x -> { throw Errors.arbitraryError(13, size, x); }).get();
                 final Gen<T14> gen14 = Try.of(() -> a14.apply(size)).recover(x -> { throw Errors.arbitraryError(14, size, x); }).get();
                 final Gen<T15> gen15 = Try.of(() -> a15.apply(size)).recover(x -> { throw Errors.arbitraryError(15, size, x); }).get();
+                boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
-                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
-                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
-                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
-                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
-                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
-                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
-                        final T12 val12 = Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).get();
-                        final T13 val13 = Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).get();
-                        final T14 val14 = Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).get();
-                        final T15 val15 = Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.apply(random)).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.apply(random)).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.apply(random)).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.apply(random)).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T12 val12 = Try.of(() -> gen12.apply(random)).recover(x -> { throw Errors.genError(12, size, x); }).get();
+                        final T13 val13 = Try.of(() -> gen13.apply(random)).recover(x -> { throw Errors.genError(13, size, x); }).get();
+                        final T14 val14 = Try.of(() -> gen14.apply(random)).recover(x -> { throw Errors.genError(14, size, x); }).get();
+                        final T15 val15 = Try.of(() -> gen15.apply(random)).recover(x -> { throw Errors.genError(15, size, x); }).get();
                         try {
-                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15)).recover(x -> { throw Errors.predicateError(x); }).get();
-                            if (!test) {
-                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15));
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (condition.precondition) {
+                                exhausted = false;
+                                if (!condition.postcondition) {
+                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15));
+                                }
                             }
                         } catch(Failure.NonFatal nonFatal) {
                             return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15)));
@@ -3366,14 +2393,14 @@ public interface Property {
                         return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries);
+                return CheckResult.satisfied(tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
                 return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class SuchThat16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> implements Property {
+    static class Property16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> implements Property {
 
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
@@ -3391,9 +2418,9 @@ public interface Property {
         private final Arbitrary<T14> a14;
         private final Arbitrary<T15> a15;
         private final Arbitrary<T16> a16;
-        final CheckedLambda16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Boolean> predicate;
+        final CheckedLambda16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Condition> predicate;
 
-        SuchThat16(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, CheckedLambda16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Boolean> predicate) {
+        Property16(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, CheckedLambda16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Condition> predicate) {
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -3413,8 +2440,21 @@ public interface Property {
             this.predicate = predicate;
         }
 
+        public Property implies(CheckedLambda16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Boolean> postcondition) {
+            final CheckedLambda16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) -> {
+                final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16);
+                if (precondition.isFalse()) {
+                    // ex falso quodlibet
+                    return new Condition(false, true);
+                } else {
+                    return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16));
+                }
+            };
+            return new Property16<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, implication);
+        }
+
         @Override
-        public CheckResult<Tuple16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>> check(int size, int tries) {
+        public CheckResult<Tuple16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>> check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -3432,28 +2472,32 @@ public interface Property {
                 final Gen<T14> gen14 = Try.of(() -> a14.apply(size)).recover(x -> { throw Errors.arbitraryError(14, size, x); }).get();
                 final Gen<T15> gen15 = Try.of(() -> a15.apply(size)).recover(x -> { throw Errors.arbitraryError(15, size, x); }).get();
                 final Gen<T16> gen16 = Try.of(() -> a16.apply(size)).recover(x -> { throw Errors.arbitraryError(16, size, x); }).get();
+                boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
-                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
-                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
-                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
-                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
-                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
-                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
-                        final T12 val12 = Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).get();
-                        final T13 val13 = Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).get();
-                        final T14 val14 = Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).get();
-                        final T15 val15 = Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).get();
-                        final T16 val16 = Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.apply(random)).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.apply(random)).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.apply(random)).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.apply(random)).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T12 val12 = Try.of(() -> gen12.apply(random)).recover(x -> { throw Errors.genError(12, size, x); }).get();
+                        final T13 val13 = Try.of(() -> gen13.apply(random)).recover(x -> { throw Errors.genError(13, size, x); }).get();
+                        final T14 val14 = Try.of(() -> gen14.apply(random)).recover(x -> { throw Errors.genError(14, size, x); }).get();
+                        final T15 val15 = Try.of(() -> gen15.apply(random)).recover(x -> { throw Errors.genError(15, size, x); }).get();
+                        final T16 val16 = Try.of(() -> gen16.apply(random)).recover(x -> { throw Errors.genError(16, size, x); }).get();
                         try {
-                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16)).recover(x -> { throw Errors.predicateError(x); }).get();
-                            if (!test) {
-                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16));
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (condition.precondition) {
+                                exhausted = false;
+                                if (!condition.postcondition) {
+                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16));
+                                }
                             }
                         } catch(Failure.NonFatal nonFatal) {
                             return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16)));
@@ -3462,14 +2506,14 @@ public interface Property {
                         return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries);
+                return CheckResult.satisfied(tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
                 return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class SuchThat17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> implements Property {
+    static class Property17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> implements Property {
 
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
@@ -3488,9 +2532,9 @@ public interface Property {
         private final Arbitrary<T15> a15;
         private final Arbitrary<T16> a16;
         private final Arbitrary<T17> a17;
-        final CheckedLambda17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, Boolean> predicate;
+        final CheckedLambda17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, Condition> predicate;
 
-        SuchThat17(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, CheckedLambda17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, Boolean> predicate) {
+        Property17(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, CheckedLambda17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, Condition> predicate) {
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -3511,8 +2555,21 @@ public interface Property {
             this.predicate = predicate;
         }
 
+        public Property implies(CheckedLambda17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, Boolean> postcondition) {
+            final CheckedLambda17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17) -> {
+                final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17);
+                if (precondition.isFalse()) {
+                    // ex falso quodlibet
+                    return new Condition(false, true);
+                } else {
+                    return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17));
+                }
+            };
+            return new Property17<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, implication);
+        }
+
         @Override
-        public CheckResult<Tuple17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>> check(int size, int tries) {
+        public CheckResult<Tuple17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>> check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -3531,29 +2588,33 @@ public interface Property {
                 final Gen<T15> gen15 = Try.of(() -> a15.apply(size)).recover(x -> { throw Errors.arbitraryError(15, size, x); }).get();
                 final Gen<T16> gen16 = Try.of(() -> a16.apply(size)).recover(x -> { throw Errors.arbitraryError(16, size, x); }).get();
                 final Gen<T17> gen17 = Try.of(() -> a17.apply(size)).recover(x -> { throw Errors.arbitraryError(17, size, x); }).get();
+                boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
-                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
-                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
-                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
-                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
-                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
-                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
-                        final T12 val12 = Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).get();
-                        final T13 val13 = Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).get();
-                        final T14 val14 = Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).get();
-                        final T15 val15 = Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).get();
-                        final T16 val16 = Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).get();
-                        final T17 val17 = Try.of(() -> gen17.get()).recover(x -> { throw Errors.genError(17, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.apply(random)).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.apply(random)).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.apply(random)).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.apply(random)).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T12 val12 = Try.of(() -> gen12.apply(random)).recover(x -> { throw Errors.genError(12, size, x); }).get();
+                        final T13 val13 = Try.of(() -> gen13.apply(random)).recover(x -> { throw Errors.genError(13, size, x); }).get();
+                        final T14 val14 = Try.of(() -> gen14.apply(random)).recover(x -> { throw Errors.genError(14, size, x); }).get();
+                        final T15 val15 = Try.of(() -> gen15.apply(random)).recover(x -> { throw Errors.genError(15, size, x); }).get();
+                        final T16 val16 = Try.of(() -> gen16.apply(random)).recover(x -> { throw Errors.genError(16, size, x); }).get();
+                        final T17 val17 = Try.of(() -> gen17.apply(random)).recover(x -> { throw Errors.genError(17, size, x); }).get();
                         try {
-                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17)).recover(x -> { throw Errors.predicateError(x); }).get();
-                            if (!test) {
-                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17));
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (condition.precondition) {
+                                exhausted = false;
+                                if (!condition.postcondition) {
+                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17));
+                                }
                             }
                         } catch(Failure.NonFatal nonFatal) {
                             return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17)));
@@ -3562,14 +2623,14 @@ public interface Property {
                         return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries);
+                return CheckResult.satisfied(tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
                 return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class SuchThat18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> implements Property {
+    static class Property18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> implements Property {
 
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
@@ -3589,9 +2650,9 @@ public interface Property {
         private final Arbitrary<T16> a16;
         private final Arbitrary<T17> a17;
         private final Arbitrary<T18> a18;
-        final CheckedLambda18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, Boolean> predicate;
+        final CheckedLambda18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, Condition> predicate;
 
-        SuchThat18(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, CheckedLambda18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, Boolean> predicate) {
+        Property18(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, CheckedLambda18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, Condition> predicate) {
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -3613,8 +2674,21 @@ public interface Property {
             this.predicate = predicate;
         }
 
+        public Property implies(CheckedLambda18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, Boolean> postcondition) {
+            final CheckedLambda18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18) -> {
+                final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18);
+                if (precondition.isFalse()) {
+                    // ex falso quodlibet
+                    return new Condition(false, true);
+                } else {
+                    return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18));
+                }
+            };
+            return new Property18<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, implication);
+        }
+
         @Override
-        public CheckResult<Tuple18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>> check(int size, int tries) {
+        public CheckResult<Tuple18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>> check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -3634,30 +2708,34 @@ public interface Property {
                 final Gen<T16> gen16 = Try.of(() -> a16.apply(size)).recover(x -> { throw Errors.arbitraryError(16, size, x); }).get();
                 final Gen<T17> gen17 = Try.of(() -> a17.apply(size)).recover(x -> { throw Errors.arbitraryError(17, size, x); }).get();
                 final Gen<T18> gen18 = Try.of(() -> a18.apply(size)).recover(x -> { throw Errors.arbitraryError(18, size, x); }).get();
+                boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
-                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
-                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
-                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
-                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
-                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
-                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
-                        final T12 val12 = Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).get();
-                        final T13 val13 = Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).get();
-                        final T14 val14 = Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).get();
-                        final T15 val15 = Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).get();
-                        final T16 val16 = Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).get();
-                        final T17 val17 = Try.of(() -> gen17.get()).recover(x -> { throw Errors.genError(17, size, x); }).get();
-                        final T18 val18 = Try.of(() -> gen18.get()).recover(x -> { throw Errors.genError(18, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.apply(random)).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.apply(random)).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.apply(random)).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.apply(random)).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T12 val12 = Try.of(() -> gen12.apply(random)).recover(x -> { throw Errors.genError(12, size, x); }).get();
+                        final T13 val13 = Try.of(() -> gen13.apply(random)).recover(x -> { throw Errors.genError(13, size, x); }).get();
+                        final T14 val14 = Try.of(() -> gen14.apply(random)).recover(x -> { throw Errors.genError(14, size, x); }).get();
+                        final T15 val15 = Try.of(() -> gen15.apply(random)).recover(x -> { throw Errors.genError(15, size, x); }).get();
+                        final T16 val16 = Try.of(() -> gen16.apply(random)).recover(x -> { throw Errors.genError(16, size, x); }).get();
+                        final T17 val17 = Try.of(() -> gen17.apply(random)).recover(x -> { throw Errors.genError(17, size, x); }).get();
+                        final T18 val18 = Try.of(() -> gen18.apply(random)).recover(x -> { throw Errors.genError(18, size, x); }).get();
                         try {
-                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18)).recover(x -> { throw Errors.predicateError(x); }).get();
-                            if (!test) {
-                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18));
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (condition.precondition) {
+                                exhausted = false;
+                                if (!condition.postcondition) {
+                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18));
+                                }
                             }
                         } catch(Failure.NonFatal nonFatal) {
                             return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18)));
@@ -3666,14 +2744,14 @@ public interface Property {
                         return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries);
+                return CheckResult.satisfied(tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
                 return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class SuchThat19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> implements Property {
+    static class Property19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> implements Property {
 
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
@@ -3694,9 +2772,9 @@ public interface Property {
         private final Arbitrary<T17> a17;
         private final Arbitrary<T18> a18;
         private final Arbitrary<T19> a19;
-        final CheckedLambda19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, Boolean> predicate;
+        final CheckedLambda19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, Condition> predicate;
 
-        SuchThat19(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, CheckedLambda19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, Boolean> predicate) {
+        Property19(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, CheckedLambda19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, Condition> predicate) {
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -3719,8 +2797,21 @@ public interface Property {
             this.predicate = predicate;
         }
 
+        public Property implies(CheckedLambda19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, Boolean> postcondition) {
+            final CheckedLambda19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19) -> {
+                final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19);
+                if (precondition.isFalse()) {
+                    // ex falso quodlibet
+                    return new Condition(false, true);
+                } else {
+                    return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19));
+                }
+            };
+            return new Property19<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, implication);
+        }
+
         @Override
-        public CheckResult<Tuple19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>> check(int size, int tries) {
+        public CheckResult<Tuple19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>> check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -3741,31 +2832,35 @@ public interface Property {
                 final Gen<T17> gen17 = Try.of(() -> a17.apply(size)).recover(x -> { throw Errors.arbitraryError(17, size, x); }).get();
                 final Gen<T18> gen18 = Try.of(() -> a18.apply(size)).recover(x -> { throw Errors.arbitraryError(18, size, x); }).get();
                 final Gen<T19> gen19 = Try.of(() -> a19.apply(size)).recover(x -> { throw Errors.arbitraryError(19, size, x); }).get();
+                boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
-                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
-                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
-                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
-                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
-                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
-                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
-                        final T12 val12 = Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).get();
-                        final T13 val13 = Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).get();
-                        final T14 val14 = Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).get();
-                        final T15 val15 = Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).get();
-                        final T16 val16 = Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).get();
-                        final T17 val17 = Try.of(() -> gen17.get()).recover(x -> { throw Errors.genError(17, size, x); }).get();
-                        final T18 val18 = Try.of(() -> gen18.get()).recover(x -> { throw Errors.genError(18, size, x); }).get();
-                        final T19 val19 = Try.of(() -> gen19.get()).recover(x -> { throw Errors.genError(19, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.apply(random)).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.apply(random)).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.apply(random)).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.apply(random)).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T12 val12 = Try.of(() -> gen12.apply(random)).recover(x -> { throw Errors.genError(12, size, x); }).get();
+                        final T13 val13 = Try.of(() -> gen13.apply(random)).recover(x -> { throw Errors.genError(13, size, x); }).get();
+                        final T14 val14 = Try.of(() -> gen14.apply(random)).recover(x -> { throw Errors.genError(14, size, x); }).get();
+                        final T15 val15 = Try.of(() -> gen15.apply(random)).recover(x -> { throw Errors.genError(15, size, x); }).get();
+                        final T16 val16 = Try.of(() -> gen16.apply(random)).recover(x -> { throw Errors.genError(16, size, x); }).get();
+                        final T17 val17 = Try.of(() -> gen17.apply(random)).recover(x -> { throw Errors.genError(17, size, x); }).get();
+                        final T18 val18 = Try.of(() -> gen18.apply(random)).recover(x -> { throw Errors.genError(18, size, x); }).get();
+                        final T19 val19 = Try.of(() -> gen19.apply(random)).recover(x -> { throw Errors.genError(19, size, x); }).get();
                         try {
-                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19)).recover(x -> { throw Errors.predicateError(x); }).get();
-                            if (!test) {
-                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19));
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (condition.precondition) {
+                                exhausted = false;
+                                if (!condition.postcondition) {
+                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19));
+                                }
                             }
                         } catch(Failure.NonFatal nonFatal) {
                             return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19)));
@@ -3774,14 +2869,14 @@ public interface Property {
                         return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries);
+                return CheckResult.satisfied(tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
                 return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class SuchThat20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> implements Property {
+    static class Property20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> implements Property {
 
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
@@ -3803,9 +2898,9 @@ public interface Property {
         private final Arbitrary<T18> a18;
         private final Arbitrary<T19> a19;
         private final Arbitrary<T20> a20;
-        final CheckedLambda20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, Boolean> predicate;
+        final CheckedLambda20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, Condition> predicate;
 
-        SuchThat20(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, CheckedLambda20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, Boolean> predicate) {
+        Property20(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, CheckedLambda20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, Condition> predicate) {
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -3829,8 +2924,21 @@ public interface Property {
             this.predicate = predicate;
         }
 
+        public Property implies(CheckedLambda20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, Boolean> postcondition) {
+            final CheckedLambda20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20) -> {
+                final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20);
+                if (precondition.isFalse()) {
+                    // ex falso quodlibet
+                    return new Condition(false, true);
+                } else {
+                    return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20));
+                }
+            };
+            return new Property20<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, implication);
+        }
+
         @Override
-        public CheckResult<Tuple20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>> check(int size, int tries) {
+        public CheckResult<Tuple20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>> check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -3852,32 +2960,36 @@ public interface Property {
                 final Gen<T18> gen18 = Try.of(() -> a18.apply(size)).recover(x -> { throw Errors.arbitraryError(18, size, x); }).get();
                 final Gen<T19> gen19 = Try.of(() -> a19.apply(size)).recover(x -> { throw Errors.arbitraryError(19, size, x); }).get();
                 final Gen<T20> gen20 = Try.of(() -> a20.apply(size)).recover(x -> { throw Errors.arbitraryError(20, size, x); }).get();
+                boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
-                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
-                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
-                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
-                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
-                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
-                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
-                        final T12 val12 = Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).get();
-                        final T13 val13 = Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).get();
-                        final T14 val14 = Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).get();
-                        final T15 val15 = Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).get();
-                        final T16 val16 = Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).get();
-                        final T17 val17 = Try.of(() -> gen17.get()).recover(x -> { throw Errors.genError(17, size, x); }).get();
-                        final T18 val18 = Try.of(() -> gen18.get()).recover(x -> { throw Errors.genError(18, size, x); }).get();
-                        final T19 val19 = Try.of(() -> gen19.get()).recover(x -> { throw Errors.genError(19, size, x); }).get();
-                        final T20 val20 = Try.of(() -> gen20.get()).recover(x -> { throw Errors.genError(20, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.apply(random)).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.apply(random)).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.apply(random)).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.apply(random)).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T12 val12 = Try.of(() -> gen12.apply(random)).recover(x -> { throw Errors.genError(12, size, x); }).get();
+                        final T13 val13 = Try.of(() -> gen13.apply(random)).recover(x -> { throw Errors.genError(13, size, x); }).get();
+                        final T14 val14 = Try.of(() -> gen14.apply(random)).recover(x -> { throw Errors.genError(14, size, x); }).get();
+                        final T15 val15 = Try.of(() -> gen15.apply(random)).recover(x -> { throw Errors.genError(15, size, x); }).get();
+                        final T16 val16 = Try.of(() -> gen16.apply(random)).recover(x -> { throw Errors.genError(16, size, x); }).get();
+                        final T17 val17 = Try.of(() -> gen17.apply(random)).recover(x -> { throw Errors.genError(17, size, x); }).get();
+                        final T18 val18 = Try.of(() -> gen18.apply(random)).recover(x -> { throw Errors.genError(18, size, x); }).get();
+                        final T19 val19 = Try.of(() -> gen19.apply(random)).recover(x -> { throw Errors.genError(19, size, x); }).get();
+                        final T20 val20 = Try.of(() -> gen20.apply(random)).recover(x -> { throw Errors.genError(20, size, x); }).get();
                         try {
-                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20)).recover(x -> { throw Errors.predicateError(x); }).get();
-                            if (!test) {
-                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20));
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (condition.precondition) {
+                                exhausted = false;
+                                if (!condition.postcondition) {
+                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20));
+                                }
                             }
                         } catch(Failure.NonFatal nonFatal) {
                             return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20)));
@@ -3886,14 +2998,14 @@ public interface Property {
                         return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries);
+                return CheckResult.satisfied(tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
                 return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class SuchThat21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> implements Property {
+    static class Property21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> implements Property {
 
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
@@ -3916,9 +3028,9 @@ public interface Property {
         private final Arbitrary<T19> a19;
         private final Arbitrary<T20> a20;
         private final Arbitrary<T21> a21;
-        final CheckedLambda21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, Boolean> predicate;
+        final CheckedLambda21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, Condition> predicate;
 
-        SuchThat21(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, CheckedLambda21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, Boolean> predicate) {
+        Property21(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, CheckedLambda21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, Condition> predicate) {
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -3943,8 +3055,21 @@ public interface Property {
             this.predicate = predicate;
         }
 
+        public Property implies(CheckedLambda21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, Boolean> postcondition) {
+            final CheckedLambda21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21) -> {
+                final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21);
+                if (precondition.isFalse()) {
+                    // ex falso quodlibet
+                    return new Condition(false, true);
+                } else {
+                    return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21));
+                }
+            };
+            return new Property21<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, implication);
+        }
+
         @Override
-        public CheckResult<Tuple21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>> check(int size, int tries) {
+        public CheckResult<Tuple21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>> check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -3967,33 +3092,37 @@ public interface Property {
                 final Gen<T19> gen19 = Try.of(() -> a19.apply(size)).recover(x -> { throw Errors.arbitraryError(19, size, x); }).get();
                 final Gen<T20> gen20 = Try.of(() -> a20.apply(size)).recover(x -> { throw Errors.arbitraryError(20, size, x); }).get();
                 final Gen<T21> gen21 = Try.of(() -> a21.apply(size)).recover(x -> { throw Errors.arbitraryError(21, size, x); }).get();
+                boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
-                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
-                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
-                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
-                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
-                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
-                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
-                        final T12 val12 = Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).get();
-                        final T13 val13 = Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).get();
-                        final T14 val14 = Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).get();
-                        final T15 val15 = Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).get();
-                        final T16 val16 = Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).get();
-                        final T17 val17 = Try.of(() -> gen17.get()).recover(x -> { throw Errors.genError(17, size, x); }).get();
-                        final T18 val18 = Try.of(() -> gen18.get()).recover(x -> { throw Errors.genError(18, size, x); }).get();
-                        final T19 val19 = Try.of(() -> gen19.get()).recover(x -> { throw Errors.genError(19, size, x); }).get();
-                        final T20 val20 = Try.of(() -> gen20.get()).recover(x -> { throw Errors.genError(20, size, x); }).get();
-                        final T21 val21 = Try.of(() -> gen21.get()).recover(x -> { throw Errors.genError(21, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.apply(random)).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.apply(random)).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.apply(random)).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.apply(random)).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T12 val12 = Try.of(() -> gen12.apply(random)).recover(x -> { throw Errors.genError(12, size, x); }).get();
+                        final T13 val13 = Try.of(() -> gen13.apply(random)).recover(x -> { throw Errors.genError(13, size, x); }).get();
+                        final T14 val14 = Try.of(() -> gen14.apply(random)).recover(x -> { throw Errors.genError(14, size, x); }).get();
+                        final T15 val15 = Try.of(() -> gen15.apply(random)).recover(x -> { throw Errors.genError(15, size, x); }).get();
+                        final T16 val16 = Try.of(() -> gen16.apply(random)).recover(x -> { throw Errors.genError(16, size, x); }).get();
+                        final T17 val17 = Try.of(() -> gen17.apply(random)).recover(x -> { throw Errors.genError(17, size, x); }).get();
+                        final T18 val18 = Try.of(() -> gen18.apply(random)).recover(x -> { throw Errors.genError(18, size, x); }).get();
+                        final T19 val19 = Try.of(() -> gen19.apply(random)).recover(x -> { throw Errors.genError(19, size, x); }).get();
+                        final T20 val20 = Try.of(() -> gen20.apply(random)).recover(x -> { throw Errors.genError(20, size, x); }).get();
+                        final T21 val21 = Try.of(() -> gen21.apply(random)).recover(x -> { throw Errors.genError(21, size, x); }).get();
                         try {
-                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21)).recover(x -> { throw Errors.predicateError(x); }).get();
-                            if (!test) {
-                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21));
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (condition.precondition) {
+                                exhausted = false;
+                                if (!condition.postcondition) {
+                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21));
+                                }
                             }
                         } catch(Failure.NonFatal nonFatal) {
                             return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21)));
@@ -4002,14 +3131,14 @@ public interface Property {
                         return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries);
+                return CheckResult.satisfied(tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
                 return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class SuchThat22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> implements Property {
+    static class Property22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> implements Property {
 
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
@@ -4033,9 +3162,9 @@ public interface Property {
         private final Arbitrary<T20> a20;
         private final Arbitrary<T21> a21;
         private final Arbitrary<T22> a22;
-        final CheckedLambda22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, Boolean> predicate;
+        final CheckedLambda22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, Condition> predicate;
 
-        SuchThat22(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, CheckedLambda22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, Boolean> predicate) {
+        Property22(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, CheckedLambda22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, Condition> predicate) {
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -4061,8 +3190,21 @@ public interface Property {
             this.predicate = predicate;
         }
 
+        public Property implies(CheckedLambda22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, Boolean> postcondition) {
+            final CheckedLambda22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22) -> {
+                final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22);
+                if (precondition.isFalse()) {
+                    // ex falso quodlibet
+                    return new Condition(false, true);
+                } else {
+                    return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22));
+                }
+            };
+            return new Property22<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, implication);
+        }
+
         @Override
-        public CheckResult<Tuple22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>> check(int size, int tries) {
+        public CheckResult<Tuple22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>> check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -4086,34 +3228,38 @@ public interface Property {
                 final Gen<T20> gen20 = Try.of(() -> a20.apply(size)).recover(x -> { throw Errors.arbitraryError(20, size, x); }).get();
                 final Gen<T21> gen21 = Try.of(() -> a21.apply(size)).recover(x -> { throw Errors.arbitraryError(21, size, x); }).get();
                 final Gen<T22> gen22 = Try.of(() -> a22.apply(size)).recover(x -> { throw Errors.arbitraryError(22, size, x); }).get();
+                boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
-                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
-                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
-                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
-                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
-                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
-                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
-                        final T12 val12 = Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).get();
-                        final T13 val13 = Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).get();
-                        final T14 val14 = Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).get();
-                        final T15 val15 = Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).get();
-                        final T16 val16 = Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).get();
-                        final T17 val17 = Try.of(() -> gen17.get()).recover(x -> { throw Errors.genError(17, size, x); }).get();
-                        final T18 val18 = Try.of(() -> gen18.get()).recover(x -> { throw Errors.genError(18, size, x); }).get();
-                        final T19 val19 = Try.of(() -> gen19.get()).recover(x -> { throw Errors.genError(19, size, x); }).get();
-                        final T20 val20 = Try.of(() -> gen20.get()).recover(x -> { throw Errors.genError(20, size, x); }).get();
-                        final T21 val21 = Try.of(() -> gen21.get()).recover(x -> { throw Errors.genError(21, size, x); }).get();
-                        final T22 val22 = Try.of(() -> gen22.get()).recover(x -> { throw Errors.genError(22, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.apply(random)).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.apply(random)).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.apply(random)).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.apply(random)).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T12 val12 = Try.of(() -> gen12.apply(random)).recover(x -> { throw Errors.genError(12, size, x); }).get();
+                        final T13 val13 = Try.of(() -> gen13.apply(random)).recover(x -> { throw Errors.genError(13, size, x); }).get();
+                        final T14 val14 = Try.of(() -> gen14.apply(random)).recover(x -> { throw Errors.genError(14, size, x); }).get();
+                        final T15 val15 = Try.of(() -> gen15.apply(random)).recover(x -> { throw Errors.genError(15, size, x); }).get();
+                        final T16 val16 = Try.of(() -> gen16.apply(random)).recover(x -> { throw Errors.genError(16, size, x); }).get();
+                        final T17 val17 = Try.of(() -> gen17.apply(random)).recover(x -> { throw Errors.genError(17, size, x); }).get();
+                        final T18 val18 = Try.of(() -> gen18.apply(random)).recover(x -> { throw Errors.genError(18, size, x); }).get();
+                        final T19 val19 = Try.of(() -> gen19.apply(random)).recover(x -> { throw Errors.genError(19, size, x); }).get();
+                        final T20 val20 = Try.of(() -> gen20.apply(random)).recover(x -> { throw Errors.genError(20, size, x); }).get();
+                        final T21 val21 = Try.of(() -> gen21.apply(random)).recover(x -> { throw Errors.genError(21, size, x); }).get();
+                        final T22 val22 = Try.of(() -> gen22.apply(random)).recover(x -> { throw Errors.genError(22, size, x); }).get();
                         try {
-                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22)).recover(x -> { throw Errors.predicateError(x); }).get();
-                            if (!test) {
-                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22));
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (condition.precondition) {
+                                exhausted = false;
+                                if (!condition.postcondition) {
+                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22));
+                                }
                             }
                         } catch(Failure.NonFatal nonFatal) {
                             return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22)));
@@ -4122,14 +3268,14 @@ public interface Property {
                         return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries);
+                return CheckResult.satisfied(tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
                 return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class SuchThat23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> implements Property {
+    static class Property23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> implements Property {
 
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
@@ -4154,9 +3300,9 @@ public interface Property {
         private final Arbitrary<T21> a21;
         private final Arbitrary<T22> a22;
         private final Arbitrary<T23> a23;
-        final CheckedLambda23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, Boolean> predicate;
+        final CheckedLambda23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, Condition> predicate;
 
-        SuchThat23(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, CheckedLambda23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, Boolean> predicate) {
+        Property23(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, CheckedLambda23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, Condition> predicate) {
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -4183,8 +3329,21 @@ public interface Property {
             this.predicate = predicate;
         }
 
+        public Property implies(CheckedLambda23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, Boolean> postcondition) {
+            final CheckedLambda23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23) -> {
+                final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23);
+                if (precondition.isFalse()) {
+                    // ex falso quodlibet
+                    return new Condition(false, true);
+                } else {
+                    return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23));
+                }
+            };
+            return new Property23<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, implication);
+        }
+
         @Override
-        public CheckResult<Tuple23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>> check(int size, int tries) {
+        public CheckResult<Tuple23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>> check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -4209,35 +3368,39 @@ public interface Property {
                 final Gen<T21> gen21 = Try.of(() -> a21.apply(size)).recover(x -> { throw Errors.arbitraryError(21, size, x); }).get();
                 final Gen<T22> gen22 = Try.of(() -> a22.apply(size)).recover(x -> { throw Errors.arbitraryError(22, size, x); }).get();
                 final Gen<T23> gen23 = Try.of(() -> a23.apply(size)).recover(x -> { throw Errors.arbitraryError(23, size, x); }).get();
+                boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
-                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
-                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
-                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
-                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
-                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
-                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
-                        final T12 val12 = Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).get();
-                        final T13 val13 = Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).get();
-                        final T14 val14 = Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).get();
-                        final T15 val15 = Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).get();
-                        final T16 val16 = Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).get();
-                        final T17 val17 = Try.of(() -> gen17.get()).recover(x -> { throw Errors.genError(17, size, x); }).get();
-                        final T18 val18 = Try.of(() -> gen18.get()).recover(x -> { throw Errors.genError(18, size, x); }).get();
-                        final T19 val19 = Try.of(() -> gen19.get()).recover(x -> { throw Errors.genError(19, size, x); }).get();
-                        final T20 val20 = Try.of(() -> gen20.get()).recover(x -> { throw Errors.genError(20, size, x); }).get();
-                        final T21 val21 = Try.of(() -> gen21.get()).recover(x -> { throw Errors.genError(21, size, x); }).get();
-                        final T22 val22 = Try.of(() -> gen22.get()).recover(x -> { throw Errors.genError(22, size, x); }).get();
-                        final T23 val23 = Try.of(() -> gen23.get()).recover(x -> { throw Errors.genError(23, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.apply(random)).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.apply(random)).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.apply(random)).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.apply(random)).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T12 val12 = Try.of(() -> gen12.apply(random)).recover(x -> { throw Errors.genError(12, size, x); }).get();
+                        final T13 val13 = Try.of(() -> gen13.apply(random)).recover(x -> { throw Errors.genError(13, size, x); }).get();
+                        final T14 val14 = Try.of(() -> gen14.apply(random)).recover(x -> { throw Errors.genError(14, size, x); }).get();
+                        final T15 val15 = Try.of(() -> gen15.apply(random)).recover(x -> { throw Errors.genError(15, size, x); }).get();
+                        final T16 val16 = Try.of(() -> gen16.apply(random)).recover(x -> { throw Errors.genError(16, size, x); }).get();
+                        final T17 val17 = Try.of(() -> gen17.apply(random)).recover(x -> { throw Errors.genError(17, size, x); }).get();
+                        final T18 val18 = Try.of(() -> gen18.apply(random)).recover(x -> { throw Errors.genError(18, size, x); }).get();
+                        final T19 val19 = Try.of(() -> gen19.apply(random)).recover(x -> { throw Errors.genError(19, size, x); }).get();
+                        final T20 val20 = Try.of(() -> gen20.apply(random)).recover(x -> { throw Errors.genError(20, size, x); }).get();
+                        final T21 val21 = Try.of(() -> gen21.apply(random)).recover(x -> { throw Errors.genError(21, size, x); }).get();
+                        final T22 val22 = Try.of(() -> gen22.apply(random)).recover(x -> { throw Errors.genError(22, size, x); }).get();
+                        final T23 val23 = Try.of(() -> gen23.apply(random)).recover(x -> { throw Errors.genError(23, size, x); }).get();
                         try {
-                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23)).recover(x -> { throw Errors.predicateError(x); }).get();
-                            if (!test) {
-                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23));
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (condition.precondition) {
+                                exhausted = false;
+                                if (!condition.postcondition) {
+                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23));
+                                }
                             }
                         } catch(Failure.NonFatal nonFatal) {
                             return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23)));
@@ -4246,14 +3409,14 @@ public interface Property {
                         return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries);
+                return CheckResult.satisfied(tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
                 return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class SuchThat24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> implements Property {
+    static class Property24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> implements Property {
 
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
@@ -4279,9 +3442,9 @@ public interface Property {
         private final Arbitrary<T22> a22;
         private final Arbitrary<T23> a23;
         private final Arbitrary<T24> a24;
-        final CheckedLambda24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, Boolean> predicate;
+        final CheckedLambda24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, Condition> predicate;
 
-        SuchThat24(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, CheckedLambda24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, Boolean> predicate) {
+        Property24(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, CheckedLambda24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, Condition> predicate) {
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -4309,8 +3472,21 @@ public interface Property {
             this.predicate = predicate;
         }
 
+        public Property implies(CheckedLambda24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, Boolean> postcondition) {
+            final CheckedLambda24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24) -> {
+                final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24);
+                if (precondition.isFalse()) {
+                    // ex falso quodlibet
+                    return new Condition(false, true);
+                } else {
+                    return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24));
+                }
+            };
+            return new Property24<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, implication);
+        }
+
         @Override
-        public CheckResult<Tuple24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>> check(int size, int tries) {
+        public CheckResult<Tuple24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>> check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -4336,36 +3512,40 @@ public interface Property {
                 final Gen<T22> gen22 = Try.of(() -> a22.apply(size)).recover(x -> { throw Errors.arbitraryError(22, size, x); }).get();
                 final Gen<T23> gen23 = Try.of(() -> a23.apply(size)).recover(x -> { throw Errors.arbitraryError(23, size, x); }).get();
                 final Gen<T24> gen24 = Try.of(() -> a24.apply(size)).recover(x -> { throw Errors.arbitraryError(24, size, x); }).get();
+                boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
-                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
-                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
-                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
-                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
-                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
-                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
-                        final T12 val12 = Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).get();
-                        final T13 val13 = Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).get();
-                        final T14 val14 = Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).get();
-                        final T15 val15 = Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).get();
-                        final T16 val16 = Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).get();
-                        final T17 val17 = Try.of(() -> gen17.get()).recover(x -> { throw Errors.genError(17, size, x); }).get();
-                        final T18 val18 = Try.of(() -> gen18.get()).recover(x -> { throw Errors.genError(18, size, x); }).get();
-                        final T19 val19 = Try.of(() -> gen19.get()).recover(x -> { throw Errors.genError(19, size, x); }).get();
-                        final T20 val20 = Try.of(() -> gen20.get()).recover(x -> { throw Errors.genError(20, size, x); }).get();
-                        final T21 val21 = Try.of(() -> gen21.get()).recover(x -> { throw Errors.genError(21, size, x); }).get();
-                        final T22 val22 = Try.of(() -> gen22.get()).recover(x -> { throw Errors.genError(22, size, x); }).get();
-                        final T23 val23 = Try.of(() -> gen23.get()).recover(x -> { throw Errors.genError(23, size, x); }).get();
-                        final T24 val24 = Try.of(() -> gen24.get()).recover(x -> { throw Errors.genError(24, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.apply(random)).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.apply(random)).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.apply(random)).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.apply(random)).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T12 val12 = Try.of(() -> gen12.apply(random)).recover(x -> { throw Errors.genError(12, size, x); }).get();
+                        final T13 val13 = Try.of(() -> gen13.apply(random)).recover(x -> { throw Errors.genError(13, size, x); }).get();
+                        final T14 val14 = Try.of(() -> gen14.apply(random)).recover(x -> { throw Errors.genError(14, size, x); }).get();
+                        final T15 val15 = Try.of(() -> gen15.apply(random)).recover(x -> { throw Errors.genError(15, size, x); }).get();
+                        final T16 val16 = Try.of(() -> gen16.apply(random)).recover(x -> { throw Errors.genError(16, size, x); }).get();
+                        final T17 val17 = Try.of(() -> gen17.apply(random)).recover(x -> { throw Errors.genError(17, size, x); }).get();
+                        final T18 val18 = Try.of(() -> gen18.apply(random)).recover(x -> { throw Errors.genError(18, size, x); }).get();
+                        final T19 val19 = Try.of(() -> gen19.apply(random)).recover(x -> { throw Errors.genError(19, size, x); }).get();
+                        final T20 val20 = Try.of(() -> gen20.apply(random)).recover(x -> { throw Errors.genError(20, size, x); }).get();
+                        final T21 val21 = Try.of(() -> gen21.apply(random)).recover(x -> { throw Errors.genError(21, size, x); }).get();
+                        final T22 val22 = Try.of(() -> gen22.apply(random)).recover(x -> { throw Errors.genError(22, size, x); }).get();
+                        final T23 val23 = Try.of(() -> gen23.apply(random)).recover(x -> { throw Errors.genError(23, size, x); }).get();
+                        final T24 val24 = Try.of(() -> gen24.apply(random)).recover(x -> { throw Errors.genError(24, size, x); }).get();
                         try {
-                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24)).recover(x -> { throw Errors.predicateError(x); }).get();
-                            if (!test) {
-                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24));
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (condition.precondition) {
+                                exhausted = false;
+                                if (!condition.postcondition) {
+                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24));
+                                }
                             }
                         } catch(Failure.NonFatal nonFatal) {
                             return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24)));
@@ -4374,14 +3554,14 @@ public interface Property {
                         return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries);
+                return CheckResult.satisfied(tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
                 return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class SuchThat25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> implements Property {
+    static class Property25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> implements Property {
 
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
@@ -4408,9 +3588,9 @@ public interface Property {
         private final Arbitrary<T23> a23;
         private final Arbitrary<T24> a24;
         private final Arbitrary<T25> a25;
-        final CheckedLambda25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, Boolean> predicate;
+        final CheckedLambda25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, Condition> predicate;
 
-        SuchThat25(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, CheckedLambda25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, Boolean> predicate) {
+        Property25(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, CheckedLambda25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, Condition> predicate) {
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -4439,8 +3619,21 @@ public interface Property {
             this.predicate = predicate;
         }
 
+        public Property implies(CheckedLambda25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, Boolean> postcondition) {
+            final CheckedLambda25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25) -> {
+                final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25);
+                if (precondition.isFalse()) {
+                    // ex falso quodlibet
+                    return new Condition(false, true);
+                } else {
+                    return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25));
+                }
+            };
+            return new Property25<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, implication);
+        }
+
         @Override
-        public CheckResult<Tuple25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>> check(int size, int tries) {
+        public CheckResult<Tuple25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>> check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -4467,37 +3660,41 @@ public interface Property {
                 final Gen<T23> gen23 = Try.of(() -> a23.apply(size)).recover(x -> { throw Errors.arbitraryError(23, size, x); }).get();
                 final Gen<T24> gen24 = Try.of(() -> a24.apply(size)).recover(x -> { throw Errors.arbitraryError(24, size, x); }).get();
                 final Gen<T25> gen25 = Try.of(() -> a25.apply(size)).recover(x -> { throw Errors.arbitraryError(25, size, x); }).get();
+                boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
-                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
-                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
-                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
-                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
-                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
-                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
-                        final T12 val12 = Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).get();
-                        final T13 val13 = Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).get();
-                        final T14 val14 = Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).get();
-                        final T15 val15 = Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).get();
-                        final T16 val16 = Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).get();
-                        final T17 val17 = Try.of(() -> gen17.get()).recover(x -> { throw Errors.genError(17, size, x); }).get();
-                        final T18 val18 = Try.of(() -> gen18.get()).recover(x -> { throw Errors.genError(18, size, x); }).get();
-                        final T19 val19 = Try.of(() -> gen19.get()).recover(x -> { throw Errors.genError(19, size, x); }).get();
-                        final T20 val20 = Try.of(() -> gen20.get()).recover(x -> { throw Errors.genError(20, size, x); }).get();
-                        final T21 val21 = Try.of(() -> gen21.get()).recover(x -> { throw Errors.genError(21, size, x); }).get();
-                        final T22 val22 = Try.of(() -> gen22.get()).recover(x -> { throw Errors.genError(22, size, x); }).get();
-                        final T23 val23 = Try.of(() -> gen23.get()).recover(x -> { throw Errors.genError(23, size, x); }).get();
-                        final T24 val24 = Try.of(() -> gen24.get()).recover(x -> { throw Errors.genError(24, size, x); }).get();
-                        final T25 val25 = Try.of(() -> gen25.get()).recover(x -> { throw Errors.genError(25, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.apply(random)).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.apply(random)).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.apply(random)).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.apply(random)).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T12 val12 = Try.of(() -> gen12.apply(random)).recover(x -> { throw Errors.genError(12, size, x); }).get();
+                        final T13 val13 = Try.of(() -> gen13.apply(random)).recover(x -> { throw Errors.genError(13, size, x); }).get();
+                        final T14 val14 = Try.of(() -> gen14.apply(random)).recover(x -> { throw Errors.genError(14, size, x); }).get();
+                        final T15 val15 = Try.of(() -> gen15.apply(random)).recover(x -> { throw Errors.genError(15, size, x); }).get();
+                        final T16 val16 = Try.of(() -> gen16.apply(random)).recover(x -> { throw Errors.genError(16, size, x); }).get();
+                        final T17 val17 = Try.of(() -> gen17.apply(random)).recover(x -> { throw Errors.genError(17, size, x); }).get();
+                        final T18 val18 = Try.of(() -> gen18.apply(random)).recover(x -> { throw Errors.genError(18, size, x); }).get();
+                        final T19 val19 = Try.of(() -> gen19.apply(random)).recover(x -> { throw Errors.genError(19, size, x); }).get();
+                        final T20 val20 = Try.of(() -> gen20.apply(random)).recover(x -> { throw Errors.genError(20, size, x); }).get();
+                        final T21 val21 = Try.of(() -> gen21.apply(random)).recover(x -> { throw Errors.genError(21, size, x); }).get();
+                        final T22 val22 = Try.of(() -> gen22.apply(random)).recover(x -> { throw Errors.genError(22, size, x); }).get();
+                        final T23 val23 = Try.of(() -> gen23.apply(random)).recover(x -> { throw Errors.genError(23, size, x); }).get();
+                        final T24 val24 = Try.of(() -> gen24.apply(random)).recover(x -> { throw Errors.genError(24, size, x); }).get();
+                        final T25 val25 = Try.of(() -> gen25.apply(random)).recover(x -> { throw Errors.genError(25, size, x); }).get();
                         try {
-                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24, val25)).recover(x -> { throw Errors.predicateError(x); }).get();
-                            if (!test) {
-                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24, val25));
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24, val25)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (condition.precondition) {
+                                exhausted = false;
+                                if (!condition.postcondition) {
+                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24, val25));
+                                }
                             }
                         } catch(Failure.NonFatal nonFatal) {
                             return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24, val25)));
@@ -4506,14 +3703,14 @@ public interface Property {
                         return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries);
+                return CheckResult.satisfied(tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
                 return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class SuchThat26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> implements Property {
+    static class Property26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> implements Property {
 
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
@@ -4541,9 +3738,9 @@ public interface Property {
         private final Arbitrary<T24> a24;
         private final Arbitrary<T25> a25;
         private final Arbitrary<T26> a26;
-        final CheckedLambda26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, Boolean> predicate;
+        final CheckedLambda26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, Condition> predicate;
 
-        SuchThat26(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26, CheckedLambda26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, Boolean> predicate) {
+        Property26(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26, CheckedLambda26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, Condition> predicate) {
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -4573,8 +3770,21 @@ public interface Property {
             this.predicate = predicate;
         }
 
+        public Property implies(CheckedLambda26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, Boolean> postcondition) {
+            final CheckedLambda26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26) -> {
+                final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26);
+                if (precondition.isFalse()) {
+                    // ex falso quodlibet
+                    return new Condition(false, true);
+                } else {
+                    return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26));
+                }
+            };
+            return new Property26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26, implication);
+        }
+
         @Override
-        public CheckResult<Tuple26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>> check(int size, int tries) {
+        public CheckResult<Tuple26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>> check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -4602,38 +3812,42 @@ public interface Property {
                 final Gen<T24> gen24 = Try.of(() -> a24.apply(size)).recover(x -> { throw Errors.arbitraryError(24, size, x); }).get();
                 final Gen<T25> gen25 = Try.of(() -> a25.apply(size)).recover(x -> { throw Errors.arbitraryError(25, size, x); }).get();
                 final Gen<T26> gen26 = Try.of(() -> a26.apply(size)).recover(x -> { throw Errors.arbitraryError(26, size, x); }).get();
+                boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.get()).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.get()).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.get()).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.get()).recover(x -> { throw Errors.genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.get()).recover(x -> { throw Errors.genError(5, size, x); }).get();
-                        final T6 val6 = Try.of(() -> gen6.get()).recover(x -> { throw Errors.genError(6, size, x); }).get();
-                        final T7 val7 = Try.of(() -> gen7.get()).recover(x -> { throw Errors.genError(7, size, x); }).get();
-                        final T8 val8 = Try.of(() -> gen8.get()).recover(x -> { throw Errors.genError(8, size, x); }).get();
-                        final T9 val9 = Try.of(() -> gen9.get()).recover(x -> { throw Errors.genError(9, size, x); }).get();
-                        final T10 val10 = Try.of(() -> gen10.get()).recover(x -> { throw Errors.genError(10, size, x); }).get();
-                        final T11 val11 = Try.of(() -> gen11.get()).recover(x -> { throw Errors.genError(11, size, x); }).get();
-                        final T12 val12 = Try.of(() -> gen12.get()).recover(x -> { throw Errors.genError(12, size, x); }).get();
-                        final T13 val13 = Try.of(() -> gen13.get()).recover(x -> { throw Errors.genError(13, size, x); }).get();
-                        final T14 val14 = Try.of(() -> gen14.get()).recover(x -> { throw Errors.genError(14, size, x); }).get();
-                        final T15 val15 = Try.of(() -> gen15.get()).recover(x -> { throw Errors.genError(15, size, x); }).get();
-                        final T16 val16 = Try.of(() -> gen16.get()).recover(x -> { throw Errors.genError(16, size, x); }).get();
-                        final T17 val17 = Try.of(() -> gen17.get()).recover(x -> { throw Errors.genError(17, size, x); }).get();
-                        final T18 val18 = Try.of(() -> gen18.get()).recover(x -> { throw Errors.genError(18, size, x); }).get();
-                        final T19 val19 = Try.of(() -> gen19.get()).recover(x -> { throw Errors.genError(19, size, x); }).get();
-                        final T20 val20 = Try.of(() -> gen20.get()).recover(x -> { throw Errors.genError(20, size, x); }).get();
-                        final T21 val21 = Try.of(() -> gen21.get()).recover(x -> { throw Errors.genError(21, size, x); }).get();
-                        final T22 val22 = Try.of(() -> gen22.get()).recover(x -> { throw Errors.genError(22, size, x); }).get();
-                        final T23 val23 = Try.of(() -> gen23.get()).recover(x -> { throw Errors.genError(23, size, x); }).get();
-                        final T24 val24 = Try.of(() -> gen24.get()).recover(x -> { throw Errors.genError(24, size, x); }).get();
-                        final T25 val25 = Try.of(() -> gen25.get()).recover(x -> { throw Errors.genError(25, size, x); }).get();
-                        final T26 val26 = Try.of(() -> gen26.get()).recover(x -> { throw Errors.genError(26, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.apply(random)).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T9 val9 = Try.of(() -> gen9.apply(random)).recover(x -> { throw Errors.genError(9, size, x); }).get();
+                        final T10 val10 = Try.of(() -> gen10.apply(random)).recover(x -> { throw Errors.genError(10, size, x); }).get();
+                        final T11 val11 = Try.of(() -> gen11.apply(random)).recover(x -> { throw Errors.genError(11, size, x); }).get();
+                        final T12 val12 = Try.of(() -> gen12.apply(random)).recover(x -> { throw Errors.genError(12, size, x); }).get();
+                        final T13 val13 = Try.of(() -> gen13.apply(random)).recover(x -> { throw Errors.genError(13, size, x); }).get();
+                        final T14 val14 = Try.of(() -> gen14.apply(random)).recover(x -> { throw Errors.genError(14, size, x); }).get();
+                        final T15 val15 = Try.of(() -> gen15.apply(random)).recover(x -> { throw Errors.genError(15, size, x); }).get();
+                        final T16 val16 = Try.of(() -> gen16.apply(random)).recover(x -> { throw Errors.genError(16, size, x); }).get();
+                        final T17 val17 = Try.of(() -> gen17.apply(random)).recover(x -> { throw Errors.genError(17, size, x); }).get();
+                        final T18 val18 = Try.of(() -> gen18.apply(random)).recover(x -> { throw Errors.genError(18, size, x); }).get();
+                        final T19 val19 = Try.of(() -> gen19.apply(random)).recover(x -> { throw Errors.genError(19, size, x); }).get();
+                        final T20 val20 = Try.of(() -> gen20.apply(random)).recover(x -> { throw Errors.genError(20, size, x); }).get();
+                        final T21 val21 = Try.of(() -> gen21.apply(random)).recover(x -> { throw Errors.genError(21, size, x); }).get();
+                        final T22 val22 = Try.of(() -> gen22.apply(random)).recover(x -> { throw Errors.genError(22, size, x); }).get();
+                        final T23 val23 = Try.of(() -> gen23.apply(random)).recover(x -> { throw Errors.genError(23, size, x); }).get();
+                        final T24 val24 = Try.of(() -> gen24.apply(random)).recover(x -> { throw Errors.genError(24, size, x); }).get();
+                        final T25 val25 = Try.of(() -> gen25.apply(random)).recover(x -> { throw Errors.genError(25, size, x); }).get();
+                        final T26 val26 = Try.of(() -> gen26.apply(random)).recover(x -> { throw Errors.genError(26, size, x); }).get();
                         try {
-                            final boolean test = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24, val25, val26)).recover(x -> { throw Errors.predicateError(x); }).get();
-                            if (!test) {
-                                return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24, val25, val26));
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24, val25, val26)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (condition.precondition) {
+                                exhausted = false;
+                                if (!condition.postcondition) {
+                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24, val25, val26));
+                                }
                             }
                         } catch(Failure.NonFatal nonFatal) {
                             return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24, val25, val26)));
@@ -4642,10 +3856,26 @@ public interface Property {
                         return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries);
+                return CheckResult.satisfied(tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
                 return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
             }
+        }
+    }
+
+    static class Condition {
+
+        final boolean precondition;
+        final boolean postcondition;
+
+        Condition(boolean precondition, boolean postcondition) {
+            this.precondition = precondition;
+            this.postcondition = postcondition;
+        }
+
+        // ¬(p => q) ≡ ¬(¬p ∨ q) ≡ p ∧ ¬q
+        boolean isFalse() {
+            return precondition && !postcondition;
         }
     }
 }

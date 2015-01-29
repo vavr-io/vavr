@@ -12,6 +12,13 @@ interface Errors {
     String GEN_ERROR = "Gen %s of size %s";
     String PREDICATE_ERROR = "Applying predicate";
 
+    /**
+     *
+     * @param position The position of the argument within the argument list of the property, starting with 1.
+     * @param size The size hint passed to the {@linkplain Arbitrary} which caused the error.
+     * @param cause The error which occured when the {@linkplain Arbitrary} tried to obtain the generator {@linkplain Gen}.
+     * @return
+     */
     static Error arbitraryError(int position, int size, Throwable cause) {
         return new Error(String.format(ARBITRARY_ERROR, position, size), cause);
     }

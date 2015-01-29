@@ -13,8 +13,8 @@ import javaslang.control.Some;
 // TODO: ValueObject (unapply, equals, hashCode, toString)
 public interface CheckResult<T extends Tuple> {
 
-    static <T extends Tuple> Satisfied<T> satisfied(int count) {
-        return new Satisfied<>(count);
+    static <T extends Tuple> Satisfied<T> satisfied(int count, boolean exhausted) {
+        return new Satisfied<>(count, exhausted);
     }
 
     static <T extends Tuple> Falsified<T> falsified(int count, T sample) {
@@ -31,6 +31,8 @@ public interface CheckResult<T extends Tuple> {
 
     boolean isErroneous();
 
+    boolean isExhausted();
+
     int count();
 
     Option<T> sample();
@@ -44,9 +46,11 @@ public interface CheckResult<T extends Tuple> {
     static class Satisfied<T extends Tuple> implements CheckResult<T> {
 
         final int count;
+        final boolean exhausted;
 
-        Satisfied(int count) {
+        Satisfied(int count, boolean exhausted) {
             this.count = count;
+            this.exhausted = exhausted;
         }
 
         @Override
@@ -62,6 +66,11 @@ public interface CheckResult<T extends Tuple> {
         @Override
         public boolean isErroneous() {
             return false;
+        }
+
+        @Override
+        public boolean isExhausted() {
+            return exhausted;
         }
 
         @Override
@@ -110,6 +119,11 @@ public interface CheckResult<T extends Tuple> {
         }
 
         @Override
+        public boolean isExhausted() {
+            return false;
+        }
+
+        @Override
         public int count() {
             return count;
         }
@@ -154,6 +168,11 @@ public interface CheckResult<T extends Tuple> {
         @Override
         public boolean isErroneous() {
             return true;
+        }
+
+        @Override
+        public boolean isExhausted() {
+            return false;
         }
 
         @Override
