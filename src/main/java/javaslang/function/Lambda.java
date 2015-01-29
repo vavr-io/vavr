@@ -32,7 +32,7 @@ public interface Lambda<R> extends Serializable {
      * Serializes a lambda and returns the corresponding {@link java.lang.invoke.SerializedLambda}.
      *
      * @param lambda A serializable lambda
-     * @return The serialized lambda wrapped in a {@link javaslang.control.Try.Success}, or a {@link javaslang.control.Try.Failure}
+     * @return The serialized lambda wrapped in a {@link javaslang.control.Success}, or a {@link javaslang.control.Failure}
      * if an exception occurred.
      * @see <a
      * href="http://stackoverflow.com/questions/21860875/printing-debug-info-on-errors-with-java-8-lambda-expressions">printing
