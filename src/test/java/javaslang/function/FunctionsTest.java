@@ -49,8 +49,8 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldEnsureThatX0ImplementsTheλInterface() {
-		final χ0<Integer> x0 = () -> 1;
+	public void shouldEnsureThatX0ImplementsTheLambdaInterface() {
+		final CheckedLambda0<Integer> x0 = () -> 1;
 		Assertions.assertThat(Try.of(x0::apply).get()).isEqualTo(1);
 		assertThat(x0.andThen(i -> i + 1).getType().toString()).isEqualTo("(Function)Object");
 		assertThat(x0.arity()).isEqualTo(0);
@@ -59,9 +59,9 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldEnsureThatλ0ImplementsTheλInterface() {
-		final λ0<Integer> λ0 = () -> 1;
-		assertThat(λ0.get()).isEqualTo(1);
+	public void shouldEnsureThatLambda0ImplementsTheLambdaInterface() {
+		final Lambda0<Integer> Lambda0 = () -> 1;
+		assertThat(Lambda0.get()).isEqualTo(1);
 	}
 
 	// -- Lambda1
@@ -97,34 +97,33 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldEnsureThatX1ImplementsTheλInterface() {
-		final χ1<Integer, Integer> x1 = i -> i + 1;
+	public void shouldEnsureThatX1ImplementsTheLambdaInterface() {
+		final CheckedLambda1<Integer, Integer> x1 = i -> i + 1;
 		Assertions.assertThat(Try.of(() -> x1.apply(1)).get()).isEqualTo(2);
 		assertThat(x1.andThen(i -> i + 1).getType().toString()).isEqualTo("(Function,Object)Object");
 		assertThat(x1.arity()).isEqualTo(1);
 		assertThat(x1.curried().getType().toString()).isEqualTo("(Object)Object");
 		assertThat(x1.tupled().getType().toString()).isEqualTo("(Tuple1)Object");
 		Assertions.assertThat(Try.of(() -> x1.compose(o -> Integer.parseInt(o.toString())).apply("1")).get()).isEqualTo(2);
-		assertThat(Try.of(() -> χ1.identity().apply(1)).get()).isEqualTo(1);
-	}
-
-	@Test
-	public void shouldEnsureThatCheckedLambda1ImplementsTheλInterface() {
 		assertThat(Try.of(() -> CheckedLambda1.identity().apply(1)).get()).isEqualTo(1);
 	}
 
 	@Test
-	public void shouldEnsureThatλ1ImplementsTheλInterface() {
-		assertThat(λ1.identity().apply(1)).isEqualTo(1);
-		assertThat(λ1.identity().andThen(λ1.identity()).apply(1)).isEqualTo(1);
+	public void shouldEnsureThatCheckedLambda1IdentityImplementsTheLambdaInterface() {
+		assertThat(Try.of(() -> CheckedLambda1.identity().apply(1)).get()).isEqualTo(1);
 	}
 
 	@Test
-	public void shouldEnsureThatLambda1ImplementsTheλInterface() {
-		assertThat(Try.of(() -> Lambda1.identity().apply(1)).get()).isEqualTo(1);
+	public void shouldEnsureThatLambda1IdentityImplementsTheLambdaInterface() {
+		assertThat(Lambda1.identity().apply(1)).isEqualTo(1);
 	}
 
-	// -- Lambda2
+    @Test
+    public void shouldEnsureThatLambda1IdentityCompositionImplementsTheLambdaInterface() {
+        assertThat(Lambda1.identity().andThen(Lambda1.identity()).apply(1)).isEqualTo(1);
+    }
+
+    // -- Lambda2
 
 	@Test
 	public void shouldGetMethodTypeOfLambda2() {
@@ -154,12 +153,12 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldEnsureThatX2ImplementsTheλInterface() {
-		final χ2<Integer, Integer, Integer> x2 = (i, j) -> i + j;
+	public void shouldEnsureThatX2ImplementsTheLambdaInterface() {
+		final CheckedLambda2<Integer, Integer, Integer> x2 = (i, j) -> i + j;
 		Assertions.assertThat(Try.of(() -> x2.apply(1, 1)).get()).isEqualTo(2);
 		assertThat(x2.andThen(i -> i + 1).getType().toString()).isEqualTo("(Function,Object,Object)Object");
 		assertThat(x2.arity()).isEqualTo(2);
-		assertThat(x2.curried().getType().toString()).isEqualTo("(Object)χ1");
+		assertThat(x2.curried().getType().toString()).isEqualTo("(Object)CheckedLambda1");
 		assertThat(x2.tupled().getType().toString()).isEqualTo("(Tuple2)Object");
 	}
 
@@ -194,12 +193,12 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldEnsureThatX3ImplementsTheλInterface() {
-		final χ3<Integer, Integer, Integer, Integer> x3 = (i1, i2, i3) -> i1 + i2 + i3;
+	public void shouldEnsureThatX3ImplementsTheLambdaInterface() {
+		final CheckedLambda3<Integer, Integer, Integer, Integer> x3 = (i1, i2, i3) -> i1 + i2 + i3;
 		Assertions.assertThat(Try.of(() -> x3.apply(1, 1, 1)).get()).isEqualTo(3);
 		assertThat(x3.andThen(i -> i + 1).getType().toString()).isEqualTo("(Function,Object,Object,Object)Object");
 		assertThat(x3.arity()).isEqualTo(3);
-		assertThat(x3.curried().getType().toString()).isEqualTo("(Object)χ1");
+		assertThat(x3.curried().getType().toString()).isEqualTo("(Object)CheckedLambda1");
 		assertThat(x3.tupled().getType().toString()).isEqualTo("(Tuple3)Object");
 	}
 
@@ -234,12 +233,12 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldEnsureThatX4ImplementsTheλInterface() {
-		final χ4<Integer, Integer, Integer, Integer, Integer> x = (i1, i2, i3, i4) -> i1 + i2 + i3 + i4;
+	public void shouldEnsureThatX4ImplementsTheLambdaInterface() {
+		final CheckedLambda4<Integer, Integer, Integer, Integer, Integer> x = (i1, i2, i3, i4) -> i1 + i2 + i3 + i4;
 		Assertions.assertThat(Try.of(() -> x.apply(1, 1, 1, 1)).get()).isEqualTo(4);
 		assertThat(x.andThen(i -> i + 1).getType().toString()).isEqualTo("(Function,Object,Object,Object,Object)Object");
 		assertThat(x.arity()).isEqualTo(4);
-		assertThat(x.curried().getType().toString()).isEqualTo("(Object)χ1");
+		assertThat(x.curried().getType().toString()).isEqualTo("(Object)CheckedLambda1");
 		assertThat(x.tupled().getType().toString()).isEqualTo("(Tuple4)Object");
 	}
 
@@ -275,12 +274,12 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldEnsureThatX5ImplementsTheλInterface() {
-		final χ5<Integer, Integer, Integer, Integer, Integer, Integer> x = (i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5;
+	public void shouldEnsureThatX5ImplementsTheLambdaInterface() {
+		final CheckedLambda5<Integer, Integer, Integer, Integer, Integer, Integer> x = (i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5;
 		Assertions.assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1)).get()).isEqualTo(5);
 		assertThat(x.andThen(i -> i + 1).getType().toString()).isEqualTo("(Function,Object,Object,Object,Object,Object)Object");
 		assertThat(x.arity()).isEqualTo(5);
-		assertThat(x.curried().getType().toString()).isEqualTo("(Object)χ1");
+		assertThat(x.curried().getType().toString()).isEqualTo("(Object)CheckedLambda1");
 		assertThat(x.tupled().getType().toString()).isEqualTo("(Tuple5)Object");
 	}
 
@@ -316,12 +315,12 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldEnsureThatX6ImplementsTheλInterface() {
-		final χ6<Integer, Integer, Integer, Integer, Integer, Integer, Integer> x = (i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6;
+	public void shouldEnsureThatX6ImplementsTheLambdaInterface() {
+		final CheckedLambda6<Integer, Integer, Integer, Integer, Integer, Integer, Integer> x = (i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6;
 		Assertions.assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1)).get()).isEqualTo(6);
 		assertThat(x.andThen(i -> i + 1).getType().toString()).isEqualTo("(Function,Object,Object,Object,Object,Object,Object)Object");
 		assertThat(x.arity()).isEqualTo(6);
-		assertThat(x.curried().getType().toString()).isEqualTo("(Object)χ1");
+		assertThat(x.curried().getType().toString()).isEqualTo("(Object)CheckedLambda1");
 		assertThat(x.tupled().getType().toString()).isEqualTo("(Tuple6)Object");
 	}
 
@@ -357,13 +356,13 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldEnsureThatX7ImplementsTheλInterface() {
-		final χ7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
+	public void shouldEnsureThatX7ImplementsTheLambdaInterface() {
+		final CheckedLambda7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
 				(i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7;
 		Assertions.assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1, 1)).get()).isEqualTo(7);
 		assertThat(x.andThen(i -> i + 1).getType().toString()).isEqualTo("(Function,Object,Object,Object,Object,Object,Object,Object)Object");
 		assertThat(x.arity()).isEqualTo(7);
-		assertThat(x.curried().getType().toString()).isEqualTo("(Object)χ1");
+		assertThat(x.curried().getType().toString()).isEqualTo("(Object)CheckedLambda1");
 		assertThat(x.tupled().getType().toString()).isEqualTo("(Tuple7)Object");
 	}
 
@@ -399,13 +398,13 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldEnsureThatX8ImplementsTheλInterface() {
-		final χ8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
+	public void shouldEnsureThatX8ImplementsTheLambdaInterface() {
+		final CheckedLambda8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
 				(i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8;
 		Assertions.assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1, 1, 1)).get()).isEqualTo(8);
 		assertThat(x.andThen(i -> i + 1).getType().toString()).isEqualTo("(Function,Object,Object,Object,Object,Object,Object,Object,Object)Object");
 		assertThat(x.arity()).isEqualTo(8);
-		assertThat(x.curried().getType().toString()).isEqualTo("(Object)χ1");
+		assertThat(x.curried().getType().toString()).isEqualTo("(Object)CheckedLambda1");
 		assertThat(x.tupled().getType().toString()).isEqualTo("(Tuple8)Object");
 	}
 
@@ -441,14 +440,14 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldEnsureThatX9ImplementsTheλInterface() {
-		final χ9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
+	public void shouldEnsureThatX9ImplementsTheLambdaInterface() {
+		final CheckedLambda9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
 				(i1, i2, i3, i4, i5, i6, i7, i8, i9) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8 + i9;
 		Assertions.assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1, 1, 1, 1)).get()).isEqualTo(9);
 		assertThat(x.andThen(i -> i + 1).getType().toString())
 				.isEqualTo("(Function,Object,Object,Object,Object,Object,Object,Object,Object,Object)Object");
 		assertThat(x.arity()).isEqualTo(9);
-		assertThat(x.curried().getType().toString()).isEqualTo("(Object)χ1");
+		assertThat(x.curried().getType().toString()).isEqualTo("(Object)CheckedLambda1");
 		assertThat(x.tupled().getType().toString()).isEqualTo("(Tuple9)Object");
 	}
 
@@ -484,14 +483,14 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldEnsureThatX10ImplementsTheλInterface() {
-		final χ10<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
+	public void shouldEnsureThatX10ImplementsTheLambdaInterface() {
+		final CheckedLambda10<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
 				(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8 + i9 + i10;
 		Assertions.assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1, 1, 1, 1, 1)).get()).isEqualTo(10);
 		assertThat(x.andThen(i -> i + 1).getType().toString())
 				.isEqualTo("(Function,Object,Object,Object,Object,Object,Object,Object,Object,Object,Object)Object");
 		assertThat(x.arity()).isEqualTo(10);
-		assertThat(x.curried().getType().toString()).isEqualTo("(Object)χ1");
+		assertThat(x.curried().getType().toString()).isEqualTo("(Object)CheckedLambda1");
 		assertThat(x.tupled().getType().toString()).isEqualTo("(Tuple10)Object");
 	}
 
@@ -527,14 +526,14 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldEnsureThatX11ImplementsTheλInterface() {
-		final χ11<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
+	public void shouldEnsureThatX11ImplementsTheLambdaInterface() {
+		final CheckedLambda11<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
 				(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8 + i9 + i10 + i11;
 		Assertions.assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)).get()).isEqualTo(11);
 		assertThat(x.andThen(i -> i + 1).getType().toString())
 				.isEqualTo("(Function,Object,Object,Object,Object,Object,Object,Object,Object,Object,Object,Object)Object");
 		assertThat(x.arity()).isEqualTo(11);
-		assertThat(x.curried().getType().toString()).isEqualTo("(Object)χ1");
+		assertThat(x.curried().getType().toString()).isEqualTo("(Object)CheckedLambda1");
 		assertThat(x.tupled().getType().toString()).isEqualTo("(Tuple11)Object");
 	}
 
@@ -570,14 +569,14 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldEnsureThatX12ImplementsTheλInterface() {
-		final χ12<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
+	public void shouldEnsureThatX12ImplementsTheLambdaInterface() {
+		final CheckedLambda12<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
 				(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8 + i9 + i10 + i11 + i12;
 		Assertions.assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)).get()).isEqualTo(12);
 		assertThat(x.andThen(i -> i + 1).getType().toString())
 				.isEqualTo("(Function,Object,Object,Object,Object,Object,Object,Object,Object,Object,Object,Object,Object)Object");
 		assertThat(x.arity()).isEqualTo(12);
-		assertThat(x.curried().getType().toString()).isEqualTo("(Object)χ1");
+		assertThat(x.curried().getType().toString()).isEqualTo("(Object)CheckedLambda1");
 		assertThat(x.tupled().getType().toString()).isEqualTo("(Tuple12)Object");
 	}
 
@@ -616,14 +615,14 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void shouldEnsureThatX13ImplementsTheλInterface() {
-		final χ13<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
+	public void shouldEnsureThatX13ImplementsTheLambdaInterface() {
+		final CheckedLambda13<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
 				(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12, i13) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8 + i9 + i10 + i11 + i12 + i13;
 		Assertions.assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)).get()).isEqualTo(13);
 		assertThat(x.andThen(i -> i + 1).getType().toString())
 				.isEqualTo("(Function,Object,Object,Object,Object,Object,Object,Object,Object,Object,Object,Object,Object,Object)Object");
 		assertThat(x.arity()).isEqualTo(13);
-		assertThat(x.curried().getType().toString()).isEqualTo("(Object)χ1");
+		assertThat(x.curried().getType().toString()).isEqualTo("(Object)CheckedLambda1");
 		assertThat(x.tupled().getType().toString()).isEqualTo("(Tuple13)Object");
 	}
 
