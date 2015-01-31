@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import javaslang.*;
-import javaslang.algebra.Monoid;
 import javaslang.collection.Stream.Cons;
 import javaslang.collection.Stream.Nil;
 
@@ -34,12 +33,6 @@ public class StreamTest extends AbstractSeqTest {
     @Override
     protected <T> Stream<T> of(T... elements) {
         return Stream.of(elements);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    protected <T, U extends Traversable<T>> Monoid<U> zero() {
-        return (Monoid<U>) (Monoid) Stream.nil().zero();
     }
 
     // -- static collector()

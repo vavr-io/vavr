@@ -5,7 +5,11 @@
  */
 package javaslang.collection;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import javaslang.Serializables;
+import javaslang.Tuple;
+import javaslang.collection.List.Cons;
+import javaslang.collection.List.Nil;
+import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.InvalidObjectException;
@@ -14,12 +18,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
-import javaslang.*;
-import javaslang.algebra.Monoid;
-import javaslang.collection.List.Cons;
-import javaslang.collection.List.Nil;
-
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ListTest extends AbstractSeqTest {
 
@@ -32,12 +31,6 @@ public class ListTest extends AbstractSeqTest {
 	@Override
 	protected <T> List<T> of(T... elements) {
 		return List.of(elements);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	protected <T, U extends Traversable<T>> Monoid<U> zero() {
-		return (Monoid<U>) (Monoid) List.nil().zero();
 	}
 
 	// -- static collector()

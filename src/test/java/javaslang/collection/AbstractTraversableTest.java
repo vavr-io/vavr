@@ -5,9 +5,9 @@
  */
 package javaslang.collection;
 
+import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.algebra.Monoid;
-import javaslang.Tuple;
 import javaslang.control.Option;
 import org.junit.Test;
 
@@ -19,8 +19,7 @@ import static javaslang.Serializables.serialize;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests all methods defined in {@link javaslang.collection.Traversable} (plus some of {@link javaslang.algebra.Monoid},
- * {@link java.lang.Object} and {@link java.io.Serializable}, for the sake of simplicity).
+ * Tests all methods defined in {@link javaslang.collection.Traversable}.
  */
 public abstract class AbstractTraversableTest {
 
@@ -28,8 +27,6 @@ public abstract class AbstractTraversableTest {
 
     @SuppressWarnings("unchecked")
     abstract protected <T> Traversable<T> of(T... elements);
-
-    abstract protected <T, U extends Traversable<T>> Monoid<U> zero();
 
     // -- clear
 
@@ -81,33 +78,6 @@ public abstract class AbstractTraversableTest {
     public void shouldRecognizeNonNilContainsAllOnSelf() {
         final boolean actual = this.of(1, 2, 3).containsAll(this.of(1, 2, 3));
         assertThat(actual).isTrue();
-    }
-
-    // -- combine // Monoid
-
-    @Test
-    public void shouldCombineTwoTraversables() {
-        assertThat(this.zero().combine(this.of(1, 2), this.of(3, 4))).isEqualTo(this.of(1, 2, 3, 4));
-    }
-
-    @Test
-    public void shouldCombineToRightIfLeftIsZero() {
-        assertThat(this.zero().combine(this.nil(), this.of(1))).isEqualTo(this.of(1));
-    }
-
-    @Test
-    public void shouldCombineToLeftIfRightIsZero() {
-        assertThat(this.zero().combine(this.of(1), this.nil())).isEqualTo(this.of(1));
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenCombiningAndFirstArgIsNull() {
-        this.zero().combine(null, this.nil());
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenCombiningAndSecondArgIsNull() {
-        this.zero().combine(this.nil(), null);
     }
 
     // -- distinct
@@ -902,13 +872,6 @@ public abstract class AbstractTraversableTest {
         final Tuple actual = this.of(0, 1).unzip(i -> Tuple.of(i, (char) ((short) 'a' + i)));
         final Tuple expected = Tuple.of(this.of(0, 1), this.<Character> of('a', 'b'));
         assertThat(actual).isEqualTo(expected);
-    }
-
-    // -- zero // Monoid
-
-    @Test
-    public void shouldDefineZeroAsNil() {
-        assertThat(this.zero().equals(this.nil()));
     }
 
     // -- zip

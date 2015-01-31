@@ -9,12 +9,15 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import javaslang.algebra.HigherKinded1;
+import javaslang.algebra.Monad1;
+
 import java.util.Objects;
 
 /**
  * Implementation of a pair, a tuple containing 1 elements.
  */
-public class Tuple1<T1> implements Tuple {
+public class Tuple1<T1> implements Tuple, Monad1<T1, Tuple1<?>> {
 
     private static final long serialVersionUID = 1L;
 
@@ -27,6 +30,17 @@ public class Tuple1<T1> implements Tuple {
     @Override
     public int arity() {
         return 1;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <U1, MONAD extends HigherKinded1<U1, Tuple1<?>>> Tuple1<U1> flatMap(java.util.function.Function<? super T1, MONAD> f) {
+        return (Tuple1<U1>) f.apply(_1);
+    }
+
+    @Override
+    public <U1> Tuple1<U1> map(java.util.function.Function<? super T1, ? extends U1> f) {
+        return new Tuple1<>(f.apply(_1));
     }
 
     @Override

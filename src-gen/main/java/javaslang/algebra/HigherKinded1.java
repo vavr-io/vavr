@@ -5,6 +5,10 @@
  */
 package javaslang.algebra;
 
+/*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*\
+   G E N E R A T O R   C R A F T E D
+\*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
+
 /**
  * <p>
  * A type <em>HigherKinded</em> declares a generic type constructor, which consists of an inner type (component type)
@@ -18,10 +22,10 @@ package javaslang.algebra;
  * Example: {@link javaslang.algebra.Monad#flatMap(java.util.function.Function)}
  * </p>
  *
- * @param <A> Component type of the type to be constructed.
+ * @param <T1> Component type of the type to be constructed.
  * @param <TYPE> Container type of the type to be constructed.
- */
-public interface HigherKinded<A, TYPE extends HigherKinded<?, TYPE>> {
+ */      
+public interface HigherKinded1<T1, TYPE extends HigherKinded1<?, TYPE>> {
 
     // used for type declaration only
 }

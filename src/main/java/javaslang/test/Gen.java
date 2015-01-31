@@ -5,18 +5,16 @@
  */
 package javaslang.test;
 
-import javaslang.algebra.*;
 import javaslang.Tuple2;
+import javaslang.algebra.HigherKinded1;
+import javaslang.algebra.Monad1;
 import javaslang.collection.Stream;
 import javaslang.collection.Traversable;
 
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 /**
  * <p>
@@ -40,7 +38,7 @@ import java.util.function.Supplier;
  * @see javaslang.test.Arbitrary
  */
 @FunctionalInterface
-public interface Gen<T> extends Function<Random, T>, Monad<T, Gen<?>> {
+public interface Gen<T> extends Function<Random, T>, Monad1<T, Gen<?>> {
 
     /**
      * A generator which constantly returns t.
@@ -263,7 +261,7 @@ public interface Gen<T> extends Function<Random, T>, Monad<T, Gen<?>> {
      */
     @SuppressWarnings("unchecked")
     @Override
-    default <U, GEN extends HigherKinded<U, Gen<?>>> Gen<U> flatMap(Function<? super T, GEN> mapper) {
+    default <U, GEN extends HigherKinded1<U, Gen<?>>> Gen<U> flatMap(Function<? super T, GEN> mapper) {
         //noinspection Convert2MethodRef
         return random -> ((Gen<U>) mapper.apply(apply(random))).apply(random);
     }

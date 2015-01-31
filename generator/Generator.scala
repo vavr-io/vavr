@@ -21,8 +21,122 @@ val TARGET = "src-gen/main/java"
 def run() {
 
   genFunctions()
+  genFunctors()
+  genHigherKindeds()
+  genMonads()
   genPropertyChecks()
   genTuples()
+}
+
+
+/**
+ * Generator of javaslang.algebra.Functor*
+ */
+def genFunctors() = 1 to N foreach { i =>
+  genJavaslangFile("javaslang.algebra", s"Functor$i")((packageName, className) => {
+    val generics = (1 to i).gen(j => s"T$j")(", ")
+    val paramTypes = (1 to i).gen(j => s"? super T$j")(", ")
+    val resultType = if (i == 1) "? extends U1" else s"Tuple$i<${(1 to i).gen(j => s"? extends U$j")(", ")}>"
+    val resultGenerics = (1 to i).gen(j => s"U$j")(", ")
+    val functionType = i match {
+      case 1 => "java.util.function.Function"
+      case 2 => "java.util.function.BiFunction"
+      case _ => s"javaslang.function.Lambda$i"
+    }
+    xs"""
+      ${//TODO(#90): Import Manager
+        (i > 1).gen(s"import javaslang.Tuple$i;")
+      }
+      import javaslang.function.Lambda$i;
+
+      ${(i == 1).gen(xs"""
+      /**
+       * Defines a Functor by generalizing the map function.
+       * <p>
+       * All instances of the Functor interface should obey the two functor laws:
+       * <ul>
+       *     <li>{@code m.map(a -> a) ≡ m}</li>
+       *     <li>{@code m.map(f.compse(g)) ≡ m.map(g).map(f)}</li>
+       * </ul>
+       *
+       * @param <T1> Component type of this Functor.
+       * @see <a href="http://www.haskellforall.com/2012/09/the-functor-design-pattern.html">The functor design pattern</a>
+       */
+      """)}
+      public interface $className<$generics> {
+
+          <$resultGenerics> $className<$resultGenerics> map($functionType<$paramTypes, $resultType> f);
+      }
+  """
+  })
+}
+
+/**
+ * Generator of javaslang.algebra.HigherKinded*
+ */
+def genHigherKindeds() = 1 to N foreach { i =>
+  genJavaslangFile("javaslang.algebra", s"HigherKinded$i")((packageName, className) => xs"""
+      ${(i == 1).gen(xs"""
+      /**
+       * <p>
+       * A type <em>HigherKinded</em> declares a generic type constructor, which consists of an inner type (component type)
+       * and an outer type (container type).
+       * </p>
+       * <p>
+       * HigherKinded is needed to (partially) simulate Higher-Kinded/Higher-Order Types, which  are not part of the Java
+       * language but needed for generic type constructors.
+       * </p>
+       * <p>
+       * Example: {@link javaslang.algebra.Monad#flatMap(java.util.function.Function)}
+       * </p>
+       *
+       * @param <T1> Component type of the type to be constructed.
+       * @param <TYPE> Container type of the type to be constructed.
+       */      """)}
+      public interface $className<${(1 to i).gen(j => s"T$j")(", ")}, TYPE extends $className<${"?, " * i}TYPE>> {
+
+          // used for type declaration only
+      }
+  """)
+}
+
+/**
+ * Generator of javaslang.algebra.Monad*
+ */
+def genMonads() = 1 to N foreach { i =>
+  genJavaslangFile("javaslang.algebra", s"Monad$i")((packageName, className) => {
+    val generics = (1 to i).gen(j => s"T$j")(", ")
+    val paramTypes = (1 to i).gen(j => s"? super T$j")(", ")
+    val resultGenerics = (1 to i).gen(j => s"U$j")(", ")
+    val functionType = i match {
+      case 1 => "java.util.function.Function"
+      case 2 => "java.util.function.BiFunction"
+      case _ => s"javaslang.function.Lambda$i"
+    }
+    xs"""
+      import javaslang.function.Lambda$i;
+
+      ${(i == 1).gen(xs"""
+      /**
+       * Defines a Monad by generalizing the flatMap and unit functions.
+       * <p>
+       * All instances of the Monad interface should obey the three control laws:
+       * <ul>
+       *     <li><strong>Left identity:</strong> {@code unit(a).flatMap(f) ≡ f a}</li>
+       *     <li><strong>Right identity:</strong> {@code m.flatMap(unit) ≡ m}</li>
+       *     <li><strong>Associativity:</strong> {@code m.flatMap(f).flatMap(g) ≡ m.flatMap(x -> f.apply(x).flatMap(g)}</li>
+       * </ul>
+       * <p>
+       *
+       * @param <T1> Component type of this Monad$i.
+       */
+      """)}
+      public interface $className<$generics, M extends HigherKinded$i<${"?, " * i}M>> extends Functor$i<$generics>, HigherKinded$i<$generics, M> {
+
+          <$resultGenerics, MONAD extends HigherKinded$i<$resultGenerics, M>> $className<$resultGenerics, M> flatMap($functionType<$paramTypes, MONAD> f);
+      }
+  """
+  })
 }
 
 /**
@@ -401,13 +515,27 @@ def genTuples(): Unit = {
   def genTuple(i: Int)(packageName: String, className: String): String = {
     val generics = (1 to i).gen(j => s"T$j")(", ")
     val paramsDecl = (1 to i).gen(j => s"T$j t$j")(", ")
+    val params = (1 to i).gen(j => s"_$j")(", ")
+    val paramTypes = (1 to i).gen(j => s"? super T$j")(", ")
+    val resultType = if (i == 1) "? extends U1" else s"Tuple$i<${(1 to i).gen(j => s"? extends U$j")(", ")}>"
+    val resultGenerics = (1 to i).gen(j => s"U$j")(", ")
+    val untyped = (1 to i).gen(j => "?")(", ")
+    val functionType = i match {
+      case 1 => "java.util.function.Function"
+      case 2 => "java.util.function.BiFunction"
+      case _ => s"javaslang.function.Lambda$i"
+    }
+
     xs"""
+      import javaslang.algebra.HigherKinded$i;
+      import javaslang.algebra.Monad$i;
+
       import java.util.Objects;
 
       /**
        * Implementation of a pair, a tuple containing $i elements.
        */
-      public class $className<$generics> implements Tuple {
+      public class $className<$generics> implements Tuple, Monad$i<$generics, $className<$untyped>> {
 
           private static final long serialVersionUID = 1L;
 
@@ -420,6 +548,23 @@ def genTuples(): Unit = {
           @Override
           public int arity() {
               return $i;
+          }
+
+          @SuppressWarnings("unchecked")
+          @Override
+          public <$resultGenerics, MONAD extends HigherKinded$i<$resultGenerics, $className<$untyped>>> $className<$resultGenerics> flatMap($functionType<$paramTypes, MONAD> f) {
+              return ($className<$resultGenerics>) f.apply($params);
+          }
+
+          ${(i > 1).gen("""@SuppressWarnings("unchecked")""")}
+          @Override
+          public <$resultGenerics> $className<$resultGenerics> map($functionType<$paramTypes, $resultType> f) {
+              ${if (i > 1) { xs"""
+                // normally the result of f would be mapped to the result type of map, but Tuple.map is a special case
+                return ($className<$resultGenerics>) f.apply($params);"""
+              } else { xs"""
+                return new Tuple$i<>(f.apply($params));"""
+              }}
           }
 
           @Override
@@ -537,7 +682,7 @@ def genJavaFile(packageName: String, className: String)(classHeader: String)(gen
     \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
     ${gen.apply(packageName, className)}
-  """) // TODO: pass a mutable ImportManager to gen
+  """) // TODO(#90): pass a mutable ImportManager to gen
 }
 
 /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*\
@@ -560,6 +705,10 @@ def genFile(dirName: String, fileName: String)(contents: => String)(implicit cha
  * Core generator API
  */
 object GeneratorImplicits {
+
+  implicit class BooleanExtensions(condition: Boolean) {
+    def gen(s: String): String =  if (condition) s else ""
+  }
 
   /**
    * Generates a String based on ints within a specific range.

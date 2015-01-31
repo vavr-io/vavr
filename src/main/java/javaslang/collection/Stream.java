@@ -5,9 +5,9 @@
  */
 package javaslang.collection;
 
-import javaslang.algebra.*;
-import javaslang.Lazy;
 import javaslang.*;
+import javaslang.algebra.HigherKinded1;
+import javaslang.algebra.Monad1;
 import javaslang.control.Try;
 
 import java.io.*;
@@ -15,11 +15,10 @@ import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.function.*;
-import java.util.function.Function;
 import java.util.stream.Collector;
 
 // DEV-NOTE: Beware of serializing IO streams.
-public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stream<T>>, ValueObject {
+public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObject {
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
@@ -314,13 +313,6 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
     }
 
     @Override
-    default Stream<T> combine(Stream<T> list1, Stream<T> list2) {
-        Objects.requireNonNull(list1, "list1 is null");
-        Objects.requireNonNull(list2, "list2 is null");
-        return list1.appendAll(list2);
-    }
-
-    @Override
     default Stream<T> distinct() {
         // TODO: better solution?
             return Stream.of(List.of(this).distinct());
@@ -357,7 +349,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
     }
 
     @Override
-    default <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Stream<U> flatMap(Function<? super T, TRAVERSABLE> mapper) {
+    default <U, TRAVERSABLE extends HigherKinded1<U, Traversable<?>>> Stream<U> flatMap(Function<? super T, TRAVERSABLE> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return Nil.instance();
@@ -703,15 +695,10 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
     }
 
     @Override
-    default <T1, T2> Tuple2<Stream<T1>, Stream<T2>> unzip(Function<? super T, Tuple2<T1, T2>> unzipper) {
+    default <T1, T2> Tuple2<Stream<T1>, Stream<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
-        final Stream<Tuple2<T1, T2>> stream = map(unzipper);
-        return Tuple.of(stream.map(t -> t._1), stream.map(t -> t._2));
-    }
-
-    @Override
-    default Stream<T> zero() {
-        return Nil.instance();
+        final Stream<Tuple2<? extends T1, ? extends T2>> stream = map(unzipper);
+        return Tuple.of(stream.map(t -> t._1), /*TODO(IntelliJ bug): remove cast*/(Stream<T2>) stream.map(t -> t._2));
     }
 
     @Override

@@ -9,12 +9,15 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import javaslang.algebra.HigherKinded11;
+import javaslang.algebra.Monad11;
+
 import java.util.Objects;
 
 /**
  * Implementation of a pair, a tuple containing 11 elements.
  */
-public class Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> implements Tuple {
+public class Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> implements Tuple, Monad11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Tuple11<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>> {
 
     private static final long serialVersionUID = 1L;
 
@@ -47,6 +50,19 @@ public class Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> implements Tu
     @Override
     public int arity() {
         return 11;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11, MONAD extends HigherKinded11<U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11, Tuple11<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>> Tuple11<U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11> flatMap(javaslang.function.Lambda11<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? super T10, ? super T11, MONAD> f) {
+        return (Tuple11<U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11>) f.apply(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11> Tuple11<U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11> map(javaslang.function.Lambda11<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? super T10, ? super T11, Tuple11<? extends U1, ? extends U2, ? extends U3, ? extends U4, ? extends U5, ? extends U6, ? extends U7, ? extends U8, ? extends U9, ? extends U10, ? extends U11>> f) {
+        // normally the result of f would be mapped to the result type of map, but Tuple.map is a special case
+        return (Tuple11<U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11>) f.apply(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11);
     }
 
     @Override

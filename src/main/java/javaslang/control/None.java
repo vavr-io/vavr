@@ -7,7 +7,7 @@ package javaslang.control;
 
 import javaslang.Tuple;
 import javaslang.Tuple0;
-import javaslang.algebra.HigherKinded;
+import javaslang.algebra.HigherKinded1;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -106,7 +106,7 @@ public final class None<T> implements Option<T> {
     }
 
     @Override
-    public <U, OPTION extends HigherKinded<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper) {
+    public <U, OPTION extends HigherKinded1<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper) {
         return None.instance();
     }
 

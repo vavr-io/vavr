@@ -5,7 +5,8 @@
  */
 package javaslang.test;
 
-import javaslang.algebra.*;
+import javaslang.algebra.HigherKinded1;
+import javaslang.algebra.Monad1;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -18,7 +19,7 @@ import java.util.function.Predicate;
  * @param <T> The type of the arbitrary object.
  */
 @FunctionalInterface
-public interface Arbitrary<T> extends IntFunction<Gen<T>>, Function<Integer, Gen<T>>, Monad<T, Arbitrary<?>> {
+public interface Arbitrary<T> extends IntFunction<Gen<T>>, Function<Integer, Gen<T>>, Monad1<T, Arbitrary<?>> {
 
     /**
      * <p>
@@ -97,7 +98,7 @@ public interface Arbitrary<T> extends IntFunction<Gen<T>>, Function<Integer, Gen
      */
     @SuppressWarnings("unchecked")
     @Override
-    default <U, ARBITRARY extends HigherKinded<U, Arbitrary<?>>> Arbitrary<U> flatMap(Function<? super T, ARBITRARY> mapper) {
+    default <U, ARBITRARY extends HigherKinded1<U, Arbitrary<?>>> Arbitrary<U> flatMap(Function<? super T, ARBITRARY> mapper) {
         return n -> {
             final Gen<T> generator = apply(n);
             return random -> ((Arbitrary<U>) mapper.apply(generator.apply(random))).apply(n).apply(random);

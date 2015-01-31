@@ -7,7 +7,7 @@ package javaslang.control;
 
 import javaslang.Tuple;
 import javaslang.Tuple1;
-import javaslang.algebra.HigherKinded;
+import javaslang.algebra.HigherKinded1;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -88,7 +88,7 @@ public final class Some<T> implements Option<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U, OPTION extends HigherKinded<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper) {
+    public <U, OPTION extends HigherKinded1<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper) {
         return (Option<U>) mapper.apply(value);
     }
 

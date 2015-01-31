@@ -8,7 +8,7 @@ package javaslang.control;
 import javaslang.Tuple;
 import javaslang.Tuple1;
 import javaslang.ValueObject;
-import javaslang.algebra.HigherKinded;
+import javaslang.algebra.HigherKinded1;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -120,7 +120,7 @@ public final class Failure<T> implements Try<T> {
     }
 
     @Override
-    public <U, TRY extends HigherKinded<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper) {
+    public <U, TRY extends HigherKinded1<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper) {
         @SuppressWarnings("unchecked")
         final Try<U> result = (Try<U>) this;
         return result;

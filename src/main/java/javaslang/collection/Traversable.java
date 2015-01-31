@@ -5,8 +5,9 @@
  */
 package javaslang.collection;
 
-import javaslang.algebra.*;
 import javaslang.Tuple2;
+import javaslang.algebra.HigherKinded1;
+import javaslang.algebra.Monoid;
 import javaslang.control.Match;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -117,7 +118,7 @@ import java.util.function.UnaryOperator;
  *
  * @param <T> Component type.
  */
-public interface Traversable<T> extends Iterable<T>, HigherKinded<T, Traversable<?>> {
+public interface Traversable<T> extends Iterable<T>, HigherKinded1<T, Traversable<?>> {
 
     /**
      * Returns a Traversable based on an Iterable. Returns the given Iterable, if it is already a Traversable,
@@ -285,7 +286,7 @@ public interface Traversable<T> extends Iterable<T>, HigherKinded<T, Traversable
         return reverse().findFirst(predicate);
     }
 
-    <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Traversable<U> flatMap(Function<? super T, TRAVERSABLE> mapper);
+    <U, TRAVERSABLE extends HigherKinded1<U, Traversable<?>>> Traversable<U> flatMap(Function<? super T, TRAVERSABLE> mapper);
 
     /**
      * <p>
@@ -497,7 +498,7 @@ public interface Traversable<T> extends Iterable<T>, HigherKinded<T, Traversable
      * @param mapper A mapper.
      * @param <U>    Component type of the target Traversable
      * @return A mapped Traversable
-     * @see javaslang.algebra.Monad#map(Function)
+     * @see javaslang.algebra.Monad1#map(javaslang.function.Lambda1)
      */
     <U> Traversable<U> map(Function<? super T, ? extends U> mapper);
 
@@ -841,7 +842,7 @@ public interface Traversable<T> extends Iterable<T>, HigherKinded<T, Traversable
         return toJavaList().stream();
     }
 
-    <T1, T2> Tuple2<? extends Traversable<T1>, ? extends Traversable<T2>> unzip(Function<? super T, Tuple2<T1, T2>> unzipper);
+    <T1, T2> Tuple2<? extends Traversable<T1>, ? extends Traversable<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
 
     /**
      * Returns a Traversable formed from this Traversable and another Iterable collection by combining corresponding elements

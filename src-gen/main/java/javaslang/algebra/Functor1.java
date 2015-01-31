@@ -5,7 +5,11 @@
  */
 package javaslang.algebra;
 
-import java.util.function.Function;
+/*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*\
+   G E N E R A T O R   C R A F T E D
+\*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
+
+import javaslang.function.Lambda1;
 
 /**
  * Defines a Functor by generalizing the map function.
@@ -16,10 +20,10 @@ import java.util.function.Function;
  *     <li>{@code m.map(f.compse(g)) ≡ m.map(g).map(f)}</li>
  * </ul>
  *
- * @param <A> Component type of this Functor.
+ * @param <T1> Component type of this Functor.
  * @see <a href="http://www.haskellforall.com/2012/09/the-functor-design-pattern.html">The functor design pattern</a>
  */
-public interface Functor<A> {
+public interface Functor1<T1> {
 
-    <B> Functor<B> map(Function<? super A, ? extends B> f);
+    <U1> Functor1<U1> map(java.util.function.Function<? super T1, ? extends U1> f);
 }

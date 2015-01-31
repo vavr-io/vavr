@@ -7,7 +7,6 @@ package javaslang.collection;
 
 import javaslang.*;
 import javaslang.algebra.*;
-import javaslang.Tuple.*;
 
 import java.io.*;
 import java.util.*;
@@ -36,7 +35,7 @@ import java.util.stream.Collector;
  *
  * @param <T> Component type of the List.
  */
-public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T>>, ValueObject {
+public interface List<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObject {
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
@@ -150,13 +149,6 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
     }
 
     @Override
-    default List<T> combine(List<T> list1, List<T> list2) {
-        Objects.requireNonNull(list1, "list1 is null");
-        Objects.requireNonNull(list2, "list2 is null");
-        return list2.prependAll(list1);
-    }
-
-    @Override
     default List<T> distinct() {
         return foldRight(nil(), (x, xs) -> xs.contains(x) ? xs : xs.prepend(x));
     }
@@ -184,7 +176,7 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
 
     @SuppressWarnings("unchecked")
     @Override
-    default <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> List<U> flatMap(Function<? super T, TRAVERSABLE> mapper) {
+    default <U, TRAVERSABLE extends HigherKinded1<U, Traversable<?>>> List<U> flatMap(Function<? super T, TRAVERSABLE> mapper) {
         return foldLeft(Nil.<U> instance(), (List<U> xs, T x) -> xs.prependAll((Traversable<U>) mapper.apply(x))).reverse();
     }
 
@@ -550,21 +542,16 @@ public interface List<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<List<T
     }
 
     @Override
-    default <T1, T2> Tuple2<List<T1>, List<T2>> unzip(Function<? super T, Tuple2<T1, T2>> unzipper) {
+    default <T1, T2> Tuple2<List<T1>, List<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         List<T1> xs = nil();
         List<T2> ys = nil();
         for (T element : this) {
-            final Tuple2<T1, T2> t = unzipper.apply(element);
+            final Tuple2<? extends T1, ? extends T2> t = unzipper.apply(element);
             xs = xs.prepend(t._1);
             ys = ys.prepend(t._2);
         }
             return Tuple.of(xs.reverse(), ys.reverse());
-    }
-
-    @Override
-    default List<T> zero() {
-        return Nil.instance();
     }
 
     @Override

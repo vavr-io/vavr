@@ -9,8 +9,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import javaslang.Tuple;
 import javaslang.Tuple1;
+import javaslang.Tuple2;
+import javaslang.collection.List;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import java.util.function.Function;
 
 public class PropertyTest {
 
@@ -76,5 +80,18 @@ public class PropertyTest {
         assertThat(result.count()).isEqualTo(1);
         assertThat(result.sample().isPresent()).isTrue();
         assertThat(result.sample().get()).isEqualTo(Tuple.of(1, 2));
+    }
+
+    @Test
+    public void shouldXxx() {
+        // ∀is,ss: length(is) = length(ss) → unzip(zip(is, ss)) = (is, ss)
+        final Arbitrary<List<Integer>> ints = null; // TODO
+        final Arbitrary<List<String>> strings = null; // TODO
+        final CheckResult result = Property
+                .forAll(ints, strings)
+                .suchThat((is, ss) -> is.length() == ss.length())
+                .implies((is, ss) -> is.zip(ss).unzip(t -> t).equals(Tuple.of(is, ss)))
+                .check();
+        System.out.println(result.error().get()); // TODO: CheckResult.toString
     }
 }

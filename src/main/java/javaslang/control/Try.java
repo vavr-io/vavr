@@ -6,8 +6,8 @@
 package javaslang.control;
 
 import javaslang.ValueObject;
-import javaslang.algebra.HigherKinded;
-import javaslang.algebra.Monad;
+import javaslang.algebra.HigherKinded1;
+import javaslang.algebra.Monad1;
 import javaslang.control.Valences.Bivalent;
 import javaslang.function.CheckedRunnable;
 import javaslang.function.CheckedSupplier;
@@ -21,7 +21,7 @@ import java.util.function.Predicate;
  *
  * @param <T> Value type in the case of success.
  */
-public interface Try<T> extends Monad<T, Try<?>>, ValueObject, Bivalent<T, Throwable> {
+public interface Try<T> extends Monad1<T, Try<?>>, ValueObject, Bivalent<T, Throwable> {
 
 	static <T> Try<T> of(CheckedSupplier<T> supplier) {
 		try {
@@ -58,7 +58,7 @@ public interface Try<T> extends Monad<T, Try<?>>, ValueObject, Bivalent<T, Throw
 	<U> Try<U> map(Function<? super T, ? extends U> mapper);
 
 	@Override
-	<U, TRY extends HigherKinded<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper);
+	<U, TRY extends HigherKinded1<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper);
 
 	@Override
 	boolean equals(Object o);

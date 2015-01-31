@@ -7,7 +7,7 @@ package javaslang.control;
 
 import javaslang.Tuple;
 import javaslang.Tuple1;
-import javaslang.algebra.HigherKinded;
+import javaslang.algebra.HigherKinded1;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -114,7 +114,7 @@ public final class Success<T> implements Try<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U, TRY extends HigherKinded<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper) {
+    public <U, TRY extends HigherKinded1<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper) {
         try {
             return (Try<U>) mapper.apply(value);
         } catch (Throwable t) {

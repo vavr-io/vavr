@@ -7,8 +7,13 @@ package javaslang.control;
 
 import javaslang.Tuple;
 import javaslang.Tuple1;
+import javaslang.Tuple2;
+import javaslang.algebra.Functor2;
+import javaslang.algebra.HigherKinded2;
+import javaslang.algebra.Monad2;
 
 import java.util.Objects;
+import java.util.function.BiFunction;
 
 public final class Left<L, R> implements Either<L, R> {
 

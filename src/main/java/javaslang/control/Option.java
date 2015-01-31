@@ -6,8 +6,8 @@
 package javaslang.control;
 
 import javaslang.ValueObject;
-import javaslang.algebra.HigherKinded;
-import javaslang.algebra.Monad;
+import javaslang.algebra.HigherKinded1;
+import javaslang.algebra.Monad1;
 import javaslang.control.Valences.Univalent;
 
 import java.util.function.Consumer;
@@ -29,7 +29,7 @@ import java.util.function.Predicate;
  *
  * @param <T> The type of the optional value.
  */
-public interface Option<T> extends Monad<T, Option<?>>, ValueObject, Univalent<T> {
+public interface Option<T> extends Monad1<T, Option<?>>, ValueObject, Univalent<T> {
 
     static <T> Option<T> of(T value) {
         return (value == null) ? None.instance() : new Some<>(value);
@@ -53,7 +53,7 @@ public interface Option<T> extends Monad<T, Option<?>>, ValueObject, Univalent<T
     <U> Option<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
-    <U, OPTION extends HigherKinded<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper);
+    <U, OPTION extends HigherKinded1<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper);
 
     @Override
     boolean equals(Object o);
