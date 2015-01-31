@@ -13,7 +13,7 @@ Profile 'release-sign-artifacts':
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<prerequisites>
-		<maven>3.0.0</maven>
+		<maven>3.0.4</maven>
 	</prerequisites>
 	<parent>
 		<groupId>org.sonatype.oss</groupId>
@@ -54,6 +54,7 @@ Profile 'release-sign-artifacts':
 		<java.version>1.8</java.version>
 		<junit.version>4.12</junit.version>
 		<maven.build-helper.version>1.9.1</maven.build-helper.version>
+        <maven.clean.plugin>2.6.1</maven.clean.plugin>
 		<maven.compiler.version>3.2</maven.compiler.version>
 		<maven.coveralls.version>3.0.1</maven.coveralls.version>
 		<maven.gpg.version>1.5</maven.gpg.version>
@@ -66,7 +67,9 @@ Profile 'release-sign-artifacts':
 	<build>
 		<plugins>
 			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-clean-plugin</artifactId>
+                <version>${maven.clean.plugin}</version>
 				<configuration>
 					<filesets>
 						<fileset>
