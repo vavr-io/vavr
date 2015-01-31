@@ -19,7 +19,6 @@ val TARGET = "src-gen/main/java"
  * ENTRY POINT
  */
 def run() {
-
   genFunctions()
   genFunctors()
   genHigherKindeds()
@@ -426,9 +425,7 @@ def genFunctions(): Unit = {
       }
     """
 
-    genJavaslangFile("javaslang.function", s"χ$i")(genFunction("χ", checked = true))
     genJavaslangFile("javaslang.function", s"CheckedLambda$i")(genFunction("CheckedLambda", checked = true))
-    genJavaslangFile("javaslang.function", s"λ$i")(genFunction("λ", checked = false))
     genJavaslangFile("javaslang.function", s"Lambda$i")(genFunction("Lambda", checked = false))
   }
 
