@@ -161,7 +161,11 @@ public interface Traversable<T> extends Iterable<T>, HigherKinded<T, Traversable
                     .caze((long t) -> (T) (Long) (((Traversable<Integer>) this).foldLeft((long) 0, (i, j) -> i + j) / n))
                     .caze((short t) -> (T) (Short) (short) (((Traversable<Short>) this).foldLeft((int) 0, (i, j) -> i + j) / n))
                     .caze((BigInteger t) -> (T) ((Traversable<BigInteger>) this).reduce(BigInteger::add).divide(BigInteger.valueOf(n)))
-                    .caze((BigDecimal t) -> (T) ((Traversable<BigDecimal>) this).reduce(BigDecimal::add).divide(BigDecimal.valueOf(n), BigDecimal.ROUND_HALF_EVEN))
+                    .caze((BigDecimal t) -> {
+                        final Traversable<BigDecimal> traversable = (Traversable<BigDecimal>) this;
+                        final int scale = traversable.map(BigDecimal::scale).max();
+                        return (T) traversable.reduce(BigDecimal::add).divide(BigDecimal.valueOf(n), scale + 1, BigDecimal.ROUND_HALF_EVEN);
+                    })
                     .orElse(() -> {
                         throw new UnsupportedOperationException("not numeric");
                     })

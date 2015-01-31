@@ -7,6 +7,7 @@ package javaslang.control;
 
 import javaslang.function.*;
 
+import java.lang.invoke.MethodType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -196,7 +197,8 @@ public final class Match<R> implements Function<Object, R> {
 		 */
 		public Builder<R> caze(BooleanFunction<R> function) {
 			Objects.requireNonNull(function, "function is null");
-			cases.add(caze(None.instance(), (Boolean b) -> function.apply(b), Boolean.class));
+            //noinspection Convert2MethodRef
+            cases.add(caze(None.instance(), (Boolean b) -> function.apply(b), Boolean.class));
 			return this;
 		}
 
@@ -210,6 +212,7 @@ public final class Match<R> implements Function<Object, R> {
 		 */
 		public Builder<R> caze(ByteFunction<R> function) {
 			Objects.requireNonNull(function, "function is null");
+            //noinspection Convert2MethodRef
 			cases.add(caze(None.instance(), (Byte b) -> function.apply(b), Byte.class));
 			return this;
 		}
@@ -224,6 +227,7 @@ public final class Match<R> implements Function<Object, R> {
 		 */
 		public Builder<R> caze(CharFunction<R> function) {
 			Objects.requireNonNull(function, "function is null");
+            //noinspection Convert2MethodRef
 			cases.add(caze(None.instance(), (Character c) -> function.apply(c), Character.class));
 			return this;
 		}
@@ -238,6 +242,7 @@ public final class Match<R> implements Function<Object, R> {
 		 */
 		public Builder<R> caze(DoubleFunction<R> function) {
 			Objects.requireNonNull(function, "function is null");
+            //noinspection Convert2MethodRef
 			cases.add(caze(None.instance(), (Double d) -> function.apply(d), Double.class));
 			return this;
 		}
@@ -252,6 +257,7 @@ public final class Match<R> implements Function<Object, R> {
 		 */
 		public Builder<R> caze(FloatFunction<R> function) {
 			Objects.requireNonNull(function, "function is null");
+            //noinspection Convert2MethodRef
 			cases.add(caze(None.instance(), (Float f) -> function.apply(f), Float.class));
 			return this;
 		}
@@ -266,6 +272,7 @@ public final class Match<R> implements Function<Object, R> {
 		 */
 		public Builder<R> caze(IntFunction<R> function) {
 			Objects.requireNonNull(function, "function is null");
+            //noinspection Convert2MethodRef
 			cases.add(caze(None.instance(), (Integer i) -> function.apply(i), Integer.class));
 			return this;
 		}
@@ -280,6 +287,7 @@ public final class Match<R> implements Function<Object, R> {
 		 */
 		public Builder<R> caze(LongFunction<R> function) {
 			Objects.requireNonNull(function, "function is null");
+            //noinspection Convert2MethodRef
 			cases.add(caze(None.instance(), (Long l) -> function.apply(l), Long.class));
 			return this;
 		}
@@ -294,6 +302,7 @@ public final class Match<R> implements Function<Object, R> {
 		 */
 		public Builder<R> caze(ShortFunction<R> function) {
 			Objects.requireNonNull(function, "function is null");
+            //noinspection Convert2MethodRef
 			cases.add(caze(None.instance(), (Short s) -> function.apply(s), Short.class));
 			return this;
 		}
@@ -326,7 +335,10 @@ public final class Match<R> implements Function<Object, R> {
 		}
 
 		private Function<Object, Option<R>> caze(Option<?> prototype, λ1<?, R> function) {
-			return caze(prototype, function, function.getType().parameterType(0));
+            final MethodType type = function.getType();
+            // the compiler may add additional parameters to the lambda, our parameter is the last one
+            final Class<?> parameterType = type.parameterType(type.parameterCount() - 1);
+			return caze(prototype, function, parameterType);
 		}
 
 		/**
@@ -339,7 +351,7 @@ public final class Match<R> implements Function<Object, R> {
 		// TODO: split prototype and non-prototype cases to increase performance
 		private Function<Object, Option<R>> caze(Option<?> prototype, Function<?, R> function, Class<?> parameterType) {
 			final Predicate<Object> applicable = obj -> {
-				final boolean isCompatible = obj == null || parameterType.isAssignableFrom(obj.getClass());
+                final boolean isCompatible = obj == null || parameterType.isAssignableFrom(obj.getClass());
 				return isCompatible
 						&& prototype.map(val -> val == obj || (val != null && val.equals(obj))).orElse(obj != null);
 			};
