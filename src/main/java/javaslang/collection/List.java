@@ -600,7 +600,7 @@ public interface List<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObject 
     // (see Effective Java, 2nd ed., p. 315)
     static final class Cons<T> extends AbstractList<T> {
 
-        private static final long serialVersionUID = 53595355464228669L;
+        private static final long serialVersionUID = 1L;
 
         private final T head;
         private final List<T> tail;
@@ -668,7 +668,7 @@ public interface List<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObject 
         // classes. Also, it may not be compatible with circular object graphs.
         private static final class SerializationProxy<T> implements Serializable {
 
-            private static final long serialVersionUID = 3851894487210781138L;
+            private static final long serialVersionUID = 1L;
 
             // the instance to be serialized/deserialized
             private transient Cons<T> list;
@@ -748,7 +748,7 @@ public interface List<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObject 
      */
     static final class Nil<T> extends AbstractList<T> {
 
-        private static final long serialVersionUID = 809473773619488283L;
+        private static final long serialVersionUID = 1L;
 
         private static final Nil<?> INSTANCE = new Nil<>();
 
@@ -805,7 +805,7 @@ public interface List<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObject 
      */
     static abstract class AbstractList<T> implements List<T> {
 
-        private static final long serialVersionUID = -2982070502699296498L;
+        private static final long serialVersionUID = 1L;
 
         @Override
         public boolean equals(Object o) {

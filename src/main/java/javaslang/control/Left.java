@@ -17,7 +17,7 @@ import java.util.function.BiFunction;
 
 public final class Left<L, R> implements Either<L, R> {
 
-    private static final long serialVersionUID = 3297057402720487673L;
+    private static final long serialVersionUID = 1L;
 
     final L left;
 

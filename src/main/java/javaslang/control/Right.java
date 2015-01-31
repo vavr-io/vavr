@@ -12,7 +12,7 @@ import java.util.Objects;
 
 public final class Right<L, R> implements Either<L, R> {
 
-    private static final long serialVersionUID = 6037923230455552437L;
+    private static final long serialVersionUID = 1L;
 
     final R right;
 

@@ -755,7 +755,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
     // (see Effective Java, 2nd ed., p. 315)
     static final class Cons<T> extends AbstractStream<T> {
 
-        private static final long serialVersionUID = 53595355464228669L;
+        private static final long serialVersionUID = 1L;
 
         private final T head;
         private final Lazy<Stream<T>> tail;
@@ -821,7 +821,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
         // classes. Also, it may not be compatible with circular object graphs.
         private static final class SerializationProxy<T> implements Serializable {
 
-            private static final long serialVersionUID = 3851894487210781138L;
+            private static final long serialVersionUID = 1L;
 
             // the instance to be serialized/deserialized
             private transient Cons<T> stream;
@@ -904,7 +904,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
      */
     static final class Nil<T> extends AbstractStream<T> {
 
-        private static final long serialVersionUID = 809473773619488283L;
+        private static final long serialVersionUID = 1L;
 
         private static final Nil<?> INSTANCE = new Nil<>();
 
@@ -956,7 +956,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
      */
     static final class Deferred<T> extends AbstractStream<T> {
 
-        private static final long serialVersionUID = -8478757773471498399L;
+        private static final long serialVersionUID = 1L;
 
         private final Lazy<Stream<T>> stream;
 
@@ -1023,7 +1023,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
      */
     static abstract class AbstractStream<T> implements Stream<T> {
 
-        private static final long serialVersionUID = 5433763348296234013L;
+        private static final long serialVersionUID = 1L;
 
         @Override
         public boolean equals(Object o) {

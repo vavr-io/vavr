@@ -142,7 +142,7 @@ public interface BinaryTree<T> extends Tree<T> {
 
     static final class Leaf<T> extends AbstractBinaryTree<T> {
 
-        private static final long serialVersionUID = -189719611914095083L;
+        private static final long serialVersionUID = 1L;
 
         private final T value;
 
@@ -188,7 +188,7 @@ public interface BinaryTree<T> extends Tree<T> {
 
     static final class Branch<T> extends AbstractBinaryTree<T> {
 
-        private static final long serialVersionUID = -1368274890360703478L;
+        private static final long serialVersionUID = 1L;
 
         private final BinaryTree<T> left;
         private final BinaryTree<T> right;
@@ -279,7 +279,7 @@ public interface BinaryTree<T> extends Tree<T> {
         // classes. Also, it may not be compatible with circular object graphs.
         private static final class SerializationProxy<T> implements Serializable {
 
-            private static final long serialVersionUID = -8789880233113465837L;
+            private static final long serialVersionUID = 1L;
 
             // the instance to be serialized/deserialized
             private transient Branch<T> branch;
@@ -342,7 +342,7 @@ public interface BinaryTree<T> extends Tree<T> {
 
     static final class Nil<T> extends AbstractBinaryTree<T> {
 
-        private static final long serialVersionUID = 4966576338736993154L;
+        private static final long serialVersionUID = 1L;
 
         private static final Nil<?> INSTANCE = new Nil<>();
 
@@ -406,7 +406,7 @@ public interface BinaryTree<T> extends Tree<T> {
 
     static abstract class AbstractBinaryTree<T> implements BinaryTree<T> {
 
-        private static final long serialVersionUID = -4266172093004605495L;
+        private static final long serialVersionUID = 1L;
 
         @Override
         public boolean equals(Object o) {

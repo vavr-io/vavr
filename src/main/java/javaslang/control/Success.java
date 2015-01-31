@@ -17,7 +17,7 @@ import java.util.function.Predicate;
 
 public final class Success<T> implements Try<T> {
 
-    private static final long serialVersionUID = 9157097743377386892L;
+    private static final long serialVersionUID = 1L;
 
     private T value;
 

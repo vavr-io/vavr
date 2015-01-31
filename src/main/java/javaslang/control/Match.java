@@ -54,9 +54,11 @@ import java.util.function.*;
  * 
  * @param <R> The result type of the Match expression.
  */
-public final class Match<R> implements Function<Object, R> {
+public final class Match<R> implements Lambda1<Object, R> {
 
-	private final List<Function<Object, Option<R>>> cases;
+    private static final long serialVersionUID = 1L;
+
+    private final List<Function<Object, Option<R>>> cases;
 	private final Option<Supplier<R>> defaultOption;
 
 	private Match(List<Function<Object, Option<R>>> cases, Option<Supplier<R>> defaultOption) {

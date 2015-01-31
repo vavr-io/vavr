@@ -24,7 +24,7 @@ import java.util.function.Supplier;
  */
 public final class None<T> implements Option<T> {
 
-    private static final long serialVersionUID = -7265680402159660165L;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The singleton instance of None.

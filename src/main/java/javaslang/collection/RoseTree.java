@@ -80,7 +80,7 @@ public interface RoseTree<T> extends Tree<T> {
 
     static final class Leaf<T> extends AbstractRoseTree<T> implements NonNil<T> {
 
-        private static final long serialVersionUID = -6301673452872179894L;
+        private static final long serialVersionUID = 1L;
 
         private final T value;
 
@@ -116,7 +116,7 @@ public interface RoseTree<T> extends Tree<T> {
 
     static final class Branch<T> extends AbstractRoseTree<T> implements NonNil<T> {
 
-        private static final long serialVersionUID = -1368274890360703478L;
+        private static final long serialVersionUID = 1L;
 
         private final List<NonNil<T>> children;
         private final T value;
@@ -193,7 +193,7 @@ public interface RoseTree<T> extends Tree<T> {
         // classes. Also, it may not be compatible with circular object graphs.
         private static final class SerializationProxy<T> implements Serializable {
 
-            private static final long serialVersionUID = -1169723642575166947L;
+            private static final long serialVersionUID = 1L;
 
             // the instance to be serialized/deserialized
             private transient Branch<T> branch;
@@ -255,7 +255,7 @@ public interface RoseTree<T> extends Tree<T> {
 
     static final class Nil<T> extends AbstractRoseTree<T> {
 
-        private static final long serialVersionUID = 4966576338736993154L;
+        private static final long serialVersionUID = 1L;
 
         private static final Nil<?> INSTANCE = new Nil<>();
 
@@ -309,7 +309,7 @@ public interface RoseTree<T> extends Tree<T> {
 
     static abstract class AbstractRoseTree<T> implements RoseTree<T> {
 
-        private static final long serialVersionUID = -8001420483694263100L;
+        private static final long serialVersionUID = 1L;
 
         @Override
         public boolean equals(Object o) {

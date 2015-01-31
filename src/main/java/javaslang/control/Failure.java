@@ -17,7 +17,7 @@ import java.util.function.Predicate;
 
 public final class Failure<T> implements Try<T> {
 
-    private static final long serialVersionUID = 2836756728630414146L;
+    private static final long serialVersionUID = 1L;
 
     private final NonFatal cause;
 
@@ -175,7 +175,7 @@ public final class Failure<T> implements Try<T> {
      */
     public static abstract class Cause extends RuntimeException implements ValueObject {
 
-        private static final long serialVersionUID = 1905549717320100279L;
+        private static final long serialVersionUID = 1L;
 
         Cause(Throwable cause) {
             super(cause);
@@ -227,7 +227,7 @@ public final class Failure<T> implements Try<T> {
      */
     public static final class Fatal extends Cause {
 
-        private static final long serialVersionUID = 7927552082244515502L;
+        private static final long serialVersionUID = 1L;
 
         Fatal(Throwable cause) {
             super(cause);
@@ -244,7 +244,7 @@ public final class Failure<T> implements Try<T> {
      */
     public static final class NonFatal extends Cause {
 
-        private static final long serialVersionUID = -1643015386682564223L;
+        private static final long serialVersionUID = 1L;
 
         NonFatal(Throwable cause) {
             super(cause);
