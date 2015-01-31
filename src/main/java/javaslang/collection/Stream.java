@@ -6,9 +6,8 @@
 package javaslang.collection;
 
 import javaslang.algebra.*;
-import javaslang.collection.Lazy.Lazy0;
+import javaslang.Lazy;
 import javaslang.*;
-import javaslang.Tuple.*;
 import javaslang.control.Try;
 
 import java.io.*;
@@ -772,7 +771,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
         private static final long serialVersionUID = 53595355464228669L;
 
         private final T head;
-        private final Lazy0<Stream<T>> tail;
+        private final Lazy<Stream<T>> tail;
 
         public Cons(T head, Supplier<Stream<T>> tail) {
             this.head = head;
@@ -972,7 +971,7 @@ public interface Stream<T> extends Seq<T>, Monad<T, Traversable<?>>, Monoid<Stre
 
         private static final long serialVersionUID = -8478757773471498399L;
 
-        private final Lazy0<Stream<T>> stream;
+        private final Lazy<Stream<T>> stream;
 
         public Deferred(Supplier<Stream<T>> streamSupplier) {
             this.stream = Lazy.of(streamSupplier);
