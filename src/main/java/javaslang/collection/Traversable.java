@@ -153,14 +153,14 @@ public interface Traversable<T> extends Iterable<T>, HigherKinded1<T, Traversabl
             T head = head();
             int n = length();
             return Match
-                    .<T>caze((boolean t) -> (T) (Boolean) (((Traversable<Boolean>) this).filter(b -> b == true).length() >= n / 2))
-                    .caze((byte t) -> (T) (Byte) (byte) (((Traversable<Byte>) this).foldLeft((int) 0, (i, j) -> i + j) / n))
-                    .caze((char t) -> (T) (Character) (char) (((Traversable<Character>) this).foldLeft((int) 0, (i, j) -> i + j) / n))
-                    .caze((double t) -> (T) (Double) (((Traversable<Double>) this).foldLeft((double) 0, (i, j) -> i + j) / n))
-                    .caze((float t) -> (T) (Float) (float) (((Traversable<Float>) this).foldLeft((double) 0, (i, j) -> i + j) / n))
-                    .caze((int t) -> (T) (Integer) (int) (((Traversable<Integer>) this).foldLeft((long) 0, (i, j) -> i + j) / n))
-                    .caze((long t) -> (T) (Long) (((Traversable<Integer>) this).foldLeft((long) 0, (i, j) -> i + j) / n))
-                    .caze((short t) -> (T) (Short) (short) (((Traversable<Short>) this).foldLeft((int) 0, (i, j) -> i + j) / n))
+                    .<T>caze((boolean t) -> (T) (Boolean) (((Traversable<Boolean>) this).filter(Boolean::booleanValue).length() >= n / 2))
+                    .caze((byte t) -> (T) (Byte) (byte) (((Traversable<Byte>) this).foldLeft(0, (i, j) -> i + j) / n))
+                    .caze((char t) -> (T) (Character) (char) (((Traversable<Character>) this).foldLeft(0, (i, j) -> i + j) / n))
+                    .caze((double t) -> (T) (Double) (((Traversable<Double>) this).foldLeft(0d, (i, j) -> i + j) / n))
+                    .caze((float t) -> (T) (Float) (float) (((Traversable<Float>) this).foldLeft(0d, (i, j) -> i + j) / n))
+                    .caze((int t) -> (T) (Integer) (int) (((Traversable<Integer>) this).foldLeft(0L, (i, j) -> i + j) / n))
+                    .caze((long t) -> (T) (Long) (((Traversable<Long>) this).foldLeft(0L, (i, j) -> i + j) / n))
+                    .caze((short t) -> (T) (Short) (short) (((Traversable<Short>) this).foldLeft(0, (i, j) -> i + j) / n))
                     .caze((BigInteger t) -> (T) ((Traversable<BigInteger>) this).reduce(BigInteger::add).divide(BigInteger.valueOf(n)))
                     .caze((BigDecimal t) -> {
                         final Traversable<BigDecimal> traversable = (Traversable<BigDecimal>) this;
@@ -576,13 +576,13 @@ public interface Traversable<T> extends Iterable<T>, HigherKinded1<T, Traversabl
             T head = head();
             return Match
                     .<T>caze((boolean t) -> (T) ((Traversable<Boolean>) this).reduce((i, j) -> i && j))
-                    .caze((byte t) -> (T) ((Traversable<Byte>) this).foldLeft((int) 0, (i, j) -> i * j))
-                    .caze((char t) -> (T) ((Traversable<Character>) this).foldLeft((int) 0, (xs, x) -> xs * (char) x))
+                    .caze((byte t) -> (T) ((Traversable<Byte>) this).foldLeft(0, (i, j) -> i * j))
+                    .caze((char t) -> (T) ((Traversable<Character>) this).foldLeft(0, (xs, x) -> xs * (char) x))
                     .caze((double t) -> (T) ((Traversable<Double>) this).reduce((i, j) -> i * j))
                     .caze((float t) -> (T) ((Traversable<Float>) this).reduce((i, j) -> i * j))
                     .caze((int t) -> (T) ((Traversable<Integer>) this).reduce((i, j) -> i * j))
                     .caze((long t) -> (T) ((Traversable<Long>) this).reduce((i, j) -> i * j))
-                    .caze((short t) -> (T) ((Traversable<Short>) this).foldLeft((int) 0, (xs, x) -> xs * x))
+                    .caze((short t) -> (T) ((Traversable<Short>) this).foldLeft(0, (xs, x) -> xs * x))
                     .caze((BigInteger t) -> (T) ((Traversable<BigInteger>) this).reduce(BigInteger::multiply))
                     .caze((BigDecimal t) -> (T) ((Traversable<BigDecimal>) this).reduce(BigDecimal::multiply))
                     .orElse(() -> {
@@ -730,13 +730,13 @@ public interface Traversable<T> extends Iterable<T>, HigherKinded1<T, Traversabl
             T head = head();
             return Match
                     .<T>caze((boolean t) -> (T) ((Traversable<Boolean>) this).reduce((i, j) -> i || j))
-                    .caze((byte t) -> (T) ((Traversable<Byte>) this).foldLeft((int) 0, (i, j) -> i + j))
-                    .caze((char t) -> (T) ((Traversable<Character>) this).foldLeft((int) 0, (xs, x) -> xs + (char) x))
+                    .caze((byte t) -> (T) ((Traversable<Byte>) this).foldLeft(0, (i, j) -> i + j))
+                    .caze((char t) -> (T) ((Traversable<Character>) this).foldLeft(0, (xs, x) -> xs + (char) x))
                     .caze((double t) -> (T) ((Traversable<Double>) this).reduce((i, j) -> i + j))
                     .caze((float t) -> (T) ((Traversable<Float>) this).reduce((i, j) -> i + j))
                     .caze((int t) -> (T) ((Traversable<Integer>) this).reduce((i, j) -> i + j))
                     .caze((long t) -> (T) ((Traversable<Long>) this).reduce((i, j) -> i + j))
-                    .caze((short t) -> (T) ((Traversable<Short>) this).foldLeft((int) 0, (xs, x) -> xs + x))
+                    .caze((short t) -> (T) ((Traversable<Short>) this).foldLeft(0, (xs, x) -> xs + x))
                     .caze((BigInteger t) -> (T) ((Traversable<BigInteger>) this).reduce(BigInteger::add))
                     .caze((BigDecimal t) -> (T) ((Traversable<BigDecimal>) this).reduce(BigDecimal::add))
                     .orElse(() -> {
