@@ -28,6 +28,8 @@ def run() {
   genTuples()
 }
 
+// Use /$** instead of /** in a StringContext when IntelliJ IDEA otherwise shows up errors in the editor
+val javadoc = "**"
 
 /**
  * Generator of javaslang.algebra.Functor*
@@ -50,7 +52,7 @@ def genFunctors() = 1 to N foreach { i =>
       import javaslang.function.Lambda$i;
 
       ${(i == 1).gen(xs"""
-      /**
+      /$javadoc
        * Defines a Functor by generalizing the map function.
        * <p>
        * All instances of the Functor interface should obey the two functor laws:
@@ -77,7 +79,7 @@ def genFunctors() = 1 to N foreach { i =>
 def genHigherKindeds() = 1 to N foreach { i =>
   genJavaslangFile("javaslang.algebra", s"HigherKinded$i")((packageName, className) => xs"""
       ${(i == 1).gen(xs"""
-      /**
+      /$javadoc
        * <p>
        * A type <em>HigherKinded</em> declares a generic type constructor, which consists of an inner type (component type)
        * and an outer type (container type).
@@ -92,7 +94,8 @@ def genHigherKindeds() = 1 to N foreach { i =>
        *
        * @param <T1> Component type of the type to be constructed.
        * @param <TYPE> Container type of the type to be constructed.
-       */      """)}
+       */
+      """)}
       public interface $className<${(1 to i).gen(j => s"T$j")(", ")}, TYPE extends $className<${"?, " * i}TYPE>> {
 
           // used for type declaration only
@@ -117,7 +120,7 @@ def genMonads() = 1 to N foreach { i =>
       import javaslang.function.Lambda$i;
 
       ${(i == 1).gen(xs"""
-      /**
+      /$javadoc
        * Defines a Monad by generalizing the flatMap and unit functions.
        * <p>
        * All instances of the Monad interface should obey the three control laws:

@@ -24,7 +24,7 @@ package javaslang.algebra;
  *
  * @param <T1> Component type of the type to be constructed.
  * @param <TYPE> Container type of the type to be constructed.
- */      
+ */
 public interface HigherKinded1<T1, TYPE extends HigherKinded1<?, TYPE>> {
 
     // used for type declaration only
