@@ -17,7 +17,7 @@ import javaslang.function.Lambda1;
  * All instances of the Functor interface should obey the two functor laws:
  * <ul>
  *     <li>{@code m.map(a -> a) ≡ m}</li>
- *     <li>{@code m.map(f.compse(g)) ≡ m.map(g).map(f)}</li>
+ *     <li>{@code m.map(f.compose(g)) ≡ m.map(g).map(f)}</li>
  * </ul>
  *
  * @param <T1> Component type of this Functor.
