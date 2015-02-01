@@ -224,6 +224,9 @@ public final class Failure<T> implements Try<T> {
          */
         public static Cause of(Throwable t) {
             Objects.requireNonNull(t, "Throwable is null");
+            if (t instanceof Cause) {
+                return (Cause) t;
+            }
             final boolean isFatal = (t instanceof VirtualMachineError && !(t instanceof StackOverflowError))
                     || t instanceof ThreadDeath
                     || t instanceof InterruptedException
