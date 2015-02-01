@@ -88,6 +88,16 @@ public final class Failure<T> implements Try<T> {
     }
 
     @Override
+    public Try<T> onFailure(Consumer<Throwable> f) {
+        try {
+            f.accept(cause.getCause());
+            return this;
+        } catch (Throwable t) {
+            return new Failure<>(t);
+        }
+    }
+
+    @Override
     public Option<T> toOption() {
         return None.instance();
     }

@@ -44,14 +44,12 @@ public class TryTest {
 
 	@Test
 	public void shouldDetectFailureOfRunnable() {
-		assertThat(Try.run(() -> { throw new RuntimeException(); }).isFailure()).isTrue();
+		assertThat(Try.of(() -> { throw new RuntimeException(); }).isFailure()).isTrue();
 	}
 
 	@Test(expected = Failure.Fatal.class)
 	public void shouldPassThroughFatalException() {
-		Try.of(() -> {
-			throw new UnknownError();
-		});
+		Try.of(() -> { throw new UnknownError(); });
 	}
 
 	@Test

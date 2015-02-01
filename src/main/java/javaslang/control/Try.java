@@ -50,6 +50,8 @@ public interface Try<T> extends Monad1<T, Try<?>>, ValueObject, Bivalent<T, Thro
 
 	Try<Throwable> failed();
 
+    Try<T> onFailure(Consumer<Throwable> f);
+
 	Try<T> filter(Predicate<? super T> predicate);
 
 	void forEach(Consumer<? super T> action);

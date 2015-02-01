@@ -71,6 +71,11 @@ public final class Success<T> implements Try<T> {
     }
 
     @Override
+    public Try<T> onFailure(Consumer<Throwable> f) {
+        return this;
+    }
+
+    @Override
     public Option<T> toOption() {
         return new Some<>(value);
     }
