@@ -704,7 +704,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
     @Override
     default <U> Stream<Tuple2<T, U>> zip(Iterable<U> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
-            final Stream<U> that = Stream.of(iterable);
+        final Stream<U> that = Stream.of(iterable);
         if (this.isEmpty() || that.isEmpty()) {
             return Nil.instance();
         } else {
