@@ -7,12 +7,14 @@ package javaslang.control;
 
 import javaslang.Serializables;
 import javaslang.Tuple;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,6 +41,18 @@ public class TryTest {
 		final Exception exception = new Exception();
 		assertThat(Failure.Cause.of(exception).unapply()).isEqualTo(Tuple.of(exception));
 	}
+
+    @Test
+    public void shouldSubsequentlyHandOverCause() {
+        final Supplier<?> inner = () -> { throw new UnknownError("\uD83D\uDCA9"); };
+        final Supplier<?> outer = () -> Try.of(inner::get).get();
+        try {
+            Try.of(outer::get).get();
+            Assertions.fail("Exception expected");
+        } catch(Throwable x) {
+            Assertions.assertThat(x.getCause().getMessage()).isEqualTo("\uD83D\uDCA9");
+        }
+    }
 
 	// -- Failure
 
