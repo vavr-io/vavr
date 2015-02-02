@@ -5,8 +5,25 @@
  */
 package javaslang.test;
 
+import javaslang.collection.Stream;
+import org.junit.Test;
+
+import java.util.Random;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class GenTest {
 
-    // TODO: junit tests
-
+    @Test
+    public void shouldUseCustomRandomNumberGenerator() {
+        //noinspection serial
+        final Random rng = new Random() {
+            public int nextInt(int bound) {
+                return 0;
+            }
+        };
+        final Gen<Integer> gen = Gen.choose(1, 2);
+        final int actual = Stream.gen(() -> gen.apply(rng)).take(10).sum();
+        assertThat(actual).isEqualTo(10);
+    }
 }
