@@ -7,8 +7,6 @@ package javaslang.control;
 
 import javaslang.Serializables;
 import javaslang.Tuple;
-import javaslang.algebra.Monad1Laws;
-import javaslang.test.Arbitrary;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
@@ -16,12 +14,7 @@ import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class OptionTest implements Monad1Laws<Integer, Option<?>> {
-
-    @Override
-    public Arbitrary<Option<Integer>> arbitrary() {
-        return null; // TODO
-    }
+public class OptionTest {
 
     // -- construction
 
