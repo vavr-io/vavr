@@ -9,7 +9,7 @@ package javaslang.algebra;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.function.Lambda2;
+import javaslang.Function2;
 
 public interface Monad2<T1, T2, M extends HigherKinded2<?, ?, M>> extends Functor2<T1, T2>, HigherKinded2<T1, T2, M> {
 

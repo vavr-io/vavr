@@ -42,13 +42,13 @@ def genFunctors() = 1 to N foreach { i =>
     val functionType = i match {
       case 1 => "java.util.function.Function"
       case 2 => "java.util.function.BiFunction"
-      case _ => s"javaslang.function.Lambda$i"
+      case _ => s"javaslang.Function$i"
     }
     xs"""
       ${//TODO(#90): Import Manager
         (i > 1).gen(s"import javaslang.Tuple$i;")
       }
-      import javaslang.function.Lambda$i;
+      import javaslang.Function$i;
 
       ${(i == 1).gen(xs"""
       /$javadoc
@@ -113,10 +113,10 @@ def genMonads() = 1 to N foreach { i =>
     val functionType = i match {
       case 1 => "java.util.function.Function"
       case 2 => "java.util.function.BiFunction"
-      case _ => s"javaslang.function.Lambda$i"
+      case _ => s"javaslang.Function$i"
     }
     xs"""
-      import javaslang.function.Lambda$i;
+      import javaslang.Function$i;
 
       ${(i == 1).gen(xs"""
       /$javadoc
@@ -149,7 +149,6 @@ def genPropertyChecks(): Unit = {
   def genProperty(packageName: String, className: String): String = xs"""
     import javaslang.*;
     import javaslang.control.*;
-    import javaslang.function.*;
 
     import java.util.Random;
     import java.util.concurrent.ThreadLocalRandom;
@@ -233,8 +232,8 @@ def genPropertyChecks(): Unit = {
                         """)("\n")}
                     }
 
-                    public Property$i<$generics> suchThat(CheckedLambda$i<$generics, Boolean> predicate) {
-                        final CheckedLambda$i<$generics, Condition> proposition = (${params("t")}) -> new Condition(true, predicate.apply(${params("t")}));
+                    public Property$i<$generics> suchThat(CheckedFunction$i<$generics, Boolean> predicate) {
+                        final CheckedFunction$i<$generics, Condition> proposition = (${params("t")}) -> new Condition(true, predicate.apply(${params("t")}));
                         return new Property$i<>(${params("a")}, proposition);
                     }
                 }
@@ -251,17 +250,17 @@ def genPropertyChecks(): Unit = {
                     ${(1 to i).gen(j => xs"""
                         private final Arbitrary<T$j> a$j;
                     """)("\n")}
-                    final CheckedLambda$i<$generics, Condition> predicate;
+                    final CheckedFunction$i<$generics, Condition> predicate;
 
-                    Property$i($parametersDecl, CheckedLambda$i<$generics, Condition> predicate) {
+                    Property$i($parametersDecl, CheckedFunction$i<$generics, Condition> predicate) {
                         ${(1 to i).gen(j => xs"""
                             this.a$j = a$j;
                         """)("\n")}
                         this.predicate = predicate;
                     }
 
-                    public Property implies(CheckedLambda$i<$generics, Boolean> postcondition) {
-                        final CheckedLambda$i<$generics, Condition> implication = (${params("t")}) -> {
+                    public Property implies(CheckedFunction$i<$generics, Boolean> postcondition) {
+                        final CheckedFunction$i<$generics, Condition> implication = (${params("t")}) -> {
                             final Condition precondition = predicate.apply(${params("t")});
                             if (precondition.isFalse()) {
                                 // ex falso quodlibet
@@ -331,7 +330,7 @@ def genPropertyChecks(): Unit = {
 }
 
 /**
- * Generator of javaslang.function.*
+ * Generator of Functions
  */
 def genFunctions(): Unit = {
 
@@ -369,13 +368,11 @@ def genFunctions(): Unit = {
     }
 
     def genFunction(name: String, checked: Boolean)(packageName: String, className: String): String = xs"""
-      import javaslang.Tuple$i;
-
       import java.util.Objects;
       import java.util.function.Function;
 
       @FunctionalInterface
-      public interface $className<${if (i > 0) s"$generics, " else ""}R> extends Lambda<R>${additionalInterfaces(i, checked)} {
+      public interface $className<${if (i > 0) s"$generics, " else ""}R> extends λ<R>${additionalInterfaces(i, checked)} {
 
           ${if (i == 1) xs"""
           static <T> ${name}1<T, T> identity() {
@@ -425,8 +422,8 @@ def genFunctions(): Unit = {
       }
     """
 
-    genJavaslangFile("javaslang.function", s"CheckedLambda$i")(genFunction("CheckedLambda", checked = true))
-    genJavaslangFile("javaslang.function", s"Lambda$i")(genFunction("Lambda", checked = false))
+    genJavaslangFile("javaslang", s"CheckedFunction$i")(genFunction("CheckedFunction", checked = true))
+    genJavaslangFile("javaslang", s"Function$i")(genFunction("Function", checked = false))
   }
 
   (0 to N).foreach(genFunctions)
@@ -523,7 +520,7 @@ def genTuples(): Unit = {
     val functionType = i match {
       case 1 => "java.util.function.Function"
       case 2 => "java.util.function.BiFunction"
-      case _ => s"javaslang.function.Lambda$i"
+      case _ => s"javaslang.Function$i"
     }
 
     xs"""

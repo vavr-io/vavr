@@ -10,7 +10,7 @@ package javaslang.algebra;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import javaslang.Tuple2;
-import javaslang.function.Lambda2;
+import javaslang.Function2;
 
 public interface Functor2<T1, T2> {
 

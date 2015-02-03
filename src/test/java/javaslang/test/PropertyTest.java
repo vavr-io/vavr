@@ -5,16 +5,11 @@
  */
 package javaslang.test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import javaslang.Tuple;
-import javaslang.Tuple1;
-import javaslang.Tuple2;
 import javaslang.collection.List;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.function.Function;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class PropertyTest {
 

@@ -38,13 +38,13 @@ public class Tuple3<T1, T2, T3> implements Tuple, Monad3<T1, T2, T3, Tuple3<?, ?
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U1, U2, U3, MONAD extends HigherKinded3<U1, U2, U3, Tuple3<?, ?, ?>>> Tuple3<U1, U2, U3> flatMap(javaslang.function.Lambda3<? super T1, ? super T2, ? super T3, MONAD> f) {
+    public <U1, U2, U3, MONAD extends HigherKinded3<U1, U2, U3, Tuple3<?, ?, ?>>> Tuple3<U1, U2, U3> flatMap(javaslang.Function3<? super T1, ? super T2, ? super T3, MONAD> f) {
         return (Tuple3<U1, U2, U3>) f.apply(_1, _2, _3);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U1, U2, U3> Tuple3<U1, U2, U3> map(javaslang.function.Lambda3<? super T1, ? super T2, ? super T3, Tuple3<? extends U1, ? extends U2, ? extends U3>> f) {
+    public <U1, U2, U3> Tuple3<U1, U2, U3> map(javaslang.Function3<? super T1, ? super T2, ? super T3, Tuple3<? extends U1, ? extends U2, ? extends U3>> f) {
         // normally the result of f would be mapped to the result type of map, but Tuple.map is a special case
         return (Tuple3<U1, U2, U3>) f.apply(_1, _2, _3);
     }

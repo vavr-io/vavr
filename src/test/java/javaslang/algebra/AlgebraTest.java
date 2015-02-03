@@ -7,7 +7,7 @@ package javaslang.algebra;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import javaslang.function.Lambda1;
+import javaslang.Function1;
 import org.junit.Test;
 
 import java.util.function.Function;
@@ -17,8 +17,8 @@ public class AlgebraTest {
     @Test
     public void shouldCombineMonoids() {
         final Monoid<Function<Integer, Integer>> endo = Monoid.endoMonoid();
-        final Lambda1<Integer, Integer> after = i -> i + 1;
-        final Lambda1<Integer, Integer> before = i -> i * 2;
+        final Function1<Integer, Integer> after = i -> i + 1;
+        final Function1<Integer, Integer> before = i -> i * 2;
         assertThat(endo.combine(after, before).apply(2)).isEqualTo(5);
     }
 }

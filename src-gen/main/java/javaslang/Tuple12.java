@@ -56,13 +56,13 @@ public class Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> implemen
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11, U12, MONAD extends HigherKinded12<U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11, U12, Tuple12<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>> Tuple12<U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11, U12> flatMap(javaslang.function.Lambda12<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? super T10, ? super T11, ? super T12, MONAD> f) {
+    public <U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11, U12, MONAD extends HigherKinded12<U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11, U12, Tuple12<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>> Tuple12<U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11, U12> flatMap(javaslang.Function12<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? super T10, ? super T11, ? super T12, MONAD> f) {
         return (Tuple12<U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11, U12>) f.apply(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11, U12> Tuple12<U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11, U12> map(javaslang.function.Lambda12<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? super T10, ? super T11, ? super T12, Tuple12<? extends U1, ? extends U2, ? extends U3, ? extends U4, ? extends U5, ? extends U6, ? extends U7, ? extends U8, ? extends U9, ? extends U10, ? extends U11, ? extends U12>> f) {
+    public <U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11, U12> Tuple12<U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11, U12> map(javaslang.Function12<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? super T10, ? super T11, ? super T12, Tuple12<? extends U1, ? extends U2, ? extends U3, ? extends U4, ? extends U5, ? extends U6, ? extends U7, ? extends U8, ? extends U9, ? extends U10, ? extends U11, ? extends U12>> f) {
         // normally the result of f would be mapped to the result type of map, but Tuple.map is a special case
         return (Tuple12<U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11, U12>) f.apply(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12);
     }

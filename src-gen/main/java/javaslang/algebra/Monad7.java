@@ -9,9 +9,9 @@ package javaslang.algebra;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.function.Lambda7;
+import javaslang.Function7;
 
 public interface Monad7<T1, T2, T3, T4, T5, T6, T7, M extends HigherKinded7<?, ?, ?, ?, ?, ?, ?, M>> extends Functor7<T1, T2, T3, T4, T5, T6, T7>, HigherKinded7<T1, T2, T3, T4, T5, T6, T7, M> {
 
-    <U1, U2, U3, U4, U5, U6, U7, MONAD extends HigherKinded7<U1, U2, U3, U4, U5, U6, U7, M>> Monad7<U1, U2, U3, U4, U5, U6, U7, M> flatMap(javaslang.function.Lambda7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, MONAD> f);
+    <U1, U2, U3, U4, U5, U6, U7, MONAD extends HigherKinded7<U1, U2, U3, U4, U5, U6, U7, M>> Monad7<U1, U2, U3, U4, U5, U6, U7, M> flatMap(javaslang.Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, MONAD> f);
 }

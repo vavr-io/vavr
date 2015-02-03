@@ -42,13 +42,13 @@ public class Tuple5<T1, T2, T3, T4, T5> implements Tuple, Monad5<T1, T2, T3, T4,
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U1, U2, U3, U4, U5, MONAD extends HigherKinded5<U1, U2, U3, U4, U5, Tuple5<?, ?, ?, ?, ?>>> Tuple5<U1, U2, U3, U4, U5> flatMap(javaslang.function.Lambda5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, MONAD> f) {
+    public <U1, U2, U3, U4, U5, MONAD extends HigherKinded5<U1, U2, U3, U4, U5, Tuple5<?, ?, ?, ?, ?>>> Tuple5<U1, U2, U3, U4, U5> flatMap(javaslang.Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, MONAD> f) {
         return (Tuple5<U1, U2, U3, U4, U5>) f.apply(_1, _2, _3, _4, _5);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U1, U2, U3, U4, U5> Tuple5<U1, U2, U3, U4, U5> map(javaslang.function.Lambda5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Tuple5<? extends U1, ? extends U2, ? extends U3, ? extends U4, ? extends U5>> f) {
+    public <U1, U2, U3, U4, U5> Tuple5<U1, U2, U3, U4, U5> map(javaslang.Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Tuple5<? extends U1, ? extends U2, ? extends U3, ? extends U4, ? extends U5>> f) {
         // normally the result of f would be mapped to the result type of map, but Tuple.map is a special case
         return (Tuple5<U1, U2, U3, U4, U5>) f.apply(_1, _2, _3, _4, _5);
     }

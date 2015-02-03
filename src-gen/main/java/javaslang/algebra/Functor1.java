@@ -9,7 +9,7 @@ package javaslang.algebra;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.function.Lambda1;
+import javaslang.Function1;
 
 /**
  * Defines a Functor by generalizing the map function.
