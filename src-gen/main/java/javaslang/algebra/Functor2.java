@@ -9,10 +9,10 @@ package javaslang.algebra;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import java.util.function.BiFunction;
 import javaslang.Tuple2;
-import javaslang.Function2;
 
 public interface Functor2<T1, T2> {
 
-    <U1, U2> Functor2<U1, U2> map(java.util.function.BiFunction<? super T1, ? super T2, Tuple2<? extends U1, ? extends U2>> f);
+    <U1, U2> Functor2<U1, U2> map(BiFunction<? super T1, ? super T2, Tuple2<? extends U1, ? extends U2>> f);
 }

@@ -9,7 +9,7 @@ package javaslang.algebra;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Function1;
+import java.util.function.Function;
 
 /**
  * Defines a Monad by generalizing the flatMap and unit functions.
@@ -26,5 +26,5 @@ import javaslang.Function1;
  */
 public interface Monad1<T1, M extends HigherKinded1<?, M>> extends Functor1<T1>, HigherKinded1<T1, M> {
 
-    <U1, MONAD extends HigherKinded1<U1, M>> Monad1<U1, M> flatMap(java.util.function.Function<? super T1, MONAD> f);
+    <U1, MONAD extends HigherKinded1<U1, M>> Monad1<U1, M> flatMap(Function<? super T1, MONAD> f);
 }

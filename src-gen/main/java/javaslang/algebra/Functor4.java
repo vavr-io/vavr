@@ -9,10 +9,10 @@ package javaslang.algebra;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Tuple4;
 import javaslang.Function4;
+import javaslang.Tuple4;
 
 public interface Functor4<T1, T2, T3, T4> {
 
-    <U1, U2, U3, U4> Functor4<U1, U2, U3, U4> map(javaslang.Function4<? super T1, ? super T2, ? super T3, ? super T4, Tuple4<? extends U1, ? extends U2, ? extends U3, ? extends U4>> f);
+    <U1, U2, U3, U4> Functor4<U1, U2, U3, U4> map(Function4<? super T1, ? super T2, ? super T3, ? super T4, Tuple4<? extends U1, ? extends U2, ? extends U3, ? extends U4>> f);
 }

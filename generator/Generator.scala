@@ -10,6 +10,7 @@ import java.nio.file.StandardOpenOption
 
 import GeneratorImplicits._
 
+import scala.collection.mutable
 import scala.util.Properties.lineSeparator
 
 val N = 26
@@ -34,22 +35,17 @@ val javadoc = "**"
  * Generator of javaslang.algebra.Functor*
  */
 def genFunctors() = 1 to N foreach { i =>
-  genJavaslangFile("javaslang.algebra", s"Functor$i")((packageName, className) => {
+  genJavaslangFile("javaslang.algebra", s"Functor$i")((im: ImportManager, packageName, className) => {
     val generics = (1 to i).gen(j => s"T$j")(", ")
     val paramTypes = (1 to i).gen(j => s"? super T$j")(", ")
-    val resultType = if (i == 1) "? extends U1" else s"Tuple$i<${(1 to i).gen(j => s"? extends U$j")(", ")}>"
+    val resultType = if (i == 1) "? extends U1" else s"${im.getType(s"javaslang.Tuple$i")}<${(1 to i).gen(j => s"? extends U$j")(", ")}>"
     val resultGenerics = (1 to i).gen(j => s"U$j")(", ")
     val functionType = i match {
-      case 1 => "java.util.function.Function"
-      case 2 => "java.util.function.BiFunction"
-      case _ => s"javaslang.Function$i"
+      case 1 => im.getType("java.util.function.Function")
+      case 2 => im.getType("java.util.function.BiFunction")
+      case _ => im.getType(s"javaslang.Function$i")
     }
     xs"""
-      ${//TODO(#90): Import Manager
-        (i > 1).gen(s"import javaslang.Tuple$i;")
-      }
-      import javaslang.Function$i;
-
       ${(i == 1).gen(xs"""
       /$javadoc
        * Defines a Functor by generalizing the map function.
@@ -76,7 +72,7 @@ def genFunctors() = 1 to N foreach { i =>
  * Generator of javaslang.algebra.HigherKinded*
  */
 def genHigherKindeds() = 1 to N foreach { i =>
-  genJavaslangFile("javaslang.algebra", s"HigherKinded$i")((packageName, className) => xs"""
+  genJavaslangFile("javaslang.algebra", s"HigherKinded$i")((im: ImportManager, packageName, className) => xs"""
       ${(i == 1).gen(xs"""
       /$javadoc
        * <p>
@@ -106,18 +102,16 @@ def genHigherKindeds() = 1 to N foreach { i =>
  * Generator of javaslang.algebra.Monad*
  */
 def genMonads() = 1 to N foreach { i =>
-  genJavaslangFile("javaslang.algebra", s"Monad$i")((packageName, className) => {
+  genJavaslangFile("javaslang.algebra", s"Monad$i")((im: ImportManager, packageName, className) => {
     val generics = (1 to i).gen(j => s"T$j")(", ")
     val paramTypes = (1 to i).gen(j => s"? super T$j")(", ")
     val resultGenerics = (1 to i).gen(j => s"U$j")(", ")
     val functionType = i match {
-      case 1 => "java.util.function.Function"
-      case 2 => "java.util.function.BiFunction"
-      case _ => s"javaslang.Function$i"
+      case 1 => im.getType("java.util.function.Function")
+      case 2 => im.getType("java.util.function.BiFunction")
+      case _ => im.getType(s"javaslang.Function$i")
     }
     xs"""
-      import javaslang.Function$i;
-
       ${(i == 1).gen(xs"""
       /$javadoc
        * Defines a Monad by generalizing the flatMap and unit functions.
@@ -146,21 +140,14 @@ def genMonads() = 1 to N foreach { i =>
  */
 def genPropertyChecks(): Unit = {
 
-  def genProperty(packageName: String, className: String): String = xs"""
-    import javaslang.*;
-    import javaslang.control.*;
-
-    import java.util.Random;
-    import java.util.concurrent.ThreadLocalRandom;
-    import java.util.function.Supplier;
-
+  def genProperty(im: ImportManager, packageName: String, className: String): String = xs"""
     @FunctionalInterface
     public interface $className {
 
         /**
          * A thread-safe, equally distributed random number generator.
          */
-        Supplier<Random> RNG = ThreadLocalRandom::current;
+        ${im.getType("java.util.function.Supplier")}<${im.getType("java.util.Random")}> RNG = ${im.getType("java.util.concurrent.ThreadLocalRandom")}::current;
 
         /**
          * Default size hint for generators.
@@ -172,7 +159,7 @@ def genPropertyChecks(): Unit = {
          */
         int DEFAULT_TRIES = 1000;
 
-        CheckResult check(Random randomNumberGenerator, int size, int tries);
+        CheckResult check(${im.getType("java.util.Random")} randomNumberGenerator, int size, int tries);
 
         default CheckResult check(int size, int tries) {
             return check(RNG.get(), size, tries);
@@ -232,8 +219,8 @@ def genPropertyChecks(): Unit = {
                         """)("\n")}
                     }
 
-                    public Property$i<$generics> suchThat(CheckedFunction$i<$generics, Boolean> predicate) {
-                        final CheckedFunction$i<$generics, Condition> proposition = (${params("t")}) -> new Condition(true, predicate.apply(${params("t")}));
+                    public Property$i<$generics> suchThat(${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> predicate) {
+                        final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Condition> proposition = (${params("t")}) -> new Condition(true, predicate.apply(${params("t")}));
                         return new Property$i<>(${params("a")}, proposition);
                     }
                 }
@@ -241,26 +228,37 @@ def genPropertyChecks(): Unit = {
         })("\n\n")}
 
         ${(1 to N).gen(i => {
+
+            val checkedFunctionType = im.getType(s"javaslang.CheckedFunction$i")
+            val failureType = im.getType("javaslang.control.Failure")
+            val noneType = im.getType("javaslang.control.None")
+            val randomType = im.getType("java.util.Random")
+            val someType = im.getType("javaslang.control.Some")
+            val tryType = im.getType("javaslang.control.Try")
+            val tupleType = im.getType(s"javaslang.Tuple")
+            val tuple_iType = im.getType(s"javaslang.Tuple$i")
+
             val generics = (1 to i).gen(j => s"T$j")(", ")
             val params = (paramName: String) => (1 to i).gen(j => s"$paramName$j")(", ")
             val parametersDecl = (1 to i).gen(j => s"Arbitrary<T$j> a$j")(", ")
+
             xs"""
                 static class Property$i<$generics> implements Property {
 
                     ${(1 to i).gen(j => xs"""
                         private final Arbitrary<T$j> a$j;
                     """)("\n")}
-                    final CheckedFunction$i<$generics, Condition> predicate;
+                    final $checkedFunctionType<$generics, Condition> predicate;
 
-                    Property$i($parametersDecl, CheckedFunction$i<$generics, Condition> predicate) {
+                    Property$i($parametersDecl, $checkedFunctionType<$generics, Condition> predicate) {
                         ${(1 to i).gen(j => xs"""
                             this.a$j = a$j;
                         """)("\n")}
                         this.predicate = predicate;
                     }
 
-                    public Property implies(CheckedFunction$i<$generics, Boolean> postcondition) {
-                        final CheckedFunction$i<$generics, Condition> implication = (${params("t")}) -> {
+                    public Property implies($checkedFunctionType<$generics, Boolean> postcondition) {
+                        final $checkedFunctionType<$generics, Condition> implication = (${params("t")}) -> {
                             final Condition precondition = predicate.apply(${params("t")});
                             if (precondition.isFalse()) {
                                 // ex falso quodlibet
@@ -273,35 +271,35 @@ def genPropertyChecks(): Unit = {
                     }
 
                     @Override
-                    public CheckResult<Tuple$i<$generics>> check(Random random, int size, int tries) {
+                    public CheckResult<$tuple_iType<$generics>> check($randomType random, int size, int tries) {
                         try {
                             ${(1 to i).gen(j => {
-                                s"""final Gen<T$j> gen$j = Try.of(() -> a$j.apply(size)).recover(x -> { throw Errors.arbitraryError($j, size, x); }).get();"""
+                                s"""final Gen<T$j> gen$j = $tryType.of(() -> a$j.apply(size)).recover(x -> { throw Errors.arbitraryError($j, size, x); }).get();"""
                             })("\n")}
                             boolean exhausted = true;
                             for (int i = 1; i <= tries; i++) {
                                 try {
                                     ${(1 to i).gen(j => {
-                                      s"""final T$j val$j = Try.of(() -> gen$j.apply(random)).recover(x -> { throw Errors.genError($j, size, x); }).get();"""
+                                      s"""final T$j val$j = $tryType.of(() -> gen$j.apply(random)).recover(x -> { throw Errors.genError($j, size, x); }).get();"""
                                     })("\n")}
                                     try {
-                                        final Condition condition = Try.of(() -> predicate.apply(${(1 to i).gen(j => s"val$j")(", ")})).recover(x -> { throw Errors.predicateError(x); }).get();
+                                        final Condition condition = $tryType.of(() -> predicate.apply(${(1 to i).gen(j => s"val$j")(", ")})).recover(x -> { throw Errors.predicateError(x); }).get();
                                         if (condition.precondition) {
                                             exhausted = false;
                                             if (!condition.postcondition) {
-                                                return CheckResult.falsified(i, Tuple.of(${(1 to i).gen(j => s"val$j")(", ")}));
+                                                return CheckResult.falsified(i, $tupleType.of(${(1 to i).gen(j => s"val$j")(", ")}));
                                             }
                                         }
-                                    } catch(Failure.NonFatal nonFatal) {
-                                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(${(1 to i).gen(j => s"val$j")(", ")})));
+                                    } catch($failureType.NonFatal nonFatal) {
+                                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new $someType<>($tupleType.of(${(1 to i).gen(j => s"val$j")(", ")})));
                                     }
-                                } catch(Failure.NonFatal nonFatal) {
-                                    return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
+                                } catch($failureType.NonFatal nonFatal) {
+                                    return CheckResult.erroneous(i, (Error) nonFatal.getCause(), $noneType.instance());
                                 }
                             }
                             return CheckResult.satisfied(tries, exhausted);
-                        } catch(Failure.NonFatal nonFatal) {
-                            return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+                        } catch($failureType.NonFatal nonFatal) {
+                            return CheckResult.erroneous(0, (Error) nonFatal.getCause(), $noneType.instance());
                         }
                     }
                 }
@@ -367,10 +365,7 @@ def genFunctions(): Unit = {
       }
     }
 
-    def genFunction(name: String, checked: Boolean)(packageName: String, className: String): String = xs"""
-      import java.util.Objects;
-      import java.util.function.Function;
-
+    def genFunction(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = xs"""
       @FunctionalInterface
       public interface $className<${if (i > 0) s"$generics, " else ""}R> extends λ<R>${additionalInterfaces(i, checked)} {
 
@@ -409,14 +404,14 @@ def genFunctions(): Unit = {
           }
 
           @Override
-          default <V> $className<${genericsFunction}V> andThen(Function<? super R, ? extends V> after) {
-              Objects.requireNonNull(after);
+          default <V> $className<${genericsFunction}V> andThen(${im.getType("java.util.function.Function")}<? super R, ? extends V> after) {
+              ${im.getType("java.util.Objects")}.requireNonNull(after);
               return ($params) -> after.apply(apply($params));
           }
 
           ${if (i == 1) xs"""
-          default <V> ${name}1<V, R> compose(Function<? super V, ? extends T1> before) {
-              Objects.requireNonNull(before);
+          default <V> ${name}1<V, R> compose(${im.getType("java.util.function.Function")}<? super V, ? extends T1> before) {
+              ${im.getType("java.util.Objects")}.requireNonNull(before);
               return v -> apply(before.apply(v));
           }""" else ""}
       }
@@ -437,9 +432,7 @@ def genTuples(): Unit = {
   /*
    * Generates Tuple0
    */
-  def genTuple0(packageName: String, className: String): String = xs"""
-    import java.util.Objects;
-
+  def genTuple0(im: ImportManager, packageName: String, className: String): String = xs"""
     /**
      * Implementation of an empty tuple, a tuple containing no elements.
      */
@@ -484,7 +477,7 @@ def genTuples(): Unit = {
 
         @Override
         public int hashCode() {
-            return Objects.hash();
+            return ${im.getType("java.util.Objects")}.hash();
         }
 
         @Override
@@ -509,7 +502,7 @@ def genTuples(): Unit = {
   /*
    * Generates Tuple1..N
    */
-  def genTuple(i: Int)(packageName: String, className: String): String = {
+  def genTuple(i: Int)(im: ImportManager, packageName: String, className: String): String = {
     val generics = (1 to i).gen(j => s"T$j")(", ")
     val paramsDecl = (1 to i).gen(j => s"T$j t$j")(", ")
     val params = (1 to i).gen(j => s"_$j")(", ")
@@ -518,21 +511,16 @@ def genTuples(): Unit = {
     val resultGenerics = (1 to i).gen(j => s"U$j")(", ")
     val untyped = (1 to i).gen(j => "?")(", ")
     val functionType = i match {
-      case 1 => "java.util.function.Function"
-      case 2 => "java.util.function.BiFunction"
-      case _ => s"javaslang.Function$i"
+      case 1 => im.getType("java.util.function.Function")
+      case 2 => im.getType("java.util.function.BiFunction")
+      case _ => s"Function$i"
     }
 
     xs"""
-      import javaslang.algebra.HigherKinded$i;
-      import javaslang.algebra.Monad$i;
-
-      import java.util.Objects;
-
       /**
        * Implementation of a pair, a tuple containing $i elements.
        */
-      public class $className<$generics> implements Tuple, Monad$i<$generics, $className<$untyped>> {
+      public class $className<$generics> implements Tuple, ${im.getType(s"javaslang.algebra.Monad$i")}<$generics, $className<$untyped>> {
 
           private static final long serialVersionUID = 1L;
 
@@ -549,7 +537,7 @@ def genTuples(): Unit = {
 
           @SuppressWarnings("unchecked")
           @Override
-          public <$resultGenerics, MONAD extends HigherKinded$i<$resultGenerics, $className<$untyped>>> $className<$resultGenerics> flatMap($functionType<$paramTypes, MONAD> f) {
+          public <$resultGenerics, MONAD extends ${im.getType(s"javaslang.algebra.HigherKinded$i")}<$resultGenerics, $className<$untyped>>> $className<$resultGenerics> flatMap($functionType<$paramTypes, MONAD> f) {
               return ($className<$resultGenerics>) f.apply($params);
           }
 
@@ -560,7 +548,7 @@ def genTuples(): Unit = {
                 // normally the result of f would be mapped to the result type of map, but Tuple.map is a special case
                 return ($className<$resultGenerics>) f.apply($params);"""
               } else { xs"""
-                return new Tuple$i<>(f.apply($params));"""
+                return new $className<>(f.apply($params));"""
               }}
           }
 
@@ -577,13 +565,13 @@ def genTuples(): Unit = {
                   return false;
               } else {
                   final $className that = ($className) o;
-                  return ${(1 to i).gen(j => s"Objects.equals(this._$j, that._$j)")("\n                         && ")};
+                  return ${(1 to i).gen(j => s"${im.getType("java.util.Objects")}.equals(this._$j, that._$j)")("\n                         && ")};
               }
           }
 
           @Override
           public int hashCode() {
-              return Objects.hash(${(1 to i).gen(j => s"_$j")(", ")});
+              return ${im.getType("java.util.Objects")}.hash(${(1 to i).gen(j => s"_$j")(", ")});
           }
 
           @Override
@@ -597,7 +585,7 @@ def genTuples(): Unit = {
   /*
    * Generates Tuple
    */
-  def genBaseTuple(packageName: String, className: String): String = {
+  def genBaseTuple(im: ImportManager, packageName: String, className: String): String = {
 
     def genFactoryMethod(i: Int) = {
       val generics = (1 to i).gen(j => s"T$j")(", ")
@@ -645,7 +633,7 @@ def genTuples(): Unit = {
  * @param className Simple java class name
  * @param gen A generator which produces a String.
  */
-def genJavaslangFile(packageName: String, className: String)(gen: (String, String) => String) =
+def genJavaslangFile(packageName: String, className: String)(gen: (ImportManager, String, String) => String, knownSimpleClassNames: List[String] = List()) =
   genJavaFile(packageName, className)(xraw"""
     /**    / \____  _    ______   _____ / \____   ____  _____
      *    /  \__  \/ \  / \__  \ /  __//  \__  \ /    \/ __  \   Javaslang
@@ -665,10 +653,12 @@ def genJavaslangFile(packageName: String, className: String)(gen: (String, Strin
  * @param classHeader A class file header
  * @param gen A generator which produces a String.
  */
-def genJavaFile(packageName: String, className: String)(classHeader: String)(gen: (String, String) => String)(implicit charset: Charset = StandardCharsets.UTF_8): Unit = {
+def genJavaFile(packageName: String, className: String)(classHeader: String)(gen: (ImportManager, String, String) => String, knownSimpleClassNames: List[String] = List())(implicit charset: Charset = StandardCharsets.UTF_8): Unit = {
 
   val dirName = packageName.replaceAll("\\.", File.separator)
   val fileName = className + ".java"
+  val importManager = new ImportManager(packageName, knownSimpleClassNames)
+  val classBody = gen.apply(importManager, packageName, className)
 
   genFile(dirName, fileName)(xraw"""
     $classHeader
@@ -678,8 +668,59 @@ def genJavaFile(packageName: String, className: String)(classHeader: String)(gen
        G E N E R A T O R   C R A F T E D
     \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-    ${gen.apply(packageName, className)}
-  """) // TODO(#90): pass a mutable ImportManager to gen
+    ${importManager.getImports}
+
+    $classBody
+  """)
+}
+
+/**
+ * An ImportManager which generates an import section of a Java class file.
+ * @param packageNameOfClass package name of the generated class
+ * @param knownSimpleClassNames a list of class names which may not be imported from other packages
+ */
+// TODO: use reflection to add java.lang.* to knownSimpleClassNames)
+// TODO: implement getStatic() to import static methods
+class ImportManager(packageNameOfClass: String, knownSimpleClassNames: List[String]) {
+
+  val imports = new mutable.HashMap[String, String]
+
+  def getType(fullQualifiedName: String): String = {
+    val index = fullQualifiedName.lastIndexOf('.')
+    if (index == -1) {
+      if (packageNameOfClass.isEmpty) {
+        // generated and referenced class are both in default package
+        fullQualifiedName
+      } else {
+        throw new IllegalStateException("Can't import class located in default package")
+      }
+    } else {
+      val packageName = fullQualifiedName.substring(0, index)
+      val simpleName = fullQualifiedName.substring(index + 1)
+      if (packageName.equals(packageNameOfClass)) {
+        // generated and referenced class are in the same package
+        simpleName
+      } else {
+        if (imports.contains(fullQualifiedName)) {
+          // type already stored in importmanager
+          imports.get(fullQualifiedName).get
+        } else {
+          if (knownSimpleClassNames.contains(simpleName) || imports.values.exists(simpleName.equals(_))) {
+            // simpleName occurs in package of generated class and may be referenced or simpleName already deduced
+            // => class may not be imported
+            fullQualifiedName
+          } else {
+            // deduce simple name by importing class
+            imports += fullQualifiedName -> simpleName
+            simpleName
+          }
+        }
+      }
+    }
+  }
+
+  def getImports: String =
+    imports.keySet.toIndexedSeq.sorted.map(fqn => s"import $fqn;").mkString("\n")
 }
 
 /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*\

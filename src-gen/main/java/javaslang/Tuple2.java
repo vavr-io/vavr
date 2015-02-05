@@ -9,10 +9,10 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import java.util.Objects;
+import java.util.function.BiFunction;
 import javaslang.algebra.HigherKinded2;
 import javaslang.algebra.Monad2;
-
-import java.util.Objects;
 
 /**
  * Implementation of a pair, a tuple containing 2 elements.
@@ -36,13 +36,13 @@ public class Tuple2<T1, T2> implements Tuple, Monad2<T1, T2, Tuple2<?, ?>> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U1, U2, MONAD extends HigherKinded2<U1, U2, Tuple2<?, ?>>> Tuple2<U1, U2> flatMap(java.util.function.BiFunction<? super T1, ? super T2, MONAD> f) {
+    public <U1, U2, MONAD extends HigherKinded2<U1, U2, Tuple2<?, ?>>> Tuple2<U1, U2> flatMap(BiFunction<? super T1, ? super T2, MONAD> f) {
         return (Tuple2<U1, U2>) f.apply(_1, _2);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U1, U2> Tuple2<U1, U2> map(java.util.function.BiFunction<? super T1, ? super T2, Tuple2<? extends U1, ? extends U2>> f) {
+    public <U1, U2> Tuple2<U1, U2> map(BiFunction<? super T1, ? super T2, Tuple2<? extends U1, ? extends U2>> f) {
         // normally the result of f would be mapped to the result type of map, but Tuple.map is a special case
         return (Tuple2<U1, U2>) f.apply(_1, _2);
     }

@@ -13,5 +13,5 @@ import javaslang.Function3;
 
 public interface Monad3<T1, T2, T3, M extends HigherKinded3<?, ?, ?, M>> extends Functor3<T1, T2, T3>, HigherKinded3<T1, T2, T3, M> {
 
-    <U1, U2, U3, MONAD extends HigherKinded3<U1, U2, U3, M>> Monad3<U1, U2, U3, M> flatMap(javaslang.Function3<? super T1, ? super T2, ? super T3, MONAD> f);
+    <U1, U2, U3, MONAD extends HigherKinded3<U1, U2, U3, M>> Monad3<U1, U2, U3, M> flatMap(Function3<? super T1, ? super T2, ? super T3, MONAD> f);
 }

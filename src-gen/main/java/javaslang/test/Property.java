@@ -9,12 +9,66 @@ package javaslang.test;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.*;
-import javaslang.control.*;
-
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
+import javaslang.CheckedFunction1;
+import javaslang.CheckedFunction10;
+import javaslang.CheckedFunction11;
+import javaslang.CheckedFunction12;
+import javaslang.CheckedFunction13;
+import javaslang.CheckedFunction14;
+import javaslang.CheckedFunction15;
+import javaslang.CheckedFunction16;
+import javaslang.CheckedFunction17;
+import javaslang.CheckedFunction18;
+import javaslang.CheckedFunction19;
+import javaslang.CheckedFunction2;
+import javaslang.CheckedFunction20;
+import javaslang.CheckedFunction21;
+import javaslang.CheckedFunction22;
+import javaslang.CheckedFunction23;
+import javaslang.CheckedFunction24;
+import javaslang.CheckedFunction25;
+import javaslang.CheckedFunction26;
+import javaslang.CheckedFunction3;
+import javaslang.CheckedFunction4;
+import javaslang.CheckedFunction5;
+import javaslang.CheckedFunction6;
+import javaslang.CheckedFunction7;
+import javaslang.CheckedFunction8;
+import javaslang.CheckedFunction9;
+import javaslang.Tuple;
+import javaslang.Tuple1;
+import javaslang.Tuple10;
+import javaslang.Tuple11;
+import javaslang.Tuple12;
+import javaslang.Tuple13;
+import javaslang.Tuple14;
+import javaslang.Tuple15;
+import javaslang.Tuple16;
+import javaslang.Tuple17;
+import javaslang.Tuple18;
+import javaslang.Tuple19;
+import javaslang.Tuple2;
+import javaslang.Tuple20;
+import javaslang.Tuple21;
+import javaslang.Tuple22;
+import javaslang.Tuple23;
+import javaslang.Tuple24;
+import javaslang.Tuple25;
+import javaslang.Tuple26;
+import javaslang.Tuple3;
+import javaslang.Tuple4;
+import javaslang.Tuple5;
+import javaslang.Tuple6;
+import javaslang.Tuple7;
+import javaslang.Tuple8;
+import javaslang.Tuple9;
+import javaslang.control.Failure;
+import javaslang.control.None;
+import javaslang.control.Some;
+import javaslang.control.Try;
 
 @FunctionalInterface
 public interface Property {

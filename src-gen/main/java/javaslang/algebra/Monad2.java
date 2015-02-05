@@ -9,9 +9,9 @@ package javaslang.algebra;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Function2;
+import java.util.function.BiFunction;
 
 public interface Monad2<T1, T2, M extends HigherKinded2<?, ?, M>> extends Functor2<T1, T2>, HigherKinded2<T1, T2, M> {
 
-    <U1, U2, MONAD extends HigherKinded2<U1, U2, M>> Monad2<U1, U2, M> flatMap(java.util.function.BiFunction<? super T1, ? super T2, MONAD> f);
+    <U1, U2, MONAD extends HigherKinded2<U1, U2, M>> Monad2<U1, U2, M> flatMap(BiFunction<? super T1, ? super T2, MONAD> f);
 }
