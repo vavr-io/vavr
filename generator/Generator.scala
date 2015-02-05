@@ -681,7 +681,7 @@ def genJavaFile(packageName: String, className: String)(classHeader: String)(gen
  * @param packageNameOfClass package name of the generated class
  * @param knownSimpleClassNames a list of class names which may not be imported from other packages
  */
-class ImportManager(packageNameOfClass: String, knownSimpleClassNames: List[String]) {
+class ImportManager(packageNameOfClass: String, knownSimpleClassNames: List[String], wildcardThreshold: Int = 5) {
 
   val nonStaticImports = new mutable.HashMap[String, String]
   val staticImports = new mutable.HashMap[String, String]
@@ -724,10 +724,21 @@ class ImportManager(packageNameOfClass: String, knownSimpleClassNames: List[Stri
     }
   }
 
-  def getImports: String =
-    staticImports.keySet.toIndexedSeq.sorted.map(fqn => s"import static $fqn;").mkString("\n") +
-    "\n" +
-    nonStaticImports.keySet.toIndexedSeq.sorted.map(fqn => s"import $fqn;").mkString("\n")
+  def getImports: String = {
+
+    def pkg(fqn: String): String = fqn.substring(0, fqn.lastIndexOf("."))
+
+    def optimizeImports(imports: Seq[String], static: Boolean): String = {
+      val counts = imports.map(pkg).groupBy(s => s).map { case (s, list) => s -> list.length }
+      val directImports = imports.filter(s => counts(pkg(s)) <= wildcardThreshold)
+      val wildcardImports = counts.filter { case (s, count) => count > wildcardThreshold }.keySet.toIndexedSeq.map(s => s"$s.*")
+      (directImports ++ wildcardImports).sorted.map(fqn => s"import ${static.gen("static ")}$fqn;").mkString("\n")
+    }
+
+    val staticImportSection = optimizeImports(staticImports.keySet.toIndexedSeq, static = true)
+    val nonStaticImportSection = optimizeImports(nonStaticImports.keySet.toIndexedSeq, static = false)
+    Seq(staticImportSection, nonStaticImportSection).mkString("\n\n")
+  }
 }
 
 /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*\
