@@ -399,7 +399,6 @@ def genFunctions(): Unit = {
 
             @Override
             default ${returnType(i, name)} curried() {
-                ${(i == 1).gen("//noinspection Convert2MethodRef")}
                 return $curried -> apply($params);
             }
 
@@ -410,7 +409,6 @@ def genFunctions(): Unit = {
 
             @Override
             default $className<${genericsReversedFunction}R> reversed() {
-                ${(i <= 1).gen("//noinspection Convert2MethodRef")}
                 return ($paramsReversed) -> apply($params);
             }
 
