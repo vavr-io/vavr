@@ -715,7 +715,7 @@ class ImportManager(packageNameOfClass: String, knownSimpleClassNames: List[Stri
     def optimizeImports(imports: Seq[String], static: Boolean): String = {
       val counts = imports.map(getPackageName).groupBy(s => s).map { case (s, list) => s -> list.length }
       val directImports = imports.filter(s => counts(getPackageName(s)) <= wildcardThreshold)
-      val wildcardImports = counts.filter { case (s, count) => count > wildcardThreshold }.keySet.toIndexedSeq.map(s => s"$s.*")
+      val wildcardImports = counts.filter { case (_, count) => count > wildcardThreshold }.keySet.toIndexedSeq.map(s => s"$s.*")
       (directImports ++ wildcardImports).sorted.map(fqn => s"import ${static.gen("static ")}$fqn;").mkString("\n")
     }
 
