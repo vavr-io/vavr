@@ -61,7 +61,7 @@ public class Tuple2<T1, T2> implements Tuple, Monad2<T1, T2, Tuple2<?, ?>> {
         } else {
             final Tuple2 that = (Tuple2) o;
             return Objects.equals(this._1, that._1)
-                  && Objects.equals(this._2, that._2);
+                    && Objects.equals(this._2, that._2);
         }
     }
 
