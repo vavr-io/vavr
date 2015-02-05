@@ -29,7 +29,6 @@ public interface Function1<T1, R> extends λ<R>, Function<T1, R> {
 
     @Override
     default Function1<T1, R> curried() {
-        //noinspection Convert2MethodRef
         return t1 -> apply(t1);
     }
 
@@ -40,7 +39,6 @@ public interface Function1<T1, R> extends λ<R>, Function<T1, R> {
 
     @Override
     default Function1<T1, R> reversed() {
-        //noinspection Convert2MethodRef
         return (t1) -> apply(t1);
     }
 

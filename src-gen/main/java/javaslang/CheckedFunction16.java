@@ -24,7 +24,6 @@ public interface CheckedFunction16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11,
 
     @Override
     default CheckedFunction1<T1, CheckedFunction1<T2, CheckedFunction1<T3, CheckedFunction1<T4, CheckedFunction1<T5, CheckedFunction1<T6, CheckedFunction1<T7, CheckedFunction1<T8, CheckedFunction1<T9, CheckedFunction1<T10, CheckedFunction1<T11, CheckedFunction1<T12, CheckedFunction1<T13, CheckedFunction1<T14, CheckedFunction1<T15, CheckedFunction1<T16, R>>>>>>>>>>>>>>>> curried() {
-
         return t1 -> t2 -> t3 -> t4 -> t5 -> t6 -> t7 -> t8 -> t9 -> t10 -> t11 -> t12 -> t13 -> t14 -> t15 -> t16 -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16);
     }
 
@@ -35,7 +34,6 @@ public interface CheckedFunction16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11,
 
     @Override
     default CheckedFunction16<T16, T15, T14, T13, T12, T11, T10, T9, T8, T7, T6, T5, T4, T3, T2, T1, R> reversed() {
-
         return (t16, t15, t14, t13, t12, t11, t10, t9, t8, t7, t6, t5, t4, t3, t2, t1) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16);
     }
 

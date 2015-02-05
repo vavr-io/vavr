@@ -24,7 +24,6 @@ public interface CheckedFunction0<R> extends λ<R> {
 
     @Override
     default CheckedFunction1<Void, R> curried() {
-
         return v -> apply();
     }
 
@@ -35,7 +34,6 @@ public interface CheckedFunction0<R> extends λ<R> {
 
     @Override
     default CheckedFunction0<R> reversed() {
-        //noinspection Convert2MethodRef
         return () -> apply();
     }
 

@@ -24,7 +24,6 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends λ<R> {
 
     @Override
     default Function1<T1, Function1<T2, Function1<T3, Function1<T4, Function1<T5, Function1<T6, Function1<T7, R>>>>>>> curried() {
-
         return t1 -> t2 -> t3 -> t4 -> t5 -> t6 -> t7 -> apply(t1, t2, t3, t4, t5, t6, t7);
     }
 
@@ -35,7 +34,6 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends λ<R> {
 
     @Override
     default Function7<T7, T6, T5, T4, T3, T2, T1, R> reversed() {
-
         return (t7, t6, t5, t4, t3, t2, t1) -> apply(t1, t2, t3, t4, t5, t6, t7);
     }
 

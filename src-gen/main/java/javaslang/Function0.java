@@ -30,7 +30,6 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
 
     @Override
     default Function1<Void, R> curried() {
-
         return v -> apply();
     }
 
@@ -41,7 +40,6 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
 
     @Override
     default Function0<R> reversed() {
-        //noinspection Convert2MethodRef
         return () -> apply();
     }
 

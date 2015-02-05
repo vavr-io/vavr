@@ -26,7 +26,6 @@ public interface Function2<T1, T2, R> extends λ<R>, BiFunction<T1, T2, R> {
 
     @Override
     default Function1<T1, Function1<T2, R>> curried() {
-
         return t1 -> t2 -> apply(t1, t2);
     }
 
@@ -37,7 +36,6 @@ public interface Function2<T1, T2, R> extends λ<R>, BiFunction<T1, T2, R> {
 
     @Override
     default Function2<T2, T1, R> reversed() {
-
         return (t2, t1) -> apply(t1, t2);
     }
 
