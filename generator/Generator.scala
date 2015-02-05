@@ -370,27 +370,21 @@ def genFunctions(): Unit = {
 
       xs"""
         @FunctionalInterface
-        public interface $className<${if (i > 0) s"$generics, " else ""}R> extends λ<R>${additionalInterfaces(i, checked)} {
+        public interface $className<${(i > 0).gen(s"$generics, ")}R> extends λ<R>${additionalInterfaces(i, checked)} {
 
-            ${
-        if (i == 1) xs"""
+            ${(i == 1).gen(xs"""
             static <T> ${name}1<T, T> identity() {
                 return t -> t;
-            }"""
-        else ""
-      }
+            }""")}
 
-            ${if ((i == 1 || i == 2) && !checked) "@Override" else ""}
-            R apply($paramsDecl)${if (checked) " throws Throwable" else ""};
+            ${((i == 1 || i == 2) && !checked).gen("@Override")}
+            R apply($paramsDecl)${checked.gen(" throws Throwable")};
 
-            ${
-        if (i == 0 && !checked) xs"""
+            ${(i == 0 && !checked).gen(xs"""
             @Override
             default R get() {
                 return apply();
-            }"""
-        else ""
-      }
+            }""")}
 
             @Override
             default int arity() {
@@ -418,14 +412,11 @@ def genFunctions(): Unit = {
                 return ($params) -> after.apply(apply($params));
             }
 
-            ${
-        if (i == 1) xs"""
+            ${(i == 1).gen(xs"""
             default <V> ${name}1<V, R> compose(${im.getType("java.util.function.Function")}<? super V, ? extends T1> before) {
                 ${im.getType("java.util.Objects")}.requireNonNull(before);
                 return v -> apply(before.apply(v));
-            }"""
-        else ""
-      }
+            }""")}
         }
       """
     }
