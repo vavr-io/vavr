@@ -24,6 +24,7 @@ public interface CheckedFunction3<T1, T2, T3, R> extends λ<R> {
 
     @Override
     default CheckedFunction1<T1, CheckedFunction1<T2, CheckedFunction1<T3, R>>> curried() {
+
         return t1 -> t2 -> t3 -> apply(t1, t2, t3);
     }
 
@@ -34,6 +35,7 @@ public interface CheckedFunction3<T1, T2, T3, R> extends λ<R> {
 
     @Override
     default CheckedFunction3<T3, T2, T1, R> reversed() {
+
         return (t3, t2, t1) -> apply(t1, t2, t3);
     }
 

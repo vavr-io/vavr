@@ -390,6 +390,7 @@ def genFunctions(): Unit = {
 
           @Override
           default ${returnType(i, name)} curried() {
+              ${(i == 1).gen("//noinspection Convert2MethodRef")}
               return $curried -> apply($params);
           }
 
@@ -400,6 +401,7 @@ def genFunctions(): Unit = {
 
           @Override
           default $className<${genericsReversedFunction}R> reversed() {
+              ${(i <= 1).gen("//noinspection Convert2MethodRef")}
               return ($paramsReversed) -> apply($params);
           }
 
@@ -679,13 +681,16 @@ def genJavaFile(packageName: String, className: String)(classHeader: String)(gen
  * @param packageNameOfClass package name of the generated class
  * @param knownSimpleClassNames a list of class names which may not be imported from other packages
  */
-// TODO: use reflection to add java.lang.* to knownSimpleClassNames)
-// TODO: implement getStatic() to import static methods
 class ImportManager(packageNameOfClass: String, knownSimpleClassNames: List[String]) {
 
-  val imports = new mutable.HashMap[String, String]
+  val nonStaticImports = new mutable.HashMap[String, String]
+  val staticImports = new mutable.HashMap[String, String]
 
-  def getType(fullQualifiedName: String): String = {
+  def getType(fullQualifiedName: String): String = simplify(fullQualifiedName, nonStaticImports)
+
+  def getStatic(fullQualifiedName: String): String = simplify(fullQualifiedName, staticImports)
+
+  private def simplify(fullQualifiedName: String, imports: mutable.HashMap[String, String]): String = {
     val index = fullQualifiedName.lastIndexOf('.')
     if (index == -1) {
       if (packageNameOfClass.isEmpty) {
@@ -720,7 +725,9 @@ class ImportManager(packageNameOfClass: String, knownSimpleClassNames: List[Stri
   }
 
   def getImports: String =
-    imports.keySet.toIndexedSeq.sorted.map(fqn => s"import $fqn;").mkString("\n")
+    staticImports.keySet.toIndexedSeq.sorted.map(fqn => s"import static $fqn;").mkString("\n") +
+    "\n" +
+    nonStaticImports.keySet.toIndexedSeq.sorted.map(fqn => s"import $fqn;").mkString("\n")
 }
 
 /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*\
