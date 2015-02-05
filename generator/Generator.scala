@@ -690,47 +690,31 @@ class ImportManager(packageNameOfClass: String, knownSimpleClassNames: List[Stri
 
   def getStatic(fullQualifiedName: String): String = simplify(fullQualifiedName, staticImports)
 
+  private def getPackageName(fqn: String): String = fqn.substring(0, Math.max(fqn.lastIndexOf("."), 0))
+  private def getSimpleName(fqn: String): String = fqn.substring(fqn.lastIndexOf(".") + 1)
+
   private def simplify(fullQualifiedName: String, imports: mutable.HashMap[String, String]): String = {
-    val index = fullQualifiedName.lastIndexOf('.')
-    if (index == -1) {
-      if (packageNameOfClass.isEmpty) {
-        // generated and referenced class are both in default package
-        fullQualifiedName
-      } else {
-        throw new IllegalStateException("Can't import class located in default package")
-      }
+    val simpleName = getSimpleName(fullQualifiedName)
+    val packageName = getPackageName(fullQualifiedName)
+    if (packageName.isEmpty && !packageNameOfClass.isEmpty) {
+      throw new IllegalStateException(s"Can't import class '$simpleName' located in default package")
+    } else if (packageName == packageNameOfClass) {
+      simpleName
+    } else if (imports.contains(fullQualifiedName)) {
+      imports.get(fullQualifiedName).get
+    } else if (knownSimpleClassNames.contains(simpleName) || imports.values.exists(simpleName.equals(_))) {
+      fullQualifiedName
     } else {
-      val packageName = fullQualifiedName.substring(0, index)
-      val simpleName = fullQualifiedName.substring(index + 1)
-      if (packageName.equals(packageNameOfClass)) {
-        // generated and referenced class are in the same package
-        simpleName
-      } else {
-        if (imports.contains(fullQualifiedName)) {
-          // type already stored in importmanager
-          imports.get(fullQualifiedName).get
-        } else {
-          if (knownSimpleClassNames.contains(simpleName) || imports.values.exists(simpleName.equals(_))) {
-            // simpleName occurs in package of generated class and may be referenced or simpleName already deduced
-            // => class may not be imported
-            fullQualifiedName
-          } else {
-            // deduce simple name by importing class
-            imports += fullQualifiedName -> simpleName
-            simpleName
-          }
-        }
-      }
+      imports += fullQualifiedName -> simpleName
+      simpleName
     }
   }
 
   def getImports: String = {
 
-    def pkg(fqn: String): String = fqn.substring(0, fqn.lastIndexOf("."))
-
     def optimizeImports(imports: Seq[String], static: Boolean): String = {
-      val counts = imports.map(pkg).groupBy(s => s).map { case (s, list) => s -> list.length }
-      val directImports = imports.filter(s => counts(pkg(s)) <= wildcardThreshold)
+      val counts = imports.map(getPackageName).groupBy(s => s).map { case (s, list) => s -> list.length }
+      val directImports = imports.filter(s => counts(getPackageName(s)) <= wildcardThreshold)
       val wildcardImports = counts.filter { case (s, count) => count > wildcardThreshold }.keySet.toIndexedSeq.map(s => s"$s.*")
       (directImports ++ wildcardImports).sorted.map(fqn => s"import ${static.gen("static ")}$fqn;").mkString("\n")
     }
