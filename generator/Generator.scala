@@ -371,7 +371,7 @@ def generateMainClasses(): Unit = {
           case _ => ""
         }
 
-        def returnType(max: Int, function: String): String = {
+        def curriedType(max: Int, function: String): String = {
           if (max == 0) {
             s"${function}1<Void, R>"
           } else {
@@ -408,7 +408,7 @@ def generateMainClasses(): Unit = {
               }
 
               @Override
-              default ${returnType(i, name)} curried() {
+              default ${curriedType(i, name)} curried() {
                   return $curried -> apply($params);
               }
 
@@ -651,8 +651,77 @@ def generateMainClasses(): Unit = {
  */
 def generateTestClasses(): Unit = {
 
-  // TODO
+  genFunctionTests()
 
+  /**
+   * Generator of Functions
+   */
+  def genFunctionTests(): Unit = {
+
+    (0 to N).foreach(i => {
+
+      def genFunction(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
+
+        val functionArgs =  (1 to i).gen(j => s"t$j")(", ")
+
+        val test = im.getType("org.junit.Test")
+        val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
+
+        def curriedType(max: Int, function: String): String = {
+          def returnType(curr: Int, max: Int): String = {
+            val next = if (curr < max) returnType(curr + 1, max) else "?"
+            s"${function}1<?, $next>"
+          }
+          returnType(1, max)
+        }
+
+        xs"""
+          public class $className {
+
+              @$test
+              public void shouldGetArity() {
+                  final $name$i f = ($functionArgs) -> null;
+                  $assertThat(f.arity()).isEqualTo($i);
+              }
+
+              @$test
+              public void shouldCurry() {
+                  final $name$i f = ($functionArgs) -> null;
+                  @SuppressWarnings("unchecked")
+                  final ${curriedType(i, name)} curried = f.curried();
+                  $assertThat(curried).isNotNull();
+              }
+
+              @$test
+              public void shouldTuple() {
+                  final $name$i f = ($functionArgs) -> null;
+                  @SuppressWarnings("unchecked")
+                  final ${name}1<Tuple$i, ?> tupled = f.tupled();
+                  $assertThat(tupled).isNotNull();
+              }
+
+              @$test
+              public void shouldReverse() {
+                  final $name$i f = ($functionArgs) -> null;
+                  $assertThat(f.reversed()).isNotNull();
+              }
+
+              @$test
+              public void shouldComposeWithAndThen() {
+                  final $name$i f = ($functionArgs) -> null;
+                  final ${im.getType("java.util.function.Function")} after = o -> null;
+                  @SuppressWarnings("unchecked")
+                  final $name$i composed = f.andThen(after);
+                  $assertThat(composed).isNotNull();
+              }
+          }
+        """
+      }
+
+      genJavaslangFile("javaslang", s"CheckedFunction${i}Test", baseDir = TARGET_TEST)(genFunction("CheckedFunction", checked = true))
+      genJavaslangFile("javaslang", s"Function${i}Test", baseDir = TARGET_TEST)(genFunction("Function", checked = false))
+    })
+  }
 }
 
 /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*\

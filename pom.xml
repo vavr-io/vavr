@@ -117,7 +117,7 @@ Profile 'release-sign-artifacts':
                     </execution>
                     <execution>
                         <id>add-test-source</id>
-                        <phase>generate-test-sources</phase>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>add-test-source</goal>
                         </goals>
