@@ -11,9 +11,10 @@ package javaslang;
 
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 @FunctionalInterface
-public interface Function0<R> extends λ<R>, java.util.function.Supplier<R> {
+public interface Function0<R> extends λ<R>, Supplier<R> {
 
     R apply();
 

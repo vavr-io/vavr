@@ -333,98 +333,108 @@ def genPropertyChecks(): Unit = {
  */
 def genFunctions(): Unit = {
 
-  def genFunctions(i: Int): Unit = {
+  (0 to N).foreach(i => {
 
-    val generics = (1 to i).gen(j => s"T$j")(", ")
-    val genericsReversed = (1 to i).reverse.gen(j => s"T$j")(", ")
-    val genericsTuple = if (i > 0) s"<$generics>" else ""
-    val genericsFunction = if (i > 0) s"$generics, " else ""
-    val genericsReversedFunction = if (i > 0) s"$genericsReversed, " else ""
-    val curried = if (i == 0) "v" else (1 to i).gen(j => s"t$j")(" -> ")
-    val paramsDecl = (1 to i).gen(j => s"T$j t$j")(", ")
-    val params = (1 to i).gen(j => s"t$j")(", ")
-    val paramsReversed = (1 to i).reverse.gen(j => s"t$j")(", ")
-    val tupled = (1 to i).gen(j => s"t._$j")(", ")
+    def genFunction(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
 
-    def additionalInterfaces(arity: Int, checked: Boolean): String = (arity, checked) match {
-      case (0, false) => s", java.util.function.Supplier<R>"
-      case (1, false) => s", java.util.function.Function<$generics, R>"
-      case (2, false) => s", java.util.function.BiFunction<$generics, R>"
-      case _ => ""
-    }
+      val generics = (1 to i).gen(j => s"T$j")(", ")
+      val genericsReversed = (1 to i).reverse.gen(j => s"T$j")(", ")
+      val genericsTuple = if (i > 0) s"<$generics>" else ""
+      val genericsFunction = if (i > 0) s"$generics, " else ""
+      val genericsReversedFunction = if (i > 0) s"$genericsReversed, " else ""
+      val curried = if (i == 0) "v" else (1 to i).gen(j => s"t$j")(" -> ")
+      val paramsDecl = (1 to i).gen(j => s"T$j t$j")(", ")
+      val params = (1 to i).gen(j => s"t$j")(", ")
+      val paramsReversed = (1 to i).reverse.gen(j => s"t$j")(", ")
+      val tupled = (1 to i).gen(j => s"t._$j")(", ")
 
-    def returnType(max: Int, function: String): String = {
-      if (max == 0) {
+      def additionalInterfaces(arity: Int, checked: Boolean): String = (arity, checked) match {
+        case (0, false) => s", ${im.getType("java.util.function.Supplier")}<R>"
+        case (1, false) => s", ${im.getType("java.util.function.Function")}<$generics, R>"
+        case (2, false) => s", ${im.getType("java.util.function.BiFunction")}<$generics, R>"
+        case _ => ""
+      }
+
+      def returnType(max: Int, function: String): String = {
+        if (max == 0) {
           s"${function}1<Void, R>"
-      } else {
+        } else {
           def returnType(curr: Int, max: Int): String = {
-              val isParam = curr < max
-              val next = if (isParam) returnType(curr + 1, max) else "R"
-              s"${function}1<T$curr, $next>"
+            val isParam = curr < max
+            val next = if (isParam) returnType(curr + 1, max) else "R"
+            s"${function}1<T$curr, $next>"
           }
           returnType(1, max)
+        }
       }
+
+      xs"""
+        @FunctionalInterface
+        public interface $className<${if (i > 0) s"$generics, " else ""}R> extends λ<R>${additionalInterfaces(i, checked)} {
+
+            ${
+        if (i == 1) xs"""
+            static <T> ${name}1<T, T> identity() {
+                return t -> t;
+            }"""
+        else ""
+      }
+
+            ${if ((i == 1 || i == 2) && !checked) "@Override" else ""}
+            R apply($paramsDecl)${if (checked) " throws Throwable" else ""};
+
+            ${
+        if (i == 0 && !checked) xs"""
+            @Override
+            default R get() {
+                return apply();
+            }"""
+        else ""
+      }
+
+            @Override
+            default int arity() {
+                return $i;
+            }
+
+            @Override
+            default ${returnType(i, name)} curried() {
+                ${(i == 1).gen("//noinspection Convert2MethodRef")}
+                return $curried -> apply($params);
+            }
+
+            @Override
+            default ${name}1<Tuple$i$genericsTuple, R> tupled() {
+                return t -> apply($tupled);
+            }
+
+            @Override
+            default $className<${genericsReversedFunction}R> reversed() {
+                ${(i <= 1).gen("//noinspection Convert2MethodRef")}
+                return ($paramsReversed) -> apply($params);
+            }
+
+            @Override
+            default <V> $className<${genericsFunction}V> andThen(${im.getType("java.util.function.Function")}<? super R, ? extends V> after) {
+                ${im.getType("java.util.Objects")}.requireNonNull(after);
+                return ($params) -> after.apply(apply($params));
+            }
+
+            ${
+        if (i == 1) xs"""
+            default <V> ${name}1<V, R> compose(${im.getType("java.util.function.Function")}<? super V, ? extends T1> before) {
+                ${im.getType("java.util.Objects")}.requireNonNull(before);
+                return v -> apply(before.apply(v));
+            }"""
+        else ""
+      }
+        }
+      """
     }
-
-    def genFunction(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = xs"""
-      @FunctionalInterface
-      public interface $className<${if (i > 0) s"$generics, " else ""}R> extends λ<R>${additionalInterfaces(i, checked)} {
-
-          ${if (i == 1) xs"""
-          static <T> ${name}1<T, T> identity() {
-              return t -> t;
-          }""" else ""}
-
-          ${if ((i == 1 || i == 2) && !checked) "@Override" else ""}
-          R apply($paramsDecl)${if (checked) " throws Throwable" else ""};
-
-          ${if (i == 0 && !checked) xs"""
-          @Override
-          default R get() {
-              return apply();
-          }""" else ""}
-
-          @Override
-          default int arity() {
-              return $i;
-          }
-
-          @Override
-          default ${returnType(i, name)} curried() {
-              ${(i == 1).gen("//noinspection Convert2MethodRef")}
-              return $curried -> apply($params);
-          }
-
-          @Override
-          default ${name}1<Tuple$i$genericsTuple, R> tupled() {
-              return t -> apply($tupled);
-          }
-
-          @Override
-          default $className<${genericsReversedFunction}R> reversed() {
-              ${(i <= 1).gen("//noinspection Convert2MethodRef")}
-              return ($paramsReversed) -> apply($params);
-          }
-
-          @Override
-          default <V> $className<${genericsFunction}V> andThen(${im.getType("java.util.function.Function")}<? super R, ? extends V> after) {
-              ${im.getType("java.util.Objects")}.requireNonNull(after);
-              return ($params) -> after.apply(apply($params));
-          }
-
-          ${if (i == 1) xs"""
-          default <V> ${name}1<V, R> compose(${im.getType("java.util.function.Function")}<? super V, ? extends T1> before) {
-              ${im.getType("java.util.Objects")}.requireNonNull(before);
-              return v -> apply(before.apply(v));
-          }""" else ""}
-      }
-    """
 
     genJavaslangFile("javaslang", s"CheckedFunction$i")(genFunction("CheckedFunction", checked = true))
     genJavaslangFile("javaslang", s"Function$i")(genFunction("Function", checked = false))
-  }
-
-  (0 to N).foreach(genFunctions)
+  })
 }
 
 /**

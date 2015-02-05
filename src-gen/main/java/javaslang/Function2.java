@@ -10,10 +10,11 @@ package javaslang;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 @FunctionalInterface
-public interface Function2<T1, T2, R> extends λ<R>, java.util.function.BiFunction<T1, T2, R> {
+public interface Function2<T1, T2, R> extends λ<R>, BiFunction<T1, T2, R> {
 
     @Override
     R apply(T1 t1, T2 t2);
