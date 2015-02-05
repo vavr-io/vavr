@@ -14,7 +14,8 @@ import scala.collection.mutable
 import scala.util.Properties.lineSeparator
 
 val N = 26
-val TARGET = "src-gen/main/java"
+val TARGET_MAIN = "src-gen/main/java"
+val TARGET_TEST = "src-gen/test/java"
 
 /**
  * ENTRY POINT
@@ -635,8 +636,8 @@ def genTuples(): Unit = {
  * @param className Simple java class name
  * @param gen A generator which produces a String.
  */
-def genJavaslangFile(packageName: String, className: String)(gen: (ImportManager, String, String) => String, knownSimpleClassNames: List[String] = List()) =
-  genJavaFile(packageName, className)(xraw"""
+def genJavaslangFile(packageName: String, className: String, baseDir: String = TARGET_MAIN)(gen: (ImportManager, String, String) => String, knownSimpleClassNames: List[String] = List()) =
+  genJavaFile(baseDir, packageName, className)(xraw"""
     /**    / \____  _    ______   _____ / \____   ____  _____
      *    /  \__  \/ \  / \__  \ /  __//  \__  \ /    \/ __  \   Javaslang
      *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014-2015 Daniel Dietrich
@@ -655,14 +656,14 @@ def genJavaslangFile(packageName: String, className: String)(gen: (ImportManager
  * @param classHeader A class file header
  * @param gen A generator which produces a String.
  */
-def genJavaFile(packageName: String, className: String)(classHeader: String)(gen: (ImportManager, String, String) => String, knownSimpleClassNames: List[String] = List())(implicit charset: Charset = StandardCharsets.UTF_8): Unit = {
+def genJavaFile(baseDir: String, packageName: String, className: String)(classHeader: String)(gen: (ImportManager, String, String) => String, knownSimpleClassNames: List[String] = List())(implicit charset: Charset = StandardCharsets.UTF_8): Unit = {
 
   val dirName = packageName.replaceAll("\\.", File.separator)
   val fileName = className + ".java"
   val importManager = new ImportManager(packageName, knownSimpleClassNames)
   val classBody = gen.apply(importManager, packageName, className)
 
-  genFile(dirName, fileName)(xraw"""
+  genFile(baseDir, dirName, fileName)(xraw"""
     $classHeader
     package $packageName;
 
@@ -729,14 +730,23 @@ class ImportManager(packageNameOfClass: String, knownSimpleClassNames: List[Stri
      C O R E   G E N E R A T O R   F R A M E W O R K
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-def genFile(dirName: String, fileName: String)(contents: => String)(implicit charset: Charset = StandardCharsets.UTF_8): Unit = {
+/**
+ * Generates a file by writing string contents to the file system.
+ *
+ * @param baseDir The base directory, e.g. src-gen
+ * @param dirName The directory relative to baseDir, e.g. main/java
+ * @param fileName The file name within baseDir/dirName
+ * @param contents The string contents of the file
+ * @param charset The charset, by default UTF-8
+ */
+def genFile(baseDir: String, dirName: String, fileName: String)(contents: => String)(implicit charset: Charset = StandardCharsets.UTF_8): Unit = {
 
   println(s"Generating $dirName${File.separator}$fileName")
 
   import java.nio.file.{Paths, Files}
 
   Files.write(
-    Files.createDirectories(Paths.get(TARGET, dirName)).resolve(fileName),
+    Files.createDirectories(Paths.get(baseDir, dirName)).resolve(fileName),
     contents.getBytes(charset),
     StandardOpenOption.CREATE, StandardOpenOption.WRITE)
 }
