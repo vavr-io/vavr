@@ -580,7 +580,7 @@ def generateMainClasses(): Unit = {
                 }
             }
 
-            ${(i == 1).gen("// if this._1 == null hashCode(_1) returns Objects.hash(new T1[] { null }) = 31 instead of 0 = Objects.hash(null)")}
+            ${(i == 1).gen("// if _1 == null, hashCode() returns Objects.hash(new T1[] { null }) = 31 instead of 0 = Objects.hash(null)")}
             @Override
             public int hashCode() {
                 return ${im.getType("java.util.Objects")}.hash(${(1 to i).gen(j => s"_$j")(", ")});
