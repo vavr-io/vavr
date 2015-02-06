@@ -23,13 +23,17 @@ import java.util.function.Function;
 // TODO: Implement ValueObject
 public interface RoseTree<T> extends Tree<T> {
 
+    static final long serialVersionUID = 1L;
+
     @SafeVarargs
     static <T> NonNil<T> of(T value, NonNil<T>... children) {
         Objects.requireNonNull(children, "children is null");
         if (children.length == 0) {
             return new Leaf<>(value);
         } else {
-            return new Branch<>(value, List.of(children));
+            @SuppressWarnings({"unchecked", "varargs"})
+            final List<NonNil<T>> list = List.of(children);
+            return new Branch<>(value, list);
         }
     }
 
@@ -37,7 +41,9 @@ public interface RoseTree<T> extends Tree<T> {
     static <T> Branch<T> branch(T value, NonNil<T> child1, NonNil<T>... children) {
         Objects.requireNonNull(children, "child1 is null");
         Objects.requireNonNull(children, "children is null");
-        return new Branch<>(value, List.of(children).prepend(child1));
+        @SuppressWarnings({"unchecked", "varargs"})
+        final List<NonNil<T>> list = List.of(children).prepend(child1);
+        return new Branch<>(value, list);
     }
 
     static <T> Leaf<T> leaf(T value) {
@@ -60,13 +66,14 @@ public interface RoseTree<T> extends Tree<T> {
             return new Leaf<>(mapper.apply(getValue()));
         } else {
             final U value = mapper.apply(getValue());
-            final List children = getChildren().map(tree -> tree.map(mapper));
             /*
              * DEV-NOTE: The constructor of Branch and the factory method RoseTree.of
              * expect NonNil children. With the implementation of map this implies that
              * the result of the method getChildren().map is of type List<NonNil>.
              */
-            return new Branch<>(value, (List<NonNil<U>>) children);
+            @SuppressWarnings({"unchecked", "rawtypes"})
+            final List children = (List<NonNil<U>>) (List) getChildren().map(tree -> tree.map(mapper));
+            return new Branch<>(value, children);
         }
     }
 
@@ -318,7 +325,7 @@ public interface RoseTree<T> extends Tree<T> {
             } else if (!(o instanceof RoseTree)) {
                 return false;
             } else {
-                final RoseTree that = (RoseTree) o;
+                final RoseTree<?> that = (RoseTree<?>) o;
                 return (this.isEmpty() && that.isEmpty()) || (!this.isEmpty() && !that.isEmpty()
                         && Objects.equals(this.getValue(), that.getValue())
                         && this.getChildren().equals(that.getChildren()));

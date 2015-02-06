@@ -70,7 +70,7 @@ public class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Monad8<T1,
         } else if (!(o instanceof Tuple8)) {
             return false;
         } else {
-            final Tuple8 that = (Tuple8) o;
+            final Tuple8<?, ?, ?, ?, ?, ?, ?, ?> that = (Tuple8<?, ?, ?, ?, ?, ?, ?, ?>) o;
             return Objects.equals(this._1, that._1)
                     && Objects.equals(this._2, that._2)
                     && Objects.equals(this._3, that._3)

@@ -138,11 +138,10 @@ Profile 'release-sign-artifacts':
                     <target>${java.version}</target>
                     <showDeprecation>true</showDeprecation>
                     <showWarnings>true</showWarnings>
-                    <!--
                     <compilerArgs>
-                        <arg>-Xlint</arg>
+                        <arg>-Xlint:all</arg>
+                        <arg>-Werror</arg>
                     </compilerArgs>
-                    -->
                 </configuration>
             </plugin>
             <plugin>

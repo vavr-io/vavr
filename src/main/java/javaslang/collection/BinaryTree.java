@@ -28,6 +28,8 @@ import java.util.function.Function;
 // TODO: Implement ValueObject
 public interface BinaryTree<T> extends Tree<T> {
 
+    static final long serialVersionUID = 1L;
+
     static <T> BinaryTree<T> of(BinaryTree<T> left, T value, BinaryTree<T> right) {
         Objects.requireNonNull(left, "left is null");
         Objects.requireNonNull(right, "right is null");
@@ -105,7 +107,9 @@ public interface BinaryTree<T> extends Tree<T> {
      */
     @SafeVarargs
     static <T> BinaryTree<T> balance(T... elements) {
-        return BinaryTree.balance(List.of(elements));
+        @SuppressWarnings({"unchecked", "varargs"})
+        final List<T> list = List.of(elements);
+        return BinaryTree.balance(list);
     }
 
     default BinaryTree<T> balance() {
@@ -415,7 +419,7 @@ public interface BinaryTree<T> extends Tree<T> {
             } else if (!(o instanceof BinaryTree)) {
                 return false;
             } else {
-                final BinaryTree that = (BinaryTree) o;
+                final BinaryTree<?> that = (BinaryTree<?>) o;
                 return (this.isEmpty() && that.isEmpty()) || (!this.isEmpty() && !that.isEmpty()
                         && Objects.equals(this.getValue(), that.getValue())
                         && this.getChildren().equals(that.getChildren()));

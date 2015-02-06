@@ -11,6 +11,8 @@ package javaslang;
 
 public interface Tuple extends ValueObject {
 
+    static final long serialVersionUID = 1L;
+
     /**
      * Returns the number of elements of this tuple.
      *

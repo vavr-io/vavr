@@ -15,6 +15,8 @@ import java.util.Objects;
 @FunctionalInterface
 public interface CheckedLongConsumer extends Serializable {
 
+    static final long serialVersionUID = 1L;
+
     void accept(long value) throws Throwable;
 
     default CheckedLongConsumer andThen(CheckedLongConsumer after) {

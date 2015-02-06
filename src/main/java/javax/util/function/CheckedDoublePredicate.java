@@ -15,6 +15,8 @@ import java.util.Objects;
 @FunctionalInterface
 public interface CheckedDoublePredicate extends Serializable {
 
+    static final long serialVersionUID = 1L;
+
     boolean test(double value) throws Throwable;
 
     default CheckedDoublePredicate and(CheckedDoublePredicate other) {

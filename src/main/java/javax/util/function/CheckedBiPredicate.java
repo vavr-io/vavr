@@ -18,6 +18,8 @@ import java.util.Objects;
 @FunctionalInterface
 public interface CheckedBiPredicate<T, U> extends Serializable {
 
+    static final long serialVersionUID = 1L;
+
     boolean test(T t, U u) throws Throwable;
 
     default CheckedBiPredicate<T, U> and(CheckedBiPredicate<? super T, ? super U> other) {

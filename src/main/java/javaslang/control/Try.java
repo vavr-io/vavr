@@ -23,6 +23,8 @@ import java.util.function.Predicate;
  */
 public interface Try<T> extends Monad1<T, Try<?>>, ValueObject, Bivalent<T, Throwable> {
 
+    static final long serialVersionUID = 1L;
+
 	static <T> Try<T> of(CheckedSupplier<T> supplier) {
 		try {
 			return new Success<>(supplier.get());

@@ -18,38 +18,35 @@ public class Function15Test {
 
     @Test
     public void shouldGetArity() {
-        final Function15 f = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) -> null;
+        final Function15<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15) -> null;
         assertThat(f.arity()).isEqualTo(15);
     }
 
     @Test
     public void shouldCurry() {
-        final Function15 f = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) -> null;
-        @SuppressWarnings("unchecked")
-        final Function1<?, Function1<?, Function1<?, Function1<?, Function1<?, Function1<?, Function1<?, Function1<?, Function1<?, Function1<?, Function1<?, Function1<?, Function1<?, Function1<?, Function1<?, ?>>>>>>>>>>>>>>> curried = f.curried();
+        final Function15<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15) -> null;
+        final Function1<Object, Function1<Object, Function1<Object, Function1<Object, Function1<Object, Function1<Object, Function1<Object, Function1<Object, Function1<Object, Function1<Object, Function1<Object, Function1<Object, Function1<Object, Function1<Object, Function1<Object, Object>>>>>>>>>>>>>>> curried = f.curried();
         assertThat(curried).isNotNull();
     }
 
     @Test
     public void shouldTuple() {
-        final Function15 f = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) -> null;
-        @SuppressWarnings("unchecked")
-        final Function1<Tuple15, ?> tupled = f.tupled();
+        final Function15<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15) -> null;
+        final Function1<Tuple15<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object>, Object> tupled = f.tupled();
         assertThat(tupled).isNotNull();
     }
 
     @Test
     public void shouldReverse() {
-        final Function15 f = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) -> null;
+        final Function15<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15) -> null;
         assertThat(f.reversed()).isNotNull();
     }
 
     @Test
     public void shouldComposeWithAndThen() {
-        final Function15 f = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) -> null;
-        final Function after = o -> null;
-        @SuppressWarnings("unchecked")
-        final Function15 composed = f.andThen(after);
+        final Function15<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15) -> null;
+        final Function<Object, Object> after = o -> null;
+        final Function15<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> composed = f.andThen(after);
         assertThat(composed).isNotNull();
     }
 }

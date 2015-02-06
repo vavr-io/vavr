@@ -28,6 +28,8 @@ import java.util.function.Function;
  */
 public interface λ<R> extends Serializable {
 
+    static final long serialVersionUID = 1L;
+
     /**
      * Serializes a lambda and returns the corresponding {@link java.lang.invoke.SerializedLambda}.
      *
@@ -77,6 +79,8 @@ public interface λ<R> extends Serializable {
      *
      * @return A curried function equivalent to this.
      */
+    // generic argument count varies
+    @SuppressWarnings("rawtypes")
     λ curried();
 
     /**

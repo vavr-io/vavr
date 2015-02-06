@@ -11,18 +11,18 @@ import javaslang.control.Option;
 import javaslang.control.Some;
 
 // TODO: ValueObject (unapply, equals, hashCode, toString)
-public interface CheckResult<T extends Tuple> {
+public interface CheckResult {
 
-    static <T extends Tuple> Satisfied<T> satisfied(int count, boolean exhausted) {
-        return new Satisfied<>(count, exhausted);
+    static Satisfied satisfied(int count, boolean exhausted) {
+        return new Satisfied(count, exhausted);
     }
 
-    static <T extends Tuple> Falsified<T> falsified(int count, T sample) {
-        return new Falsified<>(count, sample);
+    static Falsified falsified(int count, Tuple sample) {
+        return new Falsified(count, sample);
     }
 
-    static <T extends Tuple> Erroneous<T> erroneous(int count, Error error, Option<T> sample) {
-        return new Erroneous<>(count, error, sample);
+    static Erroneous erroneous(int count, Error error, Option<Tuple> sample) {
+        return new Erroneous(count, error, sample);
     }
 
     boolean isSatisfied();
@@ -35,15 +35,14 @@ public interface CheckResult<T extends Tuple> {
 
     int count();
 
-    Option<T> sample();
+    Option<Tuple> sample();
 
     Option<Error> error();
 
     /**
      * Represents a satisfied property check.
-     * @param <T> Type of property arguments represented as Tuple.
      */
-    static class Satisfied<T extends Tuple> implements CheckResult<T> {
+    static class Satisfied implements CheckResult {
 
         final int count;
         final boolean exhausted;
@@ -79,28 +78,27 @@ public interface CheckResult<T extends Tuple> {
         }
 
         @Override
-        public Option<T> sample() {
+        public None<Tuple> sample() {
             return None.instance();
         }
 
         @Override
-        public Option<Error> error() {
+        public None<Error> error() {
             return None.instance();
         }
     }
 
     /**
      * Represents a falsified property check.
-     * @param <T> Type of property arguments represented as Tuple.
      */
-    static class Falsified<T extends Tuple> implements CheckResult<T> {
+    static class Falsified implements CheckResult {
 
         private final int count;
-        private final Some<T> sample;
+        private final Tuple sample;
 
-        Falsified(int count, T sample) {
+        Falsified(int count, Tuple sample) {
             this.count = count;
-            this.sample = new Some<>(sample);
+            this.sample = sample;
         }
 
         @Override
@@ -129,29 +127,28 @@ public interface CheckResult<T extends Tuple> {
         }
 
         @Override
-        public Option<T> sample() {
-            return sample;
+        public Some<Tuple> sample() {
+            return new Some<>(sample);
         }
 
         @Override
-        public Option<Error> error() {
+        public None<Error> error() {
             return None.instance();
         }
     }
 
     /**
      * Represents an erroneous property check.
-     * @param <T> Type of property arguments represented as Tuple.
      */
-    static class Erroneous<T extends Tuple> implements CheckResult<T> {
+    static class Erroneous implements CheckResult {
 
         private final int count;
-        private final Some<Error> error;
-        private final Option<T> sample;
+        private final Error error;
+        private final Option<Tuple> sample;
 
-        Erroneous(int count, Error error, Option<T> sample) {
+        Erroneous(int count, Error error, Option<Tuple> sample) {
             this.count = count;
-            this.error = new Some<>(error);
+            this.error = error;
             this.sample = sample;
         }
 
@@ -181,13 +178,13 @@ public interface CheckResult<T extends Tuple> {
         }
 
         @Override
-        public Option<T> sample() {
+        public Option<Tuple> sample() {
             return sample;
         }
 
         @Override
-        public Option<Error> error() {
-            return error;
+        public Some<Error> error() {
+            return new Some<>(error);
         }
     }
 }

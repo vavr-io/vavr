@@ -66,7 +66,7 @@ public class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Monad6<T1, T2, T3,
         } else if (!(o instanceof Tuple6)) {
             return false;
         } else {
-            final Tuple6 that = (Tuple6) o;
+            final Tuple6<?, ?, ?, ?, ?, ?> that = (Tuple6<?, ?, ?, ?, ?, ?>) o;
             return Objects.equals(this._1, that._1)
                     && Objects.equals(this._2, that._2)
                     && Objects.equals(this._3, that._3)

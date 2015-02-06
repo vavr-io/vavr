@@ -18,38 +18,35 @@ public class CheckedFunction8Test {
 
     @Test
     public void shouldGetArity() {
-        final CheckedFunction8 f = (t1, t2, t3, t4, t5, t6, t7, t8) -> null;
+        final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8) -> null;
         assertThat(f.arity()).isEqualTo(8);
     }
 
     @Test
     public void shouldCurry() {
-        final CheckedFunction8 f = (t1, t2, t3, t4, t5, t6, t7, t8) -> null;
-        @SuppressWarnings("unchecked")
-        final CheckedFunction1<?, CheckedFunction1<?, CheckedFunction1<?, CheckedFunction1<?, CheckedFunction1<?, CheckedFunction1<?, CheckedFunction1<?, CheckedFunction1<?, ?>>>>>>>> curried = f.curried();
+        final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8) -> null;
+        final CheckedFunction1<Object, CheckedFunction1<Object, CheckedFunction1<Object, CheckedFunction1<Object, CheckedFunction1<Object, CheckedFunction1<Object, CheckedFunction1<Object, CheckedFunction1<Object, Object>>>>>>>> curried = f.curried();
         assertThat(curried).isNotNull();
     }
 
     @Test
     public void shouldTuple() {
-        final CheckedFunction8 f = (t1, t2, t3, t4, t5, t6, t7, t8) -> null;
-        @SuppressWarnings("unchecked")
-        final CheckedFunction1<Tuple8, ?> tupled = f.tupled();
+        final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8) -> null;
+        final CheckedFunction1<Tuple8<Object, Object, Object, Object, Object, Object, Object, Object>, Object> tupled = f.tupled();
         assertThat(tupled).isNotNull();
     }
 
     @Test
     public void shouldReverse() {
-        final CheckedFunction8 f = (t1, t2, t3, t4, t5, t6, t7, t8) -> null;
+        final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8) -> null;
         assertThat(f.reversed()).isNotNull();
     }
 
     @Test
     public void shouldComposeWithAndThen() {
-        final CheckedFunction8 f = (t1, t2, t3, t4, t5, t6, t7, t8) -> null;
-        final Function after = o -> null;
-        @SuppressWarnings("unchecked")
-        final CheckedFunction8 composed = f.andThen(after);
+        final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8) -> null;
+        final Function<Object, Object> after = o -> null;
+        final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Object> composed = f.andThen(after);
         assertThat(composed).isNotNull();
     }
 }

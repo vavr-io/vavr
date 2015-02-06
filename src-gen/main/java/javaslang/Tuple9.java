@@ -72,7 +72,7 @@ public class Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9> implements Tuple, Monad9
         } else if (!(o instanceof Tuple9)) {
             return false;
         } else {
-            final Tuple9 that = (Tuple9) o;
+            final Tuple9<?, ?, ?, ?, ?, ?, ?, ?, ?> that = (Tuple9<?, ?, ?, ?, ?, ?, ?, ?, ?>) o;
             return Objects.equals(this._1, that._1)
                     && Objects.equals(this._2, that._2)
                     && Objects.equals(this._3, that._3)

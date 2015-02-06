@@ -20,6 +20,8 @@ import java.util.stream.Collector;
 // DEV-NOTE: Beware of serializing IO streams.
 public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObject {
 
+    static final long serialVersionUID = 1L;
+
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
      * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link javaslang.collection.Stream}.
@@ -698,7 +700,9 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
     default <T1, T2> Tuple2<Stream<T1>, Stream<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         final Stream<Tuple2<? extends T1, ? extends T2>> stream = map(unzipper);
-        return Tuple.of(stream.map(t -> t._1), /*TODO(IntelliJ bug): remove cast*/(Stream<T2>) stream.map(t -> t._2));
+        final Stream<T1> stream1 = stream.map(t -> t._1);
+        final Stream<T2> stream2 = stream.map(t -> t._2);
+        return Tuple.of(stream1, stream2);
     }
 
     @Override

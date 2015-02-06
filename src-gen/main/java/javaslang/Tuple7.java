@@ -68,7 +68,7 @@ public class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Monad7<T1, T2,
         } else if (!(o instanceof Tuple7)) {
             return false;
         } else {
-            final Tuple7 that = (Tuple7) o;
+            final Tuple7<?, ?, ?, ?, ?, ?, ?> that = (Tuple7<?, ?, ?, ?, ?, ?, ?>) o;
             return Objects.equals(this._1, that._1)
                     && Objects.equals(this._2, that._2)
                     && Objects.equals(this._3, that._3)

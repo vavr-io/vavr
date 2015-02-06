@@ -62,7 +62,7 @@ public class Tuple4<T1, T2, T3, T4> implements Tuple, Monad4<T1, T2, T3, T4, Tup
         } else if (!(o instanceof Tuple4)) {
             return false;
         } else {
-            final Tuple4 that = (Tuple4) o;
+            final Tuple4<?, ?, ?, ?> that = (Tuple4<?, ?, ?, ?>) o;
             return Objects.equals(this._1, that._1)
                     && Objects.equals(this._2, that._2)
                     && Objects.equals(this._3, that._3)

@@ -18,44 +18,42 @@ public class Tuple5Test {
 
     @Test
     public void shouldCreateTuple() {
-        final Tuple5 tuple = createTuple();
+        final Tuple5<Object, Object, Object, Object, Object> tuple = createTuple();
         assertThat(tuple).isNotNull();
     }
 
     @Test
     public void shouldGetArity() {
-        final Tuple5 tuple = createTuple();
+        final Tuple5<Object, Object, Object, Object, Object> tuple = createTuple();
         assertThat(tuple.arity()).isEqualTo(5);
     }
 
     @Test
     public void shouldFlatMap() {
-        final Tuple5 tuple = createTuple();
-        final Function5 mapper = (t1, t2, t3, t4, t5) -> tuple;
-        @SuppressWarnings("unchecked")
-        final Tuple5 actual = tuple.flatMap(mapper);
+        final Tuple5<Object, Object, Object, Object, Object> tuple = createTuple();
+        final Function5<Object, Object, Object, Object, Object, Tuple5<Object, Object, Object, Object, Object>> mapper = (o1, o2, o3, o4, o5) -> tuple;
+        final Tuple5<Object, Object, Object, Object, Object> actual = tuple.flatMap(mapper);
         assertThat(actual).isEqualTo(tuple);
     }
 
     @Test
     public void shouldMap() {
-        final Tuple5 tuple = createTuple();
-        final Function5 mapper = (t1, t2, t3, t4, t5) -> tuple;
-        @SuppressWarnings("unchecked")
-        final Tuple5 actual = tuple.map(mapper);
+        final Tuple5<Object, Object, Object, Object, Object> tuple = createTuple();
+        final Function5<Object, Object, Object, Object, Object, Tuple5<?, ?, ?, ?, ?>> mapper = (o1, o2, o3, o4, o5) -> tuple;
+        final Tuple5<Object, Object, Object, Object, Object> actual = tuple.map(mapper);
         assertThat(actual).isEqualTo(tuple);
     }
 
     @Test
     public void shouldUnapply() {
-        final Tuple5 tuple = createTuple();
+        final Tuple5<Object, Object, Object, Object, Object> tuple = createTuple();
         assertThat(tuple.unapply()).isEqualTo(tuple);
     }
 
     @Test
     public void shouldCompareViaEquals() {
-        final Tuple5 tuple1 = createTuple();
-        final Tuple5 tuple2 = createTuple();
+        final Tuple5<Object, Object, Object, Object, Object> tuple1 = createTuple();
+        final Tuple5<Object, Object, Object, Object, Object> tuple2 = createTuple();
         assertThat(tuple1).isEqualTo(tuple2);
     }
 
@@ -73,7 +71,7 @@ public class Tuple5Test {
         assertThat(actual).isEqualTo(expected);
     }
 
-    private Tuple5 createTuple() {
+    private Tuple5<Object, Object, Object, Object, Object> createTuple() {
         return new Tuple5<>(null, null, null, null, null);
     }
 }

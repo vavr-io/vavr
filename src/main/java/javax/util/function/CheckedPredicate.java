@@ -17,6 +17,8 @@ import java.util.Objects;
 @FunctionalInterface
 public interface CheckedPredicate<T> extends Serializable {
 
+    static final long serialVersionUID = 1L;
+
     static <T> CheckedPredicate<T> isEqual(Object targetRef) {
         return (null == targetRef)
                 ? Objects::isNull

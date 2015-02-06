@@ -18,38 +18,35 @@ public class Function2Test {
 
     @Test
     public void shouldGetArity() {
-        final Function2 f = (t1, t2) -> null;
+        final Function2<Object, Object, Object> f = (o1, o2) -> null;
         assertThat(f.arity()).isEqualTo(2);
     }
 
     @Test
     public void shouldCurry() {
-        final Function2 f = (t1, t2) -> null;
-        @SuppressWarnings("unchecked")
-        final Function1<?, Function1<?, ?>> curried = f.curried();
+        final Function2<Object, Object, Object> f = (o1, o2) -> null;
+        final Function1<Object, Function1<Object, Object>> curried = f.curried();
         assertThat(curried).isNotNull();
     }
 
     @Test
     public void shouldTuple() {
-        final Function2 f = (t1, t2) -> null;
-        @SuppressWarnings("unchecked")
-        final Function1<Tuple2, ?> tupled = f.tupled();
+        final Function2<Object, Object, Object> f = (o1, o2) -> null;
+        final Function1<Tuple2<Object, Object>, Object> tupled = f.tupled();
         assertThat(tupled).isNotNull();
     }
 
     @Test
     public void shouldReverse() {
-        final Function2 f = (t1, t2) -> null;
+        final Function2<Object, Object, Object> f = (o1, o2) -> null;
         assertThat(f.reversed()).isNotNull();
     }
 
     @Test
     public void shouldComposeWithAndThen() {
-        final Function2 f = (t1, t2) -> null;
-        final Function after = o -> null;
-        @SuppressWarnings("unchecked")
-        final Function2 composed = f.andThen(after);
+        final Function2<Object, Object, Object> f = (o1, o2) -> null;
+        final Function<Object, Object> after = o -> null;
+        final Function2<Object, Object, Object> composed = f.andThen(after);
         assertThat(composed).isNotNull();
     }
 }

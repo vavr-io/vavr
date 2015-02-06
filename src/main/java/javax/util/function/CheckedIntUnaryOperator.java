@@ -15,6 +15,8 @@ import java.util.Objects;
 @FunctionalInterface
 public interface CheckedIntUnaryOperator extends Serializable {
 
+    static final long serialVersionUID = 1L;
+
     int applyAsInt(int operand) throws Throwable;
 
     default CheckedIntUnaryOperator compose(CheckedIntUnaryOperator before) {

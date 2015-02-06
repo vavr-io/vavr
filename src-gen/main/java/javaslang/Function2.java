@@ -16,6 +16,8 @@ import java.util.function.Function;
 @FunctionalInterface
 public interface Function2<T1, T2, R> extends λ<R>, BiFunction<T1, T2, R> {
 
+    static final long serialVersionUID = 1L;
+
     @Override
     R apply(T1 t1, T2 t2);
 

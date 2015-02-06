@@ -19,44 +19,42 @@ public class Tuple2Test {
 
     @Test
     public void shouldCreateTuple() {
-        final Tuple2 tuple = createTuple();
+        final Tuple2<Object, Object> tuple = createTuple();
         assertThat(tuple).isNotNull();
     }
 
     @Test
     public void shouldGetArity() {
-        final Tuple2 tuple = createTuple();
+        final Tuple2<Object, Object> tuple = createTuple();
         assertThat(tuple.arity()).isEqualTo(2);
     }
 
     @Test
     public void shouldFlatMap() {
-        final Tuple2 tuple = createTuple();
-        final BiFunction mapper = (t1, t2) -> tuple;
-        @SuppressWarnings("unchecked")
-        final Tuple2 actual = tuple.flatMap(mapper);
+        final Tuple2<Object, Object> tuple = createTuple();
+        final BiFunction<Object, Object, Tuple2<Object, Object>> mapper = (o1, o2) -> tuple;
+        final Tuple2<Object, Object> actual = tuple.flatMap(mapper);
         assertThat(actual).isEqualTo(tuple);
     }
 
     @Test
     public void shouldMap() {
-        final Tuple2 tuple = createTuple();
-        final BiFunction mapper = (t1, t2) -> tuple;
-        @SuppressWarnings("unchecked")
-        final Tuple2 actual = tuple.map(mapper);
+        final Tuple2<Object, Object> tuple = createTuple();
+        final BiFunction<Object, Object, Tuple2<?, ?>> mapper = (o1, o2) -> tuple;
+        final Tuple2<Object, Object> actual = tuple.map(mapper);
         assertThat(actual).isEqualTo(tuple);
     }
 
     @Test
     public void shouldUnapply() {
-        final Tuple2 tuple = createTuple();
+        final Tuple2<Object, Object> tuple = createTuple();
         assertThat(tuple.unapply()).isEqualTo(tuple);
     }
 
     @Test
     public void shouldCompareViaEquals() {
-        final Tuple2 tuple1 = createTuple();
-        final Tuple2 tuple2 = createTuple();
+        final Tuple2<Object, Object> tuple1 = createTuple();
+        final Tuple2<Object, Object> tuple2 = createTuple();
         assertThat(tuple1).isEqualTo(tuple2);
     }
 
@@ -74,7 +72,7 @@ public class Tuple2Test {
         assertThat(actual).isEqualTo(expected);
     }
 
-    private Tuple2 createTuple() {
+    private Tuple2<Object, Object> createTuple() {
         return new Tuple2<>(null, null);
     }
 }

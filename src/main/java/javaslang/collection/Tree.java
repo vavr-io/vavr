@@ -17,6 +17,8 @@ import java.util.function.Function;
 
 public interface Tree<T> extends Functor1<T>, ValueObject {
 
+    static final long serialVersionUID = 1L;
+
     /**
      * Gets the value of this tree.
      *

@@ -17,6 +17,8 @@ import javaslang.CheckedFunction1;
 @FunctionalInterface
 public interface CheckedFunction<T, R> extends CheckedFunction1<T, R> {
 
+    static final long serialVersionUID = 1L;
+
     static <T> CheckedFunction<T, T> identity() {
         return t -> t;
     }

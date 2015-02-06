@@ -18,6 +18,8 @@ import java.util.Objects;
 @FunctionalInterface
 public interface CheckedBiConsumer<T, U> extends Serializable {
 
+    static final long serialVersionUID = 1L;
+
     void accept(T t, U u) throws Throwable;
 
     default CheckedBiConsumer<T,U>	andThen(CheckedBiConsumer<? super T,? super U> after) {

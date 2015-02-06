@@ -19,44 +19,42 @@ public class Tuple1Test {
 
     @Test
     public void shouldCreateTuple() {
-        final Tuple1 tuple = createTuple();
+        final Tuple1<Object> tuple = createTuple();
         assertThat(tuple).isNotNull();
     }
 
     @Test
     public void shouldGetArity() {
-        final Tuple1 tuple = createTuple();
+        final Tuple1<Object> tuple = createTuple();
         assertThat(tuple.arity()).isEqualTo(1);
     }
 
     @Test
     public void shouldFlatMap() {
-        final Tuple1 tuple = createTuple();
-        final Function mapper = (t1) -> tuple;
-        @SuppressWarnings("unchecked")
-        final Tuple1 actual = tuple.flatMap(mapper);
+        final Tuple1<Object> tuple = createTuple();
+        final Function<Object, Tuple1<Object>> mapper = (o1) -> tuple;
+        final Tuple1<Object> actual = tuple.flatMap(mapper);
         assertThat(actual).isEqualTo(tuple);
     }
 
     @Test
     public void shouldMap() {
-        final Tuple1 tuple = createTuple();
-        final Function mapper = (t1) -> t1;
-        @SuppressWarnings("unchecked")
-        final Tuple1 actual = tuple.map(mapper);
+        final Tuple1<Object> tuple = createTuple();
+        final Function<Object, Object> mapper = o1 -> o1;
+        final Tuple1<Object> actual = tuple.map(mapper);
         assertThat(actual).isEqualTo(tuple);
     }
 
     @Test
     public void shouldUnapply() {
-        final Tuple1 tuple = createTuple();
+        final Tuple1<Object> tuple = createTuple();
         assertThat(tuple.unapply()).isEqualTo(tuple);
     }
 
     @Test
     public void shouldCompareViaEquals() {
-        final Tuple1 tuple1 = createTuple();
-        final Tuple1 tuple2 = createTuple();
+        final Tuple1<Object> tuple1 = createTuple();
+        final Tuple1<Object> tuple2 = createTuple();
         assertThat(tuple1).isEqualTo(tuple2);
     }
 
@@ -74,7 +72,7 @@ public class Tuple1Test {
         assertThat(actual).isEqualTo(expected);
     }
 
-    private Tuple1 createTuple() {
+    private Tuple1<Object> createTuple() {
         return new Tuple1<>(null);
     }
 }

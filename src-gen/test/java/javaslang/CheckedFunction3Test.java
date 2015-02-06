@@ -18,38 +18,35 @@ public class CheckedFunction3Test {
 
     @Test
     public void shouldGetArity() {
-        final CheckedFunction3 f = (t1, t2, t3) -> null;
+        final CheckedFunction3<Object, Object, Object, Object> f = (o1, o2, o3) -> null;
         assertThat(f.arity()).isEqualTo(3);
     }
 
     @Test
     public void shouldCurry() {
-        final CheckedFunction3 f = (t1, t2, t3) -> null;
-        @SuppressWarnings("unchecked")
-        final CheckedFunction1<?, CheckedFunction1<?, CheckedFunction1<?, ?>>> curried = f.curried();
+        final CheckedFunction3<Object, Object, Object, Object> f = (o1, o2, o3) -> null;
+        final CheckedFunction1<Object, CheckedFunction1<Object, CheckedFunction1<Object, Object>>> curried = f.curried();
         assertThat(curried).isNotNull();
     }
 
     @Test
     public void shouldTuple() {
-        final CheckedFunction3 f = (t1, t2, t3) -> null;
-        @SuppressWarnings("unchecked")
-        final CheckedFunction1<Tuple3, ?> tupled = f.tupled();
+        final CheckedFunction3<Object, Object, Object, Object> f = (o1, o2, o3) -> null;
+        final CheckedFunction1<Tuple3<Object, Object, Object>, Object> tupled = f.tupled();
         assertThat(tupled).isNotNull();
     }
 
     @Test
     public void shouldReverse() {
-        final CheckedFunction3 f = (t1, t2, t3) -> null;
+        final CheckedFunction3<Object, Object, Object, Object> f = (o1, o2, o3) -> null;
         assertThat(f.reversed()).isNotNull();
     }
 
     @Test
     public void shouldComposeWithAndThen() {
-        final CheckedFunction3 f = (t1, t2, t3) -> null;
-        final Function after = o -> null;
-        @SuppressWarnings("unchecked")
-        final CheckedFunction3 composed = f.andThen(after);
+        final CheckedFunction3<Object, Object, Object, Object> f = (o1, o2, o3) -> null;
+        final Function<Object, Object> after = o -> null;
+        final CheckedFunction3<Object, Object, Object, Object> composed = f.andThen(after);
         assertThat(composed).isNotNull();
     }
 }

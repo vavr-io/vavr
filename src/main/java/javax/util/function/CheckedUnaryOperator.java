@@ -16,6 +16,8 @@ import javaslang.CheckedFunction1;
 @FunctionalInterface
 public interface CheckedUnaryOperator<T> extends CheckedFunction1<T, T> {
 
+    static final long serialVersionUID = 1L;
+
     static <T> CheckedUnaryOperator<T> identity() {
         return t -> t;
     }

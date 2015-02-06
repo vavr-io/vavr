@@ -276,7 +276,7 @@ def generateMainClasses(): Unit = {
                       }
 
                       @Override
-                      public CheckResult<$tuple_iType<$generics>> check($randomType random, int size, int tries) {
+                      public CheckResult check($randomType random, int size, int tries) {
                           try {
                               ${(1 to i).gen(j => {
                                   s"""final Gen<T$j> gen$j = $tryType.of(() -> a$j.apply(size)).recover(x -> { throw Errors.arbitraryError($j, size, x); }).get();"""
@@ -376,6 +376,8 @@ def generateMainClasses(): Unit = {
         xs"""
           @FunctionalInterface
           public interface $className<${(i > 0).gen(s"$generics, ")}R> extends λ<R>${additionalInterfaces(i, checked)} {
+
+              static final long serialVersionUID = 1L;
 
               ${(i == 1).gen(xs"""
               static <T> ${name}1<T, T> identity() {
@@ -575,7 +577,7 @@ def generateMainClasses(): Unit = {
                 } else if (!(o instanceof $className)) {
                     return false;
                 } else {
-                    final $className that = ($className) o;
+                    final $className<$untyped> that = ($className<$untyped>) o;
                     return ${(1 to i).gen(j => s"${im.getType("java.util.Objects")}.equals(this._$j, that._$j)")("\n                             && ")};
                 }
             }
@@ -612,6 +614,8 @@ def generateMainClasses(): Unit = {
 
       xs"""
         public interface $className extends ValueObject {
+
+            static final long serialVersionUID = 1L;
 
             /**
              * Returns the number of elements of this tuple.
@@ -653,17 +657,23 @@ def generateTestClasses(): Unit = {
 
       def genFunction(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
 
-        val functionArgs = (1 to i).gen(j => s"t$j")(", ")
+        val functionArgs = (1 to i).gen(j => s"o$j")(", ")
+        val generics = (1 to i + 1).gen(j => "Object")(", ")
 
         val test = im.getType("org.junit.Test")
         val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
 
         def curriedType(max: Int, function: String): String = {
-          def returnType(curr: Int, max: Int): String = {
-            val next = if (curr < max) returnType(curr + 1, max) else "?"
-            s"${function}1<?, $next>"
+          if (max == 0) {
+            s"${function}1<Void, Object>"
+          } else {
+            def returnType(curr: Int, max: Int): String = {
+              val isParam = curr < max
+              val next = if (isParam) returnType(curr + 1, max) else "Object"
+              s"${function}1<Object, $next>"
+            }
+            returnType(1, max)
           }
-          returnType(1, max)
         }
 
         xs"""
@@ -671,38 +681,35 @@ def generateTestClasses(): Unit = {
 
               @$test
               public void shouldGetArity() {
-                  final $name$i f = ($functionArgs) -> null;
+                  final $name$i<$generics> f = ($functionArgs) -> null;
                   $assertThat(f.arity()).isEqualTo($i);
               }
 
               @$test
               public void shouldCurry() {
-                  final $name$i f = ($functionArgs) -> null;
-                  @SuppressWarnings("unchecked")
+                  final $name$i<$generics> f = ($functionArgs) -> null;
                   final ${curriedType(i, name)} curried = f.curried();
                   $assertThat(curried).isNotNull();
               }
 
               @$test
               public void shouldTuple() {
-                  final $name$i f = ($functionArgs) -> null;
-                  @SuppressWarnings("unchecked")
-                  final ${name}1<Tuple$i, ?> tupled = f.tupled();
+                  final $name$i<$generics> f = ($functionArgs) -> null;
+                  final ${name}1<Tuple$i${(i > 0).gen(s"<${(1 to i).gen(j => "Object")(", ")}>")}, Object> tupled = f.tupled();
                   $assertThat(tupled).isNotNull();
               }
 
               @$test
               public void shouldReverse() {
-                  final $name$i f = ($functionArgs) -> null;
+                  final $name$i<$generics> f = ($functionArgs) -> null;
                   $assertThat(f.reversed()).isNotNull();
               }
 
               @$test
               public void shouldComposeWithAndThen() {
-                  final $name$i f = ($functionArgs) -> null;
-                  final ${im.getType("java.util.function.Function")} after = o -> null;
-                  @SuppressWarnings("unchecked")
-                  final $name$i composed = f.andThen(after);
+                  final $name$i<$generics> f = ($functionArgs) -> null;
+                  final ${im.getType("java.util.function.Function")}<Object, Object> after = o -> null;
+                  final $name$i<$generics> composed = f.andThen(after);
                   $assertThat(composed).isNotNull();
               }
           }
@@ -728,7 +735,10 @@ def generateTestClasses(): Unit = {
           case 2 => im.getType("java.util.function.BiFunction")
           case _ => s"Function$i"
         }
-        val functionArgTypes = (1 to i).gen(j => s"t$j")(", ")
+
+        val generics = (1 to i).gen(j => s"Object")(", ")
+        val genericsUnknown = (1 to i).gen(j => s"?")(", ")
+        val functionArgTypes = (1 to i).gen(j => s"o$j")(", ")
         val nullArgs = (1 to i).gen(j => "null")(", ")
 
         xs"""
@@ -736,44 +746,46 @@ def generateTestClasses(): Unit = {
 
               @$test
               public void shouldCreateTuple() {
-                  final Tuple$i tuple = createTuple();
+                  final Tuple$i<$generics> tuple = createTuple();
                   $assertThat(tuple).isNotNull();
               }
 
               @$test
               public void shouldGetArity() {
-                  final Tuple$i tuple = createTuple();
+                  final Tuple$i<$generics> tuple = createTuple();
                   $assertThat(tuple.arity()).isEqualTo($i);
               }
 
               @$test
               public void shouldFlatMap() {
-                  final Tuple$i tuple = createTuple();
-                  final $functionType mapper = ${s"($functionArgTypes)"} -> tuple;
-                  @SuppressWarnings("unchecked")
-                  final Tuple$i actual = tuple.flatMap(mapper);
+                  final Tuple$i<$generics> tuple = createTuple();
+                  final $functionType<$generics, Tuple$i<$generics>> mapper = ${s"($functionArgTypes)"} -> tuple;
+                  final Tuple$i<$generics> actual = tuple.flatMap(mapper);
                   $assertThat(actual).isEqualTo(tuple);
               }
 
               @$test
               public void shouldMap() {
-                  final Tuple$i tuple = createTuple();
-                  final $functionType mapper = ${s"($functionArgTypes)"} -> ${if (i == 1) "t1" else "tuple"};
-                  @SuppressWarnings("unchecked")
-                  final Tuple$i actual = tuple.map(mapper);
+                  final Tuple$i<$generics> tuple = createTuple();
+                  ${if (i == 1) {
+                    s"final $functionType<$generics, Object> mapper = $functionArgTypes -> o1;"
+                  } else {
+                    s"final $functionType<$generics, Tuple$i<$genericsUnknown>> mapper = ($functionArgTypes) -> tuple;"
+                  }}
+                  final Tuple$i<$generics> actual = tuple.map(mapper);
                   $assertThat(actual).isEqualTo(tuple);
               }
 
               @$test
               public void shouldUnapply() {
-                  final Tuple$i tuple = createTuple();
+                  final Tuple$i<$generics> tuple = createTuple();
                   $assertThat(tuple.unapply()).isEqualTo(tuple);
               }
 
               @$test
               public void shouldCompareViaEquals() {
-                  final Tuple$i tuple1 = createTuple();
-                  final Tuple$i tuple2 = createTuple();
+                  final Tuple$i<$generics> tuple1 = createTuple();
+                  final Tuple$i<$generics> tuple2 = createTuple();
                   $assertThat(tuple1).isEqualTo(tuple2);
               }
 
@@ -791,7 +803,7 @@ def generateTestClasses(): Unit = {
                   $assertThat(actual).isEqualTo(expected);
               }
 
-              private Tuple$i createTuple() {
+              private Tuple$i<$generics> createTuple() {
                   return new Tuple$i<>($nullArgs);
               }
           }

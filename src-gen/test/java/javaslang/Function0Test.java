@@ -18,38 +18,35 @@ public class Function0Test {
 
     @Test
     public void shouldGetArity() {
-        final Function0 f = () -> null;
+        final Function0<Object> f = () -> null;
         assertThat(f.arity()).isEqualTo(0);
     }
 
     @Test
     public void shouldCurry() {
-        final Function0 f = () -> null;
-        @SuppressWarnings("unchecked")
-        final Function1<?, ?> curried = f.curried();
+        final Function0<Object> f = () -> null;
+        final Function1<Void, Object> curried = f.curried();
         assertThat(curried).isNotNull();
     }
 
     @Test
     public void shouldTuple() {
-        final Function0 f = () -> null;
-        @SuppressWarnings("unchecked")
-        final Function1<Tuple0, ?> tupled = f.tupled();
+        final Function0<Object> f = () -> null;
+        final Function1<Tuple0, Object> tupled = f.tupled();
         assertThat(tupled).isNotNull();
     }
 
     @Test
     public void shouldReverse() {
-        final Function0 f = () -> null;
+        final Function0<Object> f = () -> null;
         assertThat(f.reversed()).isNotNull();
     }
 
     @Test
     public void shouldComposeWithAndThen() {
-        final Function0 f = () -> null;
-        final Function after = o -> null;
-        @SuppressWarnings("unchecked")
-        final Function0 composed = f.andThen(after);
+        final Function0<Object> f = () -> null;
+        final Function<Object, Object> after = o -> null;
+        final Function0<Object> composed = f.andThen(after);
         assertThat(composed).isNotNull();
     }
 }

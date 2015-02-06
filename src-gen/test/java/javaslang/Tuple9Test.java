@@ -18,44 +18,42 @@ public class Tuple9Test {
 
     @Test
     public void shouldCreateTuple() {
-        final Tuple9 tuple = createTuple();
+        final Tuple9<Object, Object, Object, Object, Object, Object, Object, Object, Object> tuple = createTuple();
         assertThat(tuple).isNotNull();
     }
 
     @Test
     public void shouldGetArity() {
-        final Tuple9 tuple = createTuple();
+        final Tuple9<Object, Object, Object, Object, Object, Object, Object, Object, Object> tuple = createTuple();
         assertThat(tuple.arity()).isEqualTo(9);
     }
 
     @Test
     public void shouldFlatMap() {
-        final Tuple9 tuple = createTuple();
-        final Function9 mapper = (t1, t2, t3, t4, t5, t6, t7, t8, t9) -> tuple;
-        @SuppressWarnings("unchecked")
-        final Tuple9 actual = tuple.flatMap(mapper);
+        final Tuple9<Object, Object, Object, Object, Object, Object, Object, Object, Object> tuple = createTuple();
+        final Function9<Object, Object, Object, Object, Object, Object, Object, Object, Object, Tuple9<Object, Object, Object, Object, Object, Object, Object, Object, Object>> mapper = (o1, o2, o3, o4, o5, o6, o7, o8, o9) -> tuple;
+        final Tuple9<Object, Object, Object, Object, Object, Object, Object, Object, Object> actual = tuple.flatMap(mapper);
         assertThat(actual).isEqualTo(tuple);
     }
 
     @Test
     public void shouldMap() {
-        final Tuple9 tuple = createTuple();
-        final Function9 mapper = (t1, t2, t3, t4, t5, t6, t7, t8, t9) -> tuple;
-        @SuppressWarnings("unchecked")
-        final Tuple9 actual = tuple.map(mapper);
+        final Tuple9<Object, Object, Object, Object, Object, Object, Object, Object, Object> tuple = createTuple();
+        final Function9<Object, Object, Object, Object, Object, Object, Object, Object, Object, Tuple9<?, ?, ?, ?, ?, ?, ?, ?, ?>> mapper = (o1, o2, o3, o4, o5, o6, o7, o8, o9) -> tuple;
+        final Tuple9<Object, Object, Object, Object, Object, Object, Object, Object, Object> actual = tuple.map(mapper);
         assertThat(actual).isEqualTo(tuple);
     }
 
     @Test
     public void shouldUnapply() {
-        final Tuple9 tuple = createTuple();
+        final Tuple9<Object, Object, Object, Object, Object, Object, Object, Object, Object> tuple = createTuple();
         assertThat(tuple.unapply()).isEqualTo(tuple);
     }
 
     @Test
     public void shouldCompareViaEquals() {
-        final Tuple9 tuple1 = createTuple();
-        final Tuple9 tuple2 = createTuple();
+        final Tuple9<Object, Object, Object, Object, Object, Object, Object, Object, Object> tuple1 = createTuple();
+        final Tuple9<Object, Object, Object, Object, Object, Object, Object, Object, Object> tuple2 = createTuple();
         assertThat(tuple1).isEqualTo(tuple2);
     }
 
@@ -73,7 +71,7 @@ public class Tuple9Test {
         assertThat(actual).isEqualTo(expected);
     }
 
-    private Tuple9 createTuple() {
+    private Tuple9<Object, Object, Object, Object, Object, Object, Object, Object, Object> createTuple() {
         return new Tuple9<>(null, null, null, null, null, null, null, null, null);
     }
 }

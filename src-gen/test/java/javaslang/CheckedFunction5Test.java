@@ -18,38 +18,35 @@ public class CheckedFunction5Test {
 
     @Test
     public void shouldGetArity() {
-        final CheckedFunction5 f = (t1, t2, t3, t4, t5) -> null;
+        final CheckedFunction5<Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5) -> null;
         assertThat(f.arity()).isEqualTo(5);
     }
 
     @Test
     public void shouldCurry() {
-        final CheckedFunction5 f = (t1, t2, t3, t4, t5) -> null;
-        @SuppressWarnings("unchecked")
-        final CheckedFunction1<?, CheckedFunction1<?, CheckedFunction1<?, CheckedFunction1<?, CheckedFunction1<?, ?>>>>> curried = f.curried();
+        final CheckedFunction5<Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5) -> null;
+        final CheckedFunction1<Object, CheckedFunction1<Object, CheckedFunction1<Object, CheckedFunction1<Object, CheckedFunction1<Object, Object>>>>> curried = f.curried();
         assertThat(curried).isNotNull();
     }
 
     @Test
     public void shouldTuple() {
-        final CheckedFunction5 f = (t1, t2, t3, t4, t5) -> null;
-        @SuppressWarnings("unchecked")
-        final CheckedFunction1<Tuple5, ?> tupled = f.tupled();
+        final CheckedFunction5<Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5) -> null;
+        final CheckedFunction1<Tuple5<Object, Object, Object, Object, Object>, Object> tupled = f.tupled();
         assertThat(tupled).isNotNull();
     }
 
     @Test
     public void shouldReverse() {
-        final CheckedFunction5 f = (t1, t2, t3, t4, t5) -> null;
+        final CheckedFunction5<Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5) -> null;
         assertThat(f.reversed()).isNotNull();
     }
 
     @Test
     public void shouldComposeWithAndThen() {
-        final CheckedFunction5 f = (t1, t2, t3, t4, t5) -> null;
-        final Function after = o -> null;
-        @SuppressWarnings("unchecked")
-        final CheckedFunction5 composed = f.andThen(after);
+        final CheckedFunction5<Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5) -> null;
+        final Function<Object, Object> after = o -> null;
+        final CheckedFunction5<Object, Object, Object, Object, Object, Object> composed = f.andThen(after);
         assertThat(composed).isNotNull();
     }
 }

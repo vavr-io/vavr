@@ -16,6 +16,8 @@ import java.util.function.Supplier;
 @FunctionalInterface
 public interface Function0<R> extends λ<R>, Supplier<R> {
 
+    static final long serialVersionUID = 1L;
+
     R apply();
 
     @Override

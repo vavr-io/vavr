@@ -17,6 +17,8 @@ import java.util.Objects;
 @FunctionalInterface
 public interface CheckedConsumer<T> extends Serializable {
 
+    static final long serialVersionUID = 1L;
+
     void accept(T t) throws Throwable;
 
     default CheckedConsumer<T> andThen(CheckedConsumer<? super T> after) {

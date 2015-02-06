@@ -51,6 +51,6 @@ final class Valences {
         Option<T> toOption();
 
         // order of generic parameters may vary (see Either.LeftProjection, Either.RightProjection)
-        Either toEither();
+        Either<?, ?> toEither();
     }
 }

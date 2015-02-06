@@ -18,38 +18,35 @@ public class CheckedFunction2Test {
 
     @Test
     public void shouldGetArity() {
-        final CheckedFunction2 f = (t1, t2) -> null;
+        final CheckedFunction2<Object, Object, Object> f = (o1, o2) -> null;
         assertThat(f.arity()).isEqualTo(2);
     }
 
     @Test
     public void shouldCurry() {
-        final CheckedFunction2 f = (t1, t2) -> null;
-        @SuppressWarnings("unchecked")
-        final CheckedFunction1<?, CheckedFunction1<?, ?>> curried = f.curried();
+        final CheckedFunction2<Object, Object, Object> f = (o1, o2) -> null;
+        final CheckedFunction1<Object, CheckedFunction1<Object, Object>> curried = f.curried();
         assertThat(curried).isNotNull();
     }
 
     @Test
     public void shouldTuple() {
-        final CheckedFunction2 f = (t1, t2) -> null;
-        @SuppressWarnings("unchecked")
-        final CheckedFunction1<Tuple2, ?> tupled = f.tupled();
+        final CheckedFunction2<Object, Object, Object> f = (o1, o2) -> null;
+        final CheckedFunction1<Tuple2<Object, Object>, Object> tupled = f.tupled();
         assertThat(tupled).isNotNull();
     }
 
     @Test
     public void shouldReverse() {
-        final CheckedFunction2 f = (t1, t2) -> null;
+        final CheckedFunction2<Object, Object, Object> f = (o1, o2) -> null;
         assertThat(f.reversed()).isNotNull();
     }
 
     @Test
     public void shouldComposeWithAndThen() {
-        final CheckedFunction2 f = (t1, t2) -> null;
-        final Function after = o -> null;
-        @SuppressWarnings("unchecked")
-        final CheckedFunction2 composed = f.andThen(after);
+        final CheckedFunction2<Object, Object, Object> f = (o1, o2) -> null;
+        final Function<Object, Object> after = o -> null;
+        final CheckedFunction2<Object, Object, Object> composed = f.andThen(after);
         assertThat(composed).isNotNull();
     }
 }

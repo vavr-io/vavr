@@ -74,6 +74,7 @@ public final class Match<R> implements Function1<Object, R> {
 	 * @param function A function which is applied to a matched object.
 	 * @return A Match of type T
 	 */
+    @SuppressWarnings("overloads")
 	public static <R> Match.Builder<R> caze(Function1<?, R> function) {
 		return new Match.Builder<R>().caze(function);
 	}
@@ -91,34 +92,42 @@ public final class Match<R> implements Function1<Object, R> {
 		return new Match.Builder<R>().caze(prototype, function);
 	}
 
+    @SuppressWarnings("overloads")
 	public static <R> Match.Builder<R> caze(BooleanFunction<R> function) {
 		return new Match.Builder<R>().caze(function);
 	}
 
+    @SuppressWarnings("overloads")
 	public static <R> Match.Builder<R> caze(ByteFunction<R> function) {
 		return new Match.Builder<R>().caze(function);
 	}
 
+    @SuppressWarnings("overloads")
 	public static <R> Match.Builder<R> caze(CharFunction<R> function) {
 		return new Match.Builder<R>().caze(function);
 	}
 
+    @SuppressWarnings("overloads")
 	public static <R> Match.Builder<R> caze(DoubleFunction<R> function) {
 		return new Match.Builder<R>().caze(function);
 	}
 
+    @SuppressWarnings("overloads")
 	public static <R> Match.Builder<R> caze(FloatFunction<R> function) {
 		return new Match.Builder<R>().caze(function);
 	}
 
+    @SuppressWarnings("overloads")
 	public static <R> Match.Builder<R> caze(IntFunction<R> function) {
 		return new Match.Builder<R>().caze(function);
 	}
 
+    @SuppressWarnings("overloads")
 	public static <R> Match.Builder<R> caze(LongFunction<R> function) {
 		return new Match.Builder<R>().caze(function);
 	}
 
+    @SuppressWarnings("overloads")
 	public static <R> Match.Builder<R> caze(ShortFunction<R> function) {
 		return new Match.Builder<R>().caze(function);
 	}
@@ -156,6 +165,7 @@ public final class Match<R> implements Function1<Object, R> {
 		 * @return this, the current instance of Match.
 		 * @throws NullPointerException if function is null.
 		 */
+        @SuppressWarnings("overloads")
 		public Builder<R> caze(Function1<?, R> function) {
 			Objects.requireNonNull(function, "function is null");
 			cases.add(caze(None.instance(), function));
@@ -198,6 +208,7 @@ public final class Match<R> implements Function1<Object, R> {
 		 * @return this, the current instance of Match.
 		 * @throws NullPointerException if function is null.
 		 */
+        @SuppressWarnings("overloads")
 		public Builder<R> caze(BooleanFunction<R> function) {
 			Objects.requireNonNull(function, "function is null");
             //noinspection Convert2MethodRef
@@ -213,6 +224,7 @@ public final class Match<R> implements Function1<Object, R> {
 		 * @return this, the current instance of Match.
 		 * @throws NullPointerException if function is null.
 		 */
+        @SuppressWarnings("overloads")
 		public Builder<R> caze(ByteFunction<R> function) {
 			Objects.requireNonNull(function, "function is null");
             //noinspection Convert2MethodRef
@@ -228,6 +240,7 @@ public final class Match<R> implements Function1<Object, R> {
 		 * @return this, the current instance of Match.
 		 * @throws NullPointerException if function is null.
 		 */
+        @SuppressWarnings("overloads")
 		public Builder<R> caze(CharFunction<R> function) {
 			Objects.requireNonNull(function, "function is null");
             //noinspection Convert2MethodRef
@@ -243,6 +256,7 @@ public final class Match<R> implements Function1<Object, R> {
 		 * @return this, the current instance of Match.
 		 * @throws NullPointerException if function is null.
 		 */
+        @SuppressWarnings("overloads")
 		public Builder<R> caze(DoubleFunction<R> function) {
 			Objects.requireNonNull(function, "function is null");
             //noinspection Convert2MethodRef
@@ -258,6 +272,7 @@ public final class Match<R> implements Function1<Object, R> {
 		 * @return this, the current instance of Match.
 		 * @throws NullPointerException if function is null.
 		 */
+        @SuppressWarnings("overloads")
 		public Builder<R> caze(FloatFunction<R> function) {
 			Objects.requireNonNull(function, "function is null");
             //noinspection Convert2MethodRef
@@ -273,6 +288,7 @@ public final class Match<R> implements Function1<Object, R> {
 		 * @return this, the current instance of Match.
 		 * @throws NullPointerException if function is null.
 		 */
+        @SuppressWarnings("overloads")
 		public Builder<R> caze(IntFunction<R> function) {
 			Objects.requireNonNull(function, "function is null");
             //noinspection Convert2MethodRef
@@ -288,6 +304,7 @@ public final class Match<R> implements Function1<Object, R> {
 		 * @return this, the current instance of Match.
 		 * @throws NullPointerException if function is null.
 		 */
+        @SuppressWarnings("overloads")
 		public Builder<R> caze(LongFunction<R> function) {
 			Objects.requireNonNull(function, "function is null");
             //noinspection Convert2MethodRef
@@ -303,6 +320,7 @@ public final class Match<R> implements Function1<Object, R> {
 		 * @return this, the current instance of Match.
 		 * @throws NullPointerException if function is null.
 		 */
+        @SuppressWarnings("overloads")
 		public Builder<R> caze(ShortFunction<R> function) {
 			Objects.requireNonNull(function, "function is null");
             //noinspection Convert2MethodRef

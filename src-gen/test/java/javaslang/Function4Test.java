@@ -18,38 +18,35 @@ public class Function4Test {
 
     @Test
     public void shouldGetArity() {
-        final Function4 f = (t1, t2, t3, t4) -> null;
+        final Function4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
         assertThat(f.arity()).isEqualTo(4);
     }
 
     @Test
     public void shouldCurry() {
-        final Function4 f = (t1, t2, t3, t4) -> null;
-        @SuppressWarnings("unchecked")
-        final Function1<?, Function1<?, Function1<?, Function1<?, ?>>>> curried = f.curried();
+        final Function4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
+        final Function1<Object, Function1<Object, Function1<Object, Function1<Object, Object>>>> curried = f.curried();
         assertThat(curried).isNotNull();
     }
 
     @Test
     public void shouldTuple() {
-        final Function4 f = (t1, t2, t3, t4) -> null;
-        @SuppressWarnings("unchecked")
-        final Function1<Tuple4, ?> tupled = f.tupled();
+        final Function4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
+        final Function1<Tuple4<Object, Object, Object, Object>, Object> tupled = f.tupled();
         assertThat(tupled).isNotNull();
     }
 
     @Test
     public void shouldReverse() {
-        final Function4 f = (t1, t2, t3, t4) -> null;
+        final Function4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
         assertThat(f.reversed()).isNotNull();
     }
 
     @Test
     public void shouldComposeWithAndThen() {
-        final Function4 f = (t1, t2, t3, t4) -> null;
-        final Function after = o -> null;
-        @SuppressWarnings("unchecked")
-        final Function4 composed = f.andThen(after);
+        final Function4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
+        final Function<Object, Object> after = o -> null;
+        final Function4<Object, Object, Object, Object, Object> composed = f.andThen(after);
         assertThat(composed).isNotNull();
     }
 }

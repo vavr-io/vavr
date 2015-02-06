@@ -15,6 +15,8 @@ import java.util.Objects;
 @FunctionalInterface
 public interface CheckedIntPredicate extends Serializable {
 
+    static final long serialVersionUID = 1L;
+
     boolean test(int value) throws Throwable;
 
     default CheckedIntPredicate and(CheckedIntPredicate other) {

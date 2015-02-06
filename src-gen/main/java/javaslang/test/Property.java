@@ -1210,7 +1210,7 @@ public interface Property {
         }
 
         @Override
-        public CheckResult<Tuple1<T1>> check(Random random, int size, int tries) {
+        public CheckResult check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 boolean exhausted = true;
@@ -1265,7 +1265,7 @@ public interface Property {
         }
 
         @Override
-        public CheckResult<Tuple2<T1, T2>> check(Random random, int size, int tries) {
+        public CheckResult check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -1324,7 +1324,7 @@ public interface Property {
         }
 
         @Override
-        public CheckResult<Tuple3<T1, T2, T3>> check(Random random, int size, int tries) {
+        public CheckResult check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -1387,7 +1387,7 @@ public interface Property {
         }
 
         @Override
-        public CheckResult<Tuple4<T1, T2, T3, T4>> check(Random random, int size, int tries) {
+        public CheckResult check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -1454,7 +1454,7 @@ public interface Property {
         }
 
         @Override
-        public CheckResult<Tuple5<T1, T2, T3, T4, T5>> check(Random random, int size, int tries) {
+        public CheckResult check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -1525,7 +1525,7 @@ public interface Property {
         }
 
         @Override
-        public CheckResult<Tuple6<T1, T2, T3, T4, T5, T6>> check(Random random, int size, int tries) {
+        public CheckResult check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -1600,7 +1600,7 @@ public interface Property {
         }
 
         @Override
-        public CheckResult<Tuple7<T1, T2, T3, T4, T5, T6, T7>> check(Random random, int size, int tries) {
+        public CheckResult check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -1679,7 +1679,7 @@ public interface Property {
         }
 
         @Override
-        public CheckResult<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> check(Random random, int size, int tries) {
+        public CheckResult check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -1762,7 +1762,7 @@ public interface Property {
         }
 
         @Override
-        public CheckResult<Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9>> check(Random random, int size, int tries) {
+        public CheckResult check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -1849,7 +1849,7 @@ public interface Property {
         }
 
         @Override
-        public CheckResult<Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>> check(Random random, int size, int tries) {
+        public CheckResult check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -1940,7 +1940,7 @@ public interface Property {
         }
 
         @Override
-        public CheckResult<Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>> check(Random random, int size, int tries) {
+        public CheckResult check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -2035,7 +2035,7 @@ public interface Property {
         }
 
         @Override
-        public CheckResult<Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>> check(Random random, int size, int tries) {
+        public CheckResult check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -2134,7 +2134,7 @@ public interface Property {
         }
 
         @Override
-        public CheckResult<Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>> check(Random random, int size, int tries) {
+        public CheckResult check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -2237,7 +2237,7 @@ public interface Property {
         }
 
         @Override
-        public CheckResult<Tuple14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>> check(Random random, int size, int tries) {
+        public CheckResult check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -2344,7 +2344,7 @@ public interface Property {
         }
 
         @Override
-        public CheckResult<Tuple15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>> check(Random random, int size, int tries) {
+        public CheckResult check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -2455,7 +2455,7 @@ public interface Property {
         }
 
         @Override
-        public CheckResult<Tuple16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>> check(Random random, int size, int tries) {
+        public CheckResult check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -2570,7 +2570,7 @@ public interface Property {
         }
 
         @Override
-        public CheckResult<Tuple17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>> check(Random random, int size, int tries) {
+        public CheckResult check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -2689,7 +2689,7 @@ public interface Property {
         }
 
         @Override
-        public CheckResult<Tuple18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>> check(Random random, int size, int tries) {
+        public CheckResult check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -2812,7 +2812,7 @@ public interface Property {
         }
 
         @Override
-        public CheckResult<Tuple19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>> check(Random random, int size, int tries) {
+        public CheckResult check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -2939,7 +2939,7 @@ public interface Property {
         }
 
         @Override
-        public CheckResult<Tuple20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>> check(Random random, int size, int tries) {
+        public CheckResult check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -3070,7 +3070,7 @@ public interface Property {
         }
 
         @Override
-        public CheckResult<Tuple21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>> check(Random random, int size, int tries) {
+        public CheckResult check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -3205,7 +3205,7 @@ public interface Property {
         }
 
         @Override
-        public CheckResult<Tuple22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>> check(Random random, int size, int tries) {
+        public CheckResult check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -3344,7 +3344,7 @@ public interface Property {
         }
 
         @Override
-        public CheckResult<Tuple23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>> check(Random random, int size, int tries) {
+        public CheckResult check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -3487,7 +3487,7 @@ public interface Property {
         }
 
         @Override
-        public CheckResult<Tuple24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>> check(Random random, int size, int tries) {
+        public CheckResult check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -3634,7 +3634,7 @@ public interface Property {
         }
 
         @Override
-        public CheckResult<Tuple25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>> check(Random random, int size, int tries) {
+        public CheckResult check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -3785,7 +3785,7 @@ public interface Property {
         }
 
         @Override
-        public CheckResult<Tuple26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>> check(Random random, int size, int tries) {
+        public CheckResult check(Random random, int size, int tries) {
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();

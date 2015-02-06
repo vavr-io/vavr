@@ -15,6 +15,8 @@ import java.util.function.Function;
 @FunctionalInterface
 public interface CheckedFunction0<R> extends λ<R> {
 
+    static final long serialVersionUID = 1L;
+
     R apply() throws Throwable;
 
     @Override

@@ -15,6 +15,8 @@ import java.util.Objects;
 @FunctionalInterface
 public interface CheckedDoubleConsumer extends Serializable {
 
+    static final long serialVersionUID = 1L;
+
     void accept(double value) throws Throwable;
 
     default CheckedDoubleConsumer andThen(CheckedDoubleConsumer after) {
