@@ -9,6 +9,7 @@ import Generator._, JavaGenerator._
 val N = 26
 val TARGET_MAIN = "src-gen/main/java"
 val TARGET_TEST = "src-gen/test/java"
+val CHARSET = java.nio.charset.StandardCharsets.UTF_8
 
 /**
  * ENTRY POINT
@@ -17,21 +18,6 @@ def run(): Unit = {
   generateMainClasses()
   generateTestClasses()
 }
-
-/**
- * Adds the Javaslang header to generated classes.
- * @param packageName Java package name
- * @param className Simple java class name
- * @param gen A generator which produces a String.
- */
-def genJavaslangFile(packageName: String, className: String, baseDir: String = TARGET_MAIN)(gen: (ImportManager, String, String) => String, knownSimpleClassNames: List[String] = List()) =
-  genJavaFile(baseDir, packageName, className)(xraw"""
-      /**    / \____  _    ______   _____ / \____   ____  _____
-       *    /  \__  \/ \  / \__  \ /  __//  \__  \ /    \/ __  \   Javaslang
-       *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014-2015 Daniel Dietrich
-       * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
-       */
-    """)(gen)//(StandardCharsets.UTF_8)
 
 /**
  * Generate Javaslang src-gen/main/java classes
@@ -156,6 +142,8 @@ def generateMainClasses(): Unit = {
    * Generator of javaslang.test.Property
    */
   def genPropertyChecks(): Unit = {
+
+    genJavaslangFile("javaslang.test", "Property")(genProperty)
 
     def genProperty(im: ImportManager, packageName: String, className: String): String = xs"""
       @FunctionalInterface
@@ -340,8 +328,6 @@ def generateMainClasses(): Unit = {
           }
       }
     """
-
-    genJavaslangFile("javaslang.test", "Property")(genProperty)
   }
 
   /**
@@ -350,6 +336,9 @@ def generateMainClasses(): Unit = {
   def genFunctions(): Unit = {
 
     (0 to N).foreach(i => {
+
+      genJavaslangFile("javaslang", s"CheckedFunction$i")(genFunction("CheckedFunction", checked = true))
+      genJavaslangFile("javaslang", s"Function$i")(genFunction("Function", checked = false))
 
       def genFunction(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
 
@@ -436,9 +425,6 @@ def generateMainClasses(): Unit = {
           }
         """
       }
-
-      genJavaslangFile("javaslang", s"CheckedFunction$i")(genFunction("CheckedFunction", checked = true))
-      genJavaslangFile("javaslang", s"Function$i")(genFunction("Function", checked = false))
     })
   }
 
@@ -446,6 +432,13 @@ def generateMainClasses(): Unit = {
    * Generator of javaslang.Tuple*
    */
   def genTuples(): Unit = {
+
+    genJavaslangFile("javaslang", "Tuple")(genBaseTuple)
+    genJavaslangFile("javaslang", "Tuple0")(genTuple0)
+
+    (1 to N).foreach { i =>
+      genJavaslangFile("javaslang", s"Tuple$i")(genTuple(i))
+    }
 
     /*
      * Generates Tuple0
@@ -636,13 +629,6 @@ def generateMainClasses(): Unit = {
         }
       """
     }
-
-    genJavaslangFile("javaslang", "Tuple")(genBaseTuple)
-    genJavaslangFile("javaslang", "Tuple0")(genTuple0)
-
-    (1 to N).foreach { i =>
-      genJavaslangFile("javaslang", s"Tuple$i")(genTuple(i))
-    }
   }
 }
 
@@ -652,17 +638,21 @@ def generateMainClasses(): Unit = {
 def generateTestClasses(): Unit = {
 
   genFunctionTests()
+  genTupleTests()
 
   /**
-   * Generator of Functions
+   * Generator of Function tests
    */
   def genFunctionTests(): Unit = {
 
     (0 to N).foreach(i => {
 
+      genJavaslangFile("javaslang", s"CheckedFunction${i}Test", baseDir = TARGET_TEST)(genFunction("CheckedFunction", checked = true))
+      genJavaslangFile("javaslang", s"Function${i}Test", baseDir = TARGET_TEST)(genFunction("Function", checked = false))
+
       def genFunction(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
 
-        val functionArgs =  (1 to i).gen(j => s"t$j")(", ")
+        val functionArgs = (1 to i).gen(j => s"t$j")(", ")
 
         val test = im.getType("org.junit.Test")
         val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
@@ -717,12 +707,113 @@ def generateTestClasses(): Unit = {
           }
         """
       }
+    })
+  }
 
-      genJavaslangFile("javaslang", s"CheckedFunction${i}Test", baseDir = TARGET_TEST)(genFunction("CheckedFunction", checked = true))
-      genJavaslangFile("javaslang", s"Function${i}Test", baseDir = TARGET_TEST)(genFunction("Function", checked = false))
+  /**
+   * Generator of Tuple tests
+   */
+  def genTupleTests(): Unit = {
+
+    (1 to N).foreach(i => {
+
+      genJavaslangFile("javaslang", s"Tuple${i}Test", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
+
+        val test = im.getType("org.junit.Test")
+        val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
+
+        val functionType = i match {
+          case 1 => im.getType("java.util.function.Function")
+          case 2 => im.getType("java.util.function.BiFunction")
+          case _ => s"Function$i"
+        }
+        val functionArgTypes = (1 to i).gen(j => s"t$j")(", ")
+        val nullArgs = (1 to i).gen(j => "null")(", ")
+
+        xs"""
+          public class Tuple${i}Test {
+
+              @$test
+              public void shouldCreateTuple() {
+                  final Tuple$i tuple = createTuple();
+                  $assertThat(tuple).isNotNull();
+              }
+
+              @$test
+              public void shouldGetArity() {
+                  final Tuple$i tuple = createTuple();
+                  $assertThat(tuple.arity()).isEqualTo($i);
+              }
+
+              @$test
+              public void shouldFlatMap() {
+                  final Tuple$i tuple = createTuple();
+                  final $functionType mapper = ${s"($functionArgTypes)"} -> tuple;
+                  @SuppressWarnings("unchecked")
+                  final Tuple$i actual = tuple.flatMap(mapper);
+                  $assertThat(actual).isEqualTo(tuple);
+              }
+
+              @$test
+              public void shouldMap() {
+                  final Tuple$i tuple = createTuple();
+                  final $functionType mapper = ${s"($functionArgTypes)"} -> tuple;
+                  @SuppressWarnings("unchecked")
+                  final Tuple$i actual = tuple.flatMap(mapper);
+                  $assertThat(actual).isEqualTo(tuple);
+              }
+
+              @$test
+              public void shouldUnapply() {
+                  final Tuple$i tuple = createTuple();
+                  $assertThat(tuple.unapply()).isEqualTo(tuple);
+              }
+
+              @$test
+              public void shouldCompareViaEquals() {
+                  final Tuple$i tuple1 = createTuple();
+                  final Tuple$i tuple2 = createTuple();
+                  $assertThat(tuple1).isEqualTo(tuple2);
+              }
+
+              @$test
+              public void shouldComputeCorrectHashCode() {
+                  final int actual = createTuple().hashCode();
+                  final int expected = ${im.getType("java.util.Objects")}.hash(${if (i == 1) "new Object[] { null }" else nullArgs});
+                  $assertThat(actual).isEqualTo(expected);
+              }
+
+              @$test
+              public void shouldImplementToString() {
+                  final String actual = createTuple().toString();
+                  final String expected = "($nullArgs)";
+                  $assertThat(actual).isEqualTo(expected);
+              }
+
+              private Tuple$i createTuple() {
+                  return new Tuple$i<>($nullArgs);
+              }
+          }
+        """
+      })
     })
   }
 }
+
+/**
+ * Adds the Javaslang header to generated classes.
+ * @param packageName Java package name
+ * @param className Simple java class name
+ * @param gen A generator which produces a String.
+ */
+def genJavaslangFile(packageName: String, className: String, baseDir: String = TARGET_MAIN)(gen: (ImportManager, String, String) => String, knownSimpleClassNames: List[String] = List()) =
+  genJavaFile(baseDir, packageName, className)(xraw"""
+      /**    / \____  _    ______   _____ / \____   ____  _____
+       *    /  \__  \/ \  / \__  \ /  __//  \__  \ /    \/ __  \   Javaslang
+       *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014-2015 Daniel Dietrich
+       * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
+       */
+    """)(gen)(CHARSET)
 
 /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*\
      J A V A   G E N E R A T O R   F R A M E W O R K
@@ -764,7 +855,7 @@ object JavaGenerator {
   }
 
   /**
-   * An ImportManager which generates an import section of a Java class file.
+   * A <em>stateful</em> ImportManager which generates an import section of a Java class file.
    * @param packageNameOfClass package name of the generated class
    * @param knownSimpleClassNames a list of class names which may not be imported from other packages
    */
@@ -779,8 +870,19 @@ object JavaGenerator {
 
     def getStatic(fullQualifiedName: String): String = simplify(fullQualifiedName, staticImports)
 
-    private def getPackageName(fqn: String): String = fqn.substring(0, Math.max(fqn.lastIndexOf("."), 0))
-    private def getSimpleName(fqn: String): String = fqn.substring(fqn.lastIndexOf(".") + 1)
+    def getImports: String = {
+
+      def optimizeImports(imports: Seq[String], static: Boolean): String = {
+        val counts = imports.map(getPackageName).groupBy(s => s).map { case (s, list) => s -> list.length }
+        val directImports = imports.filter(s => counts(getPackageName(s)) <= wildcardThreshold)
+        val wildcardImports = counts.filter { case (_, count) => count > wildcardThreshold }.keySet.toIndexedSeq.map(s => s"$s.*")
+        (directImports ++ wildcardImports).sorted.map(fqn => s"import ${static.gen("static ")}$fqn;").mkString("\n")
+      }
+
+      val staticImportSection = optimizeImports(staticImports.keySet.toIndexedSeq, static = true)
+      val nonStaticImportSection = optimizeImports(nonStaticImports.keySet.toIndexedSeq, static = false)
+      Seq(staticImportSection, nonStaticImportSection).mkString("\n\n")
+    }
 
     private def simplify(fullQualifiedName: String, imports: mutable.HashMap[String, String]): String = {
       val simpleName = getSimpleName(fullQualifiedName)
@@ -799,19 +901,8 @@ object JavaGenerator {
       }
     }
 
-    def getImports: String = {
-
-      def optimizeImports(imports: Seq[String], static: Boolean): String = {
-        val counts = imports.map(getPackageName).groupBy(s => s).map { case (s, list) => s -> list.length }
-        val directImports = imports.filter(s => counts(getPackageName(s)) <= wildcardThreshold)
-        val wildcardImports = counts.filter { case (_, count) => count >wildcardThreshold }.keySet.toIndexedSeq.map(s => s"$s.*")
-        (directImports ++ wildcardImports).sorted.map(fqn => s"import ${static.gen("static ")}$fqn;").mkString("\n")
-      }
-
-      val staticImportSection = optimizeImports(staticImports.keySet.toIndexedSeq, static = true)
-      val nonStaticImportSection = optimizeImports(nonStaticImports.keySet.toIndexedSeq, static = false)
-      Seq(staticImportSection, nonStaticImportSection).mkString("\n\n")
-    }
+    private def getPackageName(fqn: String): String = fqn.substring(0, Math.max(fqn.lastIndexOf("."), 0))
+    private def getSimpleName(fqn: String): String = fqn.substring(fqn.lastIndexOf(".") + 1)
   }
 }
 
