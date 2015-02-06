@@ -42,7 +42,7 @@ public class Tuple8Test {
         final Tuple8 tuple = createTuple();
         final Function8 mapper = (t1, t2, t3, t4, t5, t6, t7, t8) -> tuple;
         @SuppressWarnings("unchecked")
-        final Tuple8 actual = tuple.flatMap(mapper);
+        final Tuple8 actual = tuple.map(mapper);
         assertThat(actual).isEqualTo(tuple);
     }
 

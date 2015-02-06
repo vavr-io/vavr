@@ -41,9 +41,9 @@ public class Tuple1Test {
     @Test
     public void shouldMap() {
         final Tuple1 tuple = createTuple();
-        final Function mapper = (t1) -> tuple;
+        final Function mapper = (t1) -> t1;
         @SuppressWarnings("unchecked")
-        final Tuple1 actual = tuple.flatMap(mapper);
+        final Tuple1 actual = tuple.map(mapper);
         assertThat(actual).isEqualTo(tuple);
     }
 

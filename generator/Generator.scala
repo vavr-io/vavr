@@ -580,6 +580,7 @@ def generateMainClasses(): Unit = {
                 }
             }
 
+            ${(i == 1).gen("// if this._1 == null hashCode(_1) returns Objects.hash(new T1[] { null }) = 31 instead of 0 = Objects.hash(null)")}
             @Override
             public int hashCode() {
                 return ${im.getType("java.util.Objects")}.hash(${(1 to i).gen(j => s"_$j")(", ")});
@@ -757,9 +758,9 @@ def generateTestClasses(): Unit = {
               @$test
               public void shouldMap() {
                   final Tuple$i tuple = createTuple();
-                  final $functionType mapper = ${s"($functionArgTypes)"} -> tuple;
+                  final $functionType mapper = ${s"($functionArgTypes)"} -> ${if (i == 1) "t1" else "tuple"};
                   @SuppressWarnings("unchecked")
-                  final Tuple$i actual = tuple.flatMap(mapper);
+                  final Tuple$i actual = tuple.map(mapper);
                   $assertThat(actual).isEqualTo(tuple);
               }
 

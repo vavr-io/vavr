@@ -43,7 +43,7 @@ public class Tuple2Test {
         final Tuple2 tuple = createTuple();
         final BiFunction mapper = (t1, t2) -> tuple;
         @SuppressWarnings("unchecked")
-        final Tuple2 actual = tuple.flatMap(mapper);
+        final Tuple2 actual = tuple.map(mapper);
         assertThat(actual).isEqualTo(tuple);
     }
 

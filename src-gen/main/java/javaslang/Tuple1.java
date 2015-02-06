@@ -60,6 +60,7 @@ public class Tuple1<T1> implements Tuple, Monad1<T1, Tuple1<?>> {
         }
     }
 
+    // if this._1 == null hashCode(_1) returns Objects.hash(new T1[] { null }) = 31 instead of 0 = Objects.hash(null)
     @Override
     public int hashCode() {
         return Objects.hash(_1);
