@@ -643,6 +643,7 @@ def generateMainClasses(): Unit = {
 def generateTestClasses(): Unit = {
 
   genFunctionTests()
+  genPropertyCheckTests()
   genTupleTests()
 
   /**
@@ -719,6 +720,13 @@ def generateTestClasses(): Unit = {
   }
 
   /**
+   * Generator of Property-check tests
+   */
+  def genPropertyCheckTests(): Unit = {
+    // TODO
+  }
+
+  /**
    * Generator of Tuple tests
    */
   def genTupleTests(): Unit = {
@@ -783,10 +791,17 @@ def generateTestClasses(): Unit = {
               }
 
               @$test
-              public void shouldCompareViaEquals() {
+              public void shouldRecognizeEquality() {
                   final Tuple$i<$generics> tuple1 = createTuple();
                   final Tuple$i<$generics> tuple2 = createTuple();
                   $assertThat(tuple1).isEqualTo(tuple2);
+              }
+
+              @$test
+              public void shouldRecognizeNonEquality() {
+                  final Tuple$i<$generics> tuple1 = createTuple();
+                  final Object other = new Object();
+                  $assertThat(tuple1).isNotEqualTo(other);
               }
 
               @$test
