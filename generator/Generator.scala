@@ -241,7 +241,6 @@ def generateMainClasses(): Unit = {
               val someType = im.getType("javaslang.control.Some")
               val tryType = im.getType("javaslang.control.Try")
               val tupleType = im.getType(s"javaslang.Tuple")
-              val tuple_iType = im.getType(s"javaslang.Tuple$i")
 
               val generics = (1 to i).gen(j => s"T$j")(", ")
               val params = (paramName: String) => (1 to i).gen(j => s"$paramName$j")(", ")
