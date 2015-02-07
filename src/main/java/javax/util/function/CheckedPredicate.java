@@ -20,7 +20,7 @@ public interface CheckedPredicate<T> extends Serializable {
     static final long serialVersionUID = 1L;
 
     static <T> CheckedPredicate<T> isEqual(Object targetRef) {
-        return (null == targetRef)
+        return (targetRef == null)
                 ? Objects::isNull
                 : targetRef::equals;
     }
