@@ -52,58 +52,54 @@ public interface Gen<T> extends Function<Random, T>, Monad1<T, Gen<?>> {
     }
 
     /**
-     * Chooses an int between min and max, bounds inclusive and numbers equally distributed.
+     * <p>Chooses an int between min and max, bounds inclusive and numbers equally distributed.</p>
+     * <p>Note: min and max are internally swapped if min &gt; max.</p>
      *
      * @param min lower bound
      * @param max upper bound
      * @return A new int generator
-     * @throws IllegalArgumentException if min &gt; max
      */
     static Gen<Integer> choose(int min, int max) {
-        if (min > max) {
-            throw new IllegalArgumentException(String.format("min > max: %s > %s", min, max));
-        }
         if (min == max) {
             return ignored -> min;
         } else {
-            return rng -> rng.nextInt(Math.abs(max - min) + 1) + min;
+            final int _min = Math.min(min, max);
+            final int _max = Math.max(min, max);
+            return rng -> rng.nextInt(Math.abs(_max - _min) + 1) + _min;
         }
     }
 
     /**
-     * Chooses a long between min and max, bounds inclusive and numbers equally distributed.
+     * <p>Chooses a long between min and max, bounds inclusive and numbers equally distributed.</p>
+     * <p>Note: min and max are internally swapped if min &gt; max.</p>
      *
      * @param min lower bound
      * @param max upper bound
      * @return A new long generator
-     * @throws IllegalArgumentException if min &gt; max
      */
     static Gen<Long> choose(long min, long max) {
-        if (min > max) {
-            throw new IllegalArgumentException(String.format("min > max: %s > %s", min, max));
-        }
         if (min == max) {
             return ignored -> min;
         } else {
             return random -> {
                 final double d = random.nextDouble();
-                return (long) ((d * max) + ((1.0 - d) * min) + d);
+                final long _min = Math.min(min, max);
+                final long _max = Math.max(min, max);
+                return (long) ((d * _max) + ((1.0 - d) * _min) + d);
             };
         }
     }
 
     /**
-     * Chooses a double between min and max, bounds inclusive and numbers equally distributed.
+     * <p>Chooses a double between min and max, bounds inclusive and numbers equally distributed.</p>
+     * <p>Note: min and max are internally swapped if min &gt; max.</p>
      *
      * @param min lower bound
      * @param max upper bound
      * @return A new double generator
-     * @throws IllegalArgumentException if min &gt; max, min or max is infinite, min or max is not a number (NaN)
+     * @throws IllegalArgumentException if min or max is infinite, min or max is not a number (NaN)
      */
     static Gen<Double> choose(double min, double max) {
-        if (min > max) {
-            throw new IllegalArgumentException(String.format("min > max: %s > %s", min, max));
-        }
         if (Double.isInfinite(min)) {
             throw new IllegalArgumentException("min is infinite");
         }
@@ -121,7 +117,9 @@ public interface Gen<T> extends Function<Random, T>, Monad1<T, Gen<?>> {
         } else {
             return random -> {
                 final double d = random.nextDouble();
-                return d * max + (1.0 - d) * min;
+                final double _min = Math.min(min, max);
+                final double _max = Math.max(min, max);
+                return d * _max + (1.0 - d) * _min;
             };
         }
     }
