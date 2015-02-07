@@ -16,6 +16,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ArbitraryTest {
 
     @Test
+    public void shouldApplyIntegerObject() {
+        final Gen<BinaryTree<Integer>> gen = new ArbitraryBinaryTree(0, 0).apply(Integer.valueOf(0));
+        assertThat(gen).isNotNull();
+    }
+
+    @Test
     public void shouldFlatMapArbitrary() {
         final Arbitrary<Integer> arbitraryInt = size -> Gen.choose(-size, size);
         final Arbitrary<BinaryTree<Integer>> arbitraryTree = arbitraryInt.flatMap(i -> new ArbitraryBinaryTree(-i, i));
