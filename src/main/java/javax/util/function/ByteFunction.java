@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * Unchecked byte to R function.
- * Essentially the same as {@code Function1<Byte, R>}, or short {@code λ1<Byte, R>}.
+ * Essentially the same as {@code Function1<Byte, R>}.
  *
  * @param <R> Return value type
  */

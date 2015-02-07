@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * Checked version of FloatFunction.
- * Essentially the same as {@code CheckedFunction1<Float, R>}, or short {@code X1<Float, R>}.
+ * Essentially the same as {@code CheckedFunction1<Float, R>}.
  *
  * @param <R> Return value type
  */

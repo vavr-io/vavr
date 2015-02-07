@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * Checked version of ShortFunction.
- * Essentially the same as {@code CheckedFunction1<Short, R>}, or short {@code X1<Short, R>}.
+ * Essentially the same as {@code CheckedFunction1<Short, R>}.
  *
  * @param <R> Return value type
  */

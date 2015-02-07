@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * Checked version of BooleanFunction.
- * Essentially the same as {@code CheckedFunction1<Boolean, R>}, or short {@code X1<Boolean, R>}.
+ * Essentially the same as {@code CheckedFunction1<Boolean, R>}.
  *
  * @param <R> Return value type
  */

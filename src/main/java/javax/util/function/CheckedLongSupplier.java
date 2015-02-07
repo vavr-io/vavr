@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * Checked version of java.util.function.LongSupplier.
- * Essentially the same as {@code CheckedFunction0<Long>}, or short {@code X0<Long>}.
+ * Essentially the same as {@code CheckedFunction0<Long>}.
  */
 @FunctionalInterface
 public interface CheckedLongSupplier extends Serializable {

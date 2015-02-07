@@ -10,7 +10,7 @@ import java.util.Objects;
 
 /**
  * Checked version of java.util.function.BiPredicate.
- * Essentially the same as {@code CheckedFunction2<T, U, Boolean>}, or short {@code X2<T, U, Boolean>}.
+ * Essentially the same as {@code CheckedFunction2<T, U, Boolean>}.
  *
  * @param <T> First argument type
  * @param <U> Second argument type

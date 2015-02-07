@@ -10,7 +10,7 @@ import java.util.Objects;
 
 /**
  * Checked version of java.util.function.BiConsumer.
- * Essentially the same as {@code CheckedFunction2<T, U, Void>}, or short {@code X2<T, U, Void>}.
+ * Essentially the same as {@code CheckedFunction2<T, U, Void>}.
  *
  * @param <T> First argument type
  * @param <U> Second argument type

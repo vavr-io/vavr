@@ -10,7 +10,7 @@ import java.util.Objects;
 
 /**
  * Checked version of java.util.function.IntConsumer.
- * Essentially the same as {@code CheckedFunction1<Integer, Void>}, or short {@code X1<Integer, Void>}.
+ * Essentially the same as {@code CheckedFunction1<Integer, Void>}.
  */
 @FunctionalInterface
 public interface CheckedIntConsumer extends Serializable {

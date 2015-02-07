@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * Checked version of java.util.function.ToIntFunction.
- * Essentially the same as {@code CheckedFunction1<T, Integer>}, or short {@code X1<T, Integer>}.
+ * Essentially the same as {@code CheckedFunction1<T, Integer>}.
  *
  * @param <T> Argument type
  */

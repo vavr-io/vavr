@@ -10,7 +10,7 @@ import java.util.Objects;
 
 /**
  * Checked version of java.util.function.DoubleUnaryOperator.
- * Essentially the same as {@code CheckedFunction1<Double, Double>}, or short {@code X1<Double, Double>}.
+ * Essentially the same as {@code CheckedFunction1<Double, Double>}.
  */
 @FunctionalInterface
 public interface CheckedDoubleUnaryOperator extends Serializable {

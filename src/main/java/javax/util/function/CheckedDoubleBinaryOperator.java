@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * Checked version of java.util.function.DoubleBinaryOperator.
- * Essentially the same as {@code CheckedFunction2<Double, Double, Double>}, or short {@code X2<Double, Double, Double>}.
+ * Essentially the same as {@code CheckedFunction2<Double, Double, Double>}.
  */
 @FunctionalInterface
 public interface CheckedDoubleBinaryOperator extends Serializable {

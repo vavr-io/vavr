@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * Checked version of java.util.function.ToLongFunction.
- * Essentially the same as {@code CheckedFunction1<T, Long>}, or short {@code X1<T, Long>}.
+ * Essentially the same as {@code CheckedFunction1<T, Long>}.
  *
  * @param <T> Argument type
  */

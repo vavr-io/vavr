@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * Checked version of java.util.function.DoubleSupplier.
- * Essentially the same as {@code CheckedFunction0<Double>}, or short {@code X0<Double>}.
+ * Essentially the same as {@code CheckedFunction0<Double>}.
  */
 @FunctionalInterface
 public interface CheckedDoubleSupplier extends Serializable {

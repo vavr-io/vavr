@@ -10,7 +10,7 @@ import java.util.Objects;
 
 /**
  * Checked version of java.util.function.LongUnaryOperator.
- * Essentially the same as {@code CheckedFunction1<Long, Long>}, or short {@code X1<Long, Long>}.
+ * Essentially the same as {@code CheckedFunction1<Long, Long>}.
  */
 @FunctionalInterface
 public interface CheckedLongUnaryOperator extends Serializable {

@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * Checked version of java.util.function.ToDoubleBiFunction.
- * Essentially the same as {@code CheckedFunction2<T, U, Double>}, or short {@code X2<T, U, Double>}.
+ * Essentially the same as {@code CheckedFunction2<T, U, Double>}.
  *
  * @param <T> First argument type
  * @param <U> Second argument type

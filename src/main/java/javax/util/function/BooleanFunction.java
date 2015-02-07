@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * Unchecked boolean to R function.
- * Essentially the same as {@code Function1<Boolean, R>}, or short {@code λ1<Boolean, R>}.
+ * Essentially the same as {@code Function1<Boolean, R>}.
  *
  * @param <R> Return value type
  */

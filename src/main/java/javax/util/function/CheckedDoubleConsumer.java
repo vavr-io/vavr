@@ -10,7 +10,7 @@ import java.util.Objects;
 
 /**
  * Checked version of java.util.function.DoubleConsumer.
- * Essentially the same as {@code CheckedFunction1<Double, Void>}, or short {@code X1<Double, Void>}.
+ * Essentially the same as {@code CheckedFunction1<Double, Void>}.
  */
 @FunctionalInterface
 public interface CheckedDoubleConsumer extends Serializable {

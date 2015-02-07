@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * Checked version of java.util.function.DoubleToLongFunction.
- * Essentially the same as {@code CheckedFunction1<Double, Long>}, or short {@code X1<Double, Long>}.
+ * Essentially the same as {@code CheckedFunction1<Double, Long>}.
  */
 @FunctionalInterface
 public interface CheckedDoubleToLongFunction extends Serializable {

@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * Checked version of java.util.function.Supplier.
- * Essentially the same as {@code CheckedFunction0<R>}, or short {@code X0<R>}.
+ * Essentially the same as {@code CheckedFunction0<R>}.
  *
  * @param <R> Return type
  */

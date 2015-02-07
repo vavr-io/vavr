@@ -10,7 +10,7 @@ import java.util.Objects;
 
 /**
  * Checked version of java.util.function.Predicate.
- * Essentially the same as {@code CheckedFunction1<T, Boolean>}, or short {@code X1<T, Boolean>}.
+ * Essentially the same as {@code CheckedFunction1<T, Boolean>}.
  *
  * @param <T> Argument type
  */

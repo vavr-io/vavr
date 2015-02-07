@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * Unchecked float to R function.
- * Essentially the same as {@code Function1<Float, R>}, or short {@code λ1<Float, R>}.
+ * Essentially the same as {@code Function1<Float, R>}.
  *
  * @param <R> Return value type
  */

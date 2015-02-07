@@ -7,7 +7,7 @@ package javax.util.function;
 
 /**
  * Checked version of java.util.function.BinaryOperator.
- * Essentially the same as {@code CheckedFunction2<T, T, T>}, or short {@code X2<T, T, T>}.
+ * Essentially the same as {@code CheckedFunction2<T, T, T>}.
  *
  * @param <T> Operand type
  */

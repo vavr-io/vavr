@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * Checked version of java.util.function.ObjLongConsumer.
- * Essentially the same as {@code CheckedFunction2<T, Long, Void>}, or short {@code X2<T, Long, Void>}.
+ * Essentially the same as {@code CheckedFunction2<T, Long, Void>}.
  *
  * @param <T> Argument type
  */

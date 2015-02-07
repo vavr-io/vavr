@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * Checked version of java.util.function.ObjIntConsumer.
- * Essentially the same as {@code CheckedFunction2<T, Integer, Void>}, or short {@code X2<T, Integer, Void>}.
+ * Essentially the same as {@code CheckedFunction2<T, Integer, Void>}.
  *
  * @param <T> Argument type
  */

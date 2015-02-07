@@ -10,7 +10,7 @@ import java.util.Objects;
 
 /**
  * Checked version of java.util.function.DoublePredicate.
- * Essentially the same as {@code CheckedFunction1<Double, Boolean>}, or short {@code X1<Double, Boolean>}.
+ * Essentially the same as {@code CheckedFunction1<Double, Boolean>}.
  */
 @FunctionalInterface
 public interface CheckedDoublePredicate extends Serializable {

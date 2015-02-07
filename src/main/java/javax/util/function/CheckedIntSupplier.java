@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * Checked version of java.util.function.IntSupplier.
- * Essentially the same as {@code CheckedFunction0<Integer>}, or short {@code X0<Integer>}.
+ * Essentially the same as {@code CheckedFunction0<Integer>}.
  */
 @FunctionalInterface
 public interface CheckedIntSupplier extends Serializable {

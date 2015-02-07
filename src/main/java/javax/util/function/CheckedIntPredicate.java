@@ -10,7 +10,7 @@ import java.util.Objects;
 
 /**
  * Checked version of java.util.function.IntPredicate.
- * Essentially the same as {@code CheckedFunction1<Integer, Boolean>}, or short {@code X1<Integer, Boolean>}.
+ * Essentially the same as {@code CheckedFunction1<Integer, Boolean>}.
  */
 @FunctionalInterface
 public interface CheckedIntPredicate extends Serializable {

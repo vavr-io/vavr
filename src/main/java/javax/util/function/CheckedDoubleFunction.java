@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * Checked version of java.util.function.DoubleFunction.
- * Essentially the same as {@code CheckedFunction1<Double, R>}, or short {@code X1<Double, R>}.
+ * Essentially the same as {@code CheckedFunction1<Double, R>}.
  *
  * @param <R> Return value type
  */

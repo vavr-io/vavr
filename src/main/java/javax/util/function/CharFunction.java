@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * Unchecked char to R function.
- * Essentially the same as {@code Function1<Character, R>}, or short {@code λ1<Character, R>}.
+ * Essentially the same as {@code Function1<Character, R>}.
  *
  * @param <R> Return value type
  */

@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * Checked version of java.util.function.BooleanSupplier.
- * Essentially the same as {@code CheckedFunction0<Boolean>}, or short {@code X0<Boolean>}.
+ * Essentially the same as {@code CheckedFunction0<Boolean>}.
  */
 @FunctionalInterface
 public interface CheckedBooleanSupplier extends Serializable {

@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * Checked version of ByteFunction.
- * Essentially the same as {@code CheckedFunction1<Byte, R>}, or short {@code X1<Byte, R>}.
+ * Essentially the same as {@code CheckedFunction1<Byte, R>}.
  *
  * @param <R> Return value type
  */

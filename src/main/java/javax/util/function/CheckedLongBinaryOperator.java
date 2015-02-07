@@ -9,10 +9,10 @@ import java.io.Serializable;
 
 /**
  * Checked version of java.util.function.LongBinaryOperator.
- * Essentially the same as {@code CheckedFunction2<Long, Long, Long>}, or short {@code X2<Long, Long, Long>}.
+ * Essentially the same as {@code CheckedFunction2<Long, Long, Long>}.
  */
 @FunctionalInterface
 public interface CheckedLongBinaryOperator extends Serializable {
 
-    long applyAsInt(long left, long right) throws Throwable;
+    long applyAsLong(long left, long right) throws Throwable;
 }

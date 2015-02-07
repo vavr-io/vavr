@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * Checked version of CharFunction.
- * Essentially the same as {@code CheckedFunction1<Character, R>}, or short {@code X1<Character, R>}.
+ * Essentially the same as {@code CheckedFunction1<Character, R>}.
  *
  * @param <R> Return value type
  */

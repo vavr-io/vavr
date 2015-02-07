@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * Checked version of java.util.function.IntToLongFunction.
- * Essentially the same as {@code CheckedFunction1<Integer, Long>}, or short {@code X1<Integer, Long>}.
+ * Essentially the same as {@code CheckedFunction1<Integer, Long>}.
  */
 @FunctionalInterface
 public interface CheckedIntToLongFunction extends Serializable {

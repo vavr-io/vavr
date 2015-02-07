@@ -10,7 +10,7 @@ import java.util.Objects;
 
 /**
  * Checked version of java.util.function.IntUnaryOperator.
- * Essentially the same as {@code CheckedFunction1<Integer, Integer>}, or short {@code X1<Integer, Integer>}.
+ * Essentially the same as {@code CheckedFunction1<Integer, Integer>}.
  */
 @FunctionalInterface
 public interface CheckedIntUnaryOperator extends Serializable {

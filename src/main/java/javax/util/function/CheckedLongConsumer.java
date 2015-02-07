@@ -10,7 +10,7 @@ import java.util.Objects;
 
 /**
  * Checked version of java.util.function.LongConsumer.
- * Essentially the same as {@code CheckedFunction1<Long, Void>}, or short {@code X1<Long, Void>}.
+ * Essentially the same as {@code CheckedFunction1<Long, Void>}.
  */
 @FunctionalInterface
 public interface CheckedLongConsumer extends Serializable {

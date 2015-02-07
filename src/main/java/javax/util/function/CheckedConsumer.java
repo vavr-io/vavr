@@ -10,7 +10,7 @@ import java.util.Objects;
 
 /**
  * Checked version of java.util.function.Consumer.
- * Essentially the same as {@code CheckedFunction1<T, Void>}, or short {@code X1<T, Void>}.
+ * Essentially the same as {@code CheckedFunction1<T, Void>}.
  *
  * @param <T> Argument type
  */

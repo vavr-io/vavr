@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * Checked version of java.util.function.ToLongBiFunction.
- * Essentially the same as {@code CheckedFunction2<T, U, Long>}, or short {@code X2<T, U, Long>}.
+ * Essentially the same as {@code CheckedFunction2<T, U, Long>}.
  *
  * @param <T> First argument type
  * @param <U> Second argument type

@@ -10,7 +10,7 @@ import java.util.Objects;
 
 /**
  * Checked version of java.util.function.LongPredicate.
- * Essentially the same as {@code CheckedFunction1<Long, Boolean>}, or short {@code X1<Long, Boolean>}.
+ * Essentially the same as {@code CheckedFunction1<Long, Boolean>}.
  */
 @FunctionalInterface
 public interface CheckedLongPredicate extends Serializable {
