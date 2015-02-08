@@ -5,16 +5,22 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.Function1;
 
 /**
  * Unchecked float to R function.
- * Essentially the same as {@code Function1<Float, R>}.
  *
  * @param <R> Return value type
  */
 @FunctionalInterface
-public interface FloatFunction<R> extends Serializable {
+public interface FloatFunction<R> extends Function1<Float, R> {
+
+    static final long serialVersionUID = 1L;
 
     R apply(float f);
+
+    @Override
+    default R apply(Float f) {
+        return apply(f.floatValue());
+    }
 }

@@ -39,7 +39,6 @@ public interface Function12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, R
         return (t12, t11, t10, t9, t8, t7, t6, t5, t4, t3, t2, t1) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12);
     }
 
-    @Override
     default <V> Function12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, V> andThen(Function<? super R, ? extends V> after) {
         Objects.requireNonNull(after);
         return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12));

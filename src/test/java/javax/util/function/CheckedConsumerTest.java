@@ -19,7 +19,7 @@ public class CheckedConsumerTest {
         final CheckedConsumer<Object> cc1 = o -> results[i[0]++] = 1;
         final CheckedConsumer<Object> cc2 = o -> results[i[0]++] = 2;
         try {
-            cc1.andThen(cc2).accept(null);
+            cc1.andThen(cc2).apply(null);
             assertThat(results).isEqualTo(new byte[]{1, 2});
         } catch (Throwable x) {
             fail("Exception occurred", x);

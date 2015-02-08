@@ -5,17 +5,18 @@
  */
 package javax.util.function;
 
+import javaslang.CheckedFunction1;
+
 import java.io.Serializable;
 import java.util.Objects;
 
 /**
  * Checked version of java.util.function.Predicate.
- * Essentially the same as {@code CheckedFunction1<T, Boolean>}.
  *
  * @param <T> Argument type
  */
 @FunctionalInterface
-public interface CheckedPredicate<T> extends Serializable {
+public interface CheckedPredicate<T> extends CheckedFunction1<T, Boolean> {
 
     static final long serialVersionUID = 1L;
 
@@ -26,6 +27,11 @@ public interface CheckedPredicate<T> extends Serializable {
     }
 
     boolean test(T t) throws Throwable;
+
+    @Override
+    default Boolean apply(T t) throws Throwable {
+        return test(t);
+    }
 
     default CheckedPredicate<T> and(CheckedPredicate<? super T> other) {
         Objects.requireNonNull(other);

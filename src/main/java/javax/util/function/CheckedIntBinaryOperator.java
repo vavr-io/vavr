@@ -5,14 +5,20 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.CheckedFunction2;
 
 /**
  * Checked version of java.util.function.IntBinaryOperator.
- * Essentially the same as {@code CheckedFunction2<Integer, Integer, Integer>}.
  */
 @FunctionalInterface
-public interface CheckedIntBinaryOperator extends Serializable {
+public interface CheckedIntBinaryOperator extends CheckedFunction2<Integer, Integer, Integer> {
+
+    static final long serialVersionUID = 1L;
 
     int applyAsInt(int left, int right) throws Throwable;
+
+    @Override
+    default Integer apply(Integer left, Integer right) throws Throwable {
+        return applyAsInt(left, right);
+    }
 }

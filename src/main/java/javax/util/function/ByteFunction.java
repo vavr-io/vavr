@@ -5,16 +5,22 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.Function1;
 
 /**
  * Unchecked byte to R function.
- * Essentially the same as {@code Function1<Byte, R>}.
  *
  * @param <R> Return value type
  */
 @FunctionalInterface
-public interface ByteFunction<R> extends Serializable {
+public interface ByteFunction<R> extends Function1<Byte, R> {
+
+    static final long serialVersionUID = 1L;
 
     R apply(byte b);
+
+    @Override
+    default R apply(Byte b) {
+        return apply(b.byteValue());
+    }
 }

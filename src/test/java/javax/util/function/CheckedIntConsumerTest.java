@@ -13,14 +13,12 @@ import static org.assertj.core.api.Assertions.fail;
 public class CheckedIntConsumerTest {
 
     @Test
-    public void shouldChainCheckedIntConsumersWithAndThen() {
-        final byte[] j = new byte[]{0};
-        final byte[] results = new byte[]{0, 0};
-        final CheckedIntConsumer cic1 = i -> results[j[0]++] = 1;
-        final CheckedIntConsumer cic2 = i -> results[j[0]++] = 2;
+    public void shouldApplyInt() {
+        final boolean[] b = new boolean[] { false };
+        final CheckedIntConsumer cic = any -> b[0] = true;
         try {
-            cic1.andThen(cic2).accept(0);
-            assertThat(results).isEqualTo(new byte[]{1, 2});
+            cic.apply(0);
+            assertThat(b[0]).isTrue();
         } catch (Throwable x) {
             fail("Exception occurred", x);
         }

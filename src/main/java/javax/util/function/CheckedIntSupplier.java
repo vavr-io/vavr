@@ -5,14 +5,20 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.CheckedFunction0;
 
 /**
  * Checked version of java.util.function.IntSupplier.
- * Essentially the same as {@code CheckedFunction0<Integer>}.
  */
 @FunctionalInterface
-public interface CheckedIntSupplier extends Serializable {
+public interface CheckedIntSupplier extends CheckedFunction0<Integer> {
+
+    static final long serialVersionUID = 1L;
 
     int getAsInt() throws Throwable;
+
+    @Override
+    default Integer apply() throws Throwable {
+        return getAsInt();
+    }
 }

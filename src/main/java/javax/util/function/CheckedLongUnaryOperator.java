@@ -5,28 +5,23 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.CheckedFunction1;
+
 import java.util.Objects;
 
 /**
  * Checked version of java.util.function.LongUnaryOperator.
- * Essentially the same as {@code CheckedFunction1<Long, Long>}.
  */
 @FunctionalInterface
-public interface CheckedLongUnaryOperator extends Serializable {
+public interface CheckedLongUnaryOperator extends CheckedFunction1<Long, Long> {
 
     static final long serialVersionUID = 1L;
 
     long applyAsLong(long operand) throws Throwable;
 
-    default CheckedLongUnaryOperator compose(CheckedLongUnaryOperator before) {
-        Objects.requireNonNull(before);
-        return (long v) -> applyAsLong(before.applyAsLong(v));
-    }
-
-    default CheckedLongUnaryOperator andThen(CheckedLongUnaryOperator after) {
-        Objects.requireNonNull(after);
-        return (long t) -> after.applyAsLong(applyAsLong(t));
+    @Override
+    default Long apply(Long operand) throws Throwable {
+        return applyAsLong(operand);
     }
 
     static CheckedLongUnaryOperator identity() {

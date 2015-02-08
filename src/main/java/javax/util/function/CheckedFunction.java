@@ -9,7 +9,6 @@ import javaslang.CheckedFunction1;
 
 /**
  * Checked version of java.util.function.Function.
- * Essentially the same as {@code CheckedFunction1<T, R>}.
  *
  * @param <T> Argument type
  * @param <R> Return value type

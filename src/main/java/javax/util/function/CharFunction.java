@@ -5,16 +5,22 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.Function1;
 
 /**
  * Unchecked char to R function.
- * Essentially the same as {@code Function1<Character, R>}.
  *
  * @param <R> Return value type
  */
 @FunctionalInterface
-public interface CharFunction<R> extends Serializable {
+public interface CharFunction<R> extends Function1<Character, R> {
+
+    static final long serialVersionUID = 1L;
 
     R apply(char c);
+
+    @Override
+    default R apply(Character c) {
+        return apply(c.charValue());
+    }
 }

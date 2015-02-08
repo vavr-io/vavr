@@ -5,19 +5,24 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.CheckedFunction1;
+
 import java.util.Objects;
 
 /**
  * Checked version of java.util.function.IntPredicate.
- * Essentially the same as {@code CheckedFunction1<Integer, Boolean>}.
  */
 @FunctionalInterface
-public interface CheckedIntPredicate extends Serializable {
+public interface CheckedIntPredicate extends CheckedFunction1<Integer, Boolean> {
 
     static final long serialVersionUID = 1L;
 
     boolean test(int value) throws Throwable;
+
+    @Override
+    default Boolean apply(Integer value) throws Throwable {
+        return test(value);
+    }
 
     default CheckedIntPredicate and(CheckedIntPredicate other) {
         Objects.requireNonNull(other);

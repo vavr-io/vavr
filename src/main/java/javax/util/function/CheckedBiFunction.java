@@ -9,7 +9,6 @@ import javaslang.CheckedFunction2;
 
 /**
  * Checked version of java.util.function.BiFunction.
- * Essentially the same as {@code CheckedFunction2<T, U, R>}.
  *
  * @param <T> First argument type
  * @param <U> Second argument type

@@ -5,17 +5,23 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.CheckedFunction2;
 
 /**
  * Checked version of java.util.function.ToDoubleBiFunction.
- * Essentially the same as {@code CheckedFunction2<T, U, Double>}.
  *
  * @param <T> First argument type
  * @param <U> Second argument type
  */
 @FunctionalInterface
-public interface CheckedToDoubleBiFunction<T, U> extends Serializable {
+public interface CheckedToDoubleBiFunction<T, U> extends CheckedFunction2<T, U, Double> {
+
+    static final long serialVersionUID = 1L;
 
     double applyAsDouble(T t, U u) throws Throwable;
+
+    @Override
+    default Double apply(T t, U u) throws Throwable {
+        return applyAsDouble(t, u);
+    }
 }

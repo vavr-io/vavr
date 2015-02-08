@@ -5,16 +5,22 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.CheckedFunction1;
 
 /**
  * Checked version of java.util.function.IntFunction.
- * Essentially the same as {@code CheckedFunction1<Integer, R>}.
  *
  * @param <R> Return value type
  */
 @FunctionalInterface
-public interface CheckedIntFunction<R> extends Serializable {
+public interface CheckedIntFunction<R> extends CheckedFunction1<Integer, R> {
+
+    static final long serialVersionUID = 1L;
 
     R apply(int value) throws Throwable;
+
+    @Override
+    default R apply(Integer value) throws Throwable {
+        return apply(value.intValue());
+    }
 }

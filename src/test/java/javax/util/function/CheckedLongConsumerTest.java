@@ -13,14 +13,12 @@ import static org.assertj.core.api.Assertions.fail;
 public class CheckedLongConsumerTest {
 
     @Test
-    public void shouldChainCheckedLongConsumersWithAndThen() {
-        final byte[] i = new byte[]{0};
-        final byte[] results = new byte[]{0, 0};
-        final CheckedLongConsumer clc1 = l -> results[i[0]++] = 1;
-        final CheckedLongConsumer clc2 = l -> results[i[0]++] = 2;
+    public void shouldApplyLong() {
+        final boolean[] b = new boolean[] { false };
+        final CheckedLongConsumer clc = any -> b[0] = true;
         try {
-            clc1.andThen(clc2).accept(0L);
-            assertThat(results).isEqualTo(new byte[]{1, 2});
+            clc.apply(0L);
+            assertThat(b[0]).isTrue();
         } catch (Throwable x) {
             fail("Exception occurred", x);
         }

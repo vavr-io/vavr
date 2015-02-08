@@ -39,7 +39,6 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends λ<R> {
         return (t7, t6, t5, t4, t3, t2, t1) -> apply(t1, t2, t3, t4, t5, t6, t7);
     }
 
-    @Override
     default <V> Function7<T1, T2, T3, T4, T5, T6, T7, V> andThen(Function<? super R, ? extends V> after) {
         Objects.requireNonNull(after);
         return (t1, t2, t3, t4, t5, t6, t7) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7));

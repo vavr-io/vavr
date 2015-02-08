@@ -10,7 +10,6 @@ package javaslang;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import java.util.Objects;
-import java.util.function.Function;
 
 @FunctionalInterface
 public interface CheckedFunction0<R> extends λ<R> {
@@ -39,8 +38,7 @@ public interface CheckedFunction0<R> extends λ<R> {
         return () -> apply();
     }
 
-    @Override
-    default <V> CheckedFunction0<V> andThen(Function<? super R, ? extends V> after) {
+    default <V> CheckedFunction0<V> andThen(CheckedFunction1<? super R, ? extends V> after) {
         Objects.requireNonNull(after);
         return () -> after.apply(apply());
     }

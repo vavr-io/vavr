@@ -5,16 +5,22 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.CheckedFunction1;
 
 /**
  * Checked version of ByteFunction.
- * Essentially the same as {@code CheckedFunction1<Byte, R>}.
  *
  * @param <R> Return value type
  */
 @FunctionalInterface
-public interface CheckedByteFunction<R> extends Serializable {
+public interface CheckedByteFunction<R> extends CheckedFunction1<Byte, R> {
 
-    R apply(boolean b) throws Throwable;
+    static final long serialVersionUID = 1L;
+
+    R apply(byte b) throws Throwable;
+
+    @Override
+    default R apply(Byte b) throws Throwable {
+        return apply(b.byteValue());
+    }
 }

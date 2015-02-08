@@ -17,7 +17,7 @@ public class CheckedIntUnaryOperatorTest {
         final CheckedIntUnaryOperator ciuo1 = i -> i + 1;
         final CheckedIntUnaryOperator ciuo2 = i -> i * 2;
         try {
-            final double actual = ciuo1.compose(ciuo2).applyAsInt(0);
+            final double actual = ciuo1.compose(ciuo2).apply(0);
             assertThat(actual).isEqualTo(1);
         } catch (Throwable x) {
             fail("Exception occurred", x);
@@ -29,7 +29,7 @@ public class CheckedIntUnaryOperatorTest {
         final CheckedIntUnaryOperator ciuo1 = i -> i + 1;
         final CheckedIntUnaryOperator ciuo2 = i -> i * 2;
         try {
-            final double actual = ciuo1.andThen(ciuo2).applyAsInt(0);
+            final double actual = ciuo1.andThen(ciuo2).apply(0);
             assertThat(actual).isEqualTo(2);
         } catch (Throwable x) {
             fail("Exception occurred", x);

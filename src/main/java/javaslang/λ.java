@@ -98,17 +98,6 @@ public interface λ<R> extends Serializable {
     λ<R> reversed();
 
     /**
-     * There can be nothing said about the type of exception (in Java), if the Function arg is also a checked function.
-     * In an ideal world we could denote the appropriate bound of both exception types (this and after).
-     * This is the reason why CheckedFunction throws a Throwable instead of a concrete exception.
-     *
-     * @param after Functions applied after this
-     * @param <V>   Return value of after
-     * @return A Function composed of this and after
-     */
-    <V> λ<V> andThen(Function<? super R, ? extends V> after);
-
-    /**
      * Get reflective type information about lambda parameters and return type.
      *
      * @return A {@link java.lang.invoke.MethodType}

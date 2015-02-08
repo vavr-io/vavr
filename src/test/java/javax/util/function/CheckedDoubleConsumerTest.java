@@ -13,14 +13,12 @@ import static org.assertj.core.api.Assertions.fail;
 public class CheckedDoubleConsumerTest {
 
     @Test
-    public void shouldChainCheckedDoubleConsumersWithAndThen() {
-        final byte[] i = new byte[]{0};
-        final byte[] results = new byte[]{0, 0};
-        final CheckedDoubleConsumer cdc1 = d -> results[i[0]++] = 1;
-        final CheckedDoubleConsumer cdc2 = d -> results[i[0]++] = 2;
+    public void shouldApplyDouble() {
+        final boolean[] b = new boolean[] { false };
+        final CheckedDoubleConsumer cdc = any -> b[0] = true;
         try {
-            cdc1.andThen(cdc2).accept(0d);
-            assertThat(results).isEqualTo(new byte[]{1, 2});
+            cdc.apply(0d);
+            assertThat(b[0]).isTrue();
         } catch (Throwable x) {
             fail("Exception occurred", x);
         }

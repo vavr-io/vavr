@@ -5,14 +5,20 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.CheckedFunction0;
 
 /**
  * Checked version of java.util.function.BooleanSupplier.
- * Essentially the same as {@code CheckedFunction0<Boolean>}.
  */
 @FunctionalInterface
-public interface CheckedBooleanSupplier extends Serializable {
+public interface CheckedBooleanSupplier extends CheckedFunction0<Boolean> {
+
+    static final long serialVersionUID = 1L;
 
     boolean getAsBoolean() throws Throwable;
+
+    @Override
+    default Boolean apply() throws Throwable {
+        return getAsBoolean();
+    }
 }

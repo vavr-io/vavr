@@ -5,22 +5,23 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.CheckedFunction1;
+
 import java.util.Objects;
 
 /**
  * Checked version of java.util.function.DoubleConsumer.
- * Essentially the same as {@code CheckedFunction1<Double, Void>}.
  */
 @FunctionalInterface
-public interface CheckedDoubleConsumer extends Serializable {
+public interface CheckedDoubleConsumer extends CheckedFunction1<Double, Void> {
 
     static final long serialVersionUID = 1L;
 
     void accept(double value) throws Throwable;
 
-    default CheckedDoubleConsumer andThen(CheckedDoubleConsumer after) {
-        Objects.requireNonNull(after);
-        return (double t) -> { accept(t); after.accept(t); };
+    @Override
+    default Void apply(Double value) throws Throwable {
+        accept(value);
+        return null;
     }
 }

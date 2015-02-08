@@ -44,7 +44,6 @@ public interface Function1<T1, R> extends λ<R>, Function<T1, R> {
         return (t1) -> apply(t1);
     }
 
-    @Override
     default <V> Function1<T1, V> andThen(Function<? super R, ? extends V> after) {
         Objects.requireNonNull(after);
         return (t1) -> after.apply(apply(t1));

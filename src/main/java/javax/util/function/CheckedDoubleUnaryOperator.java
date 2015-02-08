@@ -5,28 +5,23 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.CheckedFunction1;
+
 import java.util.Objects;
 
 /**
  * Checked version of java.util.function.DoubleUnaryOperator.
- * Essentially the same as {@code CheckedFunction1<Double, Double>}.
  */
 @FunctionalInterface
-public interface CheckedDoubleUnaryOperator extends Serializable {
+public interface CheckedDoubleUnaryOperator extends CheckedFunction1<Double, Double> {
 
     static final long serialVersionUID = 1L;
 
     double applyAsDouble(double operand) throws Throwable;
 
-    default CheckedDoubleUnaryOperator compose(CheckedDoubleUnaryOperator before) {
-        Objects.requireNonNull(before);
-        return (double v) -> applyAsDouble(before.applyAsDouble(v));
-    }
-
-    default CheckedDoubleUnaryOperator andThen(CheckedDoubleUnaryOperator after) {
-        Objects.requireNonNull(after);
-        return (double t) -> after.applyAsDouble(applyAsDouble(t));
+    @Override
+    default Double apply(Double operand) throws Throwable {
+        return applyAsDouble(operand);
     }
 
     static CheckedDoubleUnaryOperator identity() {

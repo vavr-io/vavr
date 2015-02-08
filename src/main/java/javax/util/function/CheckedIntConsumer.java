@@ -5,22 +5,23 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.CheckedFunction1;
+
 import java.util.Objects;
 
 /**
  * Checked version of java.util.function.IntConsumer.
- * Essentially the same as {@code CheckedFunction1<Integer, Void>}.
  */
 @FunctionalInterface
-public interface CheckedIntConsumer extends Serializable {
+public interface CheckedIntConsumer extends CheckedFunction1<Integer, Void> {
 
     static final long serialVersionUID = 1L;
 
     void accept(int value) throws Throwable;
 
-    default CheckedIntConsumer andThen(CheckedIntConsumer after) {
-        Objects.requireNonNull(after);
-        return (int t) -> { accept(t); after.accept(t); };
+    @Override
+    default Void apply(Integer value) throws Throwable {
+        accept(value);
+        return null;
     }
 }

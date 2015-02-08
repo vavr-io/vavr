@@ -10,7 +10,6 @@ package javaslang;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import java.util.Objects;
-import java.util.function.Function;
 
 @FunctionalInterface
 public interface CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<R> {
@@ -39,8 +38,7 @@ public interface CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<
         return (t8, t7, t6, t5, t4, t3, t2, t1) -> apply(t1, t2, t3, t4, t5, t6, t7, t8);
     }
 
-    @Override
-    default <V> CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, V> andThen(Function<? super R, ? extends V> after) {
+    default <V> CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, V> andThen(CheckedFunction1<? super R, ? extends V> after) {
         Objects.requireNonNull(after);
         return (t1, t2, t3, t4, t5, t6, t7, t8) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8));
     }

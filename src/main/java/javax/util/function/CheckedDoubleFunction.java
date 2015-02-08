@@ -5,16 +5,22 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.CheckedFunction1;
 
 /**
  * Checked version of java.util.function.DoubleFunction.
- * Essentially the same as {@code CheckedFunction1<Double, R>}.
  *
  * @param <R> Return value type
  */
 @FunctionalInterface
-public interface CheckedDoubleFunction<R> extends Serializable {
+public interface CheckedDoubleFunction<R> extends CheckedFunction1<Double, R> {
+
+    static final long serialVersionUID = 1L;
 
     R apply(double value) throws Throwable;
+
+    @Override
+    default R apply(Double value) throws Throwable {
+        return apply(value.doubleValue());
+    }
 }

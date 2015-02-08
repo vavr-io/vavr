@@ -5,16 +5,22 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.CheckedFunction1;
 
 /**
  * Checked version of FloatFunction.
- * Essentially the same as {@code CheckedFunction1<Float, R>}.
  *
  * @param <R> Return value type
  */
 @FunctionalInterface
-public interface CheckedFloatFunction<R> extends Serializable {
+public interface CheckedFloatFunction<R> extends CheckedFunction1<Float, R> {
+
+    static final long serialVersionUID = 1L;
 
     R apply(float f) throws Throwable;
+
+    @Override
+    default R apply(Float f) throws Throwable {
+        return apply(f.floatValue());
+    }
 }

@@ -11,7 +11,6 @@ package javaslang;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.function.Function;
 import org.junit.Test;
 
 public class Function7Test {
@@ -45,7 +44,7 @@ public class Function7Test {
     @Test
     public void shouldComposeWithAndThen() {
         final Function7<Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7) -> null;
-        final Function<Object, Object> after = o -> null;
+        final Function1<Object, Object> after = o -> null;
         final Function7<Object, Object, Object, Object, Object, Object, Object, Object> composed = f.andThen(after);
         assertThat(composed).isNotNull();
     }

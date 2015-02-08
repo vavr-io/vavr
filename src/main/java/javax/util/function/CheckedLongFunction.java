@@ -5,16 +5,22 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.CheckedFunction1;
 
 /**
  * Checked version of java.util.function.LongFunction.
- * Essentially the same as {@code CheckedFunction1<Long, R>}.
  *
  * @param <R> Return value type
  */
 @FunctionalInterface
-public interface CheckedLongFunction<R> extends Serializable {
+public interface CheckedLongFunction<R> extends CheckedFunction1<Long, R> {
+
+    static final long serialVersionUID = 1L;
 
     R apply(long value) throws Throwable;
+
+    @Override
+    default R apply(Long value) throws Throwable {
+        return apply(value.longValue());
+    }
 }

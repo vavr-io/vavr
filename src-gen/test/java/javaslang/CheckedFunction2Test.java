@@ -11,7 +11,6 @@ package javaslang;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.function.Function;
 import org.junit.Test;
 
 public class CheckedFunction2Test {
@@ -45,7 +44,7 @@ public class CheckedFunction2Test {
     @Test
     public void shouldComposeWithAndThen() {
         final CheckedFunction2<Object, Object, Object> f = (o1, o2) -> null;
-        final Function<Object, Object> after = o -> null;
+        final CheckedFunction1<Object, Object> after = o -> null;
         final CheckedFunction2<Object, Object, Object> composed = f.andThen(after);
         assertThat(composed).isNotNull();
     }

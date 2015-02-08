@@ -17,7 +17,7 @@ public class CheckedDoubleUnaryOperatorTest {
         final CheckedDoubleUnaryOperator cduo1 = d -> d + 1;
         final CheckedDoubleUnaryOperator cduo2 = d -> d * 2;
         try {
-            final double actual = cduo1.compose(cduo2).applyAsDouble(0d);
+            final double actual = cduo1.compose(cduo2).apply(0d);
             assertThat(actual).isEqualTo(1d);
         } catch (Throwable x) {
             fail("Exception occurred", x);
@@ -29,7 +29,7 @@ public class CheckedDoubleUnaryOperatorTest {
         final CheckedDoubleUnaryOperator cduo1 = d -> d + 1;
         final CheckedDoubleUnaryOperator cduo2 = d -> d * 2;
         try {
-            final double actual = cduo1.andThen(cduo2).applyAsDouble(0d);
+            final double actual = cduo1.andThen(cduo2).apply(0d);
             assertThat(actual).isEqualTo(2d);
         } catch (Throwable x) {
             fail("Exception occurred", x);

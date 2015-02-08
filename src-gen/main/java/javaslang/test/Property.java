@@ -9,6 +9,7 @@ package javaslang.test;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
@@ -27,21 +28,45 @@ public interface Property {
     Supplier<Random> RNG = ThreadLocalRandom::current;
 
     /**
-     * Default size hint for generators.
+     * Default size hint for generators: 100
      */
     int DEFAULT_SIZE = 100;
 
     /**
-     * Default tries to check a property.
+     * Default tries to check a property: 1000
      */
     int DEFAULT_TRIES = 1000;
 
+    /**
+     * Checks this property.
+     *
+     * @param randomNumberGenerator An implementation of {@link java.util.Random}.
+     * @param size A (not necessarily positive) size hint.
+     * @param tries A non-negative number of tries to falsify the given property.
+     * @return A {@linkplain CheckResult}
+     */
     CheckResult check(Random randomNumberGenerator, int size, int tries);
 
+    /**
+     * Checks this property using the default random number generator {@link #RNG}.
+     *
+     * @param size A (not necessarily positive) size hint.
+     * @param tries A non-negative number of tries to falsify the given property.
+     * @return A {@linkplain CheckResult}
+     */
     default CheckResult check(int size, int tries) {
+        if (tries < 0) {
+            throw new IllegalArgumentException("tries < 0");
+        }
         return check(RNG.get(), size, tries);
     }
 
+    /**
+     * Checks this property using the default random number generator {@link #RNG} by calling {@link #check(int, int)},
+     * where size is {@link #DEFAULT_SIZE} and tries is {@link #DEFAULT_TRIES}.
+     *
+     * @return A {@linkplain CheckResult}
+     */
     default CheckResult check() {
         return check(RNG.get(), DEFAULT_SIZE, DEFAULT_TRIES);
     }
@@ -1211,6 +1236,10 @@ public interface Property {
 
         @Override
         public CheckResult check(Random random, int size, int tries) {
+            Objects.requireNonNull(random, "random is null");
+            if (tries < 0) {
+                throw new IllegalArgumentException("tries < 0");
+            }
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 boolean exhausted = true;
@@ -1266,6 +1295,10 @@ public interface Property {
 
         @Override
         public CheckResult check(Random random, int size, int tries) {
+            Objects.requireNonNull(random, "random is null");
+            if (tries < 0) {
+                throw new IllegalArgumentException("tries < 0");
+            }
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -1325,6 +1358,10 @@ public interface Property {
 
         @Override
         public CheckResult check(Random random, int size, int tries) {
+            Objects.requireNonNull(random, "random is null");
+            if (tries < 0) {
+                throw new IllegalArgumentException("tries < 0");
+            }
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -1388,6 +1425,10 @@ public interface Property {
 
         @Override
         public CheckResult check(Random random, int size, int tries) {
+            Objects.requireNonNull(random, "random is null");
+            if (tries < 0) {
+                throw new IllegalArgumentException("tries < 0");
+            }
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -1455,6 +1496,10 @@ public interface Property {
 
         @Override
         public CheckResult check(Random random, int size, int tries) {
+            Objects.requireNonNull(random, "random is null");
+            if (tries < 0) {
+                throw new IllegalArgumentException("tries < 0");
+            }
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -1526,6 +1571,10 @@ public interface Property {
 
         @Override
         public CheckResult check(Random random, int size, int tries) {
+            Objects.requireNonNull(random, "random is null");
+            if (tries < 0) {
+                throw new IllegalArgumentException("tries < 0");
+            }
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -1601,6 +1650,10 @@ public interface Property {
 
         @Override
         public CheckResult check(Random random, int size, int tries) {
+            Objects.requireNonNull(random, "random is null");
+            if (tries < 0) {
+                throw new IllegalArgumentException("tries < 0");
+            }
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -1680,6 +1733,10 @@ public interface Property {
 
         @Override
         public CheckResult check(Random random, int size, int tries) {
+            Objects.requireNonNull(random, "random is null");
+            if (tries < 0) {
+                throw new IllegalArgumentException("tries < 0");
+            }
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -1763,6 +1820,10 @@ public interface Property {
 
         @Override
         public CheckResult check(Random random, int size, int tries) {
+            Objects.requireNonNull(random, "random is null");
+            if (tries < 0) {
+                throw new IllegalArgumentException("tries < 0");
+            }
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -1850,6 +1911,10 @@ public interface Property {
 
         @Override
         public CheckResult check(Random random, int size, int tries) {
+            Objects.requireNonNull(random, "random is null");
+            if (tries < 0) {
+                throw new IllegalArgumentException("tries < 0");
+            }
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -1941,6 +2006,10 @@ public interface Property {
 
         @Override
         public CheckResult check(Random random, int size, int tries) {
+            Objects.requireNonNull(random, "random is null");
+            if (tries < 0) {
+                throw new IllegalArgumentException("tries < 0");
+            }
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -2036,6 +2105,10 @@ public interface Property {
 
         @Override
         public CheckResult check(Random random, int size, int tries) {
+            Objects.requireNonNull(random, "random is null");
+            if (tries < 0) {
+                throw new IllegalArgumentException("tries < 0");
+            }
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -2135,6 +2208,10 @@ public interface Property {
 
         @Override
         public CheckResult check(Random random, int size, int tries) {
+            Objects.requireNonNull(random, "random is null");
+            if (tries < 0) {
+                throw new IllegalArgumentException("tries < 0");
+            }
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -2238,6 +2315,10 @@ public interface Property {
 
         @Override
         public CheckResult check(Random random, int size, int tries) {
+            Objects.requireNonNull(random, "random is null");
+            if (tries < 0) {
+                throw new IllegalArgumentException("tries < 0");
+            }
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -2345,6 +2426,10 @@ public interface Property {
 
         @Override
         public CheckResult check(Random random, int size, int tries) {
+            Objects.requireNonNull(random, "random is null");
+            if (tries < 0) {
+                throw new IllegalArgumentException("tries < 0");
+            }
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -2456,6 +2541,10 @@ public interface Property {
 
         @Override
         public CheckResult check(Random random, int size, int tries) {
+            Objects.requireNonNull(random, "random is null");
+            if (tries < 0) {
+                throw new IllegalArgumentException("tries < 0");
+            }
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -2571,6 +2660,10 @@ public interface Property {
 
         @Override
         public CheckResult check(Random random, int size, int tries) {
+            Objects.requireNonNull(random, "random is null");
+            if (tries < 0) {
+                throw new IllegalArgumentException("tries < 0");
+            }
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -2690,6 +2783,10 @@ public interface Property {
 
         @Override
         public CheckResult check(Random random, int size, int tries) {
+            Objects.requireNonNull(random, "random is null");
+            if (tries < 0) {
+                throw new IllegalArgumentException("tries < 0");
+            }
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -2813,6 +2910,10 @@ public interface Property {
 
         @Override
         public CheckResult check(Random random, int size, int tries) {
+            Objects.requireNonNull(random, "random is null");
+            if (tries < 0) {
+                throw new IllegalArgumentException("tries < 0");
+            }
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -2940,6 +3041,10 @@ public interface Property {
 
         @Override
         public CheckResult check(Random random, int size, int tries) {
+            Objects.requireNonNull(random, "random is null");
+            if (tries < 0) {
+                throw new IllegalArgumentException("tries < 0");
+            }
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -3071,6 +3176,10 @@ public interface Property {
 
         @Override
         public CheckResult check(Random random, int size, int tries) {
+            Objects.requireNonNull(random, "random is null");
+            if (tries < 0) {
+                throw new IllegalArgumentException("tries < 0");
+            }
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -3206,6 +3315,10 @@ public interface Property {
 
         @Override
         public CheckResult check(Random random, int size, int tries) {
+            Objects.requireNonNull(random, "random is null");
+            if (tries < 0) {
+                throw new IllegalArgumentException("tries < 0");
+            }
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -3345,6 +3458,10 @@ public interface Property {
 
         @Override
         public CheckResult check(Random random, int size, int tries) {
+            Objects.requireNonNull(random, "random is null");
+            if (tries < 0) {
+                throw new IllegalArgumentException("tries < 0");
+            }
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -3488,6 +3605,10 @@ public interface Property {
 
         @Override
         public CheckResult check(Random random, int size, int tries) {
+            Objects.requireNonNull(random, "random is null");
+            if (tries < 0) {
+                throw new IllegalArgumentException("tries < 0");
+            }
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -3635,6 +3756,10 @@ public interface Property {
 
         @Override
         public CheckResult check(Random random, int size, int tries) {
+            Objects.requireNonNull(random, "random is null");
+            if (tries < 0) {
+                throw new IllegalArgumentException("tries < 0");
+            }
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -3786,6 +3911,10 @@ public interface Property {
 
         @Override
         public CheckResult check(Random random, int size, int tries) {
+            Objects.requireNonNull(random, "random is null");
+            if (tries < 0) {
+                throw new IllegalArgumentException("tries < 0");
+            }
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();

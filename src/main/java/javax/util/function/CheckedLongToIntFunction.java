@@ -5,14 +5,20 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.CheckedFunction1;
 
 /**
  * Checked version of java.util.function.LongToIntFunction.
- * Essentially the same as {@code CheckedFunction1<Long, Integer>}.
  */
 @FunctionalInterface
-public interface CheckedLongToIntFunction extends Serializable {
+public interface CheckedLongToIntFunction extends CheckedFunction1<Long, Integer> {
+
+    static final long serialVersionUID = 1L;
 
     int applyAsInt(long value) throws Throwable;
+
+    @Override
+    default Integer apply(Long value) throws Throwable {
+        return applyAsInt(value);
+    }
 }

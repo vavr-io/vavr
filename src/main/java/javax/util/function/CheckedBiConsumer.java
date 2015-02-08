@@ -5,22 +5,28 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.CheckedFunction2;
+
 import java.util.Objects;
 
 /**
  * Checked version of java.util.function.BiConsumer.
- * Essentially the same as {@code CheckedFunction2<T, U, Void>}.
  *
  * @param <T> First argument type
  * @param <U> Second argument type
  */
 @FunctionalInterface
-public interface CheckedBiConsumer<T, U> extends Serializable {
+public interface CheckedBiConsumer<T, U> extends CheckedFunction2<T, U, Void> {
 
     static final long serialVersionUID = 1L;
 
     void accept(T t, U u) throws Throwable;
+
+    @Override
+    default Void apply(T t, U u) throws Throwable {
+        accept(t, u);
+        return null;
+    }
 
     default CheckedBiConsumer<T,U>	andThen(CheckedBiConsumer<? super T,? super U> after) {
         Objects.requireNonNull(after);

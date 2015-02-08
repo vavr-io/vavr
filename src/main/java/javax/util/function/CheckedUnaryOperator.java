@@ -9,7 +9,6 @@ import javaslang.CheckedFunction1;
 
 /**
  * Checked version of java.util.function.UnaryOperator.
- * Essentially the same as {@code CheckedFunction1<T, T>}.
  *
  * @param <T> Operand type
  */

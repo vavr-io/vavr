@@ -5,22 +5,27 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.CheckedFunction2;
+
 import java.util.Objects;
 
 /**
  * Checked version of java.util.function.BiPredicate.
- * Essentially the same as {@code CheckedFunction2<T, U, Boolean>}.
  *
  * @param <T> First argument type
  * @param <U> Second argument type
  */
 @FunctionalInterface
-public interface CheckedBiPredicate<T, U> extends Serializable {
+public interface CheckedBiPredicate<T, U> extends CheckedFunction2<T, U, Boolean> {
 
     static final long serialVersionUID = 1L;
 
     boolean test(T t, U u) throws Throwable;
+
+    @Override
+    default Boolean apply(T t, U u) throws Throwable {
+        return test(t, u);
+    }
 
     default CheckedBiPredicate<T, U> and(CheckedBiPredicate<? super T, ? super U> other) {
         Objects.requireNonNull(other);

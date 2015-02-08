@@ -5,16 +5,22 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.Function1;
 
 /**
  * Unchecked short to R function.
- * Essentially the same as {@code Function1<Short, R>}.
  *
  * @param <R> Return value type
  */
 @FunctionalInterface
-public interface ShortFunction<R> extends Serializable {
+public interface ShortFunction<R> extends Function1<Short, R> {
+
+    static final long serialVersionUID = 1L;
 
     R apply(short s);
+
+    @Override
+    default R apply(Short s) {
+        return apply(s.shortValue());
+    }
 }

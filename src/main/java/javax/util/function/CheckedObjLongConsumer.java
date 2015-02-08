@@ -5,16 +5,23 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.CheckedFunction2;
 
 /**
  * Checked version of java.util.function.ObjLongConsumer.
- * Essentially the same as {@code CheckedFunction2<T, Long, Void>}.
  *
  * @param <T> Argument type
  */
 @FunctionalInterface
-public interface CheckedObjLongConsumer<T> extends Serializable {
+public interface CheckedObjLongConsumer<T> extends CheckedFunction2<T, Long, Void> {
+
+    static final long serialVersionUID = 1L;
 
     void accept(T t, long value) throws Throwable;
+
+    @Override
+    default Void apply(T t, Long value) throws Throwable {
+        accept(t, value);
+        return null;
+    }
 }

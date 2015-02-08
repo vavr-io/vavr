@@ -5,6 +5,7 @@
  */
 package javaslang.test;
 
+import javaslang.Function1;
 import javaslang.Tuple2;
 import javaslang.algebra.HigherKinded1;
 import javaslang.algebra.Monad1;
@@ -38,7 +39,9 @@ import java.util.function.Predicate;
  * @see javaslang.test.Arbitrary
  */
 @FunctionalInterface
-public interface Gen<T> extends Function<Random, T>, Monad1<T, Gen<?>> {
+public interface Gen<T> extends Function1<Random, T>, Monad1<T, Gen<?>> {
+
+    static final long serialVersionUID = 1L;
 
     /**
      * A generator which constantly returns t.
@@ -122,6 +125,28 @@ public interface Gen<T> extends Function<Random, T>, Monad1<T, Gen<?>> {
                 return d * _max + (1.0 - d) * _min;
             };
         }
+    }
+
+    /**
+     * <p>Chooses a char between min and max, bounds inclusive and chars equally distributed.</p>
+     * <p>Note: min and max are internally swapped if min &gt; max.</p>
+     *
+     * @param min lower bound
+     * @param max upper bound
+     * @return A new char generator
+     */
+    static Gen<Character> choose(char min, char max) {
+        return random -> (char) (int) Gen.choose((int) min, (int) max).apply(random);
+    }
+
+    /**
+     * A failing generator which throws a RuntimeException("failed").
+     *
+     * @param <T>     Type of values theoretically generated.
+     * @return A new generator which always fails with the message "failed"
+     */
+    static <T> Gen<T> fail() {
+        return fail("failed");
     }
 
     /**

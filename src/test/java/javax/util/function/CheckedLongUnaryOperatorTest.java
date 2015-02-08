@@ -17,7 +17,7 @@ public class CheckedLongUnaryOperatorTest {
         final CheckedLongUnaryOperator cluo1 = l -> l + 1;
         final CheckedLongUnaryOperator cluo2 = l -> l * 2;
         try {
-            final double actual = cluo1.compose(cluo2).applyAsLong(0L);
+            final double actual = cluo1.compose(cluo2).apply(0L);
             assertThat(actual).isEqualTo(1L);
         } catch (Throwable x) {
             fail("Exception occurred", x);
@@ -29,7 +29,7 @@ public class CheckedLongUnaryOperatorTest {
         final CheckedLongUnaryOperator cluo1 = l -> l + 1;
         final CheckedLongUnaryOperator cluo2 = l -> l * 2;
         try {
-            final double actual = cluo1.andThen(cluo2).applyAsLong(0L);
+            final double actual = cluo1.andThen(cluo2).apply(0L);
             assertThat(actual).isEqualTo(2L);
         } catch (Throwable x) {
             fail("Exception occurred", x);

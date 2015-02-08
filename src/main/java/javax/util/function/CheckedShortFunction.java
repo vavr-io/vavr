@@ -5,16 +5,22 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.CheckedFunction1;
 
 /**
  * Checked version of ShortFunction.
- * Essentially the same as {@code CheckedFunction1<Short, R>}.
  *
  * @param <R> Return value type
  */
 @FunctionalInterface
-public interface CheckedShortFunction<R> extends Serializable {
+public interface CheckedShortFunction<R> extends CheckedFunction1<Short, R> {
+
+    static final long serialVersionUID = 1L;
 
     R apply(short s) throws Throwable;
+
+    @Override
+    default R apply(Short s) throws Throwable {
+        return apply(s.shortValue());
+    }
 }

@@ -5,16 +5,22 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.Function1;
 
 /**
  * Unchecked boolean to R function.
- * Essentially the same as {@code Function1<Boolean, R>}.
  *
  * @param <R> Return value type
  */
 @FunctionalInterface
-public interface BooleanFunction<R> extends Serializable {
+public interface BooleanFunction<R> extends Function1<Boolean, R> {
+
+    static final long serialVersionUID = 1L;
 
     R apply(boolean b);
+
+    @Override
+    default R apply(Boolean b) {
+        return apply(b.booleanValue());
+    }
 }

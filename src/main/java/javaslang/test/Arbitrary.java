@@ -5,8 +5,10 @@
  */
 package javaslang.test;
 
+import javaslang.Tuple;
 import javaslang.algebra.HigherKinded1;
 import javaslang.algebra.Monad1;
+import javaslang.collection.List;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -55,7 +57,7 @@ public interface Arbitrary<T> extends IntFunction<Gen<T>>, Function<Integer, Gen
      * </code>
      * </pre>
      *
-     * @param size A size parameter which may be interpreted idividually and is constant for all arbitrary objects regarding one property check.
+     * @param size A (not necessarily positive) size parameter which may be interpreted idividually and is constant for all arbitrary objects regarding one property check.
      * @return A generator for objects of type T.
      */
     @Override
@@ -113,5 +115,29 @@ public interface Arbitrary<T> extends IntFunction<Gen<T>>, Function<Integer, Gen
      */
     default Arbitrary<T> filter(Predicate<T> predicate) {
         return n -> apply(n).filter(predicate);
+    }
+
+    static Arbitrary<String> string(Gen<Character> gen) {
+        return size -> random -> Gen.choose(0, size).map(i -> {
+            final char[] chars = new char[i];
+            for (int j = 0; j < i; j++) {
+                chars[j] = gen.apply(random);
+            }
+            return new String(chars);
+        }).apply(random);
+    }
+
+    static <T> Arbitrary<List<T>> list(Arbitrary<T> arbitraryT) {
+        return size -> {
+            final Gen<T> genT = arbitraryT.apply(size);
+            return random -> Gen.choose(0, size).map(i -> {
+                List<T> list = List.nil();
+                for (int j = 0; j < i; j++) {
+                    final T element = genT.apply(random);
+                    list = list.prepend(element);
+                }
+                return list;
+            }).apply(random);
+        };
     }
 }

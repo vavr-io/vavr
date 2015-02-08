@@ -5,19 +5,24 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.CheckedFunction1;
+
 import java.util.Objects;
 
 /**
  * Checked version of java.util.function.LongPredicate.
- * Essentially the same as {@code CheckedFunction1<Long, Boolean>}.
  */
 @FunctionalInterface
-public interface CheckedLongPredicate extends Serializable {
+public interface CheckedLongPredicate extends CheckedFunction1<Long, Boolean> {
 
     static final long serialVersionUID = 1L;
 
     boolean test(long value) throws Throwable;
+
+    @Override
+    default Boolean apply(Long value) throws Throwable {
+        return test(value);
+    }
 
     default CheckedLongPredicate and(CheckedLongPredicate other) {
         Objects.requireNonNull(other);

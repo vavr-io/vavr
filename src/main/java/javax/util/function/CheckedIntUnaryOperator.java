@@ -5,28 +5,23 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.CheckedFunction1;
+
 import java.util.Objects;
 
 /**
  * Checked version of java.util.function.IntUnaryOperator.
- * Essentially the same as {@code CheckedFunction1<Integer, Integer>}.
  */
 @FunctionalInterface
-public interface CheckedIntUnaryOperator extends Serializable {
+public interface CheckedIntUnaryOperator extends CheckedFunction1<Integer, Integer> {
 
     static final long serialVersionUID = 1L;
 
     int applyAsInt(int operand) throws Throwable;
 
-    default CheckedIntUnaryOperator compose(CheckedIntUnaryOperator before) {
-        Objects.requireNonNull(before);
-        return (int v) -> applyAsInt(before.applyAsInt(v));
-    }
-
-    default CheckedIntUnaryOperator andThen(CheckedIntUnaryOperator after) {
-        Objects.requireNonNull(after);
-        return (int t) -> after.applyAsInt(applyAsInt(t));
+    @Override
+    default Integer apply(Integer operand) throws Throwable {
+        return applyAsInt(operand);
     }
 
     static CheckedIntUnaryOperator identity() {

@@ -5,16 +5,22 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.CheckedFunction1;
 
 /**
  * Checked version of CharFunction.
- * Essentially the same as {@code CheckedFunction1<Character, R>}.
  *
  * @param <R> Return value type
  */
 @FunctionalInterface
-public interface CheckedCharFunction<R> extends Serializable {
+public interface CheckedCharFunction<R> extends CheckedFunction1<Character, R> {
+
+    static final long serialVersionUID = 1L;
 
     R apply(char c) throws Throwable;
+
+    @Override
+    default R apply(Character c) throws Throwable {
+        return apply(c.charValue());
+    }
 }

@@ -5,17 +5,23 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.CheckedFunction2;
 
 /**
  * Checked version of java.util.function.ToLongBiFunction.
- * Essentially the same as {@code CheckedFunction2<T, U, Long>}.
  *
  * @param <T> First argument type
  * @param <U> Second argument type
  */
 @FunctionalInterface
-public interface CheckedToLongBiFunction<T, U> extends Serializable {
+public interface CheckedToLongBiFunction<T, U> extends CheckedFunction2<T, U, Long> {
+
+    static final long serialVersionUID = 1L;
 
     long applyAsLong(T t, U u) throws Throwable;
+
+    @Override
+    default Long apply(T t, U u) throws Throwable {
+        return applyAsLong(t, u);
+    }
 }

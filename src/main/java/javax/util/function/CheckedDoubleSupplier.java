@@ -5,14 +5,20 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.CheckedFunction0;
 
 /**
  * Checked version of java.util.function.DoubleSupplier.
- * Essentially the same as {@code CheckedFunction0<Double>}.
  */
 @FunctionalInterface
-public interface CheckedDoubleSupplier extends Serializable {
+public interface CheckedDoubleSupplier extends CheckedFunction0<Double> {
+
+    static final long serialVersionUID = 1L;
 
     double getAsDouble() throws Throwable;
+
+    @Override
+    default Double apply() throws Throwable {
+        return getAsDouble();
+    }
 }

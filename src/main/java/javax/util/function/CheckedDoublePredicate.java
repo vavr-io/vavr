@@ -5,19 +5,24 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.CheckedFunction1;
+
 import java.util.Objects;
 
 /**
  * Checked version of java.util.function.DoublePredicate.
- * Essentially the same as {@code CheckedFunction1<Double, Boolean>}.
  */
 @FunctionalInterface
-public interface CheckedDoublePredicate extends Serializable {
+public interface CheckedDoublePredicate extends CheckedFunction1<Double, Boolean> {
 
     static final long serialVersionUID = 1L;
 
     boolean test(double value) throws Throwable;
+
+    @Override
+    default Boolean apply(Double value) throws Throwable {
+        return test(value);
+    }
 
     default CheckedDoublePredicate and(CheckedDoublePredicate other) {
         Objects.requireNonNull(other);

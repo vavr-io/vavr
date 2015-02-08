@@ -5,16 +5,22 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.CheckedFunction1;
 
 /**
  * Checked version of java.util.function.ToIntFunction.
- * Essentially the same as {@code CheckedFunction1<T, Integer>}.
  *
  * @param <T> Argument type
  */
 @FunctionalInterface
-public interface CheckedToIntFunction<T> extends Serializable {
+public interface CheckedToIntFunction<T> extends CheckedFunction1<T, Integer> {
+
+    static final long serialVersionUID = 1L;
 
     int applyAsInt(T value) throws Throwable;
+
+    @Override
+    default Integer apply(T value) throws Throwable {
+        return applyAsInt(value);
+    }
 }

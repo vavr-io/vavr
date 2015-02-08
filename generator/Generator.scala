@@ -155,21 +155,45 @@ def generateMainClasses(): Unit = {
           ${im.getType("java.util.function.Supplier")}<${im.getType("java.util.Random")}> RNG = ${im.getType("java.util.concurrent.ThreadLocalRandom")}::current;
 
           /**
-           * Default size hint for generators.
+           * Default size hint for generators: 100
            */
           int DEFAULT_SIZE = 100;
 
           /**
-           * Default tries to check a property.
+           * Default tries to check a property: 1000
            */
           int DEFAULT_TRIES = 1000;
 
+          /**
+           * Checks this property.
+           *
+           * @param randomNumberGenerator An implementation of {@link java.util.Random}.
+           * @param size A (not necessarily positive) size hint.
+           * @param tries A non-negative number of tries to falsify the given property.
+           * @return A {@linkplain CheckResult}
+           */
           CheckResult check(${im.getType("java.util.Random")} randomNumberGenerator, int size, int tries);
 
+          /**
+           * Checks this property using the default random number generator {@link #RNG}.
+           *
+           * @param size A (not necessarily positive) size hint.
+           * @param tries A non-negative number of tries to falsify the given property.
+           * @return A {@linkplain CheckResult}
+           */
           default CheckResult check(int size, int tries) {
+              if (tries < 0) {
+                  throw new IllegalArgumentException("tries < 0");
+              }
               return check(RNG.get(), size, tries);
           }
 
+          /**
+           * Checks this property using the default random number generator {@link #RNG} by calling {@link #check(int, int)},
+           * where size is {@link #DEFAULT_SIZE} and tries is {@link #DEFAULT_TRIES}.
+           *
+           * @return A {@linkplain CheckResult}
+           */
           default CheckResult check() {
               return check(RNG.get(), DEFAULT_SIZE, DEFAULT_TRIES);
           }
@@ -276,6 +300,10 @@ def generateMainClasses(): Unit = {
 
                       @Override
                       public CheckResult check($randomType random, int size, int tries) {
+                          ${im.getType("java.util.Objects")}.requireNonNull(random, "random is null");
+                          if (tries < 0) {
+                              throw new IllegalArgumentException("tries < 0");
+                          }
                           try {
                               ${(1 to i).gen(j => {
                                   s"""final Gen<T$j> gen$j = $tryType.of(() -> a$j.apply(size)).recover(x -> { throw Errors.arbitraryError($j, size, x); }).get();"""
@@ -351,6 +379,7 @@ def generateMainClasses(): Unit = {
         val params = (1 to i).gen(j => s"t$j")(", ")
         val paramsReversed = (1 to i).reverse.gen(j => s"t$j")(", ")
         val tupled = (1 to i).gen(j => s"t._$j")(", ")
+        val compositionType = if (checked) "CheckedFunction1" else im.getType("java.util.function.Function")
 
         def additionalInterfaces(arity: Int, checked: Boolean): String = (arity, checked) match {
           case (0, false) => s", ${im.getType("java.util.function.Supplier")}<R>"
@@ -412,14 +441,13 @@ def generateMainClasses(): Unit = {
                   return ($paramsReversed) -> apply($params);
               }
 
-              @Override
-              default <V> $className<${genericsFunction}V> andThen(${im.getType("java.util.function.Function")}<? super R, ? extends V> after) {
+              default <V> $className<${genericsFunction}V> andThen($compositionType<? super R, ? extends V> after) {
                   ${im.getType("java.util.Objects")}.requireNonNull(after);
                   return ($params) -> after.apply(apply($params));
               }
 
               ${(i == 1).gen(xs"""
-              default <V> ${name}1<V, R> compose(${im.getType("java.util.function.Function")}<? super V, ? extends T1> before) {
+              default <V> ${name}1<V, R> compose($compositionType<? super V, ? extends T1> before) {
                   ${im.getType("java.util.Objects")}.requireNonNull(before);
                   return v -> apply(before.apply(v));
               }""")}
@@ -708,7 +736,7 @@ def generateTestClasses(): Unit = {
               @$test
               public void shouldComposeWithAndThen() {
                   final $name$i<$generics> f = ($functionArgs) -> null;
-                  final ${im.getType("java.util.function.Function")}<Object, Object> after = o -> null;
+                  final ${name}1<Object, Object> after = o -> null;
                   final $name$i<$generics> composed = f.andThen(after);
                   $assertThat(composed).isNotNull();
               }
@@ -719,10 +747,158 @@ def generateTestClasses(): Unit = {
   }
 
   /**
-   * Generator of Property-check tests
+    * Generator of Property-check tests
    */
   def genPropertyCheckTests(): Unit = {
-    // TODO
+    genJavaslangFile("javaslang.test", "PropertyTest", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
+
+      // main classes
+      val list = im.getType("javaslang.collection.List")
+      val predicate = im.getType("javax.util.function.CheckedPredicate")
+      val random = im.getType("java.util.Random")
+      val tuple = im.getType("javaslang.Tuple")
+
+      // test classes
+      val test = im.getType("org.junit.Test")
+      val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
+
+      xs"""
+        public class PropertyTest {
+
+            static <T> $predicate<T> tautology() {
+                return any -> true;
+            }
+
+            static <T> $predicate<T> falsum() {
+                return any -> false;
+            }
+
+            // -- Property.check methods
+
+            @$test
+            public void shouldCheckUsingDefaultConfiguration() {
+                final CheckResult result = Property
+                        .forAll(Gen.of(null).arbitrary())
+                        .suchThat(ignored -> true)
+                        .check();
+                $assertThat(result.isSatisfied()).isTrue();
+                $assertThat(result.isExhausted()).isFalse();
+            }
+
+            @$test
+            public void shouldCheckGivenSizeAndTries() {
+                final CheckResult result = Property
+                        .forAll(Gen.of(null).arbitrary())
+                        .suchThat(ignored -> true)
+                        .check(0, 0);
+                $assertThat(result.isSatisfied()).isTrue();
+                $assertThat(result.isExhausted()).isTrue();
+            }
+
+            @$test
+            public void shouldCheckGivenRandomAndSizeAndTries() {
+                final CheckResult result = Property
+                        .forAll(Gen.of(null).arbitrary())
+                        .suchThat(ignored -> true)
+                        .check(new $random(), 0, 0);
+                $assertThat(result.isSatisfied()).isTrue();
+                $assertThat(result.isExhausted()).isTrue();
+            }
+
+            // -- satisfaction
+
+            @$test
+            public void shouldCheckPythagoras() {
+
+                final Arbitrary<Double> real = n -> Gen.choose(0, (double) n).filter(d -> d > .0d);
+
+                // (∀a,b ∈ ℝ+ ∃c ∈ ℝ+ : a²+b²=c²) ≡ (∀a,b ∈ ℝ+ : √(a²+b²) ∈ ℝ+)
+                final Property property = Property.forAll(real, real).suchThat((a, b) -> Math.sqrt(a * a + b * b) > .0d);
+                final CheckResult result = property.check();
+
+                $assertThat(result.isSatisfied()).isTrue();
+                $assertThat(result.isExhausted()).isFalse();
+            }
+
+            @$test
+            public void shouldCheckZipAndThenUnzipIsIdempotentForListsOfSameLength() {
+                // ∀is,ss: length(is) = length(ss) → unzip(zip(is, ss)) = (is, ss)
+                final Arbitrary<$list<Integer>> ints = Arbitrary.list(size -> Gen.choose(0, size));
+                final Arbitrary<$list<String>> strings = Arbitrary.list(
+                        Arbitrary.string(
+                            Gen.frequency(
+                                Tuple.of(1, Gen.choose('A', 'Z')),
+                                Tuple.of(1, Gen.choose('a', 'z')),
+                                Tuple.of(1, Gen.choose('0', '9'))
+                            )));
+                final CheckResult result = Property
+                        .forAll(ints, strings)
+                        .suchThat((is, ss) -> is.length() == ss.length())
+                        .implies((is, ss) -> is.zip(ss).unzip(t -> t).equals($tuple.of(is, ss)))
+                        .check();
+                $assertThat(result.isSatisfied()).isTrue();
+                $assertThat(result.isExhausted()).isFalse();
+            }
+
+            // -- exhausting
+
+            @$test
+            public void shouldRecognizeExhaustedParameters() {
+                final Arbitrary<?> x = n -> random -> null;
+                final CheckResult result = Property.forAll(x).suchThat(falsum()).implies(tautology()).check();
+                $assertThat(result.isSatisfied()).isTrue();
+                $assertThat(result.isExhausted()).isTrue();
+            }
+
+            // -- falsification
+
+            @$test
+            public void shouldFalsifyFalseProperty() {
+                final Arbitrary<Integer> ones = n -> random -> 1;
+                final CheckResult result = Property.forAll(ones).suchThat(one -> one == 2).check();
+                $assertThat(result.isFalsified()).isTrue();
+                $assertThat(result.isExhausted()).isFalse();
+                $assertThat(result.count()).isEqualTo(1);
+            }
+
+            // -- error detection
+
+            @$test
+            public void shouldRecognizeArbitraryError() {
+                final Arbitrary<?> arbitrary = n -> { throw new RuntimeException("woops"); };
+                final CheckResult result = Property.forAll(arbitrary).suchThat(tautology()).check();
+                $assertThat(result.isErroneous()).isTrue();
+                $assertThat(result.isExhausted()).isFalse();
+                $assertThat(result.count()).isEqualTo(0);
+                $assertThat(result.sample().isNotPresent()).isTrue();
+            }
+
+            @$test
+            public void shouldRecognizeGenError() {
+                final Arbitrary<?> arbitrary = Gen.fail("woops").arbitrary();
+                final CheckResult result = Property.forAll(arbitrary).suchThat(tautology()).check();
+                $assertThat(result.isErroneous()).isTrue();
+                $assertThat(result.isExhausted()).isFalse();
+                $assertThat(result.count()).isEqualTo(1);
+                $assertThat(result.sample().isNotPresent()).isTrue();
+            }
+
+            @$test
+            public void shouldRecognizePropertyError() {
+                final Arbitrary<Integer> a1 = n -> random -> 1;
+                final Arbitrary<Integer> a2 = n -> random -> 2;
+                final CheckResult result = Property.forAll(a1, a2).suchThat((a, b) -> {
+                    throw new RuntimeException("woops");
+                }).check();
+                $assertThat(result.isErroneous()).isTrue();
+                $assertThat(result.isExhausted()).isFalse();
+                $assertThat(result.count()).isEqualTo(1);
+                $assertThat(result.sample().isPresent()).isTrue();
+                $assertThat(result.sample().get()).isEqualTo(Tuple.of(1, 2));
+            }
+        }
+      """
+    })
   }
 
   /**

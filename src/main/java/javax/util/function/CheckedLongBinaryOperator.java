@@ -5,14 +5,20 @@
  */
 package javax.util.function;
 
-import java.io.Serializable;
+import javaslang.CheckedFunction2;
 
 /**
  * Checked version of java.util.function.LongBinaryOperator.
- * Essentially the same as {@code CheckedFunction2<Long, Long, Long>}.
  */
 @FunctionalInterface
-public interface CheckedLongBinaryOperator extends Serializable {
+public interface CheckedLongBinaryOperator extends CheckedFunction2<Long, Long, Long> {
+
+    static final long serialVersionUID = 1L;
 
     long applyAsLong(long left, long right) throws Throwable;
+
+    @Override
+    default Long apply(Long left, Long right) throws Throwable {
+        return applyAsLong(left, right);
+    }
 }
