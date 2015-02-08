@@ -773,34 +773,32 @@ def generateTestClasses(): Unit = {
                 return any -> false;
             }
 
+            static Arbitrary<Object> objects = Gen.of(null).arbitrary();
+
             // -- Property.check methods
 
             @$test
             public void shouldCheckUsingDefaultConfiguration() {
-                final CheckResult result = Property
-                        .forAll(Gen.of(null).arbitrary())
-                        .suchThat(ignored -> true)
-                        .check();
+                final CheckResult result = Property.forAll(objects).suchThat(tautology()).check();
                 $assertThat(result.isSatisfied()).isTrue();
                 $assertThat(result.isExhausted()).isFalse();
             }
 
             @$test
             public void shouldCheckGivenSizeAndTries() {
-                final CheckResult result = Property
-                        .forAll(Gen.of(null).arbitrary())
-                        .suchThat(ignored -> true)
-                        .check(0, 0);
+                final CheckResult result = Property.forAll(objects).suchThat(tautology()).check(0, 0);
                 $assertThat(result.isSatisfied()).isTrue();
                 $assertThat(result.isExhausted()).isTrue();
             }
 
+            @$test(expected = IllegalArgumentException.class)
+            public void shouldThrowOnCheckGivenNegativeTries() {
+                Property.forAll(objects).suchThat(tautology()).check(0, -1);
+            }
+
             @$test
             public void shouldCheckGivenRandomAndSizeAndTries() {
-                final CheckResult result = Property
-                        .forAll(Gen.of(null).arbitrary())
-                        .suchThat(ignored -> true)
-                        .check(new $random(), 0, 0);
+                final CheckResult result = Property.forAll(objects).suchThat(tautology()).check(new $random(), 0, 0);
                 $assertThat(result.isSatisfied()).isTrue();
                 $assertThat(result.isExhausted()).isTrue();
             }
@@ -844,8 +842,7 @@ def generateTestClasses(): Unit = {
 
             @$test
             public void shouldRecognizeExhaustedParameters() {
-                final Arbitrary<?> x = n -> random -> null;
-                final CheckResult result = Property.forAll(x).suchThat(falsum()).implies(tautology()).check();
+                final CheckResult result = Property.forAll(objects).suchThat(falsum()).implies(tautology()).check();
                 $assertThat(result.isSatisfied()).isTrue();
                 $assertThat(result.isExhausted()).isTrue();
             }
@@ -895,6 +892,144 @@ def generateTestClasses(): Unit = {
                 $assertThat(result.count()).isEqualTo(1);
                 $assertThat(result.sample().isPresent()).isTrue();
                 $assertThat(result.sample().get()).isEqualTo(Tuple.of(1, 2));
+            }
+
+            // -- Property checks
+
+            ${(1 to N).gen(i => {
+
+              val generics = (1 to i).gen(j => "Object")(", ")
+              val arbitraries = (1 to i).gen(j => "objects")(", ")
+              val args = (1 to i).gen(j => s"o$j")(", ")
+
+              xs"""
+                @$test
+                public void shouldApplyForAllOfArity$i() {
+                    final Property.ForAll$i<${(1 to i).gen(j => "Object")(", ")}> forAll = Property.forAll(${(1 to i).gen(j => "null")(", ")});
+                    $assertThat(forAll).isNotNull();
+                }
+
+                @$test
+                public void shouldApplySuchThatOfArity$i() {
+                    final Property.ForAll$i<$generics> forAll = Property.forAll($arbitraries);
+                    final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> predicate = ($args) -> true;
+                    final Property.Property$i<$generics> suchThat = forAll.suchThat(predicate);
+                    $assertThat(suchThat).isNotNull();
+                }
+
+                @$test
+                public void shouldCheckTrueProperty$i() {
+                    final Property.ForAll$i<$generics> forAll = Property.forAll($arbitraries);
+                    final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> predicate = ($args) -> true;
+                    final CheckResult result = forAll.suchThat(predicate).check();
+                    $assertThat(result.isSatisfied()).isTrue();
+                    $assertThat(result.isExhausted()).isFalse();
+                }
+
+                @$test
+                public void shouldCheckFalseProperty$i() {
+                    final Property.ForAll$i<$generics> forAll = Property.forAll($arbitraries);
+                    final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> predicate = ($args) -> false;
+                    final CheckResult result = forAll.suchThat(predicate).check();
+                    $assertThat(result.isFalsified()).isTrue();
+                }
+
+                @$test
+                public void shouldCheckErroneousProperty$i() {
+                    final Property.ForAll$i<$generics> forAll = Property.forAll($arbitraries);
+                    final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> predicate = ($args) -> { throw new RuntimeException("woops"); };
+                    final CheckResult result = forAll.suchThat(predicate).check();
+                    $assertThat(result.isErroneous()).isTrue();
+                }
+
+                @$test
+                public void shouldCheckProperty${i}ImplicationWithTruePrecondition() {
+                    final Property.ForAll$i<$generics> forAll = Property.forAll($arbitraries);
+                    final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> p1 = ($args) -> true;
+                    final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> p2 = ($args) -> true;
+                    final CheckResult result = forAll.suchThat(p1).implies(p2).check();
+                    $assertThat(result.isSatisfied()).isTrue();
+                    $assertThat(result.isExhausted()).isFalse();
+                }
+
+                @$test
+                public void shouldCheckProperty${i}ImplicationWithFalsePrecondition() {
+                    final Property.ForAll$i<$generics> forAll = Property.forAll($arbitraries);
+                    final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> p1 = ($args) -> false;
+                    final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> p2 = ($args) -> true;
+                    final CheckResult result = forAll.suchThat(p1).implies(p2).check();
+                    $assertThat(result.isSatisfied()).isTrue();
+                    $assertThat(result.isExhausted()).isTrue();
+                }
+              """})("\n\n")
+            }
+
+            // -- Property.and tests
+
+            @$test
+            public void shouldCheckAndCombinationWhereFirstPropertyIsTrueAndSecondPropertyIsTrue() {
+                final Property p1 = Property.forAll(objects).suchThat(tautology());
+                final Property p2 = Property.forAll(objects).suchThat(tautology());
+                final CheckResult result = p1.and(p2).check();
+                $assertThat(result.isSatisfied()).isTrue();
+            }
+
+            @$test
+            public void shouldCheckAndCombinationWhereFirstPropertyIsTrueAndSecondPropertyIsFalse() {
+                final Property p1 = Property.forAll(objects).suchThat(tautology());
+                final Property p2 = Property.forAll(objects).suchThat(falsum());
+                final CheckResult result = p1.and(p2).check();
+                $assertThat(result.isSatisfied()).isFalse();
+            }
+
+            @$test
+            public void shouldCheckAndCombinationWhereFirstPropertyIsFalseAndSecondPropertyIsTrue() {
+                final Property p1 = Property.forAll(objects).suchThat(falsum());
+                final Property p2 = Property.forAll(objects).suchThat(tautology());
+                final CheckResult result = p1.and(p2).check();
+                $assertThat(result.isSatisfied()).isFalse();
+            }
+
+            @$test
+            public void shouldCheckAndCombinationWhereFirstPropertyIsFalseAndSecondPropertyIsFalse() {
+                final Property p1 = Property.forAll(objects).suchThat(falsum());
+                final Property p2 = Property.forAll(objects).suchThat(falsum());
+                final CheckResult result = p1.and(p2).check();
+                $assertThat(result.isSatisfied()).isFalse();
+            }
+
+            // -- Property.or tests
+
+            @$test
+            public void shouldCheckOrCombinationWhereFirstPropertyIsTrueAndSecondPropertyIsTrue() {
+                final Property p1 = Property.forAll(objects).suchThat(tautology());
+                final Property p2 = Property.forAll(objects).suchThat(tautology());
+                final CheckResult result = p1.or(p2).check();
+                $assertThat(result.isSatisfied()).isTrue();
+            }
+
+            @$test
+            public void shouldCheckOrCombinationWhereFirstPropertyIsTrueAndSecondPropertyIsFalse() {
+                final Property p1 = Property.forAll(objects).suchThat(tautology());
+                final Property p2 = Property.forAll(objects).suchThat(falsum());
+                final CheckResult result = p1.or(p2).check();
+                $assertThat(result.isSatisfied()).isTrue();
+            }
+
+            @$test
+            public void shouldCheckOrCombinationWhereFirstPropertyIsFalseAndSecondPropertyIsTrue() {
+                final Property p1 = Property.forAll(objects).suchThat(falsum());
+                final Property p2 = Property.forAll(objects).suchThat(tautology());
+                final CheckResult result = p1.or(p2).check();
+                $assertThat(result.isSatisfied()).isTrue();
+            }
+
+            @$test
+            public void shouldCheckOrCombinationWhereFirstPropertyIsFalseAndSecondPropertyIsFalse() {
+                final Property p1 = Property.forAll(objects).suchThat(falsum());
+                final Property p2 = Property.forAll(objects).suchThat(falsum());
+                final CheckResult result = p1.or(p2).check();
+                $assertThat(result.isSatisfied()).isFalse();
             }
         }
       """
