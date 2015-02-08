@@ -900,6 +900,7 @@ def generateTestClasses(): Unit = {
 
               val generics = (1 to i).gen(j => "Object")(", ")
               val arbitraries = (1 to i).gen(j => "objects")(", ")
+              val arbitrariesMinus1 = (1 to i - 1).gen(j => "objects")(", ")
               val args = (1 to i).gen(j => s"o$j")(", ")
 
               xs"""
@@ -960,6 +961,34 @@ def generateTestClasses(): Unit = {
                     final CheckResult result = forAll.suchThat(p1).implies(p2).check();
                     $assertThat(result.isSatisfied()).isTrue();
                     $assertThat(result.isExhausted()).isTrue();
+                }
+
+                @$test(expected = IllegalArgumentException.class)
+                public void shouldThrowOnProperty${i}CheckGivenNegativeTries() {
+                    Property
+                        .forAll($arbitraries)
+                        .suchThat(($args) -> true)
+                        .check(0, -1);
+                }
+
+                @$test
+                public void shouldReturnErroneousProperty${i}CheckResultIfGenFails() {
+                    final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+                    final CheckResult result = Property
+                        .forAll(failingGen${(i > 1).gen(s", $arbitrariesMinus1")})
+                        .suchThat(($args) -> true)
+                        .check();
+                    $assertThat(result.isErroneous()).isTrue();
+                }
+
+                @$test
+                public void shouldReturnErroneousProperty${i}CheckResultIfArbitraryFails() {
+                    final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+                    final CheckResult result = Property
+                        .forAll(failingArbitrary${(i > 1).gen(s", $arbitrariesMinus1")})
+                        .suchThat(($args) -> true)
+                        .check();
+                    $assertThat(result.isErroneous()).isTrue();
                 }
               """})("\n\n")
             }

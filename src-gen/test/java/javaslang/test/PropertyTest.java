@@ -209,6 +209,34 @@ public class PropertyTest {
         assertThat(result.isExhausted()).isTrue();
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowOnProperty1CheckGivenNegativeTries() {
+        Property
+            .forAll(objects)
+            .suchThat((o1) -> true)
+            .check(0, -1);
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty1CheckResultIfGenFails() {
+        final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+        final CheckResult result = Property
+            .forAll(failingGen)
+            .suchThat((o1) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty1CheckResultIfArbitraryFails() {
+        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+        final CheckResult result = Property
+            .forAll(failingArbitrary)
+            .suchThat((o1) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
     @Test
     public void shouldApplyForAllOfArity2() {
         final Property.ForAll2<Object, Object> forAll = Property.forAll(null, null);
@@ -266,6 +294,34 @@ public class PropertyTest {
         final CheckResult result = forAll.suchThat(p1).implies(p2).check();
         assertThat(result.isSatisfied()).isTrue();
         assertThat(result.isExhausted()).isTrue();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowOnProperty2CheckGivenNegativeTries() {
+        Property
+            .forAll(objects, objects)
+            .suchThat((o1, o2) -> true)
+            .check(0, -1);
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty2CheckResultIfGenFails() {
+        final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+        final CheckResult result = Property
+            .forAll(failingGen, objects)
+            .suchThat((o1, o2) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty2CheckResultIfArbitraryFails() {
+        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+        final CheckResult result = Property
+            .forAll(failingArbitrary, objects)
+            .suchThat((o1, o2) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
     }
 
     @Test
@@ -327,6 +383,34 @@ public class PropertyTest {
         assertThat(result.isExhausted()).isTrue();
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowOnProperty3CheckGivenNegativeTries() {
+        Property
+            .forAll(objects, objects, objects)
+            .suchThat((o1, o2, o3) -> true)
+            .check(0, -1);
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty3CheckResultIfGenFails() {
+        final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+        final CheckResult result = Property
+            .forAll(failingGen, objects, objects)
+            .suchThat((o1, o2, o3) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty3CheckResultIfArbitraryFails() {
+        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+        final CheckResult result = Property
+            .forAll(failingArbitrary, objects, objects)
+            .suchThat((o1, o2, o3) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
     @Test
     public void shouldApplyForAllOfArity4() {
         final Property.ForAll4<Object, Object, Object, Object> forAll = Property.forAll(null, null, null, null);
@@ -384,6 +468,34 @@ public class PropertyTest {
         final CheckResult result = forAll.suchThat(p1).implies(p2).check();
         assertThat(result.isSatisfied()).isTrue();
         assertThat(result.isExhausted()).isTrue();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowOnProperty4CheckGivenNegativeTries() {
+        Property
+            .forAll(objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4) -> true)
+            .check(0, -1);
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty4CheckResultIfGenFails() {
+        final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+        final CheckResult result = Property
+            .forAll(failingGen, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty4CheckResultIfArbitraryFails() {
+        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+        final CheckResult result = Property
+            .forAll(failingArbitrary, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
     }
 
     @Test
@@ -445,6 +557,34 @@ public class PropertyTest {
         assertThat(result.isExhausted()).isTrue();
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowOnProperty5CheckGivenNegativeTries() {
+        Property
+            .forAll(objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5) -> true)
+            .check(0, -1);
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty5CheckResultIfGenFails() {
+        final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+        final CheckResult result = Property
+            .forAll(failingGen, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty5CheckResultIfArbitraryFails() {
+        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+        final CheckResult result = Property
+            .forAll(failingArbitrary, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
     @Test
     public void shouldApplyForAllOfArity6() {
         final Property.ForAll6<Object, Object, Object, Object, Object, Object> forAll = Property.forAll(null, null, null, null, null, null);
@@ -502,6 +642,34 @@ public class PropertyTest {
         final CheckResult result = forAll.suchThat(p1).implies(p2).check();
         assertThat(result.isSatisfied()).isTrue();
         assertThat(result.isExhausted()).isTrue();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowOnProperty6CheckGivenNegativeTries() {
+        Property
+            .forAll(objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6) -> true)
+            .check(0, -1);
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty6CheckResultIfGenFails() {
+        final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+        final CheckResult result = Property
+            .forAll(failingGen, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty6CheckResultIfArbitraryFails() {
+        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+        final CheckResult result = Property
+            .forAll(failingArbitrary, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
     }
 
     @Test
@@ -563,6 +731,34 @@ public class PropertyTest {
         assertThat(result.isExhausted()).isTrue();
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowOnProperty7CheckGivenNegativeTries() {
+        Property
+            .forAll(objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7) -> true)
+            .check(0, -1);
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty7CheckResultIfGenFails() {
+        final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+        final CheckResult result = Property
+            .forAll(failingGen, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty7CheckResultIfArbitraryFails() {
+        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+        final CheckResult result = Property
+            .forAll(failingArbitrary, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
     @Test
     public void shouldApplyForAllOfArity8() {
         final Property.ForAll8<Object, Object, Object, Object, Object, Object, Object, Object> forAll = Property.forAll(null, null, null, null, null, null, null, null);
@@ -620,6 +816,34 @@ public class PropertyTest {
         final CheckResult result = forAll.suchThat(p1).implies(p2).check();
         assertThat(result.isSatisfied()).isTrue();
         assertThat(result.isExhausted()).isTrue();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowOnProperty8CheckGivenNegativeTries() {
+        Property
+            .forAll(objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8) -> true)
+            .check(0, -1);
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty8CheckResultIfGenFails() {
+        final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+        final CheckResult result = Property
+            .forAll(failingGen, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty8CheckResultIfArbitraryFails() {
+        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+        final CheckResult result = Property
+            .forAll(failingArbitrary, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
     }
 
     @Test
@@ -681,6 +905,34 @@ public class PropertyTest {
         assertThat(result.isExhausted()).isTrue();
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowOnProperty9CheckGivenNegativeTries() {
+        Property
+            .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9) -> true)
+            .check(0, -1);
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty9CheckResultIfGenFails() {
+        final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+        final CheckResult result = Property
+            .forAll(failingGen, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty9CheckResultIfArbitraryFails() {
+        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+        final CheckResult result = Property
+            .forAll(failingArbitrary, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
     @Test
     public void shouldApplyForAllOfArity10() {
         final Property.ForAll10<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> forAll = Property.forAll(null, null, null, null, null, null, null, null, null, null);
@@ -738,6 +990,34 @@ public class PropertyTest {
         final CheckResult result = forAll.suchThat(p1).implies(p2).check();
         assertThat(result.isSatisfied()).isTrue();
         assertThat(result.isExhausted()).isTrue();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowOnProperty10CheckGivenNegativeTries() {
+        Property
+            .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10) -> true)
+            .check(0, -1);
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty10CheckResultIfGenFails() {
+        final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+        final CheckResult result = Property
+            .forAll(failingGen, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty10CheckResultIfArbitraryFails() {
+        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+        final CheckResult result = Property
+            .forAll(failingArbitrary, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
     }
 
     @Test
@@ -799,6 +1079,34 @@ public class PropertyTest {
         assertThat(result.isExhausted()).isTrue();
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowOnProperty11CheckGivenNegativeTries() {
+        Property
+            .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11) -> true)
+            .check(0, -1);
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty11CheckResultIfGenFails() {
+        final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+        final CheckResult result = Property
+            .forAll(failingGen, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty11CheckResultIfArbitraryFails() {
+        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+        final CheckResult result = Property
+            .forAll(failingArbitrary, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
     @Test
     public void shouldApplyForAllOfArity12() {
         final Property.ForAll12<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> forAll = Property.forAll(null, null, null, null, null, null, null, null, null, null, null, null);
@@ -856,6 +1164,34 @@ public class PropertyTest {
         final CheckResult result = forAll.suchThat(p1).implies(p2).check();
         assertThat(result.isSatisfied()).isTrue();
         assertThat(result.isExhausted()).isTrue();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowOnProperty12CheckGivenNegativeTries() {
+        Property
+            .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12) -> true)
+            .check(0, -1);
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty12CheckResultIfGenFails() {
+        final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+        final CheckResult result = Property
+            .forAll(failingGen, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty12CheckResultIfArbitraryFails() {
+        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+        final CheckResult result = Property
+            .forAll(failingArbitrary, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
     }
 
     @Test
@@ -917,6 +1253,34 @@ public class PropertyTest {
         assertThat(result.isExhausted()).isTrue();
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowOnProperty13CheckGivenNegativeTries() {
+        Property
+            .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13) -> true)
+            .check(0, -1);
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty13CheckResultIfGenFails() {
+        final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+        final CheckResult result = Property
+            .forAll(failingGen, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty13CheckResultIfArbitraryFails() {
+        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+        final CheckResult result = Property
+            .forAll(failingArbitrary, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
     @Test
     public void shouldApplyForAllOfArity14() {
         final Property.ForAll14<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> forAll = Property.forAll(null, null, null, null, null, null, null, null, null, null, null, null, null, null);
@@ -974,6 +1338,34 @@ public class PropertyTest {
         final CheckResult result = forAll.suchThat(p1).implies(p2).check();
         assertThat(result.isSatisfied()).isTrue();
         assertThat(result.isExhausted()).isTrue();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowOnProperty14CheckGivenNegativeTries() {
+        Property
+            .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14) -> true)
+            .check(0, -1);
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty14CheckResultIfGenFails() {
+        final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+        final CheckResult result = Property
+            .forAll(failingGen, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty14CheckResultIfArbitraryFails() {
+        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+        final CheckResult result = Property
+            .forAll(failingArbitrary, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
     }
 
     @Test
@@ -1035,6 +1427,34 @@ public class PropertyTest {
         assertThat(result.isExhausted()).isTrue();
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowOnProperty15CheckGivenNegativeTries() {
+        Property
+            .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15) -> true)
+            .check(0, -1);
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty15CheckResultIfGenFails() {
+        final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+        final CheckResult result = Property
+            .forAll(failingGen, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty15CheckResultIfArbitraryFails() {
+        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+        final CheckResult result = Property
+            .forAll(failingArbitrary, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
     @Test
     public void shouldApplyForAllOfArity16() {
         final Property.ForAll16<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> forAll = Property.forAll(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
@@ -1092,6 +1512,34 @@ public class PropertyTest {
         final CheckResult result = forAll.suchThat(p1).implies(p2).check();
         assertThat(result.isSatisfied()).isTrue();
         assertThat(result.isExhausted()).isTrue();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowOnProperty16CheckGivenNegativeTries() {
+        Property
+            .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16) -> true)
+            .check(0, -1);
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty16CheckResultIfGenFails() {
+        final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+        final CheckResult result = Property
+            .forAll(failingGen, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty16CheckResultIfArbitraryFails() {
+        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+        final CheckResult result = Property
+            .forAll(failingArbitrary, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
     }
 
     @Test
@@ -1153,6 +1601,34 @@ public class PropertyTest {
         assertThat(result.isExhausted()).isTrue();
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowOnProperty17CheckGivenNegativeTries() {
+        Property
+            .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17) -> true)
+            .check(0, -1);
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty17CheckResultIfGenFails() {
+        final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+        final CheckResult result = Property
+            .forAll(failingGen, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty17CheckResultIfArbitraryFails() {
+        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+        final CheckResult result = Property
+            .forAll(failingArbitrary, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
     @Test
     public void shouldApplyForAllOfArity18() {
         final Property.ForAll18<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> forAll = Property.forAll(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
@@ -1210,6 +1686,34 @@ public class PropertyTest {
         final CheckResult result = forAll.suchThat(p1).implies(p2).check();
         assertThat(result.isSatisfied()).isTrue();
         assertThat(result.isExhausted()).isTrue();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowOnProperty18CheckGivenNegativeTries() {
+        Property
+            .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18) -> true)
+            .check(0, -1);
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty18CheckResultIfGenFails() {
+        final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+        final CheckResult result = Property
+            .forAll(failingGen, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty18CheckResultIfArbitraryFails() {
+        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+        final CheckResult result = Property
+            .forAll(failingArbitrary, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
     }
 
     @Test
@@ -1271,6 +1775,34 @@ public class PropertyTest {
         assertThat(result.isExhausted()).isTrue();
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowOnProperty19CheckGivenNegativeTries() {
+        Property
+            .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19) -> true)
+            .check(0, -1);
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty19CheckResultIfGenFails() {
+        final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+        final CheckResult result = Property
+            .forAll(failingGen, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty19CheckResultIfArbitraryFails() {
+        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+        final CheckResult result = Property
+            .forAll(failingArbitrary, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
     @Test
     public void shouldApplyForAllOfArity20() {
         final Property.ForAll20<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> forAll = Property.forAll(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
@@ -1328,6 +1860,34 @@ public class PropertyTest {
         final CheckResult result = forAll.suchThat(p1).implies(p2).check();
         assertThat(result.isSatisfied()).isTrue();
         assertThat(result.isExhausted()).isTrue();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowOnProperty20CheckGivenNegativeTries() {
+        Property
+            .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20) -> true)
+            .check(0, -1);
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty20CheckResultIfGenFails() {
+        final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+        final CheckResult result = Property
+            .forAll(failingGen, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty20CheckResultIfArbitraryFails() {
+        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+        final CheckResult result = Property
+            .forAll(failingArbitrary, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
     }
 
     @Test
@@ -1389,6 +1949,34 @@ public class PropertyTest {
         assertThat(result.isExhausted()).isTrue();
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowOnProperty21CheckGivenNegativeTries() {
+        Property
+            .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21) -> true)
+            .check(0, -1);
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty21CheckResultIfGenFails() {
+        final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+        final CheckResult result = Property
+            .forAll(failingGen, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty21CheckResultIfArbitraryFails() {
+        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+        final CheckResult result = Property
+            .forAll(failingArbitrary, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
     @Test
     public void shouldApplyForAllOfArity22() {
         final Property.ForAll22<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> forAll = Property.forAll(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
@@ -1446,6 +2034,34 @@ public class PropertyTest {
         final CheckResult result = forAll.suchThat(p1).implies(p2).check();
         assertThat(result.isSatisfied()).isTrue();
         assertThat(result.isExhausted()).isTrue();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowOnProperty22CheckGivenNegativeTries() {
+        Property
+            .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22) -> true)
+            .check(0, -1);
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty22CheckResultIfGenFails() {
+        final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+        final CheckResult result = Property
+            .forAll(failingGen, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty22CheckResultIfArbitraryFails() {
+        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+        final CheckResult result = Property
+            .forAll(failingArbitrary, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
     }
 
     @Test
@@ -1507,6 +2123,34 @@ public class PropertyTest {
         assertThat(result.isExhausted()).isTrue();
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowOnProperty23CheckGivenNegativeTries() {
+        Property
+            .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23) -> true)
+            .check(0, -1);
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty23CheckResultIfGenFails() {
+        final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+        final CheckResult result = Property
+            .forAll(failingGen, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty23CheckResultIfArbitraryFails() {
+        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+        final CheckResult result = Property
+            .forAll(failingArbitrary, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
     @Test
     public void shouldApplyForAllOfArity24() {
         final Property.ForAll24<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> forAll = Property.forAll(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
@@ -1564,6 +2208,34 @@ public class PropertyTest {
         final CheckResult result = forAll.suchThat(p1).implies(p2).check();
         assertThat(result.isSatisfied()).isTrue();
         assertThat(result.isExhausted()).isTrue();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowOnProperty24CheckGivenNegativeTries() {
+        Property
+            .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24) -> true)
+            .check(0, -1);
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty24CheckResultIfGenFails() {
+        final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+        final CheckResult result = Property
+            .forAll(failingGen, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty24CheckResultIfArbitraryFails() {
+        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+        final CheckResult result = Property
+            .forAll(failingArbitrary, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
     }
 
     @Test
@@ -1625,6 +2297,34 @@ public class PropertyTest {
         assertThat(result.isExhausted()).isTrue();
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowOnProperty25CheckGivenNegativeTries() {
+        Property
+            .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25) -> true)
+            .check(0, -1);
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty25CheckResultIfGenFails() {
+        final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+        final CheckResult result = Property
+            .forAll(failingGen, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty25CheckResultIfArbitraryFails() {
+        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+        final CheckResult result = Property
+            .forAll(failingArbitrary, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
     @Test
     public void shouldApplyForAllOfArity26() {
         final Property.ForAll26<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> forAll = Property.forAll(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
@@ -1682,6 +2382,34 @@ public class PropertyTest {
         final CheckResult result = forAll.suchThat(p1).implies(p2).check();
         assertThat(result.isSatisfied()).isTrue();
         assertThat(result.isExhausted()).isTrue();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowOnProperty26CheckGivenNegativeTries() {
+        Property
+            .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25, o26) -> true)
+            .check(0, -1);
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty26CheckResultIfGenFails() {
+        final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+        final CheckResult result = Property
+            .forAll(failingGen, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25, o26) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnErroneousProperty26CheckResultIfArbitraryFails() {
+        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+        final CheckResult result = Property
+            .forAll(failingArbitrary, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25, o26) -> true)
+            .check();
+        assertThat(result.isErroneous()).isTrue();
     }
 
     // -- Property.and tests
