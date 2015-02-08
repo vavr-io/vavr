@@ -27,6 +27,7 @@ def generateMainClasses(): Unit = {
   // Workaround: Use /$** instead of /** in a StringContext when IntelliJ IDEA otherwise shows up errors in the editor
   val javadoc = "**"
 
+  genJavaFunctions()
   genFunctions()
   genFunctors()
   genHigherKindeds()
@@ -35,9 +36,104 @@ def generateMainClasses(): Unit = {
   genTuples()
 
   /**
+   * Generator of [javaslang]javax.util.function
+   */
+  def genJavaFunctions(): Unit = {
+
+    /**
+     * Known Java types (relevant for functional interface generation)
+     */
+    object Types extends Enumeration {
+
+      type Types = Value
+
+      val boolean, byte, char, double, float, int, long, short, void, Object = Value
+
+      implicit class TypesExtensions(val v: Value) {
+
+        def isPrimitive = !isVoid && !isObject
+        def isVoid = v == void
+        def isObject = v == Object
+        def isPredicate = v == boolean
+
+        def asClassName = {
+          val s = v.toString
+          s(0).toUpper + s.substring(1)
+        }
+      }
+    }
+
+    import Types._
+
+    /**
+     * Represents a lambda type signature.
+     *
+     * @param returnType Return type of the lambda
+     * @param args Arguments of the lambda (currently length is 1 or 2)
+     */
+    case class Signature(returnType: Types , args: Types*) {
+
+      // characteristics
+      lazy val isUnit = args.length == 0 && returnType.isVoid
+      lazy val isSupplier = args.length == 0 && !returnType.isVoid
+      lazy val isConsumer = args.length == 1 && returnType.isVoid && !args(0).isVoid
+      lazy val isBiConsumer = args.length == 2 && returnType.isVoid && ((args(0).isObject && args(1).isObject) || (args(0).isPrimitive && args(1).isPrimitive))
+      lazy val isOperator = args.length == 1 && returnType == args(0)
+      lazy val isBiOperator = args.length == 2 && returnType == args(0) && returnType == args(1)
+      lazy val isPredicate = args.length == 1 && returnType.isPredicate && !args(0).isVoid
+      lazy val isBiPredicate = args.length == 2 && returnType.isPredicate && ((args(0).isObject && args(1).isObject) || (args(0).isPrimitive && args(1).isPrimitive))
+      lazy val isFunction = args.length == 1 && !isConsumer && !isOperator && !isPredicate
+      lazy val isBiFunction = args.length == 2 && !isBiConsumer && !isBiOperator && !isBiPredicate
+
+      // checks
+      lazy val isRelevant = isUnit || isSupplier || isConsumer || isBiConsumer || isOperator || isBiOperator ||
+        isPredicate || isBiPredicate || isFunction || isBiFunction
+
+      // interface name (modulo 'Checked')
+      lazy val interfaceName =
+          if (isUnit) "Runnable"
+          else if (isSupplier) s"${returnType.isPrimitive.gen(returnType.asClassName)}Supplier"
+          else if (isConsumer) s"${args(0).isPrimitive.gen(args(0).asClassName)}Consumer"
+          // TODO
+          else throw new IllegalStateException("unknown signature: " + toString)
+
+      // interface method (modulo 'throws')
+      lazy val interfaceMethod = "" // TODO
+
+      // returns the lambda signature where arg type 'void' is allowed due to technical reasons
+      override def toString: String = s"(${args.mkString(", ")}) -> $returnType"
+    }
+
+    /**
+     * Compute (relevant) combinations of lambda types.
+     */
+    Types.values.foreach( returnType => {
+      val function0 = Signature(returnType)
+      if (function0.isRelevant) {
+        // TODO: generate function0
+        println(function0)
+      }
+      Types.values.foreach( arg1Type => {
+        val function1 = Signature(returnType, arg1Type)
+        if (function1.isRelevant) {
+          // TODO: generate function1
+          println(function1)
+        }
+        Types.values.foreach( arg2Type => {
+          val function2 = Signature(returnType, arg1Type, arg2Type)
+          if (function2.isRelevant) {
+            // TODO: generate function2
+            println(function2)
+          }
+        })
+      })
+    })
+  }
+
+  /**
    * Generator of javaslang.algebra.Functor*
    */
-  def genFunctors() = 1 to N foreach { i =>
+  def genFunctors(): Unit = 1 to N foreach { i =>
     genJavaslangFile("javaslang.algebra", s"Functor$i")((im: ImportManager, packageName, className) => {
       val generics = (1 to i).gen(j => s"T$j")(", ")
       val paramTypes = (1 to i).gen(j => s"? super T$j")(", ")
@@ -74,7 +170,7 @@ def generateMainClasses(): Unit = {
   /**
    * Generator of javaslang.algebra.HigherKinded*
    */
-  def genHigherKindeds() = 1 to N foreach { i =>
+  def genHigherKindeds(): Unit = 1 to N foreach { i =>
     genJavaslangFile("javaslang.algebra", s"HigherKinded$i")((im: ImportManager, packageName, className) => xs"""
         ${(i == 1).gen(xs"""
         /$javadoc
@@ -104,7 +200,7 @@ def generateMainClasses(): Unit = {
   /**
    * Generator of javaslang.algebra.Monad*
    */
-  def genMonads() = 1 to N foreach { i =>
+  def genMonads(): Unit = 1 to N foreach { i =>
     genJavaslangFile("javaslang.algebra", s"Monad$i")((im: ImportManager, packageName, className) => {
       val generics = (1 to i).gen(j => s"T$j")(", ")
       val paramTypes = (1 to i).gen(j => s"? super T$j")(", ")
