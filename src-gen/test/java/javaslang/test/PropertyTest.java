@@ -214,7 +214,7 @@ public class PropertyTest {
         Property
             .forAll(objects)
             .suchThat((o1) -> true)
-            .check(0, -1);
+            .check(Property.RNG.get(), 0, -1);
     }
 
     @Test
@@ -301,7 +301,7 @@ public class PropertyTest {
         Property
             .forAll(objects, objects)
             .suchThat((o1, o2) -> true)
-            .check(0, -1);
+            .check(Property.RNG.get(), 0, -1);
     }
 
     @Test
@@ -388,7 +388,7 @@ public class PropertyTest {
         Property
             .forAll(objects, objects, objects)
             .suchThat((o1, o2, o3) -> true)
-            .check(0, -1);
+            .check(Property.RNG.get(), 0, -1);
     }
 
     @Test
@@ -475,7 +475,7 @@ public class PropertyTest {
         Property
             .forAll(objects, objects, objects, objects)
             .suchThat((o1, o2, o3, o4) -> true)
-            .check(0, -1);
+            .check(Property.RNG.get(), 0, -1);
     }
 
     @Test
@@ -562,7 +562,7 @@ public class PropertyTest {
         Property
             .forAll(objects, objects, objects, objects, objects)
             .suchThat((o1, o2, o3, o4, o5) -> true)
-            .check(0, -1);
+            .check(Property.RNG.get(), 0, -1);
     }
 
     @Test
@@ -649,7 +649,7 @@ public class PropertyTest {
         Property
             .forAll(objects, objects, objects, objects, objects, objects)
             .suchThat((o1, o2, o3, o4, o5, o6) -> true)
-            .check(0, -1);
+            .check(Property.RNG.get(), 0, -1);
     }
 
     @Test
@@ -736,7 +736,7 @@ public class PropertyTest {
         Property
             .forAll(objects, objects, objects, objects, objects, objects, objects)
             .suchThat((o1, o2, o3, o4, o5, o6, o7) -> true)
-            .check(0, -1);
+            .check(Property.RNG.get(), 0, -1);
     }
 
     @Test
@@ -823,7 +823,7 @@ public class PropertyTest {
         Property
             .forAll(objects, objects, objects, objects, objects, objects, objects, objects)
             .suchThat((o1, o2, o3, o4, o5, o6, o7, o8) -> true)
-            .check(0, -1);
+            .check(Property.RNG.get(), 0, -1);
     }
 
     @Test
@@ -910,7 +910,7 @@ public class PropertyTest {
         Property
             .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects)
             .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9) -> true)
-            .check(0, -1);
+            .check(Property.RNG.get(), 0, -1);
     }
 
     @Test
@@ -997,7 +997,7 @@ public class PropertyTest {
         Property
             .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
             .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10) -> true)
-            .check(0, -1);
+            .check(Property.RNG.get(), 0, -1);
     }
 
     @Test
@@ -1084,7 +1084,7 @@ public class PropertyTest {
         Property
             .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
             .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11) -> true)
-            .check(0, -1);
+            .check(Property.RNG.get(), 0, -1);
     }
 
     @Test
@@ -1171,7 +1171,7 @@ public class PropertyTest {
         Property
             .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
             .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12) -> true)
-            .check(0, -1);
+            .check(Property.RNG.get(), 0, -1);
     }
 
     @Test
@@ -1258,7 +1258,7 @@ public class PropertyTest {
         Property
             .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
             .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13) -> true)
-            .check(0, -1);
+            .check(Property.RNG.get(), 0, -1);
     }
 
     @Test
@@ -1345,7 +1345,7 @@ public class PropertyTest {
         Property
             .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
             .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14) -> true)
-            .check(0, -1);
+            .check(Property.RNG.get(), 0, -1);
     }
 
     @Test
@@ -1432,7 +1432,7 @@ public class PropertyTest {
         Property
             .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
             .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15) -> true)
-            .check(0, -1);
+            .check(Property.RNG.get(), 0, -1);
     }
 
     @Test
@@ -1519,7 +1519,7 @@ public class PropertyTest {
         Property
             .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
             .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16) -> true)
-            .check(0, -1);
+            .check(Property.RNG.get(), 0, -1);
     }
 
     @Test
@@ -1606,7 +1606,7 @@ public class PropertyTest {
         Property
             .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
             .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17) -> true)
-            .check(0, -1);
+            .check(Property.RNG.get(), 0, -1);
     }
 
     @Test
@@ -1693,7 +1693,7 @@ public class PropertyTest {
         Property
             .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
             .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18) -> true)
-            .check(0, -1);
+            .check(Property.RNG.get(), 0, -1);
     }
 
     @Test
@@ -1780,7 +1780,7 @@ public class PropertyTest {
         Property
             .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
             .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19) -> true)
-            .check(0, -1);
+            .check(Property.RNG.get(), 0, -1);
     }
 
     @Test
@@ -1867,7 +1867,7 @@ public class PropertyTest {
         Property
             .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
             .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20) -> true)
-            .check(0, -1);
+            .check(Property.RNG.get(), 0, -1);
     }
 
     @Test
@@ -1954,7 +1954,7 @@ public class PropertyTest {
         Property
             .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
             .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21) -> true)
-            .check(0, -1);
+            .check(Property.RNG.get(), 0, -1);
     }
 
     @Test
@@ -2041,7 +2041,7 @@ public class PropertyTest {
         Property
             .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
             .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22) -> true)
-            .check(0, -1);
+            .check(Property.RNG.get(), 0, -1);
     }
 
     @Test
@@ -2128,7 +2128,7 @@ public class PropertyTest {
         Property
             .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
             .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23) -> true)
-            .check(0, -1);
+            .check(Property.RNG.get(), 0, -1);
     }
 
     @Test
@@ -2215,7 +2215,7 @@ public class PropertyTest {
         Property
             .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
             .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24) -> true)
-            .check(0, -1);
+            .check(Property.RNG.get(), 0, -1);
     }
 
     @Test
@@ -2302,7 +2302,7 @@ public class PropertyTest {
         Property
             .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
             .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25) -> true)
-            .check(0, -1);
+            .check(Property.RNG.get(), 0, -1);
     }
 
     @Test
@@ -2389,7 +2389,7 @@ public class PropertyTest {
         Property
             .forAll(objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects, objects)
             .suchThat((o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25, o26) -> true)
-            .check(0, -1);
+            .check(Property.RNG.get(), 0, -1);
     }
 
     @Test

@@ -968,7 +968,7 @@ def generateTestClasses(): Unit = {
                     Property
                         .forAll($arbitraries)
                         .suchThat(($args) -> true)
-                        .check(0, -1);
+                        .check(Property.RNG.get(), 0, -1);
                 }
 
                 @$test
