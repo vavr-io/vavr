@@ -51,80 +51,136 @@ def generateMainClasses(): Unit = {
 
       implicit class TypesExtensions(val v: Value) {
 
-        def isPrimitive = !isVoid && !isObject
-        def isVoid = v == void
+        def isBoolean = v == boolean
         def isObject = v == Object
-        def isPredicate = v == boolean
+        def isVoid = v == void
+        def isPrimitive = !isVoid && !isObject
 
-        def asClassName = {
-          val s = v.toString
-          s(0).toUpper + s.substring(1)
+        // converts primitive types to object names, return 'R' if type is Object
+        def asObject: String = v match {
+          case `char` => "Character"
+          case `int` => "Integer"
+          case `Object` => "R"
+          case _ =>
+            val s = v.toString
+            s(0).toUpper + s.substring(1)
         }
+
+        // identifier used in class and method names
+        def asName: String = v match {
+          case `Object` => "Obj"
+          case _ =>
+            val s = v.toString
+            s(0).toUpper + s.substring(1)
+        }
+
+        // returns primitive type or 'R', if type is Object
+        def asReturnType = if (isObject) "R" else v.toString
       }
     }
 
     import Types._
 
-    /**
-     * Represents a lambda type signature.
-     *
-     * @param returnType Return type of the lambda
-     * @param args Arguments of the lambda (currently length is 1 or 2)
-     */
-    case class Signature(returnType: Types , args: Types*) {
+    sealed trait FunctionalInterface {
 
-      // characteristics
-      lazy val isUnit = args.length == 0 && returnType.isVoid
-      lazy val isSupplier = args.length == 0 && !returnType.isVoid
-      lazy val isConsumer = args.length == 1 && returnType.isVoid && !args(0).isVoid
-      lazy val isBiConsumer = args.length == 2 && returnType.isVoid && ((args(0).isObject && args(1).isObject) || (args(0).isPrimitive && args(1).isPrimitive))
-      lazy val isOperator = args.length == 1 && returnType == args(0)
-      lazy val isBiOperator = args.length == 2 && returnType == args(0) && returnType == args(1)
-      lazy val isPredicate = args.length == 1 && returnType.isPredicate && !args(0).isVoid
-      lazy val isBiPredicate = args.length == 2 && returnType.isPredicate && ((args(0).isObject && args(1).isObject) || (args(0).isPrimitive && args(1).isPrimitive))
-      lazy val isFunction = args.length == 1 && !isConsumer && !isOperator && !isPredicate
-      lazy val isBiFunction = args.length == 2 && !isBiConsumer && !isBiOperator && !isBiPredicate
+      def isConsumer: Boolean
 
-      // checks
-      lazy val isRelevant = isUnit || isSupplier || isConsumer || isBiConsumer || isOperator || isBiOperator ||
-        isPredicate || isBiPredicate || isFunction || isBiFunction
+      def name: String
+      def methodDecl: String
+      def methodCall: String
+      def superName: String
+      def superMethodDecl: String
 
-      // interface name (modulo 'Checked')
-      lazy val interfaceName =
-          if (isUnit) "Runnable"
-          else if (isSupplier) s"${returnType.isPrimitive.gen(returnType.asClassName)}Supplier"
-          else if (isConsumer) s"${args(0).isPrimitive.gen(args(0).asClassName)}Consumer"
-          // TODO
-          else throw new IllegalStateException("unknown signature: " + toString)
+      def gen(checked: Boolean): String = xs"""
+        @FunctionalInterface
+        public interface ${checked.gen("Checked")}$name extends ${checked.gen("Checked")}$superName {
 
-      // interface method (modulo 'throws')
-      lazy val interfaceMethod = "" // TODO
+            static final long serialVersionUID = 1L;
 
-      // returns the lambda signature where arg type 'void' is allowed due to technical reasons
-      override def toString: String = s"(${args.mkString(", ")}) -> $returnType"
+            $methodDecl${checked.gen(" throws Throwable")};
+
+            @Override
+            default $superMethodDecl${checked.gen(" throws Throwable")} {
+                ${if (isConsumer) {
+                  xs"""
+                  $methodCall;
+                  return null;
+                  """
+                } else {
+                  s"return $methodCall;"
+                }}
+            }
+        }
+      """
+    }
+
+    case class Function0(returnType: Types) extends FunctionalInterface {
+
+      override def isConsumer: Boolean = returnType.isVoid
+
+      override def name: String =
+          if (returnType.isVoid) "Runnable"
+          else if (returnType.isPrimitive) s"${returnType.asName}Supplier"
+          else "Supplier<R>"
+
+      override def methodDecl: String =
+          if (returnType.isVoid) "void run()"
+          else if (returnType.isPrimitive) s"${returnType.asReturnType} getAs${returnType.asName}()"
+          else s"R get()"
+
+      override def methodCall: String =
+          if (returnType.isVoid) "run()"
+          else if (returnType.isPrimitive) s"getAs${returnType.asName}()"
+          else "get()"
+
+      override def superName: String = s"Function0<${returnType.asObject}>"
+
+      override def superMethodDecl: String = s"${returnType.asObject} apply()"
+
+      override def toString: String = s"() -> $returnType"
+    }
+
+    case class Function1(returnType: Types, arg: Types) extends FunctionalInterface {
+
+      override def isConsumer: Boolean = returnType.isVoid
+
+      override def name: String = ???
+      override def methodDecl: String = ???
+      override def methodCall: String = ???
+      override def superName: String = ???
+      override def superMethodDecl: String = ???
+      override def toString: String = s"($arg) -> $returnType"
+    }
+
+    case class Function2(returnType: Types, arg1: Types, arg2: Types) extends FunctionalInterface {
+
+      override def isConsumer: Boolean = returnType.isVoid
+
+      override def name: String = ???
+      override def methodDecl: String = ???
+      override def methodCall: String = ???
+      override def superName: String = ???
+      override def superMethodDecl: String = ???
+      override def toString: String = s"($arg1, $arg2) -> $returnType"
     }
 
     /**
      * Compute (relevant) combinations of lambda types.
      */
     Types.values.foreach( returnType => {
-      val function0 = Signature(returnType)
-      if (function0.isRelevant) {
-        // TODO: generate function0
-        println(function0)
-      }
-      Types.values.foreach( arg1Type => {
-        val function1 = Signature(returnType, arg1Type)
-        if (function1.isRelevant) {
-          // TODO: generate function1
-          println(function1)
-        }
-        Types.values.foreach( arg2Type => {
-          val function2 = Signature(returnType, arg1Type, arg2Type)
-          if (function2.isRelevant) {
-            // TODO: generate function2
-            println(function2)
-          }
+      println(Function0(returnType).gen(checked = true))
+      Types.values.filter(!_.isVoid).foreach( arg1Type => {
+        val function1 = Function1(returnType, arg1Type)
+//        if (function1.isRelevant) {
+//          // TODO: generate function1
+//          println(function1)
+//        }
+        Types.values.filter(!_.isVoid).foreach( arg2Type => {
+          val function2 = Function2(returnType, arg1Type, arg2Type)
+//          if (function2.isRelevant) {
+//            // TODO: generate function2
+//            // println(function2)
+//          }
         })
       })
     })
@@ -1348,18 +1404,23 @@ object JavaGenerator {
     }
 
     private def simplify(fullQualifiedName: String, imports: mutable.HashMap[String, String]): String = {
-      val simpleName = getSimpleName(fullQualifiedName)
-      val packageName = getPackageName(fullQualifiedName)
+      def normalize(fqn: String): String = {
+        val index = fqn.indexOf('<')
+        if (index != -1) fqn.substring(0, index) else fqn
+      }
+      val nomalizedFQN = normalize(fullQualifiedName)
+      val simpleName = getSimpleName(nomalizedFQN)
+      val packageName = getPackageName(nomalizedFQN)
       if (packageName.isEmpty && !packageNameOfClass.isEmpty) {
         throw new IllegalStateException(s"Can't import class '$simpleName' located in default package")
       } else if (packageName == packageNameOfClass) {
         simpleName
-      } else if (imports.contains(fullQualifiedName)) {
-        imports.get(fullQualifiedName).get
+      } else if (imports.contains(nomalizedFQN)) {
+        imports.get(nomalizedFQN).get
       } else if (knownSimpleClassNames.contains(simpleName) || imports.values.exists(simpleName.equals(_))) {
-        fullQualifiedName
+        nomalizedFQN
       } else {
-        imports += fullQualifiedName -> simpleName
+        imports += nomalizedFQN -> simpleName
         simpleName
       }
     }
@@ -1391,10 +1452,9 @@ object Generator {
    */
   def genFile(baseDir: String, dirName: String, fileName: String)(contents: => String)(implicit charset: Charset = StandardCharsets.UTF_8): Unit = {
 
-    import java.io.File
     import java.nio.file.{Files, Paths, StandardOpenOption}
 
-    println(s"Generating $dirName${File.separator}$fileName")
+    // println(s"Generating $dirName${File.separator}$fileName")
 
     Files.write(
       Files.createDirectories(Paths.get(baseDir, dirName)).resolve(fileName),
