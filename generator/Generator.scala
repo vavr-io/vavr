@@ -56,40 +56,38 @@ def generateMainClasses(): Unit = {
         def isVoid = v == void
         def isPrimitive = !isVoid && !isObject
 
-        // converts primitive types to object names, return 'R' if type is Object
-        def asObject: String = v match {
+        // converts primitive types to object names, return genericParameter if type is Object
+        def asBoxed(implicit genericParameter: String = "R"): String = v match {
           case `char` => "Character"
           case `int` => "Integer"
-          case `Object` => "R"
+          case `Object` => genericParameter
           case _ =>
             val s = v.toString
             s(0).toUpper + s.substring(1)
         }
 
+        // returns primitive type or genericParameter if type is Object
+        def asUnboxed(implicit genericParameter: String = "R") = if (isObject) genericParameter else v.toString
+
         // identifier used in class and method names
-        def asName: String = v match {
+        def asIdentifier: String = v match {
           case `Object` => "Obj"
           case _ =>
             val s = v.toString
             s(0).toUpper + s.substring(1)
         }
-
-        // returns primitive type or 'R', if type is Object
-        def asReturnType = if (isObject) "R" else v.toString
       }
     }
 
     import Types._
 
-    sealed trait FunctionalInterface {
-
-      def isConsumer: Boolean
+    sealed abstract class FunctionalInterface(returnType: Types) {
 
       def name: String
-      def methodDecl: String
+      def method: String
       def methodCall: String
       def superName: String
-      def superMethodDecl: String
+      def superMethod: String
 
       def gen(checked: Boolean): String = xs"""
         @FunctionalInterface
@@ -97,11 +95,11 @@ def generateMainClasses(): Unit = {
 
             static final long serialVersionUID = 1L;
 
-            $methodDecl${checked.gen(" throws Throwable")};
+            ${(name != "Function").gen(s"${returnType.asUnboxed} $method${checked.gen(" throws Throwable")};")}
 
             @Override
-            default $superMethodDecl${checked.gen(" throws Throwable")} {
-                ${if (isConsumer) {
+            default $superMethod${checked.gen(" throws Throwable")} {
+                ${if (returnType.isVoid) {
                   xs"""
                   $methodCall;
                   return null;
@@ -114,54 +112,86 @@ def generateMainClasses(): Unit = {
       """
     }
 
-    case class Function0(returnType: Types) extends FunctionalInterface {
+    /**
+     * Represents a functional interface with no arguments.
+     */
+    case class Function0(returnType: Types) extends FunctionalInterface(returnType) {
 
-      override def isConsumer: Boolean = returnType.isVoid
-
-      override def name: String =
+      override def name =
           if (returnType.isVoid) "Runnable"
-          else if (returnType.isPrimitive) s"${returnType.asName}Supplier"
+          else if (returnType.isPrimitive) s"${returnType.asIdentifier}Supplier"
           else "Supplier<R>"
 
-      override def methodDecl: String =
-          if (returnType.isVoid) "void run()"
-          else if (returnType.isPrimitive) s"${returnType.asReturnType} getAs${returnType.asName}()"
-          else s"R get()"
-
-      override def methodCall: String =
+      override def method =
           if (returnType.isVoid) "run()"
-          else if (returnType.isPrimitive) s"getAs${returnType.asName}()"
+          else if (returnType.isPrimitive) s"getAs${returnType.asIdentifier}()"
           else "get()"
 
-      override def superName: String = s"Function0<${returnType.asObject}>"
+      override def methodCall = method
 
-      override def superMethodDecl: String = s"${returnType.asObject} apply()"
+      override def superName = s"Function0<${returnType.asBoxed}>"
 
-      override def toString: String = s"() -> $returnType"
+      override def superMethod = s"${returnType.asBoxed} apply()"
+
+      override def toString = s"() -> $returnType"
     }
 
-    case class Function1(returnType: Types, arg: Types) extends FunctionalInterface {
+    /**
+     * Represents a functional interface with one argument.
+     */
+    case class Function1(returnType: Types, arg: Types) extends FunctionalInterface(returnType) {
 
-      override def isConsumer: Boolean = returnType.isVoid
+      override def name =
+        if (returnType.isVoid) {
+          if (arg.isPrimitive) s"${arg.asIdentifier}Consumer" else "Consumer"
+        }  else if (returnType.isPrimitive) {
+          if (arg.isPrimitive) {
+            if (arg == returnType) s"${arg.asIdentifier}UnaryOperator" else s"${arg.asIdentifier}To${returnType.asIdentifier}Function"
+          } else {
+            s"To${returnType.asIdentifier}Function"
+          }
+        } else {
+          if (arg.isPrimitive) s"${arg.asIdentifier}Function" else "Function"
+        }
 
-      override def name: String = ???
-      override def methodDecl: String = ???
-      override def methodCall: String = ???
-      override def superName: String = ???
-      override def superMethodDecl: String = ???
-      override def toString: String = s"($arg) -> $returnType"
+      override def method = {
+        val methodName =
+          if (returnType.isVoid) "accept"
+          else if (returnType.isPrimitive) s"applyAs${returnType.asIdentifier}"
+          else "apply"
+        val argName = arg.asBoxed("T").charAt(0).toLower
+        s"$methodName(${arg.asUnboxed("T")} $argName)"
+      }
+
+      override def methodCall = {
+        val methodName =
+          if (returnType.isVoid) "accept"
+          else if (returnType.isPrimitive) s"applyAs${returnType.asIdentifier}"
+          else "apply"
+        val argName = arg.asBoxed("T").charAt(0).toLower
+        s"$methodName($argName)"
+      }
+
+      override def superName = s"Function1<${arg.asBoxed("T")}, ${returnType.asBoxed}>"
+
+      override def superMethod = {
+        val argName = arg.asBoxed("T").charAt(0).toLower
+        s"${returnType.asBoxed} apply(${arg.asBoxed("T")} $argName)"
+      }
+
+      override def toString = s"($arg) -> $returnType"
     }
 
-    case class Function2(returnType: Types, arg1: Types, arg2: Types) extends FunctionalInterface {
-
-      override def isConsumer: Boolean = returnType.isVoid
-
-      override def name: String = ???
-      override def methodDecl: String = ???
-      override def methodCall: String = ???
-      override def superName: String = ???
-      override def superMethodDecl: String = ???
-      override def toString: String = s"($arg1, $arg2) -> $returnType"
+    /**
+     * Represents a functional interface with two arguments.
+     */
+    case class Function2(returnType: Types, arg1: Types, arg2: Types) extends FunctionalInterface(returnType) {
+      override def name = ???
+      override def method = ???
+      override def methodCall = ???
+      override def superName = ???
+      override def superMethod = ???
+      override def toString = s"($arg1, $arg2) -> $returnType"
     }
 
     /**
@@ -170,11 +200,7 @@ def generateMainClasses(): Unit = {
     Types.values.foreach( returnType => {
       println(Function0(returnType).gen(checked = true))
       Types.values.filter(!_.isVoid).foreach( arg1Type => {
-        val function1 = Function1(returnType, arg1Type)
-//        if (function1.isRelevant) {
-//          // TODO: generate function1
-//          println(function1)
-//        }
+        println(Function1(returnType, arg1Type).gen(checked = true))
         Types.values.filter(!_.isVoid).foreach( arg2Type => {
           val function2 = Function2(returnType, arg1Type, arg2Type)
 //          if (function2.isRelevant) {
@@ -1404,23 +1430,18 @@ object JavaGenerator {
     }
 
     private def simplify(fullQualifiedName: String, imports: mutable.HashMap[String, String]): String = {
-      def normalize(fqn: String): String = {
-        val index = fqn.indexOf('<')
-        if (index != -1) fqn.substring(0, index) else fqn
-      }
-      val nomalizedFQN = normalize(fullQualifiedName)
-      val simpleName = getSimpleName(nomalizedFQN)
-      val packageName = getPackageName(nomalizedFQN)
+      val simpleName = getSimpleName(fullQualifiedName)
+      val packageName = getPackageName(fullQualifiedName)
       if (packageName.isEmpty && !packageNameOfClass.isEmpty) {
         throw new IllegalStateException(s"Can't import class '$simpleName' located in default package")
       } else if (packageName == packageNameOfClass) {
         simpleName
-      } else if (imports.contains(nomalizedFQN)) {
-        imports.get(nomalizedFQN).get
+      } else if (imports.contains(fullQualifiedName)) {
+        imports.get(fullQualifiedName).get
       } else if (knownSimpleClassNames.contains(simpleName) || imports.values.exists(simpleName.equals(_))) {
-        nomalizedFQN
+        fullQualifiedName
       } else {
-        imports += nomalizedFQN -> simpleName
+        imports += fullQualifiedName -> simpleName
         simpleName
       }
     }
