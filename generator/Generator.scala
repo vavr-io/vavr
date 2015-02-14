@@ -79,15 +79,21 @@ def generateMainClasses(): Unit = {
       }
     }
 
+    case class Arg(javaType: String, identifier: String)
+
+    case class Method(returnType: String, name: String, args: Arg*) {
+      def asCall = s"$name(${args.map(_.identifier).mkString(", ")})"
+      def asDecl = s"$returnType $name(${args.map(arg => s"${arg.javaType} ${arg.identifier}").mkString(", ")})"
+    }
+
     import Types._
 
-    sealed abstract class FunctionalInterface(returnType: Types) {
+    sealed trait FunctionalInterface {
 
       def name: String
-      def method: String
-      def methodCall: String
+      def method: Method
       def superName: String
-      def superMethod: String
+      def superMethod: Method
 
       def gen(checked: Boolean): String = xs"""
         @FunctionalInterface
@@ -95,17 +101,19 @@ def generateMainClasses(): Unit = {
 
             static final long serialVersionUID = 1L;
 
-            ${(name != "Function").gen(s"${returnType.asUnboxed} $method${checked.gen(" throws Throwable")};")}
+            ${(method.asDecl != superMethod.asDecl).gen {
+              s"${method.asDecl}${checked.gen(" throws Throwable")};"
+            }}
 
             @Override
-            default $superMethod${checked.gen(" throws Throwable")} {
-                ${if (returnType.isVoid) {
+            default ${superMethod.asDecl}${checked.gen(" throws Throwable")} {
+                ${if (superMethod.returnType == "Void") {
                   xs"""
-                  $methodCall;
+                  ${method.asCall};
                   return null;
                   """
                 } else {
-                  s"return $methodCall;"
+                  s"return ${method.asCall};"
                 }}
             }
         }
@@ -115,23 +123,24 @@ def generateMainClasses(): Unit = {
     /**
      * Represents a functional interface with no arguments.
      */
-    case class Function0(returnType: Types) extends FunctionalInterface(returnType) {
+    case class Function0(returnType: Types) extends FunctionalInterface {
 
       override def name =
           if (returnType.isVoid) "Runnable"
           else if (returnType.isPrimitive) s"${returnType.asIdentifier}Supplier"
           else "Supplier<R>"
 
-      override def method =
-          if (returnType.isVoid) "run()"
-          else if (returnType.isPrimitive) s"getAs${returnType.asIdentifier}()"
-          else "get()"
-
-      override def methodCall = method
+      override def method = {
+        val name =
+          if (returnType.isVoid) "run"
+          else if (returnType.isPrimitive) s"getAs${returnType.asIdentifier}"
+          else "get"
+        Method(returnType.asUnboxed, name)
+      }
 
       override def superName = s"Function0<${returnType.asBoxed}>"
 
-      override def superMethod = s"${returnType.asBoxed} apply()"
+      override def superMethod = Method(returnType.asBoxed, "apply")
 
       override def toString = s"() -> $returnType"
     }
@@ -139,7 +148,7 @@ def generateMainClasses(): Unit = {
     /**
      * Represents a functional interface with one argument.
      */
-    case class Function1(returnType: Types, arg: Types) extends FunctionalInterface(returnType) {
+    case class Function1(returnType: Types, arg: Types) extends FunctionalInterface {
 
       override def name =
         if (returnType.isVoid) {
@@ -159,24 +168,15 @@ def generateMainClasses(): Unit = {
           if (returnType.isVoid) "accept"
           else if (returnType.isPrimitive) s"applyAs${returnType.asIdentifier}"
           else "apply"
-        val argName = arg.asBoxed("T").charAt(0).toLower
-        s"$methodName(${arg.asUnboxed("T")} $argName)"
-      }
-
-      override def methodCall = {
-        val methodName =
-          if (returnType.isVoid) "accept"
-          else if (returnType.isPrimitive) s"applyAs${returnType.asIdentifier}"
-          else "apply"
-        val argName = arg.asBoxed("T").charAt(0).toLower
-        s"$methodName($argName)"
+        val argName = arg.asUnboxed("T").substring(0, 1).toLowerCase
+        Method(returnType.asUnboxed, methodName, Arg(arg.asUnboxed("T"), argName))
       }
 
       override def superName = s"Function1<${arg.asBoxed("T")}, ${returnType.asBoxed}>"
 
       override def superMethod = {
-        val argName = arg.asBoxed("T").charAt(0).toLower
-        s"${returnType.asBoxed} apply(${arg.asBoxed("T")} $argName)"
+        val argName = arg.asBoxed("T").substring(0, 1).toLowerCase
+        Method(returnType.asBoxed, "apply", Arg(arg.asBoxed("T"), argName))
       }
 
       override def toString = s"($arg) -> $returnType"
@@ -185,10 +185,9 @@ def generateMainClasses(): Unit = {
     /**
      * Represents a functional interface with two arguments.
      */
-    case class Function2(returnType: Types, arg1: Types, arg2: Types) extends FunctionalInterface(returnType) {
+    case class Function2(returnType: Types, arg1: Types, arg2: Types) extends FunctionalInterface {
       override def name = ???
       override def method = ???
-      override def methodCall = ???
       override def superName = ???
       override def superMethod = ???
       override def toString = s"($arg1, $arg2) -> $returnType"
