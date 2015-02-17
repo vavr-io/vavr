@@ -90,7 +90,11 @@ def generateMainClasses(): Unit = {
       def asDecl = s"$returnType $name($argDecls)"
 
       def argNames = if (args.length == 2 && args(0)._1.isPrimitive && args(1)._1.isPrimitive) {
-        s"(${args(0)._1.asUnboxed}) left, (${args(1)._1.asUnboxed}) right"
+        if (name == "apply") {
+          s"(${args(0)._1.asUnboxed}) left, (${args(1)._1.asUnboxed}) right"
+        } else {
+          "left, right"
+        }
       } else if (name == "apply") {
         args.map {
           case (argType, argName) => if (argType.isObject) argName.toLowerCase else s"(${argType.asUnboxed}) value"
@@ -138,14 +142,14 @@ def generateMainClasses(): Unit = {
 
             @Override
             default ${superMethod.asDecl}${checked.gen(" throws Throwable")} {
-            ${if (superMethod.returnType == "Void") {
-              xs"""
-                ${method.asCall};
-                return null;
-              """
-            } else {
-              s"return ${method.asCall};"
-            }}
+                ${if (superMethod.returnType == "Void") {
+                  xs"""
+                    ${method.asCall};
+                    return null;
+                  """
+                } else {
+                  s"return ${method.asCall};"
+                }}
             }
         }
       """
@@ -193,7 +197,11 @@ def generateMainClasses(): Unit = {
             if (arg == returnType) TypeName(s"${arg.asIdentifier}UnaryOperator") else TypeName(s"${arg.asIdentifier}To${returnType.asIdentifier}Function")
           }
         } else /* returnType.isObject */ {
-          if (arg.isObject) TypeName("Function", "<T, R>") else TypeName(s"${arg.asIdentifier}Function", "<R>")
+          if (arg.isObject) {
+            if (arg == returnType) TypeName("UnaryOperator", "<T>") else TypeName("Function", "<T, R>")
+          } else {
+            TypeName(s"${arg.asIdentifier}Function", "<R>")
+          }
         }
 
       override val method = {
@@ -241,7 +249,7 @@ def generateMainClasses(): Unit = {
           }
         } else /* returnType.isObject */ {
           if (arg1.isObject && arg2.isObject) {
-            TypeName("BiFunction", "<T, U, R>")
+            if (arg1 == returnType && arg2 == returnType) TypeName("BinaryOperator", "<T>") else TypeName("BiFunction", "<T, U, R>")
           } else {
             val generics = if (arg1.isObject) "T, " else if (arg2.isObject) "U, " else ""
             TypeName(s"${arg1.asIdentifier}${arg2.asIdentifier}Function", s"<${generics}R>")
@@ -257,7 +265,10 @@ def generateMainClasses(): Unit = {
         Method(returnType.asUnboxed, methodName, (arg1, arg1.asUnboxed("T")), (arg2, arg2.asUnboxed("U")))
       }
 
-      override val superName = TypeName("Function2", s"<${arg1.asBoxed("T")}, ${arg2.asBoxed("U")}, ${returnType.asBoxed}>")
+      override val superName = {
+        val generic2 = if (arg1 == returnType && arg2 == returnType) "T" else "U"
+        TypeName("Function2", s"<${arg1.asBoxed("T")}, ${arg2.asBoxed(g)}, ${returnType.asBoxed}>")
+      }
       override val superMethod = Method(returnType.asBoxed, "apply", (arg1, arg1.asBoxed("T")), (arg2, arg2.asBoxed("U")))
       override val toString = s"($arg1, $arg2) -> $returnType"
     }
