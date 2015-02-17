@@ -125,6 +125,8 @@ def generateMainClasses(): Unit = {
 
       lazy val javaPackage: String = if (name.simpleName == "Runnable") "javax.lang" else "javax.util.function"
 
+      val isEndoTyped: Boolean
+
       val name: TypeName
       val method: Method
       val superName: TypeName
@@ -160,6 +162,8 @@ def generateMainClasses(): Unit = {
      */
     case class Function0(returnType: Types) extends FunctionalInterface {
 
+      override val isEndoTyped = false
+
       override val name =
         if (returnType.isVoid) TypeName("Runnable")
         else if (returnType.isBoolean) TypeName(s"${returnType.asIdentifier}Predicate")
@@ -185,6 +189,8 @@ def generateMainClasses(): Unit = {
      */
     case class Function1(returnType: Types, arg: Types) extends FunctionalInterface {
 
+      override val isEndoTyped = arg == returnType
+
       override val name =
         if (returnType.isVoid) {
           if (arg.isObject) TypeName("Consumer", "<T>") else TypeName(s"${arg.asIdentifier}Consumer")
@@ -194,11 +200,11 @@ def generateMainClasses(): Unit = {
           if (arg.isObject) {
             TypeName(s"To${returnType.asIdentifier}Function", "<T>")
           } else {
-            if (arg == returnType) TypeName(s"${arg.asIdentifier}UnaryOperator") else TypeName(s"${arg.asIdentifier}To${returnType.asIdentifier}Function")
+            if (isEndoTyped) TypeName(s"${arg.asIdentifier}UnaryOperator") else TypeName(s"${arg.asIdentifier}To${returnType.asIdentifier}Function")
           }
         } else /* returnType.isObject */ {
           if (arg.isObject) {
-            if (arg == returnType) TypeName("UnaryOperator", "<T>") else TypeName("Function", "<T, R>")
+            if (isEndoTyped) TypeName("UnaryOperator", "<T>") else TypeName("Function", "<T, R>")
           } else {
             TypeName(s"${arg.asIdentifier}Function", "<R>")
           }
@@ -210,10 +216,14 @@ def generateMainClasses(): Unit = {
           else if (returnType.isBoolean) "test"
           else if (returnType.isPrimitive) s"applyAs${returnType.asIdentifier}"
           else /* returnType.isObject */ "apply"
-        Method(returnType.asUnboxed, methodName, (arg, arg.asUnboxed("T")))
+        val genericReturnType = if (isEndoTyped) "T" else "R"
+        Method(returnType.asUnboxed(genericReturnType), methodName, (arg, arg.asUnboxed("T")))
       }
 
-      override val superName = TypeName("Function1", s"<${arg.asBoxed("T")}, ${returnType.asBoxed}>")
+      override val superName = {
+        val genericReturnType = if (isEndoTyped) "T" else "R"
+        TypeName("Function1", s"<${arg.asBoxed("T")}, ${returnType.asBoxed(genericReturnType)}>")
+      }
       override val superMethod = Method(returnType.asBoxed, "apply", (arg, arg.asBoxed("T")))
       override val toString = s"($arg) -> $returnType"
     }
@@ -222,6 +232,8 @@ def generateMainClasses(): Unit = {
      * Represents a functional interface with two arguments.
      */
     case class Function2(returnType: Types, arg1: Types, arg2: Types) extends FunctionalInterface {
+
+      override val isEndoTyped = arg1 == returnType && arg2 == returnType
 
       override val name =
         if (returnType.isVoid) {
@@ -241,7 +253,7 @@ def generateMainClasses(): Unit = {
         } else if (returnType.isPrimitive) {
           if (arg1.isObject && arg2.isObject) {
             TypeName(s"To${returnType.asIdentifier}BiFunction", "<T, U>")
-          } else if (returnType == arg1 && returnType == arg2) {
+          } else if (isEndoTyped) {
             TypeName(s"${returnType.asIdentifier}BinaryOperator")
           } else {
             val generics = if (arg1.isObject) "<T>" else if (arg2.isObject) "<U>" else ""
@@ -249,7 +261,7 @@ def generateMainClasses(): Unit = {
           }
         } else /* returnType.isObject */ {
           if (arg1.isObject && arg2.isObject) {
-            if (arg1 == returnType && arg2 == returnType) TypeName("BinaryOperator", "<T>") else TypeName("BiFunction", "<T, U, R>")
+            if (isEndoTyped) TypeName("BinaryOperator", "<T>") else TypeName("BiFunction", "<T, U, R>")
           } else {
             val generics = if (arg1.isObject) "T, " else if (arg2.isObject) "U, " else ""
             TypeName(s"${arg1.asIdentifier}${arg2.asIdentifier}Function", s"<${generics}R>")
@@ -262,14 +274,20 @@ def generateMainClasses(): Unit = {
           else if (returnType.isBoolean) "test"
           else if (returnType.isPrimitive) s"applyAs${returnType.asIdentifier}"
           else /* returnType.isObject */ "apply"
-        Method(returnType.asUnboxed, methodName, (arg1, arg1.asUnboxed("T")), (arg2, arg2.asUnboxed("U")))
+        val generic2 = if (isEndoTyped) "T" else "U"
+        val genericReturnType = if (isEndoTyped) "T" else "R"
+        Method(returnType.asUnboxed(genericReturnType), methodName, (arg1, arg1.asUnboxed("T")), (arg2, arg2.asUnboxed(generic2)))
       }
 
       override val superName = {
-        val generic2 = if (arg1 == returnType && arg2 == returnType) "T" else "U"
-        TypeName("Function2", s"<${arg1.asBoxed("T")}, ${arg2.asBoxed(generic2)}, ${returnType.asBoxed}>")
+        val generic2 = if (isEndoTyped) "T" else "U"
+        val genericReturnType = if (isEndoTyped) "T" else "R"
+        TypeName("Function2", s"<${arg1.asBoxed("T")}, ${arg2.asBoxed(generic2)}, ${returnType.asBoxed(genericReturnType)}>")
       }
-      override val superMethod = Method(returnType.asBoxed, "apply", (arg1, arg1.asBoxed("T")), (arg2, arg2.asBoxed("U")))
+      override val superMethod = {
+        val generic2 = if (isEndoTyped) "T" else "U"
+        Method(returnType.asBoxed, "apply", (arg1, arg1.asBoxed("T")), (arg2, arg2.asBoxed(generic2)))
+      }
       override val toString = s"($arg1, $arg2) -> $returnType"
     }
 
