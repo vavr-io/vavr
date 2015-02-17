@@ -267,7 +267,7 @@ def generateMainClasses(): Unit = {
 
       override val superName = {
         val generic2 = if (arg1 == returnType && arg2 == returnType) "T" else "U"
-        TypeName("Function2", s"<${arg1.asBoxed("T")}, ${arg2.asBoxed(g)}, ${returnType.asBoxed}>")
+        TypeName("Function2", s"<${arg1.asBoxed("T")}, ${arg2.asBoxed(generic2)}, ${returnType.asBoxed}>")
       }
       override val superMethod = Method(returnType.asBoxed, "apply", (arg1, arg1.asBoxed("T")), (arg2, arg2.asBoxed("U")))
       override val toString = s"($arg1, $arg2) -> $returnType"
