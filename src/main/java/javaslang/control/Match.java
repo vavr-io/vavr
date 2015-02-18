@@ -12,7 +12,6 @@ import java.lang.invoke.MethodType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.*;
 
 /**
  * A better switch for Java. A Match...
@@ -370,7 +369,7 @@ public final class Match<R> implements Function1<Object, R> {
 		 * @param parameterType The type of the unboxed function argument.
 		 */
 		// TODO: split prototype and non-prototype cases to increase performance
-		private Function<Object, Option<R>> caze(Option<?> prototype, Function<?, R> function, Class<?> parameterType) {
+		private Function<Object, Option<R>> caze(Option<?> prototype, Function1<?, R> function, Class<?> parameterType) {
 			final Predicate<Object> applicable = obj -> {
                 final boolean isCompatible = obj == null || parameterType.isAssignableFrom(obj.getClass());
 				return isCompatible
