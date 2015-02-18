@@ -167,6 +167,16 @@ def generateMainClasses(): Unit = {
             """}
         }
       """
+
+      def hasUnitTests: Boolean = method.asDecl != superMethod.asDecl
+
+      def genTest(im: ImportManager, checked: Boolean): String = xs"""
+        public class ${checked.gen("Checked")}${name.simpleName}Test${name.generics} {
+
+            // TODO: unit tests
+
+        }
+      """
     }
 
     /**
@@ -306,13 +316,16 @@ def generateMainClasses(): Unit = {
     def gen(fi: FunctionalInterface): Unit = {
       genJavaslangFile(fi.javaPackage, fi.name.simpleName)((im: ImportManager, _, _) => fi.gen(im, checked = false))
       genJavaslangFile(fi.javaPackage, s"Checked${fi.name.simpleName}")((im: ImportManager, _, _) => fi.gen(im, checked = true))
+      if (fi.hasUnitTests) {
+        genJavaslangFile(fi.javaPackage, s"${fi.name.simpleName}Test", baseDir = TARGET_TEST)((im: ImportManager, _, _) => fi.genTest(im, checked = false))
+        genJavaslangFile(fi.javaPackage, s"Checked${fi.name.simpleName}Test", baseDir = TARGET_TEST)((im: ImportManager, _, _) => fi.genTest(im, checked = true))
+      }
     }
 
     /**
      * Compute (relevant) combinations of lambda types.
      */
-    gen(UnaryOperator())
-    gen(BinaryOperator())
+    Seq(UnaryOperator(), BinaryOperator()).foreach { gen }
     Types.values.foreach(returnType => {
       gen(Function0(returnType))
       Types.values.filter(!_.isVoid).foreach(arg1Type => {
