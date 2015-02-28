@@ -20,7 +20,7 @@ public interface ShortBinaryOperator extends Function2<Short, Short, Short> {
 
     @Override
     default Short apply(Short left, Short right) {
-      return applyAsShort(left, right);
+        return applyAsShort(left, right);
     }
 
 }

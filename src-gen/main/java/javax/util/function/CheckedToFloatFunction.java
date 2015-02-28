@@ -20,7 +20,7 @@ public interface CheckedToFloatFunction<T> extends CheckedFunction1<T, Float> {
 
     @Override
     default Float apply(T t) throws Throwable {
-      return applyAsFloat(t);
+        return applyAsFloat(t);
     }
 
     static ToFloatFunction<Float> identity() {

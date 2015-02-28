@@ -20,7 +20,7 @@ public interface CheckedByteIntToShortFunction extends CheckedFunction2<Byte, In
 
     @Override
     default Short apply(Byte left, Integer right) throws Throwable {
-      return applyAsShort(left, right);
+        return applyAsShort(left, right);
     }
 
 }

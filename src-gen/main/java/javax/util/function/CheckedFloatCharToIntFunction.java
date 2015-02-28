@@ -20,7 +20,7 @@ public interface CheckedFloatCharToIntFunction extends CheckedFunction2<Float, C
 
     @Override
     default Integer apply(Float left, Character right) throws Throwable {
-      return applyAsInt(left, right);
+        return applyAsInt(left, right);
     }
 
 }

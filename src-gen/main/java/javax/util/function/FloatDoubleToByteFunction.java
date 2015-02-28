@@ -20,7 +20,7 @@ public interface FloatDoubleToByteFunction extends Function2<Float, Double, Byte
 
     @Override
     default Byte apply(Float left, Double right) {
-      return applyAsByte(left, right);
+        return applyAsByte(left, right);
     }
 
 }

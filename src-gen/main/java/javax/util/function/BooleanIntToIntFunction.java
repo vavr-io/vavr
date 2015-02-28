@@ -20,7 +20,7 @@ public interface BooleanIntToIntFunction extends Function2<Boolean, Integer, Int
 
     @Override
     default Integer apply(Boolean left, Integer right) {
-      return applyAsInt(left, right);
+        return applyAsInt(left, right);
     }
 
 }

@@ -20,7 +20,7 @@ public interface CheckedObjDoubleFunction<T, R> extends CheckedFunction2<T, Doub
 
     @Override
     default R apply(T t, Double value) throws Throwable {
-      return apply(t, (double) value);
+        return apply(t, (double) value);
     }
 
 }

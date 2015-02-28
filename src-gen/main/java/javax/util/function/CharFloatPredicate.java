@@ -20,7 +20,7 @@ public interface CharFloatPredicate extends Function2<Character, Float, Boolean>
 
     @Override
     default Boolean apply(Character left, Float right) {
-      return test(left, right);
+        return test(left, right);
     }
 
 }

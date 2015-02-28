@@ -20,8 +20,8 @@ public interface BooleanShortConsumer extends Function2<Boolean, Short, Void> {
 
     @Override
     default Void apply(Boolean left, Short right) {
-      accept(left, right);
-      return null;
+        accept(left, right);
+        return null;
     }
 
 }

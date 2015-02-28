@@ -20,8 +20,8 @@ public interface CharBooleanConsumer extends Function2<Character, Boolean, Void>
 
     @Override
     default Void apply(Character left, Boolean right) {
-      accept(left, right);
-      return null;
+        accept(left, right);
+        return null;
     }
 
 }

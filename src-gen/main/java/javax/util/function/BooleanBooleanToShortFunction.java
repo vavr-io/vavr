@@ -20,7 +20,7 @@ public interface BooleanBooleanToShortFunction extends Function2<Boolean, Boolea
 
     @Override
     default Short apply(Boolean left, Boolean right) {
-      return applyAsShort(left, right);
+        return applyAsShort(left, right);
     }
 
 }

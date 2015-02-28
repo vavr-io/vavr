@@ -20,7 +20,7 @@ public interface ObjShortFunction<T, R> extends Function2<T, Short, R> {
 
     @Override
     default R apply(T t, Short value) {
-      return apply(t, (short) value);
+        return apply(t, (short) value);
     }
 
 }

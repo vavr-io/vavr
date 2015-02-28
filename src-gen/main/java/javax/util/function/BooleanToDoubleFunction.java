@@ -20,7 +20,7 @@ public interface BooleanToDoubleFunction extends Function1<Boolean, Double> {
 
     @Override
     default Double apply(Boolean value) {
-      return applyAsDouble(value);
+        return applyAsDouble(value);
     }
 
 }

@@ -20,7 +20,7 @@ public interface ObjDoubleToLongFunction<T> extends Function2<T, Double, Long> {
 
     @Override
     default Long apply(T t, Double value) {
-      return applyAsLong(t, value);
+        return applyAsLong(t, value);
     }
 
 }

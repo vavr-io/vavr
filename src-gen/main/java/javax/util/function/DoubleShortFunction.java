@@ -20,7 +20,7 @@ public interface DoubleShortFunction<R> extends Function2<Double, Short, R> {
 
     @Override
     default R apply(Double left, Short right) {
-      return apply((double) left, (short) right);
+        return apply((double) left, (short) right);
     }
 
 }

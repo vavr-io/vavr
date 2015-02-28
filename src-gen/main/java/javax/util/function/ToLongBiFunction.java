@@ -20,7 +20,7 @@ public interface ToLongBiFunction<T, U> extends Function2<T, U, Long>, java.util
 
     @Override
     default Long apply(T t, U u) {
-      return applyAsLong(t, u);
+        return applyAsLong(t, u);
     }
 
 }

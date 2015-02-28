@@ -20,7 +20,7 @@ public interface IntByteFunction<R> extends Function2<Integer, Byte, R> {
 
     @Override
     default R apply(Integer left, Byte right) {
-      return apply((int) left, (byte) right);
+        return apply((int) left, (byte) right);
     }
 
 }

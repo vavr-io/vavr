@@ -20,7 +20,7 @@ public interface CheckedIntUnaryOperator extends CheckedFunction1<Integer, Integ
 
     @Override
     default Integer apply(Integer value) throws Throwable {
-      return applyAsInt(value);
+        return applyAsInt(value);
     }
 
     static IntUnaryOperator identity() {

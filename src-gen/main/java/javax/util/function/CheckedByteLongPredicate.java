@@ -20,7 +20,7 @@ public interface CheckedByteLongPredicate extends CheckedFunction2<Byte, Long, B
 
     @Override
     default Boolean apply(Byte left, Long right) throws Throwable {
-      return test(left, right);
+        return test(left, right);
     }
 
 }

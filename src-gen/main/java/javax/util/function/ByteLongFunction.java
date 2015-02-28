@@ -20,7 +20,7 @@ public interface ByteLongFunction<R> extends Function2<Byte, Long, R> {
 
     @Override
     default R apply(Byte left, Long right) {
-      return apply((byte) left, (long) right);
+        return apply((byte) left, (long) right);
     }
 
 }

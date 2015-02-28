@@ -20,7 +20,7 @@ public interface DoublePredicate extends Function1<Double, Boolean>, java.util.f
 
     @Override
     default Boolean apply(Double value) {
-      return test(value);
+        return test(value);
     }
 
 }

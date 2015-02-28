@@ -20,7 +20,7 @@ public interface CheckedBooleanToLongFunction extends CheckedFunction1<Boolean, 
 
     @Override
     default Long apply(Boolean value) throws Throwable {
-      return applyAsLong(value);
+        return applyAsLong(value);
     }
 
 }

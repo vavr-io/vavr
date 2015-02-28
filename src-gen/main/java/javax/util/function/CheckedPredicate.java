@@ -20,7 +20,7 @@ public interface CheckedPredicate<T> extends CheckedFunction1<T, Boolean> {
 
     @Override
     default Boolean apply(T t) throws Throwable {
-      return test(t);
+        return test(t);
     }
 
     static Predicate<Boolean> identity() {

@@ -20,8 +20,8 @@ public interface CheckedCharIntConsumer extends CheckedFunction2<Character, Inte
 
     @Override
     default Void apply(Character left, Integer right) throws Throwable {
-      accept(left, right);
-      return null;
+        accept(left, right);
+        return null;
     }
 
 }

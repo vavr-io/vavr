@@ -20,7 +20,7 @@ public interface CheckedSupplier<R> extends CheckedFunction0<R> {
 
     @Override
     default R apply() throws Throwable {
-      return get();
+        return get();
     }
 
 }

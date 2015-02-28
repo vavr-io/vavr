@@ -20,7 +20,7 @@ public interface CheckedLongFunction<R> extends CheckedFunction1<Long, R> {
 
     @Override
     default R apply(Long value) throws Throwable {
-      return apply((long) value);
+        return apply((long) value);
     }
 
     static LongFunction<Long> identity() {

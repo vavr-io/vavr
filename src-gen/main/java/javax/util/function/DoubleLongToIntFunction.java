@@ -20,7 +20,7 @@ public interface DoubleLongToIntFunction extends Function2<Double, Long, Integer
 
     @Override
     default Integer apply(Double left, Long right) {
-      return applyAsInt(left, right);
+        return applyAsInt(left, right);
     }
 
 }

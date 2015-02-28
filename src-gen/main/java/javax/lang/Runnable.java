@@ -20,8 +20,8 @@ public interface Runnable extends Function0<Void>, java.lang.Runnable {
 
     @Override
     default Void apply() {
-      run();
-      return null;
+        run();
+        return null;
     }
 
 }

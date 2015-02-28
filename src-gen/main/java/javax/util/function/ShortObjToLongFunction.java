@@ -20,7 +20,7 @@ public interface ShortObjToLongFunction<U> extends Function2<Short, U, Long> {
 
     @Override
     default Long apply(Short value, U u) {
-      return applyAsLong(value, u);
+        return applyAsLong(value, u);
     }
 
 }

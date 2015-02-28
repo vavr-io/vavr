@@ -20,7 +20,7 @@ public interface IntLongToFloatFunction extends Function2<Integer, Long, Float> 
 
     @Override
     default Float apply(Integer left, Long right) {
-      return applyAsFloat(left, right);
+        return applyAsFloat(left, right);
     }
 
 }

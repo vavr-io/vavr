@@ -20,7 +20,7 @@ public interface ObjCharFunction<T, R> extends Function2<T, Character, R> {
 
     @Override
     default R apply(T t, Character value) {
-      return apply(t, (char) value);
+        return apply(t, (char) value);
     }
 
 }

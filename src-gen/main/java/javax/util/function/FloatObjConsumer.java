@@ -20,8 +20,8 @@ public interface FloatObjConsumer<U> extends Function2<Float, U, Void> {
 
     @Override
     default Void apply(Float value, U u) {
-      accept(value, u);
-      return null;
+        accept(value, u);
+        return null;
     }
 
 }

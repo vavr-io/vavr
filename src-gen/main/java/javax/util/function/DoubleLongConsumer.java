@@ -20,8 +20,8 @@ public interface DoubleLongConsumer extends Function2<Double, Long, Void> {
 
     @Override
     default Void apply(Double left, Long right) {
-      accept(left, right);
-      return null;
+        accept(left, right);
+        return null;
     }
 
 }

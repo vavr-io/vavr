@@ -20,8 +20,8 @@ public interface CheckedByteShortConsumer extends CheckedFunction2<Byte, Short, 
 
     @Override
     default Void apply(Byte left, Short right) throws Throwable {
-      accept(left, right);
-      return null;
+        accept(left, right);
+        return null;
     }
 
 }

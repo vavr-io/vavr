@@ -20,7 +20,7 @@ public interface CheckedFloatIntToDoubleFunction extends CheckedFunction2<Float,
 
     @Override
     default Double apply(Float left, Integer right) throws Throwable {
-      return applyAsDouble(left, right);
+        return applyAsDouble(left, right);
     }
 
 }

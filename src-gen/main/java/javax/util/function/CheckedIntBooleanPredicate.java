@@ -20,7 +20,7 @@ public interface CheckedIntBooleanPredicate extends CheckedFunction2<Integer, Bo
 
     @Override
     default Boolean apply(Integer left, Boolean right) throws Throwable {
-      return test(left, right);
+        return test(left, right);
     }
 
 }

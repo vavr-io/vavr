@@ -20,7 +20,7 @@ public interface CheckedDoubleBooleanToShortFunction extends CheckedFunction2<Do
 
     @Override
     default Short apply(Double left, Boolean right) throws Throwable {
-      return applyAsShort(left, right);
+        return applyAsShort(left, right);
     }
 
 }

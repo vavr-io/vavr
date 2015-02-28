@@ -20,7 +20,7 @@ public interface CheckedIntCharToIntFunction extends CheckedFunction2<Integer, C
 
     @Override
     default Integer apply(Integer left, Character right) throws Throwable {
-      return applyAsInt(left, right);
+        return applyAsInt(left, right);
     }
 
 }

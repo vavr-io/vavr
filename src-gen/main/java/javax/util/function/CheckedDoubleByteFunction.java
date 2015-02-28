@@ -20,7 +20,7 @@ public interface CheckedDoubleByteFunction<R> extends CheckedFunction2<Double, B
 
     @Override
     default R apply(Double left, Byte right) throws Throwable {
-      return apply((double) left, (byte) right);
+        return apply((double) left, (byte) right);
     }
 
 }

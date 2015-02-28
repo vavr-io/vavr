@@ -20,7 +20,7 @@ public interface CheckedCharToLongFunction extends CheckedFunction1<Character, L
 
     @Override
     default Long apply(Character value) throws Throwable {
-      return applyAsLong(value);
+        return applyAsLong(value);
     }
 
 }

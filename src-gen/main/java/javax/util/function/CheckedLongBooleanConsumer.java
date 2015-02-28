@@ -20,8 +20,8 @@ public interface CheckedLongBooleanConsumer extends CheckedFunction2<Long, Boole
 
     @Override
     default Void apply(Long left, Boolean right) throws Throwable {
-      accept(left, right);
-      return null;
+        accept(left, right);
+        return null;
     }
 
 }

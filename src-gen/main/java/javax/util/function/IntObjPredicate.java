@@ -20,7 +20,7 @@ public interface IntObjPredicate<U> extends Function2<Integer, U, Boolean> {
 
     @Override
     default Boolean apply(Integer value, U u) {
-      return test(value, u);
+        return test(value, u);
     }
 
 }

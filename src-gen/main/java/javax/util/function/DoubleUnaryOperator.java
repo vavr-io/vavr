@@ -20,7 +20,7 @@ public interface DoubleUnaryOperator extends Function1<Double, Double>, java.uti
 
     @Override
     default Double apply(Double value) {
-      return applyAsDouble(value);
+        return applyAsDouble(value);
     }
 
     static DoubleUnaryOperator identity() {

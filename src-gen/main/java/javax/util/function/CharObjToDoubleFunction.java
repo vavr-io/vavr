@@ -20,7 +20,7 @@ public interface CharObjToDoubleFunction<U> extends Function2<Character, U, Doub
 
     @Override
     default Double apply(Character value, U u) {
-      return applyAsDouble(value, u);
+        return applyAsDouble(value, u);
     }
 
 }

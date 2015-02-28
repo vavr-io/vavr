@@ -20,7 +20,7 @@ public interface CheckedDoubleIntFunction<R> extends CheckedFunction2<Double, In
 
     @Override
     default R apply(Double left, Integer right) throws Throwable {
-      return apply((double) left, (int) right);
+        return apply((double) left, (int) right);
     }
 
 }

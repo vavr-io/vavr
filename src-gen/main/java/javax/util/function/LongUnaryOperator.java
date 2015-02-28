@@ -20,7 +20,7 @@ public interface LongUnaryOperator extends Function1<Long, Long>, java.util.func
 
     @Override
     default Long apply(Long value) {
-      return applyAsLong(value);
+        return applyAsLong(value);
     }
 
     static LongUnaryOperator identity() {

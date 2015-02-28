@@ -20,7 +20,7 @@ public interface CheckedBooleanBooleanToCharFunction extends CheckedFunction2<Bo
 
     @Override
     default Character apply(Boolean left, Boolean right) throws Throwable {
-      return applyAsChar(left, right);
+        return applyAsChar(left, right);
     }
 
 }

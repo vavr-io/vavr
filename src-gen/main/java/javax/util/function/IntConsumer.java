@@ -20,8 +20,8 @@ public interface IntConsumer extends Function1<Integer, Void>, java.util.functio
 
     @Override
     default Void apply(Integer value) {
-      accept(value);
-      return null;
+        accept(value);
+        return null;
     }
 
 }

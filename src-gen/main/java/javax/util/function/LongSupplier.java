@@ -20,7 +20,7 @@ public interface LongSupplier extends Function0<Long>, java.util.function.LongSu
 
     @Override
     default Long apply() {
-      return getAsLong();
+        return getAsLong();
     }
 
 }

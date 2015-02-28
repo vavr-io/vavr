@@ -20,7 +20,7 @@ public interface BytePredicate extends Function1<Byte, Boolean> {
 
     @Override
     default Boolean apply(Byte value) {
-      return test(value);
+        return test(value);
     }
 
 }

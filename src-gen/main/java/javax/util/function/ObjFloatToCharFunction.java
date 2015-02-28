@@ -20,7 +20,7 @@ public interface ObjFloatToCharFunction<T> extends Function2<T, Float, Character
 
     @Override
     default Character apply(T t, Float value) {
-      return applyAsChar(t, value);
+        return applyAsChar(t, value);
     }
 
 }

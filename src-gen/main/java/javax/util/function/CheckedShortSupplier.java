@@ -20,7 +20,7 @@ public interface CheckedShortSupplier extends CheckedFunction0<Short> {
 
     @Override
     default Short apply() throws Throwable {
-      return getAsShort();
+        return getAsShort();
     }
 
 }

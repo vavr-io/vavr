@@ -20,7 +20,7 @@ public interface CharByteToIntFunction extends Function2<Character, Byte, Intege
 
     @Override
     default Integer apply(Character left, Byte right) {
-      return applyAsInt(left, right);
+        return applyAsInt(left, right);
     }
 
 }

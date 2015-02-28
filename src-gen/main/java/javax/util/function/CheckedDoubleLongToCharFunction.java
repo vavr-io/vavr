@@ -20,7 +20,7 @@ public interface CheckedDoubleLongToCharFunction extends CheckedFunction2<Double
 
     @Override
     default Character apply(Double left, Long right) throws Throwable {
-      return applyAsChar(left, right);
+        return applyAsChar(left, right);
     }
 
 }

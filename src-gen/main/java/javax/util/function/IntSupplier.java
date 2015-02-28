@@ -20,7 +20,7 @@ public interface IntSupplier extends Function0<Integer>, java.util.function.IntS
 
     @Override
     default Integer apply() {
-      return getAsInt();
+        return getAsInt();
     }
 
 }

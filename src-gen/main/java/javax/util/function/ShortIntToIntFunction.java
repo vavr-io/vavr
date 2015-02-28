@@ -20,7 +20,7 @@ public interface ShortIntToIntFunction extends Function2<Short, Integer, Integer
 
     @Override
     default Integer apply(Short left, Integer right) {
-      return applyAsInt(left, right);
+        return applyAsInt(left, right);
     }
 
 }

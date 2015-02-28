@@ -20,7 +20,7 @@ public interface BooleanSupplier extends Function0<Boolean>, java.util.function.
 
     @Override
     default Boolean apply() {
-      return getAsBoolean();
+        return getAsBoolean();
     }
 
 }

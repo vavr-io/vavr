@@ -20,8 +20,8 @@ public interface CheckedByteDoubleConsumer extends CheckedFunction2<Byte, Double
 
     @Override
     default Void apply(Byte left, Double right) throws Throwable {
-      accept(left, right);
-      return null;
+        accept(left, right);
+        return null;
     }
 
 }

@@ -20,7 +20,7 @@ public interface CheckedCharObjFunction<U, R> extends CheckedFunction2<Character
 
     @Override
     default R apply(Character value, U u) throws Throwable {
-      return apply((char) value, u);
+        return apply((char) value, u);
     }
 
 }

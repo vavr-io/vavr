@@ -20,7 +20,7 @@ public interface CheckedByteBinaryOperator extends CheckedFunction2<Byte, Byte, 
 
     @Override
     default Byte apply(Byte left, Byte right) throws Throwable {
-      return applyAsByte(left, right);
+        return applyAsByte(left, right);
     }
 
 }

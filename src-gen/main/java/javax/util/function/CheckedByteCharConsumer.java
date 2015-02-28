@@ -20,8 +20,8 @@ public interface CheckedByteCharConsumer extends CheckedFunction2<Byte, Characte
 
     @Override
     default Void apply(Byte left, Character right) throws Throwable {
-      accept(left, right);
-      return null;
+        accept(left, right);
+        return null;
     }
 
 }

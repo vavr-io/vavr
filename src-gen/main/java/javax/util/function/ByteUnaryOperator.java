@@ -20,7 +20,7 @@ public interface ByteUnaryOperator extends Function1<Byte, Byte> {
 
     @Override
     default Byte apply(Byte value) {
-      return applyAsByte(value);
+        return applyAsByte(value);
     }
 
     static ByteUnaryOperator identity() {

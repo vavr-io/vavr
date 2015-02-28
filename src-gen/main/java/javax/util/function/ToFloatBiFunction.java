@@ -20,7 +20,7 @@ public interface ToFloatBiFunction<T, U> extends Function2<T, U, Float> {
 
     @Override
     default Float apply(T t, U u) {
-      return applyAsFloat(t, u);
+        return applyAsFloat(t, u);
     }
 
 }

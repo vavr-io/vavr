@@ -20,7 +20,7 @@ public interface CheckedLongFloatPredicate extends CheckedFunction2<Long, Float,
 
     @Override
     default Boolean apply(Long left, Float right) throws Throwable {
-      return test(left, right);
+        return test(left, right);
     }
 
 }

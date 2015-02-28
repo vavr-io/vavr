@@ -20,7 +20,7 @@ public interface ShortByteFunction<R> extends Function2<Short, Byte, R> {
 
     @Override
     default R apply(Short left, Byte right) {
-      return apply((short) left, (byte) right);
+        return apply((short) left, (byte) right);
     }
 
 }

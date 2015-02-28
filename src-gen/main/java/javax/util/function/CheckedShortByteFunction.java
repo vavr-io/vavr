@@ -20,7 +20,7 @@ public interface CheckedShortByteFunction<R> extends CheckedFunction2<Short, Byt
 
     @Override
     default R apply(Short left, Byte right) throws Throwable {
-      return apply((short) left, (byte) right);
+        return apply((short) left, (byte) right);
     }
 
 }

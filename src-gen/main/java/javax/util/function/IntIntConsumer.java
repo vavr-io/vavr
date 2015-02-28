@@ -20,8 +20,8 @@ public interface IntIntConsumer extends Function2<Integer, Integer, Void> {
 
     @Override
     default Void apply(Integer left, Integer right) {
-      accept(left, right);
-      return null;
+        accept(left, right);
+        return null;
     }
 
 }

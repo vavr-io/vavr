@@ -20,8 +20,8 @@ public interface CheckedObjShortConsumer<T> extends CheckedFunction2<T, Short, V
 
     @Override
     default Void apply(T t, Short value) throws Throwable {
-      accept(t, value);
-      return null;
+        accept(t, value);
+        return null;
     }
 
 }

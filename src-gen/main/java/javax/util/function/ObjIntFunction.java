@@ -20,7 +20,7 @@ public interface ObjIntFunction<T, R> extends Function2<T, Integer, R> {
 
     @Override
     default R apply(T t, Integer value) {
-      return apply(t, (int) value);
+        return apply(t, (int) value);
     }
 
 }

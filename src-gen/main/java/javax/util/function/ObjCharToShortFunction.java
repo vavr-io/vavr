@@ -20,7 +20,7 @@ public interface ObjCharToShortFunction<T> extends Function2<T, Character, Short
 
     @Override
     default Short apply(T t, Character value) {
-      return applyAsShort(t, value);
+        return applyAsShort(t, value);
     }
 
 }

@@ -20,7 +20,7 @@ public interface IntToShortFunction extends Function1<Integer, Short> {
 
     @Override
     default Short apply(Integer value) {
-      return applyAsShort(value);
+        return applyAsShort(value);
     }
 
 }

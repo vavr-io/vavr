@@ -20,7 +20,7 @@ public interface CharLongToShortFunction extends Function2<Character, Long, Shor
 
     @Override
     default Short apply(Character left, Long right) {
-      return applyAsShort(left, right);
+        return applyAsShort(left, right);
     }
 
 }

@@ -20,7 +20,7 @@ public interface ShortSupplier extends Function0<Short> {
 
     @Override
     default Short apply() {
-      return getAsShort();
+        return getAsShort();
     }
 
 }

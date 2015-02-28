@@ -20,7 +20,7 @@ public interface CheckedByteObjPredicate<U> extends CheckedFunction2<Byte, U, Bo
 
     @Override
     default Boolean apply(Byte value, U u) throws Throwable {
-      return test(value, u);
+        return test(value, u);
     }
 
 }

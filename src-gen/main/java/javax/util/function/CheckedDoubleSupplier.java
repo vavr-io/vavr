@@ -20,7 +20,7 @@ public interface CheckedDoubleSupplier extends CheckedFunction0<Double> {
 
     @Override
     default Double apply() throws Throwable {
-      return getAsDouble();
+        return getAsDouble();
     }
 
 }

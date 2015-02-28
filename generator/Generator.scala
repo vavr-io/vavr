@@ -76,7 +76,6 @@ def generateMainClasses(): Unit = {
           case _ => v.toString.firstUpper
         }
       }
-
     }
 
     import Types._
@@ -177,14 +176,12 @@ def generateMainClasses(): Unit = {
 
                 @Override
                 default ${superMethod.asDecl}${checked.gen(" throws Throwable")} {
-                  ${if (superMethod.returnType._2 == "Void") {
-                    xs"""
+                    ${if (superMethod.returnType._2 == "Void") xs"""
                       ${method.asCall};
                       return null;
-                    """
-                  } else {
-                    s"return ${method.asCall};"
-                  }}
+                    """ else xs"""
+                      return ${method.asCall};
+                    """}
                 }
               """}
 

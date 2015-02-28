@@ -20,8 +20,8 @@ public interface CheckedCharShortConsumer extends CheckedFunction2<Character, Sh
 
     @Override
     default Void apply(Character left, Short right) throws Throwable {
-      accept(left, right);
-      return null;
+        accept(left, right);
+        return null;
     }
 
 }

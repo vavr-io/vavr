@@ -20,7 +20,7 @@ public interface ShortShortPredicate extends Function2<Short, Short, Boolean> {
 
     @Override
     default Boolean apply(Short left, Short right) {
-      return test(left, right);
+        return test(left, right);
     }
 
 }

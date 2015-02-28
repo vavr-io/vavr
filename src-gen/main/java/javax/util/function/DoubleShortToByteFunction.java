@@ -20,7 +20,7 @@ public interface DoubleShortToByteFunction extends Function2<Double, Short, Byte
 
     @Override
     default Byte apply(Double left, Short right) {
-      return applyAsByte(left, right);
+        return applyAsByte(left, right);
     }
 
 }

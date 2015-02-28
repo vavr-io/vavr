@@ -20,7 +20,7 @@ public interface ShortCharToIntFunction extends Function2<Short, Character, Inte
 
     @Override
     default Integer apply(Short left, Character right) {
-      return applyAsInt(left, right);
+        return applyAsInt(left, right);
     }
 
 }

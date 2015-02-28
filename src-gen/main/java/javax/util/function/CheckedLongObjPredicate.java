@@ -20,7 +20,7 @@ public interface CheckedLongObjPredicate<U> extends CheckedFunction2<Long, U, Bo
 
     @Override
     default Boolean apply(Long value, U u) throws Throwable {
-      return test(value, u);
+        return test(value, u);
     }
 
 }

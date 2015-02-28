@@ -20,7 +20,7 @@ public interface Supplier<R> extends Function0<R>, java.util.function.Supplier<R
 
     @Override
     default R apply() {
-      return get();
+        return get();
     }
 
 }

@@ -20,8 +20,8 @@ public interface CharByteConsumer extends Function2<Character, Byte, Void> {
 
     @Override
     default Void apply(Character left, Byte right) {
-      accept(left, right);
-      return null;
+        accept(left, right);
+        return null;
     }
 
 }

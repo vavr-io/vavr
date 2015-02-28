@@ -20,8 +20,8 @@ public interface ObjLongConsumer<T> extends Function2<T, Long, Void>, java.util.
 
     @Override
     default Void apply(T t, Long value) {
-      accept(t, value);
-      return null;
+        accept(t, value);
+        return null;
     }
 
 }

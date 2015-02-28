@@ -20,7 +20,7 @@ public interface ToByteFunction<T> extends Function1<T, Byte> {
 
     @Override
     default Byte apply(T t) {
-      return applyAsByte(t);
+        return applyAsByte(t);
     }
 
     static ToByteFunction<Byte> identity() {

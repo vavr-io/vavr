@@ -20,7 +20,7 @@ public interface CharBooleanToFloatFunction extends Function2<Character, Boolean
 
     @Override
     default Float apply(Character left, Boolean right) {
-      return applyAsFloat(left, right);
+        return applyAsFloat(left, right);
     }
 
 }

@@ -20,7 +20,7 @@ public interface ObjIntToByteFunction<T> extends Function2<T, Integer, Byte> {
 
     @Override
     default Byte apply(T t, Integer value) {
-      return applyAsByte(t, value);
+        return applyAsByte(t, value);
     }
 
 }

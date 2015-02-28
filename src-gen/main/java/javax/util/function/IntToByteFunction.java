@@ -20,7 +20,7 @@ public interface IntToByteFunction extends Function1<Integer, Byte> {
 
     @Override
     default Byte apply(Integer value) {
-      return applyAsByte(value);
+        return applyAsByte(value);
     }
 
 }

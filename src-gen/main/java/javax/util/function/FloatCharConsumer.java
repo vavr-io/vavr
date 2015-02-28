@@ -20,8 +20,8 @@ public interface FloatCharConsumer extends Function2<Float, Character, Void> {
 
     @Override
     default Void apply(Float left, Character right) {
-      accept(left, right);
-      return null;
+        accept(left, right);
+        return null;
     }
 
 }

@@ -20,7 +20,7 @@ public interface CharObjToLongFunction<U> extends Function2<Character, U, Long> 
 
     @Override
     default Long apply(Character value, U u) {
-      return applyAsLong(value, u);
+        return applyAsLong(value, u);
     }
 
 }

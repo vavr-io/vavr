@@ -20,7 +20,7 @@ public interface ByteToIntFunction extends Function1<Byte, Integer> {
 
     @Override
     default Integer apply(Byte value) {
-      return applyAsInt(value);
+        return applyAsInt(value);
     }
 
 }

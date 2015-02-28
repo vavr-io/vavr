@@ -20,8 +20,8 @@ public interface ByteShortConsumer extends Function2<Byte, Short, Void> {
 
     @Override
     default Void apply(Byte left, Short right) {
-      accept(left, right);
-      return null;
+        accept(left, right);
+        return null;
     }
 
 }

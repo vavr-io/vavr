@@ -20,7 +20,7 @@ public interface FloatByteToLongFunction extends Function2<Float, Byte, Long> {
 
     @Override
     default Long apply(Float left, Byte right) {
-      return applyAsLong(left, right);
+        return applyAsLong(left, right);
     }
 
 }

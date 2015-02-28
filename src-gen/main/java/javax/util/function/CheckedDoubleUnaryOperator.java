@@ -20,7 +20,7 @@ public interface CheckedDoubleUnaryOperator extends CheckedFunction1<Double, Dou
 
     @Override
     default Double apply(Double value) throws Throwable {
-      return applyAsDouble(value);
+        return applyAsDouble(value);
     }
 
     static DoubleUnaryOperator identity() {

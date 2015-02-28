@@ -20,7 +20,7 @@ public interface CheckedToShortFunction<T> extends CheckedFunction1<T, Short> {
 
     @Override
     default Short apply(T t) throws Throwable {
-      return applyAsShort(t);
+        return applyAsShort(t);
     }
 
     static ToShortFunction<Short> identity() {

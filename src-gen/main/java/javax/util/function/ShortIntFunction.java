@@ -20,7 +20,7 @@ public interface ShortIntFunction<R> extends Function2<Short, Integer, R> {
 
     @Override
     default R apply(Short left, Integer right) {
-      return apply((short) left, (int) right);
+        return apply((short) left, (int) right);
     }
 
 }

@@ -20,7 +20,7 @@ public interface CheckedToDoubleBiFunction<T, U> extends CheckedFunction2<T, U, 
 
     @Override
     default Double apply(T t, U u) throws Throwable {
-      return applyAsDouble(t, u);
+        return applyAsDouble(t, u);
     }
 
 }

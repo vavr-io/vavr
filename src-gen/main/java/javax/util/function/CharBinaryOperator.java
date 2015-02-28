@@ -20,7 +20,7 @@ public interface CharBinaryOperator extends Function2<Character, Character, Char
 
     @Override
     default Character apply(Character left, Character right) {
-      return applyAsChar(left, right);
+        return applyAsChar(left, right);
     }
 
 }

@@ -20,7 +20,7 @@ public interface DoubleIntFunction<R> extends Function2<Double, Integer, R> {
 
     @Override
     default R apply(Double left, Integer right) {
-      return apply((double) left, (int) right);
+        return apply((double) left, (int) right);
     }
 
 }

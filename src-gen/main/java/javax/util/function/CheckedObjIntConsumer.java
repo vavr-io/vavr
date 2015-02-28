@@ -20,8 +20,8 @@ public interface CheckedObjIntConsumer<T> extends CheckedFunction2<T, Integer, V
 
     @Override
     default Void apply(T t, Integer value) throws Throwable {
-      accept(t, value);
-      return null;
+        accept(t, value);
+        return null;
     }
 
 }

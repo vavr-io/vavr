@@ -20,7 +20,7 @@ public interface CheckedShortFloatPredicate extends CheckedFunction2<Short, Floa
 
     @Override
     default Boolean apply(Short left, Float right) throws Throwable {
-      return test(left, right);
+        return test(left, right);
     }
 
 }

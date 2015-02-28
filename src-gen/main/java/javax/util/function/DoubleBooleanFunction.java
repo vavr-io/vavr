@@ -20,7 +20,7 @@ public interface DoubleBooleanFunction<R> extends Function2<Double, Boolean, R> 
 
     @Override
     default R apply(Double left, Boolean right) {
-      return apply((double) left, (boolean) right);
+        return apply((double) left, (boolean) right);
     }
 
 }

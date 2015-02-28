@@ -20,7 +20,7 @@ public interface LongByteToDoubleFunction extends Function2<Long, Byte, Double> 
 
     @Override
     default Double apply(Long left, Byte right) {
-      return applyAsDouble(left, right);
+        return applyAsDouble(left, right);
     }
 
 }

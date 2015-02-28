@@ -20,7 +20,7 @@ public interface CheckedLongByteToIntFunction extends CheckedFunction2<Long, Byt
 
     @Override
     default Integer apply(Long left, Byte right) throws Throwable {
-      return applyAsInt(left, right);
+        return applyAsInt(left, right);
     }
 
 }

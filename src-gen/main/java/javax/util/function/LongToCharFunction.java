@@ -20,7 +20,7 @@ public interface LongToCharFunction extends Function1<Long, Character> {
 
     @Override
     default Character apply(Long value) {
-      return applyAsChar(value);
+        return applyAsChar(value);
     }
 
 }

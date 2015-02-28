@@ -20,8 +20,8 @@ public interface ByteBooleanConsumer extends Function2<Byte, Boolean, Void> {
 
     @Override
     default Void apply(Byte left, Boolean right) {
-      accept(left, right);
-      return null;
+        accept(left, right);
+        return null;
     }
 
 }

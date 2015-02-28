@@ -20,7 +20,7 @@ public interface CheckedByteBooleanFunction<R> extends CheckedFunction2<Byte, Bo
 
     @Override
     default R apply(Byte left, Boolean right) throws Throwable {
-      return apply((byte) left, (boolean) right);
+        return apply((byte) left, (boolean) right);
     }
 
 }

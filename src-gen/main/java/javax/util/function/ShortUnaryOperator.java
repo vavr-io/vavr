@@ -20,7 +20,7 @@ public interface ShortUnaryOperator extends Function1<Short, Short> {
 
     @Override
     default Short apply(Short value) {
-      return applyAsShort(value);
+        return applyAsShort(value);
     }
 
     static ShortUnaryOperator identity() {

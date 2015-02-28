@@ -20,7 +20,7 @@ public interface CheckedCharDoublePredicate extends CheckedFunction2<Character, 
 
     @Override
     default Boolean apply(Character left, Double right) throws Throwable {
-      return test(left, right);
+        return test(left, right);
     }
 
 }

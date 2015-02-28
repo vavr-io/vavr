@@ -20,7 +20,7 @@ public interface CharBooleanToLongFunction extends Function2<Character, Boolean,
 
     @Override
     default Long apply(Character left, Boolean right) {
-      return applyAsLong(left, right);
+        return applyAsLong(left, right);
     }
 
 }

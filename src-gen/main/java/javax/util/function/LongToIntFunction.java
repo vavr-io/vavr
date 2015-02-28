@@ -20,7 +20,7 @@ public interface LongToIntFunction extends Function1<Long, Integer>, java.util.f
 
     @Override
     default Integer apply(Long value) {
-      return applyAsInt(value);
+        return applyAsInt(value);
     }
 
 }

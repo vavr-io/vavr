@@ -20,7 +20,7 @@ public interface ObjLongToFloatFunction<T> extends Function2<T, Long, Float> {
 
     @Override
     default Float apply(T t, Long value) {
-      return applyAsFloat(t, value);
+        return applyAsFloat(t, value);
     }
 
 }

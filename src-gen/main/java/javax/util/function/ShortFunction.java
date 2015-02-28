@@ -20,7 +20,7 @@ public interface ShortFunction<R> extends Function1<Short, R> {
 
     @Override
     default R apply(Short value) {
-      return apply((short) value);
+        return apply((short) value);
     }
 
     static ShortFunction<Short> identity() {

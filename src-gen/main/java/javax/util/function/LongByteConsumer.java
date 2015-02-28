@@ -20,8 +20,8 @@ public interface LongByteConsumer extends Function2<Long, Byte, Void> {
 
     @Override
     default Void apply(Long left, Byte right) {
-      accept(left, right);
-      return null;
+        accept(left, right);
+        return null;
     }
 
 }

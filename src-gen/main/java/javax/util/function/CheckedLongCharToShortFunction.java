@@ -20,7 +20,7 @@ public interface CheckedLongCharToShortFunction extends CheckedFunction2<Long, C
 
     @Override
     default Short apply(Long left, Character right) throws Throwable {
-      return applyAsShort(left, right);
+        return applyAsShort(left, right);
     }
 
 }

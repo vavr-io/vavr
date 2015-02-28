@@ -20,7 +20,7 @@ public interface CheckedShortPredicate extends CheckedFunction1<Short, Boolean> 
 
     @Override
     default Boolean apply(Short value) throws Throwable {
-      return test(value);
+        return test(value);
     }
 
 }

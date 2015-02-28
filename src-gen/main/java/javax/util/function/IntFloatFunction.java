@@ -20,7 +20,7 @@ public interface IntFloatFunction<R> extends Function2<Integer, Float, R> {
 
     @Override
     default R apply(Integer left, Float right) {
-      return apply((int) left, (float) right);
+        return apply((int) left, (float) right);
     }
 
 }

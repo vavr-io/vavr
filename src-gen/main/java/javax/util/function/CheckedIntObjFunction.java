@@ -20,7 +20,7 @@ public interface CheckedIntObjFunction<U, R> extends CheckedFunction2<Integer, U
 
     @Override
     default R apply(Integer value, U u) throws Throwable {
-      return apply((int) value, u);
+        return apply((int) value, u);
     }
 
 }

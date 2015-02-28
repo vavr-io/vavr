@@ -20,7 +20,7 @@ public interface CheckedBooleanToIntFunction extends CheckedFunction1<Boolean, I
 
     @Override
     default Integer apply(Boolean value) throws Throwable {
-      return applyAsInt(value);
+        return applyAsInt(value);
     }
 
 }

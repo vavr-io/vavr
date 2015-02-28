@@ -20,8 +20,8 @@ public interface CheckedBooleanFloatConsumer extends CheckedFunction2<Boolean, F
 
     @Override
     default Void apply(Boolean left, Float right) throws Throwable {
-      accept(left, right);
-      return null;
+        accept(left, right);
+        return null;
     }
 
 }

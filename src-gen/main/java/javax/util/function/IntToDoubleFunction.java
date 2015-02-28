@@ -20,7 +20,7 @@ public interface IntToDoubleFunction extends Function1<Integer, Double>, java.ut
 
     @Override
     default Double apply(Integer value) {
-      return applyAsDouble(value);
+        return applyAsDouble(value);
     }
 
 }

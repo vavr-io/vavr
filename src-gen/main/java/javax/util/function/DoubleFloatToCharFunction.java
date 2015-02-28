@@ -20,7 +20,7 @@ public interface DoubleFloatToCharFunction extends Function2<Double, Float, Char
 
     @Override
     default Character apply(Double left, Float right) {
-      return applyAsChar(left, right);
+        return applyAsChar(left, right);
     }
 
 }

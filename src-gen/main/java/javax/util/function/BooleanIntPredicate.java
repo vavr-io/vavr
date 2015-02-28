@@ -20,7 +20,7 @@ public interface BooleanIntPredicate extends Function2<Boolean, Integer, Boolean
 
     @Override
     default Boolean apply(Boolean left, Integer right) {
-      return test(left, right);
+        return test(left, right);
     }
 
 }

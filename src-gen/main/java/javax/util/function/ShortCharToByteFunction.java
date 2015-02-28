@@ -20,7 +20,7 @@ public interface ShortCharToByteFunction extends Function2<Short, Character, Byt
 
     @Override
     default Byte apply(Short left, Character right) {
-      return applyAsByte(left, right);
+        return applyAsByte(left, right);
     }
 
 }

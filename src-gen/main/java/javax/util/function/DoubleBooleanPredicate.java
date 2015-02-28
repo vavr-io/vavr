@@ -20,7 +20,7 @@ public interface DoubleBooleanPredicate extends Function2<Double, Boolean, Boole
 
     @Override
     default Boolean apply(Double left, Boolean right) {
-      return test(left, right);
+        return test(left, right);
     }
 
 }

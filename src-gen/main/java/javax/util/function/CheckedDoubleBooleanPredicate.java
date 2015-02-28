@@ -20,7 +20,7 @@ public interface CheckedDoubleBooleanPredicate extends CheckedFunction2<Double, 
 
     @Override
     default Boolean apply(Double left, Boolean right) throws Throwable {
-      return test(left, right);
+        return test(left, right);
     }
 
 }

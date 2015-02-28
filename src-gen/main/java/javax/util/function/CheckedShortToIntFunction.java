@@ -20,7 +20,7 @@ public interface CheckedShortToIntFunction extends CheckedFunction1<Short, Integ
 
     @Override
     default Integer apply(Short value) throws Throwable {
-      return applyAsInt(value);
+        return applyAsInt(value);
     }
 
 }

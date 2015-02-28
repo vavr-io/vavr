@@ -20,7 +20,7 @@ public interface CheckedBooleanObjFunction<U, R> extends CheckedFunction2<Boolea
 
     @Override
     default R apply(Boolean value, U u) throws Throwable {
-      return apply((boolean) value, u);
+        return apply((boolean) value, u);
     }
 
 }

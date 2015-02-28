@@ -20,7 +20,7 @@ public interface IntCharToByteFunction extends Function2<Integer, Character, Byt
 
     @Override
     default Byte apply(Integer left, Character right) {
-      return applyAsByte(left, right);
+        return applyAsByte(left, right);
     }
 
 }

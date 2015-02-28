@@ -20,8 +20,8 @@ public interface FloatBooleanConsumer extends Function2<Float, Boolean, Void> {
 
     @Override
     default Void apply(Float left, Boolean right) {
-      accept(left, right);
-      return null;
+        accept(left, right);
+        return null;
     }
 
 }

@@ -20,7 +20,7 @@ public interface ByteBinaryOperator extends Function2<Byte, Byte, Byte> {
 
     @Override
     default Byte apply(Byte left, Byte right) {
-      return applyAsByte(left, right);
+        return applyAsByte(left, right);
     }
 
 }

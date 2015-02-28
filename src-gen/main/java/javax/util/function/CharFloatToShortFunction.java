@@ -20,7 +20,7 @@ public interface CharFloatToShortFunction extends Function2<Character, Float, Sh
 
     @Override
     default Short apply(Character left, Float right) {
-      return applyAsShort(left, right);
+        return applyAsShort(left, right);
     }
 
 }

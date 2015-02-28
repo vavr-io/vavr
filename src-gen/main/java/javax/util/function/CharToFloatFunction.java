@@ -20,7 +20,7 @@ public interface CharToFloatFunction extends Function1<Character, Float> {
 
     @Override
     default Float apply(Character value) {
-      return applyAsFloat(value);
+        return applyAsFloat(value);
     }
 
 }

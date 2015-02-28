@@ -20,7 +20,7 @@ public interface CharDoubleFunction<R> extends Function2<Character, Double, R> {
 
     @Override
     default R apply(Character left, Double right) {
-      return apply((char) left, (double) right);
+        return apply((char) left, (double) right);
     }
 
 }

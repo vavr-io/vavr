@@ -20,7 +20,7 @@ public interface CharSupplier extends Function0<Character> {
 
     @Override
     default Character apply() {
-      return getAsChar();
+        return getAsChar();
     }
 
 }

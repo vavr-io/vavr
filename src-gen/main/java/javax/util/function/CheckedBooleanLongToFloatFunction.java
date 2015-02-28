@@ -20,7 +20,7 @@ public interface CheckedBooleanLongToFloatFunction extends CheckedFunction2<Bool
 
     @Override
     default Float apply(Boolean left, Long right) throws Throwable {
-      return applyAsFloat(left, right);
+        return applyAsFloat(left, right);
     }
 
 }

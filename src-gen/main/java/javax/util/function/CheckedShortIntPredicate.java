@@ -20,7 +20,7 @@ public interface CheckedShortIntPredicate extends CheckedFunction2<Short, Intege
 
     @Override
     default Boolean apply(Short left, Integer right) throws Throwable {
-      return test(left, right);
+        return test(left, right);
     }
 
 }

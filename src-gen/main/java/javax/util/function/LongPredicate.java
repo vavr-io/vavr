@@ -20,7 +20,7 @@ public interface LongPredicate extends Function1<Long, Boolean>, java.util.funct
 
     @Override
     default Boolean apply(Long value) {
-      return test(value);
+        return test(value);
     }
 
 }

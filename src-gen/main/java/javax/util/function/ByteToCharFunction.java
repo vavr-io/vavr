@@ -20,7 +20,7 @@ public interface ByteToCharFunction extends Function1<Byte, Character> {
 
     @Override
     default Character apply(Byte value) {
-      return applyAsChar(value);
+        return applyAsChar(value);
     }
 
 }

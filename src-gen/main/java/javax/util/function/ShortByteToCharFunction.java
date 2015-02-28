@@ -20,7 +20,7 @@ public interface ShortByteToCharFunction extends Function2<Short, Byte, Characte
 
     @Override
     default Character apply(Short left, Byte right) {
-      return applyAsChar(left, right);
+        return applyAsChar(left, right);
     }
 
 }

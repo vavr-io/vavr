@@ -20,7 +20,7 @@ public interface ObjCharToDoubleFunction<T> extends Function2<T, Character, Doub
 
     @Override
     default Double apply(T t, Character value) {
-      return applyAsDouble(t, value);
+        return applyAsDouble(t, value);
     }
 
 }

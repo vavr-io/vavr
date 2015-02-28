@@ -20,7 +20,7 @@ public interface CheckedByteIntFunction<R> extends CheckedFunction2<Byte, Intege
 
     @Override
     default R apply(Byte left, Integer right) throws Throwable {
-      return apply((byte) left, (int) right);
+        return apply((byte) left, (int) right);
     }
 
 }

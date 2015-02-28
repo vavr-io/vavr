@@ -20,7 +20,7 @@ public interface IntPredicate extends Function1<Integer, Boolean>, java.util.fun
 
     @Override
     default Boolean apply(Integer value) {
-      return test(value);
+        return test(value);
     }
 
 }

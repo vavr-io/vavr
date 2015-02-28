@@ -20,7 +20,7 @@ public interface BooleanObjToFloatFunction<U> extends Function2<Boolean, U, Floa
 
     @Override
     default Float apply(Boolean value, U u) {
-      return applyAsFloat(value, u);
+        return applyAsFloat(value, u);
     }
 
 }

@@ -20,7 +20,7 @@ public interface IntCharToDoubleFunction extends Function2<Integer, Character, D
 
     @Override
     default Double apply(Integer left, Character right) {
-      return applyAsDouble(left, right);
+        return applyAsDouble(left, right);
     }
 
 }

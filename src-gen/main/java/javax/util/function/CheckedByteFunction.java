@@ -20,7 +20,7 @@ public interface CheckedByteFunction<R> extends CheckedFunction1<Byte, R> {
 
     @Override
     default R apply(Byte value) throws Throwable {
-      return apply((byte) value);
+        return apply((byte) value);
     }
 
     static ByteFunction<Byte> identity() {

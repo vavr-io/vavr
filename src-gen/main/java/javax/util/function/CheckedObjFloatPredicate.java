@@ -20,7 +20,7 @@ public interface CheckedObjFloatPredicate<T> extends CheckedFunction2<T, Float, 
 
     @Override
     default Boolean apply(T t, Float value) throws Throwable {
-      return test(t, value);
+        return test(t, value);
     }
 
 }

@@ -20,7 +20,7 @@ public interface CheckedShortToFloatFunction extends CheckedFunction1<Short, Flo
 
     @Override
     default Float apply(Short value) throws Throwable {
-      return applyAsFloat(value);
+        return applyAsFloat(value);
     }
 
 }

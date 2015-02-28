@@ -20,7 +20,7 @@ public interface DoubleShortToCharFunction extends Function2<Double, Short, Char
 
     @Override
     default Character apply(Double left, Short right) {
-      return applyAsChar(left, right);
+        return applyAsChar(left, right);
     }
 
 }

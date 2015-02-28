@@ -20,7 +20,7 @@ public interface LongLongFunction<R> extends Function2<Long, Long, R> {
 
     @Override
     default R apply(Long left, Long right) {
-      return apply((long) left, (long) right);
+        return apply((long) left, (long) right);
     }
 
 }

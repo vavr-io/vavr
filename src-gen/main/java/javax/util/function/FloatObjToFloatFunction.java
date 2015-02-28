@@ -20,7 +20,7 @@ public interface FloatObjToFloatFunction<U> extends Function2<Float, U, Float> {
 
     @Override
     default Float apply(Float value, U u) {
-      return applyAsFloat(value, u);
+        return applyAsFloat(value, u);
     }
 
 }

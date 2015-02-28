@@ -20,8 +20,8 @@ public interface CharLongConsumer extends Function2<Character, Long, Void> {
 
     @Override
     default Void apply(Character left, Long right) {
-      accept(left, right);
-      return null;
+        accept(left, right);
+        return null;
     }
 
 }

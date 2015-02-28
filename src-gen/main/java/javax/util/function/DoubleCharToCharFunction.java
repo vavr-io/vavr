@@ -20,7 +20,7 @@ public interface DoubleCharToCharFunction extends Function2<Double, Character, C
 
     @Override
     default Character apply(Double left, Character right) {
-      return applyAsChar(left, right);
+        return applyAsChar(left, right);
     }
 
 }

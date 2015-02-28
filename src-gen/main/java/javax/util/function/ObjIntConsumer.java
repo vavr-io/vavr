@@ -20,8 +20,8 @@ public interface ObjIntConsumer<T> extends Function2<T, Integer, Void>, java.uti
 
     @Override
     default Void apply(T t, Integer value) {
-      accept(t, value);
-      return null;
+        accept(t, value);
+        return null;
     }
 
 }

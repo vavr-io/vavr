@@ -20,7 +20,7 @@ public interface BooleanObjFunction<U, R> extends Function2<Boolean, U, R> {
 
     @Override
     default R apply(Boolean value, U u) {
-      return apply((boolean) value, u);
+        return apply((boolean) value, u);
     }
 
 }

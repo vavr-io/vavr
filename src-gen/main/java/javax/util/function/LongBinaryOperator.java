@@ -20,7 +20,7 @@ public interface LongBinaryOperator extends Function2<Long, Long, Long>, java.ut
 
     @Override
     default Long apply(Long left, Long right) {
-      return applyAsLong(left, right);
+        return applyAsLong(left, right);
     }
 
 }

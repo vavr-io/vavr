@@ -20,7 +20,7 @@ public interface CheckedShortFloatToLongFunction extends CheckedFunction2<Short,
 
     @Override
     default Long apply(Short left, Float right) throws Throwable {
-      return applyAsLong(left, right);
+        return applyAsLong(left, right);
     }
 
 }

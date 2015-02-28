@@ -20,7 +20,7 @@ public interface DoubleSupplier extends Function0<Double>, java.util.function.Do
 
     @Override
     default Double apply() {
-      return getAsDouble();
+        return getAsDouble();
     }
 
 }

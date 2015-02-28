@@ -20,7 +20,7 @@ public interface ByteCharToDoubleFunction extends Function2<Byte, Character, Dou
 
     @Override
     default Double apply(Byte left, Character right) {
-      return applyAsDouble(left, right);
+        return applyAsDouble(left, right);
     }
 
 }

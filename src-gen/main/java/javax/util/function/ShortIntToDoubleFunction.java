@@ -20,7 +20,7 @@ public interface ShortIntToDoubleFunction extends Function2<Short, Integer, Doub
 
     @Override
     default Double apply(Short left, Integer right) {
-      return applyAsDouble(left, right);
+        return applyAsDouble(left, right);
     }
 
 }

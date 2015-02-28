@@ -20,7 +20,7 @@ public interface CheckedDoubleByteToFloatFunction extends CheckedFunction2<Doubl
 
     @Override
     default Float apply(Double left, Byte right) throws Throwable {
-      return applyAsFloat(left, right);
+        return applyAsFloat(left, right);
     }
 
 }

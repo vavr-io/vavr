@@ -20,7 +20,7 @@ public interface CheckedBooleanShortPredicate extends CheckedFunction2<Boolean, 
 
     @Override
     default Boolean apply(Boolean left, Short right) throws Throwable {
-      return test(left, right);
+        return test(left, right);
     }
 
 }

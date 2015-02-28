@@ -20,7 +20,7 @@ public interface CheckedFloatBinaryOperator extends CheckedFunction2<Float, Floa
 
     @Override
     default Float apply(Float left, Float right) throws Throwable {
-      return applyAsFloat(left, right);
+        return applyAsFloat(left, right);
     }
 
 }

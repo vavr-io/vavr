@@ -20,7 +20,7 @@ public interface IntIntToCharFunction extends Function2<Integer, Integer, Charac
 
     @Override
     default Character apply(Integer left, Integer right) {
-      return applyAsChar(left, right);
+        return applyAsChar(left, right);
     }
 
 }

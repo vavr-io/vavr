@@ -20,7 +20,7 @@ public interface BooleanToLongFunction extends Function1<Boolean, Long> {
 
     @Override
     default Long apply(Boolean value) {
-      return applyAsLong(value);
+        return applyAsLong(value);
     }
 
 }

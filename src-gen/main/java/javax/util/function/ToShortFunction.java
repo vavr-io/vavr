@@ -20,7 +20,7 @@ public interface ToShortFunction<T> extends Function1<T, Short> {
 
     @Override
     default Short apply(T t) {
-      return applyAsShort(t);
+        return applyAsShort(t);
     }
 
     static ToShortFunction<Short> identity() {

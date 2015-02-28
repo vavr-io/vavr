@@ -20,7 +20,7 @@ public interface FloatDoubleToIntFunction extends Function2<Float, Double, Integ
 
     @Override
     default Integer apply(Float left, Double right) {
-      return applyAsInt(left, right);
+        return applyAsInt(left, right);
     }
 
 }

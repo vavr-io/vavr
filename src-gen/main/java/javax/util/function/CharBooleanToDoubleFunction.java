@@ -20,7 +20,7 @@ public interface CharBooleanToDoubleFunction extends Function2<Character, Boolea
 
     @Override
     default Double apply(Character left, Boolean right) {
-      return applyAsDouble(left, right);
+        return applyAsDouble(left, right);
     }
 
 }

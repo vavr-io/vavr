@@ -20,7 +20,7 @@ public interface LongObjFunction<U, R> extends Function2<Long, U, R> {
 
     @Override
     default R apply(Long value, U u) {
-      return apply((long) value, u);
+        return apply((long) value, u);
     }
 
 }

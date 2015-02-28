@@ -20,7 +20,7 @@ public interface CharFunction<R> extends Function1<Character, R> {
 
     @Override
     default R apply(Character value) {
-      return apply((char) value);
+        return apply((char) value);
     }
 
     static CharFunction<Character> identity() {

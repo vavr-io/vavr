@@ -20,7 +20,7 @@ public interface IntToFloatFunction extends Function1<Integer, Float> {
 
     @Override
     default Float apply(Integer value) {
-      return applyAsFloat(value);
+        return applyAsFloat(value);
     }
 
 }

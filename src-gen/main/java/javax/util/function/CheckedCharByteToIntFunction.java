@@ -20,7 +20,7 @@ public interface CheckedCharByteToIntFunction extends CheckedFunction2<Character
 
     @Override
     default Integer apply(Character left, Byte right) throws Throwable {
-      return applyAsInt(left, right);
+        return applyAsInt(left, right);
     }
 
 }

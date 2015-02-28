@@ -20,8 +20,8 @@ public interface CheckedDoubleObjConsumer<U> extends CheckedFunction2<Double, U,
 
     @Override
     default Void apply(Double value, U u) throws Throwable {
-      accept(value, u);
-      return null;
+        accept(value, u);
+        return null;
     }
 
 }

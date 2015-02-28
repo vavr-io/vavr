@@ -20,7 +20,7 @@ public interface BooleanIntToCharFunction extends Function2<Boolean, Integer, Ch
 
     @Override
     default Character apply(Boolean left, Integer right) {
-      return applyAsChar(left, right);
+        return applyAsChar(left, right);
     }
 
 }

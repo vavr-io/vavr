@@ -20,7 +20,7 @@ public interface FloatSupplier extends Function0<Float> {
 
     @Override
     default Float apply() {
-      return getAsFloat();
+        return getAsFloat();
     }
 
 }

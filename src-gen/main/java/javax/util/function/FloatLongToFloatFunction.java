@@ -20,7 +20,7 @@ public interface FloatLongToFloatFunction extends Function2<Float, Long, Float> 
 
     @Override
     default Float apply(Float left, Long right) {
-      return applyAsFloat(left, right);
+        return applyAsFloat(left, right);
     }
 
 }

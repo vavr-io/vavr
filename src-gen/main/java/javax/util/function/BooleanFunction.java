@@ -20,7 +20,7 @@ public interface BooleanFunction<R> extends Function1<Boolean, R> {
 
     @Override
     default R apply(Boolean value) {
-      return apply((boolean) value);
+        return apply((boolean) value);
     }
 
     static BooleanFunction<Boolean> identity() {

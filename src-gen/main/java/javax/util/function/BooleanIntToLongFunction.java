@@ -20,7 +20,7 @@ public interface BooleanIntToLongFunction extends Function2<Boolean, Integer, Lo
 
     @Override
     default Long apply(Boolean left, Integer right) {
-      return applyAsLong(left, right);
+        return applyAsLong(left, right);
     }
 
 }

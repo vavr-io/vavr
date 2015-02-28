@@ -20,7 +20,7 @@ public interface CheckedBooleanCharPredicate extends CheckedFunction2<Boolean, C
 
     @Override
     default Boolean apply(Boolean left, Character right) throws Throwable {
-      return test(left, right);
+        return test(left, right);
     }
 
 }

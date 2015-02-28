@@ -20,7 +20,7 @@ public interface CheckedShortIntToLongFunction extends CheckedFunction2<Short, I
 
     @Override
     default Long apply(Short left, Integer right) throws Throwable {
-      return applyAsLong(left, right);
+        return applyAsLong(left, right);
     }
 
 }

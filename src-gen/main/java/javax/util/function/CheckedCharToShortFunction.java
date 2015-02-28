@@ -20,7 +20,7 @@ public interface CheckedCharToShortFunction extends CheckedFunction1<Character, 
 
     @Override
     default Short apply(Character value) throws Throwable {
-      return applyAsShort(value);
+        return applyAsShort(value);
     }
 
 }

@@ -20,8 +20,8 @@ public interface CharDoubleConsumer extends Function2<Character, Double, Void> {
 
     @Override
     default Void apply(Character left, Double right) {
-      accept(left, right);
-      return null;
+        accept(left, right);
+        return null;
     }
 
 }

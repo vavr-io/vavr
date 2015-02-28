@@ -20,7 +20,7 @@ public interface BooleanFloatFunction<R> extends Function2<Boolean, Float, R> {
 
     @Override
     default R apply(Boolean left, Float right) {
-      return apply((boolean) left, (float) right);
+        return apply((boolean) left, (float) right);
     }
 
 }

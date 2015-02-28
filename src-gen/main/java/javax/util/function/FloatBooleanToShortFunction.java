@@ -20,7 +20,7 @@ public interface FloatBooleanToShortFunction extends Function2<Float, Boolean, S
 
     @Override
     default Short apply(Float left, Boolean right) {
-      return applyAsShort(left, right);
+        return applyAsShort(left, right);
     }
 
 }

@@ -20,7 +20,7 @@ public interface ByteCharToCharFunction extends Function2<Byte, Character, Chara
 
     @Override
     default Character apply(Byte left, Character right) {
-      return applyAsChar(left, right);
+        return applyAsChar(left, right);
     }
 
 }

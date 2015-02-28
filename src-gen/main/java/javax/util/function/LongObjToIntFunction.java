@@ -20,7 +20,7 @@ public interface LongObjToIntFunction<U> extends Function2<Long, U, Integer> {
 
     @Override
     default Integer apply(Long value, U u) {
-      return applyAsInt(value, u);
+        return applyAsInt(value, u);
     }
 
 }

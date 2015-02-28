@@ -20,8 +20,8 @@ public interface CheckedLongByteConsumer extends CheckedFunction2<Long, Byte, Vo
 
     @Override
     default Void apply(Long left, Byte right) throws Throwable {
-      accept(left, right);
-      return null;
+        accept(left, right);
+        return null;
     }
 
 }

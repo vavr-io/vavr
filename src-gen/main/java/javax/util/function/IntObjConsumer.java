@@ -20,8 +20,8 @@ public interface IntObjConsumer<U> extends Function2<Integer, U, Void> {
 
     @Override
     default Void apply(Integer value, U u) {
-      accept(value, u);
-      return null;
+        accept(value, u);
+        return null;
     }
 
 }
