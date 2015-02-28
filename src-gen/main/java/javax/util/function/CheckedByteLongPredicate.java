@@ -22,4 +22,5 @@ public interface CheckedByteLongPredicate extends CheckedFunction2<Byte, Long, B
     default Boolean apply(Byte left, Long right) throws Throwable {
         return test(left, right);
     }
+
 }

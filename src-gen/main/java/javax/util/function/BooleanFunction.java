@@ -22,4 +22,8 @@ public interface BooleanFunction<R> extends Function1<Boolean, R> {
     default R apply(Boolean value) {
         return apply((boolean) value);
     }
+
+    static BooleanFunction<Boolean> identity() {
+        return v -> v;
+    }
 }

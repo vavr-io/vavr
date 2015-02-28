@@ -22,4 +22,5 @@ public interface ShortLongToIntFunction extends Function2<Short, Long, Integer> 
     default Integer apply(Short left, Long right) {
         return applyAsInt(left, right);
     }
+
 }

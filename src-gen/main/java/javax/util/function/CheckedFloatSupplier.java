@@ -22,4 +22,5 @@ public interface CheckedFloatSupplier extends CheckedFunction0<Float> {
     default Float apply() throws Throwable {
         return getAsFloat();
     }
+
 }

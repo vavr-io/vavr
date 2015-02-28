@@ -22,4 +22,8 @@ public interface CheckedToByteFunction<T> extends CheckedFunction1<T, Byte> {
     default Byte apply(T t) throws Throwable {
         return applyAsByte(t);
     }
+
+    static ToByteFunction<Byte> identity() {
+        return v -> v;
+    }
 }

@@ -22,4 +22,8 @@ public interface CheckedDoubleFunction<R> extends CheckedFunction1<Double, R> {
     default R apply(Double value) throws Throwable {
         return apply((double) value);
     }
+
+    static DoubleFunction<Double> identity() {
+        return v -> v;
+    }
 }

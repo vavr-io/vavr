@@ -22,4 +22,5 @@ public interface FloatBinaryOperator extends Function2<Float, Float, Float> {
     default Float apply(Float left, Float right) {
         return applyAsFloat(left, right);
     }
+
 }

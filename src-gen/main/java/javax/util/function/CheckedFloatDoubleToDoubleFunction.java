@@ -22,4 +22,5 @@ public interface CheckedFloatDoubleToDoubleFunction extends CheckedFunction2<Flo
     default Double apply(Float left, Double right) throws Throwable {
         return applyAsDouble(left, right);
     }
+
 }

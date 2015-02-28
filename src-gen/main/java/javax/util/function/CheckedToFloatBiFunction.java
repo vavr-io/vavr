@@ -22,4 +22,5 @@ public interface CheckedToFloatBiFunction<T, U> extends CheckedFunction2<T, U, F
     default Float apply(T t, U u) throws Throwable {
         return applyAsFloat(t, u);
     }
+
 }

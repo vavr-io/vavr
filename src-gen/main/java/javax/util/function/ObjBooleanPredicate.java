@@ -22,4 +22,5 @@ public interface ObjBooleanPredicate<T> extends Function2<T, Boolean, Boolean> {
     default Boolean apply(T t, Boolean value) {
         return test(t, value);
     }
+
 }

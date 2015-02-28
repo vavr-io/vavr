@@ -22,4 +22,5 @@ public interface LongSupplier extends Function0<Long> {
     default Long apply() {
         return getAsLong();
     }
+
 }

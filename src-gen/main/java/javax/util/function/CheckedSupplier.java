@@ -22,4 +22,5 @@ public interface CheckedSupplier<R> extends CheckedFunction0<R> {
     default R apply() throws Throwable {
         return get();
     }
+
 }

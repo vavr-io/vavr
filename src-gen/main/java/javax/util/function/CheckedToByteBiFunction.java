@@ -22,4 +22,5 @@ public interface CheckedToByteBiFunction<T, U> extends CheckedFunction2<T, U, By
     default Byte apply(T t, U u) throws Throwable {
         return applyAsByte(t, u);
     }
+
 }

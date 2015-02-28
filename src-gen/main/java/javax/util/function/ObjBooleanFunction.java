@@ -22,4 +22,5 @@ public interface ObjBooleanFunction<T, R> extends Function2<T, Boolean, R> {
     default R apply(T t, Boolean value) {
         return apply(t, (boolean) value);
     }
+
 }

@@ -22,4 +22,8 @@ public interface CheckedDoubleUnaryOperator extends CheckedFunction1<Double, Dou
     default Double apply(Double value) throws Throwable {
         return applyAsDouble(value);
     }
+
+    static DoubleUnaryOperator identity() {
+        return v -> v;
+    }
 }

@@ -22,4 +22,8 @@ public interface CharFunction<R> extends Function1<Character, R> {
     default R apply(Character value) {
         return apply((char) value);
     }
+
+    static CharFunction<Character> identity() {
+        return v -> v;
+    }
 }

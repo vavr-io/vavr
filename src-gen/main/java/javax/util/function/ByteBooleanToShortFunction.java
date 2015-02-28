@@ -22,4 +22,5 @@ public interface ByteBooleanToShortFunction extends Function2<Byte, Boolean, Sho
     default Short apply(Byte left, Boolean right) {
         return applyAsShort(left, right);
     }
+
 }

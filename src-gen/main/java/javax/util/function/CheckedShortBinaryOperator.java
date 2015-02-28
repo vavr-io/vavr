@@ -22,4 +22,5 @@ public interface CheckedShortBinaryOperator extends CheckedFunction2<Short, Shor
     default Short apply(Short left, Short right) throws Throwable {
         return applyAsShort(left, right);
     }
+
 }

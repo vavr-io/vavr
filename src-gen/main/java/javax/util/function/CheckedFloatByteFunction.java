@@ -22,4 +22,5 @@ public interface CheckedFloatByteFunction<R> extends CheckedFunction2<Float, Byt
     default R apply(Float left, Byte right) throws Throwable {
         return apply((float) left, (byte) right);
     }
+
 }

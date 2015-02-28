@@ -23,4 +23,5 @@ public interface CheckedObjIntConsumer<T> extends CheckedFunction2<T, Integer, V
         accept(t, value);
         return null;
     }
+
 }

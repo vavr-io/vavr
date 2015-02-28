@@ -22,4 +22,5 @@ public interface ShortFloatToDoubleFunction extends Function2<Short, Float, Doub
     default Double apply(Short left, Float right) {
         return applyAsDouble(left, right);
     }
+
 }

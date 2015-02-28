@@ -22,4 +22,5 @@ public interface IntObjToFloatFunction<U> extends Function2<Integer, U, Float> {
     default Float apply(Integer value, U u) {
         return applyAsFloat(value, u);
     }
+
 }

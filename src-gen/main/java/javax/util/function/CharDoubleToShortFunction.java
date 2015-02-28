@@ -22,4 +22,5 @@ public interface CharDoubleToShortFunction extends Function2<Character, Double, 
     default Short apply(Character left, Double right) {
         return applyAsShort(left, right);
     }
+
 }

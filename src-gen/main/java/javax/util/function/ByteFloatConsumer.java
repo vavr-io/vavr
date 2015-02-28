@@ -23,4 +23,5 @@ public interface ByteFloatConsumer extends Function2<Byte, Float, Void> {
         accept(left, right);
         return null;
     }
+
 }

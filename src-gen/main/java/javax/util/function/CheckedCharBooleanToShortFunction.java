@@ -22,4 +22,5 @@ public interface CheckedCharBooleanToShortFunction extends CheckedFunction2<Char
     default Short apply(Character left, Boolean right) throws Throwable {
         return applyAsShort(left, right);
     }
+
 }

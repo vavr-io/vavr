@@ -22,4 +22,5 @@ public interface CheckedObjLongToShortFunction<T> extends CheckedFunction2<T, Lo
     default Short apply(T t, Long value) throws Throwable {
         return applyAsShort(t, value);
     }
+
 }

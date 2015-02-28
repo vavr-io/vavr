@@ -22,4 +22,5 @@ public interface ObjFloatToFloatFunction<T> extends Function2<T, Float, Float> {
     default Float apply(T t, Float value) {
         return applyAsFloat(t, value);
     }
+
 }

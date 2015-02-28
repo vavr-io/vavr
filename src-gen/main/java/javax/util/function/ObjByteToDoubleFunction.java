@@ -22,4 +22,5 @@ public interface ObjByteToDoubleFunction<T> extends Function2<T, Byte, Double> {
     default Double apply(T t, Byte value) {
         return applyAsDouble(t, value);
     }
+
 }

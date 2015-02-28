@@ -22,4 +22,5 @@ public interface CheckedFloatByteToShortFunction extends CheckedFunction2<Float,
     default Short apply(Float left, Byte right) throws Throwable {
         return applyAsShort(left, right);
     }
+
 }

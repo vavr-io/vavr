@@ -22,4 +22,8 @@ public interface ShortUnaryOperator extends Function1<Short, Short> {
     default Short apply(Short value) {
         return applyAsShort(value);
     }
+
+    static ShortUnaryOperator identity() {
+        return v -> v;
+    }
 }

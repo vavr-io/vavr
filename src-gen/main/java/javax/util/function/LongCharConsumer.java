@@ -23,4 +23,5 @@ public interface LongCharConsumer extends Function2<Long, Character, Void> {
         accept(left, right);
         return null;
     }
+
 }

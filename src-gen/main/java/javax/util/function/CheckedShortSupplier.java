@@ -22,4 +22,5 @@ public interface CheckedShortSupplier extends CheckedFunction0<Short> {
     default Short apply() throws Throwable {
         return getAsShort();
     }
+
 }

@@ -22,4 +22,8 @@ public interface ToCharFunction<T> extends Function1<T, Character> {
     default Character apply(T t) {
         return applyAsChar(t);
     }
+
+    static ToCharFunction<Character> identity() {
+        return v -> v;
+    }
 }

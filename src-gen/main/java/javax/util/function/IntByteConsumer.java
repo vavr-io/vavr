@@ -23,4 +23,5 @@ public interface IntByteConsumer extends Function2<Integer, Byte, Void> {
         accept(left, right);
         return null;
     }
+
 }

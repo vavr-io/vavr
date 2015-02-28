@@ -23,4 +23,5 @@ public interface LongBooleanConsumer extends Function2<Long, Boolean, Void> {
         accept(left, right);
         return null;
     }
+
 }

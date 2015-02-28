@@ -22,4 +22,8 @@ public interface CheckedByteUnaryOperator extends CheckedFunction1<Byte, Byte> {
     default Byte apply(Byte value) throws Throwable {
         return applyAsByte(value);
     }
+
+    static ByteUnaryOperator identity() {
+        return v -> v;
+    }
 }

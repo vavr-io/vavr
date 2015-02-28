@@ -22,4 +22,5 @@ public interface CheckedShortFloatFunction<R> extends CheckedFunction2<Short, Fl
     default R apply(Short left, Float right) throws Throwable {
         return apply((short) left, (float) right);
     }
+
 }

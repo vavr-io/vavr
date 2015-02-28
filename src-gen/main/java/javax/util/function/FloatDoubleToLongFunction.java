@@ -22,4 +22,5 @@ public interface FloatDoubleToLongFunction extends Function2<Float, Double, Long
     default Long apply(Float left, Double right) {
         return applyAsLong(left, right);
     }
+
 }

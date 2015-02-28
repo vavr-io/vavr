@@ -22,4 +22,5 @@ public interface CheckedByteObjToShortFunction<U> extends CheckedFunction2<Byte,
     default Short apply(Byte value, U u) throws Throwable {
         return applyAsShort(value, u);
     }
+
 }

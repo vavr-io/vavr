@@ -22,4 +22,5 @@ public interface CheckedBooleanCharFunction<R> extends CheckedFunction2<Boolean,
     default R apply(Boolean left, Character right) throws Throwable {
         return apply((boolean) left, (char) right);
     }
+
 }

@@ -22,4 +22,5 @@ public interface IntToLongFunction extends Function1<Integer, Long> {
     default Long apply(Integer value) {
         return applyAsLong(value);
     }
+
 }

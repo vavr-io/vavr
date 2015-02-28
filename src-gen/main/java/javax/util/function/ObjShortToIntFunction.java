@@ -22,4 +22,5 @@ public interface ObjShortToIntFunction<T> extends Function2<T, Short, Integer> {
     default Integer apply(T t, Short value) {
         return applyAsInt(t, value);
     }
+
 }

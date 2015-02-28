@@ -22,4 +22,5 @@ public interface ShortBytePredicate extends Function2<Short, Byte, Boolean> {
     default Boolean apply(Short left, Byte right) {
         return test(left, right);
     }
+
 }

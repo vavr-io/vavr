@@ -22,4 +22,5 @@ public interface CheckedDoubleCharFunction<R> extends CheckedFunction2<Double, C
     default R apply(Double left, Character right) throws Throwable {
         return apply((double) left, (char) right);
     }
+
 }

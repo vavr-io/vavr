@@ -22,4 +22,5 @@ public interface IntObjToDoubleFunction<U> extends Function2<Integer, U, Double>
     default Double apply(Integer value, U u) {
         return applyAsDouble(value, u);
     }
+
 }

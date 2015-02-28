@@ -22,4 +22,8 @@ public interface CheckedToDoubleFunction<T> extends CheckedFunction1<T, Double> 
     default Double apply(T t) throws Throwable {
         return applyAsDouble(t);
     }
+
+    static ToDoubleFunction<Double> identity() {
+        return v -> v;
+    }
 }

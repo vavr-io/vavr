@@ -22,4 +22,5 @@ public interface ByteObjToFloatFunction<U> extends Function2<Byte, U, Float> {
     default Float apply(Byte value, U u) {
         return applyAsFloat(value, u);
     }
+
 }

@@ -22,4 +22,5 @@ public interface CheckedToCharBiFunction<T, U> extends CheckedFunction2<T, U, Ch
     default Character apply(T t, U u) throws Throwable {
         return applyAsChar(t, u);
     }
+
 }

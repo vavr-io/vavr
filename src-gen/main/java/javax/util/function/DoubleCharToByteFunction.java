@@ -22,4 +22,5 @@ public interface DoubleCharToByteFunction extends Function2<Double, Character, B
     default Byte apply(Double left, Character right) {
         return applyAsByte(left, right);
     }
+
 }

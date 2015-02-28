@@ -22,4 +22,8 @@ public interface DoubleFunction<R> extends Function1<Double, R> {
     default R apply(Double value) {
         return apply((double) value);
     }
+
+    static DoubleFunction<Double> identity() {
+        return v -> v;
+    }
 }

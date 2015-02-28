@@ -22,4 +22,5 @@ public interface DoubleByteToIntFunction extends Function2<Double, Byte, Integer
     default Integer apply(Double left, Byte right) {
         return applyAsInt(left, right);
     }
+
 }

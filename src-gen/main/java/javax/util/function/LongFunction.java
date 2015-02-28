@@ -22,4 +22,8 @@ public interface LongFunction<R> extends Function1<Long, R> {
     default R apply(Long value) {
         return apply((long) value);
     }
+
+    static LongFunction<Long> identity() {
+        return v -> v;
+    }
 }

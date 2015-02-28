@@ -22,4 +22,5 @@ public interface CheckedLongCharToFloatFunction extends CheckedFunction2<Long, C
     default Float apply(Long left, Character right) throws Throwable {
         return applyAsFloat(left, right);
     }
+
 }

@@ -22,4 +22,8 @@ public interface IntUnaryOperator extends Function1<Integer, Integer> {
     default Integer apply(Integer value) {
         return applyAsInt(value);
     }
+
+    static IntUnaryOperator identity() {
+        return v -> v;
+    }
 }

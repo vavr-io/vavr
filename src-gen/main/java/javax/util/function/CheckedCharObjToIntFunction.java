@@ -22,4 +22,5 @@ public interface CheckedCharObjToIntFunction<U> extends CheckedFunction2<Charact
     default Integer apply(Character value, U u) throws Throwable {
         return applyAsInt(value, u);
     }
+
 }

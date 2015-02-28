@@ -22,4 +22,5 @@ public interface CheckedObjLongToIntFunction<T> extends CheckedFunction2<T, Long
     default Integer apply(T t, Long value) throws Throwable {
         return applyAsInt(t, value);
     }
+
 }

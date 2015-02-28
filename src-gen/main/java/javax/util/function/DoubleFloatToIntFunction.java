@@ -22,4 +22,5 @@ public interface DoubleFloatToIntFunction extends Function2<Double, Float, Integ
     default Integer apply(Double left, Float right) {
         return applyAsInt(left, right);
     }
+
 }

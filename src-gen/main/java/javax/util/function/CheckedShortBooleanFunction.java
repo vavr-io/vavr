@@ -22,4 +22,5 @@ public interface CheckedShortBooleanFunction<R> extends CheckedFunction2<Short, 
     default R apply(Short left, Boolean right) throws Throwable {
         return apply((short) left, (boolean) right);
     }
+
 }

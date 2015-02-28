@@ -22,4 +22,5 @@ public interface ByteBooleanFunction<R> extends Function2<Byte, Boolean, R> {
     default R apply(Byte left, Boolean right) {
         return apply((byte) left, (boolean) right);
     }
+
 }

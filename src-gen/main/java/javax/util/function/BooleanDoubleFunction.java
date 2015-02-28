@@ -22,4 +22,5 @@ public interface BooleanDoubleFunction<R> extends Function2<Boolean, Double, R> 
     default R apply(Boolean left, Double right) {
         return apply((boolean) left, (double) right);
     }
+
 }

@@ -22,4 +22,5 @@ public interface CheckedBooleanBytePredicate extends CheckedFunction2<Boolean, B
     default Boolean apply(Boolean left, Byte right) throws Throwable {
         return test(left, right);
     }
+
 }

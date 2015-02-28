@@ -23,4 +23,5 @@ public interface CheckedFloatShortConsumer extends CheckedFunction2<Float, Short
         accept(left, right);
         return null;
     }
+
 }

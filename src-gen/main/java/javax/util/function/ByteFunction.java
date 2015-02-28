@@ -22,4 +22,8 @@ public interface ByteFunction<R> extends Function1<Byte, R> {
     default R apply(Byte value) {
         return apply((byte) value);
     }
+
+    static ByteFunction<Byte> identity() {
+        return v -> v;
+    }
 }

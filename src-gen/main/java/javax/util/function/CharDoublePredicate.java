@@ -22,4 +22,5 @@ public interface CharDoublePredicate extends Function2<Character, Double, Boolea
     default Boolean apply(Character left, Double right) {
         return test(left, right);
     }
+
 }

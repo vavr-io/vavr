@@ -22,4 +22,5 @@ public interface ByteBinaryOperator extends Function2<Byte, Byte, Byte> {
     default Byte apply(Byte left, Byte right) {
         return applyAsByte(left, right);
     }
+
 }

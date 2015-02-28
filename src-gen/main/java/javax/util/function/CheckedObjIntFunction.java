@@ -22,4 +22,5 @@ public interface CheckedObjIntFunction<T, R> extends CheckedFunction2<T, Integer
     default R apply(T t, Integer value) throws Throwable {
         return apply(t, (int) value);
     }
+
 }

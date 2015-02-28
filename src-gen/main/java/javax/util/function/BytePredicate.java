@@ -22,4 +22,5 @@ public interface BytePredicate extends Function1<Byte, Boolean> {
     default Boolean apply(Byte value) {
         return test(value);
     }
+
 }

@@ -22,4 +22,5 @@ public interface ObjCharToLongFunction<T> extends Function2<T, Character, Long> 
     default Long apply(T t, Character value) {
         return applyAsLong(t, value);
     }
+
 }

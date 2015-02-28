@@ -22,4 +22,5 @@ public interface CharLongFunction<R> extends Function2<Character, Long, R> {
     default R apply(Character left, Long right) {
         return apply((char) left, (long) right);
     }
+
 }

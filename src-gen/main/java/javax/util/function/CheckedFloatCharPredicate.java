@@ -22,4 +22,5 @@ public interface CheckedFloatCharPredicate extends CheckedFunction2<Float, Chara
     default Boolean apply(Float left, Character right) throws Throwable {
         return test(left, right);
     }
+
 }

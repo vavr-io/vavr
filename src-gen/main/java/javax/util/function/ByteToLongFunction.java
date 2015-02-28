@@ -22,4 +22,5 @@ public interface ByteToLongFunction extends Function1<Byte, Long> {
     default Long apply(Byte value) {
         return applyAsLong(value);
     }
+
 }

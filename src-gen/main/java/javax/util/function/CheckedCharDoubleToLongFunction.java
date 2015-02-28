@@ -22,4 +22,5 @@ public interface CheckedCharDoubleToLongFunction extends CheckedFunction2<Charac
     default Long apply(Character left, Double right) throws Throwable {
         return applyAsLong(left, right);
     }
+
 }

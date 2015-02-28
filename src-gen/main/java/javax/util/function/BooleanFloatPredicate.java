@@ -22,4 +22,5 @@ public interface BooleanFloatPredicate extends Function2<Boolean, Float, Boolean
     default Boolean apply(Boolean left, Float right) {
         return test(left, right);
     }
+
 }

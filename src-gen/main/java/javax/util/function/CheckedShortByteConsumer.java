@@ -23,4 +23,5 @@ public interface CheckedShortByteConsumer extends CheckedFunction2<Short, Byte, 
         accept(left, right);
         return null;
     }
+
 }

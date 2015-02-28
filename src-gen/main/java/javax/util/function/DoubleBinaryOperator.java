@@ -22,4 +22,5 @@ public interface DoubleBinaryOperator extends Function2<Double, Double, Double> 
     default Double apply(Double left, Double right) {
         return applyAsDouble(left, right);
     }
+
 }

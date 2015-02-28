@@ -18,4 +18,8 @@ public interface UnaryOperator<T> extends Function1<T, T> {
 
     @Override
     T apply(T t);
+
+    static <T> UnaryOperator<T> identity() {
+        return v -> v;
+    }
 }

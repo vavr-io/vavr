@@ -22,4 +22,5 @@ public interface BooleanCharFunction<R> extends Function2<Boolean, Character, R>
     default R apply(Boolean left, Character right) {
         return apply((boolean) left, (char) right);
     }
+
 }

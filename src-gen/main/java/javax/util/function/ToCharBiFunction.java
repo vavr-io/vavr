@@ -22,4 +22,5 @@ public interface ToCharBiFunction<T, U> extends Function2<T, U, Character> {
     default Character apply(T t, U u) {
         return applyAsChar(t, u);
     }
+
 }

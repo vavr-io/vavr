@@ -22,4 +22,5 @@ public interface CheckedCharLongPredicate extends CheckedFunction2<Character, Lo
     default Boolean apply(Character left, Long right) throws Throwable {
         return test(left, right);
     }
+
 }

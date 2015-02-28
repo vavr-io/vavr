@@ -22,4 +22,8 @@ public interface CheckedFloatFunction<R> extends CheckedFunction1<Float, R> {
     default R apply(Float value) throws Throwable {
         return apply((float) value);
     }
+
+    static FloatFunction<Float> identity() {
+        return v -> v;
+    }
 }

@@ -22,4 +22,5 @@ public interface CheckedIntFloatPredicate extends CheckedFunction2<Integer, Floa
     default Boolean apply(Integer left, Float right) throws Throwable {
         return test(left, right);
     }
+
 }

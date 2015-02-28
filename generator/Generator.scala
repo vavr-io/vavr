@@ -84,11 +84,11 @@ def generateMainClasses(): Unit = {
     /**
      * Java method representation
      */
-    case class Method(returnType: String, name: String, args: (Types, String)*) {
+    case class Method(returnType: (Types, String), name: String, args: (Types, String)*) {
 
       def asCall = s"$name($argNames)"
 
-      def asDecl = s"$returnType $name($argDecls)"
+      def asDecl = s"${returnType._2} $name($argDecls)"
 
       def argNames =
         if (args.length == 2 && args(0)._1.isObject && args(0)._2 == args(1)._2) {
@@ -135,15 +135,17 @@ def generateMainClasses(): Unit = {
     sealed trait FunctionalInterface {
 
       lazy val javaPackage: String = if (name.simpleName == "Runnable") "javax.lang" else "javax.util.function"
+      lazy val originalPackage: String = javaPackage.replaceFirst("^javax.", "java.")
 
       val name: TypeName
       val method: Method
       val superName: TypeName
       val superMethod: Method
+      val identity: Option[String]
 
       def gen(im: ImportManager, checked: Boolean): String = xs"""
         @FunctionalInterface
-        public interface ${checked.gen("Checked")}$name extends ${im.getType(s"javaslang.${checked.gen("Checked")}${superName.simpleName}")}${superName.generics} {
+        public interface ${checked.gen("Checked")}$name extends ${im.getType(s"javaslang.${checked.gen("Checked")}${superName.simpleName}")}${superName.generics}${""/*TODO:(!checked).gen(s", $originalPackage.$name")*/} {
 
             static final long serialVersionUID = 1L;
 
@@ -155,7 +157,7 @@ def generateMainClasses(): Unit = {
 
               @Override
               default ${superMethod.asDecl}${checked.gen(" throws Throwable")} {
-                  ${if (superMethod.returnType == "Void") {
+                  ${if (superMethod.returnType._2 == "Void") {
                     xs"""
                       ${method.asCall};
                       return null;
@@ -165,6 +167,12 @@ def generateMainClasses(): Unit = {
                   }}
               }
             """}
+
+            ${identity.gen(retType => xs"""
+              static $retType identity() {
+                  return v -> v;
+              }
+            """)}
         }
       """
 
@@ -186,21 +194,21 @@ def generateMainClasses(): Unit = {
 
       override val name =
         if (returnType.isVoid) TypeName("Runnable")
-        else if (returnType.isBoolean) TypeName(s"${returnType.asIdentifier}Predicate")
         else if (returnType.isPrimitive) TypeName(s"${returnType.asIdentifier}Supplier")
         else /* returnType.isObject */ TypeName("Supplier", "<R>")
 
       override val method = {
         val name =
           if (returnType.isVoid) "run"
-          else if (returnType.isBoolean) "test"
           else if (returnType.isPrimitive) s"getAs${returnType.asIdentifier}"
           else /* returnType.isObject */ "get"
-        Method(returnType.asUnboxed, name)
+        Method((returnType, returnType.asUnboxed), name)
       }
 
       override val superName = TypeName("Function0", s"<${returnType.asBoxed}>")
-      override val superMethod = Method(returnType.asBoxed, "apply")
+      override val superMethod = Method((returnType, returnType.asBoxed), "apply")
+
+      override val identity = None
     }
 
     /**
@@ -233,15 +241,36 @@ def generateMainClasses(): Unit = {
           else if (returnType.isBoolean) "test"
           else if (returnType.isPrimitive) s"applyAs${returnType.asIdentifier}"
           else /* returnType.isObject */ "apply"
-        Method(returnType.asUnboxed, methodName, (arg, arg.asUnboxed("T")))
+        Method((returnType, returnType.asUnboxed), methodName, (arg, arg.asUnboxed("T")))
       }
 
       override val superName = {
         TypeName("Function1", s"<${arg.asBoxed("T")}, ${returnType.asBoxed}>")
       }
       override val superMethod = {
-        Method(returnType.asBoxed, "apply", (arg, arg.asBoxed("T")))
+        Method((returnType, returnType.asBoxed), "apply", (arg, arg.asBoxed("T")))
       }
+
+      override val identity =
+        if (returnType.isVoid) {
+          None
+        } else if (returnType.isBoolean) {
+          if (arg.isObject) Some("Predicate<Boolean>")
+          else if (arg.isBoolean) Some(s"${arg.asIdentifier}Predicate")
+          else None
+        } else if (returnType.isPrimitive) {
+          if (arg.isObject) {
+            Some(s"To${returnType.asIdentifier}Function<${returnType.asBoxed}>")
+          } else {
+            if (arg == returnType) Some(s"${arg.asIdentifier}UnaryOperator") else None
+          }
+        } else /* returnType.isObject */ {
+          if (arg.isObject) {
+            Some("<T> Function<T, T>")
+          } else {
+            Some(s"${arg.asIdentifier}Function<${arg.asBoxed}>")
+          }
+        }
     }
 
     /**
@@ -288,29 +317,33 @@ def generateMainClasses(): Unit = {
           else if (returnType.isBoolean) "test"
           else if (returnType.isPrimitive) s"applyAs${returnType.asIdentifier}"
           else /* returnType.isObject */ "apply"
-        Method(returnType.asUnboxed, methodName, (arg1, arg1.asUnboxed("T")), (arg2, arg2.asUnboxed("U")))
+        Method((returnType, returnType.asUnboxed), methodName, (arg1, arg1.asUnboxed("T")), (arg2, arg2.asUnboxed("U")))
       }
 
       override val superName = {
         TypeName("Function2", s"<${arg1.asBoxed("T")}, ${arg2.asBoxed("U")}, ${returnType.asBoxed}>")
       }
       override val superMethod = {
-        Method(returnType.asBoxed, "apply", (arg1, arg1.asBoxed("T")), (arg2, arg2.asBoxed("U")))
+        Method((returnType, returnType.asBoxed), "apply", (arg1, arg1.asBoxed("T")), (arg2, arg2.asBoxed("U")))
       }
+
+      override val identity = None
     }
 
     case class UnaryOperator() extends FunctionalInterface {
-      override val method: Method = Method("T", "apply", (Types.Object, "T"))
+      override val method: Method = Method((Types.Object, "T"), "apply", (Types.Object, "T"))
       override val name: TypeName = TypeName("UnaryOperator", "<T>")
       override val superName: TypeName = TypeName("Function1", "<T, T>")
       override val superMethod: Method = method
+      override val identity = Some("<T> UnaryOperator<T>")
     }
 
     case class BinaryOperator() extends FunctionalInterface {
-      override val method: Method = Method("T", "apply", (Types.Object, "T"), (Types.Object, "T"))
+      override val method: Method = Method((Types.Object, "T"), "apply", (Types.Object, "T"), (Types.Object, "T"))
       override val name: TypeName = TypeName("BinaryOperator", "<T>")
       override val superName: TypeName = TypeName("Function2", "<T, T, T>")
       override val superMethod: Method = method
+      override val identity = None
     }
 
     def gen(fi: FunctionalInterface): Unit = {
@@ -1622,6 +1655,10 @@ object Generator {
 
   implicit class BooleanExtensions(condition: Boolean) {
     def gen(s: String): String =  if (condition) s else ""
+  }
+
+  implicit class OptionExtensions(option: Option[Any]) {
+    def gen(f: Any => String): String =  option.map(f).getOrElse("")
   }
 
   /**

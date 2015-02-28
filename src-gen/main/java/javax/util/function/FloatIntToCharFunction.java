@@ -22,4 +22,5 @@ public interface FloatIntToCharFunction extends Function2<Float, Integer, Charac
     default Character apply(Float left, Integer right) {
         return applyAsChar(left, right);
     }
+
 }

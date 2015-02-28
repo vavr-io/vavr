@@ -22,4 +22,5 @@ public interface ByteFloatFunction<R> extends Function2<Byte, Float, R> {
     default R apply(Byte left, Float right) {
         return apply((byte) left, (float) right);
     }
+
 }

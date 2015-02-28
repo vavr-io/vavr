@@ -23,4 +23,5 @@ public interface ObjFloatConsumer<T> extends Function2<T, Float, Void> {
         accept(t, value);
         return null;
     }
+
 }

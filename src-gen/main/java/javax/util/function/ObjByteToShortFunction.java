@@ -22,4 +22,5 @@ public interface ObjByteToShortFunction<T> extends Function2<T, Byte, Short> {
     default Short apply(T t, Byte value) {
         return applyAsShort(t, value);
     }
+
 }

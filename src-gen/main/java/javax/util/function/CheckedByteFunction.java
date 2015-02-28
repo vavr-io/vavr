@@ -22,4 +22,8 @@ public interface CheckedByteFunction<R> extends CheckedFunction1<Byte, R> {
     default R apply(Byte value) throws Throwable {
         return apply((byte) value);
     }
+
+    static ByteFunction<Byte> identity() {
+        return v -> v;
+    }
 }

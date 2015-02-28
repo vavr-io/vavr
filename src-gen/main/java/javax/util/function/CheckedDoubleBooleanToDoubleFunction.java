@@ -22,4 +22,5 @@ public interface CheckedDoubleBooleanToDoubleFunction extends CheckedFunction2<D
     default Double apply(Double left, Boolean right) throws Throwable {
         return applyAsDouble(left, right);
     }
+
 }

@@ -22,4 +22,5 @@ public interface FloatShortToIntFunction extends Function2<Float, Short, Integer
     default Integer apply(Float left, Short right) {
         return applyAsInt(left, right);
     }
+
 }

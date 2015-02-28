@@ -22,4 +22,5 @@ public interface CheckedBooleanIntPredicate extends CheckedFunction2<Boolean, In
     default Boolean apply(Boolean left, Integer right) throws Throwable {
         return test(left, right);
     }
+
 }

@@ -22,4 +22,5 @@ public interface CheckedBooleanFloatToFloatFunction extends CheckedFunction2<Boo
     default Float apply(Boolean left, Float right) throws Throwable {
         return applyAsFloat(left, right);
     }
+
 }

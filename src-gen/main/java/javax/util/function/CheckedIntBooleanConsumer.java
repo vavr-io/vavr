@@ -23,4 +23,5 @@ public interface CheckedIntBooleanConsumer extends CheckedFunction2<Integer, Boo
         accept(left, right);
         return null;
     }
+
 }

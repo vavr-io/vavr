@@ -22,4 +22,5 @@ public interface IntDoubleToShortFunction extends Function2<Integer, Double, Sho
     default Short apply(Integer left, Double right) {
         return applyAsShort(left, right);
     }
+
 }

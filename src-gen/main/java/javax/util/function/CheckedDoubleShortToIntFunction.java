@@ -22,4 +22,5 @@ public interface CheckedDoubleShortToIntFunction extends CheckedFunction2<Double
     default Integer apply(Double left, Short right) throws Throwable {
         return applyAsInt(left, right);
     }
+
 }

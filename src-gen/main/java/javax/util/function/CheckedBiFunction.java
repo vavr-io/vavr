@@ -18,4 +18,5 @@ public interface CheckedBiFunction<T, U, R> extends CheckedFunction2<T, U, R> {
 
     @Override
     R apply(T t, U u) throws Throwable;
+
 }

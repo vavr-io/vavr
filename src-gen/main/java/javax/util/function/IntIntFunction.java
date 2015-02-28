@@ -22,4 +22,5 @@ public interface IntIntFunction<R> extends Function2<Integer, Integer, R> {
     default R apply(Integer left, Integer right) {
         return apply((int) left, (int) right);
     }
+
 }

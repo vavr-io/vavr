@@ -22,4 +22,5 @@ public interface CheckedShortBooleanToLongFunction extends CheckedFunction2<Shor
     default Long apply(Short left, Boolean right) throws Throwable {
         return applyAsLong(left, right);
     }
+
 }

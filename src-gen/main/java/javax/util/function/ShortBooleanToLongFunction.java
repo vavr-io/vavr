@@ -22,4 +22,5 @@ public interface ShortBooleanToLongFunction extends Function2<Short, Boolean, Lo
     default Long apply(Short left, Boolean right) {
         return applyAsLong(left, right);
     }
+
 }

@@ -22,4 +22,5 @@ public interface CharToLongFunction extends Function1<Character, Long> {
     default Long apply(Character value) {
         return applyAsLong(value);
     }
+
 }

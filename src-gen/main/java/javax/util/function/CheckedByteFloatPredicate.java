@@ -22,4 +22,5 @@ public interface CheckedByteFloatPredicate extends CheckedFunction2<Byte, Float,
     default Boolean apply(Byte left, Float right) throws Throwable {
         return test(left, right);
     }
+
 }

@@ -22,4 +22,5 @@ public interface LongByteToLongFunction extends Function2<Long, Byte, Long> {
     default Long apply(Long left, Byte right) {
         return applyAsLong(left, right);
     }
+
 }

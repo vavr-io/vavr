@@ -22,4 +22,5 @@ public interface CheckedByteBinaryOperator extends CheckedFunction2<Byte, Byte, 
     default Byte apply(Byte left, Byte right) throws Throwable {
         return applyAsByte(left, right);
     }
+
 }

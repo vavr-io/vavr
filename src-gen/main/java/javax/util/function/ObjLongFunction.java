@@ -22,4 +22,5 @@ public interface ObjLongFunction<T, R> extends Function2<T, Long, R> {
     default R apply(T t, Long value) {
         return apply(t, (long) value);
     }
+
 }

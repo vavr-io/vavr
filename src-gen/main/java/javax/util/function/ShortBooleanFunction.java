@@ -22,4 +22,5 @@ public interface ShortBooleanFunction<R> extends Function2<Short, Boolean, R> {
     default R apply(Short left, Boolean right) {
         return apply((short) left, (boolean) right);
     }
+
 }

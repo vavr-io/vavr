@@ -23,4 +23,5 @@ public interface DoubleIntConsumer extends Function2<Double, Integer, Void> {
         accept(left, right);
         return null;
     }
+
 }

@@ -22,4 +22,5 @@ public interface ShortBinaryOperator extends Function2<Short, Short, Short> {
     default Short apply(Short left, Short right) {
         return applyAsShort(left, right);
     }
+
 }

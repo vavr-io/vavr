@@ -22,4 +22,5 @@ public interface DoubleObjToCharFunction<U> extends Function2<Double, U, Charact
     default Character apply(Double value, U u) {
         return applyAsChar(value, u);
     }
+
 }

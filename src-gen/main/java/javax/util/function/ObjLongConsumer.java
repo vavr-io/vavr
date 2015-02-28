@@ -23,4 +23,5 @@ public interface ObjLongConsumer<T> extends Function2<T, Long, Void> {
         accept(t, value);
         return null;
     }
+
 }

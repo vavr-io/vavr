@@ -22,4 +22,5 @@ public interface IntLongToDoubleFunction extends Function2<Integer, Long, Double
     default Double apply(Integer left, Long right) {
         return applyAsDouble(left, right);
     }
+
 }

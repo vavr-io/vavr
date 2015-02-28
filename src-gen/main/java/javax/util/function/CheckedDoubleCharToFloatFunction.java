@@ -22,4 +22,5 @@ public interface CheckedDoubleCharToFloatFunction extends CheckedFunction2<Doubl
     default Float apply(Double left, Character right) throws Throwable {
         return applyAsFloat(left, right);
     }
+
 }

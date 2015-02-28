@@ -22,4 +22,5 @@ public interface ShortCharPredicate extends Function2<Short, Character, Boolean>
     default Boolean apply(Short left, Character right) {
         return test(left, right);
     }
+
 }

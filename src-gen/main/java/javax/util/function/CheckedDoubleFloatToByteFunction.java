@@ -22,4 +22,5 @@ public interface CheckedDoubleFloatToByteFunction extends CheckedFunction2<Doubl
     default Byte apply(Double left, Float right) throws Throwable {
         return applyAsByte(left, right);
     }
+
 }

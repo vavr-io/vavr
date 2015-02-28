@@ -22,4 +22,5 @@ public interface DoubleByteFunction<R> extends Function2<Double, Byte, R> {
     default R apply(Double left, Byte right) {
         return apply((double) left, (byte) right);
     }
+
 }

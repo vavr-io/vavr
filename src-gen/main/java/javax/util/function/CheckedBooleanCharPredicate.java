@@ -22,4 +22,5 @@ public interface CheckedBooleanCharPredicate extends CheckedFunction2<Boolean, C
     default Boolean apply(Boolean left, Character right) throws Throwable {
         return test(left, right);
     }
+
 }

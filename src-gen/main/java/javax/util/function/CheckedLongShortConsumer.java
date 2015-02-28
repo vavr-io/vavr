@@ -23,4 +23,5 @@ public interface CheckedLongShortConsumer extends CheckedFunction2<Long, Short, 
         accept(left, right);
         return null;
     }
+
 }

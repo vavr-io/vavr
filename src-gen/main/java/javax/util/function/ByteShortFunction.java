@@ -22,4 +22,5 @@ public interface ByteShortFunction<R> extends Function2<Byte, Short, R> {
     default R apply(Byte left, Short right) {
         return apply((byte) left, (short) right);
     }
+
 }

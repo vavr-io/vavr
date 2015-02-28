@@ -22,4 +22,5 @@ public interface BooleanToCharFunction extends Function1<Boolean, Character> {
     default Character apply(Boolean value) {
         return applyAsChar(value);
     }
+
 }

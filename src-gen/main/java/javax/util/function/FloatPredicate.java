@@ -22,4 +22,5 @@ public interface FloatPredicate extends Function1<Float, Boolean> {
     default Boolean apply(Float value) {
         return test(value);
     }
+
 }

@@ -22,4 +22,8 @@ public interface BooleanPredicate extends Function1<Boolean, Boolean> {
     default Boolean apply(Boolean value) {
         return test(value);
     }
+
+    static BooleanPredicate identity() {
+        return v -> v;
+    }
 }

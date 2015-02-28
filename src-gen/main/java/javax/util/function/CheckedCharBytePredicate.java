@@ -22,4 +22,5 @@ public interface CheckedCharBytePredicate extends CheckedFunction2<Character, By
     default Boolean apply(Character left, Byte right) throws Throwable {
         return test(left, right);
     }
+
 }

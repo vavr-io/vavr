@@ -22,4 +22,5 @@ public interface BooleanCharToDoubleFunction extends Function2<Boolean, Characte
     default Double apply(Boolean left, Character right) {
         return applyAsDouble(left, right);
     }
+
 }

@@ -22,4 +22,5 @@ public interface ObjDoubleToIntFunction<T> extends Function2<T, Double, Integer>
     default Integer apply(T t, Double value) {
         return applyAsInt(t, value);
     }
+
 }

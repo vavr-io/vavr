@@ -18,4 +18,5 @@ public interface BinaryOperator<T> extends Function2<T, T, T> {
 
     @Override
     T apply(T t1, T t2);
+
 }

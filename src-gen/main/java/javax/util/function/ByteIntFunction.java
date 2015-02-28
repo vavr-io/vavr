@@ -22,4 +22,5 @@ public interface ByteIntFunction<R> extends Function2<Byte, Integer, R> {
     default R apply(Byte left, Integer right) {
         return apply((byte) left, (int) right);
     }
+
 }

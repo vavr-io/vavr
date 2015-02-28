@@ -22,4 +22,5 @@ public interface CharBooleanPredicate extends Function2<Character, Boolean, Bool
     default Boolean apply(Character left, Boolean right) {
         return test(left, right);
     }
+
 }

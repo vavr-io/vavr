@@ -22,4 +22,8 @@ public interface ToIntFunction<T> extends Function1<T, Integer> {
     default Integer apply(T t) {
         return applyAsInt(t);
     }
+
+    static ToIntFunction<Integer> identity() {
+        return v -> v;
+    }
 }

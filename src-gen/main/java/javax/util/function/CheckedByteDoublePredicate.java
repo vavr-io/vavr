@@ -22,4 +22,5 @@ public interface CheckedByteDoublePredicate extends CheckedFunction2<Byte, Doubl
     default Boolean apply(Byte left, Double right) throws Throwable {
         return test(left, right);
     }
+
 }

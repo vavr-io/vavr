@@ -22,4 +22,5 @@ public interface ShortIntToByteFunction extends Function2<Short, Integer, Byte> 
     default Byte apply(Short left, Integer right) {
         return applyAsByte(left, right);
     }
+
 }

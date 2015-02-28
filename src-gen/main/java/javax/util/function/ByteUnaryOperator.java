@@ -22,4 +22,8 @@ public interface ByteUnaryOperator extends Function1<Byte, Byte> {
     default Byte apply(Byte value) {
         return applyAsByte(value);
     }
+
+    static ByteUnaryOperator identity() {
+        return v -> v;
+    }
 }

@@ -22,4 +22,5 @@ public interface CheckedCharFloatToByteFunction extends CheckedFunction2<Charact
     default Byte apply(Character left, Float right) throws Throwable {
         return applyAsByte(left, right);
     }
+
 }

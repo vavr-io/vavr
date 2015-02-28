@@ -23,4 +23,5 @@ public interface ByteLongConsumer extends Function2<Byte, Long, Void> {
         accept(left, right);
         return null;
     }
+
 }

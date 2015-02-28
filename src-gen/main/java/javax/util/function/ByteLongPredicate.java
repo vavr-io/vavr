@@ -22,4 +22,5 @@ public interface ByteLongPredicate extends Function2<Byte, Long, Boolean> {
     default Boolean apply(Byte left, Long right) {
         return test(left, right);
     }
+
 }

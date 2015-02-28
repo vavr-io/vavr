@@ -22,4 +22,5 @@ public interface CharObjFunction<U, R> extends Function2<Character, U, R> {
     default R apply(Character value, U u) {
         return apply((char) value, u);
     }
+
 }

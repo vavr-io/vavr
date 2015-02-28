@@ -22,4 +22,5 @@ public interface FloatByteToIntFunction extends Function2<Float, Byte, Integer> 
     default Integer apply(Float left, Byte right) {
         return applyAsInt(left, right);
     }
+
 }

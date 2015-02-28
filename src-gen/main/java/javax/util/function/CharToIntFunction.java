@@ -22,4 +22,5 @@ public interface CharToIntFunction extends Function1<Character, Integer> {
     default Integer apply(Character value) {
         return applyAsInt(value);
     }
+
 }

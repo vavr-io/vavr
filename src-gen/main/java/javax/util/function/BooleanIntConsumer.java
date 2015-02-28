@@ -23,4 +23,5 @@ public interface BooleanIntConsumer extends Function2<Boolean, Integer, Void> {
         accept(left, right);
         return null;
     }
+
 }

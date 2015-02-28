@@ -22,4 +22,5 @@ public interface DoubleBooleanToDoubleFunction extends Function2<Double, Boolean
     default Double apply(Double left, Boolean right) {
         return applyAsDouble(left, right);
     }
+
 }

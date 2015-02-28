@@ -22,4 +22,5 @@ public interface ToDoubleBiFunction<T, U> extends Function2<T, U, Double> {
     default Double apply(T t, U u) {
         return applyAsDouble(t, u);
     }
+
 }

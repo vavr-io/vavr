@@ -22,4 +22,5 @@ public interface IntPredicate extends Function1<Integer, Boolean> {
     default Boolean apply(Integer value) {
         return test(value);
     }
+
 }

@@ -22,4 +22,8 @@ public interface CheckedBooleanFunction<R> extends CheckedFunction1<Boolean, R> 
     default R apply(Boolean value) throws Throwable {
         return apply((boolean) value);
     }
+
+    static BooleanFunction<Boolean> identity() {
+        return v -> v;
+    }
 }

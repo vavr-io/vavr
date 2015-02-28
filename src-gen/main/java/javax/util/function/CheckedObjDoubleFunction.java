@@ -22,4 +22,5 @@ public interface CheckedObjDoubleFunction<T, R> extends CheckedFunction2<T, Doub
     default R apply(T t, Double value) throws Throwable {
         return apply(t, (double) value);
     }
+
 }

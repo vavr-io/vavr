@@ -22,4 +22,5 @@ public interface LongBooleanToByteFunction extends Function2<Long, Boolean, Byte
     default Byte apply(Long left, Boolean right) {
         return applyAsByte(left, right);
     }
+
 }

@@ -22,4 +22,8 @@ public interface CheckedIntFunction<R> extends CheckedFunction1<Integer, R> {
     default R apply(Integer value) throws Throwable {
         return apply((int) value);
     }
+
+    static IntFunction<Integer> identity() {
+        return v -> v;
+    }
 }

@@ -22,4 +22,8 @@ public interface CheckedShortFunction<R> extends CheckedFunction1<Short, R> {
     default R apply(Short value) throws Throwable {
         return apply((short) value);
     }
+
+    static ShortFunction<Short> identity() {
+        return v -> v;
+    }
 }

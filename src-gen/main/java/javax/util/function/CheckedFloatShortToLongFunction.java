@@ -22,4 +22,5 @@ public interface CheckedFloatShortToLongFunction extends CheckedFunction2<Float,
     default Long apply(Float left, Short right) throws Throwable {
         return applyAsLong(left, right);
     }
+
 }

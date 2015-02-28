@@ -22,4 +22,5 @@ public interface FloatIntFunction<R> extends Function2<Float, Integer, R> {
     default R apply(Float left, Integer right) {
         return apply((float) left, (int) right);
     }
+
 }

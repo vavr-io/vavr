@@ -22,4 +22,5 @@ public interface ShortDoublePredicate extends Function2<Short, Double, Boolean> 
     default Boolean apply(Short left, Double right) {
         return test(left, right);
     }
+
 }

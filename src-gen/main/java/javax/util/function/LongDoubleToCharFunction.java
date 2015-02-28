@@ -22,4 +22,5 @@ public interface LongDoubleToCharFunction extends Function2<Long, Double, Charac
     default Character apply(Long left, Double right) {
         return applyAsChar(left, right);
     }
+
 }

@@ -22,4 +22,8 @@ public interface ToDoubleFunction<T> extends Function1<T, Double> {
     default Double apply(T t) {
         return applyAsDouble(t);
     }
+
+    static ToDoubleFunction<Double> identity() {
+        return v -> v;
+    }
 }

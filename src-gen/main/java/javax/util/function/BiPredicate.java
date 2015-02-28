@@ -22,4 +22,5 @@ public interface BiPredicate<T, U> extends Function2<T, U, Boolean> {
     default Boolean apply(T t, U u) {
         return test(t, u);
     }
+
 }

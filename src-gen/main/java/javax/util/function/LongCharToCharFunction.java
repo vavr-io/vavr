@@ -22,4 +22,5 @@ public interface LongCharToCharFunction extends Function2<Long, Character, Chara
     default Character apply(Long left, Character right) {
         return applyAsChar(left, right);
     }
+
 }

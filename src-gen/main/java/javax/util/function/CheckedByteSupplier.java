@@ -22,4 +22,5 @@ public interface CheckedByteSupplier extends CheckedFunction0<Byte> {
     default Byte apply() throws Throwable {
         return getAsByte();
     }
+
 }

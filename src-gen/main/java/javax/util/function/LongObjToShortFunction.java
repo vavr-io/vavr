@@ -22,4 +22,5 @@ public interface LongObjToShortFunction<U> extends Function2<Long, U, Short> {
     default Short apply(Long value, U u) {
         return applyAsShort(value, u);
     }
+
 }

@@ -22,4 +22,8 @@ public interface ToByteFunction<T> extends Function1<T, Byte> {
     default Byte apply(T t) {
         return applyAsByte(t);
     }
+
+    static ToByteFunction<Byte> identity() {
+        return v -> v;
+    }
 }

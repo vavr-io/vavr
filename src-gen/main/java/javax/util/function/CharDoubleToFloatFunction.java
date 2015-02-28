@@ -22,4 +22,5 @@ public interface CharDoubleToFloatFunction extends Function2<Character, Double, 
     default Float apply(Character left, Double right) {
         return applyAsFloat(left, right);
     }
+
 }

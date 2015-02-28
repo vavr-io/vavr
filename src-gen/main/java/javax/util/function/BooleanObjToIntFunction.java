@@ -22,4 +22,5 @@ public interface BooleanObjToIntFunction<U> extends Function2<Boolean, U, Intege
     default Integer apply(Boolean value, U u) {
         return applyAsInt(value, u);
     }
+
 }

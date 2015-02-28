@@ -22,4 +22,5 @@ public interface CheckedFloatShortToDoubleFunction extends CheckedFunction2<Floa
     default Double apply(Float left, Short right) throws Throwable {
         return applyAsDouble(left, right);
     }
+
 }

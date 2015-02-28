@@ -22,4 +22,5 @@ public interface CheckedIntBooleanToCharFunction extends CheckedFunction2<Intege
     default Character apply(Integer left, Boolean right) throws Throwable {
         return applyAsChar(left, right);
     }
+
 }

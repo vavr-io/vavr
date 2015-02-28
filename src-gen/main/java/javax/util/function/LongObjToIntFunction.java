@@ -22,4 +22,5 @@ public interface LongObjToIntFunction<U> extends Function2<Long, U, Integer> {
     default Integer apply(Long value, U u) {
         return applyAsInt(value, u);
     }
+
 }

@@ -22,4 +22,5 @@ public interface CheckedBooleanObjToByteFunction<U> extends CheckedFunction2<Boo
     default Byte apply(Boolean value, U u) throws Throwable {
         return applyAsByte(value, u);
     }
+
 }

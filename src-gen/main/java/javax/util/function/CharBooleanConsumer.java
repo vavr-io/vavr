@@ -23,4 +23,5 @@ public interface CharBooleanConsumer extends Function2<Character, Boolean, Void>
         accept(left, right);
         return null;
     }
+
 }

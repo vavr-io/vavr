@@ -23,4 +23,5 @@ public interface BooleanByteConsumer extends Function2<Boolean, Byte, Void> {
         accept(left, right);
         return null;
     }
+
 }

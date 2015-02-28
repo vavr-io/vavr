@@ -22,4 +22,5 @@ public interface BooleanDoubleToFloatFunction extends Function2<Boolean, Double,
     default Float apply(Boolean left, Double right) {
         return applyAsFloat(left, right);
     }
+
 }

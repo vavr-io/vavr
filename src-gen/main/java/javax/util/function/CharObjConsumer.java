@@ -23,4 +23,5 @@ public interface CharObjConsumer<U> extends Function2<Character, U, Void> {
         accept(value, u);
         return null;
     }
+
 }

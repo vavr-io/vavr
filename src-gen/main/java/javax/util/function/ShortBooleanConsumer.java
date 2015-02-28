@@ -23,4 +23,5 @@ public interface ShortBooleanConsumer extends Function2<Short, Boolean, Void> {
         accept(left, right);
         return null;
     }
+
 }

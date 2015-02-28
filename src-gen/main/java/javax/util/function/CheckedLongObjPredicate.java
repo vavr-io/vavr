@@ -22,4 +22,5 @@ public interface CheckedLongObjPredicate<U> extends CheckedFunction2<Long, U, Bo
     default Boolean apply(Long value, U u) throws Throwable {
         return test(value, u);
     }
+
 }

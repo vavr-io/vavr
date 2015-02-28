@@ -22,4 +22,5 @@ public interface ToIntBiFunction<T, U> extends Function2<T, U, Integer> {
     default Integer apply(T t, U u) {
         return applyAsInt(t, u);
     }
+
 }

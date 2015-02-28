@@ -22,4 +22,5 @@ public interface LongPredicate extends Function1<Long, Boolean> {
     default Boolean apply(Long value) {
         return test(value);
     }
+
 }

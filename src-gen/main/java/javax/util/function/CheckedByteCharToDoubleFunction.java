@@ -22,4 +22,5 @@ public interface CheckedByteCharToDoubleFunction extends CheckedFunction2<Byte, 
     default Double apply(Byte left, Character right) throws Throwable {
         return applyAsDouble(left, right);
     }
+
 }

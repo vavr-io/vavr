@@ -22,4 +22,5 @@ public interface CheckedToIntBiFunction<T, U> extends CheckedFunction2<T, U, Int
     default Integer apply(T t, U u) throws Throwable {
         return applyAsInt(t, u);
     }
+
 }

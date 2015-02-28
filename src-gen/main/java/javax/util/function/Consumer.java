@@ -23,4 +23,5 @@ public interface Consumer<T> extends Function1<T, Void> {
         accept(t);
         return null;
     }
+
 }

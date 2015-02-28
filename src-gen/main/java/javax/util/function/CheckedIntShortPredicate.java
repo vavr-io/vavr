@@ -22,4 +22,5 @@ public interface CheckedIntShortPredicate extends CheckedFunction2<Integer, Shor
     default Boolean apply(Integer left, Short right) throws Throwable {
         return test(left, right);
     }
+
 }

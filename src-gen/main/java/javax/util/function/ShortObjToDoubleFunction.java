@@ -22,4 +22,5 @@ public interface ShortObjToDoubleFunction<U> extends Function2<Short, U, Double>
     default Double apply(Short value, U u) {
         return applyAsDouble(value, u);
     }
+
 }

@@ -22,4 +22,5 @@ public interface CheckedIntShortFunction<R> extends CheckedFunction2<Integer, Sh
     default R apply(Integer left, Short right) throws Throwable {
         return apply((int) left, (short) right);
     }
+
 }

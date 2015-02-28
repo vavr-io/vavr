@@ -23,4 +23,5 @@ public interface CheckedBooleanCharConsumer extends CheckedFunction2<Boolean, Ch
         accept(left, right);
         return null;
     }
+
 }

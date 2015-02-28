@@ -23,4 +23,5 @@ public interface FloatLongConsumer extends Function2<Float, Long, Void> {
         accept(left, right);
         return null;
     }
+
 }

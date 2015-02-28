@@ -22,4 +22,5 @@ public interface IntShortToLongFunction extends Function2<Integer, Short, Long> 
     default Long apply(Integer left, Short right) {
         return applyAsLong(left, right);
     }
+
 }

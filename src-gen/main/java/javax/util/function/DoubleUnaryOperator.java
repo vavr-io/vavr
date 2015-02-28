@@ -22,4 +22,8 @@ public interface DoubleUnaryOperator extends Function1<Double, Double> {
     default Double apply(Double value) {
         return applyAsDouble(value);
     }
+
+    static DoubleUnaryOperator identity() {
+        return v -> v;
+    }
 }

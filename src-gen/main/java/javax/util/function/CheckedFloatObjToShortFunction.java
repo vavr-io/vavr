@@ -22,4 +22,5 @@ public interface CheckedFloatObjToShortFunction<U> extends CheckedFunction2<Floa
     default Short apply(Float value, U u) throws Throwable {
         return applyAsShort(value, u);
     }
+
 }

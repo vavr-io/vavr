@@ -22,4 +22,5 @@ public interface CheckedShortBooleanToByteFunction extends CheckedFunction2<Shor
     default Byte apply(Short left, Boolean right) throws Throwable {
         return applyAsByte(left, right);
     }
+
 }

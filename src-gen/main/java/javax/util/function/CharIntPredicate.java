@@ -22,4 +22,5 @@ public interface CharIntPredicate extends Function2<Character, Integer, Boolean>
     default Boolean apply(Character left, Integer right) {
         return test(left, right);
     }
+
 }

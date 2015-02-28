@@ -22,4 +22,5 @@ public interface IntBinaryOperator extends Function2<Integer, Integer, Integer> 
     default Integer apply(Integer left, Integer right) {
         return applyAsInt(left, right);
     }
+
 }

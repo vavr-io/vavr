@@ -22,4 +22,5 @@ public interface CharBytePredicate extends Function2<Character, Byte, Boolean> {
     default Boolean apply(Character left, Byte right) {
         return test(left, right);
     }
+
 }

@@ -22,4 +22,5 @@ public interface CheckedFloatDoublePredicate extends CheckedFunction2<Float, Dou
     default Boolean apply(Float left, Double right) throws Throwable {
         return test(left, right);
     }
+
 }

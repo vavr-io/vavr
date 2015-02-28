@@ -22,4 +22,5 @@ public interface CharLongPredicate extends Function2<Character, Long, Boolean> {
     default Boolean apply(Character left, Long right) {
         return test(left, right);
     }
+
 }

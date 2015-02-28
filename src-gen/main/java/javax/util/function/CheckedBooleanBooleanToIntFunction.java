@@ -22,4 +22,5 @@ public interface CheckedBooleanBooleanToIntFunction extends CheckedFunction2<Boo
     default Integer apply(Boolean left, Boolean right) throws Throwable {
         return applyAsInt(left, right);
     }
+
 }

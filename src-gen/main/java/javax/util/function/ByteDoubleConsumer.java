@@ -23,4 +23,5 @@ public interface ByteDoubleConsumer extends Function2<Byte, Double, Void> {
         accept(left, right);
         return null;
     }
+
 }

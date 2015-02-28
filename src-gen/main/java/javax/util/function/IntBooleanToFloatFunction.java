@@ -22,4 +22,5 @@ public interface IntBooleanToFloatFunction extends Function2<Integer, Boolean, F
     default Float apply(Integer left, Boolean right) {
         return applyAsFloat(left, right);
     }
+
 }

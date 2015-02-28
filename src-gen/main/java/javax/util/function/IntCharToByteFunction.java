@@ -22,4 +22,5 @@ public interface IntCharToByteFunction extends Function2<Integer, Character, Byt
     default Byte apply(Integer left, Character right) {
         return applyAsByte(left, right);
     }
+
 }

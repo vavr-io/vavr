@@ -22,4 +22,5 @@ public interface CharIntToShortFunction extends Function2<Character, Integer, Sh
     default Short apply(Character left, Integer right) {
         return applyAsShort(left, right);
     }
+
 }

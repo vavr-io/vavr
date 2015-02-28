@@ -22,4 +22,5 @@ public interface ShortCharFunction<R> extends Function2<Short, Character, R> {
     default R apply(Short left, Character right) {
         return apply((short) left, (char) right);
     }
+
 }

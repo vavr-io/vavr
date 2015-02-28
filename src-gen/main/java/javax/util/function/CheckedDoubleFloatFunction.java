@@ -22,4 +22,5 @@ public interface CheckedDoubleFloatFunction<R> extends CheckedFunction2<Double, 
     default R apply(Double left, Float right) throws Throwable {
         return apply((double) left, (float) right);
     }
+
 }

@@ -22,4 +22,5 @@ public interface DoubleSupplier extends Function0<Double> {
     default Double apply() {
         return getAsDouble();
     }
+
 }

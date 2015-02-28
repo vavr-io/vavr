@@ -22,4 +22,5 @@ public interface IntBooleanFunction<R> extends Function2<Integer, Boolean, R> {
     default R apply(Integer left, Boolean right) {
         return apply((int) left, (boolean) right);
     }
+
 }

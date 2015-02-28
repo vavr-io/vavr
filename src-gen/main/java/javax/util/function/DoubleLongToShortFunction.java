@@ -22,4 +22,5 @@ public interface DoubleLongToShortFunction extends Function2<Double, Long, Short
     default Short apply(Double left, Long right) {
         return applyAsShort(left, right);
     }
+
 }

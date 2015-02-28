@@ -22,4 +22,8 @@ public interface CheckedToCharFunction<T> extends CheckedFunction1<T, Character>
     default Character apply(T t) throws Throwable {
         return applyAsChar(t);
     }
+
+    static ToCharFunction<Character> identity() {
+        return v -> v;
+    }
 }

@@ -22,4 +22,8 @@ public interface CheckedBooleanPredicate extends CheckedFunction1<Boolean, Boole
     default Boolean apply(Boolean value) throws Throwable {
         return test(value);
     }
+
+    static BooleanPredicate identity() {
+        return v -> v;
+    }
 }

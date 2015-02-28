@@ -22,4 +22,8 @@ public interface Predicate<T> extends Function1<T, Boolean> {
     default Boolean apply(T t) {
         return test(t);
     }
+
+    static Predicate<Boolean> identity() {
+        return v -> v;
+    }
 }

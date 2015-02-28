@@ -23,4 +23,5 @@ public interface CheckedCharFloatConsumer extends CheckedFunction2<Character, Fl
         accept(left, right);
         return null;
     }
+
 }

@@ -18,4 +18,8 @@ public interface CheckedUnaryOperator<T> extends CheckedFunction1<T, T> {
 
     @Override
     T apply(T t) throws Throwable;
+
+    static <T> UnaryOperator<T> identity() {
+        return v -> v;
+    }
 }

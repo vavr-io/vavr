@@ -22,4 +22,5 @@ public interface ShortToByteFunction extends Function1<Short, Byte> {
     default Byte apply(Short value) {
         return applyAsByte(value);
     }
+
 }

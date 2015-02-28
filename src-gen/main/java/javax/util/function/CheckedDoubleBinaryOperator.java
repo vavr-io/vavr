@@ -22,4 +22,5 @@ public interface CheckedDoubleBinaryOperator extends CheckedFunction2<Double, Do
     default Double apply(Double left, Double right) throws Throwable {
         return applyAsDouble(left, right);
     }
+
 }

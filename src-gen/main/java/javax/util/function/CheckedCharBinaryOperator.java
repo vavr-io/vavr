@@ -22,4 +22,5 @@ public interface CheckedCharBinaryOperator extends CheckedFunction2<Character, C
     default Character apply(Character left, Character right) throws Throwable {
         return applyAsChar(left, right);
     }
+
 }

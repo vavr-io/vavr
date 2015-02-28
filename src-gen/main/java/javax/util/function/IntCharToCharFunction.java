@@ -22,4 +22,5 @@ public interface IntCharToCharFunction extends Function2<Integer, Character, Cha
     default Character apply(Integer left, Character right) {
         return applyAsChar(left, right);
     }
+
 }

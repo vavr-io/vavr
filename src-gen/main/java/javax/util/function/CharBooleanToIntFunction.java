@@ -22,4 +22,5 @@ public interface CharBooleanToIntFunction extends Function2<Character, Boolean, 
     default Integer apply(Character left, Boolean right) {
         return applyAsInt(left, right);
     }
+
 }

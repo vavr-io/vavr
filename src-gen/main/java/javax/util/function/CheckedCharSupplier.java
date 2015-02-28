@@ -22,4 +22,5 @@ public interface CheckedCharSupplier extends CheckedFunction0<Character> {
     default Character apply() throws Throwable {
         return getAsChar();
     }
+
 }

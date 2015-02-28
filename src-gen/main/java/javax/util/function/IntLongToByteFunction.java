@@ -22,4 +22,5 @@ public interface IntLongToByteFunction extends Function2<Integer, Long, Byte> {
     default Byte apply(Integer left, Long right) {
         return applyAsByte(left, right);
     }
+
 }

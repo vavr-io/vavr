@@ -22,4 +22,5 @@ public interface IntShortPredicate extends Function2<Integer, Short, Boolean> {
     default Boolean apply(Integer left, Short right) {
         return test(left, right);
     }
+
 }

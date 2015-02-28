@@ -22,4 +22,5 @@ public interface ShortObjFunction<U, R> extends Function2<Short, U, R> {
     default R apply(Short value, U u) {
         return apply((short) value, u);
     }
+
 }

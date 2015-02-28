@@ -22,4 +22,5 @@ public interface ShortCharToLongFunction extends Function2<Short, Character, Lon
     default Long apply(Short left, Character right) {
         return applyAsLong(left, right);
     }
+
 }

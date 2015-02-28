@@ -23,4 +23,5 @@ public interface CharShortConsumer extends Function2<Character, Short, Void> {
         accept(left, right);
         return null;
     }
+
 }

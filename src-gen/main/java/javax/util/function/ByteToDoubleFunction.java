@@ -22,4 +22,5 @@ public interface ByteToDoubleFunction extends Function1<Byte, Double> {
     default Double apply(Byte value) {
         return applyAsDouble(value);
     }
+
 }

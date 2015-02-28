@@ -22,4 +22,5 @@ public interface BooleanLongFunction<R> extends Function2<Boolean, Long, R> {
     default R apply(Boolean left, Long right) {
         return apply((boolean) left, (long) right);
     }
+
 }

@@ -22,4 +22,5 @@ public interface CheckedCharDoublePredicate extends CheckedFunction2<Character, 
     default Boolean apply(Character left, Double right) throws Throwable {
         return test(left, right);
     }
+
 }

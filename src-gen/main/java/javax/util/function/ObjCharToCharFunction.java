@@ -22,4 +22,5 @@ public interface ObjCharToCharFunction<T> extends Function2<T, Character, Charac
     default Character apply(T t, Character value) {
         return applyAsChar(t, value);
     }
+
 }

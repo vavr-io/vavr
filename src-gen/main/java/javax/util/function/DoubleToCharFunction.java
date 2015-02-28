@@ -22,4 +22,5 @@ public interface DoubleToCharFunction extends Function1<Double, Character> {
     default Character apply(Double value) {
         return applyAsChar(value);
     }
+
 }

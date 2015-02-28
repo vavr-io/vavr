@@ -22,4 +22,5 @@ public interface CheckedShortDoubleToCharFunction extends CheckedFunction2<Short
     default Character apply(Short left, Double right) throws Throwable {
         return applyAsChar(left, right);
     }
+
 }

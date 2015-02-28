@@ -22,4 +22,5 @@ public interface ObjBooleanToByteFunction<T> extends Function2<T, Boolean, Byte>
     default Byte apply(T t, Boolean value) {
         return applyAsByte(t, value);
     }
+
 }

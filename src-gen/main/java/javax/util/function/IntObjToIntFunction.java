@@ -22,4 +22,5 @@ public interface IntObjToIntFunction<U> extends Function2<Integer, U, Integer> {
     default Integer apply(Integer value, U u) {
         return applyAsInt(value, u);
     }
+
 }

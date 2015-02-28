@@ -22,4 +22,5 @@ public interface DoubleBooleanToIntFunction extends Function2<Double, Boolean, I
     default Integer apply(Double left, Boolean right) {
         return applyAsInt(left, right);
     }
+
 }

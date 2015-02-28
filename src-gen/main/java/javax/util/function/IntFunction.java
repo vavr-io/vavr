@@ -22,4 +22,8 @@ public interface IntFunction<R> extends Function1<Integer, R> {
     default R apply(Integer value) {
         return apply((int) value);
     }
+
+    static IntFunction<Integer> identity() {
+        return v -> v;
+    }
 }

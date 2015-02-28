@@ -22,4 +22,5 @@ public interface CheckedLongDoublePredicate extends CheckedFunction2<Long, Doubl
     default Boolean apply(Long left, Double right) throws Throwable {
         return test(left, right);
     }
+
 }

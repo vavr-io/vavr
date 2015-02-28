@@ -18,4 +18,8 @@ public interface Function<T, R> extends Function1<T, R> {
 
     @Override
     R apply(T t);
+
+    static <T> Function<T, T> identity() {
+        return v -> v;
+    }
 }

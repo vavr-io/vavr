@@ -22,4 +22,5 @@ public interface CheckedToLongBiFunction<T, U> extends CheckedFunction2<T, U, Lo
     default Long apply(T t, U u) throws Throwable {
         return applyAsLong(t, u);
     }
+
 }

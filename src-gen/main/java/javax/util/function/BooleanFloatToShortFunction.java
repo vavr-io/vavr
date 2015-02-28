@@ -22,4 +22,5 @@ public interface BooleanFloatToShortFunction extends Function2<Boolean, Float, S
     default Short apply(Boolean left, Float right) {
         return applyAsShort(left, right);
     }
+
 }

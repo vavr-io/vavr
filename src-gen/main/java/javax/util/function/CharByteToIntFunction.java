@@ -22,4 +22,5 @@ public interface CharByteToIntFunction extends Function2<Character, Byte, Intege
     default Integer apply(Character left, Byte right) {
         return applyAsInt(left, right);
     }
+
 }

@@ -22,4 +22,5 @@ public interface LongCharToIntFunction extends Function2<Long, Character, Intege
     default Integer apply(Long left, Character right) {
         return applyAsInt(left, right);
     }
+
 }

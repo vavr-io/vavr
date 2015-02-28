@@ -22,4 +22,5 @@ public interface Supplier<R> extends Function0<R> {
     default R apply() {
         return get();
     }
+
 }

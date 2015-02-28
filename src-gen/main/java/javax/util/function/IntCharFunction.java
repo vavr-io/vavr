@@ -22,4 +22,5 @@ public interface IntCharFunction<R> extends Function2<Integer, Character, R> {
     default R apply(Integer left, Character right) {
         return apply((int) left, (char) right);
     }
+
 }

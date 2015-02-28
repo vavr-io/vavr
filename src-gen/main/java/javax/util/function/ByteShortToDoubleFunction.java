@@ -22,4 +22,5 @@ public interface ByteShortToDoubleFunction extends Function2<Byte, Short, Double
     default Double apply(Byte left, Short right) {
         return applyAsDouble(left, right);
     }
+
 }

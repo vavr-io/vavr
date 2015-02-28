@@ -22,4 +22,5 @@ public interface CharLongToIntFunction extends Function2<Character, Long, Intege
     default Integer apply(Character left, Long right) {
         return applyAsInt(left, right);
     }
+
 }

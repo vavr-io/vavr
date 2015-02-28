@@ -23,4 +23,5 @@ public interface CheckedBooleanObjConsumer<U> extends CheckedFunction2<Boolean, 
         accept(value, u);
         return null;
     }
+
 }

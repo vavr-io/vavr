@@ -22,4 +22,5 @@ public interface CheckedFloatCharToIntFunction extends CheckedFunction2<Float, C
     default Integer apply(Float left, Character right) throws Throwable {
         return applyAsInt(left, right);
     }
+
 }

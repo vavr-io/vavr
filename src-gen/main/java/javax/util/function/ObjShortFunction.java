@@ -22,4 +22,5 @@ public interface ObjShortFunction<T, R> extends Function2<T, Short, R> {
     default R apply(T t, Short value) {
         return apply(t, (short) value);
     }
+
 }

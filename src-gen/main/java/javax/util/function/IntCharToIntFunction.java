@@ -22,4 +22,5 @@ public interface IntCharToIntFunction extends Function2<Integer, Character, Inte
     default Integer apply(Integer left, Character right) {
         return applyAsInt(left, right);
     }
+
 }

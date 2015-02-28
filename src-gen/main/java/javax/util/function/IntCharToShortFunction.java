@@ -22,4 +22,5 @@ public interface IntCharToShortFunction extends Function2<Integer, Character, Sh
     default Short apply(Integer left, Character right) {
         return applyAsShort(left, right);
     }
+
 }

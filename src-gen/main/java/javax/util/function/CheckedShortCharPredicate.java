@@ -22,4 +22,5 @@ public interface CheckedShortCharPredicate extends CheckedFunction2<Short, Chara
     default Boolean apply(Short left, Character right) throws Throwable {
         return test(left, right);
     }
+
 }

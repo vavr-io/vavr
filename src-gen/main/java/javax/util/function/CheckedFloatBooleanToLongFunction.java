@@ -22,4 +22,5 @@ public interface CheckedFloatBooleanToLongFunction extends CheckedFunction2<Floa
     default Long apply(Float left, Boolean right) throws Throwable {
         return applyAsLong(left, right);
     }
+
 }

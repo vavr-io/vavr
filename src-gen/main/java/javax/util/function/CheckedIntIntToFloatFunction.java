@@ -22,4 +22,5 @@ public interface CheckedIntIntToFloatFunction extends CheckedFunction2<Integer, 
     default Float apply(Integer left, Integer right) throws Throwable {
         return applyAsFloat(left, right);
     }
+
 }

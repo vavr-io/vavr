@@ -22,4 +22,5 @@ public interface CheckedShortObjPredicate<U> extends CheckedFunction2<Short, U, 
     default Boolean apply(Short value, U u) throws Throwable {
         return test(value, u);
     }
+
 }

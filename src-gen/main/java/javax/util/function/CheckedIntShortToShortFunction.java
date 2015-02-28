@@ -22,4 +22,5 @@ public interface CheckedIntShortToShortFunction extends CheckedFunction2<Integer
     default Short apply(Integer left, Short right) throws Throwable {
         return applyAsShort(left, right);
     }
+
 }

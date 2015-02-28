@@ -22,4 +22,5 @@ public interface IntSupplier extends Function0<Integer> {
     default Integer apply() {
         return getAsInt();
     }
+
 }

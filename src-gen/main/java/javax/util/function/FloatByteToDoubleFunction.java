@@ -22,4 +22,5 @@ public interface FloatByteToDoubleFunction extends Function2<Float, Byte, Double
     default Double apply(Float left, Byte right) {
         return applyAsDouble(left, right);
     }
+
 }

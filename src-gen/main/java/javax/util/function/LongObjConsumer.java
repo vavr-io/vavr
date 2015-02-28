@@ -23,4 +23,5 @@ public interface LongObjConsumer<U> extends Function2<Long, U, Void> {
         accept(value, u);
         return null;
     }
+
 }

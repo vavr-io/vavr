@@ -22,4 +22,5 @@ public interface DoublePredicate extends Function1<Double, Boolean> {
     default Boolean apply(Double value) {
         return test(value);
     }
+
 }

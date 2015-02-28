@@ -22,4 +22,5 @@ public interface DoubleCharToIntFunction extends Function2<Double, Character, In
     default Integer apply(Double left, Character right) {
         return applyAsInt(left, right);
     }
+
 }

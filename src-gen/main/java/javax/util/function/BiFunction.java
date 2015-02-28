@@ -18,4 +18,5 @@ public interface BiFunction<T, U, R> extends Function2<T, U, R> {
 
     @Override
     R apply(T t, U u);
+
 }

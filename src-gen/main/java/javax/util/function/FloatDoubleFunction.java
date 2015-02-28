@@ -22,4 +22,5 @@ public interface FloatDoubleFunction<R> extends Function2<Float, Double, R> {
     default R apply(Float left, Double right) {
         return apply((float) left, (double) right);
     }
+
 }

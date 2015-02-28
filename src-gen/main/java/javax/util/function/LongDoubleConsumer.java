@@ -23,4 +23,5 @@ public interface LongDoubleConsumer extends Function2<Long, Double, Void> {
         accept(left, right);
         return null;
     }
+
 }

@@ -22,4 +22,5 @@ public interface ByteLongToShortFunction extends Function2<Byte, Long, Short> {
     default Short apply(Byte left, Long right) {
         return applyAsShort(left, right);
     }
+
 }

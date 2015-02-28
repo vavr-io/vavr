@@ -22,4 +22,8 @@ public interface FloatUnaryOperator extends Function1<Float, Float> {
     default Float apply(Float value) {
         return applyAsFloat(value);
     }
+
+    static FloatUnaryOperator identity() {
+        return v -> v;
+    }
 }

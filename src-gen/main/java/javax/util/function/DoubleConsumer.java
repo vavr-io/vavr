@@ -23,4 +23,5 @@ public interface DoubleConsumer extends Function1<Double, Void> {
         accept(value);
         return null;
     }
+
 }

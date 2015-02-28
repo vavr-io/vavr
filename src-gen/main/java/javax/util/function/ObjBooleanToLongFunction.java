@@ -22,4 +22,5 @@ public interface ObjBooleanToLongFunction<T> extends Function2<T, Boolean, Long>
     default Long apply(T t, Boolean value) {
         return applyAsLong(t, value);
     }
+
 }

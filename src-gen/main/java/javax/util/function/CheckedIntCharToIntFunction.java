@@ -22,4 +22,5 @@ public interface CheckedIntCharToIntFunction extends CheckedFunction2<Integer, C
     default Integer apply(Integer left, Character right) throws Throwable {
         return applyAsInt(left, right);
     }
+
 }

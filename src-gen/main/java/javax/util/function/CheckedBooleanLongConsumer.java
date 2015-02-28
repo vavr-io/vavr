@@ -23,4 +23,5 @@ public interface CheckedBooleanLongConsumer extends CheckedFunction2<Boolean, Lo
         accept(left, right);
         return null;
     }
+
 }

@@ -22,4 +22,5 @@ public interface ShortCharToIntFunction extends Function2<Short, Character, Inte
     default Integer apply(Short left, Character right) {
         return applyAsInt(left, right);
     }
+
 }

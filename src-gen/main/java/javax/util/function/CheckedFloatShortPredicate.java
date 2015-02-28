@@ -22,4 +22,5 @@ public interface CheckedFloatShortPredicate extends CheckedFunction2<Float, Shor
     default Boolean apply(Float left, Short right) throws Throwable {
         return test(left, right);
     }
+
 }

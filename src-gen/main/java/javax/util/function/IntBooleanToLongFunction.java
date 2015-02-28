@@ -22,4 +22,5 @@ public interface IntBooleanToLongFunction extends Function2<Integer, Boolean, Lo
     default Long apply(Integer left, Boolean right) {
         return applyAsLong(left, right);
     }
+
 }

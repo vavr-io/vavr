@@ -22,4 +22,5 @@ public interface CheckedLongObjToFloatFunction<U> extends CheckedFunction2<Long,
     default Float apply(Long value, U u) throws Throwable {
         return applyAsFloat(value, u);
     }
+
 }

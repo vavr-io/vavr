@@ -22,4 +22,5 @@ public interface BooleanCharToByteFunction extends Function2<Boolean, Character,
     default Byte apply(Boolean left, Character right) {
         return applyAsByte(left, right);
     }
+
 }

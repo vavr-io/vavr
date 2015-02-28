@@ -23,4 +23,5 @@ public interface ObjIntConsumer<T> extends Function2<T, Integer, Void> {
         accept(t, value);
         return null;
     }
+
 }

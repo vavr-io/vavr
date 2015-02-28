@@ -22,4 +22,5 @@ public interface ByteSupplier extends Function0<Byte> {
     default Byte apply() {
         return getAsByte();
     }
+
 }

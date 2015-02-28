@@ -22,4 +22,5 @@ public interface CharToFloatFunction extends Function1<Character, Float> {
     default Float apply(Character value) {
         return applyAsFloat(value);
     }
+
 }

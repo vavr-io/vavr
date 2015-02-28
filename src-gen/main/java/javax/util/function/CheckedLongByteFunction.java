@@ -22,4 +22,5 @@ public interface CheckedLongByteFunction<R> extends CheckedFunction2<Long, Byte,
     default R apply(Long left, Byte right) throws Throwable {
         return apply((long) left, (byte) right);
     }
+
 }

@@ -22,4 +22,5 @@ public interface CheckedShortByteToIntFunction extends CheckedFunction2<Short, B
     default Integer apply(Short left, Byte right) throws Throwable {
         return applyAsInt(left, right);
     }
+
 }

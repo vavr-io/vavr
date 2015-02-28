@@ -22,4 +22,5 @@ public interface LongObjToCharFunction<U> extends Function2<Long, U, Character> 
     default Character apply(Long value, U u) {
         return applyAsChar(value, u);
     }
+
 }

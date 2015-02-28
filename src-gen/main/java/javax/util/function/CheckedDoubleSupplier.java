@@ -22,4 +22,5 @@ public interface CheckedDoubleSupplier extends CheckedFunction0<Double> {
     default Double apply() throws Throwable {
         return getAsDouble();
     }
+
 }

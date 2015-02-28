@@ -22,4 +22,5 @@ public interface ByteCharToLongFunction extends Function2<Byte, Character, Long>
     default Long apply(Byte left, Character right) {
         return applyAsLong(left, right);
     }
+
 }

@@ -22,4 +22,8 @@ public interface CheckedLongFunction<R> extends CheckedFunction1<Long, R> {
     default R apply(Long value) throws Throwable {
         return apply((long) value);
     }
+
+    static LongFunction<Long> identity() {
+        return v -> v;
+    }
 }

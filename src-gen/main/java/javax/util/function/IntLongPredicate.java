@@ -22,4 +22,5 @@ public interface IntLongPredicate extends Function2<Integer, Long, Boolean> {
     default Boolean apply(Integer left, Long right) {
         return test(left, right);
     }
+
 }

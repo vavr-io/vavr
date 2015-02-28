@@ -22,4 +22,5 @@ public interface ShortObjToFloatFunction<U> extends Function2<Short, U, Float> {
     default Float apply(Short value, U u) {
         return applyAsFloat(value, u);
     }
+
 }

@@ -22,4 +22,5 @@ public interface IntObjFunction<U, R> extends Function2<Integer, U, R> {
     default R apply(Integer value, U u) {
         return apply((int) value, u);
     }
+
 }

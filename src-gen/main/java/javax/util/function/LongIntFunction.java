@@ -22,4 +22,5 @@ public interface LongIntFunction<R> extends Function2<Long, Integer, R> {
     default R apply(Long left, Integer right) {
         return apply((long) left, (int) right);
     }
+
 }

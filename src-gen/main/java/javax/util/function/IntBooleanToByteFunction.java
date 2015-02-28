@@ -22,4 +22,5 @@ public interface IntBooleanToByteFunction extends Function2<Integer, Boolean, By
     default Byte apply(Integer left, Boolean right) {
         return applyAsByte(left, right);
     }
+
 }

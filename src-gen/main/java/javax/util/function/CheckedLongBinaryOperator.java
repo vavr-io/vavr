@@ -22,4 +22,5 @@ public interface CheckedLongBinaryOperator extends CheckedFunction2<Long, Long, 
     default Long apply(Long left, Long right) throws Throwable {
         return applyAsLong(left, right);
     }
+
 }

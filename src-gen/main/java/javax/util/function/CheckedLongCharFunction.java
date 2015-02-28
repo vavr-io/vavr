@@ -22,4 +22,5 @@ public interface CheckedLongCharFunction<R> extends CheckedFunction2<Long, Chara
     default R apply(Long left, Character right) throws Throwable {
         return apply((long) left, (char) right);
     }
+
 }

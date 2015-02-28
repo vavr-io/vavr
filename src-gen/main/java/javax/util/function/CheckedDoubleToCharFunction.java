@@ -22,4 +22,5 @@ public interface CheckedDoubleToCharFunction extends CheckedFunction1<Double, Ch
     default Character apply(Double value) throws Throwable {
         return applyAsChar(value);
     }
+
 }

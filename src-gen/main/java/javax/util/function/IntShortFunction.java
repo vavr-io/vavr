@@ -22,4 +22,5 @@ public interface IntShortFunction<R> extends Function2<Integer, Short, R> {
     default R apply(Integer left, Short right) {
         return apply((int) left, (short) right);
     }
+
 }

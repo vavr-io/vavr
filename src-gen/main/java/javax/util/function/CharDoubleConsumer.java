@@ -23,4 +23,5 @@ public interface CharDoubleConsumer extends Function2<Character, Double, Void> {
         accept(left, right);
         return null;
     }
+
 }

@@ -23,4 +23,5 @@ public interface CheckedDoubleObjConsumer<U> extends CheckedFunction2<Double, U,
         accept(value, u);
         return null;
     }
+
 }

@@ -23,4 +23,5 @@ public interface ByteCharConsumer extends Function2<Byte, Character, Void> {
         accept(left, right);
         return null;
     }
+
 }

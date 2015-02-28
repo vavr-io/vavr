@@ -22,4 +22,5 @@ public interface CheckedObjDoubleToFloatFunction<T> extends CheckedFunction2<T, 
     default Float apply(T t, Double value) throws Throwable {
         return applyAsFloat(t, value);
     }
+
 }

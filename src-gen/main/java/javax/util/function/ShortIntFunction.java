@@ -22,4 +22,5 @@ public interface ShortIntFunction<R> extends Function2<Short, Integer, R> {
     default R apply(Short left, Integer right) {
         return apply((short) left, (int) right);
     }
+
 }

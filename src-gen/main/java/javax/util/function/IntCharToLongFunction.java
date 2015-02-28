@@ -22,4 +22,5 @@ public interface IntCharToLongFunction extends Function2<Integer, Character, Lon
     default Long apply(Integer left, Character right) {
         return applyAsLong(left, right);
     }
+
 }

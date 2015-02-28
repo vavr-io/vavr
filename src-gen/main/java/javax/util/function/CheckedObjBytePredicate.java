@@ -22,4 +22,5 @@ public interface CheckedObjBytePredicate<T> extends CheckedFunction2<T, Byte, Bo
     default Boolean apply(T t, Byte value) throws Throwable {
         return test(t, value);
     }
+
 }

@@ -22,4 +22,5 @@ public interface LongLongToIntFunction extends Function2<Long, Long, Integer> {
     default Integer apply(Long left, Long right) {
         return applyAsInt(left, right);
     }
+
 }

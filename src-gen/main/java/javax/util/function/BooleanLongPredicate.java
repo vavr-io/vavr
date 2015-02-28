@@ -22,4 +22,5 @@ public interface BooleanLongPredicate extends Function2<Boolean, Long, Boolean> 
     default Boolean apply(Boolean left, Long right) {
         return test(left, right);
     }
+
 }

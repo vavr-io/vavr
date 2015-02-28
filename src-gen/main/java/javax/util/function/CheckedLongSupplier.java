@@ -22,4 +22,5 @@ public interface CheckedLongSupplier extends CheckedFunction0<Long> {
     default Long apply() throws Throwable {
         return getAsLong();
     }
+
 }

@@ -23,4 +23,5 @@ public interface ObjShortConsumer<T> extends Function2<T, Short, Void> {
         accept(t, value);
         return null;
     }
+
 }

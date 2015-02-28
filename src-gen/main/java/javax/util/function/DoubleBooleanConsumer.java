@@ -23,4 +23,5 @@ public interface DoubleBooleanConsumer extends Function2<Double, Boolean, Void> 
         accept(left, right);
         return null;
     }
+
 }

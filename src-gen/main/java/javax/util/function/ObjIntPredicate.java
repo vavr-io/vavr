@@ -22,4 +22,5 @@ public interface ObjIntPredicate<T> extends Function2<T, Integer, Boolean> {
     default Boolean apply(T t, Integer value) {
         return test(t, value);
     }
+
 }

@@ -22,4 +22,5 @@ public interface CheckedObjBooleanFunction<T, R> extends CheckedFunction2<T, Boo
     default R apply(T t, Boolean value) throws Throwable {
         return apply(t, (boolean) value);
     }
+
 }

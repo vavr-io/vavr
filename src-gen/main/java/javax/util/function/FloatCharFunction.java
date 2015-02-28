@@ -22,4 +22,5 @@ public interface FloatCharFunction<R> extends Function2<Float, Character, R> {
     default R apply(Float left, Character right) {
         return apply((float) left, (char) right);
     }
+
 }

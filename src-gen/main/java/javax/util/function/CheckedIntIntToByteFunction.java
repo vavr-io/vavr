@@ -22,4 +22,5 @@ public interface CheckedIntIntToByteFunction extends CheckedFunction2<Integer, I
     default Byte apply(Integer left, Integer right) throws Throwable {
         return applyAsByte(left, right);
     }
+
 }

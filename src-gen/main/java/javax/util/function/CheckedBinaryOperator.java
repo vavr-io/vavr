@@ -18,4 +18,5 @@ public interface CheckedBinaryOperator<T> extends CheckedFunction2<T, T, T> {
 
     @Override
     T apply(T t1, T t2) throws Throwable;
+
 }

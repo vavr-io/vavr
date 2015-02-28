@@ -22,4 +22,5 @@ public interface FloatByteToCharFunction extends Function2<Float, Byte, Characte
     default Character apply(Float left, Byte right) {
         return applyAsChar(left, right);
     }
+
 }

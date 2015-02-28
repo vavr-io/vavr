@@ -22,4 +22,5 @@ public interface ShortSupplier extends Function0<Short> {
     default Short apply() {
         return getAsShort();
     }
+
 }

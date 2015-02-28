@@ -23,4 +23,5 @@ public interface LongShortConsumer extends Function2<Long, Short, Void> {
         accept(left, right);
         return null;
     }
+
 }

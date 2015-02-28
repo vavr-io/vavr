@@ -22,4 +22,5 @@ public interface CheckedFloatIntFunction<R> extends CheckedFunction2<Float, Inte
     default R apply(Float left, Integer right) throws Throwable {
         return apply((float) left, (int) right);
     }
+
 }

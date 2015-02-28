@@ -22,4 +22,5 @@ public interface ByteCharToDoubleFunction extends Function2<Byte, Character, Dou
     default Double apply(Byte left, Character right) {
         return applyAsDouble(left, right);
     }
+
 }

@@ -22,4 +22,5 @@ public interface CheckedObjDoubleToIntFunction<T> extends CheckedFunction2<T, Do
     default Integer apply(T t, Double value) throws Throwable {
         return applyAsInt(t, value);
     }
+
 }

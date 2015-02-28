@@ -22,4 +22,5 @@ public interface ObjDoublePredicate<T> extends Function2<T, Double, Boolean> {
     default Boolean apply(T t, Double value) {
         return test(t, value);
     }
+
 }

@@ -22,4 +22,5 @@ public interface CheckedBooleanLongToByteFunction extends CheckedFunction2<Boole
     default Byte apply(Boolean left, Long right) throws Throwable {
         return applyAsByte(left, right);
     }
+
 }

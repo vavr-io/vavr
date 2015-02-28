@@ -22,4 +22,5 @@ public interface FloatObjToCharFunction<U> extends Function2<Float, U, Character
     default Character apply(Float value, U u) {
         return applyAsChar(value, u);
     }
+
 }

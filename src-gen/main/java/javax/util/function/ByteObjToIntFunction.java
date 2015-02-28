@@ -22,4 +22,5 @@ public interface ByteObjToIntFunction<U> extends Function2<Byte, U, Integer> {
     default Integer apply(Byte value, U u) {
         return applyAsInt(value, u);
     }
+
 }

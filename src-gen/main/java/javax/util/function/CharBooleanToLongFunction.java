@@ -22,4 +22,5 @@ public interface CharBooleanToLongFunction extends Function2<Character, Boolean,
     default Long apply(Character left, Boolean right) {
         return applyAsLong(left, right);
     }
+
 }

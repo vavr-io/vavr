@@ -22,4 +22,5 @@ public interface ByteLongToIntFunction extends Function2<Byte, Long, Integer> {
     default Integer apply(Byte left, Long right) {
         return applyAsInt(left, right);
     }
+
 }

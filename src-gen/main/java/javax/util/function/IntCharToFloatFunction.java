@@ -22,4 +22,5 @@ public interface IntCharToFloatFunction extends Function2<Integer, Character, Fl
     default Float apply(Integer left, Character right) {
         return applyAsFloat(left, right);
     }
+
 }

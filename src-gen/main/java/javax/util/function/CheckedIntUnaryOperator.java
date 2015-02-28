@@ -22,4 +22,8 @@ public interface CheckedIntUnaryOperator extends CheckedFunction1<Integer, Integ
     default Integer apply(Integer value) throws Throwable {
         return applyAsInt(value);
     }
+
+    static IntUnaryOperator identity() {
+        return v -> v;
+    }
 }

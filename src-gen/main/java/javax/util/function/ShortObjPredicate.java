@@ -22,4 +22,5 @@ public interface ShortObjPredicate<U> extends Function2<Short, U, Boolean> {
     default Boolean apply(Short value, U u) {
         return test(value, u);
     }
+
 }

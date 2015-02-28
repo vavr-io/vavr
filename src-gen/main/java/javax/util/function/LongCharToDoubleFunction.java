@@ -22,4 +22,5 @@ public interface LongCharToDoubleFunction extends Function2<Long, Character, Dou
     default Double apply(Long left, Character right) {
         return applyAsDouble(left, right);
     }
+
 }

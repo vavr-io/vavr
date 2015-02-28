@@ -22,4 +22,5 @@ public interface CheckedShortBooleanToFloatFunction extends CheckedFunction2<Sho
     default Float apply(Short left, Boolean right) throws Throwable {
         return applyAsFloat(left, right);
     }
+
 }

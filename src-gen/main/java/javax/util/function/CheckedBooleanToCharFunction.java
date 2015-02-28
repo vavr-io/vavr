@@ -22,4 +22,5 @@ public interface CheckedBooleanToCharFunction extends CheckedFunction1<Boolean, 
     default Character apply(Boolean value) throws Throwable {
         return applyAsChar(value);
     }
+
 }

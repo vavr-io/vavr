@@ -23,4 +23,5 @@ public interface Runnable extends Function0<Void> {
         run();
         return null;
     }
+
 }

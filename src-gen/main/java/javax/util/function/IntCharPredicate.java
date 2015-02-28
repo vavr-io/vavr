@@ -22,4 +22,5 @@ public interface IntCharPredicate extends Function2<Integer, Character, Boolean>
     default Boolean apply(Integer left, Character right) {
         return test(left, right);
     }
+
 }

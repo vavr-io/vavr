@@ -22,4 +22,5 @@ public interface FloatShortToByteFunction extends Function2<Float, Short, Byte> 
     default Byte apply(Float left, Short right) {
         return applyAsByte(left, right);
     }
+
 }

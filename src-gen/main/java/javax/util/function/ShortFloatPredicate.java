@@ -22,4 +22,5 @@ public interface ShortFloatPredicate extends Function2<Short, Float, Boolean> {
     default Boolean apply(Short left, Float right) {
         return test(left, right);
     }
+
 }

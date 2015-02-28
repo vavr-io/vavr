@@ -22,4 +22,5 @@ public interface CheckedIntBinaryOperator extends CheckedFunction2<Integer, Inte
     default Integer apply(Integer left, Integer right) throws Throwable {
         return applyAsInt(left, right);
     }
+
 }

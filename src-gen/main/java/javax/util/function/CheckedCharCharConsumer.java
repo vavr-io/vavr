@@ -23,4 +23,5 @@ public interface CheckedCharCharConsumer extends CheckedFunction2<Character, Cha
         accept(left, right);
         return null;
     }
+
 }

@@ -22,4 +22,5 @@ public interface CheckedByteCharToFloatFunction extends CheckedFunction2<Byte, C
     default Float apply(Byte left, Character right) throws Throwable {
         return applyAsFloat(left, right);
     }
+
 }

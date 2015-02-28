@@ -22,4 +22,5 @@ public interface ToShortBiFunction<T, U> extends Function2<T, U, Short> {
     default Short apply(T t, U u) {
         return applyAsShort(t, u);
     }
+
 }

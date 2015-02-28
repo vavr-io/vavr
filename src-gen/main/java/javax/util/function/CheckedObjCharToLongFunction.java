@@ -22,4 +22,5 @@ public interface CheckedObjCharToLongFunction<T> extends CheckedFunction2<T, Cha
     default Long apply(T t, Character value) throws Throwable {
         return applyAsLong(t, value);
     }
+
 }

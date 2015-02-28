@@ -22,4 +22,5 @@ public interface CheckedLongDoubleToByteFunction extends CheckedFunction2<Long, 
     default Byte apply(Long left, Double right) throws Throwable {
         return applyAsByte(left, right);
     }
+
 }

@@ -22,4 +22,5 @@ public interface BooleanCharToShortFunction extends Function2<Boolean, Character
     default Short apply(Boolean left, Character right) {
         return applyAsShort(left, right);
     }
+
 }

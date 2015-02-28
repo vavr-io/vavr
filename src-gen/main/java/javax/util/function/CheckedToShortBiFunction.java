@@ -22,4 +22,5 @@ public interface CheckedToShortBiFunction<T, U> extends CheckedFunction2<T, U, S
     default Short apply(T t, U u) throws Throwable {
         return applyAsShort(t, u);
     }
+
 }

@@ -22,4 +22,5 @@ public interface ToLongBiFunction<T, U> extends Function2<T, U, Long> {
     default Long apply(T t, U u) {
         return applyAsLong(t, u);
     }
+
 }

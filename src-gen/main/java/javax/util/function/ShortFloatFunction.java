@@ -22,4 +22,5 @@ public interface ShortFloatFunction<R> extends Function2<Short, Float, R> {
     default R apply(Short left, Float right) {
         return apply((short) left, (float) right);
     }
+
 }

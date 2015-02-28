@@ -22,4 +22,5 @@ public interface ShortDoubleToDoubleFunction extends Function2<Short, Double, Do
     default Double apply(Short left, Double right) {
         return applyAsDouble(left, right);
     }
+
 }

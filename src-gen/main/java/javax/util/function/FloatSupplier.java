@@ -22,4 +22,5 @@ public interface FloatSupplier extends Function0<Float> {
     default Float apply() {
         return getAsFloat();
     }
+
 }

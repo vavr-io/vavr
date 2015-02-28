@@ -22,4 +22,5 @@ public interface CheckedObjIntToByteFunction<T> extends CheckedFunction2<T, Inte
     default Byte apply(T t, Integer value) throws Throwable {
         return applyAsByte(t, value);
     }
+
 }

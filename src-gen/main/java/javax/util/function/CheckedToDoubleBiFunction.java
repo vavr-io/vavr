@@ -22,4 +22,5 @@ public interface CheckedToDoubleBiFunction<T, U> extends CheckedFunction2<T, U, 
     default Double apply(T t, U u) throws Throwable {
         return applyAsDouble(t, u);
     }
+
 }

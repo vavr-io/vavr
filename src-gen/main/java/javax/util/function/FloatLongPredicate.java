@@ -22,4 +22,5 @@ public interface FloatLongPredicate extends Function2<Float, Long, Boolean> {
     default Boolean apply(Float left, Long right) {
         return test(left, right);
     }
+
 }

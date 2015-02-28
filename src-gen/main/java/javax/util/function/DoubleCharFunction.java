@@ -22,4 +22,5 @@ public interface DoubleCharFunction<R> extends Function2<Double, Character, R> {
     default R apply(Double left, Character right) {
         return apply((double) left, (char) right);
     }
+
 }

@@ -22,4 +22,5 @@ public interface ObjFloatPredicate<T> extends Function2<T, Float, Boolean> {
     default Boolean apply(T t, Float value) {
         return test(t, value);
     }
+
 }

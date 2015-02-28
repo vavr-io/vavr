@@ -22,4 +22,5 @@ public interface BooleanToByteFunction extends Function1<Boolean, Byte> {
     default Byte apply(Boolean value) {
         return applyAsByte(value);
     }
+
 }

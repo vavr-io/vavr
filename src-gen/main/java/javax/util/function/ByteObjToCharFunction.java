@@ -22,4 +22,5 @@ public interface ByteObjToCharFunction<U> extends Function2<Byte, U, Character> 
     default Character apply(Byte value, U u) {
         return applyAsChar(value, u);
     }
+
 }

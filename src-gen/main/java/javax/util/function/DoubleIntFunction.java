@@ -22,4 +22,5 @@ public interface DoubleIntFunction<R> extends Function2<Double, Integer, R> {
     default R apply(Double left, Integer right) {
         return apply((double) left, (int) right);
     }
+
 }

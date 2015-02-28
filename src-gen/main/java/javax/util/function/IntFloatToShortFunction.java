@@ -22,4 +22,5 @@ public interface IntFloatToShortFunction extends Function2<Integer, Float, Short
     default Short apply(Integer left, Float right) {
         return applyAsShort(left, right);
     }
+
 }

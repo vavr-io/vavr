@@ -22,4 +22,5 @@ public interface ByteByteToCharFunction extends Function2<Byte, Byte, Character>
     default Character apply(Byte left, Byte right) {
         return applyAsChar(left, right);
     }
+
 }

@@ -23,4 +23,5 @@ public interface CheckedIntConsumer extends CheckedFunction1<Integer, Void> {
         accept(value);
         return null;
     }
+
 }

@@ -22,4 +22,5 @@ public interface BooleanLongToIntFunction extends Function2<Boolean, Long, Integ
     default Integer apply(Boolean left, Long right) {
         return applyAsInt(left, right);
     }
+
 }

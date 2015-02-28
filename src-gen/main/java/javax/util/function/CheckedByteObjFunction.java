@@ -22,4 +22,5 @@ public interface CheckedByteObjFunction<U, R> extends CheckedFunction2<Byte, U, 
     default R apply(Byte value, U u) throws Throwable {
         return apply((byte) value, u);
     }
+
 }

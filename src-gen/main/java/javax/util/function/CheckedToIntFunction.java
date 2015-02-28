@@ -22,4 +22,8 @@ public interface CheckedToIntFunction<T> extends CheckedFunction1<T, Integer> {
     default Integer apply(T t) throws Throwable {
         return applyAsInt(t);
     }
+
+    static ToIntFunction<Integer> identity() {
+        return v -> v;
+    }
 }

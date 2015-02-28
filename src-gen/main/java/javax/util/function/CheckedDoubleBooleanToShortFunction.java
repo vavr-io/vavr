@@ -22,4 +22,5 @@ public interface CheckedDoubleBooleanToShortFunction extends CheckedFunction2<Do
     default Short apply(Double left, Boolean right) throws Throwable {
         return applyAsShort(left, right);
     }
+
 }

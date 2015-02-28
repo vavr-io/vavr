@@ -23,4 +23,5 @@ public interface ByteConsumer extends Function1<Byte, Void> {
         accept(value);
         return null;
     }
+
 }

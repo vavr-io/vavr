@@ -22,4 +22,5 @@ public interface BooleanToShortFunction extends Function1<Boolean, Short> {
     default Short apply(Boolean value) {
         return applyAsShort(value);
     }
+
 }

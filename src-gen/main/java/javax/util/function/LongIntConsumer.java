@@ -23,4 +23,5 @@ public interface LongIntConsumer extends Function2<Long, Integer, Void> {
         accept(left, right);
         return null;
     }
+
 }

@@ -22,4 +22,5 @@ public interface CheckedLongCharToShortFunction extends CheckedFunction2<Long, C
     default Short apply(Long left, Character right) throws Throwable {
         return applyAsShort(left, right);
     }
+
 }

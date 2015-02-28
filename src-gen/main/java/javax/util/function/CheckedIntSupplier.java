@@ -22,4 +22,5 @@ public interface CheckedIntSupplier extends CheckedFunction0<Integer> {
     default Integer apply() throws Throwable {
         return getAsInt();
     }
+
 }

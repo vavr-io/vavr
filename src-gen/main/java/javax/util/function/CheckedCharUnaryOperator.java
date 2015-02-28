@@ -22,4 +22,8 @@ public interface CheckedCharUnaryOperator extends CheckedFunction1<Character, Ch
     default Character apply(Character value) throws Throwable {
         return applyAsChar(value);
     }
+
+    static CharUnaryOperator identity() {
+        return v -> v;
+    }
 }

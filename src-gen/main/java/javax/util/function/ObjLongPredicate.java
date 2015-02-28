@@ -22,4 +22,5 @@ public interface ObjLongPredicate<T> extends Function2<T, Long, Boolean> {
     default Boolean apply(T t, Long value) {
         return test(t, value);
     }
+
 }

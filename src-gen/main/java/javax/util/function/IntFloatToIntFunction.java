@@ -22,4 +22,5 @@ public interface IntFloatToIntFunction extends Function2<Integer, Float, Integer
     default Integer apply(Integer left, Float right) {
         return applyAsInt(left, right);
     }
+
 }

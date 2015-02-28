@@ -22,4 +22,5 @@ public interface CharBooleanToFloatFunction extends Function2<Character, Boolean
     default Float apply(Character left, Boolean right) {
         return applyAsFloat(left, right);
     }
+
 }

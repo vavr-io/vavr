@@ -23,4 +23,5 @@ public interface CheckedLongFloatConsumer extends CheckedFunction2<Long, Float, 
         accept(left, right);
         return null;
     }
+
 }

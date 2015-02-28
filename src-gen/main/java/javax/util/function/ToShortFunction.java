@@ -22,4 +22,8 @@ public interface ToShortFunction<T> extends Function1<T, Short> {
     default Short apply(T t) {
         return applyAsShort(t);
     }
+
+    static ToShortFunction<Short> identity() {
+        return v -> v;
+    }
 }

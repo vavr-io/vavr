@@ -22,4 +22,8 @@ public interface CheckedToLongFunction<T> extends CheckedFunction1<T, Long> {
     default Long apply(T t) throws Throwable {
         return applyAsLong(t);
     }
+
+    static ToLongFunction<Long> identity() {
+        return v -> v;
+    }
 }

@@ -22,4 +22,8 @@ public interface CheckedCharFunction<R> extends CheckedFunction1<Character, R> {
     default R apply(Character value) throws Throwable {
         return apply((char) value);
     }
+
+    static CharFunction<Character> identity() {
+        return v -> v;
+    }
 }

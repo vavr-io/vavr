@@ -22,4 +22,5 @@ public interface CheckedShortBytePredicate extends CheckedFunction2<Short, Byte,
     default Boolean apply(Short left, Byte right) throws Throwable {
         return test(left, right);
     }
+
 }

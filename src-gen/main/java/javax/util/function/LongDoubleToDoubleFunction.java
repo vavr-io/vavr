@@ -22,4 +22,5 @@ public interface LongDoubleToDoubleFunction extends Function2<Long, Double, Doub
     default Double apply(Long left, Double right) {
         return applyAsDouble(left, right);
     }
+
 }

@@ -22,4 +22,5 @@ public interface LongByteFunction<R> extends Function2<Long, Byte, R> {
     default R apply(Long left, Byte right) {
         return apply((long) left, (byte) right);
     }
+
 }

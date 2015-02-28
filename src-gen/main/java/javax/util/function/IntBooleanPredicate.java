@@ -22,4 +22,5 @@ public interface IntBooleanPredicate extends Function2<Integer, Boolean, Boolean
     default Boolean apply(Integer left, Boolean right) {
         return test(left, right);
     }
+
 }

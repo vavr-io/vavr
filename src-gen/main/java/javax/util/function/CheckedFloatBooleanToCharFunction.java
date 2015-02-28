@@ -22,4 +22,5 @@ public interface CheckedFloatBooleanToCharFunction extends CheckedFunction2<Floa
     default Character apply(Float left, Boolean right) throws Throwable {
         return applyAsChar(left, right);
     }
+
 }

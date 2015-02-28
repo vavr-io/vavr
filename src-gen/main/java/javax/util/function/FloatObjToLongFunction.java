@@ -22,4 +22,5 @@ public interface FloatObjToLongFunction<U> extends Function2<Float, U, Long> {
     default Long apply(Float value, U u) {
         return applyAsLong(value, u);
     }
+
 }

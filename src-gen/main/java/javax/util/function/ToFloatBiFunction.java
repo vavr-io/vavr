@@ -22,4 +22,5 @@ public interface ToFloatBiFunction<T, U> extends Function2<T, U, Float> {
     default Float apply(T t, U u) {
         return applyAsFloat(t, u);
     }
+
 }

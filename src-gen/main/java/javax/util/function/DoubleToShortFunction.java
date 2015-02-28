@@ -22,4 +22,5 @@ public interface DoubleToShortFunction extends Function1<Double, Short> {
     default Short apply(Double value) {
         return applyAsShort(value);
     }
+
 }

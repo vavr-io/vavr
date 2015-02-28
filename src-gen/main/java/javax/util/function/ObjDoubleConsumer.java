@@ -23,4 +23,5 @@ public interface ObjDoubleConsumer<T> extends Function2<T, Double, Void> {
         accept(t, value);
         return null;
     }
+
 }

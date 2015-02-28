@@ -23,4 +23,5 @@ public interface CheckedFloatObjConsumer<U> extends CheckedFunction2<Float, U, V
         accept(value, u);
         return null;
     }
+
 }

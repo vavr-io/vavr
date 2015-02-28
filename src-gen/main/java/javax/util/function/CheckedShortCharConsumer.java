@@ -23,4 +23,5 @@ public interface CheckedShortCharConsumer extends CheckedFunction2<Short, Charac
         accept(left, right);
         return null;
     }
+
 }

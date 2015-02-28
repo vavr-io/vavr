@@ -22,4 +22,8 @@ public interface LongUnaryOperator extends Function1<Long, Long> {
     default Long apply(Long value) {
         return applyAsLong(value);
     }
+
+    static LongUnaryOperator identity() {
+        return v -> v;
+    }
 }

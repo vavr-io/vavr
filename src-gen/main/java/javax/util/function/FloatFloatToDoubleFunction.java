@@ -22,4 +22,5 @@ public interface FloatFloatToDoubleFunction extends Function2<Float, Float, Doub
     default Double apply(Float left, Float right) {
         return applyAsDouble(left, right);
     }
+
 }

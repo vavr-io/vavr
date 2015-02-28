@@ -22,4 +22,5 @@ public interface CharFloatPredicate extends Function2<Character, Float, Boolean>
     default Boolean apply(Character left, Float right) {
         return test(left, right);
     }
+
 }

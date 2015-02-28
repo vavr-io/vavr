@@ -22,4 +22,5 @@ public interface ByteObjToByteFunction<U> extends Function2<Byte, U, Byte> {
     default Byte apply(Byte value, U u) {
         return applyAsByte(value, u);
     }
+
 }

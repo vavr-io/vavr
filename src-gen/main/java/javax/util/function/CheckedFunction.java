@@ -18,4 +18,8 @@ public interface CheckedFunction<T, R> extends CheckedFunction1<T, R> {
 
     @Override
     R apply(T t) throws Throwable;
+
+    static <T> Function<T, T> identity() {
+        return v -> v;
+    }
 }

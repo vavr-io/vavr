@@ -23,4 +23,5 @@ public interface CheckedRunnable extends CheckedFunction0<Void> {
         run();
         return null;
     }
+
 }

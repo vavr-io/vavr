@@ -22,4 +22,5 @@ public interface CheckedObjShortToCharFunction<T> extends CheckedFunction2<T, Sh
     default Character apply(T t, Short value) throws Throwable {
         return applyAsChar(t, value);
     }
+
 }

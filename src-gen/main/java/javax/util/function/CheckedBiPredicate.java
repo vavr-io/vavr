@@ -22,4 +22,5 @@ public interface CheckedBiPredicate<T, U> extends CheckedFunction2<T, U, Boolean
     default Boolean apply(T t, U u) throws Throwable {
         return test(t, u);
     }
+
 }

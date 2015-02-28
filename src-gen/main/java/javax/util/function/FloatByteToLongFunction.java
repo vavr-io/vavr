@@ -22,4 +22,5 @@ public interface FloatByteToLongFunction extends Function2<Float, Byte, Long> {
     default Long apply(Float left, Byte right) {
         return applyAsLong(left, right);
     }
+
 }

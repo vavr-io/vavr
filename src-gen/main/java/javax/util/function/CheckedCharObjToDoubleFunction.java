@@ -22,4 +22,5 @@ public interface CheckedCharObjToDoubleFunction<U> extends CheckedFunction2<Char
     default Double apply(Character value, U u) throws Throwable {
         return applyAsDouble(value, u);
     }
+
 }

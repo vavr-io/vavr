@@ -23,4 +23,5 @@ public interface CheckedShortBooleanConsumer extends CheckedFunction2<Short, Boo
         accept(left, right);
         return null;
     }
+
 }

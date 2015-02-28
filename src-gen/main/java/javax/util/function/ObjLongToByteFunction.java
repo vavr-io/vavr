@@ -22,4 +22,5 @@ public interface ObjLongToByteFunction<T> extends Function2<T, Long, Byte> {
     default Byte apply(T t, Long value) {
         return applyAsByte(t, value);
     }
+
 }

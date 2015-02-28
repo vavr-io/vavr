@@ -22,4 +22,5 @@ public interface LongByteToIntFunction extends Function2<Long, Byte, Integer> {
     default Integer apply(Long left, Byte right) {
         return applyAsInt(left, right);
     }
+
 }

@@ -22,4 +22,5 @@ public interface IntCharToDoubleFunction extends Function2<Integer, Character, D
     default Double apply(Integer left, Character right) {
         return applyAsDouble(left, right);
     }
+
 }

@@ -22,4 +22,5 @@ public interface CheckedLongShortFunction<R> extends CheckedFunction2<Long, Shor
     default R apply(Long left, Short right) throws Throwable {
         return apply((long) left, (short) right);
     }
+
 }

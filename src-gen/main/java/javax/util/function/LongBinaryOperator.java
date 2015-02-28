@@ -22,4 +22,5 @@ public interface LongBinaryOperator extends Function2<Long, Long, Long> {
     default Long apply(Long left, Long right) {
         return applyAsLong(left, right);
     }
+
 }

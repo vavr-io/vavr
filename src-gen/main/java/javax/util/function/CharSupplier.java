@@ -22,4 +22,5 @@ public interface CharSupplier extends Function0<Character> {
     default Character apply() {
         return getAsChar();
     }
+
 }

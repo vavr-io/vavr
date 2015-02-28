@@ -22,4 +22,5 @@ public interface CheckedByteBooleanToFloatFunction extends CheckedFunction2<Byte
     default Float apply(Byte left, Boolean right) throws Throwable {
         return applyAsFloat(left, right);
     }
+
 }

@@ -23,4 +23,5 @@ public interface CheckedByteCharConsumer extends CheckedFunction2<Byte, Characte
         accept(left, right);
         return null;
     }
+
 }

@@ -22,4 +22,5 @@ public interface ShortLongFunction<R> extends Function2<Short, Long, R> {
     default R apply(Short left, Long right) {
         return apply((short) left, (long) right);
     }
+
 }

@@ -22,4 +22,5 @@ public interface BooleanDoubleToLongFunction extends Function2<Boolean, Double, 
     default Long apply(Boolean left, Double right) {
         return applyAsLong(left, right);
     }
+
 }

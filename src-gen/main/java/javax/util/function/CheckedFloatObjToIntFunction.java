@@ -22,4 +22,5 @@ public interface CheckedFloatObjToIntFunction<U> extends CheckedFunction2<Float,
     default Integer apply(Float value, U u) throws Throwable {
         return applyAsInt(value, u);
     }
+
 }

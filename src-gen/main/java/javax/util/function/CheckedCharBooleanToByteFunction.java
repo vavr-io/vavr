@@ -22,4 +22,5 @@ public interface CheckedCharBooleanToByteFunction extends CheckedFunction2<Chara
     default Byte apply(Character left, Boolean right) throws Throwable {
         return applyAsByte(left, right);
     }
+
 }

@@ -22,4 +22,5 @@ public interface CheckedByteFloatToIntFunction extends CheckedFunction2<Byte, Fl
     default Integer apply(Byte left, Float right) throws Throwable {
         return applyAsInt(left, right);
     }
+
 }

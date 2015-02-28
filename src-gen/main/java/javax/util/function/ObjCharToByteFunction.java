@@ -22,4 +22,5 @@ public interface ObjCharToByteFunction<T> extends Function2<T, Character, Byte> 
     default Byte apply(T t, Character value) {
         return applyAsByte(t, value);
     }
+
 }

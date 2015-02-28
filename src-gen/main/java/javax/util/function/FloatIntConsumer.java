@@ -23,4 +23,5 @@ public interface FloatIntConsumer extends Function2<Float, Integer, Void> {
         accept(left, right);
         return null;
     }
+
 }

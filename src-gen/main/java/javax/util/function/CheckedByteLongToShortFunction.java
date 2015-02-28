@@ -22,4 +22,5 @@ public interface CheckedByteLongToShortFunction extends CheckedFunction2<Byte, L
     default Short apply(Byte left, Long right) throws Throwable {
         return applyAsShort(left, right);
     }
+
 }

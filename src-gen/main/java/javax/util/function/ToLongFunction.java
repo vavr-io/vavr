@@ -22,4 +22,8 @@ public interface ToLongFunction<T> extends Function1<T, Long> {
     default Long apply(T t) {
         return applyAsLong(t);
     }
+
+    static ToLongFunction<Long> identity() {
+        return v -> v;
+    }
 }

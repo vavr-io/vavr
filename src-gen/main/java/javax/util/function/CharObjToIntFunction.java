@@ -22,4 +22,5 @@ public interface CharObjToIntFunction<U> extends Function2<Character, U, Integer
     default Integer apply(Character value, U u) {
         return applyAsInt(value, u);
     }
+
 }

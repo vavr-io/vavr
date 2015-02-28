@@ -22,4 +22,5 @@ public interface IntToCharFunction extends Function1<Integer, Character> {
     default Character apply(Integer value) {
         return applyAsChar(value);
     }
+
 }

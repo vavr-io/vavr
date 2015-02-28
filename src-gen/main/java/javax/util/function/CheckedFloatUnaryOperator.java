@@ -22,4 +22,8 @@ public interface CheckedFloatUnaryOperator extends CheckedFunction1<Float, Float
     default Float apply(Float value) throws Throwable {
         return applyAsFloat(value);
     }
+
+    static FloatUnaryOperator identity() {
+        return v -> v;
+    }
 }

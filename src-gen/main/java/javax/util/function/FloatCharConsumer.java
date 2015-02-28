@@ -23,4 +23,5 @@ public interface FloatCharConsumer extends Function2<Float, Character, Void> {
         accept(left, right);
         return null;
     }
+
 }

@@ -23,4 +23,5 @@ public interface BooleanObjConsumer<U> extends Function2<Boolean, U, Void> {
         accept(value, u);
         return null;
     }
+
 }

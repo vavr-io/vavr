@@ -22,4 +22,5 @@ public interface CheckedFloatLongPredicate extends CheckedFunction2<Float, Long,
     default Boolean apply(Float left, Long right) throws Throwable {
         return test(left, right);
     }
+
 }

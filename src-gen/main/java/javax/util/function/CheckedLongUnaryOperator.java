@@ -22,4 +22,8 @@ public interface CheckedLongUnaryOperator extends CheckedFunction1<Long, Long> {
     default Long apply(Long value) throws Throwable {
         return applyAsLong(value);
     }
+
+    static LongUnaryOperator identity() {
+        return v -> v;
+    }
 }

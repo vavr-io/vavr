@@ -22,4 +22,5 @@ public interface BooleanBytePredicate extends Function2<Boolean, Byte, Boolean> 
     default Boolean apply(Boolean left, Byte right) {
         return test(left, right);
     }
+
 }

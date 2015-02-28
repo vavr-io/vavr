@@ -22,4 +22,5 @@ public interface FloatCharToLongFunction extends Function2<Float, Character, Lon
     default Long apply(Float left, Character right) {
         return applyAsLong(left, right);
     }
+
 }

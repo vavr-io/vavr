@@ -22,4 +22,5 @@ public interface BooleanShortToIntFunction extends Function2<Boolean, Short, Int
     default Integer apply(Boolean left, Short right) {
         return applyAsInt(left, right);
     }
+
 }

@@ -23,4 +23,5 @@ public interface ByteShortConsumer extends Function2<Byte, Short, Void> {
         accept(left, right);
         return null;
     }
+
 }

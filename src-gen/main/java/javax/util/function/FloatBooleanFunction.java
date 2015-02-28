@@ -22,4 +22,5 @@ public interface FloatBooleanFunction<R> extends Function2<Float, Boolean, R> {
     default R apply(Float left, Boolean right) {
         return apply((float) left, (boolean) right);
     }
+
 }

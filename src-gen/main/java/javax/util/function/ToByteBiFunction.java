@@ -22,4 +22,5 @@ public interface ToByteBiFunction<T, U> extends Function2<T, U, Byte> {
     default Byte apply(T t, U u) {
         return applyAsByte(t, u);
     }
+
 }

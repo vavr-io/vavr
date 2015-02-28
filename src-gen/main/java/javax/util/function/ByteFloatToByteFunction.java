@@ -22,4 +22,5 @@ public interface ByteFloatToByteFunction extends Function2<Byte, Float, Byte> {
     default Byte apply(Byte left, Float right) {
         return applyAsByte(left, right);
     }
+
 }

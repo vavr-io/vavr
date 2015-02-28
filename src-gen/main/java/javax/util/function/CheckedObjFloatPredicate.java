@@ -22,4 +22,5 @@ public interface CheckedObjFloatPredicate<T> extends CheckedFunction2<T, Float, 
     default Boolean apply(T t, Float value) throws Throwable {
         return test(t, value);
     }
+
 }

@@ -23,4 +23,5 @@ public interface BiConsumer<T, U> extends Function2<T, U, Void> {
         accept(t, u);
         return null;
     }
+
 }
