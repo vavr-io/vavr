@@ -143,12 +143,17 @@ def generateMainClasses(): Unit = {
      */
     sealed trait FunctionalInterface {
 
-      def originalName: Option[TypeName]
+      val originalReturnTypes: Seq[Types] = Seq(Types.boolean, Types.double, Types.int, Types.long, Types.void, Types.Object)
+      val originalParamTypes: Seq[Types] = Seq(Types.double, Types.int, Types.long, Types.Object)
+
+      def isOriginal: Boolean
       def name: TypeName
       def method: Method
       def superName: TypeName
       def superMethod: Method
       def identity: Option[String]
+
+      def originalName: Option[TypeName] = if (isOriginal) Some(name.transform((p,n,g) => (p.replaceFirst("^javax.", "java."), n, g))) else None
 
       def gen(im: ImportManager, checked: Boolean): String = {
 
@@ -208,10 +213,7 @@ def generateMainClasses(): Unit = {
      */
     case class Function0(returnType: Types) extends FunctionalInterface {
 
-      override def originalName = {
-        val isOriginal = Seq(Types.boolean, Types.double, Types.int, Types.long, Types.void, Types.Object).contains(returnType)
-        if (isOriginal) Some(name.transform((p,n,g) => (p.replaceFirst("^javax.", "java."), n, g))) else None
-      }
+      override def isOriginal = originalReturnTypes.contains(returnType)
 
       override def name =
         if (returnType.isVoid) TypeName("javax.lang", "Runnable")
@@ -237,7 +239,7 @@ def generateMainClasses(): Unit = {
      */
     case class Function1(returnType: Types, arg: Types) extends FunctionalInterface {
 
-      override def originalName = None // TODO
+      override def isOriginal = originalReturnTypes.contains(returnType) && originalParamTypes.contains(arg)
 
       override def name =
         if (returnType.isVoid) {
@@ -301,7 +303,17 @@ def generateMainClasses(): Unit = {
      */
     case class Function2(returnType: Types, arg1: Types, arg2: Types) extends FunctionalInterface {
 
-      override def originalName = None // TODO
+      override def isOriginal =
+        // BiConsumer
+        (returnType.isVoid && arg1.isObject && arg2.isObject) ||
+        // BiFunction, BinaryOperator, XxxBinaryOperator
+        (originalReturnTypes.contains(returnType) && !returnType.isBoolean && returnType == arg1 && returnType == arg2) ||
+        // BiPredicate
+        (returnType.isBoolean && arg1.isObject && arg2.isObject) ||
+        // ObjXxxConsumer
+        (returnType.isVoid && arg1.isObject && arg2.isPrimitive && originalParamTypes.contains(arg2)) ||
+        // ToXxxBiFunction
+        (returnType.isPrimitive && originalReturnTypes.contains(returnType) && arg1.isObject && arg2.isObject)
 
       override def name =
         if (returnType.isVoid) {
@@ -356,7 +368,7 @@ def generateMainClasses(): Unit = {
     }
 
     case class UnaryOperator() extends FunctionalInterface {
-      override def originalName: Option[TypeName] = Some(TypeName("java.util.function", "UnaryOperator", "<T>"))
+      override def isOriginal = true
       override def name: TypeName = TypeName("javax.util.function", "UnaryOperator", "<T>")
       override def method: Method = Method((Types.Object, "T"), "apply", (Types.Object, "T"))
       override def superName: TypeName = TypeName("javaslang", "Function1", "<T, T>")
@@ -365,7 +377,7 @@ def generateMainClasses(): Unit = {
     }
 
     case class BinaryOperator() extends FunctionalInterface {
-      override def originalName: Option[TypeName] = Some(TypeName("java.util.function", "BinaryOperator", "<T>"))
+      override def isOriginal = true
       override def name: TypeName = TypeName("javax.util.function", "BinaryOperator", "<T>")
       override def method: Method = Method((Types.Object, "T"), "apply", (Types.Object, "T"), (Types.Object, "T"))
       override def superName: TypeName = TypeName("javaslang", "Function2", "<T, T, T>")

@@ -12,7 +12,7 @@ package javax.util.function;
 import javaslang.Function2;
 
 @FunctionalInterface
-public interface BiConsumer<T, U> extends Function2<T, U, Void> {
+public interface BiConsumer<T, U> extends Function2<T, U, Void>, java.util.function.BiConsumer<T, U> {
 
     static final long serialVersionUID = 1L;
 

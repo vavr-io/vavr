@@ -12,7 +12,7 @@ package javax.util.function;
 import javaslang.Function2;
 
 @FunctionalInterface
-public interface ToIntBiFunction<T, U> extends Function2<T, U, Integer> {
+public interface ToIntBiFunction<T, U> extends Function2<T, U, Integer>, java.util.function.ToIntBiFunction<T, U> {
 
     static final long serialVersionUID = 1L;
 

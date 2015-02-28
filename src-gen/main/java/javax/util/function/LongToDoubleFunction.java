@@ -12,7 +12,7 @@ package javax.util.function;
 import javaslang.Function1;
 
 @FunctionalInterface
-public interface LongToDoubleFunction extends Function1<Long, Double> {
+public interface LongToDoubleFunction extends Function1<Long, Double>, java.util.function.LongToDoubleFunction {
 
     static final long serialVersionUID = 1L;
 

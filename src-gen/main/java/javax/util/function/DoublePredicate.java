@@ -12,7 +12,7 @@ package javax.util.function;
 import javaslang.Function1;
 
 @FunctionalInterface
-public interface DoublePredicate extends Function1<Double, Boolean> {
+public interface DoublePredicate extends Function1<Double, Boolean>, java.util.function.DoublePredicate {
 
     static final long serialVersionUID = 1L;
 

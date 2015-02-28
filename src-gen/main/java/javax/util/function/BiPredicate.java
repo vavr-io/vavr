@@ -12,7 +12,7 @@ package javax.util.function;
 import javaslang.Function2;
 
 @FunctionalInterface
-public interface BiPredicate<T, U> extends Function2<T, U, Boolean> {
+public interface BiPredicate<T, U> extends Function2<T, U, Boolean>, java.util.function.BiPredicate<T, U> {
 
     static final long serialVersionUID = 1L;
 

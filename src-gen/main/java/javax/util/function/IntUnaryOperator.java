@@ -12,7 +12,7 @@ package javax.util.function;
 import javaslang.Function1;
 
 @FunctionalInterface
-public interface IntUnaryOperator extends Function1<Integer, Integer> {
+public interface IntUnaryOperator extends Function1<Integer, Integer>, java.util.function.IntUnaryOperator {
 
     static final long serialVersionUID = 1L;
 

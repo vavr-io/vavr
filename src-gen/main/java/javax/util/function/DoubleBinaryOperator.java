@@ -12,7 +12,7 @@ package javax.util.function;
 import javaslang.Function2;
 
 @FunctionalInterface
-public interface DoubleBinaryOperator extends Function2<Double, Double, Double> {
+public interface DoubleBinaryOperator extends Function2<Double, Double, Double>, java.util.function.DoubleBinaryOperator {
 
     static final long serialVersionUID = 1L;
 
