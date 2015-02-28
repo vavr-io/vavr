@@ -20,7 +20,7 @@ public interface FloatCharToFloatFunction extends Function2<Float, Character, Fl
 
     @Override
     default Float apply(Float left, Character right) {
-        return applyAsFloat(left, right);
+      return applyAsFloat(left, right);
     }
 
 }

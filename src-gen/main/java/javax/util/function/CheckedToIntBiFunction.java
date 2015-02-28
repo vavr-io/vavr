@@ -20,7 +20,7 @@ public interface CheckedToIntBiFunction<T, U> extends CheckedFunction2<T, U, Int
 
     @Override
     default Integer apply(T t, U u) throws Throwable {
-        return applyAsInt(t, u);
+      return applyAsInt(t, u);
     }
 
 }

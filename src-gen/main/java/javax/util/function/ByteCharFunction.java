@@ -20,7 +20,7 @@ public interface ByteCharFunction<R> extends Function2<Byte, Character, R> {
 
     @Override
     default R apply(Byte left, Character right) {
-        return apply((byte) left, (char) right);
+      return apply((byte) left, (char) right);
     }
 
 }

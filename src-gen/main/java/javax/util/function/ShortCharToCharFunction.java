@@ -20,7 +20,7 @@ public interface ShortCharToCharFunction extends Function2<Short, Character, Cha
 
     @Override
     default Character apply(Short left, Character right) {
-        return applyAsChar(left, right);
+      return applyAsChar(left, right);
     }
 
 }

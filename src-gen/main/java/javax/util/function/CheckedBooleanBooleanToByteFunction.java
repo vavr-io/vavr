@@ -20,7 +20,7 @@ public interface CheckedBooleanBooleanToByteFunction extends CheckedFunction2<Bo
 
     @Override
     default Byte apply(Boolean left, Boolean right) throws Throwable {
-        return applyAsByte(left, right);
+      return applyAsByte(left, right);
     }
 
 }

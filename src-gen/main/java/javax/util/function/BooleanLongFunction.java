@@ -20,7 +20,7 @@ public interface BooleanLongFunction<R> extends Function2<Boolean, Long, R> {
 
     @Override
     default R apply(Boolean left, Long right) {
-        return apply((boolean) left, (long) right);
+      return apply((boolean) left, (long) right);
     }
 
 }

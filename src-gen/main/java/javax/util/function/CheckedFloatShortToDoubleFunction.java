@@ -20,7 +20,7 @@ public interface CheckedFloatShortToDoubleFunction extends CheckedFunction2<Floa
 
     @Override
     default Double apply(Float left, Short right) throws Throwable {
-        return applyAsDouble(left, right);
+      return applyAsDouble(left, right);
     }
 
 }

@@ -20,8 +20,8 @@ public interface DoubleObjConsumer<U> extends Function2<Double, U, Void> {
 
     @Override
     default Void apply(Double value, U u) {
-        accept(value, u);
-        return null;
+      accept(value, u);
+      return null;
     }
 
 }

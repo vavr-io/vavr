@@ -20,7 +20,7 @@ public interface ObjFloatToIntFunction<T> extends Function2<T, Float, Integer> {
 
     @Override
     default Integer apply(T t, Float value) {
-        return applyAsInt(t, value);
+      return applyAsInt(t, value);
     }
 
 }

@@ -20,7 +20,7 @@ public interface CheckedLongBinaryOperator extends CheckedFunction2<Long, Long, 
 
     @Override
     default Long apply(Long left, Long right) throws Throwable {
-        return applyAsLong(left, right);
+      return applyAsLong(left, right);
     }
 
 }

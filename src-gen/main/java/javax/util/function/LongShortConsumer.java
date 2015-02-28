@@ -20,8 +20,8 @@ public interface LongShortConsumer extends Function2<Long, Short, Void> {
 
     @Override
     default Void apply(Long left, Short right) {
-        accept(left, right);
-        return null;
+      accept(left, right);
+      return null;
     }
 
 }

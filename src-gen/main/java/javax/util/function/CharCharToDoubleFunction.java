@@ -20,7 +20,7 @@ public interface CharCharToDoubleFunction extends Function2<Character, Character
 
     @Override
     default Double apply(Character left, Character right) {
-        return applyAsDouble(left, right);
+      return applyAsDouble(left, right);
     }
 
 }

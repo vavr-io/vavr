@@ -20,7 +20,7 @@ public interface CheckedShortFloatToCharFunction extends CheckedFunction2<Short,
 
     @Override
     default Character apply(Short left, Float right) throws Throwable {
-        return applyAsChar(left, right);
+      return applyAsChar(left, right);
     }
 
 }

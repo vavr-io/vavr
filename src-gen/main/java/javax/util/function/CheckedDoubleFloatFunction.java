@@ -20,7 +20,7 @@ public interface CheckedDoubleFloatFunction<R> extends CheckedFunction2<Double, 
 
     @Override
     default R apply(Double left, Float right) throws Throwable {
-        return apply((double) left, (float) right);
+      return apply((double) left, (float) right);
     }
 
 }

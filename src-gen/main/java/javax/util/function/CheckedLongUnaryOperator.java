@@ -20,7 +20,7 @@ public interface CheckedLongUnaryOperator extends CheckedFunction1<Long, Long> {
 
     @Override
     default Long apply(Long value) throws Throwable {
-        return applyAsLong(value);
+      return applyAsLong(value);
     }
 
     static LongUnaryOperator identity() {

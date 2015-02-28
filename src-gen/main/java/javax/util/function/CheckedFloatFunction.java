@@ -20,7 +20,7 @@ public interface CheckedFloatFunction<R> extends CheckedFunction1<Float, R> {
 
     @Override
     default R apply(Float value) throws Throwable {
-        return apply((float) value);
+      return apply((float) value);
     }
 
     static FloatFunction<Float> identity() {

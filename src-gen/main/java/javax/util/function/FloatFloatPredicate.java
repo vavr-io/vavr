@@ -20,7 +20,7 @@ public interface FloatFloatPredicate extends Function2<Float, Float, Boolean> {
 
     @Override
     default Boolean apply(Float left, Float right) {
-        return test(left, right);
+      return test(left, right);
     }
 
 }

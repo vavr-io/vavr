@@ -20,7 +20,7 @@ public interface ByteCharPredicate extends Function2<Byte, Character, Boolean> {
 
     @Override
     default Boolean apply(Byte left, Character right) {
-        return test(left, right);
+      return test(left, right);
     }
 
 }

@@ -20,8 +20,8 @@ public interface FloatIntConsumer extends Function2<Float, Integer, Void> {
 
     @Override
     default Void apply(Float left, Integer right) {
-        accept(left, right);
-        return null;
+      accept(left, right);
+      return null;
     }
 
 }

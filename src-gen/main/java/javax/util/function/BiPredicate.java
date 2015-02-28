@@ -20,7 +20,7 @@ public interface BiPredicate<T, U> extends Function2<T, U, Boolean> {
 
     @Override
     default Boolean apply(T t, U u) {
-        return test(t, u);
+      return test(t, u);
     }
 
 }

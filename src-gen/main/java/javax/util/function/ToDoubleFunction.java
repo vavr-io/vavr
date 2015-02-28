@@ -20,7 +20,7 @@ public interface ToDoubleFunction<T> extends Function1<T, Double> {
 
     @Override
     default Double apply(T t) {
-        return applyAsDouble(t);
+      return applyAsDouble(t);
     }
 
     static ToDoubleFunction<Double> identity() {

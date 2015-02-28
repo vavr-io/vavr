@@ -20,7 +20,7 @@ public interface CheckedIntSupplier extends CheckedFunction0<Integer> {
 
     @Override
     default Integer apply() throws Throwable {
-        return getAsInt();
+      return getAsInt();
     }
 
 }

@@ -20,7 +20,7 @@ public interface CharShortToIntFunction extends Function2<Character, Short, Inte
 
     @Override
     default Integer apply(Character left, Short right) {
-        return applyAsInt(left, right);
+      return applyAsInt(left, right);
     }
 
 }

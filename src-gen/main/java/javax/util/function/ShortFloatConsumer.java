@@ -20,8 +20,8 @@ public interface ShortFloatConsumer extends Function2<Short, Float, Void> {
 
     @Override
     default Void apply(Short left, Float right) {
-        accept(left, right);
-        return null;
+      accept(left, right);
+      return null;
     }
 
 }

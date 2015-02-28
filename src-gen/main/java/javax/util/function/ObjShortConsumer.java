@@ -20,8 +20,8 @@ public interface ObjShortConsumer<T> extends Function2<T, Short, Void> {
 
     @Override
     default Void apply(T t, Short value) {
-        accept(t, value);
-        return null;
+      accept(t, value);
+      return null;
     }
 
 }

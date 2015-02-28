@@ -20,7 +20,7 @@ public interface CharLongToFloatFunction extends Function2<Character, Long, Floa
 
     @Override
     default Float apply(Character left, Long right) {
-        return applyAsFloat(left, right);
+      return applyAsFloat(left, right);
     }
 
 }

@@ -20,7 +20,7 @@ public interface IntCharPredicate extends Function2<Integer, Character, Boolean>
 
     @Override
     default Boolean apply(Integer left, Character right) {
-        return test(left, right);
+      return test(left, right);
     }
 
 }

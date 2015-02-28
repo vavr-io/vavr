@@ -20,7 +20,7 @@ public interface CheckedLongBooleanFunction<R> extends CheckedFunction2<Long, Bo
 
     @Override
     default R apply(Long left, Boolean right) throws Throwable {
-        return apply((long) left, (boolean) right);
+      return apply((long) left, (boolean) right);
     }
 
 }

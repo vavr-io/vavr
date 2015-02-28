@@ -20,7 +20,7 @@ public interface IntCharFunction<R> extends Function2<Integer, Character, R> {
 
     @Override
     default R apply(Integer left, Character right) {
-        return apply((int) left, (char) right);
+      return apply((int) left, (char) right);
     }
 
 }

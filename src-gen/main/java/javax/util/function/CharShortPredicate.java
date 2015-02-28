@@ -20,7 +20,7 @@ public interface CharShortPredicate extends Function2<Character, Short, Boolean>
 
     @Override
     default Boolean apply(Character left, Short right) {
-        return test(left, right);
+      return test(left, right);
     }
 
 }

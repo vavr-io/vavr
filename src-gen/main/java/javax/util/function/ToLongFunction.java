@@ -20,7 +20,7 @@ public interface ToLongFunction<T> extends Function1<T, Long> {
 
     @Override
     default Long apply(T t) {
-        return applyAsLong(t);
+      return applyAsLong(t);
     }
 
     static ToLongFunction<Long> identity() {

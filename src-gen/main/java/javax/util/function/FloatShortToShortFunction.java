@@ -20,7 +20,7 @@ public interface FloatShortToShortFunction extends Function2<Float, Short, Short
 
     @Override
     default Short apply(Float left, Short right) {
-        return applyAsShort(left, right);
+      return applyAsShort(left, right);
     }
 
 }

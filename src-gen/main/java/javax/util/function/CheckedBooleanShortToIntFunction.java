@@ -20,7 +20,7 @@ public interface CheckedBooleanShortToIntFunction extends CheckedFunction2<Boole
 
     @Override
     default Integer apply(Boolean left, Short right) throws Throwable {
-        return applyAsInt(left, right);
+      return applyAsInt(left, right);
     }
 
 }

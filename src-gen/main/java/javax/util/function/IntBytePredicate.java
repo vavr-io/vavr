@@ -20,7 +20,7 @@ public interface IntBytePredicate extends Function2<Integer, Byte, Boolean> {
 
     @Override
     default Boolean apply(Integer left, Byte right) {
-        return test(left, right);
+      return test(left, right);
     }
 
 }

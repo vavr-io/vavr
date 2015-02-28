@@ -20,7 +20,7 @@ public interface CheckedLongCharPredicate extends CheckedFunction2<Long, Charact
 
     @Override
     default Boolean apply(Long left, Character right) throws Throwable {
-        return test(left, right);
+      return test(left, right);
     }
 
 }

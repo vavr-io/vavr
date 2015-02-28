@@ -20,7 +20,7 @@ public interface CheckedFloatByteToShortFunction extends CheckedFunction2<Float,
 
     @Override
     default Short apply(Float left, Byte right) throws Throwable {
-        return applyAsShort(left, right);
+      return applyAsShort(left, right);
     }
 
 }

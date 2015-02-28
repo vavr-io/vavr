@@ -20,7 +20,7 @@ public interface ByteSupplier extends Function0<Byte> {
 
     @Override
     default Byte apply() {
-        return getAsByte();
+      return getAsByte();
     }
 
 }

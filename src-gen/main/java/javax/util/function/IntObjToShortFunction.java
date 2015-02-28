@@ -20,7 +20,7 @@ public interface IntObjToShortFunction<U> extends Function2<Integer, U, Short> {
 
     @Override
     default Short apply(Integer value, U u) {
-        return applyAsShort(value, u);
+      return applyAsShort(value, u);
     }
 
 }

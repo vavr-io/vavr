@@ -20,7 +20,7 @@ public interface CheckedObjLongToFloatFunction<T> extends CheckedFunction2<T, Lo
 
     @Override
     default Float apply(T t, Long value) throws Throwable {
-        return applyAsFloat(t, value);
+      return applyAsFloat(t, value);
     }
 
 }

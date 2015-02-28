@@ -20,7 +20,7 @@ public interface CheckedFloatBooleanFunction<R> extends CheckedFunction2<Float, 
 
     @Override
     default R apply(Float left, Boolean right) throws Throwable {
-        return apply((float) left, (boolean) right);
+      return apply((float) left, (boolean) right);
     }
 
 }

@@ -20,8 +20,8 @@ public interface ByteLongConsumer extends Function2<Byte, Long, Void> {
 
     @Override
     default Void apply(Byte left, Long right) {
-        accept(left, right);
-        return null;
+      accept(left, right);
+      return null;
     }
 
 }

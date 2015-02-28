@@ -20,7 +20,7 @@ public interface ShortDoubleToLongFunction extends Function2<Short, Double, Long
 
     @Override
     default Long apply(Short left, Double right) {
-        return applyAsLong(left, right);
+      return applyAsLong(left, right);
     }
 
 }

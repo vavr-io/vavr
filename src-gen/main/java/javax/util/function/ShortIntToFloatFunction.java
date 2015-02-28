@@ -20,7 +20,7 @@ public interface ShortIntToFloatFunction extends Function2<Short, Integer, Float
 
     @Override
     default Float apply(Short left, Integer right) {
-        return applyAsFloat(left, right);
+      return applyAsFloat(left, right);
     }
 
 }

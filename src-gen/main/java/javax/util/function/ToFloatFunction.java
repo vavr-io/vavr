@@ -20,7 +20,7 @@ public interface ToFloatFunction<T> extends Function1<T, Float> {
 
     @Override
     default Float apply(T t) {
-        return applyAsFloat(t);
+      return applyAsFloat(t);
     }
 
     static ToFloatFunction<Float> identity() {

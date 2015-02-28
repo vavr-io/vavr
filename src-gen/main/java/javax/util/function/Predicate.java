@@ -20,7 +20,7 @@ public interface Predicate<T> extends Function1<T, Boolean> {
 
     @Override
     default Boolean apply(T t) {
-        return test(t);
+      return test(t);
     }
 
     static Predicate<Boolean> identity() {

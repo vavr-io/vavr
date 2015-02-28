@@ -20,7 +20,7 @@ public interface CheckedBooleanObjToDoubleFunction<U> extends CheckedFunction2<B
 
     @Override
     default Double apply(Boolean value, U u) throws Throwable {
-        return applyAsDouble(value, u);
+      return applyAsDouble(value, u);
     }
 
 }

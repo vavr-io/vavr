@@ -20,7 +20,7 @@ public interface CheckedToLongBiFunction<T, U> extends CheckedFunction2<T, U, Lo
 
     @Override
     default Long apply(T t, U u) throws Throwable {
-        return applyAsLong(t, u);
+      return applyAsLong(t, u);
     }
 
 }

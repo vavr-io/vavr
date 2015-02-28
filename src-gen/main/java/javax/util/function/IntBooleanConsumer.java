@@ -20,8 +20,8 @@ public interface IntBooleanConsumer extends Function2<Integer, Boolean, Void> {
 
     @Override
     default Void apply(Integer left, Boolean right) {
-        accept(left, right);
-        return null;
+      accept(left, right);
+      return null;
     }
 
 }

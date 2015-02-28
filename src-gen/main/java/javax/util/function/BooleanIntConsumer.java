@@ -20,8 +20,8 @@ public interface BooleanIntConsumer extends Function2<Boolean, Integer, Void> {
 
     @Override
     default Void apply(Boolean left, Integer right) {
-        accept(left, right);
-        return null;
+      accept(left, right);
+      return null;
     }
 
 }

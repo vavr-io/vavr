@@ -20,7 +20,7 @@ public interface CharLongToByteFunction extends Function2<Character, Long, Byte>
 
     @Override
     default Byte apply(Character left, Long right) {
-        return applyAsByte(left, right);
+      return applyAsByte(left, right);
     }
 
 }

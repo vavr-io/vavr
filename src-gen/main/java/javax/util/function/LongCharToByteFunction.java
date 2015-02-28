@@ -20,7 +20,7 @@ public interface LongCharToByteFunction extends Function2<Long, Character, Byte>
 
     @Override
     default Byte apply(Long left, Character right) {
-        return applyAsByte(left, right);
+      return applyAsByte(left, right);
     }
 
 }

@@ -20,7 +20,7 @@ public interface ShortFloatFunction<R> extends Function2<Short, Float, R> {
 
     @Override
     default R apply(Short left, Float right) {
-        return apply((short) left, (float) right);
+      return apply((short) left, (float) right);
     }
 
 }

@@ -20,7 +20,7 @@ public interface DoubleByteToIntFunction extends Function2<Double, Byte, Integer
 
     @Override
     default Integer apply(Double left, Byte right) {
-        return applyAsInt(left, right);
+      return applyAsInt(left, right);
     }
 
 }

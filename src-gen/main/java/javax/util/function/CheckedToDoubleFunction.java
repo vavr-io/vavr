@@ -20,7 +20,7 @@ public interface CheckedToDoubleFunction<T> extends CheckedFunction1<T, Double> 
 
     @Override
     default Double apply(T t) throws Throwable {
-        return applyAsDouble(t);
+      return applyAsDouble(t);
     }
 
     static ToDoubleFunction<Double> identity() {

@@ -20,7 +20,7 @@ public interface CheckedShortShortFunction<R> extends CheckedFunction2<Short, Sh
 
     @Override
     default R apply(Short left, Short right) throws Throwable {
-        return apply((short) left, (short) right);
+      return apply((short) left, (short) right);
     }
 
 }

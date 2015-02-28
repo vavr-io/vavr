@@ -20,8 +20,8 @@ public interface DoubleConsumer extends Function1<Double, Void> {
 
     @Override
     default Void apply(Double value) {
-        accept(value);
-        return null;
+      accept(value);
+      return null;
     }
 
 }

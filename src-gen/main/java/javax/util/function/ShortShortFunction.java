@@ -20,7 +20,7 @@ public interface ShortShortFunction<R> extends Function2<Short, Short, R> {
 
     @Override
     default R apply(Short left, Short right) {
-        return apply((short) left, (short) right);
+      return apply((short) left, (short) right);
     }
 
 }

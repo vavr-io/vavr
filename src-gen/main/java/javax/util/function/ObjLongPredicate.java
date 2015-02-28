@@ -20,7 +20,7 @@ public interface ObjLongPredicate<T> extends Function2<T, Long, Boolean> {
 
     @Override
     default Boolean apply(T t, Long value) {
-        return test(t, value);
+      return test(t, value);
     }
 
 }

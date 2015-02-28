@@ -20,7 +20,7 @@ public interface ByteFunction<R> extends Function1<Byte, R> {
 
     @Override
     default R apply(Byte value) {
-        return apply((byte) value);
+      return apply((byte) value);
     }
 
     static ByteFunction<Byte> identity() {

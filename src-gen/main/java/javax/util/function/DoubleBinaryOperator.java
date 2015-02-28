@@ -20,7 +20,7 @@ public interface DoubleBinaryOperator extends Function2<Double, Double, Double> 
 
     @Override
     default Double apply(Double left, Double right) {
-        return applyAsDouble(left, right);
+      return applyAsDouble(left, right);
     }
 
 }

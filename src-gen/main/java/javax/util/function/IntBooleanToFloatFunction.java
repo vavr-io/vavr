@@ -20,7 +20,7 @@ public interface IntBooleanToFloatFunction extends Function2<Integer, Boolean, F
 
     @Override
     default Float apply(Integer left, Boolean right) {
-        return applyAsFloat(left, right);
+      return applyAsFloat(left, right);
     }
 
 }

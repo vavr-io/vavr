@@ -20,7 +20,7 @@ public interface CheckedBooleanSupplier extends CheckedFunction0<Boolean> {
 
     @Override
     default Boolean apply() throws Throwable {
-        return getAsBoolean();
+      return getAsBoolean();
     }
 
 }

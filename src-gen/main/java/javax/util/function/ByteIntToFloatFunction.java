@@ -20,7 +20,7 @@ public interface ByteIntToFloatFunction extends Function2<Byte, Integer, Float> 
 
     @Override
     default Float apply(Byte left, Integer right) {
-        return applyAsFloat(left, right);
+      return applyAsFloat(left, right);
     }
 
 }

@@ -20,8 +20,8 @@ public interface CheckedRunnable extends CheckedFunction0<Void> {
 
     @Override
     default Void apply() throws Throwable {
-        run();
-        return null;
+      run();
+      return null;
     }
 
 }

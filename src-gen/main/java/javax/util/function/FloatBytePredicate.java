@@ -20,7 +20,7 @@ public interface FloatBytePredicate extends Function2<Float, Byte, Boolean> {
 
     @Override
     default Boolean apply(Float left, Byte right) {
-        return test(left, right);
+      return test(left, right);
     }
 
 }

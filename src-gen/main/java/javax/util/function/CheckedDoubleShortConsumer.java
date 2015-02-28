@@ -20,8 +20,8 @@ public interface CheckedDoubleShortConsumer extends CheckedFunction2<Double, Sho
 
     @Override
     default Void apply(Double left, Short right) throws Throwable {
-        accept(left, right);
-        return null;
+      accept(left, right);
+      return null;
     }
 
 }

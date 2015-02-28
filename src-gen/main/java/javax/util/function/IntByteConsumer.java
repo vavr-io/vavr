@@ -20,8 +20,8 @@ public interface IntByteConsumer extends Function2<Integer, Byte, Void> {
 
     @Override
     default Void apply(Integer left, Byte right) {
-        accept(left, right);
-        return null;
+      accept(left, right);
+      return null;
     }
 
 }

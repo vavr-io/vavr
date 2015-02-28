@@ -20,7 +20,7 @@ public interface LongCharToShortFunction extends Function2<Long, Character, Shor
 
     @Override
     default Short apply(Long left, Character right) {
-        return applyAsShort(left, right);
+      return applyAsShort(left, right);
     }
 
 }

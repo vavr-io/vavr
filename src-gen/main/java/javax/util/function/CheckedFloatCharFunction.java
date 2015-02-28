@@ -20,7 +20,7 @@ public interface CheckedFloatCharFunction<R> extends CheckedFunction2<Float, Cha
 
     @Override
     default R apply(Float left, Character right) throws Throwable {
-        return apply((float) left, (char) right);
+      return apply((float) left, (char) right);
     }
 
 }

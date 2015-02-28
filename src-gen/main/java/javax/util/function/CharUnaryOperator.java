@@ -20,7 +20,7 @@ public interface CharUnaryOperator extends Function1<Character, Character> {
 
     @Override
     default Character apply(Character value) {
-        return applyAsChar(value);
+      return applyAsChar(value);
     }
 
     static CharUnaryOperator identity() {

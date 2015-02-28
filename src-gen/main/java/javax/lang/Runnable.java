@@ -12,7 +12,7 @@ package javax.lang;
 import javaslang.Function0;
 
 @FunctionalInterface
-public interface Runnable extends Function0<Void> {
+public interface Runnable extends Function0<Void>, java.lang.Runnable {
 
     static final long serialVersionUID = 1L;
 
@@ -20,8 +20,8 @@ public interface Runnable extends Function0<Void> {
 
     @Override
     default Void apply() {
-        run();
-        return null;
+      run();
+      return null;
     }
 
 }

@@ -20,7 +20,7 @@ public interface IntBinaryOperator extends Function2<Integer, Integer, Integer> 
 
     @Override
     default Integer apply(Integer left, Integer right) {
-        return applyAsInt(left, right);
+      return applyAsInt(left, right);
     }
 
 }

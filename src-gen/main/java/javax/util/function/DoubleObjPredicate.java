@@ -20,7 +20,7 @@ public interface DoubleObjPredicate<U> extends Function2<Double, U, Boolean> {
 
     @Override
     default Boolean apply(Double value, U u) {
-        return test(value, u);
+      return test(value, u);
     }
 
 }

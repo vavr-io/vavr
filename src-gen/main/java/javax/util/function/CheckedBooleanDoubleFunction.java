@@ -20,7 +20,7 @@ public interface CheckedBooleanDoubleFunction<R> extends CheckedFunction2<Boolea
 
     @Override
     default R apply(Boolean left, Double right) throws Throwable {
-        return apply((boolean) left, (double) right);
+      return apply((boolean) left, (double) right);
     }
 
 }

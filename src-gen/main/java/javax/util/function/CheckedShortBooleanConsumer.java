@@ -20,8 +20,8 @@ public interface CheckedShortBooleanConsumer extends CheckedFunction2<Short, Boo
 
     @Override
     default Void apply(Short left, Boolean right) throws Throwable {
-        accept(left, right);
-        return null;
+      accept(left, right);
+      return null;
     }
 
 }

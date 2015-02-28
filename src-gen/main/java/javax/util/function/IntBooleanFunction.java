@@ -20,7 +20,7 @@ public interface IntBooleanFunction<R> extends Function2<Integer, Boolean, R> {
 
     @Override
     default R apply(Integer left, Boolean right) {
-        return apply((int) left, (boolean) right);
+      return apply((int) left, (boolean) right);
     }
 
 }

@@ -20,8 +20,8 @@ public interface LongFloatConsumer extends Function2<Long, Float, Void> {
 
     @Override
     default Void apply(Long left, Float right) {
-        accept(left, right);
-        return null;
+      accept(left, right);
+      return null;
     }
 
 }

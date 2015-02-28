@@ -20,7 +20,7 @@ public interface BooleanFloatToDoubleFunction extends Function2<Boolean, Float, 
 
     @Override
     default Double apply(Boolean left, Float right) {
-        return applyAsDouble(left, right);
+      return applyAsDouble(left, right);
     }
 
 }

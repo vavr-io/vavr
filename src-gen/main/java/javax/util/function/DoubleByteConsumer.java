@@ -20,8 +20,8 @@ public interface DoubleByteConsumer extends Function2<Double, Byte, Void> {
 
     @Override
     default Void apply(Double left, Byte right) {
-        accept(left, right);
-        return null;
+      accept(left, right);
+      return null;
     }
 
 }

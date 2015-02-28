@@ -20,7 +20,7 @@ public interface IntIntFunction<R> extends Function2<Integer, Integer, R> {
 
     @Override
     default R apply(Integer left, Integer right) {
-        return apply((int) left, (int) right);
+      return apply((int) left, (int) right);
     }
 
 }

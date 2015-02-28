@@ -20,8 +20,8 @@ public interface BooleanConsumer extends Function1<Boolean, Void> {
 
     @Override
     default Void apply(Boolean value) {
-        accept(value);
-        return null;
+      accept(value);
+      return null;
     }
 
 }

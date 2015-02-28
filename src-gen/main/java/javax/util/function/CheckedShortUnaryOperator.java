@@ -20,7 +20,7 @@ public interface CheckedShortUnaryOperator extends CheckedFunction1<Short, Short
 
     @Override
     default Short apply(Short value) throws Throwable {
-        return applyAsShort(value);
+      return applyAsShort(value);
     }
 
     static ShortUnaryOperator identity() {

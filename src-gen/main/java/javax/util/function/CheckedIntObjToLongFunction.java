@@ -20,7 +20,7 @@ public interface CheckedIntObjToLongFunction<U> extends CheckedFunction2<Integer
 
     @Override
     default Long apply(Integer value, U u) throws Throwable {
-        return applyAsLong(value, u);
+      return applyAsLong(value, u);
     }
 
 }

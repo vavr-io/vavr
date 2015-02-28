@@ -20,8 +20,8 @@ public interface IntCharConsumer extends Function2<Integer, Character, Void> {
 
     @Override
     default Void apply(Integer left, Character right) {
-        accept(left, right);
-        return null;
+      accept(left, right);
+      return null;
     }
 
 }

@@ -20,7 +20,7 @@ public interface BooleanShortToByteFunction extends Function2<Boolean, Short, By
 
     @Override
     default Byte apply(Boolean left, Short right) {
-        return applyAsByte(left, right);
+      return applyAsByte(left, right);
     }
 
 }

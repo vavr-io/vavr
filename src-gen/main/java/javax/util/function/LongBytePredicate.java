@@ -20,7 +20,7 @@ public interface LongBytePredicate extends Function2<Long, Byte, Boolean> {
 
     @Override
     default Boolean apply(Long left, Byte right) {
-        return test(left, right);
+      return test(left, right);
     }
 
 }

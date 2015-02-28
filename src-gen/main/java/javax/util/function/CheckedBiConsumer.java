@@ -20,8 +20,8 @@ public interface CheckedBiConsumer<T, U> extends CheckedFunction2<T, U, Void> {
 
     @Override
     default Void apply(T t, U u) throws Throwable {
-        accept(t, u);
-        return null;
+      accept(t, u);
+      return null;
     }
 
 }

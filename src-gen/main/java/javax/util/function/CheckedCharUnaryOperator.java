@@ -20,7 +20,7 @@ public interface CheckedCharUnaryOperator extends CheckedFunction1<Character, Ch
 
     @Override
     default Character apply(Character value) throws Throwable {
-        return applyAsChar(value);
+      return applyAsChar(value);
     }
 
     static CharUnaryOperator identity() {

@@ -20,7 +20,7 @@ public interface ObjCharPredicate<T> extends Function2<T, Character, Boolean> {
 
     @Override
     default Boolean apply(T t, Character value) {
-        return test(t, value);
+      return test(t, value);
     }
 
 }

@@ -20,7 +20,7 @@ public interface IntLongToCharFunction extends Function2<Integer, Long, Characte
 
     @Override
     default Character apply(Integer left, Long right) {
-        return applyAsChar(left, right);
+      return applyAsChar(left, right);
     }
 
 }

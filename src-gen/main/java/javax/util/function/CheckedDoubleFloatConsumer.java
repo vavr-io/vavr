@@ -20,8 +20,8 @@ public interface CheckedDoubleFloatConsumer extends CheckedFunction2<Double, Flo
 
     @Override
     default Void apply(Double left, Float right) throws Throwable {
-        accept(left, right);
-        return null;
+      accept(left, right);
+      return null;
     }
 
 }

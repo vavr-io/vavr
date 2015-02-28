@@ -20,7 +20,7 @@ public interface ObjBooleanPredicate<T> extends Function2<T, Boolean, Boolean> {
 
     @Override
     default Boolean apply(T t, Boolean value) {
-        return test(t, value);
+      return test(t, value);
     }
 
 }

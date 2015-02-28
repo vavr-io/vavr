@@ -20,7 +20,7 @@ public interface DoubleObjToShortFunction<U> extends Function2<Double, U, Short>
 
     @Override
     default Short apply(Double value, U u) {
-        return applyAsShort(value, u);
+      return applyAsShort(value, u);
     }
 
 }

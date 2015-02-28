@@ -20,7 +20,7 @@ public interface CheckedFloatObjFunction<U, R> extends CheckedFunction2<Float, U
 
     @Override
     default R apply(Float value, U u) throws Throwable {
-        return apply((float) value, u);
+      return apply((float) value, u);
     }
 
 }

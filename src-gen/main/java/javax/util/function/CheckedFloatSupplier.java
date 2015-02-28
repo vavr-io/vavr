@@ -20,7 +20,7 @@ public interface CheckedFloatSupplier extends CheckedFunction0<Float> {
 
     @Override
     default Float apply() throws Throwable {
-        return getAsFloat();
+      return getAsFloat();
     }
 
 }

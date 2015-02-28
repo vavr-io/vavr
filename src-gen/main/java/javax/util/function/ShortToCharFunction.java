@@ -20,7 +20,7 @@ public interface ShortToCharFunction extends Function1<Short, Character> {
 
     @Override
     default Character apply(Short value) {
-        return applyAsChar(value);
+      return applyAsChar(value);
     }
 
 }

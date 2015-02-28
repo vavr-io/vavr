@@ -20,7 +20,7 @@ public interface CheckedByteUnaryOperator extends CheckedFunction1<Byte, Byte> {
 
     @Override
     default Byte apply(Byte value) throws Throwable {
-        return applyAsByte(value);
+      return applyAsByte(value);
     }
 
     static ByteUnaryOperator identity() {

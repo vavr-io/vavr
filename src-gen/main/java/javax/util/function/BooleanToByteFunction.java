@@ -20,7 +20,7 @@ public interface BooleanToByteFunction extends Function1<Boolean, Byte> {
 
     @Override
     default Byte apply(Boolean value) {
-        return applyAsByte(value);
+      return applyAsByte(value);
     }
 
 }

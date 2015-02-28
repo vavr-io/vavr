@@ -20,7 +20,7 @@ public interface CheckedIntLongFunction<R> extends CheckedFunction2<Integer, Lon
 
     @Override
     default R apply(Integer left, Long right) throws Throwable {
-        return apply((int) left, (long) right);
+      return apply((int) left, (long) right);
     }
 
 }

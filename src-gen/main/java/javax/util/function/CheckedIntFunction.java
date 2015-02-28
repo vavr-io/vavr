@@ -20,7 +20,7 @@ public interface CheckedIntFunction<R> extends CheckedFunction1<Integer, R> {
 
     @Override
     default R apply(Integer value) throws Throwable {
-        return apply((int) value);
+      return apply((int) value);
     }
 
     static IntFunction<Integer> identity() {

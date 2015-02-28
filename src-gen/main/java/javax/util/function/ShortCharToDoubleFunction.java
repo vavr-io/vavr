@@ -20,7 +20,7 @@ public interface ShortCharToDoubleFunction extends Function2<Short, Character, D
 
     @Override
     default Double apply(Short left, Character right) {
-        return applyAsDouble(left, right);
+      return applyAsDouble(left, right);
     }
 
 }

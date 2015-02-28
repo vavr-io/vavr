@@ -20,7 +20,7 @@ public interface CheckedByteSupplier extends CheckedFunction0<Byte> {
 
     @Override
     default Byte apply() throws Throwable {
-        return getAsByte();
+      return getAsByte();
     }
 
 }

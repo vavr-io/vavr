@@ -20,8 +20,8 @@ public interface ByteObjConsumer<U> extends Function2<Byte, U, Void> {
 
     @Override
     default Void apply(Byte value, U u) {
-        accept(value, u);
-        return null;
+      accept(value, u);
+      return null;
     }
 
 }

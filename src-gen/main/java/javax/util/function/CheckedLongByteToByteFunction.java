@@ -20,7 +20,7 @@ public interface CheckedLongByteToByteFunction extends CheckedFunction2<Long, By
 
     @Override
     default Byte apply(Long left, Byte right) throws Throwable {
-        return applyAsByte(left, right);
+      return applyAsByte(left, right);
     }
 
 }

@@ -20,7 +20,7 @@ public interface FloatFunction<R> extends Function1<Float, R> {
 
     @Override
     default R apply(Float value) {
-        return apply((float) value);
+      return apply((float) value);
     }
 
     static FloatFunction<Float> identity() {

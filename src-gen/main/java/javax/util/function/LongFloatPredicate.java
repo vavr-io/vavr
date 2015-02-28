@@ -20,7 +20,7 @@ public interface LongFloatPredicate extends Function2<Long, Float, Boolean> {
 
     @Override
     default Boolean apply(Long left, Float right) {
-        return test(left, right);
+      return test(left, right);
     }
 
 }

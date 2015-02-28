@@ -20,7 +20,7 @@ public interface CheckedToCharBiFunction<T, U> extends CheckedFunction2<T, U, Ch
 
     @Override
     default Character apply(T t, U u) throws Throwable {
-        return applyAsChar(t, u);
+      return applyAsChar(t, u);
     }
 
 }

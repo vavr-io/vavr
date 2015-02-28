@@ -12,7 +12,7 @@ package javax.util.function;
 import javaslang.Function0;
 
 @FunctionalInterface
-public interface DoubleSupplier extends Function0<Double> {
+public interface DoubleSupplier extends Function0<Double>, java.util.function.DoubleSupplier {
 
     static final long serialVersionUID = 1L;
 
@@ -20,7 +20,7 @@ public interface DoubleSupplier extends Function0<Double> {
 
     @Override
     default Double apply() {
-        return getAsDouble();
+      return getAsDouble();
     }
 
 }

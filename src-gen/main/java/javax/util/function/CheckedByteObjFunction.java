@@ -20,7 +20,7 @@ public interface CheckedByteObjFunction<U, R> extends CheckedFunction2<Byte, U, 
 
     @Override
     default R apply(Byte value, U u) throws Throwable {
-        return apply((byte) value, u);
+      return apply((byte) value, u);
     }
 
 }

@@ -20,7 +20,7 @@ public interface FloatToByteFunction extends Function1<Float, Byte> {
 
     @Override
     default Byte apply(Float value) {
-        return applyAsByte(value);
+      return applyAsByte(value);
     }
 
 }

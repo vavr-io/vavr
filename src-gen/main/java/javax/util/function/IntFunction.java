@@ -20,7 +20,7 @@ public interface IntFunction<R> extends Function1<Integer, R> {
 
     @Override
     default R apply(Integer value) {
-        return apply((int) value);
+      return apply((int) value);
     }
 
     static IntFunction<Integer> identity() {

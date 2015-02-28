@@ -20,7 +20,7 @@ public interface ByteToShortFunction extends Function1<Byte, Short> {
 
     @Override
     default Short apply(Byte value) {
-        return applyAsShort(value);
+      return applyAsShort(value);
     }
 
 }

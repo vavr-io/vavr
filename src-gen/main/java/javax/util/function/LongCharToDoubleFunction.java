@@ -20,7 +20,7 @@ public interface LongCharToDoubleFunction extends Function2<Long, Character, Dou
 
     @Override
     default Double apply(Long left, Character right) {
-        return applyAsDouble(left, right);
+      return applyAsDouble(left, right);
     }
 
 }

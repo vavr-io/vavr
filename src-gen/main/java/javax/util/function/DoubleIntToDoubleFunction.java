@@ -20,7 +20,7 @@ public interface DoubleIntToDoubleFunction extends Function2<Double, Integer, Do
 
     @Override
     default Double apply(Double left, Integer right) {
-        return applyAsDouble(left, right);
+      return applyAsDouble(left, right);
     }
 
 }

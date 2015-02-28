@@ -20,7 +20,7 @@ public interface IntDoublePredicate extends Function2<Integer, Double, Boolean> 
 
     @Override
     default Boolean apply(Integer left, Double right) {
-        return test(left, right);
+      return test(left, right);
     }
 
 }

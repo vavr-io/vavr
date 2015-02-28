@@ -20,7 +20,7 @@ public interface FloatCharFunction<R> extends Function2<Float, Character, R> {
 
     @Override
     default R apply(Float left, Character right) {
-        return apply((float) left, (char) right);
+      return apply((float) left, (char) right);
     }
 
 }

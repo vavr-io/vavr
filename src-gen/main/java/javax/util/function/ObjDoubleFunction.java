@@ -20,7 +20,7 @@ public interface ObjDoubleFunction<T, R> extends Function2<T, Double, R> {
 
     @Override
     default R apply(T t, Double value) {
-        return apply(t, (double) value);
+      return apply(t, (double) value);
     }
 
 }

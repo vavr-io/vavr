@@ -20,7 +20,7 @@ public interface ByteShortPredicate extends Function2<Byte, Short, Boolean> {
 
     @Override
     default Boolean apply(Byte left, Short right) {
-        return test(left, right);
+      return test(left, right);
     }
 
 }

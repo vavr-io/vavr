@@ -20,7 +20,7 @@ public interface CheckedObjCharToIntFunction<T> extends CheckedFunction2<T, Char
 
     @Override
     default Integer apply(T t, Character value) throws Throwable {
-        return applyAsInt(t, value);
+      return applyAsInt(t, value);
     }
 
 }

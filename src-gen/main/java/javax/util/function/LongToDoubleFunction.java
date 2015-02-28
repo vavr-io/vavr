@@ -20,7 +20,7 @@ public interface LongToDoubleFunction extends Function1<Long, Double> {
 
     @Override
     default Double apply(Long value) {
-        return applyAsDouble(value);
+      return applyAsDouble(value);
     }
 
 }

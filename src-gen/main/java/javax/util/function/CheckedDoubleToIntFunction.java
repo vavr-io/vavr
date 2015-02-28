@@ -20,7 +20,7 @@ public interface CheckedDoubleToIntFunction extends CheckedFunction1<Double, Int
 
     @Override
     default Integer apply(Double value) throws Throwable {
-        return applyAsInt(value);
+      return applyAsInt(value);
     }
 
 }

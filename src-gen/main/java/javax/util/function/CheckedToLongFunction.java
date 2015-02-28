@@ -20,7 +20,7 @@ public interface CheckedToLongFunction<T> extends CheckedFunction1<T, Long> {
 
     @Override
     default Long apply(T t) throws Throwable {
-        return applyAsLong(t);
+      return applyAsLong(t);
     }
 
     static ToLongFunction<Long> identity() {

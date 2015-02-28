@@ -20,7 +20,7 @@ public interface CheckedCharShortPredicate extends CheckedFunction2<Character, S
 
     @Override
     default Boolean apply(Character left, Short right) throws Throwable {
-        return test(left, right);
+      return test(left, right);
     }
 
 }

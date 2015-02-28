@@ -20,7 +20,7 @@ public interface ObjIntToCharFunction<T> extends Function2<T, Integer, Character
 
     @Override
     default Character apply(T t, Integer value) {
-        return applyAsChar(t, value);
+      return applyAsChar(t, value);
     }
 
 }

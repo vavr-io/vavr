@@ -20,7 +20,7 @@ public interface LongFunction<R> extends Function1<Long, R> {
 
     @Override
     default R apply(Long value) {
-        return apply((long) value);
+      return apply((long) value);
     }
 
     static LongFunction<Long> identity() {

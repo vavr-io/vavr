@@ -20,8 +20,8 @@ public interface CharObjConsumer<U> extends Function2<Character, U, Void> {
 
     @Override
     default Void apply(Character value, U u) {
-        accept(value, u);
-        return null;
+      accept(value, u);
+      return null;
     }
 
 }

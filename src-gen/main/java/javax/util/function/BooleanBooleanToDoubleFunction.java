@@ -20,7 +20,7 @@ public interface BooleanBooleanToDoubleFunction extends Function2<Boolean, Boole
 
     @Override
     default Double apply(Boolean left, Boolean right) {
-        return applyAsDouble(left, right);
+      return applyAsDouble(left, right);
     }
 
 }

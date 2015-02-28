@@ -20,7 +20,7 @@ public interface ObjFloatToDoubleFunction<T> extends Function2<T, Float, Double>
 
     @Override
     default Double apply(T t, Float value) {
-        return applyAsDouble(t, value);
+      return applyAsDouble(t, value);
     }
 
 }

@@ -20,7 +20,7 @@ public interface BooleanByteToDoubleFunction extends Function2<Boolean, Byte, Do
 
     @Override
     default Double apply(Boolean left, Byte right) {
-        return applyAsDouble(left, right);
+      return applyAsDouble(left, right);
     }
 
 }

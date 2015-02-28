@@ -20,7 +20,7 @@ public interface FloatPredicate extends Function1<Float, Boolean> {
 
     @Override
     default Boolean apply(Float value) {
-        return test(value);
+      return test(value);
     }
 
 }

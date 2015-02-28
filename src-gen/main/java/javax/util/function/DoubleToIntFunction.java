@@ -20,7 +20,7 @@ public interface DoubleToIntFunction extends Function1<Double, Integer> {
 
     @Override
     default Integer apply(Double value) {
-        return applyAsInt(value);
+      return applyAsInt(value);
     }
 
 }

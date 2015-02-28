@@ -20,7 +20,7 @@ public interface CheckedToFloatBiFunction<T, U> extends CheckedFunction2<T, U, F
 
     @Override
     default Float apply(T t, U u) throws Throwable {
-        return applyAsFloat(t, u);
+      return applyAsFloat(t, u);
     }
 
 }

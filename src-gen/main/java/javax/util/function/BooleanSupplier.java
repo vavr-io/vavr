@@ -12,7 +12,7 @@ package javax.util.function;
 import javaslang.Function0;
 
 @FunctionalInterface
-public interface BooleanSupplier extends Function0<Boolean> {
+public interface BooleanSupplier extends Function0<Boolean>, java.util.function.BooleanSupplier {
 
     static final long serialVersionUID = 1L;
 
@@ -20,7 +20,7 @@ public interface BooleanSupplier extends Function0<Boolean> {
 
     @Override
     default Boolean apply() {
-        return getAsBoolean();
+      return getAsBoolean();
     }
 
 }

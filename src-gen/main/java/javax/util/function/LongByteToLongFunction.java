@@ -20,7 +20,7 @@ public interface LongByteToLongFunction extends Function2<Long, Byte, Long> {
 
     @Override
     default Long apply(Long left, Byte right) {
-        return applyAsLong(left, right);
+      return applyAsLong(left, right);
     }
 
 }

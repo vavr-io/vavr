@@ -20,7 +20,7 @@ public interface DoubleFunction<R> extends Function1<Double, R> {
 
     @Override
     default R apply(Double value) {
-        return apply((double) value);
+      return apply((double) value);
     }
 
     static DoubleFunction<Double> identity() {

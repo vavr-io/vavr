@@ -20,7 +20,7 @@ public interface CharObjToIntFunction<U> extends Function2<Character, U, Integer
 
     @Override
     default Integer apply(Character value, U u) {
-        return applyAsInt(value, u);
+      return applyAsInt(value, u);
     }
 
 }

@@ -20,7 +20,7 @@ public interface LongIntPredicate extends Function2<Long, Integer, Boolean> {
 
     @Override
     default Boolean apply(Long left, Integer right) {
-        return test(left, right);
+      return test(left, right);
     }
 
 }

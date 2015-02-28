@@ -20,7 +20,7 @@ public interface CheckedBooleanLongToShortFunction extends CheckedFunction2<Bool
 
     @Override
     default Short apply(Boolean left, Long right) throws Throwable {
-        return applyAsShort(left, right);
+      return applyAsShort(left, right);
     }
 
 }

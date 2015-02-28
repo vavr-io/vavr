@@ -20,7 +20,7 @@ public interface BooleanObjToCharFunction<U> extends Function2<Boolean, U, Chara
 
     @Override
     default Character apply(Boolean value, U u) {
-        return applyAsChar(value, u);
+      return applyAsChar(value, u);
     }
 
 }

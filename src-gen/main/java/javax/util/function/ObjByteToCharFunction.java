@@ -20,7 +20,7 @@ public interface ObjByteToCharFunction<T> extends Function2<T, Byte, Character> 
 
     @Override
     default Character apply(T t, Byte value) {
-        return applyAsChar(t, value);
+      return applyAsChar(t, value);
     }
 
 }

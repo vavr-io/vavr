@@ -20,7 +20,7 @@ public interface FloatBooleanToByteFunction extends Function2<Float, Boolean, By
 
     @Override
     default Byte apply(Float left, Boolean right) {
-        return applyAsByte(left, right);
+      return applyAsByte(left, right);
     }
 
 }

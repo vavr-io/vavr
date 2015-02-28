@@ -20,7 +20,7 @@ public interface IntBooleanToLongFunction extends Function2<Integer, Boolean, Lo
 
     @Override
     default Long apply(Integer left, Boolean right) {
-        return applyAsLong(left, right);
+      return applyAsLong(left, right);
     }
 
 }

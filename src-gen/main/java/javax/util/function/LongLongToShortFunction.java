@@ -20,7 +20,7 @@ public interface LongLongToShortFunction extends Function2<Long, Long, Short> {
 
     @Override
     default Short apply(Long left, Long right) {
-        return applyAsShort(left, right);
+      return applyAsShort(left, right);
     }
 
 }

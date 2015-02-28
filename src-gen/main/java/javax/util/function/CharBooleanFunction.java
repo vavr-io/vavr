@@ -20,7 +20,7 @@ public interface CharBooleanFunction<R> extends Function2<Character, Boolean, R>
 
     @Override
     default R apply(Character left, Boolean right) {
-        return apply((char) left, (boolean) right);
+      return apply((char) left, (boolean) right);
     }
 
 }

@@ -20,8 +20,8 @@ public interface BiConsumer<T, U> extends Function2<T, U, Void> {
 
     @Override
     default Void apply(T t, U u) {
-        accept(t, u);
-        return null;
+      accept(t, u);
+      return null;
     }
 
 }

@@ -20,7 +20,7 @@ public interface CheckedDoubleObjToByteFunction<U> extends CheckedFunction2<Doub
 
     @Override
     default Byte apply(Double value, U u) throws Throwable {
-        return applyAsByte(value, u);
+      return applyAsByte(value, u);
     }
 
 }

@@ -20,7 +20,7 @@ public interface BooleanPredicate extends Function1<Boolean, Boolean> {
 
     @Override
     default Boolean apply(Boolean value) {
-        return test(value);
+      return test(value);
     }
 
     static BooleanPredicate identity() {

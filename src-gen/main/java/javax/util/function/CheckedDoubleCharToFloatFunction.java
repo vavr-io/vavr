@@ -20,7 +20,7 @@ public interface CheckedDoubleCharToFloatFunction extends CheckedFunction2<Doubl
 
     @Override
     default Float apply(Double left, Character right) throws Throwable {
-        return applyAsFloat(left, right);
+      return applyAsFloat(left, right);
     }
 
 }

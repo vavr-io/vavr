@@ -20,7 +20,7 @@ public interface CheckedToCharFunction<T> extends CheckedFunction1<T, Character>
 
     @Override
     default Character apply(T t) throws Throwable {
-        return applyAsChar(t);
+      return applyAsChar(t);
     }
 
     static ToCharFunction<Character> identity() {

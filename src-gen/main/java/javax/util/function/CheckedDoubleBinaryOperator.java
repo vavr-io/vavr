@@ -20,7 +20,7 @@ public interface CheckedDoubleBinaryOperator extends CheckedFunction2<Double, Do
 
     @Override
     default Double apply(Double left, Double right) throws Throwable {
-        return applyAsDouble(left, right);
+      return applyAsDouble(left, right);
     }
 
 }

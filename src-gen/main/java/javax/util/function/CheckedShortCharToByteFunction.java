@@ -20,7 +20,7 @@ public interface CheckedShortCharToByteFunction extends CheckedFunction2<Short, 
 
     @Override
     default Byte apply(Short left, Character right) throws Throwable {
-        return applyAsByte(left, right);
+      return applyAsByte(left, right);
     }
 
 }

@@ -20,7 +20,7 @@ public interface ByteDoubleFunction<R> extends Function2<Byte, Double, R> {
 
     @Override
     default R apply(Byte left, Double right) {
-        return apply((byte) left, (double) right);
+      return apply((byte) left, (double) right);
     }
 
 }

@@ -20,7 +20,7 @@ public interface CheckedCharSupplier extends CheckedFunction0<Character> {
 
     @Override
     default Character apply() throws Throwable {
-        return getAsChar();
+      return getAsChar();
     }
 
 }

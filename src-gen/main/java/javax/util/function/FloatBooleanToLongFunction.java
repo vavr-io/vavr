@@ -20,7 +20,7 @@ public interface FloatBooleanToLongFunction extends Function2<Float, Boolean, Lo
 
     @Override
     default Long apply(Float left, Boolean right) {
-        return applyAsLong(left, right);
+      return applyAsLong(left, right);
     }
 
 }

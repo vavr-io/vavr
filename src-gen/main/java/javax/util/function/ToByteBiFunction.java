@@ -20,7 +20,7 @@ public interface ToByteBiFunction<T, U> extends Function2<T, U, Byte> {
 
     @Override
     default Byte apply(T t, U u) {
-        return applyAsByte(t, u);
+      return applyAsByte(t, u);
     }
 
 }

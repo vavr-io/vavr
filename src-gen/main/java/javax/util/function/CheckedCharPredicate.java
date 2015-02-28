@@ -20,7 +20,7 @@ public interface CheckedCharPredicate extends CheckedFunction1<Character, Boolea
 
     @Override
     default Boolean apply(Character value) throws Throwable {
-        return test(value);
+      return test(value);
     }
 
 }

@@ -20,8 +20,8 @@ public interface CheckedCharObjConsumer<U> extends CheckedFunction2<Character, U
 
     @Override
     default Void apply(Character value, U u) throws Throwable {
-        accept(value, u);
-        return null;
+      accept(value, u);
+      return null;
     }
 
 }

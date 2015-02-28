@@ -20,7 +20,7 @@ public interface ObjShortToByteFunction<T> extends Function2<T, Short, Byte> {
 
     @Override
     default Byte apply(T t, Short value) {
-        return applyAsByte(t, value);
+      return applyAsByte(t, value);
     }
 
 }

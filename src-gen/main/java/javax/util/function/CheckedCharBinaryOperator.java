@@ -20,7 +20,7 @@ public interface CheckedCharBinaryOperator extends CheckedFunction2<Character, C
 
     @Override
     default Character apply(Character left, Character right) throws Throwable {
-        return applyAsChar(left, right);
+      return applyAsChar(left, right);
     }
 
 }

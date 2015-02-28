@@ -20,7 +20,7 @@ public interface CheckedCharFloatPredicate extends CheckedFunction2<Character, F
 
     @Override
     default Boolean apply(Character left, Float right) throws Throwable {
-        return test(left, right);
+      return test(left, right);
     }
 
 }

@@ -20,7 +20,7 @@ public interface CheckedByteCharToFloatFunction extends CheckedFunction2<Byte, C
 
     @Override
     default Float apply(Byte left, Character right) throws Throwable {
-        return applyAsFloat(left, right);
+      return applyAsFloat(left, right);
     }
 
 }

@@ -20,7 +20,7 @@ public interface CheckedCharBooleanToShortFunction extends CheckedFunction2<Char
 
     @Override
     default Short apply(Character left, Boolean right) throws Throwable {
-        return applyAsShort(left, right);
+      return applyAsShort(left, right);
     }
 
 }

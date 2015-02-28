@@ -20,8 +20,8 @@ public interface Consumer<T> extends Function1<T, Void> {
 
     @Override
     default Void apply(T t) {
-        accept(t);
-        return null;
+      accept(t);
+      return null;
     }
 
 }

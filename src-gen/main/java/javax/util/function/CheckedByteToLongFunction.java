@@ -20,7 +20,7 @@ public interface CheckedByteToLongFunction extends CheckedFunction1<Byte, Long> 
 
     @Override
     default Long apply(Byte value) throws Throwable {
-        return applyAsLong(value);
+      return applyAsLong(value);
     }
 
 }

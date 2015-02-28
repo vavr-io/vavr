@@ -20,7 +20,7 @@ public interface ByteBooleanToLongFunction extends Function2<Byte, Boolean, Long
 
     @Override
     default Long apply(Byte left, Boolean right) {
-        return applyAsLong(left, right);
+      return applyAsLong(left, right);
     }
 
 }

@@ -20,7 +20,7 @@ public interface ShortByteToIntFunction extends Function2<Short, Byte, Integer> 
 
     @Override
     default Integer apply(Short left, Byte right) {
-        return applyAsInt(left, right);
+      return applyAsInt(left, right);
     }
 
 }

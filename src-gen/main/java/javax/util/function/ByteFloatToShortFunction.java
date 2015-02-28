@@ -20,7 +20,7 @@ public interface ByteFloatToShortFunction extends Function2<Byte, Float, Short> 
 
     @Override
     default Short apply(Byte left, Float right) {
-        return applyAsShort(left, right);
+      return applyAsShort(left, right);
     }
 
 }

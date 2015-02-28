@@ -20,7 +20,7 @@ public interface BooleanObjToIntFunction<U> extends Function2<Boolean, U, Intege
 
     @Override
     default Integer apply(Boolean value, U u) {
-        return applyAsInt(value, u);
+      return applyAsInt(value, u);
     }
 
 }

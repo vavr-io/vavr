@@ -20,7 +20,7 @@ public interface CharByteToFloatFunction extends Function2<Character, Byte, Floa
 
     @Override
     default Float apply(Character left, Byte right) {
-        return applyAsFloat(left, right);
+      return applyAsFloat(left, right);
     }
 
 }

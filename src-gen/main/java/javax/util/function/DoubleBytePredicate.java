@@ -20,7 +20,7 @@ public interface DoubleBytePredicate extends Function2<Double, Byte, Boolean> {
 
     @Override
     default Boolean apply(Double left, Byte right) {
-        return test(left, right);
+      return test(left, right);
     }
 
 }

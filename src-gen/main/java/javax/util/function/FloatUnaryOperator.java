@@ -20,7 +20,7 @@ public interface FloatUnaryOperator extends Function1<Float, Float> {
 
     @Override
     default Float apply(Float value) {
-        return applyAsFloat(value);
+      return applyAsFloat(value);
     }
 
     static FloatUnaryOperator identity() {

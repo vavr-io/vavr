@@ -20,8 +20,8 @@ public interface CheckedByteObjConsumer<U> extends CheckedFunction2<Byte, U, Voi
 
     @Override
     default Void apply(Byte value, U u) throws Throwable {
-        accept(value, u);
-        return null;
+      accept(value, u);
+      return null;
     }
 
 }

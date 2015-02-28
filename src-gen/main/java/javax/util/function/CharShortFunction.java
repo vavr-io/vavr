@@ -20,7 +20,7 @@ public interface CharShortFunction<R> extends Function2<Character, Short, R> {
 
     @Override
     default R apply(Character left, Short right) {
-        return apply((char) left, (short) right);
+      return apply((char) left, (short) right);
     }
 
 }

@@ -20,7 +20,7 @@ public interface ToCharFunction<T> extends Function1<T, Character> {
 
     @Override
     default Character apply(T t) {
-        return applyAsChar(t);
+      return applyAsChar(t);
     }
 
     static ToCharFunction<Character> identity() {

@@ -20,7 +20,7 @@ public interface ByteFloatFunction<R> extends Function2<Byte, Float, R> {
 
     @Override
     default R apply(Byte left, Float right) {
-        return apply((byte) left, (float) right);
+      return apply((byte) left, (float) right);
     }
 
 }

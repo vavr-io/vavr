@@ -12,7 +12,7 @@ package javax.util.function;
 import javaslang.Function0;
 
 @FunctionalInterface
-public interface IntSupplier extends Function0<Integer> {
+public interface IntSupplier extends Function0<Integer>, java.util.function.IntSupplier {
 
     static final long serialVersionUID = 1L;
 
@@ -20,7 +20,7 @@ public interface IntSupplier extends Function0<Integer> {
 
     @Override
     default Integer apply() {
-        return getAsInt();
+      return getAsInt();
     }
 
 }

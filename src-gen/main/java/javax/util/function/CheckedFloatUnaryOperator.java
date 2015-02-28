@@ -20,7 +20,7 @@ public interface CheckedFloatUnaryOperator extends CheckedFunction1<Float, Float
 
     @Override
     default Float apply(Float value) throws Throwable {
-        return applyAsFloat(value);
+      return applyAsFloat(value);
     }
 
     static FloatUnaryOperator identity() {

@@ -20,7 +20,7 @@ public interface CheckedLongFloatFunction<R> extends CheckedFunction2<Long, Floa
 
     @Override
     default R apply(Long left, Float right) throws Throwable {
-        return apply((long) left, (float) right);
+      return apply((long) left, (float) right);
     }
 
 }

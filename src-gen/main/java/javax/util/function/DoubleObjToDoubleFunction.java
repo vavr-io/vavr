@@ -20,7 +20,7 @@ public interface DoubleObjToDoubleFunction<U> extends Function2<Double, U, Doubl
 
     @Override
     default Double apply(Double value, U u) {
-        return applyAsDouble(value, u);
+      return applyAsDouble(value, u);
     }
 
 }

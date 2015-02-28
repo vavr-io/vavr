@@ -20,7 +20,7 @@ public interface CharObjToCharFunction<U> extends Function2<Character, U, Charac
 
     @Override
     default Character apply(Character value, U u) {
-        return applyAsChar(value, u);
+      return applyAsChar(value, u);
     }
 
 }

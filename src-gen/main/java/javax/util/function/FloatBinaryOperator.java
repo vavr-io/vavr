@@ -20,7 +20,7 @@ public interface FloatBinaryOperator extends Function2<Float, Float, Float> {
 
     @Override
     default Float apply(Float left, Float right) {
-        return applyAsFloat(left, right);
+      return applyAsFloat(left, right);
     }
 
 }
