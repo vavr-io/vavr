@@ -14,16 +14,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Random;
 import javaslang.*;
 import javaslang.collection.List;
-import javax.util.function.CheckedPredicate;
 import org.junit.Test;
 
 public class PropertyTest {
 
-    static <T> CheckedPredicate<T> tautology() {
+    static <T> CheckedFunction1<T, Boolean> tautology() {
         return any -> true;
     }
 
-    static <T> CheckedPredicate<T> falsum() {
+    static <T> CheckedFunction1<T, Boolean> falsum() {
         return any -> false;
     }
 
@@ -121,7 +120,7 @@ public class PropertyTest {
         assertThat(result.isErroneous()).isTrue();
         assertThat(result.isExhausted()).isFalse();
         assertThat(result.count()).isEqualTo(0);
-        assertThat(result.sample().isNotPresent()).isTrue();
+        assertThat(result.sample().isEmpty()).isTrue();
     }
 
     @Test
@@ -131,7 +130,7 @@ public class PropertyTest {
         assertThat(result.isErroneous()).isTrue();
         assertThat(result.isExhausted()).isFalse();
         assertThat(result.count()).isEqualTo(1);
-        assertThat(result.sample().isNotPresent()).isTrue();
+        assertThat(result.sample().isEmpty()).isTrue();
     }
 
     @Test
@@ -144,7 +143,7 @@ public class PropertyTest {
         assertThat(result.isErroneous()).isTrue();
         assertThat(result.isExhausted()).isFalse();
         assertThat(result.count()).isEqualTo(1);
-        assertThat(result.sample().isPresent()).isTrue();
+        assertThat(result.sample().isDefined()).isTrue();
         assertThat(result.sample().get()).isEqualTo(Tuple.of(1, 2));
     }
 

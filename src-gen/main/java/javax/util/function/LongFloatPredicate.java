@@ -9,18 +9,13 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Function2;
+import java.io.Serializable;
 
 @FunctionalInterface
-public interface LongFloatPredicate extends Function2<Long, Float, Boolean> {
+public interface LongFloatPredicate extends Serializable {
 
     static final long serialVersionUID = 1L;
 
     boolean test(long left, float right);
-
-    @Override
-    default Boolean apply(Long left, Float right) {
-        return test(left, right);
-    }
 
 }

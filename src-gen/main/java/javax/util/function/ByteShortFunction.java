@@ -9,18 +9,13 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Function2;
+import java.io.Serializable;
 
 @FunctionalInterface
-public interface ByteShortFunction<R> extends Function2<Byte, Short, R> {
+public interface ByteShortFunction<R> extends Serializable {
 
     static final long serialVersionUID = 1L;
 
     R apply(byte left, short right);
-
-    @Override
-    default R apply(Byte left, Short right) {
-        return apply((byte) left, (short) right);
-    }
 
 }

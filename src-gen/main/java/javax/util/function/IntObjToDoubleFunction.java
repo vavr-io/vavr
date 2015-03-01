@@ -9,18 +9,13 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Function2;
+import java.io.Serializable;
 
 @FunctionalInterface
-public interface IntObjToDoubleFunction<U> extends Function2<Integer, U, Double> {
+public interface IntObjToDoubleFunction<U> extends Serializable {
 
     static final long serialVersionUID = 1L;
 
     double applyAsDouble(int value, U u);
-
-    @Override
-    default Double apply(Integer value, U u) {
-        return applyAsDouble(value, u);
-    }
 
 }

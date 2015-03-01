@@ -9,18 +9,13 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.CheckedFunction2;
+import java.io.Serializable;
 
 @FunctionalInterface
-public interface CheckedCharByteToCharFunction extends CheckedFunction2<Character, Byte, Character> {
+public interface CheckedCharByteToCharFunction extends Serializable {
 
     static final long serialVersionUID = 1L;
 
     char applyAsChar(char left, byte right) throws Throwable;
-
-    @Override
-    default Character apply(Character left, Byte right) throws Throwable {
-        return applyAsChar(left, right);
-    }
 
 }

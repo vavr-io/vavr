@@ -9,19 +9,19 @@ package javax.lang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.CheckedFunction0;
+import java.io.Serializable;
+import java.util.Objects;
 
 @FunctionalInterface
-public interface CheckedRunnable extends CheckedFunction0<Void> {
+public interface CheckedRunnable extends Serializable {
 
     static final long serialVersionUID = 1L;
 
     void run() throws Throwable;
 
-    @Override
-    default Void apply() throws Throwable {
-        run();
-        return null;
+    default CheckedRunnable andThen(CheckedRunnable after) {
+        Objects.requireNonNull(after);
+        return () -> { run(); after.run(); };
     }
 
 }

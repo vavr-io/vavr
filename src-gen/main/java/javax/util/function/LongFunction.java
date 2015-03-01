@@ -9,19 +9,15 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Function1;
+import java.io.Serializable;
 
 @FunctionalInterface
-public interface LongFunction<R> extends Function1<Long, R>, java.util.function.LongFunction<R> {
+public interface LongFunction<R> extends Serializable, java.util.function.LongFunction<R> {
 
     static final long serialVersionUID = 1L;
 
-    R apply(long value);
-
     @Override
-    default R apply(Long value) {
-        return apply((long) value);
-    }
+    R apply(long value);
 
     static LongFunction<Long> identity() {
         return v -> v;

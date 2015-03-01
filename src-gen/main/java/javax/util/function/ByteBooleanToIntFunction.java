@@ -9,18 +9,13 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Function2;
+import java.io.Serializable;
 
 @FunctionalInterface
-public interface ByteBooleanToIntFunction extends Function2<Byte, Boolean, Integer> {
+public interface ByteBooleanToIntFunction extends Serializable {
 
     static final long serialVersionUID = 1L;
 
     int applyAsInt(byte left, boolean right);
-
-    @Override
-    default Integer apply(Byte left, Boolean right) {
-        return applyAsInt(left, right);
-    }
 
 }

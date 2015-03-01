@@ -9,19 +9,20 @@ package javax.lang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Function0;
+import java.io.Serializable;
+import java.util.Objects;
 
 @FunctionalInterface
-public interface Runnable extends Function0<Void>, java.lang.Runnable {
+public interface Runnable extends Serializable, java.lang.Runnable {
 
     static final long serialVersionUID = 1L;
 
+    @Override
     void run();
 
-    @Override
-    default Void apply() {
-        run();
-        return null;
+    default Runnable andThen(java.lang.Runnable after) {
+        Objects.requireNonNull(after);
+        return () -> { run(); after.run(); };
     }
 
 }

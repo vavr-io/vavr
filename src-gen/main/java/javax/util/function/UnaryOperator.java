@@ -9,10 +9,10 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Function1;
+import java.io.Serializable;
 
 @FunctionalInterface
-public interface UnaryOperator<T> extends Function1<T, T>, java.util.function.UnaryOperator<T> {
+public interface UnaryOperator<T> extends Serializable, java.util.function.UnaryOperator<T> {
 
     static final long serialVersionUID = 1L;
 

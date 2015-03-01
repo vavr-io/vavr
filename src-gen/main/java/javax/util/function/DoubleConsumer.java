@@ -9,19 +9,21 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Function1;
+import java.io.Serializable;
+import java.util.Objects;
 
 @FunctionalInterface
-public interface DoubleConsumer extends Function1<Double, Void>, java.util.function.DoubleConsumer {
+public interface DoubleConsumer extends Serializable, java.util.function.DoubleConsumer {
 
     static final long serialVersionUID = 1L;
 
+    @Override
     void accept(double value);
 
     @Override
-    default Void apply(Double value) {
-        accept(value);
-        return null;
+    default DoubleConsumer andThen(java.util.function.DoubleConsumer after) {
+        Objects.requireNonNull(after);
+        return (double value) -> { accept(value); after.accept(value); };
     }
 
 }

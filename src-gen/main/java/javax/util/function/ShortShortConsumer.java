@@ -9,19 +9,19 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Function2;
+import java.io.Serializable;
+import java.util.Objects;
 
 @FunctionalInterface
-public interface ShortShortConsumer extends Function2<Short, Short, Void> {
+public interface ShortShortConsumer extends Serializable {
 
     static final long serialVersionUID = 1L;
 
     void accept(short left, short right);
 
-    @Override
-    default Void apply(Short left, Short right) {
-        accept(left, right);
-        return null;
+    default ShortShortConsumer andThen(ShortShortConsumer after) {
+        Objects.requireNonNull(after);
+        return (short left, short right) -> { accept(left, right); after.accept(left, right); };
     }
 
 }

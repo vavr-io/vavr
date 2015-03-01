@@ -9,19 +9,15 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Function1;
+import java.io.Serializable;
 
 @FunctionalInterface
-public interface LongUnaryOperator extends Function1<Long, Long>, java.util.function.LongUnaryOperator {
+public interface LongUnaryOperator extends Serializable, java.util.function.LongUnaryOperator {
 
     static final long serialVersionUID = 1L;
 
-    long applyAsLong(long value);
-
     @Override
-    default Long apply(Long value) {
-        return applyAsLong(value);
-    }
+    long applyAsLong(long value);
 
     static LongUnaryOperator identity() {
         return v -> v;

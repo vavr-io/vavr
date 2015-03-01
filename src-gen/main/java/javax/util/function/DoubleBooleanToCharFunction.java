@@ -9,18 +9,13 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Function2;
+import java.io.Serializable;
 
 @FunctionalInterface
-public interface DoubleBooleanToCharFunction extends Function2<Double, Boolean, Character> {
+public interface DoubleBooleanToCharFunction extends Serializable {
 
     static final long serialVersionUID = 1L;
 
     char applyAsChar(double left, boolean right);
-
-    @Override
-    default Character apply(Double left, Boolean right) {
-        return applyAsChar(left, right);
-    }
 
 }

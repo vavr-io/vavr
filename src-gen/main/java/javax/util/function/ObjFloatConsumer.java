@@ -9,19 +9,19 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Function2;
+import java.io.Serializable;
+import java.util.Objects;
 
 @FunctionalInterface
-public interface ObjFloatConsumer<T> extends Function2<T, Float, Void> {
+public interface ObjFloatConsumer<T> extends Serializable {
 
     static final long serialVersionUID = 1L;
 
     void accept(T t, float value);
 
-    @Override
-    default Void apply(T t, Float value) {
-        accept(t, value);
-        return null;
+    default ObjFloatConsumer<T> andThen(ObjFloatConsumer<? super T> after) {
+        Objects.requireNonNull(after);
+        return (T t, float value) -> { accept(t, value); after.accept(t, value); };
     }
 
 }

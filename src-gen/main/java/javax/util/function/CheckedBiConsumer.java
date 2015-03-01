@@ -9,19 +9,19 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.CheckedFunction2;
+import java.io.Serializable;
+import java.util.Objects;
 
 @FunctionalInterface
-public interface CheckedBiConsumer<T, U> extends CheckedFunction2<T, U, Void> {
+public interface CheckedBiConsumer<T, U> extends Serializable {
 
     static final long serialVersionUID = 1L;
 
     void accept(T t, U u) throws Throwable;
 
-    @Override
-    default Void apply(T t, U u) throws Throwable {
-        accept(t, u);
-        return null;
+    default CheckedBiConsumer<T, U> andThen(CheckedBiConsumer<? super T, ? super U> after) {
+        Objects.requireNonNull(after);
+        return (T t, U u) -> { accept(t, u); after.accept(t, u); };
     }
 
 }

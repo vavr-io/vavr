@@ -9,19 +9,19 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Function1;
+import java.io.Serializable;
+import java.util.Objects;
 
 @FunctionalInterface
-public interface ByteConsumer extends Function1<Byte, Void> {
+public interface ByteConsumer extends Serializable {
 
     static final long serialVersionUID = 1L;
 
     void accept(byte value);
 
-    @Override
-    default Void apply(Byte value) {
-        accept(value);
-        return null;
+    default ByteConsumer andThen(ByteConsumer after) {
+        Objects.requireNonNull(after);
+        return (byte value) -> { accept(value); after.accept(value); };
     }
 
 }

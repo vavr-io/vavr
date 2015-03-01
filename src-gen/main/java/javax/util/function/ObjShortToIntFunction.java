@@ -9,18 +9,13 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Function2;
+import java.io.Serializable;
 
 @FunctionalInterface
-public interface ObjShortToIntFunction<T> extends Function2<T, Short, Integer> {
+public interface ObjShortToIntFunction<T> extends Serializable {
 
     static final long serialVersionUID = 1L;
 
     int applyAsInt(T t, short value);
-
-    @Override
-    default Integer apply(T t, Short value) {
-        return applyAsInt(t, value);
-    }
 
 }

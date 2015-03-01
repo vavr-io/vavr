@@ -9,18 +9,13 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Function2;
+import java.io.Serializable;
 
 @FunctionalInterface
-public interface FloatFloatToCharFunction extends Function2<Float, Float, Character> {
+public interface FloatFloatToCharFunction extends Serializable {
 
     static final long serialVersionUID = 1L;
 
     char applyAsChar(float left, float right);
-
-    @Override
-    default Character apply(Float left, Float right) {
-        return applyAsChar(left, right);
-    }
 
 }

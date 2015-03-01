@@ -9,10 +9,10 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Function1;
+import java.io.Serializable;
 
 @FunctionalInterface
-public interface Function<T, R> extends Function1<T, R>, java.util.function.Function<T, R> {
+public interface Function<T, R> extends Serializable, java.util.function.Function<T, R> {
 
     static final long serialVersionUID = 1L;
 

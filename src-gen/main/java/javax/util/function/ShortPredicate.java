@@ -9,18 +9,13 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Function1;
+import java.io.Serializable;
 
 @FunctionalInterface
-public interface ShortPredicate extends Function1<Short, Boolean> {
+public interface ShortPredicate extends Serializable {
 
     static final long serialVersionUID = 1L;
 
     boolean test(short value);
-
-    @Override
-    default Boolean apply(Short value) {
-        return test(value);
-    }
 
 }

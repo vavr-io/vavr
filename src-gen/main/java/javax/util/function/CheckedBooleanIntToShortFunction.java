@@ -9,18 +9,13 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.CheckedFunction2;
+import java.io.Serializable;
 
 @FunctionalInterface
-public interface CheckedBooleanIntToShortFunction extends CheckedFunction2<Boolean, Integer, Short> {
+public interface CheckedBooleanIntToShortFunction extends Serializable {
 
     static final long serialVersionUID = 1L;
 
     short applyAsShort(boolean left, int right) throws Throwable;
-
-    @Override
-    default Short apply(Boolean left, Integer right) throws Throwable {
-        return applyAsShort(left, right);
-    }
 
 }

@@ -9,18 +9,13 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.CheckedFunction1;
+import java.io.Serializable;
 
 @FunctionalInterface
-public interface CheckedByteToIntFunction extends CheckedFunction1<Byte, Integer> {
+public interface CheckedByteToIntFunction extends Serializable {
 
     static final long serialVersionUID = 1L;
 
     int applyAsInt(byte value) throws Throwable;
-
-    @Override
-    default Integer apply(Byte value) throws Throwable {
-        return applyAsInt(value);
-    }
 
 }

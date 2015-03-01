@@ -9,19 +9,14 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Function1;
+import java.io.Serializable;
 
 @FunctionalInterface
-public interface FloatUnaryOperator extends Function1<Float, Float> {
+public interface FloatUnaryOperator extends Serializable {
 
     static final long serialVersionUID = 1L;
 
     float applyAsFloat(float value);
-
-    @Override
-    default Float apply(Float value) {
-        return applyAsFloat(value);
-    }
 
     static FloatUnaryOperator identity() {
         return v -> v;

@@ -9,19 +9,19 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.CheckedFunction2;
+import java.io.Serializable;
+import java.util.Objects;
 
 @FunctionalInterface
-public interface CheckedFloatBooleanConsumer extends CheckedFunction2<Float, Boolean, Void> {
+public interface CheckedFloatBooleanConsumer extends Serializable {
 
     static final long serialVersionUID = 1L;
 
     void accept(float left, boolean right) throws Throwable;
 
-    @Override
-    default Void apply(Float left, Boolean right) throws Throwable {
-        accept(left, right);
-        return null;
+    default CheckedFloatBooleanConsumer andThen(CheckedFloatBooleanConsumer after) {
+        Objects.requireNonNull(after);
+        return (float left, boolean right) -> { accept(left, right); after.accept(left, right); };
     }
 
 }

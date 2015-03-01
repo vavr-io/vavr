@@ -9,18 +9,14 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Function0;
+import java.io.Serializable;
 
 @FunctionalInterface
-public interface DoubleSupplier extends Function0<Double>, java.util.function.DoubleSupplier {
+public interface DoubleSupplier extends Serializable, java.util.function.DoubleSupplier {
 
     static final long serialVersionUID = 1L;
 
-    double getAsDouble();
-
     @Override
-    default Double apply() {
-        return getAsDouble();
-    }
+    double getAsDouble();
 
 }

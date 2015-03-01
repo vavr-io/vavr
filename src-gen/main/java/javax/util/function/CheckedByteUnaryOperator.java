@@ -9,19 +9,14 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.CheckedFunction1;
+import java.io.Serializable;
 
 @FunctionalInterface
-public interface CheckedByteUnaryOperator extends CheckedFunction1<Byte, Byte> {
+public interface CheckedByteUnaryOperator extends Serializable {
 
     static final long serialVersionUID = 1L;
 
     byte applyAsByte(byte value) throws Throwable;
-
-    @Override
-    default Byte apply(Byte value) throws Throwable {
-        return applyAsByte(value);
-    }
 
     static ByteUnaryOperator identity() {
         return v -> v;

@@ -9,19 +9,14 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Function1;
+import java.io.Serializable;
 
 @FunctionalInterface
-public interface ShortUnaryOperator extends Function1<Short, Short> {
+public interface ShortUnaryOperator extends Serializable {
 
     static final long serialVersionUID = 1L;
 
     short applyAsShort(short value);
-
-    @Override
-    default Short apply(Short value) {
-        return applyAsShort(value);
-    }
 
     static ShortUnaryOperator identity() {
         return v -> v;

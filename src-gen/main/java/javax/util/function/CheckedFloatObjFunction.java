@@ -9,18 +9,13 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.CheckedFunction2;
+import java.io.Serializable;
 
 @FunctionalInterface
-public interface CheckedFloatObjFunction<U, R> extends CheckedFunction2<Float, U, R> {
+public interface CheckedFloatObjFunction<U, R> extends Serializable {
 
     static final long serialVersionUID = 1L;
 
     R apply(float value, U u) throws Throwable;
-
-    @Override
-    default R apply(Float value, U u) throws Throwable {
-        return apply((float) value, u);
-    }
 
 }

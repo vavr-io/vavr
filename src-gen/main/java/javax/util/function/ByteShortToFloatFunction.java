@@ -9,18 +9,13 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Function2;
+import java.io.Serializable;
 
 @FunctionalInterface
-public interface ByteShortToFloatFunction extends Function2<Byte, Short, Float> {
+public interface ByteShortToFloatFunction extends Serializable {
 
     static final long serialVersionUID = 1L;
 
     float applyAsFloat(byte left, short right);
-
-    @Override
-    default Float apply(Byte left, Short right) {
-        return applyAsFloat(left, right);
-    }
 
 }

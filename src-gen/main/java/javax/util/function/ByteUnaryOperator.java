@@ -9,19 +9,14 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Function1;
+import java.io.Serializable;
 
 @FunctionalInterface
-public interface ByteUnaryOperator extends Function1<Byte, Byte> {
+public interface ByteUnaryOperator extends Serializable {
 
     static final long serialVersionUID = 1L;
 
     byte applyAsByte(byte value);
-
-    @Override
-    default Byte apply(Byte value) {
-        return applyAsByte(value);
-    }
 
     static ByteUnaryOperator identity() {
         return v -> v;

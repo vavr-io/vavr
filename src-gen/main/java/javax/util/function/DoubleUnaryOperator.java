@@ -9,19 +9,15 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Function1;
+import java.io.Serializable;
 
 @FunctionalInterface
-public interface DoubleUnaryOperator extends Function1<Double, Double>, java.util.function.DoubleUnaryOperator {
+public interface DoubleUnaryOperator extends Serializable, java.util.function.DoubleUnaryOperator {
 
     static final long serialVersionUID = 1L;
 
-    double applyAsDouble(double value);
-
     @Override
-    default Double apply(Double value) {
-        return applyAsDouble(value);
-    }
+    double applyAsDouble(double value);
 
     static DoubleUnaryOperator identity() {
         return v -> v;

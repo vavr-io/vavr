@@ -9,18 +9,14 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Function1;
+import java.io.Serializable;
 
 @FunctionalInterface
-public interface DoublePredicate extends Function1<Double, Boolean>, java.util.function.DoublePredicate {
+public interface DoublePredicate extends Serializable, java.util.function.DoublePredicate {
 
     static final long serialVersionUID = 1L;
 
-    boolean test(double value);
-
     @Override
-    default Boolean apply(Double value) {
-        return test(value);
-    }
+    boolean test(double value);
 
 }

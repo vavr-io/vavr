@@ -9,18 +9,14 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Function2;
+import java.io.Serializable;
 
 @FunctionalInterface
-public interface ToDoubleBiFunction<T, U> extends Function2<T, U, Double>, java.util.function.ToDoubleBiFunction<T, U> {
+public interface ToDoubleBiFunction<T, U> extends Serializable, java.util.function.ToDoubleBiFunction<T, U> {
 
     static final long serialVersionUID = 1L;
 
-    double applyAsDouble(T t, U u);
-
     @Override
-    default Double apply(T t, U u) {
-        return applyAsDouble(t, u);
-    }
+    double applyAsDouble(T t, U u);
 
 }

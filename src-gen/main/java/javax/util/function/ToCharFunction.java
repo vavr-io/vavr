@@ -9,19 +9,14 @@ package javax.util.function;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Function1;
+import java.io.Serializable;
 
 @FunctionalInterface
-public interface ToCharFunction<T> extends Function1<T, Character> {
+public interface ToCharFunction<T> extends Serializable {
 
     static final long serialVersionUID = 1L;
 
     char applyAsChar(T t);
-
-    @Override
-    default Character apply(T t) {
-        return applyAsChar(t);
-    }
 
     static ToCharFunction<Character> identity() {
         return v -> v;
