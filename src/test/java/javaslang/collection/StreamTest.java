@@ -94,6 +94,13 @@ public class StreamTest extends AbstractSeqTest {
         assertThat(Stream.nil()).isEqualTo(Nil.instance());
     }
 
+    // -- static cons()
+
+    @Test
+    public void shouldCreateStreamOfStreamUsingCons() {
+        assertThat(Stream.cons(Stream.nil()).toString()).isEqualTo("Stream(Stream())");
+    }
+
     // -- static of(T...)
 
     @Test
@@ -166,8 +173,18 @@ public class StreamTest extends AbstractSeqTest {
     // -- combinations
 
     @Test
+    public void shouldComputeCombinationsOfEmptyList() {
+        assertThat(Stream.nil().combinations(1)).isEqualTo(Stream.nil());
+    }
+
+    @Test
     public void shouldComputeCombinationsOfNonEmptyStream() {
         assertThat(Stream.of(1, 2, 3).combinations(2)).isEqualTo(Stream.of(Stream.of(1, 2), Stream.of(1, 3), Stream.of(2, 3)));
+    }
+
+    @Test
+    public void shouldComputeCombinationsOfNegativeK() {
+        assertThat(Stream.of(1).combinations(-1)).isEqualTo(Stream.cons(Stream.nil()));
     }
 
     // -- unapply

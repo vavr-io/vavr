@@ -66,7 +66,14 @@ public class ListTest extends AbstractSeqTest {
 		assertThat(List.nil()).isEqualTo(Nil.instance());
 	}
 
-	// -- static of(T...)
+    // -- static cons()
+
+    @Test
+    public void shouldCreateListOfListUsingCons() {
+        assertThat(List.cons(List.nil()).toString()).isEqualTo("List(List())");
+    }
+
+    // -- static of(T...)
 
 	@Test
 	public void shouldCreateListOfElements() {
@@ -130,8 +137,18 @@ public class ListTest extends AbstractSeqTest {
     // -- combinations
 
     @Test
+    public void shouldComputeCombinationsOfEmptyList() {
+        assertThat(List.nil().combinations(1)).isEqualTo(List.nil());
+    }
+
+    @Test
     public void shouldComputeCombinationsOfNonEmptyList() {
         assertThat(List.of(1, 2, 3).combinations(2)).isEqualTo(List.of(List.of(1, 3), List.of(1, 2), List.of(2, 3)));
+    }
+
+    @Test
+    public void shouldComputeCombinationsOfNegativeK() {
+        assertThat(List.of(1).combinations(-1)).isEqualTo(List.cons(List.nil()));
     }
 
     // -- unapply

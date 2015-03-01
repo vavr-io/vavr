@@ -341,7 +341,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
                                 combinations(elements.drop(t._2 + 1), (k - 1)).map(c -> c.prepend(t._1)));
             }
         }
-        return new Recursion().combinations(this, k);
+        return new Recursion().combinations(this, Math.max(k, 0));
     }
 
     @Override
