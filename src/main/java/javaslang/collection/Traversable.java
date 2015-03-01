@@ -216,7 +216,7 @@ public interface Traversable<T> extends Iterable<T>, HigherKinded1<T, Traversabl
     Traversable<T> distinct();
 
     /**
-     * Drops the first n elements of this Traversable or the all elements, if this length &lt; n.
+     * Drops the first n elements of this Traversable or all elements, if this length &lt; n.
      *
      * @param n The number of elements to drop.
      * @return A Traversable consisting of all elements of this Traversable except the first n ones, or else an empty Traversable, if this
