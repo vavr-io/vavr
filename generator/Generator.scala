@@ -247,7 +247,9 @@ def generateMainClasses(): Unit = {
       def method: Method
 
       // optional code
-      def identity: Option[String]
+      def andThenFunction: Option[String]
+      def composeFunction: Option[String]
+      def identityFunction: Option[String]
 
       // derived properties
       def originalName: Option[TypeName] = if (isOriginal) Some(name.transform((p,n,g) => (p.replaceFirst("^javax.", "java."), n, g))) else None
@@ -303,7 +305,7 @@ def generateMainClasses(): Unit = {
 
               ${andThenConsumer.gen}
 
-              ${identity.gen(retType => xs"""
+              ${identityFunction.gen(retType => xs"""
                 static $retType identity() {
                     return v -> v;
                 }
@@ -312,7 +314,7 @@ def generateMainClasses(): Unit = {
         """
       }
 
-      def hasUnitTests: Boolean = identity.isDefined
+      def hasUnitTests: Boolean = identityFunction.isDefined
 
       def genTest(im: ImportManager, checked: Boolean): String = {
 
@@ -352,7 +354,9 @@ def generateMainClasses(): Unit = {
         Method((returnType, returnType.asUnboxed), name)
       }
 
-      override def identity = None
+      override def andThenFunction = ???
+      override def composeFunction = ???
+      override def identityFunction = None
     }
 
     /**
@@ -392,7 +396,11 @@ def generateMainClasses(): Unit = {
         Method((returnType, returnType.asUnboxed), methodName, (arg, arg.asUnboxed("T")))
       }
 
-      override def identity =
+      override def andThenFunction = ???
+
+      override def composeFunction = ???
+
+      override def identityFunction =
         if (returnType.isVoid) {
           None
         } else if (returnType.isBoolean) {
@@ -483,7 +491,11 @@ def generateMainClasses(): Unit = {
         Method((returnType, returnType.asUnboxed), methodName, (arg1, arg1.asUnboxed("T")), (arg2, arg2.asUnboxed("U")))
       }
 
-      override def identity = None
+      override def andThenFunction = ???
+
+      override def composeFunction = ???
+
+      override def identityFunction = None
     }
 
     case class UnaryOperator() extends FunctionalInterface {
@@ -493,7 +505,9 @@ def generateMainClasses(): Unit = {
       override def isOriginal = true
       override def name: TypeName = TypeName("javax.util.function", "UnaryOperator", Generics("T"))
       override def method: Method = Method((Types.Object, "T"), "apply", (Types.Object, "T"))
-      override def identity = Some("<T> UnaryOperator<T>")
+      override def andThenFunction = ???
+      override def composeFunction = ???
+      override def identityFunction = Some("<T> UnaryOperator<T>")
     }
 
     case class BinaryOperator() extends FunctionalInterface {
@@ -503,7 +517,9 @@ def generateMainClasses(): Unit = {
       override def isOriginal = true
       override def name: TypeName = TypeName("javax.util.function", "BinaryOperator", Generics("T"))
       override def method: Method = Method((Types.Object, "T"), "apply", (Types.Object, "T"), (Types.Object, "T"))
-      override def identity = None
+      override def andThenFunction = ???
+      override def composeFunction = ???
+      override def identityFunction = None
     }
 
     def gen(fi: FunctionalInterface): Unit = {
@@ -1782,6 +1798,7 @@ object JavaGenerator {
 object Generator {
 
   import java.nio.charset.{Charset, StandardCharsets}
+  import java.nio.file.{Files, Paths, StandardOpenOption}
 
   /**
    * Generates a file by writing string contents to the file system.
@@ -1789,19 +1806,18 @@ object Generator {
    * @param baseDir The base directory, e.g. src-gen
    * @param dirName The directory relative to baseDir, e.g. main/java
    * @param fileName The file name within baseDir/dirName
+   * @param createOption One of java.nio.file.{StandardOpenOption.CREATE_NEW, StandardOpenOption.CREATE}, default: CREATE_NEW
    * @param contents The string contents of the file
    * @param charset The charset, by default UTF-8
    */
-  def genFile(baseDir: String, dirName: String, fileName: String)(contents: => String)(implicit charset: Charset = StandardCharsets.UTF_8): Unit = {
-
-    import java.nio.file.{Files, Paths, StandardOpenOption}
+  def genFile(baseDir: String, dirName: String, fileName: String, createOption: StandardOpenOption = StandardOpenOption.CREATE_NEW)(contents: => String)(implicit charset: Charset = StandardCharsets.UTF_8): Unit = {
 
     // println(s"Generating $dirName${File.separator}$fileName")
 
     Files.write(
       Files.createDirectories(Paths.get(baseDir, dirName)).resolve(fileName),
       contents.getBytes(charset),
-      StandardOpenOption.CREATE, StandardOpenOption.WRITE)
+      createOption, StandardOpenOption.WRITE)
   }
 
   implicit class StringExtensions(s: String) {
