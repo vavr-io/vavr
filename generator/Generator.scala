@@ -50,7 +50,7 @@ def generateMainClasses(): Unit = {
 
       type Types = Value
 
-      val boolean, byte, char, double, float, int, long, short, void, Object = Value
+      val Object, int, long, double, boolean, byte, char, float, short, void = Value
 
       implicit class TypesExtensions(val v: Value) {
 
@@ -79,7 +79,6 @@ def generateMainClasses(): Unit = {
           case _ => v.toString.firstUpper
         }
       }
-
     }
 
     import Types._
@@ -438,6 +437,8 @@ def generateMainClasses(): Unit = {
         if (returnType.isVoid) {
           if (arg1.isObject && arg2.isObject) {
             TypeName("javax.util.function", "BiConsumer", Generics("T", "U"))
+          } else if (arg1 == arg2) {
+            TypeName("javax.util.function", s"${arg1.asIdentifier}BiConsumer", Generics())
           } else {
             val generics = if (arg1.isObject) Generics("T") else if (arg2.isObject) Generics("U") else Generics()
             TypeName("javax.util.function", s"${arg1.asIdentifier}${arg2.asIdentifier}Consumer", generics)
@@ -445,6 +446,8 @@ def generateMainClasses(): Unit = {
         } else if (returnType.isBoolean) {
           if (arg1.isObject && arg2.isObject) {
             TypeName("javax.util.function", "BiPredicate", Generics("T", "U"))
+          } else if (arg1 == arg2) {
+            TypeName("javax.util.function", s"${arg1.asIdentifier}BiPredicate", Generics())
           } else {
             val generics = if (arg1.isObject) Generics("T") else if (arg2.isObject) Generics("U") else Generics()
             TypeName("javax.util.function", s"${arg1.asIdentifier}${arg2.asIdentifier}Predicate", generics)
@@ -454,6 +457,8 @@ def generateMainClasses(): Unit = {
             TypeName("javax.util.function", s"To${returnType.asIdentifier}BiFunction", Generics("T", "U"))
           } else if (arg1 == returnType && arg2 == returnType) {
             TypeName("javax.util.function", s"${returnType.asIdentifier}BinaryOperator")
+          } else if (arg1 == arg2) {
+            TypeName("javax.util.function", s"${arg1.asIdentifier}To${returnType.asIdentifier}BiFunction")
           } else {
             val generics = if (arg1.isObject) Generics("T") else if (arg2.isObject) Generics("U") else Generics()
             TypeName("javax.util.function", s"${arg1.asIdentifier}${arg2.asIdentifier}To${returnType.asIdentifier}Function", generics)
@@ -461,6 +466,8 @@ def generateMainClasses(): Unit = {
         } else /* returnType.isObject */ {
           if (arg1.isObject && arg2.isObject) {
             TypeName("javax.util.function", "BiFunction", Generics("T", "U", "R"))
+          } else if (arg1 == arg2) {
+            TypeName("javax.util.function", s"${arg1.asIdentifier}BiFunction", Generics())
           } else {
             val generics = if (arg1.isObject) Generics("T", "R") else if (arg2.isObject) Generics("U", "R") else Generics("R")
             TypeName("javax.util.function", s"${arg1.asIdentifier}${arg2.asIdentifier}Function", generics)
@@ -514,12 +521,15 @@ def generateMainClasses(): Unit = {
     Seq(UnaryOperator(), BinaryOperator()).foreach { gen }
     Types.values.foreach(returnType => {
       gen(Function0(returnType))
-      Types.values.filter(!_.isVoid).foreach(arg1Type => {
-        gen(Function1(returnType, arg1Type))
-        Types.values.filter(!_.isVoid).foreach(arg2Type => {
-          gen(Function2(returnType, arg1Type, arg2Type))
-        })
-      })
+      Types.values.filter(!_.isVoid).foreach {
+        argType => {
+          gen(Function1(returnType, argType))
+          gen(Function2(returnType, argType, argType))
+        }
+      }
+      Types.values.filter(!_.isVoid).toSeq.combinations(2).map(l => (l(0), l(1))).foreach {
+        case (arg1Type, arg2Type) => gen(Function2(returnType, arg1Type, arg2Type))
+      }
     })
   }
 
