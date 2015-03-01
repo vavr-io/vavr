@@ -6,12 +6,12 @@
 package javaslang.collection;
 
 import javaslang.*;
-import javaslang.algebra.*;
+import javaslang.algebra.HigherKinded1;
+import javaslang.algebra.Monad1;
 
 import java.io.*;
 import java.util.*;
 import java.util.function.*;
-import java.util.function.Function;
 import java.util.stream.Collector;
 
 /**
@@ -71,14 +71,14 @@ public interface List<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObject 
      * <p>
      * Use {@linkplain List#cons(T)} instead of {@linkplain List#of(Iterable)} in order to create nested structures of
      * the form {@code List&lt;List&lt;T&gt;&gt;}.
-     *</p>
+     * </p>
      * <p>
      * {@linkplain List#cons(T)} produces the same result as {@linkplain List#of(Iterable)} if T is not Iterable and
      * the Iterable contains only one element.
      * </p>
      *
      * @param element An element.
-     * @param <T> The component type
+     * @param <T>     The component type
      * @return A new List instance containing the given element
      */
     static <T> List<T> cons(T element) {
@@ -209,7 +209,7 @@ public interface List<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObject 
     @SuppressWarnings("unchecked")
     @Override
     default <U, TRAVERSABLE extends HigherKinded1<U, Traversable<?>>> List<U> flatMap(Function<? super T, TRAVERSABLE> mapper) {
-        return foldLeft(Nil.<U> instance(), (List<U> xs, T x) -> xs.prependAll((Traversable<U>) mapper.apply(x))).reverse();
+        return foldLeft(Nil.<U>instance(), (List<U> xs, T x) -> xs.prependAll((Traversable<U>) mapper.apply(x))).reverse();
     }
 
     @Override
@@ -583,7 +583,7 @@ public interface List<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObject 
             xs = xs.prepend(t._1);
             ys = ys.prepend(t._2);
         }
-            return Tuple.of(xs.reverse(), ys.reverse());
+        return Tuple.of(xs.reverse(), ys.reverse());
     }
 
     @Override

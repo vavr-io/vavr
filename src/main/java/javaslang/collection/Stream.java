@@ -210,14 +210,14 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
      * <p>
      * Use {@linkplain Stream#cons(T)} instead of {@linkplain Stream#of(Iterable)} in order to create nested structures of
      * the form {@code Stream&lt;Stream&lt;T&gt;&gt;}.
-     *</p>
+     * </p>
      * <p>
      * {@linkplain Stream#cons(T)} produces the same result as {@linkplain Stream#of(Iterable)} if T is not Iterable and
      * the Iterable contains only one element.
      * </p>
      *
      * @param element An element.
-     * @param <T> The component type
+     * @param <T>     The component type
      * @return A new Stream instance containing the given element
      */
     static <T> Stream<T> cons(T element) {
@@ -347,7 +347,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
     @Override
     default Stream<T> distinct() {
         // TODO: better solution?
-            return Stream.of(List.of(this).distinct());
+        return Stream.of(List.of(this).distinct());
     }
 
     @Override
@@ -362,7 +362,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
 
     @Override
     default Stream<T> dropWhile(Predicate<? super T> predicate) {
-            return (Stream<T>) Seq.super.dropWhile(predicate);
+        return (Stream<T>) Seq.super.dropWhile(predicate);
     }
 
     @Override
@@ -554,8 +554,8 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
     }
 
     @Override
-    default Stream<T> removeAll (T removed){
-            return filter(e -> !Objects.equals(e, removed));
+    default Stream<T> removeAll(T removed) {
+        return filter(e -> !Objects.equals(e, removed));
     }
 
     @Override
@@ -630,35 +630,35 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
             throw new IndexOutOfBoundsException("set(" + index + ", e) on stream of size " + length());
         }
         // skip the current head element because it is replaced
-            return preceding.reverse().appendAll(tail.tail().prepend(element));
+        return preceding.reverse().appendAll(tail.tail().prepend(element));
     }
 
     @Override
     default Stream<T> sort() {
-            return toJavaStream().sorted().collect(Stream.collector());
+        return toJavaStream().sorted().collect(Stream.collector());
     }
 
     @Override
     default Stream<T> sort(Comparator<? super T> c) {
         Objects.requireNonNull(c, "comparator is null");
-            return toJavaStream().sorted(c).collect(Stream.collector());
+        return toJavaStream().sorted(c).collect(Stream.collector());
     }
 
     @Override
     default Tuple2<Stream<T>, Stream<T>> span(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-            return Tuple.of(takeWhile(predicate), dropWhile(predicate));
+        return Tuple.of(takeWhile(predicate), dropWhile(predicate));
     }
 
     @Override
-    default Tuple2<Stream<T>, Stream<T>> splitAt ( int n){
-            return Tuple.of(take(n), drop(n));
+    default Tuple2<Stream<T>, Stream<T>> splitAt(int n) {
+        return Tuple.of(take(n), drop(n));
     }
 
     @Override
     default Spliterator<T> spliterator() {
         // the focus of the Stream API is on random-access collections of *known size*
-            return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
+        return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
     }
 
     @Override
