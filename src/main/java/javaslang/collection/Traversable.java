@@ -99,6 +99,7 @@ import java.util.function.UnaryOperator;
  * </ul>
  * <p>Transformation:</p>
  * <ul>
+ * <li>{@link #combinations(int)}</li>
  * <li>{@link #distinct()}</li>
  * <li>{@link #flatMap(java.util.function.Function)}</li>
  * <li>TODO: groupBy</li>
@@ -180,6 +181,15 @@ public interface Traversable<T> extends Iterable<T>, HigherKinded1<T, Traversabl
      * @return An empty Traversable.
      */
     Traversable<T> clear();
+
+    /**
+     * Returns the k-combination of this traversable, i.e. all subset of this of k distinct elements.
+     *
+     * @param k Size of subsets
+     * @return The k-combination of this elements
+     * @see <a href="http://en.wikipedia.org/wiki/Combination">Combination</a>
+     */
+    Traversable<? extends Traversable<T>> combinations(int k);
 
     /**
      * Tests if this Traversable contains a given value.

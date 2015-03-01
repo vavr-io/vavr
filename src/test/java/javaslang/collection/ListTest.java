@@ -127,7 +127,14 @@ public class ListTest extends AbstractSeqTest {
 		assertThat(List.range(Integer.MIN_VALUE, Integer.MIN_VALUE)).isEqualTo(List.nil());
 	}
 
-	// -- unapply
+    // -- combinations
+
+    @Test
+    public void shouldComputeCombinationsOfNonEmptyList() {
+        assertThat(List.of(1, 2, 3).combinations(2)).isEqualTo(List.of(List.of(1, 3), List.of(1, 2), List.of(2, 3)));
+    }
+
+    // -- unapply
 
 	@Test
 	public void shouldUnapplyNil() {

@@ -208,6 +208,24 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
 
     /**
      * <p>
+     * Use {@linkplain Stream#cons(T)} instead of {@linkplain Stream#of(Iterable)} in order to create nested structures of
+     * the form {@code Stream&lt;Stream&lt;T&gt;&gt;}.
+     *</p>
+     * <p>
+     * {@linkplain Stream#cons(T)} produces the same result as {@linkplain Stream#of(Iterable)} if T is not Iterable and
+     * the Iterable contains only one element.
+     * </p>
+     *
+     * @param element An element.
+     * @param <T> The component type
+     * @return A new Stream instance containing the given element
+     */
+    static <T> Stream<T> cons(T element) {
+        return new Cons<>(element, Nil::instance);
+    }
+
+    /**
+     * <p>
      * Creates a Stream of the given elements.
      * </p>
      * <pre>
@@ -312,6 +330,18 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
     @Override
     default Stream<T> clear() {
         return Nil.instance();
+    }
+
+    @Override
+    default Stream<Stream<T>> combinations(int k) {
+        class Recursion {
+            Stream<Stream<T>> combinations(Stream<T> elements, int k) {
+                return (k == 0) ? Stream.cons(Stream.nil()) :
+                        elements.zipWithIndex().flatMap(t ->
+                                combinations(elements.drop(t._2 + 1), (k - 1)).map(c -> c.prepend(t._1)));
+            }
+        }
+        return new Recursion().combinations(this, k);
     }
 
     @Override

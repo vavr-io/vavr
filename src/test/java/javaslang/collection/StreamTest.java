@@ -163,6 +163,13 @@ public class StreamTest extends AbstractSeqTest {
         assertThat(Stream.range(Integer.MIN_VALUE, Integer.MIN_VALUE)).isEqualTo(Stream.nil());
     }
 
+    // -- combinations
+
+    @Test
+    public void shouldComputeCombinationsOfNonEmptyStream() {
+        assertThat(Stream.of(1, 2, 3).combinations(2)).isEqualTo(Stream.of(Stream.of(1, 2), Stream.of(1, 3), Stream.of(2, 3)));
+    }
+
     // -- unapply
 
     @Test

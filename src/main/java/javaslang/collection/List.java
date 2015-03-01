@@ -69,6 +69,24 @@ public interface List<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObject 
 
     /**
      * <p>
+     * Use {@linkplain List#cons(T)} instead of {@linkplain List#of(Iterable)} in order to create nested structures of
+     * the form {@code List&lt;List&lt;T&gt;&gt;}.
+     *</p>
+     * <p>
+     * {@linkplain List#cons(T)} produces the same result as {@linkplain List#of(Iterable)} if T is not Iterable and
+     * the Iterable contains only one element.
+     * </p>
+     *
+     * @param element An element.
+     * @param <T> The component type
+     * @return A new List instance containing the given element
+     */
+    static <T> List<T> cons(T element) {
+        return new Cons<>(element, Nil.instance());
+    }
+
+    /**
+     * <p>
      * Creates a List of the given elements.
      * </p>
      * <pre>
@@ -148,6 +166,18 @@ public interface List<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObject 
     @Override
     default List<T> clear() {
         return Nil.instance();
+    }
+
+    @Override
+    default List<List<T>> combinations(int k) {
+        class Recursion {
+            List<List<T>> combinations(List<T> elements, int k) {
+                return (k == 0) ? List.cons(List.nil()) :
+                        elements.zipWithIndex().flatMap(t ->
+                                combinations(elements.drop(t._2 + 1), (k - 1)).map(c -> c.prepend(t._1)));
+            }
+        }
+        return new Recursion().combinations(this, k);
     }
 
     @Override
