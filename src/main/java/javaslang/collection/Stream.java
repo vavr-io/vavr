@@ -393,11 +393,6 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
     }
 
     @Override
-    default T fold(T zero, BiFunction<? super T, ? super T, ? extends T> op) {
-        return foldLeft(zero, op);
-    }
-
-    @Override
     default T get(int index) {
         if (isEmpty()) {
             throw new IndexOutOfBoundsException("get(" + index + ") on empty stream");

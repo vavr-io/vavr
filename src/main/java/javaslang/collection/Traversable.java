@@ -310,7 +310,9 @@ public interface Traversable<T> extends Iterable<T>, HigherKinded1<T, Traversabl
      * @param op   The accumulator operator.
      * @return An accumulated version of this.
      */
-    T fold(T zero, BiFunction<? super T, ? super T, ? extends T> op);
+    default T fold(T zero, BiFunction<? super T, ? super T, ? extends T> op) {
+        return foldLeft(zero, op);
+    }
 
     /**
      * <p>
