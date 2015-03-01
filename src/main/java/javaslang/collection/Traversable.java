@@ -188,7 +188,7 @@ public interface Traversable<T> extends Iterable<T>, HigherKinded1<T, Traversabl
      * @return true, if element is in this Traversable, false otherwise.
      */
     default boolean contains(T element) {
-        return findFirst(e -> java.util.Objects.equals(e, element)).isPresent();
+        return findFirst(e -> java.util.Objects.equals(e, element)).isDefined();
     }
 
     /**
@@ -210,7 +210,7 @@ public interface Traversable<T> extends Iterable<T>, HigherKinded1<T, Traversabl
         return List.of(elements)
                 .distinct()
                 .findFirst(e -> !this.contains(e))
-                .isNotPresent();
+                .isEmpty();
     }
 
     Traversable<T> distinct();

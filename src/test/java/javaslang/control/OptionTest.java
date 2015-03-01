@@ -26,7 +26,7 @@ public class OptionTest {
 	@Test
 	public void shouldMapNonNullToSome() throws Exception {
 		final Option<?> option = Option.of(new Object());
-		assertThat(option.isPresent()).isTrue();
+		assertThat(option.isDefined()).isTrue();
 	}
 
 	@Test
@@ -87,27 +87,39 @@ public class OptionTest {
 
 	@Test
 	public void shouldBePresentOnIsPresentWhenValueIsPresent() {
-		assertThat(Option.of(1).isPresent()).isTrue();
+		assertThat(Option.of(1).isDefined()).isTrue();
 	}
 
 	@Test
 	public void shouldNotBePresentOnIsPresentWhenValueIsNotPresent() {
-		assertThat(Option.none().isPresent()).isFalse();
+		assertThat(Option.none().isDefined()).isFalse();
 	}
 
-	// -- ifPresent
+    // -- isEmpty
+
+    @Test
+    public void shouldBeEmptyOnIsEmptyWhenValueIsEmpty() {
+        assertThat(Option.none().isEmpty()).isTrue();
+    }
+
+    @Test
+    public void shouldBePresentOnIsEmptyWhenValueIsPresent() {
+        assertThat(Option.of(1).isEmpty()).isFalse();
+    }
+
+    // -- ifPresent
 
 	@Test
 	public void shouldConsumePresentValueOnIsPresentWhenValueIsPresent() {
 		final int[] actual = new int[] { -1 };
-		Option.of(1).ifPresent(i -> actual[0] = i);
+		Option.of(1).forEach(i -> actual[0] = i);
 		assertThat(actual[0]).isEqualTo(1);
 	}
 
 	@Test
 	public void shouldNotConsumeAnythingOnIsPresentWhenValueIsNotPresent() {
 		final int[] actual = new int[] { -1 };
-		Option.<Integer> none().ifPresent(i -> actual[0] = i);
+		Option.<Integer> none().forEach(i -> actual[0] = i);
 		assertThat(actual[0]).isEqualTo(-1);
 	}
 

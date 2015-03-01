@@ -116,7 +116,7 @@ public class TryTest {
 
 	@Test
 	public void shouldConvertFailureToOption() {
-		assertThat(failure().toOption().isPresent()).isFalse();
+		assertThat(failure().toOption().isDefined()).isFalse();
 	}
 
 	@Test

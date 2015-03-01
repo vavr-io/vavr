@@ -38,63 +38,8 @@ public final class Some<T> implements Option<T> {
     }
 
     @Override
-    public T orElse(T other) {
-        return value;
-    }
-
-    @Override
-    public T orElseGet(Supplier<? extends T> other) {
-        return value;
-    }
-
-    @Override
-    public <X extends Throwable> T orElseThrow(Supplier<X> exceptionSupplier) throws X {
-        return value;
-    }
-
-    @Override
-    public boolean isPresent() {
-        return true;
-    }
-
-    @Override
-    public boolean isNotPresent() {
+    public boolean isEmpty() {
         return false;
-    }
-
-    @Override
-    public void ifPresent(Consumer<? super T> consumer) {
-        consumer.accept(value);
-    }
-
-    @Override
-    public Option<T> filter(Predicate<? super T> predicate) {
-        if (predicate.test(value)) {
-            return this;
-        } else {
-            return None.instance();
-        }
-    }
-
-    @Override
-    public void forEach(Consumer<? super T> action) {
-        action.accept(value);
-    }
-
-    @Override
-    public <U> Option<U> map(Function<? super T, ? extends U> mapper) {
-        return new Some<>(mapper.apply(value));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U, OPTION extends HigherKinded1<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper) {
-        return (Option<U>) mapper.apply(value);
-    }
-
-    @Override
-    public Option<T> toOption() {
-        return this;
     }
 
     @Override

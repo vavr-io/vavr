@@ -144,7 +144,7 @@ public final class Match<R> implements Function1<Object, R> {
 	public R apply(Object obj) {
 		for (java.util.function.Function<Object, Option<R>> caze : cases) {
 			final Option<R> result = caze.apply(obj);
-			if (result.isPresent()) {
+			if (result.isDefined()) {
 				return result.get();
 			}
 		}

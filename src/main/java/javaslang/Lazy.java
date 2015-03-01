@@ -37,9 +37,9 @@ public final class Lazy<T> implements Supplier<T> {
 
     @Override
     public T get() {
-        if (!value.isPresent()) {
+        if (value.isEmpty()) {
             synchronized (this) {
-                if (!value.isPresent()) {
+                if (value.isEmpty()) {
                     value = new Some<>(supplier.get());
                     supplier = null; // free mem
                 }

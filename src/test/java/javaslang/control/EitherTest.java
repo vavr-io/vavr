@@ -177,25 +177,25 @@ public class EitherTest {
 
 	@Test
 	public void shouldFilterSomeOnLeftProjectionOfLeftIfPredicateMatches() {
-		final boolean actual = new Left<Integer, String>(1).left().filter(i -> true).isPresent();
+		final boolean actual = new Left<Integer, String>(1).left().filter(i -> true).isDefined();
 		assertThat(actual).isTrue();
 	}
 
 	@Test
 	public void shouldFilterNoneOnLeftProjectionOfLeftIfPredicateNotMatches() {
-		final boolean actual = new Left<Integer, String>(1).left().filter(i -> false).isPresent();
+		final boolean actual = new Left<Integer, String>(1).left().filter(i -> false).isDefined();
 		assertThat(actual).isFalse();
 	}
 
 	@Test
 	public void shouldFilterSomeOnLeftProjectionOfRightIfPredicateMatches() {
-		final boolean actual = new Right<Integer, String>("1").left().filter(i -> true).isPresent();
+		final boolean actual = new Right<Integer, String>("1").left().filter(i -> true).isDefined();
 		assertThat(actual).isFalse();
 	}
 
 	@Test
 	public void shouldFilterNoneOnLeftProjectionOfRightIfPredicateNotMatches() {
-		final boolean actual = new Right<Integer, String>("1").left().filter(i -> false).isPresent();
+		final boolean actual = new Right<Integer, String>("1").left().filter(i -> false).isDefined();
 		assertThat(actual).isFalse();
 	}
 
@@ -468,25 +468,25 @@ public class EitherTest {
 
 	@Test
 	public void shouldFilterSomeOnRightProjectionOfRightIfPredicateMatches() {
-		final boolean actual = new Right<String, Integer>(1).right().filter(i -> true).isPresent();
+		final boolean actual = new Right<String, Integer>(1).right().filter(i -> true).isDefined();
 		assertThat(actual).isTrue();
 	}
 
 	@Test
 	public void shouldFilterNoneOnRightProjectionOfRightIfPredicateNotMatches() {
-		final boolean actual = new Right<String, Integer>(1).right().filter(i -> false).isPresent();
+		final boolean actual = new Right<String, Integer>(1).right().filter(i -> false).isDefined();
 		assertThat(actual).isFalse();
 	}
 
 	@Test
 	public void shouldFilterSomeOnRightProjectionOfLeftIfPredicateMatches() {
-		final boolean actual = new Left<String, Integer>("1").right().filter(i -> true).isPresent();
+		final boolean actual = new Left<String, Integer>("1").right().filter(i -> true).isDefined();
 		assertThat(actual).isFalse();
 	}
 
 	@Test
 	public void shouldFilterNoneOnRightProjectionOfLeftIfPredicateNotMatches() {
-		final boolean actual = new Left<String, Integer>("1").right().filter(i -> false).isPresent();
+		final boolean actual = new Left<String, Integer>("1").right().filter(i -> false).isDefined();
 		assertThat(actual).isFalse();
 	}
 

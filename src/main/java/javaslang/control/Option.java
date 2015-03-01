@@ -13,6 +13,7 @@ import javaslang.control.Valences.Univalent;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * <p>
@@ -41,21 +42,66 @@ public interface Option<T> extends Monad1<T, Option<?>>, ValueObject, Univalent<
         return None.instance();
     }
 
-    boolean isPresent();
+    default boolean isDefined() {
+        return !isEmpty();
+    }
 
-    boolean isNotPresent();
+    default Option<T> filter(Predicate<? super T> predicate) {
+        if (isEmpty() || predicate.test(get())) {
+            return this;
+        } else {
+            return None.instance();
+        }
+    }
 
-    void ifPresent(Consumer<? super T> consumer);
-
-    Option<T> filter(Predicate<? super T> predicate);
-
-    void forEach(Consumer<? super T> action);
+    default void forEach(Consumer<? super T> action) {
+        if (isDefined()) {
+            action.accept(get());
+        }
+    }
 
     @Override
-    <U> Option<U> map(Function<? super T, ? extends U> mapper);
+    default T orElse(T other) {
+        return isEmpty() ? other : get();
+    }
 
     @Override
-    <U, OPTION extends HigherKinded1<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper);
+    default T orElseGet(Supplier<? extends T> other) {
+        return isEmpty() ? other.get() : get();
+    }
+
+    @Override
+    default <X extends Throwable> T orElseThrow(Supplier<X> exceptionSupplier) throws X {
+        if (isEmpty()) {
+            throw exceptionSupplier.get();
+        } else {
+            return get();
+        }
+    }
+
+    @Override
+    default Option<T> toOption() {
+        return this;
+    }
+
+    @Override
+    default <U> Option<U> map(Function<? super T, ? extends U> mapper) {
+        if (isEmpty()) {
+            return None.instance();
+        } else {
+            return new Some<>(mapper.apply(get()));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U, OPTION extends HigherKinded1<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper) {
+        if (isEmpty()) {
+            return None.instance();
+        } else {
+            return (Option<U>) mapper.apply(get());
+        }
+    }
 
     @Override
     boolean equals(Object o);

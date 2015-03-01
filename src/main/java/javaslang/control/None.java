@@ -60,59 +60,8 @@ public final class None<T> implements Option<T> {
     }
 
     @Override
-    public T orElse(T other) {
-        return other;
-    }
-
-    @Override
-    public T orElseGet(Supplier<? extends T> other) {
-        return other.get();
-    }
-
-    @Override
-    public <X extends Throwable> T orElseThrow(Supplier<X> exceptionSupplier) throws X {
-        throw exceptionSupplier.get();
-    }
-
-    @Override
-    public boolean isPresent() {
-        return false;
-    }
-
-    @Override
-    public boolean isNotPresent() {
+    public boolean isEmpty() {
         return true;
-    }
-
-    @Override
-    public void ifPresent(Consumer<? super T> consumer) {
-        // nothing to do
-    }
-
-    @Override
-    public Option<T> filter(Predicate<? super T> predicate) {
-        // semantically correct but structurally the same as <code>return this;</code>
-        return None.instance();
-    }
-
-    @Override
-    public void forEach(Consumer<? super T> action) {
-        // nothing to do
-    }
-
-    @Override
-    public <U> Option<U> map(Function<? super T, ? extends U> mapper) {
-        return None.instance();
-    }
-
-    @Override
-    public <U, OPTION extends HigherKinded1<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper) {
-        return None.instance();
-    }
-
-    @Override
-    public Option<T> toOption() {
-        return this;
     }
 
     @Override
