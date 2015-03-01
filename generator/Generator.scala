@@ -467,7 +467,7 @@ def generateMainClasses(): Unit = {
           if (arg1.isObject && arg2.isObject) {
             TypeName("javax.util.function", "BiFunction", Generics("T", "U", "R"))
           } else if (arg1 == arg2) {
-            TypeName("javax.util.function", s"${arg1.asIdentifier}BiFunction", Generics())
+            TypeName("javax.util.function", s"${arg1.asIdentifier}BiFunction", Generics("R"))
           } else {
             val generics = if (arg1.isObject) Generics("T", "R") else if (arg2.isObject) Generics("U", "R") else Generics("R")
             TypeName("javax.util.function", s"${arg1.asIdentifier}${arg2.asIdentifier}Function", generics)
