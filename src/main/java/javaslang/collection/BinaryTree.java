@@ -43,10 +43,10 @@ public interface BinaryTree<T> extends Tree<T> {
     /**
      * Throws if left and right are Nil - if in doubt, use BinaryTree.of(left, value, right) instead.
      *
-     * @param left Left tree
+     * @param left  Left tree
      * @param value Value
      * @param right Right tree
-     * @param <T> Component type
+     * @param <T>   Component type
      * @return A new Branch consisting of the given values.
      */
     static <T> Branch<T> branch(BinaryTree<T> left, T value, BinaryTree<T> right) {

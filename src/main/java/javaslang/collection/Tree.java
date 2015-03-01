@@ -129,7 +129,7 @@ public interface Tree<T> extends Functor1<T>, ValueObject {
 
     default Iterator<T> iterator() {
         if (isEmpty()) {
-            return List.<T> nil().iterator();
+            return List.<T>nil().iterator();
         } else {
             class Local {
                 Stream<T> preOrder(Tree<T> tree) {
@@ -142,6 +142,7 @@ public interface Tree<T> extends Functor1<T>, ValueObject {
 
     /**
      * Flattens the Tree to a List, traversing the tree in preorder.
+     *
      * @return A List containing all elements of this tree, which is List.Nil if this tree is empty.
      */
     default List<T> flatten() {
@@ -154,6 +155,7 @@ public interface Tree<T> extends Functor1<T>, ValueObject {
                 return tree.getChildren()
                         .foldLeft(List.of(tree.getValue()), (acc, child) -> acc.appendAll(preOrder(child)));
             }
+
             List<T> inOrder(Tree<T> tree) {
                 if (tree.isLeaf()) {
                     return List.of(tree.getValue());
@@ -164,11 +166,13 @@ public interface Tree<T> extends Functor1<T>, ValueObject {
                             .prependAll(inOrder(children.head()));
                 }
             }
+
             List<T> postOrder(Tree<T> tree) {
                 return tree.getChildren()
-                        .foldLeft(List.<T> nil(), (acc, child) -> acc.appendAll(postOrder(child)))
+                        .foldLeft(List.<T>nil(), (acc, child) -> acc.appendAll(postOrder(child)))
                         .append(tree.getValue());
             }
+
             List<T> levelOrder(Tree<T> tree) {
                 List<T> result = List.nil();
                 final Queue<Tree<T>> queue = new LinkedList<>();
@@ -186,11 +190,16 @@ public interface Tree<T> extends Functor1<T>, ValueObject {
         } else {
             final Flatten flatten = new Flatten();
             switch (order) {
-                case PRE_ORDER : return flatten.preOrder(this);
-                case IN_ORDER : return flatten.inOrder(this);
-                case POST_ORDER : return flatten.postOrder(this);
-                case LEVEL_ORDER : return flatten.levelOrder(this);
-                default : throw new IllegalStateException("Unknown traversal: " + order.name());
+                case PRE_ORDER:
+                    return flatten.preOrder(this);
+                case IN_ORDER:
+                    return flatten.inOrder(this);
+                case POST_ORDER:
+                    return flatten.postOrder(this);
+                case LEVEL_ORDER:
+                    return flatten.levelOrder(this);
+                default:
+                    throw new IllegalStateException("Unknown traversal: " + order.name());
             }
         }
     }
