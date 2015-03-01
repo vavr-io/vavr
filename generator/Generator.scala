@@ -247,8 +247,13 @@ def generateMainClasses(): Unit = {
       def method: Method
 
       // optional code
-      def andThenFunction: Option[String]
+      def andThenFunction: Option[String] = None
+//        if (method.returnType._1.isVoid) None else Some(xs"""
+//          ???
+//        """)
+
       def composeFunction: Option[String]
+
       def identityFunction: Option[String]
 
       // derived properties
@@ -303,7 +308,7 @@ def generateMainClasses(): Unit = {
               ${(!checked && isOriginal).gen("@Override")}
               ${method.asDecl}${checked.gen(" throws Throwable")};
 
-              ${andThenConsumer.gen}
+              ${andThenConsumer.orElse(andThenFunction).gen}
 
               ${identityFunction.gen(retType => xs"""
                 static $retType identity() {
@@ -354,7 +359,6 @@ def generateMainClasses(): Unit = {
         Method((returnType, returnType.asUnboxed), name)
       }
 
-      override def andThenFunction = ???
       override def composeFunction = ???
       override def identityFunction = None
     }
@@ -395,8 +399,6 @@ def generateMainClasses(): Unit = {
           else /* returnType.isObject */ "apply"
         Method((returnType, returnType.asUnboxed), methodName, (arg, arg.asUnboxed("T")))
       }
-
-      override def andThenFunction = ???
 
       override def composeFunction = ???
 
@@ -491,8 +493,6 @@ def generateMainClasses(): Unit = {
         Method((returnType, returnType.asUnboxed), methodName, (arg1, arg1.asUnboxed("T")), (arg2, arg2.asUnboxed("U")))
       }
 
-      override def andThenFunction = ???
-
       override def composeFunction = ???
 
       override def identityFunction = None
@@ -505,7 +505,6 @@ def generateMainClasses(): Unit = {
       override def isOriginal = true
       override def name: TypeName = TypeName("javax.util.function", "UnaryOperator", Generics("T"))
       override def method: Method = Method((Types.Object, "T"), "apply", (Types.Object, "T"))
-      override def andThenFunction = ???
       override def composeFunction = ???
       override def identityFunction = Some("<T> UnaryOperator<T>")
     }
@@ -517,7 +516,6 @@ def generateMainClasses(): Unit = {
       override def isOriginal = true
       override def name: TypeName = TypeName("javax.util.function", "BinaryOperator", Generics("T"))
       override def method: Method = Method((Types.Object, "T"), "apply", (Types.Object, "T"), (Types.Object, "T"))
-      override def andThenFunction = ???
       override def composeFunction = ???
       override def identityFunction = None
     }

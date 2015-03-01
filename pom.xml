@@ -71,13 +71,22 @@ Profile 'release-sign-artifacts':
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
                 <version>${maven.clean.plugin}</version>
-                <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>${basedir}/src-gen</directory>
-                        </fileset>
-                    </filesets>
-                </configuration>
+                <executions>
+                    <execution>
+                        <id>clean-generated-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <configuration>
+                            <filesets>
+                                <fileset>
+                                    <directory>${basedir}/src-gen</directory>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
