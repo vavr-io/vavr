@@ -21,7 +21,7 @@ public interface Seq<T> extends Traversable<T> {
      * @param <T>      Component type
      * @return A Seq
      */
-    static <T> Traversable<T> of(Iterable<? extends T> iterable) {
+    static <T> Seq<T> of(Iterable<? extends T> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
         if (iterable instanceof Seq) {
             @SuppressWarnings("unchecked")

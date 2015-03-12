@@ -55,7 +55,8 @@ public interface Gen<T> extends Function1<Random, T>, Monad1<T, Gen<?>> {
     }
 
     /**
-     * <p>Chooses an int between min and max, bounds inclusive and numbers equally distributed.</p>
+     * <p>Chooses an int between min and max, bounds inclusive and numbers distributed according to the distribution of
+     * the underlying random number generator.</p>
      * <p>Note: min and max are internally swapped if min &gt; max.</p>
      *
      * @param min lower bound
@@ -73,7 +74,8 @@ public interface Gen<T> extends Function1<Random, T>, Monad1<T, Gen<?>> {
     }
 
     /**
-     * <p>Chooses a long between min and max, bounds inclusive and numbers equally distributed.</p>
+     * <p>Chooses a long between min and max, bounds inclusive and numbers distributed according to the distribution of
+     * the underlying random number generator.</p>
      * <p>Note: min and max are internally swapped if min &gt; max.</p>
      *
      * @param min lower bound
@@ -94,7 +96,8 @@ public interface Gen<T> extends Function1<Random, T>, Monad1<T, Gen<?>> {
     }
 
     /**
-     * <p>Chooses a double between min and max, bounds inclusive and numbers equally distributed.</p>
+     * <p>Chooses a double between min and max, bounds inclusive and numbers distributed according to the distribution
+     * of the underlying random number generator.</p>
      * <p>Note: min and max are internally swapped if min &gt; max.</p>
      *
      * @param min lower bound
@@ -128,7 +131,8 @@ public interface Gen<T> extends Function1<Random, T>, Monad1<T, Gen<?>> {
     }
 
     /**
-     * <p>Chooses a char between min and max, bounds inclusive and chars equally distributed.</p>
+     * <p>Chooses a char between min and max, bounds inclusive and chars distributed according to the underlying random
+     * number generator.</p>
      * <p>Note: min and max are internally swapped if min &gt; max.</p>
      *
      * @param min lower bound
@@ -136,13 +140,17 @@ public interface Gen<T> extends Function1<Random, T>, Monad1<T, Gen<?>> {
      * @return A new char generator
      */
     static Gen<Character> choose(char min, char max) {
-        return random -> (char) (int) Gen.choose((int) min, (int) max).apply(random);
+        if (min == max) {
+            return ignored -> min;
+        } else {
+            return random -> (char) (int) Gen.choose((int) min, (int) max).apply(random);
+        }
     }
 
     /**
      * A failing generator which throws a RuntimeException("failed").
      *
-     * @param <T>     Type of values theoretically generated.
+     * @param <T> Type of values theoretically generated.
      * @return A new generator which always fails with the message "failed"
      */
     static <T> Gen<T> fail() {
@@ -259,6 +267,7 @@ public interface Gen<T> extends Function1<Random, T>, Monad1<T, Gen<?>> {
 
     /**
      * Converts this Gen to an Arbitrary
+     *
      * @return An arbitrary which returns this generator regardless of the provided size hint n
      */
     default Arbitrary<T> arbitrary() {

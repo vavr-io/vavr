@@ -136,7 +136,7 @@ public interface Traversable<T> extends Iterable<T>, HigherKinded1<T, Traversabl
             final Traversable<T> traversable = (Traversable<T>) iterable;
             return traversable;
         } else {
-            return Stream.of(iterable); // TODO: Stream or List?
+            return Stream.of(iterable);
         }
     }
 
