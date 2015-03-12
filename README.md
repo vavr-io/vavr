@@ -1,6 +1,8 @@
-## Why Javaslang?
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.javaslang/javaslang/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.javaslang/javaslang)
 [![Build Status](https://travis-ci.org/rocketscience-projects/javaslang.png)](https://travis-ci.org/rocketscience-projects/javaslang)
 [![Coverage Status](https://img.shields.io/coveralls/rocketscience-projects/javaslang.svg)](https://coveralls.io/r/rocketscience-projects/javaslang)
+
+# Javaslang
 
 Feature-rich & self-contained functional programming in Java&trade; 8 and above.
 
