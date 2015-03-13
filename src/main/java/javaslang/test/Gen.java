@@ -297,6 +297,7 @@ public interface Gen<T> extends Function1<Random, T>, Monad1<T, Gen<?>> {
     @SuppressWarnings("unchecked")
     @Override
     default <U, GEN extends HigherKinded1<U, Gen<?>>> Gen<U> flatMap(Function<? super T, GEN> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
         //noinspection Convert2MethodRef
         return random -> ((Gen<U>) mapper.apply(apply(random))).apply(random);
     }
@@ -308,6 +309,7 @@ public interface Gen<T> extends Function1<Random, T>, Monad1<T, Gen<?>> {
      * @return A new generator
      */
     default Gen<T> filter(Predicate<T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
         return random -> {
             int count = 0;
             T t;
