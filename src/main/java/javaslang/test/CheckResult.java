@@ -134,6 +134,7 @@ public interface CheckResult extends ValueObject {
         private final Tuple sample;
 
         Falsified(int count, Tuple sample) {
+            Objects.requireNonNull(sample, "sample is null");
             this.count = count;
             this.sample = sample;
         }
@@ -213,6 +214,8 @@ public interface CheckResult extends ValueObject {
         private final Option<Tuple> sample;
 
         Erroneous(int count, Error error, Option<Tuple> sample) {
+            Objects.requireNonNull(error, "error is null");
+            Objects.requireNonNull(sample, "sample is null");
             this.count = count;
             this.error = error;
             this.sample = sample;
@@ -265,21 +268,37 @@ public interface CheckResult extends ValueObject {
             } else if (o instanceof Erroneous) {
                 final Erroneous that = (Erroneous) o;
                 return this.count == that.count
-                        && Objects.equals(this.error, that.error)
+                        && deepEquals(this.error, that.error)
                         && Objects.equals(this.sample, that.sample);
             } else {
                 return false;
             }
         }
 
+        boolean deepEquals(Throwable t1, Throwable t2) {
+            return (t1 == null && t2 == null) || (
+                    t1 != null && t2 != null
+                    && Objects.equals(t1.getMessage(), t2.getMessage())
+                    && deepEquals(t1.getCause(), t2.getCause())
+            );
+        }
+
         @Override
         public int hashCode() {
-            return Objects.hash(count, error, sample);
+            return Objects.hash(count, deepHashCode(error), sample);
+        }
+
+        int deepHashCode(Throwable t) {
+            if (t == null) {
+                return 0;
+            } else {
+                return Objects.hash(t.getMessage(), deepHashCode(t.getCause()));
+            }
         }
 
         @Override
         public String toString() {
-            return String.format("%s(count = %s, error = %s, sample = %s)", getClass().getSimpleName(), count, error, sample);
+            return String.format("%s(count = %s, error = %s, sample = %s)", getClass().getSimpleName(), count, error.getMessage(), sample);
         }
     }
 }
