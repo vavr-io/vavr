@@ -6,12 +6,18 @@
 package javaslang.test;
 
 import javaslang.Tuple;
+import javaslang.Tuple2;
+import javaslang.Tuple3;
+import javaslang.ValueObject;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
 
-// TODO: ValueObject (unapply, equals, hashCode, toString)
-public interface CheckResult {
+import java.util.Objects;
+
+public interface CheckResult extends ValueObject {
+
+    static final long serialVersionUID = 1L;
 
     static Satisfied satisfied(int count, boolean exhausted) {
         return new Satisfied(count, exhausted);
@@ -43,6 +49,8 @@ public interface CheckResult {
      * Represents a satisfied property check.
      */
     static class Satisfied implements CheckResult {
+
+        private static final long serialVersionUID = 1L;
 
         final int count;
         final boolean exhausted;
@@ -86,12 +94,41 @@ public interface CheckResult {
         public None<Error> error() {
             return None.instance();
         }
+
+        @Override
+        public Tuple2<Integer, Boolean> unapply() {
+            return Tuple.of(count, exhausted);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            } else if (o instanceof Satisfied) {
+                final Satisfied that = (Satisfied) o;
+                return this.count == that.count && this.exhausted == that.exhausted;
+            } else {
+                return false;
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(count, exhausted);
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%s(count = %s, exhausted = %s)", getClass().getSimpleName(), count, exhausted);
+        }
     }
 
     /**
      * Represents a falsified property check.
      */
     static class Falsified implements CheckResult {
+
+        private static final long serialVersionUID = 1L;
 
         private final int count;
         private final Tuple sample;
@@ -135,12 +172,41 @@ public interface CheckResult {
         public None<Error> error() {
             return None.instance();
         }
+
+        @Override
+        public Tuple2<Integer, Tuple> unapply() {
+            return Tuple.of(count, sample);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            } else if (o instanceof Falsified) {
+                final Falsified that = (Falsified) o;
+                return this.count == that.count && Objects.equals(this.sample, that.sample);
+            } else {
+                return false;
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(count, sample);
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%s(count = %s, sample = %s)", getClass().getSimpleName(), count, sample);
+        }
     }
 
     /**
      * Represents an erroneous property check.
      */
     static class Erroneous implements CheckResult {
+
+        private static final long serialVersionUID = 1L;
 
         private final int count;
         private final Error error;
@@ -185,6 +251,35 @@ public interface CheckResult {
         @Override
         public Some<Error> error() {
             return new Some<>(error);
+        }
+
+        @Override
+        public Tuple3<Integer, Error, Option<Tuple>> unapply() {
+            return Tuple.of(count, error, sample);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            } else if (o instanceof Erroneous) {
+                final Erroneous that = (Erroneous) o;
+                return this.count == that.count
+                        && Objects.equals(this.error, that.error)
+                        && Objects.equals(this.sample, that.sample);
+            } else {
+                return false;
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(count, error, sample);
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%s(count = %s, error = %s, sample = %s)", getClass().getSimpleName(), count, error, sample);
         }
     }
 }
