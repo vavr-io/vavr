@@ -240,7 +240,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldBeAwareOfExistingElement() {
-        assertThat(of(1).exists(i -> i == 1)).isTrue();
+        assertThat(of(1, 2).exists(i -> i == 2)).isTrue();
     }
 
     @Test
