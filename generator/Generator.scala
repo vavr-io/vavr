@@ -292,8 +292,7 @@ def generateMainClasses(): Unit = {
                           final $checkedFunctionType<$generics, Condition> implication = (${params("t")}) -> {
                               final Condition precondition = predicate.apply(${params("t")});
                               if (precondition.isFalse()) {
-                                  // ex falso quodlibet
-                                  return new Condition(false, true);
+                                  return Condition.exFalsoQuodlibet();
                               } else {
                                   return new Condition(true, postcondition.apply(${params("t")}));
                               }
@@ -345,6 +344,10 @@ def generateMainClasses(): Unit = {
 
               final boolean precondition;
               final boolean postcondition;
+
+              static Condition exFalsoQuodlibet() {
+                  return new Condition(false, true);
+              }
 
               Condition(boolean precondition, boolean postcondition) {
                   this.precondition = precondition;
