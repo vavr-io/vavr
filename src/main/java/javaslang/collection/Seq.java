@@ -11,6 +11,40 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Objects;
 
+/**
+ * Interface for sequential, traversable data structures.
+ * <p>Mutation:</p>
+ * <ul>
+ * <li>{@link #append(Object)}</li>
+ * <li>{@link #appendAll(Iterable)}</li>
+ * <li>{@link #insert(int, Object)}</li>
+ * <li>{@link #insertAll(int, Iterable)}</li>
+ * <li>{@link #prepend(Object)}</li>
+ * <li>{@link #prependAll(Iterable)}</li>
+ * <li>{@link #set(int, Object)}</li>
+ * </ul>
+ * <p>Selection:</p>
+ * <ul>
+ * <li>{@link #get(int)}</li>
+ * <li>{@link #indexOf(Object)}</li>
+ * <li>{@link #lastIndexOf(Object)}</li>
+ * <li>{@link #subsequence(int)}</li>
+ * <li>{@link #subsequence(int, int)}</li>
+ * </ul>
+ * <p>Transformation:</p>
+ * <ul>
+ * <li>TODO(#111): permutations()</li>
+ * <li>{@link #sort()}</li>
+ * <li>{@link #sort(Comparator)}</li>
+ * <li>{@link #splitAt(int)}</li>
+ * </ul>
+ * <p>Traversion:</p>
+ * <ul>
+ * <li>{@link #iterator(int)}</li>
+ * </ul>
+ *
+ * @param <T> Component type
+ */
 public interface Seq<T> extends Traversable<T> {
 
     /**

@@ -15,6 +15,7 @@ import javaslang.control.Some;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Objects;
@@ -57,7 +58,9 @@ import java.util.function.UnaryOperator;
  * <ul>
  * <li>{@link #average()}</li>
  * <li>{@link #max()}</li>
+ * <li>TODO(#116) #maxBy(Comparator)</li>
  * <li>{@link #min()}</li>
+ * <li>TODO(#116) #minBy(Comparator)</li>
  * <li>{@link #product()}</li>
  * <li>{@link #sum()}</li>
  * </ul>
@@ -102,14 +105,16 @@ import java.util.function.UnaryOperator;
  * <li>{@link #combinations(int)}</li>
  * <li>{@link #distinct()}</li>
  * <li>{@link #flatMap(java.util.function.Function)}</li>
- * <li>TODO: groupBy</li>
+ * <li>TODO(#115): #grouped(int)</li>
+ * <li>TODO(#110): groupBy</li>
  * <li>{@link #intersperse(Object)}</li>
  * <li>{@link #map(java.util.function.Function)}</li>
- * <li>TODO: partition (generalization of groupBy)</li>
+ * <li>TODO(#110): partition (generalization of groupBy)</li>
  * <li>{@link #replace(Object, Object)}</li>
  * <li>{@link #replaceAll(Object, Object)}</li>
  * <li>{@link #replaceAll(java.util.function.UnaryOperator)}</li>
  * <li>{@link #reverse()}</li>
+ * <li>TODO(#115): #sliding(int)</li>
  * <li>{@link #span(java.util.function.Predicate)}</li>
  * <li>{@link #unzip(java.util.function.Function)}</li>
  * <li>{@link #zip(Iterable)}</li>
@@ -117,7 +122,7 @@ import java.util.function.UnaryOperator;
  * <li>{@link #zipWithIndex()}</li>
  * </ul>
  *
- * @param <T> Component type.
+ * @param <T> Component type
  */
 public interface Traversable<T> extends Iterable<T>, HigherKinded1<T, Traversable<?>> {
 
@@ -141,7 +146,20 @@ public interface Traversable<T> extends Iterable<T>, HigherKinded1<T, Traversabl
     }
 
     /**
-     * Calculates the average of this elements.
+     * <p>Calculates the average of this elements by computing the arithmetic mean.</p>
+     * <p>In order to preserve summation results, the value space is expanded as follows:
+     * <ul>
+     *     <li><strong>element type, summation type</strong></li>
+     *     <li>byte, long</li>
+     *     <li>char, int</li>
+     *     <li>double, double</li>
+     *     <li>float, double</li>
+     *     <li>int, long</li>
+     *     <li>short, int</li>
+     * </ul>
+     * </p>
+     * <p>BigInteger and BigDecimal are not treated special.</p>
+     * <p>The average of boolean elements is defined to be {@link this.filter(Boolean::booleanValue).length() &gt;= n / 2}.</p>
      *
      * @return The average of this elements.
      * @throws java.lang.UnsupportedOperationException if no elements are present or the elements are not numeric
@@ -151,8 +169,8 @@ public interface Traversable<T> extends Iterable<T>, HigherKinded1<T, Traversabl
         if (isEmpty()) {
             throw new UnsupportedOperationException("average of nothing");
         } else {
-            T head = head();
-            int n = length();
+            final T head = head();
+            final int n = length();
             return Match
                     .<T>caze((boolean t) -> (T) (Boolean) (((Traversable<Boolean>) this).filter(Boolean::booleanValue).length() >= n / 2))
                     .caze((byte t) -> (T) (Byte) (byte) (((Traversable<Byte>) this).foldLeft(0, (i, j) -> i + j) / n))
@@ -525,7 +543,7 @@ public interface Traversable<T> extends Iterable<T>, HigherKinded1<T, Traversabl
         if (isEmpty()) {
             throw new UnsupportedOperationException("max of nothing");
         } else {
-            T head = head();
+            final T head = head();
             return Match
                     .<T>caze((boolean t) -> (T) ((Traversable<Boolean>) this).reduce((i, j) -> i || j))
                     .caze((byte t) -> (T) ((Traversable<Byte>) this).reduce((i, j) -> (i > j) ? i : j))
@@ -555,7 +573,7 @@ public interface Traversable<T> extends Iterable<T>, HigherKinded1<T, Traversabl
         if (isEmpty()) {
             throw new UnsupportedOperationException("min of nothing");
         } else {
-            T head = head();
+            final T head = head();
             return Match
                     .<T>caze((boolean t) -> (T) ((Traversable<Boolean>) this).reduce((i, j) -> i && j))
                     .caze((byte t) -> (T) ((Traversable<Byte>) this).reduce((i, j) -> (i < j) ? i : j))
@@ -575,7 +593,11 @@ public interface Traversable<T> extends Iterable<T>, HigherKinded1<T, Traversabl
     }
 
     /**
-     * Calculates the product of this elements.
+     * <p>Calculates the product of this elements.</p>
+     * <p>The product operation is applied to this elements according to the Java Language Secification
+     * <a href="http://docs.oracle.com/javase/specs/jls/se8/html/jls-5.html#jls-5.6.2">Chapter 5. Conversions and Contexts</a>.
+     * The resulting value is converted to the component type of this Traversable.</p>
+     * <p>If b1 and b2 are of type boolean, b1 * b2 := b1 &amp;&amp; b2.</p>
      *
      * @return The product of this elements.
      * @throws java.lang.UnsupportedOperationException if no elements are present or the elements are not numeric
@@ -588,13 +610,13 @@ public interface Traversable<T> extends Iterable<T>, HigherKinded1<T, Traversabl
             T head = head();
             return Match
                     .<T>caze((boolean t) -> (T) ((Traversable<Boolean>) this).reduce((i, j) -> i && j))
-                    .caze((byte t) -> (T) ((Traversable<Byte>) this).foldLeft(0, (i, j) -> i * j))
-                    .caze((char t) -> (T) ((Traversable<Character>) this).foldLeft(0, (xs, x) -> xs * (char) x))
+                    .caze((byte t) -> (T) Byte.valueOf(((Traversable<Byte>) this).foldLeft(1, (i, j) -> i * j).byteValue()))
+                    .caze((char t) -> (T) Character.valueOf((char) ((Traversable<Character>) this).foldLeft(1, (i, j) -> i * j).shortValue()))
                     .caze((double t) -> (T) ((Traversable<Double>) this).reduce((i, j) -> i * j))
                     .caze((float t) -> (T) ((Traversable<Float>) this).reduce((i, j) -> i * j))
                     .caze((int t) -> (T) ((Traversable<Integer>) this).reduce((i, j) -> i * j))
                     .caze((long t) -> (T) ((Traversable<Long>) this).reduce((i, j) -> i * j))
-                    .caze((short t) -> (T) ((Traversable<Short>) this).foldLeft(0, (xs, x) -> xs * x))
+                    .caze((short t) -> (T) Short.valueOf( ((Traversable<Short>) this).foldLeft(1, (i, j) -> i * j).shortValue()))
                     .caze((BigInteger t) -> (T) ((Traversable<BigInteger>) this).reduce(BigInteger::multiply))
                     .caze((BigDecimal t) -> (T) ((Traversable<BigDecimal>) this).reduce(BigDecimal::multiply))
                     .orElse(() -> {
@@ -729,7 +751,11 @@ public interface Traversable<T> extends Iterable<T>, HigherKinded1<T, Traversabl
     Tuple2<? extends Traversable<T>, ? extends Traversable<T>> span(Predicate<? super T> predicate);
 
     /**
-     * Calculates the sum of this elements.
+     * <p>Calculates the sum of this elements.</p>
+     * <p>The sum operation is applied to this elements according to the Java Language Secification
+     * <a href="http://docs.oracle.com/javase/specs/jls/se8/html/jls-5.html#jls-5.6.2">Chapter 5. Conversions and Contexts</a>.
+     * The resulting value is converted to the component type of this Traversable.</p>
+     * <p>If b1 and b2 are of type boolean, b1 + b2 := b1 || b2.</p>
      *
      * @return The sum of this elements.
      * @throws java.lang.UnsupportedOperationException if no elements are present or the elements are not numeric
@@ -742,13 +768,13 @@ public interface Traversable<T> extends Iterable<T>, HigherKinded1<T, Traversabl
             T head = head();
             return Match
                     .<T>caze((boolean t) -> (T) ((Traversable<Boolean>) this).reduce((i, j) -> i || j))
-                    .caze((byte t) -> (T) ((Traversable<Byte>) this).foldLeft(0, (i, j) -> i + j))
-                    .caze((char t) -> (T) ((Traversable<Character>) this).foldLeft(0, (xs, x) -> xs + (char) x))
+                    .caze((byte t) -> (T) Byte.valueOf(((Traversable<Byte>) this).foldLeft(0, (i, j) -> i + j).byteValue()))
+                    .caze((char t) -> (T) Character.valueOf((char) ((Traversable<Character>) this).foldLeft(0, (i, j) -> i + j).shortValue()))
                     .caze((double t) -> (T) ((Traversable<Double>) this).reduce((i, j) -> i + j))
                     .caze((float t) -> (T) ((Traversable<Float>) this).reduce((i, j) -> i + j))
                     .caze((int t) -> (T) ((Traversable<Integer>) this).reduce((i, j) -> i + j))
                     .caze((long t) -> (T) ((Traversable<Long>) this).reduce((i, j) -> i + j))
-                    .caze((short t) -> (T) ((Traversable<Short>) this).foldLeft(0, (xs, x) -> xs + x))
+                    .caze((short t) -> (T) Short.valueOf(((Traversable<Short>) this).foldLeft(0, (i, j) -> i + j).shortValue()))
                     .caze((BigInteger t) -> (T) ((Traversable<BigInteger>) this).reduce(BigInteger::add))
                     .caze((BigDecimal t) -> (T) ((Traversable<BigDecimal>) this).reduce(BigDecimal::add))
                     .orElse(() -> {
@@ -759,28 +785,26 @@ public interface Traversable<T> extends Iterable<T>, HigherKinded1<T, Traversabl
     }
 
     default void stderr() {
-        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.err))) {
+        try (PrintStream writer = System.err) {
             for (T t : this) {
-                writer.write(String.valueOf(t));
-                writer.newLine();
-                writer.flush(); // need to flush for blocking streams to see results
+                writer.println(String.valueOf(t));
+                if (writer.checkError()) {
+                    throw new IllegalStateException("Error writing to stderr");
+                }
             }
-        } catch (IOException x) {
-            throw new IllegalStateException("Error writing to stderr", x);
         }
     }
 
     // See also http://stackoverflow.com/questions/3643939/java-process-with-input-output-stream.
     @SuppressWarnings("InfiniteLoopStatement")
     default void stdout() {
-        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.out))) {
+        try (PrintStream writer = System.out) {
             for (T t : this) {
-                writer.write(String.valueOf(t));
-                writer.newLine();
-                writer.flush(); // need to flush for blocking streams to see results
+                writer.println(String.valueOf(t));
+                if (writer.checkError()) {
+                    throw new IllegalStateException("Error writing to stdout");
+                }
             }
-        } catch (IOException x) {
-            throw new IllegalStateException("Error writing to stdout", x);
         }
     }
 

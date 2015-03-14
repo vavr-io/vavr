@@ -11,6 +11,9 @@ import javaslang.algebra.Monoid;
 import javaslang.control.Option;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
@@ -19,6 +22,7 @@ import java.util.function.Function;
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
 /**
  * Tests all methods defined in {@link javaslang.collection.Traversable}.
@@ -232,6 +236,35 @@ public abstract class AbstractTraversableTest {
         assertThat(of(1, 2, 3).dropWhile(i -> i < 2)).isEqualTo(of(2, 3));
     }
 
+    // -- exists
+
+    @Test
+    public void shouldBeAwareOfExistingElement() {
+        assertThat(of(1).exists(i -> i == 1)).isTrue();
+    }
+
+    @Test
+    public void shouldBeAwareOfNonExistingElement() {
+        assertThat(this.<Integer> nil().exists(i -> i == 1)).isFalse();
+    }
+
+    // -- existsUnique
+
+    @Test
+    public void shouldBeAwareOfExistingUniqueElement() {
+        assertThat(of(1, 2).existsUnique(i -> i == 1)).isTrue();
+    }
+
+    @Test
+    public void shouldBeAwareOfNonExistingUniqueElement() {
+        assertThat(this.<Integer> nil().existsUnique(i -> i == 1)).isFalse();
+    }
+
+    @Test
+    public void shouldBeAwareOfExistingNonUniqueElement() {
+        assertThat(of(1, 1, 2).existsUnique(i -> i == 1)).isFalse();
+    }
+
     // -- filter
 
     @Test
@@ -377,6 +410,18 @@ public abstract class AbstractTraversableTest {
     @Test
     public void shouldFoldRightNonNil() {
         assertThat(of("a", "b", "c").foldRight("", (x, xs) -> x + xs)).isEqualTo("abc");
+    }
+
+    // -- forAll
+
+    @Test
+    public void shouldBeAwareOfPropertyThatHoldsForAll() {
+        assertThat(List.of(2, 4).forAll(i -> i % 2 == 0)).isTrue();
+    }
+
+    @Test
+    public void shouldBeAwareOfPropertyThatNotHoldsForAll() {
+        assertThat(List.of(2, 3).forAll(i -> i % 2 == 0)).isFalse();
     }
 
     // -- head
@@ -532,16 +577,220 @@ public abstract class AbstractTraversableTest {
         assertThat(of(1, 2, 3).map(i -> i + 1)).isEqualTo(of(2, 3, 4));
     }
 
-    // -- product
+    // -- max
 
     @Test(expected = UnsupportedOperationException.class)
-    public void shouldNotGetProductOfNil() {
-        nil().product();
+    public void shouldThrowWhenMaxOfNil() {
+        nil().max();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldThrowWhenMaxOfNonNumeric() {
+        of("1", "2", "3").max();
     }
 
     @Test
-    public void shouldGetProductOfNonNil() {
-        assertThat(of(2, 3).product()).isEqualTo(6);
+    public void shouldComputeMaxOfBoolean() {
+        final boolean actual = of(true, false).max();
+        assertThat(actual).isEqualTo(true);
+    }
+
+    @Test
+    public void shouldComputeMaxOfByte() {
+        final byte actual = of((byte) 1, (byte) 2).max();
+        assertThat(actual).isEqualTo((byte) 2);
+    }
+
+    @Test
+    public void shouldComputeMaxOfChar() {
+        final char actual = of('a', 'b', 'c').max();
+        assertThat(actual).isEqualTo('c');
+    }
+
+    @Test
+    public void shouldComputeMaxOfDouble() {
+        final double actual = of(.1d, .2d, .3d).max();
+        assertThat(actual).isEqualTo(.3d);
+    }
+
+    @Test
+    public void shouldComputeMaxOfFloat() {
+        final float actual = of(.1f, .2f, .3f).max();
+        assertThat(actual).isEqualTo(.3f);
+    }
+
+    @Test
+    public void shouldComputeMaxOfInt() {
+        final int actual = of(1 ,2, 3).max();
+        assertThat(actual).isEqualTo(3);
+    }
+
+    @Test
+    public void shouldComputeMaxOfLong() {
+        final long actual = of(1L ,2L, 3L).max();
+        assertThat(actual).isEqualTo(3L);
+    }
+
+    @Test
+    public void shouldComputeMaxOfShort() {
+        final short actual = of((short) 1 ,(short) 2, (short) 3).max();
+        assertThat(actual).isEqualTo((short) 3);
+    }
+
+    @Test
+    public void shouldComputeMaxOfBigInteger() {
+        final BigInteger actual = of(BigInteger.ZERO, BigInteger.ONE).max();
+        assertThat(actual).isEqualTo(BigInteger.ONE);
+    }
+
+    @Test
+    public void shouldComputeMaxOfBigDecimal() {
+        final BigDecimal actual = of(BigDecimal.ZERO, BigDecimal.ONE).max();
+        assertThat(actual).isEqualTo(BigDecimal.ONE);
+    }
+
+    // -- min
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldThrowWhenMinOfNil() {
+        nil().min();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldThrowWhenMinOfNonNumeric() {
+        of("1", "2", "3").min();
+    }
+
+    @Test
+    public void shouldComputeMinOfBoolean() {
+        final boolean actual = of(true, false).min();
+        assertThat(actual).isEqualTo(false);
+    }
+
+    @Test
+    public void shouldComputeMinOfByte() {
+        final byte actual = of((byte) 1, (byte) 2).min();
+        assertThat(actual).isEqualTo((byte) 1);
+    }
+
+    @Test
+    public void shouldComputeMinOfChar() {
+        final char actual = of('a', 'b', 'c').min();
+        assertThat(actual).isEqualTo('a');
+    }
+
+    @Test
+    public void shouldComputeMinOfDouble() {
+        final double actual = of(.1d, .2d, .3d).min();
+        assertThat(actual).isEqualTo(.1d);
+    }
+
+    @Test
+    public void shouldComputeMinOfFloat() {
+        final float actual = of(.1f, .2f, .3f).min();
+        assertThat(actual).isEqualTo(.1f);
+    }
+
+    @Test
+    public void shouldComputeMinOfInt() {
+        final int actual = of(1 ,2, 3).min();
+        assertThat(actual).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldComputeMinOfLong() {
+        final long actual = of(1L ,2L, 3L).min();
+        assertThat(actual).isEqualTo(1L);
+    }
+
+    @Test
+    public void shouldComputeMinOfShort() {
+        final short actual = of((short) 1 ,(short) 2, (short) 3).min();
+        assertThat(actual).isEqualTo((short) 1);
+    }
+
+    @Test
+    public void shouldComputeMinOfBigInteger() {
+        final BigInteger actual = of(BigInteger.ZERO, BigInteger.ONE).min();
+        assertThat(actual).isEqualTo(BigInteger.ZERO);
+    }
+
+    @Test
+    public void shouldComputeMinOfBigDecimal() {
+        final BigDecimal actual = of(BigDecimal.ZERO, BigDecimal.ONE).min();
+        assertThat(actual).isEqualTo(BigDecimal.ZERO);
+    }
+
+    // -- product
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldThrowWhenProductOfNil() {
+        nil().product();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldThrowWhenProductOfNonNumeric() {
+        of("1", "2", "3").product();
+    }
+
+    @Test
+    public void shouldComputeProductOfBoolean() {
+        final boolean actual = of(true, false).product();
+        assertThat(actual).isEqualTo(false);
+    }
+
+    @Test
+    public void shouldComputeProductOfByte() {
+        final byte actual = of((byte) 1, (byte) 2).product();
+        assertThat(actual).isEqualTo((byte) 2);
+    }
+
+    @Test
+    public void shouldComputeProductOfChar() {
+        final char actual = of('a', 'b', 'c').product();
+        assertThat(actual).isEqualTo(Character.valueOf((char) ('a' * 'b' * 'c')));
+    }
+
+    @Test
+    public void shouldComputeProductOfDouble() {
+        final double actual = of(.1d, .2d, .3d).product();
+        assertThat(actual).isEqualTo(.006d, within(10e-10));
+    }
+
+    @Test
+    public void shouldComputeProductOfFloat() {
+        final float actual = of(.1f, .2f, .3f).product();
+        assertThat(actual).isEqualTo(.006f, within(10e-10f));
+    }
+
+    @Test
+    public void shouldComputeProductOfInt() {
+        final int actual = of(1 ,2, 3).product();
+        assertThat(actual).isEqualTo(6);
+    }
+
+    @Test
+    public void shouldComputeProductOfLong() {
+        final long actual = of(1L ,2L, 3L).product();
+        assertThat(actual).isEqualTo(6L);
+    }
+
+    @Test
+    public void shouldComputeProductOfShort() {
+        final short actual = of((short) 1 ,(short) 2, (short) 3).product();
+        assertThat(actual).isEqualTo((short) 6);
+    }
+
+    @Test
+    public void shouldComputeProductOfBigInteger() {
+        final BigInteger actual = of(BigInteger.ZERO, BigInteger.ONE).product();
+        assertThat(actual).isEqualTo(BigInteger.ZERO);
+    }
+
+    @Test
+    public void shouldComputeProductOfBigDecimal() {
+        final BigDecimal actual = of(BigDecimal.ZERO, BigDecimal.ONE).product();
+        assertThat(actual).isEqualTo(BigDecimal.ZERO);
     }
 
     // -- reduce
@@ -776,6 +1025,17 @@ public abstract class AbstractTraversableTest {
         of(1, 2, 3).stderr();
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void shouldHandleStderrIOException() {
+        final PrintStream originalErr = System.err;
+        try(PrintStream failingPrintStream = failingPrintStream()) {
+            System.setErr(failingPrintStream);
+            of(0).stderr();
+        } finally {
+            System.setErr(originalErr);
+        }
+    }
+
     // -- stdout
 
     @Test
@@ -783,16 +1043,87 @@ public abstract class AbstractTraversableTest {
         of(1, 2, 3).stdout();
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void shouldHandleStdoutIOException() {
+        final PrintStream originalOut = System.out;
+        try(PrintStream failingPrintStream = failingPrintStream()) {
+            System.setOut(failingPrintStream);
+            of(0).stdout();
+        } finally {
+            System.setOut(originalOut);
+        }
+    }
+
     // -- sum
 
     @Test(expected = UnsupportedOperationException.class)
-    public void shouldNotSumNil() {
+    public void shouldThrowWhenSumOfNil() {
         nil().sum();
     }
 
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldThrowWhenSumOfNonNumeric() {
+        of("1", "2", "3").sum();
+    }
+
     @Test
-    public void shouldSumNonNil() {
-        assertThat(of(2, 3).sum()).isEqualTo(5);
+    public void shouldComputeSumOfBoolean() {
+        final boolean actual = of(true, false).sum();
+        assertThat(actual).isEqualTo(true);
+    }
+
+    @Test
+    public void shouldComputeSumOfByte() {
+        final byte actual = of((byte) 1, (byte) 2).sum();
+        assertThat(actual).isEqualTo((byte) 3);
+    }
+
+    @Test
+    public void shouldComputeSumOfChar() {
+        final char actual = of('a', 'b', 'c').sum();
+        assertThat(actual).isEqualTo(Character.valueOf((char) ('a' + 'b' + 'c')));
+    }
+
+    @Test
+    public void shouldComputeSumOfDouble() {
+        final double actual = of(.1d, .2d, .3d).sum();
+        assertThat(actual).isEqualTo(.6d, within(10e-10));
+    }
+
+    @Test
+    public void shouldComputeSumOfFloat() {
+        final float actual = of(.1f, .2f, .3f).sum();
+        assertThat(actual).isEqualTo(.6f, within(10e-10f));
+    }
+
+    @Test
+    public void shouldComputeSumOfInt() {
+        final int actual = of(1 ,2, 3).sum();
+        assertThat(actual).isEqualTo(6);
+    }
+
+    @Test
+    public void shouldComputeSumOfLong() {
+        final long actual = of(1L ,2L, 3L).sum();
+        assertThat(actual).isEqualTo(6L);
+    }
+
+    @Test
+    public void shouldComputeSumOfShort() {
+        final short actual = of((short) 1 ,(short) 2, (short) 3).sum();
+        assertThat(actual).isEqualTo((short) 6);
+    }
+
+    @Test
+    public void shouldComputeSumOfBigInteger() {
+        final BigInteger actual = of(BigInteger.ZERO, BigInteger.ONE).sum();
+        assertThat(actual).isEqualTo(BigInteger.ONE);
+    }
+
+    @Test
+    public void shouldComputeSumOfBigDecimal() {
+        final BigDecimal actual = of(BigDecimal.ZERO, BigDecimal.ONE).sum();
+        assertThat(actual).isEqualTo(BigDecimal.ONE);
     }
 
     // -- take
@@ -1152,5 +1483,16 @@ public abstract class AbstractTraversableTest {
         final Object actual = deserialize(serialize(of(1, 2, 3)));
         final Object expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
+    }
+
+    // helpers
+
+    static PrintStream failingPrintStream() {
+        return new PrintStream(new OutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+                throw new IOException();
+            }
+        });
     }
 }
