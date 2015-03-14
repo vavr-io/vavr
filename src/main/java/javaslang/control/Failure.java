@@ -88,7 +88,7 @@ public final class Failure<T> implements Try<T> {
     }
 
     @Override
-    public Try<T> onFailure(Consumer<Throwable> f) {
+    public Failure<T> onFailure(Consumer<Throwable> f) {
         try {
             f.accept(cause.getCause());
             return this;
@@ -98,22 +98,22 @@ public final class Failure<T> implements Try<T> {
     }
 
     @Override
-    public Option<T> toOption() {
+    public None<T> toOption() {
         return None.instance();
     }
 
     @Override
-    public Either<Throwable, T> toEither() {
+    public Left<Throwable, T> toEither() {
         return new Left<>(cause.getCause());
     }
 
     @Override
-    public Try<Throwable> failed() {
+    public Success<Throwable> failed() {
         return new Success<>(cause.getCause());
     }
 
     @Override
-    public Try<T> filter(Predicate<? super T> predicate) {
+    public Failure<T> filter(Predicate<? super T> predicate) {
         return this;
     }
 
@@ -123,16 +123,16 @@ public final class Failure<T> implements Try<T> {
     }
 
     @Override
-    public <U> Try<U> map(Function<? super T, ? extends U> mapper) {
+    public <U> Failure<U> map(Function<? super T, ? extends U> mapper) {
         @SuppressWarnings("unchecked")
-        final Try<U> result = (Try<U>) this;
+        final Failure<U> result = (Failure<U>) this;
         return result;
     }
 
     @Override
-    public <U, TRY extends HigherKinded1<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper) {
+    public <U, TRY extends HigherKinded1<U, Try<?>>> Failure<U> flatMap(Function<? super T, TRY> mapper) {
         @SuppressWarnings("unchecked")
-        final Try<U> result = (Try<U>) this;
+        final Failure<U> result = (Failure<U>) this;
         return result;
     }
 

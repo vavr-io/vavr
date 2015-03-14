@@ -61,27 +61,27 @@ public final class Success<T> implements Try<T> {
     }
 
     @Override
-    public Try<T> recover(Function<Throwable, ? extends T> f) {
+    public Success<T> recover(Function<Throwable, ? extends T> f) {
         return this;
     }
 
     @Override
-    public Try<T> recoverWith(Function<Throwable, Try<T>> f) {
+    public Success<T> recoverWith(Function<Throwable, Try<T>> f) {
         return this;
     }
 
     @Override
-    public Try<T> onFailure(Consumer<Throwable> f) {
+    public Success<T> onFailure(Consumer<Throwable> f) {
         return this;
     }
 
     @Override
-    public Option<T> toOption() {
+    public Some<T> toOption() {
         return new Some<>(value);
     }
 
     @Override
-    public Either<Throwable, T> toEither() {
+    public Right<Throwable, T> toEither() {
         return new Right<>(value);
     }
 
@@ -99,7 +99,7 @@ public final class Success<T> implements Try<T> {
     }
 
     @Override
-    public Try<Throwable> failed() {
+    public Failure<Throwable> failed() {
         return new Failure<>(new UnsupportedOperationException("Success.failed()"));
     }
 

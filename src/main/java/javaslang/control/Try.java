@@ -9,9 +9,9 @@ import javaslang.ValueObject;
 import javaslang.algebra.HigherKinded1;
 import javaslang.algebra.Monad1;
 import javaslang.control.Valences.Bivalent;
+
 import javax.lang.CheckedRunnable;
 import javax.util.function.CheckedSupplier;
-
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
