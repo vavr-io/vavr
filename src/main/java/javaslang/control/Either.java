@@ -169,7 +169,7 @@ public interface Either<L, R> extends ValueObject {
 
 		@Override
 		public boolean equals(Object obj) {
-			return (obj == this)|| (obj instanceof LeftProjection && Objects.equals(either, ((LeftProjection<?, ?>) obj).either));
+			return (obj == this) || (obj instanceof LeftProjection && Objects.equals(either, ((LeftProjection<?, ?>) obj).either));
 		}
 
 		@Override
@@ -290,7 +290,7 @@ public interface Either<L, R> extends ValueObject {
 
 		@Override
 		public boolean equals(Object obj) {
-			return (obj == this)|| (obj instanceof RightProjection && Objects.equals(either, ((RightProjection<?, ?>) obj).either));
+			return (obj == this) || (obj instanceof RightProjection && Objects.equals(either, ((RightProjection<?, ?>) obj).either));
 		}
 
 		@Override

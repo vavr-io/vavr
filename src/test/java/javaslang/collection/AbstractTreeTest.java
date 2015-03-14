@@ -172,8 +172,6 @@ public abstract class AbstractTreeTest {
 
     // -- iterator
 
-    // -- iterator
-
     @Test
     public void shouldNotHasNextWhenNilIterator() {
         assertThat(nil().iterator().hasNext()).isFalse();
@@ -199,7 +197,7 @@ public abstract class AbstractTreeTest {
 
     @Test
     public void shouldFlattenNil() {
-        assertThat(tree().flatten()).isEqualTo(List.of(1, 2, 4, 7, 5, 3, 6, 8, 9));
+        assertThat(nil().flatten()).isEqualTo(List.nil());
     }
 
     // -- flatten(Order)

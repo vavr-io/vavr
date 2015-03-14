@@ -838,9 +838,7 @@ public interface List<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObject 
         public boolean equals(Object o) {
             if (o == this) {
                 return true;
-            } else if (!(o instanceof List)) {
-                return false;
-            } else {
+            } else if (o instanceof List) {
                 List<?> list1 = this;
                 List<?> list2 = (List<?>) o;
                 while (!list1.isEmpty() && !list2.isEmpty()) {
@@ -852,6 +850,8 @@ public interface List<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObject 
                     list2 = list2.tail();
                 }
                 return list1.isEmpty() && list2.isEmpty();
+            } else {
+                return false;
             }
         }
 

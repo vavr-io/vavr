@@ -49,14 +49,7 @@ public final class Some<T> implements Option<T> {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        }
-        if (!(obj instanceof Some)) {
-            return false;
-        }
-        final Some<?> other = (Some<?>) obj;
-        return Objects.equals(value, other.value);
+        return (obj == this) || (obj instanceof Some && Objects.equals(value, ((Some<?>) obj).value));
     }
 
     @Override

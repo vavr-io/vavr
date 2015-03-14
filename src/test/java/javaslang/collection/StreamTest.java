@@ -5,22 +5,18 @@
  */
 package javaslang.collection;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import javaslang.Serializables;
+import javaslang.Tuple;
+import javaslang.collection.Stream.Cons;
+import javaslang.collection.Stream.Nil;
+import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
 import java.io.InvalidObjectException;
-import java.io.ObjectInputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import javaslang.*;
-import javaslang.collection.Stream.Cons;
-import javaslang.collection.Stream.Nil;
-
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class StreamTest extends AbstractSeqTest {
 
@@ -215,7 +211,7 @@ public class StreamTest extends AbstractSeqTest {
 
     @Test(expected = InvalidObjectException.class)
     public void shouldNotSerializeEnclosingClass() throws Throwable {
-        callReadObject(Stream.of(1));
+        Serializables.callReadObject(Stream.of(1));
     }
 
     @Test(expected = InvalidObjectException.class)
@@ -250,18 +246,5 @@ public class StreamTest extends AbstractSeqTest {
             } catch (IllegalStateException x) {
                 throw (x.getCause() != null) ? x.getCause() : x;
             }
-    }
-
-    private void callReadObject(Object o) throws Throwable {
-        final byte[] objectData = Serializables.serialize(o);
-        try (ObjectInputStream stream = new ObjectInputStream(new ByteArrayInputStream(objectData))) {
-            final Method method = o.getClass().getDeclaredMethod("readObject", ObjectInputStream.class);
-            method.setAccessible(true);
-            try {
-                method.invoke(o, stream);
-            } catch (InvocationTargetException x) {
-                throw (x.getCause() != null) ? x.getCause() : x;
-            }
-        }
     }
 }

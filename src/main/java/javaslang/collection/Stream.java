@@ -1058,9 +1058,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
         public boolean equals(Object o) {
             if (o == this) {
                 return true;
-            } else if (!(o instanceof Stream)) {
-                return false;
-            } else {
+            } else if (o instanceof Stream) {
                 Stream<?> stream1 = this;
                 Stream<?> stream2 = (Stream<?>) o;
                 while (!stream1.isEmpty() && !stream2.isEmpty()) {
@@ -1072,6 +1070,8 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
                     stream2 = stream2.tail();
                 }
                 return stream1.isEmpty() && stream2.isEmpty();
+            } else {
+                return false;
             }
         }
 

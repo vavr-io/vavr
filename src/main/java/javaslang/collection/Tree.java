@@ -8,6 +8,7 @@ package javaslang.collection;
 import javaslang.Strings;
 import javaslang.ValueObject;
 import javaslang.algebra.Functor1;
+import javaslang.control.Match;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -144,12 +145,14 @@ public interface Tree<T> extends Functor1<T>, ValueObject {
      * Flattens the Tree to a List, traversing the tree in preorder.
      *
      * @return A List containing all elements of this tree, which is List.Nil if this tree is empty.
+     * @throws java.lang.NullPointerException if order is null
      */
     default List<T> flatten() {
         return flatten(Order.PRE_ORDER);
     }
 
     default List<T> flatten(Order order) {
+        Objects.requireNonNull(order, "order is null");
         class Flatten {
             List<T> preOrder(Tree<T> tree) {
                 return tree.getChildren()
@@ -189,18 +192,12 @@ public interface Tree<T> extends Functor1<T>, ValueObject {
             return List.nil();
         } else {
             final Flatten flatten = new Flatten();
-            switch (order) {
-                case PRE_ORDER:
-                    return flatten.preOrder(this);
-                case IN_ORDER:
-                    return flatten.inOrder(this);
-                case POST_ORDER:
-                    return flatten.postOrder(this);
-                case LEVEL_ORDER:
-                    return flatten.levelOrder(this);
-                default:
-                    throw new IllegalStateException("Unknown traversal: " + order.name());
-            }
+            return Match
+                .caze(Order.PRE_ORDER, (Order o) -> flatten.preOrder(this))
+                .caze(Order.IN_ORDER, (Order o) -> flatten.inOrder(this))
+                .caze(Order.POST_ORDER, (Order o) -> flatten.postOrder(this))
+                .caze(Order.LEVEL_ORDER, (Order o) -> flatten.levelOrder(this))
+                .apply(order);
         }
     }
 

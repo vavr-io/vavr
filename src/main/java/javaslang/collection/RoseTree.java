@@ -20,7 +20,6 @@ import java.util.function.Function;
  *
  * @param <T> the type of a Node's value.
  */
-// TODO: Implement ValueObject
 public interface RoseTree<T> extends Tree<T> {
 
     static final long serialVersionUID = 1L;
@@ -322,13 +321,13 @@ public interface RoseTree<T> extends Tree<T> {
         public boolean equals(Object o) {
             if (o == this) {
                 return true;
-            } else if (!(o instanceof RoseTree)) {
-                return false;
-            } else {
+            } else if (o instanceof RoseTree) {
                 final RoseTree<?> that = (RoseTree<?>) o;
                 return (this.isEmpty() && that.isEmpty()) || (!this.isEmpty() && !that.isEmpty()
                         && Objects.equals(this.getValue(), that.getValue())
                         && this.getChildren().equals(that.getChildren()));
+            } else {
+                return false;
             }
         }
 

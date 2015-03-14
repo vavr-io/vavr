@@ -25,7 +25,6 @@ import java.util.function.Function;
  *
  * @param <T> the type of a tree node's value.
  */
-// TODO: Implement ValueObject
 public interface BinaryTree<T> extends Tree<T> {
 
     static final long serialVersionUID = 1L;
@@ -416,13 +415,13 @@ public interface BinaryTree<T> extends Tree<T> {
         public boolean equals(Object o) {
             if (o == this) {
                 return true;
-            } else if (!(o instanceof BinaryTree)) {
-                return false;
-            } else {
+            } else if (o instanceof BinaryTree) {
                 final BinaryTree<?> that = (BinaryTree<?>) o;
                 return (this.isEmpty() && that.isEmpty()) || (!this.isEmpty() && !that.isEmpty()
                         && Objects.equals(this.getValue(), that.getValue())
                         && this.getChildren().equals(that.getChildren()));
+            } else {
+                return false;
             }
         }
 
@@ -431,9 +430,7 @@ public interface BinaryTree<T> extends Tree<T> {
             if (isEmpty()) {
                 return 1;
             } else {
-                // need cast because of jdk 1.8.0_25 compiler error
-                //noinspection RedundantCast
-                return (int) getChildren().map(Objects::hashCode).foldLeft(31 + Objects.hashCode(getValue()), (i, j) -> i * 31 + j);
+                return getChildren().map(Objects::hashCode).foldLeft(31 + Objects.hashCode(getValue()), (i, j) -> i * 31 + j);
             }
         }
 

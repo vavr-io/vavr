@@ -134,14 +134,7 @@ public final class Success<T> implements Try<T> {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        }
-        if (!(obj instanceof Success)) {
-            return false;
-        }
-        final Success<?> success = (Success<?>) obj;
-        return Objects.equals(value, success.value);
+        return (obj == this) || (obj instanceof Success && Objects.equals(value, ((Success<?>) obj).value));
     }
 
     @Override

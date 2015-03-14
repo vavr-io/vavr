@@ -5,10 +5,13 @@
  */
 package javaslang.collection;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import javaslang.Serializables;
 import javaslang.Tuple;
 import org.junit.Test;
+
+import java.io.InvalidObjectException;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class BinaryTreeTest extends AbstractTreeTest {
 
@@ -29,6 +32,8 @@ public class BinaryTreeTest extends AbstractTreeTest {
         return tree;
     }
 
+    // -- balance
+
     @Test
     public void shouldBalanceIterable() {
         assertThat(BinaryTree.balance(List.of(1, 2, 3, 4, 5, 6)).toLispString()).isEqualTo("(1 (2 3 4) (5 6))");
@@ -44,14 +49,23 @@ public class BinaryTreeTest extends AbstractTreeTest {
         assertThat(tree.balance().toLispString()).isEqualTo("(1 (2 (4 7) 5) (3 (6 8) 9))");
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldNotCreateBranchWithToEmptySubTrees() {
-        new BinaryTree.Branch<>(BinaryTree.nil(), 1, BinaryTree.nil());
-    }
+    // -- Leaf test
 
     @Test
     public void shouldUnapplyLeaf() {
         assertThat(BinaryTree.leaf(1).unapply()).isEqualTo(Tuple.of(1));
+    }
+
+    // -- Branch test
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotCreateBranchWithEmptySubTrees() {
+        new BinaryTree.Branch<>(BinaryTree.nil(), 1, BinaryTree.nil());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotCreateBranchUsingBranchFactoryMethodAndBothSubtreesAreNil() {
+        BinaryTree.branch(nil(), 1, nil());
     }
 
     @Test
@@ -60,6 +74,13 @@ public class BinaryTreeTest extends AbstractTreeTest {
         final Tuple expected = Tuple.of(BinaryTree.leaf(2), 1, BinaryTree.leaf(3));
         assertThat(actual).isEqualTo(expected);
     }
+
+    @Test(expected = InvalidObjectException.class)
+    public void shouldNotCallReadObjectOnBranchInstance() throws Throwable {
+        Serializables.callReadObject(tree());
+    }
+
+    // -- Nil test
 
     @Test
     public void shouldUnapplyNil() {
@@ -76,18 +97,46 @@ public class BinaryTreeTest extends AbstractTreeTest {
         BinaryTree.nil().right();
     }
 
+    // -- AbstractBinaryTree test
+
+    // equals
+
     @Test
-    public void shouldNilEqualsNil() {
-        assertThat(BinaryTree.nil().equals(BinaryTree.nil())).isTrue();
+    public void shouldBeAwareThatTwoTreesOfSameInstanceAreEqual() {
+        assertThat(nil().equals(nil())).isTrue();
     }
 
     @Test
-    public void shouldComputeHashCodeOfNil() {
-        assertThat(BinaryTree.nil().hashCode()).isEqualTo(1);
+    public void shouldBeAwareOfTwoDifferentEqualTrees() {
+        assertThat(leaf().equals(leaf())).isTrue();
     }
 
     @Test
-    public void shouldConvertNilToString() {
-        assertThat(BinaryTree.nil().toString()).isEqualTo("BinaryTree()");
+    public void shouldBeAwareThatTreeNotEqualsObject() {
+        assertThat(leaf().equals(new Object())).isFalse();
+    }
+
+    // hashCode
+
+    @Test
+    public void shouldBeAwareThatHashCodeOfNilIsOne() {
+        assertThat(nil().hashCode()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldBeAwareThatHashCodeOfLeafIsGreaterThanOne() {
+        assertThat(leaf().hashCode()).isGreaterThan(1);
+    }
+
+    // toString
+
+    @Test
+    public void shouldReturnStringRepresentationOfNil() {
+        assertThat(nil().toString()).isEqualTo("BinaryTree()");
+    }
+
+    @Test
+    public void shouldReturnStringRepresentationOfBranch() {
+        assertThat(tree().toString()).isEqualTo("BinaryTree(1 (2 (4 7) 5) (3 (6 8 9)))");
     }
 }

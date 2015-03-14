@@ -11,11 +11,7 @@ import javaslang.collection.List.Cons;
 import javaslang.collection.List.Nil;
 import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
 import java.io.InvalidObjectException;
-import java.io.ObjectInputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -179,7 +175,7 @@ public class ListTest extends AbstractSeqTest {
 
 	@Test(expected = InvalidObjectException.class)
 	public void shouldNotSerializeEnclosingClass() throws Throwable {
-		callReadObject(List.of(1));
+		Serializables.callReadObject(List.of(1));
 	}
 
 	@Test(expected = InvalidObjectException.class)
@@ -214,18 +210,5 @@ public class ListTest extends AbstractSeqTest {
 			} catch (IllegalStateException x) {
 				throw (x.getCause() != null) ? x.getCause() : x;
 			}
-	}
-
-	private void callReadObject(Object o) throws Throwable {
-		final byte[] objectData = Serializables.serialize(o);
-		try (ObjectInputStream stream = new ObjectInputStream(new ByteArrayInputStream(objectData))) {
-			final Method method = o.getClass().getDeclaredMethod("readObject", ObjectInputStream.class);
-			method.setAccessible(true);
-			try {
-				method.invoke(o, stream);
-			} catch (InvocationTargetException x) {
-				throw (x.getCause() != null) ? x.getCause() : x;
-			}
-		}
 	}
 }

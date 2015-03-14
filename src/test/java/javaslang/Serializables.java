@@ -10,6 +10,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 public final class Serializables {
 
@@ -65,4 +67,17 @@ public final class Serializables {
 			throw new IllegalStateException("Error deserializing object", x);
 		}
 	}
+
+    public static void callReadObject(Object o) throws Throwable {
+        final byte[] objectData = Serializables.serialize(o);
+        try (ObjectInputStream stream = new ObjectInputStream(new ByteArrayInputStream(objectData))) {
+            final Method method = o.getClass().getDeclaredMethod("readObject", ObjectInputStream.class);
+            method.setAccessible(true);
+            try {
+                method.invoke(o, stream);
+            } catch (InvocationTargetException x) {
+                throw (x.getCause() != null) ? x.getCause() : x;
+            }
+        }
+    }
 }

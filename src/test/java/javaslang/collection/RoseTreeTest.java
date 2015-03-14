@@ -7,8 +7,11 @@ package javaslang.collection;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import javaslang.Serializables;
 import javaslang.Tuple;
 import org.junit.Test;
+
+import java.io.InvalidObjectException;
 
 public class RoseTreeTest extends AbstractTreeTest {
 
@@ -29,12 +32,16 @@ public class RoseTreeTest extends AbstractTreeTest {
         return tree;
     }
 
+    // -- RoseTree test
+
     @Test
     public void shouldInstantiateRoseTreeBranchWithOf() {
         final RoseTree<Integer> actual = RoseTree.of(1, RoseTree.leaf(2), RoseTree.leaf(3));
         final RoseTree<Integer> expected = new RoseTree.Branch<>(1, List.of(new RoseTree.Leaf<>(2), new RoseTree.Leaf<>(3)));
         assertThat(actual).isEqualTo(expected);
     }
+
+    // -- Leaf test
 
     @Test
     public void shouldInstantiateRoseTreeLeafWithOf() {
@@ -43,14 +50,16 @@ public class RoseTreeTest extends AbstractTreeTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldNotCreateABranchWithoutChildren() {
-        new RoseTree.Branch<>(1, List.nil());
-    }
-
     @Test
     public void shouldUnapplyLeaf() {
         assertThat(RoseTree.leaf(1).unapply()).isEqualTo(Tuple.of(1));
+    }
+
+    // -- Branch test
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotCreateABranchWithoutChildren() {
+        new RoseTree.Branch<>(1, List.nil());
     }
 
     @Test
@@ -60,8 +69,58 @@ public class RoseTreeTest extends AbstractTreeTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    @Test(expected = InvalidObjectException.class)
+    public void shouldNotCallReadObjectOnBranchInstance() throws Throwable {
+        Serializables.callReadObject(tree());
+    }
+
+    // -- Nil test
+
     @Test
     public void shouldUnapplyNil() {
         assertThat(RoseTree.nil().unapply()).isEqualTo(Tuple.empty());
+    }
+
+    // -- AbstractBinaryTree test
+
+    // equals
+
+    @Test
+    public void shouldBeAwareThatTwoTreesOfSameInstanceAreEqual() {
+        assertThat(nil().equals(nil())).isTrue();
+    }
+
+    @Test
+    public void shouldBeAwareOfTwoDifferentEqualTrees() {
+        assertThat(leaf().equals(leaf())).isTrue();
+    }
+
+    @Test
+    public void shouldBeAwareThatTreeNotEqualsObject() {
+        assertThat(leaf().equals(new Object())).isFalse();
+    }
+
+    // hashCode
+
+    @Test
+    public void shouldBeAwareThatHashCodeOfNilIsOne() {
+        assertThat(nil().hashCode()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldBeAwareThatHashCodeOfLeafIsGreaterThanOne() {
+        assertThat(leaf().hashCode()).isGreaterThan(1);
+    }
+
+    // toString
+
+    @Test
+    public void shouldReturnStringRepresentationOfNil() {
+        assertThat(nil().toString()).isEqualTo("RoseTree()");
+    }
+
+    @Test
+    public void shouldReturnStringRepresentationOfBranch() {
+        assertThat(tree().toString()).isEqualTo("RoseTree(1 (2 (4 7) 5) (3 (6 8 9)))");
     }
 }
