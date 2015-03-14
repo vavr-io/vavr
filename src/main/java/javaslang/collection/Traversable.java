@@ -12,9 +12,6 @@ import javaslang.control.Match;
 import javaslang.control.Option;
 import javaslang.control.Some;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
