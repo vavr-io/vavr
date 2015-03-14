@@ -192,6 +192,11 @@ public class StreamTest extends AbstractSeqTest {
 
     @Test
     public void shouldUnapplyCons() {
+        assertThat(new Cons<>(1, Nil::instance).unapply()).isEqualTo(Tuple.of(1, Nil.instance()));
+    }
+
+    @Test
+    public void shouldUnapplyDeferred() {
         assertThat(Stream.of(1, 2, 3).unapply()).isEqualTo(Tuple.of(1, Stream.of(2, 3)));
     }
 
@@ -207,11 +212,11 @@ public class StreamTest extends AbstractSeqTest {
         assertThat(this.of(1, 2, 3).toString()).isEqualTo("Stream(1, 2, 3)");
     }
 
-    // -- Cons test
+    // -- Serializable
 
     @Test(expected = InvalidObjectException.class)
-    public void shouldNotSerializeEnclosingClass() throws Throwable {
-        Serializables.callReadObject(Stream.of(1));
+    public void shouldNotSerializeEnclosingClassOfCons() throws Throwable {
+        Serializables.callReadObject(new Cons<>(1, Nil::instance));
     }
 
     @Test(expected = InvalidObjectException.class)
@@ -246,5 +251,10 @@ public class StreamTest extends AbstractSeqTest {
             } catch (IllegalStateException x) {
                 throw (x.getCause() != null) ? x.getCause() : x;
             }
+    }
+
+    @Test(expected = InvalidObjectException.class)
+    public void shouldNotSerializeEnclosingClassOfDeferred() throws Throwable {
+        Serializables.callReadObject(new Stream.Deferred<>(Nil::instance));
     }
 }
