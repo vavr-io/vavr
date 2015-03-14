@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class TryTest {
 
 	private static final String OK = "ok";
+    private static final String FAILURE = "failure";
 
     // -- Try.of
 
@@ -115,7 +116,14 @@ public class TryTest {
 		assertThat(failure().orElseGet(x -> OK)).isEqualTo(OK);
 	}
 
-	@Test(expected = IllegalStateException.class)
+    @Test
+    public void shouldRunElseWhenOrElseRunOnFailure() {
+        final String[] result = new String[1];
+        failure().orElseRun(x -> result[0] = OK);
+        assertThat(result[0]).isEqualTo(OK);
+    }
+
+    @Test(expected = IllegalStateException.class)
 	public void shouldThrowOtherWhenOrElseThrowOnFailure() {
 		failure().orElseThrow(x -> new IllegalStateException(OK));
 	}
@@ -138,10 +146,28 @@ public class TryTest {
 		})).isEqualTo(new Failure<>(error));
 	}
 
-	@Test
+    @Test
+    public void shouldConsumeThrowableWhenCallingOnFailureGivenFailure() {
+        final String[] result = new String[] { FAILURE };
+        failure().onFailure(x -> result[0] = OK);
+        assertThat(result[0]).isEqualTo(OK);
+    }
+
+    @Test
+    public void shouldReturnNewFailureWhenCallingOnFailureAndThrowingGivenFailure() {
+        final Try<Throwable> actual = failure().onFailure(x -> { throw new Error(OK); }).failed();
+        assertThat(actual.get().getMessage()).isEqualTo(OK);
+    }
+
+    @Test
 	public void shouldConvertFailureToOption() {
 		assertThat(failure().toOption().isDefined()).isFalse();
 	}
+
+    @Test
+    public void shouldConvertFailureToEither() {
+        assertThat(failure().toEither().isLeft()).isTrue();
+    }
 
 	@Test
 	public void shouldFilterMatchingPredicateOnFailure() {
@@ -283,6 +309,13 @@ public class TryTest {
 		assertThat(success().orElseGet(x -> null)).isEqualTo(OK);
 	}
 
+    @Test
+    public void shouldOrElseRunOnSuccess() {
+        final String[] result = new String[] { OK };
+        success().orElseRun(x -> result[0] = FAILURE);
+        assertThat(result[0]).isEqualTo(OK);
+    }
+
 	@Test
 	public void shouldOrElseThrowOnSuccess() {
 		assertThat(success().orElseThrow(x -> null)).isEqualTo(OK);
@@ -298,12 +331,24 @@ public class TryTest {
 		assertThat(success().recoverWith(x -> null).get()).isEqualTo(OK);
 	}
 
+    @Test
+    public void shouldNotConsumeThrowableWhenCallingOnFailureGivenSuccess() {
+        final String[] result = new String[] { OK };
+        success().onFailure(x -> result[0] = FAILURE);
+        assertThat(result[0]).isEqualTo(OK);
+    }
+
 	@Test
 	public void shouldConvertSuccessToOption() {
 		assertThat(success().toOption().get()).isEqualTo(OK);
 	}
 
-	@Test
+    @Test
+    public void shouldConvertSuccessToEither() {
+        assertThat(success().toEither().isRight()).isTrue();
+    }
+
+    @Test
 	public void shouldFilterMatchingPredicateOnSuccess() {
 		assertThat(success().filter(s -> true).get()).isEqualTo(OK);
 	}
