@@ -1225,7 +1225,7 @@ public interface Property {
             final CheckedFunction1<T1, Condition> implication = (t1) -> {
                 final Condition precondition = predicate.apply(t1);
                 if (precondition.isFalse()) {
-                    return Condition.exFalsoQuodlibet();
+                    return Condition.EX_FALSO_QUODLIBET;
                 } else {
                     return new Condition(true, postcondition.apply(t1));
                 }
@@ -1283,7 +1283,7 @@ public interface Property {
             final CheckedFunction2<T1, T2, Condition> implication = (t1, t2) -> {
                 final Condition precondition = predicate.apply(t1, t2);
                 if (precondition.isFalse()) {
-                    return Condition.exFalsoQuodlibet();
+                    return Condition.EX_FALSO_QUODLIBET;
                 } else {
                     return new Condition(true, postcondition.apply(t1, t2));
                 }
@@ -1345,7 +1345,7 @@ public interface Property {
             final CheckedFunction3<T1, T2, T3, Condition> implication = (t1, t2, t3) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3);
                 if (precondition.isFalse()) {
-                    return Condition.exFalsoQuodlibet();
+                    return Condition.EX_FALSO_QUODLIBET;
                 } else {
                     return new Condition(true, postcondition.apply(t1, t2, t3));
                 }
@@ -1411,7 +1411,7 @@ public interface Property {
             final CheckedFunction4<T1, T2, T3, T4, Condition> implication = (t1, t2, t3, t4) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4);
                 if (precondition.isFalse()) {
-                    return Condition.exFalsoQuodlibet();
+                    return Condition.EX_FALSO_QUODLIBET;
                 } else {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4));
                 }
@@ -1481,7 +1481,7 @@ public interface Property {
             final CheckedFunction5<T1, T2, T3, T4, T5, Condition> implication = (t1, t2, t3, t4, t5) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5);
                 if (precondition.isFalse()) {
-                    return Condition.exFalsoQuodlibet();
+                    return Condition.EX_FALSO_QUODLIBET;
                 } else {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5));
                 }
@@ -1555,7 +1555,7 @@ public interface Property {
             final CheckedFunction6<T1, T2, T3, T4, T5, T6, Condition> implication = (t1, t2, t3, t4, t5, t6) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6);
                 if (precondition.isFalse()) {
-                    return Condition.exFalsoQuodlibet();
+                    return Condition.EX_FALSO_QUODLIBET;
                 } else {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6));
                 }
@@ -1633,7 +1633,7 @@ public interface Property {
             final CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, Condition> implication = (t1, t2, t3, t4, t5, t6, t7) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7);
                 if (precondition.isFalse()) {
-                    return Condition.exFalsoQuodlibet();
+                    return Condition.EX_FALSO_QUODLIBET;
                 } else {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7));
                 }
@@ -1715,7 +1715,7 @@ public interface Property {
             final CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8);
                 if (precondition.isFalse()) {
-                    return Condition.exFalsoQuodlibet();
+                    return Condition.EX_FALSO_QUODLIBET;
                 } else {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8));
                 }
@@ -1801,7 +1801,7 @@ public interface Property {
             final CheckedFunction9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9);
                 if (precondition.isFalse()) {
-                    return Condition.exFalsoQuodlibet();
+                    return Condition.EX_FALSO_QUODLIBET;
                 } else {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9));
                 }
@@ -1891,7 +1891,7 @@ public interface Property {
             final CheckedFunction10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10);
                 if (precondition.isFalse()) {
-                    return Condition.exFalsoQuodlibet();
+                    return Condition.EX_FALSO_QUODLIBET;
                 } else {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10));
                 }
@@ -1985,7 +1985,7 @@ public interface Property {
             final CheckedFunction11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11);
                 if (precondition.isFalse()) {
-                    return Condition.exFalsoQuodlibet();
+                    return Condition.EX_FALSO_QUODLIBET;
                 } else {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11));
                 }
@@ -2083,7 +2083,7 @@ public interface Property {
             final CheckedFunction12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12);
                 if (precondition.isFalse()) {
-                    return Condition.exFalsoQuodlibet();
+                    return Condition.EX_FALSO_QUODLIBET;
                 } else {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12));
                 }
@@ -2185,7 +2185,7 @@ public interface Property {
             final CheckedFunction13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13);
                 if (precondition.isFalse()) {
-                    return Condition.exFalsoQuodlibet();
+                    return Condition.EX_FALSO_QUODLIBET;
                 } else {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13));
                 }
@@ -2291,7 +2291,7 @@ public interface Property {
             final CheckedFunction14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
                 if (precondition.isFalse()) {
-                    return Condition.exFalsoQuodlibet();
+                    return Condition.EX_FALSO_QUODLIBET;
                 } else {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14));
                 }
@@ -2401,7 +2401,7 @@ public interface Property {
             final CheckedFunction15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15);
                 if (precondition.isFalse()) {
-                    return Condition.exFalsoQuodlibet();
+                    return Condition.EX_FALSO_QUODLIBET;
                 } else {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15));
                 }
@@ -2515,7 +2515,7 @@ public interface Property {
             final CheckedFunction16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16);
                 if (precondition.isFalse()) {
-                    return Condition.exFalsoQuodlibet();
+                    return Condition.EX_FALSO_QUODLIBET;
                 } else {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16));
                 }
@@ -2633,7 +2633,7 @@ public interface Property {
             final CheckedFunction17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17);
                 if (precondition.isFalse()) {
-                    return Condition.exFalsoQuodlibet();
+                    return Condition.EX_FALSO_QUODLIBET;
                 } else {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17));
                 }
@@ -2755,7 +2755,7 @@ public interface Property {
             final CheckedFunction18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18);
                 if (precondition.isFalse()) {
-                    return Condition.exFalsoQuodlibet();
+                    return Condition.EX_FALSO_QUODLIBET;
                 } else {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18));
                 }
@@ -2881,7 +2881,7 @@ public interface Property {
             final CheckedFunction19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19);
                 if (precondition.isFalse()) {
-                    return Condition.exFalsoQuodlibet();
+                    return Condition.EX_FALSO_QUODLIBET;
                 } else {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19));
                 }
@@ -3011,7 +3011,7 @@ public interface Property {
             final CheckedFunction20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20);
                 if (precondition.isFalse()) {
-                    return Condition.exFalsoQuodlibet();
+                    return Condition.EX_FALSO_QUODLIBET;
                 } else {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20));
                 }
@@ -3145,7 +3145,7 @@ public interface Property {
             final CheckedFunction21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21);
                 if (precondition.isFalse()) {
-                    return Condition.exFalsoQuodlibet();
+                    return Condition.EX_FALSO_QUODLIBET;
                 } else {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21));
                 }
@@ -3283,7 +3283,7 @@ public interface Property {
             final CheckedFunction22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22);
                 if (precondition.isFalse()) {
-                    return Condition.exFalsoQuodlibet();
+                    return Condition.EX_FALSO_QUODLIBET;
                 } else {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22));
                 }
@@ -3425,7 +3425,7 @@ public interface Property {
             final CheckedFunction23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23);
                 if (precondition.isFalse()) {
-                    return Condition.exFalsoQuodlibet();
+                    return Condition.EX_FALSO_QUODLIBET;
                 } else {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23));
                 }
@@ -3571,7 +3571,7 @@ public interface Property {
             final CheckedFunction24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24);
                 if (precondition.isFalse()) {
-                    return Condition.exFalsoQuodlibet();
+                    return Condition.EX_FALSO_QUODLIBET;
                 } else {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24));
                 }
@@ -3721,7 +3721,7 @@ public interface Property {
             final CheckedFunction25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25);
                 if (precondition.isFalse()) {
-                    return Condition.exFalsoQuodlibet();
+                    return Condition.EX_FALSO_QUODLIBET;
                 } else {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25));
                 }
@@ -3875,7 +3875,7 @@ public interface Property {
             final CheckedFunction26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26);
                 if (precondition.isFalse()) {
-                    return Condition.exFalsoQuodlibet();
+                    return Condition.EX_FALSO_QUODLIBET;
                 } else {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26));
                 }
@@ -3969,12 +3969,10 @@ public interface Property {
 
     static class Condition {
 
+        static final Condition EX_FALSO_QUODLIBET = new Condition(false, true);
+
         final boolean precondition;
         final boolean postcondition;
-
-        static Condition exFalsoQuodlibet() {
-            return new Condition(false, true);
-        }
 
         Condition(boolean precondition, boolean postcondition) {
             this.precondition = precondition;
