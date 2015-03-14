@@ -5,11 +5,12 @@
  */
 package javaslang;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import javaslang.collection.List;
+import org.junit.Test;
 
 import java.util.Arrays;
 
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class StringsTest {
 
@@ -318,6 +319,11 @@ public class StringsTest {
 		assertThat(Strings.join(array, '^', '\\')).isEqualTo("\\\\\\^^\\\\\\^\\\\");
 	}
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowWhenJoiningArrayOfStringsAndSeparatorEqualsEscape() {
+        Strings.join(new String[] {}, '!', '!');
+    }
+
 	// join(Iterable<String>, separator, escape)
 
 	@Test
@@ -355,6 +361,11 @@ public class StringsTest {
 		final Iterable<String> iterable = Arrays.asList(new String[] { "\\^", "\\^\\" });
 		assertThat(Strings.join(iterable, '^', '\\')).isEqualTo("\\\\\\^^\\\\\\^\\\\");
 	}
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowWhenJoiningIterableOfStringsAndSeparatorEqualsEscape() {
+        Strings.join(List.nil(), '!', '!');
+    }
 
 	// split(string, separator)
 
@@ -394,7 +405,12 @@ public class StringsTest {
 		assertThat(actual).isEqualTo(new String[] { "", "123", "" });
 	}
 
-	// split(string, separator, escape)
+    @Test
+    public void shouldBeIdentityWhenSplittingStringUsingEmptySeparator() {
+        assertThat(Strings.split("ok", "")).isEqualTo(new String[] { "ok" });
+    }
+
+    // split(string, separator, escape)
 
 	@Test
 	public void shouldSplitEmptyStringWithEscape() {
@@ -431,6 +447,11 @@ public class StringsTest {
 		final String[] actual = Strings.split("\\\\\\^^\\\\\\^\\\\", '^', '\\');
 		assertThat(actual).isEqualTo(new String[] { "\\^", "\\^\\" });
 	}
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowWhenSplittingStringAndSeparatorEqualsEscape() {
+        Strings.split("test", '!', '!');
+    }
 
 	// ArrayExtensions
 

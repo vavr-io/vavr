@@ -59,7 +59,7 @@ public class OptionTest {
 		assertThat(Option.none().orElse(2)).isEqualTo(2);
 	}
 
-	// orElseGet
+	// -- orElseGet
 
 	@Test
 	public void shouldGetValueOnOrElseGetWhenValueIsPresent() {
@@ -71,7 +71,7 @@ public class OptionTest {
 		assertThat(Option.none().orElseGet(() -> 2)).isEqualTo(2);
 	}
 
-	// orElseThrow
+	// -- orElseThrow
 
 	@Test
 	public void shouldGetValueOnOrElseThrowWhenValueIsPresent() {
@@ -83,11 +83,11 @@ public class OptionTest {
 		Option.none().orElseThrow(() -> new RuntimeException("none"));
 	}
 
-    // toOption
+    // -- toOption
 
     @Test
     public void shouldConvertNoneToOption() {
-        final None none = None.instance();
+        final None<Object> none = None.instance();
         assertThat(none.toOption()).isEqualTo(none);
     }
 
