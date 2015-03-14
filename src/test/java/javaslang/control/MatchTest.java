@@ -71,8 +71,14 @@ public class MatchTest {
 
 	// -- default case
 
-	@Test
-	public void shouldMatchDefaultCase() {
+    @Test
+    public void shouldMatchDefaultCaseUsingEagerDefaultValue() {
+        final int actual = Match.caze(null, o -> 1).orElse(2).apply("default");
+        assertThat(actual).isEqualTo(2);
+    }
+
+    @Test
+	public void shouldMatchDefaultCaseUsingLazyDefaultValue() {
 		final int actual = Match.caze(null, o -> 1).orElse(() -> 2).apply("default");
 		assertThat(actual).isEqualTo(2);
 	}
