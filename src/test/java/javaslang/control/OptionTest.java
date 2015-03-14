@@ -83,6 +83,20 @@ public class OptionTest {
 		Option.none().orElseThrow(() -> new RuntimeException("none"));
 	}
 
+    // toOption
+
+    @Test
+    public void shouldConvertNoneToOption() {
+        final None none = None.instance();
+        assertThat(none.toOption()).isEqualTo(none);
+    }
+
+    @Test
+    public void shouldConvertSomeToOption() {
+        final Some<Integer> some = new Some<>(1);
+        assertThat(some.toOption()).isEqualTo(some);
+    }
+
 	// -- isPresent
 
 	@Test
