@@ -22,7 +22,31 @@ public class TryTest {
 
 	private static final String OK = "ok";
 
-	// -- Failure.Cause
+    // -- Try.of
+
+    @Test
+    public void shouldCreateFailureWhenCallingTryOfSupplier() {
+        assertThat(Try.of(() -> 1) instanceof Success).isTrue();
+    }
+
+    @Test
+    public void shouldCreateSuccessWhenCallingTryOfSupplier() {
+        assertThat(Try.of(() -> { throw new Error("error"); }) instanceof Failure).isTrue();
+    }
+
+    // -- Try.run
+
+    @Test
+    public void shouldCreateFailureWhenCallingTryRunRunnable() {
+        assertThat(Try.run(() -> {}) instanceof Success).isTrue();
+    }
+
+    @Test
+    public void shouldCreateSuccessWhenCallingTryRunRunnable() {
+        assertThat(Try.run(() -> { throw new Error("error"); }) instanceof Failure).isTrue();
+    }
+
+    // -- Failure.Cause
 
 	@Test
 	public void shouldDetectFatalException() throws Exception {
