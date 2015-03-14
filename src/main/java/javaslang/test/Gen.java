@@ -207,12 +207,11 @@ public interface Gen<T> extends Function1<Random, T>, Monad1<T, Gen<?>> {
         }
         final class Frequency {
             Gen<T> gen(int n, Traversable<Tuple2<Integer, Gen<T>>> list) {
-                if (list.isEmpty()) {
-                    return fail("frequency of nil");
-                } else {
-                    final int k = list.head()._1;
-                    return (n <= k) ? list.head()._2 : gen(n - k, list.tail());
+                final int k = list.head()._1;
+                if (k < 0) {
+                    throw new IllegalArgumentException("negative frequency: " + k);
                 }
+                return (n <= k) ? list.head()._2 : gen(n - k, list.tail());
             }
         }
         final int size = traversable.map(t -> t._1).sum();

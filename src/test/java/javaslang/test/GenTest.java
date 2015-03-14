@@ -140,6 +140,12 @@ public class GenTest {
         Gen.frequency(empty);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowWhenCallingFrequencyOfVarArgsAndFrequenceIsNegative() {
+        final Gen<Integer> gen = Gen.frequency(Tuple.of(-1, Gen.of(-1)));
+        gen.apply(RANDOM);
+    }
+
     @Test
     public void shouldGenerateElementsAccordingToFrequencyGivenVarArgs() {
         final Gen<Integer> gen = Gen.frequency(Tuple.of(0, Gen.of(-1)), Tuple.of(1, Gen.of(1)));
