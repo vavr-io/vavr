@@ -11,7 +11,6 @@ import javaslang.collection.List;
 import javaslang.collection.Stream;
 
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -202,17 +201,12 @@ public interface Arbitrary<T> extends IntFunction<Gen<T>>, Function<Integer, Gen
 
                 @Override
                 public boolean hasNext() {
-                    return count > 0;
+                    return count-- > 0;
                 }
 
                 @Override
                 public T next() {
-                    if (count <= 0) {
-                        throw new NoSuchElementException();
-                    } else {
-                        count--;
-                        return genT.apply(random);
-                    }
+                    return genT.apply(random);
                 }
             })).apply(random);
         };

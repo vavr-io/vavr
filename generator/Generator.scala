@@ -752,6 +752,16 @@ def generateTestClasses(): Unit = {
 
             static Arbitrary<Object> objects = Gen.of(null).arbitrary();
 
+            @$test(expected = NullPointerException.class)
+            public void shouldThrowWhenPropertyNameIsNull() {
+                new Property(null);
+            }
+
+            @$test(expected = IllegalArgumentException.class)
+            public void shouldThrowWhenPropertyNameIsEmpty() {
+                new Property("");
+            }
+
             // -- Property.check methods
 
             @$test

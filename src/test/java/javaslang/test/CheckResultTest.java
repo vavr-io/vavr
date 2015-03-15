@@ -48,6 +48,11 @@ public class CheckResultTest {
     }
 
     @Test
+    public void shouldGetPropertyNameOfSatisfied() {
+        assertThat(SATISFIED.propertyName()).isEqualTo("test");
+    }
+
+    @Test
     public void shouldGetCountOfSatisfied() {
         assertThat(SATISFIED.count()).isEqualTo(0);
     }
@@ -123,7 +128,12 @@ public class CheckResultTest {
 
     @Test
     public void shouldNotBeExhaustedWhenIsFalsified() {
-        assertThat(SATISFIED.isExhausted()).isFalse();
+        assertThat(FALSIFIED.isExhausted()).isFalse();
+    }
+
+    @Test
+    public void shouldGetPropertyNameOfFalsified() {
+        assertThat(FALSIFIED.propertyName()).isEqualTo("test");
     }
 
     @Test
@@ -203,6 +213,11 @@ public class CheckResultTest {
     @Test
     public void shouldNotBeExhaustedWhenIsErroneous() {
         assertThat(ERRONEOUS.isExhausted()).isFalse();
+    }
+
+    @Test
+    public void shouldGetPropertyNameOfErroneous() {
+        assertThat(ERRONEOUS.propertyName()).isEqualTo("test");
     }
 
     @Test

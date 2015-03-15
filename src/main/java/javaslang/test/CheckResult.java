@@ -47,11 +47,6 @@ public interface CheckResult extends ValueObject {
         private final boolean exhausted;
 
         Satisfied(String propertyName, int count, boolean exhausted) {
-            Objects.requireNonNull(propertyName, "propertyName is null");
-            Objects.requireNonNull(propertyName, "propertyName is null");
-            if (propertyName.isEmpty()) {
-                throw new IllegalArgumentException("propertyName is empty");
-            }
             this.propertyName = propertyName;
             this.count = count;
             this.exhausted = exhausted;
@@ -139,11 +134,6 @@ public interface CheckResult extends ValueObject {
         private final Tuple sample;
 
         Falsified(String propertyName, int count, Tuple sample) {
-            Objects.requireNonNull(propertyName, "propertyName is null");
-            Objects.requireNonNull(sample, "sample is null");
-            if (propertyName.isEmpty()) {
-                throw new IllegalArgumentException("propertyName is empty");
-            }
             this.propertyName = propertyName;
             this.count = count;
             this.sample = sample;
@@ -232,12 +222,6 @@ public interface CheckResult extends ValueObject {
         private final Option<Tuple> sample;
 
         Erroneous(String propertyName, int count, Error error, Option<Tuple> sample) {
-            Objects.requireNonNull(propertyName, "propertyName is null");
-            Objects.requireNonNull(error, "error is null");
-            Objects.requireNonNull(sample, "sample is null");
-            if (propertyName.isEmpty()) {
-                throw new IllegalArgumentException("propertyName is empty");
-            }
             this.propertyName = propertyName;
             this.count = count;
             this.error = error;

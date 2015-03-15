@@ -28,6 +28,16 @@ public class PropertyTest {
 
     static Arbitrary<Object> objects = Gen.of(null).arbitrary();
 
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenPropertyNameIsNull() {
+        new Property(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowWhenPropertyNameIsEmpty() {
+        new Property("");
+    }
+
     // -- Property.check methods
 
     @Test
