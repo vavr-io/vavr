@@ -7,6 +7,7 @@ package javaslang.collection;
 
 import javaslang.Tuple2;
 import javaslang.algebra.HigherKinded1;
+import javaslang.algebra.Monad1;
 import javaslang.algebra.Monoid;
 import javaslang.control.Match;
 import javaslang.control.Option;
@@ -121,7 +122,7 @@ import java.util.function.UnaryOperator;
  *
  * @param <T> Component type
  */
-public interface Traversable<T> extends Iterable<T>, HigherKinded1<T, Traversable<?>> {
+public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
 
     /**
      * Returns a Traversable based on an Iterable. Returns the given Iterable, if it is already a Traversable,

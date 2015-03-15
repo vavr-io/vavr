@@ -149,78 +149,39 @@ def generateMainClasses(): Unit = {
     genJavaslangFile("javaslang.test", "Property")(genProperty)
 
     def genProperty(im: ImportManager, packageName: String, className: String): String = xs"""
-      @FunctionalInterface
-      public interface $className {
+      public class $className {
+
+          private final String name;
 
           /**
-           * A thread-safe, equally distributed random number generator.
+           * Construct a named property.
            */
-          ${im.getType("java.util.function.Supplier")}<${im.getType("java.util.Random")}> RNG = ${im.getType("java.util.concurrent.ThreadLocalRandom")}::current;
-
-          /**
-           * Default size hint for generators: 100
-           */
-          int DEFAULT_SIZE = 100;
-
-          /**
-           * Default tries to check a property: 1000
-           */
-          int DEFAULT_TRIES = 1000;
-
-          /**
-           * Checks this property.
-           *
-           * @param randomNumberGenerator An implementation of {@link java.util.Random}.
-           * @param size A (not necessarily positive) size hint.
-           * @param tries A non-negative number of tries to falsify the given property.
-           * @return A {@linkplain CheckResult}
-           */
-          CheckResult check(${im.getType("java.util.Random")} randomNumberGenerator, int size, int tries);
-
-          /**
-           * Checks this property using the default random number generator {@link #RNG}.
-           *
-           * @param size A (not necessarily positive) size hint.
-           * @param tries A non-negative number of tries to falsify the given property.
-           * @return A {@linkplain CheckResult}
-           */
-          default CheckResult check(int size, int tries) {
-              if (tries < 0) {
-                  throw new IllegalArgumentException("tries < 0");
+          public $className(String name) {
+              ${im.getType("java.util.Objects")}.requireNonNull(name, "name is null");
+              if (name.isEmpty()) {
+                  throw new IllegalArgumentException("name is empty");
               }
-              return check(RNG.get(), size, tries);
+              this.name = name;
           }
 
-          /**
-           * Checks this property using the default random number generator {@link #RNG} by calling {@link #check(int, int)},
-           * where size is {@link #DEFAULT_SIZE} and tries is {@link #DEFAULT_TRIES}.
-           *
-           * @return A {@linkplain CheckResult}
-           */
-          default CheckResult check() {
-              return check(RNG.get(), DEFAULT_SIZE, DEFAULT_TRIES);
+          static void logSatisfied(String name, int tries, boolean exhausted) {
+              if (exhausted) {
+                  log(String.format("%s: Exhausted after %s tests.", name, tries));
+              } else {
+                  log(String.format("%s: OK, passed %s tests.", name, tries));
+              }
           }
 
-          default Property and(Property property) {
-              return (rng, size, tries) -> {
-                  final CheckResult result = check(rng, size, tries);
-                  if (result.isSatisfied()) {
-                      return property.check(rng, size, tries);
-                  } else {
-                      return result;
-                  }
-              };
+          static void logFalsified(String name, int currentTry) {
+              log(String.format("%s: Falsified after %s passed tests.", name, currentTry - 1));
           }
 
-          default Property or(Property property) {
-              return (rng, size, tries) -> {
-                  final CheckResult result = check(rng, size, tries);
-                  if (result.isSatisfied()) {
-                      return result;
-                  } else {
-                      return property.check(rng, size, tries);
-                  }
-              };
+          static void logErroneous(String name, int currentTry, String errorMessage) {
+              log(String.format("%s: Errored after %s passed tests with message: %s", name, Math.max(0, currentTry - 1), errorMessage));
+          }
+
+          static void log(String msg) {
+              System.out.println(msg);
           }
 
           ${(1 to N).gen(i => {
@@ -228,8 +189,8 @@ def generateMainClasses(): Unit = {
               val parameters = (1 to i).gen(j => s"a$j")(", ")
               val parametersDecl = (1 to i).gen(j => s"Arbitrary<T$j> a$j")(", ")
               xs"""
-                  static <$generics> ForAll$i<$generics> forAll($parametersDecl) {
-                      return new ForAll$i<>($parameters);
+                  public <$generics> ForAll$i<$generics> forAll($parametersDecl) {
+                      return new ForAll$i<>(name, $parameters);
                   }
               """
           })("\n\n")}
@@ -239,13 +200,15 @@ def generateMainClasses(): Unit = {
               val params = (name: String) => (1 to i).gen(j => s"$name$j")(", ")
               val parametersDecl = (1 to i).gen(j => s"Arbitrary<T$j> a$j")(", ")
               xs"""
-                  static class ForAll$i<$generics> {
+                  public static class ForAll$i<$generics> {
 
+                      private final String name;
                       ${(1 to i).gen(j => xs"""
                           private final Arbitrary<T$j> a$j;
                       """)("\n")}
 
-                      ForAll$i($parametersDecl) {
+                      ForAll$i(String name, $parametersDecl) {
+                          this.name = name;
                           ${(1 to i).gen(j => xs"""
                               this.a$j = a$j;
                           """)("\n")}
@@ -253,7 +216,7 @@ def generateMainClasses(): Unit = {
 
                       public Property$i<$generics> suchThat(${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> predicate) {
                           final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Condition> proposition = (${params("t")}) -> new Condition(true, predicate.apply(${params("t")}));
-                          return new Property$i<>(${params("a")}, proposition);
+                          return new Property$i<>(name, ${params("a")}, proposition);
                       }
                   }
               """
@@ -274,21 +237,23 @@ def generateMainClasses(): Unit = {
               val parametersDecl = (1 to i).gen(j => s"Arbitrary<T$j> a$j")(", ")
 
               xs"""
-                  static class Property$i<$generics> implements Property {
+                  public static class Property$i<$generics> implements Checkable {
 
+                      private final String name;
                       ${(1 to i).gen(j => xs"""
                           private final Arbitrary<T$j> a$j;
                       """)("\n")}
-                      final $checkedFunctionType<$generics, Condition> predicate;
+                      private final $checkedFunctionType<$generics, Condition> predicate;
 
-                      Property$i($parametersDecl, $checkedFunctionType<$generics, Condition> predicate) {
+                      Property$i(String name, $parametersDecl, $checkedFunctionType<$generics, Condition> predicate) {
+                          this.name = name;
                           ${(1 to i).gen(j => xs"""
                               this.a$j = a$j;
                           """)("\n")}
                           this.predicate = predicate;
                       }
 
-                      public Property implies($checkedFunctionType<$generics, Boolean> postcondition) {
+                      public Checkable implies($checkedFunctionType<$generics, Boolean> postcondition) {
                           final $checkedFunctionType<$generics, Condition> implication = (${params("t")}) -> {
                               final Condition precondition = predicate.apply(${params("t")});
                               if (precondition.isFalse()) {
@@ -297,7 +262,7 @@ def generateMainClasses(): Unit = {
                                   return new Condition(true, postcondition.apply(${params("t")}));
                               }
                           };
-                          return new Property$i<>(${params("a")}, implication);
+                          return new Property$i<>(name, ${params("a")}, implication);
                       }
 
                       @Override
@@ -321,25 +286,33 @@ def generateMainClasses(): Unit = {
                                           if (condition.precondition) {
                                               exhausted = false;
                                               if (!condition.postcondition) {
-                                                  return CheckResult.falsified(i, $tupleType.of(${(1 to i).gen(j => s"val$j")(", ")}));
+                                                  logFalsified(name, i);
+                                                  return new CheckResult.Falsified(name, i, $tupleType.of(${(1 to i).gen(j => s"val$j")(", ")}));
                                               }
                                           }
                                       } catch($failureType.NonFatal nonFatal) {
-                                          return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new $someType<>($tupleType.of(${(1 to i).gen(j => s"val$j")(", ")})));
+                                          logErroneous(name, i, nonFatal.getCause().getMessage());
+                                          return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new $someType<>($tupleType.of(${(1 to i).gen(j => s"val$j")(", ")})));
                                       }
                                   } catch($failureType.NonFatal nonFatal) {
-                                      return CheckResult.erroneous(i, (Error) nonFatal.getCause(), $noneType.instance());
+                                      logErroneous(name, i, nonFatal.getCause().getMessage());
+                                      return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), $noneType.instance());
                                   }
                               }
-                              return CheckResult.satisfied(tries, exhausted);
+                              logSatisfied(name, tries, exhausted);
+                              return new CheckResult.Satisfied(name, tries, exhausted);
                           } catch($failureType.NonFatal nonFatal) {
-                              return CheckResult.erroneous(0, (Error) nonFatal.getCause(), $noneType.instance());
+                              logErroneous(name, 0, nonFatal.getCause().getMessage());
+                              return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), $noneType.instance());
                           }
                       }
                   }
               """
           })("\n\n")}
 
+          /**
+           * Internally used to model conditions composed of pre- and post-condition.
+           */
           static class Condition {
 
               static final Condition EX_FALSO_QUODLIBET = new Condition(false, true);
@@ -783,26 +756,26 @@ def generateTestClasses(): Unit = {
 
             @$test
             public void shouldCheckUsingDefaultConfiguration() {
-                final CheckResult result = Property.forAll(objects).suchThat(tautology()).check();
+                final CheckResult result = new Property("test").forAll(objects).suchThat(tautology()).check();
                 $assertThat(result.isSatisfied()).isTrue();
                 $assertThat(result.isExhausted()).isFalse();
             }
 
             @$test
             public void shouldCheckGivenSizeAndTries() {
-                final CheckResult result = Property.forAll(objects).suchThat(tautology()).check(0, 0);
+                final CheckResult result = new Property("test").forAll(objects).suchThat(tautology()).check(0, 0);
                 $assertThat(result.isSatisfied()).isTrue();
                 $assertThat(result.isExhausted()).isTrue();
             }
 
             @$test(expected = IllegalArgumentException.class)
             public void shouldThrowOnCheckGivenNegativeTries() {
-                Property.forAll(objects).suchThat(tautology()).check(0, -1);
+                new Property("test").forAll(objects).suchThat(tautology()).check(0, -1);
             }
 
             @$test
             public void shouldCheckGivenRandomAndSizeAndTries() {
-                final CheckResult result = Property.forAll(objects).suchThat(tautology()).check(new $random(), 0, 0);
+                final CheckResult result = new Property("test").forAll(objects).suchThat(tautology()).check(new $random(), 0, 0);
                 $assertThat(result.isSatisfied()).isTrue();
                 $assertThat(result.isExhausted()).isTrue();
             }
@@ -815,7 +788,7 @@ def generateTestClasses(): Unit = {
                 final Arbitrary<Double> real = n -> Gen.choose(0, (double) n).filter(d -> d > .0d);
 
                 // (∀a,b ∈ ℝ+ ∃c ∈ ℝ+ : a²+b²=c²) ≡ (∀a,b ∈ ℝ+ : √(a²+b²) ∈ ℝ+)
-                final Property property = Property.forAll(real, real).suchThat((a, b) -> Math.sqrt(a * a + b * b) > .0d);
+                final Checkable property = new Property("test").forAll(real, real).suchThat((a, b) -> Math.sqrt(a * a + b * b) > .0d);
                 final CheckResult result = property.check();
 
                 $assertThat(result.isSatisfied()).isTrue();
@@ -833,7 +806,7 @@ def generateTestClasses(): Unit = {
                                 Tuple.of(1, Gen.choose('a', 'z')),
                                 Tuple.of(1, Gen.choose('0', '9'))
                             )));
-                final CheckResult result = Property
+                final CheckResult result = new Property("test")
                         .forAll(ints, strings)
                         .suchThat((is, ss) -> is.length() == ss.length())
                         .implies((is, ss) -> is.zip(ss).unzip(t -> t).equals($tuple.of(is, ss)))
@@ -846,7 +819,7 @@ def generateTestClasses(): Unit = {
 
             @$test
             public void shouldRecognizeExhaustedParameters() {
-                final CheckResult result = Property.forAll(objects).suchThat(falsum()).implies(tautology()).check();
+                final CheckResult result = new Property("test").forAll(objects).suchThat(falsum()).implies(tautology()).check();
                 $assertThat(result.isSatisfied()).isTrue();
                 $assertThat(result.isExhausted()).isTrue();
             }
@@ -856,7 +829,7 @@ def generateTestClasses(): Unit = {
             @$test
             public void shouldFalsifyFalseProperty() {
                 final Arbitrary<Integer> ones = n -> random -> 1;
-                final CheckResult result = Property.forAll(ones).suchThat(one -> one == 2).check();
+                final CheckResult result = new Property("test").forAll(ones).suchThat(one -> one == 2).check();
                 $assertThat(result.isFalsified()).isTrue();
                 $assertThat(result.isExhausted()).isFalse();
                 $assertThat(result.count()).isEqualTo(1);
@@ -867,7 +840,7 @@ def generateTestClasses(): Unit = {
             @$test
             public void shouldRecognizeArbitraryError() {
                 final Arbitrary<?> arbitrary = n -> { throw new RuntimeException("woops"); };
-                final CheckResult result = Property.forAll(arbitrary).suchThat(tautology()).check();
+                final CheckResult result = new Property("test").forAll(arbitrary).suchThat(tautology()).check();
                 $assertThat(result.isErroneous()).isTrue();
                 $assertThat(result.isExhausted()).isFalse();
                 $assertThat(result.count()).isEqualTo(0);
@@ -877,7 +850,7 @@ def generateTestClasses(): Unit = {
             @$test
             public void shouldRecognizeGenError() {
                 final Arbitrary<?> arbitrary = Gen.fail("woops").arbitrary();
-                final CheckResult result = Property.forAll(arbitrary).suchThat(tautology()).check();
+                final CheckResult result = new Property("test").forAll(arbitrary).suchThat(tautology()).check();
                 $assertThat(result.isErroneous()).isTrue();
                 $assertThat(result.isExhausted()).isFalse();
                 $assertThat(result.count()).isEqualTo(1);
@@ -888,7 +861,7 @@ def generateTestClasses(): Unit = {
             public void shouldRecognizePropertyError() {
                 final Arbitrary<Integer> a1 = n -> random -> 1;
                 final Arbitrary<Integer> a2 = n -> random -> 2;
-                final CheckResult result = Property.forAll(a1, a2).suchThat((a, b) -> {
+                final CheckResult result = new Property("test").forAll(a1, a2).suchThat((a, b) -> {
                     throw new RuntimeException("woops");
                 }).check();
                 $assertThat(result.isErroneous()).isTrue();
@@ -910,13 +883,13 @@ def generateTestClasses(): Unit = {
               xs"""
                 @$test
                 public void shouldApplyForAllOfArity$i() {
-                    final Property.ForAll$i<${(1 to i).gen(j => "Object")(", ")}> forAll = Property.forAll(${(1 to i).gen(j => "null")(", ")});
+                    final Property.ForAll$i<${(1 to i).gen(j => "Object")(", ")}> forAll = new Property("test").forAll(${(1 to i).gen(j => "null")(", ")});
                     $assertThat(forAll).isNotNull();
                 }
 
                 @$test
                 public void shouldApplySuchThatOfArity$i() {
-                    final Property.ForAll$i<$generics> forAll = Property.forAll($arbitraries);
+                    final Property.ForAll$i<$generics> forAll = new Property("test").forAll($arbitraries);
                     final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> predicate = ($args) -> true;
                     final Property.Property$i<$generics> suchThat = forAll.suchThat(predicate);
                     $assertThat(suchThat).isNotNull();
@@ -924,7 +897,7 @@ def generateTestClasses(): Unit = {
 
                 @$test
                 public void shouldCheckTrueProperty$i() {
-                    final Property.ForAll$i<$generics> forAll = Property.forAll($arbitraries);
+                    final Property.ForAll$i<$generics> forAll = new Property("test").forAll($arbitraries);
                     final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> predicate = ($args) -> true;
                     final CheckResult result = forAll.suchThat(predicate).check();
                     $assertThat(result.isSatisfied()).isTrue();
@@ -933,7 +906,7 @@ def generateTestClasses(): Unit = {
 
                 @$test
                 public void shouldCheckFalseProperty$i() {
-                    final Property.ForAll$i<$generics> forAll = Property.forAll($arbitraries);
+                    final Property.ForAll$i<$generics> forAll = new Property("test").forAll($arbitraries);
                     final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> predicate = ($args) -> false;
                     final CheckResult result = forAll.suchThat(predicate).check();
                     $assertThat(result.isFalsified()).isTrue();
@@ -941,7 +914,7 @@ def generateTestClasses(): Unit = {
 
                 @$test
                 public void shouldCheckErroneousProperty$i() {
-                    final Property.ForAll$i<$generics> forAll = Property.forAll($arbitraries);
+                    final Property.ForAll$i<$generics> forAll = new Property("test").forAll($arbitraries);
                     final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> predicate = ($args) -> { throw new RuntimeException("woops"); };
                     final CheckResult result = forAll.suchThat(predicate).check();
                     $assertThat(result.isErroneous()).isTrue();
@@ -949,7 +922,7 @@ def generateTestClasses(): Unit = {
 
                 @$test
                 public void shouldCheckProperty${i}ImplicationWithTruePrecondition() {
-                    final Property.ForAll$i<$generics> forAll = Property.forAll($arbitraries);
+                    final Property.ForAll$i<$generics> forAll = new Property("test").forAll($arbitraries);
                     final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> p1 = ($args) -> true;
                     final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> p2 = ($args) -> true;
                     final CheckResult result = forAll.suchThat(p1).implies(p2).check();
@@ -959,7 +932,7 @@ def generateTestClasses(): Unit = {
 
                 @$test
                 public void shouldCheckProperty${i}ImplicationWithFalsePrecondition() {
-                    final Property.ForAll$i<$generics> forAll = Property.forAll($arbitraries);
+                    final Property.ForAll$i<$generics> forAll = new Property("test").forAll($arbitraries);
                     final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> p1 = ($args) -> false;
                     final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> p2 = ($args) -> true;
                     final CheckResult result = forAll.suchThat(p1).implies(p2).check();
@@ -969,16 +942,16 @@ def generateTestClasses(): Unit = {
 
                 @$test(expected = IllegalArgumentException.class)
                 public void shouldThrowOnProperty${i}CheckGivenNegativeTries() {
-                    Property
+                    new Property("test")
                         .forAll($arbitraries)
                         .suchThat(($args) -> true)
-                        .check(Property.RNG.get(), 0, -1);
+                        .check(Checkable.RNG.get(), 0, -1);
                 }
 
                 @$test
                 public void shouldReturnErroneousProperty${i}CheckResultIfGenFails() {
                     final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
-                    final CheckResult result = Property
+                    final CheckResult result = new Property("test")
                         .forAll(failingGen${(i > 1).gen(s", $arbitrariesMinus1")})
                         .suchThat(($args) -> true)
                         .check();
@@ -988,7 +961,7 @@ def generateTestClasses(): Unit = {
                 @$test
                 public void shouldReturnErroneousProperty${i}CheckResultIfArbitraryFails() {
                     final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
-                    final CheckResult result = Property
+                    final CheckResult result = new Property("test")
                         .forAll(failingArbitrary${(i > 1).gen(s", $arbitrariesMinus1")})
                         .suchThat(($args) -> true)
                         .check();
@@ -1001,32 +974,32 @@ def generateTestClasses(): Unit = {
 
             @$test
             public void shouldCheckAndCombinationWhereFirstPropertyIsTrueAndSecondPropertyIsTrue() {
-                final Property p1 = Property.forAll(objects).suchThat(tautology());
-                final Property p2 = Property.forAll(objects).suchThat(tautology());
+                final Checkable p1 = new Property("test").forAll(objects).suchThat(tautology());
+                final Checkable p2 = new Property("test").forAll(objects).suchThat(tautology());
                 final CheckResult result = p1.and(p2).check();
                 $assertThat(result.isSatisfied()).isTrue();
             }
 
             @$test
             public void shouldCheckAndCombinationWhereFirstPropertyIsTrueAndSecondPropertyIsFalse() {
-                final Property p1 = Property.forAll(objects).suchThat(tautology());
-                final Property p2 = Property.forAll(objects).suchThat(falsum());
+                final Checkable p1 = new Property("test").forAll(objects).suchThat(tautology());
+                final Checkable p2 = new Property("test").forAll(objects).suchThat(falsum());
                 final CheckResult result = p1.and(p2).check();
                 $assertThat(result.isSatisfied()).isFalse();
             }
 
             @$test
             public void shouldCheckAndCombinationWhereFirstPropertyIsFalseAndSecondPropertyIsTrue() {
-                final Property p1 = Property.forAll(objects).suchThat(falsum());
-                final Property p2 = Property.forAll(objects).suchThat(tautology());
+                final Checkable p1 = new Property("test").forAll(objects).suchThat(falsum());
+                final Checkable p2 = new Property("test").forAll(objects).suchThat(tautology());
                 final CheckResult result = p1.and(p2).check();
                 $assertThat(result.isSatisfied()).isFalse();
             }
 
             @$test
             public void shouldCheckAndCombinationWhereFirstPropertyIsFalseAndSecondPropertyIsFalse() {
-                final Property p1 = Property.forAll(objects).suchThat(falsum());
-                final Property p2 = Property.forAll(objects).suchThat(falsum());
+                final Checkable p1 = new Property("test").forAll(objects).suchThat(falsum());
+                final Checkable p2 = new Property("test").forAll(objects).suchThat(falsum());
                 final CheckResult result = p1.and(p2).check();
                 $assertThat(result.isSatisfied()).isFalse();
             }
@@ -1035,32 +1008,32 @@ def generateTestClasses(): Unit = {
 
             @$test
             public void shouldCheckOrCombinationWhereFirstPropertyIsTrueAndSecondPropertyIsTrue() {
-                final Property p1 = Property.forAll(objects).suchThat(tautology());
-                final Property p2 = Property.forAll(objects).suchThat(tautology());
+                final Checkable p1 = new Property("test").forAll(objects).suchThat(tautology());
+                final Checkable p2 = new Property("test").forAll(objects).suchThat(tautology());
                 final CheckResult result = p1.or(p2).check();
                 $assertThat(result.isSatisfied()).isTrue();
             }
 
             @$test
             public void shouldCheckOrCombinationWhereFirstPropertyIsTrueAndSecondPropertyIsFalse() {
-                final Property p1 = Property.forAll(objects).suchThat(tautology());
-                final Property p2 = Property.forAll(objects).suchThat(falsum());
+                final Checkable p1 = new Property("test").forAll(objects).suchThat(tautology());
+                final Checkable p2 = new Property("test").forAll(objects).suchThat(falsum());
                 final CheckResult result = p1.or(p2).check();
                 $assertThat(result.isSatisfied()).isTrue();
             }
 
             @$test
             public void shouldCheckOrCombinationWhereFirstPropertyIsFalseAndSecondPropertyIsTrue() {
-                final Property p1 = Property.forAll(objects).suchThat(falsum());
-                final Property p2 = Property.forAll(objects).suchThat(tautology());
+                final Checkable p1 = new Property("test").forAll(objects).suchThat(falsum());
+                final Checkable p2 = new Property("test").forAll(objects).suchThat(tautology());
                 final CheckResult result = p1.or(p2).check();
                 $assertThat(result.isSatisfied()).isTrue();
             }
 
             @$test
             public void shouldCheckOrCombinationWhereFirstPropertyIsFalseAndSecondPropertyIsFalse() {
-                final Property p1 = Property.forAll(objects).suchThat(falsum());
-                final Property p2 = Property.forAll(objects).suchThat(falsum());
+                final Checkable p1 = new Property("test").forAll(objects).suchThat(falsum());
+                final Checkable p2 = new Property("test").forAll(objects).suchThat(falsum());
                 final CheckResult result = p1.or(p2).check();
                 $assertThat(result.isSatisfied()).isFalse();
             }

@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class GenTest {
 
     // equally distributed random number generator
-    static final Random RANDOM = Property.RNG.get();
+    static final Random RANDOM = new Random();
 
     // number of tries to assert a property
     static final int TRIES = 1000;

@@ -11,229 +11,194 @@ package javaslang.test;
 
 import java.util.Objects;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Supplier;
 import javaslang.*;
 import javaslang.control.Failure;
 import javaslang.control.None;
 import javaslang.control.Some;
 import javaslang.control.Try;
 
-@FunctionalInterface
-public interface Property {
+public class Property {
+
+    private final String name;
 
     /**
-     * A thread-safe, equally distributed random number generator.
+     * Construct a named property.
      */
-    Supplier<Random> RNG = ThreadLocalRandom::current;
-
-    /**
-     * Default size hint for generators: 100
-     */
-    int DEFAULT_SIZE = 100;
-
-    /**
-     * Default tries to check a property: 1000
-     */
-    int DEFAULT_TRIES = 1000;
-
-    /**
-     * Checks this property.
-     *
-     * @param randomNumberGenerator An implementation of {@link java.util.Random}.
-     * @param size A (not necessarily positive) size hint.
-     * @param tries A non-negative number of tries to falsify the given property.
-     * @return A {@linkplain CheckResult}
-     */
-    CheckResult check(Random randomNumberGenerator, int size, int tries);
-
-    /**
-     * Checks this property using the default random number generator {@link #RNG}.
-     *
-     * @param size A (not necessarily positive) size hint.
-     * @param tries A non-negative number of tries to falsify the given property.
-     * @return A {@linkplain CheckResult}
-     */
-    default CheckResult check(int size, int tries) {
-        if (tries < 0) {
-            throw new IllegalArgumentException("tries < 0");
+    public Property(String name) {
+        Objects.requireNonNull(name, "name is null");
+        if (name.isEmpty()) {
+            throw new IllegalArgumentException("name is empty");
         }
-        return check(RNG.get(), size, tries);
+        this.name = name;
     }
 
-    /**
-     * Checks this property using the default random number generator {@link #RNG} by calling {@link #check(int, int)},
-     * where size is {@link #DEFAULT_SIZE} and tries is {@link #DEFAULT_TRIES}.
-     *
-     * @return A {@linkplain CheckResult}
-     */
-    default CheckResult check() {
-        return check(RNG.get(), DEFAULT_SIZE, DEFAULT_TRIES);
+    static void logSatisfied(String name, int tries, boolean exhausted) {
+        if (exhausted) {
+            log(String.format("%s: Exhausted after %s tests.", name, tries));
+        } else {
+            log(String.format("%s: OK, passed %s tests.", name, tries));
+        }
     }
 
-    default Property and(Property property) {
-        return (rng, size, tries) -> {
-            final CheckResult result = check(rng, size, tries);
-            if (result.isSatisfied()) {
-                return property.check(rng, size, tries);
-            } else {
-                return result;
-            }
-        };
+    static void logFalsified(String name, int currentTry) {
+        log(String.format("%s: Falsified after %s passed tests.", name, currentTry - 1));
     }
 
-    default Property or(Property property) {
-        return (rng, size, tries) -> {
-            final CheckResult result = check(rng, size, tries);
-            if (result.isSatisfied()) {
-                return result;
-            } else {
-                return property.check(rng, size, tries);
-            }
-        };
+    static void logErroneous(String name, int currentTry, String errorMessage) {
+        log(String.format("%s: Errored after %s passed tests with message: %s", name, Math.max(0, currentTry - 1), errorMessage));
     }
 
-    static <T1> ForAll1<T1> forAll(Arbitrary<T1> a1) {
-        return new ForAll1<>(a1);
+    static void log(String msg) {
+        System.out.println(msg);
     }
 
-    static <T1, T2> ForAll2<T1, T2> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2) {
-        return new ForAll2<>(a1, a2);
+    public <T1> ForAll1<T1> forAll(Arbitrary<T1> a1) {
+        return new ForAll1<>(name, a1);
     }
 
-    static <T1, T2, T3> ForAll3<T1, T2, T3> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3) {
-        return new ForAll3<>(a1, a2, a3);
+    public <T1, T2> ForAll2<T1, T2> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2) {
+        return new ForAll2<>(name, a1, a2);
     }
 
-    static <T1, T2, T3, T4> ForAll4<T1, T2, T3, T4> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4) {
-        return new ForAll4<>(a1, a2, a3, a4);
+    public <T1, T2, T3> ForAll3<T1, T2, T3> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3) {
+        return new ForAll3<>(name, a1, a2, a3);
     }
 
-    static <T1, T2, T3, T4, T5> ForAll5<T1, T2, T3, T4, T5> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5) {
-        return new ForAll5<>(a1, a2, a3, a4, a5);
+    public <T1, T2, T3, T4> ForAll4<T1, T2, T3, T4> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4) {
+        return new ForAll4<>(name, a1, a2, a3, a4);
     }
 
-    static <T1, T2, T3, T4, T5, T6> ForAll6<T1, T2, T3, T4, T5, T6> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6) {
-        return new ForAll6<>(a1, a2, a3, a4, a5, a6);
+    public <T1, T2, T3, T4, T5> ForAll5<T1, T2, T3, T4, T5> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5) {
+        return new ForAll5<>(name, a1, a2, a3, a4, a5);
     }
 
-    static <T1, T2, T3, T4, T5, T6, T7> ForAll7<T1, T2, T3, T4, T5, T6, T7> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7) {
-        return new ForAll7<>(a1, a2, a3, a4, a5, a6, a7);
+    public <T1, T2, T3, T4, T5, T6> ForAll6<T1, T2, T3, T4, T5, T6> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6) {
+        return new ForAll6<>(name, a1, a2, a3, a4, a5, a6);
     }
 
-    static <T1, T2, T3, T4, T5, T6, T7, T8> ForAll8<T1, T2, T3, T4, T5, T6, T7, T8> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8) {
-        return new ForAll8<>(a1, a2, a3, a4, a5, a6, a7, a8);
+    public <T1, T2, T3, T4, T5, T6, T7> ForAll7<T1, T2, T3, T4, T5, T6, T7> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7) {
+        return new ForAll7<>(name, a1, a2, a3, a4, a5, a6, a7);
     }
 
-    static <T1, T2, T3, T4, T5, T6, T7, T8, T9> ForAll9<T1, T2, T3, T4, T5, T6, T7, T8, T9> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9) {
-        return new ForAll9<>(a1, a2, a3, a4, a5, a6, a7, a8, a9);
+    public <T1, T2, T3, T4, T5, T6, T7, T8> ForAll8<T1, T2, T3, T4, T5, T6, T7, T8> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8) {
+        return new ForAll8<>(name, a1, a2, a3, a4, a5, a6, a7, a8);
     }
 
-    static <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> ForAll10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10) {
-        return new ForAll10<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10);
+    public <T1, T2, T3, T4, T5, T6, T7, T8, T9> ForAll9<T1, T2, T3, T4, T5, T6, T7, T8, T9> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9) {
+        return new ForAll9<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9);
     }
 
-    static <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> ForAll11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11) {
-        return new ForAll11<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11);
+    public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> ForAll10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10) {
+        return new ForAll10<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10);
     }
 
-    static <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> ForAll12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12) {
-        return new ForAll12<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12);
+    public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> ForAll11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11) {
+        return new ForAll11<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11);
     }
 
-    static <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> ForAll13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13) {
-        return new ForAll13<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13);
+    public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> ForAll12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12) {
+        return new ForAll12<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12);
     }
 
-    static <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> ForAll14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14) {
-        return new ForAll14<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14);
+    public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> ForAll13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13) {
+        return new ForAll13<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13);
     }
 
-    static <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> ForAll15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15) {
-        return new ForAll15<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15);
+    public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> ForAll14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14) {
+        return new ForAll14<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14);
     }
 
-    static <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> ForAll16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16) {
-        return new ForAll16<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16);
+    public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> ForAll15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15) {
+        return new ForAll15<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15);
     }
 
-    static <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> ForAll17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17) {
-        return new ForAll17<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17);
+    public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> ForAll16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16) {
+        return new ForAll16<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16);
     }
 
-    static <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> ForAll18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18) {
-        return new ForAll18<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18);
+    public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> ForAll17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17) {
+        return new ForAll17<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17);
     }
 
-    static <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> ForAll19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19) {
-        return new ForAll19<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19);
+    public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> ForAll18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18) {
+        return new ForAll18<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18);
     }
 
-    static <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> ForAll20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20) {
-        return new ForAll20<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20);
+    public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> ForAll19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19) {
+        return new ForAll19<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19);
     }
 
-    static <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> ForAll21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21) {
-        return new ForAll21<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21);
+    public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> ForAll20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20) {
+        return new ForAll20<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20);
     }
 
-    static <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> ForAll22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22) {
-        return new ForAll22<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22);
+    public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> ForAll21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21) {
+        return new ForAll21<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21);
     }
 
-    static <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> ForAll23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23) {
-        return new ForAll23<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23);
+    public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> ForAll22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22) {
+        return new ForAll22<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22);
     }
 
-    static <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> ForAll24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24) {
-        return new ForAll24<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24);
+    public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> ForAll23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23) {
+        return new ForAll23<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23);
     }
 
-    static <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> ForAll25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25) {
-        return new ForAll25<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25);
+    public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> ForAll24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24) {
+        return new ForAll24<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24);
     }
 
-    static <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26) {
-        return new ForAll26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26);
+    public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> ForAll25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25) {
+        return new ForAll25<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25);
     }
 
-    static class ForAll1<T1> {
+    public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26) {
+        return new ForAll26<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26);
+    }
 
+    public static class ForAll1<T1> {
+
+        private final String name;
         private final Arbitrary<T1> a1;
 
-        ForAll1(Arbitrary<T1> a1) {
+        ForAll1(String name, Arbitrary<T1> a1) {
+            this.name = name;
             this.a1 = a1;
         }
 
         public Property1<T1> suchThat(CheckedFunction1<T1, Boolean> predicate) {
             final CheckedFunction1<T1, Condition> proposition = (t1) -> new Condition(true, predicate.apply(t1));
-            return new Property1<>(a1, proposition);
+            return new Property1<>(name, a1, proposition);
         }
     }
 
-    static class ForAll2<T1, T2> {
+    public static class ForAll2<T1, T2> {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
 
-        ForAll2(Arbitrary<T1> a1, Arbitrary<T2> a2) {
+        ForAll2(String name, Arbitrary<T1> a1, Arbitrary<T2> a2) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
         }
 
         public Property2<T1, T2> suchThat(CheckedFunction2<T1, T2, Boolean> predicate) {
             final CheckedFunction2<T1, T2, Condition> proposition = (t1, t2) -> new Condition(true, predicate.apply(t1, t2));
-            return new Property2<>(a1, a2, proposition);
+            return new Property2<>(name, a1, a2, proposition);
         }
     }
 
-    static class ForAll3<T1, T2, T3> {
+    public static class ForAll3<T1, T2, T3> {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
 
-        ForAll3(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3) {
+        ForAll3(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -241,18 +206,20 @@ public interface Property {
 
         public Property3<T1, T2, T3> suchThat(CheckedFunction3<T1, T2, T3, Boolean> predicate) {
             final CheckedFunction3<T1, T2, T3, Condition> proposition = (t1, t2, t3) -> new Condition(true, predicate.apply(t1, t2, t3));
-            return new Property3<>(a1, a2, a3, proposition);
+            return new Property3<>(name, a1, a2, a3, proposition);
         }
     }
 
-    static class ForAll4<T1, T2, T3, T4> {
+    public static class ForAll4<T1, T2, T3, T4> {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
         private final Arbitrary<T4> a4;
 
-        ForAll4(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4) {
+        ForAll4(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -261,19 +228,21 @@ public interface Property {
 
         public Property4<T1, T2, T3, T4> suchThat(CheckedFunction4<T1, T2, T3, T4, Boolean> predicate) {
             final CheckedFunction4<T1, T2, T3, T4, Condition> proposition = (t1, t2, t3, t4) -> new Condition(true, predicate.apply(t1, t2, t3, t4));
-            return new Property4<>(a1, a2, a3, a4, proposition);
+            return new Property4<>(name, a1, a2, a3, a4, proposition);
         }
     }
 
-    static class ForAll5<T1, T2, T3, T4, T5> {
+    public static class ForAll5<T1, T2, T3, T4, T5> {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
         private final Arbitrary<T4> a4;
         private final Arbitrary<T5> a5;
 
-        ForAll5(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5) {
+        ForAll5(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -283,12 +252,13 @@ public interface Property {
 
         public Property5<T1, T2, T3, T4, T5> suchThat(CheckedFunction5<T1, T2, T3, T4, T5, Boolean> predicate) {
             final CheckedFunction5<T1, T2, T3, T4, T5, Condition> proposition = (t1, t2, t3, t4, t5) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5));
-            return new Property5<>(a1, a2, a3, a4, a5, proposition);
+            return new Property5<>(name, a1, a2, a3, a4, a5, proposition);
         }
     }
 
-    static class ForAll6<T1, T2, T3, T4, T5, T6> {
+    public static class ForAll6<T1, T2, T3, T4, T5, T6> {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -296,7 +266,8 @@ public interface Property {
         private final Arbitrary<T5> a5;
         private final Arbitrary<T6> a6;
 
-        ForAll6(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6) {
+        ForAll6(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -307,12 +278,13 @@ public interface Property {
 
         public Property6<T1, T2, T3, T4, T5, T6> suchThat(CheckedFunction6<T1, T2, T3, T4, T5, T6, Boolean> predicate) {
             final CheckedFunction6<T1, T2, T3, T4, T5, T6, Condition> proposition = (t1, t2, t3, t4, t5, t6) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6));
-            return new Property6<>(a1, a2, a3, a4, a5, a6, proposition);
+            return new Property6<>(name, a1, a2, a3, a4, a5, a6, proposition);
         }
     }
 
-    static class ForAll7<T1, T2, T3, T4, T5, T6, T7> {
+    public static class ForAll7<T1, T2, T3, T4, T5, T6, T7> {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -321,7 +293,8 @@ public interface Property {
         private final Arbitrary<T6> a6;
         private final Arbitrary<T7> a7;
 
-        ForAll7(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7) {
+        ForAll7(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -333,12 +306,13 @@ public interface Property {
 
         public Property7<T1, T2, T3, T4, T5, T6, T7> suchThat(CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, Boolean> predicate) {
             final CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7));
-            return new Property7<>(a1, a2, a3, a4, a5, a6, a7, proposition);
+            return new Property7<>(name, a1, a2, a3, a4, a5, a6, a7, proposition);
         }
     }
 
-    static class ForAll8<T1, T2, T3, T4, T5, T6, T7, T8> {
+    public static class ForAll8<T1, T2, T3, T4, T5, T6, T7, T8> {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -348,7 +322,8 @@ public interface Property {
         private final Arbitrary<T7> a7;
         private final Arbitrary<T8> a8;
 
-        ForAll8(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8) {
+        ForAll8(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -361,12 +336,13 @@ public interface Property {
 
         public Property8<T1, T2, T3, T4, T5, T6, T7, T8> suchThat(CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, Boolean> predicate) {
             final CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8));
-            return new Property8<>(a1, a2, a3, a4, a5, a6, a7, a8, proposition);
+            return new Property8<>(name, a1, a2, a3, a4, a5, a6, a7, a8, proposition);
         }
     }
 
-    static class ForAll9<T1, T2, T3, T4, T5, T6, T7, T8, T9> {
+    public static class ForAll9<T1, T2, T3, T4, T5, T6, T7, T8, T9> {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -377,7 +353,8 @@ public interface Property {
         private final Arbitrary<T8> a8;
         private final Arbitrary<T9> a9;
 
-        ForAll9(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9) {
+        ForAll9(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -391,12 +368,13 @@ public interface Property {
 
         public Property9<T1, T2, T3, T4, T5, T6, T7, T8, T9> suchThat(CheckedFunction9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Boolean> predicate) {
             final CheckedFunction9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9));
-            return new Property9<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, proposition);
+            return new Property9<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, proposition);
         }
     }
 
-    static class ForAll10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> {
+    public static class ForAll10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -408,7 +386,8 @@ public interface Property {
         private final Arbitrary<T9> a9;
         private final Arbitrary<T10> a10;
 
-        ForAll10(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10) {
+        ForAll10(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -423,12 +402,13 @@ public interface Property {
 
         public Property10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> suchThat(CheckedFunction10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Boolean> predicate) {
             final CheckedFunction10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10));
-            return new Property10<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, proposition);
+            return new Property10<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, proposition);
         }
     }
 
-    static class ForAll11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> {
+    public static class ForAll11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -441,7 +421,8 @@ public interface Property {
         private final Arbitrary<T10> a10;
         private final Arbitrary<T11> a11;
 
-        ForAll11(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11) {
+        ForAll11(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -457,12 +438,13 @@ public interface Property {
 
         public Property11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> suchThat(CheckedFunction11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Boolean> predicate) {
             final CheckedFunction11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11));
-            return new Property11<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, proposition);
+            return new Property11<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, proposition);
         }
     }
 
-    static class ForAll12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> {
+    public static class ForAll12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -476,7 +458,8 @@ public interface Property {
         private final Arbitrary<T11> a11;
         private final Arbitrary<T12> a12;
 
-        ForAll12(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12) {
+        ForAll12(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -493,12 +476,13 @@ public interface Property {
 
         public Property12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> suchThat(CheckedFunction12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Boolean> predicate) {
             final CheckedFunction12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12));
-            return new Property12<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, proposition);
+            return new Property12<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, proposition);
         }
     }
 
-    static class ForAll13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> {
+    public static class ForAll13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -513,7 +497,8 @@ public interface Property {
         private final Arbitrary<T12> a12;
         private final Arbitrary<T13> a13;
 
-        ForAll13(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13) {
+        ForAll13(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -531,12 +516,13 @@ public interface Property {
 
         public Property13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> suchThat(CheckedFunction13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Boolean> predicate) {
             final CheckedFunction13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13));
-            return new Property13<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, proposition);
+            return new Property13<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, proposition);
         }
     }
 
-    static class ForAll14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> {
+    public static class ForAll14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -552,7 +538,8 @@ public interface Property {
         private final Arbitrary<T13> a13;
         private final Arbitrary<T14> a14;
 
-        ForAll14(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14) {
+        ForAll14(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -571,12 +558,13 @@ public interface Property {
 
         public Property14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> suchThat(CheckedFunction14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Boolean> predicate) {
             final CheckedFunction14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14));
-            return new Property14<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, proposition);
+            return new Property14<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, proposition);
         }
     }
 
-    static class ForAll15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> {
+    public static class ForAll15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -593,7 +581,8 @@ public interface Property {
         private final Arbitrary<T14> a14;
         private final Arbitrary<T15> a15;
 
-        ForAll15(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15) {
+        ForAll15(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -613,12 +602,13 @@ public interface Property {
 
         public Property15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> suchThat(CheckedFunction15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Boolean> predicate) {
             final CheckedFunction15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15));
-            return new Property15<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, proposition);
+            return new Property15<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, proposition);
         }
     }
 
-    static class ForAll16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> {
+    public static class ForAll16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -636,7 +626,8 @@ public interface Property {
         private final Arbitrary<T15> a15;
         private final Arbitrary<T16> a16;
 
-        ForAll16(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16) {
+        ForAll16(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -657,12 +648,13 @@ public interface Property {
 
         public Property16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> suchThat(CheckedFunction16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Boolean> predicate) {
             final CheckedFunction16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16));
-            return new Property16<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, proposition);
+            return new Property16<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, proposition);
         }
     }
 
-    static class ForAll17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> {
+    public static class ForAll17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -681,7 +673,8 @@ public interface Property {
         private final Arbitrary<T16> a16;
         private final Arbitrary<T17> a17;
 
-        ForAll17(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17) {
+        ForAll17(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -703,12 +696,13 @@ public interface Property {
 
         public Property17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> suchThat(CheckedFunction17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, Boolean> predicate) {
             final CheckedFunction17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17));
-            return new Property17<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, proposition);
+            return new Property17<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, proposition);
         }
     }
 
-    static class ForAll18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> {
+    public static class ForAll18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -728,7 +722,8 @@ public interface Property {
         private final Arbitrary<T17> a17;
         private final Arbitrary<T18> a18;
 
-        ForAll18(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18) {
+        ForAll18(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -751,12 +746,13 @@ public interface Property {
 
         public Property18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> suchThat(CheckedFunction18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, Boolean> predicate) {
             final CheckedFunction18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18));
-            return new Property18<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, proposition);
+            return new Property18<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, proposition);
         }
     }
 
-    static class ForAll19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> {
+    public static class ForAll19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -777,7 +773,8 @@ public interface Property {
         private final Arbitrary<T18> a18;
         private final Arbitrary<T19> a19;
 
-        ForAll19(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19) {
+        ForAll19(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -801,12 +798,13 @@ public interface Property {
 
         public Property19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> suchThat(CheckedFunction19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, Boolean> predicate) {
             final CheckedFunction19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19));
-            return new Property19<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, proposition);
+            return new Property19<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, proposition);
         }
     }
 
-    static class ForAll20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> {
+    public static class ForAll20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -828,7 +826,8 @@ public interface Property {
         private final Arbitrary<T19> a19;
         private final Arbitrary<T20> a20;
 
-        ForAll20(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20) {
+        ForAll20(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -853,12 +852,13 @@ public interface Property {
 
         public Property20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> suchThat(CheckedFunction20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, Boolean> predicate) {
             final CheckedFunction20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20));
-            return new Property20<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, proposition);
+            return new Property20<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, proposition);
         }
     }
 
-    static class ForAll21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> {
+    public static class ForAll21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -881,7 +881,8 @@ public interface Property {
         private final Arbitrary<T20> a20;
         private final Arbitrary<T21> a21;
 
-        ForAll21(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21) {
+        ForAll21(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -907,12 +908,13 @@ public interface Property {
 
         public Property21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> suchThat(CheckedFunction21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, Boolean> predicate) {
             final CheckedFunction21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21));
-            return new Property21<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, proposition);
+            return new Property21<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, proposition);
         }
     }
 
-    static class ForAll22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> {
+    public static class ForAll22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -936,7 +938,8 @@ public interface Property {
         private final Arbitrary<T21> a21;
         private final Arbitrary<T22> a22;
 
-        ForAll22(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22) {
+        ForAll22(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -963,12 +966,13 @@ public interface Property {
 
         public Property22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> suchThat(CheckedFunction22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, Boolean> predicate) {
             final CheckedFunction22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22));
-            return new Property22<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, proposition);
+            return new Property22<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, proposition);
         }
     }
 
-    static class ForAll23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> {
+    public static class ForAll23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -993,7 +997,8 @@ public interface Property {
         private final Arbitrary<T22> a22;
         private final Arbitrary<T23> a23;
 
-        ForAll23(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23) {
+        ForAll23(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -1021,12 +1026,13 @@ public interface Property {
 
         public Property23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> suchThat(CheckedFunction23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, Boolean> predicate) {
             final CheckedFunction23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23));
-            return new Property23<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, proposition);
+            return new Property23<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, proposition);
         }
     }
 
-    static class ForAll24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> {
+    public static class ForAll24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -1052,7 +1058,8 @@ public interface Property {
         private final Arbitrary<T23> a23;
         private final Arbitrary<T24> a24;
 
-        ForAll24(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24) {
+        ForAll24(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -1081,12 +1088,13 @@ public interface Property {
 
         public Property24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> suchThat(CheckedFunction24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, Boolean> predicate) {
             final CheckedFunction24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24));
-            return new Property24<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, proposition);
+            return new Property24<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, proposition);
         }
     }
 
-    static class ForAll25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> {
+    public static class ForAll25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -1113,7 +1121,8 @@ public interface Property {
         private final Arbitrary<T24> a24;
         private final Arbitrary<T25> a25;
 
-        ForAll25(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25) {
+        ForAll25(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -1143,12 +1152,13 @@ public interface Property {
 
         public Property25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> suchThat(CheckedFunction25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, Boolean> predicate) {
             final CheckedFunction25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25));
-            return new Property25<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, proposition);
+            return new Property25<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, proposition);
         }
     }
 
-    static class ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> {
+    public static class ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -1176,7 +1186,8 @@ public interface Property {
         private final Arbitrary<T25> a25;
         private final Arbitrary<T26> a26;
 
-        ForAll26(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26) {
+        ForAll26(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -1207,21 +1218,23 @@ public interface Property {
 
         public Property26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> suchThat(CheckedFunction26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, Boolean> predicate) {
             final CheckedFunction26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26));
-            return new Property26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26, proposition);
+            return new Property26<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26, proposition);
         }
     }
 
-    static class Property1<T1> implements Property {
+    public static class Property1<T1> implements Checkable {
 
+        private final String name;
         private final Arbitrary<T1> a1;
-        final CheckedFunction1<T1, Condition> predicate;
+        private final CheckedFunction1<T1, Condition> predicate;
 
-        Property1(Arbitrary<T1> a1, CheckedFunction1<T1, Condition> predicate) {
+        Property1(String name, Arbitrary<T1> a1, CheckedFunction1<T1, Condition> predicate) {
+            this.name = name;
             this.a1 = a1;
             this.predicate = predicate;
         }
 
-        public Property implies(CheckedFunction1<T1, Boolean> postcondition) {
+        public Checkable implies(CheckedFunction1<T1, Boolean> postcondition) {
             final CheckedFunction1<T1, Condition> implication = (t1) -> {
                 final Condition precondition = predicate.apply(t1);
                 if (precondition.isFalse()) {
@@ -1230,7 +1243,7 @@ public interface Property {
                     return new Condition(true, postcondition.apply(t1));
                 }
             };
-            return new Property1<>(a1, implication);
+            return new Property1<>(name, a1, implication);
         }
 
         @Override
@@ -1250,36 +1263,43 @@ public interface Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    return CheckResult.falsified(i, Tuple.of(val1));
+                                    logFalsified(name, i);
+                                    return new CheckResult.Falsified(name, i, Tuple.of(val1));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1)));
+                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
+                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries, exhausted);
+                logSatisfied(name, tries, exhausted);
+                return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class Property2<T1, T2> implements Property {
+    public static class Property2<T1, T2> implements Checkable {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
-        final CheckedFunction2<T1, T2, Condition> predicate;
+        private final CheckedFunction2<T1, T2, Condition> predicate;
 
-        Property2(Arbitrary<T1> a1, Arbitrary<T2> a2, CheckedFunction2<T1, T2, Condition> predicate) {
+        Property2(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, CheckedFunction2<T1, T2, Condition> predicate) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.predicate = predicate;
         }
 
-        public Property implies(CheckedFunction2<T1, T2, Boolean> postcondition) {
+        public Checkable implies(CheckedFunction2<T1, T2, Boolean> postcondition) {
             final CheckedFunction2<T1, T2, Condition> implication = (t1, t2) -> {
                 final Condition precondition = predicate.apply(t1, t2);
                 if (precondition.isFalse()) {
@@ -1288,7 +1308,7 @@ public interface Property {
                     return new Condition(true, postcondition.apply(t1, t2));
                 }
             };
-            return new Property2<>(a1, a2, implication);
+            return new Property2<>(name, a1, a2, implication);
         }
 
         @Override
@@ -1310,38 +1330,45 @@ public interface Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    return CheckResult.falsified(i, Tuple.of(val1, val2));
+                                    logFalsified(name, i);
+                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2)));
+                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
+                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries, exhausted);
+                logSatisfied(name, tries, exhausted);
+                return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class Property3<T1, T2, T3> implements Property {
+    public static class Property3<T1, T2, T3> implements Checkable {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
-        final CheckedFunction3<T1, T2, T3, Condition> predicate;
+        private final CheckedFunction3<T1, T2, T3, Condition> predicate;
 
-        Property3(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, CheckedFunction3<T1, T2, T3, Condition> predicate) {
+        Property3(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, CheckedFunction3<T1, T2, T3, Condition> predicate) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
             this.predicate = predicate;
         }
 
-        public Property implies(CheckedFunction3<T1, T2, T3, Boolean> postcondition) {
+        public Checkable implies(CheckedFunction3<T1, T2, T3, Boolean> postcondition) {
             final CheckedFunction3<T1, T2, T3, Condition> implication = (t1, t2, t3) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3);
                 if (precondition.isFalse()) {
@@ -1350,7 +1377,7 @@ public interface Property {
                     return new Condition(true, postcondition.apply(t1, t2, t3));
                 }
             };
-            return new Property3<>(a1, a2, a3, implication);
+            return new Property3<>(name, a1, a2, a3, implication);
         }
 
         @Override
@@ -1374,32 +1401,39 @@ public interface Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3));
+                                    logFalsified(name, i);
+                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3)));
+                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
+                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries, exhausted);
+                logSatisfied(name, tries, exhausted);
+                return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class Property4<T1, T2, T3, T4> implements Property {
+    public static class Property4<T1, T2, T3, T4> implements Checkable {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
         private final Arbitrary<T4> a4;
-        final CheckedFunction4<T1, T2, T3, T4, Condition> predicate;
+        private final CheckedFunction4<T1, T2, T3, T4, Condition> predicate;
 
-        Property4(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, CheckedFunction4<T1, T2, T3, T4, Condition> predicate) {
+        Property4(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, CheckedFunction4<T1, T2, T3, T4, Condition> predicate) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -1407,7 +1441,7 @@ public interface Property {
             this.predicate = predicate;
         }
 
-        public Property implies(CheckedFunction4<T1, T2, T3, T4, Boolean> postcondition) {
+        public Checkable implies(CheckedFunction4<T1, T2, T3, T4, Boolean> postcondition) {
             final CheckedFunction4<T1, T2, T3, T4, Condition> implication = (t1, t2, t3, t4) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4);
                 if (precondition.isFalse()) {
@@ -1416,7 +1450,7 @@ public interface Property {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4));
                 }
             };
-            return new Property4<>(a1, a2, a3, a4, implication);
+            return new Property4<>(name, a1, a2, a3, a4, implication);
         }
 
         @Override
@@ -1442,33 +1476,40 @@ public interface Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4));
+                                    logFalsified(name, i);
+                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4)));
+                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
+                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries, exhausted);
+                logSatisfied(name, tries, exhausted);
+                return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class Property5<T1, T2, T3, T4, T5> implements Property {
+    public static class Property5<T1, T2, T3, T4, T5> implements Checkable {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
         private final Arbitrary<T4> a4;
         private final Arbitrary<T5> a5;
-        final CheckedFunction5<T1, T2, T3, T4, T5, Condition> predicate;
+        private final CheckedFunction5<T1, T2, T3, T4, T5, Condition> predicate;
 
-        Property5(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, CheckedFunction5<T1, T2, T3, T4, T5, Condition> predicate) {
+        Property5(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, CheckedFunction5<T1, T2, T3, T4, T5, Condition> predicate) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -1477,7 +1518,7 @@ public interface Property {
             this.predicate = predicate;
         }
 
-        public Property implies(CheckedFunction5<T1, T2, T3, T4, T5, Boolean> postcondition) {
+        public Checkable implies(CheckedFunction5<T1, T2, T3, T4, T5, Boolean> postcondition) {
             final CheckedFunction5<T1, T2, T3, T4, T5, Condition> implication = (t1, t2, t3, t4, t5) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5);
                 if (precondition.isFalse()) {
@@ -1486,7 +1527,7 @@ public interface Property {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5));
                 }
             };
-            return new Property5<>(a1, a2, a3, a4, a5, implication);
+            return new Property5<>(name, a1, a2, a3, a4, a5, implication);
         }
 
         @Override
@@ -1514,34 +1555,41 @@ public interface Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5));
+                                    logFalsified(name, i);
+                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5)));
+                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
+                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries, exhausted);
+                logSatisfied(name, tries, exhausted);
+                return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class Property6<T1, T2, T3, T4, T5, T6> implements Property {
+    public static class Property6<T1, T2, T3, T4, T5, T6> implements Checkable {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
         private final Arbitrary<T4> a4;
         private final Arbitrary<T5> a5;
         private final Arbitrary<T6> a6;
-        final CheckedFunction6<T1, T2, T3, T4, T5, T6, Condition> predicate;
+        private final CheckedFunction6<T1, T2, T3, T4, T5, T6, Condition> predicate;
 
-        Property6(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, CheckedFunction6<T1, T2, T3, T4, T5, T6, Condition> predicate) {
+        Property6(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, CheckedFunction6<T1, T2, T3, T4, T5, T6, Condition> predicate) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -1551,7 +1599,7 @@ public interface Property {
             this.predicate = predicate;
         }
 
-        public Property implies(CheckedFunction6<T1, T2, T3, T4, T5, T6, Boolean> postcondition) {
+        public Checkable implies(CheckedFunction6<T1, T2, T3, T4, T5, T6, Boolean> postcondition) {
             final CheckedFunction6<T1, T2, T3, T4, T5, T6, Condition> implication = (t1, t2, t3, t4, t5, t6) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6);
                 if (precondition.isFalse()) {
@@ -1560,7 +1608,7 @@ public interface Property {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6));
                 }
             };
-            return new Property6<>(a1, a2, a3, a4, a5, a6, implication);
+            return new Property6<>(name, a1, a2, a3, a4, a5, a6, implication);
         }
 
         @Override
@@ -1590,25 +1638,31 @@ public interface Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6));
+                                    logFalsified(name, i);
+                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6)));
+                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
+                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries, exhausted);
+                logSatisfied(name, tries, exhausted);
+                return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class Property7<T1, T2, T3, T4, T5, T6, T7> implements Property {
+    public static class Property7<T1, T2, T3, T4, T5, T6, T7> implements Checkable {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -1616,9 +1670,10 @@ public interface Property {
         private final Arbitrary<T5> a5;
         private final Arbitrary<T6> a6;
         private final Arbitrary<T7> a7;
-        final CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, Condition> predicate;
+        private final CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, Condition> predicate;
 
-        Property7(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, Condition> predicate) {
+        Property7(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, Condition> predicate) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -1629,7 +1684,7 @@ public interface Property {
             this.predicate = predicate;
         }
 
-        public Property implies(CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, Boolean> postcondition) {
+        public Checkable implies(CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, Boolean> postcondition) {
             final CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, Condition> implication = (t1, t2, t3, t4, t5, t6, t7) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7);
                 if (precondition.isFalse()) {
@@ -1638,7 +1693,7 @@ public interface Property {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7));
                 }
             };
-            return new Property7<>(a1, a2, a3, a4, a5, a6, a7, implication);
+            return new Property7<>(name, a1, a2, a3, a4, a5, a6, a7, implication);
         }
 
         @Override
@@ -1670,25 +1725,31 @@ public interface Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7));
+                                    logFalsified(name, i);
+                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6, val7));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7)));
+                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
+                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries, exhausted);
+                logSatisfied(name, tries, exhausted);
+                return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class Property8<T1, T2, T3, T4, T5, T6, T7, T8> implements Property {
+    public static class Property8<T1, T2, T3, T4, T5, T6, T7, T8> implements Checkable {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -1697,9 +1758,10 @@ public interface Property {
         private final Arbitrary<T6> a6;
         private final Arbitrary<T7> a7;
         private final Arbitrary<T8> a8;
-        final CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, Condition> predicate;
+        private final CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, Condition> predicate;
 
-        Property8(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, Condition> predicate) {
+        Property8(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, Condition> predicate) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -1711,7 +1773,7 @@ public interface Property {
             this.predicate = predicate;
         }
 
-        public Property implies(CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, Boolean> postcondition) {
+        public Checkable implies(CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, Boolean> postcondition) {
             final CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8);
                 if (precondition.isFalse()) {
@@ -1720,7 +1782,7 @@ public interface Property {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8));
                 }
             };
-            return new Property8<>(a1, a2, a3, a4, a5, a6, a7, a8, implication);
+            return new Property8<>(name, a1, a2, a3, a4, a5, a6, a7, a8, implication);
         }
 
         @Override
@@ -1754,25 +1816,31 @@ public interface Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8));
+                                    logFalsified(name, i);
+                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8)));
+                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
+                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries, exhausted);
+                logSatisfied(name, tries, exhausted);
+                return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class Property9<T1, T2, T3, T4, T5, T6, T7, T8, T9> implements Property {
+    public static class Property9<T1, T2, T3, T4, T5, T6, T7, T8, T9> implements Checkable {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -1782,9 +1850,10 @@ public interface Property {
         private final Arbitrary<T7> a7;
         private final Arbitrary<T8> a8;
         private final Arbitrary<T9> a9;
-        final CheckedFunction9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Condition> predicate;
+        private final CheckedFunction9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Condition> predicate;
 
-        Property9(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, CheckedFunction9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Condition> predicate) {
+        Property9(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, CheckedFunction9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Condition> predicate) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -1797,7 +1866,7 @@ public interface Property {
             this.predicate = predicate;
         }
 
-        public Property implies(CheckedFunction9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Boolean> postcondition) {
+        public Checkable implies(CheckedFunction9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Boolean> postcondition) {
             final CheckedFunction9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9);
                 if (precondition.isFalse()) {
@@ -1806,7 +1875,7 @@ public interface Property {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9));
                 }
             };
-            return new Property9<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, implication);
+            return new Property9<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, implication);
         }
 
         @Override
@@ -1842,25 +1911,31 @@ public interface Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9));
+                                    logFalsified(name, i);
+                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9)));
+                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
+                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries, exhausted);
+                logSatisfied(name, tries, exhausted);
+                return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class Property10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> implements Property {
+    public static class Property10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> implements Checkable {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -1871,9 +1946,10 @@ public interface Property {
         private final Arbitrary<T8> a8;
         private final Arbitrary<T9> a9;
         private final Arbitrary<T10> a10;
-        final CheckedFunction10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Condition> predicate;
+        private final CheckedFunction10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Condition> predicate;
 
-        Property10(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, CheckedFunction10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Condition> predicate) {
+        Property10(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, CheckedFunction10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Condition> predicate) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -1887,7 +1963,7 @@ public interface Property {
             this.predicate = predicate;
         }
 
-        public Property implies(CheckedFunction10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Boolean> postcondition) {
+        public Checkable implies(CheckedFunction10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Boolean> postcondition) {
             final CheckedFunction10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10);
                 if (precondition.isFalse()) {
@@ -1896,7 +1972,7 @@ public interface Property {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10));
                 }
             };
-            return new Property10<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, implication);
+            return new Property10<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, implication);
         }
 
         @Override
@@ -1934,25 +2010,31 @@ public interface Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10));
+                                    logFalsified(name, i);
+                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10)));
+                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
+                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries, exhausted);
+                logSatisfied(name, tries, exhausted);
+                return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class Property11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> implements Property {
+    public static class Property11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> implements Checkable {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -1964,9 +2046,10 @@ public interface Property {
         private final Arbitrary<T9> a9;
         private final Arbitrary<T10> a10;
         private final Arbitrary<T11> a11;
-        final CheckedFunction11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Condition> predicate;
+        private final CheckedFunction11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Condition> predicate;
 
-        Property11(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, CheckedFunction11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Condition> predicate) {
+        Property11(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, CheckedFunction11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Condition> predicate) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -1981,7 +2064,7 @@ public interface Property {
             this.predicate = predicate;
         }
 
-        public Property implies(CheckedFunction11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Boolean> postcondition) {
+        public Checkable implies(CheckedFunction11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Boolean> postcondition) {
             final CheckedFunction11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11);
                 if (precondition.isFalse()) {
@@ -1990,7 +2073,7 @@ public interface Property {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11));
                 }
             };
-            return new Property11<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, implication);
+            return new Property11<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, implication);
         }
 
         @Override
@@ -2030,25 +2113,31 @@ public interface Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11));
+                                    logFalsified(name, i);
+                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11)));
+                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
+                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries, exhausted);
+                logSatisfied(name, tries, exhausted);
+                return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class Property12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> implements Property {
+    public static class Property12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> implements Checkable {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -2061,9 +2150,10 @@ public interface Property {
         private final Arbitrary<T10> a10;
         private final Arbitrary<T11> a11;
         private final Arbitrary<T12> a12;
-        final CheckedFunction12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Condition> predicate;
+        private final CheckedFunction12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Condition> predicate;
 
-        Property12(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, CheckedFunction12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Condition> predicate) {
+        Property12(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, CheckedFunction12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Condition> predicate) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -2079,7 +2169,7 @@ public interface Property {
             this.predicate = predicate;
         }
 
-        public Property implies(CheckedFunction12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Boolean> postcondition) {
+        public Checkable implies(CheckedFunction12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Boolean> postcondition) {
             final CheckedFunction12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12);
                 if (precondition.isFalse()) {
@@ -2088,7 +2178,7 @@ public interface Property {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12));
                 }
             };
-            return new Property12<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, implication);
+            return new Property12<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, implication);
         }
 
         @Override
@@ -2130,25 +2220,31 @@ public interface Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12));
+                                    logFalsified(name, i);
+                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12)));
+                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
+                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries, exhausted);
+                logSatisfied(name, tries, exhausted);
+                return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class Property13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> implements Property {
+    public static class Property13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> implements Checkable {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -2162,9 +2258,10 @@ public interface Property {
         private final Arbitrary<T11> a11;
         private final Arbitrary<T12> a12;
         private final Arbitrary<T13> a13;
-        final CheckedFunction13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Condition> predicate;
+        private final CheckedFunction13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Condition> predicate;
 
-        Property13(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, CheckedFunction13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Condition> predicate) {
+        Property13(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, CheckedFunction13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Condition> predicate) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -2181,7 +2278,7 @@ public interface Property {
             this.predicate = predicate;
         }
 
-        public Property implies(CheckedFunction13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Boolean> postcondition) {
+        public Checkable implies(CheckedFunction13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Boolean> postcondition) {
             final CheckedFunction13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13);
                 if (precondition.isFalse()) {
@@ -2190,7 +2287,7 @@ public interface Property {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13));
                 }
             };
-            return new Property13<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, implication);
+            return new Property13<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, implication);
         }
 
         @Override
@@ -2234,25 +2331,31 @@ public interface Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13));
+                                    logFalsified(name, i);
+                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13)));
+                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
+                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries, exhausted);
+                logSatisfied(name, tries, exhausted);
+                return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class Property14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> implements Property {
+    public static class Property14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> implements Checkable {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -2267,9 +2370,10 @@ public interface Property {
         private final Arbitrary<T12> a12;
         private final Arbitrary<T13> a13;
         private final Arbitrary<T14> a14;
-        final CheckedFunction14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Condition> predicate;
+        private final CheckedFunction14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Condition> predicate;
 
-        Property14(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, CheckedFunction14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Condition> predicate) {
+        Property14(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, CheckedFunction14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Condition> predicate) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -2287,7 +2391,7 @@ public interface Property {
             this.predicate = predicate;
         }
 
-        public Property implies(CheckedFunction14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Boolean> postcondition) {
+        public Checkable implies(CheckedFunction14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Boolean> postcondition) {
             final CheckedFunction14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
                 if (precondition.isFalse()) {
@@ -2296,7 +2400,7 @@ public interface Property {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14));
                 }
             };
-            return new Property14<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, implication);
+            return new Property14<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, implication);
         }
 
         @Override
@@ -2342,25 +2446,31 @@ public interface Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14));
+                                    logFalsified(name, i);
+                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14)));
+                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
+                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries, exhausted);
+                logSatisfied(name, tries, exhausted);
+                return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class Property15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> implements Property {
+    public static class Property15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> implements Checkable {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -2376,9 +2486,10 @@ public interface Property {
         private final Arbitrary<T13> a13;
         private final Arbitrary<T14> a14;
         private final Arbitrary<T15> a15;
-        final CheckedFunction15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Condition> predicate;
+        private final CheckedFunction15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Condition> predicate;
 
-        Property15(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, CheckedFunction15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Condition> predicate) {
+        Property15(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, CheckedFunction15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Condition> predicate) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -2397,7 +2508,7 @@ public interface Property {
             this.predicate = predicate;
         }
 
-        public Property implies(CheckedFunction15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Boolean> postcondition) {
+        public Checkable implies(CheckedFunction15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Boolean> postcondition) {
             final CheckedFunction15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15);
                 if (precondition.isFalse()) {
@@ -2406,7 +2517,7 @@ public interface Property {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15));
                 }
             };
-            return new Property15<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, implication);
+            return new Property15<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, implication);
         }
 
         @Override
@@ -2454,25 +2565,31 @@ public interface Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15));
+                                    logFalsified(name, i);
+                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15)));
+                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
+                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries, exhausted);
+                logSatisfied(name, tries, exhausted);
+                return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class Property16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> implements Property {
+    public static class Property16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> implements Checkable {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -2489,9 +2606,10 @@ public interface Property {
         private final Arbitrary<T14> a14;
         private final Arbitrary<T15> a15;
         private final Arbitrary<T16> a16;
-        final CheckedFunction16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Condition> predicate;
+        private final CheckedFunction16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Condition> predicate;
 
-        Property16(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, CheckedFunction16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Condition> predicate) {
+        Property16(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, CheckedFunction16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Condition> predicate) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -2511,7 +2629,7 @@ public interface Property {
             this.predicate = predicate;
         }
 
-        public Property implies(CheckedFunction16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Boolean> postcondition) {
+        public Checkable implies(CheckedFunction16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Boolean> postcondition) {
             final CheckedFunction16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16);
                 if (precondition.isFalse()) {
@@ -2520,7 +2638,7 @@ public interface Property {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16));
                 }
             };
-            return new Property16<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, implication);
+            return new Property16<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, implication);
         }
 
         @Override
@@ -2570,25 +2688,31 @@ public interface Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16));
+                                    logFalsified(name, i);
+                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16)));
+                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
+                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries, exhausted);
+                logSatisfied(name, tries, exhausted);
+                return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class Property17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> implements Property {
+    public static class Property17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> implements Checkable {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -2606,9 +2730,10 @@ public interface Property {
         private final Arbitrary<T15> a15;
         private final Arbitrary<T16> a16;
         private final Arbitrary<T17> a17;
-        final CheckedFunction17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, Condition> predicate;
+        private final CheckedFunction17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, Condition> predicate;
 
-        Property17(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, CheckedFunction17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, Condition> predicate) {
+        Property17(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, CheckedFunction17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, Condition> predicate) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -2629,7 +2754,7 @@ public interface Property {
             this.predicate = predicate;
         }
 
-        public Property implies(CheckedFunction17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, Boolean> postcondition) {
+        public Checkable implies(CheckedFunction17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, Boolean> postcondition) {
             final CheckedFunction17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17);
                 if (precondition.isFalse()) {
@@ -2638,7 +2763,7 @@ public interface Property {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17));
                 }
             };
-            return new Property17<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, implication);
+            return new Property17<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, implication);
         }
 
         @Override
@@ -2690,25 +2815,31 @@ public interface Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17));
+                                    logFalsified(name, i);
+                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17)));
+                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
+                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries, exhausted);
+                logSatisfied(name, tries, exhausted);
+                return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class Property18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> implements Property {
+    public static class Property18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> implements Checkable {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -2727,9 +2858,10 @@ public interface Property {
         private final Arbitrary<T16> a16;
         private final Arbitrary<T17> a17;
         private final Arbitrary<T18> a18;
-        final CheckedFunction18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, Condition> predicate;
+        private final CheckedFunction18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, Condition> predicate;
 
-        Property18(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, CheckedFunction18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, Condition> predicate) {
+        Property18(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, CheckedFunction18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, Condition> predicate) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -2751,7 +2883,7 @@ public interface Property {
             this.predicate = predicate;
         }
 
-        public Property implies(CheckedFunction18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, Boolean> postcondition) {
+        public Checkable implies(CheckedFunction18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, Boolean> postcondition) {
             final CheckedFunction18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18);
                 if (precondition.isFalse()) {
@@ -2760,7 +2892,7 @@ public interface Property {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18));
                 }
             };
-            return new Property18<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, implication);
+            return new Property18<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, implication);
         }
 
         @Override
@@ -2814,25 +2946,31 @@ public interface Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18));
+                                    logFalsified(name, i);
+                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18)));
+                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
+                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries, exhausted);
+                logSatisfied(name, tries, exhausted);
+                return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class Property19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> implements Property {
+    public static class Property19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> implements Checkable {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -2852,9 +2990,10 @@ public interface Property {
         private final Arbitrary<T17> a17;
         private final Arbitrary<T18> a18;
         private final Arbitrary<T19> a19;
-        final CheckedFunction19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, Condition> predicate;
+        private final CheckedFunction19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, Condition> predicate;
 
-        Property19(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, CheckedFunction19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, Condition> predicate) {
+        Property19(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, CheckedFunction19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, Condition> predicate) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -2877,7 +3016,7 @@ public interface Property {
             this.predicate = predicate;
         }
 
-        public Property implies(CheckedFunction19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, Boolean> postcondition) {
+        public Checkable implies(CheckedFunction19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, Boolean> postcondition) {
             final CheckedFunction19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19);
                 if (precondition.isFalse()) {
@@ -2886,7 +3025,7 @@ public interface Property {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19));
                 }
             };
-            return new Property19<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, implication);
+            return new Property19<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, implication);
         }
 
         @Override
@@ -2942,25 +3081,31 @@ public interface Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19));
+                                    logFalsified(name, i);
+                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19)));
+                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
+                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries, exhausted);
+                logSatisfied(name, tries, exhausted);
+                return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class Property20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> implements Property {
+    public static class Property20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> implements Checkable {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -2981,9 +3126,10 @@ public interface Property {
         private final Arbitrary<T18> a18;
         private final Arbitrary<T19> a19;
         private final Arbitrary<T20> a20;
-        final CheckedFunction20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, Condition> predicate;
+        private final CheckedFunction20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, Condition> predicate;
 
-        Property20(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, CheckedFunction20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, Condition> predicate) {
+        Property20(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, CheckedFunction20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, Condition> predicate) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -3007,7 +3153,7 @@ public interface Property {
             this.predicate = predicate;
         }
 
-        public Property implies(CheckedFunction20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, Boolean> postcondition) {
+        public Checkable implies(CheckedFunction20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, Boolean> postcondition) {
             final CheckedFunction20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20);
                 if (precondition.isFalse()) {
@@ -3016,7 +3162,7 @@ public interface Property {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20));
                 }
             };
-            return new Property20<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, implication);
+            return new Property20<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, implication);
         }
 
         @Override
@@ -3074,25 +3220,31 @@ public interface Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20));
+                                    logFalsified(name, i);
+                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20)));
+                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
+                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries, exhausted);
+                logSatisfied(name, tries, exhausted);
+                return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class Property21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> implements Property {
+    public static class Property21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> implements Checkable {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -3114,9 +3266,10 @@ public interface Property {
         private final Arbitrary<T19> a19;
         private final Arbitrary<T20> a20;
         private final Arbitrary<T21> a21;
-        final CheckedFunction21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, Condition> predicate;
+        private final CheckedFunction21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, Condition> predicate;
 
-        Property21(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, CheckedFunction21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, Condition> predicate) {
+        Property21(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, CheckedFunction21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, Condition> predicate) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -3141,7 +3294,7 @@ public interface Property {
             this.predicate = predicate;
         }
 
-        public Property implies(CheckedFunction21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, Boolean> postcondition) {
+        public Checkable implies(CheckedFunction21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, Boolean> postcondition) {
             final CheckedFunction21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21);
                 if (precondition.isFalse()) {
@@ -3150,7 +3303,7 @@ public interface Property {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21));
                 }
             };
-            return new Property21<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, implication);
+            return new Property21<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, implication);
         }
 
         @Override
@@ -3210,25 +3363,31 @@ public interface Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21));
+                                    logFalsified(name, i);
+                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21)));
+                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
+                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries, exhausted);
+                logSatisfied(name, tries, exhausted);
+                return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class Property22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> implements Property {
+    public static class Property22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> implements Checkable {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -3251,9 +3410,10 @@ public interface Property {
         private final Arbitrary<T20> a20;
         private final Arbitrary<T21> a21;
         private final Arbitrary<T22> a22;
-        final CheckedFunction22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, Condition> predicate;
+        private final CheckedFunction22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, Condition> predicate;
 
-        Property22(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, CheckedFunction22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, Condition> predicate) {
+        Property22(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, CheckedFunction22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, Condition> predicate) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -3279,7 +3439,7 @@ public interface Property {
             this.predicate = predicate;
         }
 
-        public Property implies(CheckedFunction22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, Boolean> postcondition) {
+        public Checkable implies(CheckedFunction22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, Boolean> postcondition) {
             final CheckedFunction22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22);
                 if (precondition.isFalse()) {
@@ -3288,7 +3448,7 @@ public interface Property {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22));
                 }
             };
-            return new Property22<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, implication);
+            return new Property22<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, implication);
         }
 
         @Override
@@ -3350,25 +3510,31 @@ public interface Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22));
+                                    logFalsified(name, i);
+                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22)));
+                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
+                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries, exhausted);
+                logSatisfied(name, tries, exhausted);
+                return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class Property23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> implements Property {
+    public static class Property23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> implements Checkable {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -3392,9 +3558,10 @@ public interface Property {
         private final Arbitrary<T21> a21;
         private final Arbitrary<T22> a22;
         private final Arbitrary<T23> a23;
-        final CheckedFunction23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, Condition> predicate;
+        private final CheckedFunction23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, Condition> predicate;
 
-        Property23(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, CheckedFunction23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, Condition> predicate) {
+        Property23(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, CheckedFunction23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, Condition> predicate) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -3421,7 +3588,7 @@ public interface Property {
             this.predicate = predicate;
         }
 
-        public Property implies(CheckedFunction23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, Boolean> postcondition) {
+        public Checkable implies(CheckedFunction23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, Boolean> postcondition) {
             final CheckedFunction23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23);
                 if (precondition.isFalse()) {
@@ -3430,7 +3597,7 @@ public interface Property {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23));
                 }
             };
-            return new Property23<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, implication);
+            return new Property23<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, implication);
         }
 
         @Override
@@ -3494,25 +3661,31 @@ public interface Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23));
+                                    logFalsified(name, i);
+                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23)));
+                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
+                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries, exhausted);
+                logSatisfied(name, tries, exhausted);
+                return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class Property24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> implements Property {
+    public static class Property24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> implements Checkable {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -3537,9 +3710,10 @@ public interface Property {
         private final Arbitrary<T22> a22;
         private final Arbitrary<T23> a23;
         private final Arbitrary<T24> a24;
-        final CheckedFunction24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, Condition> predicate;
+        private final CheckedFunction24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, Condition> predicate;
 
-        Property24(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, CheckedFunction24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, Condition> predicate) {
+        Property24(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, CheckedFunction24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, Condition> predicate) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -3567,7 +3741,7 @@ public interface Property {
             this.predicate = predicate;
         }
 
-        public Property implies(CheckedFunction24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, Boolean> postcondition) {
+        public Checkable implies(CheckedFunction24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, Boolean> postcondition) {
             final CheckedFunction24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24);
                 if (precondition.isFalse()) {
@@ -3576,7 +3750,7 @@ public interface Property {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24));
                 }
             };
-            return new Property24<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, implication);
+            return new Property24<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, implication);
         }
 
         @Override
@@ -3642,25 +3816,31 @@ public interface Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24));
+                                    logFalsified(name, i);
+                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24)));
+                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
+                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries, exhausted);
+                logSatisfied(name, tries, exhausted);
+                return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class Property25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> implements Property {
+    public static class Property25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> implements Checkable {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -3686,9 +3866,10 @@ public interface Property {
         private final Arbitrary<T23> a23;
         private final Arbitrary<T24> a24;
         private final Arbitrary<T25> a25;
-        final CheckedFunction25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, Condition> predicate;
+        private final CheckedFunction25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, Condition> predicate;
 
-        Property25(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, CheckedFunction25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, Condition> predicate) {
+        Property25(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, CheckedFunction25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, Condition> predicate) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -3717,7 +3898,7 @@ public interface Property {
             this.predicate = predicate;
         }
 
-        public Property implies(CheckedFunction25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, Boolean> postcondition) {
+        public Checkable implies(CheckedFunction25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, Boolean> postcondition) {
             final CheckedFunction25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25);
                 if (precondition.isFalse()) {
@@ -3726,7 +3907,7 @@ public interface Property {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25));
                 }
             };
-            return new Property25<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, implication);
+            return new Property25<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, implication);
         }
 
         @Override
@@ -3794,25 +3975,31 @@ public interface Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24, val25));
+                                    logFalsified(name, i);
+                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24, val25));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24, val25)));
+                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24, val25)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
+                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries, exhausted);
+                logSatisfied(name, tries, exhausted);
+                return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
-    static class Property26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> implements Property {
+    public static class Property26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> implements Checkable {
 
+        private final String name;
         private final Arbitrary<T1> a1;
         private final Arbitrary<T2> a2;
         private final Arbitrary<T3> a3;
@@ -3839,9 +4026,10 @@ public interface Property {
         private final Arbitrary<T24> a24;
         private final Arbitrary<T25> a25;
         private final Arbitrary<T26> a26;
-        final CheckedFunction26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, Condition> predicate;
+        private final CheckedFunction26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, Condition> predicate;
 
-        Property26(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26, CheckedFunction26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, Condition> predicate) {
+        Property26(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26, CheckedFunction26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, Condition> predicate) {
+            this.name = name;
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -3871,7 +4059,7 @@ public interface Property {
             this.predicate = predicate;
         }
 
-        public Property implies(CheckedFunction26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, Boolean> postcondition) {
+        public Checkable implies(CheckedFunction26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, Boolean> postcondition) {
             final CheckedFunction26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26);
                 if (precondition.isFalse()) {
@@ -3880,7 +4068,7 @@ public interface Property {
                     return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26));
                 }
             };
-            return new Property26<>(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26, implication);
+            return new Property26<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26, implication);
         }
 
         @Override
@@ -3950,23 +4138,31 @@ public interface Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    return CheckResult.falsified(i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24, val25, val26));
+                                    logFalsified(name, i);
+                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24, val25, val26));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            return CheckResult.erroneous(i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24, val25, val26)));
+                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17, val18, val19, val20, val21, val22, val23, val24, val25, val26)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        return CheckResult.erroneous(i, (Error) nonFatal.getCause(), None.instance());
+                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                return CheckResult.satisfied(tries, exhausted);
+                logSatisfied(name, tries, exhausted);
+                return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                return CheckResult.erroneous(0, (Error) nonFatal.getCause(), None.instance());
+                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
     }
 
+    /**
+     * Internally used to model conditions composed of pre- and post-condition.
+     */
     static class Condition {
 
         static final Condition EX_FALSO_QUODLIBET = new Condition(false, true);

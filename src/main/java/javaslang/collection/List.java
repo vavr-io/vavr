@@ -7,7 +7,6 @@ package javaslang.collection;
 
 import javaslang.*;
 import javaslang.algebra.HigherKinded1;
-import javaslang.algebra.Monad1;
 
 import java.io.*;
 import java.util.*;
@@ -35,7 +34,7 @@ import java.util.stream.Collector;
  *
  * @param <T> Component type of the List.
  */
-public interface List<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObject {
+public interface List<T> extends Seq<T>, ValueObject {
 
     static final long serialVersionUID = 1L;
 

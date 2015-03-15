@@ -7,6 +7,8 @@ package javaslang.test;
 
 import javaslang.Tuple;
 import javaslang.collection.BinaryTree;
+import javaslang.collection.List;
+import javaslang.collection.Stream;
 import org.junit.Test;
 
 import java.util.Random;
@@ -41,6 +43,38 @@ public class ArbitraryTest {
         final Arbitrary<BinaryTree<Integer>> arbitraryTreeWithEvenNodeCount = arbitraryTree.filter(tree -> tree.nodeCount() % 2 == 0);
         assertThat(arbitraryTree.apply(0).apply(new Random())).isNotNull();
     }
+
+    // factory methods
+
+    @Test
+    public void shouldCreateArbitraryInteger() {
+        final Arbitrary<Integer> arbitrary = Arbitrary.integer();
+        final Integer actual = arbitrary.apply(10).apply(new Random());
+        assertThat(actual).isNotNull();
+    }
+
+    @Test
+    public void shouldCreateArbitraryString() {
+        final Arbitrary<String> arbitrary = Arbitrary.string(Gen.choose('a', 'z'));
+        final String actual = arbitrary.apply(10).apply(new Random());
+        assertThat(actual).isNotNull();
+    }
+
+    @Test
+    public void shouldCreateArbitraryList() {
+        final Arbitrary<List<Integer>> arbitrary = Arbitrary.list(Arbitrary.integer());
+        final List<Integer> actual = arbitrary.apply(10).apply(new Random());
+        assertThat(actual).isNotNull();
+    }
+
+    @Test
+    public void shouldCreateArbitraryStream() {
+        final Arbitrary<Stream<Integer>> arbitrary = Arbitrary.stream(Arbitrary.integer());
+        final Stream<Integer> actual = arbitrary.apply(10).apply(new Random());
+        assertThat(actual).isNotNull();
+    }
+
+    // helpers
 
     /**
      * Represents arbitrary binary trees of a certain depth n with values of type int.

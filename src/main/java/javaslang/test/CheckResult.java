@@ -19,18 +19,6 @@ public interface CheckResult extends ValueObject {
 
     static final long serialVersionUID = 1L;
 
-    static Satisfied satisfied(int count, boolean exhausted) {
-        return new Satisfied(count, exhausted);
-    }
-
-    static Falsified falsified(int count, Tuple sample) {
-        return new Falsified(count, sample);
-    }
-
-    static Erroneous erroneous(int count, Error error, Option<Tuple> sample) {
-        return new Erroneous(count, error, sample);
-    }
-
     boolean isSatisfied();
 
     boolean isFalsified();
@@ -38,6 +26,8 @@ public interface CheckResult extends ValueObject {
     boolean isErroneous();
 
     boolean isExhausted();
+
+    String propertyName();
 
     int count();
 
@@ -52,10 +42,17 @@ public interface CheckResult extends ValueObject {
 
         private static final long serialVersionUID = 1L;
 
-        final int count;
-        final boolean exhausted;
+        private final String propertyName;
+        private final int count;
+        private final boolean exhausted;
 
-        Satisfied(int count, boolean exhausted) {
+        Satisfied(String propertyName, int count, boolean exhausted) {
+            Objects.requireNonNull(propertyName, "propertyName is null");
+            Objects.requireNonNull(propertyName, "propertyName is null");
+            if (propertyName.isEmpty()) {
+                throw new IllegalArgumentException("propertyName is empty");
+            }
+            this.propertyName = propertyName;
             this.count = count;
             this.exhausted = exhausted;
         }
@@ -78,6 +75,11 @@ public interface CheckResult extends ValueObject {
         @Override
         public boolean isExhausted() {
             return exhausted;
+        }
+
+        @Override
+        public String propertyName() {
+            return propertyName;
         }
 
         @Override
@@ -106,7 +108,9 @@ public interface CheckResult extends ValueObject {
                 return true;
             } else if (o instanceof Satisfied) {
                 final Satisfied that = (Satisfied) o;
-                return this.count == that.count && this.exhausted == that.exhausted;
+                return Objects.equals(this.propertyName, that.propertyName)
+                        && this.count == that.count
+                        && this.exhausted == that.exhausted;
             } else {
                 return false;
             }
@@ -114,12 +118,12 @@ public interface CheckResult extends ValueObject {
 
         @Override
         public int hashCode() {
-            return Objects.hash(count, exhausted);
+            return Objects.hash(propertyName, count, exhausted);
         }
 
         @Override
         public String toString() {
-            return String.format("%s(count = %s, exhausted = %s)", getClass().getSimpleName(), count, exhausted);
+            return String.format("%s(propertyName = %s, count = %s, exhausted = %s)", getClass().getSimpleName(), propertyName, count, exhausted);
         }
     }
 
@@ -130,11 +134,17 @@ public interface CheckResult extends ValueObject {
 
         private static final long serialVersionUID = 1L;
 
+        private final String propertyName;
         private final int count;
         private final Tuple sample;
 
-        Falsified(int count, Tuple sample) {
+        Falsified(String propertyName, int count, Tuple sample) {
+            Objects.requireNonNull(propertyName, "propertyName is null");
             Objects.requireNonNull(sample, "sample is null");
+            if (propertyName.isEmpty()) {
+                throw new IllegalArgumentException("propertyName is empty");
+            }
+            this.propertyName = propertyName;
             this.count = count;
             this.sample = sample;
         }
@@ -157,6 +167,11 @@ public interface CheckResult extends ValueObject {
         @Override
         public boolean isExhausted() {
             return false;
+        }
+
+        @Override
+        public String propertyName() {
+            return propertyName;
         }
 
         @Override
@@ -185,7 +200,9 @@ public interface CheckResult extends ValueObject {
                 return true;
             } else if (o instanceof Falsified) {
                 final Falsified that = (Falsified) o;
-                return this.count == that.count && Objects.equals(this.sample, that.sample);
+                return Objects.equals(this.propertyName, that.propertyName)
+                        && this.count == that.count
+                        && Objects.equals(this.sample, that.sample);
             } else {
                 return false;
             }
@@ -193,12 +210,12 @@ public interface CheckResult extends ValueObject {
 
         @Override
         public int hashCode() {
-            return Objects.hash(count, sample);
+            return Objects.hash(propertyName, count, sample);
         }
 
         @Override
         public String toString() {
-            return String.format("%s(count = %s, sample = %s)", getClass().getSimpleName(), count, sample);
+            return String.format("%s(propertyName = %s, count = %s, sample = %s)", getClass().getSimpleName(), propertyName, count, sample);
         }
     }
 
@@ -209,13 +226,19 @@ public interface CheckResult extends ValueObject {
 
         private static final long serialVersionUID = 1L;
 
+        private final String propertyName;
         private final int count;
         private final Error error;
         private final Option<Tuple> sample;
 
-        Erroneous(int count, Error error, Option<Tuple> sample) {
+        Erroneous(String propertyName, int count, Error error, Option<Tuple> sample) {
+            Objects.requireNonNull(propertyName, "propertyName is null");
             Objects.requireNonNull(error, "error is null");
             Objects.requireNonNull(sample, "sample is null");
+            if (propertyName.isEmpty()) {
+                throw new IllegalArgumentException("propertyName is empty");
+            }
+            this.propertyName = propertyName;
             this.count = count;
             this.error = error;
             this.sample = sample;
@@ -239,6 +262,11 @@ public interface CheckResult extends ValueObject {
         @Override
         public boolean isExhausted() {
             return false;
+        }
+
+        @Override
+        public String propertyName() {
+            return propertyName;
         }
 
         @Override
@@ -267,7 +295,8 @@ public interface CheckResult extends ValueObject {
                 return true;
             } else if (o instanceof Erroneous) {
                 final Erroneous that = (Erroneous) o;
-                return this.count == that.count
+                return Objects.equals(this.propertyName, that.propertyName)
+                        && this.count == that.count
                         && deepEquals(this.error, that.error)
                         && Objects.equals(this.sample, that.sample);
             } else {
@@ -285,7 +314,7 @@ public interface CheckResult extends ValueObject {
 
         @Override
         public int hashCode() {
-            return Objects.hash(count, deepHashCode(error), sample);
+            return Objects.hash(propertyName, count, deepHashCode(error), sample);
         }
 
         int deepHashCode(Throwable t) {
@@ -298,7 +327,7 @@ public interface CheckResult extends ValueObject {
 
         @Override
         public String toString() {
-            return String.format("%s(count = %s, error = %s, sample = %s)", getClass().getSimpleName(), count, error.getMessage(), sample);
+            return String.format("%s(propertyName = %s, count = %s, error = %s, sample = %s)", getClass().getSimpleName(), propertyName, count, error.getMessage(), sample);
         }
     }
 }

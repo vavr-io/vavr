@@ -5,11 +5,13 @@
  */
 package javaslang.test;
 
-import javaslang.Tuple;
 import javaslang.algebra.HigherKinded1;
 import javaslang.algebra.Monad1;
 import javaslang.collection.List;
+import javaslang.collection.Stream;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -117,6 +119,30 @@ public interface Arbitrary<T> extends IntFunction<Gen<T>>, Function<Integer, Gen
         return n -> apply(n).filter(predicate);
     }
 
+    /**
+     * <p>Generates arbitrary integer values.</p>
+     * @return A new Arbitrary of Integer
+     */
+    static Arbitrary<Integer> integer() {
+        return size -> random -> Gen.choose(-size, size).apply(random);
+    }
+
+    /**
+     * <p>Generates arbitrary strings based on a given alphabet represented by <em>gen</em>.</p>
+     * <p>Example:
+     * <pre>
+     * <code>
+     * Arbitrary.string(
+     *     Gen.frequency(
+     *         Tuple.of(1, Gen.choose('A', 'Z')),
+     *         Tuple.of(1, Gen.choose('a', 'z')),
+     *         Tuple.of(1, Gen.choose('0', '9'))));
+     * </code>
+     * </pre>
+     * </p>
+     * @param gen A character generator
+     * @return a new Arbitrary of String
+     */
     static Arbitrary<String> string(Gen<Character> gen) {
         return size -> random -> Gen.choose(0, size).map(i -> {
             final char[] chars = new char[i];
@@ -127,6 +153,19 @@ public interface Arbitrary<T> extends IntFunction<Gen<T>>, Function<Integer, Gen
         }).apply(random);
     }
 
+    /**
+     * <p>Generates arbitrary lists based on a given element generator arbitraryT.</p>
+     * <p>Example:
+     * <pre>
+     * <code>
+     * Arbitrary.list(Arbitrary.integer());
+     * </code>
+     * </pre>
+     * </p>
+     * @param arbitraryT Arbitrary elements of type T
+     * @param <T> Component type of the List
+     * @return a new Arbitrary of List&lt;T&gt;
+     */
     static <T> Arbitrary<List<T>> list(Arbitrary<T> arbitraryT) {
         return size -> {
             final Gen<T> genT = arbitraryT.apply(size);
@@ -138,6 +177,44 @@ public interface Arbitrary<T> extends IntFunction<Gen<T>>, Function<Integer, Gen
                 }
                 return list;
             }).apply(random);
+        };
+    }
+
+    /**
+     * <p>Generates arbitrary streams based on a given element generator arbitraryT.</p>
+     * <p>Example:
+     * <pre>
+     * <code>
+     * Arbitrary.stream(Arbitrary.integer());
+     * </code>
+     * </pre>
+     * </p>
+     * @param arbitraryT Arbitrary elements of type T
+     * @param <T> Component type of the Stream
+     * @return a new Arbitrary of Stream&lt;T&gt;
+     */
+    static <T> Arbitrary<Stream<T>> stream(Arbitrary<T> arbitraryT) {
+        return size -> {
+            final Gen<T> genT = arbitraryT.apply(size);
+            return random -> Gen.choose(0, size).map(i -> Stream.of(() -> new Iterator<T>() {
+
+                int count = i;
+
+                @Override
+                public boolean hasNext() {
+                    return count > 0;
+                }
+
+                @Override
+                public T next() {
+                    if (count <= 0) {
+                        throw new NoSuchElementException();
+                    } else {
+                        count--;
+                        return genT.apply(random);
+                    }
+                }
+            })).apply(random);
         };
     }
 }
