@@ -37,5 +37,19 @@ public interface CheckResultAssertions {
             }
             return this;
         }
+
+        public CheckResultAssertion isFalsified() {
+            if (!checkResult.isFalsified()) {
+                throw new AssertionError("Expected falsified check result but was " + checkResult);
+            }
+            return this;
+        }
+
+        public CheckResultAssertion isErroneous() {
+            if (!checkResult.isErroneous()) {
+                throw new AssertionError("Expected erroneous check result but was " + checkResult);
+            }
+            return this;
+        }
     }
 }
