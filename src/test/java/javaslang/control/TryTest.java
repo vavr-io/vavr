@@ -487,7 +487,7 @@ public class TryTest implements Monad1Laws<Try<?>> {
 
     // -- Functor1Laws
 
-    static final Arbitrary<? extends Functor1<Integer>> FUNCTOR_TRIES = size -> random -> Gen.frequency(
+    static final Arbitrary<Try<Integer>> TRIES = size -> random -> Gen.frequency(
             Tuple.of(1, Gen.of(new Failure<Integer>(new Error("test")))),
             Tuple.of(4, Gen.choose(-size, size).map(i -> new Success<>(i)))
     ).apply(random);
@@ -495,7 +495,7 @@ public class TryTest implements Monad1Laws<Try<?>> {
     @Test
     @Override
     public void shouldSatisfyFunctorIdentity() {
-        final CheckResult result = checkFunctorIdentity(FUNCTOR_TRIES);
+        final CheckResult result = checkFunctorIdentity(TRIES);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
     }
 
@@ -506,7 +506,7 @@ public class TryTest implements Monad1Laws<Try<?>> {
                 size -> random -> Double::valueOf;
         final Arbitrary<Function<? super Double, ? extends String>> after =
                 size -> random -> String::valueOf;
-        final CheckResult result = checkFunctorComposition(FUNCTOR_TRIES, before, after);
+        final CheckResult result = checkFunctorComposition(TRIES, before, after);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
     }
 
@@ -515,11 +515,6 @@ public class TryTest implements Monad1Laws<Try<?>> {
     static final Arbitrary<Integer> INTEGERS = size -> random -> Gen.frequency(
             Tuple.of(1, Gen.of(null)),
             Tuple.of(4, Gen.choose(-size, size))
-    ).apply(random);
-
-    static final Arbitrary<? extends Monad1<Integer, Try<?>>> MONAD_TRIES = size -> random -> Gen.frequency(
-            Tuple.of(1, Gen.of(new Failure<Integer>(new Error("test")))),
-            Tuple.of(4, Gen.choose(-size, size).map(i -> new Success<>(i)))
     ).apply(random);
 
     static <T> Function<? super T, ? extends Monad1<T, Try<?>>> unit() {
@@ -548,7 +543,7 @@ public class TryTest implements Monad1Laws<Try<?>> {
     @Test
     @Override
     public void shouldSatisfyMonadRightIdentity() {
-        final CheckResult result = checkMonadRightIdentity(TryTest.<Integer> unit(), MONAD_TRIES);
+        final CheckResult result = checkMonadRightIdentity(TryTest.<Integer> unit(), TRIES);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
     }
 
@@ -559,7 +554,7 @@ public class TryTest implements Monad1Laws<Try<?>> {
                 size -> random -> i -> TryTest.mapTry(i, Double::valueOf);
         final Arbitrary<Function<? super Double, ? extends Monad1<String, Try<?>>>> after =
                 size -> random -> d -> TryTest.mapTry(d, String::valueOf);
-        final CheckResult result = checkMonadAssociativity(MONAD_TRIES, before, after);
+        final CheckResult result = checkMonadAssociativity(TRIES, before, after);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
     }
 }

@@ -287,7 +287,7 @@ public class OptionTest implements Monad1Laws<Option<?>> {
 
     // -- Functor1Laws
 
-    static final Arbitrary<? extends Functor1<Integer>> FUNCTOR_OPTIONS = size -> random -> Gen.frequency(
+    static final Arbitrary<Option<Integer>> OPTIONS = size -> random -> Gen.frequency(
             Tuple.of(1, Gen.of(None.<Integer> instance())),
             Tuple.of(4, Gen.choose(-size, size).map(i -> new Some<>(i)))
     ).apply(random);
@@ -295,7 +295,7 @@ public class OptionTest implements Monad1Laws<Option<?>> {
     @Test
     @Override
     public void shouldSatisfyFunctorIdentity() {
-        final CheckResult result = checkFunctorIdentity(FUNCTOR_OPTIONS);
+        final CheckResult result = checkFunctorIdentity(OPTIONS);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
     }
 
@@ -306,7 +306,7 @@ public class OptionTest implements Monad1Laws<Option<?>> {
                 size -> random -> Double::valueOf;
         final Arbitrary<Function<? super Double, ? extends String>> after =
                 size -> random -> String::valueOf;
-        final CheckResult result = checkFunctorComposition(FUNCTOR_OPTIONS, before, after);
+        final CheckResult result = checkFunctorComposition(OPTIONS, before, after);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
     }
 
@@ -315,11 +315,6 @@ public class OptionTest implements Monad1Laws<Option<?>> {
     static final Arbitrary<Integer> INTEGERS = size -> random -> Gen.frequency(
             Tuple.of(1, Gen.of(null)),
             Tuple.of(4, Gen.choose(-size, size))
-    ).apply(random);
-
-    static final Arbitrary<? extends Monad1<Integer, Option<?>>> MONAD_OPTIONS = size -> random -> Gen.frequency(
-            Tuple.of(1, Gen.of(None.<Integer> instance())),
-            Tuple.of(4, Gen.choose(-size, size).map(i -> new Some<>(i)))
     ).apply(random);
 
     @Test
@@ -334,7 +329,7 @@ public class OptionTest implements Monad1Laws<Option<?>> {
     @Test
     @Override
     public void shouldSatisfyMonadRightIdentity() {
-        final CheckResult result = checkMonadRightIdentity(Option::of, MONAD_OPTIONS);
+        final CheckResult result = checkMonadRightIdentity(Option::of, OPTIONS);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
     }
 
@@ -345,7 +340,7 @@ public class OptionTest implements Monad1Laws<Option<?>> {
                 size -> random -> i -> Option.of(i).map(Double::valueOf);
         final Arbitrary<Function<? super Double, ? extends Monad1<String, Option<?>>>> after =
                 size -> random -> d -> Option.of(d).map(String::valueOf);
-        final CheckResult result = checkMonadAssociativity(MONAD_OPTIONS, before, after);
+        final CheckResult result = checkMonadAssociativity(OPTIONS, before, after);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
     }
 }
