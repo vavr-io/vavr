@@ -10,8 +10,12 @@ package javaslang.algebra;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import java.util.function.BiFunction;
+import javaslang.Tuple2;
 
 public interface Monad2<T1, T2, M extends HigherKinded2<?, ?, M>> extends Functor2<T1, T2>, HigherKinded2<T1, T2, M> {
 
     <U1, U2, MONAD extends HigherKinded2<U1, U2, M>> Monad2<U1, U2, M> flatMap(BiFunction<? super T1, ? super T2, MONAD> f);
+
+    @Override
+    <U1, U2> Monad2<U1, U2, M> map(BiFunction<? super T1, ? super T2, Tuple2<? extends U1, ? extends U2>> f);
 }

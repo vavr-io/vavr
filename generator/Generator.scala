@@ -111,6 +111,7 @@ def generateMainClasses(): Unit = {
     genJavaslangFile("javaslang.algebra", s"Monad$i")((im: ImportManager, packageName, className) => {
       val generics = (1 to i).gen(j => s"T$j")(", ")
       val paramTypes = (1 to i).gen(j => s"? super T$j")(", ")
+      val resultType = if (i == 1) "? extends U1" else s"${im.getType(s"javaslang.Tuple$i")}<${(1 to i).gen(j => s"? extends U$j")(", ")}>"
       val resultGenerics = (1 to i).gen(j => s"U$j")(", ")
       val functionType = i match {
         case 1 => im.getType("java.util.function.Function")
@@ -136,6 +137,9 @@ def generateMainClasses(): Unit = {
         public interface $className<$generics, M extends HigherKinded$i<${"?, " * i}M>> extends Functor$i<$generics>, HigherKinded$i<$generics, M> {
 
             <$resultGenerics, MONAD extends HigherKinded$i<$resultGenerics, M>> $className<$resultGenerics, M> flatMap($functionType<$paramTypes, MONAD> f);
+
+            @Override
+            <$resultGenerics> $className<$resultGenerics, M> map($functionType<$paramTypes, $resultType> f);
         }
     """
     })

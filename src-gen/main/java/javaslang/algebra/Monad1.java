@@ -27,4 +27,7 @@ import java.util.function.Function;
 public interface Monad1<T1, M extends HigherKinded1<?, M>> extends Functor1<T1>, HigherKinded1<T1, M> {
 
     <U1, MONAD extends HigherKinded1<U1, M>> Monad1<U1, M> flatMap(Function<? super T1, MONAD> f);
+
+    @Override
+    <U1> Monad1<U1, M> map(Function<? super T1, ? extends U1> f);
 }

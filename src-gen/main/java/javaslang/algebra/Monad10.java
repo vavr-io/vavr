@@ -10,8 +10,12 @@ package javaslang.algebra;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import javaslang.Function10;
+import javaslang.Tuple10;
 
 public interface Monad10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, M extends HigherKinded10<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M>> extends Functor10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>, HigherKinded10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, M> {
 
     <U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, MONAD extends HigherKinded10<U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, M>> Monad10<U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, M> flatMap(Function10<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? super T10, MONAD> f);
+
+    @Override
+    <U1, U2, U3, U4, U5, U6, U7, U8, U9, U10> Monad10<U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, M> map(Function10<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? super T10, Tuple10<? extends U1, ? extends U2, ? extends U3, ? extends U4, ? extends U5, ? extends U6, ? extends U7, ? extends U8, ? extends U9, ? extends U10>> f);
 }
