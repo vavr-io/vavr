@@ -3,7 +3,7 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014-2015 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang;
+package javaslang.collection;
 
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -20,7 +20,7 @@ import java.util.function.Supplier;
  * </code>
  * </pre>
  */
-public final class Lazy<T> implements Supplier<T> {
+final class Lazy<T> implements Supplier<T> {
 
     private Supplier<T> supplier;
 

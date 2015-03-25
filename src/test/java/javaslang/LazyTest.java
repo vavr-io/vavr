@@ -7,6 +7,7 @@ package javaslang;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import javaslang.collection.Lazy;
 import org.junit.Test;
 
 public class LazyTest {
