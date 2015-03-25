@@ -8,9 +8,9 @@ package javaslang.test;
 // internally used within Property.check
 interface Errors {
 
-    String ARBITRARY_ERROR = "Arbitrary %s of size %s";
-    String GEN_ERROR = "Gen %s of size %s";
-    String PREDICATE_ERROR = "Applying predicate";
+    String ARBITRARY_ERROR = "Arbitrary %s of size %s: %s";
+    String GEN_ERROR = "Gen %s of size %s: %s";
+    String PREDICATE_ERROR = "Applying predicate: %s";
 
     /**
      *
@@ -20,14 +20,14 @@ interface Errors {
      * @return
      */
     static Error arbitraryError(int position, int size, Throwable cause) {
-        return new Error(String.format(ARBITRARY_ERROR, position, size), cause);
+        return new Error(String.format(ARBITRARY_ERROR, position, size, cause.getMessage()), cause);
     }
 
     static Error genError(int position, int size, Throwable cause) {
-        return new Error(String.format(GEN_ERROR, position, size), cause);
+        return new Error(String.format(GEN_ERROR, position, size, cause.getMessage()), cause);
     }
 
     static Error predicateError(Throwable cause) {
-        return new Error(PREDICATE_ERROR, cause);
+        return new Error(String.format(PREDICATE_ERROR, cause.getMessage()), cause);
     }
 }

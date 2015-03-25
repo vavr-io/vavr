@@ -7,14 +7,22 @@ package javaslang.control;
 
 import javaslang.Serializables;
 import javaslang.Tuple;
+import javaslang.algebra.Functor1;
+import javaslang.algebra.Monad1;
+import javaslang.algebra.Monad1Laws;
+import javaslang.test.Arbitrary;
+import javaslang.test.CheckResult;
+import javaslang.test.CheckResultAssertions;
+import javaslang.test.Gen;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class OptionTest {
+public class OptionTest implements Monad1Laws<Option<?>> {
 
     // -- construction
 
@@ -276,4 +284,68 @@ public class OptionTest {
 		final Object none = Serializables.deserialize(Serializables.serialize(None.instance()));
 		assertThat(none == None.instance()).isTrue();
 	}
+
+    // -- Functor1Laws
+
+    static final Arbitrary<? extends Functor1<Integer>> FUNCTOR_OPTIONS = size -> random -> Gen.frequency(
+            Tuple.of(1, Gen.of(None.<Integer> instance())),
+            Tuple.of(4, Gen.choose(-size, size).map(i -> new Some<>(i)))
+    ).apply(random);
+
+    @Test
+    @Override
+    public void shouldSatisfyFunctorIdentity() {
+        final CheckResult result = checkFunctorIdentity(FUNCTOR_OPTIONS);
+        CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
+    }
+
+    @Test
+    @Override
+    public void shouldSatisfyFunctorComposition() {
+        final Arbitrary<Function<? super Integer, ? extends Double>> before =
+                size -> random -> Double::valueOf;
+        final Arbitrary<Function<? super Double, ? extends String>> after =
+                size -> random -> String::valueOf;
+        final CheckResult result = checkFunctorComposition(FUNCTOR_OPTIONS, before, after);
+        CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
+    }
+
+    // -- Monad1Laws
+
+    static final Arbitrary<Integer> INTEGERS = size -> random -> Gen.frequency(
+            Tuple.of(1, Gen.of(null)),
+            Tuple.of(4, Gen.choose(-size, size))
+    ).apply(random);
+
+    static final Arbitrary<? extends Monad1<Integer, Option<?>>> MONAD_OPTIONS = size -> random -> Gen.frequency(
+            Tuple.of(1, Gen.of(None.<Integer> instance())),
+            Tuple.of(4, Gen.choose(-size, size).map(i -> new Some<>(i)))
+    ).apply(random);
+
+    @Test
+    @Override
+    public void shouldSatisfyMonadLeftIdentity() {
+        final Arbitrary<Function<? super Integer, ? extends Monad1<String, Option<?>>>> mappers =
+                size -> random -> i -> Option.of(i).map(String::valueOf);
+        final CheckResult result = checkMonadLeftIdentity(Option::of, INTEGERS, mappers);
+        CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
+    }
+
+    @Test
+    @Override
+    public void shouldSatisfyMonadRightIdentity() {
+        final CheckResult result = checkMonadRightIdentity(Option::of, MONAD_OPTIONS);
+        CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
+    }
+
+    @Test
+    @Override
+    public void shouldSatisfyMonadAssociativity() {
+        final Arbitrary<Function<? super Integer, ? extends Monad1<Double, Option<?>>>> before =
+                size -> random -> i -> Option.of(i).map(Double::valueOf);
+        final Arbitrary<Function<? super Double, ? extends Monad1<String, Option<?>>>> after =
+                size -> random -> d -> Option.of(d).map(String::valueOf);
+        final CheckResult result = checkMonadAssociativity(MONAD_OPTIONS, before, after);
+        CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
+    }
 }
