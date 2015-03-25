@@ -7,6 +7,13 @@ package javaslang.control;
 
 import javaslang.Serializables;
 import javaslang.Tuple;
+import javaslang.algebra.Functor1;
+import javaslang.algebra.Monad1;
+import javaslang.algebra.Monad1Laws;
+import javaslang.test.Arbitrary;
+import javaslang.test.CheckResult;
+import javaslang.test.CheckResultAssertions;
+import javaslang.test.Gen;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
@@ -14,11 +21,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class TryTest {
+public class TryTest implements Monad1Laws<Try<?>> {
 
 	private static final String OK = "ok";
     private static final String FAILURE = "failure";
@@ -476,4 +484,82 @@ public class TryTest {
 	private Try<String> success() {
 		return Try.of(() -> "ok");
 	}
+
+    // -- Functor1Laws
+
+    static final Arbitrary<? extends Functor1<Integer>> FUNCTOR_TRIES = size -> random -> Gen.frequency(
+            Tuple.of(1, Gen.of(new Failure<Integer>(new Error("test")))),
+            Tuple.of(4, Gen.choose(-size, size).map(i -> new Success<>(i)))
+    ).apply(random);
+
+    @Test
+    @Override
+    public void shouldSatisfyFunctorIdentity() {
+        final CheckResult result = checkFunctorIdentity(FUNCTOR_TRIES);
+        CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
+    }
+
+    @Test
+    @Override
+    public void shouldSatisfyFunctorComposition() {
+        final Arbitrary<Function<? super Integer, ? extends Double>> before =
+                size -> random -> Double::valueOf;
+        final Arbitrary<Function<? super Double, ? extends String>> after =
+                size -> random -> String::valueOf;
+        final CheckResult result = checkFunctorComposition(FUNCTOR_TRIES, before, after);
+        CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
+    }
+
+    // -- Monad1Laws
+
+    static final Arbitrary<Integer> INTEGERS = size -> random -> Gen.frequency(
+            Tuple.of(1, Gen.of(null)),
+            Tuple.of(4, Gen.choose(-size, size))
+    ).apply(random);
+
+    static final Arbitrary<? extends Monad1<Integer, Try<?>>> MONAD_TRIES = size -> random -> Gen.frequency(
+            Tuple.of(1, Gen.of(new Failure<Integer>(new Error("test")))),
+            Tuple.of(4, Gen.choose(-size, size).map(i -> new Success<>(i)))
+    ).apply(random);
+
+    static <T> Function<? super T, ? extends Monad1<T, Try<?>>> unit() {
+        return i -> Try.of(() -> {
+            if (i == null) {
+                throw new Error("test");
+            } else {
+                return i;
+            }
+        });
+    }
+
+    static <T, R> Monad1<R, Try<?>> mapTry(T t, Function<? super T, R> mapper) {
+        return TryTest.<T> unit().apply(t).map(mapper::apply);
+    }
+
+    @Test
+    @Override
+    public void shouldSatisfyMonadLeftIdentity() {
+        final Arbitrary<Function<? super Integer, ? extends Monad1<String, Try<?>>>> mappers =
+                size -> random -> i -> TryTest.mapTry(i, String::valueOf);
+        final CheckResult result = checkMonadLeftIdentity(TryTest.<Integer> unit(), INTEGERS, mappers);
+        CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
+    }
+
+    @Test
+    @Override
+    public void shouldSatisfyMonadRightIdentity() {
+        final CheckResult result = checkMonadRightIdentity(TryTest.<Integer> unit(), MONAD_TRIES);
+        CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
+    }
+
+    @Test
+    @Override
+    public void shouldSatisfyMonadAssociativity() {
+        final Arbitrary<Function<? super Integer, ? extends Monad1<Double, Try<?>>>> before =
+                size -> random -> i -> TryTest.mapTry(i, Double::valueOf);
+        final Arbitrary<Function<? super Double, ? extends Monad1<String, Try<?>>>> after =
+                size -> random -> d -> TryTest.mapTry(d, String::valueOf);
+        final CheckResult result = checkMonadAssociativity(MONAD_TRIES, before, after);
+        CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
+    }
 }
