@@ -23,6 +23,8 @@ public class CheckResultAssertionsTest {
         CheckResultAssertions.assertThat(new CheckResult.Falsified("test", 0, Tuple.empty())).isSatisfied();
     }
 
+    // -- satisfiedWithExhaustion
+
     @Test
     public void shouldAssertThatCheckResultIsSatisfiedWithExhaustionTrue() {
         CheckResultAssertions.assertThat(new CheckResult.Satisfied("test", 0, true)).isSatisfiedWithExhaustion(true);
