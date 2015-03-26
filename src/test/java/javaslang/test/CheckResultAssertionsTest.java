@@ -34,8 +34,13 @@ public class CheckResultAssertionsTest {
     }
 
     @Test(expected = AssertionError.class)
-    public void shouldThrowWhenAssertThatNonSatisfiedCheckResultIsSatisfiedWithExhaustion() {
-        CheckResultAssertions.assertThat(new CheckResult.Falsified("test", 0, Tuple.empty())).isSatisfied();
+    public void shouldThrowWhenAssertThatNonSatisfiedCheckResultIsSatisfiedWithExhaustionTrue() {
+        CheckResultAssertions.assertThat(new CheckResult.Falsified("test", 0, Tuple.empty())).isSatisfiedWithExhaustion(true);
+    }
+
+    @Test(expected = AssertionError.class)
+    public void shouldThrowWhenAssertThatNonSatisfiedCheckResultIsSatisfiedWithExhaustionFalse() {
+        CheckResultAssertions.assertThat(new CheckResult.Falsified("test", 0, Tuple.empty())).isSatisfiedWithExhaustion(false);
     }
 
     @Test(expected = AssertionError.class)
