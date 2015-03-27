@@ -866,7 +866,7 @@ public interface List<T> extends Seq<T>, ValueObject {
 
         @Override
         public String toString() {
-            return List.class.getSimpleName() + map(Strings::toString).join(", ", "(", ")");
+            return List.class.getSimpleName() + map(String::valueOf).join(", ", "(", ")");
         }
     }
 }

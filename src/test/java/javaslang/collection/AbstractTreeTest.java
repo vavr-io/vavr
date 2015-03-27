@@ -231,7 +231,7 @@ public abstract class AbstractTreeTest {
 
     @Test
     public void shouldMapTree() {
-        assertThat(tree().map(i -> (char) (i + 64)).toLispString()).isEqualTo("('A' ('B' ('D' 'G') 'E') ('C' ('F' 'H' 'I')))");
+        assertThat(tree().map(i -> (char) (i + 64)).toLispString()).isEqualTo("(A (B (D G) E) (C (F H I)))");
     }
 
     // -- toListString

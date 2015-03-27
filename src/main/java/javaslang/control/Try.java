@@ -10,8 +10,6 @@ import javaslang.algebra.HigherKinded1;
 import javaslang.algebra.Monad1;
 import javaslang.control.Valences.Bivalent;
 
-import javax.lang.CheckedRunnable;
-import javax.util.function.CheckedSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -25,51 +23,61 @@ public interface Try<T> extends Monad1<T, Try<?>>, ValueObject, Bivalent<T, Thro
 
     long serialVersionUID = 1L;
 
-	static <T> Try<T> of(CheckedSupplier<T> supplier) {
-		try {
-			return new Success<>(supplier.get());
-		} catch (Throwable t) {
-			return new Failure<>(t);
-		}
-	}
+    static <T> Try<T> of(CheckedSupplier<T> supplier) {
+        try {
+            return new Success<>(supplier.get());
+        } catch (Throwable t) {
+            return new Failure<>(t);
+        }
+    }
 
-	static Try<Void> run(CheckedRunnable runnable) {
-		try {
-			runnable.run();
-			return new Success<>(null); // null represents the absence of an value, i.e. Void
-		} catch (Throwable t) {
-			return new Failure<>(t);
-		}
-	}
+    static Try<Void> run(CheckedRunnable runnable) {
+        try {
+            runnable.run();
+            return new Success<>(null); // null represents the absence of an value, i.e. Void
+        } catch (Throwable t) {
+            return new Failure<>(t);
+        }
+    }
 
-	boolean isFailure();
+    boolean isFailure();
 
-	boolean isSuccess();
+    boolean isSuccess();
 
-	Try<T> recover(Function<Throwable, ? extends T> f);
+    Try<T> recover(Function<Throwable, ? extends T> f);
 
-	Try<T> recoverWith(Function<Throwable, Try<T>> f);
+    Try<T> recoverWith(Function<Throwable, Try<T>> f);
 
-	Try<Throwable> failed();
+    Try<Throwable> failed();
 
     Try<T> onFailure(Consumer<Throwable> f);
 
-	Try<T> filter(Predicate<? super T> predicate);
+    Try<T> filter(Predicate<? super T> predicate);
 
-	void forEach(Consumer<? super T> action);
+    void forEach(Consumer<? super T> action);
 
-	@Override
-	<U> Try<U> map(Function<? super T, ? extends U> mapper);
+    @Override
+    <U> Try<U> map(Function<? super T, ? extends U> mapper);
 
-	@Override
-	<U, TRY extends HigherKinded1<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper);
+    @Override
+    <U, TRY extends HigherKinded1<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper);
 
-	@Override
-	boolean equals(Object o);
+    @Override
+    boolean equals(Object o);
 
-	@Override
-	int hashCode();
+    @Override
+    int hashCode();
 
-	@Override
-	String toString();
+    @Override
+    String toString();
+
+    @FunctionalInterface
+    interface CheckedRunnable {
+        void run() throws Throwable;
+    }
+
+    @FunctionalInterface
+    interface CheckedSupplier<R> {
+        R get() throws Throwable;
+    }
 }

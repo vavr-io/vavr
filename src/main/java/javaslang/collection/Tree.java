@@ -5,15 +5,11 @@
  */
 package javaslang.collection;
 
-import javaslang.Strings;
 import javaslang.ValueObject;
 import javaslang.algebra.Functor1;
 import javaslang.control.Match;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Objects;
-import java.util.Queue;
+import java.util.*;
 import java.util.function.Function;
 
 public interface Tree<T> extends Functor1<T>, ValueObject {
@@ -193,11 +189,11 @@ public interface Tree<T> extends Functor1<T>, ValueObject {
         } else {
             final Flatten flatten = new Flatten();
             return Match
-                .caze(Order.PRE_ORDER, (Order o) -> flatten.preOrder(this))
-                .caze(Order.IN_ORDER, (Order o) -> flatten.inOrder(this))
-                .caze(Order.POST_ORDER, (Order o) -> flatten.postOrder(this))
-                .caze(Order.LEVEL_ORDER, (Order o) -> flatten.levelOrder(this))
-                .apply(order);
+                    .caze(Order.PRE_ORDER, (Order o) -> flatten.preOrder(this))
+                    .caze(Order.IN_ORDER, (Order o) -> flatten.inOrder(this))
+                    .caze(Order.POST_ORDER, (Order o) -> flatten.postOrder(this))
+                    .caze(Order.LEVEL_ORDER, (Order o) -> flatten.levelOrder(this))
+                    .apply(order);
         }
     }
 
@@ -210,7 +206,7 @@ public interface Tree<T> extends Functor1<T>, ValueObject {
                 if (tree.isEmpty()) {
                     return "()";
                 } else {
-                    final String value = Strings.toString(tree.getValue()).replaceAll("\\s+", " ").trim();
+                    final String value = String.valueOf(tree.getValue()).replaceAll("\\s+", " ").trim();
                     if (tree.isLeaf()) {
                         return value;
                     } else {
@@ -232,8 +228,8 @@ public interface Tree<T> extends Functor1<T>, ValueObject {
                 if (tree.isEmpty()) {
                     return "";
                 } else {
-                    final String indent = Strings.repeat(' ', depth * 2);
-                    final String value = Strings.toString(tree.getValue()).replaceAll("\\s+", " ").trim();
+                    final String indent = repeat(' ', depth * 2);
+                    final String value = String.valueOf(tree.getValue()).replaceAll("\\s+", " ").trim();
                     if (tree.isLeaf()) {
                         return "\n" + indent + value;
                     } else {
@@ -243,6 +239,12 @@ public interface Tree<T> extends Functor1<T>, ValueObject {
                         return String.format("\n%s%s%s", indent, value, children);
                     }
                 }
+            }
+
+            String repeat(char c, int n) {
+                final char[] buf = new char[n];
+                Arrays.fill(buf, c);
+                return String.valueOf(buf);
             }
         }
         return new Local().toString(this, 0);

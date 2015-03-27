@@ -1086,7 +1086,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
 
         @Override
         public String toString() {
-            return Stream.class.getSimpleName() + map(Strings::toString).join(", ", "(", ")");
+            return Stream.class.getSimpleName() + map(String::valueOf).join(", ", "(", ")");
         }
     }
 }
