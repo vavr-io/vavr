@@ -394,11 +394,10 @@ public final class Match<R> implements Function1<Object, R> {
 		/**
 		 * Defines the default return value.
 		 *
-		 * @param <T> (super-)type of the object to be matched
 		 * @param defaultValue The default return value of this Match.
 		 * @return this, the current instance of Match.
 		 */
-		public <T> MatchBuilder<R> orElse(R defaultValue) {
+		public MatchBuilder<R> orElse(R defaultValue) {
 			setDefault(Option.of(() -> defaultValue));
 			return this;
 		}
@@ -406,11 +405,10 @@ public final class Match<R> implements Function1<Object, R> {
 		/**
 		 * Defines the supplier of the default return value.
 		 * 
-		 * @param <T> (super-)type of the object to be matched
 		 * @param defaultSupplier Supplier of the default return value of this Match.
 		 * @return this, the current instance of Match.
 		 */
-		public <T> MatchBuilder<R> orElse(Supplier<R> defaultSupplier) {
+		public MatchBuilder<R> orElse(Supplier<R> defaultSupplier) {
 			Objects.requireNonNull(defaultSupplier, "defaultSupplier is null");
 			setDefault(Option.of(defaultSupplier));
 			return this;

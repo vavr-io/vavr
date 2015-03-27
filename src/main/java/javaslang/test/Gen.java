@@ -41,7 +41,9 @@ import java.util.function.Predicate;
 @FunctionalInterface
 public interface Gen<T> extends Function1<Random, T>, Monad1<T, Gen<?>> {
 
-    static final long serialVersionUID = 1L;
+    long serialVersionUID = 1L;
+
+    int FILTER_THRESHOLD = Integer.MAX_VALUE;
 
     /**
      * A generator which constantly returns t.
@@ -313,7 +315,8 @@ public interface Gen<T> extends Function1<Random, T>, Monad1<T, Gen<?>> {
             int count = 0;
             T t;
             while (!predicate.test(t = apply(random))) {
-                if (++count == Integer.MAX_VALUE) {
+                // it may take a looooooong time to hit this condition!
+                if (++count == FILTER_THRESHOLD) {
                     throw new IllegalStateException("empty filter");
                 }
             }

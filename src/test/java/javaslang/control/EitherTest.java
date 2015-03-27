@@ -119,9 +119,7 @@ public class EitherTest {
 	@Test
 	public void shouldReturnLeftWhenOrElseRunOnLeftProjectionOfLeft() {
 		final boolean[] actual = new boolean[] { true };
-		new Left<Integer, String>(1).left().orElseRun(s -> {
-			actual[0] = false;
-		});
+		new Left<Integer, String>(1).left().orElseRun(s -> actual[0] = false);
 		assertThat(actual[0]).isTrue();
 	}
 
@@ -138,13 +136,13 @@ public class EitherTest {
 
 	@Test
 	public void shouldReturnLeftWhenOrElseThrowWithFunctionOnLeftProjectionOfLeft() {
-		final Integer actual = new Left<Integer, String>(1).left().orElseThrow(str -> new RuntimeException(str));
+		final Integer actual = new Left<Integer, String>(1).left().orElseThrow(RuntimeException::new);
 		assertThat(actual).isEqualTo(1);
 	}
 
 	@Test(expected = RuntimeException.class)
 	public void shouldThrowWhenOrElseThrowWithFunctionOnLeftProjectionOfRight() {
-		new Right<Integer, String>("1").left().orElseThrow(str -> new RuntimeException(str));
+		new Right<Integer, String>("1").left().orElseThrow(RuntimeException::new);
 	}
 
 	// toOption
@@ -218,14 +216,14 @@ public class EitherTest {
 	@Test
 	public void shouldForEachOnLeftProjectionOfLeft() {
 		final List<Integer> actual = new ArrayList<>();
-		new Left<Integer, String>(1).left().forEach(i -> actual.add(i));
-		assertThat(actual).isEqualTo(Arrays.asList(1));
+		new Left<Integer, String>(1).left().forEach(actual::add);
+		assertThat(actual).isEqualTo(Collections.singletonList(1));
 	}
 
 	@Test
 	public void shouldForEachOnLeftProjectionOfRight() {
 		final List<Integer> actual = new ArrayList<>();
-		new Right<Integer, String>("1").left().forEach(i -> actual.add(i));
+		new Right<Integer, String>("1").left().forEach(actual::add);
 		assertThat(actual.isEmpty()).isTrue();
 	}
 
@@ -429,13 +427,13 @@ public class EitherTest {
 
 	@Test
 	public void shouldReturnRightWhenOrElseThrowWithFunctionOnRightProjectionOfRight() {
-		final Integer actual = new Right<String, Integer>(1).right().orElseThrow(str -> new RuntimeException(str));
+		final Integer actual = new Right<String, Integer>(1).right().orElseThrow(RuntimeException::new);
 		assertThat(actual).isEqualTo(1);
 	}
 
 	@Test(expected = RuntimeException.class)
 	public void shouldThrowWhenOrElseThrowWithFunctionOnRightProjectionOfLeft() {
-		new Left<String, Integer>("1").right().orElseThrow(str -> new RuntimeException(str));
+		new Left<String, Integer>("1").right().orElseThrow(RuntimeException::new);
 	}
 
 	// toOption
@@ -509,14 +507,14 @@ public class EitherTest {
 	@Test
 	public void shouldForEachOnRightProjectionOfRight() {
 		final List<Integer> actual = new ArrayList<>();
-		new Right<String, Integer>(1).right().forEach(i -> actual.add(i));
-		assertThat(actual).isEqualTo(Arrays.asList(1));
+		new Right<String, Integer>(1).right().forEach(actual::add);
+		assertThat(actual).isEqualTo(Collections.singletonList(1));
 	}
 
 	@Test
 	public void shouldForEachOnRightProjectionOfLeft() {
 		final List<Integer> actual = new ArrayList<>();
-		new Left<String, Integer>("1").right().forEach(i -> actual.add(i));
+		new Left<String, Integer>("1").right().forEach(actual::add);
 		assertThat(actual.isEmpty()).isTrue();
 	}
 

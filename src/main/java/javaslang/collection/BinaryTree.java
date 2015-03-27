@@ -27,7 +27,7 @@ import java.util.function.Function;
  */
 public interface BinaryTree<T> extends Tree<T> {
 
-    static final long serialVersionUID = 1L;
+    long serialVersionUID = 1L;
 
     static <T> BinaryTree<T> of(BinaryTree<T> left, T value, BinaryTree<T> right) {
         Objects.requireNonNull(left, "left is null");
@@ -143,7 +143,7 @@ public interface BinaryTree<T> extends Tree<T> {
         }
     }
 
-    static final class Leaf<T> extends AbstractBinaryTree<T> {
+    final class Leaf<T> extends AbstractBinaryTree<T> {
 
         private static final long serialVersionUID = 1L;
 
@@ -189,7 +189,7 @@ public interface BinaryTree<T> extends Tree<T> {
         }
     }
 
-    static final class Branch<T> extends AbstractBinaryTree<T> {
+    final class Branch<T> extends AbstractBinaryTree<T> {
 
         private static final long serialVersionUID = 1L;
 
@@ -343,7 +343,7 @@ public interface BinaryTree<T> extends Tree<T> {
         }
     }
 
-    static final class Nil<T> extends AbstractBinaryTree<T> {
+    final class Nil<T> extends AbstractBinaryTree<T> {
 
         private static final long serialVersionUID = 1L;
 
@@ -407,7 +407,7 @@ public interface BinaryTree<T> extends Tree<T> {
         }
     }
 
-    static abstract class AbstractBinaryTree<T> implements BinaryTree<T> {
+    abstract class AbstractBinaryTree<T> implements BinaryTree<T> {
 
         private static final long serialVersionUID = 1L;
 

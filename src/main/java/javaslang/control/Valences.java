@@ -22,7 +22,7 @@ final class Valences {
     }
 
     // has one (primary) value
-    static interface Univalent<T> {
+    interface Univalent<T> {
 
         boolean isEmpty();
 
@@ -38,7 +38,7 @@ final class Valences {
     }
 
     // has two values (, one is primary)
-    static interface Bivalent<T, U> {
+    interface Bivalent<T, U> {
 
         T get();
 

@@ -9,6 +9,7 @@ package javaslang.algebra;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+@SuppressWarnings("unused")
 public interface HigherKinded6<T1, T2, T3, T4, T5, T6, TYPE extends HigherKinded6<?, ?, ?, ?, ?, ?, TYPE>> {
 
     // used for type declaration only

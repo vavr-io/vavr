@@ -15,7 +15,7 @@ import java.util.function.Function;
 @FunctionalInterface
 public interface Function1<T1, R> extends λ<R>, Function<T1, R> {
 
-    static final long serialVersionUID = 1L;
+    long serialVersionUID = 1L;
 
     static <T> Function1<T, T> identity() {
         return t -> t;

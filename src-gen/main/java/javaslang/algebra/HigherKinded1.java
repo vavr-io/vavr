@@ -19,12 +19,13 @@ package javaslang.algebra;
  * language but needed for generic type constructors.
  * </p>
  * <p>
- * Example: {@link javaslang.algebra.Monad#flatMap(java.util.function.Function)}
+ * Example: {@link javaslang.algebra.Monad1#flatMap(java.util.function.Function)}
  * </p>
  *
  * @param <T1> Component type of the type to be constructed.
  * @param <TYPE> Container type of the type to be constructed.
  */
+@SuppressWarnings("unused")
 public interface HigherKinded1<T1, TYPE extends HigherKinded1<?, TYPE>> {
 
     // used for type declaration only

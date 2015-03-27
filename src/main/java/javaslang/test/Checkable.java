@@ -18,17 +18,17 @@ public interface Checkable {
     /**
      * A thread-safe, equally distributed random number generator.
      */
-    public static final Supplier<Random> RNG = ThreadLocalRandom::current;
+    Supplier<Random> RNG = ThreadLocalRandom::current;
 
     /**
      * Default size hint for generators: 100
      */
-    public static final int DEFAULT_SIZE = 100;
+    int DEFAULT_SIZE = 100;
 
     /**
      * Default tries to check a property: 1000
      */
-    public static final int DEFAULT_TRIES = 1000;
+    int DEFAULT_TRIES = 1000;
 
     /**
      * Checks this property.

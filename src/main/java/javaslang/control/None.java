@@ -7,14 +7,9 @@ package javaslang.control;
 
 import javaslang.Tuple;
 import javaslang.Tuple0;
-import javaslang.algebra.HigherKinded1;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 /**
  * None is a singleton representation of the undefined {@link javaslang.control.Option}. The instance is obtained by

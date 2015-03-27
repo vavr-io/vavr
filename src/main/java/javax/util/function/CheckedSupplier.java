@@ -10,8 +10,7 @@ import java.io.Serializable;
 @FunctionalInterface
 public interface CheckedSupplier<R> extends Serializable {
 
-    static final long serialVersionUID = 1L;
+    long serialVersionUID = 1L;
 
     R get() throws Throwable;
-
 }

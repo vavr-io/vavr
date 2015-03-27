@@ -104,10 +104,10 @@ import java.util.function.UnaryOperator;
  * <li>{@link #distinct()}</li>
  * <li>{@link #flatMap(java.util.function.Function)}</li>
  * <li>TODO(#115): #grouped(int)</li>
- * <li>TODO(#110): groupBy</li>
+ * <li>TODO(#110): #groupBy</li>
  * <li>{@link #intersperse(Object)}</li>
  * <li>{@link #map(java.util.function.Function)}</li>
- * <li>TODO(#110): partition (generalization of groupBy)</li>
+ * <li>TODO(#110): #partition (generalization of groupBy)</li>
  * <li>{@link #replace(Object, Object)}</li>
  * <li>{@link #replaceAll(Object, Object)}</li>
  * <li>{@link #replaceAll(java.util.function.UnaryOperator)}</li>
@@ -145,7 +145,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
 
     /**
      * <p>Calculates the average of this elements by computing the arithmetic mean.</p>
-     * <p>In order to preserve summation results, the value space is expanded as follows:
+     * <p>In order to preserve summation results, the value space is expanded as follows:</p>
      * <ul>
      *     <li><strong>element type, summation type</strong></li>
      *     <li>byte, long</li>
@@ -155,9 +155,8 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      *     <li>int, long</li>
      *     <li>short, int</li>
      * </ul>
-     * </p>
      * <p>BigInteger and BigDecimal are not treated special.</p>
-     * <p>The average of boolean elements is defined to be {@link this.filter(Boolean::booleanValue).length() &gt;= n / 2}.</p>
+     * <p>The average of boolean elements is defined to be {@code this.filter(Boolean::booleanValue).length() &gt;= n / 2}.</p>
      *
      * @return The average of this elements.
      * @throws java.lang.UnsupportedOperationException if no elements are present or the elements are not numeric
@@ -526,7 +525,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * @param mapper A mapper.
      * @param <U>    Component type of the target Traversable
      * @return A mapped Traversable
-     * @see javaslang.algebra.Monad1#map(javaslang.function.Lambda1)
+     * @see javaslang.algebra.Monad1#map(Function)
      */
     <U> Traversable<U> map(Function<? super T, ? extends U> mapper);
 

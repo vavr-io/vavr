@@ -20,7 +20,7 @@ import java.util.stream.Collector;
 // DEV-NOTE: Beware of serializing IO streams.
 public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObject {
 
-    static final long serialVersionUID = 1L;
+    long serialVersionUID = 1L;
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
@@ -113,7 +113,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
 
             @Override
             public boolean hasNext() {
-                final boolean hasNext = (next = Try.of(reader::readLine).orElse(null)) != null;
+                final boolean hasNext = (next = Try.<String> of(reader::readLine).orElse(null)) != null;
                 if (!hasNext) {
                     Try.run(reader::close);
                 }
@@ -208,11 +208,11 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
 
     /**
      * <p>
-     * Use {@linkplain Stream#cons(T)} instead of {@linkplain Stream#of(Iterable)} in order to create nested structures of
+     * Use {@linkplain Stream#cons(Object)} instead of {@linkplain Stream#of(Iterable)} in order to create nested structures of
      * the form {@code Stream&lt;Stream&lt;T&gt;&gt;}.
      * </p>
      * <p>
-     * {@linkplain Stream#cons(T)} produces the same result as {@linkplain Stream#of(Iterable)} if T is not Iterable and
+     * {@linkplain Stream#cons(Object)} produces the same result as {@linkplain Stream#of(Iterable)} if T is not Iterable and
      * the Iterable contains only one element.
      * </p>
      *
@@ -782,7 +782,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
      */
     // DEV NOTE: class declared final because of serialization proxy pattern.
     // (see Effective Java, 2nd ed., p. 315)
-    static final class Cons<T> extends AbstractStream<T> {
+    final class Cons<T> extends AbstractStream<T> {
 
         private static final long serialVersionUID = 1L;
 
@@ -931,7 +931,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
      *
      * @param <T> Component type of the Stream.
      */
-    static final class Nil<T> extends AbstractStream<T> {
+    final class Nil<T> extends AbstractStream<T> {
 
         private static final long serialVersionUID = 1L;
 
@@ -941,10 +941,9 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
         private Nil() {
         }
 
+        @SuppressWarnings("unchecked")
         public static <T> Nil<T> instance() {
-            @SuppressWarnings("unchecked")
-            final Nil<T> instance = (Nil<T>) INSTANCE;
-            return instance;
+            return (Nil<T>) INSTANCE;
         }
 
         @Override
@@ -983,7 +982,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
      *
      * @param <T> Component type of the Stream.
      */
-    static final class Deferred<T> extends AbstractStream<T> {
+    final class Deferred<T> extends AbstractStream<T> {
 
         private static final long serialVersionUID = 1L;
 
@@ -1050,7 +1049,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
      *
      * @param <T> Component type of the Stream.
      */
-    static abstract class AbstractStream<T> implements Stream<T> {
+    abstract class AbstractStream<T> implements Stream<T> {
 
         private static final long serialVersionUID = 1L;
 

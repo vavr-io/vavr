@@ -90,13 +90,14 @@ def generateMainClasses(): Unit = {
          * language but needed for generic type constructors.
          * </p>
          * <p>
-         * Example: {@link javaslang.algebra.Monad#flatMap(java.util.function.Function)}
+         * Example: {@link javaslang.algebra.Monad1#flatMap(java.util.function.Function)}
          * </p>
          *
          * @param <T1> Component type of the type to be constructed.
          * @param <TYPE> Container type of the type to be constructed.
          */
         """)}
+        @SuppressWarnings("unused")
         public interface $className<${(1 to i).gen(j => s"T$j")(", ")}, TYPE extends $className<${"?, " * i}TYPE>> {
 
             // used for type declaration only
@@ -159,6 +160,7 @@ def generateMainClasses(): Unit = {
 
           /**
            * Construct a named property.
+           * @param name property name
            */
           public $className(String name) {
               ${im.getType("java.util.Objects")}.requireNonNull(name, "name is null");
@@ -386,7 +388,7 @@ def generateMainClasses(): Unit = {
           @FunctionalInterface
           public interface $className<${(i > 0).gen(s"$generics, ")}R> extends λ<R>${additionalInterfaces(i, checked)} {
 
-              static final long serialVersionUID = 1L;
+              long serialVersionUID = 1L;
 
               ${(i == 1).gen(xs"""
               static <T> ${name}1<T, T> identity() {
@@ -623,7 +625,7 @@ def generateMainClasses(): Unit = {
       xs"""
         public interface $className extends ValueObject {
 
-            static final long serialVersionUID = 1L;
+            long serialVersionUID = 1L;
 
             /**
              * Returns the number of elements of this tuple.
@@ -754,7 +756,7 @@ def generateTestClasses(): Unit = {
                 return any -> false;
             }
 
-            static Arbitrary<Object> objects = Gen.of(null).arbitrary();
+            static final Arbitrary<Object> OBJECTS = Gen.of(null).arbitrary();
 
             @$test(expected = NullPointerException.class)
             public void shouldThrowWhenPropertyNameIsNull() {
@@ -770,26 +772,26 @@ def generateTestClasses(): Unit = {
 
             @$test
             public void shouldCheckUsingDefaultConfiguration() {
-                final CheckResult result = new Property("test").forAll(objects).suchThat(tautology()).check();
+                final CheckResult result = new Property("test").forAll(OBJECTS).suchThat(tautology()).check();
                 $assertThat(result.isSatisfied()).isTrue();
                 $assertThat(result.isExhausted()).isFalse();
             }
 
             @$test
             public void shouldCheckGivenSizeAndTries() {
-                final CheckResult result = new Property("test").forAll(objects).suchThat(tautology()).check(0, 0);
+                final CheckResult result = new Property("test").forAll(OBJECTS).suchThat(tautology()).check(0, 0);
                 $assertThat(result.isSatisfied()).isTrue();
                 $assertThat(result.isExhausted()).isTrue();
             }
 
             @$test(expected = IllegalArgumentException.class)
             public void shouldThrowOnCheckGivenNegativeTries() {
-                new Property("test").forAll(objects).suchThat(tautology()).check(0, -1);
+                new Property("test").forAll(OBJECTS).suchThat(tautology()).check(0, -1);
             }
 
             @$test
             public void shouldCheckGivenRandomAndSizeAndTries() {
-                final CheckResult result = new Property("test").forAll(objects).suchThat(tautology()).check(new $random(), 0, 0);
+                final CheckResult result = new Property("test").forAll(OBJECTS).suchThat(tautology()).check(new $random(), 0, 0);
                 $assertThat(result.isSatisfied()).isTrue();
                 $assertThat(result.isExhausted()).isTrue();
             }
@@ -833,7 +835,7 @@ def generateTestClasses(): Unit = {
 
             @$test
             public void shouldRecognizeExhaustedParameters() {
-                final CheckResult result = new Property("test").forAll(objects).suchThat(falsum()).implies(tautology()).check();
+                final CheckResult result = new Property("test").forAll(OBJECTS).suchThat(falsum()).implies(tautology()).check();
                 $assertThat(result.isSatisfied()).isTrue();
                 $assertThat(result.isExhausted()).isTrue();
             }
@@ -890,8 +892,8 @@ def generateTestClasses(): Unit = {
             ${(1 to N).gen(i => {
 
               val generics = (1 to i).gen(j => "Object")(", ")
-              val arbitraries = (1 to i).gen(j => "objects")(", ")
-              val arbitrariesMinus1 = (1 to i - 1).gen(j => "objects")(", ")
+              val arbitraries = (1 to i).gen(j => "OBJECTS")(", ")
+              val arbitrariesMinus1 = (1 to i - 1).gen(j => "OBJECTS")(", ")
               val args = (1 to i).gen(j => s"o$j")(", ")
 
               xs"""
@@ -988,32 +990,32 @@ def generateTestClasses(): Unit = {
 
             @$test
             public void shouldCheckAndCombinationWhereFirstPropertyIsTrueAndSecondPropertyIsTrue() {
-                final Checkable p1 = new Property("test").forAll(objects).suchThat(tautology());
-                final Checkable p2 = new Property("test").forAll(objects).suchThat(tautology());
+                final Checkable p1 = new Property("test").forAll(OBJECTS).suchThat(tautology());
+                final Checkable p2 = new Property("test").forAll(OBJECTS).suchThat(tautology());
                 final CheckResult result = p1.and(p2).check();
                 $assertThat(result.isSatisfied()).isTrue();
             }
 
             @$test
             public void shouldCheckAndCombinationWhereFirstPropertyIsTrueAndSecondPropertyIsFalse() {
-                final Checkable p1 = new Property("test").forAll(objects).suchThat(tautology());
-                final Checkable p2 = new Property("test").forAll(objects).suchThat(falsum());
+                final Checkable p1 = new Property("test").forAll(OBJECTS).suchThat(tautology());
+                final Checkable p2 = new Property("test").forAll(OBJECTS).suchThat(falsum());
                 final CheckResult result = p1.and(p2).check();
                 $assertThat(result.isSatisfied()).isFalse();
             }
 
             @$test
             public void shouldCheckAndCombinationWhereFirstPropertyIsFalseAndSecondPropertyIsTrue() {
-                final Checkable p1 = new Property("test").forAll(objects).suchThat(falsum());
-                final Checkable p2 = new Property("test").forAll(objects).suchThat(tautology());
+                final Checkable p1 = new Property("test").forAll(OBJECTS).suchThat(falsum());
+                final Checkable p2 = new Property("test").forAll(OBJECTS).suchThat(tautology());
                 final CheckResult result = p1.and(p2).check();
                 $assertThat(result.isSatisfied()).isFalse();
             }
 
             @$test
             public void shouldCheckAndCombinationWhereFirstPropertyIsFalseAndSecondPropertyIsFalse() {
-                final Checkable p1 = new Property("test").forAll(objects).suchThat(falsum());
-                final Checkable p2 = new Property("test").forAll(objects).suchThat(falsum());
+                final Checkable p1 = new Property("test").forAll(OBJECTS).suchThat(falsum());
+                final Checkable p2 = new Property("test").forAll(OBJECTS).suchThat(falsum());
                 final CheckResult result = p1.and(p2).check();
                 $assertThat(result.isSatisfied()).isFalse();
             }
@@ -1022,32 +1024,32 @@ def generateTestClasses(): Unit = {
 
             @$test
             public void shouldCheckOrCombinationWhereFirstPropertyIsTrueAndSecondPropertyIsTrue() {
-                final Checkable p1 = new Property("test").forAll(objects).suchThat(tautology());
-                final Checkable p2 = new Property("test").forAll(objects).suchThat(tautology());
+                final Checkable p1 = new Property("test").forAll(OBJECTS).suchThat(tautology());
+                final Checkable p2 = new Property("test").forAll(OBJECTS).suchThat(tautology());
                 final CheckResult result = p1.or(p2).check();
                 $assertThat(result.isSatisfied()).isTrue();
             }
 
             @$test
             public void shouldCheckOrCombinationWhereFirstPropertyIsTrueAndSecondPropertyIsFalse() {
-                final Checkable p1 = new Property("test").forAll(objects).suchThat(tautology());
-                final Checkable p2 = new Property("test").forAll(objects).suchThat(falsum());
+                final Checkable p1 = new Property("test").forAll(OBJECTS).suchThat(tautology());
+                final Checkable p2 = new Property("test").forAll(OBJECTS).suchThat(falsum());
                 final CheckResult result = p1.or(p2).check();
                 $assertThat(result.isSatisfied()).isTrue();
             }
 
             @$test
             public void shouldCheckOrCombinationWhereFirstPropertyIsFalseAndSecondPropertyIsTrue() {
-                final Checkable p1 = new Property("test").forAll(objects).suchThat(falsum());
-                final Checkable p2 = new Property("test").forAll(objects).suchThat(tautology());
+                final Checkable p1 = new Property("test").forAll(OBJECTS).suchThat(falsum());
+                final Checkable p2 = new Property("test").forAll(OBJECTS).suchThat(tautology());
                 final CheckResult result = p1.or(p2).check();
                 $assertThat(result.isSatisfied()).isTrue();
             }
 
             @$test
             public void shouldCheckOrCombinationWhereFirstPropertyIsFalseAndSecondPropertyIsFalse() {
-                final Checkable p1 = new Property("test").forAll(objects).suchThat(falsum());
-                final Checkable p2 = new Property("test").forAll(objects).suchThat(falsum());
+                final Checkable p1 = new Property("test").forAll(OBJECTS).suchThat(falsum());
+                final Checkable p2 = new Property("test").forAll(OBJECTS).suchThat(falsum());
                 final CheckResult result = p1.or(p2).check();
                 $assertThat(result.isSatisfied()).isFalse();
             }
@@ -1500,7 +1502,7 @@ object Generator {
         val space = """([ \t]*)[^\s]*$""".r.findFirstMatchIn(part).map(_.group(1)).getOrElse("")
         // add this leading space to each line (except the first) of current arg
         arg.split("\r?\n") match {
-          case lines: Array[String] if lines.length > 0 => lines reduce (_ + lineSeparator + space + _)
+          case lines: Array[String] if lines.nonEmpty => lines reduce (_ + lineSeparator + space + _)
           case whitespace => whitespace mkString ""
         }
       }

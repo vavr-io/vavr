@@ -9,6 +9,7 @@ import javaslang.collection.List;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -328,37 +329,37 @@ public class StringsTest {
 
 	@Test
 	public void shouldJoinIterableOfEmptyStringWithEscape() {
-		final Iterable<String> iterable = Arrays.asList(new String[] { "" });
+		final Iterable<String> iterable = Collections.singletonList("");
 		assertThat(Strings.join(iterable, ';', '\\')).isEqualTo("");
 	}
 
 	@Test
 	public void shouldJoinIterableOfTwoEmptyStringsWithEscape() {
-		final Iterable<String> iterable = Arrays.asList(new String[] { "", "" });
+		final Iterable<String> iterable = Arrays.asList("", "");
 		assertThat(Strings.join(iterable, ';', '\\')).isEqualTo(";");
 	}
 
 	@Test
 	public void shouldJoinIterableOfSeparatorWithEscape() {
-		final Iterable<String> iterable = Arrays.asList(new String[] { ";" });
+		final Iterable<String> iterable = Collections.singletonList(";");
 		assertThat(Strings.join(iterable, ';', '\\')).isEqualTo("\\;");
 	}
 
 	@Test
 	public void shouldJoinIterableOfTwoSeparatorsWithEscape() {
-		final Iterable<String> iterable = Arrays.asList(new String[] { ";", ";" });
+		final Iterable<String> iterable = Arrays.asList(";", ";");
 		assertThat(Strings.join(iterable, ';', '\\')).isEqualTo("\\;;\\;");
 	}
 
 	@Test
 	public void shouldJoinIterableOfTwoNonSeparators() {
-		final Iterable<String> iterable = Arrays.asList(new String[] { "A", "B" });
+		final Iterable<String> iterable = Arrays.asList("A", "B");
 		assertThat(Strings.join(iterable, ';', '\\')).isEqualTo("A;B");
 	}
 
 	@Test
 	public void shouldJoinIterableOfTwoEscapedSeparatorsWithEscape() {
-		final Iterable<String> iterable = Arrays.asList(new String[] { "\\^", "\\^\\" });
+		final Iterable<String> iterable = Arrays.asList("\\^", "\\^\\");
 		assertThat(Strings.join(iterable, '^', '\\')).isEqualTo("\\\\\\^^\\\\\\^\\\\");
 	}
 

@@ -265,7 +265,7 @@ public final class Strings {
         if (separator == escape) {
             throw new IllegalArgumentException("separator equals escape charater");
         }
-        final List<String> tokens = new ArrayList<String>();
+        final List<String> tokens = new ArrayList<>();
         final StringBuilder buf = new StringBuilder();
         int fromIndex = 0;
         int index = nextIndex(string, separator, escape, fromIndex);
@@ -345,9 +345,9 @@ public final class Strings {
         return result;
     }
 
-    static interface ArrayExtensions {
+    interface ArrayExtensions {
 
-        static final Match<Stream<?>> ARRAY_TO_STREAM_MATCHER = new Match.Builder<Stream<?>>()
+        Match<Stream<?>> ARRAY_TO_STREAM_MATCHER = new Match.Builder<Stream<?>>()
                 .caze((boolean[] a) -> stream(a))
                 .caze((byte[] a) -> stream(a))
                 .caze((char[] a) -> stream(a))
@@ -359,7 +359,7 @@ public final class Strings {
                 .caze((Object[] a) -> Stream.of(a))
                 .build();
 
-        public static Stream<?> toStream(Object o) {
+        static Stream<?> toStream(Object o) {
             return ARRAY_TO_STREAM_MATCHER.apply(o);
         }
 
@@ -403,7 +403,7 @@ public final class Strings {
             return new StreamableList<>(array.length, i -> array[i]).stream();
         }
 
-        static class StreamableList<E> extends AbstractList<E> {
+        class StreamableList<E> extends AbstractList<E> {
 
             final int size;
             final Function<Integer, E> getter;

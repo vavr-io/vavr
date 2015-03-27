@@ -777,97 +777,97 @@ public class FunctionsTest {
 	}
 
 	@FunctionalInterface
-	static interface Unit extends Serializable {
+	interface Unit extends Serializable {
 		void go();
 	}
 
 	@FunctionalInterface
-	static interface StringIntegerArrayDoubleArrayToTuple3 extends Serializable {
+	interface StringIntegerArrayDoubleArrayToTuple3 extends Serializable {
 		Tuple3<String, Integer[][], double[][]> go(String s, Integer[][] i, double[][] d);
 	}
 
 	@FunctionalInterface
-	static interface StringIntArrayDoubleArrayToTuple3 extends Serializable {
+	interface StringIntArrayDoubleArrayToTuple3 extends Serializable {
 		Tuple3<String, int[][], double[][]> go(String s, int[][] i, double[][] d);
 	}
 
 	@FunctionalInterface
-	static interface ReturnTypeVoid extends Serializable {
+	interface ReturnTypeVoid extends Serializable {
 		void go();
 	}
 
 	@FunctionalInterface
-	static interface ReturnTypeBoolean extends Serializable {
+	interface ReturnTypeBoolean extends Serializable {
 		boolean go();
 	}
 
 	@FunctionalInterface
-	static interface ReturnTypeByte extends Serializable {
+	interface ReturnTypeByte extends Serializable {
 		byte go();
 	}
 
 	@FunctionalInterface
-	static interface ReturnTypeChar extends Serializable {
+	interface ReturnTypeChar extends Serializable {
 		char go();
 	}
 
 	@FunctionalInterface
-	static interface ReturnTypeFloat extends Serializable {
+	interface ReturnTypeFloat extends Serializable {
 		float go();
 	}
 
 	@FunctionalInterface
-	static interface ReturnTypeDouble extends Serializable {
+	interface ReturnTypeDouble extends Serializable {
 		double go();
 	}
 
 	@FunctionalInterface
-	static interface ReturnTypeInt extends Serializable {
+	interface ReturnTypeInt extends Serializable {
 		int go();
 	}
 
 	@FunctionalInterface
-	static interface ReturnTypeLong extends Serializable {
+	interface ReturnTypeLong extends Serializable {
 		long go();
 	}
 
 	@FunctionalInterface
-	static interface ReturnTypeShort extends Serializable {
+	interface ReturnTypeShort extends Serializable {
 		short go();
 	}
 
 	@FunctionalInterface
-	static interface ReturnTypeArrayOfInt extends Serializable {
+	interface ReturnTypeArrayOfInt extends Serializable {
 		int[] go();
 	}
 
 	@FunctionalInterface
-	static interface ReturnTypeArrayOfArrayOfString extends Serializable {
+	interface ReturnTypeArrayOfArrayOfString extends Serializable {
 		String[][] go();
 	}
 
 	@FunctionalInterface
-	static interface ReturnTypeClassReference extends Serializable {
+	interface ReturnTypeClassReference extends Serializable {
 		String go();
 	}
 
 	@FunctionalInterface
-	static interface NoParameterTypes extends Serializable {
+	interface NoParameterTypes extends Serializable {
 		void go();
 	}
 
 	@FunctionalInterface
-	static interface OneParameterType extends Serializable {
+	interface OneParameterType extends Serializable {
 		void go(int i);
 	}
 
 	@FunctionalInterface
-	static interface TwoParameterTypes extends Serializable {
+	interface TwoParameterTypes extends Serializable {
 		void go(String s, byte[][] bytes);
 	}
 
 	@FunctionalInterface
-	static interface ParameterTypeArrayOfBoolean extends Serializable {
+	interface ParameterTypeArrayOfBoolean extends Serializable {
 		void go(boolean[] b);
 	}
 }

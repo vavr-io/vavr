@@ -32,7 +32,7 @@ import java.util.function.Supplier;
  */
 public interface Option<T> extends Monad1<T, Option<?>>, ValueObject, Univalent<T> {
 
-    static final long serialVersionUID = 1L;
+    long serialVersionUID = 1L;
 
     static <T> Option<T> of(T value) {
         return (value == null) ? None.instance() : new Some<>(value);

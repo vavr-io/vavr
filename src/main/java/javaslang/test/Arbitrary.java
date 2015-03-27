@@ -30,7 +30,7 @@ public interface Arbitrary<T> extends IntFunction<Gen<T>>, Function<Integer, Gen
      * Use {@link Gen#map(java.util.function.Function)} and {@link Gen#flatMap(java.util.function.Function)} to
      * combine object generators.
      * </p>
-     * Example:
+     * <p>Example:</p>
      * <pre>
      * <code>
      * // represents arbitrary binary trees of a certain depth n
@@ -54,7 +54,7 @@ public interface Arbitrary<T> extends IntFunction<Gen<T>>, Function<Integer, Gen
      * final Gen&lt;BinaryTree&lt;Integer&gt;&gt; treeGen = new ArbitraryTree().apply(10);
      *
      * // stream sum of tree node values to console for 100 arbitrary trees
-     * Stream.of(() -> treeGen.apply(RNG.get())).map(Tree::sum).take(100).stdout();
+     * Stream.of(() -&gt; treeGen.apply(RNG.get())).map(Tree::sum).take(100).stdout();
      * </code>
      * </pre>
      *
@@ -128,7 +128,7 @@ public interface Arbitrary<T> extends IntFunction<Gen<T>>, Function<Integer, Gen
 
     /**
      * <p>Generates arbitrary strings based on a given alphabet represented by <em>gen</em>.</p>
-     * <p>Example:
+     * <p>Example:</p>
      * <pre>
      * <code>
      * Arbitrary.string(
@@ -138,7 +138,7 @@ public interface Arbitrary<T> extends IntFunction<Gen<T>>, Function<Integer, Gen
      *         Tuple.of(1, Gen.choose('0', '9'))));
      * </code>
      * </pre>
-     * </p>
+     *
      * @param gen A character generator
      * @return a new Arbitrary of String
      */
@@ -154,13 +154,13 @@ public interface Arbitrary<T> extends IntFunction<Gen<T>>, Function<Integer, Gen
 
     /**
      * <p>Generates arbitrary lists based on a given element generator arbitraryT.</p>
-     * <p>Example:
+     * <p>Example:</p>
      * <pre>
      * <code>
      * Arbitrary.list(Arbitrary.integer());
      * </code>
      * </pre>
-     * </p>
+     *
      * @param arbitraryT Arbitrary elements of type T
      * @param <T> Component type of the List
      * @return a new Arbitrary of List&lt;T&gt;
@@ -181,13 +181,13 @@ public interface Arbitrary<T> extends IntFunction<Gen<T>>, Function<Integer, Gen
 
     /**
      * <p>Generates arbitrary streams based on a given element generator arbitraryT.</p>
-     * <p>Example:
+     * <p>Example:</p>
      * <pre>
      * <code>
      * Arbitrary.stream(Arbitrary.integer());
      * </code>
      * </pre>
-     * </p>
+     *
      * @param arbitraryT Arbitrary elements of type T
      * @param <T> Component type of the Stream
      * @return a new Arbitrary of Stream&lt;T&gt;

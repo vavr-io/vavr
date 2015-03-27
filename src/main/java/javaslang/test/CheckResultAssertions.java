@@ -14,7 +14,7 @@ public interface CheckResultAssertions {
         return new CheckResultAssertion(checkResult);
     }
 
-    static class CheckResultAssertion {
+    class CheckResultAssertion {
 
         private final CheckResult checkResult;
 

@@ -7,7 +7,6 @@ package javaslang.control;
 
 import javaslang.Serializables;
 import javaslang.Tuple;
-import javaslang.algebra.Functor1;
 import javaslang.algebra.Monad1;
 import javaslang.algebra.Monad1Laws;
 import javaslang.test.Arbitrary;
@@ -17,10 +16,7 @@ import javaslang.test.Gen;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -385,7 +381,7 @@ public class TryTest implements Monad1Laws<Try<?>> {
 	public void shouldForEachOnSuccess() {
 		final List<String> actual = new ArrayList<>();
 		success().forEach(actual::add);
-		assertThat(actual).isEqualTo(Arrays.asList(OK));
+		assertThat(actual).isEqualTo(Collections.singletonList(OK));
 	}
 
 	@Test
@@ -488,8 +484,8 @@ public class TryTest implements Monad1Laws<Try<?>> {
     // -- Functor1Laws
 
     static final Arbitrary<Try<Integer>> TRIES = size -> random -> Gen.frequency(
-            Tuple.of(1, Gen.of(new Failure<Integer>(new Error("test")))),
-            Tuple.of(4, Gen.choose(-size, size).map(i -> new Success<>(i)))
+            Tuple.of(1, Gen.<Try<Integer>> of(new Failure<>(new Error("test")))),
+            Tuple.of(4, Gen.choose(-size, size).<Try<Integer>> map(Success::new))
     ).apply(random);
 
     @Test

@@ -36,7 +36,7 @@ import java.util.stream.Collector;
  */
 public interface List<T> extends Seq<T>, ValueObject {
 
-    static final long serialVersionUID = 1L;
+    long serialVersionUID = 1L;
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
@@ -68,11 +68,11 @@ public interface List<T> extends Seq<T>, ValueObject {
 
     /**
      * <p>
-     * Use {@linkplain List#cons(T)} instead of {@linkplain List#of(Iterable)} in order to create nested structures of
+     * Use {@linkplain List#cons(Object)} instead of {@linkplain List#of(Iterable)} in order to create nested structures of
      * the form {@code List&lt;List&lt;T&gt;&gt;}.
      * </p>
      * <p>
-     * {@linkplain List#cons(T)} produces the same result as {@linkplain List#of(Iterable)} if T is not Iterable and
+     * {@linkplain List#cons(Object)} produces the same result as {@linkplain List#of(Iterable)} if T is not Iterable and
      * the Iterable contains only one element.
      * </p>
      *
@@ -624,7 +624,7 @@ public interface List<T> extends Seq<T>, ValueObject {
      */
     // DEV NOTE: class declared final because of serialization proxy pattern.
     // (see Effective Java, 2nd ed., p. 315)
-    static final class Cons<T> extends AbstractList<T> {
+    final class Cons<T> extends AbstractList<T> {
 
         private static final long serialVersionUID = 1L;
 
@@ -772,7 +772,7 @@ public interface List<T> extends Seq<T>, ValueObject {
      *
      * @param <T> Component type of the List.
      */
-    static final class Nil<T> extends AbstractList<T> {
+    final class Nil<T> extends AbstractList<T> {
 
         private static final long serialVersionUID = 1L;
 
@@ -829,7 +829,7 @@ public interface List<T> extends Seq<T>, ValueObject {
      *
      * @param <T> Component type of the List.
      */
-    static abstract class AbstractList<T> implements List<T> {
+    abstract class AbstractList<T> implements List<T> {
 
         private static final long serialVersionUID = 1L;
 

@@ -23,7 +23,7 @@ import java.util.function.Predicate;
  */
 public interface Try<T> extends Monad1<T, Try<?>>, ValueObject, Bivalent<T, Throwable> {
 
-    static final long serialVersionUID = 1L;
+    long serialVersionUID = 1L;
 
 	static <T> Try<T> of(CheckedSupplier<T> supplier) {
 		try {
@@ -33,7 +33,7 @@ public interface Try<T> extends Monad1<T, Try<?>>, ValueObject, Bivalent<T, Thro
 		}
 	}
 
-	static <T> Try<Void> run(CheckedRunnable runnable) {
+	static Try<Void> run(CheckedRunnable runnable) {
 		try {
 			runnable.run();
 			return new Success<>(null); // null represents the absence of an value, i.e. Void

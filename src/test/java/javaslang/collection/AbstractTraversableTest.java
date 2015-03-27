@@ -988,7 +988,7 @@ public abstract class AbstractTraversableTest {
     public void shouldSplitNil() {
         final java.util.List<Integer> actual = new java.util.ArrayList<>();
         this.<Integer> nil().spliterator().forEachRemaining(actual::add);
-        assertThat(actual).isEqualTo(Arrays.asList());
+        assertThat(actual).isEqualTo(Collections.emptyList());
     }
 
     @Test

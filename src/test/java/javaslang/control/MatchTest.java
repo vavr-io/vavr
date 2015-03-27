@@ -138,13 +138,15 @@ public class MatchTest {
 
 	@Test
 	public void shouldMatchByteAsPrimitiveByte() {
-		final boolean actual = Match.caze((byte b) -> true).caze((Byte b) -> false).apply(new Byte((byte) 1));
+		final Byte one = 1;
+		final boolean actual = Match.caze((byte b) -> true).caze((Byte b) -> false).apply(one);
 		assertThat(actual).isTrue();
 	}
 
 	@Test
 	public void shouldMatchByte() {
-		final boolean actual = Match.caze((Byte b) -> true).caze((byte b) -> false).apply(new Byte((byte) 1));
+		final Byte one = 1;
+		final boolean actual = Match.caze((Byte b) -> true).caze((byte b) -> false).apply(one);
 		assertThat(actual).isTrue();
 	}
 
@@ -405,13 +407,13 @@ public class MatchTest {
 	}
 
 	@FunctionalInterface
-	static interface SpecialFunction extends Function<Integer, String> {
+	interface SpecialFunction extends Function<Integer, String> {
 		@Override
 		String apply(Integer i);
 	}
 
 	@FunctionalInterface
-	static interface SameSignatureAsSpecialFunction extends Function<Integer, String> {
+	interface SameSignatureAsSpecialFunction extends Function<Integer, String> {
 		@Override
 		String apply(Integer i);
 	}

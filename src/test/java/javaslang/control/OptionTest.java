@@ -7,7 +7,6 @@ package javaslang.control;
 
 import javaslang.Serializables;
 import javaslang.Tuple;
-import javaslang.algebra.Functor1;
 import javaslang.algebra.Monad1;
 import javaslang.algebra.Monad1Laws;
 import javaslang.test.Arbitrary;

@@ -10,8 +10,7 @@ import java.io.Serializable;
 @FunctionalInterface
 public interface CheckedRunnable extends Serializable {
 
-    static final long serialVersionUID = 1L;
+    long serialVersionUID = 1L;
 
     void run() throws Throwable;
-
 }

@@ -24,7 +24,6 @@ import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;

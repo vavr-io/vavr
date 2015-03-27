@@ -18,7 +18,7 @@ import java.util.function.Function;
 
 public interface Tree<T> extends Functor1<T>, ValueObject {
 
-    static final long serialVersionUID = 1L;
+    long serialVersionUID = 1L;
 
     /**
      * Gets the value of this tree.
@@ -263,7 +263,7 @@ public interface Tree<T> extends Functor1<T>, ValueObject {
      * 7       8   9
      *
      */
-    static enum Order {
+    enum Order {
 
         // 1 2 4 7 5 3 6 8 9 (= depth-first)
         PRE_ORDER,

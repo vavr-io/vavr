@@ -44,7 +44,7 @@ import java.util.function.Predicate;
 // DEV-NOTE: Either is no Monad and no Functor in the sense of javaslang.Algebra.*
 public interface Either<L, R> extends ValueObject {
 
-    static final long serialVersionUID = 1L;
+    long serialVersionUID = 1L;
 
 	boolean isLeft();
 
@@ -71,7 +71,7 @@ public interface Either<L, R> extends ValueObject {
 
 	// -- Left/Right projections
 
-	static final class LeftProjection<L, R> implements Bivalent<L, R> {
+	final class LeftProjection<L, R> implements Bivalent<L, R> {
 
 		private final Either<L, R> either;
 
@@ -191,7 +191,7 @@ public interface Either<L, R> extends ValueObject {
 		}
 	}
 
-	static final class RightProjection<L, R> implements Bivalent<R, L> {
+	final class RightProjection<L, R> implements Bivalent<R, L> {
 
 		private final Either<L, R> either;
 

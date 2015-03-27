@@ -1,6 +1,7 @@
-/**    / \____  _    ______   _____ / \____   ____  _____
- *    /  \__  \/ \  / \__  \ /  __//  \__  \ /    \/ __  \   Javaslang
- *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014-2015 Daniel Dietrich
+/**
+ * / \____  _    ______   _____ / \____   ____  _____
+ * /  \__  \/ \  / \__  \ /  __//  \__  \ /    \/ __  \   Javaslang
+ * _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014-2015 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
 package javaslang.collection;
@@ -22,7 +23,7 @@ import java.util.function.Function;
  */
 public interface RoseTree<T> extends Tree<T> {
 
-    static final long serialVersionUID = 1L;
+    long serialVersionUID = 1L;
 
     @SafeVarargs
     static <T> NonNil<T> of(T value, NonNil<T>... children) {
@@ -56,35 +57,21 @@ public interface RoseTree<T> extends Tree<T> {
     @Override
     List<NonNil<T>> getChildren();
 
-    @SuppressWarnings("unchecked")
     @Override
-    default <U> RoseTree<U> map(Function<? super T, ? extends U> mapper) {
-        if (isEmpty()) {
-            return Nil.instance();
-        } else if (isLeaf()) {
-            return new Leaf<>(mapper.apply(getValue()));
-        } else {
-            final U value = mapper.apply(getValue());
-            /*
-             * DEV-NOTE: The constructor of Branch and the factory method RoseTree.of
-             * expect NonNil children. With the implementation of map this implies that
-             * the result of the method getChildren().map is of type List<NonNil>.
-             */
-            @SuppressWarnings({"unchecked", "rawtypes"})
-            final List children = (List<NonNil<U>>) (List) getChildren().map(tree -> tree.map(mapper));
-            return new Branch<>(value, children);
-        }
-    }
+    <U> RoseTree<U> map(Function<? super T, ? extends U> mapper);
 
     /**
      * Implementors of this tagging interface indicate that they are not Nil.
      *
      * @param <T> Component type of the rose tree.
      */
-    static interface NonNil<T> extends RoseTree<T> {
+    interface NonNil<T> extends RoseTree<T> {
+
+        @Override
+        <U> NonNil<U> map(Function<? super T, ? extends U> mapper);
     }
 
-    static final class Leaf<T> extends AbstractRoseTree<T> implements NonNil<T> {
+    final class Leaf<T> extends AbstractRoseTree<T> implements NonNil<T> {
 
         private static final long serialVersionUID = 1L;
 
@@ -115,12 +102,17 @@ public interface RoseTree<T> extends Tree<T> {
         }
 
         @Override
+        public <U> NonNil<U> map(Function<? super T, ? extends U> mapper) {
+            return new Leaf<>(mapper.apply(getValue()));
+        }
+
+        @Override
         public Tuple1<T> unapply() {
             return Tuple.of(value);
         }
     }
 
-    static final class Branch<T> extends AbstractRoseTree<T> implements NonNil<T> {
+    final class Branch<T> extends AbstractRoseTree<T> implements NonNil<T> {
 
         private static final long serialVersionUID = 1L;
 
@@ -154,6 +146,13 @@ public interface RoseTree<T> extends Tree<T> {
         @Override
         public List<NonNil<T>> getChildren() {
             return children;
+        }
+
+        @Override
+        public <U> NonNil<U> map(Function<? super T, ? extends U> mapper) {
+            final U value = mapper.apply(getValue());
+            final List<NonNil<U>> children = getChildren().map(tree -> tree.map(mapper));
+            return new Branch<>(value, children);
         }
 
         @Override
@@ -259,7 +258,7 @@ public interface RoseTree<T> extends Tree<T> {
         }
     }
 
-    static final class Nil<T> extends AbstractRoseTree<T> {
+    final class Nil<T> extends AbstractRoseTree<T> {
 
         private static final long serialVersionUID = 1L;
 
@@ -296,6 +295,11 @@ public interface RoseTree<T> extends Tree<T> {
         }
 
         @Override
+        public <U> Nil<U> map(Function<? super T, ? extends U> mapper) {
+            return Nil.instance();
+        }
+
+        @Override
         public Tuple0 unapply() {
             return Tuple0.instance();
         }
@@ -313,7 +317,7 @@ public interface RoseTree<T> extends Tree<T> {
         }
     }
 
-    static abstract class AbstractRoseTree<T> implements RoseTree<T> {
+    abstract class AbstractRoseTree<T> implements RoseTree<T> {
 
         private static final long serialVersionUID = 1L;
 

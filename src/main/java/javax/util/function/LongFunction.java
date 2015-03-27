@@ -10,7 +10,7 @@ import java.io.Serializable;
 @FunctionalInterface
 public interface LongFunction<R> extends Serializable {
 
-    static final long serialVersionUID = 1L;
+    long serialVersionUID = 1L;
 
     R apply(long value);
 }

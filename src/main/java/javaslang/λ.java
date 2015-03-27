@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Method;
-import java.util.function.Function;
 
 /**
  * <p>
@@ -28,7 +27,7 @@ import java.util.function.Function;
  */
 public interface λ<R> extends Serializable {
 
-    static final long serialVersionUID = 1L;
+    long serialVersionUID = 1L;
 
     /**
      * Serializes a lambda and returns the corresponding {@link java.lang.invoke.SerializedLambda}.

@@ -17,7 +17,7 @@ import java.util.Objects;
 
 public interface CheckResult extends ValueObject {
 
-    static final long serialVersionUID = 1L;
+    long serialVersionUID = 1L;
 
     boolean isSatisfied();
 
@@ -38,7 +38,7 @@ public interface CheckResult extends ValueObject {
     /**
      * Represents a satisfied property check.
      */
-    static class Satisfied implements CheckResult {
+    class Satisfied implements CheckResult {
 
         private static final long serialVersionUID = 1L;
 
@@ -125,7 +125,7 @@ public interface CheckResult extends ValueObject {
     /**
      * Represents a falsified property check.
      */
-    static class Falsified implements CheckResult {
+    class Falsified implements CheckResult {
 
         private static final long serialVersionUID = 1L;
 
@@ -212,7 +212,7 @@ public interface CheckResult extends ValueObject {
     /**
      * Represents an erroneous property check.
      */
-    static class Erroneous implements CheckResult {
+    class Erroneous implements CheckResult {
 
         private static final long serialVersionUID = 1L;
 

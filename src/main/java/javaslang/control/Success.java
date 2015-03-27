@@ -19,7 +19,7 @@ public final class Success<T> implements Try<T> {
 
     private static final long serialVersionUID = 1L;
 
-    private T value;
+    private final T value;
 
     public Success(T value) {
         this.value = value;

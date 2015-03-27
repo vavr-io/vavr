@@ -40,8 +40,8 @@ public class ArbitraryTest {
     @Test
     public void shouldFilterArbitrary() {
         final Arbitrary<BinaryTree<Integer>> arbitraryTree = new ArbitraryBinaryTree(0, 1000);
-        final Arbitrary<BinaryTree<Integer>> arbitraryTreeWithEvenNodeCount = arbitraryTree.filter(tree -> tree.nodeCount() % 2 == 0);
-        assertThat(arbitraryTree.apply(0).apply(new Random())).isNotNull();
+        final Arbitrary<BinaryTree<Integer>> arbitraryTreeWithEvenNodeCount = arbitraryTree.filter(tree -> tree.nodeCount() % 3 == 0);
+        assertThat(arbitraryTreeWithEvenNodeCount.apply(10).apply(new Random())).isNotNull();
     }
 
     // factory methods

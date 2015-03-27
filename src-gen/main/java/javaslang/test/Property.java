@@ -23,6 +23,7 @@ public class Property {
 
     /**
      * Construct a named property.
+     * @param name property name
      */
     public Property(String name) {
         Objects.requireNonNull(name, "name is null");
