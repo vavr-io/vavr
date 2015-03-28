@@ -69,7 +69,7 @@ public interface List<T> extends Seq<T>, ValueObject {
     /**
      * <p>
      * Use {@linkplain List#cons(Object)} instead of {@linkplain List#of(Iterable)} in order to create nested structures of
-     * the form {@code List&lt;List&lt;T&gt;&gt;}.
+     * the form {@code List<List<T>>}.
      * </p>
      * <p>
      * {@linkplain List#cons(Object)} produces the same result as {@linkplain List#of(Iterable)} if T is not Iterable and

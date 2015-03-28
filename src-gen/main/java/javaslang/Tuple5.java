@@ -41,7 +41,7 @@ public class Tuple5<T1, T2, T3, T4, T5> implements Tuple, Monad5<T1, T2, T3, T4,
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U1, U2, U3, U4, U5, MONAD extends HigherKinded5<U1, U2, U3, U4, U5, Tuple5<?, ?, ?, ?, ?>>> Tuple5<U1, U2, U3, U4, U5> flatMap(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, MONAD> f) {
+    public <U1, U2, U3, U4, U5, TUPLE extends HigherKinded5<U1, U2, U3, U4, U5, Tuple5<?, ?, ?, ?, ?>>> Tuple5<U1, U2, U3, U4, U5> flatMap(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, TUPLE> f) {
         return (Tuple5<U1, U2, U3, U4, U5>) f.apply(_1, _2, _3, _4, _5);
     }
 

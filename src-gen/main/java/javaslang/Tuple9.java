@@ -49,7 +49,7 @@ public class Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9> implements Tuple, Monad9
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U1, U2, U3, U4, U5, U6, U7, U8, U9, MONAD extends HigherKinded9<U1, U2, U3, U4, U5, U6, U7, U8, U9, Tuple9<?, ?, ?, ?, ?, ?, ?, ?, ?>>> Tuple9<U1, U2, U3, U4, U5, U6, U7, U8, U9> flatMap(Function9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, MONAD> f) {
+    public <U1, U2, U3, U4, U5, U6, U7, U8, U9, TUPLE extends HigherKinded9<U1, U2, U3, U4, U5, U6, U7, U8, U9, Tuple9<?, ?, ?, ?, ?, ?, ?, ?, ?>>> Tuple9<U1, U2, U3, U4, U5, U6, U7, U8, U9> flatMap(Function9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, TUPLE> f) {
         return (Tuple9<U1, U2, U3, U4, U5, U6, U7, U8, U9>) f.apply(_1, _2, _3, _4, _5, _6, _7, _8, _9);
     }
 

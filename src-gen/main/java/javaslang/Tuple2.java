@@ -36,7 +36,7 @@ public class Tuple2<T1, T2> implements Tuple, Monad2<T1, T2, Tuple2<?, ?>> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U1, U2, MONAD extends HigherKinded2<U1, U2, Tuple2<?, ?>>> Tuple2<U1, U2> flatMap(BiFunction<? super T1, ? super T2, MONAD> f) {
+    public <U1, U2, TUPLE extends HigherKinded2<U1, U2, Tuple2<?, ?>>> Tuple2<U1, U2> flatMap(BiFunction<? super T1, ? super T2, TUPLE> f) {
         return (Tuple2<U1, U2>) f.apply(_1, _2);
     }
 

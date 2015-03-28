@@ -34,7 +34,7 @@ public class Tuple1<T1> implements Tuple, Monad1<T1, Tuple1<?>> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U1, MONAD extends HigherKinded1<U1, Tuple1<?>>> Tuple1<U1> flatMap(Function<? super T1, MONAD> f) {
+    public <U1, TUPLE extends HigherKinded1<U1, Tuple1<?>>> Tuple1<U1> flatMap(Function<? super T1, TUPLE> f) {
         return (Tuple1<U1>) f.apply(_1);
     }
 

@@ -560,7 +560,7 @@ def generateMainClasses(): Unit = {
 
             @SuppressWarnings("unchecked")
             @Override
-            public <$resultGenerics, MONAD extends ${im.getType(s"javaslang.algebra.HigherKinded$i")}<$resultGenerics, $className<$untyped>>> $className<$resultGenerics> flatMap($functionType<$paramTypes, MONAD> f) {
+            public <$resultGenerics, TUPLE extends ${im.getType(s"javaslang.algebra.HigherKinded$i")}<$resultGenerics, $className<$untyped>>> $className<$resultGenerics> flatMap($functionType<$paramTypes, TUPLE> f) {
                 return ($className<$resultGenerics>) f.apply($params);
             }
 

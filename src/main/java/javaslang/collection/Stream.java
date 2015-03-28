@@ -209,7 +209,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
     /**
      * <p>
      * Use {@linkplain Stream#cons(Object)} instead of {@linkplain Stream#of(Iterable)} in order to create nested structures of
-     * the form {@code Stream&lt;Stream&lt;T&gt;&gt;}.
+     * the form {@code Stream<Stream<T>>}.
      * </p>
      * <p>
      * {@linkplain Stream#cons(Object)} produces the same result as {@linkplain Stream#of(Iterable)} if T is not Iterable and

@@ -156,7 +156,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      *     <li>short, int</li>
      * </ul>
      * <p>BigInteger and BigDecimal are not treated special.</p>
-     * <p>The average of boolean elements is defined to be {@code this.filter(Boolean::booleanValue).length() &gt;= n / 2}.</p>
+     * <p>The average of boolean elements is defined to be {@code this.filter(Boolean::booleanValue).length() >= n / 2}.</p>
      *
      * @return The average of this elements.
      * @throws java.lang.UnsupportedOperationException if no elements are present or the elements are not numeric
@@ -318,7 +318,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * Accumulates the elements of this Traversable by successively calling the given operator {@code op}.
      * </p>
      * <p>
-     * Example: {@code List("a", "b", "c").fold("", (a, b) -&gt; a + b) = "abc"}
+     * Example: {@code List("a", "b", "c").fold("", (a, b) -> a + b) = "abc"}
      * </p>
      *
      * @param zero Value to start the accumulation with.
@@ -335,7 +335,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * starting with a value {@code zero} of type B.
      * </p>
      * <p>
-     * Example: {@code List.of("a", "b", "c").foldLeft("", (xs, x) -&gt; xs + x) = "abc"}
+     * Example: {@code List.of("a", "b", "c").foldLeft("", (xs, x) -> xs + x) = "abc"}
      * </p>
      *
      * @param zero Value to start the accumulation with.
@@ -376,7 +376,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * starting with a value {@code zero} of type B.
      * </p>
      * <p>
-     * Example: {@code List.of("a", "b", "c").foldRight("", (x, xs) -&gt; x + xs) = "abc"}
+     * Example: {@code List.of("a", "b", "c").foldRight("", (x, xs) -> x + xs) = "abc"}
      * </p>
      * <p>
      * In order to prevent recursive calls, foldRight is implemented based on reverse and foldLeft. A recursive variant
@@ -818,8 +818,8 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * Takes the first n elements of this Traversable or all elements, if this length &lt; n.
      * </p>
      * <p>
-     * The result is equivalent to {@code sublist(0, n)} but does not throw if n &lt; 0 or n &gt; length(). In the case of
-     * n &lt; 0 the empty Traversable is returned, in the case of n &gt; length() this Traversable is returned.
+     * The result is equivalent to {@code sublist(0, n)} but does not throw if {@code n < 0} or {@code n > length()}. In the case of
+     * {@code n < 0} the empty Traversable is returned, in the case of {@code n > length()} this Traversable is returned.
      * </p>
      *
      * @param n The number of elements to take.
@@ -834,7 +834,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
     Traversable<T> takeWhile(Predicate<? super T> predicate);
 
     /**
-     * Tip: Given a {@code Traversable&lt;M&lt;T&gt;&gt; t} use {@code t.toJavaArray((Class&lt;M&lt;T&gt;&gt;) (Class) M.class)}.
+     * Tip: Given a {@code Traversable<M<T>> t} use {@code t.toJavaArray((Class<M<T>>) (Class) M.class)}.
      *
      * @param componentType Type of resulting array's elements.
      * @return An array containing this elements
