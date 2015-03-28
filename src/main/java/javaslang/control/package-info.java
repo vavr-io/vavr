@@ -36,5 +36,7 @@
  * <p>
  * The match control is a more mature switch expression with pattern matching capabilities.
  * </p>
+ *
+ * @since 1.0.0
  */
 package javaslang.control;
