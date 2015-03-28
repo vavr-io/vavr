@@ -5,29 +5,42 @@
  */
 package javaslang.test;
 
-// internally used within Property.check
+/**
+ * Error messages used internally within {@code Property.check}.
+ */
 interface Errors {
 
-    String ARBITRARY_ERROR = "Arbitrary %s of size %s: %s";
-    String GEN_ERROR = "Gen %s of size %s: %s";
-    String PREDICATE_ERROR = "Applying predicate: %s";
-
     /**
+     * Creates an Error caused by an exception when obtaining a generator.
      *
      * @param position The position of the argument within the argument list of the property, starting with 1.
      * @param size The size hint passed to the {@linkplain Arbitrary} which caused the error.
      * @param cause The error which occured when the {@linkplain Arbitrary} tried to obtain the generator {@linkplain Gen}.
-     * @return
+     * @return a new Error instance.
      */
     static Error arbitraryError(int position, int size, Throwable cause) {
-        return new Error(String.format(ARBITRARY_ERROR, position, size, cause.getMessage()), cause);
+        return new Error(String.format("Arbitrary %s of size %s: %s", position, size, cause.getMessage()), cause);
     }
 
+    /**
+     * Creates an Error caused by an exception when generating a value.
+     *
+     * @param position The position of the argument within the argument list of the property, starting with 1.
+     * @param size The size hint of the arbitrary which called the generator {@linkplain Gen} which caused the error.
+     * @param cause The error which occured when the {@linkplain Gen} tried to generate a random value.
+     * @return a new Error instance.
+     */
     static Error genError(int position, int size, Throwable cause) {
-        return new Error(String.format(GEN_ERROR, position, size, cause.getMessage()), cause);
+        return new Error(String.format("Gen %s of size %s: %s", position, size, cause.getMessage()), cause);
     }
 
+    /**
+     * Creates an Error caused by an exception when testing a Predicate.
+     *
+     * @param cause The error which occured when applying the {@linkplain java.util.function.Predicate}.
+     * @return a new Error instance.
+     */
     static Error predicateError(Throwable cause) {
-        return new Error(String.format(PREDICATE_ERROR, cause.getMessage()), cause);
+        return new Error(String.format("Applying predicate: %s", cause.getMessage()), cause);
     }
 }

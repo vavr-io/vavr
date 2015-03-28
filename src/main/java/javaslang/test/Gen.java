@@ -18,22 +18,13 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
- * <p>
- * Generators are the building blocks for providing arbitrary objects.
- * </p>
- * <p>
- * Gen&lt;T&gt; implements Iterable&lt;T&gt; which allows us to stream arbitrary generated objects.
- * </p>
- * Example:
- * <pre>
- * <code>
- * // random trees
- * final Gen&lt;BinaryTree&lt;Integer&gt;&gt; treeGen = ...;
- *
- * // stream sum of tree node values to console for 100 trees
- * Stream.of(treeGen).map(Tree::sum).take(100).stdout();
- * </code>
- * </pre>
+ * <p>Generators are the building blocks for providing arbitrary objects.</p>
+ * <p>To ease the creation of Arbitraries, Gen is a FunctionalInterface which extends {@code Function1<Random, T>}.</p>
+ * <p>Gen objects are obtained via one of the methods {@code choose}, {@code fail}, {@code frequency}, {@code of} and
+ * {@code oneOf}.</p>
+ * <p>Given Gen objects may be transformed using one of the methods {@code filter}, {@code map} and {@code flatMap}.</p>
+ * <p>A simple way to obtain an Arbitrary of a Gen is to call {@linkplain javaslang.test.Gen#arbitrary()}.
+ * This will ignore the size hint of Arbitrary.</p>
  *
  * @param <T> type of generated objects
  * @see javaslang.test.Arbitrary

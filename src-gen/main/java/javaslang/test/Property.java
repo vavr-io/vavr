@@ -33,7 +33,7 @@ public class Property {
         this.name = name;
     }
 
-    static void logSatisfied(String name, int tries, boolean exhausted) {
+    private static void logSatisfied(String name, int tries, boolean exhausted) {
         if (exhausted) {
             log(String.format("%s: Exhausted after %s tests.", name, tries));
         } else {
@@ -41,15 +41,15 @@ public class Property {
         }
     }
 
-    static void logFalsified(String name, int currentTry) {
+    private static void logFalsified(String name, int currentTry) {
         log(String.format("%s: Falsified after %s passed tests.", name, currentTry - 1));
     }
 
-    static void logErroneous(String name, int currentTry, String errorMessage) {
+    private static void logErroneous(String name, int currentTry, String errorMessage) {
         log(String.format("%s: Errored after %s passed tests with message: %s", name, Math.max(0, currentTry - 1), errorMessage));
     }
 
-    static void log(String msg) {
+    private static void log(String msg) {
         System.out.println(msg);
     }
 

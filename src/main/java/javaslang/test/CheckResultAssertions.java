@@ -7,13 +7,26 @@ package javaslang.test;
 
 import java.util.Objects;
 
+/**
+ * Assertions targerting on unit tests.
+ */
 public interface CheckResultAssertions {
 
+    /**
+     * Returns a {@linkplain javaslang.test.CheckResultAssertions.CheckResultAssertion} which provides a fluent API
+     * to call further assertions on the given checkResult.
+     *
+     * @param checkResult A CheckResult
+     * @return A new CheckResultAssertion
+     */
     static CheckResultAssertion assertThat(CheckResult checkResult) {
         Objects.requireNonNull("checkResult is null");
         return new CheckResultAssertion(checkResult);
     }
 
+    /**
+     * Assertions for {@linkplain javaslang.test.CheckResult}.
+     */
     class CheckResultAssertion {
 
         private final CheckResult checkResult;
@@ -22,6 +35,12 @@ public interface CheckResultAssertions {
             this.checkResult = checkResult;
         }
 
+        /**
+         * Asserts that the underlying CheckResult is satisfied.
+         *
+         * @return this CheckResultAssertion
+         * @throws AssertionError if the underlying CheckResult is not satisfied.
+         */
         public CheckResultAssertion isSatisfied() {
             if (!checkResult.isSatisfied()) {
                 throw new AssertionError("Expected satisfied check result but was " + checkResult);
@@ -29,6 +48,13 @@ public interface CheckResultAssertions {
             return this;
         }
 
+        /**
+         * Asserts that the underlying CheckResult is satisfied with a given exhausted state.
+         *
+         * @param exhausted The exhausted state to be checked in the case of a satisfied CheckResult.
+         * @return this CheckResultAssertion
+         * @throws AssertionError if the underlying CheckResult is not satisfied or the exhausted state does not match.
+         */
         public CheckResultAssertion isSatisfiedWithExhaustion(boolean exhausted) {
             if (!checkResult.isSatisfied()) {
                 throw new AssertionError("Expected satisfied check result but was " + checkResult);
@@ -38,6 +64,12 @@ public interface CheckResultAssertions {
             return this;
         }
 
+        /**
+         * Asserts that the underlying CheckResult is falsified.
+         *
+         * @return this CheckResultAssertion
+         * @throws AssertionError if the underlying CheckResult is not falsified.
+         */
         public CheckResultAssertion isFalsified() {
             if (!checkResult.isFalsified()) {
                 throw new AssertionError("Expected falsified check result but was " + checkResult);
@@ -45,6 +77,12 @@ public interface CheckResultAssertions {
             return this;
         }
 
+        /**
+         * Asserts that the underlying CheckResult is erroneous.
+         *
+         * @return this CheckResultAssertion
+         * @throws AssertionError if the underlying CheckResult is not erroneous.
+         */
         public CheckResultAssertion isErroneous() {
             if (!checkResult.isErroneous()) {
                 throw new AssertionError("Expected erroneous check result but was " + checkResult);

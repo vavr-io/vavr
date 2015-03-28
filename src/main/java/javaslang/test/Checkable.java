@@ -64,6 +64,13 @@ public interface Checkable {
         return check(RNG.get(), DEFAULT_SIZE, DEFAULT_TRIES);
     }
 
+    /**
+     * <p>Returns a new Checkable which is satisfied if this Checkable <em>and</em> the given checkable are satisfied.</p>
+     * <p>First this Checkable is checked.</p>
+     *
+     * @param checkable A Checkable
+     * @return A new Checkable
+     */
     default Checkable and(Checkable checkable) {
         return (rng, size, tries) -> {
             final CheckResult result = check(rng, size, tries);
@@ -75,6 +82,13 @@ public interface Checkable {
         };
     }
 
+    /**
+     * <p>Returns a new Checkable which is satisfied if this Checkable <em>or</em> the given checkable are satisfied.</p>
+     * <p>First this Checkable is checked.</p>
+     *
+     * @param checkable A Checkable
+     * @return A new Checkable
+     */
     default Checkable or(Checkable checkable) {
         return (rng, size, tries) -> {
             final CheckResult result = check(rng, size, tries);
