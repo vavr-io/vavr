@@ -63,7 +63,7 @@ Profile 'release-sign-artifacts':
         <maven.release.version>2.5.1</maven.release.version>
         <maven.versions.version>2.1</maven.versions.version>
         <scala.maven.version>3.2.0</scala.maven.version>
-        <scala.version>2.11.5</scala.version>
+        <scala.version>2.11.6</scala.version>
     </properties>
     <build>
         <plugins>
