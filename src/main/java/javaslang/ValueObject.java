@@ -44,17 +44,20 @@ public interface ValueObject extends Serializable {
      *     <code>
      *     if (o == this) {
      *         return true;
-     *     } else if (!(o instanceof CurrentType)) {
-     *         return false;
-     *     } else {
+     *     } else if (o instanceof CurrentType) {
      *         final CurrentType that = (CurrentType) o;
      *         return ...; // check if values of this and that are pairwise equal
+     *     } else {
+     *         return false;
      *     }
      *     </code>
      * </pre>
      *
+     * Please note that double and float values 0.0 and -0.0 are not equal, just in case.
+     *
      * @param o An object, may be null.
      * @return true, if o equals this, false otherwise.
+     * @see java.util.Objects#equals(Object, Object)
      */
     @Override
     boolean equals(Object o);
@@ -63,6 +66,7 @@ public interface ValueObject extends Serializable {
      * Needs to be overridden because of equals.
      *
      * @return The hashCode of this object.
+     * @see java.util.Objects#hash(Object...)
      */
     @Override
     int hashCode();
@@ -71,6 +75,7 @@ public interface ValueObject extends Serializable {
      * Returns a String representation of this object including type and state.
      *
      * @return A String representation of this object.
+     * @see java.lang.String#valueOf(Object)
      */
     @Override
     String toString();
