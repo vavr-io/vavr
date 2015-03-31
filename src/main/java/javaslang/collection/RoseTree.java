@@ -19,6 +19,7 @@ import java.util.function.Function;
  * See <a href="http://en.wikipedia.org/wiki/Rose_tree">Wikipedia: Rose tree</a>.
  *
  * @param <T> the type of a Node's value.
+ * @since 1.1.0
  */
 public interface RoseTree<T> extends Tree<T> {
 

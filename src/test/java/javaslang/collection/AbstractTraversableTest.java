@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Function1;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.algebra.Monoid;
@@ -373,7 +374,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldFoldMapNil() {
-        nil().foldMap(Monoid.endoMonoid(), o -> Function.identity());
+        nil().foldMap(Monoid.endoMonoid(), o -> Function1.identity());
     }
 
     @Test

@@ -17,6 +17,12 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
+/**
+ * A Lazy linked list implementation.
+ *
+ * @param <T> component type of this Stream
+ * @since 1.1.0
+ */
 // DEV-NOTE: Beware of serializing IO streams.
 public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObject {
 

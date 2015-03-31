@@ -11,15 +11,35 @@ package javaslang;
 
 import java.util.Objects;
 
+/**
+ * Represents a function with one argument.
+ *
+ * @param <T1> argument 1 of the function
+ * @param <R> return type of the function
+ * @since 1.1.0
+ */
 @FunctionalInterface
 public interface CheckedFunction1<T1, R> extends λ<R> {
 
     long serialVersionUID = 1L;
 
+    /**
+     * Returns the identity CheckedFunction1, i.e. the function that returns its input.
+     *
+     * @param <T> argument type (and return type) of the identity function
+     * @return the identity CheckedFunction1
+     */
     static <T> CheckedFunction1<T, T> identity() {
         return t -> t;
     }
 
+    /**
+     * Applies this function to one argument and returns the result.
+     *
+     * @param t1 argument 1
+     * @return the result of function application
+     * @throws Throwable if something goes wrong applying this function to the given arguments
+     */
     R apply(T1 t1) throws Throwable;
 
     @Override
@@ -42,11 +62,29 @@ public interface CheckedFunction1<T1, R> extends λ<R> {
         return (t1) -> apply(t1);
     }
 
+    /**
+     * Returns a composed function that first applies this CheckedFunction1 to the given argument and then applies
+     * {@linkplain CheckedFunction1} {@code after} to the result.
+     *
+     * @param <V> return type of after
+     * @param after the function applied after this
+     * @return a function composed of this and after
+     * @throws NullPointerException if after is null
+     */
     default <V> CheckedFunction1<T1, V> andThen(CheckedFunction1<? super R, ? extends V> after) {
         Objects.requireNonNull(after);
         return (t1) -> after.apply(apply(t1));
     }
 
+    /**
+     * Returns a composed function that first applies the {@linkplain CheckedFunction1} {@code before} the
+     * given argument and then applies this CheckedFunction1 to the result.
+     *
+     * @param <V> argument type of before
+     * @param before the function applied before this
+     * @return a function composed of before and this
+     * @throws NullPointerException if before is null
+     */
     default <V> CheckedFunction1<V, R> compose(CheckedFunction1<? super V, ? extends T1> before) {
         Objects.requireNonNull(before);
         return v -> apply(before.apply(v));

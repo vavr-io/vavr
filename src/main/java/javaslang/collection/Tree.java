@@ -12,6 +12,12 @@ import javaslang.control.Match;
 import java.util.*;
 import java.util.function.Function;
 
+/**
+ * A general Tree interface.
+ *
+ * @param <T> component type of this Tree
+ * @since 1.1.0
+ */
 public interface Tree<T> extends Functor1<T>, ValueObject {
 
     long serialVersionUID = 1L;

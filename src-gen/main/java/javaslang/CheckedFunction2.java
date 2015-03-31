@@ -11,11 +11,27 @@ package javaslang;
 
 import java.util.Objects;
 
+/**
+ * Represents a function with two arguments.
+ *
+ * @param <T1> argument 1 of the function
+ * @param <T2> argument 2 of the function
+ * @param <R> return type of the function
+ * @since 1.1.0
+ */
 @FunctionalInterface
 public interface CheckedFunction2<T1, T2, R> extends λ<R> {
 
     long serialVersionUID = 1L;
 
+    /**
+     * Applies this function to two arguments and returns the result.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @return the result of function application
+     * @throws Throwable if something goes wrong applying this function to the given arguments
+     */
     R apply(T1 t1, T2 t2) throws Throwable;
 
     @Override
@@ -38,6 +54,15 @@ public interface CheckedFunction2<T1, T2, R> extends λ<R> {
         return (t2, t1) -> apply(t1, t2);
     }
 
+    /**
+     * Returns a composed function that first applies this CheckedFunction2 to the given argument and then applies
+     * {@linkplain CheckedFunction1} {@code after} to the result.
+     *
+     * @param <V> return type of after
+     * @param after the function applied after this
+     * @return a function composed of this and after
+     * @throws NullPointerException if after is null
+     */
     default <V> CheckedFunction2<T1, T2, V> andThen(CheckedFunction1<? super R, ? extends V> after) {
         Objects.requireNonNull(after);
         return (t1, t2) -> after.apply(apply(t1, t2));

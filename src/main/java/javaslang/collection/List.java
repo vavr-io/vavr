@@ -33,6 +33,7 @@ import java.util.stream.Collector;
  * </p>
  *
  * @param <T> Component type of the List.
+ * @since 1.1.0
  */
 public interface List<T> extends Seq<T>, ValueObject {
 

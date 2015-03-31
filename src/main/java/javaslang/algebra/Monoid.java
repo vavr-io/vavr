@@ -5,7 +5,7 @@
  */
 package javaslang.algebra;
 
-import java.util.function.Function;
+import javaslang.Function1;
 
 /**
  * <p>A Monoid is a {@linkplain javaslang.algebra.Semigroup} (types with an associative binary operation) that has an
@@ -22,6 +22,7 @@ import java.util.function.Function;
  * on numbers.</p>
  *
  * @param <A> A type.
+ * @since 1.1.0
  */
 public interface Monoid<A> extends Semigroup<A> {
 
@@ -38,8 +39,8 @@ public interface Monoid<A> extends Semigroup<A> {
      * @param <A> Value type
      * @return The monoid of endomorphisms of type A.
      */
-    static <A> Monoid<Function<A, A>> endoMonoid() {
-        return Monoid.of(Function.identity(), Function::compose);
+    static <A> Monoid<Function1<A, A>> endoMonoid() {
+        return Monoid.of(Function1.identity(), Function1::compose);
     }
 
     /**

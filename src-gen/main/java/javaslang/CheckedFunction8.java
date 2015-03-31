@@ -11,11 +11,39 @@ package javaslang;
 
 import java.util.Objects;
 
+/**
+ * Represents a function with 8 arguments.
+ *
+ * @param <T1> argument 1 of the function
+ * @param <T2> argument 2 of the function
+ * @param <T3> argument 3 of the function
+ * @param <T4> argument 4 of the function
+ * @param <T5> argument 5 of the function
+ * @param <T6> argument 6 of the function
+ * @param <T7> argument 7 of the function
+ * @param <T8> argument 8 of the function
+ * @param <R> return type of the function
+ * @since 1.1.0
+ */
 @FunctionalInterface
 public interface CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<R> {
 
     long serialVersionUID = 1L;
 
+    /**
+     * Applies this function to 8 arguments and returns the result.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @param t5 argument 5
+     * @param t6 argument 6
+     * @param t7 argument 7
+     * @param t8 argument 8
+     * @return the result of function application
+     * @throws Throwable if something goes wrong applying this function to the given arguments
+     */
     R apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8) throws Throwable;
 
     @Override
@@ -38,6 +66,15 @@ public interface CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<
         return (t8, t7, t6, t5, t4, t3, t2, t1) -> apply(t1, t2, t3, t4, t5, t6, t7, t8);
     }
 
+    /**
+     * Returns a composed function that first applies this CheckedFunction8 to the given argument and then applies
+     * {@linkplain CheckedFunction1} {@code after} to the result.
+     *
+     * @param <V> return type of after
+     * @param after the function applied after this
+     * @return a function composed of this and after
+     * @throws NullPointerException if after is null
+     */
     default <V> CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, V> andThen(CheckedFunction1<? super R, ? extends V> after) {
         Objects.requireNonNull(after);
         return (t1, t2, t3, t4, t5, t6, t7, t8) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8));

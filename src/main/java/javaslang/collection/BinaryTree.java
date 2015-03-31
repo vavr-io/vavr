@@ -24,6 +24,7 @@ import java.util.function.Function;
  * A branch has a left and a right child, at least one child is not Nil.
  *
  * @param <T> the type of a tree node's value.
+ * @since 1.1.0
  */
 public interface BinaryTree<T> extends Tree<T> {
 

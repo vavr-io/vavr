@@ -60,10 +60,10 @@ public final class Match<R> implements Function1<Object, R> {
 
     private static final long serialVersionUID = 1L;
 
-    private final List<java.util.function.Function<Object, Option<R>>> cases;
+    private final List<Function1<Object, Option<R>>> cases;
     private final Option<Supplier<R>> defaultOption;
 
-    private Match(List<java.util.function.Function<Object, Option<R>>> cases, Option<Supplier<R>> defaultOption) {
+    private Match(List<Function1<Object, Option<R>>> cases, Option<Supplier<R>> defaultOption) {
         this.cases = cases;
         this.defaultOption = defaultOption;
     }
@@ -134,7 +134,7 @@ public final class Match<R> implements Function1<Object, R> {
     }
 
     /**
-     * Applies an object to this matcher. This is the implementation of the {@link java.util.function.Function} interface.
+     * Applies an object to this matcher. This is the implementation of the {@link Function1} interface.
      *
      * @param obj An object.
      * @return The result when applying the given obj to the first matching case. If the case has a consumer, the result
@@ -144,7 +144,7 @@ public final class Match<R> implements Function1<Object, R> {
      */
     @Override
     public R apply(Object obj) {
-        for (java.util.function.Function<Object, Option<R>> caze : cases) {
+        for (Function1<Object, Option<R>> caze : cases) {
             final Option<R> result = caze.apply(obj);
             if (result.isDefined()) {
                 return result.get();
@@ -155,7 +155,7 @@ public final class Match<R> implements Function1<Object, R> {
 
     public static class Builder<R> extends OrElseBuilder<R> {
 
-        private final List<java.util.function.Function<Object, Option<R>>> cases = new ArrayList<>();
+        private final List<Function1<Object, Option<R>>> cases = new ArrayList<>();
         private Option<Supplier<R>> defaultOption = Option.none();
 
         /**
@@ -334,7 +334,7 @@ public final class Match<R> implements Function1<Object, R> {
          * @see javaslang.control.Match.MatchBuilder#getCases()
          */
         @Override
-        protected List<java.util.function.Function<Object, Option<R>>> getCases() {
+        protected List<Function1<Object, Option<R>>> getCases() {
             return cases;
         }
 
@@ -356,7 +356,7 @@ public final class Match<R> implements Function1<Object, R> {
             this.defaultOption = defaultOption;
         }
 
-        private java.util.function.Function<Object, Option<R>> caze(Option<?> prototype, Function1<?, R> function) {
+        private Function1<Object, Option<R>> caze(Option<?> prototype, Function1<?, R> function) {
             final MethodType type = function.getType();
             // the compiler may add additional parameters to the lambda, our parameter is the last one
             final Class<?> parameterType = type.parameterType(type.parameterCount() - 1);
@@ -371,7 +371,7 @@ public final class Match<R> implements Function1<Object, R> {
          * @param parameterType The type of the unboxed function argument.
          */
         // TODO: split prototype and non-prototype cases to increase performance
-        private java.util.function.Function<Object, Option<R>> caze(Option<?> prototype, java.util.function.Function<?, R> function, Class<?> parameterType) {
+        private Function1<Object, Option<R>> caze(Option<?> prototype, Function1<?, R> function, Class<?> parameterType) {
             final Predicate<Object> applicable = obj -> {
                 final boolean isCompatible = obj == null || parameterType.isAssignableFrom(obj.getClass());
                 return isCompatible
@@ -380,7 +380,7 @@ public final class Match<R> implements Function1<Object, R> {
             return obj -> {
                 if (applicable.test(obj)) {
                     @SuppressWarnings("unchecked")
-                    final R result = ((java.util.function.Function<Object, R>) function).apply(obj);
+                    final R result = ((Function1<Object, R>) function).apply(obj);
                     return new Some<>(result);
                 } else {
                     return None.instance();
@@ -431,7 +431,7 @@ public final class Match<R> implements Function1<Object, R> {
             return build().apply(obj);
         }
 
-        protected abstract List<java.util.function.Function<Object, Option<R>>> getCases();
+        protected abstract List<Function1<Object, Option<R>>> getCases();
 
         protected abstract Option<Supplier<R>> getDefault();
 

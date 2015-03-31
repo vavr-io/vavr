@@ -44,6 +44,7 @@ import java.util.Objects;
  * </ul>
  *
  * @param <T> Component type
+ * @since 1.1.0
  */
 public interface Seq<T> extends Traversable<T> {
 

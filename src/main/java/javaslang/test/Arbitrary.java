@@ -20,6 +20,7 @@ import java.util.function.Predicate;
  * Represents an arbitrary object of type T.
  *
  * @param <T> The type of the arbitrary object.
+ * @since 1.2.0
  */
 @FunctionalInterface
 public interface Arbitrary<T> extends IntFunction<Gen<T>>, Function<Integer, Gen<T>>, Monad1<T, Arbitrary<?>> {

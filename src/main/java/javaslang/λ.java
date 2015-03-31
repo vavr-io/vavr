@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
  * </p>
  *
  * @param <R> Return type of the function.
+ * @since 1.0.0
  */
 public interface λ<R> extends Serializable {
 

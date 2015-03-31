@@ -10,13 +10,72 @@ package javaslang;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import java.util.Objects;
-import java.util.function.Function;
 
+/**
+ * Represents a function with 24 arguments.
+ *
+ * @param <T1> argument 1 of the function
+ * @param <T2> argument 2 of the function
+ * @param <T3> argument 3 of the function
+ * @param <T4> argument 4 of the function
+ * @param <T5> argument 5 of the function
+ * @param <T6> argument 6 of the function
+ * @param <T7> argument 7 of the function
+ * @param <T8> argument 8 of the function
+ * @param <T9> argument 9 of the function
+ * @param <T10> argument 10 of the function
+ * @param <T11> argument 11 of the function
+ * @param <T12> argument 12 of the function
+ * @param <T13> argument 13 of the function
+ * @param <T14> argument 14 of the function
+ * @param <T15> argument 15 of the function
+ * @param <T16> argument 16 of the function
+ * @param <T17> argument 17 of the function
+ * @param <T18> argument 18 of the function
+ * @param <T19> argument 19 of the function
+ * @param <T20> argument 20 of the function
+ * @param <T21> argument 21 of the function
+ * @param <T22> argument 22 of the function
+ * @param <T23> argument 23 of the function
+ * @param <T24> argument 24 of the function
+ * @param <R> return type of the function
+ * @since 1.1.0
+ */
 @FunctionalInterface
 public interface Function24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, R> extends λ<R> {
 
     long serialVersionUID = 1L;
 
+    /**
+     * Applies this function to 24 arguments and returns the result.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @param t5 argument 5
+     * @param t6 argument 6
+     * @param t7 argument 7
+     * @param t8 argument 8
+     * @param t9 argument 9
+     * @param t10 argument 10
+     * @param t11 argument 11
+     * @param t12 argument 12
+     * @param t13 argument 13
+     * @param t14 argument 14
+     * @param t15 argument 15
+     * @param t16 argument 16
+     * @param t17 argument 17
+     * @param t18 argument 18
+     * @param t19 argument 19
+     * @param t20 argument 20
+     * @param t21 argument 21
+     * @param t22 argument 22
+     * @param t23 argument 23
+     * @param t24 argument 24
+     * @return the result of function application
+     * 
+     */
     R apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13, T14 t14, T15 t15, T16 t16, T17 t17, T18 t18, T19 t19, T20 t20, T21 t21, T22 t22, T23 t23, T24 t24);
 
     @Override
@@ -39,7 +98,16 @@ public interface Function24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T
         return (t24, t23, t22, t21, t20, t19, t18, t17, t16, t15, t14, t13, t12, t11, t10, t9, t8, t7, t6, t5, t4, t3, t2, t1) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24);
     }
 
-    default <V> Function24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, V> andThen(Function<? super R, ? extends V> after) {
+    /**
+     * Returns a composed function that first applies this Function24 to the given argument and then applies
+     * {@linkplain Function1} {@code after} to the result.
+     *
+     * @param <V> return type of after
+     * @param after the function applied after this
+     * @return a function composed of this and after
+     * @throws NullPointerException if after is null
+     */
+    default <V> Function24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, V> andThen(Function1<? super R, ? extends V> after) {
         Objects.requireNonNull(after);
         return (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24));
     }

@@ -7,6 +7,7 @@ package javaslang.test;
 
 /**
  * Error messages used internally within {@code Property.check}.
+ * @since 1.2.0
  */
 interface Errors {
 

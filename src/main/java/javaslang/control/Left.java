@@ -10,6 +10,13 @@ import javaslang.Tuple1;
 
 import java.util.Objects;
 
+/**
+ * The left type of an Either.
+ *
+ * @param <L> left component type
+ * @param <R> right component type
+ * @since 1.0.0
+ */
 public final class Left<L, R> implements Either<L, R> {
 
     private static final long serialVersionUID = 1L;

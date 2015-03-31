@@ -15,6 +15,9 @@ import javaslang.control.Some;
 
 import java.util.Objects;
 
+/**
+ * @since 1.2.0
+ */
 public interface CheckResult extends ValueObject {
 
     long serialVersionUID = 1L;

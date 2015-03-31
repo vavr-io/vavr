@@ -58,7 +58,7 @@ public class FunctionsTest {
 	@Test
 	public void shouldEnsureThatFunction0ImplementsTheFunctionInterface() {
 		final Function0<Integer> Function0 = () -> 1;
-		assertThat(Function0.get()).isEqualTo(1);
+		assertThat(Function0.apply()).isEqualTo(1);
 	}
 
 	// -- Function1

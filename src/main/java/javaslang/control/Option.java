@@ -29,6 +29,7 @@ import java.util.function.Supplier;
  * href="http://www.scala-lang.org/api/current/#scala.Option">Scala</a>.
  *
  * @param <T> The type of the optional value.
+ * @since 1.0.0
  */
 public interface Option<T> extends Monad1<T, Option<?>>, ValueObject, Univalent<T> {
 

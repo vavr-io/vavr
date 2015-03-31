@@ -16,6 +16,7 @@ package javaslang.algebra;
  * clarifies that the operation {@code combine} is associative.</p>
  *
  * @param <A> A type.
+ * @since 1.1.0
  */
 @FunctionalInterface
 public interface Semigroup<A> {

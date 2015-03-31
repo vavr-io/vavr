@@ -9,6 +9,7 @@ import java.util.Objects;
 
 /**
  * Assertions targerting on unit tests.
+ * @since 1.2.0
  */
 public interface CheckResultAssertions {
 

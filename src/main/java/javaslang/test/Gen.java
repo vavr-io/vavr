@@ -28,6 +28,7 @@ import java.util.function.Predicate;
  *
  * @param <T> type of generated objects
  * @see javaslang.test.Arbitrary
+ * @since 1.2.0
  */
 @FunctionalInterface
 public interface Gen<T> extends Function1<Random, T>, Monad1<T, Gen<?>> {

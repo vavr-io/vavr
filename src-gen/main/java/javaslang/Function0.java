@@ -10,20 +10,25 @@ package javaslang;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import java.util.Objects;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
+/**
+ * Represents a function with no arguments.
+ *
+ * @param <R> return type of the function
+ * @since 1.1.0
+ */
 @FunctionalInterface
-public interface Function0<R> extends λ<R>, Supplier<R> {
+public interface Function0<R> extends λ<R> {
 
     long serialVersionUID = 1L;
 
+    /**
+     * Applies this function to no arguments and returns the result.
+     *
+     * @return the result of function application
+     * 
+     */
     R apply();
-
-    @Override
-    default R get() {
-        return apply();
-    }
 
     @Override
     default int arity() {
@@ -45,7 +50,16 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
         return () -> apply();
     }
 
-    default <V> Function0<V> andThen(Function<? super R, ? extends V> after) {
+    /**
+     * Returns a composed function that first applies this Function0 to the given argument and then applies
+     * {@linkplain Function1} {@code after} to the result.
+     *
+     * @param <V> return type of after
+     * @param after the function applied after this
+     * @return a function composed of this and after
+     * @throws NullPointerException if after is null
+     */
+    default <V> Function0<V> andThen(Function1<? super R, ? extends V> after) {
         Objects.requireNonNull(after);
         return () -> after.apply(apply());
     }

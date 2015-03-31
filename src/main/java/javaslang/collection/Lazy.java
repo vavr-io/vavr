@@ -19,6 +19,7 @@ import java.util.function.Supplier;
  * lazyDouble.get() // returns the memoized value, e.g. 0.123
  * </code>
  * </pre>
+ * @since 1.1.0
  */
 final class Lazy<T> implements Supplier<T> {
 

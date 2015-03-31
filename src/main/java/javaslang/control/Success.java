@@ -15,6 +15,12 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+/**
+ * A succeeded Try.
+ *
+ * @param <T> component type of this Success
+ * @since 1.0.0
+ */
 public final class Success<T> implements Try<T> {
 
     private static final long serialVersionUID = 1L;

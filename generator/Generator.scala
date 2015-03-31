@@ -362,14 +362,7 @@ def generateMainClasses(): Unit = {
         val params = (1 to i).gen(j => s"t$j")(", ")
         val paramsReversed = (1 to i).reverse.gen(j => s"t$j")(", ")
         val tupled = (1 to i).gen(j => s"t._$j")(", ")
-        val compositionType = if (checked) "CheckedFunction1" else im.getType("java.util.function.Function")
-
-        def additionalInterfaces(arity: Int, checked: Boolean): String = (arity, checked) match {
-          case (0, false) => s", ${im.getType("java.util.function.Supplier")}<R>"
-          case (1, false) => s", ${im.getType("java.util.function.Function")}<$generics, R>"
-          case (2, false) => s", ${im.getType("java.util.function.BiFunction")}<$generics, R>"
-          case _ => ""
-        }
+        val compositionType = s"${checked.gen("Checked")}Function1"
 
         def curriedType(max: Int, function: String): String = {
           if (max == 0) {
@@ -384,25 +377,44 @@ def generateMainClasses(): Unit = {
           }
         }
 
+        def arguments(count: Int): String = count match {
+          case 0 => "no arguments"
+          case 1 => "one argument"
+          case 2 => "two arguments"
+          case 3 => "three arguments"
+          case _ => s"$i arguments"
+        }
+
         xs"""
+          /$javadoc
+           * Represents a function with ${arguments(i)}.
+           ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> argument $j of the function")("\n")}
+           * @param <R> return type of the function
+           * @since 1.1.0
+           */
           @FunctionalInterface
-          public interface $className<${(i > 0).gen(s"$generics, ")}R> extends λ<R>${additionalInterfaces(i, checked)} {
+          public interface $className<${(i > 0).gen(s"$generics, ")}R> extends λ<R> {
 
               long serialVersionUID = 1L;
 
               ${(i == 1).gen(xs"""
+              /$javadoc
+               * Returns the identity $className, i.e. the function that returns its input.
+               *
+               * @param <T> argument type (and return type) of the identity function
+               * @return the identity $className
+               */
               static <T> ${name}1<T, T> identity() {
                   return t -> t;
               }""")}
 
-              ${((i == 1 || i == 2) && !checked).gen("@Override")}
+              /$javadoc
+               * Applies this function to ${arguments(i)} and returns the result.
+               ${(0 to i).gen(j => if (j == 0) "*" else s"* @param t$j argument $j")("\n")}
+               * @return the result of function application
+               * ${checked.gen("@throws Throwable if something goes wrong applying this function to the given arguments")}
+               */
               R apply($paramsDecl)${checked.gen(" throws Throwable")};
-
-              ${(i == 0 && !checked).gen(xs"""
-              @Override
-              default R get() {
-                  return apply();
-              }""")}
 
               @Override
               default int arity() {
@@ -424,12 +436,30 @@ def generateMainClasses(): Unit = {
                   return ($paramsReversed) -> apply($params);
               }
 
+              /$javadoc
+               * Returns a composed function that first applies this $className to the given argument and then applies
+               * {@linkplain $compositionType} {@code after} to the result.
+               *
+               * @param <V> return type of after
+               * @param after the function applied after this
+               * @return a function composed of this and after
+               * @throws NullPointerException if after is null
+               */
               default <V> $className<${genericsFunction}V> andThen($compositionType<? super R, ? extends V> after) {
                   ${im.getType("java.util.Objects")}.requireNonNull(after);
                   return ($params) -> after.apply(apply($params));
               }
 
               ${(i == 1).gen(xs"""
+              /$javadoc
+               * Returns a composed function that first applies the {@linkplain $compositionType} {@code before} the
+               * given argument and then applies this $className to the result.
+               *
+               * @param <V> argument type of before
+               * @param before the function applied before this
+               * @return a function composed of before and this
+               * @throws NullPointerException if before is null
+               */
               default <V> ${name}1<V, R> compose($compositionType<? super V, ? extends T1> before) {
                   ${im.getType("java.util.Objects")}.requireNonNull(before);
                   return v -> apply(before.apply(v));

@@ -11,11 +11,23 @@ package javaslang;
 
 import java.util.Objects;
 
+/**
+ * Represents a function with no arguments.
+ *
+ * @param <R> return type of the function
+ * @since 1.1.0
+ */
 @FunctionalInterface
 public interface CheckedFunction0<R> extends λ<R> {
 
     long serialVersionUID = 1L;
 
+    /**
+     * Applies this function to no arguments and returns the result.
+     *
+     * @return the result of function application
+     * @throws Throwable if something goes wrong applying this function to the given arguments
+     */
     R apply() throws Throwable;
 
     @Override
@@ -38,6 +50,15 @@ public interface CheckedFunction0<R> extends λ<R> {
         return () -> apply();
     }
 
+    /**
+     * Returns a composed function that first applies this CheckedFunction0 to the given argument and then applies
+     * {@linkplain CheckedFunction1} {@code after} to the result.
+     *
+     * @param <V> return type of after
+     * @param after the function applied after this
+     * @return a function composed of this and after
+     * @throws NullPointerException if after is null
+     */
     default <V> CheckedFunction0<V> andThen(CheckedFunction1<? super R, ? extends V> after) {
         Objects.requireNonNull(after);
         return () -> after.apply(apply());
