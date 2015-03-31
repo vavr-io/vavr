@@ -28,18 +28,18 @@ import java.util.function.Predicate;
  * <strong>Example:</strong> A compute() function, which results either in an Integer value (in the case of success) or
  * in an error message of type String (in the case of failure). By convention the success case is Right and the failure
  * is Left.
- * 
+ *
  * <pre>
  * <code>
  * Either&lt;String,Integer&gt; value = compute().right().map(i -&gt; i * 2);
  * </code>
  * </pre>
- * 
+ *
  * If the result of compute() is Right(1), the value is Right(2).<br>
  * If the result of compute() is Left("error), the value is Left("error").
  *
- * @param <L> The type of a Left value of the Either.
- * @param <R> The type of a Right value of the Either.
+ * @param <L> The type of the Left value of an Either.
+ * @param <R> The type of the Right value of an Either.
  * @since 1.0.0
  */
 // DEV-NOTE: Either is no Monad and no Functor in the sense of javaslang.Algebra.*
@@ -72,7 +72,14 @@ public interface Either<L, R> extends ValueObject {
 
 	// -- Left/Right projections
 
-	final class LeftProjection<L, R> implements Bivalent<L, R> {
+	/**
+     * A left projection of an either.
+     *
+     * @param <L> The type of the Left value of an Either.
+     * @param <R> The type of the Right value of an Either.
+     * @since 1.0.0
+     */
+ 	final class LeftProjection<L, R> implements Bivalent<L, R> {
 
 		private final Either<L, R> either;
 
@@ -192,6 +199,13 @@ public interface Either<L, R> extends ValueObject {
 		}
 	}
 
+    /**
+     * A right projection of an either.
+     *
+     * @param <L> The type of the Left value of an Either.
+     * @param <R> The type of the Right value of an Either.
+     * @since 1.0.0
+     */
 	final class RightProjection<L, R> implements Bivalent<R, L> {
 
 		private final Either<L, R> either;
