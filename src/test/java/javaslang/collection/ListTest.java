@@ -146,7 +146,7 @@ public class ListTest extends AbstractSeqTest implements Monad1Laws<Traversable<
 
     @Test
     public void shouldComputeCombinationsOfNonEmptyList() {
-        assertThat(List.of(1, 2, 3).combinations(2)).isEqualTo(List.of(List.of(1, 3), List.of(1, 2), List.of(2, 3)));
+        assertThat(List.of(1, 2, 3).combinations(2)).isEqualTo(List.of(List.of(1, 2), List.of(1, 3), List.of(2, 3)));
     }
 
     @Test

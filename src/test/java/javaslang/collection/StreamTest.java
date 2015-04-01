@@ -275,7 +275,7 @@ public class StreamTest extends AbstractSeqTest implements Monad1Laws<Traversabl
     // -- combinations
 
     @Test
-    public void shouldComputeCombinationsOfEmptyList() {
+    public void shouldComputeCombinationsOfEmptyStream() {
         assertThat(Stream.nil().combinations(1)).isEqualTo(Stream.nil());
     }
 

@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.*;
+import javaslang.algebra.Functor1;
 import javaslang.algebra.HigherKinded1;
 import javaslang.algebra.Monad1;
 import javaslang.control.Try;
@@ -119,7 +120,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
 
             @Override
             public boolean hasNext() {
-                final boolean hasNext = (next = Try.<String> of(reader::readLine).orElse(null)) != null;
+                final boolean hasNext = (next = Try.<String>of(reader::readLine).orElse(null)) != null;
                 if (!hasNext) {
                     Try.run(reader::close);
                 }
@@ -395,6 +396,23 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
             @SuppressWarnings("unchecked")
             final Traversable<U> mapped = (Traversable<U>) mapper.apply(head());
             return Nil.<U>instance().appendAll(mapped).appendAll(tail().flatMap(mapper));
+        }
+    }
+
+    @Override
+    default <U> Stream<U> flatten() {
+        final Seq<U> seq = Seq.super.flatten();
+        return (Stream<U>) seq;
+    }
+
+    @Override
+    default <U> Stream<U> flatten(Function1<T, ? extends Iterable<? extends U>> f) {
+        Objects.requireNonNull(f, "f is null");
+        if (isEmpty()) {
+            return Nil.instance();
+        } else {
+            final Iterable<? extends U> mapped = f.apply(head());
+            return Nil.<U>instance().appendAll(mapped).appendAll(tail().flatten(f));
         }
     }
 

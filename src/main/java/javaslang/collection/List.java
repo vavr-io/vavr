@@ -209,7 +209,19 @@ public interface List<T> extends Seq<T>, ValueObject {
     @SuppressWarnings("unchecked")
     @Override
     default <U, TRAVERSABLE extends HigherKinded1<U, Traversable<?>>> List<U> flatMap(Function1<? super T, TRAVERSABLE> mapper) {
-        return foldLeft(Nil.<U>instance(), (List<U> xs, T x) -> xs.prependAll((Traversable<U>) mapper.apply(x))).reverse();
+        return foldRight(nil(), (t, xs) -> xs.prependAll((Traversable<U>)  mapper.apply(t)));
+    }
+
+    @Override
+    default <U> List<U> flatten() {
+        final Seq<U> seq = Seq.super.flatten();
+        return (List<U>) seq;
+    }
+
+    @Override
+    default <U> List<U> flatten(Function1<T, ? extends Iterable<? extends U>> f) {
+        Objects.requireNonNull(f, "f is null");
+        return foldRight(nil(), (t, xs) -> xs.prependAll(f.apply(t)));
     }
 
     @Override

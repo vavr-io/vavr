@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Function1;
 import javaslang.Tuple2;
 
 import java.util.Comparator;
@@ -70,6 +71,15 @@ public interface Seq<T> extends Traversable<T> {
     Seq<T> append(T element);
 
     Seq<T> appendAll(Iterable<? extends T> elements);
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Seq<U> flatten() {
+        return (Seq<U>) Traversable.super.flatten();
+    }
+
+    @Override
+    <U> Seq<U> flatten(Function1<T, ? extends Iterable<? extends U>> f);
 
     T get(int index);
 

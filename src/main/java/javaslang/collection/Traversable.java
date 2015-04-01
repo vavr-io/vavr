@@ -102,6 +102,8 @@ import java.util.function.Predicate;
  * <li>{@link #combinations(int)}</li>
  * <li>{@link #distinct()}</li>
  * <li>{@link #flatMap(Function1)}</li>
+ * <li>{@link #flatten()}</li>
+ * <li>{@link #flatten(Function1)}</li>
  * <li>TODO(#115): #grouped(int)</li>
  * <li>TODO(#110): #groupBy</li>
  * <li>{@link #intersperse(Object)}</li>
@@ -312,6 +314,48 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
 
     @Override
     <U, TRAVERSABLE extends HigherKinded1<U, Traversable<?>>> Traversable<U> flatMap(Function1<? super T, TRAVERSABLE> mapper);
+
+    /**
+     * <p>Flattens this Traversable, i.e. unboxes iterable elements. If this Traversable contains elements and
+     * iterables of elements of the same type, flattening works as expected.</p>
+     * Examples:
+     * <ul>
+     * <li>{@code List.of(1, 2, 3).flatten() = List.of(1, 2, 3)}</li>
+     * <li>{@code List.of(List.of(1), Stream.of(2, 3)).flatten() = List.of(1, 2, 3)}</li>
+     * <li>{@code List.of(1, List.of(2), Stream.of(3, 4)).flatten() = List.of(1, 2, 3, 4)}</li>
+     * </ul>
+     *
+     * @param <U> new component type (!!UNSAFE!! {@code of(1, 2, 3).map(Object::toString).<Integer> flatten()})
+     * @return A flattened version of this traversable
+     */
+    default <U> Traversable<U> flatten() {
+        final Match<Iterable<U>> match = Match
+                .caze((Iterable<U> xs) -> xs)
+                .caze((U x) -> List.of(x))
+                .build();
+        return flatten(match::apply);
+    }
+
+    /**
+     * <p>Flattens this Traversable using a function as hint how to obtain iterable elements.</p>
+     * Examples:
+     * <ul>
+     * <li>{@code List.of(1, 2, 3).flatten(i -> List.of(i)) = List.of(1, 2, 3)}</li>
+     * <li>{@code List.of(List.of(1), Stream.of(2, 3)).flatten(Function1.identity()) = List.of(1, 2, 3)}</li>
+     * <li>
+     * <pre><code>List.of(1, List.of(2), Stream.of(3, 4))
+     *     .flatten(x -> Match
+     *         .caze((Iterable<Integer> ys) -> ys)
+     *         .caze((Integer i) -> List.of(i))
+     *         .apply(x)
+     *     ) = List.of(1, 2, 3, 4)}</code></pre>
+     * </li>
+     * </ul>
+     *
+     * @param <U> new component type (UNSAFE!)
+     * @return A flattened version of this traversable
+     */
+    <U> Traversable<U> flatten(Function1<T, ? extends Iterable<? extends U>> f);
 
     /**
      * <p>

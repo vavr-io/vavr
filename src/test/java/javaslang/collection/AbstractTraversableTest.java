@@ -9,6 +9,7 @@ import javaslang.Function1;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.algebra.Monoid;
+import javaslang.control.Match;
 import javaslang.control.Option;
 import org.junit.Test;
 
@@ -84,7 +85,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldComputeAverageOfLong() {
-        final long actual = of(1L ,2L, 3L).average();
+        final long actual = of(1L, 2L, 3L).average();
         assertThat(actual).isEqualTo(2L);
     }
 
@@ -323,6 +324,111 @@ public abstract class AbstractTraversableTest {
     @Test
     public void shouldFlatMapNonEmptyTraversable() {
         assertThat(of(1, 2, 3).flatMap(this::of)).isEqualTo(of(1, 2, 3));
+    }
+
+    @Test
+    public void shouldFlatMapTraversableByExpandingElements() {
+        assertThat(of(1, 2, 3).flatMap(i -> {
+            if (i == 1) {
+                return of(1, 2, 3);
+            } else if (i == 2) {
+                return of(4, 5);
+            } else {
+                return of(6);
+            }
+        })).isEqualTo(of(1, 2, 3, 4, 5, 6));
+    }
+
+    // -- flatten
+
+    @Test
+    public <T> void shouldFlattenEmptyTraversable() {
+        final Traversable<? extends Traversable<? extends T>> nil = nil();
+        final Traversable<T> actual = nil.flatten();
+        assertThat(actual).isEqualTo(nil());
+    }
+
+    @Test
+    public void shouldFlattenTraversableOfPlainElements() {
+        final Traversable<Integer> actual = of(1, 2, 3).flatten();
+        final Traversable<Integer> expected = of(1, 2, 3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldFlattenTraversableOfTraversables() {
+        @SuppressWarnings("unchecked")
+        final Traversable<? extends Traversable<? extends Integer>> xs = of(of(1), of(2, 3));
+        final Traversable<Integer> actual = xs.flatten();
+        final Traversable<Integer> expected = of(1, 2, 3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldFlattenTraversableOfTraversablesAndPlainElements() {
+        final Traversable<?> xs = of(1, of(2, 3));
+        final Traversable<Integer> actual = xs.flatten();
+        final Traversable<Integer> expected = of(1, 2, 3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldFlatten_UNSAFE_WithBadImplicitReturnType() {
+        // the implicit type parameter xxx.<U> flatten() is unsafe
+        final Traversable<Integer> actual = of(1, 2, 3).map(Object::toString).flatten();
+        assertThat(actual).isEqualTo(of("1", "2", "3"));
+    }
+
+    @Test
+    public void shouldFlattenDifferentElementTypes() {
+        final Traversable<Object> actual = this.<Object> of(1, "2", this.<Object> of(3.1415, 1L)).flatten();
+        assertThat(actual).isEqualTo(this.<Object> of(1, "2", 3.1415, 1L));
+    }
+
+    // -- flatten(Function1)
+
+    @Test
+    public <T> void shouldFlattenEmptyTraversableGivenAFunction() {
+        final Traversable<? extends Traversable<? extends T>> nil = nil();
+        final Traversable<T> actual = nil.flatten(Function1.identity());
+        assertThat(actual).isEqualTo(nil());
+    }
+
+    @Test
+    public void shouldFlattenTraversableOfPlainElementsGivenAFunction() {
+        final Traversable<Integer> actual = of(1, 2, 3).flatten(this::of);
+        final Traversable<Integer> expected = of(1, 2, 3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldFlattenTraversableOfTraversablesGivenAFunction() {
+        @SuppressWarnings("unchecked")
+        final Traversable<? extends Traversable<? extends Integer>> xs = of(of(1), of(2, 3));
+        final Traversable<Integer> actual = xs.flatten(Function1.identity());
+        final Traversable<Integer> expected = of(1, 2, 3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldFlattenTraversableOfTraversablesAndPlainElementsGivenAFunction() {
+        final Traversable<?> xs = of(1, of(2, 3));
+        final Traversable<Integer> actual = xs.flatten(x -> Match
+                .caze((Traversable<Integer> ys) -> ys)
+                .caze((Integer i) -> of(i))
+                .apply(x));
+        final Traversable<Integer> expected = of(1, 2, 3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldFlattenDifferentElementTypesGivenAFunction() {
+        final Traversable<Object> actual = this.<Object> of(1, "2", this.<Object> of(3.1415, 1L))
+                .flatten(x -> Match
+                        .caze((Traversable<Object> ys) -> ys)
+                        .caze((Object i) -> of(i))
+                        .apply(x));
+        assertThat(actual).isEqualTo(this.<Object> of(1, "2", 3.1415, 1L));
     }
 
     // -- fold
