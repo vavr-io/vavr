@@ -344,15 +344,16 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * <li>{@code List.of(List.of(1), Stream.of(2, 3)).flatten(Function1.identity()) = List.of(1, 2, 3)}</li>
      * <li>
      * <pre><code>List.of(1, List.of(2), Stream.of(3, 4))
-     *     .flatten(x -> Match
-     *         .caze((Iterable<Integer> ys) -> ys)
-     *         .caze((Integer i) -> List.of(i))
+     *     .flatten(x -&gt; Match
+     *         .caze((Iterable&lt;Integer&gt; ys) -&gt; ys)
+     *         .caze((Integer i) -&gt; List.of(i))
      *         .apply(x)
      *     ) = List.of(1, 2, 3, 4)}</code></pre>
      * </li>
      * </ul>
      *
      * @param <U> new component type (UNSAFE!)
+     * @param f An unboxing function that maps elements T to Iterables of elements U that will be unboxed.
      * @return A flattened version of this traversable
      */
     <U> Traversable<U> flatten(Function1<T, ? extends Iterable<? extends U>> f);
