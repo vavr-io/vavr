@@ -30,12 +30,51 @@ def generateMainClasses(): Unit = {
   // Workaround: Use /$** instead of /** in a StringContext when IntelliJ IDEA otherwise shows up errors in the editor
   val javadoc = "**"
 
+  genUberMonad()
+
   genFunctions()
   genFunctors()
   genHigherKindeds()
   genMonads()
   genPropertyChecks()
   genTuples()
+
+  def genUberMonad(): Unit = {
+    val genericTypes = (1 to 26).gen(j => s"T$j")(", ")
+    val genericMonadTypes = (1 to 26).gen(j => s"HigherKinded$j<${(1 to j).gen(_ => "?")(", ")}, M>")(" & ")
+    val superInterfaces = (1 to 26).gen(j => s"Monad$j<${(1 to j).gen(k => s"T$k")(", ")}, M>, HigherKinded$j<${(1 to j).gen(k => s"T$k")(", ")}, M>")(",\n")
+    genJavaslangFile("javaslang.algebra", s"UberMonad")((im: ImportManager, packageName, className) => xs"""
+        public interface UberMonad<$genericTypes, M extends $genericMonadTypes> extends
+            $superInterfaces {
+
+            ${(1 to 26).gen(i => {
+              val paramTypes = (1 to i).gen(j => s"? super T$j")(", ")
+              val resultGenerics = (1 to i).gen(j => s"U$j")(", ")
+              val resultGenerics2 = (if (i < 26) {
+                resultGenerics + ", " + ((i+1) to 26).gen(j => s"T$j")(", ")
+              } else {
+                resultGenerics
+              }) + ", M"
+              val resultType = if (i == 1) "? extends U1" else s"${im.getType(s"javaslang.Tuple$i")}<${(1 to i).gen(j => s"? extends U$j")(", ")}>"
+              val functionType = im.getType(s"javaslang.Function$i")
+              xs"""
+                @Override
+                <$resultGenerics> $className<$resultGenerics2> map($functionType<$paramTypes, $resultType> f);
+
+                ${(i > 1).gen(xs"""
+                  @Override
+                  default <$resultGenerics> $className<$resultGenerics2> map(${(1 to i).gen(j => s"${im.getType("javaslang.Function1")}<? super T$j, ? extends U$j> f$j")(", ")}) {
+                      return map((${(1 to i).gen(j => s"t$j")(", ")}) -> ${im.getType("javaslang.Tuple")}.of(${(1 to i).gen(j => s"f$j.apply(t$j)")(", ")}));
+                  }
+                """)}
+
+                @Override
+                <$resultGenerics, MONAD extends HigherKinded$i<$resultGenerics, M>> $className<$resultGenerics2> flatMap($functionType<$paramTypes, MONAD> f);
+              """
+            })("\n\n")}
+        }
+    """)
+  }
 
   /**
    * Generator of javaslang.algebra.Functor*
