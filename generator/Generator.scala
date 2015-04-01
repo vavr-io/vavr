@@ -719,6 +719,7 @@ def generateMainClasses(): Unit = {
 def generateTestClasses(): Unit = {
 
   genFunctionTests()
+  genFunctorTests()
   genPropertyCheckTests()
   genTupleTests()
 
@@ -792,6 +793,46 @@ def generateTestClasses(): Unit = {
           }
         """
       }
+    })
+  }
+
+  /**
+   * Generator of Functor tests
+   */
+  def genFunctorTests(): Unit = {
+
+    (2 to N).foreach(i => {
+
+      genJavaslangFile("javaslang.algebra", s"Functor${i}Test", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
+
+        val generics = (1 to i).gen(j => s"T$j")(", ")
+        val paramTypes = (1 to i).gen(j => s"? super T$j")(", ")
+        val resultType = if (i == 1) "? extends U1" else s"${im.getType(s"javaslang.Tuple$i")}<${(1 to i).gen(j => s"? extends U$j")(", ")}>"
+        val resultGenerics = (1 to i).gen(j => s"U$j")(", ")
+        val functionType = im.getType(s"javaslang.Function$i")
+
+        // test classes
+        val test = im.getType("org.junit.Test")
+        val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
+
+        xs"""
+          public class $className {
+
+              @$test
+              public <$generics> void shouldMapComponentsSeparately() {
+                  final Functor$i<$generics> functor = new Functor$i<$generics>() {
+                      @SuppressWarnings("unchecked")
+                      @Override
+                      public <$resultGenerics> Functor$i<$resultGenerics> map($functionType<$paramTypes, $resultType> f) {
+                          return (Functor$i<$resultGenerics>) this;
+                      }
+                  };
+                  final Functor$i<$generics> actual = functor.map(${(1 to i).gen(_ => s"${im.getType("javaslang.Function1")}.identity()")(", ")});
+                  $assertThat(actual).isNotNull();
+              }
+          }
+        """
+      })
     })
   }
 
