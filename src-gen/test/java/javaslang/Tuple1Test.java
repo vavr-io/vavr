@@ -12,7 +12,6 @@ package javaslang;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Objects;
-import java.util.function.Function;
 import org.junit.Test;
 
 public class Tuple1Test {
@@ -32,7 +31,7 @@ public class Tuple1Test {
     @Test
     public void shouldFlatMap() {
         final Tuple1<Object> tuple = createTuple();
-        final Function<Object, Tuple1<Object>> mapper = (o1) -> tuple;
+        final Function1<Object, Tuple1<Object>> mapper = (o1) -> tuple;
         final Tuple1<Object> actual = tuple.flatMap(mapper);
         assertThat(actual).isEqualTo(tuple);
     }
@@ -40,7 +39,7 @@ public class Tuple1Test {
     @Test
     public void shouldMap() {
         final Tuple1<Object> tuple = createTuple();
-        final Function<Object, Object> mapper = o1 -> o1;
+        final Function1<Object, Object> mapper = o1 -> o1;
         final Tuple1<Object> actual = tuple.map(mapper);
         assertThat(actual).isEqualTo(tuple);
     }

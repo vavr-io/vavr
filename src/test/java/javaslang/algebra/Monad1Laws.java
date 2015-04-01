@@ -5,11 +5,10 @@
  */
 package javaslang.algebra;
 
+import javaslang.Function1;
 import javaslang.test.Arbitrary;
 import javaslang.test.CheckResult;
 import javaslang.test.Property;
-
-import java.util.function.Function;
 
 @SuppressWarnings("Convert2MethodRef")
 public interface Monad1Laws<M extends Monad1<?, M>> extends Functor1Laws {
@@ -21,9 +20,9 @@ public interface Monad1Laws<M extends Monad1<?, M>> extends Functor1Laws {
     void shouldSatisfyMonadAssociativity();
 
     // unit(a).flatMap(f) ≡ f.apply(a)
-    default <T, U> CheckResult checkMonadLeftIdentity(Function<? super T, ? extends Monad1<T, M>> unit,
+    default <T, U> CheckResult checkMonadLeftIdentity(Function1<? super T, ? extends Monad1<T, M>> unit,
                                                  Arbitrary<T> ts,
-                                                 Arbitrary<Function<? super T, ? extends Monad1<U, M>>> fs) {
+                                                 Arbitrary<Function1<? super T, ? extends Monad1<U, M>>> fs) {
         return new Property("monad.left_identity")
                 .forAll(ts, fs)
                 .suchThat((t, f) -> {
@@ -35,7 +34,7 @@ public interface Monad1Laws<M extends Monad1<?, M>> extends Functor1Laws {
     }
 
     // m.flatMap(unit) ≡ m
-    default <T> CheckResult checkMonadRightIdentity(Function<? super T, ? extends Monad1<T, M>> unit,
+    default <T> CheckResult checkMonadRightIdentity(Function1<? super T, ? extends Monad1<T, M>> unit,
                                                Arbitrary<? extends Monad1<T, M>> ms) {
         return new Property("monad.right_identity")
                 .forAll(ms)
@@ -48,8 +47,8 @@ public interface Monad1Laws<M extends Monad1<?, M>> extends Functor1Laws {
 
     // m.flatMap(f).flatMap(g) ≡ m.flatMap(x -> f.apply(x).flatMap(g))
     default <T, U, V> CheckResult checkMonadAssociativity(Arbitrary<? extends Monad1<T, M>> ms,
-                                                     Arbitrary<Function<? super T, ? extends Monad1<U, M>>> fs,
-                                                     Arbitrary<Function<? super U, ? extends Monad1<V, M>>> gs) {
+                                                     Arbitrary<Function1<? super T, ? extends Monad1<U, M>>> fs,
+                                                     Arbitrary<Function1<? super U, ? extends Monad1<V, M>>> gs) {
         return new Property("monad.associativity")
                 .forAll(ms, fs, gs)
                 .suchThat((m, f, g) -> {

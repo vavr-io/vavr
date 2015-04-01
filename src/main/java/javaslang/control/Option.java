@@ -5,13 +5,13 @@
  */
 package javaslang.control;
 
+import javaslang.Function1;
 import javaslang.ValueObject;
 import javaslang.algebra.HigherKinded1;
 import javaslang.algebra.Monad1;
 import javaslang.control.Valences.Univalent;
 
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -86,7 +86,7 @@ public interface Option<T> extends Monad1<T, Option<?>>, ValueObject, Univalent<
     }
 
     @Override
-    default <U> Option<U> map(Function<? super T, ? extends U> mapper) {
+    default <U> Option<U> map(Function1<? super T, ? extends U> mapper) {
         if (isEmpty()) {
             return None.instance();
         } else {
@@ -96,7 +96,7 @@ public interface Option<T> extends Monad1<T, Option<?>>, ValueObject, Univalent<
 
     @SuppressWarnings("unchecked")
     @Override
-    default <U, OPTION extends HigherKinded1<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper) {
+    default <U, OPTION extends HigherKinded1<U, Option<?>>> Option<U> flatMap(Function1<? super T, OPTION> mapper) {
         if (isEmpty()) {
             return None.instance();
         } else {

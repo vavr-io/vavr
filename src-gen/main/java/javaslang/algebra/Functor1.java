@@ -9,7 +9,7 @@ package javaslang.algebra;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import java.util.function.Function;
+import javaslang.Function1;
 
 /**
  * Defines a Functor by generalizing the map function.
@@ -25,5 +25,6 @@ import java.util.function.Function;
  */
 public interface Functor1<T1> {
 
-    <U1> Functor1<U1> map(Function<? super T1, ? extends U1> f);
+    <U1> Functor1<U1> map(Function1<? super T1, ? extends U1> f);
+
 }

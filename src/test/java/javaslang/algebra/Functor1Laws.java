@@ -5,11 +5,10 @@
  */
 package javaslang.algebra;
 
+import javaslang.Function1;
 import javaslang.test.Arbitrary;
 import javaslang.test.CheckResult;
 import javaslang.test.Property;
-
-import java.util.function.Function;
 
 public interface Functor1Laws {
 
@@ -27,8 +26,8 @@ public interface Functor1Laws {
 
     // m.map(f).map(g) ≡ m.map(x -> g.apply(f.apply(x)))
     default <T, U, V> CheckResult checkFunctorComposition(Arbitrary<? extends Functor1<T>> functors,
-                                                          Arbitrary<Function<? super T, ? extends U>> fs,
-                                                          Arbitrary<Function<? super U, ? extends V>> gs) {
+                                                          Arbitrary<Function1<? super T, ? extends U>> fs,
+                                                          Arbitrary<Function1<? super U, ? extends V>> gs) {
         return new Property("functor.composition")
                 .forAll(functors, fs, gs)
                 .suchThat((functor, f, g) -> functor.map(f).map(g).equals(functor.map(t -> g.apply(f.apply(t)))))

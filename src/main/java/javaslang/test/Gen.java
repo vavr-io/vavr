@@ -14,7 +14,6 @@ import javaslang.collection.Traversable;
 
 import java.util.Objects;
 import java.util.Random;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -275,7 +274,7 @@ public interface Gen<T> extends Function1<Random, T>, Monad1<T, Gen<?>> {
      * @return A new generator
      */
     @Override
-    default <U> Gen<U> map(Function<? super T, ? extends U> mapper) {
+    default <U> Gen<U> map(Function1<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return random -> mapper.apply(apply(random));
     }
@@ -289,7 +288,7 @@ public interface Gen<T> extends Function1<Random, T>, Monad1<T, Gen<?>> {
      */
     @SuppressWarnings("unchecked")
     @Override
-    default <U, GEN extends HigherKinded1<U, Gen<?>>> Gen<U> flatMap(Function<? super T, GEN> mapper) {
+    default <U, GEN extends HigherKinded1<U, Gen<?>>> Gen<U> flatMap(Function1<? super T, GEN> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         //noinspection Convert2MethodRef
         return random -> ((Gen<U>) mapper.apply(apply(random))).apply(random);

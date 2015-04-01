@@ -9,7 +9,6 @@ import javaslang.*;
 
 import java.io.*;
 import java.util.Objects;
-import java.util.function.Function;
 
 /**
  * <p>
@@ -136,7 +135,7 @@ public interface BinaryTree<T> extends Tree<T> {
     BinaryTree<T> right();
 
     @Override
-    default <U> BinaryTree<U> map(Function<? super T, ? extends U> mapper) {
+    default <U> BinaryTree<U> map(Function1<? super T, ? extends U> mapper) {
         if (isEmpty()) {
             return Nil.instance();
         } else {

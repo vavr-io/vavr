@@ -5,6 +5,7 @@
  */
 package javaslang.control;
 
+import javaslang.Function1;
 import javaslang.Tuple;
 import javaslang.Tuple1;
 import javaslang.ValueObject;
@@ -12,7 +13,6 @@ import javaslang.algebra.HigherKinded1;
 
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -65,7 +65,7 @@ public final class Failure<T> implements Try<T> {
     }
 
     @Override
-    public T orElseGet(Function<? super Throwable, ? extends T> other) {
+    public T orElseGet(Function1<? super Throwable, ? extends T> other) {
         return other.apply(cause.getCause());
     }
 
@@ -75,17 +75,17 @@ public final class Failure<T> implements Try<T> {
     }
 
     @Override
-    public <X extends Throwable> T orElseThrow(Function<? super Throwable, X> exceptionProvider) throws X {
+    public <X extends Throwable> T orElseThrow(Function1<? super Throwable, X> exceptionProvider) throws X {
         throw exceptionProvider.apply(cause.getCause());
     }
 
     @Override
-    public Try<T> recover(Function<Throwable, ? extends T> f) {
+    public Try<T> recover(Function1<Throwable, ? extends T> f) {
         return Try.of(() -> f.apply(cause.getCause()));
     }
 
     @Override
-    public Try<T> recoverWith(Function<Throwable, Try<T>> f) {
+    public Try<T> recoverWith(Function1<Throwable, Try<T>> f) {
         try {
             return f.apply(cause.getCause());
         } catch (Throwable t) {
@@ -129,14 +129,14 @@ public final class Failure<T> implements Try<T> {
     }
 
     @Override
-    public <U> Failure<U> map(Function<? super T, ? extends U> mapper) {
+    public <U> Failure<U> map(Function1<? super T, ? extends U> mapper) {
         @SuppressWarnings("unchecked")
         final Failure<U> result = (Failure<U>) this;
         return result;
     }
 
     @Override
-    public <U, TRY extends HigherKinded1<U, Try<?>>> Failure<U> flatMap(Function<? super T, TRY> mapper) {
+    public <U, TRY extends HigherKinded1<U, Try<?>>> Failure<U> flatMap(Function1<? super T, TRY> mapper) {
         @SuppressWarnings("unchecked")
         final Failure<U> result = (Failure<U>) this;
         return result;

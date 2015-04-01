@@ -81,6 +81,8 @@ public class ArbitraryTest {
      */
     static class ArbitraryBinaryTree implements Arbitrary<BinaryTree<Integer>> {
 
+        private static final long serialVersionUID = 1L;
+
         final int minValue;
         final int maxValue;
 

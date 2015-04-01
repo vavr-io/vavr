@@ -5,13 +5,13 @@
  */
 package javaslang.control;
 
+import javaslang.Function1;
 import javaslang.ValueObject;
 import javaslang.control.Valences.Bivalent;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -101,7 +101,7 @@ public interface Either<L, R> extends ValueObject {
 		}
 
 		@Override
-		public L orElseGet(Function<? super R, ? extends L> other) {
+		public L orElseGet(Function1<? super R, ? extends L> other) {
 			if (either.isLeft()) {
 				return asLeft();
 			} else {
@@ -117,7 +117,7 @@ public interface Either<L, R> extends ValueObject {
 		}
 
 		@Override
-		public <X extends Throwable> L orElseThrow(Function<? super R, X> exceptionFunction) throws X {
+		public <X extends Throwable> L orElseThrow(Function1<? super R, X> exceptionFunction) throws X {
 			if (either.isLeft()) {
 				return asLeft();
 			} else {
@@ -156,7 +156,7 @@ public interface Either<L, R> extends ValueObject {
 		}
 
 		@SuppressWarnings("unchecked")
-		public <U> Either<U, R> map(Function<? super L, ? extends U> mapper) {
+		public <U> Either<U, R> map(Function1<? super L, ? extends U> mapper) {
 			Objects.requireNonNull(mapper);
 			if (either.isLeft())
 				return new Left<>(mapper.apply(asLeft()));
@@ -166,7 +166,7 @@ public interface Either<L, R> extends ValueObject {
 		}
 
 		@SuppressWarnings("unchecked")
-		public <U> Either<U, R> flatMap(Function<? super L, ? extends Either<U, R>> mapper) {
+		public <U> Either<U, R> flatMap(Function1<? super L, ? extends Either<U, R>> mapper) {
 			Objects.requireNonNull(mapper);
 			if (either.isLeft()) {
 				return mapper.apply(asLeft());
@@ -229,7 +229,7 @@ public interface Either<L, R> extends ValueObject {
 		}
 
 		@Override
-		public R orElseGet(Function<? super L, ? extends R> other) {
+		public R orElseGet(Function1<? super L, ? extends R> other) {
 			if (either.isRight()) {
 				return asRight();
 			} else {
@@ -245,7 +245,7 @@ public interface Either<L, R> extends ValueObject {
 		}
 
 		@Override
-		public <X extends Throwable> R orElseThrow(Function<? super L, X> exceptionFunction) throws X {
+		public <X extends Throwable> R orElseThrow(Function1<? super L, X> exceptionFunction) throws X {
 			if (either.isRight()) {
 				return asRight();
 			} else {
@@ -284,7 +284,7 @@ public interface Either<L, R> extends ValueObject {
 		}
 
 		@SuppressWarnings("unchecked")
-		public <U> Either<L, U> map(Function<? super R, ? extends U> mapper) {
+		public <U> Either<L, U> map(Function1<? super R, ? extends U> mapper) {
 			Objects.requireNonNull(mapper);
 			if (either.isRight())
 				return new Right<>(mapper.apply(asRight()));
@@ -294,7 +294,7 @@ public interface Either<L, R> extends ValueObject {
 		}
 
 		@SuppressWarnings("unchecked")
-		public <U> Either<L, U> flatMap(Function<? super R, ? extends Either<L, U>> mapper) {
+		public <U> Either<L, U> flatMap(Function1<? super R, ? extends Either<L, U>> mapper) {
 			Objects.requireNonNull(mapper);
 			if (either.isRight())
 				return mapper.apply(asRight());

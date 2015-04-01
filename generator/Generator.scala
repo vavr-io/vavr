@@ -46,11 +46,7 @@ def generateMainClasses(): Unit = {
       val paramTypes = (1 to i).gen(j => s"? super T$j")(", ")
       val resultType = if (i == 1) "? extends U1" else s"${im.getType(s"javaslang.Tuple$i")}<${(1 to i).gen(j => s"? extends U$j")(", ")}>"
       val resultGenerics = (1 to i).gen(j => s"U$j")(", ")
-      val functionType = i match {
-        case 1 => im.getType("java.util.function.Function")
-        case 2 => im.getType("java.util.function.BiFunction")
-        case _ => im.getType(s"javaslang.Function$i")
-      }
+      val functionType = im.getType(s"javaslang.Function$i")
       xs"""
         ${(i == 1).gen(xs"""
         /$javadoc
@@ -69,6 +65,12 @@ def generateMainClasses(): Unit = {
         public interface $className<$generics> {
 
             <$resultGenerics> $className<$resultGenerics> map($functionType<$paramTypes, $resultType> f);
+
+            ${(i > 1).gen(xs"""
+              default <$resultGenerics> $className<$resultGenerics> map(${(1 to i).gen(j => s"${im.getType("javaslang.Function1")}<? super T$j, ? extends U$j> f$j")(", ")}) {
+                  return map((${(1 to i).gen(j => s"t$j")(", ")}) -> ${im.getType("javaslang.Tuple")}.of(${(1 to i).gen(j => s"f$j.apply(t$j)")(", ")}));
+              }
+            """)}
         }
     """
     })
@@ -90,7 +92,7 @@ def generateMainClasses(): Unit = {
          * language but needed for generic type constructors.
          * </p>
          * <p>
-         * Example: {@link javaslang.algebra.Monad1#flatMap(java.util.function.Function)}
+         * Example: {@link javaslang.algebra.Monad1#flatMap(Function1)}
          * </p>
          *
          * @param <T1> Component type of the type to be constructed.
@@ -114,11 +116,7 @@ def generateMainClasses(): Unit = {
       val paramTypes = (1 to i).gen(j => s"? super T$j")(", ")
       val resultType = if (i == 1) "? extends U1" else s"${im.getType(s"javaslang.Tuple$i")}<${(1 to i).gen(j => s"? extends U$j")(", ")}>"
       val resultGenerics = (1 to i).gen(j => s"U$j")(", ")
-      val functionType = i match {
-        case 1 => im.getType("java.util.function.Function")
-        case 2 => im.getType("java.util.function.BiFunction")
-        case _ => im.getType(s"javaslang.Function$i")
-      }
+      val functionType = im.getType(s"javaslang.Function$i")
       xs"""
         ${(i == 1).gen(xs"""
         /$javadoc
@@ -563,11 +561,7 @@ def generateMainClasses(): Unit = {
       val resultType = if (i == 1) "? extends U1" else s"Tuple$i<${(1 to i).gen(j => s"? extends U$j")(", ")}>"
       val resultGenerics = (1 to i).gen(j => s"U$j")(", ")
       val untyped = (1 to i).gen(j => "?")(", ")
-      val functionType = i match {
-        case 1 => im.getType("java.util.function.Function")
-        case 2 => im.getType("java.util.function.BiFunction")
-        case _ => s"Function$i"
-      }
+      val functionType = s"Function$i"
 
       xs"""
         /**
@@ -1099,13 +1093,7 @@ def generateTestClasses(): Unit = {
 
         val test = im.getType("org.junit.Test")
         val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
-
-        val functionType = i match {
-          case 1 => im.getType("java.util.function.Function")
-          case 2 => im.getType("java.util.function.BiFunction")
-          case _ => s"Function$i"
-        }
-
+        val functionType = s"Function$i"
         val generics = (1 to i).gen(j => s"Object")(", ")
         val genericsUnknown = (1 to i).gen(j => s"?")(", ")
         val functionArgTypes = (1 to i).gen(j => s"o$j")(", ")
@@ -1341,7 +1329,7 @@ object Generator {
   }
 
   implicit class BooleanExtensions(condition: Boolean) {
-    def gen(s: String): String =  if (condition) s else ""
+    def gen(s: => String): String =  if (condition) s else ""
   }
 
   implicit class OptionExtensions(option: Option[Any]) {

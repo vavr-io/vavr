@@ -5,6 +5,7 @@
  */
 package javaslang.test;
 
+import javaslang.Function1;
 import javaslang.algebra.HigherKinded1;
 import javaslang.algebra.Monad1;
 import javaslang.collection.List;
@@ -12,7 +13,6 @@ import javaslang.collection.Stream;
 
 import java.util.Iterator;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
@@ -23,12 +23,14 @@ import java.util.function.Predicate;
  * @since 1.2.0
  */
 @FunctionalInterface
-public interface Arbitrary<T> extends IntFunction<Gen<T>>, Function<Integer, Gen<T>>, Monad1<T, Arbitrary<?>> {
+public interface Arbitrary<T> extends IntFunction<Gen<T>>, Function1<Integer, Gen<T>>, Monad1<T, Arbitrary<?>> {
+
+    long serialVersionUID = 1L;
 
     /**
      * <p>
      * Returns a generator for objects of type T.
-     * Use {@link Gen#map(java.util.function.Function)} and {@link Gen#flatMap(java.util.function.Function)} to
+     * Use {@link Gen#map(javaslang.Function1)} and {@link Gen#flatMap(javaslang.Function1)} to
      * combine object generators.
      * </p>
      * <p>Example:</p>
@@ -85,7 +87,7 @@ public interface Arbitrary<T> extends IntFunction<Gen<T>>, Function<Integer, Gen
      * @return A new generator
      */
     @Override
-    default <U> Arbitrary<U> map(Function<? super T, ? extends U> mapper) {
+    default <U> Arbitrary<U> map(Function1<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return n -> {
             final Gen<T> generator = apply(n);
@@ -102,7 +104,7 @@ public interface Arbitrary<T> extends IntFunction<Gen<T>>, Function<Integer, Gen
      */
     @SuppressWarnings("unchecked")
     @Override
-    default <U, ARBITRARY extends HigherKinded1<U, Arbitrary<?>>> Arbitrary<U> flatMap(Function<? super T, ARBITRARY> mapper) {
+    default <U, ARBITRARY extends HigherKinded1<U, Arbitrary<?>>> Arbitrary<U> flatMap(Function1<? super T, ARBITRARY> mapper) {
         return n -> {
             final Gen<T> generator = apply(n);
             return random -> ((Arbitrary<U>) mapper.apply(generator.apply(random))).apply(n).apply(random);

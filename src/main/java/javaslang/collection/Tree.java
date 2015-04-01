@@ -5,12 +5,12 @@
  */
 package javaslang.collection;
 
+import javaslang.Function1;
 import javaslang.ValueObject;
 import javaslang.algebra.Functor1;
 import javaslang.control.Match;
 
 import java.util.*;
-import java.util.function.Function;
 
 /**
  * A general Tree interface.
@@ -204,7 +204,7 @@ public interface Tree<T> extends Functor1<T>, ValueObject {
     }
 
     @Override
-    <U> Tree<U> map(Function<? super T, ? extends U> mapper);
+    <U> Tree<U> map(Function1<? super T, ? extends U> mapper);
 
     default String toLispString() {
         class Local {

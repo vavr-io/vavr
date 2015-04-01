@@ -5,8 +5,9 @@
  */
 package javaslang.control;
 
+import javaslang.Function1;
+
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -45,11 +46,11 @@ final class Valences {
 
         T orElse(T other);
 
-        T orElseGet(Function<? super U, ? extends T> other);
+        T orElseGet(Function1<? super U, ? extends T> other);
 
         void orElseRun(Consumer<? super U> action);
 
-        <X extends Throwable> T orElseThrow(Function<? super U, X> exceptionProvider) throws X;
+        <X extends Throwable> T orElseThrow(Function1<? super U, X> exceptionProvider) throws X;
 
         Option<T> toOption();
 

@@ -5,6 +5,7 @@
  */
 package javaslang.control;
 
+import javaslang.Function1;
 import javaslang.Serializables;
 import javaslang.Tuple;
 import javaslang.algebra.Monad1;
@@ -17,7 +18,6 @@ import org.junit.Test;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -239,12 +239,14 @@ public class OptionTest implements Monad1Laws<Option<?>> {
 
 	@Test
 	public void shouldNotEqualNoneIfObjectIsOfDifferentType() {
-		assertThat(None.instance().equals(new Object())).isFalse();
+		final Object none = None.instance();
+		assertThat(none.equals(new Object())).isFalse();
 	}
 
 	@Test
 	public void shouldNotEqualSomeIfObjectIsOfDifferentType() {
-		assertThat(new Some<>(1).equals(new Object())).isFalse();
+		final Object some = new Some<>(1);
+		assertThat(some.equals(new Object())).isFalse();
 	}
 
 	@Test
@@ -286,10 +288,14 @@ public class OptionTest implements Monad1Laws<Option<?>> {
 
     // -- Functor1Laws
 
-    static final Arbitrary<Option<Integer>> OPTIONS = size -> random -> Gen.frequency(
-            Tuple.of(1, Gen.of(None.<Integer> instance())),
-            Tuple.of(4, Gen.choose(-size, size).map(i -> new Some<>(i)))
-    ).apply(random);
+    static final Arbitrary<Option<Integer>> OPTIONS = size -> random -> {
+		final Gen<Option<Integer>> noneInt = Gen.of(None.instance());
+		final Gen<Option<Integer>> someInt = Gen.choose(-size, size).map(Some::new);
+		return Gen.frequency(
+				Tuple.of(1, noneInt),
+				Tuple.of(4, someInt)
+		).apply(random);
+	};
 
     @Test
     @Override
@@ -301,9 +307,9 @@ public class OptionTest implements Monad1Laws<Option<?>> {
     @Test
     @Override
     public void shouldSatisfyFunctorComposition() {
-        final Arbitrary<Function<? super Integer, ? extends Double>> before =
+        final Arbitrary<Function1<? super Integer, ? extends Double>> before =
                 size -> random -> Double::valueOf;
-        final Arbitrary<Function<? super Double, ? extends String>> after =
+        final Arbitrary<Function1<? super Double, ? extends String>> after =
                 size -> random -> String::valueOf;
         final CheckResult result = checkFunctorComposition(OPTIONS, before, after);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
@@ -319,7 +325,7 @@ public class OptionTest implements Monad1Laws<Option<?>> {
     @Test
     @Override
     public void shouldSatisfyMonadLeftIdentity() {
-        final Arbitrary<Function<? super Integer, ? extends Monad1<String, Option<?>>>> mappers =
+        final Arbitrary<Function1<? super Integer, ? extends Monad1<String, Option<?>>>> mappers =
                 size -> random -> i -> Option.of(i).map(String::valueOf);
         final CheckResult result = checkMonadLeftIdentity(Option::of, INTEGERS, mappers);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
@@ -335,9 +341,9 @@ public class OptionTest implements Monad1Laws<Option<?>> {
     @Test
     @Override
     public void shouldSatisfyMonadAssociativity() {
-        final Arbitrary<Function<? super Integer, ? extends Monad1<Double, Option<?>>>> before =
+        final Arbitrary<Function1<? super Integer, ? extends Monad1<Double, Option<?>>>> before =
                 size -> random -> i -> Option.of(i).map(Double::valueOf);
-        final Arbitrary<Function<? super Double, ? extends Monad1<String, Option<?>>>> after =
+        final Arbitrary<Function1<? super Double, ? extends Monad1<String, Option<?>>>> after =
                 size -> random -> d -> Option.of(d).map(String::valueOf);
         final CheckResult result = checkMonadAssociativity(OPTIONS, before, after);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);

@@ -387,7 +387,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
     }
 
     @Override
-    default <U, TRAVERSABLE extends HigherKinded1<U, Traversable<?>>> Stream<U> flatMap(Function<? super T, TRAVERSABLE> mapper) {
+    default <U, TRAVERSABLE extends HigherKinded1<U, Traversable<?>>> Stream<U> flatMap(Function1<? super T, TRAVERSABLE> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return Nil.instance();
@@ -524,7 +524,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
     }
 
     @Override
-    default <U> Stream<U> map(Function<? super T, ? extends U> mapper) {
+    default <U> Stream<U> map(Function1<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return Nil.instance();
@@ -592,7 +592,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
     }
 
     @Override
-    default Stream<T> replaceAll(UnaryOperator<T> operator) {
+    default Stream<T> replaceAll(Function1<T, T> operator) {
         if (isEmpty()) {
             return this;
         } else {
@@ -728,7 +728,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
     }
 
     @Override
-    default <T1, T2> Tuple2<Stream<T1>, Stream<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+    default <T1, T2> Tuple2<Stream<T1>, Stream<T2>> unzip(Function1<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         final Stream<Tuple2<? extends T1, ? extends T2>> stream = map(unzipper);
         final Stream<T1> stream1 = stream.map(t -> t._1);

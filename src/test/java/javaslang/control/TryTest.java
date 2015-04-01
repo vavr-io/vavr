@@ -5,6 +5,7 @@
  */
 package javaslang.control;
 
+import javaslang.Function1;
 import javaslang.Serializables;
 import javaslang.Tuple;
 import javaslang.algebra.Monad1;
@@ -17,7 +18,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -498,9 +498,9 @@ public class TryTest implements Monad1Laws<Try<?>> {
     @Test
     @Override
     public void shouldSatisfyFunctorComposition() {
-        final Arbitrary<Function<? super Integer, ? extends Double>> before =
+        final Arbitrary<Function1<? super Integer, ? extends Double>> before =
                 size -> random -> Double::valueOf;
-        final Arbitrary<Function<? super Double, ? extends String>> after =
+        final Arbitrary<Function1<? super Double, ? extends String>> after =
                 size -> random -> String::valueOf;
         final CheckResult result = checkFunctorComposition(TRIES, before, after);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
@@ -513,7 +513,7 @@ public class TryTest implements Monad1Laws<Try<?>> {
             Tuple.of(4, Gen.choose(-size, size))
     ).apply(random);
 
-    static <T> Function<? super T, ? extends Monad1<T, Try<?>>> unit() {
+    static <T> Function1<? super T, ? extends Monad1<T, Try<?>>> unit() {
         return i -> Try.of(() -> {
             if (i == null) {
                 throw new Error("test");
@@ -523,14 +523,14 @@ public class TryTest implements Monad1Laws<Try<?>> {
         });
     }
 
-    static <T, R> Monad1<R, Try<?>> mapTry(T t, Function<? super T, R> mapper) {
+    static <T, R> Monad1<R, Try<?>> mapTry(T t, Function1<? super T, R> mapper) {
         return TryTest.<T> unit().apply(t).map(mapper::apply);
     }
 
     @Test
     @Override
     public void shouldSatisfyMonadLeftIdentity() {
-        final Arbitrary<Function<? super Integer, ? extends Monad1<String, Try<?>>>> mappers =
+        final Arbitrary<Function1<? super Integer, ? extends Monad1<String, Try<?>>>> mappers =
                 size -> random -> i -> TryTest.mapTry(i, String::valueOf);
         final CheckResult result = checkMonadLeftIdentity(TryTest.<Integer> unit(), INTEGERS, mappers);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
@@ -546,9 +546,9 @@ public class TryTest implements Monad1Laws<Try<?>> {
     @Test
     @Override
     public void shouldSatisfyMonadAssociativity() {
-        final Arbitrary<Function<? super Integer, ? extends Monad1<Double, Try<?>>>> before =
+        final Arbitrary<Function1<? super Integer, ? extends Monad1<Double, Try<?>>>> before =
                 size -> random -> i -> TryTest.mapTry(i, Double::valueOf);
-        final Arbitrary<Function<? super Double, ? extends Monad1<String, Try<?>>>> after =
+        final Arbitrary<Function1<? super Double, ? extends Monad1<String, Try<?>>>> after =
                 size -> random -> d -> TryTest.mapTry(d, String::valueOf);
         final CheckResult result = checkMonadAssociativity(TRIES, before, after);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);

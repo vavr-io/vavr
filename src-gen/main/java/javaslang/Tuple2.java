@@ -10,7 +10,6 @@ package javaslang;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import java.util.Objects;
-import java.util.function.BiFunction;
 import javaslang.algebra.HigherKinded2;
 import javaslang.algebra.Monad2;
 
@@ -36,13 +35,13 @@ public class Tuple2<T1, T2> implements Tuple, Monad2<T1, T2, Tuple2<?, ?>> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U1, U2, TUPLE extends HigherKinded2<U1, U2, Tuple2<?, ?>>> Tuple2<U1, U2> flatMap(BiFunction<? super T1, ? super T2, TUPLE> f) {
+    public <U1, U2, TUPLE extends HigherKinded2<U1, U2, Tuple2<?, ?>>> Tuple2<U1, U2> flatMap(Function2<? super T1, ? super T2, TUPLE> f) {
         return (Tuple2<U1, U2>) f.apply(_1, _2);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U1, U2> Tuple2<U1, U2> map(BiFunction<? super T1, ? super T2, Tuple2<? extends U1, ? extends U2>> f) {
+    public <U1, U2> Tuple2<U1, U2> map(Function2<? super T1, ? super T2, Tuple2<? extends U1, ? extends U2>> f) {
         // normally the result of f would be mapped to the result type of map, but Tuple.map is a special case
         return (Tuple2<U1, U2>) f.apply(_1, _2);
     }

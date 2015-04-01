@@ -5,13 +5,13 @@
  */
 package javaslang.control;
 
+import javaslang.Function1;
 import javaslang.ValueObject;
 import javaslang.algebra.HigherKinded1;
 import javaslang.algebra.Monad1;
 import javaslang.control.Valences.Bivalent;
 
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -44,9 +44,9 @@ public interface Try<T> extends Monad1<T, Try<?>>, ValueObject, Bivalent<T, Thro
 
     boolean isSuccess();
 
-    Try<T> recover(Function<Throwable, ? extends T> f);
+    Try<T> recover(Function1<Throwable, ? extends T> f);
 
-    Try<T> recoverWith(Function<Throwable, Try<T>> f);
+    Try<T> recoverWith(Function1<Throwable, Try<T>> f);
 
     Try<Throwable> failed();
 
@@ -57,10 +57,10 @@ public interface Try<T> extends Monad1<T, Try<?>>, ValueObject, Bivalent<T, Thro
     void forEach(Consumer<? super T> action);
 
     @Override
-    <U> Try<U> map(Function<? super T, ? extends U> mapper);
+    <U> Try<U> map(Function1<? super T, ? extends U> mapper);
 
     @Override
-    <U, TRY extends HigherKinded1<U, Try<?>>> Try<U> flatMap(Function<? super T, TRY> mapper);
+    <U, TRY extends HigherKinded1<U, Try<?>>> Try<U> flatMap(Function1<? super T, TRY> mapper);
 
     @Override
     boolean equals(Object o);

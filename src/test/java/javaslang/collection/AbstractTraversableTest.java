@@ -18,7 +18,6 @@ import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
-import java.util.function.Function;
 
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;

@@ -5,10 +5,10 @@
  */
 package javaslang.control;
 
+import javaslang.Function1;
 import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -401,19 +401,19 @@ public class MatchTest {
 		final SpecialFunction lambda = i -> String.valueOf(i);
 		final String actual = Match
 				.caze((SameSignatureAsSpecialFunction f) -> f.apply(1))
-				.caze((Function<Integer, String> f) -> f.apply(2))
+				.caze((Function1<Integer, String> f) -> f.apply(2))
 				.apply(lambda);
 		assertThat(actual).isEqualTo("2");
 	}
 
 	@FunctionalInterface
-	interface SpecialFunction extends Function<Integer, String> {
+	interface SpecialFunction extends Function1<Integer, String> {
 		@Override
 		String apply(Integer i);
 	}
 
 	@FunctionalInterface
-	interface SameSignatureAsSpecialFunction extends Function<Integer, String> {
+	interface SameSignatureAsSpecialFunction extends Function1<Integer, String> {
 		@Override
 		String apply(Integer i);
 	}

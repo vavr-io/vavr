@@ -208,7 +208,7 @@ public interface List<T> extends Seq<T>, ValueObject {
 
     @SuppressWarnings("unchecked")
     @Override
-    default <U, TRAVERSABLE extends HigherKinded1<U, Traversable<?>>> List<U> flatMap(Function<? super T, TRAVERSABLE> mapper) {
+    default <U, TRAVERSABLE extends HigherKinded1<U, Traversable<?>>> List<U> flatMap(Function1<? super T, TRAVERSABLE> mapper) {
         return foldLeft(Nil.<U>instance(), (List<U> xs, T x) -> xs.prependAll((Traversable<U>) mapper.apply(x))).reverse();
     }
 
@@ -332,7 +332,7 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default <U> List<U> map(Function<? super T, ? extends U> mapper) {
+    default <U> List<U> map(Function1<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return foldRight(nil(), (x, xs) -> xs.prepend(mapper.apply(x)));
     }
@@ -424,7 +424,7 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default List<T> replaceAll(UnaryOperator<T> operator) {
+    default List<T> replaceAll(Function1<T, T> operator) {
         Objects.requireNonNull(operator, "operator is null");
         List<T> result = Nil.instance();
         for (T element : this) {
@@ -569,7 +569,7 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default <T1, T2> Tuple2<List<T1>, List<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+    default <T1, T2> Tuple2<List<T1>, List<T2>> unzip(Function1<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         List<T1> xs = nil();
         List<T2> ys = nil();
