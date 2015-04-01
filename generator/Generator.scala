@@ -812,7 +812,7 @@ def generateTestClasses(): Unit = {
       val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
 
       xs"""
-        public class PropertyTest {
+        public class $className {
 
             static <T> $predicate<T, Boolean> tautology() {
                 return any -> true;
@@ -953,105 +953,6 @@ def generateTestClasses(): Unit = {
                 $assertThat(result.sample().get()).isEqualTo(Tuple.of(1, 2));
             }
 
-            // -- Property checks
-
-            ${(1 to N).gen(i => {
-
-              val generics = (1 to i).gen(j => "Object")(", ")
-              val arbitraries = (1 to i).gen(j => "OBJECTS")(", ")
-              val arbitrariesMinus1 = (1 to i - 1).gen(j => "OBJECTS")(", ")
-              val args = (1 to i).gen(j => s"o$j")(", ")
-
-              xs"""
-                @$test
-                public void shouldApplyForAllOfArity$i() {
-                    final Property.ForAll$i<${(1 to i).gen(j => "Object")(", ")}> forAll = new Property("test").forAll(${(1 to i).gen(j => "null")(", ")});
-                    $assertThat(forAll).isNotNull();
-                }
-
-                @$test
-                public void shouldApplySuchThatOfArity$i() {
-                    final Property.ForAll$i<$generics> forAll = new Property("test").forAll($arbitraries);
-                    final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> predicate = ($args) -> true;
-                    final Property.Property$i<$generics> suchThat = forAll.suchThat(predicate);
-                    $assertThat(suchThat).isNotNull();
-                }
-
-                @$test
-                public void shouldCheckTrueProperty$i() {
-                    final Property.ForAll$i<$generics> forAll = new Property("test").forAll($arbitraries);
-                    final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> predicate = ($args) -> true;
-                    final CheckResult result = forAll.suchThat(predicate).check();
-                    $assertThat(result.isSatisfied()).isTrue();
-                    $assertThat(result.isExhausted()).isFalse();
-                }
-
-                @$test
-                public void shouldCheckFalseProperty$i() {
-                    final Property.ForAll$i<$generics> forAll = new Property("test").forAll($arbitraries);
-                    final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> predicate = ($args) -> false;
-                    final CheckResult result = forAll.suchThat(predicate).check();
-                    $assertThat(result.isFalsified()).isTrue();
-                }
-
-                @$test
-                public void shouldCheckErroneousProperty$i() {
-                    final Property.ForAll$i<$generics> forAll = new Property("test").forAll($arbitraries);
-                    final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> predicate = ($args) -> { throw new RuntimeException("woops"); };
-                    final CheckResult result = forAll.suchThat(predicate).check();
-                    $assertThat(result.isErroneous()).isTrue();
-                }
-
-                @$test
-                public void shouldCheckProperty${i}ImplicationWithTruePrecondition() {
-                    final Property.ForAll$i<$generics> forAll = new Property("test").forAll($arbitraries);
-                    final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> p1 = ($args) -> true;
-                    final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> p2 = ($args) -> true;
-                    final CheckResult result = forAll.suchThat(p1).implies(p2).check();
-                    $assertThat(result.isSatisfied()).isTrue();
-                    $assertThat(result.isExhausted()).isFalse();
-                }
-
-                @$test
-                public void shouldCheckProperty${i}ImplicationWithFalsePrecondition() {
-                    final Property.ForAll$i<$generics> forAll = new Property("test").forAll($arbitraries);
-                    final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> p1 = ($args) -> false;
-                    final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> p2 = ($args) -> true;
-                    final CheckResult result = forAll.suchThat(p1).implies(p2).check();
-                    $assertThat(result.isSatisfied()).isTrue();
-                    $assertThat(result.isExhausted()).isTrue();
-                }
-
-                @$test(expected = IllegalArgumentException.class)
-                public void shouldThrowOnProperty${i}CheckGivenNegativeTries() {
-                    new Property("test")
-                        .forAll($arbitraries)
-                        .suchThat(($args) -> true)
-                        .check(Checkable.RNG.get(), 0, -1);
-                }
-
-                @$test
-                public void shouldReturnErroneousProperty${i}CheckResultIfGenFails() {
-                    final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
-                    final CheckResult result = new Property("test")
-                        .forAll(failingGen${(i > 1).gen(s", $arbitrariesMinus1")})
-                        .suchThat(($args) -> true)
-                        .check();
-                    $assertThat(result.isErroneous()).isTrue();
-                }
-
-                @$test
-                public void shouldReturnErroneousProperty${i}CheckResultIfArbitraryFails() {
-                    final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
-                    final CheckResult result = new Property("test")
-                        .forAll(failingArbitrary${(i > 1).gen(s", $arbitrariesMinus1")})
-                        .suchThat(($args) -> true)
-                        .check();
-                    $assertThat(result.isErroneous()).isTrue();
-                }
-              """})("\n\n")
-            }
-
             // -- Property.and tests
 
             @$test
@@ -1122,6 +1023,114 @@ def generateTestClasses(): Unit = {
         }
       """
     })
+
+    for (i <- 1 to N) {
+      genJavaslangFile("javaslang.test", s"PropertyCheck${i}Test", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
+
+        val generics = (1 to i).gen(j => "Object")(", ")
+        val arbitraries = (1 to i).gen(j => "OBJECTS")(", ")
+        val arbitrariesMinus1 = (1 to i - 1).gen(j => "OBJECTS")(", ")
+        val args = (1 to i).gen(j => s"o$j")(", ")
+
+        // test classes
+        val test = im.getType("org.junit.Test")
+        val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
+
+        xs"""
+          public class $className {
+
+              static final Arbitrary<Object> OBJECTS = Gen.of(null).arbitrary();
+
+              @$test
+              public void shouldApplyForAllOfArity$i() {
+                  final Property.ForAll$i<${(1 to i).gen(j => "Object")(", ")}> forAll = new Property("test").forAll(${(1 to i).gen(j => "null")(", ")});
+                  $assertThat(forAll).isNotNull();
+              }
+
+              @$test
+              public void shouldApplySuchThatOfArity$i() {
+                  final Property.ForAll$i<$generics> forAll = new Property("test").forAll($arbitraries);
+                  final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> predicate = ($args) -> true;
+                  final Property.Property$i<$generics> suchThat = forAll.suchThat(predicate);
+                  $assertThat(suchThat).isNotNull();
+              }
+
+              @$test
+              public void shouldCheckTrueProperty$i() {
+                  final Property.ForAll$i<$generics> forAll = new Property("test").forAll($arbitraries);
+                  final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> predicate = ($args) -> true;
+                  final CheckResult result = forAll.suchThat(predicate).check();
+                  $assertThat(result.isSatisfied()).isTrue();
+                  $assertThat(result.isExhausted()).isFalse();
+              }
+
+              @$test
+              public void shouldCheckFalseProperty$i() {
+                  final Property.ForAll$i<$generics> forAll = new Property("test").forAll($arbitraries);
+                  final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> predicate = ($args) -> false;
+                  final CheckResult result = forAll.suchThat(predicate).check();
+                  $assertThat(result.isFalsified()).isTrue();
+              }
+
+              @$test
+              public void shouldCheckErroneousProperty$i() {
+                  final Property.ForAll$i<$generics> forAll = new Property("test").forAll($arbitraries);
+                  final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> predicate = ($args) -> { throw new RuntimeException("woops"); };
+                  final CheckResult result = forAll.suchThat(predicate).check();
+                  $assertThat(result.isErroneous()).isTrue();
+              }
+
+              @$test
+              public void shouldCheckProperty${i}ImplicationWithTruePrecondition() {
+                  final Property.ForAll$i<$generics> forAll = new Property("test").forAll($arbitraries);
+                  final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> p1 = ($args) -> true;
+                  final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> p2 = ($args) -> true;
+                  final CheckResult result = forAll.suchThat(p1).implies(p2).check();
+                  $assertThat(result.isSatisfied()).isTrue();
+                  $assertThat(result.isExhausted()).isFalse();
+              }
+
+              @$test
+              public void shouldCheckProperty${i}ImplicationWithFalsePrecondition() {
+                  final Property.ForAll$i<$generics> forAll = new Property("test").forAll($arbitraries);
+                  final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> p1 = ($args) -> false;
+                  final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> p2 = ($args) -> true;
+                  final CheckResult result = forAll.suchThat(p1).implies(p2).check();
+                  $assertThat(result.isSatisfied()).isTrue();
+                  $assertThat(result.isExhausted()).isTrue();
+              }
+
+              @$test(expected = IllegalArgumentException.class)
+              public void shouldThrowOnProperty${i}CheckGivenNegativeTries() {
+                  new Property("test")
+                      .forAll($arbitraries)
+                      .suchThat(($args) -> true)
+                      .check(Checkable.RNG.get(), 0, -1);
+              }
+
+              @$test
+              public void shouldReturnErroneousProperty${i}CheckResultIfGenFails() {
+                  final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+                  final CheckResult result = new Property("test")
+                      .forAll(failingGen${(i > 1).gen(s", $arbitrariesMinus1")})
+                      .suchThat(($args) -> true)
+                      .check();
+                  $assertThat(result.isErroneous()).isTrue();
+              }
+
+              @$test
+              public void shouldReturnErroneousProperty${i}CheckResultIfArbitraryFails() {
+                  final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+                  final CheckResult result = new Property("test")
+                      .forAll(failingArbitrary${(i > 1).gen(s", $arbitrariesMinus1")})
+                      .suchThat(($args) -> true)
+                      .check();
+                  $assertThat(result.isErroneous()).isTrue();
+              }
+          }
+         """
+      })
+    }
   }
 
   /**
