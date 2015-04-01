@@ -11,33 +11,61 @@ package javaslang.algebra;
 
 import javaslang.*;
 
-public interface UberMonad<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, M extends HigherKinded1<?, M> & HigherKinded2<?, ?, M> & HigherKinded3<?, ?, ?, M> & HigherKinded4<?, ?, ?, ?, M> & HigherKinded5<?, ?, ?, ?, ?, M> & HigherKinded6<?, ?, ?, ?, ?, ?, M> & HigherKinded7<?, ?, ?, ?, ?, ?, ?, M> & HigherKinded8<?, ?, ?, ?, ?, ?, ?, ?, M> & HigherKinded9<?, ?, ?, ?, ?, ?, ?, ?, ?, M> & HigherKinded10<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> & HigherKinded11<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> & HigherKinded12<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> & HigherKinded13<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> & HigherKinded14<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> & HigherKinded15<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> & HigherKinded16<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> & HigherKinded17<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> & HigherKinded18<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> & HigherKinded19<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> & HigherKinded20<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> & HigherKinded21<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> & HigherKinded22<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> & HigherKinded23<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> & HigherKinded24<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> & HigherKinded25<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> & HigherKinded26<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M>> extends
-    Monad1<T1, M>, HigherKinded1<T1, M>,
-    Monad2<T1, T2, M>, HigherKinded2<T1, T2, M>,
-    Monad3<T1, T2, T3, M>, HigherKinded3<T1, T2, T3, M>,
-    Monad4<T1, T2, T3, T4, M>, HigherKinded4<T1, T2, T3, T4, M>,
-    Monad5<T1, T2, T3, T4, T5, M>, HigherKinded5<T1, T2, T3, T4, T5, M>,
-    Monad6<T1, T2, T3, T4, T5, T6, M>, HigherKinded6<T1, T2, T3, T4, T5, T6, M>,
-    Monad7<T1, T2, T3, T4, T5, T6, T7, M>, HigherKinded7<T1, T2, T3, T4, T5, T6, T7, M>,
-    Monad8<T1, T2, T3, T4, T5, T6, T7, T8, M>, HigherKinded8<T1, T2, T3, T4, T5, T6, T7, T8, M>,
-    Monad9<T1, T2, T3, T4, T5, T6, T7, T8, T9, M>, HigherKinded9<T1, T2, T3, T4, T5, T6, T7, T8, T9, M>,
-    Monad10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, M>, HigherKinded10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, M>,
-    Monad11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, M>, HigherKinded11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, M>,
-    Monad12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, M>, HigherKinded12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, M>,
-    Monad13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, M>, HigherKinded13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, M>,
-    Monad14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, M>, HigherKinded14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, M>,
-    Monad15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, M>, HigherKinded15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, M>,
-    Monad16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, M>, HigherKinded16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, M>,
-    Monad17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, M>, HigherKinded17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, M>,
-    Monad18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, M>, HigherKinded18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, M>,
-    Monad19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, M>, HigherKinded19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, M>,
-    Monad20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, M>, HigherKinded20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, M>,
-    Monad21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, M>, HigherKinded21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, M>,
-    Monad22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, M>, HigherKinded22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, M>,
-    Monad23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, M>, HigherKinded23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, M>,
-    Monad24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, M>, HigherKinded24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, M>,
-    Monad25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, M>, HigherKinded25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, M>,
-    Monad26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, M>, HigherKinded26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, M> {
+public interface UberMonad<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26,
+        M extends
+            HigherKinded1<?, M> &
+            HigherKinded2<?, ?, M> &
+            HigherKinded3<?, ?, ?, M> &
+            HigherKinded4<?, ?, ?, ?, M> &
+            HigherKinded5<?, ?, ?, ?, ?, M> &
+            HigherKinded6<?, ?, ?, ?, ?, ?, M> &
+            HigherKinded7<?, ?, ?, ?, ?, ?, ?, M> &
+            HigherKinded8<?, ?, ?, ?, ?, ?, ?, ?, M> &
+            HigherKinded9<?, ?, ?, ?, ?, ?, ?, ?, ?, M> &
+            HigherKinded10<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> &
+            HigherKinded11<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> &
+            HigherKinded12<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> &
+            HigherKinded13<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> &
+            HigherKinded14<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> &
+            HigherKinded15<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> &
+            HigherKinded16<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> &
+            HigherKinded17<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> &
+            HigherKinded18<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> &
+            HigherKinded19<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> &
+            HigherKinded20<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> &
+            HigherKinded21<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> &
+            HigherKinded22<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> &
+            HigherKinded23<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> &
+            HigherKinded24<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> &
+            HigherKinded25<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M> &
+            HigherKinded26<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M>>
+    extends
+        Monad1<T1, M>, HigherKinded1<T1, M>,
+        Monad2<T1, T2, M>, HigherKinded2<T1, T2, M>,
+        Monad3<T1, T2, T3, M>, HigherKinded3<T1, T2, T3, M>,
+        Monad4<T1, T2, T3, T4, M>, HigherKinded4<T1, T2, T3, T4, M>,
+        Monad5<T1, T2, T3, T4, T5, M>, HigherKinded5<T1, T2, T3, T4, T5, M>,
+        Monad6<T1, T2, T3, T4, T5, T6, M>, HigherKinded6<T1, T2, T3, T4, T5, T6, M>,
+        Monad7<T1, T2, T3, T4, T5, T6, T7, M>, HigherKinded7<T1, T2, T3, T4, T5, T6, T7, M>,
+        Monad8<T1, T2, T3, T4, T5, T6, T7, T8, M>, HigherKinded8<T1, T2, T3, T4, T5, T6, T7, T8, M>,
+        Monad9<T1, T2, T3, T4, T5, T6, T7, T8, T9, M>, HigherKinded9<T1, T2, T3, T4, T5, T6, T7, T8, T9, M>,
+        Monad10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, M>, HigherKinded10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, M>,
+        Monad11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, M>, HigherKinded11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, M>,
+        Monad12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, M>, HigherKinded12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, M>,
+        Monad13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, M>, HigherKinded13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, M>,
+        Monad14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, M>, HigherKinded14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, M>,
+        Monad15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, M>, HigherKinded15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, M>,
+        Monad16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, M>, HigherKinded16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, M>,
+        Monad17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, M>, HigherKinded17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, M>,
+        Monad18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, M>, HigherKinded18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, M>,
+        Monad19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, M>, HigherKinded19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, M>,
+        Monad20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, M>, HigherKinded20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, M>,
+        Monad21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, M>, HigherKinded21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, M>,
+        Monad22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, M>, HigherKinded22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, M>,
+        Monad23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, M>, HigherKinded23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, M>,
+        Monad24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, M>, HigherKinded24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, M>,
+        Monad25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, M>, HigherKinded25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, M>,
+        Monad26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, M>, HigherKinded26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, M> {
 
     @Override
     <U1> UberMonad<U1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, M> map(Function1<? super T1, ? extends U1> f);

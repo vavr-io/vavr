@@ -41,11 +41,14 @@ def generateMainClasses(): Unit = {
 
   def genUberMonad(): Unit = {
     val genericTypes = (1 to 26).gen(j => s"T$j")(", ")
-    val genericMonadTypes = (1 to 26).gen(j => s"HigherKinded$j<${(1 to j).gen(_ => "?")(", ")}, M>")(" & ")
-    val superInterfaces = (1 to 26).gen(j => s"Monad$j<${(1 to j).gen(k => s"T$k")(", ")}, M>, HigherKinded$j<${(1 to j).gen(k => s"T$k")(", ")}, M>")(",\n")
+    val genericMonadTypes = (1 to 26).gen(j => xs"HigherKinded$j<${(1 to j).gen(_ => "?")(", ")}, M>")(" &\n")
+    val superInterfaces = (1 to 26).gen(j => xs"Monad$j<${(1 to j).gen(k => s"T$k")(", ")}, M>, HigherKinded$j<${(1 to j).gen(k => s"T$k")(", ")}, M>")(",\n")
     genJavaslangFile("javaslang.algebra", s"UberMonad")((im: ImportManager, packageName, className) => xs"""
-        public interface UberMonad<$genericTypes, M extends $genericMonadTypes> extends
-            $superInterfaces {
+        public interface UberMonad<$genericTypes,
+                M extends
+                    $genericMonadTypes>
+            extends
+                $superInterfaces {
 
             ${(1 to 26).gen(i => {
               val paramTypes = (1 to i).gen(j => s"? super T$j")(", ")
