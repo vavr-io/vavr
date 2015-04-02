@@ -1236,7 +1236,7 @@ def generateTestClasses(): Unit = {
  */
 def genJavaslangFile(packageName: String, className: String, baseDir: String = TARGET_MAIN)(gen: (ImportManager, String, String) => String, knownSimpleClassNames: List[String] = List()) =
   genJavaFile(baseDir, packageName, className)(xraw"""
-      /**    / \____  _    ______   _____ / \____   ____  _____
+      /*     / \____  _    ______   _____ / \____   ____  _____
        *    /  \__  \/ \  / \__  \ /  __//  \__  \ /    \/ __  \   Javaslang
        *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014-2015 Daniel Dietrich
        * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
