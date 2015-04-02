@@ -173,12 +173,12 @@ public interface Gen<T> extends Function1<Random, T>, Monad1<T, Gen<?>> {
      * @throws java.lang.IllegalArgumentException if generators is empty
      */
     @SafeVarargs
+    @SuppressWarnings("varargs")
     static <T> Gen<T> frequency(Tuple2<Integer, Gen<T>>... generators) {
         Objects.requireNonNull(generators, "generators is null");
         if (generators.length == 0) {
             throw new IllegalArgumentException("generators is empty");
         }
-        @SuppressWarnings({"unchecked", "varargs"})
         final Iterable<Tuple2<Integer, Gen<T>>> iterable = Stream.of(generators);
         return frequency(iterable);
     }
@@ -244,7 +244,7 @@ public interface Gen<T> extends Function1<Random, T>, Monad1<T, Gen<?>> {
         if (traversable.isEmpty()) {
             throw new IllegalArgumentException("generators is empty");
         }
-        @SuppressWarnings({"unchecked", "varargs"})
+        @SuppressWarnings("unchecked")
         final Gen<T>[] array = traversable.toJavaArray((Class<Gen<T>>) (Class) Gen.class);
         return oneOf(array);
     }

@@ -6,7 +6,6 @@
 package javaslang.collection;
 
 import javaslang.*;
-import javaslang.algebra.Functor1;
 import javaslang.algebra.HigherKinded1;
 import javaslang.algebra.Monad1;
 import javaslang.control.Try;
@@ -345,7 +344,8 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
             Stream<Stream<T>> combinations(Stream<T> elements, int k) {
                 return (k == 0) ? Stream.cons(Stream.nil()) :
                         elements.zipWithIndex().flatMap(t ->
-                                combinations(elements.drop(t._2 + 1), (k - 1)).map(c -> c.prepend(t._1)));
+                                combinations(elements.drop(t._2 + 1), (k - 1))
+                                        .map((Stream<T> c) -> c.prepend(t._1)));
             }
         }
         return new Recursion().combinations(this, Math.max(k, 0));

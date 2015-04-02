@@ -22,22 +22,22 @@ public interface RoseTree<T> extends Tree<T> {
     long serialVersionUID = 1L;
 
     @SafeVarargs
+    @SuppressWarnings("varargs")
     static <T> NonNil<T> of(T value, NonNil<T>... children) {
         Objects.requireNonNull(children, "children is null");
         if (children.length == 0) {
             return new Leaf<>(value);
         } else {
-            @SuppressWarnings({"unchecked", "varargs"})
             final List<NonNil<T>> list = List.of(children);
             return new Branch<>(value, list);
         }
     }
 
     @SafeVarargs
+    @SuppressWarnings("varargs")
     static <T> Branch<T> branch(T value, NonNil<T> child1, NonNil<T>... children) {
         Objects.requireNonNull(children, "child1 is null");
         Objects.requireNonNull(children, "children is null");
-        @SuppressWarnings({"unchecked", "varargs"})
         final List<NonNil<T>> list = List.of(children).prepend(child1);
         return new Branch<>(value, list);
     }

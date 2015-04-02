@@ -105,8 +105,8 @@ public interface BinaryTree<T> extends Tree<T> {
      * @return A balanced tree containing all given elements.
      */
     @SafeVarargs
+    @SuppressWarnings("varargs")
     static <T> BinaryTree<T> balance(T... elements) {
-        @SuppressWarnings({"unchecked", "varargs"})
         final List<T> list = List.of(elements);
         return BinaryTree.balance(list);
     }
