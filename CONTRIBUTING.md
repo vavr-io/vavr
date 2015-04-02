@@ -88,7 +88,7 @@ private Xxx() {
 
 Using Eclipse, the minimal requirements are
 
-* Eclipse Platform Runtime
+* Eclipse 'Platform Runtime Binary' (http://download.eclipse.org/eclipse/downloads/)
 * jdt (Eclipse Java Development Tools)
 * m2e (Maven Integration for Eclipse)
 * git (Eclipse Git Team Provider)
