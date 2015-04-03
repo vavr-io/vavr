@@ -112,7 +112,7 @@ public interface Seq<T> extends Traversable<T> {
      * @param n An index.
      * @return A Tuple containing the first n and the remaining elements.
      */
-    Tuple2<? extends Traversable<T>, ? extends Traversable<T>> splitAt(int n);
+    Tuple2<? extends Seq<T>, ? extends Seq<T>> splitAt(int n);
 
     Seq<T> subsequence(int beginIndex);
 
