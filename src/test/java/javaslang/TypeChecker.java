@@ -5,15 +5,19 @@
  */
 package javaslang;
 
-import javaslang.algebra.Monad1;
-import javaslang.algebra.Monoid;
-import javaslang.collection.*;
-import javaslang.control.*;
+import javaslang.collection.List;
+import javaslang.collection.Stream;
+import javaslang.collection.Traversable;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -22,13 +26,12 @@ public class TypeChecker {
     @Test
     @Ignore
     public void shouldHaveAConsistentTypeSystem() throws Exception {
-        // TODO: recursively check the type hierarchy (e.g. Seq in the case of List and Stream - but remember visited classes)
-        // TODO: perform this check for *all* Javaslang classes (src and src-gen)
-        final Stream<String> msgs = Stream.of(BinaryTree.class, RoseTree.class, List.class, Stream.class, Success.class, Failure.class, Left.class, Right.class, None.class, Some.class, Monoid.class, Monad1.class)
+        final Stream<String> msgs = loadClasses("src-gen/main/java").appendAll(loadClasses("src/main/java"))
                 .map(clazz -> Tuple.of(clazz, getUnoverriddenMethods(clazz)))
                 .filter(findings -> !findings._2.isEmpty())
+                .sort((t1, t2) -> t1._1.getName().compareTo(t2._1.getName()))
                 .map(findings -> String.format("%s has to override the following methods with return type %s:\n%s",
-                        findings._1.getName(), findings._1.getSimpleName(), findings._2.map(Object::toString).join("\n")));
+                        findings._1.getName(), findings._1.getSimpleName(), findings._2.map(m -> "* " + m).join("\n")));
         if (!msgs.isEmpty()) {
             throw new AssertionError(msgs.join("\n\n", "Unoverriden methods found.\n", ""));
         }
@@ -61,14 +64,40 @@ public class TypeChecker {
     Traversable<ComparableMethod> getOverridableMethods(Traversable<Class<?>> classes) {
         return classes
                 .flatMap(clazz ->
-                    Stream.of(clazz.getDeclaredMethods()).filter((Method m) ->
-                            // https://javax0.wordpress.com/2014/02/26/syntethic-and-bridge-methods/
-                            !m.isBridge() && !m.isSynthetic() &&
-                            // private, static and final methods cannot be overridden
-                            !Modifier.isPrivate(m.getModifiers()) && !Modifier.isFinal(m.getModifiers()) && !Modifier.isStatic(m.getModifiers()) &&
-                            // we also don't want to cope with methods declared in Object
-                            !m.getDeclaringClass().equals(Object.class))
-                        .map(ComparableMethod::new));
+                        Stream.of(clazz.getDeclaredMethods()).filter((Method m) ->
+                                // https://javax0.wordpress.com/2014/02/26/syntethic-and-bridge-methods/
+                                !m.isBridge() && !m.isSynthetic() &&
+                                        // private, static and final methods cannot be overridden
+                                        !Modifier.isPrivate(m.getModifiers()) && !Modifier.isFinal(m.getModifiers()) && !Modifier.isStatic(m.getModifiers()) &&
+                                        // we also don't want to cope with methods declared in Object
+                                        !m.getDeclaringClass().equals(Object.class))
+                                .map(ComparableMethod::new));
+    }
+
+    Stream<Class<?>> loadClasses(String srcDir) throws Exception {
+        final Path path = Paths.get(srcDir);
+        final java.util.List<Class<?>> classes = new ArrayList<>();
+        Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                if (!attrs.isDirectory()) {
+                    final String name = file.subpath(path.getNameCount(), file.getNameCount()).toString();
+                    if (name.endsWith(".java") && !name.endsWith(File.separator + "package-info.java")) {
+                        final String className = name.substring(0, name.length() - ".java".length())
+                                .replaceAll("/", ".")
+                                .replaceAll("\\\\", ".");
+                        try {
+                            final Class<?> clazz = getClass().getClassLoader().loadClass(className);
+                            classes.add(clazz);
+                        } catch (ClassNotFoundException e) {
+                            throw new IOException(e);
+                        }
+                    }
+                }
+                return FileVisitResult.CONTINUE;
+            }
+        });
+        return Stream.of(classes);
     }
 
     static class ComparableMethod {
