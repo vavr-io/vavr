@@ -39,7 +39,11 @@ public class TypeChecker {
         if (superClasses.isEmpty()) {
             return Stream.nil();
         } else {
-            final Traversable<ComparableMethod> superMethods = getMethods(superClasses);
+            final Traversable<ComparableMethod> superMethods = getMethods(superClasses)
+                    .filter(comparableMethod ->
+                            // We're interested in methods that should be overridden with actual type as return type.
+                            // Because we check this recursively, the class hierarchy is consistent here.
+                            comparableMethod.m.getDeclaringClass().equals(comparableMethod.m.getReturnType()));
             final Traversable<ComparableMethod> thisMethods = getMethods(Stream.of(clazz));
             return superMethods.filter(superMethod -> thisMethods
                     .findFirst(thisMethod -> thisMethod.equals(superMethod))
@@ -57,10 +61,8 @@ public class TypeChecker {
                         Stream.of(clazz.getDeclaredMethods()).filter((Method m) ->
                                 // https://javax0.wordpress.com/2014/02/26/syntethic-and-bridge-methods/
                                 !m.isBridge() && !m.isSynthetic() &&
-                                // private and static methods cannot be overridden
-                                !Modifier.isPrivate(m.getModifiers()) && !Modifier.isStatic(m.getModifiers()) &&
-                                // we're interested in methods that should be overridden with actual type as return type
-                                m.getReturnType().equals(clazz))
+                                        // private and static methods cannot be overridden
+                                !Modifier.isPrivate(m.getModifiers()) && !Modifier.isStatic(m.getModifiers()))
                             .map(ComparableMethod::new));
     }
 
