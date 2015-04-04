@@ -39,7 +39,7 @@ public class ProjectEulerTest {
     @Test
     @Ignore
     public void shouldSolveProblem7() {
-        final int actual = Primes.primes().drop(10_000).head();
+        final int actual = Primes.asStream().drop(10_000).head();
         assertThat(actual).isEqualTo(0); // TODO, see Primes#sieve(Stream)
     }
 }

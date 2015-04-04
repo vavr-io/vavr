@@ -14,7 +14,7 @@ final class Primes {
         throw new AssertionError(getClass().getName() + " is not intented to be instantiated.");
     }
 
-    public static Stream<Integer> primes() {
+    public static Stream<Integer> asStream() {
         return sieve(Stream.gen(2));
     }
 
