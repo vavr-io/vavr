@@ -18,7 +18,7 @@ final class Primes {
         return sieve(Stream.gen(2));
     }
 
-    // TODO: refactor to prevent stack overflow
+    // TODO: prevent stack overflow
     private static Stream<Integer> sieve(Stream<Integer> numbers) {
         return new Stream.Cons<>(
                 numbers.head(),
