@@ -11,14 +11,11 @@ package javaslang.algebra;
 
 import javaslang.Function1;
 import javaslang.Function6;
-import javaslang.Tuple;
 import javaslang.Tuple6;
 
 public interface Functor6<T1, T2, T3, T4, T5, T6> {
 
     <U1, U2, U3, U4, U5, U6> Functor6<U1, U2, U3, U4, U5, U6> map(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Tuple6<? extends U1, ? extends U2, ? extends U3, ? extends U4, ? extends U5, ? extends U6>> f);
 
-    default <U1, U2, U3, U4, U5, U6> Functor6<U1, U2, U3, U4, U5, U6> map(Function1<? super T1, ? extends U1> f1, Function1<? super T2, ? extends U2> f2, Function1<? super T3, ? extends U3> f3, Function1<? super T4, ? extends U4> f4, Function1<? super T5, ? extends U5> f5, Function1<? super T6, ? extends U6> f6) {
-        return map((t1, t2, t3, t4, t5, t6) -> Tuple.of(f1.apply(t1), f2.apply(t2), f3.apply(t3), f4.apply(t4), f5.apply(t5), f6.apply(t6)));
-    }
+    <U1, U2, U3, U4, U5, U6> Functor6<U1, U2, U3, U4, U5, U6> map(Function1<? super T1, ? extends U1> f1, Function1<? super T2, ? extends U2> f2, Function1<? super T3, ? extends U3> f3, Function1<? super T4, ? extends U4> f4, Function1<? super T5, ? extends U5> f5, Function1<? super T6, ? extends U6> f6);
 }

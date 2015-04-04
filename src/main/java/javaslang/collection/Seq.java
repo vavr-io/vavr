@@ -7,10 +7,12 @@ package javaslang.collection;
 
 import javaslang.Function1;
 import javaslang.Tuple2;
+import javaslang.algebra.HigherKinded1;
 
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 /**
  * Interface for sequential, traversable data structures.
@@ -72,15 +74,6 @@ public interface Seq<T> extends Traversable<T> {
 
     Seq<T> appendAll(Iterable<? extends T> elements);
 
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> Seq<U> flatten() {
-        return (Seq<U>) Traversable.super.flatten();
-    }
-
-    @Override
-    <U> Seq<U> flatten(Function1<T, ? extends Iterable<? extends U>> f);
-
     T get(int index);
 
     int indexOf(T element);
@@ -106,7 +99,7 @@ public interface Seq<T> extends Traversable<T> {
     Seq<T> sort(Comparator<? super T> c);
 
     /**
-     * Splits a Traversable at the specified index. The result of {@code splitAt(n)} is equivalent to
+     * Splits a Seq at the specified index. The result of {@code splitAt(n)} is equivalent to
      * {@code Tuple.of(take(n), drop(n))}.
      *
      * @param n An index.
@@ -117,4 +110,99 @@ public interface Seq<T> extends Traversable<T> {
     Seq<T> subsequence(int beginIndex);
 
     Seq<T> subsequence(int beginIndex, int endIndex);
+
+    // -- Adjusted return types of Traversable methods
+
+    @Override
+    Seq<T> clear();
+
+    @Override
+    Seq<? extends Seq<T>> combinations(int k);
+
+    @Override
+    Seq<T> distinct();
+
+    @Override
+    Seq<T> drop(int n);
+
+    @Override
+    Seq<T> dropRight(int n);
+
+    @Override
+    Seq<T> dropWhile(Predicate<? super T> predicate);
+
+    @Override
+    Seq<T> filter(Predicate<? super T> predicate);
+
+    @Override
+    Seq<T> findAll(Predicate<? super T> predicate);
+
+    @Override
+    <U, TRAVERSABLE extends HigherKinded1<U, Traversable<?>>> Seq<U> flatMap(Function1<? super T, TRAVERSABLE> mapper);
+
+    @Override
+    <U> Seq<U> flatten();
+
+    @Override
+    <U> Seq<U> flatten(Function1<T, ? extends Iterable<? extends U>> f);
+
+    @Override
+    <U> Seq<U> map(Function1<? super T, ? extends U> mapper);
+
+    @Override
+    Seq<T> init();
+
+    @Override
+    Seq<T> intersperse(T element);
+
+    @Override
+    Seq<T> remove(T element);
+
+    @Override
+    Seq<T> removeAll(T element);
+
+    @Override
+    Seq<T> removeAll(Iterable<? extends T> elements);
+
+    @Override
+    Seq<T> replace(T currentElement, T newElement);
+
+    @Override
+    Seq<T> replaceAll(T currentElement, T newElement);
+
+    @Override
+    Seq<T> replaceAll(Function1<T, T> operator);
+
+    @Override
+    Seq<T> retainAll(Iterable<? extends T> elements);
+
+    @Override
+    Seq<T> reverse();
+
+    @Override
+    Tuple2<? extends Seq<T>, ? extends Seq<T>> span(Predicate<? super T> predicate);
+
+    @Override
+    Seq<T> tail();
+
+    @Override
+    Seq<T> take(int n);
+
+    @Override
+    Seq<T> takeRight(int n);
+
+    @Override
+    Seq<T> takeWhile(Predicate<? super T> predicate);
+
+    @Override
+    <T1, T2> Tuple2<? extends Seq<T1>, ? extends Seq<T2>> unzip(Function1<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
+
+    @Override
+    <U> Seq<Tuple2<T, U>> zip(Iterable<U> that);
+
+    @Override
+    <U> Seq<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
+
+    @Override
+    Seq<Tuple2<T, Integer>> zipWithIndex();
 }

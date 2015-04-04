@@ -7,6 +7,7 @@ package javaslang.collection;
 
 import javaslang.*;
 import javaslang.algebra.HigherKinded1;
+import javaslang.control.Match;
 
 import java.io.*;
 import java.util.*;
@@ -190,23 +191,37 @@ public interface List<T> extends Seq<T>, ValueObject {
 
 	@Override
 	default List<T> drop(int n) {
-		return (List<T>) Seq.super.drop(n);
+		List<T> list = this;
+		for (int i = n; i > 0 && !list.isEmpty(); i--) {
+			list = list.tail();
+		}
+		return list;
 	}
 
 	@Override
 	default List<T> dropRight(int n) {
-		return (List<T>) Seq.super.dropRight(n);
+		return reverse().drop(n).reverse();
 	}
 
 	@Override
 	default List<T> dropWhile(Predicate<? super T> predicate) {
-		return (List<T>) Seq.super.dropWhile(predicate);
+		Objects.requireNonNull(predicate, "predicate is null");
+		List<T> list = this;
+		while (!list.isEmpty() && predicate.test(list.head())) {
+			list = list.tail();
+		}
+		return list;
 	}
 
 	@Override
 	default List<T> filter(Predicate<? super T> predicate) {
 		Objects.requireNonNull(predicate, "predicate is null");
 		return foldRight(nil(), (x, xs) -> predicate.test(x) ? xs.prepend(x) : xs);
+	}
+
+	@Override
+	default List<T> findAll(Predicate<? super T> predicate) {
+		return filter(predicate);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -218,8 +233,11 @@ public interface List<T> extends Seq<T>, ValueObject {
 
 	@Override
 	default <U> List<U> flatten() {
-		final Seq<U> seq = Seq.super.flatten();
-		return (List<U>) seq;
+		final Match<Iterable<U>> match = Match
+				.caze((Iterable<U> xs) -> xs)
+				.caze((U x) -> List.of(x))
+				.build();
+		return flatten(match::apply);
 	}
 
 	@Override
@@ -572,7 +590,7 @@ public interface List<T> extends Seq<T>, ValueObject {
 
 	@Override
 	default List<T> takeRight(int n) {
-		return (List<T>) Seq.super.takeRight(n);
+		return reverse().take(n).reverse();
 	}
 
 	@Override

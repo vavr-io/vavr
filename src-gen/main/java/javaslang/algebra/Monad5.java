@@ -9,6 +9,7 @@ package javaslang.algebra;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import javaslang.Function1;
 import javaslang.Function5;
 import javaslang.Tuple5;
 
@@ -18,4 +19,7 @@ public interface Monad5<T1, T2, T3, T4, T5, M extends HigherKinded5<?, ?, ?, ?, 
 
     @Override
     <U1, U2, U3, U4, U5> Monad5<U1, U2, U3, U4, U5, M> map(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Tuple5<? extends U1, ? extends U2, ? extends U3, ? extends U4, ? extends U5>> f);
+
+    @Override
+    <U1, U2, U3, U4, U5> Monad5<U1, U2, U3, U4, U5, M> map(Function1<? super T1, ? extends U1> f1, Function1<? super T2, ? extends U2> f2, Function1<? super T3, ? extends U3> f3, Function1<? super T4, ? extends U4> f4, Function1<? super T5, ? extends U5> f5);
 }

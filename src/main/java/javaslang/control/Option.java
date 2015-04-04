@@ -39,7 +39,7 @@ public interface Option<T> extends Monad1<T, Option<?>>, ValueObject, Univalent<
         return (value == null) ? None.instance() : new Some<>(value);
     }
 
-    static <T> Option<T> none() {
+    static <T> None<T> none() {
         return None.instance();
     }
 
@@ -81,18 +81,7 @@ public interface Option<T> extends Monad1<T, Option<?>>, ValueObject, Univalent<
     }
 
     @Override
-    default Option<T> toOption() {
-        return this;
-    }
-
-    @Override
-    default <U> Option<U> map(Function1<? super T, ? extends U> mapper) {
-        if (isEmpty()) {
-            return None.instance();
-        } else {
-            return new Some<>(mapper.apply(get()));
-        }
-    }
+    <U> Option<U> map(Function1<? super T, ? extends U> mapper);
 
     @SuppressWarnings("unchecked")
     @Override

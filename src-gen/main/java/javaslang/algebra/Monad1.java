@@ -30,4 +30,5 @@ public interface Monad1<T1, M extends HigherKinded1<?, M>> extends Functor1<T1>,
 
     @Override
     <U1> Monad1<U1, M> map(Function1<? super T1, ? extends U1> f);
+
 }

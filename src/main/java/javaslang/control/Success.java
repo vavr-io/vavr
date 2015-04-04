@@ -5,6 +5,7 @@
  */
 package javaslang.control;
 
+import javaslang.CheckedFunction1;
 import javaslang.Function1;
 import javaslang.Tuple;
 import javaslang.Tuple1;
@@ -67,17 +68,17 @@ public final class Success<T> implements Try<T> {
     }
 
     @Override
-    public Success<T> recover(Function1<Throwable, ? extends T> f) {
+    public Success<T> recover(CheckedFunction1<Throwable, ? extends T> f) {
         return this;
     }
 
     @Override
-    public Success<T> recoverWith(Function1<Throwable, Try<T>> f) {
+    public Success<T> recoverWith(CheckedFunction1<Throwable, Try<T>> f) {
         return this;
     }
 
     @Override
-    public Success<T> onFailure(Consumer<Throwable> f) {
+    public Success<T> onFailure(CheckedConsumer<Throwable> f) {
         return this;
     }
 
@@ -92,7 +93,7 @@ public final class Success<T> implements Try<T> {
     }
 
     @Override
-    public Try<T> filter(Predicate<? super T> predicate) {
+    public Try<T> filter(CheckedPredicate<? super T> predicate) {
         try {
             if (predicate.test(value)) {
                 return this;

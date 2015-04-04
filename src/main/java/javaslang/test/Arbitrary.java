@@ -13,7 +13,6 @@ import javaslang.collection.Stream;
 
 import java.util.Iterator;
 import java.util.Objects;
-import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
 /**
@@ -23,9 +22,7 @@ import java.util.function.Predicate;
  * @since 1.2.0
  */
 @FunctionalInterface
-public interface Arbitrary<T> extends IntFunction<Gen<T>>, Function1<Integer, Gen<T>>, Monad1<T, Arbitrary<?>> {
-
-    long serialVersionUID = 1L;
+public interface Arbitrary<T> extends Monad1<T, Arbitrary<?>> {
 
     /**
      * <p>
@@ -64,20 +61,7 @@ public interface Arbitrary<T> extends IntFunction<Gen<T>>, Function1<Integer, Ge
      * @param size A (not necessarily positive) size parameter which may be interpreted idividually and is constant for all arbitrary objects regarding one property check.
      * @return A generator for objects of type T.
      */
-    @Override
     Gen<T> apply(int size);
-
-    /**
-     * Calls {@link #apply(int)}.
-     *
-     * @param size A size hint.
-     * @return The result of {@link #apply(int)}.
-     */
-    @Override
-    default Gen<T> apply(Integer size) {
-        Objects.requireNonNull(size, "size is null");
-        return apply((int) size);
-    }
 
     /**
      * Maps arbitrary objects T to arbitrary object U.

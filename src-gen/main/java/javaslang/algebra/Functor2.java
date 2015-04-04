@@ -11,14 +11,11 @@ package javaslang.algebra;
 
 import javaslang.Function1;
 import javaslang.Function2;
-import javaslang.Tuple;
 import javaslang.Tuple2;
 
 public interface Functor2<T1, T2> {
 
     <U1, U2> Functor2<U1, U2> map(Function2<? super T1, ? super T2, Tuple2<? extends U1, ? extends U2>> f);
 
-    default <U1, U2> Functor2<U1, U2> map(Function1<? super T1, ? extends U1> f1, Function1<? super T2, ? extends U2> f2) {
-        return map((t1, t2) -> Tuple.of(f1.apply(t1), f2.apply(t2)));
-    }
+    <U1, U2> Functor2<U1, U2> map(Function1<? super T1, ? extends U1> f1, Function1<? super T2, ? extends U2> f2);
 }

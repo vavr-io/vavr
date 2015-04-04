@@ -5,8 +5,10 @@
  */
 package javaslang.control;
 
+import javaslang.Function1;
 import javaslang.Tuple;
 import javaslang.Tuple0;
+import javaslang.algebra.Monad1;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -58,6 +60,16 @@ public final class None<T> implements Option<T> {
     @Override
     public boolean isEmpty() {
         return true;
+    }
+
+    @Override
+    public <U> None<U> map(Function1<? super T, ? extends U> mapper) {
+        return None.instance();
+    }
+
+    @Override
+    public None<T> toOption() {
+        return this;
     }
 
     @Override

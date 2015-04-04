@@ -248,26 +248,11 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * @return A Traversable consisting of all elements of this Traversable except the first n ones, or else an empty Traversable, if this
      * Traversable has less than n elements.
      */
-    default Traversable<T> drop(int n) {
-        Traversable<T> traversable = this;
-        for (int i = n; i > 0 && !traversable.isEmpty(); i--) {
-            traversable = traversable.tail();
-        }
-        return traversable;
-    }
+    Traversable<T> drop(int n);
 
-    default Traversable<T> dropRight(int n) {
-        return reverse().drop(n).reverse();
-    }
+    Traversable<T> dropRight(int n);
 
-    default Traversable<T> dropWhile(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        Traversable<T> traversable = this;
-        while (!traversable.isEmpty() && predicate.test(traversable.head())) {
-            traversable = traversable.tail();
-        }
-        return traversable;
-    }
+    Traversable<T> dropWhile(Predicate<? super T> predicate);
 
     Traversable<T> filter(Predicate<? super T> predicate);
 
@@ -278,9 +263,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * @param predicate A predicate.
      * @return All elements of this which satisfy the given predicate.
      */
-    default Traversable<T> findAll(Predicate<? super T> predicate) {
-        return filter(predicate);
-    }
+    Traversable<T> findAll(Predicate<? super T> predicate);
 
     /**
      * Returns the first element of this which satisfies the given predicate.
@@ -328,13 +311,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * @param <U> new component type (!!UNSAFE!! {@code of(1, 2, 3).map(Object::toString).<Integer> flatten()})
      * @return A flattened version of this traversable
      */
-    default <U> Traversable<U> flatten() {
-        final Match<Iterable<U>> match = Match
-                .caze((Iterable<U> xs) -> xs)
-                .caze((U x) -> List.of(x))
-                .build();
-        return flatten(match::apply);
-    }
+    <U> Traversable<U> flatten();
 
     /**
      * <p>Flattens this Traversable using a function as hint how to obtain iterable elements.</p>
@@ -692,7 +669,6 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * @param elements Elements to be removed from this Traversable.
      * @return A Traversable containing all elements of this but none of the given elements.
      */
-    // TODO: Does this clash with removeAll(T) for recursive data types Traversable<T> = Traversable<Traversable<T>>. If yes then rename it to subtract(Iterable)
     Traversable<T> removeAll(Iterable<? extends T> elements);
 
     /**
@@ -873,9 +849,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      */
     Traversable<T> take(int n);
 
-    default Traversable<T> takeRight(int n) {
-        return reverse().take(n).reverse();
-    }
+    Traversable<T> takeRight(int n);
 
     Traversable<T> takeWhile(Predicate<? super T> predicate);
 

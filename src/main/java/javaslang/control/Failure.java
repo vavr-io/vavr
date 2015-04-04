@@ -5,10 +5,7 @@
  */
 package javaslang.control;
 
-import javaslang.Function1;
-import javaslang.Tuple;
-import javaslang.Tuple1;
-import javaslang.ValueObject;
+import javaslang.*;
 import javaslang.algebra.HigherKinded1;
 
 import java.util.Objects;
@@ -80,12 +77,12 @@ public final class Failure<T> implements Try<T> {
     }
 
     @Override
-    public Try<T> recover(Function1<Throwable, ? extends T> f) {
+    public Try<T> recover(CheckedFunction1<Throwable, ? extends T> f) {
         return Try.of(() -> f.apply(cause.getCause()));
     }
 
     @Override
-    public Try<T> recoverWith(Function1<Throwable, Try<T>> f) {
+    public Try<T> recoverWith(CheckedFunction1<Throwable, Try<T>> f) {
         try {
             return f.apply(cause.getCause());
         } catch (Throwable t) {
@@ -94,7 +91,7 @@ public final class Failure<T> implements Try<T> {
     }
 
     @Override
-    public Failure<T> onFailure(Consumer<Throwable> f) {
+    public Failure<T> onFailure(CheckedConsumer<Throwable> f) {
         try {
             f.accept(cause.getCause());
             return this;
@@ -119,7 +116,7 @@ public final class Failure<T> implements Try<T> {
     }
 
     @Override
-    public Failure<T> filter(Predicate<? super T> predicate) {
+    public Failure<T> filter(CheckedPredicate<? super T> predicate) {
         return this;
     }
 

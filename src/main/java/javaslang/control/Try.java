@@ -5,6 +5,7 @@
  */
 package javaslang.control;
 
+import javaslang.CheckedFunction1;
 import javaslang.Function1;
 import javaslang.ValueObject;
 import javaslang.algebra.HigherKinded1;
@@ -44,15 +45,15 @@ public interface Try<T> extends Monad1<T, Try<?>>, ValueObject, Bivalent<T, Thro
 
     boolean isSuccess();
 
-    Try<T> recover(Function1<Throwable, ? extends T> f);
+    Try<T> recover(CheckedFunction1<Throwable, ? extends T> f);
 
-    Try<T> recoverWith(Function1<Throwable, Try<T>> f);
+    Try<T> recoverWith(CheckedFunction1<Throwable, Try<T>> f);
 
     Try<Throwable> failed();
 
-    Try<T> onFailure(Consumer<Throwable> f);
+    Try<T> onFailure(CheckedConsumer<Throwable> f);
 
-    Try<T> filter(Predicate<? super T> predicate);
+    Try<T> filter(CheckedPredicate<? super T> predicate);
 
     void forEach(Consumer<? super T> action);
 
@@ -70,6 +71,16 @@ public interface Try<T> extends Monad1<T, Try<?>>, ValueObject, Bivalent<T, Thro
 
     @Override
     String toString();
+
+    @FunctionalInterface
+    interface CheckedConsumer<T> {
+        void accept(T t) throws Throwable;
+    }
+
+    @FunctionalInterface
+    interface CheckedPredicate<T> {
+        boolean test(T t) throws Throwable;
+    }
 
     @FunctionalInterface
     interface CheckedRunnable {

@@ -8,6 +8,7 @@ package javaslang.collection;
 import javaslang.*;
 import javaslang.algebra.HigherKinded1;
 import javaslang.algebra.Monad1;
+import javaslang.control.Match;
 import javaslang.control.Try;
 
 import java.io.*;
@@ -359,17 +360,25 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
 
     @Override
     default Stream<T> drop(int n) {
-        return (Stream<T>) Seq.super.drop(n);
+        if (n <= 0 || isEmpty()) {
+            return this;
+        } else {
+            return new Deferred<>(() -> tail().drop(n - 1));
+        }
     }
 
     @Override
     default Stream<T> dropRight(int n) {
-        return (Stream<T>) Seq.super.dropRight(n);
+        return reverse().drop(n).reverse();
     }
 
     @Override
     default Stream<T> dropWhile(Predicate<? super T> predicate) {
-        return (Stream<T>) Seq.super.dropWhile(predicate);
+        if (isEmpty() || !predicate.test(head())) {
+            return this;
+        } else {
+            return new Deferred<>(() -> tail().dropWhile(predicate));
+        }
     }
 
     @Override
@@ -388,6 +397,11 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
     }
 
     @Override
+    default Stream<T> findAll(Predicate<? super T> predicate) {
+        return filter(predicate);
+    }
+
+    @Override
     default <U, TRAVERSABLE extends HigherKinded1<U, Traversable<?>>> Stream<U> flatMap(Function1<? super T, TRAVERSABLE> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
@@ -401,8 +415,11 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
 
     @Override
     default <U> Stream<U> flatten() {
-        final Seq<U> seq = Seq.super.flatten();
-        return (Stream<U>) seq;
+        final Match<Iterable<U>> match = Match
+                .caze((Iterable<U> xs) -> xs)
+                .caze((U x) -> List.of(x))
+                .build();
+        return flatten(match::apply);
     }
 
     @Override
@@ -728,7 +745,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
 
     @Override
     default Stream<T> takeRight(int n) {
-        return (Stream<T>) Seq.super.takeRight(n);
+        return reverse().take(n).reverse();
     }
 
     @Override

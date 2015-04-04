@@ -6,9 +6,8 @@
 package javaslang;
 
 import javaslang.collection.List;
+import javaslang.collection.Seq;
 import javaslang.collection.Stream;
-import javaslang.collection.Traversable;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -21,13 +20,51 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
-public class TypeChecker {
+public class TypeConsistencyTest {
 
+    static final List<String> WHITELIST = List.of(
+
+            // control.Failure
+            "javaslang.control.Failure//public abstract javaslang.control.Try javaslang.control.Try.recover(javaslang.CheckedFunction1)",
+            "javaslang.control.Failure//public abstract javaslang.control.Try javaslang.control.Try.recoverWith(javaslang.CheckedFunction1)",
+            "javaslang.control.Failure//public abstract javaslang.control.Try javaslang.control.Try.failed()",
+
+            // control.Success
+            "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.filter(javaslang.control.Try$CheckedPredicate)",
+            "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.map(javaslang.Function1)",
+            "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.flatMap(javaslang.Function1)",
+            "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.failed()",
+
+            // control.None
+            "javaslang.control.None//public default javaslang.control.Option javaslang.control.Option.filter(java.util.function.Predicate)",
+            "javaslang.control.None//public default javaslang.control.Option javaslang.control.Option.flatMap(javaslang.Function1)",
+
+            // control.Some
+            "javaslang.control.Some//public default javaslang.control.Option javaslang.control.Option.filter(java.util.function.Predicate)",
+            "javaslang.control.Some//public default javaslang.control.Option javaslang.control.Option.flatMap(javaslang.Function1)"
+    );
+
+    /**
+     * CAUTION: Non-reifiable types (like {@code Tuple2<? extends Traversable<T>, ? extends Traversable<T>>})
+     * are not recognized by this test because there is no runtime information available via reflection.
+     *
+     * @throws Exception
+     */
     @Test
-    @Ignore
-    public void shouldHaveAConsistentTypeSystem() throws Exception {
-        final Stream<String> msgs = loadClasses("src-gen/main/java").appendAll(loadClasses("src/main/java"))
+    public void shouldHaveAConsistentTypeSystem() throws IOException {
+        final Seq<Class<?>> classes = loadClasses("src-gen/main/java")
+                .appendAll(loadClasses("src/main/java"))
+                .filter(c -> {
+                    final String name = c.getName();
+                    return !name.startsWith("javaslang.Function") && !name.startsWith("javaslang.CheckedFunction");
+                });
+        final Seq<String> msgs = classes
                 .map(clazz -> Tuple.of(clazz, getUnoverriddenMethods(clazz)))
+                .filter(findings -> !findings._2.isEmpty())
+                .map(findings -> Tuple.of(findings._1, findings._2.filter(method -> {
+                    final String signature = findings._1.getName() + "//" + method;
+                    return !WHITELIST.contains(signature);
+                })))
                 .filter(findings -> !findings._2.isEmpty())
                 .sort((t1, t2) -> t1._1.getName().compareTo(t2._1.getName()))
                 .map(findings -> String.format("%s has to override the following methods with return type %s:\n%s",
@@ -37,31 +74,29 @@ public class TypeChecker {
         }
     }
 
-    Traversable<Method> getUnoverriddenMethods(Class<?> clazz) {
-        final Traversable<Class<?>> superClasses = Stream.of(clazz.getInterfaces())
+    Seq<Method> getUnoverriddenMethods(Class<?> clazz) {
+        final Seq<Class<?>> superClasses = Stream.of(clazz.getInterfaces())
                 .append(clazz.getSuperclass())
                 .filter(c -> c != null);
         if (superClasses.isEmpty()) {
             return Stream.nil();
         } else {
-            final Traversable<ComparableMethod> superMethods = getOverridableMethods(superClasses).filter(comparableMethod ->
+            final Seq<ComparableMethod> superMethods = getOverridableMethods(superClasses).filter(comparableMethod ->
                     // We're interested in methods that should be overridden with actual type as return type.
                     // Because we check this recursively, the class hierarchy is consistent here.
                     comparableMethod.m.getDeclaringClass().equals(comparableMethod.m.getReturnType()));
-            final Traversable<ComparableMethod> thisMethods = getOverridableMethods(Stream.of(clazz));
+            final Seq<ComparableMethod> thisMethods = getOverridableMethods(Stream.of(clazz));
             return superMethods.filter(superMethod -> thisMethods
                     .findFirst(thisMethod -> thisMethod.equals(superMethod))
                             // TODO: special case if visibility is package private and classes are in different package
                     .map(thisMethod -> !clazz.equals(thisMethod.m.getReturnType()))
                     .orElse(true))
-                    .map(comparableMethod -> comparableMethod.m)
-                    // TODO: .sort()
-                    ;
+                    .sort()
+                    .map(comparableMethod -> comparableMethod.m);
         }
     }
 
-    // TODO: change Traversable to Seq after running TypeChecker and fixing findings
-    Traversable<ComparableMethod> getOverridableMethods(Traversable<Class<?>> classes) {
+    Seq<ComparableMethod> getOverridableMethods(Seq<Class<?>> classes) {
         return classes
                 .flatMap(clazz ->
                         Stream.of(clazz.getDeclaredMethods()).filter((Method m) ->
@@ -74,7 +109,7 @@ public class TypeChecker {
                                 .map(ComparableMethod::new));
     }
 
-    Stream<Class<?>> loadClasses(String srcDir) throws Exception {
+    Seq<Class<?>> loadClasses(String srcDir) throws IOException {
         final Path path = Paths.get(srcDir);
         final java.util.List<Class<?>> classes = new ArrayList<>();
         Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
@@ -100,12 +135,17 @@ public class TypeChecker {
         return Stream.of(classes);
     }
 
-    static class ComparableMethod {
+    static class ComparableMethod implements Comparable<ComparableMethod> {
 
         final Method m;
 
         ComparableMethod(Method m) {
             this.m = m;
+        }
+
+        @Override
+        public int compareTo(ComparableMethod that) {
+            return this.toString().compareTo(that.toString());
         }
 
         @Override

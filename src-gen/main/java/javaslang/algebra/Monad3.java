@@ -9,6 +9,7 @@ package javaslang.algebra;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import javaslang.Function1;
 import javaslang.Function3;
 import javaslang.Tuple3;
 
@@ -18,4 +19,7 @@ public interface Monad3<T1, T2, T3, M extends HigherKinded3<?, ?, ?, M>> extends
 
     @Override
     <U1, U2, U3> Monad3<U1, U2, U3, M> map(Function3<? super T1, ? super T2, ? super T3, Tuple3<? extends U1, ? extends U2, ? extends U3>> f);
+
+    @Override
+    <U1, U2, U3> Monad3<U1, U2, U3, M> map(Function1<? super T1, ? extends U1> f1, Function1<? super T2, ? extends U2> f2, Function1<? super T3, ? extends U3> f3);
 }

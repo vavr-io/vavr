@@ -47,6 +47,11 @@ public class Tuple2<T1, T2> implements Tuple, Monad2<T1, T2, Tuple2<?, ?>> {
     }
 
     @Override
+    public <U1, U2> Tuple2<U1, U2> map(Function1<? super T1, ? extends U1> f1, Function1<? super T2, ? extends U2> f2) {
+        return map((t1, t2) -> Tuple.of(f1.apply(t1), f2.apply(t2)));
+    }
+
+    @Override
     public Tuple2<T1, T2> unapply() {
         return this;
     }

@@ -30,9 +30,7 @@ import java.util.function.Predicate;
  * @since 1.2.0
  */
 @FunctionalInterface
-public interface Gen<T> extends Function1<Random, T>, Monad1<T, Gen<?>> {
-
-    long serialVersionUID = 1L;
+public interface Gen<T> extends Monad1<T, Gen<?>> {
 
     int FILTER_THRESHOLD = Integer.MAX_VALUE;
 
@@ -252,9 +250,9 @@ public interface Gen<T> extends Function1<Random, T>, Monad1<T, Gen<?>> {
     /**
      * Functional interface of this generator.
      *
+     * @param random a random number generator
      * @return A generated value of type T.
      */
-    @Override
     T apply(Random random);
 
     /**

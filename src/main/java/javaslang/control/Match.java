@@ -56,9 +56,7 @@ import java.util.function.Supplier;
  *
  * @param <R> The result type of the Match expression.
  */
-public final class Match<R> implements Function1<Object, R> {
-
-    private static final long serialVersionUID = 1L;
+public final class Match<R> {
 
     private final List<Function1<Object, Option<R>>> cases;
     private final Option<Supplier<R>> defaultOption;
@@ -142,7 +140,6 @@ public final class Match<R> implements Function1<Object, R> {
      * @throws MatchError if no Match case matches the given object and no default is defined via orElse().
      * @throws javaslang.control.Failure.NonFatal if an error occurs executing the matched case.
      */
-    @Override
     public R apply(Object obj) {
         for (Function1<Object, Option<R>> caze : cases) {
             final Option<R> result = caze.apply(obj);

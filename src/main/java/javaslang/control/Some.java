@@ -5,6 +5,7 @@
  */
 package javaslang.control;
 
+import javaslang.Function1;
 import javaslang.Tuple;
 import javaslang.Tuple1;
 
@@ -35,6 +36,16 @@ public final class Some<T> implements Option<T> {
     @Override
     public boolean isEmpty() {
         return false;
+    }
+
+    @Override
+    public <U> Some<U> map(Function1<? super T, ? extends U> mapper) {
+        return new Some<>(mapper.apply(get()));
+    }
+
+    @Override
+    public Some<T> toOption() {
+        return this;
     }
 
     @Override
