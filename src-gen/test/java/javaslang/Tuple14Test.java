@@ -45,6 +45,27 @@ public class Tuple14Test {
     }
 
     @Test
+    public void shouldMapComponents() {
+      final Tuple14<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> tuple = createTuple();
+      final Function1<Object, Object> f1 = Function1.identity();
+      final Function1<Object, Object> f2 = Function1.identity();
+      final Function1<Object, Object> f3 = Function1.identity();
+      final Function1<Object, Object> f4 = Function1.identity();
+      final Function1<Object, Object> f5 = Function1.identity();
+      final Function1<Object, Object> f6 = Function1.identity();
+      final Function1<Object, Object> f7 = Function1.identity();
+      final Function1<Object, Object> f8 = Function1.identity();
+      final Function1<Object, Object> f9 = Function1.identity();
+      final Function1<Object, Object> f10 = Function1.identity();
+      final Function1<Object, Object> f11 = Function1.identity();
+      final Function1<Object, Object> f12 = Function1.identity();
+      final Function1<Object, Object> f13 = Function1.identity();
+      final Function1<Object, Object> f14 = Function1.identity();
+      final Tuple14<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> actual = tuple.map(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14);
+      assertThat(actual).isEqualTo(tuple);
+    }
+
+    @Test
     public void shouldUnapply() {
         final Tuple14<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> tuple = createTuple();
         assertThat(tuple.unapply()).isEqualTo(tuple);

@@ -45,6 +45,22 @@ public class Tuple9Test {
     }
 
     @Test
+    public void shouldMapComponents() {
+      final Tuple9<Object, Object, Object, Object, Object, Object, Object, Object, Object> tuple = createTuple();
+      final Function1<Object, Object> f1 = Function1.identity();
+      final Function1<Object, Object> f2 = Function1.identity();
+      final Function1<Object, Object> f3 = Function1.identity();
+      final Function1<Object, Object> f4 = Function1.identity();
+      final Function1<Object, Object> f5 = Function1.identity();
+      final Function1<Object, Object> f6 = Function1.identity();
+      final Function1<Object, Object> f7 = Function1.identity();
+      final Function1<Object, Object> f8 = Function1.identity();
+      final Function1<Object, Object> f9 = Function1.identity();
+      final Tuple9<Object, Object, Object, Object, Object, Object, Object, Object, Object> actual = tuple.map(f1, f2, f3, f4, f5, f6, f7, f8, f9);
+      assertThat(actual).isEqualTo(tuple);
+    }
+
+    @Test
     public void shouldUnapply() {
         final Tuple9<Object, Object, Object, Object, Object, Object, Object, Object, Object> tuple = createTuple();
         assertThat(tuple.unapply()).isEqualTo(tuple);

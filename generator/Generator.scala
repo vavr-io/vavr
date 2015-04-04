@@ -1153,6 +1153,16 @@ def generateTestClasses(): Unit = {
                   $assertThat(actual).isEqualTo(tuple);
               }
 
+              ${(i > 1).gen(xs"""
+                @$test
+                public void shouldMapComponents() {
+                  final Tuple$i<$generics> tuple = createTuple();
+                  ${(1 to i).gen(j => xs"""final Function1<Object, Object> f$j = Function1.identity();""")("\n")}
+                  final Tuple$i<$generics> actual = tuple.map(${(1 to i).gen(j => s"f$j")(", ")});
+                  $assertThat(actual).isEqualTo(tuple);
+                }
+              """)}
+
               @$test
               public void shouldUnapply() {
                   final Tuple$i<$generics> tuple = createTuple();
