@@ -14,20 +14,66 @@ import javaslang.algebra.HigherKinded7;
 import javaslang.algebra.Monad7;
 
 /**
- * Implementation of a pair, a tuple containing 7 elements.
+ * A tuple of 7 elements which can be seen as cartesian product of 7 components.
+ *
+ * @param <T1> type of the 1st element
+ * @param <T2> type of the 2nd element
+ * @param <T3> type of the 3rd element
+ * @param <T4> type of the 4th element
+ * @param <T5> type of the 5th element
+ * @param <T6> type of the 6th element
+ * @param <T7> type of the 7th element
  */
 public class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Monad7<T1, T2, T3, T4, T5, T6, T7, Tuple7<?, ?, ?, ?, ?, ?, ?>> {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * The 1st element of this tuple.
+     */
     public final T1 _1;
+
+    /**
+     * The 2nd element of this tuple.
+     */
     public final T2 _2;
+
+    /**
+     * The 3rd element of this tuple.
+     */
     public final T3 _3;
+
+    /**
+     * The 4th element of this tuple.
+     */
     public final T4 _4;
+
+    /**
+     * The 5th element of this tuple.
+     */
     public final T5 _5;
+
+    /**
+     * The 6th element of this tuple.
+     */
     public final T6 _6;
+
+    /**
+     * The 7th element of this tuple.
+     */
     public final T7 _7;
 
+    /**
+     * Constructs a tuple of 7 elements.
+     *
+     * @param t1 the 1st element
+     * @param t2 the 2nd element
+     * @param t3 the 3rd element
+     * @param t4 the 4th element
+     * @param t5 the 5th element
+     * @param t6 the 6th element
+     * @param t7 the 7th element
+     */
     public Tuple7(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7) {
         this._1 = t1;
         this._2 = t2;

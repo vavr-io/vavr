@@ -23,6 +23,9 @@ import java.util.Objects;
 @FunctionalInterface
 public interface CheckedFunction3<T1, T2, T3, R> extends λ<R> {
 
+    /**
+     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+     */
     long serialVersionUID = 1L;
 
     /**

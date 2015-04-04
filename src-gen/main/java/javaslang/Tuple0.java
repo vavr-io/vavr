@@ -12,7 +12,11 @@ package javaslang;
 import java.util.Objects;
 
 /**
- * Implementation of an empty tuple, a tuple containing no elements.
+ * <p>Implementation of an empty tuple, a tuple containing no elements.</p>
+ * <p>
+ * Because the empty tuple is a singleton, there is no accessible constructor.
+ * Please use {@linkplain Tuple0#instance()} or {@linkplain Tuple#empty()} to obtain the single instance.
+ * </p>
  */
 public final class Tuple0 implements Tuple {
 
@@ -23,9 +27,7 @@ public final class Tuple0 implements Tuple {
      */
     private static final Tuple0 INSTANCE = new Tuple0();
 
-    /**
-     * Hidden constructor.
-     */
+    // hidden constructor, internally called
     private Tuple0() {
     }
 

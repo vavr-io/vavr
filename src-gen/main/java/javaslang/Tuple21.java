@@ -14,34 +14,164 @@ import javaslang.algebra.HigherKinded21;
 import javaslang.algebra.Monad21;
 
 /**
- * Implementation of a pair, a tuple containing 21 elements.
+ * A tuple of 21 elements which can be seen as cartesian product of 21 components.
+ *
+ * @param <T1> type of the 1st element
+ * @param <T2> type of the 2nd element
+ * @param <T3> type of the 3rd element
+ * @param <T4> type of the 4th element
+ * @param <T5> type of the 5th element
+ * @param <T6> type of the 6th element
+ * @param <T7> type of the 7th element
+ * @param <T8> type of the 8th element
+ * @param <T9> type of the 9th element
+ * @param <T10> type of the 10th element
+ * @param <T11> type of the 11th element
+ * @param <T12> type of the 12th element
+ * @param <T13> type of the 13th element
+ * @param <T14> type of the 14th element
+ * @param <T15> type of the 15th element
+ * @param <T16> type of the 16th element
+ * @param <T17> type of the 17th element
+ * @param <T18> type of the 18th element
+ * @param <T19> type of the 19th element
+ * @param <T20> type of the 20th element
+ * @param <T21> type of the 1st element
  */
 public class Tuple21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> implements Tuple, Monad21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, Tuple21<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>> {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * The 1st element of this tuple.
+     */
     public final T1 _1;
+
+    /**
+     * The 2nd element of this tuple.
+     */
     public final T2 _2;
+
+    /**
+     * The 3rd element of this tuple.
+     */
     public final T3 _3;
+
+    /**
+     * The 4th element of this tuple.
+     */
     public final T4 _4;
+
+    /**
+     * The 5th element of this tuple.
+     */
     public final T5 _5;
+
+    /**
+     * The 6th element of this tuple.
+     */
     public final T6 _6;
+
+    /**
+     * The 7th element of this tuple.
+     */
     public final T7 _7;
+
+    /**
+     * The 8th element of this tuple.
+     */
     public final T8 _8;
+
+    /**
+     * The 9th element of this tuple.
+     */
     public final T9 _9;
+
+    /**
+     * The 10th element of this tuple.
+     */
     public final T10 _10;
+
+    /**
+     * The 11th element of this tuple.
+     */
     public final T11 _11;
+
+    /**
+     * The 12th element of this tuple.
+     */
     public final T12 _12;
+
+    /**
+     * The 13th element of this tuple.
+     */
     public final T13 _13;
+
+    /**
+     * The 14th element of this tuple.
+     */
     public final T14 _14;
+
+    /**
+     * The 15th element of this tuple.
+     */
     public final T15 _15;
+
+    /**
+     * The 16th element of this tuple.
+     */
     public final T16 _16;
+
+    /**
+     * The 17th element of this tuple.
+     */
     public final T17 _17;
+
+    /**
+     * The 18th element of this tuple.
+     */
     public final T18 _18;
+
+    /**
+     * The 19th element of this tuple.
+     */
     public final T19 _19;
+
+    /**
+     * The 20th element of this tuple.
+     */
     public final T20 _20;
+
+    /**
+     * The 1st element of this tuple.
+     */
     public final T21 _21;
 
+    /**
+     * Constructs a tuple of 21 elements.
+     *
+     * @param t1 the 1st element
+     * @param t2 the 2nd element
+     * @param t3 the 3rd element
+     * @param t4 the 4th element
+     * @param t5 the 5th element
+     * @param t6 the 6th element
+     * @param t7 the 7th element
+     * @param t8 the 8th element
+     * @param t9 the 9th element
+     * @param t10 the 10th element
+     * @param t11 the 11th element
+     * @param t12 the 12th element
+     * @param t13 the 13th element
+     * @param t14 the 14th element
+     * @param t15 the 15th element
+     * @param t16 the 16th element
+     * @param t17 the 17th element
+     * @param t18 the 18th element
+     * @param t19 the 19th element
+     * @param t20 the 20th element
+     * @param t21 the 1st element
+     */
     public Tuple21(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13, T14 t14, T15 t15, T16 t16, T17 t17, T18 t18, T19 t19, T20 t20, T21 t21) {
         this._1 = t1;
         this._2 = t2;

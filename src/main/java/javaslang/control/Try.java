@@ -22,6 +22,9 @@ import java.util.function.Predicate;
  */
 public interface Try<T> extends Monad1<T, Try<?>>, ValueObject, Bivalent<T, Throwable> {
 
+    /**
+     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+     */
     long serialVersionUID = 1L;
 
     static <T> Try<T> of(CheckedSupplier<T> supplier) {

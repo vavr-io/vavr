@@ -438,6 +438,9 @@ public final class Match<R> {
     @FunctionalInterface
     public interface BooleanFunction<R> extends Serializable {
 
+        /**
+         * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+         */
         long serialVersionUID = 1L;
 
         R apply(boolean value);
@@ -446,6 +449,9 @@ public final class Match<R> {
     @FunctionalInterface
     public interface ByteFunction<R> extends Serializable {
 
+        /**
+         * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+         */
         long serialVersionUID = 1L;
 
         R apply(byte value);
@@ -454,6 +460,9 @@ public final class Match<R> {
     @FunctionalInterface
     public interface CharFunction<R> extends Serializable {
 
+        /**
+         * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+         */
         long serialVersionUID = 1L;
 
         R apply(char value);
@@ -462,6 +471,9 @@ public final class Match<R> {
     @FunctionalInterface
     public interface DoubleFunction<R> extends Serializable {
 
+        /**
+         * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+         */
         long serialVersionUID = 1L;
 
         R apply(double value);
@@ -470,6 +482,9 @@ public final class Match<R> {
     @FunctionalInterface
     public interface FloatFunction<R> extends Serializable {
 
+        /**
+         * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+         */
         long serialVersionUID = 1L;
 
         R apply(float value);
@@ -478,6 +493,9 @@ public final class Match<R> {
     @FunctionalInterface
     public interface IntFunction<R> extends Serializable {
 
+        /**
+         * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+         */
         long serialVersionUID = 1L;
 
         R apply(int value);
@@ -486,6 +504,9 @@ public final class Match<R> {
     @FunctionalInterface
     public interface LongFunction<R> extends Serializable {
 
+        /**
+         * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+         */
         long serialVersionUID = 1L;
 
         R apply(long value);
@@ -494,6 +515,9 @@ public final class Match<R> {
     @FunctionalInterface
     public interface ShortFunction<R> extends Serializable {
 
+        /**
+         * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+         */
         long serialVersionUID = 1L;
 
         R apply(short value);

@@ -14,16 +14,38 @@ import javaslang.algebra.HigherKinded3;
 import javaslang.algebra.Monad3;
 
 /**
- * Implementation of a pair, a tuple containing 3 elements.
+ * A tuple of three elements which can be seen as cartesian product of three components.
+ *
+ * @param <T1> type of the 1st element
+ * @param <T2> type of the 2nd element
+ * @param <T3> type of the 3rd element
  */
 public class Tuple3<T1, T2, T3> implements Tuple, Monad3<T1, T2, T3, Tuple3<?, ?, ?>> {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * The 1st element of this tuple.
+     */
     public final T1 _1;
+
+    /**
+     * The 2nd element of this tuple.
+     */
     public final T2 _2;
+
+    /**
+     * The 3rd element of this tuple.
+     */
     public final T3 _3;
 
+    /**
+     * Constructs a tuple of three elements.
+     *
+     * @param t1 the 1st element
+     * @param t2 the 2nd element
+     * @param t3 the 3rd element
+     */
     public Tuple3(T1 t1, T2 t2, T3 t3) {
         this._1 = t1;
         this._2 = t2;

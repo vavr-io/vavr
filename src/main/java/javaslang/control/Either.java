@@ -45,7 +45,10 @@ import java.util.function.Predicate;
 // DEV-NOTE: Either is no Monad and no Functor in the sense of javaslang.Algebra.*
 public interface Either<L, R> extends ValueObject {
 
-    long serialVersionUID = 1L;
+	/**
+	 * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+	 */
+	long serialVersionUID = 1L;
 
 	boolean isLeft();
 

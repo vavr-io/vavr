@@ -396,6 +396,9 @@ def generateMainClasses(): Unit = {
           @FunctionalInterface
           public interface $className<${(i > 0).gen(s"$generics, ")}R> extends λ<R> {
 
+              /**
+               * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+               */
               long serialVersionUID = 1L;
 
               ${(i == 1).gen(xs"""
@@ -488,7 +491,11 @@ def generateMainClasses(): Unit = {
      */
     def genTuple0(im: ImportManager, packageName: String, className: String): String = xs"""
       /**
-       * Implementation of an empty tuple, a tuple containing no elements.
+       * <p>Implementation of an empty tuple, a tuple containing no elements.</p>
+       * <p>
+       * Because the empty tuple is a singleton, there is no accessible constructor.
+       * Please use {@linkplain Tuple0#instance()} or {@linkplain Tuple#empty()} to obtain the single instance.
+       * </p>
        */
       public final class $className implements Tuple {
 
@@ -499,9 +506,7 @@ def generateMainClasses(): Unit = {
            */
           private static final $className INSTANCE = new $className();
 
-          /**
-           * Hidden constructor.
-           */
+          // hidden constructor, internally called
           private $className() {
           }
 
@@ -568,14 +573,24 @@ def generateMainClasses(): Unit = {
 
       xs"""
         /**
-         * Implementation of a pair, a tuple containing $i elements.
+         * A tuple of ${i.numerus("element")} which can be seen as cartesian product of ${i.numerus("component")}.
+         ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> type of the ${j.ordinal} element")("\n")}
          */
         public class $className<$generics> implements Tuple, ${im.getType(s"javaslang.algebra.Monad$i")}<$generics, $className<$untyped>> {
 
             private static final long serialVersionUID = 1L;
 
-            ${(1 to i).gen(j => s"public final T$j _$j;")("\n")}
+            ${(1 to i).gen(j => xs"""
+              /$javadoc
+               * The ${j.ordinal} element of this tuple.
+               */
+              public final T$j _$j;
+            """)("\n\n")}
 
+            /$javadoc
+             * Constructs a tuple of ${i.numerus("element")}.
+             ${(0 to i).gen(j => if (j == 0) "*" else s"* @param t$j the ${j.ordinal} element")("\n")}
+             */
             public $className($paramsDecl) {
                 ${(1 to i).gen(j => s"this._$j = t$j;")("\n")}
             }
@@ -651,9 +666,10 @@ def generateMainClasses(): Unit = {
         val params = (1 to i).gen(j => s"t$j")(", ")
         xs"""
           /$javadoc
-           * Creates a tuple of $i element${(i > 1).gen("s")}.
-           *
-           * @return a tuple of $i element${(i > 1).gen("s")}.
+           * Creates a tuple of ${i.numerus("element")}.
+           ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> type of the ${j.ordinal} element")("\n")}
+           ${(1 to i).gen(j => s"* @param t$j the ${j.ordinal} element")("\n")}
+           * @return a tuple of ${i.numerus("element")}.
            */
           static <$generics> Tuple$i<$generics> of($paramsDecl) {
               return new Tuple$i<>($params);
@@ -667,6 +683,9 @@ def generateMainClasses(): Unit = {
          */
         public interface $className extends ValueObject {
 
+            /**
+             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             */
             long serialVersionUID = 1L;
 
             /**
@@ -1356,6 +1375,32 @@ object Generator {
       Files.createDirectories(Paths.get(baseDir, dirName)).resolve(fileName),
       contents.getBytes(charset),
       createOption, StandardOpenOption.WRITE)
+  }
+
+  implicit class IntExtensions(i: Int) {
+
+    // returns i as ordinal, i.e. 1st, 2nd, 3rd, 4th, ...
+    def ordinal: String =
+      if (i / 10 == 1) {
+        s"${i}th"
+      } else {
+        i % 10 match {
+          case 1 => "1st"
+          case 2 => "2nd"
+          case 3 => "3rd"
+          case _ => s"${i}th"
+        }
+      }
+
+    // returns the grammatical number of a string, i.e. `i.numerus("name")` is
+    // 0: "no name", 1: "one name", 2: "two names", 3: "three names", 4: "4 names", ...
+    def numerus(s: String): String = Math.abs(i) match {
+      case 0 => s"no ${s}s"
+      case 1 => s"one $s"
+      case 2 => s"two ${s}s"
+      case 3 => s"three ${s}s"
+      case _ => s"$i ${s}s"
+    }
   }
 
   implicit class StringExtensions(s: String) {

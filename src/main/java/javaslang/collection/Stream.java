@@ -27,6 +27,9 @@ import java.util.stream.Collector;
 // DEV-NOTE: Beware of serializing IO streams.
 public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObject {
 
+    /**
+     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+     */
     long serialVersionUID = 1L;
 
     /**

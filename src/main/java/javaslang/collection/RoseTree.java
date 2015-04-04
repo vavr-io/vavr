@@ -19,6 +19,9 @@ import java.util.Objects;
  */
 public interface RoseTree<T> extends Tree<T> {
 
+    /**
+     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+     */
     long serialVersionUID = 1L;
 
     @SafeVarargs

@@ -14,17 +14,45 @@ import javaslang.algebra.HigherKinded4;
 import javaslang.algebra.Monad4;
 
 /**
- * Implementation of a pair, a tuple containing 4 elements.
+ * A tuple of 4 elements which can be seen as cartesian product of 4 components.
+ *
+ * @param <T1> type of the 1st element
+ * @param <T2> type of the 2nd element
+ * @param <T3> type of the 3rd element
+ * @param <T4> type of the 4th element
  */
 public class Tuple4<T1, T2, T3, T4> implements Tuple, Monad4<T1, T2, T3, T4, Tuple4<?, ?, ?, ?>> {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * The 1st element of this tuple.
+     */
     public final T1 _1;
+
+    /**
+     * The 2nd element of this tuple.
+     */
     public final T2 _2;
+
+    /**
+     * The 3rd element of this tuple.
+     */
     public final T3 _3;
+
+    /**
+     * The 4th element of this tuple.
+     */
     public final T4 _4;
 
+    /**
+     * Constructs a tuple of 4 elements.
+     *
+     * @param t1 the 1st element
+     * @param t2 the 2nd element
+     * @param t3 the 3rd element
+     * @param t4 the 4th element
+     */
     public Tuple4(T1 t1, T2 t2, T3 t3, T4 t4) {
         this._1 = t1;
         this._2 = t2;

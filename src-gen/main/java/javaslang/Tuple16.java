@@ -14,29 +14,129 @@ import javaslang.algebra.HigherKinded16;
 import javaslang.algebra.Monad16;
 
 /**
- * Implementation of a pair, a tuple containing 16 elements.
+ * A tuple of 16 elements which can be seen as cartesian product of 16 components.
+ *
+ * @param <T1> type of the 1st element
+ * @param <T2> type of the 2nd element
+ * @param <T3> type of the 3rd element
+ * @param <T4> type of the 4th element
+ * @param <T5> type of the 5th element
+ * @param <T6> type of the 6th element
+ * @param <T7> type of the 7th element
+ * @param <T8> type of the 8th element
+ * @param <T9> type of the 9th element
+ * @param <T10> type of the 10th element
+ * @param <T11> type of the 11th element
+ * @param <T12> type of the 12th element
+ * @param <T13> type of the 13th element
+ * @param <T14> type of the 14th element
+ * @param <T15> type of the 15th element
+ * @param <T16> type of the 16th element
  */
 public class Tuple16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> implements Tuple, Monad16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Tuple16<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>> {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * The 1st element of this tuple.
+     */
     public final T1 _1;
+
+    /**
+     * The 2nd element of this tuple.
+     */
     public final T2 _2;
+
+    /**
+     * The 3rd element of this tuple.
+     */
     public final T3 _3;
+
+    /**
+     * The 4th element of this tuple.
+     */
     public final T4 _4;
+
+    /**
+     * The 5th element of this tuple.
+     */
     public final T5 _5;
+
+    /**
+     * The 6th element of this tuple.
+     */
     public final T6 _6;
+
+    /**
+     * The 7th element of this tuple.
+     */
     public final T7 _7;
+
+    /**
+     * The 8th element of this tuple.
+     */
     public final T8 _8;
+
+    /**
+     * The 9th element of this tuple.
+     */
     public final T9 _9;
+
+    /**
+     * The 10th element of this tuple.
+     */
     public final T10 _10;
+
+    /**
+     * The 11th element of this tuple.
+     */
     public final T11 _11;
+
+    /**
+     * The 12th element of this tuple.
+     */
     public final T12 _12;
+
+    /**
+     * The 13th element of this tuple.
+     */
     public final T13 _13;
+
+    /**
+     * The 14th element of this tuple.
+     */
     public final T14 _14;
+
+    /**
+     * The 15th element of this tuple.
+     */
     public final T15 _15;
+
+    /**
+     * The 16th element of this tuple.
+     */
     public final T16 _16;
 
+    /**
+     * Constructs a tuple of 16 elements.
+     *
+     * @param t1 the 1st element
+     * @param t2 the 2nd element
+     * @param t3 the 3rd element
+     * @param t4 the 4th element
+     * @param t5 the 5th element
+     * @param t6 the 6th element
+     * @param t7 the 7th element
+     * @param t8 the 8th element
+     * @param t9 the 9th element
+     * @param t10 the 10th element
+     * @param t11 the 11th element
+     * @param t12 the 12th element
+     * @param t13 the 13th element
+     * @param t14 the 14th element
+     * @param t15 the 15th element
+     * @param t16 the 16th element
+     */
     public Tuple16(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13, T14 t14, T15 t15, T16 t16) {
         this._1 = t1;
         this._2 = t2;

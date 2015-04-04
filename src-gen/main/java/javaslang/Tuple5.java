@@ -14,18 +14,52 @@ import javaslang.algebra.HigherKinded5;
 import javaslang.algebra.Monad5;
 
 /**
- * Implementation of a pair, a tuple containing 5 elements.
+ * A tuple of 5 elements which can be seen as cartesian product of 5 components.
+ *
+ * @param <T1> type of the 1st element
+ * @param <T2> type of the 2nd element
+ * @param <T3> type of the 3rd element
+ * @param <T4> type of the 4th element
+ * @param <T5> type of the 5th element
  */
 public class Tuple5<T1, T2, T3, T4, T5> implements Tuple, Monad5<T1, T2, T3, T4, T5, Tuple5<?, ?, ?, ?, ?>> {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * The 1st element of this tuple.
+     */
     public final T1 _1;
+
+    /**
+     * The 2nd element of this tuple.
+     */
     public final T2 _2;
+
+    /**
+     * The 3rd element of this tuple.
+     */
     public final T3 _3;
+
+    /**
+     * The 4th element of this tuple.
+     */
     public final T4 _4;
+
+    /**
+     * The 5th element of this tuple.
+     */
     public final T5 _5;
 
+    /**
+     * Constructs a tuple of 5 elements.
+     *
+     * @param t1 the 1st element
+     * @param t2 the 2nd element
+     * @param t3 the 3rd element
+     * @param t4 the 4th element
+     * @param t5 the 5th element
+     */
     public Tuple5(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) {
         this._1 = t1;
         this._2 = t2;

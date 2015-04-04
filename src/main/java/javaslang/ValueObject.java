@@ -32,7 +32,7 @@ public interface ValueObject extends Serializable {
     /**
      * Decomposes this object into its parts.
      *
-     * @return A Tuple of parts of the construction of this object.
+     * @return a Tuple of parts of the construction of this object.
      */
     Tuple unapply();
 
@@ -54,7 +54,8 @@ public interface ValueObject extends Serializable {
      *     </code>
      * </pre>
      *
-     * Please note that double and float values 0.0 and -0.0 are not equal, just in case.
+     * Please note that double and float values 0.0 and -0.0 are considered to be not equal
+     * when using {@linkplain Double#compare(double, double)}, just in case.
      *
      * @param o An object, may be null.
      * @return true, if o equals this, false otherwise.
@@ -64,9 +65,9 @@ public interface ValueObject extends Serializable {
     boolean equals(Object o);
 
     /**
-     * Needs to be overridden because of equals.
+     * An appropriate hashCode which is conform to the implementation of {@linkplain #equals(Object)}.
      *
-     * @return The hashCode of this object.
+     * @return the hashCode of this object.
      * @see java.util.Objects#hash(Object...)
      */
     @Override

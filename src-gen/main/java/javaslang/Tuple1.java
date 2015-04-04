@@ -14,14 +14,24 @@ import javaslang.algebra.HigherKinded1;
 import javaslang.algebra.Monad1;
 
 /**
- * Implementation of a pair, a tuple containing 1 elements.
+ * A tuple of one element which can be seen as cartesian product of one component.
+ *
+ * @param <T1> type of the 1st element
  */
 public class Tuple1<T1> implements Tuple, Monad1<T1, Tuple1<?>> {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * The 1st element of this tuple.
+     */
     public final T1 _1;
 
+    /**
+     * Constructs a tuple of one element.
+     *
+     * @param t1 the 1st element
+     */
     public Tuple1(T1 t1) {
         this._1 = t1;
     }
