@@ -650,6 +650,11 @@ def generateMainClasses(): Unit = {
         val paramsDecl = (1 to i).gen(j => s"T$j t$j")(", ")
         val params = (1 to i).gen(j => s"t$j")(", ")
         xs"""
+          /$javadoc
+           * Creates a tuple of $i element${(i > 1).gen("s")}.
+           *
+           * @return a tuple of $i element${(i > 1).gen("s")}.
+           */
           static <$generics> Tuple$i<$generics> of($paramsDecl) {
               return new Tuple$i<>($params);
           }
@@ -657,6 +662,9 @@ def generateMainClasses(): Unit = {
       }
 
       xs"""
+        /$javadoc
+         * The base interface of all tuples.
+         */
         public interface $className extends ValueObject {
 
             long serialVersionUID = 1L;
@@ -664,12 +672,17 @@ def generateMainClasses(): Unit = {
             /**
              * Returns the number of elements of this tuple.
              *
-             * @return The number of elements.
+             * @return the number of elements.
              */
             int arity();
 
             // -- factory methods
 
+            /$javadoc
+             * Creates the empty tuple.
+             *
+             * @return the empty tuple.
+             */
             static Tuple0 empty() {
                 return Tuple0.instance();
             }
