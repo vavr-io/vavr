@@ -29,8 +29,8 @@ public interface RoseTree<T> extends Tree<T> {
      * Creates a either a rose tree branch or a leaf, depending on the child count.
      * By definition, a node with no children is a leaf.
      *
-     * @param value The value of the branch node.
-     * @param children The tree non-nil node's children, i.e. leafs and branches.
+     * @param value The value of the node.
+     * @param children The tree node's non-nil children, i.e. leafs and branches.
      * @param <T> The value type
      * @return A new, non-nil rose tree
      */

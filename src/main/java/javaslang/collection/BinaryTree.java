@@ -11,16 +11,15 @@ import java.io.*;
 import java.util.Objects;
 
 /**
+ * A binary tree implementation where each node keeps a value.
  * <p>
- * A binary tree implementation where each node keeps a value. See <a href="http://en.wikipedia.org/wiki/Binary_tree">Wikipedia: Binary tree</a>.
- * </p>
- * <p>
- * A binary tree consists of branches (nodes with children) and leafs (nodes without children). The empty tree is represented by Nil.
- * </p>
+ * A binary tree consists of branches (nodes with children) and leafs (nodes without children).
+ * A branch has a left and a right child, at least one child is not Nil. The empty tree is represented by Nil.
  * <pre>
  *     <code>BinaryTree = Nil | Leaf(value) | Branch(BinaryTree left, value, BinaryTree right)</code>
  * </pre>
- * A branch has a left and a right child, at least one child is not Nil.
+ *
+ * See also <a href="http://en.wikipedia.org/wiki/Binary_tree">Binary tree</a> (wikipedia).
  *
  * @param <T> the type of a tree node's value.
  * @since 1.1.0
@@ -32,6 +31,16 @@ public interface BinaryTree<T> extends Tree<T> {
      */
     long serialVersionUID = 1L;
 
+    /**
+     * Creates a either a binary tree branch or a leaf, depending on the children left and right.
+     * By definition, a binary tree node with two Nil children is a leaf.
+     *
+     * @param left  Left subtree
+     * @param value A value
+     * @param right Right subtree
+     * @param <T> The value type
+     * @return A new, non-nil binary tree
+     */
     static <T> BinaryTree<T> of(BinaryTree<T> left, T value, BinaryTree<T> right) {
         Objects.requireNonNull(left, "left is null");
         Objects.requireNonNull(right, "right is null");
@@ -45,11 +54,13 @@ public interface BinaryTree<T> extends Tree<T> {
     /**
      * Throws if left and right are Nil - if in doubt, use BinaryTree.of(left, value, right) instead.
      *
-     * @param left  Left tree
-     * @param value Value
-     * @param right Right tree
+     * @param left  Left subtree
+     * @param value A value
+     * @param right Right subtree
      * @param <T>   Component type
-     * @return A new Branch consisting of the given values.
+     * @return A new binary tree branch
+     * @throws NullPointerException if left or right is null
+     * @throws IllegalArgumentException if left and right are empty (Nil)
      */
     static <T> Branch<T> branch(BinaryTree<T> left, T value, BinaryTree<T> right) {
         Objects.requireNonNull(left, "left is null");
@@ -60,10 +71,23 @@ public interface BinaryTree<T> extends Tree<T> {
         return new Branch<>(left, value, right);
     }
 
+    /**
+     * Creates a binary tree leaf of a given value.
+     *
+     * @param value the leaf's value
+     * @param <T> value type
+     * @return a new tree leaf
+     */
     static <T> Leaf<T> leaf(T value) {
         return new Leaf<>(value);
     }
 
+    /**
+     * Returns the empty binary tree
+     *
+     * @param <T> the tree's value type
+     * @return the empty binary tree
+     */
     static <T> Nil<T> nil() {
         return Nil.instance();
     }
@@ -114,6 +138,11 @@ public interface BinaryTree<T> extends Tree<T> {
         return BinaryTree.balance(list);
     }
 
+    /**
+     * Returns the balanced version of this tree, i.e. the tree where all subtrees have minimal depth.
+     *
+     * @return The balanced version of this binary tree.
+     */
     default BinaryTree<T> balance() {
         return BinaryTree.balance(flatten());
     }
@@ -146,12 +175,23 @@ public interface BinaryTree<T> extends Tree<T> {
         }
     }
 
+    /**
+     * Representation of a binary tree leaf.
+     *
+     * @param <T> value type
+     * @since 1.1.0
+     */
     final class Leaf<T> extends AbstractBinaryTree<T> {
 
         private static final long serialVersionUID = 1L;
 
         private final T value;
 
+        /**
+         * Constructs a binary tree leaf.
+         *
+         * @param value a value
+         */
         public Leaf(T value) {
             this.value = value;
         }
@@ -192,6 +232,12 @@ public interface BinaryTree<T> extends Tree<T> {
         }
     }
 
+    /**
+     * Representation of a binary tree branch.
+     *
+     * @param <T> value type
+     * @since 1.1.0
+     */
     final class Branch<T> extends AbstractBinaryTree<T> {
 
         private static final long serialVersionUID = 1L;
@@ -200,6 +246,15 @@ public interface BinaryTree<T> extends Tree<T> {
         private final BinaryTree<T> right;
         private final T value;
 
+        /**
+         * Constructs a binary tree branch consisting of a value, a left and a right subtree.
+         *
+         * @param left the left tree of this branch
+         * @param value a value
+         * @param right the right tree of this branch
+         * @throws NullPointerException if left or right is null
+         * @throws IllegalArgumentException if left and right are empty (Nil)
+         */
         public Branch(BinaryTree<T> left, T value, BinaryTree<T> right) {
             Objects.requireNonNull(left, "left is null");
             Objects.requireNonNull(right, "right is null");
@@ -346,6 +401,12 @@ public interface BinaryTree<T> extends Tree<T> {
         }
     }
 
+    /**
+     * The singleton instance of the empty binary tree.
+     *
+     * @param <T> type of the tree's values
+     * @since 1.1.0
+     */
     final class Nil<T> extends AbstractBinaryTree<T> {
 
         private static final long serialVersionUID = 1L;
@@ -356,6 +417,12 @@ public interface BinaryTree<T> extends Tree<T> {
         private Nil() {
         }
 
+        /**
+         * Returns the singleton instance of the empty binary tree.
+         *
+         * @param <T> type of the tree's values
+         * @return the single binary tree instance
+         */
         public static <T> Nil<T> instance() {
             @SuppressWarnings("unchecked")
             final Nil<T> instance = (Nil<T>) INSTANCE;
@@ -410,6 +477,12 @@ public interface BinaryTree<T> extends Tree<T> {
         }
     }
 
+    /**
+     * An abstract binary tree implementation which just overrides equals, hashCode and toString.
+     *
+     * @param <T> value type of the binary tree
+     * @since 1.1.0
+     */
     abstract class AbstractBinaryTree<T> implements BinaryTree<T> {
 
         private static final long serialVersionUID = 1L;
