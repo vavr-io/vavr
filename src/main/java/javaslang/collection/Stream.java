@@ -716,10 +716,10 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
 
     @Override
     default Stream<T> subsequence(int beginIndex, int endIndex) {
-        if (beginIndex < 0 || endIndex - beginIndex < 0) {
+        if (beginIndex < 0 || beginIndex > endIndex) {
             throw new IndexOutOfBoundsException(String.format("subsequence(%s, %s)", beginIndex, endIndex));
         }
-        if (endIndex - beginIndex == 0) {
+        if (beginIndex == endIndex) {
             return Nil.instance();
         }
         if (isEmpty()) {

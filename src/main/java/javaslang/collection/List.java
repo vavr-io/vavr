@@ -560,7 +560,7 @@ public interface List<T> extends Seq<T>, ValueObject {
 
 	@Override
 	default List<T> subsequence(int beginIndex, int endIndex) {
-		if (beginIndex < 0 || endIndex - beginIndex < 0) {
+		if (beginIndex < 0 || beginIndex > endIndex) {
 			throw new IndexOutOfBoundsException(
 					String.format("subsequence(%s, %s) on list of length %s", beginIndex, endIndex, length()));
 		}

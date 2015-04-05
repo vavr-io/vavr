@@ -57,7 +57,7 @@ public interface Seq<T> extends Traversable<T> {
      *
      * @param iterable An Iterable.
      * @param <T>      Component type
-     * @return A Seq
+     * @return a new Seq
      */
     static <T> Seq<T> of(Iterable<? extends T> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
@@ -70,32 +70,122 @@ public interface Seq<T> extends Traversable<T> {
         }
     }
 
+    /**
+     * Appends an element to this.
+     *
+     * @param element An element
+     * @return A new Seq containing the given element appended to this elements
+     */
     Seq<T> append(T element);
 
+    /**
+     * Appends all given elements to this.
+     *
+     * @param elements An Iterable of elements
+     * @return A new Seq containing the given elements appended to this elements
+     */
     Seq<T> appendAll(Iterable<? extends T> elements);
 
+    /**
+     * Returns the element at the specified index.
+     *
+     * @param index an index
+     * @return the element at the given index
+     * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
+     */
     T get(int index);
 
+    /**
+     * Returns the index of the first occurrence of the given element or -1 if this does not contain the given element.
+     *
+     * @param element an element
+     * @return the index of the first occurrence of the given element
+     */
     int indexOf(T element);
 
+    /**
+     * Inserts the given element at the specified index.
+     *
+     * @param index   an index
+     * @param element an element
+     * @return a new Seq, where the given element is inserted into this at the given index
+     * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
+     */
     Seq<T> insert(int index, T element);
 
+    /**
+     * Inserts the given elements at the specified index.
+     *
+     * @param index    an index
+     * @param elements An Iterable of elements
+     * @return a new Seq, where the given elements are inserted into this at the given index
+     * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
+     */
     Seq<T> insertAll(int index, Iterable<? extends T> elements);
 
+    /**
+     * Returns an iterator of this elements starting at the given index.
+     * The result is equivalent to {@code this.subsequence(index).iterator()}.
+     *
+     * @param index an index
+     * @return a new Iterator, starting with the element at the given index or the empty Iterator, if index = length()
+     * @throws IndexOutOfBoundsException if index &lt; 0 or index &gt; length()
+     */
     default Iterator<T> iterator(int index) {
         return subsequence(index).iterator();
     }
 
+    /**
+     * Returns the index of the last occurrence of the given element or -1 if this does not contain the given element.
+     *
+     * @param element an element
+     * @return the index of the last occurrence of the given element
+     */
     int lastIndexOf(T element);
 
+    /**
+     * Prepends an element to this.
+     *
+     * @param element An element
+     * @return A new Seq containing the given element prepended to this elements
+     */
     Seq<T> prepend(T element);
 
+    /**
+     * Prepends all given elements to this.
+     *
+     * @param elements An Iterable of elements
+     * @return A new Seq containing the given elements prepended to this elements
+     */
     Seq<T> prependAll(Iterable<? extends T> elements);
 
+    /**
+     * Sets the given element at the specified index.
+     *
+     * @param index   an index
+     * @param element an element
+     * @return a new Seq consisting of this elements and the given element is set at the given index
+     * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
+     */
     Seq<T> set(int index, T element);
 
+    /**
+     * Sorts this elements according to their natural order. If this elements are not
+     * {@code Comparable}, a {@code java.lang.ClassCastException} may be thrown.
+     *
+     * @return A sorted version of this
+     * @throws ClassCastException if this elements are not {@code Comparable}
+     */
     Seq<T> sort();
 
+    /**
+     * Sorts this elements according to the provided {@code Comparator}. If this elements are not
+     * {@code Comparable}, a {@code java.lang.ClassCastException} may be thrown.
+     *
+     * @param c A comparator
+     * @return a sorted version of this
+     * @throws ClassCastException if this elements are not {@code Comparable}
+     */
     Seq<T> sort(Comparator<? super T> c);
 
     /**
@@ -107,8 +197,47 @@ public interface Seq<T> extends Traversable<T> {
      */
     Tuple2<? extends Seq<T>, ? extends Seq<T>> splitAt(int n);
 
+    /**
+     * <p>Returns a Seq that is a subsequence of this. The subsequence begins with the element at the specified index
+     * and extends to the end of this Seq.</p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.of(1, 2).substring(0) = List.of(1, 2)
+     * List.of(1, 2).substring(1) = List.of(2)
+     * List.of(1, 2).substring(2) = List.nil()
+     * </code>
+     * </pre>
+     *
+     * @param beginIndex the beginning index, inclusive
+     * @return the specified subsequence
+     * @throws IndexOutOfBoundsException if {@code beginIndex} is negative or larger than the length of this
+     *                                   {@code String} object.
+     */
     Seq<T> subsequence(int beginIndex);
 
+    /**
+     * <p>Returns a Seq that is a subsequence of this. The subsequence begins with the element at the specified index
+     * and extends to the element at index {@code endIndex - 1}.</p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.of(1, 2, 3, 4).substring(1, 3) = List.of(2, 3)
+     * List.of(1, 2, 3, 4).substring(0, 4) = List.of(1, 2, 3, 4)
+     * List.of(1, 2, 3, 4).substring(2, 2) = List.nil()
+     * </code>
+     * </pre>
+     *
+     * @param beginIndex the beginning index, inclusive
+     * @param endIndex   the end index, exclusive
+     * @return the specified subsequence
+     * @throws IndexOutOfBoundsException if the
+     *                                   {@code beginIndex} is negative, or
+     *                                   {@code endIndex} is larger than the length of
+     *                                   this {@code String} object, or
+     *                                   {@code beginIndex} is larger than
+     *                                   {@code endIndex}.
+     */
     Seq<T> subsequence(int beginIndex, int endIndex);
 
     // -- Adjusted return types of Traversable methods
