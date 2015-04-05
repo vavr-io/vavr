@@ -92,7 +92,9 @@ public class TryTest implements Monad1Laws<Try<?>> {
 
 	@Test(expected = Failure.Fatal.class)
 	public void shouldPassThroughFatalException() {
-		Try.of(() -> { throw new UnknownError(); });
+		Try.of(() -> {
+			throw new UnknownError();
+		});
 	}
 
 	@Test
@@ -172,6 +174,11 @@ public class TryTest implements Monad1Laws<Try<?>> {
     public void shouldConvertFailureToEither() {
         assertThat(failure().toEither().isLeft()).isTrue();
     }
+
+	@Test
+	public void shouldConvertFailureToJavaOptional() {
+		assertThat(failure().toJavaOptional().isPresent()).isFalse();
+	}
 
 	@Test
 	public void shouldFilterMatchingPredicateOnFailure() {
@@ -352,7 +359,12 @@ public class TryTest implements Monad1Laws<Try<?>> {
         assertThat(success().toEither().isRight()).isTrue();
     }
 
-    @Test
+	@Test
+	public void shouldConvertSuccessToJavaOptional() {
+		assertThat(success().toJavaOptional().get()).isEqualTo(OK);
+	}
+
+	@Test
 	public void shouldFilterMatchingPredicateOnSuccess() {
 		assertThat(success().filter(s -> true).get()).isEqualTo(OK);
 	}

@@ -18,6 +18,7 @@ import org.junit.Test;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -103,6 +104,20 @@ public class OptionTest implements Monad1Laws<Option<?>> {
         final Some<Integer> some = new Some<>(1);
         assertThat(some.toOption()).isEqualTo(some);
     }
+
+	// -- toJavaOptional
+
+	@Test
+	public void shouldConvertNoneToJavaOptional() {
+		final None<Object> none = None.instance();
+		assertThat(none.toJavaOptional()).isEqualTo(Optional.empty());
+	}
+
+	@Test
+	public void shouldConvertSomeToJavaOptional() {
+		final Some<Integer> some = new Some<>(1);
+		assertThat(some.toJavaOptional()).isEqualTo(Optional.of(1));
+	}
 
 	// -- isPresent
 

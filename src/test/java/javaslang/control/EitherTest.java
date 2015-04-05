@@ -171,6 +171,18 @@ public class EitherTest {
 		assertThat(self.left().toEither()).isEqualTo(self);
 	}
 
+	// toJavaOptional
+
+	@Test
+	public void shouldConvertLeftProjectionOfLeftToJavaOptional() {
+		assertThat(new Left<Integer, String>(1).left().toJavaOptional()).isEqualTo(Optional.of(1));
+	}
+
+	@Test
+	public void shouldConvertLeftProjectionOfRightToJavaOptional() {
+		assertThat(new Right<Integer, String>("x").left().toJavaOptional()).isEqualTo(Optional.empty());
+	}
+
 	// filter
 
 	@Test
@@ -460,6 +472,18 @@ public class EitherTest {
 	public void shouldConvertRightProjectionOfRightToEither() {
 		final Either<Integer, String> self = new Right<>("1");
 		assertThat(self.right().toEither()).isEqualTo(self);
+	}
+
+	// toJavaOptional
+
+	@Test
+	public void shouldConvertRightProjectionOfLeftToJavaOptional() {
+		assertThat(new Left<Integer, String>(0).right().toJavaOptional()).isEqualTo(Optional.empty());
+	}
+
+	@Test
+	public void shouldConvertRightProjectionOfRightToJavaOptional() {
+		assertThat(new Right<Integer, String>("1").right().toJavaOptional()).isEqualTo(Optional.of("1"));
 	}
 
 	// filter
