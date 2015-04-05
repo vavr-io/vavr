@@ -48,25 +48,36 @@ def generateMainClasses(): Unit = {
       val resultGenerics = (1 to i).gen(j => s"U$j")(", ")
       val functionType = im.getType(s"javaslang.Function$i")
       xs"""
-        ${(i == 1).gen(xs"""
         /$javadoc
-         * Defines a Functor by generalizing the map function.
-         * <p>
-         * All instances of the Functor interface should obey the two functor laws:
+         * <p>Defines a Functor by generalizing the map function which maps ${i.numerus("element")}.</p>
+         *
+         * All instances of the Functor$i interface should obey the two functor laws:
          * <ul>
          *     <li>{@code m.map(a -> a) ≡ m}</li>
          *     <li>{@code m.map(f.compose(g)) ≡ m.map(g).map(f)}</li>
          * </ul>
+         * where ${if (i == 1) "f, g ∈ Function1" else s"{@code f, g ∈ Tuple$i → Tuple$i}"}.
          *
          * @param <T1> Component type of this Functor.
          * @see <a href="http://www.haskellforall.com/2012/09/the-functor-design-pattern.html">The functor design pattern</a>
          */
-        """)}
         public interface $className<$generics> {
 
+            /**
+             * Applies a function f to the components of this functor.
+             ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <U$j> type of the ${j.ordinal} component of the resulting functor")("\n")}
+             * @param f a $i-ary function which maps the components of this functor
+             * @return a new functor with ${i.numerus("component type")} ${(1 to i).gen(j => s"U$j")(", ")}.
+             */
             <$resultGenerics> $className<$resultGenerics> map($functionType<$paramTypes, $resultType> f);
 
             ${(i > 1).gen(xs"""
+              /$javadoc
+               * Applies a separate function to each component of this functor.
+               ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <U$j> type of the ${j.ordinal} component of the resulting functor")("\n")}
+               ${(1 to i).gen(j => s"* @param f$j the function applied to the ${j.ordinal} component of this functor")("\n")}
+               * @return a new functor with ${i.numerus("component type")} ${(1 to i).gen(j => s"U$j")(", ")}.
+               */
               <$resultGenerics> $className<$resultGenerics> map(${(1 to i).gen(j => s"${im.getType("javaslang.Function1")}<? super T$j, ? extends U$j> f$j")(", ")});
             """)}
         }
