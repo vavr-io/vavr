@@ -51,14 +51,34 @@ public interface Either<L, R> extends ValueObject {
 	 */
 	long serialVersionUID = 1L;
 
+	/**
+	 * Returns whether this Either is a Left.
+	 *
+	 * @return true, if this is a Left, false otherwise
+	 */
 	boolean isLeft();
 
+	/**
+	 * Returns whether this Either is a Right.
+	 *
+	 * @return true, if this is a Right, false otherwise
+	 */
 	boolean isRight();
 
+	/**
+	 * Returns a LeftProjection of this Either.
+	 *
+	 * @return a new LeftProjection of this
+	 */
 	default LeftProjection<L, R> left() {
 		return new LeftProjection<>(this);
 	}
 
+	/**
+	 * Returns a RightProjection of this Either.
+	 *
+	 * @return a new RightProjection of this
+	 */
 	default RightProjection<L, R> right() {
 		return new RightProjection<>(this);
 	}
@@ -91,6 +111,13 @@ public interface Either<L, R> extends ValueObject {
 			this.either = either;
 		}
 
+		/**
+		 * Gets the Left value or throws.
+		 *
+		 * @return the left value, if the underlying Either is a Left
+		 * @throws NoSuchElementException if the underlying either of this LeftProjection is a Right
+		 */
+		@Override
 		public L get() {
 			if (either.isLeft()) {
 				return asLeft();
@@ -99,11 +126,25 @@ public interface Either<L, R> extends ValueObject {
 			}
 		}
 
+		/**
+		 * Gets the Left value or an alternate value, if the projected Either is a Right.
+		 *
+		 * @param other an alternative value
+		 * @return the left value, if the underlying Either is a Left or else {@code other}
+		 * @throws NoSuchElementException if the underlying either of this LeftProjection is a Right
+		 */
 		@Override
 		public L orElse(L other) {
 			return either.isLeft() ? asLeft() : other;
 		}
 
+		/**
+		 * Gets the Left value or an alternate value, if the projected Either is a Right.
+		 *
+		 * @param other a function which converts a Right value to an alternative Left value
+		 * @return the left value, if the underlying Either is a Left or else the alternative Left value provided by
+		 *         {@code other} by applying the Right value.
+		 */
 		@Override
 		public L orElseGet(Function1<? super R, ? extends L> other) {
 			if (either.isLeft()) {
@@ -113,6 +154,11 @@ public interface Either<L, R> extends ValueObject {
 			}
 		}
 
+		/**
+		 * Runs an action in the case this is a projection on a Right value.
+		 *
+		 * @param action an action which consumes a Right value
+		 */
 		@Override
 		public void orElseRun(Consumer<? super R> action) {
 			if (either.isRight()) {
@@ -120,6 +166,15 @@ public interface Either<L, R> extends ValueObject {
 			}
 		}
 
+		/**
+		 * Gets the Left value or throws, if the projected Either is a Right.
+		 *
+		 * @param <X> a throwable type
+		 * @param exceptionFunction a function which creates an exception based on a Right value
+		 * @return the left value, if the underlying Either is a Left or else throws the exception provided by
+		 *         {@code exceptionFunction} by applying the Right value.
+		 * @throws X if the projected Either is a Right
+		 */
 		@Override
 		public <X extends Throwable> L orElseThrow(Function1<? super R, X> exceptionFunction) throws X {
 			if (either.isLeft()) {
@@ -129,6 +184,12 @@ public interface Either<L, R> extends ValueObject {
 			}
 		}
 
+		/**
+		 * Converts this Either to an {@linkplain javaslang.control.Option}.
+		 *
+		 * @return {@linkplain javaslang.control.Some} of the left value if this is a projection of a Left,
+		 *         {@linkplain javaslang.control.None} otherwise.
+		 */
 		@Override
 		public Option<L> toOption() {
 			if (either.isLeft()) {
@@ -138,11 +199,22 @@ public interface Either<L, R> extends ValueObject {
 			}
 		}
 
+		/**
+		 * Returns the underlying either of this projection.
+		 *
+		 * @return the underlying either
+		 */
 		@Override
 		public Either<L, R> toEither() {
 			return either;
 		}
 
+		/**
+		 * Converts this Either to a {@linkplain java.util.Optional}.
+		 *
+		 * @return {@code Optional.ofNullable(leftValue)} if this is a projection of a Left,
+		 *         {@code Optional.empty()} otherwise.
+		 */
 		@Override
 		public Optional<L> toJavaOptional() {
 			if (either.isLeft()) {
@@ -152,6 +224,13 @@ public interface Either<L, R> extends ValueObject {
 			}
 		}
 
+		/**
+		 * Returns {@code Some(Left(value))}, if the underlying Either of this projection is a Left and the left value
+		 * satisfies the given predicate. Otherwise {@code None} is returned.
+		 *
+		 * @param predicate A predicate
+		 * @return An new Option of Either
+		 */
 		public Option<Either<L, R>> filter(Predicate<? super L> predicate) {
 			Objects.requireNonNull(predicate);
 			if (either.isLeft() && predicate.test(asLeft())) {
@@ -161,6 +240,11 @@ public interface Either<L, R> extends ValueObject {
 			}
 		}
 
+		/**
+		 * Applies the given action to the value if the projected either is a Left. Otherwise nothing happens.
+		 *
+		 * @param action An action which takes a left value
+		 */
 		public void forEach(Consumer<? super L> action) {
 			Objects.requireNonNull(action);
 			if (either.isLeft()) {
@@ -168,6 +252,13 @@ public interface Either<L, R> extends ValueObject {
 			}
 		}
 
+		/**
+		 * Maps the left value if the projected Either is a Left, otherwise returns the Right.
+		 *
+		 * @param mapper A mapper which takes a left value and returns a value of type U
+		 * @param <U> The new type of a Left value
+		 * @return A new Either
+		 */
 		@SuppressWarnings("unchecked")
 		public <U> Either<U, R> map(Function1<? super L, ? extends U> mapper) {
 			Objects.requireNonNull(mapper);
@@ -178,6 +269,13 @@ public interface Either<L, R> extends ValueObject {
 			}
 		}
 
+		/**
+		 * FlatMaps the left value if the projected Either is a Left, otherwise returns the Right.
+		 *
+		 * @param mapper A mapper which takes a left value and returns a new Either
+		 * @param <U> The new type of a Left value
+		 * @return A new Either
+		 */
 		@SuppressWarnings("unchecked")
 		public <U> Either<U, R> flatMap(Function1<? super L, ? extends Either<U, R>> mapper) {
 			Objects.requireNonNull(mapper);
@@ -227,6 +325,12 @@ public interface Either<L, R> extends ValueObject {
 			this.either = either;
 		}
 
+		/**
+		 * Gets the Right value or throws.
+		 *
+		 * @return the left value, if the underlying Either is a Right
+		 * @throws NoSuchElementException if the underlying either of this RightProjection is a Left
+		 */
 		@Override
 		public R get() {
 			if (either.isRight()) {
@@ -236,11 +340,25 @@ public interface Either<L, R> extends ValueObject {
 			}
 		}
 
+		/**
+		 * Gets the Right value or an alternate value, if the projected Either is a Left.
+		 *
+		 * @param other an alternative value
+		 * @return the right value, if the underlying Either is a Right or else {@code other}
+		 * @throws NoSuchElementException if the underlying either of this RightProjection is a Left
+		 */
 		@Override
 		public R orElse(R other) {
 			return either.isRight() ? asRight() : other;
 		}
 
+		/**
+		 * Gets the Right value or an alternate value, if the projected Either is a Left.
+		 *
+		 * @param other a function which converts a Left value to an alternative Right value
+		 * @return the right value, if the underlying Either is a Right or else the alternative Right value provided by
+		 *         {@code other} by applying the Left value.
+		 */
 		@Override
 		public R orElseGet(Function1<? super L, ? extends R> other) {
 			if (either.isRight()) {
@@ -250,6 +368,11 @@ public interface Either<L, R> extends ValueObject {
 			}
 		}
 
+		/**
+		 * Runs an action in the case this is a projection on a Left value.
+		 *
+		 * @param action an action which consumes a Left value
+		 */
 		@Override
 		public void orElseRun(Consumer<? super L> action) {
 			if (either.isLeft()) {
@@ -257,6 +380,15 @@ public interface Either<L, R> extends ValueObject {
 			}
 		}
 
+		/**
+		 * Gets the Right value or throws, if the projected Either is a Left.
+		 *
+		 * @param <X> a throwable type
+		 * @param exceptionFunction a function which creates an exception based on a Left value
+		 * @return the right value, if the underlying Either is a Right or else throws the exception provided by
+		 *         {@code exceptionFunction} by applying the Left value.
+		 * @throws X if the projected Either is a Left
+		 */
 		@Override
 		public <X extends Throwable> R orElseThrow(Function1<? super L, X> exceptionFunction) throws X {
 			if (either.isRight()) {
@@ -266,6 +398,12 @@ public interface Either<L, R> extends ValueObject {
 			}
 		}
 
+		/**
+		 * Converts this Either to an {@linkplain javaslang.control.Option}.
+		 *
+		 * @return {@linkplain javaslang.control.Some} of the right value if this is a projection of a Right,
+		 *         {@linkplain javaslang.control.None} otherwise.
+		 */
 		@Override
 		public Option<R> toOption() {
 			if (either.isRight()) {
@@ -275,20 +413,22 @@ public interface Either<L, R> extends ValueObject {
 			}
 		}
 
+		/**
+		 * Returns the underlying either of this projection.
+		 *
+		 * @return the underlying either
+		 */
 		@Override
 		public Either<L, R> toEither() {
 			return either;
 		}
 
-		public Option<Either<L, R>> filter(Predicate<? super R> predicate) {
-			Objects.requireNonNull(predicate);
-			if (either.isRight() && predicate.test(asRight())) {
-				return new Some<>(either);
-			} else {
-				return None.instance();
-			}
-		}
-
+		/**
+		 * Converts this Either to a {@linkplain java.util.Optional}.
+		 *
+		 * @return {@code Optional.ofNullable(rightValue)} if this is a projection of a Right,
+		 *         {@code Optional.empty()} otherwise.
+		 */
 		@Override
 		public Optional<R> toJavaOptional() {
 			if (either.isRight()) {
@@ -298,6 +438,27 @@ public interface Either<L, R> extends ValueObject {
 			}
 		}
 
+		/**
+		 * Returns {@code Some(Right(value))}, if the underlying Either of this projection is a Right and the right value
+		 * satisfies the given predicate. Otherwise {@code None} is returned.
+		 *
+		 * @param predicate A predicate
+		 * @return An new Option of Either
+		 */
+		public Option<Either<L, R>> filter(Predicate<? super R> predicate) {
+			Objects.requireNonNull(predicate);
+			if (either.isRight() && predicate.test(asRight())) {
+				return new Some<>(either);
+			} else {
+				return None.instance();
+			}
+		}
+
+		/**
+		 * Applies the given action to the value if the projected either is a Right. Otherwise nothing happens.
+		 *
+		 * @param action An action which takes a right value
+		 */
 		public void forEach(Consumer<? super R> action) {
 			Objects.requireNonNull(action);
 			if (either.isRight()) {
@@ -305,6 +466,13 @@ public interface Either<L, R> extends ValueObject {
 			}
 		}
 
+		/**
+		 * Maps the right value if the projected Either is a Right, otherwise returns the Left.
+		 *
+		 * @param mapper A mapper which takes a right value and returns a value of type U
+		 * @param <U> The new type of a Right value
+		 * @return A new Either
+		 */
 		@SuppressWarnings("unchecked")
 		public <U> Either<L, U> map(Function1<? super R, ? extends U> mapper) {
 			Objects.requireNonNull(mapper);
@@ -315,6 +483,13 @@ public interface Either<L, R> extends ValueObject {
 			}
 		}
 
+		/**
+		 * FlatMaps the right value if the projected Either is a Right, otherwise returns the Left.
+		 *
+		 * @param mapper A mapper which takes a right value and returns a new Either
+		 * @param <U> The new type of a Right value
+		 * @return A new Either
+		 */
 		@SuppressWarnings("unchecked")
 		public <U> Either<L, U> flatMap(Function1<? super R, ? extends Either<L, U>> mapper) {
 			Objects.requireNonNull(mapper);

@@ -23,6 +23,11 @@ public final class Left<L, R> implements Either<L, R> {
 
     final L left;
 
+    /**
+     * Constructs a left.
+     *
+     * @param left The value of this Left
+     */
     public Left(L left) {
         this.left = left;
     }
