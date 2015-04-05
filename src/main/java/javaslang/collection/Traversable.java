@@ -22,7 +22,8 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
- * An interface for inherently recursive data structures. The order of elements is determined by {@link java.lang.Iterable#iterator()}, which may vary each time it is called.
+ * <p>An interface for inherently recursive data structures. The order of elements is determined by
+ * {@link java.lang.Iterable#iterator()}, which may vary each time it is called.</p>
  * <p>Conversion:</p>
  * <ul>
  * <li>{@link #toJavaArray(Class)}</li>
@@ -122,6 +123,7 @@ import java.util.function.Predicate;
  * </ul>
  *
  * @param <T> Component type
+ * @since 1.1.0
  */
 public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
 
@@ -131,7 +133,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      *
      * @param iterable An Iterable.
      * @param <T>      Component type
-     * @return A Traversable
+     * @return a Traversable
      */
     static <T> Traversable<T> of(Iterable<? extends T> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
@@ -146,20 +148,21 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
 
     /**
      * <p>Calculates the average of this elements by computing the arithmetic mean.</p>
+     * <p>Supported component types are boolean, byte, char, double, float, int, long, short, BigInteger, BigDecimal.</p>
+     * <p>The arithmetic mean of boolean is defined here to be {@code this.filter(Boolean::booleanValue).length() >= n / 2)}.</p>
      * <p>In order to preserve summation results, the value space is expanded as follows:</p>
      * <ul>
-     *     <li><strong>element type, summation type</strong></li>
-     *     <li>byte, long</li>
-     *     <li>char, int</li>
-     *     <li>double, double</li>
-     *     <li>float, double</li>
-     *     <li>int, long</li>
-     *     <li>short, int</li>
+     * <li><strong>element type, summation type</strong></li>
+     * <li>byte, long</li>
+     * <li>char, int</li>
+     * <li>double, double</li>
+     * <li>float, double</li>
+     * <li>int, long</li>
+     * <li>short, int</li>
      * </ul>
      * <p>BigInteger and BigDecimal are not treated special.</p>
-     * <p>The average of boolean elements is defined to be {@code this.filter(Boolean::booleanValue).length() >= n / 2}.</p>
      *
-     * @return The average of this elements.
+     * @return the average of this elements.
      * @throws java.lang.UnsupportedOperationException if no elements are present or the elements are not numeric
      */
     @SuppressWarnings("unchecked")
@@ -194,7 +197,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
     /**
      * Returns an empty version of this traversable, i.e. {@code this.clear().isEmpty() == true}.
      *
-     * @return An empty Traversable.
+     * @return an empty Traversable.
      */
     Traversable<T> clear();
 
@@ -202,7 +205,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * Returns the k-combination of this traversable, i.e. all subset of this of k distinct elements.
      *
      * @param k Size of subsets
-     * @return The k-combination of this elements
+     * @return the k-combination of this elements
      * @see <a href="http://en.wikipedia.org/wiki/Combination">Combination</a>
      */
     Traversable<? extends Traversable<T>> combinations(int k);
@@ -242,18 +245,38 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
     Traversable<T> distinct();
 
     /**
-     * Drops the first n elements of this Traversable or all elements, if this length &lt; n.
+     * Drops the first n elements of this or all elements, if this length &lt; n.
      *
      * @param n The number of elements to drop.
-     * @return A Traversable consisting of all elements of this Traversable except the first n ones, or else an empty Traversable, if this
-     * Traversable has less than n elements.
+     * @return a new instance consisting of all elements of this except the first n ones, or else the empty instance,
+     * if this has less than n elements.
      */
     Traversable<T> drop(int n);
 
+    /**
+     * Drops the last n elements of this or all elements, if this length &lt; n.
+     *
+     * @param n The number of elements to drop.
+     * @return a new instance consisting of all elements of this except the last n ones, or else the empty instance,
+     * if this has less than n elements.
+     */
     Traversable<T> dropRight(int n);
 
+    /**
+     * Drops elements while the predicate holds for the current element.
+     *
+     * @param predicate A condition tested subsequently for this elements starting with the first.
+     * @return a new instance consisting of all elements starting from the first one which does not satisfy the
+     * given predicate.
+     */
     Traversable<T> dropWhile(Predicate<? super T> predicate);
 
+    /**
+     * Returns a new traversable consisting of all elements of this which satisfy the given predicate.
+     *
+     * @param predicate A predicate
+     * @return a new traversable
+     */
     Traversable<T> filter(Predicate<? super T> predicate);
 
     /**
@@ -261,7 +284,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * i.e. tree.findAll() may be a List.
      *
      * @param predicate A predicate.
-     * @return All elements of this which satisfy the given predicate.
+     * @return all elements of this which satisfy the given predicate.
      */
     Traversable<T> findAll(Predicate<? super T> predicate);
 
@@ -309,7 +332,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * </ul>
      *
      * @param <U> new component type (!!UNSAFE!! {@code of(1, 2, 3).map(Object::toString).<Integer> flatten()})
-     * @return A flattened version of this traversable
+     * @return a flattened version of this traversable
      */
     <U> Traversable<U> flatten();
 
@@ -330,8 +353,8 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * </ul>
      *
      * @param <U> new component type (UNSAFE!)
-     * @param f An unboxing function that maps elements T to Iterables of elements U that will be unboxed.
-     * @return A flattened version of this traversable
+     * @param f   An unboxing function that maps elements T to Iterables of elements U that will be unboxed.
+     * @return a flattened version of this traversable
      */
     <U> Traversable<U> flatten(Function1<T, ? extends Iterable<? extends U>> f);
 
@@ -345,7 +368,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      *
      * @param zero Value to start the accumulation with.
      * @param op   The accumulator operator.
-     * @return An accumulated version of this.
+     * @return an accumulated version of this.
      */
     default T fold(T zero, Function2<? super T, ? super T, ? extends T> op) {
         return foldLeft(zero, op);
@@ -363,7 +386,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * @param zero Value to start the accumulation with.
      * @param f    The accumulator function.
      * @param <U>  Result type of the accumulator.
-     * @return An accumulated version of this.
+     * @return an accumulated version of this.
      */
     default <U> U foldLeft(U zero, Function2<? super U, ? super T, ? extends U> f) {
         Objects.requireNonNull(f, "function is null");
@@ -383,7 +406,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * @param monoid A Monoid
      * @param mapper A mapper
      * @param <U>    Component type of the given monoid.
-     * @return The folded monoid value.
+     * @return the folded monoid value.
      * @throws java.lang.NullPointerException if monoid or mapper is null
      */
     default <U> U foldMap(Monoid<U> monoid, Function1<T, U> mapper) {
@@ -414,7 +437,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * @param zero Value to start the accumulation with.
      * @param f    The accumulator function.
      * @param <U>  Result type of the accumulator.
-     * @return An accumulated version of this.
+     * @return an accumulated version of this.
      * @throws java.lang.NullPointerException if f is null
      */
     default <U> U foldRight(U zero, Function2<? super T, ? super U, ? extends U> f) {
@@ -480,14 +503,18 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      */
     T head();
 
-    // dual of tail regarding reversed order
+    /**
+     * Dual of {@linkplain #tail()}, returning all elements except the last.
+     *
+     * @return a new instance containing all elements except the last.
+     */
     Traversable<T> init();
 
     /**
      * Inserts an element between all elements of this Traversable.
      *
      * @param element An element.
-     * @return An 'interspersed' version of this Traversable.
+     * @return an interspersed version of this
      */
     Traversable<T> intersperse(T element);
 
@@ -498,14 +525,39 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      */
     boolean isEmpty();
 
+    /**
+     * Joins the elements of this by concatenating their string representations.
+     * <p>
+     * This has the same effect as calling {@code join("", "", "")}.
+     *
+     * @return a new String
+     */
     default String join() {
         return join("", "", "");
     }
 
+    /**
+     * Joins the string representations of this elements using a specific delimiter.
+     * <p>
+     * This has the same effect as calling {@code join(delimiter, "", "")}.
+     *
+     * @param delimiter A delimiter string put between string representations of elements of this
+     * @return A new String
+     */
     default String join(CharSequence delimiter) {
         return join(delimiter, "", "");
     }
 
+    /**
+     * Joins the string representations of this elements using a specific delimiter, prefix and suffix.
+     * <p>
+     * Example: {@code List.of("a", "b", "c").join(", ", "Chars(", ")") = "Chars(a, b, c)"}
+     *
+     * @param delimiter A delimiter string put between string representations of elements of this
+     * @param prefix prefix of the resulting string
+     * @param suffix suffix of the resulting string
+     * @return a new String
+     */
     default String join(CharSequence delimiter,
                         CharSequence prefix,
                         CharSequence suffix) {
@@ -514,7 +566,12 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
         return builder.append(suffix).toString();
     }
 
-    // dual of head regarding reversed order
+    /**
+     * Dual of {@linkplain #head()}, returning the last element.
+     *
+     * @return the last element.
+     * @throws UnsupportedOperationException is this is empty
+     */
     default T last() {
         if (isEmpty()) {
             throw new UnsupportedOperationException("last of empty Traversable");
@@ -531,9 +588,9 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
     }
 
     /**
-     * Computes the number of elements in this Traversable.
+     * Computes the number of elements of this.
      *
-     * @return The number of elements in this Traversable.
+     * @return the number of elements
      */
     @SuppressWarnings("RedundantCast")
     default int length() {
@@ -546,16 +603,18 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      *
      * @param mapper A mapper.
      * @param <U>    Component type of the target Traversable
-     * @return A mapped Traversable
+     * @return a mapped Traversable
      * @see javaslang.algebra.Monad1#map(Function1)
      */
     @Override
     <U> Traversable<U> map(Function1<? super T, ? extends U> mapper);
 
     /**
-     * Calculates the maximum of this elements.
+     * <p>Calculates the maximum of this elements.</p>
+     * <p>Supported component types are boolean, byte, char, double, float, int, long, short, BigInteger, BigDecimal.</p>
+     * <p>If the component type is boolean, the maximum is defined to be {@code this.reduce((i, j) -> i || j)}.</p>
      *
-     * @return The maximum of this elements.
+     * @return the maximum of this elements.
      * @throws java.lang.UnsupportedOperationException if no elements are present or the elements are not numeric
      */
     @SuppressWarnings("unchecked")
@@ -584,8 +643,10 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
 
     /**
      * Calculates the minimum of this elements.
+     * <p>Supported component types are boolean, byte, char, double, float, int, long, short, BigInteger, BigDecimal.</p>
+     * <p>If the component type is boolean, the minimum is defined to be {@code this.reduce((i, j) -> i && j)}.</p>
      *
-     * @return The minimum of this elements.
+     * @return the minimum of this elements.
      * @throws java.lang.UnsupportedOperationException if no elements are present or the elements are not numeric
      */
     @SuppressWarnings("unchecked")
@@ -614,12 +675,13 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
 
     /**
      * <p>Calculates the product of this elements.</p>
+     * <p>Supported component types are boolean, byte, char, double, float, int, long, short, BigInteger, BigDecimal.</p>
+     * <p>If b1 and b2 are of type boolean, {@code b1 * b2 := b1 &amp;&amp; b2}.</p>
      * <p>The product operation is applied to this elements according to the Java Language Secification
      * <a href="http://docs.oracle.com/javase/specs/jls/se8/html/jls-5.html#jls-5.6.2">Chapter 5. Conversions and Contexts</a>.
      * The resulting value is converted to the component type of this Traversable.</p>
-     * <p>If b1 and b2 are of type boolean, b1 * b2 := b1 &amp;&amp; b2.</p>
      *
-     * @return The product of this elements.
+     * @return the product of this elements.
      * @throws java.lang.UnsupportedOperationException if no elements are present or the elements are not numeric
      */
     @SuppressWarnings("unchecked")
@@ -636,7 +698,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
                     .caze((float t) -> (T) ((Traversable<Float>) this).reduce((i, j) -> i * j))
                     .caze((int t) -> (T) ((Traversable<Integer>) this).reduce((i, j) -> i * j))
                     .caze((long t) -> (T) ((Traversable<Long>) this).reduce((i, j) -> i * j))
-                    .caze((short t) -> (T) Short.valueOf( ((Traversable<Short>) this).foldLeft(1, (i, j) -> i * j).shortValue()))
+                    .caze((short t) -> (T) Short.valueOf(((Traversable<Short>) this).foldLeft(1, (i, j) -> i * j).shortValue()))
                     .caze((BigInteger t) -> (T) ((Traversable<BigInteger>) this).reduce(BigInteger::multiply))
                     .caze((BigDecimal t) -> (T) ((Traversable<BigDecimal>) this).reduce(BigDecimal::multiply))
                     .orElse(() -> {
@@ -650,7 +712,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * Removes the first occurrence of the given element.
      *
      * @param element An element to be removed from this Traversable.
-     * @return A Traversable containing all elements of this without the first occurrence of the given element.
+     * @return a Traversable containing all elements of this without the first occurrence of the given element.
      */
     Traversable<T> remove(T element);
 
@@ -659,7 +721,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * Removes all occurrences of the given element.
      *
      * @param element An element to be removed from this Traversable.
-     * @return A Traversable containing all elements of this but not the given element.
+     * @return a Traversable containing all elements of this but not the given element.
      */
     Traversable<T> removeAll(T element);
 
@@ -667,7 +729,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * Removes all occurrences of the given elements.
      *
      * @param elements Elements to be removed from this Traversable.
-     * @return A Traversable containing all elements of this but none of the given elements.
+     * @return a Traversable containing all elements of this but none of the given elements.
      */
     Traversable<T> removeAll(Iterable<? extends T> elements);
 
@@ -676,7 +738,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * The order of element iteration is undetermined.
      *
      * @param op A BiFunction of type T
-     * @return The reduced value.
+     * @return the reduced value.
      * @throws UnsupportedOperationException  if this Traversable is empty
      * @throws java.lang.NullPointerException if op is null
      */
@@ -688,7 +750,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * Accumulates the elements of this Traversable by successively calling the given operation {@code op} from the left.
      *
      * @param op A BiFunction of type T
-     * @return The reduced value.
+     * @return the reduced value.
      * @throws UnsupportedOperationException  if this Traversable is empty
      * @throws java.lang.NullPointerException if op is null
      */
@@ -705,7 +767,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * Accumulates the elements of this Traversable by successively calling the given operation {@code op} from the right.
      *
      * @param op An operation of type T
-     * @return The reduced value.
+     * @return the reduced value.
      * @throws UnsupportedOperationException  if this Traversable is empty
      * @throws java.lang.NullPointerException if op is null
      */
@@ -724,7 +786,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      *
      * @param currentElement An element to be substituted.
      * @param newElement     A replacement for currentElement.
-     * @return A Traversable containing all elements of this where the first occurrence of currentElement is replaced with newELement.
+     * @return a Traversable containing all elements of this where the first occurrence of currentElement is replaced with newELement.
      */
     Traversable<T> replace(T currentElement, T newElement);
 
@@ -733,7 +795,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      *
      * @param currentElement An element to be substituted.
      * @param newElement     A replacement for currentElement.
-     * @return A Traversable containing all elements of this where all occurrences of currentElement are replaced with newELement.
+     * @return a Traversable containing all elements of this where all occurrences of currentElement are replaced with newELement.
      */
     Traversable<T> replaceAll(T currentElement, T newElement);
 
@@ -742,7 +804,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * essentially a special case of {@link #map(Function1)}.
      *
      * @param operator An operator.
-     * @return A Traversable containing all elements of this transformed within the same domain.
+     * @return a Traversable containing all elements of this transformed within the same domain.
      */
     Traversable<T> replaceAll(Function1<T, T> operator);
 
@@ -750,14 +812,14 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * Keeps all occurrences of the given elements from this.
      *
      * @param elements Elements to be kept.
-     * @return A Traversable containing all occurreces of the given elements.
+     * @return a Traversable containing all occurreces of the given elements.
      */
     Traversable<T> retainAll(Iterable<? extends T> elements);
 
     /**
      * Reverses the order of elements.
      *
-     * @return The reversed elements.
+     * @return the reversed elements.
      */
     Traversable<T> reverse();
 
@@ -765,18 +827,19 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * Returns a tuple where the first element is the longest prefix of elements that satisfy p and the second element is the remainder.
      *
      * @param predicate A predicate.
-     * @return A Tuple containing the longest prefix of elements that satisfy p and the remainder.
+     * @return a Tuple containing the longest prefix of elements that satisfy p and the remainder.
      */
     Tuple2<? extends Traversable<T>, ? extends Traversable<T>> span(Predicate<? super T> predicate);
 
     /**
      * <p>Calculates the sum of this elements.</p>
+     * <p>Supported component types are boolean, byte, char, double, float, int, long, short, BigInteger, BigDecimal.</p>
+     * <p>If b1 and b2 are of type boolean, {@code b1 + b2 := b1 || b2}.</p>
      * <p>The sum operation is applied to this elements according to the Java Language Secification
      * <a href="http://docs.oracle.com/javase/specs/jls/se8/html/jls-5.html#jls-5.6.2">Chapter 5. Conversions and Contexts</a>.
      * The resulting value is converted to the component type of this Traversable.</p>
-     * <p>If b1 and b2 are of type boolean, b1 + b2 := b1 || b2.</p>
      *
-     * @return The sum of this elements.
+     * @return the sum of this elements.
      * @throws java.lang.UnsupportedOperationException if no elements are present or the elements are not numeric
      */
     @SuppressWarnings({"unchecked"})
@@ -803,6 +866,10 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
         }
     }
 
+    /**
+     * Sends the string representations of these elements to the sandard error stream {@linkplain System#err},
+     * each in a new line.
+     */
     default void stderr() {
         try (PrintStream writer = System.err) {
             for (T t : this) {
@@ -814,7 +881,11 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
         }
     }
 
-    // See also http://stackoverflow.com/questions/3643939/java-process-with-input-output-stream.
+    /**
+     * Sends the string representations of these elements to the sandard output stream {@linkplain System#out},
+     * each in a new line.
+     */
+    // TODO(#79): See also http://stackoverflow.com/questions/3643939/java-process-with-input-output-stream.
     @SuppressWarnings("InfiniteLoopStatement")
     default void stdout() {
         try (PrintStream writer = System.out) {
@@ -836,28 +907,47 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
     Traversable<T> tail();
 
     /**
+     * Takes the first n elements of this or all elements, if this length &lt; n.
      * <p>
-     * Takes the first n elements of this Traversable or all elements, if this length &lt; n.
-     * </p>
+     * The result is equivalent to {@code sublist(0, max(0, min(length(), n)))} but does not throw if {@code n < 0} or
+     * {@code n > length()}.
      * <p>
-     * The result is equivalent to {@code sublist(0, n)} but does not throw if {@code n < 0} or {@code n > length()}. In the case of
-     * {@code n < 0} the empty Traversable is returned, in the case of {@code n > length()} this Traversable is returned.
-     * </p>
+     * In the case of {@code n < 0} the empty instance is returned, in the case of {@code n > length()} this is returned.
      *
      * @param n The number of elements to take.
-     * @return A Traversable consisting of the first n elements of this Traversable or all elements, if it has less than n elements.
+     * @return A new instance consisting the first n elements of this or all elements, if this has less than n elements.
      */
     Traversable<T> take(int n);
 
+    /**
+     * Takes the last n elements of this or all elements, if this length &lt; n.
+     * <p>
+     * The result is equivalent to {@code sublist(max(0, min(length(), length() - n)), n)}, i.e. takeRight will not
+     * throw if {@code n < 0} or {@code n > length()}.
+     * <p>
+     * In the case of {@code n < 0} the empty instance is returned, in the case of {@code n > length()} this is returned.
+     *
+     * @param n The number of elements to take.
+     * @return A new instance consisting the first n elements of this or all elements, if this has less than n elements.
+     */
     Traversable<T> takeRight(int n);
 
+    /**
+     * Takes elements while the predicate holds for the current element.
+     *
+     * @param predicate A condition tested subsequently for this elements starting with the last.
+     * @return a new instance consisting of all elements starting from the last one which does not satisfy the
+     * given predicate.
+     */
     Traversable<T> takeWhile(Predicate<? super T> predicate);
 
     /**
+     * Converts this to a Java array.
+     * <p>
      * Tip: Given a {@code Traversable<M<T>> t} use {@code t.toJavaArray((Class<M<T>>) (Class) M.class)}.
      *
      * @param componentType Type of resulting array's elements.
-     * @return An array containing this elements
+     * @return a new array containing this elements
      */
     default T[] toJavaArray(Class<T> componentType) {
         final java.util.List<T> list = toJavaList();
@@ -866,6 +956,11 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
         return array;
     }
 
+    /**
+     * Converts this to a {@link java.util.List}.
+     *
+     * @return a new {@linkplain java.util.ArrayList} containing this elements
+     */
     default java.util.List<T> toJavaList() {
         final java.util.List<T> result = new java.util.ArrayList<>();
         for (T a : this) {
@@ -874,6 +969,14 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
         return result;
     }
 
+    /**
+     * Converts this to a {@link java.util.Map} by converting this elements to key-value pairs.
+     *
+     * @param <K> key type
+     * @param <V> value type
+     * @param f a function which converts elements of this to key-value pairs inserted into the resulting Map
+     * @return a new {@linkplain java.util.HashMap} containing this key-value representations of this elements
+     */
     default <K, V> java.util.Map<K, V> toJavaMap(Function1<? super T, Tuple2<K, V>> f) {
         final java.util.Map<K, V> map = new java.util.HashMap<>();
         for (T a : this) {
@@ -883,6 +986,11 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
         return map;
     }
 
+    /**
+     * Converts this to a {@link java.util.Set}.
+     *
+     * @return a new {@linkplain java.util.HashSet} containing this elements
+     */
     default java.util.Set<T> toJavaSet() {
         final java.util.Set<T> result = new java.util.HashSet<>();
         for (T a : this) {
@@ -891,10 +999,24 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
         return result;
     }
 
+    /**
+     * Converts this to a sequential {@link java.util.stream.Stream} by calling {@code this.toJavaList().stream()}.
+     *
+     * @return a new {@linkplain java.util.stream.Stream} containing this elements
+     */
     default java.util.stream.Stream<T> toJavaStream() {
         return toJavaList().stream();
     }
 
+    /**
+     * Unzips this elements by mapping this elements to pairs which are subsequentially split into to distinct
+     * traversables.
+     *
+     * @param unzipper a function which converts elements of this to pairs
+     * @param <T1> 1st element type of a pair returned by unzipper
+     * @param <T2> 2nd element type of a pair returned by unzipper
+     * @return A pair of traversables containing elements split by unzipper
+     */
     <T1, T2> Tuple2<? extends Traversable<T1>, ? extends Traversable<T2>> unzip(Function1<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
 
     /**
