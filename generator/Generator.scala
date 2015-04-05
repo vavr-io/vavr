@@ -1394,12 +1394,12 @@ object Generator {
 
     // returns the grammatical number of a string, i.e. `i.numerus("name")` is
     // 0: "no name", 1: "one name", 2: "two names", 3: "three names", 4: "4 names", ...
-    def numerus(s: String): String = Math.abs(i) match {
-      case 0 => s"no ${s}s"
-      case 1 => s"one $s"
-      case 2 => s"two ${s}s"
-      case 3 => s"three ${s}s"
-      case _ => s"$i ${s}s"
+    def numerus(noun: String): String = Math.abs(i) match {
+      case 0 => s"no ${noun}s"
+      case 1 => s"one $noun"
+      case 2 => s"two ${noun}s"
+      case 3 => s"three ${noun}s"
+      case _ => s"$i ${noun}s"
     }
   }
 
