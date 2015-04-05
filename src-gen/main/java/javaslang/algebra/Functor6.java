@@ -23,7 +23,12 @@ import javaslang.Tuple6;
  * </ul>
  * where {@code f, g ∈ Tuple6 → Tuple6}.
  *
- * @param <T1> Component type of this Functor.
+ * @param <T1> 1st component type of this monad
+ * @param <T2> 2nd component type of this monad
+ * @param <T3> 3rd component type of this monad
+ * @param <T4> 4th component type of this monad
+ * @param <T5> 5th component type of this monad
+ * @param <T6> 6th component type of this monad
  * @see <a href="http://www.haskellforall.com/2012/09/the-functor-design-pattern.html">The functor design pattern</a>
  */
 public interface Functor6<T1, T2, T3, T4, T5, T6> {

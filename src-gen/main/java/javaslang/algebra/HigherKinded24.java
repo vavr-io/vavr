@@ -20,8 +20,8 @@ package javaslang.algebra;
  * See also
  * <ul>
  * <li><a href="http://adriaanm.github.io/files/higher.pdf">Generics of a Higher Kind</a> (Moors, Piessens, Odersky)</li>
- * <li><a href="http://en.wikipedia.org/wiki/Kind_(type_theory)">kind (type theory)</a> (wikipedia)</li>
- * <li><a href="http://en.wikipedia.org/wiki/Type_constructor">type constructor</a> (wikipedia)</li>
+ * <li><a href="http://en.wikipedia.org/wiki/Kind_(type_theory)">Kind (type theory)</a> (wikipedia)</li>
+ * <li><a href="http://en.wikipedia.org/wiki/Type_constructor">Type constructor</a> (wikipedia)</li>
  * </ul>
  *
  * @param <T1> 1st component type of the type to be constructed

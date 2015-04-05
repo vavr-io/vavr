@@ -23,7 +23,8 @@ import javaslang.Tuple2;
  * </ul>
  * where {@code f, g ∈ Tuple2 → Tuple2}.
  *
- * @param <T1> Component type of this Functor.
+ * @param <T1> 1st component type of this monad
+ * @param <T2> 2nd component type of this monad
  * @see <a href="http://www.haskellforall.com/2012/09/the-functor-design-pattern.html">The functor design pattern</a>
  */
 public interface Functor2<T1, T2> {

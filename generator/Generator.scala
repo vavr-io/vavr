@@ -58,14 +58,15 @@ def generateMainClasses(): Unit = {
          * </ul>
          * where ${if (i == 1) "f, g ∈ Function1" else s"{@code f, g ∈ Tuple$i → Tuple$i}"}.
          *
-         * @param <T1> Component type of this Functor.
+         ${(1 to i).gen(j => s"* @param <T$j> ${j.ordinal} component type of this monad")("\n")}
          * @see <a href="http://www.haskellforall.com/2012/09/the-functor-design-pattern.html">The functor design pattern</a>
          */
         public interface $className<$generics> {
 
             /**
              * Applies a function f to the components of this functor.
-             ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <U$j> type of the ${j.ordinal} component of the resulting functor")("\n")}
+             *
+             ${(1 to i).gen(j => s"* @param <U$j> type of the ${j.ordinal} component of the resulting functor")("\n")}
              * @param f a $i-ary function which maps the components of this functor
              * @return a new functor with ${i.numerus("component type")} ${(1 to i).gen(j => s"U$j")(", ")}.
              */
@@ -74,7 +75,8 @@ def generateMainClasses(): Unit = {
             ${(i > 1).gen(xs"""
               /$javadoc
                * Applies a separate function to each component of this functor.
-               ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <U$j> type of the ${j.ordinal} component of the resulting functor")("\n")}
+               *
+               ${(1 to i).gen(j => s"* @param <U$j> type of the ${j.ordinal} component of the resulting functor")("\n")}
                ${(1 to i).gen(j => s"* @param f$j the function applied to the ${j.ordinal} component of this functor")("\n")}
                * @return a new functor with ${i.numerus("component type")} ${(1 to i).gen(j => s"U$j")(", ")}.
                */
@@ -101,10 +103,11 @@ def generateMainClasses(): Unit = {
          * See also
          * <ul>
          * <li><a href="http://adriaanm.github.io/files/higher.pdf">Generics of a Higher Kind</a> (Moors, Piessens, Odersky)</li>
-         * <li><a href="http://en.wikipedia.org/wiki/Kind_(type_theory)">kind (type theory)</a> (wikipedia)</li>
-         * <li><a href="http://en.wikipedia.org/wiki/Type_constructor">type constructor</a> (wikipedia)</li>
+         * <li><a href="http://en.wikipedia.org/wiki/Kind_(type_theory)">Kind (type theory)</a> (wikipedia)</li>
+         * <li><a href="http://en.wikipedia.org/wiki/Type_constructor">Type constructor</a> (wikipedia)</li>
          * </ul>
-         ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> ${j.ordinal} component type of the type to be constructed")("\n")}
+         *
+         ${(1 to i).gen(j => s"* @param <T$j> ${j.ordinal} component type of the type to be constructed")("\n")}
          * @param <TYPE> the container type, i.e. the type to be constructed.
          */
         @SuppressWarnings("unused")
@@ -125,10 +128,10 @@ def generateMainClasses(): Unit = {
       val resultType = if (i == 1) "? extends U1" else s"${im.getType(s"javaslang.Tuple$i")}<${(1 to i).gen(j => s"? extends U$j")(", ")}>"
       val resultGenerics = (1 to i).gen(j => s"U$j")(", ")
       val functionType = im.getType(s"javaslang.Function$i")
+      val plural = (i > 1).gen("s")
       xs"""
-        ${(i == 1).gen(xs"""
         /$javadoc
-         * Defines a Monad by generalizing the flatMap and unit functions.
+         * Defines a Monad by generalizing the flatMap function.
          * <p>
          * All instances of the Monad interface should obey the three control laws:
          * <ul>
@@ -136,13 +139,31 @@ def generateMainClasses(): Unit = {
          *     <li><strong>Right identity:</strong> {@code m.flatMap(unit) ≡ m}</li>
          *     <li><strong>Associativity:</strong> {@code m.flatMap(f).flatMap(g) ≡ m.flatMap(x -> f.apply(x).flatMap(g)}</li>
          * </ul>
-         * <p>
+         * given
+         * <ul>
+         * <li>an object {@code m} of type {@code HigherKinded$i<$generics, M>}</li>
+         * <li>an object {@code a} consisting of values of type {@code ${(1 to i).gen(j => s"T$j")(" ✕ ")}}</li>
+         * <li>a constructor {@code unit} taking an {@code a} and producing an object of type {@code M}</li>
+         * <li>a function {@code f: ${(1 to i).gen(j => s"T$j")(" ✕ ")} → M}
+         * </ul>
          *
-         * @param <T1> Component type of this Monad$i.
+         * To read further about monads in Java please refer to
+         * <a href="http://java.dzone.com/articles/whats-wrong-java-8-part-iv">What's Wrong in Java 8, Part IV: Monads</a>.
+         *
+         ${(1 to i).gen(j => s"* @param <T$j> ${j.ordinal} component type of this monad")("\n")}
+         * @param <M> placeholder for the type that implements this
          */
-        """)}
         public interface $className<$generics, M extends HigherKinded$i<${"?, " * i}M>> extends Functor$i<$generics>, HigherKinded$i<$generics, M> {
 
+            /**
+             * Returns the result of applying f to M's value$plural of type T1,…,T$i and returns a new M with
+             * value$plural of type U1,…,U$i.
+             *
+             ${(1 to i).gen(j => s"* @param <U$j> ${j.ordinal} component type of this monad")("\n")}
+             * @param <MONAD> placeholder for the monad type of component types T1,…,T$i and container type M
+             * @param f a function that maps the monad values to a new monad instance
+             * @return a new monad instance of component types U1,…,U$i and container type M
+             */
             <$resultGenerics, MONAD extends HigherKinded$i<$resultGenerics, M>> $className<$resultGenerics, M> flatMap($functionType<$paramTypes, MONAD> f);
 
             @Override

@@ -23,7 +23,29 @@ import javaslang.Tuple23;
  * </ul>
  * where {@code f, g ∈ Tuple23 → Tuple23}.
  *
- * @param <T1> Component type of this Functor.
+ * @param <T1> 1st component type of this monad
+ * @param <T2> 2nd component type of this monad
+ * @param <T3> 3rd component type of this monad
+ * @param <T4> 4th component type of this monad
+ * @param <T5> 5th component type of this monad
+ * @param <T6> 6th component type of this monad
+ * @param <T7> 7th component type of this monad
+ * @param <T8> 8th component type of this monad
+ * @param <T9> 9th component type of this monad
+ * @param <T10> 10th component type of this monad
+ * @param <T11> 11th component type of this monad
+ * @param <T12> 12th component type of this monad
+ * @param <T13> 13th component type of this monad
+ * @param <T14> 14th component type of this monad
+ * @param <T15> 15th component type of this monad
+ * @param <T16> 16th component type of this monad
+ * @param <T17> 17th component type of this monad
+ * @param <T18> 18th component type of this monad
+ * @param <T19> 19th component type of this monad
+ * @param <T20> 20th component type of this monad
+ * @param <T21> 1st component type of this monad
+ * @param <T22> 2nd component type of this monad
+ * @param <T23> 3rd component type of this monad
  * @see <a href="http://www.haskellforall.com/2012/09/the-functor-design-pattern.html">The functor design pattern</a>
  */
 public interface Functor23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> {

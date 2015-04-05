@@ -21,7 +21,7 @@ import javaslang.Function1;
  * </ul>
  * where f, g ∈ Function1.
  *
- * @param <T1> Component type of this Functor.
+ * @param <T1> 1st component type of this monad
  * @see <a href="http://www.haskellforall.com/2012/09/the-functor-design-pattern.html">The functor design pattern</a>
  */
 public interface Functor1<T1> {
