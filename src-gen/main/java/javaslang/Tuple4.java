@@ -20,6 +20,7 @@ import javaslang.algebra.Monad4;
  * @param <T2> type of the 2nd element
  * @param <T3> type of the 3rd element
  * @param <T4> type of the 4th element
+ * @since 1.1.0
  */
 public class Tuple4<T1, T2, T3, T4> implements Tuple, Monad4<T1, T2, T3, T4, Tuple4<?, ?, ?, ?>> {
 

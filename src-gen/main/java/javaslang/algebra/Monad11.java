@@ -45,6 +45,7 @@ import javaslang.Tuple11;
  * @param <T10> 10th component type of this monad
  * @param <T11> 11th component type of this monad
  * @param <M> placeholder for the type that implements this
+ * @since 1.1.0
  */
 public interface Monad11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, M extends HigherKinded11<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M>> extends Functor11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>, HigherKinded11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, M> {
 

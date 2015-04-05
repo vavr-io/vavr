@@ -36,6 +36,7 @@ import javaslang.Tuple12;
  * @param <T11> 11th component type of this monad
  * @param <T12> 12th component type of this monad
  * @see <a href="http://www.haskellforall.com/2012/09/the-functor-design-pattern.html">The functor design pattern</a>
+ * @since 1.1.0
  */
 public interface Functor12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> {
 

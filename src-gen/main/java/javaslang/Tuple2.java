@@ -18,6 +18,7 @@ import javaslang.algebra.Monad2;
  *
  * @param <T1> type of the 1st element
  * @param <T2> type of the 2nd element
+ * @since 1.1.0
  */
 public class Tuple2<T1, T2> implements Tuple, Monad2<T1, T2, Tuple2<?, ?>> {
 

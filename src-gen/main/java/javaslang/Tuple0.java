@@ -17,6 +17,7 @@ import java.util.Objects;
  * Because the empty tuple is a singleton, there is no accessible constructor.
  * Please use {@linkplain Tuple0#instance()} or {@linkplain Tuple#empty()} to obtain the single instance.
  * </p>
+ * @since 1.1.0
  */
 public final class Tuple0 implements Tuple {
 

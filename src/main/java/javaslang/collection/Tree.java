@@ -13,12 +13,12 @@ import javaslang.control.Match;
 import java.util.*;
 
 /**
- * A general Tree interface.
+ * <p>A general Tree interface.</p>
  *
  * @param <T> component type of this Tree
  * @since 1.1.0
  */
-public interface Tree<T> extends Functor1<T>, ValueObject {
+public interface Tree<T> extends Functor1<T>, ValueObject, Iterable<T> {
 
     /**
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
@@ -133,17 +133,13 @@ public interface Tree<T> extends Functor1<T>, ValueObject {
         }
     }
 
+    /**
+     * Iterates the elements of this tree in pre-order.
+     * @return An iterator of this tree's node values.
+     */
+    @Override
     default Iterator<T> iterator() {
-        if (isEmpty()) {
-            return List.<T>nil().iterator();
-        } else {
-            class Local {
-                Stream<T> preOrder(Tree<T> tree) {
-                    return new Stream.Cons<>(tree.getValue(), () -> Stream.of(tree.getChildren()).flatMap(Local.this::preOrder));
-                }
-            }
-            return new Local().preOrder(this).iterator();
-        }
+        return flatten().iterator();
     }
 
     /**
@@ -156,6 +152,13 @@ public interface Tree<T> extends Functor1<T>, ValueObject {
         return flatten(Order.PRE_ORDER);
     }
 
+    /**
+     * Flattens the Tree to a List, traversing the tree in a specific order.
+     *
+     * @param order the tree traversal order
+     * @return A List containing all elements of this tree, which is List.Nil if this tree is empty.
+     * @throws java.lang.NullPointerException if order is null
+     */
     default List<T> flatten(Order order) {
         Objects.requireNonNull(order, "order is null");
         class Flatten {
@@ -209,6 +212,10 @@ public interface Tree<T> extends Functor1<T>, ValueObject {
     @Override
     <U> Tree<U> map(Function1<? super T, ? extends U> mapper);
 
+    /**
+     * Returns a list string representation of this tree.
+     * @return A new string
+     */
     default String toLispString() {
         class Local {
             String toString(Tree<T> tree) {
@@ -231,6 +238,10 @@ public interface Tree<T> extends Functor1<T>, ValueObject {
         return isLeaf() ? "(" + string + ")" : string;
     }
 
+    /**
+     * Returns a indented multiline string representation of this tree.
+     * @return A new string
+     */
     default String toIndentedString() {
         class Local {
             String toString(Tree<T> tree, int depth) {
@@ -259,10 +270,12 @@ public interface Tree<T> extends Functor1<T>, ValueObject {
         return new Local().toString(this, 0);
     }
 
-    /*
-     * See http://en.wikipedia.org/wiki/Tree_traversal, http://rosettacode.org/wiki/Tree_traversal,
-     * http://programmers.stackexchange.com/questions/138766/in-order-traversal-of-m-way-trees.
+    /**
+     * <p>Tree traversal order.</p>
      *
+     * Example tree:
+     * <pre>
+     * <code>
      *         1
      *        / \
      *       /   \
@@ -272,20 +285,28 @@ public interface Tree<T> extends Functor1<T>, ValueObject {
      *   4   5   6
      *  /       / \
      * 7       8   9
+     * </code>
+     * </pre>
      *
+     * See also
+     * <ul>
+     * <li><a href="http://en.wikipedia.org/wiki/Tree_traversal">Tree traversal</a> (wikipedia)</li>
+     * <li>See <a href="http://rosettacode.org/wiki/Tree_traversal">Tree traversal</a> (rosetta code)</li>
+     * </ul>
      */
+    // see http://programmers.stackexchange.com/questions/138766/in-order-traversal-of-m-way-trees
     enum Order {
 
-        // 1 2 4 7 5 3 6 8 9 (= depth-first)
+        /** 1 2 4 7 5 3 6 8 9 (= depth-first) */
         PRE_ORDER,
 
-        // 7 4 2 5 1 8 6 9 3
+        /** 7 4 2 5 1 8 6 9 3 */
         IN_ORDER,
 
-        // 7 4 5 2 8 9 6 3 1
+        /** 7 4 5 2 8 9 6 3 1 */
         POST_ORDER,
 
-        // 1 2 3 4 5 6 7 8 9 (= breadth-first)
+        /** 1 2 3 4 5 6 7 8 9 (= breadth-first) */
         LEVEL_ORDER
     }
 }

@@ -17,6 +17,7 @@ import javaslang.algebra.Monad1;
  * A tuple of one element which can be seen as cartesian product of one component.
  *
  * @param <T1> type of the 1st element
+ * @since 1.1.0
  */
 public class Tuple1<T1> implements Tuple, Monad1<T1, Tuple1<?>> {
 

@@ -60,6 +60,7 @@ def generateMainClasses(): Unit = {
          *
          ${(1 to i).gen(j => s"* @param <T$j> ${j.ordinal} component type of this monad")("\n")}
          * @see <a href="http://www.haskellforall.com/2012/09/the-functor-design-pattern.html">The functor design pattern</a>
+         * @since 1.1.0
          */
         public interface $className<$generics> {
 
@@ -109,6 +110,7 @@ def generateMainClasses(): Unit = {
          *
          ${(1 to i).gen(j => s"* @param <T$j> ${j.ordinal} component type of the type to be constructed")("\n")}
          * @param <TYPE> the container type, i.e. the type to be constructed.
+         * @since 1.1.0
          */
         @SuppressWarnings("unused")
         public interface $className<${(1 to i).gen(j => s"T$j")(", ")}, TYPE extends $className<${"?, " * i}TYPE>> {
@@ -152,6 +154,7 @@ def generateMainClasses(): Unit = {
          *
          ${(1 to i).gen(j => s"* @param <T$j> ${j.ordinal} component type of this monad")("\n")}
          * @param <M> placeholder for the type that implements this
+         * @since 1.1.0
          */
         public interface $className<$generics, M extends HigherKinded$i<${"?, " * i}M>> extends Functor$i<$generics>, HigherKinded$i<$generics, M> {
 
@@ -527,6 +530,7 @@ def generateMainClasses(): Unit = {
        * Because the empty tuple is a singleton, there is no accessible constructor.
        * Please use {@linkplain Tuple0#instance()} or {@linkplain Tuple#empty()} to obtain the single instance.
        * </p>
+       * @since 1.1.0
        */
       public final class $className implements Tuple {
 
@@ -606,6 +610,7 @@ def generateMainClasses(): Unit = {
         /**
          * A tuple of ${i.numerus("element")} which can be seen as cartesian product of ${i.numerus("component")}.
          ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> type of the ${j.ordinal} element")("\n")}
+         * @since 1.1.0
          */
         public class $className<$generics> implements Tuple, ${im.getType(s"javaslang.algebra.Monad$i")}<$generics, $className<$untyped>> {
 
@@ -711,6 +716,7 @@ def generateMainClasses(): Unit = {
       xs"""
         /$javadoc
          * The base interface of all tuples.
+         * @since 1.1.0
          */
         public interface $className extends ValueObject {
 

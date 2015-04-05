@@ -49,6 +49,7 @@ import javaslang.Tuple15;
  * @param <T14> 14th component type of this monad
  * @param <T15> 15th component type of this monad
  * @param <M> placeholder for the type that implements this
+ * @since 1.1.0
  */
 public interface Monad15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, M extends HigherKinded15<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, M>> extends Functor15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, HigherKinded15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, M> {
 

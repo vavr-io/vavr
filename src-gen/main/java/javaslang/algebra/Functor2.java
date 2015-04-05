@@ -26,6 +26,7 @@ import javaslang.Tuple2;
  * @param <T1> 1st component type of this monad
  * @param <T2> 2nd component type of this monad
  * @see <a href="http://www.haskellforall.com/2012/09/the-functor-design-pattern.html">The functor design pattern</a>
+ * @since 1.1.0
  */
 public interface Functor2<T1, T2> {
 

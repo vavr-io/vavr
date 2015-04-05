@@ -33,6 +33,7 @@ package javaslang.algebra;
  * @param <T7> 7th component type of the type to be constructed
  * @param <T8> 8th component type of the type to be constructed
  * @param <TYPE> the container type, i.e. the type to be constructed.
+ * @since 1.1.0
  */
 @SuppressWarnings("unused")
 public interface HigherKinded8<T1, T2, T3, T4, T5, T6, T7, T8, TYPE extends HigherKinded8<?, ?, ?, ?, ?, ?, ?, ?, TYPE>> {

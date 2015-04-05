@@ -28,6 +28,7 @@ import javaslang.algebra.Monad12;
  * @param <T10> type of the 10th element
  * @param <T11> type of the 11th element
  * @param <T12> type of the 12th element
+ * @since 1.1.0
  */
 public class Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> implements Tuple, Monad12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Tuple12<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>> {
 

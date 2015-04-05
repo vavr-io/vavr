@@ -25,6 +25,7 @@ import javaslang.algebra.Monad9;
  * @param <T7> type of the 7th element
  * @param <T8> type of the 8th element
  * @param <T9> type of the 9th element
+ * @since 1.1.0
  */
 public class Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9> implements Tuple, Monad9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Tuple9<?, ?, ?, ?, ?, ?, ?, ?, ?>> {
 

@@ -31,6 +31,7 @@ package javaslang.algebra;
  * @param <T5> 5th component type of the type to be constructed
  * @param <T6> 6th component type of the type to be constructed
  * @param <TYPE> the container type, i.e. the type to be constructed.
+ * @since 1.1.0
  */
 @SuppressWarnings("unused")
 public interface HigherKinded6<T1, T2, T3, T4, T5, T6, TYPE extends HigherKinded6<?, ?, ?, ?, ?, ?, TYPE>> {

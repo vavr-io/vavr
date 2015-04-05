@@ -24,6 +24,7 @@ import javaslang.algebra.Monad8;
  * @param <T6> type of the 6th element
  * @param <T7> type of the 7th element
  * @param <T8> type of the 8th element
+ * @since 1.1.0
  */
 public class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Monad8<T1, T2, T3, T4, T5, T6, T7, T8, Tuple8<?, ?, ?, ?, ?, ?, ?, ?>> {
 

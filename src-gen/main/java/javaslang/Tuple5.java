@@ -21,6 +21,7 @@ import javaslang.algebra.Monad5;
  * @param <T3> type of the 3rd element
  * @param <T4> type of the 4th element
  * @param <T5> type of the 5th element
+ * @since 1.1.0
  */
 public class Tuple5<T1, T2, T3, T4, T5> implements Tuple, Monad5<T1, T2, T3, T4, T5, Tuple5<?, ?, ?, ?, ?>> {
 

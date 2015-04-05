@@ -33,6 +33,7 @@ import javaslang.Function1;
  *
  * @param <T1> 1st component type of this monad
  * @param <M> placeholder for the type that implements this
+ * @since 1.1.0
  */
 public interface Monad1<T1, M extends HigherKinded1<?, M>> extends Functor1<T1>, HigherKinded1<T1, M> {
 

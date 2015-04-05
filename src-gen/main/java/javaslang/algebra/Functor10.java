@@ -34,6 +34,7 @@ import javaslang.Tuple10;
  * @param <T9> 9th component type of this monad
  * @param <T10> 10th component type of this monad
  * @see <a href="http://www.haskellforall.com/2012/09/the-functor-design-pattern.html">The functor design pattern</a>
+ * @since 1.1.0
  */
 public interface Functor10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> {
 

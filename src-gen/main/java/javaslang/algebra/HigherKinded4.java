@@ -29,6 +29,7 @@ package javaslang.algebra;
  * @param <T3> 3rd component type of the type to be constructed
  * @param <T4> 4th component type of the type to be constructed
  * @param <TYPE> the container type, i.e. the type to be constructed.
+ * @since 1.1.0
  */
 @SuppressWarnings("unused")
 public interface HigherKinded4<T1, T2, T3, T4, TYPE extends HigherKinded4<?, ?, ?, ?, TYPE>> {

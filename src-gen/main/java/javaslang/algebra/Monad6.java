@@ -40,6 +40,7 @@ import javaslang.Tuple6;
  * @param <T5> 5th component type of this monad
  * @param <T6> 6th component type of this monad
  * @param <M> placeholder for the type that implements this
+ * @since 1.1.0
  */
 public interface Monad6<T1, T2, T3, T4, T5, T6, M extends HigherKinded6<?, ?, ?, ?, ?, ?, M>> extends Functor6<T1, T2, T3, T4, T5, T6>, HigherKinded6<T1, T2, T3, T4, T5, T6, M> {
 

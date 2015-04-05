@@ -32,6 +32,7 @@ import javaslang.algebra.Monad16;
  * @param <T14> type of the 14th element
  * @param <T15> type of the 15th element
  * @param <T16> type of the 16th element
+ * @since 1.1.0
  */
 public class Tuple16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> implements Tuple, Monad16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Tuple16<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>> {
 

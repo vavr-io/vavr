@@ -42,6 +42,7 @@ import javaslang.Tuple8;
  * @param <T7> 7th component type of this monad
  * @param <T8> 8th component type of this monad
  * @param <M> placeholder for the type that implements this
+ * @since 1.1.0
  */
 public interface Monad8<T1, T2, T3, T4, T5, T6, T7, T8, M extends HigherKinded8<?, ?, ?, ?, ?, ?, ?, ?, M>> extends Functor8<T1, T2, T3, T4, T5, T6, T7, T8>, HigherKinded8<T1, T2, T3, T4, T5, T6, T7, T8, M> {
 

@@ -37,6 +37,7 @@ import javaslang.Tuple3;
  * @param <T2> 2nd component type of this monad
  * @param <T3> 3rd component type of this monad
  * @param <M> placeholder for the type that implements this
+ * @since 1.1.0
  */
 public interface Monad3<T1, T2, T3, M extends HigherKinded3<?, ?, ?, M>> extends Functor3<T1, T2, T3>, HigherKinded3<T1, T2, T3, M> {
 

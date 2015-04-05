@@ -38,6 +38,7 @@ import javaslang.Tuple4;
  * @param <T3> 3rd component type of this monad
  * @param <T4> 4th component type of this monad
  * @param <M> placeholder for the type that implements this
+ * @since 1.1.0
  */
 public interface Monad4<T1, T2, T3, T4, M extends HigherKinded4<?, ?, ?, ?, M>> extends Functor4<T1, T2, T3, T4>, HigherKinded4<T1, T2, T3, T4, M> {
 

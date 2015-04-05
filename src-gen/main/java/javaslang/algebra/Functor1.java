@@ -23,6 +23,7 @@ import javaslang.Function1;
  *
  * @param <T1> 1st component type of this monad
  * @see <a href="http://www.haskellforall.com/2012/09/the-functor-design-pattern.html">The functor design pattern</a>
+ * @since 1.1.0
  */
 public interface Functor1<T1> {
 

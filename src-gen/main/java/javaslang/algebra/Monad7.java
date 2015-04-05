@@ -41,6 +41,7 @@ import javaslang.Tuple7;
  * @param <T6> 6th component type of this monad
  * @param <T7> 7th component type of this monad
  * @param <M> placeholder for the type that implements this
+ * @since 1.1.0
  */
 public interface Monad7<T1, T2, T3, T4, T5, T6, T7, M extends HigherKinded7<?, ?, ?, ?, ?, ?, ?, M>> extends Functor7<T1, T2, T3, T4, T5, T6, T7>, HigherKinded7<T1, T2, T3, T4, T5, T6, T7, M> {
 

@@ -32,6 +32,7 @@ import javaslang.Tuple8;
  * @param <T7> 7th component type of this monad
  * @param <T8> 8th component type of this monad
  * @see <a href="http://www.haskellforall.com/2012/09/the-functor-design-pattern.html">The functor design pattern</a>
+ * @since 1.1.0
  */
 public interface Functor8<T1, T2, T3, T4, T5, T6, T7, T8> {
 
