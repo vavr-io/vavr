@@ -12,7 +12,8 @@ import java.util.Objects;
 
 /**
  * A rose tree implementation, i.e. a tree with an arbitrary number of children, where each node keeps a value.
- * See <a href="http://en.wikipedia.org/wiki/Rose_tree">Wikipedia: Rose tree</a>.
+ * <p>
+ * See <a href="http://en.wikipedia.org/wiki/Rose_tree">Rose tree</a> (wikipedia).
  *
  * @param <T> the type of a Node's value.
  * @since 1.1.0
@@ -24,6 +25,15 @@ public interface RoseTree<T> extends Tree<T> {
      */
     long serialVersionUID = 1L;
 
+    /**
+     * Creates a either a rose tree branch or a leaf, depending on the child count.
+     * By definition, a node with no children is a leaf.
+     *
+     * @param value The value of the branch node.
+     * @param children The tree non-nil node's children, i.e. leafs and branches.
+     * @param <T> The value type
+     * @return A new, non-nil rose tree
+     */
     @SafeVarargs
     @SuppressWarnings("varargs")
     static <T> NonNil<T> of(T value, NonNil<T>... children) {
@@ -36,6 +46,15 @@ public interface RoseTree<T> extends Tree<T> {
         }
     }
 
+    /**
+     * Creates a rose tree branch of one or more children.
+     *
+     * @param value The value of the branch node.
+     * @param child1 The first child
+     * @param children More children, may be none
+     * @param <T> The value type
+     * @return A new rose tree branch
+     */
     @SafeVarargs
     @SuppressWarnings("varargs")
     static <T> Branch<T> branch(T value, NonNil<T> child1, NonNil<T>... children) {
@@ -45,14 +64,32 @@ public interface RoseTree<T> extends Tree<T> {
         return new Branch<>(value, list);
     }
 
+    /**
+     * Creates a rose tree leaf of a given value.
+     *
+     * @param value the leaf's value
+     * @param <T> value type
+     * @return a new tree leaf
+     */
     static <T> Leaf<T> leaf(T value) {
         return new Leaf<>(value);
     }
 
+    /**
+     * Returns the empty rose tree
+     *
+     * @param <T> the tree's value type
+     * @return the empty rose tree
+     */
     static <T> Nil<T> nil() {
         return Nil.instance();
     }
 
+    /**
+     * Returns the children of this tree which are non-nil, i.e. either leafs or branches.
+     *
+     * @return the rose tree's children
+     */
     @Override
     List<NonNil<T>> getChildren();
 
@@ -70,12 +107,23 @@ public interface RoseTree<T> extends Tree<T> {
         <U> NonNil<U> map(Function1<? super T, ? extends U> mapper);
     }
 
+    /**
+     * Representation of a rose tree leaf.
+     *
+     * @param <T> value type
+     * @since 1.1.0
+     */
     final class Leaf<T> extends AbstractRoseTree<T> implements NonNil<T> {
 
         private static final long serialVersionUID = 1L;
 
         private final T value;
 
+        /**
+         * Constructs a rose tree leaf.
+         *
+         * @param value a value
+         */
         public Leaf(T value) {
             this.value = value;
         }
@@ -111,6 +159,12 @@ public interface RoseTree<T> extends Tree<T> {
         }
     }
 
+    /**
+     * Representation of a rose tree branch.
+     *
+     * @param <T> value type
+     * @since 1.1.0
+     */
     final class Branch<T> extends AbstractRoseTree<T> implements NonNil<T> {
 
         private static final long serialVersionUID = 1L;
@@ -118,6 +172,14 @@ public interface RoseTree<T> extends Tree<T> {
         private final List<NonNil<T>> children;
         private final T value;
 
+        /**
+         * Constructs a rose tree branch.
+         *
+         * @param value A value.
+         * @param children A non-empty list of children.
+         * @throws NullPointerException if children is null
+         * @throws IllegalArgumentException if children is empty
+         */
         public Branch(T value, List<NonNil<T>> children) {
             Objects.requireNonNull(children, "children is null");
             if (children.isEmpty()) {
@@ -257,6 +319,12 @@ public interface RoseTree<T> extends Tree<T> {
         }
     }
 
+    /**
+     * The singleton instance of the empty rose tree.
+     *
+     * @param <T> type of the tree's values
+     * @since 1.1.0
+     */
     final class Nil<T> extends AbstractRoseTree<T> {
 
         private static final long serialVersionUID = 1L;
@@ -267,6 +335,12 @@ public interface RoseTree<T> extends Tree<T> {
         private Nil() {
         }
 
+        /**
+         * Returns the singleton instance of the empty rose tree.
+         *
+         * @param <T> type of the tree's values
+         * @return the single rose tree instance
+         */
         public static <T> Nil<T> instance() {
             @SuppressWarnings("unchecked")
             final Nil<T> instance = (Nil<T>) INSTANCE;
@@ -316,6 +390,12 @@ public interface RoseTree<T> extends Tree<T> {
         }
     }
 
+    /**
+     * An abstract rose tree implementation which just overrides equals, hashCode and toString.
+     *
+     * @param <T> value type of the rose tree
+     * @since 1.1.0
+     */
     abstract class AbstractRoseTree<T> implements RoseTree<T> {
 
         private static final long serialVersionUID = 1L;
