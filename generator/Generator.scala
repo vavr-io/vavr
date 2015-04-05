@@ -90,24 +90,23 @@ def generateMainClasses(): Unit = {
    */
   def genHigherKindeds(): Unit = 1 to N foreach { i =>
     genJavaslangFile("javaslang.algebra", s"HigherKinded$i")((im: ImportManager, packageName, className) => xs"""
-        ${(i == 1).gen(xs"""
         /$javadoc
-         * <p>
-         * A type <em>HigherKinded</em> declares a generic type constructor, which consists of an inner type (component type)
-         * and an outer type (container type).
-         * </p>
-         * <p>
-         * HigherKinded is needed to (partially) simulate Higher-Kinded/Higher-Order Types, which  are not part of the Java
-         * language but needed for generic type constructors.
-         * </p>
-         * <p>
-         * Example: {@link javaslang.algebra.Monad1#flatMap(Function1)}
-         * </p>
+         * <p>The <em>HigherKinded$i</em> type declares a generic type constructor, which consists of
+         * ${i.numerus("inner/component type")} and one outer/container type.</p>
+         * <p>HigherKinded$i is used to approximately simulate higher-kinded/higher-order types, which cannot be
+         * expressed with Java.</p>
+         * <p>Example: {@linkplain javaslang.Tuple$i} implements HigherKind$i in order to override
+         * {@link javaslang.algebra.Monad$i#flatMap(javaslang.Function$i)}.</p>
          *
-         * @param <T1> Component type of the type to be constructed.
-         * @param <TYPE> Container type of the type to be constructed.
+         * See also
+         * <ul>
+         * <li><a href="http://adriaanm.github.io/files/higher.pdf">Generics of a Higher Kind</a> (Moors, Piessens, Odersky)</li>
+         * <li><a href="http://en.wikipedia.org/wiki/Kind_(type_theory)">kind (type theory)</a> (wikipedia)</li>
+         * <li><a href="http://en.wikipedia.org/wiki/Type_constructor">type constructor</a> (wikipedia)</li>
+         * </ul>
+         ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> ${j.ordinal} component type of the type to be constructed")("\n")}
+         * @param <TYPE> the container type, i.e. the type to be constructed.
          */
-        """)}
         @SuppressWarnings("unused")
         public interface $className<${(1 to i).gen(j => s"T$j")(", ")}, TYPE extends $className<${"?, " * i}TYPE>> {
 

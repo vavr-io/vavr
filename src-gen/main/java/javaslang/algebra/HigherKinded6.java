@@ -9,6 +9,29 @@ package javaslang.algebra;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+/**
+ * <p>The <em>HigherKinded6</em> type declares a generic type constructor, which consists of
+ * 6 inner/component types and one outer/container type.</p>
+ * <p>HigherKinded6 is used to approximately simulate higher-kinded/higher-order types, which cannot be
+ * expressed with Java.</p>
+ * <p>Example: {@linkplain javaslang.Tuple6} implements HigherKind6 in order to override
+ * {@link javaslang.algebra.Monad6#flatMap(javaslang.Function6)}.</p>
+ *
+ * See also
+ * <ul>
+ * <li><a href="http://adriaanm.github.io/files/higher.pdf">Generics of a Higher Kind</a> (Moors, Piessens, Odersky)</li>
+ * <li><a href="http://en.wikipedia.org/wiki/Kind_(type_theory)">kind (type theory)</a> (wikipedia)</li>
+ * <li><a href="http://en.wikipedia.org/wiki/Type_constructor">type constructor</a> (wikipedia)</li>
+ * </ul>
+ *
+ * @param <T1> 1st component type of the type to be constructed
+ * @param <T2> 2nd component type of the type to be constructed
+ * @param <T3> 3rd component type of the type to be constructed
+ * @param <T4> 4th component type of the type to be constructed
+ * @param <T5> 5th component type of the type to be constructed
+ * @param <T6> 6th component type of the type to be constructed
+ * @param <TYPE> the container type, i.e. the type to be constructed.
+ */
 @SuppressWarnings("unused")
 public interface HigherKinded6<T1, T2, T3, T4, T5, T6, TYPE extends HigherKinded6<?, ?, ?, ?, ?, ?, TYPE>> {
 

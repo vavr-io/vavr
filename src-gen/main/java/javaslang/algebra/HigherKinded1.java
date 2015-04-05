@@ -10,20 +10,22 @@ package javaslang.algebra;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 /**
- * <p>
- * A type <em>HigherKinded</em> declares a generic type constructor, which consists of an inner type (component type)
- * and an outer type (container type).
- * </p>
- * <p>
- * HigherKinded is needed to (partially) simulate Higher-Kinded/Higher-Order Types, which  are not part of the Java
- * language but needed for generic type constructors.
- * </p>
- * <p>
- * Example: {@link javaslang.algebra.Monad1#flatMap(Function1)}
- * </p>
+ * <p>The <em>HigherKinded1</em> type declares a generic type constructor, which consists of
+ * one inner/component type and one outer/container type.</p>
+ * <p>HigherKinded1 is used to approximately simulate higher-kinded/higher-order types, which cannot be
+ * expressed with Java.</p>
+ * <p>Example: {@linkplain javaslang.Tuple1} implements HigherKind1 in order to override
+ * {@link javaslang.algebra.Monad1#flatMap(javaslang.Function1)}.</p>
  *
- * @param <T1> Component type of the type to be constructed.
- * @param <TYPE> Container type of the type to be constructed.
+ * See also
+ * <ul>
+ * <li><a href="http://adriaanm.github.io/files/higher.pdf">Generics of a Higher Kind</a> (Moors, Piessens, Odersky)</li>
+ * <li><a href="http://en.wikipedia.org/wiki/Kind_(type_theory)">kind (type theory)</a> (wikipedia)</li>
+ * <li><a href="http://en.wikipedia.org/wiki/Type_constructor">type constructor</a> (wikipedia)</li>
+ * </ul>
+ *
+ * @param <T1> 1st component type of the type to be constructed
+ * @param <TYPE> the container type, i.e. the type to be constructed.
  */
 @SuppressWarnings("unused")
 public interface HigherKinded1<T1, TYPE extends HigherKinded1<?, TYPE>> {
