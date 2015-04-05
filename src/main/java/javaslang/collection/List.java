@@ -138,6 +138,13 @@ public interface List<T> extends Seq<T>, ValueObject {
 		}
 	}
 
+	/**
+	 * Creates a List of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+	 *
+	 * @param from the first number
+	 * @param toExclusive the last number + 1
+	 * @return A range of int values as specified
+	 */
 	static List<Integer> range(int from, int toExclusive) {
 		if (toExclusive == Integer.MIN_VALUE) {
 			return Nil.instance();
@@ -146,6 +153,13 @@ public interface List<T> extends Seq<T>, ValueObject {
 		}
 	}
 
+	/**
+	 * Creates a List of int numbers starting from {@code from}, extending to {@code toInclusive}.
+	 *
+	 * @param from the first number
+	 * @param toInclusive the last number
+	 * @return A range of int values as specified
+	 */
 	static List<Integer> rangeClosed(int from, int toInclusive) {
 		if (from == Integer.MIN_VALUE && toInclusive == Integer.MIN_VALUE) {
 			return List.of(Integer.MIN_VALUE);
@@ -662,8 +676,7 @@ public interface List<T> extends Seq<T>, ValueObject {
 	 *
 	 * @param <T> Component type of the List.
 	 */
-	// DEV NOTE: class declared final because of serialization proxy pattern.
-	// (see Effective Java, 2nd ed., p. 315)
+	// DEV NOTE: class declared final because of serialization proxy pattern (see Effective Java, 2nd ed., p. 315)
 	final class Cons<T> extends AbstractList<T> {
 
 		private static final long serialVersionUID = 1L;
@@ -671,6 +684,12 @@ public interface List<T> extends Seq<T>, ValueObject {
 		private final T head;
 		private final List<T> tail;
 
+		/**
+		 * Creates a List consisting of a head value and a trailing List.
+		 *
+		 * @param head The head
+		 * @param tail The tail
+		 */
 		public Cons(T head, List<T> tail) {
 			this.head = head;
 			this.tail = tail;
@@ -805,10 +824,7 @@ public interface List<T> extends Seq<T>, ValueObject {
 	}
 
 	/**
-	 * <p>
-	 * The empty List.
-	 * </p>
-	 * This is a singleton, i.e. not Cloneable.
+	 * Representation of the singleton empty List.
 	 *
 	 * @param <T> Component type of the List.
 	 */
@@ -822,6 +838,12 @@ public interface List<T> extends Seq<T>, ValueObject {
 		private Nil() {
 		}
 
+		/**
+		 * Returns the singleton instance of the liked list.
+		 *
+		 * @param <T> Component type of the List
+		 * @return the singleton instance of the linked list.
+		 */
 		public static <T> Nil<T> instance() {
 			@SuppressWarnings("unchecked")
 			final Nil<T> instance = (Nil<T>) INSTANCE;
