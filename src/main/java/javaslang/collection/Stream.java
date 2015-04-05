@@ -50,6 +50,12 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
         return Collector.of(supplier, accumulator, combiner, finisher);
     }
 
+    /**
+     * Returns an (theoretically) infinitely long Stream of int values starting from {@code from}.
+     *
+     * @param from a start int value
+     * @return A new Stream of int values starting from {@code from}
+     */
     static Stream<Integer> gen(int from) {
         return Stream.of(new Iterator<Integer>() {
             int i = from;
@@ -70,6 +76,12 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
         });
     }
 
+    /**
+     * Returns an (theoretically) infinitely long Stream of BigInteger values starting from {@code from}.
+     *
+     * @param from a start BigInteger value
+     * @return A new Stream of BigInteger values starting from {@code from}
+     */
     static Stream<BigInteger> gen(BigInteger from) {
         return Stream.of(new Iterator<BigInteger>() {
             BigInteger i = from;
@@ -88,7 +100,13 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
         });
     }
 
-    // Supplier is not referential transparent in general. Example: Stream.gen(Math::random).take(10)
+    /**
+     * Generates an (theoretically) infinitely long Stream using a value Supplier.
+     *
+     * @param supplier A Supplier of Stream values
+     * @param <T> value type
+     * @return A new Stream
+     */
     static <T> Stream<T> gen(Supplier<T> supplier) {
         return Stream.of(new Iterator<T>() {
             @Override
@@ -104,18 +122,50 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
     }
 
 
+    /**
+     * <p>Creates a Stream of strings by reading lines from the standard input {@linkplain System#in}.
+     * The default charset is used to decode bytes to characters.</p>
+     * <p>Note: Because Stream is lazy, this method is not blocking.</p>
+     *
+     * @return a new Stream of strings
+     */
     static Stream<String> stdin() {
         return lines(System.in);
     }
 
+    /**
+     * <p>Creates a Stream of strings by reading lines from the standard input {@linkplain System#in}
+     * using the given charsetto decode bytes to characters.</p>
+     * <p>Note: Because Stream is lazy, this method is not blocking.</p>
+     *
+     * @param charset A Charset
+     * @return a new Stream of strings
+     */
     static Stream<String> stdin(Charset charset) {
         return lines(System.in, charset);
     }
 
+    /**
+     * <p>Creates a Stream of strings by reading lines from the given InputStream {@code in}.
+     * The default charset is used to decode bytes to characters.</p>
+     * <p>Note: Because Stream is lazy, this method is not blocking.</p>
+     *
+     * @param in An InputStream
+     * @return a new Stream of strings
+     */
     static Stream<String> lines(InputStream in) {
         return lines(in, Charset.defaultCharset());
     }
 
+    /**
+     * <p>Creates a Stream of strings by reading lines from the given InputStream {@code in} using the given
+     * charset to decode bytes to characters.</p>
+     * <p>Note: Because Stream is lazy, this method is not blocking.</p>
+     *
+     * @param in An InputStream
+     * @param charset A Charset
+     * @return a new Stream of strings
+     */
     static Stream<String> lines(InputStream in, Charset charset) {
         return Stream.of(new Iterator<String>() {
             final BufferedReader reader = new BufferedReader(new InputStreamReader(in, charset));
@@ -138,10 +188,27 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
         });
     }
 
+    /**
+     * <p>Creates a Stream of characters by reading from the given InputStream {@code in}.
+     * The default charset is used to decode bytes to characters.</p>
+     * <p>Note: Because Stream is lazy, this method is not blocking.</p>
+     *
+     * @param in An InputStream
+     * @return a new Stream of characters
+     */
     static Stream<Character> chars(InputStream in) {
         return chars(in, Charset.defaultCharset());
     }
 
+    /**
+     * <p>Creates a Stream of characters by reading from the given InputStream {@code in} using the given
+     * charset to decode bytes to characters.</p>
+     * <p>Note: Because Stream is lazy, this method is not blocking.</p>
+     *
+     * @param in An InputStream
+     * @param charset A Charset
+     * @return a new Stream of characters
+     */
     static Stream<Character> chars(InputStream in, Charset charset) {
         return Stream.of(new Iterator<Character>() {
             final InputStreamReader reader = new InputStreamReader(in, charset);
@@ -164,6 +231,13 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
         });
     }
 
+    /**
+     * <p>Creates a Stream of bytes by reading raw bytes from the given InputStream {@code in}.</p>
+     * <p>Note: Because Stream is lazy, this method is not blocking.</p>
+     *
+     * @param in An InputStream
+     * @return a new Stream of bytes
+     */
     static Stream<Byte> bytes(InputStream in) {
         return Stream.of(new Iterator<Byte>() {
             int next;
@@ -185,6 +259,14 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
         });
     }
 
+    /**
+     * <p>Creates a Stream of integers by reading raw bytes from the given InputStream {@code in} and casting them to
+     * integer values.</p>
+     * <p>Note: Because Stream is lazy, this method is not blocking.</p>
+     *
+     * @param in An InputStream
+     * @return a new Stream of integers
+     */
     static Stream<Integer> ints(InputStream in) {
         return Stream.of(new Iterator<Integer>() {
             int next;
@@ -284,6 +366,13 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
         }
     }
 
+    /**
+     * Creates a Stream based on an Iterator.
+     *
+     * @param iterator An Iterator
+     * @param <T> Component type
+     * @return A new Stream
+     */
     // providing this method to save resources creating a Stream - makes no sense for collections in general
     static <T> Stream<T> of(Iterator<? extends T> iterator) {
         Objects.requireNonNull(iterator, "iterator is null");
@@ -296,6 +385,13 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
         });
     }
 
+    /**
+     * Creates a Stream of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     *
+     * @param from the first number
+     * @param toExclusive the last number + 1
+     * @return A range of int values as specified
+     */
     static Stream<Integer> range(int from, int toExclusive) {
         if (toExclusive == Integer.MIN_VALUE) {
             return Nil.instance();
@@ -304,6 +400,13 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
         }
     }
 
+    /**
+     * Creates a Stream of int numbers starting from {@code from}, extending to {@code toInclusive}.
+     *
+     * @param from the first number
+     * @param toInclusive the last number
+     * @return A range of int values as specified
+     */
     static Stream<Integer> rangeClosed(int from, int toInclusive) {
         if (from > toInclusive) {
             return Nil.instance();
@@ -833,6 +936,12 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
         private final T head;
         private final Lazy<Stream<T>> tail;
 
+        /**
+         * Creates a new Stream consisting of a head element and a lazy trailing Stream.
+         *
+         * @param head A head element
+         * @param tail A tail Supplier
+         */
         public Cons(T head, Supplier<Stream<T>> tail) {
             this.head = head;
             this.tail = Lazy.of(tail);
@@ -985,6 +1094,12 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
         private Nil() {
         }
 
+        /**
+         * Returns the singleton empty Stream instance.
+         *
+         * @param <T> Component type of the Stream
+         * @return The empty Stream
+         */
         @SuppressWarnings("unchecked")
         public static <T> Nil<T> instance() {
             return (Nil<T>) INSTANCE;
@@ -1032,6 +1147,11 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
 
         private final Lazy<Stream<T>> stream;
 
+        /**
+         * Creates a Deferred stream which may be empty or non-empty, depending on the given supplier.
+         *
+         * @param streamSupplier A supplier of a stream.
+         */
         public Deferred(Supplier<Stream<T>> streamSupplier) {
             this.stream = Lazy.of(streamSupplier);
         }
