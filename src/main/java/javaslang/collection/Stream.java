@@ -926,6 +926,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
      * Non-empty Stream.
      *
      * @param <T> Component type of the Stream.
+     * @since 1.1.0
      */
     // DEV NOTE: class declared final because of serialization proxy pattern.
     // (see Effective Java, 2nd ed., p. 315)
@@ -1083,6 +1084,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
      * This is a singleton, i.e. not Cloneable.
      *
      * @param <T> Component type of the Stream.
+     * @since 1.1.0
      */
     final class Nil<T> extends AbstractStream<T> {
 
@@ -1140,6 +1142,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
      * Deferred Stream for lazy evaluation of blocking input.
      *
      * @param <T> Component type of the Stream.
+     * @since 1.1.0
      */
     final class Deferred<T> extends AbstractStream<T> {
 
@@ -1212,6 +1215,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
      * override Object's methods</a>.
      *
      * @param <T> Component type of the Stream.
+     * @since 1.1.0
      */
     abstract class AbstractStream<T> implements Stream<T> {
 

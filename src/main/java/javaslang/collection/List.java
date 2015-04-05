@@ -675,6 +675,7 @@ public interface List<T> extends Seq<T>, ValueObject {
 	 * Non-empty List.
 	 *
 	 * @param <T> Component type of the List.
+	 * @since 1.1.0
 	 */
 	// DEV NOTE: class declared final because of serialization proxy pattern (see Effective Java, 2nd ed., p. 315)
 	final class Cons<T> extends AbstractList<T> {
@@ -827,6 +828,7 @@ public interface List<T> extends Seq<T>, ValueObject {
 	 * Representation of the singleton empty List.
 	 *
 	 * @param <T> Component type of the List.
+	 * @since 1.1.0
 	 */
 	final class Nil<T> extends AbstractList<T> {
 
@@ -890,6 +892,7 @@ public interface List<T> extends Seq<T>, ValueObject {
 	 * override Object's methods</a>.
 	 *
 	 * @param <T> Component type of the List.
+	 * @since 1.1.0
 	 */
 	abstract class AbstractList<T> implements List<T> {
 
