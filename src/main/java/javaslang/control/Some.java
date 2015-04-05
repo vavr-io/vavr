@@ -10,6 +10,7 @@ import javaslang.Tuple;
 import javaslang.Tuple1;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Some represents a defined {@link javaslang.control.Option}. It contains a value which may be null. However, to
@@ -46,6 +47,11 @@ public final class Some<T> implements Option<T> {
     @Override
     public Some<T> toOption() {
         return this;
+    }
+
+    @Override
+    public Optional<T> toJavaOptional() {
+        return Optional.ofNullable(value);
     }
 
     @Override

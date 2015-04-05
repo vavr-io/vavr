@@ -13,6 +13,7 @@ import javaslang.algebra.HigherKinded1;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -90,6 +91,11 @@ public final class Success<T> implements Try<T> {
     @Override
     public Right<Throwable, T> toEither() {
         return new Right<>(value);
+    }
+
+    @Override
+    public Optional<T> toJavaOptional() {
+        return Optional.ofNullable(value);
     }
 
     @Override

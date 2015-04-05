@@ -9,6 +9,7 @@ import javaslang.*;
 import javaslang.algebra.HigherKinded1;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -103,6 +104,11 @@ public final class Failure<T> implements Try<T> {
     @Override
     public None<T> toOption() {
         return None.instance();
+    }
+
+    @Override
+    public Optional<T> toJavaOptional() {
+        return Optional.empty();
     }
 
     @Override

@@ -12,6 +12,7 @@ import javaslang.algebra.Monad1;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * None is a singleton representation of the undefined {@link javaslang.control.Option}. The instance is obtained by
@@ -70,6 +71,11 @@ public final class None<T> implements Option<T> {
     @Override
     public None<T> toOption() {
         return this;
+    }
+
+    @Override
+    public Optional<T> toJavaOptional() {
+        return Optional.empty();
     }
 
     @Override

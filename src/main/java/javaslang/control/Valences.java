@@ -7,6 +7,7 @@ package javaslang.control;
 
 import javaslang.Function1;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -37,6 +38,8 @@ final class Valences {
         <X extends Throwable> T orElseThrow(Supplier<X> exceptionSupplier) throws X;
 
         Option<T> toOption();
+
+        Optional<T> toJavaOptional();
     }
 
     // has two values (, one is primary)
@@ -56,5 +59,7 @@ final class Valences {
 
         // order of generic parameters may vary (see Either.LeftProjection, Either.RightProjection)
         Either<?, ?> toEither();
+
+        Optional<T> toJavaOptional();
     }
 }

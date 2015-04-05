@@ -11,6 +11,7 @@ import javaslang.control.Valences.Bivalent;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -140,6 +141,15 @@ public interface Either<L, R> extends ValueObject {
 		@Override
 		public Either<L, R> toEither() {
 			return either;
+		}
+
+		@Override
+		public Optional<L> toJavaOptional() {
+			if (either.isLeft()) {
+				return Optional.ofNullable(asLeft());
+			} else {
+				return Optional.empty();
+			}
 		}
 
 		public Option<Either<L, R>> filter(Predicate<? super L> predicate) {
@@ -276,6 +286,15 @@ public interface Either<L, R> extends ValueObject {
 				return new Some<>(either);
 			} else {
 				return None.instance();
+			}
+		}
+
+		@Override
+		public Optional<R> toJavaOptional() {
+			if (either.isRight()) {
+				return Optional.ofNullable(asRight());
+			} else {
+				return Optional.empty();
 			}
 		}
 
