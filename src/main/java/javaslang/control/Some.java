@@ -18,6 +18,7 @@ import java.util.Optional;
  * {@link Option#of(Object)} is sufficient.
  *
  * @param <T> The type of the optional value.
+ * @since 1.0.0
  */
 public final class Some<T> implements Option<T> {
 

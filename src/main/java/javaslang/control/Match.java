@@ -18,10 +18,9 @@ import java.util.function.Supplier;
 /**
  * A better switch for Java. A Match...
  * <ul>
- * <li>is lazy</li>
- * <li>is an expression, i.e. a {@code Function<Object, R>}</li>
- * <li>is able to match types, i.e. {@code Matchs.caze((byte b) -> "a byte: " + b)}</li>
- * <li>is able to match values, i.e. {@code Matchs.caze(BigDecimal.ZERO, b -> "Zero: " + b)}</li>
+ * <li>has a fluent API and is an expression</li>
+ * <li>is able to match types, i.e. {@code Match.caze((byte b) -> "a byte: " + b)}</li>
+ * <li>is able to match values, i.e. {@code Match.caze(BigDecimal.ZERO, b -> "Zero: " + b)}</li>
  * </ul>
  *
  * Example of a Match as <strong>partial</strong> function:
@@ -37,12 +36,11 @@ import java.util.function.Supplier;
  * Example of a Match as <strong>total</strong> function:
  *
  * <pre>
- * <code>final Match&lt;Number&gt; toNumber = new Match.Builder&lt;Number&gt;()
- *     .caze((Integer i) -&gt; i)
+ * <code>Match
+ *     .&lt;Number&gt; caze((Integer i) -&gt; i)
  *     .caze((String s) -&gt; new BigDecimal(s))
  *     .orElse(() -&gt; -1)
- *     .build();
- * final Number number = toNumber.apply(1.0d); // result: -1</code>
+ *     .apply(1.0d); // result: -1</code>
  * </pre>
  * <p>
  * The following calls are equivalent:
@@ -51,8 +49,6 @@ import java.util.function.Supplier;
  * <li>{@code new Match.Builder<R>.caze(...).apply(obj)}</li>
  * <li>{@code Match.caze(...).apply(obj)}</li>
  * </ul>
- *
- * This class is not intended to be extended.
  *
  * @param <R> The result type of the Match expression.
  */
@@ -91,41 +87,97 @@ public final class Match<R> {
         return new Match.Builder<R>().caze(prototype, function);
     }
 
+    /**
+     * Shortcut for {@code new Match.Builder<R>().caze(function)}.
+     *
+     * @param function A boolean function, i.e. {@code boolean -> R}.
+     * @param <R> return type of the matcher function
+     * @return A Match of type boolean
+     */
     @SuppressWarnings("overloads")
     public static <R> Match.Builder<R> caze(BooleanFunction<R> function) {
         return new Match.Builder<R>().caze(function);
     }
 
+    /**
+     * Shortcut for {@code new Match.Builder<R>().caze(function)}.
+     *
+     * @param function A byte function, i.e. {@code byte -> R}.
+     * @param <R> return type of the matcher function
+     * @return A Match of type byte
+     */
     @SuppressWarnings("overloads")
     public static <R> Match.Builder<R> caze(ByteFunction<R> function) {
         return new Match.Builder<R>().caze(function);
     }
 
+    /**
+     * Shortcut for {@code new Match.Builder<R>().caze(function)}.
+     *
+     * @param function A char function, i.e. {@code char -> R}.
+     * @param <R> return type of the matcher function
+     * @return A Match of type char
+     */
     @SuppressWarnings("overloads")
     public static <R> Match.Builder<R> caze(CharFunction<R> function) {
         return new Match.Builder<R>().caze(function);
     }
 
+    /**
+     * Shortcut for {@code new Match.Builder<R>().caze(function)}.
+     *
+     * @param function A double function, i.e. {@code double -> R}.
+     * @param <R> return type of the matcher function
+     * @return A Match of type double
+     */
     @SuppressWarnings("overloads")
     public static <R> Match.Builder<R> caze(DoubleFunction<R> function) {
         return new Match.Builder<R>().caze(function);
     }
 
+    /**
+     * Shortcut for {@code new Match.Builder<R>().caze(function)}.
+     *
+     * @param function A float function, i.e. {@code float -> R}.
+     * @param <R> return type of the matcher function
+     * @return A Match of type float
+     */
     @SuppressWarnings("overloads")
     public static <R> Match.Builder<R> caze(FloatFunction<R> function) {
         return new Match.Builder<R>().caze(function);
     }
 
+    /**
+     * Shortcut for {@code new Match.Builder<R>().caze(function)}.
+     *
+     * @param function A int function, i.e. {@code int -> R}.
+     * @param <R> return type of the matcher function
+     * @return A Match of type int
+     */
     @SuppressWarnings("overloads")
     public static <R> Match.Builder<R> caze(IntFunction<R> function) {
         return new Match.Builder<R>().caze(function);
     }
 
+    /**
+     * Shortcut for {@code new Match.Builder<R>().caze(function)}.
+     *
+     * @param function A long function, i.e. {@code long -> R}.
+     * @param <R> return type of the matcher function
+     * @return A Match of type long
+     */
     @SuppressWarnings("overloads")
     public static <R> Match.Builder<R> caze(LongFunction<R> function) {
         return new Match.Builder<R>().caze(function);
     }
 
+    /**
+     * Shortcut for {@code new Match.Builder<R>().caze(function)}.
+     *
+     * @param function A short function, i.e. {@code short -> R}.
+     * @param <R> return type of the matcher function
+     * @return A Match of type short
+     */
     @SuppressWarnings("overloads")
     public static <R> Match.Builder<R> caze(ShortFunction<R> function) {
         return new Match.Builder<R>().caze(function);
@@ -150,6 +202,11 @@ public final class Match<R> {
         return defaultOption.orElseThrow(() -> new MatchError(obj)).get();
     }
 
+    /**
+     * A Match builder, providing fluent API to specify Match cases.
+     *
+     * @param <R> Return type of the Match
+     */
     public static class Builder<R> extends OrElseBuilder<R> {
 
         private final List<Function1<Object, Option<R>>> cases = new ArrayList<>();
@@ -326,28 +383,16 @@ public final class Match<R> {
             return this;
         }
 
-        /*
-         * (non-Javadoc)
-         * @see javaslang.control.Match.MatchBuilder#getCases()
-         */
         @Override
         protected List<Function1<Object, Option<R>>> getCases() {
             return cases;
         }
 
-        /*
-         * (non-Javadoc)
-         * @see javaslang.control.Match.MatchBuilder#getDefault()
-         */
         @Override
         protected Option<Supplier<R>> getDefault() {
             return defaultOption;
         }
 
-        /*
-         * (non-Javadoc)
-         * @see javaslang.control.Match.MatchBuilder#setDefault(javaslang.option.Option)
-         */
         @Override
         protected void setDefault(Option<Supplier<R>> defaultOption) {
             this.defaultOption = defaultOption;
@@ -386,6 +431,11 @@ public final class Match<R> {
         }
     }
 
+    /**
+     * An abstract Match builder providing the orElse case.
+     *
+     * @param <R> Return type of the Match
+     */
     public static abstract class OrElseBuilder<R> extends MatchBuilder<R> {
 
         /**
@@ -412,8 +462,18 @@ public final class Match<R> {
         }
     }
 
+    /**
+     * An abstract Match builder providing base methods for the internal Match builder DSL.
+     *
+     * @param <R> Return type of the Match
+     */
     public static abstract class MatchBuilder<R> {
 
+        /**
+         * Finally used by a Match builder to build the Match instance.
+         *
+         * @return a new Match consisting of the cases specified before.
+         */
         public Match<R> build() {
             return new Match<>(getCases(), getDefault());
         }
@@ -435,6 +495,11 @@ public final class Match<R> {
         protected abstract void setDefault(Option<Supplier<R>> defaultOption);
     }
 
+    /**
+     * A function {@code f: boolean -&gt; R} that takes a primitive boolean value and returns a value of type R.
+     *
+     * @param <R> Return type of the function.
+     */
     @FunctionalInterface
     public interface BooleanFunction<R> extends Serializable {
 
@@ -443,9 +508,20 @@ public final class Match<R> {
          */
         long serialVersionUID = 1L;
 
+        /**
+         * Applies this function to the given value.
+         *
+         * @param value A boolean value
+         * @return A new value of type R
+         */
         R apply(boolean value);
     }
 
+    /**
+     * A function {@code f: byte -&gt; R} that takes a primitive byte value and returns a value of type R.
+     *
+     * @param <R> Return type of the function.
+     */
     @FunctionalInterface
     public interface ByteFunction<R> extends Serializable {
 
@@ -454,9 +530,20 @@ public final class Match<R> {
          */
         long serialVersionUID = 1L;
 
+        /**
+         * Applies this function to the given value.
+         *
+         * @param value A byte value
+         * @return A new value of type R
+         */
         R apply(byte value);
     }
 
+    /**
+     * A function {@code f: char -&gt; R} that takes a primitive char value and returns a value of type R.
+     *
+     * @param <R> Return type of the function.
+     */
     @FunctionalInterface
     public interface CharFunction<R> extends Serializable {
 
@@ -465,9 +552,20 @@ public final class Match<R> {
          */
         long serialVersionUID = 1L;
 
+        /**
+         * Applies this function to the given value.
+         *
+         * @param value A char value
+         * @return A new value of type R
+         */
         R apply(char value);
     }
 
+    /**
+     * A function {@code f: double -&gt; R} that takes a primitive double value and returns a value of type R.
+     *
+     * @param <R> Return type of the function.
+     */
     @FunctionalInterface
     public interface DoubleFunction<R> extends Serializable {
 
@@ -476,9 +574,20 @@ public final class Match<R> {
          */
         long serialVersionUID = 1L;
 
+        /**
+         * Applies this function to the given value.
+         *
+         * @param value A double value
+         * @return A new value of type R
+         */
         R apply(double value);
     }
 
+    /**
+     * A function {@code f: float -&gt; R} that takes a primitive float value and returns a value of type R.
+     *
+     * @param <R> Return type of the function.
+     */
     @FunctionalInterface
     public interface FloatFunction<R> extends Serializable {
 
@@ -487,9 +596,20 @@ public final class Match<R> {
          */
         long serialVersionUID = 1L;
 
+        /**
+         * Applies this function to the given value.
+         *
+         * @param value A float value
+         * @return A new value of type R
+         */
         R apply(float value);
     }
 
+    /**
+     * A function {@code f: int -&gt; R} that takes a primitive int value and returns a value of type R.
+     *
+     * @param <R> Return type of the function.
+     */
     @FunctionalInterface
     public interface IntFunction<R> extends Serializable {
 
@@ -498,9 +618,20 @@ public final class Match<R> {
          */
         long serialVersionUID = 1L;
 
+        /**
+         * Applies this function to the given value.
+         *
+         * @param value An int value
+         * @return A new value of type R
+         */
         R apply(int value);
     }
 
+    /**
+     * A function {@code f: long -&gt; R} that takes a primitive long value and returns a value of type R.
+     *
+     * @param <R> Return type of the function.
+     */
     @FunctionalInterface
     public interface LongFunction<R> extends Serializable {
 
@@ -509,9 +640,20 @@ public final class Match<R> {
          */
         long serialVersionUID = 1L;
 
+        /**
+         * Applies this function to the given value.
+         *
+         * @param value A long value
+         * @return A new value of type R
+         */
         R apply(long value);
     }
 
+    /**
+     * A function {@code f: short -&gt; R} that takes a primitive short value and returns a value of type R.
+     *
+     * @param <R> Return type of the function.
+     */
     @FunctionalInterface
     public interface ShortFunction<R> extends Serializable {
 
@@ -520,6 +662,12 @@ public final class Match<R> {
          */
         long serialVersionUID = 1L;
 
+        /**
+         * Applies this function to the given value.
+         *
+         * @param value A short value
+         * @return A new value of type R
+         */
         R apply(short value);
     }
 }
