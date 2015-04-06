@@ -51,6 +51,7 @@ import java.util.function.Supplier;
  * </ul>
  *
  * @param <R> The result type of the Match expression.
+ * @since 1.0.0
  */
 public final class Match<R> {
 
@@ -206,6 +207,7 @@ public final class Match<R> {
      * A Match builder, providing fluent API to specify Match cases.
      *
      * @param <R> Return type of the Match
+     * @since 1.0.0
      */
     public static class Builder<R> extends OrElseBuilder<R> {
 
@@ -435,6 +437,7 @@ public final class Match<R> {
      * An abstract Match builder providing the orElse case.
      *
      * @param <R> Return type of the Match
+     * @since 1.0.0
      */
     public static abstract class OrElseBuilder<R> extends MatchBuilder<R> {
 
@@ -466,6 +469,7 @@ public final class Match<R> {
      * An abstract Match builder providing base methods for the internal Match builder DSL.
      *
      * @param <R> Return type of the Match
+     * @since 1.0.0
      */
     public static abstract class MatchBuilder<R> {
 
@@ -499,6 +503,7 @@ public final class Match<R> {
      * A function {@code f: boolean -&gt; R} that takes a primitive boolean value and returns a value of type R.
      *
      * @param <R> Return type of the function.
+     * @since 1.0.0
      */
     @FunctionalInterface
     public interface BooleanFunction<R> extends Serializable {
@@ -521,6 +526,7 @@ public final class Match<R> {
      * A function {@code f: byte -&gt; R} that takes a primitive byte value and returns a value of type R.
      *
      * @param <R> Return type of the function.
+     * @since 1.0.0
      */
     @FunctionalInterface
     public interface ByteFunction<R> extends Serializable {
@@ -543,6 +549,7 @@ public final class Match<R> {
      * A function {@code f: char -&gt; R} that takes a primitive char value and returns a value of type R.
      *
      * @param <R> Return type of the function.
+     * @since 1.0.0
      */
     @FunctionalInterface
     public interface CharFunction<R> extends Serializable {
@@ -565,6 +572,7 @@ public final class Match<R> {
      * A function {@code f: double -&gt; R} that takes a primitive double value and returns a value of type R.
      *
      * @param <R> Return type of the function.
+     * @since 1.0.0
      */
     @FunctionalInterface
     public interface DoubleFunction<R> extends Serializable {
@@ -587,6 +595,7 @@ public final class Match<R> {
      * A function {@code f: float -&gt; R} that takes a primitive float value and returns a value of type R.
      *
      * @param <R> Return type of the function.
+     * @since 1.0.0
      */
     @FunctionalInterface
     public interface FloatFunction<R> extends Serializable {
@@ -609,6 +618,7 @@ public final class Match<R> {
      * A function {@code f: int -&gt; R} that takes a primitive int value and returns a value of type R.
      *
      * @param <R> Return type of the function.
+     * @since 1.0.0
      */
     @FunctionalInterface
     public interface IntFunction<R> extends Serializable {
@@ -631,6 +641,7 @@ public final class Match<R> {
      * A function {@code f: long -&gt; R} that takes a primitive long value and returns a value of type R.
      *
      * @param <R> Return type of the function.
+     * @since 1.0.0
      */
     @FunctionalInterface
     public interface LongFunction<R> extends Serializable {
@@ -653,6 +664,7 @@ public final class Match<R> {
      * A function {@code f: short -&gt; R} that takes a primitive short value and returns a value of type R.
      *
      * @param <R> Return type of the function.
+     * @since 1.0.0
      */
     @FunctionalInterface
     public interface ShortFunction<R> extends Serializable {

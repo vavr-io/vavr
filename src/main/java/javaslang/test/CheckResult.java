@@ -16,6 +16,18 @@ import javaslang.control.Some;
 import java.util.Objects;
 
 /**
+ * Represents the result of a property check which is
+ *
+ * <ul>
+ * <li>{@code Satisfied}, if all tests satisfied the given property</li>
+ * <li>{@code Falsified}, if a counter-example could be discovered that falsified the given property</li>
+ * <li>{@code Erroneous}, if an exception occured executing the property check</li>
+ * </ul>
+ *
+ * Please note that a {@code Satisfied} property check may be {@code Exhausted}, if the property is an implication
+ * and no sample could be found that satisfied the pre-condition. In this case the post-condition is satisfied by
+ * definition (see <a href="http://en.wikipedia.org/wiki/Principle_of_explosion">ex falso quodlibet</a>).
+ *
  * @since 1.2.0
  */
 public interface CheckResult extends ValueObject {
@@ -25,20 +37,61 @@ public interface CheckResult extends ValueObject {
      */
     long serialVersionUID = 1L;
 
+    /**
+     * If this check result is satisfied as specified above.
+     *
+     * @return true, if this check result is satisfied, false otherwise
+     */
     boolean isSatisfied();
 
+    /**
+     * If this check result is falsified as specified above.
+     *
+     * @return true, if this check result is falsified, false otherwise
+     */
     boolean isFalsified();
 
+    /**
+     * If this check result is erroneous as specified above.
+     *
+     * @return true, if this check result is erroneous, false otherwise
+     */
     boolean isErroneous();
 
+    /**
+     * If this check result is exhausted as specified above.
+     *
+     * @return true, if this check result is exhausted, false otherwise
+     */
     boolean isExhausted();
 
+    /**
+     * The name of the checked property this result refers to.
+     *
+     * @return a property name
+     */
     String propertyName();
 
+    /**
+     * The number of checks performed using random generated input data.
+     *
+     * @return the number of checks performed
+     */
     int count();
 
+    /**
+     * An optional sample which falsified the property or which lead to an error.
+     *
+     * @return an optional sample
+     */
     Option<Tuple> sample();
 
+    /**
+     * An optional error.
+     *
+     * @return an optional error
+     * @since 1.2.0
+     */
     Option<Error> error();
 
     /**
@@ -130,6 +183,8 @@ public interface CheckResult extends ValueObject {
 
     /**
      * Represents a falsified property check.
+     *
+     * @since 1.2.0
      */
     class Falsified implements CheckResult {
 
@@ -217,6 +272,8 @@ public interface CheckResult extends ValueObject {
 
     /**
      * Represents an erroneous property check.
+     *
+     * @since 1.2.0
      */
     class Erroneous implements CheckResult {
 
