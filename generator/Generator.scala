@@ -189,6 +189,10 @@ def generateMainClasses(): Unit = {
     genJavaslangFile("javaslang.test", "Property")(genProperty)
 
     def genProperty(im: ImportManager, packageName: String, className: String): String = xs"""
+      /**
+       * A property builder which provides a fluent API to build checkable properties.
+       * @since 1.2.0
+       */
       public class $className {
 
           private final String name;
@@ -230,6 +234,13 @@ def generateMainClasses(): Unit = {
               val parameters = (1 to i).gen(j => s"a$j")(", ")
               val parametersDecl = (1 to i).gen(j => s"Arbitrary<T$j> a$j")(", ")
               xs"""
+                  /$javadoc
+                   * Returns a logical for all quantor of $i given variables.
+                   *
+                   ${(1 to i).gen(j => s"* @param <T$j> ${j.ordinal} variable type of this for all quantor")("\n")}
+                   ${(1 to i).gen(j => s"* @param a$j ${j.ordinal} variable of this for all quantor")("\n")}
+                   * @return a new {@code ForAll$i} instance of $i variables
+                   */
                   public <$generics> ForAll$i<$generics> forAll($parametersDecl) {
                       return new ForAll$i<>(name, $parameters);
                   }
@@ -241,6 +252,12 @@ def generateMainClasses(): Unit = {
               val params = (name: String) => (1 to i).gen(j => s"$name$j")(", ")
               val parametersDecl = (1 to i).gen(j => s"Arbitrary<T$j> a$j")(", ")
               xs"""
+                  /$javadoc
+                   * Represents a logical for all quantor.
+                   *
+                   ${(1 to i).gen(j => s"* @param <T$j> ${j.ordinal} variable type of this for all quantor")("\n")}
+                   * @since 1.2.0
+                   */
                   public static class ForAll$i<$generics> {
 
                       private final String name;
@@ -255,6 +272,12 @@ def generateMainClasses(): Unit = {
                           """)("\n")}
                       }
 
+                      /$javadoc
+                       * Returns a checkable property that checks values of the $i variables of this {@code ForAll} quantor.
+                       *
+                       * @param predicate A $i-ary predicate
+                       * @return a new {@code Property$i} of $i variables.
+                       */
                       public Property$i<$generics> suchThat(${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> predicate) {
                           final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Condition> proposition = (${params("t")}) -> new Condition(true, predicate.apply(${params("t")}));
                           return new Property$i<>(name, ${params("a")}, proposition);
@@ -278,6 +301,10 @@ def generateMainClasses(): Unit = {
               val parametersDecl = (1 to i).gen(j => s"Arbitrary<T$j> a$j")(", ")
 
               xs"""
+                  /$javadoc
+                   * Represents a $i-ary checkable property.
+                   * @since 1.2.0
+                   */
                   public static class Property$i<$generics> implements Checkable {
 
                       private final String name;
@@ -294,6 +321,12 @@ def generateMainClasses(): Unit = {
                           this.predicate = predicate;
                       }
 
+                      /$javadoc
+                       * Returns an implication which composes this Property as pre-condition and a given post-condition.
+                       *
+                       * @param postcondition The postcondition of this implication
+                       * @return A new Checkable implication
+                       */
                       public Checkable implies($checkedFunctionType<$generics, Boolean> postcondition) {
                           final $checkedFunctionType<$generics, Condition> implication = (${params("t")}) -> {
                               final Condition precondition = predicate.apply(${params("t")});

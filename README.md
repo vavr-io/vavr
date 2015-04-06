@@ -20,7 +20,7 @@ The actual release is
 <dependency>
     <groupId>com.javaslang</groupId>
     <artifactId>javaslang</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
 </dependency>
 ```
 
@@ -30,7 +30,7 @@ On every push to github a new snapshot will be deployed to [oss.sonatype.org](ht
 <dependency>
     <groupId>com.javaslang</groupId>
     <artifactId>javaslang</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.3.0-SNAPSHOT</version>
 </dependency>
 ```
 

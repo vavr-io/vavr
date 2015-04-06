@@ -17,6 +17,10 @@ import javaslang.control.None;
 import javaslang.control.Some;
 import javaslang.control.Try;
 
+/**
+ * A property builder which provides a fluent API to build checkable properties.
+ * @since 1.2.0
+ */
 public class Property {
 
     private final String name;
@@ -53,110 +57,948 @@ public class Property {
         System.out.println(msg);
     }
 
+    /**
+     * Returns a logical for all quantor of 1 given variables.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param a1 1st variable of this for all quantor
+     * @return a new {@code ForAll1} instance of 1 variables
+     */
     public <T1> ForAll1<T1> forAll(Arbitrary<T1> a1) {
         return new ForAll1<>(name, a1);
     }
 
+    /**
+     * Returns a logical for all quantor of 2 given variables.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param a1 1st variable of this for all quantor
+     * @param a2 2nd variable of this for all quantor
+     * @return a new {@code ForAll2} instance of 2 variables
+     */
     public <T1, T2> ForAll2<T1, T2> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2) {
         return new ForAll2<>(name, a1, a2);
     }
 
+    /**
+     * Returns a logical for all quantor of 3 given variables.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param a1 1st variable of this for all quantor
+     * @param a2 2nd variable of this for all quantor
+     * @param a3 3rd variable of this for all quantor
+     * @return a new {@code ForAll3} instance of 3 variables
+     */
     public <T1, T2, T3> ForAll3<T1, T2, T3> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3) {
         return new ForAll3<>(name, a1, a2, a3);
     }
 
+    /**
+     * Returns a logical for all quantor of 4 given variables.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param a1 1st variable of this for all quantor
+     * @param a2 2nd variable of this for all quantor
+     * @param a3 3rd variable of this for all quantor
+     * @param a4 4th variable of this for all quantor
+     * @return a new {@code ForAll4} instance of 4 variables
+     */
     public <T1, T2, T3, T4> ForAll4<T1, T2, T3, T4> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4) {
         return new ForAll4<>(name, a1, a2, a3, a4);
     }
 
+    /**
+     * Returns a logical for all quantor of 5 given variables.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param a1 1st variable of this for all quantor
+     * @param a2 2nd variable of this for all quantor
+     * @param a3 3rd variable of this for all quantor
+     * @param a4 4th variable of this for all quantor
+     * @param a5 5th variable of this for all quantor
+     * @return a new {@code ForAll5} instance of 5 variables
+     */
     public <T1, T2, T3, T4, T5> ForAll5<T1, T2, T3, T4, T5> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5) {
         return new ForAll5<>(name, a1, a2, a3, a4, a5);
     }
 
+    /**
+     * Returns a logical for all quantor of 6 given variables.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param a1 1st variable of this for all quantor
+     * @param a2 2nd variable of this for all quantor
+     * @param a3 3rd variable of this for all quantor
+     * @param a4 4th variable of this for all quantor
+     * @param a5 5th variable of this for all quantor
+     * @param a6 6th variable of this for all quantor
+     * @return a new {@code ForAll6} instance of 6 variables
+     */
     public <T1, T2, T3, T4, T5, T6> ForAll6<T1, T2, T3, T4, T5, T6> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6) {
         return new ForAll6<>(name, a1, a2, a3, a4, a5, a6);
     }
 
+    /**
+     * Returns a logical for all quantor of 7 given variables.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param a1 1st variable of this for all quantor
+     * @param a2 2nd variable of this for all quantor
+     * @param a3 3rd variable of this for all quantor
+     * @param a4 4th variable of this for all quantor
+     * @param a5 5th variable of this for all quantor
+     * @param a6 6th variable of this for all quantor
+     * @param a7 7th variable of this for all quantor
+     * @return a new {@code ForAll7} instance of 7 variables
+     */
     public <T1, T2, T3, T4, T5, T6, T7> ForAll7<T1, T2, T3, T4, T5, T6, T7> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7) {
         return new ForAll7<>(name, a1, a2, a3, a4, a5, a6, a7);
     }
 
+    /**
+     * Returns a logical for all quantor of 8 given variables.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param a1 1st variable of this for all quantor
+     * @param a2 2nd variable of this for all quantor
+     * @param a3 3rd variable of this for all quantor
+     * @param a4 4th variable of this for all quantor
+     * @param a5 5th variable of this for all quantor
+     * @param a6 6th variable of this for all quantor
+     * @param a7 7th variable of this for all quantor
+     * @param a8 8th variable of this for all quantor
+     * @return a new {@code ForAll8} instance of 8 variables
+     */
     public <T1, T2, T3, T4, T5, T6, T7, T8> ForAll8<T1, T2, T3, T4, T5, T6, T7, T8> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8) {
         return new ForAll8<>(name, a1, a2, a3, a4, a5, a6, a7, a8);
     }
 
+    /**
+     * Returns a logical for all quantor of 9 given variables.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param a1 1st variable of this for all quantor
+     * @param a2 2nd variable of this for all quantor
+     * @param a3 3rd variable of this for all quantor
+     * @param a4 4th variable of this for all quantor
+     * @param a5 5th variable of this for all quantor
+     * @param a6 6th variable of this for all quantor
+     * @param a7 7th variable of this for all quantor
+     * @param a8 8th variable of this for all quantor
+     * @param a9 9th variable of this for all quantor
+     * @return a new {@code ForAll9} instance of 9 variables
+     */
     public <T1, T2, T3, T4, T5, T6, T7, T8, T9> ForAll9<T1, T2, T3, T4, T5, T6, T7, T8, T9> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9) {
         return new ForAll9<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9);
     }
 
+    /**
+     * Returns a logical for all quantor of 10 given variables.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param a1 1st variable of this for all quantor
+     * @param a2 2nd variable of this for all quantor
+     * @param a3 3rd variable of this for all quantor
+     * @param a4 4th variable of this for all quantor
+     * @param a5 5th variable of this for all quantor
+     * @param a6 6th variable of this for all quantor
+     * @param a7 7th variable of this for all quantor
+     * @param a8 8th variable of this for all quantor
+     * @param a9 9th variable of this for all quantor
+     * @param a10 10th variable of this for all quantor
+     * @return a new {@code ForAll10} instance of 10 variables
+     */
     public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> ForAll10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10) {
         return new ForAll10<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10);
     }
 
+    /**
+     * Returns a logical for all quantor of 11 given variables.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param a1 1st variable of this for all quantor
+     * @param a2 2nd variable of this for all quantor
+     * @param a3 3rd variable of this for all quantor
+     * @param a4 4th variable of this for all quantor
+     * @param a5 5th variable of this for all quantor
+     * @param a6 6th variable of this for all quantor
+     * @param a7 7th variable of this for all quantor
+     * @param a8 8th variable of this for all quantor
+     * @param a9 9th variable of this for all quantor
+     * @param a10 10th variable of this for all quantor
+     * @param a11 11th variable of this for all quantor
+     * @return a new {@code ForAll11} instance of 11 variables
+     */
     public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> ForAll11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11) {
         return new ForAll11<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11);
     }
 
+    /**
+     * Returns a logical for all quantor of 12 given variables.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param <T12> 12th variable type of this for all quantor
+     * @param a1 1st variable of this for all quantor
+     * @param a2 2nd variable of this for all quantor
+     * @param a3 3rd variable of this for all quantor
+     * @param a4 4th variable of this for all quantor
+     * @param a5 5th variable of this for all quantor
+     * @param a6 6th variable of this for all quantor
+     * @param a7 7th variable of this for all quantor
+     * @param a8 8th variable of this for all quantor
+     * @param a9 9th variable of this for all quantor
+     * @param a10 10th variable of this for all quantor
+     * @param a11 11th variable of this for all quantor
+     * @param a12 12th variable of this for all quantor
+     * @return a new {@code ForAll12} instance of 12 variables
+     */
     public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> ForAll12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12) {
         return new ForAll12<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12);
     }
 
+    /**
+     * Returns a logical for all quantor of 13 given variables.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param <T12> 12th variable type of this for all quantor
+     * @param <T13> 13th variable type of this for all quantor
+     * @param a1 1st variable of this for all quantor
+     * @param a2 2nd variable of this for all quantor
+     * @param a3 3rd variable of this for all quantor
+     * @param a4 4th variable of this for all quantor
+     * @param a5 5th variable of this for all quantor
+     * @param a6 6th variable of this for all quantor
+     * @param a7 7th variable of this for all quantor
+     * @param a8 8th variable of this for all quantor
+     * @param a9 9th variable of this for all quantor
+     * @param a10 10th variable of this for all quantor
+     * @param a11 11th variable of this for all quantor
+     * @param a12 12th variable of this for all quantor
+     * @param a13 13th variable of this for all quantor
+     * @return a new {@code ForAll13} instance of 13 variables
+     */
     public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> ForAll13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13) {
         return new ForAll13<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13);
     }
 
+    /**
+     * Returns a logical for all quantor of 14 given variables.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param <T12> 12th variable type of this for all quantor
+     * @param <T13> 13th variable type of this for all quantor
+     * @param <T14> 14th variable type of this for all quantor
+     * @param a1 1st variable of this for all quantor
+     * @param a2 2nd variable of this for all quantor
+     * @param a3 3rd variable of this for all quantor
+     * @param a4 4th variable of this for all quantor
+     * @param a5 5th variable of this for all quantor
+     * @param a6 6th variable of this for all quantor
+     * @param a7 7th variable of this for all quantor
+     * @param a8 8th variable of this for all quantor
+     * @param a9 9th variable of this for all quantor
+     * @param a10 10th variable of this for all quantor
+     * @param a11 11th variable of this for all quantor
+     * @param a12 12th variable of this for all quantor
+     * @param a13 13th variable of this for all quantor
+     * @param a14 14th variable of this for all quantor
+     * @return a new {@code ForAll14} instance of 14 variables
+     */
     public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> ForAll14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14) {
         return new ForAll14<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14);
     }
 
+    /**
+     * Returns a logical for all quantor of 15 given variables.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param <T12> 12th variable type of this for all quantor
+     * @param <T13> 13th variable type of this for all quantor
+     * @param <T14> 14th variable type of this for all quantor
+     * @param <T15> 15th variable type of this for all quantor
+     * @param a1 1st variable of this for all quantor
+     * @param a2 2nd variable of this for all quantor
+     * @param a3 3rd variable of this for all quantor
+     * @param a4 4th variable of this for all quantor
+     * @param a5 5th variable of this for all quantor
+     * @param a6 6th variable of this for all quantor
+     * @param a7 7th variable of this for all quantor
+     * @param a8 8th variable of this for all quantor
+     * @param a9 9th variable of this for all quantor
+     * @param a10 10th variable of this for all quantor
+     * @param a11 11th variable of this for all quantor
+     * @param a12 12th variable of this for all quantor
+     * @param a13 13th variable of this for all quantor
+     * @param a14 14th variable of this for all quantor
+     * @param a15 15th variable of this for all quantor
+     * @return a new {@code ForAll15} instance of 15 variables
+     */
     public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> ForAll15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15) {
         return new ForAll15<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15);
     }
 
+    /**
+     * Returns a logical for all quantor of 16 given variables.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param <T12> 12th variable type of this for all quantor
+     * @param <T13> 13th variable type of this for all quantor
+     * @param <T14> 14th variable type of this for all quantor
+     * @param <T15> 15th variable type of this for all quantor
+     * @param <T16> 16th variable type of this for all quantor
+     * @param a1 1st variable of this for all quantor
+     * @param a2 2nd variable of this for all quantor
+     * @param a3 3rd variable of this for all quantor
+     * @param a4 4th variable of this for all quantor
+     * @param a5 5th variable of this for all quantor
+     * @param a6 6th variable of this for all quantor
+     * @param a7 7th variable of this for all quantor
+     * @param a8 8th variable of this for all quantor
+     * @param a9 9th variable of this for all quantor
+     * @param a10 10th variable of this for all quantor
+     * @param a11 11th variable of this for all quantor
+     * @param a12 12th variable of this for all quantor
+     * @param a13 13th variable of this for all quantor
+     * @param a14 14th variable of this for all quantor
+     * @param a15 15th variable of this for all quantor
+     * @param a16 16th variable of this for all quantor
+     * @return a new {@code ForAll16} instance of 16 variables
+     */
     public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> ForAll16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16) {
         return new ForAll16<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16);
     }
 
+    /**
+     * Returns a logical for all quantor of 17 given variables.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param <T12> 12th variable type of this for all quantor
+     * @param <T13> 13th variable type of this for all quantor
+     * @param <T14> 14th variable type of this for all quantor
+     * @param <T15> 15th variable type of this for all quantor
+     * @param <T16> 16th variable type of this for all quantor
+     * @param <T17> 17th variable type of this for all quantor
+     * @param a1 1st variable of this for all quantor
+     * @param a2 2nd variable of this for all quantor
+     * @param a3 3rd variable of this for all quantor
+     * @param a4 4th variable of this for all quantor
+     * @param a5 5th variable of this for all quantor
+     * @param a6 6th variable of this for all quantor
+     * @param a7 7th variable of this for all quantor
+     * @param a8 8th variable of this for all quantor
+     * @param a9 9th variable of this for all quantor
+     * @param a10 10th variable of this for all quantor
+     * @param a11 11th variable of this for all quantor
+     * @param a12 12th variable of this for all quantor
+     * @param a13 13th variable of this for all quantor
+     * @param a14 14th variable of this for all quantor
+     * @param a15 15th variable of this for all quantor
+     * @param a16 16th variable of this for all quantor
+     * @param a17 17th variable of this for all quantor
+     * @return a new {@code ForAll17} instance of 17 variables
+     */
     public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> ForAll17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17) {
         return new ForAll17<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17);
     }
 
+    /**
+     * Returns a logical for all quantor of 18 given variables.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param <T12> 12th variable type of this for all quantor
+     * @param <T13> 13th variable type of this for all quantor
+     * @param <T14> 14th variable type of this for all quantor
+     * @param <T15> 15th variable type of this for all quantor
+     * @param <T16> 16th variable type of this for all quantor
+     * @param <T17> 17th variable type of this for all quantor
+     * @param <T18> 18th variable type of this for all quantor
+     * @param a1 1st variable of this for all quantor
+     * @param a2 2nd variable of this for all quantor
+     * @param a3 3rd variable of this for all quantor
+     * @param a4 4th variable of this for all quantor
+     * @param a5 5th variable of this for all quantor
+     * @param a6 6th variable of this for all quantor
+     * @param a7 7th variable of this for all quantor
+     * @param a8 8th variable of this for all quantor
+     * @param a9 9th variable of this for all quantor
+     * @param a10 10th variable of this for all quantor
+     * @param a11 11th variable of this for all quantor
+     * @param a12 12th variable of this for all quantor
+     * @param a13 13th variable of this for all quantor
+     * @param a14 14th variable of this for all quantor
+     * @param a15 15th variable of this for all quantor
+     * @param a16 16th variable of this for all quantor
+     * @param a17 17th variable of this for all quantor
+     * @param a18 18th variable of this for all quantor
+     * @return a new {@code ForAll18} instance of 18 variables
+     */
     public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> ForAll18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18) {
         return new ForAll18<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18);
     }
 
+    /**
+     * Returns a logical for all quantor of 19 given variables.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param <T12> 12th variable type of this for all quantor
+     * @param <T13> 13th variable type of this for all quantor
+     * @param <T14> 14th variable type of this for all quantor
+     * @param <T15> 15th variable type of this for all quantor
+     * @param <T16> 16th variable type of this for all quantor
+     * @param <T17> 17th variable type of this for all quantor
+     * @param <T18> 18th variable type of this for all quantor
+     * @param <T19> 19th variable type of this for all quantor
+     * @param a1 1st variable of this for all quantor
+     * @param a2 2nd variable of this for all quantor
+     * @param a3 3rd variable of this for all quantor
+     * @param a4 4th variable of this for all quantor
+     * @param a5 5th variable of this for all quantor
+     * @param a6 6th variable of this for all quantor
+     * @param a7 7th variable of this for all quantor
+     * @param a8 8th variable of this for all quantor
+     * @param a9 9th variable of this for all quantor
+     * @param a10 10th variable of this for all quantor
+     * @param a11 11th variable of this for all quantor
+     * @param a12 12th variable of this for all quantor
+     * @param a13 13th variable of this for all quantor
+     * @param a14 14th variable of this for all quantor
+     * @param a15 15th variable of this for all quantor
+     * @param a16 16th variable of this for all quantor
+     * @param a17 17th variable of this for all quantor
+     * @param a18 18th variable of this for all quantor
+     * @param a19 19th variable of this for all quantor
+     * @return a new {@code ForAll19} instance of 19 variables
+     */
     public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> ForAll19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19) {
         return new ForAll19<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19);
     }
 
+    /**
+     * Returns a logical for all quantor of 20 given variables.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param <T12> 12th variable type of this for all quantor
+     * @param <T13> 13th variable type of this for all quantor
+     * @param <T14> 14th variable type of this for all quantor
+     * @param <T15> 15th variable type of this for all quantor
+     * @param <T16> 16th variable type of this for all quantor
+     * @param <T17> 17th variable type of this for all quantor
+     * @param <T18> 18th variable type of this for all quantor
+     * @param <T19> 19th variable type of this for all quantor
+     * @param <T20> 20th variable type of this for all quantor
+     * @param a1 1st variable of this for all quantor
+     * @param a2 2nd variable of this for all quantor
+     * @param a3 3rd variable of this for all quantor
+     * @param a4 4th variable of this for all quantor
+     * @param a5 5th variable of this for all quantor
+     * @param a6 6th variable of this for all quantor
+     * @param a7 7th variable of this for all quantor
+     * @param a8 8th variable of this for all quantor
+     * @param a9 9th variable of this for all quantor
+     * @param a10 10th variable of this for all quantor
+     * @param a11 11th variable of this for all quantor
+     * @param a12 12th variable of this for all quantor
+     * @param a13 13th variable of this for all quantor
+     * @param a14 14th variable of this for all quantor
+     * @param a15 15th variable of this for all quantor
+     * @param a16 16th variable of this for all quantor
+     * @param a17 17th variable of this for all quantor
+     * @param a18 18th variable of this for all quantor
+     * @param a19 19th variable of this for all quantor
+     * @param a20 20th variable of this for all quantor
+     * @return a new {@code ForAll20} instance of 20 variables
+     */
     public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> ForAll20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20) {
         return new ForAll20<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20);
     }
 
+    /**
+     * Returns a logical for all quantor of 21 given variables.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param <T12> 12th variable type of this for all quantor
+     * @param <T13> 13th variable type of this for all quantor
+     * @param <T14> 14th variable type of this for all quantor
+     * @param <T15> 15th variable type of this for all quantor
+     * @param <T16> 16th variable type of this for all quantor
+     * @param <T17> 17th variable type of this for all quantor
+     * @param <T18> 18th variable type of this for all quantor
+     * @param <T19> 19th variable type of this for all quantor
+     * @param <T20> 20th variable type of this for all quantor
+     * @param <T21> 1st variable type of this for all quantor
+     * @param a1 1st variable of this for all quantor
+     * @param a2 2nd variable of this for all quantor
+     * @param a3 3rd variable of this for all quantor
+     * @param a4 4th variable of this for all quantor
+     * @param a5 5th variable of this for all quantor
+     * @param a6 6th variable of this for all quantor
+     * @param a7 7th variable of this for all quantor
+     * @param a8 8th variable of this for all quantor
+     * @param a9 9th variable of this for all quantor
+     * @param a10 10th variable of this for all quantor
+     * @param a11 11th variable of this for all quantor
+     * @param a12 12th variable of this for all quantor
+     * @param a13 13th variable of this for all quantor
+     * @param a14 14th variable of this for all quantor
+     * @param a15 15th variable of this for all quantor
+     * @param a16 16th variable of this for all quantor
+     * @param a17 17th variable of this for all quantor
+     * @param a18 18th variable of this for all quantor
+     * @param a19 19th variable of this for all quantor
+     * @param a20 20th variable of this for all quantor
+     * @param a21 1st variable of this for all quantor
+     * @return a new {@code ForAll21} instance of 21 variables
+     */
     public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> ForAll21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21) {
         return new ForAll21<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21);
     }
 
+    /**
+     * Returns a logical for all quantor of 22 given variables.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param <T12> 12th variable type of this for all quantor
+     * @param <T13> 13th variable type of this for all quantor
+     * @param <T14> 14th variable type of this for all quantor
+     * @param <T15> 15th variable type of this for all quantor
+     * @param <T16> 16th variable type of this for all quantor
+     * @param <T17> 17th variable type of this for all quantor
+     * @param <T18> 18th variable type of this for all quantor
+     * @param <T19> 19th variable type of this for all quantor
+     * @param <T20> 20th variable type of this for all quantor
+     * @param <T21> 1st variable type of this for all quantor
+     * @param <T22> 2nd variable type of this for all quantor
+     * @param a1 1st variable of this for all quantor
+     * @param a2 2nd variable of this for all quantor
+     * @param a3 3rd variable of this for all quantor
+     * @param a4 4th variable of this for all quantor
+     * @param a5 5th variable of this for all quantor
+     * @param a6 6th variable of this for all quantor
+     * @param a7 7th variable of this for all quantor
+     * @param a8 8th variable of this for all quantor
+     * @param a9 9th variable of this for all quantor
+     * @param a10 10th variable of this for all quantor
+     * @param a11 11th variable of this for all quantor
+     * @param a12 12th variable of this for all quantor
+     * @param a13 13th variable of this for all quantor
+     * @param a14 14th variable of this for all quantor
+     * @param a15 15th variable of this for all quantor
+     * @param a16 16th variable of this for all quantor
+     * @param a17 17th variable of this for all quantor
+     * @param a18 18th variable of this for all quantor
+     * @param a19 19th variable of this for all quantor
+     * @param a20 20th variable of this for all quantor
+     * @param a21 1st variable of this for all quantor
+     * @param a22 2nd variable of this for all quantor
+     * @return a new {@code ForAll22} instance of 22 variables
+     */
     public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> ForAll22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22) {
         return new ForAll22<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22);
     }
 
+    /**
+     * Returns a logical for all quantor of 23 given variables.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param <T12> 12th variable type of this for all quantor
+     * @param <T13> 13th variable type of this for all quantor
+     * @param <T14> 14th variable type of this for all quantor
+     * @param <T15> 15th variable type of this for all quantor
+     * @param <T16> 16th variable type of this for all quantor
+     * @param <T17> 17th variable type of this for all quantor
+     * @param <T18> 18th variable type of this for all quantor
+     * @param <T19> 19th variable type of this for all quantor
+     * @param <T20> 20th variable type of this for all quantor
+     * @param <T21> 1st variable type of this for all quantor
+     * @param <T22> 2nd variable type of this for all quantor
+     * @param <T23> 3rd variable type of this for all quantor
+     * @param a1 1st variable of this for all quantor
+     * @param a2 2nd variable of this for all quantor
+     * @param a3 3rd variable of this for all quantor
+     * @param a4 4th variable of this for all quantor
+     * @param a5 5th variable of this for all quantor
+     * @param a6 6th variable of this for all quantor
+     * @param a7 7th variable of this for all quantor
+     * @param a8 8th variable of this for all quantor
+     * @param a9 9th variable of this for all quantor
+     * @param a10 10th variable of this for all quantor
+     * @param a11 11th variable of this for all quantor
+     * @param a12 12th variable of this for all quantor
+     * @param a13 13th variable of this for all quantor
+     * @param a14 14th variable of this for all quantor
+     * @param a15 15th variable of this for all quantor
+     * @param a16 16th variable of this for all quantor
+     * @param a17 17th variable of this for all quantor
+     * @param a18 18th variable of this for all quantor
+     * @param a19 19th variable of this for all quantor
+     * @param a20 20th variable of this for all quantor
+     * @param a21 1st variable of this for all quantor
+     * @param a22 2nd variable of this for all quantor
+     * @param a23 3rd variable of this for all quantor
+     * @return a new {@code ForAll23} instance of 23 variables
+     */
     public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> ForAll23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23) {
         return new ForAll23<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23);
     }
 
+    /**
+     * Returns a logical for all quantor of 24 given variables.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param <T12> 12th variable type of this for all quantor
+     * @param <T13> 13th variable type of this for all quantor
+     * @param <T14> 14th variable type of this for all quantor
+     * @param <T15> 15th variable type of this for all quantor
+     * @param <T16> 16th variable type of this for all quantor
+     * @param <T17> 17th variable type of this for all quantor
+     * @param <T18> 18th variable type of this for all quantor
+     * @param <T19> 19th variable type of this for all quantor
+     * @param <T20> 20th variable type of this for all quantor
+     * @param <T21> 1st variable type of this for all quantor
+     * @param <T22> 2nd variable type of this for all quantor
+     * @param <T23> 3rd variable type of this for all quantor
+     * @param <T24> 24th variable type of this for all quantor
+     * @param a1 1st variable of this for all quantor
+     * @param a2 2nd variable of this for all quantor
+     * @param a3 3rd variable of this for all quantor
+     * @param a4 4th variable of this for all quantor
+     * @param a5 5th variable of this for all quantor
+     * @param a6 6th variable of this for all quantor
+     * @param a7 7th variable of this for all quantor
+     * @param a8 8th variable of this for all quantor
+     * @param a9 9th variable of this for all quantor
+     * @param a10 10th variable of this for all quantor
+     * @param a11 11th variable of this for all quantor
+     * @param a12 12th variable of this for all quantor
+     * @param a13 13th variable of this for all quantor
+     * @param a14 14th variable of this for all quantor
+     * @param a15 15th variable of this for all quantor
+     * @param a16 16th variable of this for all quantor
+     * @param a17 17th variable of this for all quantor
+     * @param a18 18th variable of this for all quantor
+     * @param a19 19th variable of this for all quantor
+     * @param a20 20th variable of this for all quantor
+     * @param a21 1st variable of this for all quantor
+     * @param a22 2nd variable of this for all quantor
+     * @param a23 3rd variable of this for all quantor
+     * @param a24 24th variable of this for all quantor
+     * @return a new {@code ForAll24} instance of 24 variables
+     */
     public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> ForAll24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24) {
         return new ForAll24<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24);
     }
 
+    /**
+     * Returns a logical for all quantor of 25 given variables.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param <T12> 12th variable type of this for all quantor
+     * @param <T13> 13th variable type of this for all quantor
+     * @param <T14> 14th variable type of this for all quantor
+     * @param <T15> 15th variable type of this for all quantor
+     * @param <T16> 16th variable type of this for all quantor
+     * @param <T17> 17th variable type of this for all quantor
+     * @param <T18> 18th variable type of this for all quantor
+     * @param <T19> 19th variable type of this for all quantor
+     * @param <T20> 20th variable type of this for all quantor
+     * @param <T21> 1st variable type of this for all quantor
+     * @param <T22> 2nd variable type of this for all quantor
+     * @param <T23> 3rd variable type of this for all quantor
+     * @param <T24> 24th variable type of this for all quantor
+     * @param <T25> 25th variable type of this for all quantor
+     * @param a1 1st variable of this for all quantor
+     * @param a2 2nd variable of this for all quantor
+     * @param a3 3rd variable of this for all quantor
+     * @param a4 4th variable of this for all quantor
+     * @param a5 5th variable of this for all quantor
+     * @param a6 6th variable of this for all quantor
+     * @param a7 7th variable of this for all quantor
+     * @param a8 8th variable of this for all quantor
+     * @param a9 9th variable of this for all quantor
+     * @param a10 10th variable of this for all quantor
+     * @param a11 11th variable of this for all quantor
+     * @param a12 12th variable of this for all quantor
+     * @param a13 13th variable of this for all quantor
+     * @param a14 14th variable of this for all quantor
+     * @param a15 15th variable of this for all quantor
+     * @param a16 16th variable of this for all quantor
+     * @param a17 17th variable of this for all quantor
+     * @param a18 18th variable of this for all quantor
+     * @param a19 19th variable of this for all quantor
+     * @param a20 20th variable of this for all quantor
+     * @param a21 1st variable of this for all quantor
+     * @param a22 2nd variable of this for all quantor
+     * @param a23 3rd variable of this for all quantor
+     * @param a24 24th variable of this for all quantor
+     * @param a25 25th variable of this for all quantor
+     * @return a new {@code ForAll25} instance of 25 variables
+     */
     public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> ForAll25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25) {
         return new ForAll25<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25);
     }
 
+    /**
+     * Returns a logical for all quantor of 26 given variables.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param <T12> 12th variable type of this for all quantor
+     * @param <T13> 13th variable type of this for all quantor
+     * @param <T14> 14th variable type of this for all quantor
+     * @param <T15> 15th variable type of this for all quantor
+     * @param <T16> 16th variable type of this for all quantor
+     * @param <T17> 17th variable type of this for all quantor
+     * @param <T18> 18th variable type of this for all quantor
+     * @param <T19> 19th variable type of this for all quantor
+     * @param <T20> 20th variable type of this for all quantor
+     * @param <T21> 1st variable type of this for all quantor
+     * @param <T22> 2nd variable type of this for all quantor
+     * @param <T23> 3rd variable type of this for all quantor
+     * @param <T24> 24th variable type of this for all quantor
+     * @param <T25> 25th variable type of this for all quantor
+     * @param <T26> 26th variable type of this for all quantor
+     * @param a1 1st variable of this for all quantor
+     * @param a2 2nd variable of this for all quantor
+     * @param a3 3rd variable of this for all quantor
+     * @param a4 4th variable of this for all quantor
+     * @param a5 5th variable of this for all quantor
+     * @param a6 6th variable of this for all quantor
+     * @param a7 7th variable of this for all quantor
+     * @param a8 8th variable of this for all quantor
+     * @param a9 9th variable of this for all quantor
+     * @param a10 10th variable of this for all quantor
+     * @param a11 11th variable of this for all quantor
+     * @param a12 12th variable of this for all quantor
+     * @param a13 13th variable of this for all quantor
+     * @param a14 14th variable of this for all quantor
+     * @param a15 15th variable of this for all quantor
+     * @param a16 16th variable of this for all quantor
+     * @param a17 17th variable of this for all quantor
+     * @param a18 18th variable of this for all quantor
+     * @param a19 19th variable of this for all quantor
+     * @param a20 20th variable of this for all quantor
+     * @param a21 1st variable of this for all quantor
+     * @param a22 2nd variable of this for all quantor
+     * @param a23 3rd variable of this for all quantor
+     * @param a24 24th variable of this for all quantor
+     * @param a25 25th variable of this for all quantor
+     * @param a26 26th variable of this for all quantor
+     * @return a new {@code ForAll26} instance of 26 variables
+     */
     public <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, Arbitrary<T9> a9, Arbitrary<T10> a10, Arbitrary<T11> a11, Arbitrary<T12> a12, Arbitrary<T13> a13, Arbitrary<T14> a14, Arbitrary<T15> a15, Arbitrary<T16> a16, Arbitrary<T17> a17, Arbitrary<T18> a18, Arbitrary<T19> a19, Arbitrary<T20> a20, Arbitrary<T21> a21, Arbitrary<T22> a22, Arbitrary<T23> a23, Arbitrary<T24> a24, Arbitrary<T25> a25, Arbitrary<T26> a26) {
         return new ForAll26<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26);
     }
 
+    /**
+     * Represents a logical for all quantor.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @since 1.2.0
+     */
     public static class ForAll1<T1> {
 
         private final String name;
@@ -167,12 +1009,25 @@ public class Property {
             this.a1 = a1;
         }
 
+        /**
+         * Returns a checkable property that checks values of the 1 variables of this {@code ForAll} quantor.
+         *
+         * @param predicate A 1-ary predicate
+         * @return a new {@code Property1} of 1 variables.
+         */
         public Property1<T1> suchThat(CheckedFunction1<T1, Boolean> predicate) {
             final CheckedFunction1<T1, Condition> proposition = (t1) -> new Condition(true, predicate.apply(t1));
             return new Property1<>(name, a1, proposition);
         }
     }
 
+    /**
+     * Represents a logical for all quantor.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @since 1.2.0
+     */
     public static class ForAll2<T1, T2> {
 
         private final String name;
@@ -185,12 +1040,26 @@ public class Property {
             this.a2 = a2;
         }
 
+        /**
+         * Returns a checkable property that checks values of the 2 variables of this {@code ForAll} quantor.
+         *
+         * @param predicate A 2-ary predicate
+         * @return a new {@code Property2} of 2 variables.
+         */
         public Property2<T1, T2> suchThat(CheckedFunction2<T1, T2, Boolean> predicate) {
             final CheckedFunction2<T1, T2, Condition> proposition = (t1, t2) -> new Condition(true, predicate.apply(t1, t2));
             return new Property2<>(name, a1, a2, proposition);
         }
     }
 
+    /**
+     * Represents a logical for all quantor.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @since 1.2.0
+     */
     public static class ForAll3<T1, T2, T3> {
 
         private final String name;
@@ -205,12 +1074,27 @@ public class Property {
             this.a3 = a3;
         }
 
+        /**
+         * Returns a checkable property that checks values of the 3 variables of this {@code ForAll} quantor.
+         *
+         * @param predicate A 3-ary predicate
+         * @return a new {@code Property3} of 3 variables.
+         */
         public Property3<T1, T2, T3> suchThat(CheckedFunction3<T1, T2, T3, Boolean> predicate) {
             final CheckedFunction3<T1, T2, T3, Condition> proposition = (t1, t2, t3) -> new Condition(true, predicate.apply(t1, t2, t3));
             return new Property3<>(name, a1, a2, a3, proposition);
         }
     }
 
+    /**
+     * Represents a logical for all quantor.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @since 1.2.0
+     */
     public static class ForAll4<T1, T2, T3, T4> {
 
         private final String name;
@@ -227,12 +1111,28 @@ public class Property {
             this.a4 = a4;
         }
 
+        /**
+         * Returns a checkable property that checks values of the 4 variables of this {@code ForAll} quantor.
+         *
+         * @param predicate A 4-ary predicate
+         * @return a new {@code Property4} of 4 variables.
+         */
         public Property4<T1, T2, T3, T4> suchThat(CheckedFunction4<T1, T2, T3, T4, Boolean> predicate) {
             final CheckedFunction4<T1, T2, T3, T4, Condition> proposition = (t1, t2, t3, t4) -> new Condition(true, predicate.apply(t1, t2, t3, t4));
             return new Property4<>(name, a1, a2, a3, a4, proposition);
         }
     }
 
+    /**
+     * Represents a logical for all quantor.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @since 1.2.0
+     */
     public static class ForAll5<T1, T2, T3, T4, T5> {
 
         private final String name;
@@ -251,12 +1151,29 @@ public class Property {
             this.a5 = a5;
         }
 
+        /**
+         * Returns a checkable property that checks values of the 5 variables of this {@code ForAll} quantor.
+         *
+         * @param predicate A 5-ary predicate
+         * @return a new {@code Property5} of 5 variables.
+         */
         public Property5<T1, T2, T3, T4, T5> suchThat(CheckedFunction5<T1, T2, T3, T4, T5, Boolean> predicate) {
             final CheckedFunction5<T1, T2, T3, T4, T5, Condition> proposition = (t1, t2, t3, t4, t5) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5));
             return new Property5<>(name, a1, a2, a3, a4, a5, proposition);
         }
     }
 
+    /**
+     * Represents a logical for all quantor.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @since 1.2.0
+     */
     public static class ForAll6<T1, T2, T3, T4, T5, T6> {
 
         private final String name;
@@ -277,12 +1194,30 @@ public class Property {
             this.a6 = a6;
         }
 
+        /**
+         * Returns a checkable property that checks values of the 6 variables of this {@code ForAll} quantor.
+         *
+         * @param predicate A 6-ary predicate
+         * @return a new {@code Property6} of 6 variables.
+         */
         public Property6<T1, T2, T3, T4, T5, T6> suchThat(CheckedFunction6<T1, T2, T3, T4, T5, T6, Boolean> predicate) {
             final CheckedFunction6<T1, T2, T3, T4, T5, T6, Condition> proposition = (t1, t2, t3, t4, t5, t6) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6));
             return new Property6<>(name, a1, a2, a3, a4, a5, a6, proposition);
         }
     }
 
+    /**
+     * Represents a logical for all quantor.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @since 1.2.0
+     */
     public static class ForAll7<T1, T2, T3, T4, T5, T6, T7> {
 
         private final String name;
@@ -305,12 +1240,31 @@ public class Property {
             this.a7 = a7;
         }
 
+        /**
+         * Returns a checkable property that checks values of the 7 variables of this {@code ForAll} quantor.
+         *
+         * @param predicate A 7-ary predicate
+         * @return a new {@code Property7} of 7 variables.
+         */
         public Property7<T1, T2, T3, T4, T5, T6, T7> suchThat(CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, Boolean> predicate) {
             final CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7));
             return new Property7<>(name, a1, a2, a3, a4, a5, a6, a7, proposition);
         }
     }
 
+    /**
+     * Represents a logical for all quantor.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @since 1.2.0
+     */
     public static class ForAll8<T1, T2, T3, T4, T5, T6, T7, T8> {
 
         private final String name;
@@ -335,12 +1289,32 @@ public class Property {
             this.a8 = a8;
         }
 
+        /**
+         * Returns a checkable property that checks values of the 8 variables of this {@code ForAll} quantor.
+         *
+         * @param predicate A 8-ary predicate
+         * @return a new {@code Property8} of 8 variables.
+         */
         public Property8<T1, T2, T3, T4, T5, T6, T7, T8> suchThat(CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, Boolean> predicate) {
             final CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8));
             return new Property8<>(name, a1, a2, a3, a4, a5, a6, a7, a8, proposition);
         }
     }
 
+    /**
+     * Represents a logical for all quantor.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @since 1.2.0
+     */
     public static class ForAll9<T1, T2, T3, T4, T5, T6, T7, T8, T9> {
 
         private final String name;
@@ -367,12 +1341,33 @@ public class Property {
             this.a9 = a9;
         }
 
+        /**
+         * Returns a checkable property that checks values of the 9 variables of this {@code ForAll} quantor.
+         *
+         * @param predicate A 9-ary predicate
+         * @return a new {@code Property9} of 9 variables.
+         */
         public Property9<T1, T2, T3, T4, T5, T6, T7, T8, T9> suchThat(CheckedFunction9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Boolean> predicate) {
             final CheckedFunction9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9));
             return new Property9<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, proposition);
         }
     }
 
+    /**
+     * Represents a logical for all quantor.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @since 1.2.0
+     */
     public static class ForAll10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> {
 
         private final String name;
@@ -401,12 +1396,34 @@ public class Property {
             this.a10 = a10;
         }
 
+        /**
+         * Returns a checkable property that checks values of the 10 variables of this {@code ForAll} quantor.
+         *
+         * @param predicate A 10-ary predicate
+         * @return a new {@code Property10} of 10 variables.
+         */
         public Property10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> suchThat(CheckedFunction10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Boolean> predicate) {
             final CheckedFunction10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10));
             return new Property10<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, proposition);
         }
     }
 
+    /**
+     * Represents a logical for all quantor.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @since 1.2.0
+     */
     public static class ForAll11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> {
 
         private final String name;
@@ -437,12 +1454,35 @@ public class Property {
             this.a11 = a11;
         }
 
+        /**
+         * Returns a checkable property that checks values of the 11 variables of this {@code ForAll} quantor.
+         *
+         * @param predicate A 11-ary predicate
+         * @return a new {@code Property11} of 11 variables.
+         */
         public Property11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> suchThat(CheckedFunction11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Boolean> predicate) {
             final CheckedFunction11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11));
             return new Property11<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, proposition);
         }
     }
 
+    /**
+     * Represents a logical for all quantor.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param <T12> 12th variable type of this for all quantor
+     * @since 1.2.0
+     */
     public static class ForAll12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> {
 
         private final String name;
@@ -475,12 +1515,36 @@ public class Property {
             this.a12 = a12;
         }
 
+        /**
+         * Returns a checkable property that checks values of the 12 variables of this {@code ForAll} quantor.
+         *
+         * @param predicate A 12-ary predicate
+         * @return a new {@code Property12} of 12 variables.
+         */
         public Property12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> suchThat(CheckedFunction12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Boolean> predicate) {
             final CheckedFunction12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12));
             return new Property12<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, proposition);
         }
     }
 
+    /**
+     * Represents a logical for all quantor.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param <T12> 12th variable type of this for all quantor
+     * @param <T13> 13th variable type of this for all quantor
+     * @since 1.2.0
+     */
     public static class ForAll13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> {
 
         private final String name;
@@ -515,12 +1579,37 @@ public class Property {
             this.a13 = a13;
         }
 
+        /**
+         * Returns a checkable property that checks values of the 13 variables of this {@code ForAll} quantor.
+         *
+         * @param predicate A 13-ary predicate
+         * @return a new {@code Property13} of 13 variables.
+         */
         public Property13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> suchThat(CheckedFunction13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Boolean> predicate) {
             final CheckedFunction13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13));
             return new Property13<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, proposition);
         }
     }
 
+    /**
+     * Represents a logical for all quantor.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param <T12> 12th variable type of this for all quantor
+     * @param <T13> 13th variable type of this for all quantor
+     * @param <T14> 14th variable type of this for all quantor
+     * @since 1.2.0
+     */
     public static class ForAll14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> {
 
         private final String name;
@@ -557,12 +1646,38 @@ public class Property {
             this.a14 = a14;
         }
 
+        /**
+         * Returns a checkable property that checks values of the 14 variables of this {@code ForAll} quantor.
+         *
+         * @param predicate A 14-ary predicate
+         * @return a new {@code Property14} of 14 variables.
+         */
         public Property14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> suchThat(CheckedFunction14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Boolean> predicate) {
             final CheckedFunction14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14));
             return new Property14<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, proposition);
         }
     }
 
+    /**
+     * Represents a logical for all quantor.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param <T12> 12th variable type of this for all quantor
+     * @param <T13> 13th variable type of this for all quantor
+     * @param <T14> 14th variable type of this for all quantor
+     * @param <T15> 15th variable type of this for all quantor
+     * @since 1.2.0
+     */
     public static class ForAll15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> {
 
         private final String name;
@@ -601,12 +1716,39 @@ public class Property {
             this.a15 = a15;
         }
 
+        /**
+         * Returns a checkable property that checks values of the 15 variables of this {@code ForAll} quantor.
+         *
+         * @param predicate A 15-ary predicate
+         * @return a new {@code Property15} of 15 variables.
+         */
         public Property15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> suchThat(CheckedFunction15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Boolean> predicate) {
             final CheckedFunction15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15));
             return new Property15<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, proposition);
         }
     }
 
+    /**
+     * Represents a logical for all quantor.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param <T12> 12th variable type of this for all quantor
+     * @param <T13> 13th variable type of this for all quantor
+     * @param <T14> 14th variable type of this for all quantor
+     * @param <T15> 15th variable type of this for all quantor
+     * @param <T16> 16th variable type of this for all quantor
+     * @since 1.2.0
+     */
     public static class ForAll16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> {
 
         private final String name;
@@ -647,12 +1789,40 @@ public class Property {
             this.a16 = a16;
         }
 
+        /**
+         * Returns a checkable property that checks values of the 16 variables of this {@code ForAll} quantor.
+         *
+         * @param predicate A 16-ary predicate
+         * @return a new {@code Property16} of 16 variables.
+         */
         public Property16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> suchThat(CheckedFunction16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Boolean> predicate) {
             final CheckedFunction16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16));
             return new Property16<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, proposition);
         }
     }
 
+    /**
+     * Represents a logical for all quantor.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param <T12> 12th variable type of this for all quantor
+     * @param <T13> 13th variable type of this for all quantor
+     * @param <T14> 14th variable type of this for all quantor
+     * @param <T15> 15th variable type of this for all quantor
+     * @param <T16> 16th variable type of this for all quantor
+     * @param <T17> 17th variable type of this for all quantor
+     * @since 1.2.0
+     */
     public static class ForAll17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> {
 
         private final String name;
@@ -695,12 +1865,41 @@ public class Property {
             this.a17 = a17;
         }
 
+        /**
+         * Returns a checkable property that checks values of the 17 variables of this {@code ForAll} quantor.
+         *
+         * @param predicate A 17-ary predicate
+         * @return a new {@code Property17} of 17 variables.
+         */
         public Property17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> suchThat(CheckedFunction17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, Boolean> predicate) {
             final CheckedFunction17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17));
             return new Property17<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, proposition);
         }
     }
 
+    /**
+     * Represents a logical for all quantor.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param <T12> 12th variable type of this for all quantor
+     * @param <T13> 13th variable type of this for all quantor
+     * @param <T14> 14th variable type of this for all quantor
+     * @param <T15> 15th variable type of this for all quantor
+     * @param <T16> 16th variable type of this for all quantor
+     * @param <T17> 17th variable type of this for all quantor
+     * @param <T18> 18th variable type of this for all quantor
+     * @since 1.2.0
+     */
     public static class ForAll18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> {
 
         private final String name;
@@ -745,12 +1944,42 @@ public class Property {
             this.a18 = a18;
         }
 
+        /**
+         * Returns a checkable property that checks values of the 18 variables of this {@code ForAll} quantor.
+         *
+         * @param predicate A 18-ary predicate
+         * @return a new {@code Property18} of 18 variables.
+         */
         public Property18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> suchThat(CheckedFunction18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, Boolean> predicate) {
             final CheckedFunction18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18));
             return new Property18<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, proposition);
         }
     }
 
+    /**
+     * Represents a logical for all quantor.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param <T12> 12th variable type of this for all quantor
+     * @param <T13> 13th variable type of this for all quantor
+     * @param <T14> 14th variable type of this for all quantor
+     * @param <T15> 15th variable type of this for all quantor
+     * @param <T16> 16th variable type of this for all quantor
+     * @param <T17> 17th variable type of this for all quantor
+     * @param <T18> 18th variable type of this for all quantor
+     * @param <T19> 19th variable type of this for all quantor
+     * @since 1.2.0
+     */
     public static class ForAll19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> {
 
         private final String name;
@@ -797,12 +2026,43 @@ public class Property {
             this.a19 = a19;
         }
 
+        /**
+         * Returns a checkable property that checks values of the 19 variables of this {@code ForAll} quantor.
+         *
+         * @param predicate A 19-ary predicate
+         * @return a new {@code Property19} of 19 variables.
+         */
         public Property19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> suchThat(CheckedFunction19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, Boolean> predicate) {
             final CheckedFunction19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19));
             return new Property19<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, proposition);
         }
     }
 
+    /**
+     * Represents a logical for all quantor.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param <T12> 12th variable type of this for all quantor
+     * @param <T13> 13th variable type of this for all quantor
+     * @param <T14> 14th variable type of this for all quantor
+     * @param <T15> 15th variable type of this for all quantor
+     * @param <T16> 16th variable type of this for all quantor
+     * @param <T17> 17th variable type of this for all quantor
+     * @param <T18> 18th variable type of this for all quantor
+     * @param <T19> 19th variable type of this for all quantor
+     * @param <T20> 20th variable type of this for all quantor
+     * @since 1.2.0
+     */
     public static class ForAll20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> {
 
         private final String name;
@@ -851,12 +2111,44 @@ public class Property {
             this.a20 = a20;
         }
 
+        /**
+         * Returns a checkable property that checks values of the 20 variables of this {@code ForAll} quantor.
+         *
+         * @param predicate A 20-ary predicate
+         * @return a new {@code Property20} of 20 variables.
+         */
         public Property20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> suchThat(CheckedFunction20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, Boolean> predicate) {
             final CheckedFunction20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20));
             return new Property20<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, proposition);
         }
     }
 
+    /**
+     * Represents a logical for all quantor.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param <T12> 12th variable type of this for all quantor
+     * @param <T13> 13th variable type of this for all quantor
+     * @param <T14> 14th variable type of this for all quantor
+     * @param <T15> 15th variable type of this for all quantor
+     * @param <T16> 16th variable type of this for all quantor
+     * @param <T17> 17th variable type of this for all quantor
+     * @param <T18> 18th variable type of this for all quantor
+     * @param <T19> 19th variable type of this for all quantor
+     * @param <T20> 20th variable type of this for all quantor
+     * @param <T21> 1st variable type of this for all quantor
+     * @since 1.2.0
+     */
     public static class ForAll21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> {
 
         private final String name;
@@ -907,12 +2199,45 @@ public class Property {
             this.a21 = a21;
         }
 
+        /**
+         * Returns a checkable property that checks values of the 21 variables of this {@code ForAll} quantor.
+         *
+         * @param predicate A 21-ary predicate
+         * @return a new {@code Property21} of 21 variables.
+         */
         public Property21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> suchThat(CheckedFunction21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, Boolean> predicate) {
             final CheckedFunction21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21));
             return new Property21<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, proposition);
         }
     }
 
+    /**
+     * Represents a logical for all quantor.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param <T12> 12th variable type of this for all quantor
+     * @param <T13> 13th variable type of this for all quantor
+     * @param <T14> 14th variable type of this for all quantor
+     * @param <T15> 15th variable type of this for all quantor
+     * @param <T16> 16th variable type of this for all quantor
+     * @param <T17> 17th variable type of this for all quantor
+     * @param <T18> 18th variable type of this for all quantor
+     * @param <T19> 19th variable type of this for all quantor
+     * @param <T20> 20th variable type of this for all quantor
+     * @param <T21> 1st variable type of this for all quantor
+     * @param <T22> 2nd variable type of this for all quantor
+     * @since 1.2.0
+     */
     public static class ForAll22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> {
 
         private final String name;
@@ -965,12 +2290,46 @@ public class Property {
             this.a22 = a22;
         }
 
+        /**
+         * Returns a checkable property that checks values of the 22 variables of this {@code ForAll} quantor.
+         *
+         * @param predicate A 22-ary predicate
+         * @return a new {@code Property22} of 22 variables.
+         */
         public Property22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> suchThat(CheckedFunction22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, Boolean> predicate) {
             final CheckedFunction22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22));
             return new Property22<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, proposition);
         }
     }
 
+    /**
+     * Represents a logical for all quantor.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param <T12> 12th variable type of this for all quantor
+     * @param <T13> 13th variable type of this for all quantor
+     * @param <T14> 14th variable type of this for all quantor
+     * @param <T15> 15th variable type of this for all quantor
+     * @param <T16> 16th variable type of this for all quantor
+     * @param <T17> 17th variable type of this for all quantor
+     * @param <T18> 18th variable type of this for all quantor
+     * @param <T19> 19th variable type of this for all quantor
+     * @param <T20> 20th variable type of this for all quantor
+     * @param <T21> 1st variable type of this for all quantor
+     * @param <T22> 2nd variable type of this for all quantor
+     * @param <T23> 3rd variable type of this for all quantor
+     * @since 1.2.0
+     */
     public static class ForAll23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> {
 
         private final String name;
@@ -1025,12 +2384,47 @@ public class Property {
             this.a23 = a23;
         }
 
+        /**
+         * Returns a checkable property that checks values of the 23 variables of this {@code ForAll} quantor.
+         *
+         * @param predicate A 23-ary predicate
+         * @return a new {@code Property23} of 23 variables.
+         */
         public Property23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> suchThat(CheckedFunction23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, Boolean> predicate) {
             final CheckedFunction23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23));
             return new Property23<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, proposition);
         }
     }
 
+    /**
+     * Represents a logical for all quantor.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param <T12> 12th variable type of this for all quantor
+     * @param <T13> 13th variable type of this for all quantor
+     * @param <T14> 14th variable type of this for all quantor
+     * @param <T15> 15th variable type of this for all quantor
+     * @param <T16> 16th variable type of this for all quantor
+     * @param <T17> 17th variable type of this for all quantor
+     * @param <T18> 18th variable type of this for all quantor
+     * @param <T19> 19th variable type of this for all quantor
+     * @param <T20> 20th variable type of this for all quantor
+     * @param <T21> 1st variable type of this for all quantor
+     * @param <T22> 2nd variable type of this for all quantor
+     * @param <T23> 3rd variable type of this for all quantor
+     * @param <T24> 24th variable type of this for all quantor
+     * @since 1.2.0
+     */
     public static class ForAll24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> {
 
         private final String name;
@@ -1087,12 +2481,48 @@ public class Property {
             this.a24 = a24;
         }
 
+        /**
+         * Returns a checkable property that checks values of the 24 variables of this {@code ForAll} quantor.
+         *
+         * @param predicate A 24-ary predicate
+         * @return a new {@code Property24} of 24 variables.
+         */
         public Property24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> suchThat(CheckedFunction24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, Boolean> predicate) {
             final CheckedFunction24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24));
             return new Property24<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, proposition);
         }
     }
 
+    /**
+     * Represents a logical for all quantor.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param <T12> 12th variable type of this for all quantor
+     * @param <T13> 13th variable type of this for all quantor
+     * @param <T14> 14th variable type of this for all quantor
+     * @param <T15> 15th variable type of this for all quantor
+     * @param <T16> 16th variable type of this for all quantor
+     * @param <T17> 17th variable type of this for all quantor
+     * @param <T18> 18th variable type of this for all quantor
+     * @param <T19> 19th variable type of this for all quantor
+     * @param <T20> 20th variable type of this for all quantor
+     * @param <T21> 1st variable type of this for all quantor
+     * @param <T22> 2nd variable type of this for all quantor
+     * @param <T23> 3rd variable type of this for all quantor
+     * @param <T24> 24th variable type of this for all quantor
+     * @param <T25> 25th variable type of this for all quantor
+     * @since 1.2.0
+     */
     public static class ForAll25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> {
 
         private final String name;
@@ -1151,12 +2581,49 @@ public class Property {
             this.a25 = a25;
         }
 
+        /**
+         * Returns a checkable property that checks values of the 25 variables of this {@code ForAll} quantor.
+         *
+         * @param predicate A 25-ary predicate
+         * @return a new {@code Property25} of 25 variables.
+         */
         public Property25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> suchThat(CheckedFunction25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, Boolean> predicate) {
             final CheckedFunction25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25));
             return new Property25<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, proposition);
         }
     }
 
+    /**
+     * Represents a logical for all quantor.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param <T9> 9th variable type of this for all quantor
+     * @param <T10> 10th variable type of this for all quantor
+     * @param <T11> 11th variable type of this for all quantor
+     * @param <T12> 12th variable type of this for all quantor
+     * @param <T13> 13th variable type of this for all quantor
+     * @param <T14> 14th variable type of this for all quantor
+     * @param <T15> 15th variable type of this for all quantor
+     * @param <T16> 16th variable type of this for all quantor
+     * @param <T17> 17th variable type of this for all quantor
+     * @param <T18> 18th variable type of this for all quantor
+     * @param <T19> 19th variable type of this for all quantor
+     * @param <T20> 20th variable type of this for all quantor
+     * @param <T21> 1st variable type of this for all quantor
+     * @param <T22> 2nd variable type of this for all quantor
+     * @param <T23> 3rd variable type of this for all quantor
+     * @param <T24> 24th variable type of this for all quantor
+     * @param <T25> 25th variable type of this for all quantor
+     * @param <T26> 26th variable type of this for all quantor
+     * @since 1.2.0
+     */
     public static class ForAll26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> {
 
         private final String name;
@@ -1217,12 +2684,22 @@ public class Property {
             this.a26 = a26;
         }
 
+        /**
+         * Returns a checkable property that checks values of the 26 variables of this {@code ForAll} quantor.
+         *
+         * @param predicate A 26-ary predicate
+         * @return a new {@code Property26} of 26 variables.
+         */
         public Property26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> suchThat(CheckedFunction26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, Boolean> predicate) {
             final CheckedFunction26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26));
             return new Property26<>(name, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26, proposition);
         }
     }
 
+    /**
+     * Represents a 1-ary checkable property.
+     * @since 1.2.0
+     */
     public static class Property1<T1> implements Checkable {
 
         private final String name;
@@ -1235,6 +2712,12 @@ public class Property {
             this.predicate = predicate;
         }
 
+        /**
+         * Returns an implication which composes this Property as pre-condition and a given post-condition.
+         *
+         * @param postcondition The postcondition of this implication
+         * @return A new Checkable implication
+         */
         public Checkable implies(CheckedFunction1<T1, Boolean> postcondition) {
             final CheckedFunction1<T1, Condition> implication = (t1) -> {
                 final Condition precondition = predicate.apply(t1);
@@ -1286,6 +2769,10 @@ public class Property {
         }
     }
 
+    /**
+     * Represents a 2-ary checkable property.
+     * @since 1.2.0
+     */
     public static class Property2<T1, T2> implements Checkable {
 
         private final String name;
@@ -1300,6 +2787,12 @@ public class Property {
             this.predicate = predicate;
         }
 
+        /**
+         * Returns an implication which composes this Property as pre-condition and a given post-condition.
+         *
+         * @param postcondition The postcondition of this implication
+         * @return A new Checkable implication
+         */
         public Checkable implies(CheckedFunction2<T1, T2, Boolean> postcondition) {
             final CheckedFunction2<T1, T2, Condition> implication = (t1, t2) -> {
                 final Condition precondition = predicate.apply(t1, t2);
@@ -1353,6 +2846,10 @@ public class Property {
         }
     }
 
+    /**
+     * Represents a 3-ary checkable property.
+     * @since 1.2.0
+     */
     public static class Property3<T1, T2, T3> implements Checkable {
 
         private final String name;
@@ -1369,6 +2866,12 @@ public class Property {
             this.predicate = predicate;
         }
 
+        /**
+         * Returns an implication which composes this Property as pre-condition and a given post-condition.
+         *
+         * @param postcondition The postcondition of this implication
+         * @return A new Checkable implication
+         */
         public Checkable implies(CheckedFunction3<T1, T2, T3, Boolean> postcondition) {
             final CheckedFunction3<T1, T2, T3, Condition> implication = (t1, t2, t3) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3);
@@ -1424,6 +2927,10 @@ public class Property {
         }
     }
 
+    /**
+     * Represents a 4-ary checkable property.
+     * @since 1.2.0
+     */
     public static class Property4<T1, T2, T3, T4> implements Checkable {
 
         private final String name;
@@ -1442,6 +2949,12 @@ public class Property {
             this.predicate = predicate;
         }
 
+        /**
+         * Returns an implication which composes this Property as pre-condition and a given post-condition.
+         *
+         * @param postcondition The postcondition of this implication
+         * @return A new Checkable implication
+         */
         public Checkable implies(CheckedFunction4<T1, T2, T3, T4, Boolean> postcondition) {
             final CheckedFunction4<T1, T2, T3, T4, Condition> implication = (t1, t2, t3, t4) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4);
@@ -1499,6 +3012,10 @@ public class Property {
         }
     }
 
+    /**
+     * Represents a 5-ary checkable property.
+     * @since 1.2.0
+     */
     public static class Property5<T1, T2, T3, T4, T5> implements Checkable {
 
         private final String name;
@@ -1519,6 +3036,12 @@ public class Property {
             this.predicate = predicate;
         }
 
+        /**
+         * Returns an implication which composes this Property as pre-condition and a given post-condition.
+         *
+         * @param postcondition The postcondition of this implication
+         * @return A new Checkable implication
+         */
         public Checkable implies(CheckedFunction5<T1, T2, T3, T4, T5, Boolean> postcondition) {
             final CheckedFunction5<T1, T2, T3, T4, T5, Condition> implication = (t1, t2, t3, t4, t5) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5);
@@ -1578,6 +3101,10 @@ public class Property {
         }
     }
 
+    /**
+     * Represents a 6-ary checkable property.
+     * @since 1.2.0
+     */
     public static class Property6<T1, T2, T3, T4, T5, T6> implements Checkable {
 
         private final String name;
@@ -1600,6 +3127,12 @@ public class Property {
             this.predicate = predicate;
         }
 
+        /**
+         * Returns an implication which composes this Property as pre-condition and a given post-condition.
+         *
+         * @param postcondition The postcondition of this implication
+         * @return A new Checkable implication
+         */
         public Checkable implies(CheckedFunction6<T1, T2, T3, T4, T5, T6, Boolean> postcondition) {
             final CheckedFunction6<T1, T2, T3, T4, T5, T6, Condition> implication = (t1, t2, t3, t4, t5, t6) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6);
@@ -1661,6 +3194,10 @@ public class Property {
         }
     }
 
+    /**
+     * Represents a 7-ary checkable property.
+     * @since 1.2.0
+     */
     public static class Property7<T1, T2, T3, T4, T5, T6, T7> implements Checkable {
 
         private final String name;
@@ -1685,6 +3222,12 @@ public class Property {
             this.predicate = predicate;
         }
 
+        /**
+         * Returns an implication which composes this Property as pre-condition and a given post-condition.
+         *
+         * @param postcondition The postcondition of this implication
+         * @return A new Checkable implication
+         */
         public Checkable implies(CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, Boolean> postcondition) {
             final CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, Condition> implication = (t1, t2, t3, t4, t5, t6, t7) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7);
@@ -1748,6 +3291,10 @@ public class Property {
         }
     }
 
+    /**
+     * Represents a 8-ary checkable property.
+     * @since 1.2.0
+     */
     public static class Property8<T1, T2, T3, T4, T5, T6, T7, T8> implements Checkable {
 
         private final String name;
@@ -1774,6 +3321,12 @@ public class Property {
             this.predicate = predicate;
         }
 
+        /**
+         * Returns an implication which composes this Property as pre-condition and a given post-condition.
+         *
+         * @param postcondition The postcondition of this implication
+         * @return A new Checkable implication
+         */
         public Checkable implies(CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, Boolean> postcondition) {
             final CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8);
@@ -1839,6 +3392,10 @@ public class Property {
         }
     }
 
+    /**
+     * Represents a 9-ary checkable property.
+     * @since 1.2.0
+     */
     public static class Property9<T1, T2, T3, T4, T5, T6, T7, T8, T9> implements Checkable {
 
         private final String name;
@@ -1867,6 +3424,12 @@ public class Property {
             this.predicate = predicate;
         }
 
+        /**
+         * Returns an implication which composes this Property as pre-condition and a given post-condition.
+         *
+         * @param postcondition The postcondition of this implication
+         * @return A new Checkable implication
+         */
         public Checkable implies(CheckedFunction9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Boolean> postcondition) {
             final CheckedFunction9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9);
@@ -1934,6 +3497,10 @@ public class Property {
         }
     }
 
+    /**
+     * Represents a 10-ary checkable property.
+     * @since 1.2.0
+     */
     public static class Property10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> implements Checkable {
 
         private final String name;
@@ -1964,6 +3531,12 @@ public class Property {
             this.predicate = predicate;
         }
 
+        /**
+         * Returns an implication which composes this Property as pre-condition and a given post-condition.
+         *
+         * @param postcondition The postcondition of this implication
+         * @return A new Checkable implication
+         */
         public Checkable implies(CheckedFunction10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Boolean> postcondition) {
             final CheckedFunction10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10);
@@ -2033,6 +3606,10 @@ public class Property {
         }
     }
 
+    /**
+     * Represents a 11-ary checkable property.
+     * @since 1.2.0
+     */
     public static class Property11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> implements Checkable {
 
         private final String name;
@@ -2065,6 +3642,12 @@ public class Property {
             this.predicate = predicate;
         }
 
+        /**
+         * Returns an implication which composes this Property as pre-condition and a given post-condition.
+         *
+         * @param postcondition The postcondition of this implication
+         * @return A new Checkable implication
+         */
         public Checkable implies(CheckedFunction11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Boolean> postcondition) {
             final CheckedFunction11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11);
@@ -2136,6 +3719,10 @@ public class Property {
         }
     }
 
+    /**
+     * Represents a 12-ary checkable property.
+     * @since 1.2.0
+     */
     public static class Property12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> implements Checkable {
 
         private final String name;
@@ -2170,6 +3757,12 @@ public class Property {
             this.predicate = predicate;
         }
 
+        /**
+         * Returns an implication which composes this Property as pre-condition and a given post-condition.
+         *
+         * @param postcondition The postcondition of this implication
+         * @return A new Checkable implication
+         */
         public Checkable implies(CheckedFunction12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Boolean> postcondition) {
             final CheckedFunction12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12);
@@ -2243,6 +3836,10 @@ public class Property {
         }
     }
 
+    /**
+     * Represents a 13-ary checkable property.
+     * @since 1.2.0
+     */
     public static class Property13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> implements Checkable {
 
         private final String name;
@@ -2279,6 +3876,12 @@ public class Property {
             this.predicate = predicate;
         }
 
+        /**
+         * Returns an implication which composes this Property as pre-condition and a given post-condition.
+         *
+         * @param postcondition The postcondition of this implication
+         * @return A new Checkable implication
+         */
         public Checkable implies(CheckedFunction13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Boolean> postcondition) {
             final CheckedFunction13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13);
@@ -2354,6 +3957,10 @@ public class Property {
         }
     }
 
+    /**
+     * Represents a 14-ary checkable property.
+     * @since 1.2.0
+     */
     public static class Property14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> implements Checkable {
 
         private final String name;
@@ -2392,6 +3999,12 @@ public class Property {
             this.predicate = predicate;
         }
 
+        /**
+         * Returns an implication which composes this Property as pre-condition and a given post-condition.
+         *
+         * @param postcondition The postcondition of this implication
+         * @return A new Checkable implication
+         */
         public Checkable implies(CheckedFunction14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Boolean> postcondition) {
             final CheckedFunction14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
@@ -2469,6 +4082,10 @@ public class Property {
         }
     }
 
+    /**
+     * Represents a 15-ary checkable property.
+     * @since 1.2.0
+     */
     public static class Property15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> implements Checkable {
 
         private final String name;
@@ -2509,6 +4126,12 @@ public class Property {
             this.predicate = predicate;
         }
 
+        /**
+         * Returns an implication which composes this Property as pre-condition and a given post-condition.
+         *
+         * @param postcondition The postcondition of this implication
+         * @return A new Checkable implication
+         */
         public Checkable implies(CheckedFunction15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Boolean> postcondition) {
             final CheckedFunction15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15);
@@ -2588,6 +4211,10 @@ public class Property {
         }
     }
 
+    /**
+     * Represents a 16-ary checkable property.
+     * @since 1.2.0
+     */
     public static class Property16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> implements Checkable {
 
         private final String name;
@@ -2630,6 +4257,12 @@ public class Property {
             this.predicate = predicate;
         }
 
+        /**
+         * Returns an implication which composes this Property as pre-condition and a given post-condition.
+         *
+         * @param postcondition The postcondition of this implication
+         * @return A new Checkable implication
+         */
         public Checkable implies(CheckedFunction16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Boolean> postcondition) {
             final CheckedFunction16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16);
@@ -2711,6 +4344,10 @@ public class Property {
         }
     }
 
+    /**
+     * Represents a 17-ary checkable property.
+     * @since 1.2.0
+     */
     public static class Property17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> implements Checkable {
 
         private final String name;
@@ -2755,6 +4392,12 @@ public class Property {
             this.predicate = predicate;
         }
 
+        /**
+         * Returns an implication which composes this Property as pre-condition and a given post-condition.
+         *
+         * @param postcondition The postcondition of this implication
+         * @return A new Checkable implication
+         */
         public Checkable implies(CheckedFunction17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, Boolean> postcondition) {
             final CheckedFunction17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17);
@@ -2838,6 +4481,10 @@ public class Property {
         }
     }
 
+    /**
+     * Represents a 18-ary checkable property.
+     * @since 1.2.0
+     */
     public static class Property18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> implements Checkable {
 
         private final String name;
@@ -2884,6 +4531,12 @@ public class Property {
             this.predicate = predicate;
         }
 
+        /**
+         * Returns an implication which composes this Property as pre-condition and a given post-condition.
+         *
+         * @param postcondition The postcondition of this implication
+         * @return A new Checkable implication
+         */
         public Checkable implies(CheckedFunction18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, Boolean> postcondition) {
             final CheckedFunction18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18);
@@ -2969,6 +4622,10 @@ public class Property {
         }
     }
 
+    /**
+     * Represents a 19-ary checkable property.
+     * @since 1.2.0
+     */
     public static class Property19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> implements Checkable {
 
         private final String name;
@@ -3017,6 +4674,12 @@ public class Property {
             this.predicate = predicate;
         }
 
+        /**
+         * Returns an implication which composes this Property as pre-condition and a given post-condition.
+         *
+         * @param postcondition The postcondition of this implication
+         * @return A new Checkable implication
+         */
         public Checkable implies(CheckedFunction19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, Boolean> postcondition) {
             final CheckedFunction19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19);
@@ -3104,6 +4767,10 @@ public class Property {
         }
     }
 
+    /**
+     * Represents a 20-ary checkable property.
+     * @since 1.2.0
+     */
     public static class Property20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> implements Checkable {
 
         private final String name;
@@ -3154,6 +4821,12 @@ public class Property {
             this.predicate = predicate;
         }
 
+        /**
+         * Returns an implication which composes this Property as pre-condition and a given post-condition.
+         *
+         * @param postcondition The postcondition of this implication
+         * @return A new Checkable implication
+         */
         public Checkable implies(CheckedFunction20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, Boolean> postcondition) {
             final CheckedFunction20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20);
@@ -3243,6 +4916,10 @@ public class Property {
         }
     }
 
+    /**
+     * Represents a 21-ary checkable property.
+     * @since 1.2.0
+     */
     public static class Property21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> implements Checkable {
 
         private final String name;
@@ -3295,6 +4972,12 @@ public class Property {
             this.predicate = predicate;
         }
 
+        /**
+         * Returns an implication which composes this Property as pre-condition and a given post-condition.
+         *
+         * @param postcondition The postcondition of this implication
+         * @return A new Checkable implication
+         */
         public Checkable implies(CheckedFunction21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, Boolean> postcondition) {
             final CheckedFunction21<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21);
@@ -3386,6 +5069,10 @@ public class Property {
         }
     }
 
+    /**
+     * Represents a 22-ary checkable property.
+     * @since 1.2.0
+     */
     public static class Property22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> implements Checkable {
 
         private final String name;
@@ -3440,6 +5127,12 @@ public class Property {
             this.predicate = predicate;
         }
 
+        /**
+         * Returns an implication which composes this Property as pre-condition and a given post-condition.
+         *
+         * @param postcondition The postcondition of this implication
+         * @return A new Checkable implication
+         */
         public Checkable implies(CheckedFunction22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, Boolean> postcondition) {
             final CheckedFunction22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22);
@@ -3533,6 +5226,10 @@ public class Property {
         }
     }
 
+    /**
+     * Represents a 23-ary checkable property.
+     * @since 1.2.0
+     */
     public static class Property23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> implements Checkable {
 
         private final String name;
@@ -3589,6 +5286,12 @@ public class Property {
             this.predicate = predicate;
         }
 
+        /**
+         * Returns an implication which composes this Property as pre-condition and a given post-condition.
+         *
+         * @param postcondition The postcondition of this implication
+         * @return A new Checkable implication
+         */
         public Checkable implies(CheckedFunction23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, Boolean> postcondition) {
             final CheckedFunction23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23);
@@ -3684,6 +5387,10 @@ public class Property {
         }
     }
 
+    /**
+     * Represents a 24-ary checkable property.
+     * @since 1.2.0
+     */
     public static class Property24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> implements Checkable {
 
         private final String name;
@@ -3742,6 +5449,12 @@ public class Property {
             this.predicate = predicate;
         }
 
+        /**
+         * Returns an implication which composes this Property as pre-condition and a given post-condition.
+         *
+         * @param postcondition The postcondition of this implication
+         * @return A new Checkable implication
+         */
         public Checkable implies(CheckedFunction24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, Boolean> postcondition) {
             final CheckedFunction24<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24);
@@ -3839,6 +5552,10 @@ public class Property {
         }
     }
 
+    /**
+     * Represents a 25-ary checkable property.
+     * @since 1.2.0
+     */
     public static class Property25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> implements Checkable {
 
         private final String name;
@@ -3899,6 +5616,12 @@ public class Property {
             this.predicate = predicate;
         }
 
+        /**
+         * Returns an implication which composes this Property as pre-condition and a given post-condition.
+         *
+         * @param postcondition The postcondition of this implication
+         * @return A new Checkable implication
+         */
         public Checkable implies(CheckedFunction25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, Boolean> postcondition) {
             final CheckedFunction25<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25);
@@ -3998,6 +5721,10 @@ public class Property {
         }
     }
 
+    /**
+     * Represents a 26-ary checkable property.
+     * @since 1.2.0
+     */
     public static class Property26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> implements Checkable {
 
         private final String name;
@@ -4060,6 +5787,12 @@ public class Property {
             this.predicate = predicate;
         }
 
+        /**
+         * Returns an implication which composes this Property as pre-condition and a given post-condition.
+         *
+         * @param postcondition The postcondition of this implication
+         * @return A new Checkable implication
+         */
         public Checkable implies(CheckedFunction26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, Boolean> postcondition) {
             final CheckedFunction26<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26) -> {
                 final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26);
