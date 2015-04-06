@@ -25,6 +25,11 @@ public final class Some<T> implements Option<T> {
 
     private final T value;
 
+    /**
+     * Creates a new Some containing the given value.
+     *
+     * @param value A value, may be null
+     */
     public Some(T value) {
         this.value = value;
     }

@@ -27,8 +27,6 @@ final class Valences {
     // has one (primary) value
     interface Univalent<T> {
 
-        boolean isEmpty();
-
         T get();
 
         T orElse(T other);

@@ -38,18 +38,51 @@ public interface Option<T> extends Monad1<T, Option<?>>, ValueObject, Univalent<
      */
     long serialVersionUID = 1L;
 
+    /**
+     * Creates a new Option of a given value.
+     *
+     * @param value A value
+     * @param <T> type of the value
+     * @return {@code Some(value)} if value is not {@code null}, {@code None} otherwise
+     */
     static <T> Option<T> of(T value) {
         return (value == null) ? None.instance() : new Some<>(value);
     }
 
+    /**
+     * Returns the single instance of {@code None}
+     *
+     * @param <T> component type
+     * @return the single instance of {@code None}
+     */
     static <T> None<T> none() {
         return None.instance();
     }
 
+    /**
+     * Returns true, if this is {@code None}, otherwise false, if this is {@code Some}.
+     *
+     * @return true, if this {@code Option} is empty, false otherwise
+     */
+    boolean isEmpty();
+
+    /**
+     * <p>Returns true, if this is {@code Some}, otherwise false, if this is {@code None}.</p>
+     * <p>Please note that it is possible to create {@code new Some(null)}, which is defined.</p>
+     *
+     * @return true, if this {@code Option} has a defined value, false otherwise
+     */
     default boolean isDefined() {
         return !isEmpty();
     }
 
+    /**
+     * Returns {@code Some(value)} if this is a {@code Some} and the value satisfies the given predicate.
+     * Otherwise {@code None} is returned.
+     *
+     * @param predicate A predicate which is used to test an optional value
+     * @return {@code Some(value)} or {@code None} as specified
+     */
     default Option<T> filter(Predicate<? super T> predicate) {
         if (isEmpty() || predicate.test(get())) {
             return this;
@@ -58,22 +91,50 @@ public interface Option<T> extends Monad1<T, Option<?>>, ValueObject, Univalent<
         }
     }
 
+    /**
+     * Applies an action to this value, if this option is defined, otherwise does nothing.
+     *
+     * @param action An action which can be applied to an optional value
+     */
     default void forEach(Consumer<? super T> action) {
         if (isDefined()) {
             action.accept(get());
         }
     }
 
+    /**
+     * <p>Returns the value if this is a {@code Some} or the {@code other} value if this is a {@code None}.</p>
+     * <p>Please note, that the other value is eagerly evaluated.</p>
+     *
+     * @param other An alternative value
+     * @return This value, if this Option is defined or the {@code other} value, if this Option is empty.
+     */
     @Override
     default T orElse(T other) {
         return isEmpty() ? other : get();
     }
 
+    /**
+     * <p>Returns the value if this is a {@code Some}, otherwise the {@code other} value is returned,
+     * if this is a {@code None}.</p>
+     * <p>Please note, that the other value is lazily evaluated.</p>
+     *
+     * @param other An alternative value supplier
+     * @return This value, if this Option is defined or the {@code other} value, if this Option is empty.
+     */
     @Override
     default T orElseGet(Supplier<? extends T> other) {
         return isEmpty() ? other.get() : get();
     }
 
+    /**
+     * Returns the value if this is a {@code Some}, otherwise throws an exception.
+     *
+     * @param exceptionSupplier An exception supplier
+     * @param <X> A throwable
+     * @return This value, if this Option is defined, otherwise throws X
+     * @throws X a throwable
+     */
     @Override
     default <X extends Throwable> T orElseThrow(Supplier<X> exceptionSupplier) throws X {
         if (isEmpty()) {
@@ -83,9 +144,24 @@ public interface Option<T> extends Monad1<T, Option<?>>, ValueObject, Univalent<
         }
     }
 
+    /**
+     * Maps the value and wraps it in a new {@code Some} if this is a {@code Some}, returns {@code None}.
+     *
+     * @param mapper A value mapper
+     * @param <U> The new value type
+     * @return a new {@code Some} containing the mapped value if this Option is defined,
+     *         otherwise {@code None}, if this is empty.
+     */
     @Override
     <U> Option<U> map(Function1<? super T, ? extends U> mapper);
 
+    /**
+     * Maps the value to a new {@code Option} if this is a {@code Some}, otherwise returns {@code None}.
+     *
+     * @param mapper A value to Option mapper
+     * @param <U> Component type of the resulting Option
+     * @return a new {@code Option}
+     */
     @SuppressWarnings("unchecked")
     @Override
     default <U, OPTION extends HigherKinded1<U, Option<?>>> Option<U> flatMap(Function1<? super T, OPTION> mapper) {
