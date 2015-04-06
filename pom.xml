@@ -15,7 +15,7 @@
 	</parent>
 	<groupId>com.javaslang</groupId>
 	<artifactId>javaslang</artifactId>
-	<version>1.2.0</version>
+	<version>1.3.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Javaslang</name>
 	<description>Javaslang is a Java standard library extension built for Java 8 and above.</description>
@@ -31,7 +31,7 @@
 		<connection>scm:git:git@github.com:rocketscience-projects/javaslang.git</connection>
 		<developerConnection>scm:git:git@github.com:rocketscience-projects/javaslang.git</developerConnection>
 		<url>git@github.com:rocketscience-projects/javaslang.git</url>
-		<tag>javaslang-1.2.0</tag>
+		<tag>HEAD</tag>
 	</scm>
 	<developers>
 		<developer>
