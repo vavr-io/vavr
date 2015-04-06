@@ -29,6 +29,11 @@ public final class Success<T> implements Try<T> {
 
     private final T value;
 
+    /**
+     * Constructs a Failure.
+     *
+     * @param value A value
+     */
     public Success(T value) {
         this.value = value;
     }
