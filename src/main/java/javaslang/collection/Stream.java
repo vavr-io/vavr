@@ -8,6 +8,7 @@ package javaslang.collection;
 import javaslang.*;
 import javaslang.algebra.HigherKinded1;
 import javaslang.algebra.Monad1;
+import javaslang.Lazy;
 import javaslang.control.Match;
 import javaslang.control.Try;
 
@@ -173,7 +174,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
 
             @Override
             public boolean hasNext() {
-                final boolean hasNext = (next = Try.<String>of(reader::readLine).orElse(null)) != null;
+                final boolean hasNext = (next = Try.of(reader::readLine).orElse(null)) != null;
                 if (!hasNext) {
                     Try.run(reader::close);
                 }
