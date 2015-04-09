@@ -28,12 +28,14 @@ public class TypeConsistencyTest {
             "javaslang.control.Failure//public abstract javaslang.control.Try javaslang.control.Try.recover(javaslang.CheckedFunction1)",
             "javaslang.control.Failure//public abstract javaslang.control.Try javaslang.control.Try.recoverWith(javaslang.CheckedFunction1)",
             "javaslang.control.Failure//public abstract javaslang.control.Try javaslang.control.Try.failed()",
+            "javaslang.control.Failure//public default javaslang.control.Try javaslang.control.Try.andThen(javaslang.control.Try$CheckedRunnable)",
 
             // control.Success
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.filter(javaslang.control.Try$CheckedPredicate)",
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.map(javaslang.Function1)",
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.flatMap(javaslang.Function1)",
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.failed()",
+            "javaslang.control.Success//public default javaslang.control.Try javaslang.control.Try.andThen(javaslang.control.Try$CheckedRunnable)",
 
             // control.None
             "javaslang.control.None//public default javaslang.control.Option javaslang.control.Option.filter(java.util.function.Predicate)",

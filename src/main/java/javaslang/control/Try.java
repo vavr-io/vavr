@@ -78,7 +78,7 @@ public interface Try<T> extends Monad1<T, Try<?>>, ValueObject, Bivalent<T, Thro
      * i.e. calling {@code Try.of(() -> f.apply(throwable))}.
      *
      * @param f A recovery function taking a Throwable
-     * @return A new Try
+     * @return a new Try
      */
     Try<T> recover(CheckedFunction1<Throwable, ? extends T> f);
 
@@ -88,7 +88,7 @@ public interface Try<T> extends Monad1<T, Try<?>>, ValueObject, Bivalent<T, Thro
      * returned.
      *
      * @param f A recovery function taking a Throwable
-     * @return A new Try
+     * @return a new Try
      */
     Try<T> recoverWith(CheckedFunction1<Throwable, Try<T>> f);
 
@@ -96,7 +96,7 @@ public interface Try<T> extends Monad1<T, Try<?>>, ValueObject, Bivalent<T, Thro
      * Returns {@code Success(throwable)} if this is a {@code Failure(throwable)}, otherwise
      * a {@code Failure(new UnsupportedOperationException("Success.failed()"))} if this is a Success.
      *
-     * @return A new Try
+     * @return a new Try
      */
     Try<Throwable> failed();
 
@@ -114,7 +114,7 @@ public interface Try<T> extends Monad1<T, Try<?>>, ValueObject, Bivalent<T, Thro
      * occurs testing the predicate.</p>
      *
      * @param predicate A predicate
-     * @return A new Try
+     * @return a new Try
      */
     Try<T> filter(CheckedPredicate<? super T> predicate);
 
@@ -126,24 +126,58 @@ public interface Try<T> extends Monad1<T, Try<?>>, ValueObject, Bivalent<T, Thro
     void forEach(Consumer<? super T> action);
 
     /**
-     * Maps the value of a Success or returns this Failure.
+     * Maps the value of a Success or returns a Failure.
      *
      * @param mapper A mapper
      * @param <U> The new component type
-     * @return A new Try
+     * @return a new Try
      */
     @Override
     <U> Try<U> map(Function1<? super T, ? extends U> mapper);
 
     /**
-     * FlatMaps the value of a Success or returns this Failure.
+     * FlatMaps the value of a Success or returns a Failure.
      *
      * @param mapper A mapper
      * @param <U> The new component type
-     * @return A new Try
+     * @return a new Try
      */
     @Override
     <U, TRY extends HigherKinded1<U, Try<?>>> Try<U> flatMap(Function1<? super T, TRY> mapper);
+
+    /**
+     * Runs the given runnable if this is a Success, otherwise returns this Failure.
+     * Shorthand for {@code flatMap(ignored -> Try.run(runnable))}.
+     * The main use case is chaining runnables using method references:
+     *
+     * <pre>
+     * <code>
+     * Try.run(A::methodRef).andThen(B::methodRef).andThen(C::methodRef);
+     * </code>
+     * </pre>
+     *
+     * Please note that these lines are semantically the same:
+     *
+     * <pre>
+     * <code>
+     * Try.run(() -&gt; { doStuff(); })
+     *    .andThen(() -&gt; { doMoreStuff(); })
+     *    .andThen(() -&gt; { doEvenMoreStuff(); });
+     *
+     * Try.run(() -&gt; {
+     *     doStuff();
+     *     doMoreStuff();
+     *     doEvenMoreStuff();
+     * });
+     * </code>
+     * </pre>
+     *
+     * @param runnable A checked runnable
+     * @return a new Try
+     */
+    default Try<Void> andThen(CheckedRunnable runnable) {
+        return flatMap(ignored -> Try.run(runnable));
+    }
 
     @Override
     boolean equals(Object o);

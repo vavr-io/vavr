@@ -234,6 +234,13 @@ public class TryTest implements Monad1Laws<Try<?>> {
 		assertThat(failure().failed().get().getClass().getName()).isEqualTo(RuntimeException.class.getName());
 	}
 
+	@Test
+	public void shouldComposeFailureWithAndThenWhenFailing() {
+		final Try<Void> actual = Try.run(() -> { throw new Error("err1"); }).andThen(() -> { throw new Error("err2"); });
+		final Try<Void> expected = new Failure<>(new Error("err1"));
+		assertThat(actual).isEqualTo(expected);
+	}
+
 	// unapply
 
 	@Test
@@ -386,7 +393,9 @@ public class TryTest implements Monad1Laws<Try<?>> {
 
 	@Test(expected = RuntimeException.class)
 	public void shouldFlatMapWithExceptionOnSuccess() {
-		success().flatMap(s -> { throw new RuntimeException("xxx"); }).get();
+		success().flatMap(s -> {
+			throw new RuntimeException("xxx");
+		}).get();
 	}
 
 	@Test
@@ -411,6 +420,20 @@ public class TryTest implements Monad1Laws<Try<?>> {
 	@Test(expected = Failure.NonFatal.class)
 	public void shouldThrowWhenCallingFailedOnSuccess() {
 		success().failed().get();
+	}
+
+	@Test
+	public void shouldComposeSuccessWithAndThenWhenFailing() {
+		final Try<Void> actual = Try.run(() -> {}).andThen(() -> { throw new Error("failure"); });
+		final Try<Void> expected = new Failure<>(new Error("failure"));
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	@Test
+	public void shouldComposeSuccessWithAndThenWhenSucceeding() {
+		final Try<Void> actual = Try.run(() -> {}).andThen(() -> {});
+		final Try<Void> expected = new Success<>(null);
+		assertThat(actual).isEqualTo(expected);
 	}
 
 	// unapply
