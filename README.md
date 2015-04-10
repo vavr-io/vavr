@@ -34,6 +34,31 @@ On every push to github a new snapshot will be deployed to [oss.sonatype.org](ht
 </dependency>
 ```
 
+In order to use snapshots ensure that your `~/.m2/settings.xml` contains the following:
+
+```xml
+<profiles>
+    <profile>
+        <id>allow-snapshots</id>
+        <activation>
+            <activeByDefault>true</activeByDefault>
+        </activation>
+        <repositories>
+            <repository>
+                <id>snapshots-repo</id>
+                <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                <releases>
+                    <enabled>false</enabled>
+                </releases>
+                <snapshots>
+                    <enabled>true</enabled>
+                </snapshots>
+            </repository>
+        </repositories>
+    </profile>
+</profiles>
+```
+
 ### Standalone
 
 Because Javaslang does _not_ depend on any libraries (other than the JVM) you can easily add it as standalone .jar to your classpath.
