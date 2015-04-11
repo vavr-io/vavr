@@ -66,7 +66,7 @@ public final class Match<R> {
     /**
      * Shortcut for {@code new Match.Builder<R>().caze(function)}.
      *
-     * @param <R> return type of the matcher function
+     * @param <R>      return type of the matcher function
      * @param function A function which is applied to a matched object.
      * @return A Match of type T
      */
@@ -78,10 +78,10 @@ public final class Match<R> {
     /**
      * Shortcut for {@code new Match.Builder<R>().caze(prototype, function)}.
      *
-     * @param <T> type of the prototype object
-     * @param <R> return type of the matcher function
+     * @param <T>       type of the prototype object
+     * @param <R>       return type of the matcher function
      * @param prototype An object which matches by equality.
-     * @param function A function which is applied to a matched object.
+     * @param function  A function which is applied to a matched object.
      * @return A Match of type T
      */
     public static <T, R> Match.Builder<R> caze(T prototype, Function1<T, R> function) {
@@ -92,7 +92,7 @@ public final class Match<R> {
      * Shortcut for {@code new Match.Builder<R>().caze(function)}.
      *
      * @param function A boolean function, i.e. {@code boolean -> R}.
-     * @param <R> return type of the matcher function
+     * @param <R>      return type of the matcher function
      * @return A Match of type boolean
      */
     @SuppressWarnings("overloads")
@@ -104,7 +104,7 @@ public final class Match<R> {
      * Shortcut for {@code new Match.Builder<R>().caze(function)}.
      *
      * @param function A byte function, i.e. {@code byte -> R}.
-     * @param <R> return type of the matcher function
+     * @param <R>      return type of the matcher function
      * @return A Match of type byte
      */
     @SuppressWarnings("overloads")
@@ -116,7 +116,7 @@ public final class Match<R> {
      * Shortcut for {@code new Match.Builder<R>().caze(function)}.
      *
      * @param function A char function, i.e. {@code char -> R}.
-     * @param <R> return type of the matcher function
+     * @param <R>      return type of the matcher function
      * @return A Match of type char
      */
     @SuppressWarnings("overloads")
@@ -128,7 +128,7 @@ public final class Match<R> {
      * Shortcut for {@code new Match.Builder<R>().caze(function)}.
      *
      * @param function A double function, i.e. {@code double -> R}.
-     * @param <R> return type of the matcher function
+     * @param <R>      return type of the matcher function
      * @return A Match of type double
      */
     @SuppressWarnings("overloads")
@@ -140,7 +140,7 @@ public final class Match<R> {
      * Shortcut for {@code new Match.Builder<R>().caze(function)}.
      *
      * @param function A float function, i.e. {@code float -> R}.
-     * @param <R> return type of the matcher function
+     * @param <R>      return type of the matcher function
      * @return A Match of type float
      */
     @SuppressWarnings("overloads")
@@ -152,7 +152,7 @@ public final class Match<R> {
      * Shortcut for {@code new Match.Builder<R>().caze(function)}.
      *
      * @param function A int function, i.e. {@code int -> R}.
-     * @param <R> return type of the matcher function
+     * @param <R>      return type of the matcher function
      * @return A Match of type int
      */
     @SuppressWarnings("overloads")
@@ -164,7 +164,7 @@ public final class Match<R> {
      * Shortcut for {@code new Match.Builder<R>().caze(function)}.
      *
      * @param function A long function, i.e. {@code long -> R}.
-     * @param <R> return type of the matcher function
+     * @param <R>      return type of the matcher function
      * @return A Match of type long
      */
     @SuppressWarnings("overloads")
@@ -176,7 +176,7 @@ public final class Match<R> {
      * Shortcut for {@code new Match.Builder<R>().caze(function)}.
      *
      * @param function A short function, i.e. {@code short -> R}.
-     * @param <R> return type of the matcher function
+     * @param <R>      return type of the matcher function
      * @return A Match of type short
      */
     @SuppressWarnings("overloads")
@@ -189,8 +189,8 @@ public final class Match<R> {
      *
      * @param obj An object.
      * @return The result when applying the given obj to the first matching case. If the case has a consumer, the result
-     *         is null, otherwise the result of the underlying function or supplier.
-     * @throws MatchError if no Match case matches the given object and no default is defined via orElse().
+     * is null, otherwise the result of the underlying function or supplier.
+     * @throws MatchError                         if no Match case matches the given object and no default is defined via orElse().
      * @throws javaslang.control.Failure.NonFatal if an error occurs executing the matched case.
      */
     public R apply(Object obj) {
@@ -233,9 +233,9 @@ public final class Match<R> {
          * Use this method to match by prototype value of object type T. An object o matches this case, if
          * {@code prototype == o || (prototype != null && prototype.equals(o))}.
          *
-         * @param <T> type of the object to be matched
+         * @param <T>       type of the object to be matched
          * @param prototype An object to be matched by equality as defined above.
-         * @param function A Function which is applied to a matched object.
+         * @param function  A Function which is applied to a matched object.
          * @return this, the current instance of Match.
          * @throws NullPointerException if function is null.
          */
@@ -410,8 +410,8 @@ public final class Match<R> {
         /**
          * Constructs a Case, used for functions having a primitive parameter type.
          *
-         * @param prototype A prototype object.
-         * @param function A function with boxed argument.
+         * @param prototype     A prototype object.
+         * @param function      A function with boxed argument.
          * @param parameterType The type of the unboxed function argument.
          */
         // TODO: split prototype and non-prototype cases to increase performance

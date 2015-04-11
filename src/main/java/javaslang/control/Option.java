@@ -42,7 +42,7 @@ public interface Option<T> extends Monad1<T, Option<?>>, ValueObject, Univalent<
      * Creates a new Option of a given value.
      *
      * @param value A value
-     * @param <T> type of the value
+     * @param <T>   type of the value
      * @return {@code Some(value)} if value is not {@code null}, {@code None} otherwise
      */
     static <T> Option<T> of(T value) {
@@ -131,7 +131,7 @@ public interface Option<T> extends Monad1<T, Option<?>>, ValueObject, Univalent<
      * Returns the value if this is a {@code Some}, otherwise throws an exception.
      *
      * @param exceptionSupplier An exception supplier
-     * @param <X> A throwable
+     * @param <X>               A throwable
      * @return This value, if this Option is defined, otherwise throws X
      * @throws X a throwable
      */
@@ -148,9 +148,9 @@ public interface Option<T> extends Monad1<T, Option<?>>, ValueObject, Univalent<
      * Maps the value and wraps it in a new {@code Some} if this is a {@code Some}, returns {@code None}.
      *
      * @param mapper A value mapper
-     * @param <U> The new value type
+     * @param <U>    The new value type
      * @return a new {@code Some} containing the mapped value if this Option is defined,
-     *         otherwise {@code None}, if this is empty.
+     * otherwise {@code None}, if this is empty.
      */
     @Override
     <U> Option<U> map(Function1<? super T, ? extends U> mapper);
@@ -159,7 +159,7 @@ public interface Option<T> extends Monad1<T, Option<?>>, ValueObject, Univalent<
      * Maps the value to a new {@code Option} if this is a {@code Some}, otherwise returns {@code None}.
      *
      * @param mapper A value to Option mapper
-     * @param <U> Component type of the resulting Option
+     * @param <U>    Component type of the resulting Option
      * @return a new {@code Option}
      */
     @SuppressWarnings("unchecked")

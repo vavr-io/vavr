@@ -25,6 +25,7 @@ import java.io.Serializable;
  * "[...] , it doesn’t make sense for immutable classes to support object copying, because copies would be virtually indistinguishable from the original."
  * </blockquote>
  * <em>(see Effective Java, 2nd ed., p. 61)</em>.
+ *
  * @since 1.1.0
  */
 public interface ValueObject extends Serializable {

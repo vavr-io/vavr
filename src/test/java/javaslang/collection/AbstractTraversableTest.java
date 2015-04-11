@@ -79,7 +79,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldComputeAverageOfInt() {
-        final int actual = of(1 ,2, 3).average();
+        final int actual = of(1, 2, 3).average();
         assertThat(actual).isEqualTo(2);
     }
 
@@ -91,7 +91,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldComputeAverageOfShort() {
-        final short actual = of((short) 1 ,(short) 2, (short) 3).average();
+        final short actual = of((short) 1, (short) 2, (short) 3).average();
         assertThat(actual).isEqualTo((short) 2);
     }
 
@@ -246,7 +246,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldBeAwareOfNonExistingElement() {
-        assertThat(this.<Integer> nil().exists(i -> i == 1)).isFalse();
+        assertThat(this.<Integer>nil().exists(i -> i == 1)).isFalse();
     }
 
     // -- existsUnique
@@ -258,7 +258,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldBeAwareOfNonExistingUniqueElement() {
-        assertThat(this.<Integer> nil().existsUnique(i -> i == 1)).isFalse();
+        assertThat(this.<Integer>nil().existsUnique(i -> i == 1)).isFalse();
     }
 
     @Test
@@ -381,8 +381,8 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldFlattenDifferentElementTypes() {
-        final Traversable<Object> actual = this.<Object> of(1, "2", this.<Object> of(3.1415, 1L)).flatten();
-        assertThat(actual).isEqualTo(this.<Object> of(1, "2", 3.1415, 1L));
+        final Traversable<Object> actual = this.<Object>of(1, "2", this.<Object>of(3.1415, 1L)).flatten();
+        assertThat(actual).isEqualTo(this.<Object>of(1, "2", 3.1415, 1L));
     }
 
     // -- flatten(Function1)
@@ -423,24 +423,24 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldFlattenDifferentElementTypesGivenAFunction() {
-        final Traversable<Object> actual = this.<Object> of(1, "2", this.<Object> of(3.1415, 1L))
+        final Traversable<Object> actual = this.<Object>of(1, "2", this.<Object>of(3.1415, 1L))
                 .flatten(x -> Match
                         .caze((Traversable<Object> ys) -> ys)
                         .caze((Object i) -> of(i))
                         .apply(x));
-        assertThat(actual).isEqualTo(this.<Object> of(1, "2", 3.1415, 1L));
+        assertThat(actual).isEqualTo(this.<Object>of(1, "2", 3.1415, 1L));
     }
 
     // -- fold
 
     @Test
     public void shouldFoldNil() {
-        assertThat(this.<String> nil().fold("", (a, b) -> a + b)).isEqualTo("");
+        assertThat(this.<String>nil().fold("", (a, b) -> a + b)).isEqualTo("");
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenFoldNullOperator() {
-        this.<String> nil().fold(null, null);
+        this.<String>nil().fold(null, null);
     }
 
     @Test
@@ -452,12 +452,12 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldFoldLeftNil() {
-        assertThat(this.<String> nil().foldLeft("", (xs, x) -> xs + x)).isEqualTo("");
+        assertThat(this.<String>nil().foldLeft("", (xs, x) -> xs + x)).isEqualTo("");
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenFoldLeftNullOperator() {
-        this.<String> nil().foldLeft(null, null);
+        this.<String>nil().foldLeft(null, null);
     }
 
     @Test
@@ -505,12 +505,12 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldFoldRightNil() {
-        assertThat(this.<String> nil().foldRight("", (x, xs) -> x + xs)).isEqualTo("");
+        assertThat(this.<String>nil().foldRight("", (x, xs) -> x + xs)).isEqualTo("");
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenFoldRightNullOperator() {
-        this.<String> nil().foldRight(null, null);
+        this.<String>nil().foldRight(null, null);
     }
 
     @Test
@@ -558,7 +558,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldIntersperseNil() {
-        assertThat(this.<Character> nil().intersperse(',')).isEqualTo(nil());
+        assertThat(this.<Character>nil().intersperse(',')).isEqualTo(nil());
     }
 
     @Test
@@ -675,7 +675,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldMapNil() {
-        assertThat(this.<Integer> nil().map(i -> i + 1)).isEqualTo(nil());
+        assertThat(this.<Integer>nil().map(i -> i + 1)).isEqualTo(nil());
     }
 
     @Test
@@ -727,19 +727,19 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldComputeMaxOfInt() {
-        final int actual = of(1 ,2, 3).max();
+        final int actual = of(1, 2, 3).max();
         assertThat(actual).isEqualTo(3);
     }
 
     @Test
     public void shouldComputeMaxOfLong() {
-        final long actual = of(1L ,2L, 3L).max();
+        final long actual = of(1L, 2L, 3L).max();
         assertThat(actual).isEqualTo(3L);
     }
 
     @Test
     public void shouldComputeMaxOfShort() {
-        final short actual = of((short) 1 ,(short) 2, (short) 3).max();
+        final short actual = of((short) 1, (short) 2, (short) 3).max();
         assertThat(actual).isEqualTo((short) 3);
     }
 
@@ -799,19 +799,19 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldComputeMinOfInt() {
-        final int actual = of(1 ,2, 3).min();
+        final int actual = of(1, 2, 3).min();
         assertThat(actual).isEqualTo(1);
     }
 
     @Test
     public void shouldComputeMinOfLong() {
-        final long actual = of(1L ,2L, 3L).min();
+        final long actual = of(1L, 2L, 3L).min();
         assertThat(actual).isEqualTo(1L);
     }
 
     @Test
     public void shouldComputeMinOfShort() {
-        final short actual = of((short) 1 ,(short) 2, (short) 3).min();
+        final short actual = of((short) 1, (short) 2, (short) 3).min();
         assertThat(actual).isEqualTo((short) 1);
     }
 
@@ -871,19 +871,19 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldComputeProductOfInt() {
-        final int actual = of(1 ,2, 3).product();
+        final int actual = of(1, 2, 3).product();
         assertThat(actual).isEqualTo(6);
     }
 
     @Test
     public void shouldComputeProductOfLong() {
-        final long actual = of(1L ,2L, 3L).product();
+        final long actual = of(1L, 2L, 3L).product();
         assertThat(actual).isEqualTo(6L);
     }
 
     @Test
     public void shouldComputeProductOfShort() {
-        final short actual = of((short) 1 ,(short) 2, (short) 3).product();
+        final short actual = of((short) 1, (short) 2, (short) 3).product();
         assertThat(actual).isEqualTo((short) 6);
     }
 
@@ -903,12 +903,12 @@ public abstract class AbstractTraversableTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void shouldThrowWhenReduceNil() {
-        this.<String> nil().reduce((a, b) -> a + b);
+        this.<String>nil().reduce((a, b) -> a + b);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenReduceNullOperator() {
-        this.<String> nil().reduce(null);
+        this.<String>nil().reduce(null);
     }
 
     @Test
@@ -920,12 +920,12 @@ public abstract class AbstractTraversableTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void shouldThrowWhenReduceLeftNil() {
-        this.<String> nil().reduceLeft((a, b) -> a + b);
+        this.<String>nil().reduceLeft((a, b) -> a + b);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenReduceLeftNullOperator() {
-        this.<String> nil().reduceLeft(null);
+        this.<String>nil().reduceLeft(null);
     }
 
     @Test
@@ -937,12 +937,12 @@ public abstract class AbstractTraversableTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void shouldThrowWhenReduceRightNil() {
-        this.<String> nil().reduceRight((a, b) -> a + b);
+        this.<String>nil().reduceRight((a, b) -> a + b);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenReduceRightNullOperator() {
-        this.<String> nil().reduceRight(null);
+        this.<String>nil().reduceRight(null);
     }
 
     @Test
@@ -1015,7 +1015,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldReplaceElementOfNilUsingCurrNew() {
-        assertThat(this.<Integer> nil().replace(1, 2)).isEqualTo(nil());
+        assertThat(this.<Integer>nil().replace(1, 2)).isEqualTo(nil());
     }
 
     @Test
@@ -1027,7 +1027,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldReplaceAllElementsOfNilUsingCurrNew() {
-        assertThat(this.<Integer> nil().replaceAll(1, 2)).isEqualTo(nil());
+        assertThat(this.<Integer>nil().replaceAll(1, 2)).isEqualTo(nil());
     }
 
     @Test
@@ -1039,7 +1039,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldReplaceAllElementsOfNilUsingUnaryOp() {
-        assertThat(this.<Integer> nil().replaceAll(i -> i + 1)).isEqualTo(nil());
+        assertThat(this.<Integer>nil().replaceAll(i -> i + 1)).isEqualTo(nil());
     }
 
     @Test
@@ -1080,7 +1080,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldSpanNil() {
-        assertThat(this.<Integer> nil().span(i -> i < 2)).isEqualTo(Tuple.of(nil(), nil()));
+        assertThat(this.<Integer>nil().span(i -> i < 2)).isEqualTo(Tuple.of(nil(), nil()));
     }
 
     @Test
@@ -1093,7 +1093,7 @@ public abstract class AbstractTraversableTest {
     @Test
     public void shouldSplitNil() {
         final java.util.List<Integer> actual = new java.util.ArrayList<>();
-        this.<Integer> nil().spliterator().forEachRemaining(actual::add);
+        this.<Integer>nil().spliterator().forEachRemaining(actual::add);
         assertThat(actual).isEqualTo(Collections.emptyList());
     }
 
@@ -1134,7 +1134,7 @@ public abstract class AbstractTraversableTest {
     @Test(expected = IllegalStateException.class)
     public void shouldHandleStderrIOException() {
         final PrintStream originalErr = System.err;
-        try(PrintStream failingPrintStream = failingPrintStream()) {
+        try (PrintStream failingPrintStream = failingPrintStream()) {
             System.setErr(failingPrintStream);
             of(0).stderr();
         } finally {
@@ -1152,7 +1152,7 @@ public abstract class AbstractTraversableTest {
     @Test(expected = IllegalStateException.class)
     public void shouldHandleStdoutIOException() {
         final PrintStream originalOut = System.out;
-        try(PrintStream failingPrintStream = failingPrintStream()) {
+        try (PrintStream failingPrintStream = failingPrintStream()) {
             System.setOut(failingPrintStream);
             of(0).stdout();
         } finally {
@@ -1204,19 +1204,19 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldComputeSumOfInt() {
-        final int actual = of(1 ,2, 3).sum();
+        final int actual = of(1, 2, 3).sum();
         assertThat(actual).isEqualTo(6);
     }
 
     @Test
     public void shouldComputeSumOfLong() {
-        final long actual = of(1L ,2L, 3L).sum();
+        final long actual = of(1L, 2L, 3L).sum();
         assertThat(actual).isEqualTo(6L);
     }
 
     @Test
     public void shouldComputeSumOfShort() {
-        final short actual = of((short) 1 ,(short) 2, (short) 3).sum();
+        final short actual = of((short) 1, (short) 2, (short) 3).sum();
         assertThat(actual).isEqualTo((short) 6);
     }
 
@@ -1316,15 +1316,15 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldConvertNilToJavaArray() {
-        final Integer[] actual = List.<Integer> nil().toJavaArray(Integer.class);
-        final Integer[] expected = new Integer[] {};
+        final Integer[] actual = List.<Integer>nil().toJavaArray(Integer.class);
+        final Integer[] expected = new Integer[]{};
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldConvertNonNilToJavaArray() {
         final Integer[] array = List.of(1, 2).toJavaArray(Integer.class);
-        final Integer[] expected = new Integer[] { 1, 2 };
+        final Integer[] expected = new Integer[]{1, 2};
         assertThat(array).isEqualTo(expected);
     }
 
@@ -1332,7 +1332,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldConvertNilToArrayList() {
-        assertThat(this.<Integer> nil().toJavaList()).isEqualTo(new ArrayList<Integer>());
+        assertThat(this.<Integer>nil().toJavaList()).isEqualTo(new ArrayList<Integer>());
     }
 
     @Test
@@ -1344,7 +1344,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldConvertNilToHashMap() {
-        assertThat(this.<Integer> nil().toJavaMap(x -> Tuple.of(x, x))).isEqualTo(new HashMap<>());
+        assertThat(this.<Integer>nil().toJavaMap(x -> Tuple.of(x, x))).isEqualTo(new HashMap<>());
     }
 
     @Test
@@ -1359,7 +1359,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldConvertNilToHashSet() {
-        assertThat(this.<Integer> nil().toJavaMap(x -> Tuple.of(x, x))).isEqualTo(new HashMap<>());
+        assertThat(this.<Integer>nil().toJavaMap(x -> Tuple.of(x, x))).isEqualTo(new HashMap<>());
     }
 
     @Test
@@ -1381,7 +1381,7 @@ public abstract class AbstractTraversableTest {
     @Test
     public void shouldUnzipNonNil() {
         final Tuple actual = of(0, 1).unzip(i -> Tuple.of(i, (char) ((short) 'a' + i)));
-        final Tuple expected = Tuple.of(of(0, 1), this.<Character> of('a', 'b'));
+        final Tuple expected = Tuple.of(of(0, 1), this.<Character>of('a', 'b'));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -1491,7 +1491,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldZipNilWithIndex() {
-        assertThat(this.<String> nil().zipWithIndex()).isEqualTo(this.<Tuple2<String, Integer>> nil());
+        assertThat(this.<String>nil().zipWithIndex()).isEqualTo(this.<Tuple2<String, Integer>>nil());
     }
 
     @Test

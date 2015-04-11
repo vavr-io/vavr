@@ -107,6 +107,7 @@ public interface Arbitrary<T> extends Monad1<T, Arbitrary<?>> {
 
     /**
      * <p>Generates arbitrary integer values.</p>
+     *
      * @return A new Arbitrary of Integer
      */
     static Arbitrary<Integer> integer() {
@@ -149,7 +150,7 @@ public interface Arbitrary<T> extends Monad1<T, Arbitrary<?>> {
      * </pre>
      *
      * @param arbitraryT Arbitrary elements of type T
-     * @param <T> Component type of the List
+     * @param <T>        Component type of the List
      * @return a new Arbitrary of List&lt;T&gt;
      */
     static <T> Arbitrary<List<T>> list(Arbitrary<T> arbitraryT) {
@@ -176,7 +177,7 @@ public interface Arbitrary<T> extends Monad1<T, Arbitrary<?>> {
      * </pre>
      *
      * @param arbitraryT Arbitrary elements of type T
-     * @param <T> Component type of the Stream
+     * @param <T>        Component type of the Stream
      * @return a new Arbitrary of Stream&lt;T&gt;
      */
     static <T> Arbitrary<Stream<T>> stream(Arbitrary<T> arbitraryT) {

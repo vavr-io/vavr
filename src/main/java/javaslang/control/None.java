@@ -8,7 +8,6 @@ package javaslang.control;
 import javaslang.Function1;
 import javaslang.Tuple;
 import javaslang.Tuple0;
-import javaslang.algebra.Monad1;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;

@@ -425,7 +425,7 @@ public class StreamTest extends AbstractSeqTest implements Monad1Laws<Traversabl
 
         @Override
         public int read() throws IOException {
-            if (count-->-1) {
+            if (count-- > -1) {
                 return '\n';
             } else {
                 throw new IOException("end of stream");

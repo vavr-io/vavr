@@ -29,9 +29,9 @@ public interface RoseTree<T> extends Tree<T> {
      * Creates a either a rose tree branch or a leaf, depending on the child count.
      * By definition, a node with no children is a leaf.
      *
-     * @param value The value of the node.
+     * @param value    The value of the node.
      * @param children The tree node's non-nil children, i.e. leafs and branches.
-     * @param <T> The value type
+     * @param <T>      The value type
      * @return A new, non-nil rose tree
      */
     @SafeVarargs
@@ -49,10 +49,10 @@ public interface RoseTree<T> extends Tree<T> {
     /**
      * Creates a rose tree branch of one or more children.
      *
-     * @param value The value of the branch node.
-     * @param child1 The first child
+     * @param value    The value of the branch node.
+     * @param child1   The first child
      * @param children More children, may be none
-     * @param <T> The value type
+     * @param <T>      The value type
      * @return A new rose tree branch
      */
     @SafeVarargs
@@ -68,7 +68,7 @@ public interface RoseTree<T> extends Tree<T> {
      * Creates a rose tree leaf of a given value.
      *
      * @param value the leaf's value
-     * @param <T> value type
+     * @param <T>   value type
      * @return a new tree leaf
      */
     static <T> Leaf<T> leaf(T value) {
@@ -175,9 +175,9 @@ public interface RoseTree<T> extends Tree<T> {
         /**
          * Constructs a rose tree branch.
          *
-         * @param value A value.
+         * @param value    A value.
          * @param children A non-empty list of children.
-         * @throws NullPointerException if children is null
+         * @throws NullPointerException     if children is null
          * @throws IllegalArgumentException if children is empty
          */
         public Branch(T value, List<NonNil<T>> children) {

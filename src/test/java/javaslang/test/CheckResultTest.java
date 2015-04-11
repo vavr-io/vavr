@@ -5,14 +5,14 @@
  */
 package javaslang.test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import javaslang.Tuple;
 import javaslang.control.None;
 import javaslang.control.Option;
 import org.junit.Test;
 
 import java.util.Objects;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class CheckResultTest {
 

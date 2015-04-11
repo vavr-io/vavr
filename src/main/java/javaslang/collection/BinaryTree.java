@@ -38,7 +38,7 @@ public interface BinaryTree<T> extends Tree<T> {
      * @param left  Left subtree
      * @param value A value
      * @param right Right subtree
-     * @param <T> The value type
+     * @param <T>   The value type
      * @return A new, non-nil binary tree
      */
     static <T> BinaryTree<T> of(BinaryTree<T> left, T value, BinaryTree<T> right) {
@@ -59,7 +59,7 @@ public interface BinaryTree<T> extends Tree<T> {
      * @param right Right subtree
      * @param <T>   Component type
      * @return A new binary tree branch
-     * @throws NullPointerException if left or right is null
+     * @throws NullPointerException     if left or right is null
      * @throws IllegalArgumentException if left and right are empty (Nil)
      */
     static <T> Branch<T> branch(BinaryTree<T> left, T value, BinaryTree<T> right) {
@@ -75,7 +75,7 @@ public interface BinaryTree<T> extends Tree<T> {
      * Creates a binary tree leaf of a given value.
      *
      * @param value the leaf's value
-     * @param <T> value type
+     * @param <T>   value type
      * @return a new tree leaf
      */
     static <T> Leaf<T> leaf(T value) {
@@ -249,10 +249,10 @@ public interface BinaryTree<T> extends Tree<T> {
         /**
          * Constructs a binary tree branch consisting of a value, a left and a right subtree.
          *
-         * @param left the left tree of this branch
+         * @param left  the left tree of this branch
          * @param value a value
          * @param right the right tree of this branch
-         * @throws NullPointerException if left or right is null
+         * @throws NullPointerException     if left or right is null
          * @throws IllegalArgumentException if left and right are empty (Nil)
          */
         public Branch(BinaryTree<T> left, T value, BinaryTree<T> right) {

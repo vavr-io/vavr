@@ -13,6 +13,7 @@ import java.util.function.Supplier;
 
 /**
  * This class is not intended to be extended nor it is intended to be public API.
+ *
  * @since 1.1.0
  */
 final class Valences {

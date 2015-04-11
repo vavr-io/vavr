@@ -135,6 +135,7 @@ public interface Tree<T> extends Functor1<T>, ValueObject, Iterable<T> {
 
     /**
      * Iterates the elements of this tree in pre-order.
+     *
      * @return An iterator of this tree's node values.
      */
     @Override
@@ -214,6 +215,7 @@ public interface Tree<T> extends Functor1<T>, ValueObject, Iterable<T> {
 
     /**
      * Returns a list string representation of this tree.
+     *
      * @return A new string
      */
     default String toLispString() {
@@ -240,6 +242,7 @@ public interface Tree<T> extends Functor1<T>, ValueObject, Iterable<T> {
 
     /**
      * Returns a indented multiline string representation of this tree.
+     *
      * @return A new string
      */
     default String toIndentedString() {
@@ -297,16 +300,24 @@ public interface Tree<T> extends Functor1<T>, ValueObject, Iterable<T> {
     // see http://programmers.stackexchange.com/questions/138766/in-order-traversal-of-m-way-trees
     enum Order {
 
-        /** 1 2 4 7 5 3 6 8 9 (= depth-first) */
+        /**
+         * 1 2 4 7 5 3 6 8 9 (= depth-first)
+         */
         PRE_ORDER,
 
-        /** 7 4 2 5 1 8 6 9 3 */
+        /**
+         * 7 4 2 5 1 8 6 9 3
+         */
         IN_ORDER,
 
-        /** 7 4 5 2 8 9 6 3 1 */
+        /**
+         * 7 4 5 2 8 9 6 3 1
+         */
         POST_ORDER,
 
-        /** 1 2 3 4 5 6 7 8 9 (= breadth-first) */
+        /**
+         * 1 2 3 4 5 6 7 8 9 (= breadth-first)
+         */
         LEVEL_ORDER
     }
 }

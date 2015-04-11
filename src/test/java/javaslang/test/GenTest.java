@@ -32,6 +32,7 @@ public class GenTest {
         @SuppressWarnings("SerializableInnerClassWithNonSerializableOuterClass")
         final Random rng = new Random() {
             private static final long serialVersionUID = 1L;
+
             public int nextInt(int bound) {
                 return 0;
             }

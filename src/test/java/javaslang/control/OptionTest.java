@@ -26,70 +26,70 @@ public class OptionTest implements Monad1Laws<Option<?>> {
 
     // -- construction
 
-	@Test
-	public void shouldMapNullToNone() throws Exception {
-		assertThat(Option.of(null)).isEqualTo(None.instance());
-	}
+    @Test
+    public void shouldMapNullToNone() throws Exception {
+        assertThat(Option.of(null)).isEqualTo(None.instance());
+    }
 
-	@Test
-	public void shouldMapNonNullToSome() throws Exception {
-		final Option<?> option = Option.of(new Object());
-		assertThat(option.isDefined()).isTrue();
-	}
+    @Test
+    public void shouldMapNonNullToSome() throws Exception {
+        final Option<?> option = Option.of(new Object());
+        assertThat(option.isDefined()).isTrue();
+    }
 
-	@Test
-	public void shouldWrapNullInSome() throws Exception {
-		final Some<?> some = new Some<>(null);
-		assertThat(some.get()).isEqualTo(null);
-	}
+    @Test
+    public void shouldWrapNullInSome() throws Exception {
+        final Some<?> some = new Some<>(null);
+        assertThat(some.get()).isEqualTo(null);
+    }
 
-	// -- get
+    // -- get
 
-	@Test
-	public void shouldSucceedOnGetWhenValueIsPresent() {
-		assertThat(Option.of(1).get()).isEqualTo(1);
-	}
+    @Test
+    public void shouldSucceedOnGetWhenValueIsPresent() {
+        assertThat(Option.of(1).get()).isEqualTo(1);
+    }
 
-	@Test(expected = NoSuchElementException.class)
-	public void shouldThrowOnGetWhenValueIsNotPresent() {
-		Option.none().get();
-	}
+    @Test(expected = NoSuchElementException.class)
+    public void shouldThrowOnGetWhenValueIsNotPresent() {
+        Option.none().get();
+    }
 
-	// -- orElse
+    // -- orElse
 
-	@Test
-	public void shouldGetValueOnOrElseWhenValueIsPresent() {
-		assertThat(Option.of(1).orElse(2)).isEqualTo(1);
-	}
+    @Test
+    public void shouldGetValueOnOrElseWhenValueIsPresent() {
+        assertThat(Option.of(1).orElse(2)).isEqualTo(1);
+    }
 
-	@Test
-	public void shouldGetAlternativeOnOrElseWhenValueIsNotPresent() {
-		assertThat(Option.none().orElse(2)).isEqualTo(2);
-	}
+    @Test
+    public void shouldGetAlternativeOnOrElseWhenValueIsNotPresent() {
+        assertThat(Option.none().orElse(2)).isEqualTo(2);
+    }
 
-	// -- orElseGet
+    // -- orElseGet
 
-	@Test
-	public void shouldGetValueOnOrElseGetWhenValueIsPresent() {
-		assertThat(Option.of(1).orElseGet(() -> 2)).isEqualTo(1);
-	}
+    @Test
+    public void shouldGetValueOnOrElseGetWhenValueIsPresent() {
+        assertThat(Option.of(1).orElseGet(() -> 2)).isEqualTo(1);
+    }
 
-	@Test
-	public void shouldGetAlternativeOnOrElseGetWhenValueIsNotPresent() {
-		assertThat(Option.none().orElseGet(() -> 2)).isEqualTo(2);
-	}
+    @Test
+    public void shouldGetAlternativeOnOrElseGetWhenValueIsNotPresent() {
+        assertThat(Option.none().orElseGet(() -> 2)).isEqualTo(2);
+    }
 
-	// -- orElseThrow
+    // -- orElseThrow
 
-	@Test
-	public void shouldGetValueOnOrElseThrowWhenValueIsPresent() {
-		assertThat(Option.of(1).orElseThrow(() -> new RuntimeException("none"))).isEqualTo(1);
-	}
+    @Test
+    public void shouldGetValueOnOrElseThrowWhenValueIsPresent() {
+        assertThat(Option.of(1).orElseThrow(() -> new RuntimeException("none"))).isEqualTo(1);
+    }
 
-	@Test(expected = RuntimeException.class)
-	public void shouldThrowOnOrElseThrowWhenValueIsNotPresent() {
-		Option.none().orElseThrow(() -> new RuntimeException("none"));
-	}
+    @Test(expected = RuntimeException.class)
+    public void shouldThrowOnOrElseThrowWhenValueIsNotPresent() {
+        Option.none().orElseThrow(() -> new RuntimeException("none"));
+    }
 
     // -- toOption
 
@@ -105,31 +105,31 @@ public class OptionTest implements Monad1Laws<Option<?>> {
         assertThat(some.toOption()).isEqualTo(some);
     }
 
-	// -- toJavaOptional
+    // -- toJavaOptional
 
-	@Test
-	public void shouldConvertNoneToJavaOptional() {
-		final None<Object> none = None.instance();
-		assertThat(none.toJavaOptional()).isEqualTo(Optional.empty());
-	}
+    @Test
+    public void shouldConvertNoneToJavaOptional() {
+        final None<Object> none = None.instance();
+        assertThat(none.toJavaOptional()).isEqualTo(Optional.empty());
+    }
 
-	@Test
-	public void shouldConvertSomeToJavaOptional() {
-		final Some<Integer> some = new Some<>(1);
-		assertThat(some.toJavaOptional()).isEqualTo(Optional.of(1));
-	}
+    @Test
+    public void shouldConvertSomeToJavaOptional() {
+        final Some<Integer> some = new Some<>(1);
+        assertThat(some.toJavaOptional()).isEqualTo(Optional.of(1));
+    }
 
-	// -- isPresent
+    // -- isPresent
 
-	@Test
-	public void shouldBePresentOnIsPresentWhenValueIsPresent() {
-		assertThat(Option.of(1).isDefined()).isTrue();
-	}
+    @Test
+    public void shouldBePresentOnIsPresentWhenValueIsPresent() {
+        assertThat(Option.of(1).isDefined()).isTrue();
+    }
 
-	@Test
-	public void shouldNotBePresentOnIsPresentWhenValueIsNotPresent() {
-		assertThat(Option.none().isDefined()).isFalse();
-	}
+    @Test
+    public void shouldNotBePresentOnIsPresentWhenValueIsNotPresent() {
+        assertThat(Option.none().isDefined()).isFalse();
+    }
 
     // -- isEmpty
 
@@ -145,172 +145,172 @@ public class OptionTest implements Monad1Laws<Option<?>> {
 
     // -- ifPresent
 
-	@Test
-	public void shouldConsumePresentValueOnIsPresentWhenValueIsPresent() {
-		final int[] actual = new int[] { -1 };
-		Option.of(1).forEach(i -> actual[0] = i);
-		assertThat(actual[0]).isEqualTo(1);
-	}
+    @Test
+    public void shouldConsumePresentValueOnIsPresentWhenValueIsPresent() {
+        final int[] actual = new int[]{-1};
+        Option.of(1).forEach(i -> actual[0] = i);
+        assertThat(actual[0]).isEqualTo(1);
+    }
 
-	@Test
-	public void shouldNotConsumeAnythingOnIsPresentWhenValueIsNotPresent() {
-		final int[] actual = new int[] { -1 };
-		Option.<Integer> none().forEach(i -> actual[0] = i);
-		assertThat(actual[0]).isEqualTo(-1);
-	}
+    @Test
+    public void shouldNotConsumeAnythingOnIsPresentWhenValueIsNotPresent() {
+        final int[] actual = new int[]{-1};
+        Option.<Integer>none().forEach(i -> actual[0] = i);
+        assertThat(actual[0]).isEqualTo(-1);
+    }
 
-	// -- filter
+    // -- filter
 
-	@Test
-	public void shouldReturnSomeOnFilterWhenValueIsPresentAndPredicateMatches() {
-		assertThat(Option.of(1).filter(i -> i == 1)).isEqualTo(Option.of(1));
-	}
+    @Test
+    public void shouldReturnSomeOnFilterWhenValueIsPresentAndPredicateMatches() {
+        assertThat(Option.of(1).filter(i -> i == 1)).isEqualTo(Option.of(1));
+    }
 
-	@Test
-	public void shouldReturnNoneOnFilterWhenValueIsPresentAndPredicateNotMatches() {
-		assertThat(Option.of(1).filter(i -> i == 2)).isEqualTo(Option.none());
-	}
+    @Test
+    public void shouldReturnNoneOnFilterWhenValueIsPresentAndPredicateNotMatches() {
+        assertThat(Option.of(1).filter(i -> i == 2)).isEqualTo(Option.none());
+    }
 
-	@Test
-	public void shouldReturnNoneOnFilterWhenValueIsNotPresentAndPredicateNotMatches() {
-		assertThat(Option.<Integer> none().filter(i -> i == 1)).isEqualTo(Option.none());
-	}
+    @Test
+    public void shouldReturnNoneOnFilterWhenValueIsNotPresentAndPredicateNotMatches() {
+        assertThat(Option.<Integer>none().filter(i -> i == 1)).isEqualTo(Option.none());
+    }
 
-	// -- map
+    // -- map
 
-	@Test
-	public void shouldMapSome() {
-		assertThat(Option.of(1).map(String::valueOf)).isEqualTo(Option.of("1"));
-	}
+    @Test
+    public void shouldMapSome() {
+        assertThat(Option.of(1).map(String::valueOf)).isEqualTo(Option.of("1"));
+    }
 
-	@Test
-	public void shouldMapNone() {
-		assertThat(Option.<Integer> none().map(String::valueOf)).isEqualTo(Option.none());
-	}
+    @Test
+    public void shouldMapNone() {
+        assertThat(Option.<Integer>none().map(String::valueOf)).isEqualTo(Option.none());
+    }
 
-	// -- flatMap
+    // -- flatMap
 
-	@Test
-	public void shouldFlatMapSome() {
-		assertThat(Option.of(1).flatMap(i -> Option.of(String.valueOf(i)))).isEqualTo(Option.of("1"));
-	}
+    @Test
+    public void shouldFlatMapSome() {
+        assertThat(Option.of(1).flatMap(i -> Option.of(String.valueOf(i)))).isEqualTo(Option.of("1"));
+    }
 
-	@Test
-	public void shouldFlatMapNone() {
-		assertThat(Option.<Integer> none().flatMap(i -> Option.of(String.valueOf(i)))).isEqualTo(Option.none());
-	}
+    @Test
+    public void shouldFlatMapNone() {
+        assertThat(Option.<Integer>none().flatMap(i -> Option.of(String.valueOf(i)))).isEqualTo(Option.none());
+    }
 
-	// -- forEach
+    // -- forEach
 
-	@Test
-	public void shouldConsumePresentValueOnForEachWhenValueIsPresent() {
-		final int[] actual = new int[] { -1 };
-		Option.of(1).forEach(i -> actual[0] = i);
-		assertThat(actual[0]).isEqualTo(1);
-	}
+    @Test
+    public void shouldConsumePresentValueOnForEachWhenValueIsPresent() {
+        final int[] actual = new int[]{-1};
+        Option.of(1).forEach(i -> actual[0] = i);
+        assertThat(actual[0]).isEqualTo(1);
+    }
 
-	@Test
-	public void shouldNotConsumeAnythingOnForEachWhenValueIsNotPresent() {
-		final int[] actual = new int[] { -1 };
-		Option.<Integer> none().forEach(i -> actual[0] = i);
-		assertThat(actual[0]).isEqualTo(-1);
-	}
+    @Test
+    public void shouldNotConsumeAnythingOnForEachWhenValueIsNotPresent() {
+        final int[] actual = new int[]{-1};
+        Option.<Integer>none().forEach(i -> actual[0] = i);
+        assertThat(actual[0]).isEqualTo(-1);
+    }
 
-	// -- unapply
+    // -- unapply
 
-	@Test
-	public void shouldUnapplyNone() {
-		assertThat(None.instance().unapply()).isEqualTo(Tuple.empty());
-	}
+    @Test
+    public void shouldUnapplyNone() {
+        assertThat(None.instance().unapply()).isEqualTo(Tuple.empty());
+    }
 
-	@Test
-	public void shouldUnapplySome() {
-		assertThat(new Some<>(1).unapply()).isEqualTo(Tuple.of(1));
-	}
+    @Test
+    public void shouldUnapplySome() {
+        assertThat(new Some<>(1).unapply()).isEqualTo(Tuple.of(1));
+    }
 
-	// -- equals
+    // -- equals
 
-	@Test
-	public void shouldEqualNoneIfObjectIsSame() {
-		final None<?> none = None.instance();
-		assertThat(none).isEqualTo(none);
-	}
+    @Test
+    public void shouldEqualNoneIfObjectIsSame() {
+        final None<?> none = None.instance();
+        assertThat(none).isEqualTo(none);
+    }
 
-	@Test
-	public void shouldEqualSomeIfObjectIsSame() {
-		final Some<?> some = new Some<>(1);
-		assertThat(some).isEqualTo(some);
-	}
+    @Test
+    public void shouldEqualSomeIfObjectIsSame() {
+        final Some<?> some = new Some<>(1);
+        assertThat(some).isEqualTo(some);
+    }
 
-	@Test
-	public void shouldNotEqualNoneIfObjectIsNull() {
-		assertThat(None.instance()).isNotNull();
-	}
+    @Test
+    public void shouldNotEqualNoneIfObjectIsNull() {
+        assertThat(None.instance()).isNotNull();
+    }
 
-	@Test
-	public void shouldNotEqualSomeIfObjectIsNull() {
-		assertThat(new Some<>(1)).isNotNull();
-	}
+    @Test
+    public void shouldNotEqualSomeIfObjectIsNull() {
+        assertThat(new Some<>(1)).isNotNull();
+    }
 
-	@Test
-	public void shouldNotEqualNoneIfObjectIsOfDifferentType() {
-		final Object none = None.instance();
-		assertThat(none.equals(new Object())).isFalse();
-	}
+    @Test
+    public void shouldNotEqualNoneIfObjectIsOfDifferentType() {
+        final Object none = None.instance();
+        assertThat(none.equals(new Object())).isFalse();
+    }
 
-	@Test
-	public void shouldNotEqualSomeIfObjectIsOfDifferentType() {
-		final Object some = new Some<>(1);
-		assertThat(some.equals(new Object())).isFalse();
-	}
+    @Test
+    public void shouldNotEqualSomeIfObjectIsOfDifferentType() {
+        final Object some = new Some<>(1);
+        assertThat(some.equals(new Object())).isFalse();
+    }
 
-	@Test
-	public void shouldEqualSome() {
-		assertThat(new Some<>(1)).isEqualTo(new Some<>(1));
-	}
+    @Test
+    public void shouldEqualSome() {
+        assertThat(new Some<>(1)).isEqualTo(new Some<>(1));
+    }
 
-	// -- hashCode
+    // -- hashCode
 
-	@Test
-	public void shouldHashNone() {
-		assertThat(None.instance().hashCode()).isEqualTo(Objects.hash());
-	}
+    @Test
+    public void shouldHashNone() {
+        assertThat(None.instance().hashCode()).isEqualTo(Objects.hash());
+    }
 
-	@Test
-	public void shouldHashSome() {
-		assertThat(new Some<>(1).hashCode()).isEqualTo(Objects.hashCode(1));
-	}
+    @Test
+    public void shouldHashSome() {
+        assertThat(new Some<>(1).hashCode()).isEqualTo(Objects.hashCode(1));
+    }
 
-	// -- toString
+    // -- toString
 
-	@Test
-	public void shouldConvertSomeToString() {
-		assertThat(new Some<>(1).toString()).isEqualTo("Some(1)");
-	}
+    @Test
+    public void shouldConvertSomeToString() {
+        assertThat(new Some<>(1).toString()).isEqualTo("Some(1)");
+    }
 
-	@Test
-	public void shouldConvertNoneToString() {
-		assertThat(None.instance().toString()).isEqualTo("None");
-	}
+    @Test
+    public void shouldConvertNoneToString() {
+        assertThat(None.instance().toString()).isEqualTo("None");
+    }
 
-	// -- serialization
+    // -- serialization
 
-	@Test
-	public void shouldPreserveSingletonWhenDeserializingNone() {
-		final Object none = Serializables.deserialize(Serializables.serialize(None.instance()));
-		assertThat(none == None.instance()).isTrue();
-	}
+    @Test
+    public void shouldPreserveSingletonWhenDeserializingNone() {
+        final Object none = Serializables.deserialize(Serializables.serialize(None.instance()));
+        assertThat(none == None.instance()).isTrue();
+    }
 
     // -- Functor1Laws
 
     static final Arbitrary<Option<Integer>> OPTIONS = size -> random -> {
-		final Gen<Option<Integer>> noneInt = Gen.of(None.instance());
-		final Gen<Option<Integer>> someInt = Gen.choose(-size, size).map(Some::new);
-		return Gen.frequency(
-				Tuple.of(1, noneInt),
-				Tuple.of(4, someInt)
-		).apply(random);
-	};
+        final Gen<Option<Integer>> noneInt = Gen.of(None.instance());
+        final Gen<Option<Integer>> someInt = Gen.choose(-size, size).map(Some::new);
+        return Gen.frequency(
+                Tuple.of(1, noneInt),
+                Tuple.of(4, someInt)
+        ).apply(random);
+    };
 
     @Test
     @Override

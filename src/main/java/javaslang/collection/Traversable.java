@@ -554,8 +554,8 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * Example: {@code List.of("a", "b", "c").join(", ", "Chars(", ")") = "Chars(a, b, c)"}
      *
      * @param delimiter A delimiter string put between string representations of elements of this
-     * @param prefix prefix of the resulting string
-     * @param suffix suffix of the resulting string
+     * @param prefix    prefix of the resulting string
+     * @param suffix    suffix of the resulting string
      * @return a new String
      */
     default String join(CharSequence delimiter,
@@ -974,7 +974,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      *
      * @param <K> key type
      * @param <V> value type
-     * @param f a function which converts elements of this to key-value pairs inserted into the resulting Map
+     * @param f   a function which converts elements of this to key-value pairs inserted into the resulting Map
      * @return a new {@linkplain java.util.HashMap} containing this key-value representations of this elements
      */
     default <K, V> java.util.Map<K, V> toJavaMap(Function1<? super T, Tuple2<K, V>> f) {
@@ -1013,8 +1013,8 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * traversables.
      *
      * @param unzipper a function which converts elements of this to pairs
-     * @param <T1> 1st element type of a pair returned by unzipper
-     * @param <T2> 2nd element type of a pair returned by unzipper
+     * @param <T1>     1st element type of a pair returned by unzipper
+     * @param <T2>     2nd element type of a pair returned by unzipper
      * @return A pair of traversables containing elements split by unzipper
      */
     <T1, T2> Tuple2<? extends Traversable<T1>, ? extends Traversable<T2>> unzip(Function1<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);

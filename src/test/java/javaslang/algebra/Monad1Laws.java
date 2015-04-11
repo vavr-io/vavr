@@ -21,8 +21,8 @@ public interface Monad1Laws<M extends Monad1<?, M>> extends Functor1Laws {
 
     // unit(a).flatMap(f) ≡ f.apply(a)
     default <T, U> CheckResult checkMonadLeftIdentity(Function1<? super T, ? extends Monad1<T, M>> unit,
-                                                 Arbitrary<T> ts,
-                                                 Arbitrary<Function1<? super T, ? extends Monad1<U, M>>> fs) {
+                                                      Arbitrary<T> ts,
+                                                      Arbitrary<Function1<? super T, ? extends Monad1<U, M>>> fs) {
         return new Property("monad.left_identity")
                 .forAll(ts, fs)
                 .suchThat((t, f) -> {
@@ -35,7 +35,7 @@ public interface Monad1Laws<M extends Monad1<?, M>> extends Functor1Laws {
 
     // m.flatMap(unit) ≡ m
     default <T> CheckResult checkMonadRightIdentity(Function1<? super T, ? extends Monad1<T, M>> unit,
-                                               Arbitrary<? extends Monad1<T, M>> ms) {
+                                                    Arbitrary<? extends Monad1<T, M>> ms) {
         return new Property("monad.right_identity")
                 .forAll(ms)
                 .suchThat(m -> {
@@ -47,8 +47,8 @@ public interface Monad1Laws<M extends Monad1<?, M>> extends Functor1Laws {
 
     // m.flatMap(f).flatMap(g) ≡ m.flatMap(x -> f.apply(x).flatMap(g))
     default <T, U, V> CheckResult checkMonadAssociativity(Arbitrary<? extends Monad1<T, M>> ms,
-                                                     Arbitrary<Function1<? super T, ? extends Monad1<U, M>>> fs,
-                                                     Arbitrary<Function1<? super U, ? extends Monad1<V, M>>> gs) {
+                                                          Arbitrary<Function1<? super T, ? extends Monad1<U, M>>> fs,
+                                                          Arbitrary<Function1<? super U, ? extends Monad1<V, M>>> gs) {
         return new Property("monad.associativity")
                 .forAll(ms, fs, gs)
                 .suchThat((m, f, g) -> {
