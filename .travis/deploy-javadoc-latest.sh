@@ -14,6 +14,9 @@ if [ "$TRAVIS_REPO_SLUG" == "javaslang/javaslang" ] && [ "$TRAVIS_JDK_VERSION" =
   cd javaslang.github.io
   git rm -rf ./javadoc/latest
   cp -Rf $HOME/javadoc-latest ./javadoc/latest
+  cd javadoc/latest
+  zip -r javaslang-latest-javadoc.zip *
+  cd -
   git add -f .
   git commit -m "Lastest javadoc on successful travis build $TRAVIS_BUILD_NUMBER auto-pushed to gh-pages"
   git push origin master
