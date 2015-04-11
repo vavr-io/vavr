@@ -14,9 +14,9 @@
 * Running `mvn javadoc:javadoc` results in no javadoc errors.
 * All classes start with the following copyright notice, which contains the list of core developers:
 ```java
-/**    / \____  _    ______   _____ / \____   ____  _____
+/*     / \____  _    ______   _____ / \____   ____  _____
  *    /  \__  \/ \  / \__  \ /  __//  \__  \ /    \/ __  \   Javaslang
- *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014 Daniel Dietrich
+ *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014-2015 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
 ```
@@ -70,8 +70,8 @@ private Xxx() {
 * High-level functionality is tested in first place.
 * Corner cases are tested.
 * Trivial methods are not tested, e.g. getters, setters.
-* The test method name documents
-* Without loss of generality (w.l.o.g.) there should be only one assertion per @Test.
+* The test method name documents the test, i.e. 'shouldFooWhenBarGivenBaz'
+* In most cases it makes sense to run one assertion per @Test.
 
 ### 3rd party libraries
 
@@ -85,6 +85,10 @@ private Xxx() {
 * Commit messages provide enough detail to extract a changelog for a new release.
 
 ## IDE
+
+Currently it is recommended to use IntelliJ IDEA because of performance issues with Eclipse regarding type inference. Please note that these issues only occur when developing Javaslang - for using Javaslang, Eclipse is fine.
+
+Using IntelliJ IDEA, the Community Edition works out-of-the-box.
 
 Using Eclipse, the minimal requirements are
 
