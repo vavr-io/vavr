@@ -13,7 +13,6 @@ import javaslang.algebra.Monad1;
 import javaslang.control.Valences.Bivalent;
 
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 /**
  * An implementation similar to Scala's Try control.
@@ -31,9 +30,9 @@ public interface Try<T> extends Monad1<T, Try<?>>, ValueObject, Bivalent<T, Thro
      * Creates a Try of a CheckedSupplier.
      *
      * @param supplier A checked supplier
-     * @param <T> Component type
+     * @param <T>      Component type
      * @return {@code Success(supplier.get())} if no exception occurs, otherwise {@code Failure(throwable)} if an
-     *         exception occurs calling {@code supplier.get()}.
+     * exception occurs calling {@code supplier.get()}.
      */
     static <T> Try<T> of(CheckedSupplier<T> supplier) {
         try {
@@ -48,7 +47,7 @@ public interface Try<T> extends Monad1<T, Try<?>>, ValueObject, Bivalent<T, Thro
      *
      * @param runnable A checked runnable
      * @return {@code Success(null)} if no exception occurs, otherwise {@code Failure(throwable)} if an exception occurs
-     *         calling {@code runnable.run()}.
+     * calling {@code runnable.run()}.
      */
     static Try<Void> run(CheckedRunnable runnable) {
         try {
@@ -102,9 +101,10 @@ public interface Try<T> extends Monad1<T, Try<?>>, ValueObject, Bivalent<T, Thro
 
     /**
      * Consumes the throwable if this is a Failure, otherwise returns this Success.
+     *
      * @param f A Consumer
      * @return a new Failure, if this is a Failure and the consumer throws, otherwise this, which may be a Success or
-     *         a Failure.
+     * a Failure.
      */
     Try<T> onFailure(CheckedConsumer<Throwable> f);
 
@@ -129,7 +129,7 @@ public interface Try<T> extends Monad1<T, Try<?>>, ValueObject, Bivalent<T, Thro
      * Maps the value of a Success or returns a Failure.
      *
      * @param mapper A mapper
-     * @param <U> The new component type
+     * @param <U>    The new component type
      * @return a new Try
      */
     @Override
@@ -139,7 +139,7 @@ public interface Try<T> extends Monad1<T, Try<?>>, ValueObject, Bivalent<T, Thro
      * FlatMaps the value of a Success or returns a Failure.
      *
      * @param mapper A mapper
-     * @param <U> The new component type
+     * @param <U>    The new component type
      * @return a new Try
      */
     @Override

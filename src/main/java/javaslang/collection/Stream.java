@@ -8,7 +8,6 @@ package javaslang.collection;
 import javaslang.*;
 import javaslang.algebra.HigherKinded1;
 import javaslang.algebra.Monad1;
-import javaslang.Lazy;
 import javaslang.control.Match;
 import javaslang.control.Try;
 
@@ -105,7 +104,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
      * Generates an (theoretically) infinitely long Stream using a value Supplier.
      *
      * @param supplier A Supplier of Stream values
-     * @param <T> value type
+     * @param <T>      value type
      * @return A new Stream
      */
     static <T> Stream<T> gen(Supplier<T> supplier) {
@@ -163,7 +162,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
      * charset to decode bytes to characters.</p>
      * <p>Note: Because Stream is lazy, this method is not blocking.</p>
      *
-     * @param in An InputStream
+     * @param in      An InputStream
      * @param charset A Charset
      * @return a new Stream of strings
      */
@@ -206,7 +205,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
      * charset to decode bytes to characters.</p>
      * <p>Note: Because Stream is lazy, this method is not blocking.</p>
      *
-     * @param in An InputStream
+     * @param in      An InputStream
      * @param charset A Charset
      * @return a new Stream of characters
      */
@@ -371,7 +370,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
      * Creates a Stream based on an Iterator.
      *
      * @param iterator An Iterator
-     * @param <T> Component type
+     * @param <T>      Component type
      * @return A new Stream
      */
     // providing this method to save resources creating a Stream - makes no sense for collections in general
@@ -389,7 +388,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
     /**
      * Creates a Stream of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
      *
-     * @param from the first number
+     * @param from        the first number
      * @param toExclusive the last number + 1
      * @return A range of int values as specified
      */
@@ -404,7 +403,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
     /**
      * Creates a Stream of int numbers starting from {@code from}, extending to {@code toInclusive}.
      *
-     * @param from the first number
+     * @param from        the first number
      * @param toInclusive the last number
      * @return A range of int values as specified
      */

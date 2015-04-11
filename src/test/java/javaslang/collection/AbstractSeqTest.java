@@ -8,7 +8,7 @@ package javaslang.collection;
 import javaslang.Tuple;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Iterator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,7 +28,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldAppendElementToNil() {
-        final Seq<Integer> actual = this.<Integer> nil().append(1);
+        final Seq<Integer> actual = this.<Integer>nil().append(1);
         final Seq<Integer> expected = this.of(1);
         assertThat(actual).isEqualTo(expected);
     }
@@ -56,7 +56,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldAppendAllNonNilToNil() {
-        final Seq<Integer> actual = this.<Integer> nil().appendAll(this.of(1, 2, 3));
+        final Seq<Integer> actual = this.<Integer>nil().appendAll(this.of(1, 2, 3));
         final Seq<Integer> expected = this.of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
@@ -133,7 +133,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldInsertIntoNil() {
-        final Seq<Integer> actual = this.<Integer> nil().insert(0, 1);
+        final Seq<Integer> actual = this.<Integer>nil().insert(0, 1);
         final Seq<Integer> expected = this.of(1);
         assertThat(actual).isEqualTo(expected);
     }
@@ -173,7 +173,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldInserAlltIntoNil() {
-        final Seq<Integer> actual = this.<Integer> nil().insertAll(0, this.of(1, 2, 3));
+        final Seq<Integer> actual = this.<Integer>nil().insertAll(0, this.of(1, 2, 3));
         final Seq<Integer> expected = this.of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
@@ -251,7 +251,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldPrependElementToNil() {
-        final Seq<Integer> actual = this.<Integer> nil().prepend(1);
+        final Seq<Integer> actual = this.<Integer>nil().prepend(1);
         final Seq<Integer> expected = this.of(1);
         assertThat(actual).isEqualTo(expected);
     }
@@ -272,7 +272,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldPrependAllNilToNil() {
-        final Seq<Integer> actual = this.<Integer> nil().prependAll(this.nil());
+        final Seq<Integer> actual = this.<Integer>nil().prependAll(this.nil());
         final Seq<Integer> expected = this.nil();
         assertThat(actual).isEqualTo(expected);
     }
@@ -286,7 +286,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldPrependAllNonNilToNil() {
-        final Seq<Integer> actual = this.<Integer> nil().prependAll(this.of(1, 2, 3));
+        final Seq<Integer> actual = this.<Integer>nil().prependAll(this.of(1, 2, 3));
         final Seq<Integer> expected = this.of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
@@ -351,7 +351,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldSortNilUsingComparator() {
-        assertThat(this.<Integer> nil().sort((i, j) -> j - i)).isEqualTo(this.nil());
+        assertThat(this.<Integer>nil().sort((i, j) -> j - i)).isEqualTo(this.nil());
     }
 
     @Test
@@ -375,7 +375,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldReturnNilWhenSubsequenceFrom0OnNil() {
-        final Seq<Integer> actual = this.<Integer> nil().subsequence(0);
+        final Seq<Integer> actual = this.<Integer>nil().subsequence(0);
         assertThat(actual).isEqualTo(this.nil());
     }
 
@@ -405,7 +405,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowWhenSubsequence0OnNil() {
-        this.<Integer> nil().subsequence(1);
+        this.<Integer>nil().subsequence(1);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
@@ -422,7 +422,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldReturnNilWhenSubsequenceFrom0To0OnNil() {
-        final Seq<Integer> actual = this.<Integer> nil().subsequence(0, 0);
+        final Seq<Integer> actual = this.<Integer>nil().subsequence(0, 0);
         assertThat(actual).isEqualTo(this.nil());
     }
 

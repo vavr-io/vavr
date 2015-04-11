@@ -5,13 +5,13 @@
  */
 package javaslang.collection;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import javaslang.Serializables;
 import javaslang.Tuple;
 import org.junit.Test;
 
 import java.io.InvalidObjectException;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class RoseTreeTest extends AbstractTreeTest {
 

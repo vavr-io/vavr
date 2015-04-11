@@ -7,6 +7,7 @@ package javaslang.test;
 
 /**
  * Error messages used internally within {@code Property.check}.
+ *
  * @since 1.2.0
  */
 interface Errors {
@@ -15,8 +16,8 @@ interface Errors {
      * Creates an Error caused by an exception when obtaining a generator.
      *
      * @param position The position of the argument within the argument list of the property, starting with 1.
-     * @param size The size hint passed to the {@linkplain Arbitrary} which caused the error.
-     * @param cause The error which occured when the {@linkplain Arbitrary} tried to obtain the generator {@linkplain Gen}.
+     * @param size     The size hint passed to the {@linkplain Arbitrary} which caused the error.
+     * @param cause    The error which occured when the {@linkplain Arbitrary} tried to obtain the generator {@linkplain Gen}.
      * @return a new Error instance.
      */
     static Error arbitraryError(int position, int size, Throwable cause) {
@@ -27,8 +28,8 @@ interface Errors {
      * Creates an Error caused by an exception when generating a value.
      *
      * @param position The position of the argument within the argument list of the property, starting with 1.
-     * @param size The size hint of the arbitrary which called the generator {@linkplain Gen} which caused the error.
-     * @param cause The error which occured when the {@linkplain Gen} tried to generate a random value.
+     * @param size     The size hint of the arbitrary which called the generator {@linkplain Gen} which caused the error.
+     * @param cause    The error which occured when the {@linkplain Gen} tried to generate a random value.
      * @return a new Error instance.
      */
     static Error genError(int position, int size, Throwable cause) {

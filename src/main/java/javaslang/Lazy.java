@@ -21,6 +21,7 @@ import java.util.function.Supplier;
  * lazyDouble.get() // returns the memoized value, e.g. 0.123
  * </code>
  * </pre>
+ *
  * @since 1.3.0
  */
 public final class Lazy<T> implements Supplier<T>, ValueObject {
@@ -39,7 +40,7 @@ public final class Lazy<T> implements Supplier<T>, ValueObject {
     /**
      * Creates a Lazy, because it is easier to write {@code Lazy.of(xxx)} than {@code new Lazy<>(xxx)}.
      *
-     * @param <T> type of the lazy value
+     * @param <T>      type of the lazy value
      * @param supplier A supplier
      * @return A new instance of Lazy
      */

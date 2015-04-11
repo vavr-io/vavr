@@ -11,6 +11,7 @@ import java.util.function.Supplier;
 
 /**
  * Interface for checkable properties, allowing composition via {@linkplain #and(Checkable)} and {@linkplain #or(Checkable)}.
+ *
  * @since 1.2.0
  */
 @FunctionalInterface

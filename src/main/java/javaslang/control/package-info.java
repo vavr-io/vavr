@@ -11,7 +11,7 @@
  * If a Right is projected to a Left, the Left control operations have no effect on the Right value.
  * If a Left is projected to a Right, the Right control operations have no effect on the Left value.
  * </p>
- * 
+ *
  * <strong>Option</strong>
  * <p>
  * The Option control is a replacement for {@linkplain java.util.Optional}. An Option is either
@@ -20,7 +20,7 @@
  * However, {@code Option.of(null)} results in None.
  * See also <a href="http://blog.rocketscience.io/your-codebase-looks-like-this/">3 ways to deal with null</a>.
  * </p>
- * 
+ *
  * <strong>Try</strong>
  * <p>
  * Exceptions are handled with the {@linkplain javaslang.control.Try} control which is either a

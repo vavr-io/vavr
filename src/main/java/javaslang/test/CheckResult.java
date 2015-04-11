@@ -354,8 +354,8 @@ public interface CheckResult extends ValueObject {
         boolean deepEquals(Throwable t1, Throwable t2) {
             return (t1 == null && t2 == null) || (
                     t1 != null && t2 != null
-                    && Objects.equals(t1.getMessage(), t2.getMessage())
-                    && deepEquals(t1.getCause(), t2.getCause())
+                            && Objects.equals(t1.getMessage(), t2.getMessage())
+                            && deepEquals(t1.getCause(), t2.getCause())
             );
         }
 

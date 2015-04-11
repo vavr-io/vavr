@@ -88,7 +88,7 @@ private Xxx() {
 
 Currently it is recommended to use IntelliJ IDEA because of performance issues with Eclipse regarding type inference. Please note that these issues only occur when developing Javaslang - for using Javaslang, Eclipse is fine.
 
-Using IntelliJ IDEA, the Community Edition works out-of-the-box.
+Using IntelliJ IDEA, the Community Edition works out-of-the-box. The idea-settings.jar can be found in the repo.
 
 Using Eclipse, the minimal requirements are
 
