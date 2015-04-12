@@ -48,4 +48,5 @@ public class Function2Test {
         final Function2<Object, Object, Object> composed = f.andThen(after);
         assertThat(composed).isNotNull();
     }
+
 }

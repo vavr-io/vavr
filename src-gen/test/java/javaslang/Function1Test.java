@@ -48,4 +48,12 @@ public class Function1Test {
         final Function1<Object, Object> composed = f.andThen(after);
         assertThat(composed).isNotNull();
     }
+
+    @Test
+    public void shouldComposeWithCompose() {
+        final Function1<Object, Object> f = (o1) -> null;
+        final Function1<Object, Object> before = o -> null;
+        final Function1<Object, Object> composed = f.compose(before);
+        assertThat(composed).isNotNull();
+    }
 }

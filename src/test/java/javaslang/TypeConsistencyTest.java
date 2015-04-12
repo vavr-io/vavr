@@ -8,6 +8,7 @@ package javaslang;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
 import javaslang.collection.Stream;
+import javaslang.control.Try;
 import org.junit.Test;
 
 import java.io.File;
@@ -49,16 +50,15 @@ public class TypeConsistencyTest {
     /**
      * CAUTION: Non-reifiable types (like {@code Tuple2<? extends Traversable<T>, ? extends Traversable<T>>})
      * are not recognized by this test because there is no runtime information available via reflection.
-     *
-     * @throws Exception
      */
     @Test
-    public void shouldHaveAConsistentTypeSystem() throws IOException {
+    public void shouldHaveAConsistentTypeSystem() {
         final Seq<Class<?>> classes = loadClasses("src-gen/main/java")
                 .appendAll(loadClasses("src/main/java"))
                 .filter(c -> {
                     final String name = c.getName();
-                    return !name.startsWith("javaslang.Function") && !name.startsWith("javaslang.CheckedFunction");
+                    return !name.startsWith("javaslang.Function") && !name.startsWith("javaslang.CheckedFunction") &&
+                           !name.startsWith("javaslang.Consumer") && !name.startsWith("javaslang.CheckedConsumer");
                 });
         final Seq<String> msgs = classes
                 .map(clazz -> Tuple.of(clazz, getUnoverriddenMethods(clazz)))
@@ -111,29 +111,30 @@ public class TypeConsistencyTest {
                                 .map(ComparableMethod::new));
     }
 
-    Seq<Class<?>> loadClasses(String srcDir) throws IOException {
+    Seq<Class<?>> loadClasses(String srcDir) {
         final Path path = Paths.get(srcDir);
         final java.util.List<Class<?>> classes = new ArrayList<>();
-        Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                if (!attrs.isDirectory()) {
-                    final String name = file.subpath(path.getNameCount(), file.getNameCount()).toString();
-                    if (name.endsWith(".java") && !name.endsWith(File.separator + "package-info.java")) {
-                        final String className = name.substring(0, name.length() - ".java".length())
-                                .replaceAll("/", ".")
-                                .replaceAll("\\\\", ".");
-                        try {
-                            final Class<?> clazz = getClass().getClassLoader().loadClass(className);
-                            classes.add(clazz);
-                        } catch (ClassNotFoundException e) {
-                            throw new IOException(e);
+        Try.of(() ->
+                Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                        if (!attrs.isDirectory()) {
+                            final String name = file.subpath(path.getNameCount(), file.getNameCount()).toString();
+                            if (name.endsWith(".java") && !name.endsWith(File.separator + "package-info.java")) {
+                                final String className = name.substring(0, name.length() - ".java".length())
+                                        .replaceAll("/", ".")
+                                        .replaceAll("\\\\", ".");
+                                try {
+                                    final Class<?> clazz = getClass().getClassLoader().loadClass(className);
+                                    classes.add(clazz);
+                                } catch (ClassNotFoundException e) {
+                                    throw new IOException(e);
+                                }
+                            }
                         }
+                        return FileVisitResult.CONTINUE;
                     }
-                }
-                return FileVisitResult.CONTINUE;
-            }
-        });
+                }));
         return Stream.of(classes);
     }
 

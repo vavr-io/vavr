@@ -52,7 +52,7 @@ public interface Function1<T1, R> extends λ<R> {
 
     @Override
     default Function1<T1, R> curried() {
-        return t1 -> apply(t1);
+        return this;
     }
 
     @Override
@@ -62,7 +62,7 @@ public interface Function1<T1, R> extends λ<R> {
 
     @Override
     default Function1<T1, R> reversed() {
-        return (t1) -> apply(t1);
+        return this;
     }
 
     /**
@@ -75,7 +75,7 @@ public interface Function1<T1, R> extends λ<R> {
      * @throws NullPointerException if after is null
      */
     default <V> Function1<T1, V> andThen(Function1<? super R, ? extends V> after) {
-        Objects.requireNonNull(after);
+        Objects.requireNonNull(after, "after is null");
         return (t1) -> after.apply(apply(t1));
     }
 
@@ -89,7 +89,7 @@ public interface Function1<T1, R> extends λ<R> {
      * @throws NullPointerException if before is null
      */
     default <V> Function1<V, R> compose(Function1<? super V, ? extends T1> before) {
-        Objects.requireNonNull(before);
+        Objects.requireNonNull(before, "before is null");
         return v -> apply(before.apply(v));
     }
 }

@@ -24,7 +24,7 @@ public class CheckedFunction0Test {
     @Test
     public void shouldCurry() {
         final CheckedFunction0<Object> f = () -> null;
-        final CheckedFunction1<Void, Object> curried = f.curried();
+        final CheckedFunction0<Object> curried = f.curried();
         assertThat(curried).isNotNull();
     }
 
@@ -48,4 +48,5 @@ public class CheckedFunction0Test {
         final CheckedFunction0<Object> composed = f.andThen(after);
         assertThat(composed).isNotNull();
     }
+
 }

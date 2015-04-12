@@ -24,7 +24,7 @@ public class Function0Test {
     @Test
     public void shouldCurry() {
         final Function0<Object> f = () -> null;
-        final Function1<Void, Object> curried = f.curried();
+        final Function0<Object> curried = f.curried();
         assertThat(curried).isNotNull();
     }
 
@@ -48,4 +48,5 @@ public class Function0Test {
         final Function0<Object> composed = f.andThen(after);
         assertThat(composed).isNotNull();
     }
+
 }

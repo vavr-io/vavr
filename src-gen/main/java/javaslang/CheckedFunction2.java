@@ -67,7 +67,7 @@ public interface CheckedFunction2<T1, T2, R> extends λ<R> {
      * @throws NullPointerException if after is null
      */
     default <V> CheckedFunction2<T1, T2, V> andThen(CheckedFunction1<? super R, ? extends V> after) {
-        Objects.requireNonNull(after);
+        Objects.requireNonNull(after, "after is null");
         return (t1, t2) -> after.apply(apply(t1, t2));
     }
 
