@@ -14,7 +14,7 @@ import javaslang.Function2;
 import javaslang.Tuple2;
 
 /**
- * <p>Defines a Functor by generalizing the map function which maps two elements.</p>
+ * <p>Defines a 2-ary Functor by generalizing the map function which maps two elements.</p>
  *
  * All instances of the Functor2 interface should obey the two functor laws:
  * <ul>
@@ -31,23 +31,23 @@ import javaslang.Tuple2;
 public interface Functor2<T1, T2> {
 
     /**
-     * Applies a function f to the components of this functor.
+     * Applies a function f to the components of this Functor.
      *
-     * @param <U1> type of the 1st component of the resulting functor
-     * @param <U2> type of the 2nd component of the resulting functor
-     * @param f a 2-ary function which maps the components of this functor
-     * @return a new functor with two component types U1, U2.
+     * @param <U1> type of the 1st component of the resulting Functor
+     * @param <U2> type of the 2nd component of the resulting Functor
+     * @param f a 2-ary Function which maps the components of this Functor
+     * @return a new Functor2 with two component types U1, U2.
      */
     <U1, U2> Functor2<U1, U2> map(Function2<? super T1, ? super T2, Tuple2<? extends U1, ? extends U2>> f);
 
     /**
-     * Applies a separate function to each component of this functor.
+     * Applies a separate function to each component of this Functor.
      *
-     * @param <U1> type of the 1st component of the resulting functor
-     * @param <U2> type of the 2nd component of the resulting functor
-     * @param f1 the function applied to the 1st component of this functor
-     * @param f2 the function applied to the 2nd component of this functor
-     * @return a new functor with two component types U1, U2.
+     * @param <U1> type of the 1st component of the resulting Functor
+     * @param <U2> type of the 2nd component of the resulting Functor
+     * @param f1 the Function applied to the 1st component of this Functor
+     * @param f2 the Function applied to the 2nd component of this Functor
+     * @return a new Functor2 with two component types U1, U2.
      */
     <U1, U2> Functor2<U1, U2> map(Function1<? super T1, ? extends U1> f1, Function1<? super T2, ? extends U2> f2);
 }

@@ -14,7 +14,7 @@ import javaslang.Function7;
 import javaslang.Tuple7;
 
 /**
- * <p>Defines a Functor by generalizing the map function which maps 7 elements.</p>
+ * <p>Defines a 7-ary Functor by generalizing the map function which maps 7 elements.</p>
  *
  * All instances of the Functor7 interface should obey the two functor laws:
  * <ul>
@@ -36,38 +36,38 @@ import javaslang.Tuple7;
 public interface Functor7<T1, T2, T3, T4, T5, T6, T7> {
 
     /**
-     * Applies a function f to the components of this functor.
+     * Applies a function f to the components of this Functor.
      *
-     * @param <U1> type of the 1st component of the resulting functor
-     * @param <U2> type of the 2nd component of the resulting functor
-     * @param <U3> type of the 3rd component of the resulting functor
-     * @param <U4> type of the 4th component of the resulting functor
-     * @param <U5> type of the 5th component of the resulting functor
-     * @param <U6> type of the 6th component of the resulting functor
-     * @param <U7> type of the 7th component of the resulting functor
-     * @param f a 7-ary function which maps the components of this functor
-     * @return a new functor with 7 component types U1, U2, U3, U4, U5, U6, U7.
+     * @param <U1> type of the 1st component of the resulting Functor
+     * @param <U2> type of the 2nd component of the resulting Functor
+     * @param <U3> type of the 3rd component of the resulting Functor
+     * @param <U4> type of the 4th component of the resulting Functor
+     * @param <U5> type of the 5th component of the resulting Functor
+     * @param <U6> type of the 6th component of the resulting Functor
+     * @param <U7> type of the 7th component of the resulting Functor
+     * @param f a 7-ary Function which maps the components of this Functor
+     * @return a new Functor7 with 7 component types U1, U2, U3, U4, U5, U6, U7.
      */
     <U1, U2, U3, U4, U5, U6, U7> Functor7<U1, U2, U3, U4, U5, U6, U7> map(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Tuple7<? extends U1, ? extends U2, ? extends U3, ? extends U4, ? extends U5, ? extends U6, ? extends U7>> f);
 
     /**
-     * Applies a separate function to each component of this functor.
+     * Applies a separate function to each component of this Functor.
      *
-     * @param <U1> type of the 1st component of the resulting functor
-     * @param <U2> type of the 2nd component of the resulting functor
-     * @param <U3> type of the 3rd component of the resulting functor
-     * @param <U4> type of the 4th component of the resulting functor
-     * @param <U5> type of the 5th component of the resulting functor
-     * @param <U6> type of the 6th component of the resulting functor
-     * @param <U7> type of the 7th component of the resulting functor
-     * @param f1 the function applied to the 1st component of this functor
-     * @param f2 the function applied to the 2nd component of this functor
-     * @param f3 the function applied to the 3rd component of this functor
-     * @param f4 the function applied to the 4th component of this functor
-     * @param f5 the function applied to the 5th component of this functor
-     * @param f6 the function applied to the 6th component of this functor
-     * @param f7 the function applied to the 7th component of this functor
-     * @return a new functor with 7 component types U1, U2, U3, U4, U5, U6, U7.
+     * @param <U1> type of the 1st component of the resulting Functor
+     * @param <U2> type of the 2nd component of the resulting Functor
+     * @param <U3> type of the 3rd component of the resulting Functor
+     * @param <U4> type of the 4th component of the resulting Functor
+     * @param <U5> type of the 5th component of the resulting Functor
+     * @param <U6> type of the 6th component of the resulting Functor
+     * @param <U7> type of the 7th component of the resulting Functor
+     * @param f1 the Function applied to the 1st component of this Functor
+     * @param f2 the Function applied to the 2nd component of this Functor
+     * @param f3 the Function applied to the 3rd component of this Functor
+     * @param f4 the Function applied to the 4th component of this Functor
+     * @param f5 the Function applied to the 5th component of this Functor
+     * @param f6 the Function applied to the 6th component of this Functor
+     * @param f7 the Function applied to the 7th component of this Functor
+     * @return a new Functor7 with 7 component types U1, U2, U3, U4, U5, U6, U7.
      */
     <U1, U2, U3, U4, U5, U6, U7> Functor7<U1, U2, U3, U4, U5, U6, U7> map(Function1<? super T1, ? extends U1> f1, Function1<? super T2, ? extends U2> f2, Function1<? super T3, ? extends U3> f3, Function1<? super T4, ? extends U4> f4, Function1<? super T5, ? extends U5> f5, Function1<? super T6, ? extends U6> f6, Function1<? super T7, ? extends U7> f7);
 }

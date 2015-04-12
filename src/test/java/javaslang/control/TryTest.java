@@ -5,9 +5,12 @@
  */
 package javaslang.control;
 
+import javaslang.CheckedFunction1;
 import javaslang.Function1;
 import javaslang.Serializables;
 import javaslang.Tuple;
+import javaslang.algebra.CheckedMonad1;
+import javaslang.algebra.CheckedMonad1Laws;
 import javaslang.algebra.Monad1;
 import javaslang.algebra.Monad1Laws;
 import javaslang.test.Arbitrary;
@@ -25,7 +28,7 @@ import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class TryTest implements Monad1Laws<Try<?>> {
+public class TryTest implements CheckedMonad1Laws<Try<?>> {
 
     private static final String OK = "ok";
     private static final String FAILURE = "failure";
@@ -541,7 +544,7 @@ public class TryTest implements Monad1Laws<Try<?>> {
         return Try.of(() -> "ok");
     }
 
-    // -- Functor1Laws
+    // -- CheckedFunctor1Laws
 
     static final Arbitrary<Try<Integer>> TRIES = size -> random -> Gen.frequency(
             Tuple.of(1, Gen.<Try<Integer>>of(new Failure<>(new Error("test")))),
@@ -550,30 +553,30 @@ public class TryTest implements Monad1Laws<Try<?>> {
 
     @Test
     @Override
-    public void shouldSatisfyFunctorIdentity() {
-        final CheckResult result = checkFunctorIdentity(TRIES);
+    public void shouldSatisfyCheckedFunctorIdentity() {
+        final CheckResult result = checkCheckedFunctorIdentity(TRIES);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
     }
 
     @Test
     @Override
-    public void shouldSatisfyFunctorComposition() {
-        final Arbitrary<Function1<? super Integer, ? extends Double>> before =
+    public void shouldSatisfyCheckedFunctorComposition() {
+        final Arbitrary<CheckedFunction1<? super Integer, ? extends Double>> before =
                 size -> random -> Double::valueOf;
-        final Arbitrary<Function1<? super Double, ? extends String>> after =
+        final Arbitrary<CheckedFunction1<? super Double, ? extends String>> after =
                 size -> random -> String::valueOf;
-        final CheckResult result = checkFunctorComposition(TRIES, before, after);
+        final CheckResult result = checkCheckedFunctorComposition(TRIES, before, after);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
     }
 
-    // -- Monad1Laws
+    // -- CheckedMonad1Laws
 
     static final Arbitrary<Integer> INTEGERS = size -> random -> Gen.frequency(
             Tuple.of(1, Gen.of(null)),
             Tuple.of(4, Gen.choose(-size, size))
     ).apply(random);
 
-    static <T> Function1<? super T, ? extends Monad1<T, Try<?>>> unit() {
+    static <T> CheckedFunction1<? super T, ? extends CheckedMonad1<T, Try<?>>> unit() {
         return i -> Try.of(() -> {
             if (i == null) {
                 throw new Error("test");
@@ -583,34 +586,34 @@ public class TryTest implements Monad1Laws<Try<?>> {
         });
     }
 
-    static <T, R> Monad1<R, Try<?>> mapTry(T t, Function1<? super T, R> mapper) {
+    static <T, R> CheckedMonad1<R, Try<?>> mapTry(T t, CheckedFunction1<? super T, R> mapper) throws Throwable {
         return TryTest.<T>unit().apply(t).map(mapper::apply);
     }
 
     @Test
     @Override
-    public void shouldSatisfyMonadLeftIdentity() {
-        final Arbitrary<Function1<? super Integer, ? extends Monad1<String, Try<?>>>> mappers =
+    public void shouldSatisfyCheckedMonadLeftIdentity() {
+        final Arbitrary<CheckedFunction1<? super Integer, ? extends CheckedMonad1<String, Try<?>>>> mappers =
                 size -> random -> i -> TryTest.mapTry(i, String::valueOf);
-        final CheckResult result = checkMonadLeftIdentity(TryTest.<Integer>unit(), INTEGERS, mappers);
+        final CheckResult result = checkCheckedMonadLeftIdentity(TryTest.<Integer>unit(), INTEGERS, mappers);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
     }
 
     @Test
     @Override
-    public void shouldSatisfyMonadRightIdentity() {
-        final CheckResult result = checkMonadRightIdentity(TryTest.<Integer>unit(), TRIES);
+    public void shouldSatisfyCheckedMonadRightIdentity() {
+        final CheckResult result = checkCheckedMonadRightIdentity(TryTest.<Integer>unit(), TRIES);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
     }
 
     @Test
     @Override
-    public void shouldSatisfyMonadAssociativity() {
-        final Arbitrary<Function1<? super Integer, ? extends Monad1<Double, Try<?>>>> before =
+    public void shouldSatisfyCheckedMonadAssociativity() {
+        final Arbitrary<CheckedFunction1<? super Integer, ? extends CheckedMonad1<Double, Try<?>>>> before =
                 size -> random -> i -> TryTest.mapTry(i, Double::valueOf);
-        final Arbitrary<Function1<? super Double, ? extends Monad1<String, Try<?>>>> after =
+        final Arbitrary<CheckedFunction1<? super Double, ? extends CheckedMonad1<String, Try<?>>>> after =
                 size -> random -> d -> TryTest.mapTry(d, String::valueOf);
-        final CheckResult result = checkMonadAssociativity(TRIES, before, after);
+        final CheckResult result = checkCheckedMonadAssociativity(TRIES, before, after);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
     }
 }

@@ -14,9 +14,9 @@ import javaslang.Function2;
 import javaslang.Tuple2;
 
 /**
- * Defines a Monad by generalizing the flatMap function.
+ * Defines a 2-ary Monad by generalizing the flatMap function.
  * <p>
- * All instances of the Monad interface should obey the three control laws:
+ * All instances of the Monad2 interface should obey the three control laws:
  * <ul>
  *     <li><strong>Left identity:</strong> {@code unit(a).flatMap(f) ≡ f a}</li>
  *     <li><strong>Right identity:</strong> {@code m.flatMap(unit) ≡ m}</li>
@@ -48,7 +48,7 @@ public interface Monad2<T1, T2, M extends HigherKinded2<?, ?, M>> extends Functo
      * @param <U2> 2nd component type of this monad
      * @param <MONAD> placeholder for the monad type of component types T1,…,T2 and container type M
      * @param f a function that maps the monad values to a new monad instance
-     * @return a new monad instance of component types U1,…,U2 and container type M
+     * @return a new Monad2 instance of component types U1,…,U2 and container type M
      */
     <U1, U2, MONAD extends HigherKinded2<U1, U2, M>> Monad2<U1, U2, M> flatMap(Function2<? super T1, ? super T2, MONAD> f);
 
