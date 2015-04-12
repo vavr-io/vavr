@@ -32,8 +32,8 @@ public class TypeConsistencyTest {
 
             // control.Success
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.filter(javaslang.control.Try$CheckedPredicate)",
-            "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.map(javaslang.Function1)",
-            "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.flatMap(javaslang.Function1)",
+            "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.map(javaslang.CheckedFunction1)",
+            "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.flatMap(javaslang.CheckedFunction1)",
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.failed()",
             "javaslang.control.Success//public default javaslang.control.Try javaslang.control.Try.andThen(javaslang.control.Try$CheckedRunnable)",
 

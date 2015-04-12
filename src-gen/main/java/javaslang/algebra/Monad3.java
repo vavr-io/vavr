@@ -14,9 +14,9 @@ import javaslang.Function3;
 import javaslang.Tuple3;
 
 /**
- * Defines a Monad by generalizing the flatMap function.
+ * Defines a 3-ary Monad by generalizing the flatMap function.
  * <p>
- * All instances of the Monad interface should obey the three control laws:
+ * All instances of the Monad3 interface should obey the three control laws:
  * <ul>
  *     <li><strong>Left identity:</strong> {@code unit(a).flatMap(f) ≡ f a}</li>
  *     <li><strong>Right identity:</strong> {@code m.flatMap(unit) ≡ m}</li>
@@ -50,7 +50,7 @@ public interface Monad3<T1, T2, T3, M extends HigherKinded3<?, ?, ?, M>> extends
      * @param <U3> 3rd component type of this monad
      * @param <MONAD> placeholder for the monad type of component types T1,…,T3 and container type M
      * @param f a function that maps the monad values to a new monad instance
-     * @return a new monad instance of component types U1,…,U3 and container type M
+     * @return a new Monad3 instance of component types U1,…,U3 and container type M
      */
     <U1, U2, U3, MONAD extends HigherKinded3<U1, U2, U3, M>> Monad3<U1, U2, U3, M> flatMap(Function3<? super T1, ? super T2, ? super T3, MONAD> f);
 

@@ -131,14 +131,14 @@ public final class Failure<T> implements Try<T> {
     }
 
     @Override
-    public <U> Failure<U> map(Function1<? super T, ? extends U> mapper) {
+    public <U> Failure<U> map(CheckedFunction1<? super T, ? extends U> mapper) {
         @SuppressWarnings("unchecked")
         final Failure<U> result = (Failure<U>) this;
         return result;
     }
 
     @Override
-    public <U, TRY extends HigherKinded1<U, Try<?>>> Failure<U> flatMap(Function1<? super T, TRY> mapper) {
+    public <U, TRY extends HigherKinded1<U, Try<?>>> Failure<U> flatMap(CheckedFunction1<? super T, TRY> mapper) {
         @SuppressWarnings("unchecked")
         final Failure<U> result = (Failure<U>) this;
         return result;

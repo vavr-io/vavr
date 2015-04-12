@@ -40,23 +40,32 @@ def generateMainClasses(): Unit = {
   /**
    * Generator of javaslang.algebra.Functor*
    */
-  def genFunctors(): Unit = 1 to N foreach { i =>
-    genJavaslangFile("javaslang.algebra", s"Functor$i")((im: ImportManager, packageName, className) => {
+  def genFunctors(): Unit = 1 to N foreach { i => {
+
+    if (i == 1) {
+      genJavaslangFile("javaslang.algebra", s"CheckedFunctor$i")(genFunctor("CheckedFunctor", checked = true))
+    }
+    genJavaslangFile("javaslang.algebra", s"Functor$i")(genFunctor("Functor", checked = false))
+
+    def genFunctor(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
+
       val generics = (1 to i).gen(j => s"T$j")(", ")
       val paramTypes = (1 to i).gen(j => s"? super T$j")(", ")
       val resultType = if (i == 1) "? extends U1" else s"${im.getType(s"javaslang.Tuple$i")}<${(1 to i).gen(j => s"? extends U$j")(", ")}>"
       val resultGenerics = (1 to i).gen(j => s"U$j")(", ")
-      val functionType = im.getType(s"javaslang.Function$i")
+      val function1Type = im.getType(s"javaslang.${checked.gen("Checked")}Function1")
+      val functionType = im.getType(s"javaslang.${checked.gen("Checked")}Function$i")
+
       xs"""
         /$javadoc
-         * <p>Defines a Functor by generalizing the map function which maps ${i.numerus("element")}.</p>
+         * <p>Defines a $i-ary $name by generalizing the map function which maps ${i.numerus("element")}.</p>
          *
-         * All instances of the Functor$i interface should obey the two functor laws:
+         * All instances of the $className interface should obey the two functor laws:
          * <ul>
          *     <li>{@code m.map(a -> a) ≡ m}</li>
          *     <li>{@code m.map(f.compose(g)) ≡ m.map(g).map(f)}</li>
          * </ul>
-         * where ${if (i == 1) "f, g ∈ Function1" else s"{@code f, g ∈ Tuple$i → Tuple$i}"}.
+         * where ${if (i == 1) "f, g ∈ $function1Type" else s"{@code f, g ∈ Tuple$i → Tuple$i}"}.
          *
          ${(1 to i).gen(j => s"* @param <T$j> ${j.ordinal} component type of this monad")("\n")}
          * @see <a href="http://www.haskellforall.com/2012/09/the-functor-design-pattern.html">The functor design pattern</a>
@@ -65,28 +74,28 @@ def generateMainClasses(): Unit = {
         public interface $className<$generics> {
 
             /**
-             * Applies a function f to the components of this functor.
+             * Applies a function f to the components of this $name.
              *
-             ${(1 to i).gen(j => s"* @param <U$j> type of the ${j.ordinal} component of the resulting functor")("\n")}
-             * @param f a $i-ary function which maps the components of this functor
-             * @return a new functor with ${i.numerus("component type")} ${(1 to i).gen(j => s"U$j")(", ")}.
+             ${(1 to i).gen(j => s"* @param <U$j> type of the ${j.ordinal} component of the resulting $name")("\n")}
+             * @param f a $i-ary ${checked.gen("Checked")}Function which maps the components of this $name
+             * @return a new $className with ${i.numerus("component type")} ${(1 to i).gen(j => s"U$j")(", ")}.
              */
             <$resultGenerics> $className<$resultGenerics> map($functionType<$paramTypes, $resultType> f);
 
             ${(i > 1).gen(xs"""
               /$javadoc
-               * Applies a separate function to each component of this functor.
+               * Applies a separate function to each component of this $name.
                *
-               ${(1 to i).gen(j => s"* @param <U$j> type of the ${j.ordinal} component of the resulting functor")("\n")}
-               ${(1 to i).gen(j => s"* @param f$j the function applied to the ${j.ordinal} component of this functor")("\n")}
-               * @return a new functor with ${i.numerus("component type")} ${(1 to i).gen(j => s"U$j")(", ")}.
+               ${(1 to i).gen(j => s"* @param <U$j> type of the ${j.ordinal} component of the resulting $name")("\n")}
+               ${(1 to i).gen(j => s"* @param f$j the ${checked.gen("Checked")}Function applied to the ${j.ordinal} component of this $name")("\n")}
+               * @return a new $className with ${i.numerus("component type")} ${(1 to i).gen(j => s"U$j")(", ")}.
                */
-              <$resultGenerics> $className<$resultGenerics> map(${(1 to i).gen(j => s"${im.getType("javaslang.Function1")}<? super T$j, ? extends U$j> f$j")(", ")});
+              <$resultGenerics> $className<$resultGenerics> map(${(1 to i).gen(j => s"$function1Type<? super T$j, ? extends U$j> f$j")(", ")});
             """)}
         }
-    """
-    })
-  }
+      """
+    }
+  }}
 
   /**
    * Generator of javaslang.algebra.HigherKinded*
@@ -123,19 +132,27 @@ def generateMainClasses(): Unit = {
   /**
    * Generator of javaslang.algebra.Monad*
    */
-  def genMonads(): Unit = 1 to N foreach { i =>
-    genJavaslangFile("javaslang.algebra", s"Monad$i")((im: ImportManager, packageName, className) => {
+  def genMonads(): Unit = 1 to N foreach { i => {
+
+    if (i == 1) {
+      genJavaslangFile("javaslang.algebra", s"CheckedMonad$i")(genMonad("CheckedMonad", checked = true))
+    }
+    genJavaslangFile("javaslang.algebra", s"Monad$i")(genMonad("Monad", checked = false))
+
+    def genMonad(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
+
       val generics = (1 to i).gen(j => s"T$j")(", ")
       val paramTypes = (1 to i).gen(j => s"? super T$j")(", ")
       val resultType = if (i == 1) "? extends U1" else s"${im.getType(s"javaslang.Tuple$i")}<${(1 to i).gen(j => s"? extends U$j")(", ")}>"
       val resultGenerics = (1 to i).gen(j => s"U$j")(", ")
-      val functionType = im.getType(s"javaslang.Function$i")
+      val function1Type = im.getType(s"javaslang.${checked.gen("Checked")}Function1")
+      val functionType = im.getType(s"javaslang.${checked.gen("Checked")}Function$i")
       val plural = (i > 1).gen("s")
       xs"""
         /$javadoc
-         * Defines a Monad by generalizing the flatMap function.
+         * Defines a $i-ary $name by generalizing the flatMap function.
          * <p>
-         * All instances of the Monad interface should obey the three control laws:
+         * All instances of the $className interface should obey the three control laws:
          * <ul>
          *     <li><strong>Left identity:</strong> {@code unit(a).flatMap(f) ≡ f a}</li>
          *     <li><strong>Right identity:</strong> {@code m.flatMap(unit) ≡ m}</li>
@@ -152,11 +169,11 @@ def generateMainClasses(): Unit = {
          * To read further about monads in Java please refer to
          * <a href="http://java.dzone.com/articles/whats-wrong-java-8-part-iv">What's Wrong in Java 8, Part IV: Monads</a>.
          *
-         ${(1 to i).gen(j => s"* @param <T$j> ${j.ordinal} component type of this monad")("\n")}
+         ${(1 to i).gen(j => s"* @param <T$j> ${j.ordinal} component type of this ${checked.gen("checked ")}monad")("\n")}
          * @param <M> placeholder for the type that implements this
          * @since 1.1.0
          */
-        public interface $className<$generics, M extends HigherKinded$i<${"?, " * i}M>> extends Functor$i<$generics>, HigherKinded$i<$generics, M> {
+        public interface $className<$generics, M extends HigherKinded$i<${"?, " * i}M>> extends ${checked.gen("Checked")}Functor$i<$generics>, HigherKinded$i<$generics, M> {
 
             /**
              * Returns the result of applying f to M's value$plural of type T1,…,T$i and returns a new M with
@@ -164,8 +181,8 @@ def generateMainClasses(): Unit = {
              *
              ${(1 to i).gen(j => s"* @param <U$j> ${j.ordinal} component type of this monad")("\n")}
              * @param <MONAD> placeholder for the monad type of component types T1,…,T$i and container type M
-             * @param f a function that maps the monad values to a new monad instance
-             * @return a new monad instance of component types U1,…,U$i and container type M
+             * @param f a ${checked.gen("checked ")}function that maps the monad values to a new monad instance
+             * @return a new $className instance of component types U1,…,U$i and container type M
              */
             <$resultGenerics, MONAD extends HigherKinded$i<$resultGenerics, M>> $className<$resultGenerics, M> flatMap($functionType<$paramTypes, MONAD> f);
 
@@ -174,12 +191,12 @@ def generateMainClasses(): Unit = {
 
             ${(i > 1).gen(xs"""
               @Override
-              <$resultGenerics> $className<$resultGenerics, M> map(${(1 to i).gen(j => s"${im.getType("javaslang.Function1")}<? super T$j, ? extends U$j> f$j")(", ")});
+              <$resultGenerics> $className<$resultGenerics, M> map(${(1 to i).gen(j => s"$function1Type<? super T$j, ? extends U$j> f$j")(", ")});
             """)}
         }
       """
-    })
-  }
+    }
+  }}
 
   /**
    * Generator of javaslang.test.Property

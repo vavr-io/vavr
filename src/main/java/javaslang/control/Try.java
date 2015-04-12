@@ -8,6 +8,7 @@ package javaslang.control;
 import javaslang.CheckedFunction1;
 import javaslang.Function1;
 import javaslang.ValueObject;
+import javaslang.algebra.CheckedMonad1;
 import javaslang.algebra.HigherKinded1;
 import javaslang.algebra.Monad1;
 import javaslang.control.Valences.Bivalent;
@@ -19,7 +20,7 @@ import java.util.function.Consumer;
  *
  * @param <T> Value type in the case of success.
  */
-public interface Try<T> extends Monad1<T, Try<?>>, ValueObject, Bivalent<T, Throwable> {
+public interface Try<T> extends CheckedMonad1<T, Try<?>>, ValueObject, Bivalent<T, Throwable> {
 
     /**
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
@@ -133,7 +134,7 @@ public interface Try<T> extends Monad1<T, Try<?>>, ValueObject, Bivalent<T, Thro
      * @return a new Try
      */
     @Override
-    <U> Try<U> map(Function1<? super T, ? extends U> mapper);
+    <U> Try<U> map(CheckedFunction1<? super T, ? extends U> mapper);
 
     /**
      * FlatMaps the value of a Success or returns a Failure.
@@ -143,7 +144,7 @@ public interface Try<T> extends Monad1<T, Try<?>>, ValueObject, Bivalent<T, Thro
      * @return a new Try
      */
     @Override
-    <U, TRY extends HigherKinded1<U, Try<?>>> Try<U> flatMap(Function1<? super T, TRY> mapper);
+    <U, TRY extends HigherKinded1<U, Try<?>>> Try<U> flatMap(CheckedFunction1<? super T, TRY> mapper);
 
     /**
      * Runs the given runnable if this is a Success, otherwise returns this Failure.

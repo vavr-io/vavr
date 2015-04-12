@@ -9,12 +9,12 @@ package javaslang.algebra;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Function1;
+import javaslang.CheckedFunction1;
 
 /**
- * <p>Defines a 1-ary Functor by generalizing the map function which maps one element.</p>
+ * <p>Defines a 1-ary CheckedFunctor by generalizing the map function which maps one element.</p>
  *
- * All instances of the Functor1 interface should obey the two functor laws:
+ * All instances of the CheckedFunctor1 interface should obey the two functor laws:
  * <ul>
  *     <li>{@code m.map(a -> a) ≡ m}</li>
  *     <li>{@code m.map(f.compose(g)) ≡ m.map(g).map(f)}</li>
@@ -25,15 +25,15 @@ import javaslang.Function1;
  * @see <a href="http://www.haskellforall.com/2012/09/the-functor-design-pattern.html">The functor design pattern</a>
  * @since 1.1.0
  */
-public interface Functor1<T1> {
+public interface CheckedFunctor1<T1> {
 
     /**
-     * Applies a function f to the components of this Functor.
+     * Applies a function f to the components of this CheckedFunctor.
      *
-     * @param <U1> type of the 1st component of the resulting Functor
-     * @param f a 1-ary Function which maps the components of this Functor
-     * @return a new Functor1 with one component type U1.
+     * @param <U1> type of the 1st component of the resulting CheckedFunctor
+     * @param f a 1-ary CheckedFunction which maps the components of this CheckedFunctor
+     * @return a new CheckedFunctor1 with one component type U1.
      */
-    <U1> Functor1<U1> map(Function1<? super T1, ? extends U1> f);
+    <U1> CheckedFunctor1<U1> map(CheckedFunction1<? super T1, ? extends U1> f);
 
 }

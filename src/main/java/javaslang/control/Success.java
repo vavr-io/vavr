@@ -126,7 +126,7 @@ public final class Success<T> implements Try<T> {
     }
 
     @Override
-    public <U> Try<U> map(Function1<? super T, ? extends U> mapper) {
+    public <U> Try<U> map(CheckedFunction1<? super T, ? extends U> mapper) {
         try {
             return new Success<>(mapper.apply(value));
         } catch (Throwable t) {
@@ -136,7 +136,7 @@ public final class Success<T> implements Try<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U, TRY extends HigherKinded1<U, Try<?>>> Try<U> flatMap(Function1<? super T, TRY> mapper) {
+    public <U, TRY extends HigherKinded1<U, Try<?>>> Try<U> flatMap(CheckedFunction1<? super T, TRY> mapper) {
         try {
             return (Try<U>) mapper.apply(value);
         } catch (Throwable t) {

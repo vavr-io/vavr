@@ -14,9 +14,9 @@ import javaslang.Function4;
 import javaslang.Tuple4;
 
 /**
- * Defines a Monad by generalizing the flatMap function.
+ * Defines a 4-ary Monad by generalizing the flatMap function.
  * <p>
- * All instances of the Monad interface should obey the three control laws:
+ * All instances of the Monad4 interface should obey the three control laws:
  * <ul>
  *     <li><strong>Left identity:</strong> {@code unit(a).flatMap(f) ≡ f a}</li>
  *     <li><strong>Right identity:</strong> {@code m.flatMap(unit) ≡ m}</li>
@@ -52,7 +52,7 @@ public interface Monad4<T1, T2, T3, T4, M extends HigherKinded4<?, ?, ?, ?, M>> 
      * @param <U4> 4th component type of this monad
      * @param <MONAD> placeholder for the monad type of component types T1,…,T4 and container type M
      * @param f a function that maps the monad values to a new monad instance
-     * @return a new monad instance of component types U1,…,U4 and container type M
+     * @return a new Monad4 instance of component types U1,…,U4 and container type M
      */
     <U1, U2, U3, U4, MONAD extends HigherKinded4<U1, U2, U3, U4, M>> Monad4<U1, U2, U3, U4, M> flatMap(Function4<? super T1, ? super T2, ? super T3, ? super T4, MONAD> f);
 
