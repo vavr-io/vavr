@@ -31,6 +31,7 @@ def generateMainClasses(): Unit = {
   val javadoc = "**"
 
   genFunctions()
+  genConsumers()
   genFunctors()
   genHigherKindeds()
   genMonads()
@@ -426,6 +427,129 @@ def generateMainClasses(): Unit = {
   }
 
   /**
+   * Generator of Consumers
+   */
+  def genConsumers(): Unit = {
+
+    (0 to N).foreach(i => {
+
+      genJavaslangFile("javaslang", s"CheckedConsumer$i")(genConsumer("CheckedConsumer", checked = true))
+      genJavaslangFile("javaslang", s"Consumer$i")(genConsumer("Consumer", checked = false))
+
+      def genConsumer(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
+
+        val generics = (1 to i).gen(j => s"T$j")(", ")
+        val genericsReversed = (1 to i).reverse.gen(j => s"T$j")(", ")
+        val genericsTuple = if (i > 0) s"<$generics>" else ""
+        val genericsReversedFunction = if (i > 0) s"<$genericsReversed>" else ""
+        val curried = if (i == 0) "v" else (1 to i).gen(j => s"t$j")(" -> ")
+        val paramsDecl = (1 to i).gen(j => s"T$j t$j")(", ")
+        val params = (1 to i).gen(j => s"t$j")(", ")
+        val paramsReversed = (1 to i).reverse.gen(j => s"t$j")(", ")
+        val tupled = (1 to i).gen(j => s"t._$j")(", ")
+
+        def curriedType(max: Int): String = {
+          def returnType(curr: Int): String = {
+            if (max == 0) {
+              s"${name}0"
+            } else if (curr >= max) {
+              s"${name}1<T$curr>"
+            } else {
+              s"${checked.gen("Checked")}Function1<T$curr, ${returnType(curr + 1)}>"
+            }
+          }
+          returnType(1)
+        }
+
+        def arguments(count: Int): String = count match {
+          case 0 => "no arguments"
+          case 1 => "one argument"
+          case 2 => "two arguments"
+          case 3 => "three arguments"
+          case _ => s"$i arguments"
+        }
+
+        xs"""
+          /$javadoc
+           * Represents a consumer with ${arguments(i)}.
+           * <p>
+           * A consumer is a special function that returns nothing, i.e. {@code Void}. This implies that the consumer
+           * performs side-effects based on its arguments.
+           * <p>
+           * Java requires a function of return type {@code Void} to explicitely return null (the only instance
+           * of Void). To circumvent this and in favor of a more consise notation of consumers, Javaslang provides the
+           * funtional interfaces {@linkplain Consumer0} to {@linkplain Consumer26}.
+           ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> argument $j of the consumer")("\n")}
+           *
+           * @since 1.3.0
+           */
+          @FunctionalInterface
+          public interface $className${(i > 0).gen(s"<$generics>")} extends λ<Void> {
+
+              /**
+               * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+               */
+              long serialVersionUID = 1L;
+
+              /$javadoc
+               * Accepts ${arguments(i)} and returns nothing.
+               ${(0 to i).gen(j => if (j == 0) "*" else s"* @param t$j argument $j")("\n")}
+               * ${checked.gen("@throws Throwable if something goes wrong accepting the given arguments")}
+               */
+              void accept($paramsDecl)${checked.gen(" throws Throwable")};
+
+              @Override
+              default int arity() {
+                  return $i;
+              }
+
+              @Override
+              default ${curriedType(i)} curried() {
+                  return ${if (i < 2) "this" else s"$curried -> accept($params)"};
+              }
+
+              @Override
+              default ${name}1<Tuple$i$genericsTuple> tupled() {
+                  return t -> accept($tupled);
+              }
+
+              @Override
+              default $className$genericsReversedFunction reversed() {
+                  return ${if (i < 2) "this" else s"($paramsReversed) -> accept($params)"};
+              }
+
+              /$javadoc
+               * Returns a composed function that first applies this $className to the given arguments and then applies
+               * {@code after} to the same arguments.
+               *
+               * @param after the consumer which accepts the given arguments after this
+               * @return a consumer composed of this and after
+               * @throws NullPointerException if after is null
+               */
+              default $className${(i > 0).gen(s"<$generics>")} andThen($className${(i > 0).gen(s"<$generics>")} after) {
+                  ${im.getType("java.util.Objects")}.requireNonNull(after, "after is null");
+                  return ($params) -> { accept($params); after.accept($params); };
+              }
+
+              /$javadoc
+               * Returns a composed function that first applies {@code before} to the given arguments and then applies
+               * this $className to the same arguments.
+               *
+               * @param before the consumer which accepts the given arguments before this
+               * @return a consumer composed of before and this
+               * @throws NullPointerException if before is null
+               */
+              default $className${(i > 0).gen(s"<$generics>")} compose($className${(i > 0).gen(s"<$generics>")} before) {
+                  ${im.getType("java.util.Objects")}.requireNonNull(before, "before is null");
+                  return ($params) -> { before.accept($params); accept($params); };
+              }
+          }
+        """
+      }
+    })
+  }
+
+  /**
    * Generator of Functions
    */
   def genFunctions(): Unit = {
@@ -451,7 +575,7 @@ def generateMainClasses(): Unit = {
 
         def curriedType(max: Int, function: String): String = {
           if (max == 0) {
-            s"${function}1<Void, R>"
+            s"$className<R>"
           } else {
             def returnType(curr: Int, max: Int): String = {
               val isParam = curr < max
@@ -511,7 +635,7 @@ def generateMainClasses(): Unit = {
 
               @Override
               default ${curriedType(i, name)} curried() {
-                  return $curried -> apply($params);
+                  return ${if (i < 2) "this" else s"$curried -> apply($params)"};
               }
 
               @Override
@@ -521,7 +645,7 @@ def generateMainClasses(): Unit = {
 
               @Override
               default $className<${genericsReversedFunction}R> reversed() {
-                  return ($paramsReversed) -> apply($params);
+                  return ${if (i < 2) "this" else s"($paramsReversed) -> apply($params)"};
               }
 
               /$javadoc
@@ -534,24 +658,25 @@ def generateMainClasses(): Unit = {
                * @throws NullPointerException if after is null
                */
               default <V> $className<${genericsFunction}V> andThen($compositionType<? super R, ? extends V> after) {
-                  ${im.getType("java.util.Objects")}.requireNonNull(after);
+                  ${im.getType("java.util.Objects")}.requireNonNull(after, "after is null");
                   return ($params) -> after.apply(apply($params));
               }
 
               ${(i == 1).gen(xs"""
-              /$javadoc
-               * Returns a composed function that first applies the {@linkplain $compositionType} {@code before} the
-               * given argument and then applies this $className to the result.
-               *
-               * @param <V> argument type of before
-               * @param before the function applied before this
-               * @return a function composed of before and this
-               * @throws NullPointerException if before is null
-               */
-              default <V> ${name}1<V, R> compose($compositionType<? super V, ? extends T1> before) {
-                  ${im.getType("java.util.Objects")}.requireNonNull(before);
-                  return v -> apply(before.apply(v));
-              }""")}
+                /$javadoc
+                 * Returns a composed function that first applies the {@linkplain $compositionType} {@code before} the
+                 * given argument and then applies this $className to the result.
+                 *
+                 * @param <V> argument type of before
+                 * @param before the function applied before this
+                 * @return a function composed of before and this
+                 * @throws NullPointerException if before is null
+                 */
+                default <V> ${name}1<V, R> compose($compositionType<? super V, ? extends T1> before) {
+                    ${im.getType("java.util.Objects")}.requireNonNull(before, "before is null");
+                    return v -> apply(before.apply(v));
+                }
+              """)}
           }
         """
       }
@@ -806,8 +931,90 @@ def generateMainClasses(): Unit = {
 def generateTestClasses(): Unit = {
 
   genFunctionTests()
+  genConsumerTests()
   genPropertyCheckTests()
   genTupleTests()
+
+  /**
+   * Generator of Function tests
+   */
+  def genConsumerTests(): Unit = {
+
+    (0 to N).foreach(i => {
+
+      genJavaslangFile("javaslang", s"CheckedConsumer${i}Test", baseDir = TARGET_TEST)(genFunctionTest("CheckedConsumer", checked = true))
+      genJavaslangFile("javaslang", s"Consumer${i}Test", baseDir = TARGET_TEST)(genFunctionTest("Consumer", checked = false))
+
+      def genFunctionTest(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
+
+        val functionArgs = (1 to i).gen(j => s"o$j")(", ")
+        val generics = if (i == 0) "" else s"<${(1 to i).gen(j => "Object")(", ")}>"
+
+        val test = im.getType("org.junit.Test")
+        val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
+
+        def curriedType(max: Int): String = {
+          def returnType(curr: Int): String = {
+            if (max == 0) {
+              s"${name}0"
+            } else if (curr >= max) {
+              s"${name}1<Object>"
+            } else {
+              s"${checked.gen("Checked")}Function1<Object, ${returnType(curr + 1)}>"
+            }
+          }
+          returnType(1)
+        }
+
+        xs"""
+          public class $className {
+
+              @$test
+              public void shouldGetArity() {
+                  final $name$i$generics f = ($functionArgs) -> {};
+                  $assertThat(f.arity()).isEqualTo($i);
+              }
+
+              @$test
+              public void shouldCurry() {
+                  final $name$i$generics f = ($functionArgs) -> {};
+                  final ${curriedType(i)} curried = f.curried();
+                  $assertThat(curried).isNotNull();
+              }
+
+              @$test
+              public void shouldTuple() {
+                  final $name$i$generics f = ($functionArgs) -> {};
+                  final ${name}1<Tuple$i${(i > 0).gen(s"<${(1 to i).gen(j => "Object")(", ")}>")}> tupled = f.tupled();
+                  $assertThat(tupled).isNotNull();
+              }
+
+              @$test
+              public void shouldReverse() {
+                  final $name$i$generics f = ($functionArgs) -> {};
+                  $assertThat(f.reversed()).isNotNull();
+              }
+
+              @$test
+              public void shouldComposeWithAndThen() {
+                  final $name$i$generics f = ($functionArgs) -> {};
+                  final $name$i$generics after = ($functionArgs) -> {};
+                  final $name$i$generics composed = f.andThen(after);
+                  $assertThat(composed).isNotNull();
+              }
+
+              @$test
+              public void shouldComposeWithCompose() {
+                  final $name$i$generics f = ($functionArgs) -> {};
+                  final $name$i$generics before = ($functionArgs) -> {};
+                  final $name$i$generics composed = f.compose(before);
+                  $assertThat(composed).isNotNull();
+              }
+          }
+        """
+      }
+    })
+  }
 
   /**
    * Generator of Function tests
@@ -816,10 +1023,10 @@ def generateTestClasses(): Unit = {
 
     (0 to N).foreach(i => {
 
-      genJavaslangFile("javaslang", s"CheckedFunction${i}Test", baseDir = TARGET_TEST)(genFunction("CheckedFunction", checked = true))
-      genJavaslangFile("javaslang", s"Function${i}Test", baseDir = TARGET_TEST)(genFunction("Function", checked = false))
+      genJavaslangFile("javaslang", s"CheckedFunction${i}Test", baseDir = TARGET_TEST)(genFunctionTest("CheckedFunction", checked = true))
+      genJavaslangFile("javaslang", s"Function${i}Test", baseDir = TARGET_TEST)(genFunctionTest("Function", checked = false))
 
-      def genFunction(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
+      def genFunctionTest(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
 
         val functionArgs = (1 to i).gen(j => s"o$j")(", ")
         val generics = (1 to i + 1).gen(j => "Object")(", ")
@@ -829,7 +1036,7 @@ def generateTestClasses(): Unit = {
 
         def curriedType(max: Int, function: String): String = {
           if (max == 0) {
-            s"${function}1<Void, Object>"
+            s"${function}0<Object>"
           } else {
             def returnType(curr: Int, max: Int): String = {
               val isParam = curr < max
@@ -876,6 +1083,16 @@ def generateTestClasses(): Unit = {
                   final $name$i<$generics> composed = f.andThen(after);
                   $assertThat(composed).isNotNull();
               }
+
+              ${(i == 1).gen(xs"""
+                @$test
+                public void shouldComposeWithCompose() {
+                    final $name$i<$generics> f = ($functionArgs) -> null;
+                    final ${name}1<Object, Object> before = o -> null;
+                    final $name$i<$generics> composed = f.compose(before);
+                    $assertThat(composed).isNotNull();
+                }
+              """)}
           }
         """
       }

@@ -39,8 +39,8 @@ public interface CheckedFunction0<R> extends λ<R> {
     }
 
     @Override
-    default CheckedFunction1<Void, R> curried() {
-        return v -> apply();
+    default CheckedFunction0<R> curried() {
+        return this;
     }
 
     @Override
@@ -50,7 +50,7 @@ public interface CheckedFunction0<R> extends λ<R> {
 
     @Override
     default CheckedFunction0<R> reversed() {
-        return () -> apply();
+        return this;
     }
 
     /**
@@ -63,7 +63,7 @@ public interface CheckedFunction0<R> extends λ<R> {
      * @throws NullPointerException if after is null
      */
     default <V> CheckedFunction0<V> andThen(CheckedFunction1<? super R, ? extends V> after) {
-        Objects.requireNonNull(after);
+        Objects.requireNonNull(after, "after is null");
         return () -> after.apply(apply());
     }
 

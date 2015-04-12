@@ -48,4 +48,5 @@ public class Function5Test {
         final Function5<Object, Object, Object, Object, Object, Object> composed = f.andThen(after);
         assertThat(composed).isNotNull();
     }
+
 }

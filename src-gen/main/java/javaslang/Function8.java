@@ -79,7 +79,7 @@ public interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<R> {
      * @throws NullPointerException if after is null
      */
     default <V> Function8<T1, T2, T3, T4, T5, T6, T7, T8, V> andThen(Function1<? super R, ? extends V> after) {
-        Objects.requireNonNull(after);
+        Objects.requireNonNull(after, "after is null");
         return (t1, t2, t3, t4, t5, t6, t7, t8) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8));
     }
 

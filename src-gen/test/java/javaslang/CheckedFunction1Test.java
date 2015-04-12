@@ -48,4 +48,12 @@ public class CheckedFunction1Test {
         final CheckedFunction1<Object, Object> composed = f.andThen(after);
         assertThat(composed).isNotNull();
     }
+
+    @Test
+    public void shouldComposeWithCompose() {
+        final CheckedFunction1<Object, Object> f = (o1) -> null;
+        final CheckedFunction1<Object, Object> before = o -> null;
+        final CheckedFunction1<Object, Object> composed = f.compose(before);
+        assertThat(composed).isNotNull();
+    }
 }

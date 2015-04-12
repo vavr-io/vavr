@@ -48,4 +48,5 @@ public class CheckedFunction3Test {
         final CheckedFunction3<Object, Object, Object, Object> composed = f.andThen(after);
         assertThat(composed).isNotNull();
     }
+
 }

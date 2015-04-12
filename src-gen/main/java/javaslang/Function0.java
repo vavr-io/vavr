@@ -39,8 +39,8 @@ public interface Function0<R> extends λ<R> {
     }
 
     @Override
-    default Function1<Void, R> curried() {
-        return v -> apply();
+    default Function0<R> curried() {
+        return this;
     }
 
     @Override
@@ -50,7 +50,7 @@ public interface Function0<R> extends λ<R> {
 
     @Override
     default Function0<R> reversed() {
-        return () -> apply();
+        return this;
     }
 
     /**
@@ -63,7 +63,7 @@ public interface Function0<R> extends λ<R> {
      * @throws NullPointerException if after is null
      */
     default <V> Function0<V> andThen(Function1<? super R, ? extends V> after) {
-        Objects.requireNonNull(after);
+        Objects.requireNonNull(after, "after is null");
         return () -> after.apply(apply());
     }
 

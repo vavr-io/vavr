@@ -6,7 +6,6 @@
 package javaslang;
 
 import javaslang.control.Try;
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import java.io.Serializable;
@@ -31,7 +30,7 @@ public class FunctionsTest {
     public void shouldGetMethodTypeOfCurriedFunction0() {
         final Function0<Object> lambda = () -> null;
         final MethodType actual = lambda.curried().getType();
-        final MethodType expected = MethodType.fromMethodDescriptorString("(Ljava/lang/Void;)Ljava/lang/Object;",
+        final MethodType expected = MethodType.fromMethodDescriptorString("()Ljava/lang/Object;",
                 getClass().getClassLoader());
         assertThat(actual).isEqualTo(expected);
     }
@@ -46,12 +45,12 @@ public class FunctionsTest {
     }
 
     @Test
-    public void schouldEnsureThatCheckedFunction0ImplementsTheFunctionInterface() {
+    public void shouldEnsureThatCheckedFunction0ImplementsTheFunctionInterface() {
         final CheckedFunction0<Integer> x0 = () -> 1;
-        Assertions.assertThat(Try.of(x0::apply).get()).isEqualTo(1);
+        assertThat(Try.of(x0::apply).get()).isEqualTo(1);
         assertThat(x0.andThen(i -> i + 1).getType().toString()).isEqualTo("(CheckedFunction1)Object");
         assertThat(x0.arity()).isEqualTo(0);
-        assertThat(x0.curried().getType().toString()).isEqualTo("(Void)Object");
+        assertThat(x0.curried().getType().toString()).isEqualTo("()Integer");
         assertThat(x0.tupled().getType().toString()).isEqualTo("(Tuple0)Object");
     }
 
@@ -91,14 +90,14 @@ public class FunctionsTest {
     }
 
     @Test
-    public void schouldEnsureThatCheckedFunction1ImplementsTheFunctionInterface() {
+    public void shouldEnsureThatCheckedFunction1ImplementsTheFunctionInterface() {
         final CheckedFunction1<Integer, Integer> x1 = i -> i + 1;
-        Assertions.assertThat(Try.of(() -> x1.apply(1)).get()).isEqualTo(2);
+        assertThat(Try.of(() -> x1.apply(1)).get()).isEqualTo(2);
         assertThat(x1.andThen(i -> i + 1).getType().toString()).isEqualTo("(CheckedFunction1,Object)Object");
         assertThat(x1.arity()).isEqualTo(1);
-        assertThat(x1.curried().getType().toString()).isEqualTo("(Object)Object");
+        assertThat(x1.curried().getType().toString()).isEqualTo("(Integer)Integer");
         assertThat(x1.tupled().getType().toString()).isEqualTo("(Tuple1)Object");
-        Assertions.assertThat(Try.of(() -> x1.compose(o -> Integer.parseInt(o.toString())).apply("1")).get()).isEqualTo(2);
+        assertThat(Try.of(() -> x1.compose(o -> Integer.parseInt(o.toString())).apply("1")).get()).isEqualTo(2);
         assertThat(Try.of(() -> CheckedFunction1.identity().apply(1)).get()).isEqualTo(1);
     }
 
@@ -147,9 +146,9 @@ public class FunctionsTest {
     }
 
     @Test
-    public void schouldEnsureThatCheckedFunction2ImplementsTheFunctionInterface() {
+    public void shouldEnsureThatCheckedFunction2ImplementsTheFunctionInterface() {
         final CheckedFunction2<Integer, Integer, Integer> x2 = (i, j) -> i + j;
-        Assertions.assertThat(Try.of(() -> x2.apply(1, 1)).get()).isEqualTo(2);
+        assertThat(Try.of(() -> x2.apply(1, 1)).get()).isEqualTo(2);
         assertThat(x2.andThen(i -> i + 1).getType().toString()).isEqualTo("(CheckedFunction1,Object,Object)Object");
         assertThat(x2.arity()).isEqualTo(2);
         assertThat(x2.curried().getType().toString()).isEqualTo("(Object)CheckedFunction1");
@@ -187,9 +186,9 @@ public class FunctionsTest {
     }
 
     @Test
-    public void schouldEnsureThatCheckedFunction3ImplementsTheFunctionInterface() {
+    public void shouldEnsureThatCheckedFunction3ImplementsTheFunctionInterface() {
         final CheckedFunction3<Integer, Integer, Integer, Integer> x3 = (i1, i2, i3) -> i1 + i2 + i3;
-        Assertions.assertThat(Try.of(() -> x3.apply(1, 1, 1)).get()).isEqualTo(3);
+        assertThat(Try.of(() -> x3.apply(1, 1, 1)).get()).isEqualTo(3);
         assertThat(x3.andThen(i -> i + 1).getType().toString()).isEqualTo("(CheckedFunction1,Object,Object,Object)Object");
         assertThat(x3.arity()).isEqualTo(3);
         assertThat(x3.curried().getType().toString()).isEqualTo("(Object)CheckedFunction1");
@@ -227,9 +226,9 @@ public class FunctionsTest {
     }
 
     @Test
-    public void schouldEnsureThatCheckedFunction4ImplementsTheFunctionInterface() {
+    public void shouldEnsureThatCheckedFunction4ImplementsTheFunctionInterface() {
         final CheckedFunction4<Integer, Integer, Integer, Integer, Integer> x = (i1, i2, i3, i4) -> i1 + i2 + i3 + i4;
-        Assertions.assertThat(Try.of(() -> x.apply(1, 1, 1, 1)).get()).isEqualTo(4);
+        assertThat(Try.of(() -> x.apply(1, 1, 1, 1)).get()).isEqualTo(4);
         assertThat(x.andThen(i -> i + 1).getType().toString()).isEqualTo("(CheckedFunction1,Object,Object,Object,Object)Object");
         assertThat(x.arity()).isEqualTo(4);
         assertThat(x.curried().getType().toString()).isEqualTo("(Object)CheckedFunction1");
@@ -268,9 +267,9 @@ public class FunctionsTest {
     }
 
     @Test
-    public void schouldEnsureThatCheckedFunction5ImplementsTheFunctionInterface() {
+    public void shouldEnsureThatCheckedFunction5ImplementsTheFunctionInterface() {
         final CheckedFunction5<Integer, Integer, Integer, Integer, Integer, Integer> x = (i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5;
-        Assertions.assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1)).get()).isEqualTo(5);
+        assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1)).get()).isEqualTo(5);
         assertThat(x.andThen(i -> i + 1).getType().toString()).isEqualTo("(CheckedFunction1,Object,Object,Object,Object,Object)Object");
         assertThat(x.arity()).isEqualTo(5);
         assertThat(x.curried().getType().toString()).isEqualTo("(Object)CheckedFunction1");
@@ -309,9 +308,9 @@ public class FunctionsTest {
     }
 
     @Test
-    public void schouldEnsureThatCheckedFunction6ImplementsTheFunctionInterface() {
+    public void shouldEnsureThatCheckedFunction6ImplementsTheFunctionInterface() {
         final CheckedFunction6<Integer, Integer, Integer, Integer, Integer, Integer, Integer> x = (i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6;
-        Assertions.assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1)).get()).isEqualTo(6);
+        assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1)).get()).isEqualTo(6);
         assertThat(x.andThen(i -> i + 1).getType().toString()).isEqualTo("(CheckedFunction1,Object,Object,Object,Object,Object,Object)Object");
         assertThat(x.arity()).isEqualTo(6);
         assertThat(x.curried().getType().toString()).isEqualTo("(Object)CheckedFunction1");
@@ -350,10 +349,10 @@ public class FunctionsTest {
     }
 
     @Test
-    public void schouldEnsureThatCheckedFunction7ImplementsTheFunctionInterface() {
+    public void shouldEnsureThatCheckedFunction7ImplementsTheFunctionInterface() {
         final CheckedFunction7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
                 (i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7;
-        Assertions.assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1, 1)).get()).isEqualTo(7);
+        assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1, 1)).get()).isEqualTo(7);
         assertThat(x.andThen(i -> i + 1).getType().toString()).isEqualTo("(CheckedFunction1,Object,Object,Object,Object,Object,Object,Object)Object");
         assertThat(x.arity()).isEqualTo(7);
         assertThat(x.curried().getType().toString()).isEqualTo("(Object)CheckedFunction1");
@@ -392,10 +391,10 @@ public class FunctionsTest {
     }
 
     @Test
-    public void schouldEnsureThatCheckedFunction8ImplementsTheFunctionInterface() {
+    public void shouldEnsureThatCheckedFunction8ImplementsTheFunctionInterface() {
         final CheckedFunction8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
                 (i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8;
-        Assertions.assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1, 1, 1)).get()).isEqualTo(8);
+        assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1, 1, 1)).get()).isEqualTo(8);
         assertThat(x.andThen(i -> i + 1).getType().toString()).isEqualTo("(CheckedFunction1,Object,Object,Object,Object,Object,Object,Object,Object)Object");
         assertThat(x.arity()).isEqualTo(8);
         assertThat(x.curried().getType().toString()).isEqualTo("(Object)CheckedFunction1");
@@ -434,10 +433,10 @@ public class FunctionsTest {
     }
 
     @Test
-    public void schouldEnsureThatCheckedFunction9ImplementsTheFunctionInterface() {
+    public void shouldEnsureThatCheckedFunction9ImplementsTheFunctionInterface() {
         final CheckedFunction9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
                 (i1, i2, i3, i4, i5, i6, i7, i8, i9) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8 + i9;
-        Assertions.assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1, 1, 1, 1)).get()).isEqualTo(9);
+        assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1, 1, 1, 1)).get()).isEqualTo(9);
         assertThat(x.andThen(i -> i + 1).getType().toString())
                 .isEqualTo("(CheckedFunction1,Object,Object,Object,Object,Object,Object,Object,Object,Object)Object");
         assertThat(x.arity()).isEqualTo(9);
@@ -477,10 +476,10 @@ public class FunctionsTest {
     }
 
     @Test
-    public void schouldEnsureThatCheckedFunction10ImplementsTheFunctionInterface() {
+    public void shouldEnsureThatCheckedFunction10ImplementsTheFunctionInterface() {
         final CheckedFunction10<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
                 (i1, i2, i3, i4, i5, i6, i7, i8, i9, i10) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8 + i9 + i10;
-        Assertions.assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1, 1, 1, 1, 1)).get()).isEqualTo(10);
+        assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1, 1, 1, 1, 1)).get()).isEqualTo(10);
         assertThat(x.andThen(i -> i + 1).getType().toString())
                 .isEqualTo("(CheckedFunction1,Object,Object,Object,Object,Object,Object,Object,Object,Object,Object)Object");
         assertThat(x.arity()).isEqualTo(10);
@@ -520,10 +519,10 @@ public class FunctionsTest {
     }
 
     @Test
-    public void schouldEnsureThatCheckedFunction11ImplementsTheFunctionInterface() {
+    public void shouldEnsureThatCheckedFunction11ImplementsTheFunctionInterface() {
         final CheckedFunction11<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
                 (i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8 + i9 + i10 + i11;
-        Assertions.assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)).get()).isEqualTo(11);
+        assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)).get()).isEqualTo(11);
         assertThat(x.andThen(i -> i + 1).getType().toString())
                 .isEqualTo("(CheckedFunction1,Object,Object,Object,Object,Object,Object,Object,Object,Object,Object,Object)Object");
         assertThat(x.arity()).isEqualTo(11);
@@ -563,10 +562,10 @@ public class FunctionsTest {
     }
 
     @Test
-    public void schouldEnsureThatCheckedFunction12ImplementsTheFunctionInterface() {
+    public void shouldEnsureThatCheckedFunction12ImplementsTheFunctionInterface() {
         final CheckedFunction12<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
                 (i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8 + i9 + i10 + i11 + i12;
-        Assertions.assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)).get()).isEqualTo(12);
+        assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)).get()).isEqualTo(12);
         assertThat(x.andThen(i -> i + 1).getType().toString())
                 .isEqualTo("(CheckedFunction1,Object,Object,Object,Object,Object,Object,Object,Object,Object,Object,Object,Object)Object");
         assertThat(x.arity()).isEqualTo(12);
@@ -609,10 +608,10 @@ public class FunctionsTest {
     }
 
     @Test
-    public void schouldEnsureThatCheckedFunction13ImplementsTheFunctionInterface() {
+    public void shouldEnsureThatCheckedFunction13ImplementsTheFunctionInterface() {
         final CheckedFunction13<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> x =
                 (i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12, i13) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8 + i9 + i10 + i11 + i12 + i13;
-        Assertions.assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)).get()).isEqualTo(13);
+        assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)).get()).isEqualTo(13);
         assertThat(x.andThen(i -> i + 1).getType().toString())
                 .isEqualTo("(CheckedFunction1,Object,Object,Object,Object,Object,Object,Object,Object,Object,Object,Object,Object,Object)Object");
         assertThat(x.arity()).isEqualTo(13);
