@@ -5,8 +5,11 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
-import javaslang.algebra.HigherKinded1;
+import javaslang.Tuple;
+import javaslang.Tuple0;
+import javaslang.Tuple2;
+import javaslang.ValueObject;
+import javaslang.algebra.HigherKinded;
 import javaslang.control.Match;
 
 import java.io.*;
@@ -74,11 +77,11 @@ public interface List<T> extends Seq<T>, ValueObject {
 
     /**
      * <p>
-     * Use {@linkplain List#cons(Object)} instead of {@linkplain List#of(Iterable)} in order to create nested structures
+     * Use {@code cons(Object)} instead of {@linkplain List#of(Iterable)} in order to create nested structures
      * of the form {@code List<List<T>>}.
      * </p>
      * <p>
-     * {@linkplain List#cons(Object)} produces the same result as {@linkplain List#of(Iterable)} if T is not Iterable
+     * {@code cons(Object)} produces the same result as {@linkplain List#of(Iterable)} if T is not Iterable
      * and the Iterable contains only one element.
      * </p>
      *
@@ -243,8 +246,8 @@ public interface List<T> extends Seq<T>, ValueObject {
 
     @SuppressWarnings("unchecked")
     @Override
-    default <U, TRAVERSABLE extends HigherKinded1<U, Traversable<?>>> List<U> flatMap(
-            Function1<? super T, TRAVERSABLE> mapper) {
+    default <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> List<U> flatMap(
+            Function<? super T, TRAVERSABLE> mapper) {
         return foldRight(nil(), (t, xs) -> xs.prependAll((Traversable<U>) mapper.apply(t)));
     }
 
@@ -258,7 +261,7 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default <U> List<U> flatten(Function1<T, ? extends Iterable<? extends U>> f) {
+    default <U> List<U> flatten(Function<T, ? extends Iterable<? extends U>> f) {
         Objects.requireNonNull(f, "f is null");
         return foldRight(nil(), (t, xs) -> xs.prependAll(f.apply(t)));
     }
@@ -383,9 +386,17 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default <U> List<U> map(Function1<? super T, ? extends U> mapper) {
+    default <U> List<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return foldRight(nil(), (x, xs) -> xs.prepend(mapper.apply(x)));
+    }
+
+    @Override
+    default List<T> peek(Consumer<? super T> action) {
+        if (!isEmpty()) {
+            action.accept(head());
+        }
+        return this;
     }
 
     @Override
@@ -475,7 +486,7 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default List<T> replaceAll(Function1<T, T> operator) {
+    default List<T> replaceAll(UnaryOperator<T> operator) {
         Objects.requireNonNull(operator, "operator is null");
         List<T> result = Nil.instance();
         for (T element : this) {
@@ -622,7 +633,7 @@ public interface List<T> extends Seq<T>, ValueObject {
 
     @Override
     default <T1, T2> Tuple2<List<T1>, List<T2>> unzip(
-            Function1<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+            Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         List<T1> xs = nil();
         List<T2> ys = nil();

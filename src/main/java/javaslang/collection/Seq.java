@@ -5,14 +5,16 @@
  */
 package javaslang.collection;
 
-import javaslang.Function1;
 import javaslang.Tuple2;
-import javaslang.algebra.HigherKinded1;
+import javaslang.algebra.HigherKinded;
 
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 
 /**
  * Interface for sequential, traversable data structures.
@@ -267,22 +269,25 @@ public interface Seq<T> extends Traversable<T> {
     Seq<T> findAll(Predicate<? super T> predicate);
 
     @Override
-    <U, TRAVERSABLE extends HigherKinded1<U, Traversable<?>>> Seq<U> flatMap(Function1<? super T, TRAVERSABLE> mapper);
+    <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Seq<U> flatMap(Function<? super T, TRAVERSABLE> mapper);
 
     @Override
     <U> Seq<U> flatten();
 
     @Override
-    <U> Seq<U> flatten(Function1<T, ? extends Iterable<? extends U>> f);
+    <U> Seq<U> flatten(Function<T, ? extends Iterable<? extends U>> f);
 
     @Override
-    <U> Seq<U> map(Function1<? super T, ? extends U> mapper);
+    <U> Seq<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
     Seq<T> init();
 
     @Override
     Seq<T> intersperse(T element);
+
+    @Override
+    Seq<T> peek(Consumer<? super T> action);
 
     @Override
     Seq<T> remove(T element);
@@ -300,7 +305,7 @@ public interface Seq<T> extends Traversable<T> {
     Seq<T> replaceAll(T currentElement, T newElement);
 
     @Override
-    Seq<T> replaceAll(Function1<T, T> operator);
+    Seq<T> replaceAll(UnaryOperator<T> operator);
 
     @Override
     Seq<T> retainAll(Iterable<? extends T> elements);
@@ -324,7 +329,7 @@ public interface Seq<T> extends Traversable<T> {
     Seq<T> takeWhile(Predicate<? super T> predicate);
 
     @Override
-    <T1, T2> Tuple2<? extends Seq<T1>, ? extends Seq<T2>> unzip(Function1<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
+    <T1, T2> Tuple2<? extends Seq<T1>, ? extends Seq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
 
     @Override
     <U> Seq<Tuple2<T, U>> zip(Iterable<U> that);

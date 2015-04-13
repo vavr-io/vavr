@@ -10,8 +10,6 @@ package javaslang;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import java.util.Objects;
-import javaslang.algebra.HigherKinded5;
-import javaslang.algebra.Monad5;
 
 /**
  * A tuple of 5 elements which can be seen as cartesian product of 5 components.
@@ -23,7 +21,7 @@ import javaslang.algebra.Monad5;
  * @param <T5> type of the 5th element
  * @since 1.1.0
  */
-public class Tuple5<T1, T2, T3, T4, T5> implements Tuple, Monad5<T1, T2, T3, T4, T5, Tuple5<?, ?, ?, ?, ?>> {
+public class Tuple5<T1, T2, T3, T4, T5> implements Tuple {
 
     private static final long serialVersionUID = 1L;
 
@@ -74,20 +72,10 @@ public class Tuple5<T1, T2, T3, T4, T5> implements Tuple, Monad5<T1, T2, T3, T4,
         return 5;
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U1, U2, U3, U4, U5, TUPLE extends HigherKinded5<U1, U2, U3, U4, U5, Tuple5<?, ?, ?, ?, ?>>> Tuple5<U1, U2, U3, U4, U5> flatMap(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, TUPLE> f) {
-        return (Tuple5<U1, U2, U3, U4, U5>) f.apply(_1, _2, _3, _4, _5);
+    public <U1, U2, U3, U4, U5> Tuple5<U1, U2, U3, U4, U5> map(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Tuple5<U1, U2, U3, U4, U5>> f) {
+        return f.apply(_1, _2, _3, _4, _5);
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U1, U2, U3, U4, U5> Tuple5<U1, U2, U3, U4, U5> map(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Tuple5<? extends U1, ? extends U2, ? extends U3, ? extends U4, ? extends U5>> f) {
-        // normally the result of f would be mapped to the result type of map, but Tuple.map is a special case
-        return (Tuple5<U1, U2, U3, U4, U5>) f.apply(_1, _2, _3, _4, _5);
-    }
-
-    @Override
     public <U1, U2, U3, U4, U5> Tuple5<U1, U2, U3, U4, U5> map(Function1<? super T1, ? extends U1> f1, Function1<? super T2, ? extends U2> f2, Function1<? super T3, ? extends U3> f3, Function1<? super T4, ? extends U4> f4, Function1<? super T5, ? extends U5> f5) {
         return map((t1, t2, t3, t4, t5) -> Tuple.of(f1.apply(t1), f2.apply(t2), f3.apply(t3), f4.apply(t4), f5.apply(t5)));
     }

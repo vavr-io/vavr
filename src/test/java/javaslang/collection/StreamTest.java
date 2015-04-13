@@ -5,12 +5,11 @@
  */
 package javaslang.collection;
 
-import javaslang.Function1;
 import javaslang.Serializables;
 import javaslang.Tuple;
-import javaslang.algebra.Functor1;
-import javaslang.algebra.Monad1;
-import javaslang.algebra.Monad1Laws;
+import javaslang.algebra.Functor;
+import javaslang.algebra.Monad;
+import javaslang.algebra.MonadLaws;
 import javaslang.collection.Stream.Cons;
 import javaslang.collection.Stream.Nil;
 import javaslang.test.Arbitrary;
@@ -25,10 +24,11 @@ import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class StreamTest extends AbstractSeqTest implements Monad1Laws<Traversable<?>> {
+public class StreamTest extends AbstractSeqTest implements MonadLaws<Traversable<?>> {
 
     @Override
     protected <T> Stream<T> nil() {
@@ -364,12 +364,12 @@ public class StreamTest extends AbstractSeqTest implements Monad1Laws<Traversabl
         Serializables.callReadObject(new Stream.Deferred<>(Nil::instance));
     }
 
-    // -- Functor1Laws
+    // -- FunctorLaws
 
     @Test
     @Override
     public void shouldSatisfyFunctorIdentity() {
-        final Arbitrary<? extends Functor1<Integer>> streams = Arbitrary.stream(Arbitrary.integer());
+        final Arbitrary<? extends Functor<Integer>> streams = Arbitrary.stream(Arbitrary.integer());
         final CheckResult result = checkFunctorIdentity(streams);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
     }
@@ -377,21 +377,21 @@ public class StreamTest extends AbstractSeqTest implements Monad1Laws<Traversabl
     @Test
     @Override
     public void shouldSatisfyFunctorComposition() {
-        final Arbitrary<? extends Functor1<Integer>> streams = Arbitrary.stream(Arbitrary.integer());
-        final Arbitrary<Function1<? super Integer, ? extends Double>> before =
+        final Arbitrary<? extends Functor<Integer>> streams = Arbitrary.stream(Arbitrary.integer());
+        final Arbitrary<Function<? super Integer, ? extends Double>> before =
                 size -> random -> Double::valueOf;
-        final Arbitrary<Function1<? super Double, ? extends String>> after =
+        final Arbitrary<Function<? super Double, ? extends String>> after =
                 size -> random -> String::valueOf;
         final CheckResult result = checkFunctorComposition(streams, before, after);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
     }
 
-    // -- Monad1Laws
+    // -- MonadLaws
 
     @Test
     @Override
     public void shouldSatisfyMonadLeftIdentity() {
-        final Arbitrary<Function1<? super Integer, ? extends Monad1<String, Traversable<?>>>> mappers =
+        final Arbitrary<Function<? super Integer, ? extends Monad<String, Traversable<?>>>> mappers =
                 size -> random -> i -> Stream.of(i).map(String::valueOf);
         final CheckResult result = checkMonadLeftIdentity(Stream::of, Arbitrary.integer(), mappers);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
@@ -400,7 +400,7 @@ public class StreamTest extends AbstractSeqTest implements Monad1Laws<Traversabl
     @Test
     @Override
     public void shouldSatisfyMonadRightIdentity() {
-        final Arbitrary<? extends Monad1<Integer, Traversable<?>>> streams = Arbitrary.stream(Arbitrary.integer());
+        final Arbitrary<? extends Monad<Integer, Traversable<?>>> streams = Arbitrary.stream(Arbitrary.integer());
         final CheckResult result = checkMonadRightIdentity(Stream::of, streams);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
     }
@@ -408,10 +408,10 @@ public class StreamTest extends AbstractSeqTest implements Monad1Laws<Traversabl
     @Test
     @Override
     public void shouldSatisfyMonadAssociativity() {
-        final Arbitrary<? extends Monad1<Integer, Traversable<?>>> streams = Arbitrary.stream(Arbitrary.integer());
-        final Arbitrary<Function1<? super Integer, ? extends Monad1<Double, Traversable<?>>>> before =
+        final Arbitrary<? extends Monad<Integer, Traversable<?>>> streams = Arbitrary.stream(Arbitrary.integer());
+        final Arbitrary<Function<? super Integer, ? extends Monad<Double, Traversable<?>>>> before =
                 size -> random -> i -> Stream.of(i).map(Double::valueOf);
-        final Arbitrary<Function1<? super Double, ? extends Monad1<String, Traversable<?>>>> after =
+        final Arbitrary<Function<? super Double, ? extends Monad<String, Traversable<?>>>> after =
                 size -> random -> d -> Stream.of(d).map(String::valueOf);
         final CheckResult result = checkMonadAssociativity(streams, before, after);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);

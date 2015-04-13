@@ -10,8 +10,6 @@ package javaslang;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import java.util.Objects;
-import javaslang.algebra.HigherKinded6;
-import javaslang.algebra.Monad6;
 
 /**
  * A tuple of 6 elements which can be seen as cartesian product of 6 components.
@@ -24,7 +22,7 @@ import javaslang.algebra.Monad6;
  * @param <T6> type of the 6th element
  * @since 1.1.0
  */
-public class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Monad6<T1, T2, T3, T4, T5, T6, Tuple6<?, ?, ?, ?, ?, ?>> {
+public class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple {
 
     private static final long serialVersionUID = 1L;
 
@@ -82,20 +80,10 @@ public class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Monad6<T1, T2, T3,
         return 6;
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U1, U2, U3, U4, U5, U6, TUPLE extends HigherKinded6<U1, U2, U3, U4, U5, U6, Tuple6<?, ?, ?, ?, ?, ?>>> Tuple6<U1, U2, U3, U4, U5, U6> flatMap(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, TUPLE> f) {
-        return (Tuple6<U1, U2, U3, U4, U5, U6>) f.apply(_1, _2, _3, _4, _5, _6);
+    public <U1, U2, U3, U4, U5, U6> Tuple6<U1, U2, U3, U4, U5, U6> map(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Tuple6<U1, U2, U3, U4, U5, U6>> f) {
+        return f.apply(_1, _2, _3, _4, _5, _6);
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U1, U2, U3, U4, U5, U6> Tuple6<U1, U2, U3, U4, U5, U6> map(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Tuple6<? extends U1, ? extends U2, ? extends U3, ? extends U4, ? extends U5, ? extends U6>> f) {
-        // normally the result of f would be mapped to the result type of map, but Tuple.map is a special case
-        return (Tuple6<U1, U2, U3, U4, U5, U6>) f.apply(_1, _2, _3, _4, _5, _6);
-    }
-
-    @Override
     public <U1, U2, U3, U4, U5, U6> Tuple6<U1, U2, U3, U4, U5, U6> map(Function1<? super T1, ? extends U1> f1, Function1<? super T2, ? extends U2> f2, Function1<? super T3, ? extends U3> f3, Function1<? super T4, ? extends U4> f4, Function1<? super T5, ? extends U5> f5, Function1<? super T6, ? extends U6> f6) {
         return map((t1, t2, t3, t4, t5, t6) -> Tuple.of(f1.apply(t1), f2.apply(t2), f3.apply(t3), f4.apply(t4), f5.apply(t5), f6.apply(t6)));
     }

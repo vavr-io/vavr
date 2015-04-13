@@ -239,6 +239,24 @@ public class EitherTest {
         assertThat(actual.isEmpty()).isTrue();
     }
 
+    // peek
+
+    @Test
+    public void shouldPeekOnLeftProjectionOfLeft() {
+        final List<Integer> actual = new ArrayList<>();
+        final Either<Integer, String> testee = new Left<Integer, String>(1).left().peek(actual::add);
+        assertThat(actual).isEqualTo(Collections.singletonList(1));
+        assertThat(testee).isEqualTo(new Left<Integer, String>(1));
+    }
+
+    @Test
+    public void shouldPeekOnLeftProjectionOfRight() {
+        final List<Integer> actual = new ArrayList<>();
+        final Either<Integer, String> testee = new Right<Integer, String>("1").left().peek(actual::add);
+        assertThat(actual.isEmpty()).isTrue();
+        assertThat(testee).isEqualTo(new Right<Integer, String>("1"));
+    }
+
     // map
 
     @Test
@@ -544,6 +562,24 @@ public class EitherTest {
         final List<Integer> actual = new ArrayList<>();
         new Left<String, Integer>("1").right().forEach(actual::add);
         assertThat(actual.isEmpty()).isTrue();
+    }
+
+    // peek
+
+    @Test
+    public void shouldPeekOnRightProjectionOfRight() {
+        final List<Integer> actual = new ArrayList<>();
+        final Either<String, Integer> testee = new Right<String, Integer>(1).right().peek(actual::add);
+        assertThat(actual).isEqualTo(Collections.singletonList(1));
+        assertThat(testee).isEqualTo(new Right<String, Integer>(1));
+    }
+
+    @Test
+    public void shouldPeekOnRightProjectionOfLeft() {
+        final List<Integer> actual = new ArrayList<>();
+        final Either<String, Integer> testee = new Left<String, Integer>("1").right().peek(actual::add);
+        assertThat(actual.isEmpty()).isTrue();
+        assertThat(testee).isEqualTo(new Left<String, Integer>("1"));
     }
 
     // map

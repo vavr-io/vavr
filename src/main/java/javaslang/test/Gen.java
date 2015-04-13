@@ -5,15 +5,16 @@
  */
 package javaslang.test;
 
-import javaslang.Function1;
 import javaslang.Tuple2;
-import javaslang.algebra.HigherKinded1;
-import javaslang.algebra.Monad1;
+import javaslang.algebra.HigherKinded;
+import javaslang.algebra.Monad;
 import javaslang.collection.Stream;
 import javaslang.collection.Traversable;
 
 import java.util.Objects;
 import java.util.Random;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -30,9 +31,17 @@ import java.util.function.Predicate;
  * @since 1.2.0
  */
 @FunctionalInterface
-public interface Gen<T> extends Monad1<T, Gen<?>> {
+public interface Gen<T> extends Monad<T, Gen<?>> {
 
     int FILTER_THRESHOLD = Integer.MAX_VALUE;
+
+    /**
+     * Functional interface of this generator.
+     *
+     * @param random a random number generator
+     * @return A generated value of type T.
+     */
+    T apply(Random random);
 
     /**
      * A generator which constantly returns t.
@@ -248,14 +257,6 @@ public interface Gen<T> extends Monad1<T, Gen<?>> {
     }
 
     /**
-     * Functional interface of this generator.
-     *
-     * @param random a random number generator
-     * @return A generated value of type T.
-     */
-    T apply(Random random);
-
-    /**
      * Converts this Gen to an Arbitrary
      *
      * @return An arbitrary which returns this generator regardless of the provided size hint n
@@ -272,7 +273,7 @@ public interface Gen<T> extends Monad1<T, Gen<?>> {
      * @return A new generator
      */
     @Override
-    default <U> Gen<U> map(Function1<? super T, ? extends U> mapper) {
+    default <U> Gen<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return random -> mapper.apply(apply(random));
     }
@@ -286,7 +287,7 @@ public interface Gen<T> extends Monad1<T, Gen<?>> {
      */
     @SuppressWarnings("unchecked")
     @Override
-    default <U, GEN extends HigherKinded1<U, Gen<?>>> Gen<U> flatMap(Function1<? super T, GEN> mapper) {
+    default <U, GEN extends HigherKinded<U, Gen<?>>> Gen<U> flatMap(Function<? super T, GEN> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         //noinspection Convert2MethodRef
         return random -> ((Gen<U>) mapper.apply(apply(random))).apply(random);
@@ -298,7 +299,8 @@ public interface Gen<T> extends Monad1<T, Gen<?>> {
      * @param predicate A predicate
      * @return A new generator
      */
-    default Gen<T> filter(Predicate<T> predicate) {
+    @Override
+    default Gen<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return random -> {
             int count = 0;
@@ -309,6 +311,26 @@ public interface Gen<T> extends Monad1<T, Gen<?>> {
                     throw new IllegalStateException("empty filter");
                 }
             }
+            return t;
+        };
+    }
+
+    /**
+     * {@code Gen.forEach} is not supported.
+     *
+     * @param action A consumer
+     * @throws UnsupportedOperationException because this operation would take infinitely long
+     */
+    @Override
+    default void forEach(Consumer<? super T> action) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    default Gen<T> peek(Consumer<? super T> action) {
+        return random -> {
+            final T t = apply(random);
+            action.accept(t);
             return t;
         };
     }

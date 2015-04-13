@@ -29,17 +29,9 @@ public class Tuple11Test {
     }
 
     @Test
-    public void shouldFlatMap() {
-        final Tuple11<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> tuple = createTuple();
-        final Function11<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Tuple11<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object>> mapper = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11) -> tuple;
-        final Tuple11<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> actual = tuple.flatMap(mapper);
-        assertThat(actual).isEqualTo(tuple);
-    }
-
-    @Test
     public void shouldMap() {
         final Tuple11<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> tuple = createTuple();
-        final Function11<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Tuple11<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>> mapper = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11) -> tuple;
+        final Function11<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Tuple11<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object>> mapper = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11) -> tuple;
         final Tuple11<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> actual = tuple.map(mapper);
         assertThat(actual).isEqualTo(tuple);
     }

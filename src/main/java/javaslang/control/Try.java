@@ -5,12 +5,9 @@
  */
 package javaslang.control;
 
-import javaslang.CheckedFunction1;
-import javaslang.Function1;
 import javaslang.ValueObject;
-import javaslang.algebra.CheckedMonad1;
-import javaslang.algebra.HigherKinded1;
-import javaslang.algebra.Monad1;
+import javaslang.algebra.CheckedMonad;
+import javaslang.algebra.HigherKinded;
 import javaslang.control.Valences.Bivalent;
 
 import java.util.function.Consumer;
@@ -20,7 +17,7 @@ import java.util.function.Consumer;
  *
  * @param <T> Value type in the case of success.
  */
-public interface Try<T> extends CheckedMonad1<T, Try<?>>, ValueObject, Bivalent<T, Throwable> {
+public interface Try<T> extends CheckedMonad<T, Try<?>>, ValueObject, Bivalent<T, Throwable> {
 
     /**
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
@@ -80,7 +77,7 @@ public interface Try<T> extends CheckedMonad1<T, Try<?>>, ValueObject, Bivalent<
      * @param f A recovery function taking a Throwable
      * @return a new Try
      */
-    Try<T> recover(CheckedFunction1<Throwable, ? extends T> f);
+    Try<T> recover(CheckedFunction<Throwable, ? extends T> f);
 
     /**
      * Returns {@code this}, if this is a Success, otherwise tries to recover the exception of the failure with {@code f},
@@ -90,7 +87,7 @@ public interface Try<T> extends CheckedMonad1<T, Try<?>>, ValueObject, Bivalent<
      * @param f A recovery function taking a Throwable
      * @return a new Try
      */
-    Try<T> recoverWith(CheckedFunction1<Throwable, Try<T>> f);
+    Try<T> recoverWith(CheckedFunction<Throwable, Try<T>> f);
 
     /**
      * Returns {@code Success(throwable)} if this is a {@code Failure(throwable)}, otherwise
@@ -117,6 +114,7 @@ public interface Try<T> extends CheckedMonad1<T, Try<?>>, ValueObject, Bivalent<
      * @param predicate A predicate
      * @return a new Try
      */
+    @Override
     Try<T> filter(CheckedPredicate<? super T> predicate);
 
     /**
@@ -124,7 +122,17 @@ public interface Try<T> extends CheckedMonad1<T, Try<?>>, ValueObject, Bivalent<
      *
      * @param action A Consumer
      */
+    @Override
     void forEach(Consumer<? super T> action);
+
+    /**
+     * Applies the action to the value of a Success or does nothing in the case of a Failure.
+     *
+     * @param action A Consumer
+     * @return this Try
+     */
+    @Override
+    Try<T> peek(CheckedConsumer<? super T> action);
 
     /**
      * Maps the value of a Success or returns a Failure.
@@ -134,7 +142,7 @@ public interface Try<T> extends CheckedMonad1<T, Try<?>>, ValueObject, Bivalent<
      * @return a new Try
      */
     @Override
-    <U> Try<U> map(CheckedFunction1<? super T, ? extends U> mapper);
+    <U> Try<U> map(CheckedFunction<? super T, ? extends U> mapper);
 
     /**
      * FlatMaps the value of a Success or returns a Failure.
@@ -144,7 +152,7 @@ public interface Try<T> extends CheckedMonad1<T, Try<?>>, ValueObject, Bivalent<
      * @return a new Try
      */
     @Override
-    <U, TRY extends HigherKinded1<U, Try<?>>> Try<U> flatMap(CheckedFunction1<? super T, TRY> mapper);
+    <U, TRY extends HigherKinded<U, Try<?>>> Try<U> flatMap(CheckedFunction<? super T, TRY> mapper);
 
     /**
      * Runs the given runnable if this is a Success, otherwise returns this Failure.
@@ -190,9 +198,28 @@ public interface Try<T> extends CheckedMonad1<T, Try<?>>, ValueObject, Bivalent<
     String toString();
 
     /**
-     * A {@linkplain java.util.function.Consumer} which may throw.
+     * A {@linkplain java.util.function.Function} which may throw.
      *
      * @param <T> the type of the input to the operation
+     * @param <R> the type of results supplied by this supplier
+     */
+    @FunctionalInterface
+    interface CheckedFunction<T, R> {
+
+        /**
+         * Applies this function to the given argument.
+         *
+         * @param t the function argument
+         * @return the function result
+         * @throws Throwable if an error occurs
+         */
+        R apply(T t) throws Throwable;
+    }
+
+    /**
+     * A {@linkplain java.util.function.Consumer} which may throw.
+     *
+     * @param <T> the type of the input of the operation
      */
     @FunctionalInterface
     interface CheckedConsumer<T> {
@@ -209,7 +236,7 @@ public interface Try<T> extends CheckedMonad1<T, Try<?>>, ValueObject, Bivalent<
     /**
      * A {@linkplain java.util.function.Predicate} which may throw.
      *
-     * @param <T> the type of the input to the predicate
+     * @param <T> the type of the input of the predicate
      */
     @FunctionalInterface
     interface CheckedPredicate<T> {

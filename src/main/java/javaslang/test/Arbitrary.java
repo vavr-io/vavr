@@ -5,14 +5,15 @@
  */
 package javaslang.test;
 
-import javaslang.Function1;
-import javaslang.algebra.HigherKinded1;
-import javaslang.algebra.Monad1;
+import javaslang.algebra.HigherKinded;
+import javaslang.algebra.Monad;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
 
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -22,12 +23,12 @@ import java.util.function.Predicate;
  * @since 1.2.0
  */
 @FunctionalInterface
-public interface Arbitrary<T> extends Monad1<T, Arbitrary<?>> {
+public interface Arbitrary<T> extends Monad<T, Arbitrary<?>> {
 
     /**
      * <p>
      * Returns a generator for objects of type T.
-     * Use {@link Gen#map(javaslang.Function1)} and {@link Gen#flatMap(javaslang.Function1)} to
+     * Use {@link Gen#map(Function)} and {@link Gen#flatMap(Function)} to
      * combine object generators.
      * </p>
      * <p>Example:</p>
@@ -71,7 +72,7 @@ public interface Arbitrary<T> extends Monad1<T, Arbitrary<?>> {
      * @return A new generator
      */
     @Override
-    default <U> Arbitrary<U> map(Function1<? super T, ? extends U> mapper) {
+    default <U> Arbitrary<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return n -> {
             final Gen<T> generator = apply(n);
@@ -88,7 +89,7 @@ public interface Arbitrary<T> extends Monad1<T, Arbitrary<?>> {
      */
     @SuppressWarnings("unchecked")
     @Override
-    default <U, ARBITRARY extends HigherKinded1<U, Arbitrary<?>>> Arbitrary<U> flatMap(Function1<? super T, ARBITRARY> mapper) {
+    default <U, ARBITRARY extends HigherKinded<U, Arbitrary<?>>> Arbitrary<U> flatMap(Function<? super T, ARBITRARY> mapper) {
         return n -> {
             final Gen<T> generator = apply(n);
             return random -> ((Arbitrary<U>) mapper.apply(generator.apply(random))).apply(n).apply(random);
@@ -101,8 +102,25 @@ public interface Arbitrary<T> extends Monad1<T, Arbitrary<?>> {
      * @param predicate A predicate
      * @return A new generator
      */
-    default Arbitrary<T> filter(Predicate<T> predicate) {
+    @Override
+    default Arbitrary<T> filter(Predicate<? super T> predicate) {
         return n -> apply(n).filter(predicate);
+    }
+
+    /**
+     * {@code Arbitrary.forEach} is not supported.
+     *
+     * @param action A consumer
+     * @throws UnsupportedOperationException because this operation would take infinitely long
+     */
+    @Override
+    default void forEach(Consumer<? super T> action) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    default Arbitrary<T> peek(Consumer<? super T> action) {
+        return size -> apply(size).peek(action);
     }
 
     /**

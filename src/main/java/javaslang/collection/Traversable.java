@@ -5,11 +5,9 @@
  */
 package javaslang.collection;
 
-import javaslang.Function1;
-import javaslang.Function2;
 import javaslang.Tuple2;
-import javaslang.algebra.HigherKinded1;
-import javaslang.algebra.Monad1;
+import javaslang.algebra.HigherKinded;
+import javaslang.algebra.Monad;
 import javaslang.algebra.Monoid;
 import javaslang.control.Match;
 import javaslang.control.Option;
@@ -19,7 +17,7 @@ import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Objects;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 /**
  * <p>An interface for inherently recursive data structures. The order of elements is determined by
@@ -28,7 +26,7 @@ import java.util.function.Predicate;
  * <ul>
  * <li>{@link #toJavaArray(Class)}</li>
  * <li>{@link #toJavaList()}</li>
- * <li>{@link #toJavaMap(Function1)}</li>
+ * <li>{@link #toJavaMap(Function)}</li>
  * <li>{@link #toJavaSet()}</li>
  * <li>{@link #toJavaStream()}</li>
  * </ul>
@@ -46,7 +44,7 @@ import java.util.function.Predicate;
  * </ul>
  * <p>Filtering</p>
  * <ul>
- * <li>{@link #filter(java.util.function.Predicate)}</li>
+ * <li>{@link #filter(Predicate)}</li>
  * <li>{@link #remove(Object)}</li>
  * <li>{@link #removeAll(Object)}</li>
  * <li>{@link #removeAll(Iterable)}</li>
@@ -64,59 +62,61 @@ import java.util.function.Predicate;
  * </ul>
  * <p>Reduction:</p>
  * <ul>
- * <li>{@link #fold(Object, Function2)}</li>
- * <li>{@link #foldLeft(Object, Function2)}</li>
- * <li>{@link #foldRight(Object, Function2)}</li>
- * <li>{@link #foldMap(javaslang.algebra.Monoid, Function1)}</li>
+ * <li>{@link #fold(Object, BiFunction)}</li>
+ * <li>{@link #foldLeft(Object, BiFunction)}</li>
+ * <li>{@link #foldRight(Object, BiFunction)}</li>
+ * <li>{@link #foldMap(javaslang.algebra.Monoid, Function)}</li>
  * <li>{@link #join()}</li>
  * <li>{@link #join(CharSequence)}</li>
  * <li>{@link #join(CharSequence, CharSequence, CharSequence)}</li>
- * <li>{@link #reduce(Function2)}</li>
- * <li>{@link #reduceLeft(Function2)}</li>
- * <li>{@link #reduceRight(Function2)}</li>
+ * <li>{@link #reduce(BiFunction)}</li>
+ * <li>{@link #reduceLeft(BiFunction)}</li>
+ * <li>{@link #reduceRight(BiFunction)}</li>
  * </ul>
  * <p>Selection:</p>
  * <ul>
  * <li>{@link #drop(int)}</li>
  * <li>{@link #dropRight(int)}</li>
- * <li>{@link #dropWhile(java.util.function.Predicate)}</li>
- * <li>{@link #findAll(java.util.function.Predicate)}</li>
- * <li>{@link #findFirst(java.util.function.Predicate)}</li>
- * <li>{@link #findLast(java.util.function.Predicate)}</li>
+ * <li>{@link #dropWhile(Predicate)}</li>
+ * <li>{@link #findAll(Predicate)}</li>
+ * <li>{@link #findFirst(Predicate)}</li>
+ * <li>{@link #findLast(Predicate)}</li>
  * <li>{@link #take(int)}</li>
  * <li>{@link #takeRight(int)}</li>
- * <li>{@link #takeWhile(java.util.function.Predicate)}</li>
+ * <li>{@link #takeWhile(Predicate)}</li>
  * </ul>
  * <p>Side-effects:</p>
  * <ul>
+ * <li>{@link #forEach(Consumer)}</li>
+ * <li>{@link #peek(Consumer)}</li>
  * <li>{@link #stderr()}</li>
  * <li>{@link #stdout()}</li>
  * </ul>
  * <p>Tests:</p>
  * <ul>
- * <li>{@link #exists(java.util.function.Predicate)}</li>
- * <li>{@link #existsUnique(java.util.function.Predicate)}</li>
- * <li>{@link #forAll(java.util.function.Predicate)}</li>
+ * <li>{@link #exists(Predicate)}</li>
+ * <li>{@link #existsUnique(Predicate)}</li>
+ * <li>{@link #forAll(Predicate)}</li>
  * </ul>
  * <p>Transformation:</p>
  * <ul>
  * <li>{@link #combinations(int)}</li>
  * <li>{@link #distinct()}</li>
- * <li>{@link #flatMap(Function1)}</li>
+ * <li>{@link #flatMap(Function)}</li>
  * <li>{@link #flatten()}</li>
- * <li>{@link #flatten(Function1)}</li>
+ * <li>{@link #flatten(Function)}</li>
  * <li>TODO(#115): #grouped(int)</li>
  * <li>TODO(#110): #groupBy</li>
  * <li>{@link #intersperse(Object)}</li>
- * <li>{@link #map(Function1)}</li>
+ * <li>{@link #map(Function)}</li>
  * <li>TODO(#110): #partition (generalization of groupBy)</li>
  * <li>{@link #replace(Object, Object)}</li>
  * <li>{@link #replaceAll(Object, Object)}</li>
- * <li>{@link #replaceAll(Function1)}</li>
+ * <li>{@link #replaceAll(UnaryOperator)}</li>
  * <li>{@link #reverse()}</li>
  * <li>TODO(#115): #sliding(int)</li>
- * <li>{@link #span(java.util.function.Predicate)}</li>
- * <li>{@link #unzip(Function1)}</li>
+ * <li>{@link #span(Predicate)}</li>
+ * <li>{@link #unzip(Function)}</li>
  * <li>{@link #zip(Iterable)}</li>
  * <li>{@link #zipAll(Iterable, Object, Object)}</li>
  * <li>{@link #zipWithIndex()}</li>
@@ -125,7 +125,7 @@ import java.util.function.Predicate;
  * @param <T> Component type
  * @since 1.1.0
  */
-public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
+public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
 
     /**
      * Returns a Traversable based on an Iterable. Returns the given Iterable, if it is already a Traversable,
@@ -319,7 +319,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
     }
 
     @Override
-    <U, TRAVERSABLE extends HigherKinded1<U, Traversable<?>>> Traversable<U> flatMap(Function1<? super T, TRAVERSABLE> mapper);
+    <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Traversable<U> flatMap(Function<? super T, TRAVERSABLE> mapper);
 
     /**
      * <p>Flattens this Traversable, i.e. unboxes iterable elements. If this Traversable contains elements and
@@ -341,7 +341,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * Examples:
      * <ul>
      * <li>{@code List.of(1, 2, 3).flatten(i -> List.of(i)) = List.of(1, 2, 3)}</li>
-     * <li>{@code List.of(List.of(1), Stream.of(2, 3)).flatten(Function1.identity()) = List.of(1, 2, 3)}</li>
+     * <li>{@code List.of(List.of(1), Stream.of(2, 3)).flatten(Function.identity()) = List.of(1, 2, 3)}</li>
      * <li>
      * <pre><code>List.of(1, List.of(2), Stream.of(3, 4))
      *     .flatten(x -&gt; Match
@@ -356,7 +356,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * @param f   An unboxing function that maps elements T to Iterables of elements U that will be unboxed.
      * @return a flattened version of this traversable
      */
-    <U> Traversable<U> flatten(Function1<T, ? extends Iterable<? extends U>> f);
+    <U> Traversable<U> flatten(Function<T, ? extends Iterable<? extends U>> f);
 
     /**
      * <p>
@@ -370,7 +370,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * @param op   The accumulator operator.
      * @return an accumulated version of this.
      */
-    default T fold(T zero, Function2<? super T, ? super T, ? extends T> op) {
+    default T fold(T zero, BiFunction<? super T, ? super T, ? extends T> op) {
         return foldLeft(zero, op);
     }
 
@@ -388,7 +388,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * @param <U>  Result type of the accumulator.
      * @return an accumulated version of this.
      */
-    default <U> U foldLeft(U zero, Function2<? super U, ? super T, ? extends U> f) {
+    default <U> U foldLeft(U zero, BiFunction<? super U, ? super T, ? extends U> f) {
         Objects.requireNonNull(f, "function is null");
         U xs = zero;
         for (T x : this) {
@@ -409,7 +409,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * @return the folded monoid value.
      * @throws java.lang.NullPointerException if monoid or mapper is null
      */
-    default <U> U foldMap(Monoid<U> monoid, Function1<T, U> mapper) {
+    default <U> U foldMap(Monoid<U> monoid, Function<T, U> mapper) {
         Objects.requireNonNull(monoid, "monoid is null");
         Objects.requireNonNull(mapper, "mapper is null");
         return foldLeft(monoid.zero(), (ys, x) -> monoid.combine(ys, mapper.apply(x)));
@@ -440,9 +440,19 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * @return an accumulated version of this.
      * @throws java.lang.NullPointerException if f is null
      */
-    default <U> U foldRight(U zero, Function2<? super T, ? super U, ? extends U> f) {
+    default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "function is null");
         return reverse().foldLeft(zero, (xs, x) -> f.apply(x, xs));
+    }
+
+    /**
+     * Calls {@code Iterable.super.forEach(action)}.
+     *
+     * @param action A Consumer
+     */
+    @Override
+    default void forEach(Consumer<? super T> action) {
+        Iterable.super.forEach(action);
     }
 
     /**
@@ -604,10 +614,9 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * @param mapper A mapper.
      * @param <U>    Component type of the target Traversable
      * @return a mapped Traversable
-     * @see javaslang.algebra.Monad1#map(Function1)
      */
     @Override
-    <U> Traversable<U> map(Function1<? super T, ? extends U> mapper);
+    <U> Traversable<U> map(Function<? super T, ? extends U> mapper);
 
     /**
      * <p>Calculates the maximum of this elements.</p>
@@ -672,6 +681,9 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
                     .apply(head);
         }
     }
+
+    @Override
+    Traversable<T> peek(Consumer<? super T> action);
 
     /**
      * <p>Calculates the product of this elements.</p>
@@ -742,7 +754,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * @throws UnsupportedOperationException  if this Traversable is empty
      * @throws java.lang.NullPointerException if op is null
      */
-    default T reduce(Function2<? super T, ? super T, ? extends T> op) {
+    default T reduce(BiFunction<? super T, ? super T, ? extends T> op) {
         return reduceLeft(op);
     }
 
@@ -754,7 +766,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * @throws UnsupportedOperationException  if this Traversable is empty
      * @throws java.lang.NullPointerException if op is null
      */
-    default T reduceLeft(Function2<? super T, ? super T, ? extends T> op) {
+    default T reduceLeft(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "operator is null");
         if (isEmpty()) {
             throw new UnsupportedOperationException("reduceLeft on Nil");
@@ -771,7 +783,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * @throws UnsupportedOperationException  if this Traversable is empty
      * @throws java.lang.NullPointerException if op is null
      */
-    default T reduceRight(Function2<? super T, ? super T, ? extends T> op) {
+    default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "operator is null");
         if (isEmpty()) {
             throw new UnsupportedOperationException("reduceRight on empty List");
@@ -801,12 +813,12 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
 
     /**
      * Replaces all occurrences of this Traversable by applying the given operator to the elements, which is
-     * essentially a special case of {@link #map(Function1)}.
+     * essentially a special case of {@link #map(Function)}.
      *
      * @param operator An operator.
      * @return a Traversable containing all elements of this transformed within the same domain.
      */
-    Traversable<T> replaceAll(Function1<T, T> operator);
+    Traversable<T> replaceAll(UnaryOperator<T> operator);
 
     /**
      * Keeps all occurrences of the given elements from this.
@@ -977,7 +989,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * @param f   a function which converts elements of this to key-value pairs inserted into the resulting Map
      * @return a new {@linkplain java.util.HashMap} containing this key-value representations of this elements
      */
-    default <K, V> java.util.Map<K, V> toJavaMap(Function1<? super T, Tuple2<K, V>> f) {
+    default <K, V> java.util.Map<K, V> toJavaMap(Function<? super T, Tuple2<K, V>> f) {
         final java.util.Map<K, V> map = new java.util.HashMap<>();
         for (T a : this) {
             final Tuple2<K, V> entry = f.apply(a);
@@ -1017,7 +1029,7 @@ public interface Traversable<T> extends Iterable<T>, Monad1<T, Traversable<?>> {
      * @param <T2>     2nd element type of a pair returned by unzipper
      * @return A pair of traversables containing elements split by unzipper
      */
-    <T1, T2> Tuple2<? extends Traversable<T1>, ? extends Traversable<T2>> unzip(Function1<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
+    <T1, T2> Tuple2<? extends Traversable<T1>, ? extends Traversable<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
 
     /**
      * Returns a Traversable formed from this Traversable and another Iterable collection by combining corresponding elements

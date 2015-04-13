@@ -5,12 +5,12 @@
  */
 package javaslang.collection;
 
-import javaslang.Function1;
 import javaslang.ValueObject;
-import javaslang.algebra.Functor1;
+import javaslang.algebra.Functor;
 import javaslang.control.Match;
 
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * <p>A general Tree interface.</p>
@@ -18,7 +18,7 @@ import java.util.*;
  * @param <T> component type of this Tree
  * @since 1.1.0
  */
-public interface Tree<T> extends Functor1<T>, ValueObject, Iterable<T> {
+public interface Tree<T> extends Functor<T>, ValueObject, Iterable<T> {
 
     /**
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
@@ -211,7 +211,7 @@ public interface Tree<T> extends Functor1<T>, ValueObject, Iterable<T> {
     }
 
     @Override
-    <U> Tree<U> map(Function1<? super T, ? extends U> mapper);
+    <U> Tree<U> map(Function<? super T, ? extends U> mapper);
 
     /**
      * Returns a list string representation of this tree.

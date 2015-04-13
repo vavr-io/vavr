@@ -10,8 +10,6 @@ package javaslang;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import java.util.Objects;
-import javaslang.algebra.HigherKinded2;
-import javaslang.algebra.Monad2;
 
 /**
  * A tuple of two elements which can be seen as cartesian product of two components.
@@ -20,7 +18,7 @@ import javaslang.algebra.Monad2;
  * @param <T2> type of the 2nd element
  * @since 1.1.0
  */
-public class Tuple2<T1, T2> implements Tuple, Monad2<T1, T2, Tuple2<?, ?>> {
+public class Tuple2<T1, T2> implements Tuple {
 
     private static final long serialVersionUID = 1L;
 
@@ -50,20 +48,10 @@ public class Tuple2<T1, T2> implements Tuple, Monad2<T1, T2, Tuple2<?, ?>> {
         return 2;
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U1, U2, TUPLE extends HigherKinded2<U1, U2, Tuple2<?, ?>>> Tuple2<U1, U2> flatMap(Function2<? super T1, ? super T2, TUPLE> f) {
-        return (Tuple2<U1, U2>) f.apply(_1, _2);
+    public <U1, U2> Tuple2<U1, U2> map(Function2<? super T1, ? super T2, Tuple2<U1, U2>> f) {
+        return f.apply(_1, _2);
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U1, U2> Tuple2<U1, U2> map(Function2<? super T1, ? super T2, Tuple2<? extends U1, ? extends U2>> f) {
-        // normally the result of f would be mapped to the result type of map, but Tuple.map is a special case
-        return (Tuple2<U1, U2>) f.apply(_1, _2);
-    }
-
-    @Override
     public <U1, U2> Tuple2<U1, U2> map(Function1<? super T1, ? extends U1> f1, Function1<? super T2, ? extends U2> f2) {
         return map((t1, t2) -> Tuple.of(f1.apply(t1), f2.apply(t2)));
     }

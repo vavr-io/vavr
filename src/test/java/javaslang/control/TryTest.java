@@ -5,14 +5,10 @@
  */
 package javaslang.control;
 
-import javaslang.CheckedFunction1;
-import javaslang.Function1;
 import javaslang.Serializables;
 import javaslang.Tuple;
-import javaslang.algebra.CheckedMonad1;
-import javaslang.algebra.CheckedMonad1Laws;
-import javaslang.algebra.Monad1;
-import javaslang.algebra.Monad1Laws;
+import javaslang.algebra.CheckedMonad;
+import javaslang.algebra.CheckedMonadLaws;
 import javaslang.test.Arbitrary;
 import javaslang.test.CheckResult;
 import javaslang.test.CheckResultAssertions;
@@ -28,7 +24,7 @@ import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class TryTest implements CheckedMonad1Laws<Try<?>> {
+public class TryTest implements CheckedMonadLaws<Try<?>> {
 
     private static final String OK = "ok";
     private static final String FAILURE = "failure";
@@ -262,6 +258,13 @@ public class TryTest implements CheckedMonad1Laws<Try<?>> {
         assertThat(actual).isEqualTo(expected);
     }
 
+    // -- peek
+
+    @Test
+    public void shouldPeekFailure() {
+        assertThat(failure().peek(t -> {})).isEqualTo(failure());
+    }
+
     // unapply
 
     @Test
@@ -464,6 +467,19 @@ public class TryTest implements CheckedMonad1Laws<Try<?>> {
         assertThat(actual).isEqualTo(expected);
     }
 
+    // -- peek
+
+    @Test
+    public void shouldPeekSuccess() {
+        assertThat(success().peek(t -> {})).isEqualTo(success());
+    }
+
+    @Test
+    public void shouldPeekSuccessAndThrow() {
+        assertThat(success().peek(t -> { failure().get(); })).isEqualTo(failure());
+    }
+
+
     // unapply
 
     @Test
@@ -561,9 +577,9 @@ public class TryTest implements CheckedMonad1Laws<Try<?>> {
     @Test
     @Override
     public void shouldSatisfyCheckedFunctorComposition() {
-        final Arbitrary<CheckedFunction1<? super Integer, ? extends Double>> before =
+        final Arbitrary<Try.CheckedFunction<? super Integer, ? extends Double>> before =
                 size -> random -> Double::valueOf;
-        final Arbitrary<CheckedFunction1<? super Double, ? extends String>> after =
+        final Arbitrary<Try.CheckedFunction<? super Double, ? extends String>> after =
                 size -> random -> String::valueOf;
         final CheckResult result = checkCheckedFunctorComposition(TRIES, before, after);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
@@ -576,7 +592,7 @@ public class TryTest implements CheckedMonad1Laws<Try<?>> {
             Tuple.of(4, Gen.choose(-size, size))
     ).apply(random);
 
-    static <T> CheckedFunction1<? super T, ? extends CheckedMonad1<T, Try<?>>> unit() {
+    static <T> Try.CheckedFunction<? super T, ? extends CheckedMonad<T, Try<?>>> unit() {
         return i -> Try.of(() -> {
             if (i == null) {
                 throw new Error("test");
@@ -586,14 +602,14 @@ public class TryTest implements CheckedMonad1Laws<Try<?>> {
         });
     }
 
-    static <T, R> CheckedMonad1<R, Try<?>> mapTry(T t, CheckedFunction1<? super T, R> mapper) throws Throwable {
+    static <T, R> CheckedMonad<R, Try<?>> mapTry(T t, Try.CheckedFunction<? super T, R> mapper) throws Throwable {
         return TryTest.<T>unit().apply(t).map(mapper::apply);
     }
 
     @Test
     @Override
     public void shouldSatisfyCheckedMonadLeftIdentity() {
-        final Arbitrary<CheckedFunction1<? super Integer, ? extends CheckedMonad1<String, Try<?>>>> mappers =
+        final Arbitrary<Try.CheckedFunction<? super Integer, ? extends CheckedMonad<String, Try<?>>>> mappers =
                 size -> random -> i -> TryTest.mapTry(i, String::valueOf);
         final CheckResult result = checkCheckedMonadLeftIdentity(TryTest.<Integer>unit(), INTEGERS, mappers);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
@@ -609,9 +625,9 @@ public class TryTest implements CheckedMonad1Laws<Try<?>> {
     @Test
     @Override
     public void shouldSatisfyCheckedMonadAssociativity() {
-        final Arbitrary<CheckedFunction1<? super Integer, ? extends CheckedMonad1<Double, Try<?>>>> before =
+        final Arbitrary<Try.CheckedFunction<? super Integer, ? extends CheckedMonad<Double, Try<?>>>> before =
                 size -> random -> i -> TryTest.mapTry(i, Double::valueOf);
-        final Arbitrary<CheckedFunction1<? super Double, ? extends CheckedMonad1<String, Try<?>>>> after =
+        final Arbitrary<Try.CheckedFunction<? super Double, ? extends CheckedMonad<String, Try<?>>>> after =
                 size -> random -> d -> TryTest.mapTry(d, String::valueOf);
         final CheckResult result = checkCheckedMonadAssociativity(TRIES, before, after);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);

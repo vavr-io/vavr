@@ -5,12 +5,15 @@
  */
 package javaslang.control;
 
-import javaslang.*;
-import javaslang.algebra.HigherKinded1;
+import javaslang.Tuple;
+import javaslang.Tuple1;
+import javaslang.ValueObject;
+import javaslang.algebra.HigherKinded;
 
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * A failed Try.
@@ -62,7 +65,7 @@ public final class Failure<T> implements Try<T> {
     }
 
     @Override
-    public T orElseGet(Function1<? super Throwable, ? extends T> other) {
+    public T orElseGet(Function<? super Throwable, ? extends T> other) {
         return other.apply(cause.getCause());
     }
 
@@ -72,17 +75,17 @@ public final class Failure<T> implements Try<T> {
     }
 
     @Override
-    public <X extends Throwable> T orElseThrow(Function1<? super Throwable, X> exceptionProvider) throws X {
+    public <X extends Throwable> T orElseThrow(Function<? super Throwable, X> exceptionProvider) throws X {
         throw exceptionProvider.apply(cause.getCause());
     }
 
     @Override
-    public Try<T> recover(CheckedFunction1<Throwable, ? extends T> f) {
+    public Try<T> recover(CheckedFunction<Throwable, ? extends T> f) {
         return Try.of(() -> f.apply(cause.getCause()));
     }
 
     @Override
-    public Try<T> recoverWith(CheckedFunction1<Throwable, Try<T>> f) {
+    public Try<T> recoverWith(CheckedFunction<Throwable, Try<T>> f) {
         try {
             return f.apply(cause.getCause());
         } catch (Throwable t) {
@@ -131,14 +134,19 @@ public final class Failure<T> implements Try<T> {
     }
 
     @Override
-    public <U> Failure<U> map(CheckedFunction1<? super T, ? extends U> mapper) {
+    public Failure<T> peek(CheckedConsumer<? super T> action) {
+        return this;
+    }
+
+    @Override
+    public <U> Failure<U> map(CheckedFunction<? super T, ? extends U> mapper) {
         @SuppressWarnings("unchecked")
         final Failure<U> result = (Failure<U>) this;
         return result;
     }
 
     @Override
-    public <U, TRY extends HigherKinded1<U, Try<?>>> Failure<U> flatMap(CheckedFunction1<? super T, TRY> mapper) {
+    public <U, TRY extends HigherKinded<U, Try<?>>> Failure<U> flatMap(CheckedFunction<? super T, TRY> mapper) {
         @SuppressWarnings("unchecked")
         final Failure<U> result = (Failure<U>) this;
         return result;
