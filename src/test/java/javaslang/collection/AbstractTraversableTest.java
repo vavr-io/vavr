@@ -5,7 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.Function1;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.algebra.Monoid;
@@ -19,6 +18,7 @@ import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.function.Function;
 
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
@@ -390,7 +390,7 @@ public abstract class AbstractTraversableTest {
     @Test
     public <T> void shouldFlattenEmptyTraversableGivenAFunction() {
         final Traversable<? extends Traversable<? extends T>> nil = nil();
-        final Traversable<T> actual = nil.flatten(Function1.identity());
+        final Traversable<T> actual = nil.flatten(Function.identity());
         assertThat(actual).isEqualTo(nil());
     }
 
@@ -405,7 +405,7 @@ public abstract class AbstractTraversableTest {
     public void shouldFlattenTraversableOfTraversablesGivenAFunction() {
         @SuppressWarnings("unchecked")
         final Traversable<? extends Traversable<? extends Integer>> xs = of(of(1), of(2, 3));
-        final Traversable<Integer> actual = xs.flatten(Function1.identity());
+        final Traversable<Integer> actual = xs.flatten(Function.identity());
         final Traversable<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
@@ -479,7 +479,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldFoldMapNil() {
-        nil().foldMap(Monoid.endoMonoid(), o -> Function1.identity());
+        nil().foldMap(Monoid.endoMonoid(), o -> Function.identity());
     }
 
     @Test
@@ -825,6 +825,23 @@ public abstract class AbstractTraversableTest {
     public void shouldComputeMinOfBigDecimal() {
         final BigDecimal actual = of(BigDecimal.ZERO, BigDecimal.ONE).min();
         assertThat(actual).isEqualTo(BigDecimal.ZERO);
+    }
+
+    // -- peek
+
+    @Test
+    public void shouldPeekNil() {
+        assertThat(nil().peek(t -> {})).isEqualTo(nil());
+    }
+
+    @Test
+    public void shouldPeekNonNilPerformingNoAction() {
+        assertThat(of(1).peek(t -> {})).isEqualTo(of(1));
+    }
+
+    @Test
+    public void shouldPeekNonNilPerformingAnAction() {
+        assertThat(of(1).peek(System.out::println)).isEqualTo(of(1));
     }
 
     // -- product

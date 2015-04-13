@@ -5,13 +5,13 @@
  */
 package javaslang.control;
 
-import javaslang.Function1;
 import javaslang.ValueObject;
-import javaslang.algebra.HigherKinded1;
-import javaslang.algebra.Monad1;
+import javaslang.algebra.HigherKinded;
+import javaslang.algebra.Monad;
 import javaslang.control.Valences.Univalent;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -31,7 +31,7 @@ import java.util.function.Supplier;
  * @param <T> The type of the optional value.
  * @since 1.0.0
  */
-public interface Option<T> extends Monad1<T, Option<?>>, ValueObject, Univalent<T> {
+public interface Option<T> extends Monad<T, Option<?>>, ValueObject, Univalent<T> {
 
     /**
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
@@ -77,32 +77,6 @@ public interface Option<T> extends Monad1<T, Option<?>>, ValueObject, Univalent<
     }
 
     /**
-     * Returns {@code Some(value)} if this is a {@code Some} and the value satisfies the given predicate.
-     * Otherwise {@code None} is returned.
-     *
-     * @param predicate A predicate which is used to test an optional value
-     * @return {@code Some(value)} or {@code None} as specified
-     */
-    default Option<T> filter(Predicate<? super T> predicate) {
-        if (isEmpty() || predicate.test(get())) {
-            return this;
-        } else {
-            return None.instance();
-        }
-    }
-
-    /**
-     * Applies an action to this value, if this option is defined, otherwise does nothing.
-     *
-     * @param action An action which can be applied to an optional value
-     */
-    default void forEach(Consumer<? super T> action) {
-        if (isDefined()) {
-            action.accept(get());
-        }
-    }
-
-    /**
      * <p>Returns the value if this is a {@code Some} or the {@code other} value if this is a {@code None}.</p>
      * <p>Please note, that the other value is eagerly evaluated.</p>
      *
@@ -145,6 +119,43 @@ public interface Option<T> extends Monad1<T, Option<?>>, ValueObject, Univalent<
     }
 
     /**
+     * Returns {@code Some(value)} if this is a {@code Some} and the value satisfies the given predicate.
+     * Otherwise {@code None} is returned.
+     *
+     * @param predicate A predicate which is used to test an optional value
+     * @return {@code Some(value)} or {@code None} as specified
+     */
+    @Override
+    default Option<T> filter(Predicate<? super T> predicate) {
+        if (isEmpty() || predicate.test(get())) {
+            return this;
+        } else {
+            return None.instance();
+        }
+    }
+
+    /**
+     * Applies an action to this value, if this option is defined, otherwise does nothing.
+     *
+     * @param action An action which can be applied to an optional value
+     */
+    @Override
+    default void forEach(Consumer<? super T> action) {
+        if (isDefined()) {
+            action.accept(get());
+        }
+    }
+
+    /**
+     * Applies an action to this value, if this option is defined, otherwise does nothing.
+     *
+     * @param action An action which can be applied to an optional value
+     * @return this {@code Option}
+     */
+    @Override
+    Option<T> peek(Consumer<? super T> action);
+
+    /**
      * Maps the value and wraps it in a new {@code Some} if this is a {@code Some}, returns {@code None}.
      *
      * @param mapper A value mapper
@@ -153,7 +164,7 @@ public interface Option<T> extends Monad1<T, Option<?>>, ValueObject, Univalent<
      * otherwise {@code None}, if this is empty.
      */
     @Override
-    <U> Option<U> map(Function1<? super T, ? extends U> mapper);
+    <U> Option<U> map(Function<? super T, ? extends U> mapper);
 
     /**
      * Maps the value to a new {@code Option} if this is a {@code Some}, otherwise returns {@code None}.
@@ -164,7 +175,7 @@ public interface Option<T> extends Monad1<T, Option<?>>, ValueObject, Univalent<
      */
     @SuppressWarnings("unchecked")
     @Override
-    default <U, OPTION extends HigherKinded1<U, Option<?>>> Option<U> flatMap(Function1<? super T, OPTION> mapper) {
+    default <U, OPTION extends HigherKinded<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper) {
         if (isEmpty()) {
             return None.instance();
         } else {

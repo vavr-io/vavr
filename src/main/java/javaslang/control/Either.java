@@ -5,7 +5,6 @@
  */
 package javaslang.control;
 
-import javaslang.Function1;
 import javaslang.ValueObject;
 import javaslang.control.Valences.Bivalent;
 
@@ -13,6 +12,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -146,7 +146,7 @@ public interface Either<L, R> extends ValueObject {
          * {@code other} by applying the Right value.
          */
         @Override
-        public L orElseGet(Function1<? super R, ? extends L> other) {
+        public L orElseGet(Function<? super R, ? extends L> other) {
             if (either.isLeft()) {
                 return asLeft();
             } else {
@@ -176,7 +176,7 @@ public interface Either<L, R> extends ValueObject {
          * @throws X if the projected Either is a Right
          */
         @Override
-        public <X extends Throwable> L orElseThrow(Function1<? super R, X> exceptionFunction) throws X {
+        public <X extends Throwable> L orElseThrow(Function<? super R, X> exceptionFunction) throws X {
             if (either.isLeft()) {
                 return asLeft();
             } else {
@@ -253,6 +253,20 @@ public interface Either<L, R> extends ValueObject {
         }
 
         /**
+         * Applies the given action to the value if the projected either is a Left. Otherwise nothing happens.
+         *
+         * @param action An action which takes a left value
+         * @return this {@code Either} instance
+         */
+        public Either<L, R> peek(Consumer<? super L> action) {
+            Objects.requireNonNull(action);
+            if (either.isLeft()) {
+                action.accept(asLeft());
+            }
+            return either;
+        }
+
+        /**
          * Maps the left value if the projected Either is a Left, otherwise returns the Right.
          *
          * @param mapper A mapper which takes a left value and returns a value of type U
@@ -260,7 +274,7 @@ public interface Either<L, R> extends ValueObject {
          * @return A new Either
          */
         @SuppressWarnings("unchecked")
-        public <U> Either<U, R> map(Function1<? super L, ? extends U> mapper) {
+        public <U> Either<U, R> map(Function<? super L, ? extends U> mapper) {
             Objects.requireNonNull(mapper);
             if (either.isLeft())
                 return new Left<>(mapper.apply(asLeft()));
@@ -277,7 +291,7 @@ public interface Either<L, R> extends ValueObject {
          * @return A new Either
          */
         @SuppressWarnings("unchecked")
-        public <U> Either<U, R> flatMap(Function1<? super L, ? extends Either<U, R>> mapper) {
+        public <U> Either<U, R> flatMap(Function<? super L, ? extends Either<U, R>> mapper) {
             Objects.requireNonNull(mapper);
             if (either.isLeft()) {
                 return mapper.apply(asLeft());
@@ -360,7 +374,7 @@ public interface Either<L, R> extends ValueObject {
          * {@code other} by applying the Left value.
          */
         @Override
-        public R orElseGet(Function1<? super L, ? extends R> other) {
+        public R orElseGet(Function<? super L, ? extends R> other) {
             if (either.isRight()) {
                 return asRight();
             } else {
@@ -390,7 +404,7 @@ public interface Either<L, R> extends ValueObject {
          * @throws X if the projected Either is a Left
          */
         @Override
-        public <X extends Throwable> R orElseThrow(Function1<? super L, X> exceptionFunction) throws X {
+        public <X extends Throwable> R orElseThrow(Function<? super L, X> exceptionFunction) throws X {
             if (either.isRight()) {
                 return asRight();
             } else {
@@ -467,6 +481,20 @@ public interface Either<L, R> extends ValueObject {
         }
 
         /**
+         * Applies the given action to the value if the projected either is a Right. Otherwise nothing happens.
+         *
+         * @param action An action which takes a right value
+         * @return this {@code Either} instance
+         */
+        public Either<L, R> peek(Consumer<? super R> action) {
+            Objects.requireNonNull(action);
+            if (either.isRight()) {
+                action.accept(asRight());
+            }
+            return either;
+        }
+
+        /**
          * Maps the right value if the projected Either is a Right, otherwise returns the Left.
          *
          * @param mapper A mapper which takes a right value and returns a value of type U
@@ -474,7 +502,7 @@ public interface Either<L, R> extends ValueObject {
          * @return A new Either
          */
         @SuppressWarnings("unchecked")
-        public <U> Either<L, U> map(Function1<? super R, ? extends U> mapper) {
+        public <U> Either<L, U> map(Function<? super R, ? extends U> mapper) {
             Objects.requireNonNull(mapper);
             if (either.isRight())
                 return new Right<>(mapper.apply(asRight()));
@@ -491,7 +519,7 @@ public interface Either<L, R> extends ValueObject {
          * @return A new Either
          */
         @SuppressWarnings("unchecked")
-        public <U> Either<L, U> flatMap(Function1<? super R, ? extends Either<L, U>> mapper) {
+        public <U> Either<L, U> flatMap(Function<? super R, ? extends Either<L, U>> mapper) {
             Objects.requireNonNull(mapper);
             if (either.isRight())
                 return mapper.apply(asRight());

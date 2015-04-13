@@ -5,11 +5,10 @@
  */
 package javaslang.control;
 
-import javaslang.Function1;
 import javaslang.Serializables;
 import javaslang.Tuple;
-import javaslang.algebra.Monad1;
-import javaslang.algebra.Monad1Laws;
+import javaslang.algebra.Monad;
+import javaslang.algebra.MonadLaws;
 import javaslang.test.Arbitrary;
 import javaslang.test.CheckResult;
 import javaslang.test.CheckResultAssertions;
@@ -19,10 +18,11 @@ import org.junit.Test;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class OptionTest implements Monad1Laws<Option<?>> {
+public class OptionTest implements MonadLaws<Option<?>> {
 
     // -- construction
 
@@ -216,6 +216,24 @@ public class OptionTest implements Monad1Laws<Option<?>> {
         assertThat(actual[0]).isEqualTo(-1);
     }
 
+    // -- peek
+
+    @Test
+    public void shouldConsumePresentValueOnPeekWhenValueIsPresent() {
+        final int[] actual = new int[]{-1};
+        final Option<Integer> testee = Option.of(1).peek(i -> actual[0] = i);
+        assertThat(actual[0]).isEqualTo(1);
+        assertThat(testee).isEqualTo(Option.of(1));
+    }
+
+    @Test
+    public void shouldNotConsumeAnythingOnPeekWhenValueIsNotPresent() {
+        final int[] actual = new int[]{-1};
+        final Option<Integer> testee = Option.<Integer>none().peek(i -> actual[0] = i);
+        assertThat(actual[0]).isEqualTo(-1);
+        assertThat(testee).isEqualTo(Option.none());
+    }
+
     // -- unapply
 
     @Test
@@ -301,7 +319,7 @@ public class OptionTest implements Monad1Laws<Option<?>> {
         assertThat(none == None.instance()).isTrue();
     }
 
-    // -- Functor1Laws
+    // -- FunctorLaws
 
     static final Arbitrary<Option<Integer>> OPTIONS = size -> random -> {
         final Gen<Option<Integer>> noneInt = Gen.of(None.instance());
@@ -322,15 +340,15 @@ public class OptionTest implements Monad1Laws<Option<?>> {
     @Test
     @Override
     public void shouldSatisfyFunctorComposition() {
-        final Arbitrary<Function1<? super Integer, ? extends Double>> before =
+        final Arbitrary<Function<? super Integer, ? extends Double>> before =
                 size -> random -> Double::valueOf;
-        final Arbitrary<Function1<? super Double, ? extends String>> after =
+        final Arbitrary<Function<? super Double, ? extends String>> after =
                 size -> random -> String::valueOf;
         final CheckResult result = checkFunctorComposition(OPTIONS, before, after);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
     }
 
-    // -- Monad1Laws
+    // -- MonadLaws
 
     static final Arbitrary<Integer> INTEGERS = size -> random -> Gen.frequency(
             Tuple.of(1, Gen.of(null)),
@@ -340,7 +358,7 @@ public class OptionTest implements Monad1Laws<Option<?>> {
     @Test
     @Override
     public void shouldSatisfyMonadLeftIdentity() {
-        final Arbitrary<Function1<? super Integer, ? extends Monad1<String, Option<?>>>> mappers =
+        final Arbitrary<Function<? super Integer, ? extends Monad<String, Option<?>>>> mappers =
                 size -> random -> i -> Option.of(i).map(String::valueOf);
         final CheckResult result = checkMonadLeftIdentity(Option::of, INTEGERS, mappers);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
@@ -356,9 +374,9 @@ public class OptionTest implements Monad1Laws<Option<?>> {
     @Test
     @Override
     public void shouldSatisfyMonadAssociativity() {
-        final Arbitrary<Function1<? super Integer, ? extends Monad1<Double, Option<?>>>> before =
+        final Arbitrary<Function<? super Integer, ? extends Monad<Double, Option<?>>>> before =
                 size -> random -> i -> Option.of(i).map(Double::valueOf);
-        final Arbitrary<Function1<? super Double, ? extends Monad1<String, Option<?>>>> after =
+        final Arbitrary<Function<? super Double, ? extends Monad<String, Option<?>>>> after =
                 size -> random -> d -> Option.of(d).map(String::valueOf);
         final CheckResult result = checkMonadAssociativity(OPTIONS, before, after);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);

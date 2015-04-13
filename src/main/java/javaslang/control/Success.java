@@ -5,16 +5,15 @@
  */
 package javaslang.control;
 
-import javaslang.CheckedFunction1;
-import javaslang.Function1;
 import javaslang.Tuple;
 import javaslang.Tuple1;
-import javaslang.algebra.HigherKinded1;
+import javaslang.algebra.HigherKinded;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * A succeeded Try.
@@ -58,7 +57,7 @@ public final class Success<T> implements Try<T> {
     }
 
     @Override
-    public T orElseGet(Function1<? super Throwable, ? extends T> other) {
+    public T orElseGet(Function<? super Throwable, ? extends T> other) {
         return value;
     }
 
@@ -68,17 +67,17 @@ public final class Success<T> implements Try<T> {
     }
 
     @Override
-    public <X extends Throwable> T orElseThrow(Function1<? super Throwable, X> exceptionProvider) throws X {
+    public <X extends Throwable> T orElseThrow(Function<? super Throwable, X> exceptionProvider) throws X {
         return value;
     }
 
     @Override
-    public Success<T> recover(CheckedFunction1<Throwable, ? extends T> f) {
+    public Success<T> recover(CheckedFunction<Throwable, ? extends T> f) {
         return this;
     }
 
     @Override
-    public Success<T> recoverWith(CheckedFunction1<Throwable, Try<T>> f) {
+    public Success<T> recoverWith(CheckedFunction<Throwable, Try<T>> f) {
         return this;
     }
 
@@ -126,7 +125,17 @@ public final class Success<T> implements Try<T> {
     }
 
     @Override
-    public <U> Try<U> map(CheckedFunction1<? super T, ? extends U> mapper) {
+    public Try<T> peek(CheckedConsumer<? super T> action) {
+        try {
+            action.accept(value);
+            return this;
+        } catch(Throwable t) {
+            return new Failure<>(t);
+        }
+    }
+
+    @Override
+    public <U> Try<U> map(CheckedFunction<? super T, ? extends U> mapper) {
         try {
             return new Success<>(mapper.apply(value));
         } catch (Throwable t) {
@@ -136,7 +145,7 @@ public final class Success<T> implements Try<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U, TRY extends HigherKinded1<U, Try<?>>> Try<U> flatMap(CheckedFunction1<? super T, TRY> mapper) {
+    public <U, TRY extends HigherKinded<U, Try<?>>> Try<U> flatMap(CheckedFunction<? super T, TRY> mapper) {
         try {
             return (Try<U>) mapper.apply(value);
         } catch (Throwable t) {

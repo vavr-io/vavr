@@ -10,8 +10,6 @@ package javaslang;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import java.util.Objects;
-import javaslang.algebra.HigherKinded1;
-import javaslang.algebra.Monad1;
 
 /**
  * A tuple of one element which can be seen as cartesian product of one component.
@@ -19,7 +17,7 @@ import javaslang.algebra.Monad1;
  * @param <T1> type of the 1st element
  * @since 1.1.0
  */
-public class Tuple1<T1> implements Tuple, Monad1<T1, Tuple1<?>> {
+public class Tuple1<T1> implements Tuple {
 
     private static final long serialVersionUID = 1L;
 
@@ -42,13 +40,6 @@ public class Tuple1<T1> implements Tuple, Monad1<T1, Tuple1<?>> {
         return 1;
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U1, TUPLE extends HigherKinded1<U1, Tuple1<?>>> Tuple1<U1> flatMap(Function1<? super T1, TUPLE> f) {
-        return (Tuple1<U1>) f.apply(_1);
-    }
-
-    @Override
     public <U1> Tuple1<U1> map(Function1<? super T1, ? extends U1> f) {
         return new Tuple1<>(f.apply(_1));
     }

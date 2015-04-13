@@ -5,10 +5,14 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Tuple;
+import javaslang.Tuple0;
+import javaslang.Tuple1;
+import javaslang.Tuple2;
 
 import java.io.*;
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * A rose tree implementation, i.e. a tree with an arbitrary number of children, where each node keeps a value.
@@ -94,7 +98,7 @@ public interface RoseTree<T> extends Tree<T> {
     List<NonNil<T>> getChildren();
 
     @Override
-    <U> RoseTree<U> map(Function1<? super T, ? extends U> mapper);
+    <U> RoseTree<U> map(Function<? super T, ? extends U> mapper);
 
     /**
      * Implementors of this tagging interface indicate that they are not Nil.
@@ -104,7 +108,7 @@ public interface RoseTree<T> extends Tree<T> {
     interface NonNil<T> extends RoseTree<T> {
 
         @Override
-        <U> NonNil<U> map(Function1<? super T, ? extends U> mapper);
+        <U> NonNil<U> map(Function<? super T, ? extends U> mapper);
     }
 
     /**
@@ -149,7 +153,7 @@ public interface RoseTree<T> extends Tree<T> {
         }
 
         @Override
-        public <U> NonNil<U> map(Function1<? super T, ? extends U> mapper) {
+        public <U> NonNil<U> map(Function<? super T, ? extends U> mapper) {
             return new Leaf<>(mapper.apply(getValue()));
         }
 
@@ -210,7 +214,7 @@ public interface RoseTree<T> extends Tree<T> {
         }
 
         @Override
-        public <U> NonNil<U> map(Function1<? super T, ? extends U> mapper) {
+        public <U> NonNil<U> map(Function<? super T, ? extends U> mapper) {
             final U value = mapper.apply(getValue());
             final List<NonNil<U>> children = getChildren().map(tree -> tree.map(mapper));
             return new Branch<>(value, children);
@@ -368,7 +372,7 @@ public interface RoseTree<T> extends Tree<T> {
         }
 
         @Override
-        public <U> Nil<U> map(Function1<? super T, ? extends U> mapper) {
+        public <U> Nil<U> map(Function<? super T, ? extends U> mapper) {
             return Nil.instance();
         }
 

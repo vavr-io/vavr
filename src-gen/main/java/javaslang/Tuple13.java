@@ -10,8 +10,6 @@ package javaslang;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import java.util.Objects;
-import javaslang.algebra.HigherKinded13;
-import javaslang.algebra.Monad13;
 
 /**
  * A tuple of 13 elements which can be seen as cartesian product of 13 components.
@@ -31,7 +29,7 @@ import javaslang.algebra.Monad13;
  * @param <T13> type of the 13th element
  * @since 1.1.0
  */
-public class Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> implements Tuple, Monad13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Tuple13<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>> {
+public class Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> implements Tuple {
 
     private static final long serialVersionUID = 1L;
 
@@ -138,20 +136,10 @@ public class Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> imp
         return 13;
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11, U12, U13, TUPLE extends HigherKinded13<U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11, U12, U13, Tuple13<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>> Tuple13<U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11, U12, U13> flatMap(Function13<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? super T10, ? super T11, ? super T12, ? super T13, TUPLE> f) {
-        return (Tuple13<U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11, U12, U13>) f.apply(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13);
+    public <U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11, U12, U13> Tuple13<U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11, U12, U13> map(Function13<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? super T10, ? super T11, ? super T12, ? super T13, Tuple13<U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11, U12, U13>> f) {
+        return f.apply(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13);
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11, U12, U13> Tuple13<U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11, U12, U13> map(Function13<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? super T10, ? super T11, ? super T12, ? super T13, Tuple13<? extends U1, ? extends U2, ? extends U3, ? extends U4, ? extends U5, ? extends U6, ? extends U7, ? extends U8, ? extends U9, ? extends U10, ? extends U11, ? extends U12, ? extends U13>> f) {
-        // normally the result of f would be mapped to the result type of map, but Tuple.map is a special case
-        return (Tuple13<U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11, U12, U13>) f.apply(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13);
-    }
-
-    @Override
     public <U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11, U12, U13> Tuple13<U1, U2, U3, U4, U5, U6, U7, U8, U9, U10, U11, U12, U13> map(Function1<? super T1, ? extends U1> f1, Function1<? super T2, ? extends U2> f2, Function1<? super T3, ? extends U3> f3, Function1<? super T4, ? extends U4> f4, Function1<? super T5, ? extends U5> f5, Function1<? super T6, ? extends U6> f6, Function1<? super T7, ? extends U7> f7, Function1<? super T8, ? extends U8> f8, Function1<? super T9, ? extends U9> f9, Function1<? super T10, ? extends U10> f10, Function1<? super T11, ? extends U11> f11, Function1<? super T12, ? extends U12> f12, Function1<? super T13, ? extends U13> f13) {
         return map((t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) -> Tuple.of(f1.apply(t1), f2.apply(t2), f3.apply(t3), f4.apply(t4), f5.apply(t5), f6.apply(t6), f7.apply(t7), f8.apply(t8), f9.apply(t9), f10.apply(t10), f11.apply(t11), f12.apply(t12), f13.apply(t13)));
     }

@@ -5,12 +5,13 @@
  */
 package javaslang.control;
 
-import javaslang.Function1;
 import javaslang.Tuple;
 import javaslang.Tuple1;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Some represents a defined {@link javaslang.control.Option}. It contains a value which may be null. However, to
@@ -46,7 +47,13 @@ public final class Some<T> implements Option<T> {
     }
 
     @Override
-    public <U> Some<U> map(Function1<? super T, ? extends U> mapper) {
+    public Some<T> peek(Consumer<? super T> action) {
+        action.accept(get());
+        return this;
+    }
+
+    @Override
+    public <U> Some<U> map(Function<? super T, ? extends U> mapper) {
         return new Some<>(mapper.apply(get()));
     }
 

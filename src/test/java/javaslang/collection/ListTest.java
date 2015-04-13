@@ -5,12 +5,11 @@
  */
 package javaslang.collection;
 
-import javaslang.Function1;
 import javaslang.Serializables;
 import javaslang.Tuple;
-import javaslang.algebra.Functor1;
-import javaslang.algebra.Monad1;
-import javaslang.algebra.Monad1Laws;
+import javaslang.algebra.Functor;
+import javaslang.algebra.Monad;
+import javaslang.algebra.MonadLaws;
 import javaslang.collection.List.Cons;
 import javaslang.collection.List.Nil;
 import javaslang.test.Arbitrary;
@@ -20,10 +19,11 @@ import org.junit.Test;
 
 import java.io.InvalidObjectException;
 import java.util.Arrays;
+import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ListTest extends AbstractSeqTest implements Monad1Laws<Traversable<?>> {
+public class ListTest extends AbstractSeqTest implements MonadLaws<Traversable<?>> {
 
     @Override
     protected <T> List<T> nil() {
@@ -219,12 +219,12 @@ public class ListTest extends AbstractSeqTest implements Monad1Laws<Traversable<
         }
     }
 
-    // -- Functor1Laws
+    // -- FunctorLaws
 
     @Test
     @Override
     public void shouldSatisfyFunctorIdentity() {
-        final Arbitrary<? extends Functor1<Integer>> lists = Arbitrary.list(Arbitrary.integer());
+        final Arbitrary<? extends Functor<Integer>> lists = Arbitrary.list(Arbitrary.integer());
         final CheckResult result = checkFunctorIdentity(lists);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
     }
@@ -232,21 +232,21 @@ public class ListTest extends AbstractSeqTest implements Monad1Laws<Traversable<
     @Test
     @Override
     public void shouldSatisfyFunctorComposition() {
-        final Arbitrary<? extends Functor1<Integer>> lists = Arbitrary.list(Arbitrary.integer());
-        final Arbitrary<Function1<? super Integer, ? extends Double>> before =
+        final Arbitrary<? extends Functor<Integer>> lists = Arbitrary.list(Arbitrary.integer());
+        final Arbitrary<Function<? super Integer, ? extends Double>> before =
                 size -> random -> Double::valueOf;
-        final Arbitrary<Function1<? super Double, ? extends String>> after =
+        final Arbitrary<Function<? super Double, ? extends String>> after =
                 size -> random -> String::valueOf;
         final CheckResult result = checkFunctorComposition(lists, before, after);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
     }
 
-    // -- Monad1Laws
+    // -- MonadLaws
 
     @Test
     @Override
     public void shouldSatisfyMonadLeftIdentity() {
-        final Arbitrary<Function1<? super Integer, ? extends Monad1<String, Traversable<?>>>> mappers =
+        final Arbitrary<Function<? super Integer, ? extends Monad<String, Traversable<?>>>> mappers =
                 size -> random -> i -> List.of(i).map(String::valueOf);
         final CheckResult result = checkMonadLeftIdentity(List::of, Arbitrary.integer(), mappers);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
@@ -255,7 +255,7 @@ public class ListTest extends AbstractSeqTest implements Monad1Laws<Traversable<
     @Test
     @Override
     public void shouldSatisfyMonadRightIdentity() {
-        final Arbitrary<? extends Monad1<Integer, Traversable<?>>> lists = Arbitrary.list(Arbitrary.integer());
+        final Arbitrary<? extends Monad<Integer, Traversable<?>>> lists = Arbitrary.list(Arbitrary.integer());
         final CheckResult result = checkMonadRightIdentity(List::of, lists);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
     }
@@ -263,10 +263,10 @@ public class ListTest extends AbstractSeqTest implements Monad1Laws<Traversable<
     @Test
     @Override
     public void shouldSatisfyMonadAssociativity() {
-        final Arbitrary<? extends Monad1<Integer, Traversable<?>>> lists = Arbitrary.list(Arbitrary.integer());
-        final Arbitrary<Function1<? super Integer, ? extends Monad1<Double, Traversable<?>>>> before =
+        final Arbitrary<? extends Monad<Integer, Traversable<?>>> lists = Arbitrary.list(Arbitrary.integer());
+        final Arbitrary<Function<? super Integer, ? extends Monad<Double, Traversable<?>>>> before =
                 size -> random -> i -> List.of(i).map(Double::valueOf);
-        final Arbitrary<Function1<? super Double, ? extends Monad1<String, Traversable<?>>>> after =
+        final Arbitrary<Function<? super Double, ? extends Monad<String, Traversable<?>>>> after =
                 size -> random -> d -> List.of(d).map(String::valueOf);
         final CheckResult result = checkMonadAssociativity(lists, before, after);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);

@@ -44,6 +44,22 @@ public class ArbitraryTest {
         assertThat(arbitraryTreeWithEvenNodeCount.apply(10).apply(new Random())).isNotNull();
     }
 
+    // -- forEach
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldThrowOnForEach() {
+        Arbitrary.integer().forEach(i -> {});
+    }
+
+    // -- peek
+
+    @Test
+    public void shouldPeekArbitrary() {
+        final int[] actual = new int[] { Integer.MIN_VALUE };
+        final int expected = Arbitrary.integer().peek(i -> actual[0] = i).apply(10).apply(new Random());
+        assertThat(actual[0]).isEqualTo(expected);
+    }
+
     // factory methods
 
     @Test

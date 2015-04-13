@@ -31,85 +31,64 @@ def generateMainClasses(): Unit = {
   val javadoc = "**"
 
   genFunctions()
-  genConsumers()
-  genFunctors()
-  genHigherKindeds()
-  genMonads()
+  genFunctor()
+  genHigherKinded()
+  genMonad()
   genPropertyChecks()
   genTuples()
 
   /**
    * Generator of javaslang.algebra.Functor*
    */
-  def genFunctors(): Unit = 1 to N foreach { i => {
+  def genFunctor(): Unit = {
 
-    if (i == 1) {
-      genJavaslangFile("javaslang.algebra", s"CheckedFunctor$i")(genFunctor("CheckedFunctor", checked = true))
-    }
-    genJavaslangFile("javaslang.algebra", s"Functor$i")(genFunctor("Functor", checked = false))
+    genJavaslangFile("javaslang.algebra", "CheckedFunctor")(genFunctor("CheckedFunctor", checked = true))
+    genJavaslangFile("javaslang.algebra", "Functor")(genFunctor("Functor", checked = false))
 
     def genFunctor(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
 
-      val generics = (1 to i).gen(j => s"T$j")(", ")
-      val paramTypes = (1 to i).gen(j => s"? super T$j")(", ")
-      val resultType = if (i == 1) "? extends U1" else s"${im.getType(s"javaslang.Tuple$i")}<${(1 to i).gen(j => s"? extends U$j")(", ")}>"
-      val resultGenerics = (1 to i).gen(j => s"U$j")(", ")
-      val function1Type = im.getType(s"javaslang.${checked.gen("Checked")}Function1")
-      val functionType = im.getType(s"javaslang.${checked.gen("Checked")}Function$i")
+      val functionType = if (checked) im.getType("javaslang.control.Try.CheckedFunction") else im.getType("java.util.function.Function")
 
       xs"""
         /$javadoc
-         * <p>Defines a $i-ary $name by generalizing the map function which maps ${i.numerus("element")}.</p>
+         * <p>Defines a $className by generalizing the map.</p>
          *
          * All instances of the $className interface should obey the two functor laws:
          * <ul>
          *     <li>{@code m.map(a -> a) ≡ m}</li>
          *     <li>{@code m.map(f.compose(g)) ≡ m.map(g).map(f)}</li>
          * </ul>
-         * where ${if (i == 1) "f, g ∈ $function1Type" else s"{@code f, g ∈ Tuple$i → Tuple$i}"}.
+         * where "f, g ∈ $functionType".
          *
-         ${(1 to i).gen(j => s"* @param <T$j> ${j.ordinal} component type of this monad")("\n")}
+         * @param <T> component type of this functor
          * @see <a href="http://www.haskellforall.com/2012/09/the-functor-design-pattern.html">The functor design pattern</a>
          * @since 1.1.0
          */
-        public interface $className<$generics> {
+        public interface $className<T> {
 
             /**
              * Applies a function f to the components of this $name.
              *
-             ${(1 to i).gen(j => s"* @param <U$j> type of the ${j.ordinal} component of the resulting $name")("\n")}
-             * @param f a $i-ary ${checked.gen("Checked")}Function which maps the components of this $name
-             * @return a new $className with ${i.numerus("component type")} ${(1 to i).gen(j => s"U$j")(", ")}.
+             * @param <U> type of the component of the resulting $name
+             * @param f a ${checked.gen("Checked")}Function which maps the component of this $name
+             * @return a new $className
              */
-            <$resultGenerics> $className<$resultGenerics> map($functionType<$paramTypes, $resultType> f);
-
-            ${(i > 1).gen(xs"""
-              /$javadoc
-               * Applies a separate function to each component of this $name.
-               *
-               ${(1 to i).gen(j => s"* @param <U$j> type of the ${j.ordinal} component of the resulting $name")("\n")}
-               ${(1 to i).gen(j => s"* @param f$j the ${checked.gen("Checked")}Function applied to the ${j.ordinal} component of this $name")("\n")}
-               * @return a new $className with ${i.numerus("component type")} ${(1 to i).gen(j => s"U$j")(", ")}.
-               */
-              <$resultGenerics> $className<$resultGenerics> map(${(1 to i).gen(j => s"$function1Type<? super T$j, ? extends U$j> f$j")(", ")});
-            """)}
+            <U> $className<U> map($functionType<? super T, ? extends U> f);
         }
       """
     }
-  }}
+  }
 
   /**
    * Generator of javaslang.algebra.HigherKinded*
    */
-  def genHigherKindeds(): Unit = 1 to N foreach { i =>
-    genJavaslangFile("javaslang.algebra", s"HigherKinded$i")((im: ImportManager, packageName, className) => xs"""
+  def genHigherKinded(): Unit = {
+    genJavaslangFile("javaslang.algebra", s"HigherKinded")((im: ImportManager, packageName, className) => xs"""
         /$javadoc
-         * <p>The <em>HigherKinded$i</em> type declares a generic type constructor, which consists of
-         * ${i.numerus("inner/component type")} and one outer/container type.</p>
-         * <p>HigherKinded$i is used to approximately simulate higher-kinded/higher-order types, which cannot be
+         * <p>The <em>HigherKinded</em> type declares a generic type constructor, which consists of
+         * on component type and one container type.</p>
+         * <p>HigherKinded is used to approximately simulate higher-kinded/higher-order types, which cannot be
          * expressed with Java.</p>
-         * <p>Example: {@linkplain javaslang.Tuple$i} implements HigherKind$i in order to override
-         * {@link javaslang.algebra.Monad$i#flatMap(javaslang.Function$i)}.</p>
          *
          * See also
          * <ul>
@@ -118,12 +97,12 @@ def generateMainClasses(): Unit = {
          * <li><a href="http://en.wikipedia.org/wiki/Type_constructor">Type constructor</a> (wikipedia)</li>
          * </ul>
          *
-         ${(1 to i).gen(j => s"* @param <T$j> ${j.ordinal} component type of the type to be constructed")("\n")}
+         * @param <T> component type of the type to be constructed
          * @param <TYPE> the container type, i.e. the type to be constructed.
          * @since 1.1.0
          */
         @SuppressWarnings("unused")
-        public interface $className<${(1 to i).gen(j => s"T$j")(", ")}, TYPE extends $className<${"?, " * i}TYPE>> {
+        public interface $className<T, TYPE extends $className<?, TYPE>> {
 
             // used for type declaration only
         }
@@ -133,25 +112,20 @@ def generateMainClasses(): Unit = {
   /**
    * Generator of javaslang.algebra.Monad*
    */
-  def genMonads(): Unit = 1 to N foreach { i => {
+  def genMonad(): Unit = {
 
-    if (i == 1) {
-      genJavaslangFile("javaslang.algebra", s"CheckedMonad$i")(genMonad("CheckedMonad", checked = true))
-    }
-    genJavaslangFile("javaslang.algebra", s"Monad$i")(genMonad("Monad", checked = false))
+    genJavaslangFile("javaslang.algebra", s"CheckedMonad")(genMonad("CheckedMonad", checked = true))
+    genJavaslangFile("javaslang.algebra", s"Monad")(genMonad("Monad", checked = false))
 
     def genMonad(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
 
-      val generics = (1 to i).gen(j => s"T$j")(", ")
-      val paramTypes = (1 to i).gen(j => s"? super T$j")(", ")
-      val resultType = if (i == 1) "? extends U1" else s"${im.getType(s"javaslang.Tuple$i")}<${(1 to i).gen(j => s"? extends U$j")(", ")}>"
-      val resultGenerics = (1 to i).gen(j => s"U$j")(", ")
-      val function1Type = im.getType(s"javaslang.${checked.gen("Checked")}Function1")
-      val functionType = im.getType(s"javaslang.${checked.gen("Checked")}Function$i")
-      val plural = (i > 1).gen("s")
+      val functionType = if (checked) im.getType("javaslang.control.Try.CheckedFunction") else im.getType("java.util.function.Function")
+      val consumerType = if (checked) im.getType("javaslang.control.Try.CheckedConsumer") else im.getType("java.util.function.Consumer")
+      val predicateType = if (checked) im.getType("javaslang.control.Try.CheckedPredicate") else im.getType("java.util.function.Predicate")
+
       xs"""
         /$javadoc
-         * Defines a $i-ary $name by generalizing the flatMap function.
+         * Defines a $name by generalizing the flatMap function.
          * <p>
          * All instances of the $className interface should obey the three control laws:
          * <ul>
@@ -161,43 +135,61 @@ def generateMainClasses(): Unit = {
          * </ul>
          * given
          * <ul>
-         * <li>an object {@code m} of type {@code HigherKinded$i<$generics, M>}</li>
-         * <li>an object {@code a} consisting of values of type {@code ${(1 to i).gen(j => s"T$j")(" ✕ ")}}</li>
+         * <li>an object {@code m} of type {@code HigherKinded<T, M>}</li>
+         * <li>an object {@code a} of type T</li>
          * <li>a constructor {@code unit} taking an {@code a} and producing an object of type {@code M}</li>
-         * <li>a function {@code f: ${(1 to i).gen(j => s"T$j")(" ✕ ")} → M}
+         * <li>a function {@code f: T → M}
          * </ul>
          *
          * To read further about monads in Java please refer to
          * <a href="http://java.dzone.com/articles/whats-wrong-java-8-part-iv">What's Wrong in Java 8, Part IV: Monads</a>.
          *
-         ${(1 to i).gen(j => s"* @param <T$j> ${j.ordinal} component type of this ${checked.gen("checked ")}monad")("\n")}
+         * @param <T> component type of this ${checked.gen("checked ")}monad
          * @param <M> placeholder for the type that implements this
          * @since 1.1.0
          */
-        public interface $className<$generics, M extends HigherKinded$i<${"?, " * i}M>> extends ${checked.gen("Checked")}Functor$i<$generics>, HigherKinded$i<$generics, M> {
+        public interface $className<T, M extends HigherKinded<?, M>> extends ${checked.gen("Checked")}Functor<T>, HigherKinded<T, M> {
 
             /**
-             * Returns the result of applying f to M's value$plural of type T1,…,T$i and returns a new M with
-             * value$plural of type U1,…,U$i.
+             * Returns the result of applying f to M's value of type T and returns a new M with value of type U.
              *
-             ${(1 to i).gen(j => s"* @param <U$j> ${j.ordinal} component type of this monad")("\n")}
-             * @param <MONAD> placeholder for the monad type of component types T1,…,T$i and container type M
-             * @param f a ${checked.gen("checked ")}function that maps the monad values to a new monad instance
-             * @return a new $className instance of component types U1,…,U$i and container type M
+             * @param <U> component type of this monad
+             * @param <MONAD> placeholder for the monad type of component type T and container type M
+             * @param f a ${checked.gen("checked ")}function that maps the monad value to a new monad instance
+             * @return a new $className instance of component type U and container type M
              */
-            <$resultGenerics, MONAD extends HigherKinded$i<$resultGenerics, M>> $className<$resultGenerics, M> flatMap($functionType<$paramTypes, MONAD> f);
+            <U, MONAD extends HigherKinded<U, M>> $className<U, M> flatMap($functionType<? super T, MONAD> f);
+
+            /**
+             * Returns a filterned instance of this {@code $name}.
+             * <p>
+             * Note: monadic filtering may be interpreted in another way than just filtering contained elements.
+             *
+             * @param predicate A {@code Predicate}
+             * @return An instance of this monad type
+             */
+            $className<T, M> filter($predicateType<? super T> predicate);
+
+            /**
+             * Performs an action on each element of this monad.
+             *
+             * @param action A {@code Consumer}
+             */
+            void forEach(${im.getType("java.util.function.Consumer")}<? super T> action);
+
+            /**
+             * Performs an action on each element of this monad.
+             * @param action A {@code Consumer}
+             * @return An instance of this monad type
+             */
+            $className<T, M> peek($consumerType<? super T> action);
 
             @Override
-            <$resultGenerics> $className<$resultGenerics, M> map($functionType<$paramTypes, $resultType> f);
-
-            ${(i > 1).gen(xs"""
-              @Override
-              <$resultGenerics> $className<$resultGenerics, M> map(${(1 to i).gen(j => s"$function1Type<? super T$j, ? extends U$j> f$j")(", ")});
-            """)}
+            <U> $className<U, M> map($functionType<? super T, ? extends U> f);
         }
       """
     }
-  }}
+  }
 
   /**
    * Generator of javaslang.test.Property
@@ -427,129 +419,6 @@ def generateMainClasses(): Unit = {
   }
 
   /**
-   * Generator of Consumers
-   */
-  def genConsumers(): Unit = {
-
-    (0 to N).foreach(i => {
-
-      genJavaslangFile("javaslang", s"CheckedConsumer$i")(genConsumer("CheckedConsumer", checked = true))
-      genJavaslangFile("javaslang", s"Consumer$i")(genConsumer("Consumer", checked = false))
-
-      def genConsumer(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
-
-        val generics = (1 to i).gen(j => s"T$j")(", ")
-        val genericsReversed = (1 to i).reverse.gen(j => s"T$j")(", ")
-        val genericsTuple = if (i > 0) s"<$generics>" else ""
-        val genericsReversedFunction = if (i > 0) s"<$genericsReversed>" else ""
-        val curried = if (i == 0) "v" else (1 to i).gen(j => s"t$j")(" -> ")
-        val paramsDecl = (1 to i).gen(j => s"T$j t$j")(", ")
-        val params = (1 to i).gen(j => s"t$j")(", ")
-        val paramsReversed = (1 to i).reverse.gen(j => s"t$j")(", ")
-        val tupled = (1 to i).gen(j => s"t._$j")(", ")
-
-        def curriedType(max: Int): String = {
-          def returnType(curr: Int): String = {
-            if (max == 0) {
-              s"${name}0"
-            } else if (curr >= max) {
-              s"${name}1<T$curr>"
-            } else {
-              s"${checked.gen("Checked")}Function1<T$curr, ${returnType(curr + 1)}>"
-            }
-          }
-          returnType(1)
-        }
-
-        def arguments(count: Int): String = count match {
-          case 0 => "no arguments"
-          case 1 => "one argument"
-          case 2 => "two arguments"
-          case 3 => "three arguments"
-          case _ => s"$i arguments"
-        }
-
-        xs"""
-          /$javadoc
-           * Represents a consumer with ${arguments(i)}.
-           * <p>
-           * A consumer is a special function that returns nothing, i.e. {@code Void}. This implies that the consumer
-           * performs side-effects based on its arguments.
-           * <p>
-           * Java requires a function of return type {@code Void} to explicitely return null (the only instance
-           * of Void). To circumvent this and in favor of a more consise notation of consumers, Javaslang provides the
-           * funtional interfaces {@linkplain Consumer0} to {@linkplain Consumer26}.
-           ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> argument $j of the consumer")("\n")}
-           *
-           * @since 1.3.0
-           */
-          @FunctionalInterface
-          public interface $className${(i > 0).gen(s"<$generics>")} extends λ<Void> {
-
-              /**
-               * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
-               */
-              long serialVersionUID = 1L;
-
-              /$javadoc
-               * Accepts ${arguments(i)} and returns nothing.
-               ${(0 to i).gen(j => if (j == 0) "*" else s"* @param t$j argument $j")("\n")}
-               * ${checked.gen("@throws Throwable if something goes wrong accepting the given arguments")}
-               */
-              void accept($paramsDecl)${checked.gen(" throws Throwable")};
-
-              @Override
-              default int arity() {
-                  return $i;
-              }
-
-              @Override
-              default ${curriedType(i)} curried() {
-                  return ${if (i < 2) "this" else s"$curried -> accept($params)"};
-              }
-
-              @Override
-              default ${name}1<Tuple$i$genericsTuple> tupled() {
-                  return t -> accept($tupled);
-              }
-
-              @Override
-              default $className$genericsReversedFunction reversed() {
-                  return ${if (i < 2) "this" else s"($paramsReversed) -> accept($params)"};
-              }
-
-              /$javadoc
-               * Returns a composed function that first applies this $className to the given arguments and then applies
-               * {@code after} to the same arguments.
-               *
-               * @param after the consumer which accepts the given arguments after this
-               * @return a consumer composed of this and after
-               * @throws NullPointerException if after is null
-               */
-              default $className${(i > 0).gen(s"<$generics>")} andThen($className${(i > 0).gen(s"<$generics>")} after) {
-                  ${im.getType("java.util.Objects")}.requireNonNull(after, "after is null");
-                  return ($params) -> { accept($params); after.accept($params); };
-              }
-
-              /$javadoc
-               * Returns a composed function that first applies {@code before} to the given arguments and then applies
-               * this $className to the same arguments.
-               *
-               * @param before the consumer which accepts the given arguments before this
-               * @return a consumer composed of before and this
-               * @throws NullPointerException if before is null
-               */
-              default $className${(i > 0).gen(s"<$generics>")} compose($className${(i > 0).gen(s"<$generics>")} before) {
-                  ${im.getType("java.util.Objects")}.requireNonNull(before, "before is null");
-                  return ($params) -> { before.accept($params); accept($params); };
-              }
-          }
-        """
-      }
-    })
-  }
-
-  /**
    * Generator of Functions
    */
   def genFunctions(): Unit = {
@@ -776,7 +645,7 @@ def generateMainClasses(): Unit = {
       val paramsDecl = (1 to i).gen(j => s"T$j t$j")(", ")
       val params = (1 to i).gen(j => s"_$j")(", ")
       val paramTypes = (1 to i).gen(j => s"? super T$j")(", ")
-      val resultType = if (i == 1) "? extends U1" else s"Tuple$i<${(1 to i).gen(j => s"? extends U$j")(", ")}>"
+      val resultType = if (i == 1) "? extends U1" else s"Tuple$i<${(1 to i).gen(j => s"U$j")(", ")}>"
       val resultGenerics = (1 to i).gen(j => s"U$j")(", ")
       val untyped = (1 to i).gen(j => "?")(", ")
       val functionType = s"Function$i"
@@ -787,7 +656,7 @@ def generateMainClasses(): Unit = {
          ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> type of the ${j.ordinal} element")("\n")}
          * @since 1.1.0
          */
-        public class $className<$generics> implements Tuple, ${im.getType(s"javaslang.algebra.Monad$i")}<$generics, $className<$untyped>> {
+        public class $className<$generics> implements Tuple {
 
             private static final long serialVersionUID = 1L;
 
@@ -811,25 +680,15 @@ def generateMainClasses(): Unit = {
                 return $i;
             }
 
-            @SuppressWarnings("unchecked")
-            @Override
-            public <$resultGenerics, TUPLE extends ${im.getType(s"javaslang.algebra.HigherKinded$i")}<$resultGenerics, $className<$untyped>>> $className<$resultGenerics> flatMap($functionType<$paramTypes, TUPLE> f) {
-                return ($className<$resultGenerics>) f.apply($params);
-            }
-
-            ${(i > 1).gen("""@SuppressWarnings("unchecked")""")}
-            @Override
             public <$resultGenerics> $className<$resultGenerics> map($functionType<$paramTypes, $resultType> f) {
                 ${if (i > 1) { xs"""
-                  // normally the result of f would be mapped to the result type of map, but Tuple.map is a special case
-                  return ($className<$resultGenerics>) f.apply($params);"""
+                  return f.apply($params);"""
                 } else { xs"""
                   return new $className<>(f.apply($params));"""
                 }}
             }
 
             ${(i > 1).gen(xs"""
-              @Override
               public <$resultGenerics> $className<$resultGenerics> map(${(1 to i).gen(j => s"${im.getType("javaslang.Function1")}<? super T$j, ? extends U$j> f$j")(", ")}) {
                   return map((${(1 to i).gen(j => s"t$j")(", ")}) -> ${im.getType("javaslang.Tuple")}.of(${(1 to i).gen(j => s"f$j.apply(t$j)")(", ")}));
               }
@@ -931,90 +790,8 @@ def generateMainClasses(): Unit = {
 def generateTestClasses(): Unit = {
 
   genFunctionTests()
-  genConsumerTests()
   genPropertyCheckTests()
   genTupleTests()
-
-  /**
-   * Generator of Function tests
-   */
-  def genConsumerTests(): Unit = {
-
-    (0 to N).foreach(i => {
-
-      genJavaslangFile("javaslang", s"CheckedConsumer${i}Test", baseDir = TARGET_TEST)(genFunctionTest("CheckedConsumer", checked = true))
-      genJavaslangFile("javaslang", s"Consumer${i}Test", baseDir = TARGET_TEST)(genFunctionTest("Consumer", checked = false))
-
-      def genFunctionTest(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
-
-        val functionArgs = (1 to i).gen(j => s"o$j")(", ")
-        val generics = if (i == 0) "" else s"<${(1 to i).gen(j => "Object")(", ")}>"
-
-        val test = im.getType("org.junit.Test")
-        val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
-
-        def curriedType(max: Int): String = {
-          def returnType(curr: Int): String = {
-            if (max == 0) {
-              s"${name}0"
-            } else if (curr >= max) {
-              s"${name}1<Object>"
-            } else {
-              s"${checked.gen("Checked")}Function1<Object, ${returnType(curr + 1)}>"
-            }
-          }
-          returnType(1)
-        }
-
-        xs"""
-          public class $className {
-
-              @$test
-              public void shouldGetArity() {
-                  final $name$i$generics f = ($functionArgs) -> {};
-                  $assertThat(f.arity()).isEqualTo($i);
-              }
-
-              @$test
-              public void shouldCurry() {
-                  final $name$i$generics f = ($functionArgs) -> {};
-                  final ${curriedType(i)} curried = f.curried();
-                  $assertThat(curried).isNotNull();
-              }
-
-              @$test
-              public void shouldTuple() {
-                  final $name$i$generics f = ($functionArgs) -> {};
-                  final ${name}1<Tuple$i${(i > 0).gen(s"<${(1 to i).gen(j => "Object")(", ")}>")}> tupled = f.tupled();
-                  $assertThat(tupled).isNotNull();
-              }
-
-              @$test
-              public void shouldReverse() {
-                  final $name$i$generics f = ($functionArgs) -> {};
-                  $assertThat(f.reversed()).isNotNull();
-              }
-
-              @$test
-              public void shouldComposeWithAndThen() {
-                  final $name$i$generics f = ($functionArgs) -> {};
-                  final $name$i$generics after = ($functionArgs) -> {};
-                  final $name$i$generics composed = f.andThen(after);
-                  $assertThat(composed).isNotNull();
-              }
-
-              @$test
-              public void shouldComposeWithCompose() {
-                  final $name$i$generics f = ($functionArgs) -> {};
-                  final $name$i$generics before = ($functionArgs) -> {};
-                  final $name$i$generics composed = f.compose(before);
-                  $assertThat(composed).isNotNull();
-              }
-          }
-        """
-      }
-    })
-  }
 
   /**
    * Generator of Function tests
@@ -1450,7 +1227,6 @@ def generateTestClasses(): Unit = {
         val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
         val functionType = s"Function$i"
         val generics = (1 to i).gen(j => s"Object")(", ")
-        val genericsUnknown = (1 to i).gen(j => s"?")(", ")
         val functionArgTypes = (1 to i).gen(j => s"o$j")(", ")
         val nullArgs = (1 to i).gen(j => "null")(", ")
 
@@ -1470,20 +1246,12 @@ def generateTestClasses(): Unit = {
               }
 
               @$test
-              public void shouldFlatMap() {
-                  final Tuple$i<$generics> tuple = createTuple();
-                  final $functionType<$generics, Tuple$i<$generics>> mapper = ${s"($functionArgTypes)"} -> tuple;
-                  final Tuple$i<$generics> actual = tuple.flatMap(mapper);
-                  $assertThat(actual).isEqualTo(tuple);
-              }
-
-              @$test
               public void shouldMap() {
                   final Tuple$i<$generics> tuple = createTuple();
                   ${if (i == 1) {
                     s"final $functionType<$generics, Object> mapper = $functionArgTypes -> o1;"
                   } else {
-                    s"final $functionType<$generics, Tuple$i<$genericsUnknown>> mapper = ($functionArgTypes) -> tuple;"
+                    s"final $functionType<$generics, Tuple$i<$generics>> mapper = ($functionArgTypes) -> tuple;"
                   }}
                   final Tuple$i<$generics> actual = tuple.map(mapper);
                   $assertThat(actual).isEqualTo(tuple);

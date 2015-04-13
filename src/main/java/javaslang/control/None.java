@@ -5,13 +5,14 @@
  */
 package javaslang.control;
 
-import javaslang.Function1;
 import javaslang.Tuple;
 import javaslang.Tuple0;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * None is a singleton representation of the undefined {@link javaslang.control.Option}. The instance is obtained by
@@ -63,7 +64,12 @@ public final class None<T> implements Option<T> {
     }
 
     @Override
-    public <U> None<U> map(Function1<? super T, ? extends U> mapper) {
+    public None<T> peek(Consumer<? super T> action) {
+        return this;
+    }
+
+    @Override
+    public <U> None<U> map(Function<? super T, ? extends U> mapper) {
         return None.instance();
     }
 

@@ -6,8 +6,7 @@
 package javaslang.collection;
 
 import javaslang.*;
-import javaslang.algebra.HigherKinded1;
-import javaslang.algebra.Monad1;
+import javaslang.algebra.HigherKinded;
 import javaslang.control.Match;
 import javaslang.control.Try;
 
@@ -25,7 +24,7 @@ import java.util.stream.Collector;
  * @since 1.1.0
  */
 // DEV-NOTE: Beware of serializing IO streams.
-public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObject {
+public interface Stream<T> extends Seq<T>, ValueObject {
 
     /**
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
@@ -508,7 +507,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
     }
 
     @Override
-    default <U, TRAVERSABLE extends HigherKinded1<U, Traversable<?>>> Stream<U> flatMap(Function1<? super T, TRAVERSABLE> mapper) {
+    default <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Stream<U> flatMap(Function<? super T, TRAVERSABLE> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return Nil.instance();
@@ -529,7 +528,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
     }
 
     @Override
-    default <U> Stream<U> flatten(Function1<T, ? extends Iterable<? extends U>> f) {
+    default <U> Stream<U> flatten(Function<T, ? extends Iterable<? extends U>> f) {
         Objects.requireNonNull(f, "f is null");
         if (isEmpty()) {
             return Nil.instance();
@@ -665,12 +664,23 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
     }
 
     @Override
-    default <U> Stream<U> map(Function1<? super T, ? extends U> mapper) {
+    default <U> Stream<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return Nil.instance();
         } else {
             return new Cons<>(mapper.apply(head()), () -> tail().map(mapper));
+        }
+    }
+
+    @Override
+    default Stream<T> peek(Consumer<? super T> action) {
+        if (isEmpty()) {
+            return this;
+        } else {
+            final T head = head();
+            action.accept(head);
+            return new Cons<>(head, () -> tail().peek(action));
         }
     }
 
@@ -733,7 +743,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
     }
 
     @Override
-    default Stream<T> replaceAll(Function1<T, T> operator) {
+    default Stream<T> replaceAll(UnaryOperator<T> operator) {
         if (isEmpty()) {
             return this;
         } else {
@@ -869,7 +879,7 @@ public interface Stream<T> extends Seq<T>, Monad1<T, Traversable<?>>, ValueObjec
     }
 
     @Override
-    default <T1, T2> Tuple2<Stream<T1>, Stream<T2>> unzip(Function1<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+    default <T1, T2> Tuple2<Stream<T1>, Stream<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         final Stream<Tuple2<? extends T1, ? extends T2>> stream = map(unzipper);
         final Stream<T1> stream1 = stream.map(t -> t._1);

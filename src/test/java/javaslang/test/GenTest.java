@@ -260,6 +260,22 @@ public class GenTest {
         Gen.of(1).filter(ignored -> false).apply(RANDOM);
     }
 
+    // -- forEach
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldThrowOnForEach() {
+        Gen.of(1).forEach(i -> {});
+    }
+
+    // -- peek
+
+    @Test
+    public void shouldPeekArbitrary() {
+        final int[] actual = new int[] { -1 };
+        final int expected = Gen.of(1).peek(i -> actual[0] = i).apply(new Random());
+        assertThat(actual[0]).isEqualTo(expected);
+    }
+
     // helpers
 
     <T> void assertForAll(Supplier<T> supplier, Predicate<T> property) {
