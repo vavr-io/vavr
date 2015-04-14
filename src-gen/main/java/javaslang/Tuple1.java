@@ -17,7 +17,7 @@ import java.util.Objects;
  * @param <T1> type of the 1st element
  * @since 1.1.0
  */
-public class Tuple1<T1> implements Tuple {
+public final class Tuple1<T1> implements Tuple {
 
     private static final long serialVersionUID = 1L;
 

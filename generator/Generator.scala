@@ -551,7 +551,7 @@ def generateMainClasses(): Unit = {
          ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> type of the ${j.ordinal} element")("\n")}
          * @since 1.1.0
          */
-        public class $className<$generics> implements Tuple {
+        public final class $className<$generics> implements Tuple {
 
             private static final long serialVersionUID = 1L;
 
