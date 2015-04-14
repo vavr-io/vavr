@@ -39,7 +39,7 @@ import java.util.Objects;
  * @param <T23> type of the 3rd element
  * @since 1.1.0
  */
-public class Tuple23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> implements Tuple {
+public final class Tuple23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> implements Tuple {
 
     private static final long serialVersionUID = 1L;
 

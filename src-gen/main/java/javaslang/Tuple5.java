@@ -21,7 +21,7 @@ import java.util.Objects;
  * @param <T5> type of the 5th element
  * @since 1.1.0
  */
-public class Tuple5<T1, T2, T3, T4, T5> implements Tuple {
+public final class Tuple5<T1, T2, T3, T4, T5> implements Tuple {
 
     private static final long serialVersionUID = 1L;
 

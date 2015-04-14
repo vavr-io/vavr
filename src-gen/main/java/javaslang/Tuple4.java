@@ -20,7 +20,7 @@ import java.util.Objects;
  * @param <T4> type of the 4th element
  * @since 1.1.0
  */
-public class Tuple4<T1, T2, T3, T4> implements Tuple {
+public final class Tuple4<T1, T2, T3, T4> implements Tuple {
 
     private static final long serialVersionUID = 1L;
 

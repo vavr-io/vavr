@@ -19,7 +19,7 @@ import java.util.Objects;
  * @param <T3> type of the 3rd element
  * @since 1.1.0
  */
-public class Tuple3<T1, T2, T3> implements Tuple {
+public final class Tuple3<T1, T2, T3> implements Tuple {
 
     private static final long serialVersionUID = 1L;
 

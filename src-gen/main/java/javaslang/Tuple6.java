@@ -22,7 +22,7 @@ import java.util.Objects;
  * @param <T6> type of the 6th element
  * @since 1.1.0
  */
-public class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple {
+public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple {
 
     private static final long serialVersionUID = 1L;
 
