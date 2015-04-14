@@ -9,6 +9,7 @@ import javaslang.Tuple;
 import javaslang.Tuple1;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * The left type of an Either.
@@ -40,6 +41,11 @@ public final class Left<L, R> implements Either<L, R> {
     @Override
     public boolean isRight() {
         return false;
+    }
+
+    @Override
+    public <X, Y> Left<X, Y> bimap(Function<? super L, ? extends X> leftMapper, Function<? super R, ? extends Y> rightMapper) {
+        return new Left<>(leftMapper.apply(left().get()));
     }
 
     @Override
