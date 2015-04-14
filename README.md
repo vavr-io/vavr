@@ -65,8 +65,6 @@ Ensure that your `~/.m2/settings.xml` contains the following:
 
 [Fork](https://help.github.com/articles/fork-a-repo) the GitHub repo and send a [pull request](https://help.github.com/articles/using-pull-requests).
 
-Javaslang needs jdk 1.8.0_40+ to compile. Prior jdks will not work due to type inference bugs. However, in order to use Javaslang as maven dependency, any build of jdk 1.8.0 is sufficient. 
-
 ```shell
 git remote add upstream https://github.com/javaslang/javaslang.git
 git fetch upstream
