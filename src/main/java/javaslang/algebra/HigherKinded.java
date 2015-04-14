@@ -5,10 +5,6 @@
  */
 package javaslang.algebra;
 
-/*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*\
-   G E N E R A T O R   C R A F T E D
-\*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
-
 /**
  * <p>The <em>HigherKinded</em> type declares a generic type constructor, which consists of
  * on component type and one container type.</p>
@@ -22,7 +18,7 @@ package javaslang.algebra;
  * <li><a href="http://en.wikipedia.org/wiki/Type_constructor">Type constructor</a> (wikipedia)</li>
  * </ul>
  *
- * @param <T> component type of the type to be constructed
+ * @param <T>    component type of the type to be constructed
  * @param <TYPE> the container type, i.e. the type to be constructed.
  * @since 1.1.0
  */

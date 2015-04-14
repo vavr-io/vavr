@@ -32,7 +32,6 @@ def generateMainClasses(): Unit = {
 
   genFunctions()
   genFunctor()
-  genHigherKinded()
   genMonad()
   genPropertyChecks()
   genTuples()
@@ -77,36 +76,6 @@ def generateMainClasses(): Unit = {
         }
       """
     }
-  }
-
-  /**
-   * Generator of javaslang.algebra.HigherKinded*
-   */
-  def genHigherKinded(): Unit = {
-    genJavaslangFile("javaslang.algebra", s"HigherKinded")((im: ImportManager, packageName, className) => xs"""
-        /$javadoc
-         * <p>The <em>HigherKinded</em> type declares a generic type constructor, which consists of
-         * on component type and one container type.</p>
-         * <p>HigherKinded is used to approximately simulate higher-kinded/higher-order types, which cannot be
-         * expressed with Java.</p>
-         *
-         * See also
-         * <ul>
-         * <li><a href="http://adriaanm.github.io/files/higher.pdf">Generics of a Higher Kind</a> (Moors, Piessens, Odersky)</li>
-         * <li><a href="http://en.wikipedia.org/wiki/Kind_(type_theory)">Kind (type theory)</a> (wikipedia)</li>
-         * <li><a href="http://en.wikipedia.org/wiki/Type_constructor">Type constructor</a> (wikipedia)</li>
-         * </ul>
-         *
-         * @param <T> component type of the type to be constructed
-         * @param <TYPE> the container type, i.e. the type to be constructed.
-         * @since 1.1.0
-         */
-        @SuppressWarnings("unused")
-        public interface $className<T, TYPE extends $className<?, TYPE>> {
-
-            // used for type declaration only
-        }
-    """)
   }
 
   /**
@@ -558,84 +527,10 @@ def generateMainClasses(): Unit = {
   def genTuples(): Unit = {
 
     genJavaslangFile("javaslang", "Tuple")(genBaseTuple)
-    genJavaslangFile("javaslang", "Tuple0")(genTuple0)
 
     (1 to N).foreach { i =>
       genJavaslangFile("javaslang", s"Tuple$i")(genTuple(i))
     }
-
-    /*
-     * Generates Tuple0
-     */
-    def genTuple0(im: ImportManager, packageName: String, className: String): String = xs"""
-      /**
-       * <p>Implementation of an empty tuple, a tuple containing no elements.</p>
-       * <p>
-       * Because the empty tuple is a singleton, there is no accessible constructor.
-       * Please use {@linkplain Tuple0#instance()} or {@linkplain Tuple#empty()} to obtain the single instance.
-       * </p>
-       * @since 1.1.0
-       */
-      public final class $className implements Tuple {
-
-          private static final long serialVersionUID = 1L;
-
-          /**
-           * The singleton instance of $className.
-           */
-          private static final $className INSTANCE = new $className();
-
-          // hidden constructor, internally called
-          private $className() {
-          }
-
-          /**
-           * Returns the singleton instance of $className.
-           *
-           * @return The singleton instance of $className.
-           */
-          public static $className instance() {
-              return INSTANCE;
-          }
-
-          @Override
-          public int arity() {
-              return 0;
-          }
-
-          @Override
-          public $className unapply() {
-              return this;
-          }
-
-          @Override
-          public boolean equals(Object o) {
-              return o == this;
-          }
-
-          @Override
-          public int hashCode() {
-              return ${im.getType("java.util.Objects")}.hash();
-          }
-
-          @Override
-          public String toString() {
-              return "()";
-          }
-
-          // -- Serializable implementation
-
-          /**
-           * Instance control for object serialization.
-           *
-           * @return The singleton instance of $className.
-           * @see java.io.Serializable
-           */
-          private Object readResolve() {
-              return INSTANCE;
-          }
-      }
-    """
 
     /*
      * Generates Tuple1..N
