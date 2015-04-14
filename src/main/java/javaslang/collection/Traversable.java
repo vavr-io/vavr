@@ -16,6 +16,7 @@ import javaslang.control.Some;
 import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.*;
 
@@ -54,9 +55,9 @@ import java.util.function.*;
  * <ul>
  * <li>{@link #average()}</li>
  * <li>{@link #max()}</li>
- * <li>TODO(#116) #maxBy(Comparator)</li>
+ * <li>{@link #maxBy(Comparator)}</li>
  * <li>{@link #min()}</li>
- * <li>TODO(#116) #minBy(Comparator)</li>
+ * <li>{@link #minBy(Comparator)}</li>
  * <li>{@link #product()}</li>
  * <li>{@link #sum()}</li>
  * </ul>
@@ -651,6 +652,22 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
     }
 
     /**
+     * <p>Calculates the maximum of this elements.</p>
+     *
+     * @param comparator A non-null element comparator
+     * @return the maximum of this elements.
+     * @throws java.lang.NullPointerException if comparator is null
+     * @throws java.lang.UnsupportedOperationException if no elements are present
+     */
+    default T maxBy(Comparator<T> comparator) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        if (isEmpty()) {
+            throw new UnsupportedOperationException("maxBy of nothing");
+        }
+        return reduce((t1, t2) -> comparator.compare(t1, t2) >= 0 ? t1 : t2);
+    }
+
+    /**
      * Calculates the minimum of this elements.
      * <p>Supported component types are boolean, byte, char, double, float, int, long, short, BigInteger, BigDecimal.</p>
      * <p>If the component type is boolean, the minimum is defined to be {@code this.reduce((i, j) -> i && j)}.</p>
@@ -680,6 +697,22 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
                     })
                     .apply(head);
         }
+    }
+
+    /**
+     * <p>Calculates the minimum of this elements.</p>
+     *
+     * @param comparator A non-null element comparator
+     * @return the minimum of this elements.
+     * @throws java.lang.NullPointerException if comparator is null
+     * @throws java.lang.UnsupportedOperationException if no elements are present
+     */
+    default T minBy(Comparator<T> comparator) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        if (isEmpty()) {
+            throw new UnsupportedOperationException("minBy of nothing");
+        }
+        return reduce((t1, t2) -> comparator.compare(t1, t2) <= 0 ? t1 : t2);
     }
 
     @Override
