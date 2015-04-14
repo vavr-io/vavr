@@ -16,6 +16,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class EitherTest {
 
+    // -- Either
+
+    @Test
+    public void shouldBimapLeft() {
+        final Either<Integer, String> actual = new Left<Integer, String>(1).bimap(i -> i + 1, s -> s + "1");
+        final Either<Integer, String> expected = new Left<>(2);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldBimapRight() {
+        final Either<Integer, String> actual = new Right<Integer, String>("1").bimap(i -> i + 1, s -> s + "1");
+        final Either<Integer, String> expected = new Right<>("11");
+        assertThat(actual).isEqualTo(expected);
+    }
+
     // -- Left
 
     @Test

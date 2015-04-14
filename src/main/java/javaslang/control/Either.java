@@ -83,6 +83,17 @@ public interface Either<L, R> extends ValueObject {
         return new RightProjection<>(this);
     }
 
+    /**
+     * Maps either the left or the right side of this disjunction.
+     *
+     * @param leftMapper  maps the left value if this is a Left
+     * @param rightMapper maps the right value if this is a Right
+     * @param <X>         The new left type of the resulting Either
+     * @param <Y>         The new right type of the resulting Either
+     * @return A new either instance
+     */
+    <X, Y> Either<X, Y> bimap(Function<? super L, ? extends X> leftMapper, Function<? super R, ? extends Y> rightMapper);
+
     // -- Object.*
 
     @Override
