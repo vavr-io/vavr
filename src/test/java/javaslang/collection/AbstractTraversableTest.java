@@ -755,6 +755,23 @@ public abstract class AbstractTraversableTest {
         assertThat(actual).isEqualTo(BigDecimal.ONE);
     }
 
+    // -- maxBy
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenMaxByWithNullComparator() {
+        of(1).maxBy(null);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldThrowWhenMaxByOfNil() {
+        nil().maxBy((o1, o2) -> 0);
+    }
+
+    @Test
+    public void shouldCalculateMaxByOfInts() {
+        assertThat(of(1, 2, 3).maxBy((i1, i2) -> i1 - i2)).isEqualTo(3);
+    }
+
     // -- min
 
     @Test(expected = UnsupportedOperationException.class)
@@ -825,6 +842,23 @@ public abstract class AbstractTraversableTest {
     public void shouldComputeMinOfBigDecimal() {
         final BigDecimal actual = of(BigDecimal.ZERO, BigDecimal.ONE).min();
         assertThat(actual).isEqualTo(BigDecimal.ZERO);
+    }
+
+    // -- minBy
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenMinByWithNullComparator() {
+        of(1).minBy(null);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldThrowWhenMinByOfNil() {
+        nil().minBy((o1, o2) -> 0);
+    }
+
+    @Test
+    public void shouldCalculateMinByOfInts() {
+        assertThat(of(1, 2, 3).minBy((i1, i2) -> i1 - i2)).isEqualTo(1);
     }
 
     // -- peek
