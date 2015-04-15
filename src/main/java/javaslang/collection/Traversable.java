@@ -911,7 +911,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
     Traversable<? extends Traversable<T>> sliding(int size);
 
     /**
-     * Slides a window of specific {@code size} and {@code step} size over this {@code Traversable}.
+     * Slides a window of a specific {@code size} and {@code step} size over this {@code Traversable}.
      * <p>
      * Examples:
      * <pre>
@@ -927,7 +927,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * @param size a positive window size
      * @param step a positive step size
      * @return a new Traversable of windows of a specific size using a specific step size
-     * @throws IllegalArgumentException if size is negative or zero
+     * @throws IllegalArgumentException if size or step are negative or zero
      */
     Traversable<? extends Traversable<T>> sliding(int size, int step);
 
