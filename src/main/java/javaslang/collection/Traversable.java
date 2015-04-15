@@ -106,7 +106,7 @@ import java.util.function.*;
  * <li>{@link #flatMap(Function)}</li>
  * <li>{@link #flatten()}</li>
  * <li>{@link #flatten(Function)}</li>
- * <li>TODO(#115): #grouped(int)</li>
+ * <li>{@link #grouped(int)}</li>
  * <li>TODO(#110): #groupBy</li>
  * <li>{@link #intersperse(Object)}</li>
  * <li>{@link #map(Function)}</li>
@@ -115,7 +115,8 @@ import java.util.function.*;
  * <li>{@link #replaceAll(Object, Object)}</li>
  * <li>{@link #replaceAll(UnaryOperator)}</li>
  * <li>{@link #reverse()}</li>
- * <li>TODO(#115): #sliding(int)</li>
+ * <li>{@link #sliding(int)}</li>
+ * <li>{@link #sliding(int, int)}</li>
  * <li>{@link #span(Predicate)}</li>
  * <li>{@link #unzip(Function)}</li>
  * <li>{@link #zip(Iterable)}</li>
@@ -507,6 +508,37 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
     }
 
     /**
+     * Groups this {@code Traversable} into fixed size blocks like so:
+     * <ul>
+     * <li>If {@code this.isEmpty()}, the resulting {@code Traversable} is empty.</li>
+     * <li>If {@code size <= this.length()}, the resulting {@code Traversable} will contain {@code this.length() / size}
+     * blocks of size {@code size} and maybe a non-empty block of size {@code this.length() % size}, if there are
+     * remaining elements.</li>
+     * <li>If {@code size > this.length()}, the resulting {@code Traversable} will contain one block of size
+     * {@code this.length()}.</li>
+     * </ul>
+     * Examples:
+     * <pre>
+     * <code>
+     * [].grouped(1) = []
+     * [].grouped(0) throws
+     * [].grouped(-1) throws
+     * [1,2,3,4].grouped(2) = [[1,2],[3,4]]
+     * [1,2,3,4,5].grouped(2) = [[1,2],[3,4],[5]]
+     * [1,2,3,4].grouped(5) = [[1,2,3,4]]
+     * </code>
+     * </pre>
+     *
+     * Please note that {@code grouped(int)} is a special case of {@linkplain #sliding(int, int)}, i.e.
+     * {@code grouped(size)} is the same as {@code sliding(size, size)}.
+     *
+     * @param size a positive block size
+     * @return A new Traversable of sliced blocks of the given size
+     * @throws IllegalArgumentException if size is negative or zero
+     */
+    Traversable<? extends Traversable<T>> grouped(int size);
+
+    /**
      * Returns the first element of a non-empty Traversable.
      *
      * @return The first element of this Traversable.
@@ -656,7 +688,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      *
      * @param comparator A non-null element comparator
      * @return the maximum of this elements.
-     * @throws java.lang.NullPointerException if comparator is null
+     * @throws java.lang.NullPointerException          if comparator is null
      * @throws java.lang.UnsupportedOperationException if no elements are present
      */
     default T maxBy(Comparator<? super T> comparator) {
@@ -704,7 +736,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      *
      * @param comparator A non-null element comparator
      * @return the minimum of this elements.
-     * @throws java.lang.NullPointerException if comparator is null
+     * @throws java.lang.NullPointerException          if comparator is null
      * @throws java.lang.UnsupportedOperationException if no elements are present
      */
     default T minBy(Comparator<? super T> comparator) {
@@ -867,6 +899,37 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * @return the reversed elements.
      */
     Traversable<T> reverse();
+
+    /**
+     * Slides a window of a specific {@code size} and step size 1 over this {@code Traversable} by calling
+     * {@link #sliding(int, int)}.
+     *
+     * @param size a positive window size
+     * @return a new Traversable of windows of a specific size using step size 1
+     * @throws IllegalArgumentException if size is negative or zero
+     */
+    Traversable<? extends Traversable<T>> sliding(int size);
+
+    /**
+     * Slides a window of specific {@code size} and {@code step} size over this {@code Traversable}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * [].sliding(1,1) = []
+     * [1,2,3,4,5].sliding(2,3) = [[1,2],[4,5]]
+     * [1,2,3,4,5].sliding(2,4) = [[1,2],[5]]
+     * [1,2,3,4,5].sliding(2,5) = [[1,2]]
+     * [1,2,3,4].sliding(5,3) = [[1,2,3,4],[4]]
+     * </code>
+     * </pre>
+     *
+     * @param size a positive window size
+     * @param step a positive step size
+     * @return a new Traversable of windows of a specific size using a specific step size
+     * @throws IllegalArgumentException if size is negative or zero
+     */
+    Traversable<? extends Traversable<T>> sliding(int size, int step);
 
     /**
      * Returns a tuple where the first element is the longest prefix of elements that satisfy p and the second element is the remainder.

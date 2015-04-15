@@ -285,6 +285,11 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
+    default List<List<T>> grouped(int size) {
+        return sliding(size, size);
+    }
+
+    @Override
     default int indexOf(T element) {
         int index = 0;
         for (List<T> list = this; !list.isEmpty(); list = list.tail(), index++) {
@@ -538,6 +543,26 @@ public interface List<T> extends Seq<T>, ValueObject {
             result = result.prepend(next);
         }
         return result;
+    }
+
+    @Override
+    default List<List<T>> sliding(int size) {
+        return sliding(size, 1);
+    }
+
+    @Override
+    default List<List<T>> sliding(int size, int step) {
+        if (size <= 0 || step <= 0) {
+            throw new IllegalArgumentException(String.format("size: %s or step: %s not positive", size, step));
+        }
+        List<List<T>> result = nil();
+        List<T> list = this;
+        while (!list.isEmpty()) {
+            final List<T> group = list.take(size);
+            result = result.prepend(group);
+            list = list.drop(step);
+        }
+        return result.reverse();
     }
 
     @Override
