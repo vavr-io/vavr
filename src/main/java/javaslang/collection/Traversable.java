@@ -659,7 +659,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * @throws java.lang.NullPointerException if comparator is null
      * @throws java.lang.UnsupportedOperationException if no elements are present
      */
-    default T maxBy(Comparator<T> comparator) {
+    default T maxBy(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         if (isEmpty()) {
             throw new UnsupportedOperationException("maxBy of nothing");
@@ -707,7 +707,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * @throws java.lang.NullPointerException if comparator is null
      * @throws java.lang.UnsupportedOperationException if no elements are present
      */
-    default T minBy(Comparator<T> comparator) {
+    default T minBy(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         if (isEmpty()) {
             throw new UnsupportedOperationException("minBy of nothing");
