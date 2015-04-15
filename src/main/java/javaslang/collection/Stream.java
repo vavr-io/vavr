@@ -803,7 +803,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
         if (isEmpty()) {
             return Nil.instance();
         } else {
-            return new Cons<>(take(size), () -> drop(step).grouped(size));
+            return new Cons<>(take(size), () -> drop(step).sliding(size, step));
         }
     }
 

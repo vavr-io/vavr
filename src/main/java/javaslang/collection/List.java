@@ -556,11 +556,11 @@ public interface List<T> extends Seq<T>, ValueObject {
             throw new IllegalArgumentException(String.format("size: %s or step: %s not positive", size, step));
         }
         List<List<T>> result = nil();
-        List<T> traversable = this;
-        while (!traversable.isEmpty()) {
-            final List<T> group = traversable.take(size);
+        List<T> list = this;
+        while (!list.isEmpty()) {
+            final List<T> group = list.take(size);
             result = result.prepend(group);
-            traversable = traversable.drop(step);
+            list = list.drop(step);
         }
         return result.reverse();
     }
