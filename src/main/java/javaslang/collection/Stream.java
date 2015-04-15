@@ -557,6 +557,11 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     @Override
+    default Stream<Stream<T>> grouped(int size) {
+        return sliding(size, size);
+    }
+
+    @Override
     default int indexOf(T element) {
         int index = 0;
         for (Stream<T> stream = this; !stream.isEmpty(); stream = stream.tail(), index++) {
@@ -783,6 +788,23 @@ public interface Stream<T> extends Seq<T>, ValueObject {
         }
         // skip the current head element because it is replaced
         return preceding.reverse().appendAll(tail.tail().prepend(element));
+    }
+
+    @Override
+    default Stream<Stream<T>> sliding(int size) {
+        return sliding(size, 1);
+    }
+
+    @Override
+    default Stream<Stream<T>> sliding(int size, int step) {
+        if (size <= 0 || step <= 0) {
+            throw new IllegalArgumentException(String.format("size: %s or step: %s not positive", size, step));
+        }
+        if (isEmpty()) {
+            return Nil.instance();
+        } else {
+            return new Cons<>(take(size), () -> drop(step).grouped(size));
+        }
     }
 
     @Override

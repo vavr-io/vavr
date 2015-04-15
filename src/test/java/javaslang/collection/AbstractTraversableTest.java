@@ -530,6 +530,41 @@ public abstract class AbstractTraversableTest {
         assertThat(List.of(2, 3).forAll(i -> i % 2 == 0)).isFalse();
     }
 
+    // -- grouped
+
+    @Test
+    public void shouldGroupedNil() {
+        assertThat(nil().grouped(1)).isEqualTo(nil());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowWhenGroupedWithSizeZero() {
+        nil().grouped(0);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowWhenGroupedWithNegativeSize() {
+        nil().grouped(-1);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldGroupedTraversableWithEqualSizedBlocks() {
+        assertThat(of(1, 2, 3, 4).grouped(2)).isEqualTo(of(of(1, 2), of(3, 4)));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldGroupedTraversableWithRemainder() {
+        assertThat(of(1, 2, 3, 4, 5).grouped(2)).isEqualTo(of(of(1, 2), of(3, 4), of(5)));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldGroupedWhenTraversableLengthIsSmallerThanBlockSize() {
+        assertThat(of(1, 2, 3, 4).grouped(5)).isEqualTo(of(of(1, 2, 3, 4)));
+    }
+
     // -- head
 
     @Test(expected = UnsupportedOperationException.class)
@@ -865,12 +900,14 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldPeekNil() {
-        assertThat(nil().peek(t -> {})).isEqualTo(nil());
+        assertThat(nil().peek(t -> {
+        })).isEqualTo(nil());
     }
 
     @Test
     public void shouldPeekNonNilPerformingNoAction() {
-        assertThat(of(1).peek(t -> {})).isEqualTo(of(1));
+        assertThat(of(1).peek(t -> {
+        })).isEqualTo(of(1));
     }
 
     @Test
@@ -1125,6 +1162,70 @@ public abstract class AbstractTraversableTest {
     @Test
     public void shouldReverseNonNil() {
         assertThat(of(1, 2, 3).reverse()).isEqualTo(of(3, 2, 1));
+    }
+
+    // -- sliding(size)
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowWhenSlidingNilByZeroSize() {
+        nil().sliding(0);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowWhenSlidingNilByNegativeSize() {
+        nil().sliding(-1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowWhenSlidingNonNilByZeroSize() {
+        of(1).sliding(0);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowWhenSlidingNonNilByNegativeSize() {
+        of(1).sliding(-1);
+    }
+
+    @Test
+    public void shouldSlideNilBySize() {
+        assertThat(nil().sliding(1)).isEqualTo(nil());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldSlideNonNilBySize() {
+        assertThat(of(1, 2, 3).sliding(1)).isEqualTo(of(of(1), of(2), of(3)));
+    }
+
+    // -- sliding(size, step)
+
+    @Test
+    public void shouldSlideNilBySizeAndStep() {
+        assertThat(nil().sliding(1, 1)).isEqualTo(nil());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldSlide5ElementsBySize2AndStep3() {
+        assertThat(of(1, 2, 3, 4, 5).sliding(2, 3)).isEqualTo(of(of(1, 2), of(4, 5)));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldSlide5ElementsBySize2AndStep4() {
+        assertThat(of(1, 2, 3, 4, 5).sliding(2, 4)).isEqualTo(of(of(1, 2), of(5)));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldSlide5ElementsBySize2AndStep5() {
+        assertThat(of(1, 2, 3, 4, 5).sliding(2, 5)).isEqualTo(of(of(1, 2)));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldSlide4ElementsBySize5AndStep3() {
+        assertThat(of(1, 2, 3, 4).sliding(5, 3)).isEqualTo(of(of(1, 2, 3, 4), of(4)));
     }
 
     // -- span

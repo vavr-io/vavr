@@ -278,13 +278,16 @@ public interface Seq<T> extends Traversable<T> {
     <U> Seq<U> flatten(Function<T, ? extends Iterable<? extends U>> f);
 
     @Override
-    <U> Seq<U> map(Function<? super T, ? extends U> mapper);
+    Seq<? extends Seq<T>> grouped(int size);
 
     @Override
     Seq<T> init();
 
     @Override
     Seq<T> intersperse(T element);
+
+    @Override
+    <U> Seq<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
     Seq<T> peek(Consumer<? super T> action);
@@ -312,6 +315,12 @@ public interface Seq<T> extends Traversable<T> {
 
     @Override
     Seq<T> reverse();
+
+    @Override
+    Seq<? extends Seq<T>> sliding(int size);
+
+    @Override
+    Seq<? extends Seq<T>> sliding(int size, int step);
 
     @Override
     Tuple2<? extends Seq<T>, ? extends Seq<T>> span(Predicate<? super T> predicate);
