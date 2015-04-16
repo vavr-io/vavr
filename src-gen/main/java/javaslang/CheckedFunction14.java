@@ -61,6 +61,227 @@ public interface CheckedFunction14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11,
      */
     R apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13, T14 t14) throws Throwable;
 
+    /**
+     * Applies this function partially to one argument.
+     *
+     * @param t1 argument 1
+     * @return a partial application of this function
+     * @throws Throwable if something goes wrong partially applying this function to the given arguments
+     */
+    default CheckedFunction13<T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, R> apply(T1 t1) throws Throwable {
+        return (T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13, T14 t14) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
+    }
+
+    /**
+     * Applies this function partially to two arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @return a partial application of this function
+     * @throws Throwable if something goes wrong partially applying this function to the given arguments
+     */
+    default CheckedFunction12<T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, R> apply(T1 t1, T2 t2) throws Throwable {
+        return (T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13, T14 t14) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
+    }
+
+    /**
+     * Applies this function partially to three arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @return a partial application of this function
+     * @throws Throwable if something goes wrong partially applying this function to the given arguments
+     */
+    default CheckedFunction11<T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, R> apply(T1 t1, T2 t2, T3 t3) throws Throwable {
+        return (T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13, T14 t14) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
+    }
+
+    /**
+     * Applies this function partially to 4 arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @return a partial application of this function
+     * @throws Throwable if something goes wrong partially applying this function to the given arguments
+     */
+    default CheckedFunction10<T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, R> apply(T1 t1, T2 t2, T3 t3, T4 t4) throws Throwable {
+        return (T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13, T14 t14) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
+    }
+
+    /**
+     * Applies this function partially to 5 arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @param t5 argument 5
+     * @return a partial application of this function
+     * @throws Throwable if something goes wrong partially applying this function to the given arguments
+     */
+    default CheckedFunction9<T6, T7, T8, T9, T10, T11, T12, T13, T14, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) throws Throwable {
+        return (T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13, T14 t14) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
+    }
+
+    /**
+     * Applies this function partially to 6 arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @param t5 argument 5
+     * @param t6 argument 6
+     * @return a partial application of this function
+     * @throws Throwable if something goes wrong partially applying this function to the given arguments
+     */
+    default CheckedFunction8<T7, T8, T9, T10, T11, T12, T13, T14, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6) throws Throwable {
+        return (T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13, T14 t14) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
+    }
+
+    /**
+     * Applies this function partially to 7 arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @param t5 argument 5
+     * @param t6 argument 6
+     * @param t7 argument 7
+     * @return a partial application of this function
+     * @throws Throwable if something goes wrong partially applying this function to the given arguments
+     */
+    default CheckedFunction7<T8, T9, T10, T11, T12, T13, T14, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7) throws Throwable {
+        return (T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13, T14 t14) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
+    }
+
+    /**
+     * Applies this function partially to 8 arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @param t5 argument 5
+     * @param t6 argument 6
+     * @param t7 argument 7
+     * @param t8 argument 8
+     * @return a partial application of this function
+     * @throws Throwable if something goes wrong partially applying this function to the given arguments
+     */
+    default CheckedFunction6<T9, T10, T11, T12, T13, T14, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8) throws Throwable {
+        return (T9 t9, T10 t10, T11 t11, T12 t12, T13 t13, T14 t14) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
+    }
+
+    /**
+     * Applies this function partially to 9 arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @param t5 argument 5
+     * @param t6 argument 6
+     * @param t7 argument 7
+     * @param t8 argument 8
+     * @param t9 argument 9
+     * @return a partial application of this function
+     * @throws Throwable if something goes wrong partially applying this function to the given arguments
+     */
+    default CheckedFunction5<T10, T11, T12, T13, T14, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9) throws Throwable {
+        return (T10 t10, T11 t11, T12 t12, T13 t13, T14 t14) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
+    }
+
+    /**
+     * Applies this function partially to 10 arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @param t5 argument 5
+     * @param t6 argument 6
+     * @param t7 argument 7
+     * @param t8 argument 8
+     * @param t9 argument 9
+     * @param t10 argument 10
+     * @return a partial application of this function
+     * @throws Throwable if something goes wrong partially applying this function to the given arguments
+     */
+    default CheckedFunction4<T11, T12, T13, T14, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10) throws Throwable {
+        return (T11 t11, T12 t12, T13 t13, T14 t14) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
+    }
+
+    /**
+     * Applies this function partially to 11 arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @param t5 argument 5
+     * @param t6 argument 6
+     * @param t7 argument 7
+     * @param t8 argument 8
+     * @param t9 argument 9
+     * @param t10 argument 10
+     * @param t11 argument 11
+     * @return a partial application of this function
+     * @throws Throwable if something goes wrong partially applying this function to the given arguments
+     */
+    default CheckedFunction3<T12, T13, T14, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11) throws Throwable {
+        return (T12 t12, T13 t13, T14 t14) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
+    }
+
+    /**
+     * Applies this function partially to 12 arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @param t5 argument 5
+     * @param t6 argument 6
+     * @param t7 argument 7
+     * @param t8 argument 8
+     * @param t9 argument 9
+     * @param t10 argument 10
+     * @param t11 argument 11
+     * @param t12 argument 12
+     * @return a partial application of this function
+     * @throws Throwable if something goes wrong partially applying this function to the given arguments
+     */
+    default CheckedFunction2<T13, T14, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12) throws Throwable {
+        return (T13 t13, T14 t14) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
+    }
+
+    /**
+     * Applies this function partially to 13 arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @param t5 argument 5
+     * @param t6 argument 6
+     * @param t7 argument 7
+     * @param t8 argument 8
+     * @param t9 argument 9
+     * @param t10 argument 10
+     * @param t11 argument 11
+     * @param t12 argument 12
+     * @param t13 argument 13
+     * @return a partial application of this function
+     * @throws Throwable if something goes wrong partially applying this function to the given arguments
+     */
+    default CheckedFunction1<T14, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13) throws Throwable {
+        return (T14 t14) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
+    }
+
     @Override
     default int arity() {
         return 14;

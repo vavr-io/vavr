@@ -43,6 +43,56 @@ public interface CheckedFunction5<T1, T2, T3, T4, T5, R> extends λ<R> {
      */
     R apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) throws Throwable;
 
+    /**
+     * Applies this function partially to one argument.
+     *
+     * @param t1 argument 1
+     * @return a partial application of this function
+     * @throws Throwable if something goes wrong partially applying this function to the given arguments
+     */
+    default CheckedFunction4<T2, T3, T4, T5, R> apply(T1 t1) throws Throwable {
+        return (T2 t2, T3 t3, T4 t4, T5 t5) -> apply(t1, t2, t3, t4, t5);
+    }
+
+    /**
+     * Applies this function partially to two arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @return a partial application of this function
+     * @throws Throwable if something goes wrong partially applying this function to the given arguments
+     */
+    default CheckedFunction3<T3, T4, T5, R> apply(T1 t1, T2 t2) throws Throwable {
+        return (T3 t3, T4 t4, T5 t5) -> apply(t1, t2, t3, t4, t5);
+    }
+
+    /**
+     * Applies this function partially to three arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @return a partial application of this function
+     * @throws Throwable if something goes wrong partially applying this function to the given arguments
+     */
+    default CheckedFunction2<T4, T5, R> apply(T1 t1, T2 t2, T3 t3) throws Throwable {
+        return (T4 t4, T5 t5) -> apply(t1, t2, t3, t4, t5);
+    }
+
+    /**
+     * Applies this function partially to 4 arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @return a partial application of this function
+     * @throws Throwable if something goes wrong partially applying this function to the given arguments
+     */
+    default CheckedFunction1<T5, R> apply(T1 t1, T2 t2, T3 t3, T4 t4) throws Throwable {
+        return (T5 t5) -> apply(t1, t2, t3, t4, t5);
+    }
+
     @Override
     default int arity() {
         return 5;

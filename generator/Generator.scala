@@ -5,9 +5,10 @@
  */
 
 // temporarily needed to circumvent https://issues.scala-lang.org/browse/SI-3772 (see case class Generics)
-import language.implicitConversions
+import Generator._
+import JavaGenerator._
 
-import Generator._, JavaGenerator._
+import scala.language.implicitConversions
 
 val N = 26
 val TARGET_MAIN = "src-gen/main/java"
@@ -466,6 +467,26 @@ def generateMainClasses(): Unit = {
                */
               R apply($paramsDecl)${checked.gen(" throws Throwable")};
 
+              ${(1 to i - 1).gen(j => {
+                val partialApplicationArgs = (1 to j).gen(k => s"T$k t$k")(", ")
+                val resultFunctionGenerics = (j+1 to i).gen(k => s"T$k")(", ")
+                val resultFunctionArgs = (j+1 to i).gen(k => s"T$k t$k")(", ")
+                val fixedApplyArgs = (1 to j).gen(k => s"t$k")(", ")
+                val variableApplyArgs = (j+1 to i).gen(k => s"t$k")(", ")
+                xs"""
+                  /$javadoc
+                   * Applies this function partially to ${j.numerus("argument")}.
+                   *
+                   ${(1 to j).gen(k => s"* @param t$k argument $k")("\n")}
+                   * @return a partial application of this function
+                   * ${checked.gen("@throws Throwable if something goes wrong partially applying this function to the given arguments")}
+                   */
+                  default $name${i - j}<$resultFunctionGenerics, R> apply($partialApplicationArgs)${checked.gen(" throws Throwable")} {
+                      return ($resultFunctionArgs) -> apply($fixedApplyArgs, $variableApplyArgs);
+                  }
+                """
+              })("\n\n")}
+
               @Override
               default int arity() {
                   return $i;
@@ -721,6 +742,17 @@ def generateTestClasses(): Unit = {
 
         xs"""
           public class $className {
+
+              ${(1 to i - 1).gen(j => {
+                val partialArgs = (1 to j).gen(k => "null")(", ")
+                xs"""
+                  @$test
+                  public void shouldPartiallyApplyWith${j}Arguments()${checked.gen(" throws Throwable")} {
+                      final $name$i<$generics> f = ($functionArgs) -> null;
+                      $assertThat(f.apply($partialArgs) instanceof $name${i - j}).isTrue();
+                  }
+                """
+              })("\n\n")}
 
               @$test
               public void shouldGetArity() {
@@ -1227,8 +1259,9 @@ def genJavaslangFile(packageName: String, className: String, baseDir: String = T
 
 object JavaGenerator {
 
-  import Generator._
   import java.nio.charset.{Charset, StandardCharsets}
+
+  import Generator._
 
   /**
    * Generates a Java file.

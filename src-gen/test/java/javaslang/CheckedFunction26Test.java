@@ -16,6 +16,156 @@ import org.junit.Test;
 public class CheckedFunction26Test {
 
     @Test
+    public void shouldPartiallyApplyWith1Arguments() throws Throwable {
+        final CheckedFunction26<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25, o26) -> null;
+        assertThat(f.apply(null) instanceof CheckedFunction25).isTrue();
+    }
+
+    @Test
+    public void shouldPartiallyApplyWith2Arguments() throws Throwable {
+        final CheckedFunction26<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25, o26) -> null;
+        assertThat(f.apply(null, null) instanceof CheckedFunction24).isTrue();
+    }
+
+    @Test
+    public void shouldPartiallyApplyWith3Arguments() throws Throwable {
+        final CheckedFunction26<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25, o26) -> null;
+        assertThat(f.apply(null, null, null) instanceof CheckedFunction23).isTrue();
+    }
+
+    @Test
+    public void shouldPartiallyApplyWith4Arguments() throws Throwable {
+        final CheckedFunction26<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25, o26) -> null;
+        assertThat(f.apply(null, null, null, null) instanceof CheckedFunction22).isTrue();
+    }
+
+    @Test
+    public void shouldPartiallyApplyWith5Arguments() throws Throwable {
+        final CheckedFunction26<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25, o26) -> null;
+        assertThat(f.apply(null, null, null, null, null) instanceof CheckedFunction21).isTrue();
+    }
+
+    @Test
+    public void shouldPartiallyApplyWith6Arguments() throws Throwable {
+        final CheckedFunction26<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25, o26) -> null;
+        assertThat(f.apply(null, null, null, null, null, null) instanceof CheckedFunction20).isTrue();
+    }
+
+    @Test
+    public void shouldPartiallyApplyWith7Arguments() throws Throwable {
+        final CheckedFunction26<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25, o26) -> null;
+        assertThat(f.apply(null, null, null, null, null, null, null) instanceof CheckedFunction19).isTrue();
+    }
+
+    @Test
+    public void shouldPartiallyApplyWith8Arguments() throws Throwable {
+        final CheckedFunction26<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25, o26) -> null;
+        assertThat(f.apply(null, null, null, null, null, null, null, null) instanceof CheckedFunction18).isTrue();
+    }
+
+    @Test
+    public void shouldPartiallyApplyWith9Arguments() throws Throwable {
+        final CheckedFunction26<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25, o26) -> null;
+        assertThat(f.apply(null, null, null, null, null, null, null, null, null) instanceof CheckedFunction17).isTrue();
+    }
+
+    @Test
+    public void shouldPartiallyApplyWith10Arguments() throws Throwable {
+        final CheckedFunction26<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25, o26) -> null;
+        assertThat(f.apply(null, null, null, null, null, null, null, null, null, null) instanceof CheckedFunction16).isTrue();
+    }
+
+    @Test
+    public void shouldPartiallyApplyWith11Arguments() throws Throwable {
+        final CheckedFunction26<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25, o26) -> null;
+        assertThat(f.apply(null, null, null, null, null, null, null, null, null, null, null) instanceof CheckedFunction15).isTrue();
+    }
+
+    @Test
+    public void shouldPartiallyApplyWith12Arguments() throws Throwable {
+        final CheckedFunction26<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25, o26) -> null;
+        assertThat(f.apply(null, null, null, null, null, null, null, null, null, null, null, null) instanceof CheckedFunction14).isTrue();
+    }
+
+    @Test
+    public void shouldPartiallyApplyWith13Arguments() throws Throwable {
+        final CheckedFunction26<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25, o26) -> null;
+        assertThat(f.apply(null, null, null, null, null, null, null, null, null, null, null, null, null) instanceof CheckedFunction13).isTrue();
+    }
+
+    @Test
+    public void shouldPartiallyApplyWith14Arguments() throws Throwable {
+        final CheckedFunction26<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25, o26) -> null;
+        assertThat(f.apply(null, null, null, null, null, null, null, null, null, null, null, null, null, null) instanceof CheckedFunction12).isTrue();
+    }
+
+    @Test
+    public void shouldPartiallyApplyWith15Arguments() throws Throwable {
+        final CheckedFunction26<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25, o26) -> null;
+        assertThat(f.apply(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null) instanceof CheckedFunction11).isTrue();
+    }
+
+    @Test
+    public void shouldPartiallyApplyWith16Arguments() throws Throwable {
+        final CheckedFunction26<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25, o26) -> null;
+        assertThat(f.apply(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null) instanceof CheckedFunction10).isTrue();
+    }
+
+    @Test
+    public void shouldPartiallyApplyWith17Arguments() throws Throwable {
+        final CheckedFunction26<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25, o26) -> null;
+        assertThat(f.apply(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null) instanceof CheckedFunction9).isTrue();
+    }
+
+    @Test
+    public void shouldPartiallyApplyWith18Arguments() throws Throwable {
+        final CheckedFunction26<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25, o26) -> null;
+        assertThat(f.apply(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null) instanceof CheckedFunction8).isTrue();
+    }
+
+    @Test
+    public void shouldPartiallyApplyWith19Arguments() throws Throwable {
+        final CheckedFunction26<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25, o26) -> null;
+        assertThat(f.apply(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null) instanceof CheckedFunction7).isTrue();
+    }
+
+    @Test
+    public void shouldPartiallyApplyWith20Arguments() throws Throwable {
+        final CheckedFunction26<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25, o26) -> null;
+        assertThat(f.apply(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null) instanceof CheckedFunction6).isTrue();
+    }
+
+    @Test
+    public void shouldPartiallyApplyWith21Arguments() throws Throwable {
+        final CheckedFunction26<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25, o26) -> null;
+        assertThat(f.apply(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null) instanceof CheckedFunction5).isTrue();
+    }
+
+    @Test
+    public void shouldPartiallyApplyWith22Arguments() throws Throwable {
+        final CheckedFunction26<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25, o26) -> null;
+        assertThat(f.apply(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null) instanceof CheckedFunction4).isTrue();
+    }
+
+    @Test
+    public void shouldPartiallyApplyWith23Arguments() throws Throwable {
+        final CheckedFunction26<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25, o26) -> null;
+        assertThat(f.apply(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null) instanceof CheckedFunction3).isTrue();
+    }
+
+    @Test
+    public void shouldPartiallyApplyWith24Arguments() throws Throwable {
+        final CheckedFunction26<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25, o26) -> null;
+        assertThat(f.apply(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null) instanceof CheckedFunction2).isTrue();
+    }
+
+    @Test
+    public void shouldPartiallyApplyWith25Arguments() throws Throwable {
+        final CheckedFunction26<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25, o26) -> null;
+        assertThat(f.apply(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null) instanceof CheckedFunction1).isTrue();
+    }
+
+    @Test
     public void shouldGetArity() {
         final CheckedFunction26<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16, o17, o18, o19, o20, o21, o22, o23, o24, o25, o26) -> null;
         assertThat(f.arity()).isEqualTo(26);
