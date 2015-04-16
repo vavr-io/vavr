@@ -16,6 +16,12 @@ import org.junit.Test;
 public class Function2Test {
 
     @Test
+    public void shouldPartiallyApplyWith1Arguments() {
+        final Function2<Object, Object, Object> f = (o1, o2) -> null;
+        assertThat(f.apply(null) instanceof Function1).isTrue();
+    }
+
+    @Test
     public void shouldGetArity() {
         final Function2<Object, Object, Object> f = (o1, o2) -> null;
         assertThat(f.arity()).isEqualTo(2);

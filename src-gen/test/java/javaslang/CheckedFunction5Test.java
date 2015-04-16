@@ -16,6 +16,30 @@ import org.junit.Test;
 public class CheckedFunction5Test {
 
     @Test
+    public void shouldPartiallyApplyWith1Arguments() throws Throwable {
+        final CheckedFunction5<Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5) -> null;
+        assertThat(f.apply(null) instanceof CheckedFunction4).isTrue();
+    }
+
+    @Test
+    public void shouldPartiallyApplyWith2Arguments() throws Throwable {
+        final CheckedFunction5<Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5) -> null;
+        assertThat(f.apply(null, null) instanceof CheckedFunction3).isTrue();
+    }
+
+    @Test
+    public void shouldPartiallyApplyWith3Arguments() throws Throwable {
+        final CheckedFunction5<Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5) -> null;
+        assertThat(f.apply(null, null, null) instanceof CheckedFunction2).isTrue();
+    }
+
+    @Test
+    public void shouldPartiallyApplyWith4Arguments() throws Throwable {
+        final CheckedFunction5<Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5) -> null;
+        assertThat(f.apply(null, null, null, null) instanceof CheckedFunction1).isTrue();
+    }
+
+    @Test
     public void shouldGetArity() {
         final CheckedFunction5<Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5) -> null;
         assertThat(f.arity()).isEqualTo(5);

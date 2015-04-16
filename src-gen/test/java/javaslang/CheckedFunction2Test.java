@@ -16,6 +16,12 @@ import org.junit.Test;
 public class CheckedFunction2Test {
 
     @Test
+    public void shouldPartiallyApplyWith1Arguments() throws Throwable {
+        final CheckedFunction2<Object, Object, Object> f = (o1, o2) -> null;
+        assertThat(f.apply(null) instanceof CheckedFunction1).isTrue();
+    }
+
+    @Test
     public void shouldGetArity() {
         final CheckedFunction2<Object, Object, Object> f = (o1, o2) -> null;
         assertThat(f.arity()).isEqualTo(2);

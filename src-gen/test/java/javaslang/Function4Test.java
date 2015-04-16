@@ -16,6 +16,24 @@ import org.junit.Test;
 public class Function4Test {
 
     @Test
+    public void shouldPartiallyApplyWith1Arguments() {
+        final Function4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
+        assertThat(f.apply(null) instanceof Function3).isTrue();
+    }
+
+    @Test
+    public void shouldPartiallyApplyWith2Arguments() {
+        final Function4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
+        assertThat(f.apply(null, null) instanceof Function2).isTrue();
+    }
+
+    @Test
+    public void shouldPartiallyApplyWith3Arguments() {
+        final Function4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
+        assertThat(f.apply(null, null, null) instanceof Function1).isTrue();
+    }
+
+    @Test
     public void shouldGetArity() {
         final Function4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
         assertThat(f.arity()).isEqualTo(4);

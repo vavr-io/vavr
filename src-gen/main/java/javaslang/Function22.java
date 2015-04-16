@@ -77,6 +77,447 @@ public interface Function22<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T
      */
     R apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13, T14 t14, T15 t15, T16 t16, T17 t17, T18 t18, T19 t19, T20 t20, T21 t21, T22 t22);
 
+    /**
+     * Applies this function partially to one argument.
+     *
+     * @param t1 argument 1
+     * @return a partial application of this function
+     * 
+     */
+    default Function21<T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, R> apply(T1 t1) {
+        return (T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13, T14 t14, T15 t15, T16 t16, T17 t17, T18 t18, T19 t19, T20 t20, T21 t21, T22 t22) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22);
+    }
+
+    /**
+     * Applies this function partially to two arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @return a partial application of this function
+     * 
+     */
+    default Function20<T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, R> apply(T1 t1, T2 t2) {
+        return (T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13, T14 t14, T15 t15, T16 t16, T17 t17, T18 t18, T19 t19, T20 t20, T21 t21, T22 t22) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22);
+    }
+
+    /**
+     * Applies this function partially to three arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @return a partial application of this function
+     * 
+     */
+    default Function19<T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, R> apply(T1 t1, T2 t2, T3 t3) {
+        return (T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13, T14 t14, T15 t15, T16 t16, T17 t17, T18 t18, T19 t19, T20 t20, T21 t21, T22 t22) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22);
+    }
+
+    /**
+     * Applies this function partially to 4 arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @return a partial application of this function
+     * 
+     */
+    default Function18<T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, R> apply(T1 t1, T2 t2, T3 t3, T4 t4) {
+        return (T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13, T14 t14, T15 t15, T16 t16, T17 t17, T18 t18, T19 t19, T20 t20, T21 t21, T22 t22) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22);
+    }
+
+    /**
+     * Applies this function partially to 5 arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @param t5 argument 5
+     * @return a partial application of this function
+     * 
+     */
+    default Function17<T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) {
+        return (T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13, T14 t14, T15 t15, T16 t16, T17 t17, T18 t18, T19 t19, T20 t20, T21 t21, T22 t22) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22);
+    }
+
+    /**
+     * Applies this function partially to 6 arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @param t5 argument 5
+     * @param t6 argument 6
+     * @return a partial application of this function
+     * 
+     */
+    default Function16<T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6) {
+        return (T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13, T14 t14, T15 t15, T16 t16, T17 t17, T18 t18, T19 t19, T20 t20, T21 t21, T22 t22) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22);
+    }
+
+    /**
+     * Applies this function partially to 7 arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @param t5 argument 5
+     * @param t6 argument 6
+     * @param t7 argument 7
+     * @return a partial application of this function
+     * 
+     */
+    default Function15<T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7) {
+        return (T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13, T14 t14, T15 t15, T16 t16, T17 t17, T18 t18, T19 t19, T20 t20, T21 t21, T22 t22) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22);
+    }
+
+    /**
+     * Applies this function partially to 8 arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @param t5 argument 5
+     * @param t6 argument 6
+     * @param t7 argument 7
+     * @param t8 argument 8
+     * @return a partial application of this function
+     * 
+     */
+    default Function14<T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8) {
+        return (T9 t9, T10 t10, T11 t11, T12 t12, T13 t13, T14 t14, T15 t15, T16 t16, T17 t17, T18 t18, T19 t19, T20 t20, T21 t21, T22 t22) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22);
+    }
+
+    /**
+     * Applies this function partially to 9 arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @param t5 argument 5
+     * @param t6 argument 6
+     * @param t7 argument 7
+     * @param t8 argument 8
+     * @param t9 argument 9
+     * @return a partial application of this function
+     * 
+     */
+    default Function13<T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9) {
+        return (T10 t10, T11 t11, T12 t12, T13 t13, T14 t14, T15 t15, T16 t16, T17 t17, T18 t18, T19 t19, T20 t20, T21 t21, T22 t22) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22);
+    }
+
+    /**
+     * Applies this function partially to 10 arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @param t5 argument 5
+     * @param t6 argument 6
+     * @param t7 argument 7
+     * @param t8 argument 8
+     * @param t9 argument 9
+     * @param t10 argument 10
+     * @return a partial application of this function
+     * 
+     */
+    default Function12<T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10) {
+        return (T11 t11, T12 t12, T13 t13, T14 t14, T15 t15, T16 t16, T17 t17, T18 t18, T19 t19, T20 t20, T21 t21, T22 t22) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22);
+    }
+
+    /**
+     * Applies this function partially to 11 arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @param t5 argument 5
+     * @param t6 argument 6
+     * @param t7 argument 7
+     * @param t8 argument 8
+     * @param t9 argument 9
+     * @param t10 argument 10
+     * @param t11 argument 11
+     * @return a partial application of this function
+     * 
+     */
+    default Function11<T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11) {
+        return (T12 t12, T13 t13, T14 t14, T15 t15, T16 t16, T17 t17, T18 t18, T19 t19, T20 t20, T21 t21, T22 t22) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22);
+    }
+
+    /**
+     * Applies this function partially to 12 arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @param t5 argument 5
+     * @param t6 argument 6
+     * @param t7 argument 7
+     * @param t8 argument 8
+     * @param t9 argument 9
+     * @param t10 argument 10
+     * @param t11 argument 11
+     * @param t12 argument 12
+     * @return a partial application of this function
+     * 
+     */
+    default Function10<T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12) {
+        return (T13 t13, T14 t14, T15 t15, T16 t16, T17 t17, T18 t18, T19 t19, T20 t20, T21 t21, T22 t22) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22);
+    }
+
+    /**
+     * Applies this function partially to 13 arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @param t5 argument 5
+     * @param t6 argument 6
+     * @param t7 argument 7
+     * @param t8 argument 8
+     * @param t9 argument 9
+     * @param t10 argument 10
+     * @param t11 argument 11
+     * @param t12 argument 12
+     * @param t13 argument 13
+     * @return a partial application of this function
+     * 
+     */
+    default Function9<T14, T15, T16, T17, T18, T19, T20, T21, T22, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13) {
+        return (T14 t14, T15 t15, T16 t16, T17 t17, T18 t18, T19 t19, T20 t20, T21 t21, T22 t22) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22);
+    }
+
+    /**
+     * Applies this function partially to 14 arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @param t5 argument 5
+     * @param t6 argument 6
+     * @param t7 argument 7
+     * @param t8 argument 8
+     * @param t9 argument 9
+     * @param t10 argument 10
+     * @param t11 argument 11
+     * @param t12 argument 12
+     * @param t13 argument 13
+     * @param t14 argument 14
+     * @return a partial application of this function
+     * 
+     */
+    default Function8<T15, T16, T17, T18, T19, T20, T21, T22, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13, T14 t14) {
+        return (T15 t15, T16 t16, T17 t17, T18 t18, T19 t19, T20 t20, T21 t21, T22 t22) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22);
+    }
+
+    /**
+     * Applies this function partially to 15 arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @param t5 argument 5
+     * @param t6 argument 6
+     * @param t7 argument 7
+     * @param t8 argument 8
+     * @param t9 argument 9
+     * @param t10 argument 10
+     * @param t11 argument 11
+     * @param t12 argument 12
+     * @param t13 argument 13
+     * @param t14 argument 14
+     * @param t15 argument 15
+     * @return a partial application of this function
+     * 
+     */
+    default Function7<T16, T17, T18, T19, T20, T21, T22, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13, T14 t14, T15 t15) {
+        return (T16 t16, T17 t17, T18 t18, T19 t19, T20 t20, T21 t21, T22 t22) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22);
+    }
+
+    /**
+     * Applies this function partially to 16 arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @param t5 argument 5
+     * @param t6 argument 6
+     * @param t7 argument 7
+     * @param t8 argument 8
+     * @param t9 argument 9
+     * @param t10 argument 10
+     * @param t11 argument 11
+     * @param t12 argument 12
+     * @param t13 argument 13
+     * @param t14 argument 14
+     * @param t15 argument 15
+     * @param t16 argument 16
+     * @return a partial application of this function
+     * 
+     */
+    default Function6<T17, T18, T19, T20, T21, T22, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13, T14 t14, T15 t15, T16 t16) {
+        return (T17 t17, T18 t18, T19 t19, T20 t20, T21 t21, T22 t22) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22);
+    }
+
+    /**
+     * Applies this function partially to 17 arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @param t5 argument 5
+     * @param t6 argument 6
+     * @param t7 argument 7
+     * @param t8 argument 8
+     * @param t9 argument 9
+     * @param t10 argument 10
+     * @param t11 argument 11
+     * @param t12 argument 12
+     * @param t13 argument 13
+     * @param t14 argument 14
+     * @param t15 argument 15
+     * @param t16 argument 16
+     * @param t17 argument 17
+     * @return a partial application of this function
+     * 
+     */
+    default Function5<T18, T19, T20, T21, T22, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13, T14 t14, T15 t15, T16 t16, T17 t17) {
+        return (T18 t18, T19 t19, T20 t20, T21 t21, T22 t22) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22);
+    }
+
+    /**
+     * Applies this function partially to 18 arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @param t5 argument 5
+     * @param t6 argument 6
+     * @param t7 argument 7
+     * @param t8 argument 8
+     * @param t9 argument 9
+     * @param t10 argument 10
+     * @param t11 argument 11
+     * @param t12 argument 12
+     * @param t13 argument 13
+     * @param t14 argument 14
+     * @param t15 argument 15
+     * @param t16 argument 16
+     * @param t17 argument 17
+     * @param t18 argument 18
+     * @return a partial application of this function
+     * 
+     */
+    default Function4<T19, T20, T21, T22, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13, T14 t14, T15 t15, T16 t16, T17 t17, T18 t18) {
+        return (T19 t19, T20 t20, T21 t21, T22 t22) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22);
+    }
+
+    /**
+     * Applies this function partially to 19 arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @param t5 argument 5
+     * @param t6 argument 6
+     * @param t7 argument 7
+     * @param t8 argument 8
+     * @param t9 argument 9
+     * @param t10 argument 10
+     * @param t11 argument 11
+     * @param t12 argument 12
+     * @param t13 argument 13
+     * @param t14 argument 14
+     * @param t15 argument 15
+     * @param t16 argument 16
+     * @param t17 argument 17
+     * @param t18 argument 18
+     * @param t19 argument 19
+     * @return a partial application of this function
+     * 
+     */
+    default Function3<T20, T21, T22, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13, T14 t14, T15 t15, T16 t16, T17 t17, T18 t18, T19 t19) {
+        return (T20 t20, T21 t21, T22 t22) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22);
+    }
+
+    /**
+     * Applies this function partially to 20 arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @param t5 argument 5
+     * @param t6 argument 6
+     * @param t7 argument 7
+     * @param t8 argument 8
+     * @param t9 argument 9
+     * @param t10 argument 10
+     * @param t11 argument 11
+     * @param t12 argument 12
+     * @param t13 argument 13
+     * @param t14 argument 14
+     * @param t15 argument 15
+     * @param t16 argument 16
+     * @param t17 argument 17
+     * @param t18 argument 18
+     * @param t19 argument 19
+     * @param t20 argument 20
+     * @return a partial application of this function
+     * 
+     */
+    default Function2<T21, T22, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13, T14 t14, T15 t15, T16 t16, T17 t17, T18 t18, T19 t19, T20 t20) {
+        return (T21 t21, T22 t22) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22);
+    }
+
+    /**
+     * Applies this function partially to 21 arguments.
+     *
+     * @param t1 argument 1
+     * @param t2 argument 2
+     * @param t3 argument 3
+     * @param t4 argument 4
+     * @param t5 argument 5
+     * @param t6 argument 6
+     * @param t7 argument 7
+     * @param t8 argument 8
+     * @param t9 argument 9
+     * @param t10 argument 10
+     * @param t11 argument 11
+     * @param t12 argument 12
+     * @param t13 argument 13
+     * @param t14 argument 14
+     * @param t15 argument 15
+     * @param t16 argument 16
+     * @param t17 argument 17
+     * @param t18 argument 18
+     * @param t19 argument 19
+     * @param t20 argument 20
+     * @param t21 argument 21
+     * @return a partial application of this function
+     * 
+     */
+    default Function1<T22, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10, T11 t11, T12 t12, T13 t13, T14 t14, T15 t15, T16 t16, T17 t17, T18 t18, T19 t19, T20 t20, T21 t21) {
+        return (T22 t22) -> apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22);
+    }
+
     @Override
     default int arity() {
         return 22;
