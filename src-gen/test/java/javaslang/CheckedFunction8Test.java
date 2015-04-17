@@ -16,45 +16,56 @@ import org.junit.Test;
 public class CheckedFunction8Test {
 
     @Test
+    public void shouldLift() {
+        class Type {
+            Object methodReference(Object o1, Object o2, Object o3, Object o4, Object o5, Object o6, Object o7, Object o8) {
+                return null;
+            }
+        }
+        final Type type = new Type();
+        assertThat(CheckedFunction8.lift(type::methodReference)).isNotNull();
+    }
+
+    @Test
     public void shouldPartiallyApplyWith1Arguments() throws Throwable {
         final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8) -> null;
-        assertThat(f.apply(null) instanceof CheckedFunction7).isTrue();
+        assertThat(f.apply(null)).isNotNull();
     }
 
     @Test
     public void shouldPartiallyApplyWith2Arguments() throws Throwable {
         final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8) -> null;
-        assertThat(f.apply(null, null) instanceof CheckedFunction6).isTrue();
+        assertThat(f.apply(null, null)).isNotNull();
     }
 
     @Test
     public void shouldPartiallyApplyWith3Arguments() throws Throwable {
         final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8) -> null;
-        assertThat(f.apply(null, null, null) instanceof CheckedFunction5).isTrue();
+        assertThat(f.apply(null, null, null)).isNotNull();
     }
 
     @Test
     public void shouldPartiallyApplyWith4Arguments() throws Throwable {
         final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8) -> null;
-        assertThat(f.apply(null, null, null, null) instanceof CheckedFunction4).isTrue();
+        assertThat(f.apply(null, null, null, null)).isNotNull();
     }
 
     @Test
     public void shouldPartiallyApplyWith5Arguments() throws Throwable {
         final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8) -> null;
-        assertThat(f.apply(null, null, null, null, null) instanceof CheckedFunction3).isTrue();
+        assertThat(f.apply(null, null, null, null, null)).isNotNull();
     }
 
     @Test
     public void shouldPartiallyApplyWith6Arguments() throws Throwable {
         final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8) -> null;
-        assertThat(f.apply(null, null, null, null, null, null) instanceof CheckedFunction2).isTrue();
+        assertThat(f.apply(null, null, null, null, null, null)).isNotNull();
     }
 
     @Test
     public void shouldPartiallyApplyWith7Arguments() throws Throwable {
         final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8) -> null;
-        assertThat(f.apply(null, null, null, null, null, null, null) instanceof CheckedFunction1).isTrue();
+        assertThat(f.apply(null, null, null, null, null, null, null)).isNotNull();
     }
 
     @Test

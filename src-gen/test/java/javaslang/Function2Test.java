@@ -16,9 +16,20 @@ import org.junit.Test;
 public class Function2Test {
 
     @Test
+    public void shouldLift() {
+        class Type {
+            Object methodReference(Object o1, Object o2) {
+                return null;
+            }
+        }
+        final Type type = new Type();
+        assertThat(Function2.lift(type::methodReference)).isNotNull();
+    }
+
+    @Test
     public void shouldPartiallyApplyWith1Arguments() {
         final Function2<Object, Object, Object> f = (o1, o2) -> null;
-        assertThat(f.apply(null) instanceof Function1).isTrue();
+        assertThat(f.apply(null)).isNotNull();
     }
 
     @Test

@@ -36,6 +36,28 @@ public interface CheckedFunction10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> e
     long serialVersionUID = 1L;
 
     /**
+     * Lifts a <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html">method
+     * reference</a> to a {@code CheckedFunction10}.
+     *
+     * @param methodReference (typically) a method reference, e.g. {@code Type::method}
+     * @param <R> return type
+     * @param <T1> 1st argument
+     * @param <T2> 2nd argument
+     * @param <T3> 3rd argument
+     * @param <T4> 4th argument
+     * @param <T5> 5th argument
+     * @param <T6> 6th argument
+     * @param <T7> 7th argument
+     * @param <T8> 8th argument
+     * @param <T9> 9th argument
+     * @param <T10> 10th argument
+     * @return a {@code CheckedFunction10}
+     */
+    static <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> CheckedFunction10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> lift(CheckedFunction10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> methodReference) {
+        return methodReference;
+    }
+
+    /**
      * Applies this function to 10 arguments and returns the result.
      *
      * @param t1 argument 1

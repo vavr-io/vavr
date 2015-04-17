@@ -439,6 +439,7 @@ def generateMainClasses(): Unit = {
       def genFunction(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
 
         val generics = (1 to i).gen(j => s"T$j")(", ")
+        val fullGenerics = s"<${(i > 0).gen(s"$generics, ")}R>"
         val genericsReversed = (1 to i).reverse.gen(j => s"T$j")(", ")
         val genericsTuple = if (i > 0) s"<$generics>" else ""
         val genericsFunction = if (i > 0) s"$generics, " else ""
@@ -479,12 +480,24 @@ def generateMainClasses(): Unit = {
            * @since 1.1.0
            */
           @FunctionalInterface
-          public interface $className<${(i > 0).gen(s"$generics, ")}R> extends λ<R> {
+          public interface $className$fullGenerics extends λ<R> {
 
               /**
                * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
                */
               long serialVersionUID = 1L;
+
+              /**
+               * Lifts a <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html">method
+               * reference</a> to a {@code $className}.
+               *
+               * @param methodReference (typically) a method reference, e.g. {@code Type::method}
+               ${(0 to i).gen(j => if (j == 0) "* @param <R> return type" else s"* @param <T$j> ${j.ordinal} argument")("\n")}
+               * @return a {@code $className}
+               */
+              static $fullGenerics $className$fullGenerics lift($className$fullGenerics methodReference) {
+                  return methodReference;
+              }
 
               ${(i == 1).gen(xs"""
               /$javadoc
@@ -759,6 +772,7 @@ def generateTestClasses(): Unit = {
 
       def genFunctionTest(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
 
+        val functionArgsDecl = (1 to i).gen(j => s"Object o$j")(", ")
         val functionArgs = (1 to i).gen(j => s"o$j")(", ")
         val generics = (1 to i + 1).gen(j => "Object")(", ")
 
@@ -781,13 +795,24 @@ def generateTestClasses(): Unit = {
         xs"""
           public class $className {
 
+              @$test
+              public void shouldLift() {
+                  class Type {
+                      Object methodReference($functionArgsDecl) {
+                          return null;
+                      }
+                  }
+                  final Type type = new Type();
+                  assertThat($name$i.lift(type::methodReference)).isNotNull();
+              }
+
               ${(1 to i - 1).gen(j => {
                 val partialArgs = (1 to j).gen(k => "null")(", ")
                 xs"""
                   @$test
                   public void shouldPartiallyApplyWith${j}Arguments()${checked.gen(" throws Throwable")} {
                       final $name$i<$generics> f = ($functionArgs) -> null;
-                      $assertThat(f.apply($partialArgs) instanceof $name${i - j}).isTrue();
+                      $assertThat(f.apply($partialArgs)).isNotNull();
                   }
                 """
               })("\n\n")}

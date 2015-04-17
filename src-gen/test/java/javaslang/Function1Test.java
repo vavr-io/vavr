@@ -16,6 +16,17 @@ import org.junit.Test;
 public class Function1Test {
 
     @Test
+    public void shouldLift() {
+        class Type {
+            Object methodReference(Object o1) {
+                return null;
+            }
+        }
+        final Type type = new Type();
+        assertThat(Function1.lift(type::methodReference)).isNotNull();
+    }
+
+    @Test
     public void shouldGetArity() {
         final Function1<Object, Object> f = (o1) -> null;
         assertThat(f.arity()).isEqualTo(1);

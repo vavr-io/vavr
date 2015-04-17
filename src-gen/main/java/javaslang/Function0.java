@@ -26,6 +26,18 @@ public interface Function0<R> extends λ<R> {
     long serialVersionUID = 1L;
 
     /**
+     * Lifts a <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html">method
+     * reference</a> to a {@code Function0}.
+     *
+     * @param methodReference (typically) a method reference, e.g. {@code Type::method}
+     * @param <R> return type
+     * @return a {@code Function0}
+     */
+    static <R> Function0<R> lift(Function0<R> methodReference) {
+        return methodReference;
+    }
+
+    /**
      * Applies this function to no arguments and returns the result.
      *
      * @return the result of function application

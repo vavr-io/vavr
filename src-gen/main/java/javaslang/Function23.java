@@ -49,6 +49,41 @@ public interface Function23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T
     long serialVersionUID = 1L;
 
     /**
+     * Lifts a <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html">method
+     * reference</a> to a {@code Function23}.
+     *
+     * @param methodReference (typically) a method reference, e.g. {@code Type::method}
+     * @param <R> return type
+     * @param <T1> 1st argument
+     * @param <T2> 2nd argument
+     * @param <T3> 3rd argument
+     * @param <T4> 4th argument
+     * @param <T5> 5th argument
+     * @param <T6> 6th argument
+     * @param <T7> 7th argument
+     * @param <T8> 8th argument
+     * @param <T9> 9th argument
+     * @param <T10> 10th argument
+     * @param <T11> 11th argument
+     * @param <T12> 12th argument
+     * @param <T13> 13th argument
+     * @param <T14> 14th argument
+     * @param <T15> 15th argument
+     * @param <T16> 16th argument
+     * @param <T17> 17th argument
+     * @param <T18> 18th argument
+     * @param <T19> 19th argument
+     * @param <T20> 20th argument
+     * @param <T21> 1st argument
+     * @param <T22> 2nd argument
+     * @param <T23> 3rd argument
+     * @return a {@code Function23}
+     */
+    static <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, R> Function23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, R> lift(Function23<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, R> methodReference) {
+        return methodReference;
+    }
+
+    /**
      * Applies this function to 23 arguments and returns the result.
      *
      * @param t1 argument 1
