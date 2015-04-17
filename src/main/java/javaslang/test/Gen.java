@@ -287,7 +287,7 @@ public interface Gen<T> extends Monad<T, Gen<?>> {
      */
     @SuppressWarnings("unchecked")
     @Override
-    default <U, GEN extends HigherKinded<U, Gen<?>>> Gen<U> flatMap(Function<? super T, GEN> mapper) {
+    default <U, GEN extends HigherKinded<U, Gen<?>>> Gen<U> flatMap(Function<? super T, ? extends GEN> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         //noinspection Convert2MethodRef
         return random -> ((Gen<U>) mapper.apply(apply(random))).apply(random);
@@ -312,6 +312,21 @@ public interface Gen<T> extends Monad<T, Gen<?>> {
                 }
             }
             return t;
+        };
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Gen<U> flatten() {
+        return ((Gen<? extends Gen<U>>) this).flatten(Function.identity());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U, GEN extends HigherKinded<U, Gen<?>>> Gen<U> flatten(Function<? super T, ? extends GEN> f) {
+        return random -> {
+            final Gen<U> gen = (Gen<U>) f.apply(apply(random));
+            return gen.apply(random);
         };
     }
 

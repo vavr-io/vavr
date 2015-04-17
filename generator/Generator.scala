@@ -95,7 +95,7 @@ def generateMainClasses(): Unit = {
 
       xs"""
         /$javadoc
-         * Defines a $name by generalizing the flatMap function.
+         * Defines a $className by generalizing the flatMap function.
          * <p>
          * All instances of the $className interface should obey the three control laws:
          * <ul>
@@ -128,7 +128,7 @@ def generateMainClasses(): Unit = {
              * @param f a ${checked.gen("checked ")}function that maps the monad value to a new monad instance
              * @return a new $className instance of component type U and container type M
              */
-            <U, MONAD extends HigherKinded<U, M>> $className<U, M> flatMap($functionType<? super T, MONAD> f);
+            <U, MONAD extends HigherKinded<U, M>> $className<U, M> flatMap($functionType<? super T, ? extends MONAD> f);
 
             /**
              * Returns a filterned instance of this {@code $name}.
@@ -139,6 +139,43 @@ def generateMainClasses(): Unit = {
              * @return An instance of this monad type
              */
             $className<T, M> filter($predicateType<? super T> predicate);
+
+            /**
+             * Flattens a nested, monadic structure. Assumes that the elements are of type HigherKinded&lt;U, M&gt;
+             *
+             * <p>
+             * A vivid example showing a simple container type:
+             * <pre>
+             * <code>
+             * [[1],[2,3]].flatten() = [1,2,3]
+             * </code>
+             * </pre>
+             *
+             * @param <U> component type of the resulting {@code Monad}
+             * @return A monadic structure containing flattened elements.
+             */
+            <U> $name<U, M> flatten();
+
+            /**
+             * Flattens a nested, monadic structure using a function.
+             * <p>
+             * A vivid example showing a simple container type:
+             * <pre>
+             * <code>
+             * // given a monad M&lt;T&gt;
+             * [a,[b,c],d].flatten( Match
+             *    .caze((M m) -&gt; m)
+             *    .caze((T t) -&gt; new M(t))
+             * ) = [a,b,c,d]
+             * </code>
+             * </pre>
+             *
+             * @param <U> component type of the resulting {@code Monad}
+             * @param <MONAD> {@code Monad} type
+             * @param f a function which maps elements of this monad to monads of the same kind
+             * @return A monadic structure containing flattened elements.
+             */
+            <U, MONAD extends HigherKinded<U, M>> $name<U, M> flatten($functionType<? super T, ? extends MONAD> f);
 
             /**
              * Performs an action on each element of this monad.
@@ -160,6 +197,7 @@ def generateMainClasses(): Unit = {
       """
     }
   }
+
 
   /**
    * Generator of javaslang.test.Property

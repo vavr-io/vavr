@@ -176,6 +176,55 @@ public class OptionTest implements MonadLaws<Option<?>> {
         assertThat(Option.<Integer>none().filter(i -> i == 1)).isEqualTo(Option.none());
     }
 
+    // -- flatten
+
+    @Test(expected = ClassCastException.class)
+    public void shouldThrowWhenFlatteningUnnestedSome() {
+        new Some<>(1).flatten();
+    }
+
+    @Test
+    public void shouldFlattenSomeOfSome() {
+        assertThat(new Some<>(new Some<>(1)).flatten()).isEqualTo(new Some<>(1));
+    }
+
+    @Test
+    public void shouldFlattenSomeOfNone() {
+        assertThat(new Some<>(None.instance()).flatten()).isEqualTo(None.instance());
+    }
+
+    @Test
+    public void shouldFlattenNone() {
+        assertThat(None.instance().flatten()).isEqualTo(None.instance());
+    }
+
+    // -- flatten(Function)
+
+    static final Match<Option<Integer>> MATCH = Match
+        .caze((Option<Integer> o) -> o)
+        .caze((Integer i) -> new Some<>(i))
+        .build();
+
+    @Test
+    public void shouldFlattenUnnestedSomeWithFunction() {
+        assertThat(new Some<>(1)).isEqualTo(new Some<>(1));
+    }
+
+    @Test
+    public void shouldFlattenSomeOfSomeWithFunction() {
+        assertThat(new Some<>(new Some<>(1)).flatten(MATCH)).isEqualTo(new Some<>(1));
+    }
+
+    @Test
+    public void shouldFlattenSomeOfNoneWithFunction() {
+        assertThat(new Some<>(None.instance()).flatten(MATCH)).isEqualTo(None.instance());
+    }
+
+    @Test
+    public void shouldFlattenNoneWithFunction() {
+        assertThat(None.instance().flatten(MATCH)).isEqualTo(None.instance());
+    }
+
     // -- map
 
     @Test

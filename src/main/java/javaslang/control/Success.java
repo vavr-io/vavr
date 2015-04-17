@@ -93,7 +93,7 @@ public final class Success<T> implements Try<T> {
 
     @Override
     public Right<Throwable, T> toEither() {
-        return new Right<>(value);
+        return Right.of(value);
     }
 
     @Override
@@ -145,7 +145,7 @@ public final class Success<T> implements Try<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U, TRY extends HigherKinded<U, Try<?>>> Try<U> flatMap(CheckedFunction<? super T, TRY> mapper) {
+    public <U, TRY extends HigherKinded<U, Try<?>>> Try<U> flatMap(CheckedFunction<? super T, ? extends TRY> mapper) {
         try {
             return (Try<U>) mapper.apply(value);
         } catch (Throwable t) {

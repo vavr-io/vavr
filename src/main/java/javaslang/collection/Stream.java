@@ -7,7 +7,6 @@ package javaslang.collection;
 
 import javaslang.*;
 import javaslang.algebra.HigherKinded;
-import javaslang.control.Match;
 import javaslang.control.Try;
 
 import java.io.*;
@@ -507,7 +506,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Stream<U> flatMap(Function<? super T, TRAVERSABLE> mapper) {
+    default <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Stream<U> flatMap(Function<? super T, ? extends TRAVERSABLE> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return Nil.instance();
@@ -518,22 +517,59 @@ public interface Stream<T> extends Seq<T>, ValueObject {
         }
     }
 
+    /**
+     * Flattens a {@code Stream}, assuming that the elements are of type Stream&lt;U&gt;
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Stream.of(1).flatten();              // throws
+     * Stream.of(Stream.of(1)).flatten();   // = Stream(1)
+     * Stream.of(Nil.instance()).flatten(); // = Nil
+     * Nil.instance().flatten();            // = Nil
+     * </code>
+     * </pre>
+     *
+     * @param <U> component type of the result {@code Stream}
+     * @return a new {@code Stream}
+     * @throws java.lang.ClassCastException if this {@code Stream} is not of type {@code Stream<? extends Stream<U>>}
+     */
+    @SuppressWarnings("unchecked")
     @Override
     default <U> Stream<U> flatten() {
-        final Match<Iterable<U>> match = Match
-                .caze((Iterable<U> xs) -> xs)
-                .caze((U x) -> List.of(x))
-                .build();
-        return flatten(match::apply);
+        return ((Stream<? extends Stream<U>>) this).flatten(Function.identity());
     }
 
+    /**
+     * Flattens a {@code Stream} using a function.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Match&lt;Stream&lt;U&gt;&gt; f
+     *    .caze((Stream&lt;U&gt; l) -&gt; l)
+     *    .caze((U u) -&gt; Stream.of(u))
+     *    .build();
+     * Stream.of(1).flatten();              // = Stream(1)
+     * Stream.of(Stream.of(1)).flatten();   // = Stream(1)
+     * Stream.of(Nil.instance()).flatten(); // = Nil
+     * Nil.instance().flatten();            // = Nil
+     * </code>
+     * </pre>
+     *
+     * @param <U> component type of the result {@code Stream}
+     * @param <TRAVERSABLE> a {@code Traversable&lt;U&gt;}
+     * @param f a function which maps elements of this Stream to Traversables
+     * @return a new {@code Stream}
+     */
+    @SuppressWarnings("unchecked")
     @Override
-    default <U> Stream<U> flatten(Function<T, ? extends Iterable<? extends U>> f) {
+    default <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Stream<U> flatten(Function<? super T, ? extends TRAVERSABLE> f) {
         Objects.requireNonNull(f, "f is null");
         if (isEmpty()) {
             return Nil.instance();
         } else {
-            final Iterable<? extends U> mapped = f.apply(head());
+            final Iterable<U> mapped = (Traversable<U>) f.apply(head());
             return Nil.<U>instance().appendAll(mapped).appendAll(tail().flatten(f));
         }
     }

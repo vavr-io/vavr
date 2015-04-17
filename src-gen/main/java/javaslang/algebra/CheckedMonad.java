@@ -48,7 +48,7 @@ public interface CheckedMonad<T, M extends HigherKinded<?, M>> extends CheckedFu
      * @param f a checked function that maps the monad value to a new monad instance
      * @return a new CheckedMonad instance of component type U and container type M
      */
-    <U, MONAD extends HigherKinded<U, M>> CheckedMonad<U, M> flatMap(CheckedFunction<? super T, MONAD> f);
+    <U, MONAD extends HigherKinded<U, M>> CheckedMonad<U, M> flatMap(CheckedFunction<? super T, ? extends MONAD> f);
 
     /**
      * Returns a filterned instance of this {@code CheckedMonad}.
@@ -59,6 +59,43 @@ public interface CheckedMonad<T, M extends HigherKinded<?, M>> extends CheckedFu
      * @return An instance of this monad type
      */
     CheckedMonad<T, M> filter(CheckedPredicate<? super T> predicate);
+
+    /**
+     * Flattens a nested, monadic structure. Assumes that the elements are of type HigherKinded&lt;U, M&gt;
+     *
+     * <p>
+     * A vivid example showing a simple container type:
+     * <pre>
+     * <code>
+     * [[1],[2,3]].flatten() = [1,2,3]
+     * </code>
+     * </pre>
+     *
+     * @param <U> component type of the resulting {@code Monad}
+     * @return A monadic structure containing flattened elements.
+     */
+    <U> CheckedMonad<U, M> flatten();
+
+    /**
+     * Flattens a nested, monadic structure using a function.
+     * <p>
+     * A vivid example showing a simple container type:
+     * <pre>
+     * <code>
+     * // given a monad M&lt;T&gt;
+     * [a,[b,c],d].flatten( Match
+     *    .caze((M m) -&gt; m)
+     *    .caze((T t) -&gt; new M(t))
+     * ) = [a,b,c,d]
+     * </code>
+     * </pre>
+     *
+     * @param <U> component type of the resulting {@code Monad}
+     * @param <MONAD> {@code Monad} type
+     * @param f a function which maps elements of this monad to monads of the same kind
+     * @return A monadic structure containing flattened elements.
+     */
+    <U, MONAD extends HigherKinded<U, M>> CheckedMonad<U, M> flatten(CheckedFunction<? super T, ? extends MONAD> f);
 
     /**
      * Performs an action on each element of this monad.

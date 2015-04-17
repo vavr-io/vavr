@@ -7,7 +7,7 @@ package javaslang.algebra;
 
 /**
  * <p>The <em>HigherKinded</em> type declares a generic type constructor, which consists of
- * on component type and one container type.</p>
+ * on component type and one container type. Subtypes of HigherKinded are expected to be of type {@code TYPE}.</p>
  * <p>HigherKinded is used to approximately simulate higher-kinded/higher-order types, which cannot be
  * expressed with Java.</p>
  *

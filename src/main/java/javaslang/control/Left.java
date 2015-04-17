@@ -12,59 +12,83 @@ import java.util.Objects;
 import java.util.function.Function;
 
 /**
- * The left type of an Either.
+ * The {@code Left} version of an {@code Either}.
  *
  * @param <L> left component type
  * @param <R> right component type
  * @since 1.0.0
  */
-public final class Left<L, R> implements Either<L, R> {
-
-    private static final long serialVersionUID = 1L;
-
-    final L left;
+public interface Left<L, R> extends Either<L, R> {
 
     /**
-     * Constructs a left.
-     *
-     * @param left The value of this Left
+     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
      */
-    public Left(L left) {
-        this.left = left;
+    long serialVersionUID = 1L;
+
+    static <L, R> Left<L, R> of(L left) {
+        return new LeftImpl<>(left);
     }
 
-    @Override
-    public boolean isLeft() {
-        return true;
-    }
+    L get();
 
     @Override
-    public boolean isRight() {
-        return false;
-    }
+    <X, Y> Left<X, Y> bimap(Function<? super L, ? extends X> leftMapper, Function<? super R, ? extends Y> rightMapper);
 
-    @Override
-    public <X, Y> Left<X, Y> bimap(Function<? super L, ? extends X> leftMapper, Function<? super R, ? extends Y> rightMapper) {
-        return new Left<>(leftMapper.apply(left().get()));
-    }
+    /**
+     * Internal implementation of {@code Left}. Users of {@code Either} should rely only on {@code Left}.
+     *
+     * @param <L> left component type
+     * @param <R> right component type
+     * @since 1.3.0
+     */
+    final class LeftImpl<L, R> implements Left<L, R> {
 
-    @Override
-    public Tuple1<L> unapply() {
-        return Tuple.of(left);
-    }
+        private static final long serialVersionUID = 1L;
 
-    @Override
-    public boolean equals(Object obj) {
-        return (obj == this) || (obj instanceof Left && Objects.equals(left, ((Left<?, ?>) obj).left));
-    }
+        private final L left;
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(left);
-    }
+        private LeftImpl(L left) {
+            this.left = left;
+        }
 
-    @Override
-    public String toString() {
-        return String.format("Left(%s)", left);
+        @Override
+        public L get() {
+            return left;
+        }
+
+        @Override
+        public boolean isLeft() {
+            return true;
+        }
+
+        @Override
+        public boolean isRight() {
+            return false;
+        }
+
+        @Override
+        public <X, Y> Left<X, Y> bimap(Function<? super L, ? extends X> leftMapper, Function<? super R, ? extends Y> rightMapper) {
+            return new LeftImpl<>(leftMapper.apply(left().get()));
+        }
+
+        @Override
+        public Tuple1<L> unapply() {
+            return Tuple.of(left);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return (obj == this) || (obj instanceof LeftImpl && Objects.equals(left, ((LeftImpl<?, ?>) obj).get()));
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(left);
+        }
+
+        @Override
+        public String toString() {
+            return String.format("Left(%s)", left);
+        }
     }
 }

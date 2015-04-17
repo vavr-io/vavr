@@ -321,7 +321,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
     }
 
     @Override
-    <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Traversable<U> flatMap(Function<? super T, TRAVERSABLE> mapper);
+    <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Traversable<U> flatMap(Function<? super T, ? extends TRAVERSABLE> mapper);
 
     /**
      * <p>Flattens this Traversable, i.e. unboxes iterable elements. If this Traversable contains elements and
@@ -358,7 +358,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * @param f   An unboxing function that maps elements T to Iterables of elements U that will be unboxed.
      * @return a flattened version of this traversable
      */
-    <U> Traversable<U> flatten(Function<T, ? extends Iterable<? extends U>> f);
+    <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Traversable<U> flatten(Function<? super T, ? extends TRAVERSABLE> f);
 
     /**
      * <p>

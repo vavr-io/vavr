@@ -269,13 +269,13 @@ public interface Seq<T> extends Traversable<T> {
     Seq<T> findAll(Predicate<? super T> predicate);
 
     @Override
-    <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Seq<U> flatMap(Function<? super T, TRAVERSABLE> mapper);
+    <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Seq<U> flatMap(Function<? super T, ? extends TRAVERSABLE> mapper);
 
     @Override
     <U> Seq<U> flatten();
 
     @Override
-    <U> Seq<U> flatten(Function<T, ? extends Iterable<? extends U>> f);
+    <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Seq<U> flatten(Function<? super T, ? extends TRAVERSABLE> f);
 
     @Override
     Seq<? extends Seq<T>> grouped(int size);

@@ -47,7 +47,7 @@ public interface Monad<T, M extends HigherKinded<?, M>> extends Functor<T>, High
      * @param f a function that maps the monad value to a new monad instance
      * @return a new Monad instance of component type U and container type M
      */
-    <U, MONAD extends HigherKinded<U, M>> Monad<U, M> flatMap(Function<? super T, MONAD> f);
+    <U, MONAD extends HigherKinded<U, M>> Monad<U, M> flatMap(Function<? super T, ? extends MONAD> f);
 
     /**
      * Returns a filterned instance of this {@code Monad}.
@@ -58,6 +58,43 @@ public interface Monad<T, M extends HigherKinded<?, M>> extends Functor<T>, High
      * @return An instance of this monad type
      */
     Monad<T, M> filter(Predicate<? super T> predicate);
+
+    /**
+     * Flattens a nested, monadic structure. Assumes that the elements are of type HigherKinded&lt;U, M&gt;
+     *
+     * <p>
+     * A vivid example showing a simple container type:
+     * <pre>
+     * <code>
+     * [[1],[2,3]].flatten() = [1,2,3]
+     * </code>
+     * </pre>
+     *
+     * @param <U> component type of the resulting {@code Monad}
+     * @return A monadic structure containing flattened elements.
+     */
+    <U> Monad<U, M> flatten();
+
+    /**
+     * Flattens a nested, monadic structure using a function.
+     * <p>
+     * A vivid example showing a simple container type:
+     * <pre>
+     * <code>
+     * // given a monad M&lt;T&gt;
+     * [a,[b,c],d].flatten( Match
+     *    .caze((M m) -&gt; m)
+     *    .caze((T t) -&gt; new M(t))
+     * ) = [a,b,c,d]
+     * </code>
+     * </pre>
+     *
+     * @param <U> component type of the resulting {@code Monad}
+     * @param <MONAD> {@code Monad} type
+     * @param f a function which maps elements of this monad to monads of the same kind
+     * @return A monadic structure containing flattened elements.
+     */
+    <U, MONAD extends HigherKinded<U, M>> Monad<U, M> flatten(Function<? super T, ? extends MONAD> f);
 
     /**
      * Performs an action on each element of this monad.

@@ -115,7 +115,7 @@ public final class Failure<T> implements Try<T> {
 
     @Override
     public Left<Throwable, T> toEither() {
-        return new Left<>(cause.getCause());
+        return Left.of(cause.getCause());
     }
 
     @Override
@@ -145,11 +145,10 @@ public final class Failure<T> implements Try<T> {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <U, TRY extends HigherKinded<U, Try<?>>> Failure<U> flatMap(CheckedFunction<? super T, TRY> mapper) {
-        @SuppressWarnings("unchecked")
-        final Failure<U> result = (Failure<U>) this;
-        return result;
+    public <U, TRY extends HigherKinded<U, Try<?>>> Failure<U> flatMap(CheckedFunction<? super T, ? extends TRY> mapper) {
+        return (Failure<U>) this;
     }
 
     @Override
