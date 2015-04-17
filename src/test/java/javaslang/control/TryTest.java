@@ -29,6 +29,55 @@ public class TryTest implements CheckedMonadLaws<Try<?>> {
     private static final String OK = "ok";
     private static final String FAILURE = "failure";
 
+    // -- flatten
+
+    @Test
+    public void shouldThrowWhenFlatteningUnnestedSuccess() {
+        assertThat(new Success<>(1).flatten().isFailure()).isTrue();
+    }
+
+    @Test
+    public void shouldFlattenSuccessOfSuccess() {
+        assertThat(new Success<>(new Success<>(1)).flatten()).isEqualTo(new Success<>(1));
+    }
+
+    @Test
+    public void shouldFlattenSuccessOfFailure() {
+        assertThat(new Success<>(failure()).flatten()).isEqualTo(failure());
+    }
+
+    @Test
+    public void shouldFlattenFailure() {
+        assertThat(failure().flatten()).isEqualTo(failure());
+    }
+
+    // -- flatten(Function)
+
+    static final Match<Try<Integer>> MATCH = Match
+        .caze((Try<Integer> o) -> o)
+        .caze((Integer i) -> new Success<>(i))
+        .build();
+
+    @Test
+    public void shouldFlattenUnnestedSuccessWithFunction() {
+        assertThat(new Success<>(1)).isEqualTo(new Success<>(1));
+    }
+
+    @Test
+    public void shouldFlattenSuccessOfSuccessWithFunction() {
+        assertThat(new Success<>(new Success<>(1)).flatten(i -> MATCH.apply(i))).isEqualTo(new Success<>(1));
+    }
+
+    @Test
+    public void shouldFlattenSuccessOfFailureWithFunction() {
+        assertThat(new Success<>(failure()).flatten(i -> MATCH.apply(i))).isEqualTo(failure());
+    }
+
+    @Test
+    public void shouldFlattenFailureWithFunction() {
+        assertThat(failure().flatten(i -> MATCH.apply(i))).isEqualTo(failure());
+    }
+
     // -- Try.of
 
     @Test
@@ -478,7 +527,6 @@ public class TryTest implements CheckedMonadLaws<Try<?>> {
     public void shouldPeekSuccessAndThrow() {
         assertThat(success().peek(t -> { failure().get(); })).isEqualTo(failure());
     }
-
 
     // unapply
 

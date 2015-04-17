@@ -10,6 +10,7 @@ import javaslang.algebra.HigherKinded;
 import javaslang.algebra.Monad;
 import javaslang.control.Valences.Univalent;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -135,6 +136,62 @@ public interface Option<T> extends Monad<T, Option<?>>, ValueObject, Univalent<T
     }
 
     /**
+     * Flattens an {@code Option}, assuming that the elements are of type Option&lt;U&gt;
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * new Some&lt;&gt;(1).flatten();                   // throws
+     * new Some&lt;&gt;(new Some&lt;&gt;(1)).flatten(); // = Some&lt;&gt;(1)
+     * new Some&lt;&gt;(None.instance()).flatten();     // = None
+     * None.instance().flatten();                       // = None
+     * </code>
+     * </pre>
+     *
+     * @param <U> component type of the result {@code Option}
+     * @return a new {@code Option}
+     * @throws java.lang.ClassCastException if this {@code Option} is not of type {@code Option<? extends Option<U>>}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Option<U> flatten() {
+        return ((Option<? extends Option<U>>) this).flatten(Function.identity());
+    }
+
+    /**
+     * Flattens an {@code Option} using a function.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Match&lt;Option&lt;U&gt;&gt; f
+     *    .caze((Option&lt;U&gt; o) -&gt; o)
+     *    .caze((U u) -&gt; new Some&lt;&gt;(u))
+     *    .build();
+     * new Some&lt;&gt;(1).flatten();                    // = Some(1)
+     * new Some&lt;&gt;(new Some&lt;&gt;(1)).flatten(f); // = Some(1)
+     * new Some&lt;&gt;(None.instance()).flatten(f);     // = None
+     * new None.instance().flatten(f);                   // = None
+     * </code>
+     * </pre>
+     *
+     * @param <U>      component type of the result {@code Option}
+     * @param <OPTION> an {@code Option&lt;U&gt;}
+     * @param f        a function which maps elements of this Option to Options
+     * @return a new {@code Option}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U, OPTION extends HigherKinded<U, Option<?>>> Option<U> flatten(Function<? super T, ? extends OPTION> f) {
+        Objects.requireNonNull(f, "f is null");
+        if (isEmpty()) {
+            return None.instance();
+        } else {
+            return (Option<U>) f.apply(get());
+        }
+    }
+
+    /**
      * Applies an action to this value, if this option is defined, otherwise does nothing.
      *
      * @param action An action which can be applied to an optional value
@@ -160,8 +217,7 @@ public interface Option<T> extends Monad<T, Option<?>>, ValueObject, Univalent<T
      *
      * @param mapper A value mapper
      * @param <U>    The new value type
-     * @return a new {@code Some} containing the mapped value if this Option is defined,
-     * otherwise {@code None}, if this is empty.
+     * @return a new {@code Some} containing the mapped value if this Option is defined, otherwise {@code None}, if this is empty.
      */
     @Override
     <U> Option<U> map(Function<? super T, ? extends U> mapper);
@@ -175,7 +231,7 @@ public interface Option<T> extends Monad<T, Option<?>>, ValueObject, Univalent<T
      */
     @SuppressWarnings("unchecked")
     @Override
-    default <U, OPTION extends HigherKinded<U, Option<?>>> Option<U> flatMap(Function<? super T, OPTION> mapper) {
+    default <U, OPTION extends HigherKinded<U, Option<?>>> Option<U> flatMap(Function<? super T, ? extends OPTION> mapper) {
         if (isEmpty()) {
             return None.instance();
         } else {

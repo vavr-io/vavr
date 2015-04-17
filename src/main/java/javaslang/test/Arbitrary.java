@@ -89,7 +89,7 @@ public interface Arbitrary<T> extends Monad<T, Arbitrary<?>> {
      */
     @SuppressWarnings("unchecked")
     @Override
-    default <U, ARBITRARY extends HigherKinded<U, Arbitrary<?>>> Arbitrary<U> flatMap(Function<? super T, ARBITRARY> mapper) {
+    default <U, ARBITRARY extends HigherKinded<U, Arbitrary<?>>> Arbitrary<U> flatMap(Function<? super T, ? extends ARBITRARY> mapper) {
         return n -> {
             final Gen<T> generator = apply(n);
             return random -> ((Arbitrary<U>) mapper.apply(generator.apply(random))).apply(n).apply(random);
@@ -105,6 +105,22 @@ public interface Arbitrary<T> extends Monad<T, Arbitrary<?>> {
     @Override
     default Arbitrary<T> filter(Predicate<? super T> predicate) {
         return n -> apply(n).filter(predicate);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Arbitrary<U> flatten() {
+        return ((Arbitrary<? extends Arbitrary<U>>) this).flatten(Function.identity());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U, ARBITRARY extends HigherKinded<U, Arbitrary<?>>> Arbitrary<U> flatten(Function<? super T, ? extends ARBITRARY> f) {
+        return size -> random -> {
+            final Gen<T> gen = apply(size);
+            final Arbitrary<U> arbitrary = (Arbitrary<U>) f.apply(gen.apply(random));
+            return arbitrary.apply(size).apply(random);
+        };
     }
 
     /**

@@ -5,7 +5,10 @@
  */
 package javaslang.control;
 
+import javaslang.Tuple1;
 import javaslang.ValueObject;
+import javaslang.algebra.HigherKinded;
+import javaslang.algebra.Monad;
 import javaslang.control.Valences.Bivalent;
 
 import java.util.NoSuchElementException;
@@ -19,8 +22,8 @@ import java.util.function.Predicate;
  * Either represents a value of two possible types. An Either is either a {@link javaslang.control.Left} or a
  * {@link javaslang.control.Right}.
  * <p>
- * It is possible to project an Either to a Left or a Right. Both cases can be further processed with control operations
- * map, flatMap, filter.
+ * It is possible to project an Either to a Left or a Right. Both cases can be further processed with
+ * {@link javaslang.algebra.Monad} operations.
  * <p>
  * If the given Either is a Right and projected to a Left, the Left operations have no effect on the Right value.<br>
  * If the given Either is a Left and projected to a Right, the Right operations have no effect on the Left value.<br>
@@ -32,7 +35,7 @@ import java.util.function.Predicate;
  *
  * <pre>
  * <code>
- * Either&lt;String,Integer&gt; value = compute().right().map(i -&gt; i * 2);
+ * Either&lt;String,Integer&gt; value = compute().right().map(i -&gt; i * 2).toEither();
  * </code>
  * </pre>
  *
@@ -43,7 +46,6 @@ import java.util.function.Predicate;
  * @param <R> The type of the Right value of an Either.
  * @since 1.0.0
  */
-// DEV-NOTE: Either is no Monad and no Functor in the sense of javaslang.Algebra.*
 public interface Either<L, R> extends ValueObject {
 
     /**
@@ -114,11 +116,11 @@ public interface Either<L, R> extends ValueObject {
      * @param <R> The type of the Right value of an Either.
      * @since 1.0.0
      */
-    final class LeftProjection<L, R> implements Bivalent<L, R> {
+    final class LeftProjection<L, R> implements Bivalent<L, R>, Monad<L, LeftProjection<?, R>> {
 
         private final Either<L, R> either;
 
-        LeftProjection(Either<L, R> either) {
+        private LeftProjection(Either<L, R> either) {
             this.either = either;
         }
 
@@ -236,18 +238,60 @@ public interface Either<L, R> extends ValueObject {
         }
 
         /**
-         * Returns {@code Some(Left(value))}, if the underlying Either of this projection is a Left and the left value
-         * satisfies the given predicate. Otherwise {@code None} is returned.
+         * Returns {@code LeftProjection(Left(value))}, if the underlying Either of this projection is a Left and the
+         * left value satisfies the given predicate. Otherwise {@code LeftProjection(Left())} (a left projection of
+         * nothing) is returned.
          *
          * @param predicate A predicate
-         * @return An new Option of Either
+         * @return a LeftProjection
          */
-        public Option<Either<L, R>> filter(Predicate<? super L> predicate) {
+        @SuppressWarnings("unchecked")
+        @Override
+        public LeftProjection<L, R> filter(Predicate<? super L> predicate) {
             Objects.requireNonNull(predicate);
-            if (either.isLeft() && predicate.test(asLeft())) {
-                return new Some<>(either);
+            if (either.isRight() || (either.isLeft() && predicate.test(asLeft()))) {
+                return this;
             } else {
-                return None.instance();
+                return Nothing.<L, R>instance().left();
+            }
+        }
+
+        /**
+         * Flattens a {@code LeftProjection}, assuming that the elements are of type LeftProjection&lt;U&gt;
+         * <p>
+         * Examples:
+         * <pre>
+         * <code>
+         * Left.of(1).left().flatten();                   // throws
+         * Left.of(Left.of(1).left()).left().flatten();   // = LeftProjection(Left(1))
+         * Left.of(Left.of(1).right()).left().flatten();  // throws
+         * Right.of(Right.of(1).left()).left().flatten(); // = LeftProjection(Right(1))
+         * </code>
+         * </pre>
+         *
+         * @return a {@code LeftProjection}
+         * @throws java.lang.ClassCastException if the projected either is not of type
+         *                                      {@code LeftProjection<? extends LeftProjection<U, R>, R>}
+         */
+        @SuppressWarnings("unchecked")
+        @Override
+        public <U> LeftProjection<U, R> flatten() {
+            return ((LeftProjection<? extends LeftProjection<U, R>, R>) this).flatten(Function.identity());
+        }
+
+        /**
+         * Flattens a {@code LeftProjection} using a function.
+         *
+         * @param f a function which maps elements of this LeftProjection to LeftProjections
+         * @return a {@code LeftProjection}
+         */
+        @SuppressWarnings("unchecked")
+        @Override
+        public <U, LEFT_PROJECTION extends HigherKinded<U, LeftProjection<?, R>>> LeftProjection<U, R> flatten(Function<? super L, ? extends LEFT_PROJECTION> f) {
+            if (either.isRight()) {
+                return (LeftProjection<U, R>) this;
+            } else {
+                return (LeftProjection<U, R>) f.apply(get());
             }
         }
 
@@ -256,6 +300,7 @@ public interface Either<L, R> extends ValueObject {
          *
          * @param action An action which takes a left value
          */
+        @Override
         public void forEach(Consumer<? super L> action) {
             Objects.requireNonNull(action);
             if (either.isLeft()) {
@@ -267,47 +312,50 @@ public interface Either<L, R> extends ValueObject {
          * Applies the given action to the value if the projected either is a Left. Otherwise nothing happens.
          *
          * @param action An action which takes a left value
-         * @return this {@code Either} instance
+         * @return this LeftProjection
          */
-        public Either<L, R> peek(Consumer<? super L> action) {
+        @Override
+        public LeftProjection<L, R> peek(Consumer<? super L> action) {
             Objects.requireNonNull(action);
             if (either.isLeft()) {
                 action.accept(asLeft());
             }
-            return either;
+            return this;
         }
 
         /**
-         * Maps the left value if the projected Either is a Left, otherwise returns the Right.
+         * Maps the left value if the projected Either is a Left.
          *
          * @param mapper A mapper which takes a left value and returns a value of type U
          * @param <U>    The new type of a Left value
-         * @return A new Either
+         * @return A new LeftProjection
          */
         @SuppressWarnings("unchecked")
-        public <U> Either<U, R> map(Function<? super L, ? extends U> mapper) {
+        @Override
+        public <U> LeftProjection<U, R> map(Function<? super L, ? extends U> mapper) {
             Objects.requireNonNull(mapper);
             if (either.isLeft())
-                return new Left<>(mapper.apply(asLeft()));
+                return Left.<U, R>of(mapper.apply(asLeft())).left();
             else {
-                return (Either<U, R>) either;
+                return (LeftProjection<U, R>) this;
             }
         }
 
         /**
-         * FlatMaps the left value if the projected Either is a Left, otherwise returns the Right.
+         * FlatMaps the left value if the projected Either is a Left.
          *
          * @param mapper A mapper which takes a left value and returns a new Either
          * @param <U>    The new type of a Left value
-         * @return A new Either
+         * @return A new LeftProjection
          */
         @SuppressWarnings("unchecked")
-        public <U> Either<U, R> flatMap(Function<? super L, ? extends Either<U, R>> mapper) {
+        @Override
+        public <U, LEFT_PROJECTION extends HigherKinded<U, LeftProjection<?, R>>> LeftProjection<U, R> flatMap(Function<? super L, ? extends LEFT_PROJECTION> mapper) {
             Objects.requireNonNull(mapper);
             if (either.isLeft()) {
-                return mapper.apply(asLeft());
+                return (LeftProjection<U, R>) mapper.apply(asLeft());
             } else {
-                return (Either<U, R>) either;
+                return (LeftProjection<U, R>) this;
             }
         }
 
@@ -327,11 +375,73 @@ public interface Either<L, R> extends ValueObject {
         }
 
         private L asLeft() {
-            return ((Left<L, R>) either).left;
+            return ((Left<L, R>) either).get();
         }
 
         private R asRight() {
-            return ((Right<L, R>) either).right;
+            return ((Right<L, R>) either).get();
+        }
+
+        /**
+         * Represents an empty filter result of a {@code Left}.
+         *
+         * @param <L> The type of the Left value.
+         * @param <R> The type of the Right value.
+         * @since 1.3.0
+         */
+        private static final class Nothing<L, R> implements Left<L, R> {
+
+            private static final long serialVersionUID = 1L;
+
+            private static Nothing<?, ?> INSTANCE = new Nothing<>();
+
+            private Nothing() {
+            }
+
+            @SuppressWarnings("unchecked")
+            static <L, R> Nothing<L, R> instance() {
+                return (Nothing<L, R>) INSTANCE;
+            }
+
+            @Override
+            public L get() {
+                throw new NoSuchElementException("Left.get() on empty Left.LeftProjection.filter()");
+            }
+
+            @Override
+            public boolean isLeft() {
+                return true;
+            }
+
+            @Override
+            public boolean isRight() {
+                return false;
+            }
+
+            @Override
+            public <X, Y> Left<X, Y> bimap(Function<? super L, ? extends X> leftMapper, Function<? super R, ? extends Y> rightMapper) {
+                throw new NoSuchElementException("Left.bimap() on empty Left.LeftProjection.filter()");
+            }
+
+            @Override
+            public Tuple1<L> unapply() {
+                throw new NoSuchElementException("Left.unapply() on empty Left.LeftProjection.filter()");
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                return o == this || o instanceof Nothing;
+            }
+
+            @Override
+            public int hashCode() {
+                return Nothing.class.hashCode();
+            }
+
+            @Override
+            public String toString() {
+                return "Left()";
+            }
         }
     }
 
@@ -342,11 +452,11 @@ public interface Either<L, R> extends ValueObject {
      * @param <R> The type of the Right value of an Either.
      * @since 1.0.0
      */
-    final class RightProjection<L, R> implements Bivalent<R, L> {
+    final class RightProjection<L, R> implements Bivalent<R, L>, Monad<R, RightProjection<L, ?>> {
 
         private final Either<L, R> either;
 
-        RightProjection(Either<L, R> either) {
+        private RightProjection(Either<L, R> either) {
             this.either = either;
         }
 
@@ -464,18 +574,60 @@ public interface Either<L, R> extends ValueObject {
         }
 
         /**
-         * Returns {@code Some(Right(value))}, if the underlying Either of this projection is a Right and the right value
-         * satisfies the given predicate. Otherwise {@code None} is returned.
+         * Returns {@code RightProjection(Right(value))}, if the underlying Either of this projection is a Right and
+         * the right value satisfies the given predicate. Otherwise {@code RightProjection(Right())} (a right projection
+         * of nothing) is returned.
          *
          * @param predicate A predicate
-         * @return An new Option of Either
+         * @return a RightProjection
          */
-        public Option<Either<L, R>> filter(Predicate<? super R> predicate) {
+        @SuppressWarnings("unchecked")
+        @Override
+        public RightProjection<L, R> filter(Predicate<? super R> predicate) {
             Objects.requireNonNull(predicate);
-            if (either.isRight() && predicate.test(asRight())) {
-                return new Some<>(either);
+            if (either.isLeft() || (either.isRight() && predicate.test(asRight()))) {
+                return this;
             } else {
-                return None.instance();
+                return Nothing.<L, R>instance().right();
+            }
+        }
+
+        /**
+         * Flattens a {@code RightProjection}, assuming that the elements are of type RightProjection&lt;U&gt;
+         * <p>
+         * Examples:
+         * <pre>
+         * <code>
+         * Right.of(1).right().flatten();                   // throws
+         * Right.of(Right.of(1).right()).right().flatten(); // = RightProjection(Right(1))
+         * Right.of(Right.of(1).left()).right().flatten();  // throws
+         * Left.of(Left.of(1).right()).right().flatten();   // = RightProjection(Left(1))
+         * </code>
+         * </pre>
+         *
+         * @return a {@code RightProjection}
+         * @throws java.lang.ClassCastException if the projected either is not of type
+         *                                      {@code RightProjection<L, ? extends RightProjection<L, U>>}
+         */
+        @SuppressWarnings("unchecked")
+        @Override
+        public <U> RightProjection<L, U> flatten() {
+            return ((RightProjection<L, ? extends RightProjection<L, U>>) this).flatten(Function.identity());
+        }
+
+        /**
+         * Flattens a {@code RightProjection} using a function.
+         *
+         * @param f a function which maps elements of this RightProjection to RightProjections
+         * @return a {@code RightProjection}
+         */
+        @SuppressWarnings("unchecked")
+        @Override
+        public <U, RIGHT_PROJECTION extends HigherKinded<U, RightProjection<L, ?>>> RightProjection<L, U> flatten(Function<? super R, ? extends RIGHT_PROJECTION> f) {
+            if (either.isLeft()) {
+                return (RightProjection<L, U>) this;
+            } else {
+                return (RightProjection<L, U>) f.apply(get());
             }
         }
 
@@ -497,45 +649,48 @@ public interface Either<L, R> extends ValueObject {
          * @param action An action which takes a right value
          * @return this {@code Either} instance
          */
-        public Either<L, R> peek(Consumer<? super R> action) {
+        @Override
+        public RightProjection<L, R> peek(Consumer<? super R> action) {
             Objects.requireNonNull(action);
             if (either.isRight()) {
                 action.accept(asRight());
             }
-            return either;
+            return this;
         }
 
         /**
-         * Maps the right value if the projected Either is a Right, otherwise returns the Left.
+         * Maps the right value if the projected Either is a Right.
          *
          * @param mapper A mapper which takes a right value and returns a value of type U
          * @param <U>    The new type of a Right value
-         * @return A new Either
+         * @return A new RightProjection
          */
         @SuppressWarnings("unchecked")
-        public <U> Either<L, U> map(Function<? super R, ? extends U> mapper) {
+        @Override
+        public <U> RightProjection<L, U> map(Function<? super R, ? extends U> mapper) {
             Objects.requireNonNull(mapper);
             if (either.isRight())
-                return new Right<>(mapper.apply(asRight()));
+                return Right.<L, U>of(mapper.apply(asRight())).right();
             else {
-                return (Either<L, U>) either;
+                return (RightProjection<L, U>) this;
             }
         }
 
         /**
-         * FlatMaps the right value if the projected Either is a Right, otherwise returns the Left.
+         * FlatMaps the right value if the projected Either is a Right.
          *
          * @param mapper A mapper which takes a right value and returns a new Either
          * @param <U>    The new type of a Right value
-         * @return A new Either
+         * @return A new RightProjection
          */
         @SuppressWarnings("unchecked")
-        public <U> Either<L, U> flatMap(Function<? super R, ? extends Either<L, U>> mapper) {
+        @Override
+        public <U, RIGHT_PROJECTION extends HigherKinded<U, RightProjection<L, ?>>> RightProjection<L, U> flatMap(Function<? super R, ? extends RIGHT_PROJECTION> mapper) {
             Objects.requireNonNull(mapper);
-            if (either.isRight())
-                return mapper.apply(asRight());
-            else {
-                return (Either<L, U>) either;
+            if (either.isRight()) {
+                return (RightProjection<L, U>) mapper.apply(asRight());
+            } else {
+                return (RightProjection<L, U>) this;
             }
         }
 
@@ -555,11 +710,73 @@ public interface Either<L, R> extends ValueObject {
         }
 
         private L asLeft() {
-            return ((Left<L, R>) either).left;
+            return ((Left<L, R>) either).get();
         }
 
         private R asRight() {
-            return ((Right<L, R>) either).right;
+            return ((Right<L, R>) either).get();
+        }
+
+        /**
+         * Represents an empty filter result of a {@code Right}.
+         *
+         * @param <L> The type of the Left value.
+         * @param <R> The type of the Right value.
+         * @since 1.3.0
+         */
+        private static final class Nothing<L, R> implements Right<L, R> {
+
+            private static final long serialVersionUID = 1L;
+
+            private static Nothing<?, ?> INSTANCE = new Nothing<>();
+
+            private Nothing() {
+            }
+
+            @SuppressWarnings("unchecked")
+            static <L, R> Nothing<L, R> instance() {
+                return (Nothing<L, R>) INSTANCE;
+            }
+
+            @Override
+            public R get() {
+                throw new NoSuchElementException("Right.get() on empty Right.RightProjection.filter()");
+            }
+
+            @Override
+            public boolean isLeft() {
+                return false;
+            }
+
+            @Override
+            public boolean isRight() {
+                return true;
+            }
+
+            @Override
+            public <X, Y> Right<X, Y> bimap(Function<? super L, ? extends X> leftMapper, Function<? super R, ? extends Y> rightMapper) {
+                throw new NoSuchElementException("Right.bimap() on empty Right.RightProjection.filter()");
+            }
+
+            @Override
+            public Tuple1<R> unapply() {
+                throw new NoSuchElementException("Right.unapply() on empty Right.RightProjection.filter()");
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                return o == this || o instanceof Nothing;
+            }
+
+            @Override
+            public int hashCode() {
+                return Nothing.class.hashCode();
+            }
+
+            @Override
+            public String toString() {
+                return "Right()";
+            }
         }
     }
 }

@@ -12,6 +12,7 @@ import java.lang.invoke.MethodType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -53,7 +54,7 @@ import java.util.function.Supplier;
  * @param <R> The result type of the Match expression.
  * @since 1.0.0
  */
-public final class Match<R> {
+public final class Match<R> implements Function<Object, R> {
 
     private final List<Function1<Object, Option<R>>> cases;
     private final Option<Supplier<R>> defaultOption;
@@ -193,6 +194,7 @@ public final class Match<R> {
      * @throws MatchError                         if no Match case matches the given object and no default is defined via orElse().
      * @throws javaslang.control.Failure.NonFatal if an error occurs executing the matched case.
      */
+    @Override
     public R apply(Object obj) {
         for (Function1<Object, Option<R>> caze : cases) {
             final Option<R> result = caze.apply(obj);

@@ -348,11 +348,9 @@ public abstract class AbstractTraversableTest {
         assertThat(actual).isEqualTo(nil());
     }
 
-    @Test
-    public void shouldFlattenTraversableOfPlainElements() {
-        final Traversable<Integer> actual = of(1, 2, 3).flatten();
-        final Traversable<Integer> expected = of(1, 2, 3);
-        assertThat(actual).isEqualTo(expected);
+    @Test(expected = ClassCastException.class)
+    public void shouldThrowOnFlattenTraversableOfPlainElements() {
+        of(1, 2, 3).flatten();
     }
 
     @Test
@@ -364,32 +362,21 @@ public abstract class AbstractTraversableTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test
-    public void shouldFlattenTraversableOfTraversablesAndPlainElements() {
-        final Traversable<?> xs = of(1, of(2, 3));
-        final Traversable<Integer> actual = xs.flatten();
-        final Traversable<Integer> expected = of(1, 2, 3);
-        assertThat(actual).isEqualTo(expected);
+    @Test(expected = ClassCastException.class)
+    public void shouldThrowOnFlattenTraversableOfTraversablesAndPlainElements() {
+        of(1, of(2, 3)).flatten();
     }
 
-    @Test
-    public void shouldFlatten_UNSAFE_WithBadImplicitReturnType() {
-        // the implicit type parameter xxx.<U> flatten() is unsafe
-        final Traversable<Integer> actual = of(1, 2, 3).map(Object::toString).flatten();
-        assertThat(actual).isEqualTo(of("1", "2", "3"));
-    }
-
-    @Test
-    public void shouldFlattenDifferentElementTypes() {
-        final Traversable<Object> actual = this.<Object>of(1, "2", this.<Object>of(3.1415, 1L)).flatten();
-        assertThat(actual).isEqualTo(this.<Object>of(1, "2", 3.1415, 1L));
+    @Test(expected = ClassCastException.class)
+    public void shouldThrowOnFlattenWithBadImplicitReturnType() {
+        of(1, 2, 3).map(Object::toString).flatten();
     }
 
     // -- flatten(Function1)
 
     @Test
     public <T> void shouldFlattenEmptyTraversableGivenAFunction() {
-        final Traversable<? extends Traversable<? extends T>> nil = nil();
+        final Traversable<? extends Traversable<T>> nil = nil();
         final Traversable<T> actual = nil.flatten(Function.identity());
         assertThat(actual).isEqualTo(nil());
     }
@@ -404,7 +391,7 @@ public abstract class AbstractTraversableTest {
     @Test
     public void shouldFlattenTraversableOfTraversablesGivenAFunction() {
         @SuppressWarnings("unchecked")
-        final Traversable<? extends Traversable<? extends Integer>> xs = of(of(1), of(2, 3));
+        final Traversable<? extends Traversable<Integer>> xs = of(of(1), of(2, 3));
         final Traversable<Integer> actual = xs.flatten(Function.identity());
         final Traversable<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);

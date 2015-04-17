@@ -10,7 +10,6 @@ import javaslang.Tuple0;
 import javaslang.Tuple2;
 import javaslang.ValueObject;
 import javaslang.algebra.HigherKinded;
-import javaslang.control.Match;
 
 import java.io.*;
 import java.util.*;
@@ -246,24 +245,60 @@ public interface List<T> extends Seq<T>, ValueObject {
 
     @SuppressWarnings("unchecked")
     @Override
-    default <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> List<U> flatMap(
-            Function<? super T, TRAVERSABLE> mapper) {
+    default <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> List<U> flatMap(Function<? super T, ? extends TRAVERSABLE> mapper) {
         return foldRight(nil(), (t, xs) -> xs.prependAll((Traversable<U>) mapper.apply(t)));
     }
 
+    /**
+     * Flattens a {@code List}, assuming that the elements are of type List&lt;U&gt;
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.of(1).flatten();              // throws
+     * List.of(List.of(1)).flatten();     // = List(1)
+     * List.of(Nil.instance()).flatten(); // = Nil
+     * Nil.instance().flatten();          // = Nil
+     * </code>
+     * </pre>
+     *
+     * @param <U> component type of the result {@code List}
+     * @return a new {@code List}
+     * @throws java.lang.ClassCastException if this {@code List} is not of type {@code List<? extends List<U>>}
+     */
+    @SuppressWarnings("unchecked")
     @Override
     default <U> List<U> flatten() {
-        final Match<Iterable<U>> match = Match
-                .caze((Iterable<U> xs) -> xs)
-                .caze((U x) -> List.of(x))
-                .build();
-        return flatten(match::apply);
+        return ((List<? extends List<U>>) this).flatten(Function.identity());
     }
 
+    /**
+     * Flattens a {@code List} using a function.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Match&lt;List&lt;U&gt;&gt; f
+     *    .caze((List&lt;U&gt; l) -&gt; l)
+     *    .caze((U u) -&gt; List.of(u))
+     *    .build();
+     * List.of(1).flatten();              // = List(1)
+     * List.of(List.of(1)).flatten();     // = List(1)
+     * List.of(Nil.instance()).flatten(); // = Nil
+     * Nil.instance().flatten();          // = Nil
+     * </code>
+     * </pre>
+     *
+     * @param <U>           component type of the result {@code List}
+     * @param <TRAVERSABLE> a {@code Traversable&lt;U&gt;}
+     * @param f             a function which maps elements of this List to Traversables
+     * @return a new {@code List}
+     */
+    @SuppressWarnings("unchecked")
     @Override
-    default <U> List<U> flatten(Function<T, ? extends Iterable<? extends U>> f) {
+    default <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> List<U> flatten(Function<? super T, ? extends TRAVERSABLE> f) {
         Objects.requireNonNull(f, "f is null");
-        return foldRight(nil(), (t, xs) -> xs.prependAll(f.apply(t)));
+        return foldRight(nil(), (t, xs) -> xs.prependAll((Traversable<U>) f.apply(t)));
     }
 
     @Override

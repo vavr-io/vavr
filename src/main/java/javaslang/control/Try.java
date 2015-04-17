@@ -10,6 +10,7 @@ import javaslang.algebra.CheckedMonad;
 import javaslang.algebra.HigherKinded;
 import javaslang.control.Valences.Bivalent;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -118,6 +119,70 @@ public interface Try<T> extends CheckedMonad<T, Try<?>>, ValueObject, Bivalent<T
     Try<T> filter(CheckedPredicate<? super T> predicate);
 
     /**
+     * Flattens a {@code Try}, assuming that the elements are of type Try&lt;U&gt;
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * new Success&lt;&gt;(1).flatten();                                  // throws
+     * new Success&lt;&gt;(new Success&lt;&gt;(1)).flatten();             // = Success (1)
+     * new Success&lt;&gt;(new Failure&lt;&gt;(new Error(""))).flatten(); // = Failure("Error")
+     * new Failure&lt;&gt;(new Error("")).flatten();                      // = Failure("Error")
+     * </code>
+     * </pre>
+     *
+     * @param <U> component type of the result {@code Try}
+     * @return a new {@code Try}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Try<U> flatten() {
+        try {
+            return ((Try<? extends Try<U>>) this).flatten(CheckedFunction.identity());
+        } catch(Throwable x) {
+            // catches ClassCastException
+            return (Try<U>) new Failure<>(x);
+        }
+    }
+
+    /**
+     * Flattens a nested, monadic structure using a function.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Match&lt;Try&lt;U&gt;&gt; f
+     *    .caze((Try&lt;U&gt; o) -&gt; o)
+     *    .caze((U u) -&gt; new Success&lt;&gt;(u))
+     *    .build();
+     * new Success&lt;&gt;(1).flatten();                                  // = Success(1)
+     * new Success&lt;&gt;(new Success&lt;&gt;(1)).flatten(f);            // = Success(1)
+     * new Success&lt;&gt;(new Failure&lt;&gt;(new Error(""))).flatten(); // = Failure("Error")
+     * new Failure&lt;&gt;(new Error("")).flatten();                      // = Failure("Error")
+     * </code>
+     * </pre>
+     *
+     * @param <U> component type of the result {@code Try}
+     * @param <TRY> a {@code Try&lt;U&gt;}
+     * @param f a function which maps elements of this Try to Trys
+     * @return a new {@code Try}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U, TRY extends HigherKinded<U, Try<?>>> Try<U> flatten(CheckedFunction<? super T, ? extends TRY> f) {
+        Objects.requireNonNull(f, "f is null");
+        if (isFailure()) {
+            return (Failure<U>) this;
+        } else {
+            try {
+                return (Try<U>) f.apply(get());
+            } catch(Throwable t) {
+                return new Failure<>(t);
+            }
+        }
+    }
+
+    /**
      * Applies the action to the value of a Success or does nothing in the case of a Failure.
      *
      * @param action A Consumer
@@ -152,7 +217,7 @@ public interface Try<T> extends CheckedMonad<T, Try<?>>, ValueObject, Bivalent<T
      * @return a new Try
      */
     @Override
-    <U, TRY extends HigherKinded<U, Try<?>>> Try<U> flatMap(CheckedFunction<? super T, TRY> mapper);
+    <U, TRY extends HigherKinded<U, Try<?>>> Try<U> flatMap(CheckedFunction<? super T, ? extends TRY> mapper);
 
     /**
      * Runs the given runnable if this is a Success, otherwise returns this Failure.
@@ -200,7 +265,7 @@ public interface Try<T> extends CheckedMonad<T, Try<?>>, ValueObject, Bivalent<T
     /**
      * A {@linkplain java.util.function.Function} which may throw.
      *
-     * @param <T> the type of the input to the operation
+     * @param <T> the type of the input of the operation
      * @param <R> the type of results supplied by this supplier
      */
     @FunctionalInterface
@@ -214,6 +279,16 @@ public interface Try<T> extends CheckedMonad<T, Try<?>>, ValueObject, Bivalent<T
          * @throws Throwable if an error occurs
          */
         R apply(T t) throws Throwable;
+
+        /**
+         * Creates the checked identity function.
+         *
+         * @param <T> the type of the input of the operation
+         * @return The identity function
+         */
+        static <T> CheckedFunction<T, T> identity() {
+            return t -> t;
+        }
     }
 
     /**
