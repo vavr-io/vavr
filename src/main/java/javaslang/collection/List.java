@@ -431,6 +431,12 @@ public interface List<T> extends Seq<T>, ValueObject {
         return foldRight(nil(), (x, xs) -> xs.prepend(mapper.apply(x)));
     }
 
+    /**
+     * Performs an action on the head element of this {@code List}.
+     *
+     * @param action A {@code Consumer}
+     * @return this {@code List}
+     */
     @Override
     default List<T> peek(Consumer<? super T> action) {
         if (!isEmpty()) {

@@ -26,6 +26,18 @@ public interface CheckedFunction0<R> extends λ<R> {
     long serialVersionUID = 1L;
 
     /**
+     * Lifts a <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html">method
+     * reference</a> to a {@code CheckedFunction0}.
+     *
+     * @param methodReference (typically) a method reference, e.g. {@code Type::method}
+     * @param <R> return type
+     * @return a {@code CheckedFunction0}
+     */
+    static <R> CheckedFunction0<R> lift(CheckedFunction0<R> methodReference) {
+        return methodReference;
+    }
+
+    /**
      * Applies this function to no arguments and returns the result.
      *
      * @return the result of function application

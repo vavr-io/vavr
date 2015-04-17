@@ -30,6 +30,22 @@ public interface Function4<T1, T2, T3, T4, R> extends λ<R> {
     long serialVersionUID = 1L;
 
     /**
+     * Lifts a <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html">method
+     * reference</a> to a {@code Function4}.
+     *
+     * @param methodReference (typically) a method reference, e.g. {@code Type::method}
+     * @param <R> return type
+     * @param <T1> 1st argument
+     * @param <T2> 2nd argument
+     * @param <T3> 3rd argument
+     * @param <T4> 4th argument
+     * @return a {@code Function4}
+     */
+    static <T1, T2, T3, T4, R> Function4<T1, T2, T3, T4, R> lift(Function4<T1, T2, T3, T4, R> methodReference) {
+        return methodReference;
+    }
+
+    /**
      * Applies this function to 4 arguments and returns the result.
      *
      * @param t1 argument 1

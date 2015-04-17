@@ -17,11 +17,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ArbitraryTest {
 
+    // -- apply
+
     @Test
     public void shouldApplyIntegerObject() {
         final Gen<BinaryTree<Integer>> gen = new ArbitraryBinaryTree(0, 0).apply(Integer.valueOf(0));
         assertThat(gen).isNotNull();
     }
+
+    // -- flatMap
 
     @Test
     public void shouldFlatMapArbitrary() {
@@ -30,6 +34,8 @@ public class ArbitraryTest {
         assertThat(arbitraryTree.apply(0).apply(new Random())).isNotNull();
     }
 
+    // -- map
+
     @Test
     public void shouldMapArbitrary() {
         final Arbitrary<Integer> arbitraryInt = size -> Gen.choose(-size, size);
@@ -37,11 +43,33 @@ public class ArbitraryTest {
         assertThat(arbitraryTree.apply(0).apply(new Random())).isNotNull();
     }
 
+    // -- filter
+
     @Test
     public void shouldFilterArbitrary() {
         final Arbitrary<BinaryTree<Integer>> arbitraryTree = new ArbitraryBinaryTree(0, 1000);
         final Arbitrary<BinaryTree<Integer>> arbitraryTreeWithEvenNodeCount = arbitraryTree.filter(tree -> tree.nodeCount() % 3 == 0);
         assertThat(arbitraryTreeWithEvenNodeCount.apply(10).apply(new Random())).isNotNull();
+    }
+
+    // -- flatten
+
+    @Test(expected = ClassCastException.class)
+    public void shouldThrowWhenFlatteningArbitraryInteger() {
+        Arbitrary.integer().flatten().apply(1).apply(new Random());
+    }
+
+    @Test
+    public void shouldFlattenNestedArbitraryInteger() {
+        final Arbitrary<Arbitrary<Integer>> nestedArbitrary = size -> random -> Arbitrary.integer();
+        assertThat(nestedArbitrary.flatten().apply(1).apply(new Random())).isNotNull();
+    }
+
+    // -- flatten(Function)
+
+    @Test
+    public void shouldFlatteningArbitraryIntegerUsingFunction() {
+        assertThat(Arbitrary.integer().flatten(i -> Gen.of(i).arbitrary()).apply(1).apply(new Random())).isNotNull();
     }
 
     // -- forEach

@@ -27,6 +27,19 @@ public interface Function1<T1, R> extends λ<R> {
     long serialVersionUID = 1L;
 
     /**
+     * Lifts a <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html">method
+     * reference</a> to a {@code Function1}.
+     *
+     * @param methodReference (typically) a method reference, e.g. {@code Type::method}
+     * @param <R> return type
+     * @param <T1> 1st argument
+     * @return a {@code Function1}
+     */
+    static <T1, R> Function1<T1, R> lift(Function1<T1, R> methodReference) {
+        return methodReference;
+    }
+
+    /**
      * Returns the identity Function1, i.e. the function that returns its input.
      *
      * @param <T> argument type (and return type) of the identity function

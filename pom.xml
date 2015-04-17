@@ -43,7 +43,7 @@
     </developers>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <assertj.core.version>2.0.0</assertj.core.version>
+        <assertj.core.version>3.0.0</assertj.core.version>
         <eclipse.lifecycle.mapping.version>1.0.0</eclipse.lifecycle.mapping.version>
         <java.version>1.8</java.version>
         <junit.version>4.12</junit.version>

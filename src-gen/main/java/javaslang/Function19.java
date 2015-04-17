@@ -45,6 +45,37 @@ public interface Function19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T
     long serialVersionUID = 1L;
 
     /**
+     * Lifts a <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html">method
+     * reference</a> to a {@code Function19}.
+     *
+     * @param methodReference (typically) a method reference, e.g. {@code Type::method}
+     * @param <R> return type
+     * @param <T1> 1st argument
+     * @param <T2> 2nd argument
+     * @param <T3> 3rd argument
+     * @param <T4> 4th argument
+     * @param <T5> 5th argument
+     * @param <T6> 6th argument
+     * @param <T7> 7th argument
+     * @param <T8> 8th argument
+     * @param <T9> 9th argument
+     * @param <T10> 10th argument
+     * @param <T11> 11th argument
+     * @param <T12> 12th argument
+     * @param <T13> 13th argument
+     * @param <T14> 14th argument
+     * @param <T15> 15th argument
+     * @param <T16> 16th argument
+     * @param <T17> 17th argument
+     * @param <T18> 18th argument
+     * @param <T19> 19th argument
+     * @return a {@code Function19}
+     */
+    static <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, R> Function19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, R> lift(Function19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, R> methodReference) {
+        return methodReference;
+    }
+
+    /**
      * Applies this function to 19 arguments and returns the result.
      *
      * @param t1 argument 1

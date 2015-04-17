@@ -423,9 +423,7 @@ public interface RoseTree<T> extends Tree<T> {
             if (isEmpty()) {
                 return 1;
             } else {
-                // need cast because of jdk 1.8.0_25/_31 compiler bug
-                //noinspection RedundantCast
-                return (int) getChildren().map(Objects::hashCode).foldLeft(31 + Objects.hashCode(getValue()), (i, j) -> i * 31 + j);
+                return getChildren().map(Objects::hashCode).foldLeft(31 + Objects.hashCode(getValue()), (i, j) -> i * 31 + j);
             }
         }
 

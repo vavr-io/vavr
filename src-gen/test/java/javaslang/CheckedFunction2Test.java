@@ -16,9 +16,20 @@ import org.junit.Test;
 public class CheckedFunction2Test {
 
     @Test
+    public void shouldLift() {
+        class Type {
+            Object methodReference(Object o1, Object o2) {
+                return null;
+            }
+        }
+        final Type type = new Type();
+        assertThat(CheckedFunction2.lift(type::methodReference)).isNotNull();
+    }
+
+    @Test
     public void shouldPartiallyApplyWith1Arguments() throws Throwable {
         final CheckedFunction2<Object, Object, Object> f = (o1, o2) -> null;
-        assertThat(f.apply(null) instanceof CheckedFunction1).isTrue();
+        assertThat(f.apply(null)).isNotNull();
     }
 
     @Test

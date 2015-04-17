@@ -16,21 +16,32 @@ import org.junit.Test;
 public class Function4Test {
 
     @Test
+    public void shouldLift() {
+        class Type {
+            Object methodReference(Object o1, Object o2, Object o3, Object o4) {
+                return null;
+            }
+        }
+        final Type type = new Type();
+        assertThat(Function4.lift(type::methodReference)).isNotNull();
+    }
+
+    @Test
     public void shouldPartiallyApplyWith1Arguments() {
         final Function4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
-        assertThat(f.apply(null) instanceof Function3).isTrue();
+        assertThat(f.apply(null)).isNotNull();
     }
 
     @Test
     public void shouldPartiallyApplyWith2Arguments() {
         final Function4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
-        assertThat(f.apply(null, null) instanceof Function2).isTrue();
+        assertThat(f.apply(null, null)).isNotNull();
     }
 
     @Test
     public void shouldPartiallyApplyWith3Arguments() {
         final Function4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
-        assertThat(f.apply(null, null, null) instanceof Function1).isTrue();
+        assertThat(f.apply(null, null, null)).isNotNull();
     }
 
     @Test

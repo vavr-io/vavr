@@ -27,6 +27,19 @@ public interface CheckedFunction1<T1, R> extends λ<R> {
     long serialVersionUID = 1L;
 
     /**
+     * Lifts a <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html">method
+     * reference</a> to a {@code CheckedFunction1}.
+     *
+     * @param methodReference (typically) a method reference, e.g. {@code Type::method}
+     * @param <R> return type
+     * @param <T1> 1st argument
+     * @return a {@code CheckedFunction1}
+     */
+    static <T1, R> CheckedFunction1<T1, R> lift(CheckedFunction1<T1, R> methodReference) {
+        return methodReference;
+    }
+
+    /**
      * Returns the identity CheckedFunction1, i.e. the function that returns its input.
      *
      * @param <T> argument type (and return type) of the identity function

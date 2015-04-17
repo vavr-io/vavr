@@ -16,69 +16,80 @@ import org.junit.Test;
 public class Function12Test {
 
     @Test
+    public void shouldLift() {
+        class Type {
+            Object methodReference(Object o1, Object o2, Object o3, Object o4, Object o5, Object o6, Object o7, Object o8, Object o9, Object o10, Object o11, Object o12) {
+                return null;
+            }
+        }
+        final Type type = new Type();
+        assertThat(Function12.lift(type::methodReference)).isNotNull();
+    }
+
+    @Test
     public void shouldPartiallyApplyWith1Arguments() {
         final Function12<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12) -> null;
-        assertThat(f.apply(null) instanceof Function11).isTrue();
+        assertThat(f.apply(null)).isNotNull();
     }
 
     @Test
     public void shouldPartiallyApplyWith2Arguments() {
         final Function12<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12) -> null;
-        assertThat(f.apply(null, null) instanceof Function10).isTrue();
+        assertThat(f.apply(null, null)).isNotNull();
     }
 
     @Test
     public void shouldPartiallyApplyWith3Arguments() {
         final Function12<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12) -> null;
-        assertThat(f.apply(null, null, null) instanceof Function9).isTrue();
+        assertThat(f.apply(null, null, null)).isNotNull();
     }
 
     @Test
     public void shouldPartiallyApplyWith4Arguments() {
         final Function12<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12) -> null;
-        assertThat(f.apply(null, null, null, null) instanceof Function8).isTrue();
+        assertThat(f.apply(null, null, null, null)).isNotNull();
     }
 
     @Test
     public void shouldPartiallyApplyWith5Arguments() {
         final Function12<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12) -> null;
-        assertThat(f.apply(null, null, null, null, null) instanceof Function7).isTrue();
+        assertThat(f.apply(null, null, null, null, null)).isNotNull();
     }
 
     @Test
     public void shouldPartiallyApplyWith6Arguments() {
         final Function12<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12) -> null;
-        assertThat(f.apply(null, null, null, null, null, null) instanceof Function6).isTrue();
+        assertThat(f.apply(null, null, null, null, null, null)).isNotNull();
     }
 
     @Test
     public void shouldPartiallyApplyWith7Arguments() {
         final Function12<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12) -> null;
-        assertThat(f.apply(null, null, null, null, null, null, null) instanceof Function5).isTrue();
+        assertThat(f.apply(null, null, null, null, null, null, null)).isNotNull();
     }
 
     @Test
     public void shouldPartiallyApplyWith8Arguments() {
         final Function12<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12) -> null;
-        assertThat(f.apply(null, null, null, null, null, null, null, null) instanceof Function4).isTrue();
+        assertThat(f.apply(null, null, null, null, null, null, null, null)).isNotNull();
     }
 
     @Test
     public void shouldPartiallyApplyWith9Arguments() {
         final Function12<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12) -> null;
-        assertThat(f.apply(null, null, null, null, null, null, null, null, null) instanceof Function3).isTrue();
+        assertThat(f.apply(null, null, null, null, null, null, null, null, null)).isNotNull();
     }
 
     @Test
     public void shouldPartiallyApplyWith10Arguments() {
         final Function12<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12) -> null;
-        assertThat(f.apply(null, null, null, null, null, null, null, null, null, null) instanceof Function2).isTrue();
+        assertThat(f.apply(null, null, null, null, null, null, null, null, null, null)).isNotNull();
     }
 
     @Test
     public void shouldPartiallyApplyWith11Arguments() {
         final Function12<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12) -> null;
-        assertThat(f.apply(null, null, null, null, null, null, null, null, null, null, null) instanceof Function1).isTrue();
+        assertThat(f.apply(null, null, null, null, null, null, null, null, null, null, null)).isNotNull();
     }
 
     @Test
