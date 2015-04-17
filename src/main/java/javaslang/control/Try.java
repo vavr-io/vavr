@@ -137,12 +137,7 @@ public interface Try<T> extends CheckedMonad<T, Try<?>>, ValueObject, Bivalent<T
     @SuppressWarnings("unchecked")
     @Override
     default <U> Try<U> flatten() {
-        try {
-            return ((Try<? extends Try<U>>) this).flatten(CheckedFunction.identity());
-        } catch(Throwable x) {
-            // catches ClassCastException
-            return (Try<U>) new Failure<>(x);
-        }
+        return ((Try<? extends Try<U>>) this).flatten(CheckedFunction.identity());
     }
 
     /**
