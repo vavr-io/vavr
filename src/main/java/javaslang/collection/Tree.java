@@ -74,9 +74,7 @@ public interface Tree<T> extends Functor<T>, ValueObject, Iterable<T> {
         if (isEmpty() || isLeaf()) {
             return 0;
         } else {
-            // need cast because of jdk 1.8.0_25 compiler error
-            //noinspection RedundantCast
-            return (int) getChildren().foldLeft(1, (count, child) -> count + child.branchCount());
+            return getChildren().foldLeft(1, (count, child) -> count + child.branchCount());
         }
     }
 
@@ -91,9 +89,7 @@ public interface Tree<T> extends Functor<T>, ValueObject, Iterable<T> {
         } else if (isLeaf()) {
             return 1;
         } else {
-            // need cast because of jdk 1.8.0_25 compiler error
-            //noinspection RedundantCast
-            return (int) getChildren().foldLeft(0, (count, child) -> count + child.leafCount());
+            return getChildren().foldLeft(0, (count, child) -> count + child.leafCount());
         }
     }
 
@@ -106,8 +102,6 @@ public interface Tree<T> extends Functor<T>, ValueObject, Iterable<T> {
         if (isEmpty()) {
             return 0;
         } else {
-            // need cast because of jdk 1.8.0_25 compiler error
-            //noinspection RedundantCast
             return 1 + getChildren().foldLeft(0, (count, child) -> count + child.nodeCount());
         }
     }

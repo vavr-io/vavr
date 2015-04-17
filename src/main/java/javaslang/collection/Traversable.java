@@ -635,10 +635,8 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      *
      * @return the number of elements
      */
-    @SuppressWarnings("RedundantCast")
     default int length() {
-        // cast because of jdk 1.8.0_25 compiler error
-        return (int) foldLeft(0, (n, ignored) -> n + 1);
+        return foldLeft(0, (n, ignored) -> n + 1);
     }
 
     /**
