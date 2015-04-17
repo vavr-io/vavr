@@ -6,6 +6,9 @@ env:
     - secure: "HU0QOLEDkYHcjX+PkicGGQ5g2L1/19V2fH13OSn82DOFlIiWmCfhSI8EG/QoWwPDp/HYQ4DH5Lo+ZEhVz5tgEultItyJ38LZJl/YYOzSAiRvTezmDdz+Cdg6SXAwCvgFCTagEJ1ChL5NyenDGDlwPB/drN0HlNNU6igPqNkM8l0="
     - secure: "VByzrX+inH3Z2nq50Hkj1FJnyOjPdsdIo/RUcl6DxUjkYfXP0n3tkPZGFA0PwiDpEwvRcSGLMR7mJ59Bhja5wgqXNhMqV4F0kB2PEFHSC3UmkyMnTSmDBKvP2aT6JLq00K3mYeNV5HiaYV4S7UVNdzZwaPCgc2aVZN8hF4f5/V8="
     - secure: "P1Wp4HoI2O8o2PPAEe9Z23TrZMEn+lrCQdfQ2llyXmLYJaM+lLsE6qsQp6gMaLcl17YFm75MTKJgp22kDdVpOM1nX3xz2leZ2AWiJ61IBZ+0+f3Xubogp7SaNzlJN7zTzh2WTSWJ0Nng3X1R9JlqMbio2LPRoaA/xPMwuNv91Fw="
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install --only-upgrade -y oracle-java8-installer
 after_success:
   - mvn clean test jacoco:report coveralls:report
   - mvn clean deploy --settings .travis/maven-settings.xml
