@@ -260,6 +260,26 @@ public class GenTest {
         Gen.of(1).filter(ignored -> false).apply(RANDOM);
     }
 
+    // -- flatten
+
+    @Test(expected = ClassCastException.class)
+    public void shouldThrowWhenFlatteningGen() {
+        Gen.of(1).flatten().apply(new Random());
+    }
+
+    @Test
+    public void shouldFlattenNestedGen() {
+        final Gen<Gen<Integer>> nestedGen = random -> Gen.of(Gen.of(1)).apply(random);
+        assertThat(nestedGen.flatten().apply(new Random())).isNotNull();
+    }
+
+    // -- flatten(Function)
+
+    @Test
+    public void shouldFlatteningGenOfIntegerUsingFunction() {
+        assertThat(Gen.of(1).flatten(Gen::of).apply(new Random())).isNotNull();
+    }
+
     // -- forEach
 
     @Test(expected = UnsupportedOperationException.class)

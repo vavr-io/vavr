@@ -5,6 +5,7 @@
  */
 package javaslang.control;
 
+import javaslang.Serializables;
 import javaslang.Tuple;
 import javaslang.control.Either.LeftProjection;
 import javaslang.control.Either.RightProjection;
@@ -197,7 +198,7 @@ public class EitherTest {
 
     @Test
     public void shouldConvertLeftProjectionOfRightToJavaOptional() {
-        assertThat(Right.<Integer, String> of("x").left().toJavaOptional()).isEqualTo(Optional.empty());
+        assertThat(Right.<Integer, String>of("x").left().toJavaOptional()).isEqualTo(Optional.empty());
     }
 
     // filter
@@ -225,17 +226,41 @@ public class EitherTest {
         assertThat(actual).isFalse();
     }
 
+    // flatten
+
+    @Test(expected = ClassCastException.class)
+    public void shouldThrowWhenFlatteningUnnestedLeftProjection() {
+        Left.of(1).left().flatten();
+    }
+
+    @Test
+    public void shouldFlattenNestedLeftProjection() {
+        assertThat(Left.of(Left.of(1).left()).left().flatten().toEither()).isEqualTo(Left.of(1));
+    }
+
+    // flatten(Function)
+
+    @Test
+    public void shouldFlattenLeftWithFunctionUsingLeftProjection() {
+        assertThat(Left.<Integer, Object> of(1).left().flatten(i -> Left.<Integer, Object> of(i).left()).toEither()).isEqualTo(Left.of(1));
+    }
+
+    @Test
+    public void shouldFlattenRightWithFunctionUsingLeftProjection() {
+        assertThat(Right.<Integer, Object>of(1).left().flatten(i -> Left.<Integer, Object>of(i).left()).toEither()).isEqualTo(Right.of(1));
+    }
+
     // flatMap
 
     @Test
     public void shouldFlatMapOnLeftProjectionOfLeft() {
-        final Either<Integer, String> actual = Left.<Integer, String> of(1).left().flatMap(i -> Left.<Integer, String> of(i + 1).left()).toEither();
+        final Either<Integer, String> actual = Left.<Integer, String> of(1).left().flatMap(i -> Left.<Integer, String>of(i + 1).left()).toEither();
         assertThat(actual).isEqualTo(Left.of(2));
     }
 
     @Test
     public void shouldFlatMapOnLeftProjectionOfRight() {
-        final Either<Integer, String> actual = Right.<Integer, String> of("1").left().flatMap(i -> Left.<Integer, String> of(i + 1).left()).toEither();
+        final Either<Integer, String> actual = Right.<Integer, String> of("1").left().flatMap(i -> Left.<Integer, String>of(i + 1).left()).toEither();
         assertThat(actual).isEqualTo(Right.of("1"));
     }
 
@@ -262,7 +287,7 @@ public class EitherTest {
         final List<Integer> actual = new ArrayList<>();
         final Either<Integer, String> testee = Left.<Integer, String> of(1).left().peek(actual::add).toEither();
         assertThat(actual).isEqualTo(Collections.singletonList(1));
-        assertThat(testee).isEqualTo(Left.<Integer, String> of(1));
+        assertThat(testee).isEqualTo(Left.<Integer, String>of(1));
     }
 
     @Test
@@ -270,7 +295,7 @@ public class EitherTest {
         final List<Integer> actual = new ArrayList<>();
         final Either<Integer, String> testee = Right.<Integer, String> of("1").left().peek(actual::add).toEither();
         assertThat(actual.isEmpty()).isTrue();
-        assertThat(testee).isEqualTo(Right.<Integer, String> of("1"));
+        assertThat(testee).isEqualTo(Right.<Integer, String>of("1"));
     }
 
     // map
@@ -353,6 +378,59 @@ public class EitherTest {
     @Test
     public void shouldConvertLeftProjectionOfRightToString() {
         assertThat(Right.of(1).left().toString()).isEqualTo("LeftProjection(Right(1))");
+    }
+
+    // -- LeftProjection.Nothing
+
+    @SuppressWarnings("unchecked")
+    static <L, R> Left<L, R> nothingLeft() {
+        return (Left<L, R>) Left.of(1).left().filter(ignored -> false).toEither();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldThrowWhenGetOnLeftNothing() {
+        nothingLeft().get();
+    }
+
+    @Test
+    public void shouldBeLeftWhenCallingIsLeftOnNothingLeft() {
+        assertThat(nothingLeft().isLeft()).isTrue();
+    }
+
+    @Test
+    public void shouldNotBeRightWhenCallingIsLeftOnNothingLeft() {
+        assertThat(nothingLeft().isRight()).isFalse();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldThrowWhenCallingBimapOnNothingLeft() {
+        nothingLeft().bimap(Function.identity(), Function.identity());
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldThrowWhenCallingUnapplyOnNothingLeft() {
+        nothingLeft().unapply();
+    }
+
+    @Test
+    public void shouldEqualSameInstanceWhenNothingLeft() {
+        assertThat(nothingLeft().equals(nothingLeft())).isTrue();
+    }
+
+    @Test
+    public void shouldHaveHashCode1WhenNothingLeft() {
+        assertThat(nothingLeft().hashCode()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldStringifyNothingLeft() {
+        assertThat(nothingLeft().toString()).isEqualTo("Left()");
+    }
+
+    @Test
+    public void shouldSerializeDeserializeNothingLeft() {
+        final Object o = Serializables.deserialize(Serializables.serialize(nothingLeft()));
+        assertThat(o).isEqualTo(nothingLeft());
     }
 
     // -- Right
@@ -495,7 +573,7 @@ public class EitherTest {
 
     @Test
     public void shouldConvertRightProjectionOfRightToSome() {
-        assertThat(Right.<Integer, String> of("1").right().toOption()).isEqualTo(Option.of("1"));
+        assertThat(Right.<Integer, String>of("1").right().toOption()).isEqualTo(Option.of("1"));
     }
 
     // toEither
@@ -521,7 +599,7 @@ public class EitherTest {
 
     @Test
     public void shouldConvertRightProjectionOfRightToJavaOptional() {
-        assertThat(Right.<Integer, String> of("1").right().toJavaOptional()).isEqualTo(Optional.of("1"));
+        assertThat(Right.<Integer, String>of("1").right().toJavaOptional()).isEqualTo(Optional.of("1"));
     }
 
     // filter
@@ -549,11 +627,35 @@ public class EitherTest {
         assertThat(actual).isFalse();
     }
 
+    // flatten
+
+    @Test(expected = ClassCastException.class)
+    public void shouldThrowWhenFlatteningUnnestedRightProjection() {
+        Right.of(1).right().flatten();
+    }
+
+    @Test
+    public void shouldFlattenNestedRightProjection() {
+        assertThat(Right.of(Right.of(1).right()).right().flatten().toEither()).isEqualTo(Right.of(1));
+    }
+
+    // flatten(Function)
+
+    @Test
+    public void shouldFlattenRightWithFunctionUsingRightProjection() {
+        assertThat(Right.<Object, Integer> of(1).right().flatten(i -> Right.<Object, Integer>of(i).right()).toEither()).isEqualTo(Right.of(1));
+    }
+
+    @Test
+    public void shouldFlattenLeftWithFunctionUsingRightProjection() {
+        assertThat(Left.<Object, Integer> of(1).right().flatten(i -> Right.<Object, Integer>of(i).right()).toEither()).isEqualTo(Left.of(1));
+    }
+
     // flatMap
 
     @Test
     public void shouldFlatMapOnRightProjectionOfRight() {
-        final Either<String, Integer> actual = Right.<String, Integer> of(1).right().flatMap(i -> Right.<String, Integer> of(i + 1).right()).toEither();
+        final Either<String, Integer> actual = Right.<String, Integer> of(1).right().flatMap(i -> Right.<String, Integer>of(i + 1).right()).toEither();
         assertThat(actual).isEqualTo(Right.of(2));
     }
 
@@ -586,7 +688,7 @@ public class EitherTest {
         final List<Integer> actual = new ArrayList<>();
         final Either<String, Integer> testee = Right.<String, Integer> of(1).right().peek(actual::add).toEither();
         assertThat(actual).isEqualTo(Collections.singletonList(1));
-        assertThat(testee).isEqualTo(Right.<String, Integer> of(1));
+        assertThat(testee).isEqualTo(Right.<String, Integer>of(1));
     }
 
     @Test
@@ -677,5 +779,58 @@ public class EitherTest {
     @Test
     public void shouldConvertRightProjectionOfRightToString() {
         assertThat(Right.of(1).right().toString()).isEqualTo("RightProjection(Right(1))");
+    }
+
+    // -- RightProjection.Nothing
+
+    @SuppressWarnings("unchecked")
+    static <L, R> Right<L, R> nothingRight() {
+        return (Right<L, R>) Right.of(1).right().filter(ignored -> false).toEither();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldThrowWhenCallingGetOnNothingRight() {
+        nothingRight().get();
+    }
+
+    @Test
+    public void shouldBeRightWhenCallingIsRightOnNothingRight() {
+        assertThat(nothingRight().isRight()).isTrue();
+    }
+
+    @Test
+    public void shouldNotBeLeftWhenCallingIsRightOnNothingRight() {
+        assertThat(nothingRight().isLeft()).isFalse();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldThrowWhenCallingBimapOnNothingRight() {
+        nothingRight().bimap(Function.identity(), Function.identity());
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldThrowWhenCallingUnapplyOnNothingRight() {
+        nothingRight().unapply();
+    }
+
+    @Test
+    public void shouldEqualSameInstanceWhenNothingRight() {
+        assertThat(nothingRight().equals(nothingRight())).isTrue();
+    }
+
+    @Test
+    public void shouldHaveHashCode1WhenNothingRight() {
+        assertThat(nothingRight().hashCode()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldStringifyNothingRight() {
+        assertThat(nothingRight().toString()).isEqualTo("Right()");
+    }
+
+    @Test
+    public void shouldSerializeDeserializeNothingRight() {
+        final Object o = Serializables.deserialize(Serializables.serialize(nothingRight()));
+        assertThat(o).isEqualTo(nothingRight());
     }
 }

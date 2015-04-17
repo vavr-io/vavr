@@ -33,7 +33,7 @@ public class TryTest implements CheckedMonadLaws<Try<?>> {
 
     @Test
     public void shouldThrowWhenFlatteningUnnestedSuccess() {
-        assertThat(new Success<>(1).flatten().isFailure()).isTrue();
+        assertThat(Try.of(() -> 1).flatten().isFailure()).isTrue();
     }
 
     @Test
@@ -65,17 +65,17 @@ public class TryTest implements CheckedMonadLaws<Try<?>> {
 
     @Test
     public void shouldFlattenSuccessOfSuccessWithFunction() {
-        assertThat(new Success<>(new Success<>(1)).flatten(i -> MATCH.apply(i))).isEqualTo(new Success<>(1));
+        assertThat(new Success<>(new Success<>(1)).flatten(MATCH::apply)).isEqualTo(new Success<>(1));
     }
 
     @Test
     public void shouldFlattenSuccessOfFailureWithFunction() {
-        assertThat(new Success<>(failure()).flatten(i -> MATCH.apply(i))).isEqualTo(failure());
+        assertThat(new Success<>(failure()).flatten(MATCH::apply)).isEqualTo(failure());
     }
 
     @Test
     public void shouldFlattenFailureWithFunction() {
-        assertThat(failure().flatten(i -> MATCH.apply(i))).isEqualTo(failure());
+        assertThat(failure().flatten(MATCH::apply)).isEqualTo(failure());
     }
 
     // -- Try.of

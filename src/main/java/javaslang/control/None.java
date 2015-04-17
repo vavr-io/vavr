@@ -95,7 +95,7 @@ public final class None<T> implements Option<T> {
 
     @Override
     public int hashCode() {
-        return Objects.hash();
+        return 1;
     }
 
     @Override

@@ -5,8 +5,6 @@
  */
 package javaslang;
 
-import java.util.Objects;
-
 /**
  * <p>Implementation of an empty tuple, a tuple containing no elements.</p>
  * <p>
@@ -54,7 +52,7 @@ public final class Tuple0 implements Tuple {
 
     @Override
     public int hashCode() {
-        return Objects.hash();
+        return 1;
     }
 
     @Override

@@ -430,17 +430,27 @@ public interface Either<L, R> extends ValueObject {
 
             @Override
             public boolean equals(Object o) {
-                return o == this || o instanceof Nothing;
+                return o == this;
             }
 
             @Override
             public int hashCode() {
-                return Nothing.class.hashCode();
+                return 1;
             }
 
             @Override
             public String toString() {
                 return "Left()";
+            }
+
+            /**
+             * Instance control for object serialization.
+             *
+             * @return The singleton instance of {@code LeftProjection.Nothing}.
+             * @see java.io.Serializable
+             */
+            private Object readResolve() {
+                return INSTANCE;
             }
         }
     }
@@ -765,17 +775,27 @@ public interface Either<L, R> extends ValueObject {
 
             @Override
             public boolean equals(Object o) {
-                return o == this || o instanceof Nothing;
+                return o == this;
             }
 
             @Override
             public int hashCode() {
-                return Nothing.class.hashCode();
+                return 1;
             }
 
             @Override
             public String toString() {
                 return "Right()";
+            }
+
+            /**
+             * Instance control for object serialization.
+             *
+             * @return The singleton instance of {@code RightProjection.Nothing}.
+             * @see java.io.Serializable
+             */
+            private Object readResolve() {
+                return INSTANCE;
             }
         }
     }
