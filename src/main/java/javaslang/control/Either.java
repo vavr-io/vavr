@@ -261,6 +261,7 @@ public interface Either<L, R> extends ValueObject {
          * is a {@code Left} and the left value does <em>not</em> satisfy the given predicate</li>
          * <li>{@code LeftProjection(Right(Some(value)))} otherwise, i.e. if the underlying {@code Either} of this
          * projection is a {@code Right}</li>
+         * </ul>
          *
          * @param predicate A predicate
          * @return a LeftProjection of an {@code Either} with an optional value
@@ -563,6 +564,7 @@ public interface Either<L, R> extends ValueObject {
          * is a {@code Right} and the right value does <em>not</em> satisfy the given predicate</li>
          * <li>{@code RightProjection(Left(Some(value)))} otherwise, i.e. if the underlying {@code Either} of this
          * projection is a {@code Left}</li>
+         *</ul>
          *
          * @param predicate A predicate
          * @return a RightProjection of an {@code Either} with an optional value
