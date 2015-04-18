@@ -91,6 +91,7 @@ def generateMainClasses(): Unit = {
 
       val functionType = if (checked) im.getType("javaslang.control.Try.CheckedFunction") else im.getType("java.util.function.Function")
       val consumerType = if (checked) im.getType("javaslang.control.Try.CheckedConsumer") else im.getType("java.util.function.Consumer")
+      val predicateType = if (checked) im.getType("javaslang.control.Try.CheckedPredicate") else im.getType("java.util.function.Predicate")
 
       xs"""
         /$javadoc
@@ -165,6 +166,22 @@ def generateMainClasses(): Unit = {
              * @return A monadic structure containing flattened elements.
              */
             <U, MONAD extends HigherKinded<U, M>> $name<U, M> flatten($functionType<? super T, ? extends MONAD> f);
+
+            /**
+             * Checks, if an element exists such that the predicate holds.
+             *
+             * @param predicate A Predicate
+             * @return true, if predicate holds for an element of this, false otherwise
+             */
+            boolean exists($predicateType<? super T> predicate);
+
+            /**
+             * Checks, if the given predicate holds for all elements of this.
+             *
+             * @param predicate A Predicate
+             * @return true, if the predicate holds for all elements of this, false otherwise
+             */
+            boolean forAll($predicateType<? super T> predicate);
 
             /**
              * Performs an action on each element of this monad.

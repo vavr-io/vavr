@@ -65,11 +65,13 @@ public final class None<T> implements Option<T> {
 
     @Override
     public None<T> peek(Consumer<? super T> action) {
+        Objects.requireNonNull(action, "action is null");
         return this;
     }
 
     @Override
     public <U> None<U> map(Function<? super T, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
         return None.instance();
     }
 

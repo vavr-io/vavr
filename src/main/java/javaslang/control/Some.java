@@ -48,12 +48,14 @@ public final class Some<T> implements Option<T> {
 
     @Override
     public Some<T> peek(Consumer<? super T> action) {
+        Objects.requireNonNull(action, "action is null");
         action.accept(get());
         return this;
     }
 
     @Override
     public <U> Some<U> map(Function<? super T, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
         return new Some<>(mapper.apply(get()));
     }
 

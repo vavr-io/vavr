@@ -9,6 +9,7 @@ import javaslang.Serializables;
 import javaslang.Tuple;
 import javaslang.algebra.Monad;
 import javaslang.algebra.MonadLaws;
+import javaslang.collection.List;
 import javaslang.test.Arbitrary;
 import javaslang.test.CheckResult;
 import javaslang.test.CheckResultAssertions;
@@ -247,6 +248,40 @@ public class OptionTest implements MonadLaws<Option<?>> {
     @Test
     public void shouldFlatMapNone() {
         assertThat(Option.<Integer>none().flatMap(i -> Option.of(String.valueOf(i)))).isEqualTo(Option.none());
+    }
+
+    // -- exists
+
+    @Test
+    public void shouldBeAwareOfPropertyThatHoldsExistsOfSome() {
+        assertThat(new Some<>(1).exists(i -> i == 1)).isTrue();
+    }
+
+    @Test
+    public void shouldBeAwareOfPropertyThatNotHoldsExistsOfSome() {
+        assertThat(new Some<>(1).exists(i -> i == 2)).isFalse();
+    }
+
+    @Test
+    public void shouldNotHoldPropertyExistsOfNone() {
+        assertThat(None.instance().exists(e -> true)).isFalse();
+    }
+
+    // -- forall
+
+    @Test
+    public void shouldBeAwareOfPropertyThatHoldsForAllOfSome() {
+        assertThat(new Some<>(1).forAll(i -> i == 1)).isTrue();
+    }
+
+    @Test
+    public void shouldBeAwareOfPropertyThatNotHoldsForAllOfSome() {
+        assertThat(new Some<>(1).forAll(i -> i == 2)).isFalse();
+    }
+
+    @Test
+    public void shouldNotHoldPropertyForAllOfNone() {
+        assertThat(None.instance().forAll(e -> true)).isFalse();
     }
 
     // -- forEach

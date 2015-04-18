@@ -123,9 +123,33 @@ public interface Arbitrary<T> extends Monad<T, Arbitrary<?>> {
     }
 
     /**
-     * {@code Arbitrary.forEach} is not supported.
+     * OPERATION NOT SUPPORTED!
      *
-     * @param action A consumer
+     * @param predicate A {@code Predicate}
+     * @return nothing
+     * @throws UnsupportedOperationException because this operation could take infinitely long
+     */
+    @Override
+    default boolean exists(Predicate<? super T> predicate) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * OPERATION NOT SUPPORTED!
+     *
+     * @param predicate A {@code Predicate}
+     * @return nothing
+     * @throws UnsupportedOperationException because this operation would take infinitely long
+     */
+    @Override
+    default boolean forAll(Predicate<? super T> predicate) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * OPERATION NOT SUPPORTED!
+     *
+     * @param action A {@code Consumer}
      * @throws UnsupportedOperationException because this operation would take infinitely long
      */
     @Override

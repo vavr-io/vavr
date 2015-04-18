@@ -45,6 +45,8 @@ public final class Right<L, R> implements Either<L, R> {
 
     @Override
     public <X, Y> Right<X, Y> bimap(Function<? super L, ? extends X> leftMapper, Function<? super R, ? extends Y> rightMapper) {
+        Objects.requireNonNull(leftMapper, "leftMapper is null");
+        Objects.requireNonNull(rightMapper, "rightMapper is null");
         return new Right<>(rightMapper.apply(value));
     }
 

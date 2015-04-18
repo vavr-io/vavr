@@ -176,6 +176,26 @@ public interface Try<T> extends CheckedMonad<T, Try<?>>, ValueObject, Bivalent<T
         }
     }
 
+    @Override
+    default boolean exists(CheckedPredicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        try {
+            return isSuccess() && predicate.test(get());
+        } catch(Throwable ignored) {
+            return false;
+        }
+    }
+
+    @Override
+    default boolean forAll(CheckedPredicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        try {
+            return isSuccess() && predicate.test(get());
+        } catch(Throwable ignored) {
+            return false;
+        }
+    }
+
     /**
      * Applies the action to the value of a Success or does nothing in the case of a Failure.
      *

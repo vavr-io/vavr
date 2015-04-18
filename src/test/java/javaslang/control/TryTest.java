@@ -78,6 +78,40 @@ public class TryTest implements CheckedMonadLaws<Try<?>> {
         assertThat(failure().flatten(MATCH::apply)).isEqualTo(failure());
     }
 
+    // -- exists
+
+    @Test
+    public void shouldBeAwareOfPropertyThatHoldsExistsOfSuccess() {
+        assertThat(new Success<>(1).exists(i -> i == 1)).isTrue();
+    }
+
+    @Test
+    public void shouldBeAwareOfPropertyThatNotHoldsExistsOfSuccess() {
+        assertThat(new Success<>(1).exists(i -> i == 2)).isFalse();
+    }
+
+    @Test
+    public void shouldNotHoldPropertyExistsOfFailure() {
+        assertThat(failure().exists(e -> true)).isFalse();
+    }
+
+    // -- forall
+
+    @Test
+    public void shouldBeAwareOfPropertyThatHoldsForAllOfSuccess() {
+        assertThat(new Success<>(1).forAll(i -> i == 1)).isTrue();
+    }
+
+    @Test
+    public void shouldBeAwareOfPropertyThatNotHoldsForAllOfSuccess() {
+        assertThat(new Success<>(1).forAll(i -> i == 2)).isFalse();
+    }
+
+    @Test
+    public void shouldNotHoldPropertyForAllOfFailure() {
+        assertThat(failure().forAll(e -> true)).isFalse();
+    }
+
     // -- Try.of
 
     @Test
@@ -307,7 +341,7 @@ public class TryTest implements CheckedMonadLaws<Try<?>> {
         assertThat(actual).isEqualTo(expected);
     }
 
-    // -- peek
+    // peek
 
     @Test
     public void shouldPeekFailure() {
@@ -516,7 +550,7 @@ public class TryTest implements CheckedMonadLaws<Try<?>> {
         assertThat(actual).isEqualTo(expected);
     }
 
-    // -- peek
+    // peek
 
     @Test
     public void shouldPeekSuccess() {

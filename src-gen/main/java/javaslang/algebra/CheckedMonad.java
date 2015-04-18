@@ -12,6 +12,7 @@ package javaslang.algebra;
 import java.util.function.Consumer;
 import javaslang.control.Try.CheckedConsumer;
 import javaslang.control.Try.CheckedFunction;
+import javaslang.control.Try.CheckedPredicate;
 
 /**
  * Defines a CheckedMonad by generalizing the flatMap function.
@@ -85,6 +86,22 @@ public interface CheckedMonad<T, M extends HigherKinded<?, M>> extends CheckedFu
      * @return A monadic structure containing flattened elements.
      */
     <U, MONAD extends HigherKinded<U, M>> CheckedMonad<U, M> flatten(CheckedFunction<? super T, ? extends MONAD> f);
+
+    /**
+     * Checks, if an element exists such that the predicate holds.
+     *
+     * @param predicate A Predicate
+     * @return true, if predicate holds for an element of this, false otherwise
+     */
+    boolean exists(CheckedPredicate<? super T> predicate);
+
+    /**
+     * Checks, if the given predicate holds for all elements of this.
+     *
+     * @param predicate A Predicate
+     * @return true, if the predicate holds for all elements of this, false otherwise
+     */
+    boolean forAll(CheckedPredicate<? super T> predicate);
 
     /**
      * Performs an action on each element of this monad.
