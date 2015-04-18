@@ -10,6 +10,8 @@ import javaslang.algebra.HigherKinded;
 import javaslang.algebra.Monad;
 import javaslang.control.Valences.Univalent;
 
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -32,7 +34,7 @@ import java.util.function.Supplier;
  * @param <T> The type of the optional value.
  * @since 1.0.0
  */
-public interface Option<T> extends Monad<T, Option<?>>, ValueObject, Univalent<T> {
+public interface Option<T> extends Monad<T, Option<?>>, ValueObject, Univalent<T>, Iterable<T> {
 
     /**
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
@@ -252,6 +254,15 @@ public interface Option<T> extends Monad<T, Option<?>>, ValueObject, Univalent<T
             return None.instance();
         } else {
             return (Option<U>) mapper.apply(get());
+        }
+    }
+
+    @Override
+    default Iterator<T> iterator() {
+        if (isDefined()) {
+            return Collections.singleton(get()).iterator();
+        } else {
+            return Collections.emptyIterator();
         }
     }
 

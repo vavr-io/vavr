@@ -112,6 +112,18 @@ public class TryTest implements CheckedMonadLaws<Try<?>> {
         assertThat(failure().forAll(e -> true)).isFalse();
     }
 
+    // -- iterator
+
+        @Test
+    public void shouldReturnIteratorOfSuccess() {
+        assertThat(new Success<>(1).iterator()).isNotNull();
+    }
+
+    @Test
+    public void shouldReturnIteratorOfFailure() {
+        assertThat(failure().iterator()).isNotNull();
+    }
+
     // -- Try.of
 
     @Test

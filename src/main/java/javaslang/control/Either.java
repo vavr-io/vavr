@@ -10,9 +10,7 @@ import javaslang.algebra.HigherKinded;
 import javaslang.algebra.Monad;
 import javaslang.control.Valences.Bivalent;
 
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -130,7 +128,7 @@ public interface Either<L, R> extends ValueObject {
      * @param <R> The type of the Right value of an Either.
      * @since 1.0.0
      */
-    final class LeftProjection<L, R> implements Bivalent<L, R>, Monad<L, LeftProjection<?, R>> {
+    final class LeftProjection<L, R> implements Bivalent<L, R>, Monad<L, LeftProjection<?, R>>, Iterable<L> {
 
         private final Either<L, R> either;
 
@@ -263,6 +261,7 @@ public interface Either<L, R> extends ValueObject {
          * is a {@code Left} and the left value does <em>not</em> satisfy the given predicate</li>
          * <li>{@code LeftProjection(Right(Some(value)))} otherwise, i.e. if the underlying {@code Either} of this
          * projection is a {@code Right}</li>
+         * </ul>
          *
          * @param predicate A predicate
          * @return a LeftProjection of an {@code Either} with an optional value
@@ -393,6 +392,15 @@ public interface Either<L, R> extends ValueObject {
         }
 
         @Override
+        public Iterator<L> iterator() {
+            if (either.isLeft()) {
+                return Collections.singleton(asLeft()).iterator();
+            } else {
+                return Collections.emptyIterator();
+            }
+        }
+
+        @Override
         public boolean equals(Object obj) {
             return (obj == this) || (obj instanceof LeftProjection && Objects.equals(either, ((LeftProjection<?, ?>) obj).either));
         }
@@ -423,7 +431,7 @@ public interface Either<L, R> extends ValueObject {
      * @param <R> The type of the Right value of an Either.
      * @since 1.0.0
      */
-    final class RightProjection<L, R> implements Bivalent<R, L>, Monad<R, RightProjection<L, ?>> {
+    final class RightProjection<L, R> implements Bivalent<R, L>, Monad<R, RightProjection<L, ?>>, Iterable<R> {
 
         private final Either<L, R> either;
 
@@ -556,6 +564,7 @@ public interface Either<L, R> extends ValueObject {
          * is a {@code Right} and the right value does <em>not</em> satisfy the given predicate</li>
          * <li>{@code RightProjection(Left(Some(value)))} otherwise, i.e. if the underlying {@code Either} of this
          * projection is a {@code Left}</li>
+         *</ul>
          *
          * @param predicate A predicate
          * @return a RightProjection of an {@code Either} with an optional value
@@ -682,6 +691,15 @@ public interface Either<L, R> extends ValueObject {
                 return (RightProjection<L, U>) mapper.apply(asRight());
             } else {
                 return (RightProjection<L, U>) this;
+            }
+        }
+
+        @Override
+        public Iterator<R> iterator() {
+            if (either.isRight()) {
+                return Collections.singleton(asRight()).iterator();
+            } else {
+                return Collections.emptyIterator();
             }
         }
 

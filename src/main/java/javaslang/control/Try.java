@@ -10,6 +10,8 @@ import javaslang.algebra.CheckedMonad;
 import javaslang.algebra.HigherKinded;
 import javaslang.control.Valences.Bivalent;
 
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -18,7 +20,7 @@ import java.util.function.Consumer;
  *
  * @param <T> Value type in the case of success.
  */
-public interface Try<T> extends CheckedMonad<T, Try<?>>, ValueObject, Bivalent<T, Throwable> {
+public interface Try<T> extends CheckedMonad<T, Try<?>>, ValueObject, Bivalent<T, Throwable>, Iterable<T> {
 
     /**
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
@@ -232,6 +234,15 @@ public interface Try<T> extends CheckedMonad<T, Try<?>>, ValueObject, Bivalent<T
      */
     @Override
     <U, TRY extends HigherKinded<U, Try<?>>> Try<U> flatMap(CheckedFunction<? super T, ? extends TRY> mapper);
+
+    @Override
+    default Iterator<T> iterator() {
+        if (isSuccess()) {
+            return Collections.singleton(get()).iterator();
+        } else {
+            return Collections.emptyIterator();
+        }
+    }
 
     /**
      * Runs the given runnable if this is a Success, otherwise returns this Failure.
