@@ -115,7 +115,6 @@ public interface Try<T> extends CheckedMonad<T, Try<?>>, ValueObject, Bivalent<T
      * @param predicate A predicate
      * @return a new Try
      */
-    @Override
     Try<T> filter(CheckedPredicate<? super T> predicate);
 
     /**

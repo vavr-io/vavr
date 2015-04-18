@@ -18,77 +18,73 @@ import java.util.function.Function;
  * @param <R> right component type
  * @since 1.0.0
  */
-public interface Right<L, R> extends Either<L, R> {
+public final class Right<L, R> implements Either<L, R> {
+
+    private static final long serialVersionUID = 1L;
+
+    private final R value;
 
     /**
-     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+     * Constructs a {@code Right}.
+     *
+     * @param value a right value
      */
-    long serialVersionUID = 1L;
-
-    static <L, R> Right<L, R> of(R right) {
-        return new RightImpl<>(right);
+    public Right(R value) {
+        this.value = value;
     }
 
-    R get();
+    @Override
+    public boolean isLeft() {
+        return false;
+    }
 
     @Override
-    <X, Y> Right<X, Y> bimap(Function<? super L, ? extends X> leftMapper, Function<? super R, ? extends Y> rightMapper);
+    public boolean isRight() {
+        return true;
+    }
+
+    @Override
+    public <X, Y> Right<X, Y> bimap(Function<? super L, ? extends X> leftMapper, Function<? super R, ? extends Y> rightMapper) {
+        return new Right<>(rightMapper.apply(value));
+    }
 
     /**
-     * Internal implementation of {@code Right}. Users of {@code Either} should rely only on {@code Right}.
+     * Returns the value of this {@code Right}.
      *
-     * @param <L> left component type
-     * @param <R> right component type
-     * @since 1.3.0
+     * @return the value of this {@code Right}
      */
-    final class RightImpl<L, R> implements Right<L, R> {
+    @Override
+    public R get() {
+        return value;
+    }
 
-        private static final long serialVersionUID = 1L;
+    /**
+     * Wrap the value of this {@code Right} in a new {@code Left}.
+     *
+     * @return a new {@code Left} containing this value
+     */
+    @Override
+    public Left<R, L> swap() {
+        return new Left<>(value);
+    }
 
-        private final R right;
+    @Override
+    public Tuple1<R> unapply() {
+        return Tuple.of(value);
+    }
 
-        private RightImpl(R right) {
-            this.right = right;
-        }
+    @Override
+    public boolean equals(Object obj) {
+        return (obj == this) || (obj instanceof Right && Objects.equals(value, ((Right<?, ?>) obj).value));
+    }
 
-        @Override
-        public R get() {
-            return right;
-        }
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(value);
+    }
 
-        @Override
-        public boolean isLeft() {
-            return false;
-        }
-
-        @Override
-        public boolean isRight() {
-            return true;
-        }
-
-        @Override
-        public <X, Y> Right<X, Y> bimap(Function<? super L, ? extends X> leftMapper, Function<? super R, ? extends Y> rightMapper) {
-            return new RightImpl<>(rightMapper.apply(right().get()));
-        }
-
-        @Override
-        public Tuple1<R> unapply() {
-            return Tuple.of(right);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return (obj == this) || (obj instanceof RightImpl && Objects.equals(right, ((RightImpl<?, ?>) obj).get()));
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hashCode(right);
-        }
-
-        @Override
-        public String toString() {
-            return String.format("Right(%s)", right);
-        }
+    @Override
+    public String toString() {
+        return String.format("Right(%s)", value);
     }
 }

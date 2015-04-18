@@ -126,7 +126,6 @@ public interface Option<T> extends Monad<T, Option<?>>, ValueObject, Univalent<T
      * @param predicate A predicate which is used to test an optional value
      * @return {@code Some(value)} or {@code None} as specified
      */
-    @Override
     default Option<T> filter(Predicate<? super T> predicate) {
         if (isEmpty() || predicate.test(get())) {
             return this;

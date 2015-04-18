@@ -115,7 +115,7 @@ public final class Failure<T> implements Try<T> {
 
     @Override
     public Left<Throwable, T> toEither() {
-        return Left.of(cause.getCause());
+        return new Left<>(cause.getCause());
     }
 
     @Override

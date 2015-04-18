@@ -299,7 +299,6 @@ public interface Gen<T> extends Monad<T, Gen<?>> {
      * @param predicate A predicate
      * @return A new generator
      */
-    @Override
     default Gen<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return random -> {

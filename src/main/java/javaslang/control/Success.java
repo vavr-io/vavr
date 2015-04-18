@@ -93,7 +93,7 @@ public final class Success<T> implements Try<T> {
 
     @Override
     public Right<Throwable, T> toEither() {
-        return Right.of(value);
+        return new Right<>(value);
     }
 
     @Override
