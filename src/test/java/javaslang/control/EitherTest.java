@@ -356,6 +356,18 @@ public class EitherTest {
         assertThat(actual).isEqualTo(new Right<>("1"));
     }
 
+    // iterator
+
+    @Test
+    public void shouldReturnIteratorOfLeftOfLeftProjection() {
+        assertThat(new Left<>(1).left().iterator()).isNotNull();
+    }
+
+    @Test
+    public void shouldReturnIteratorOfRightOfLeftProjection() {
+        assertThat(new Right<>(1).left().iterator()).isNotNull();
+    }
+
     // equals
 
     @Test
@@ -789,6 +801,18 @@ public class EitherTest {
     public void shouldMapOnRightProjectionOfLeft() {
         final Either<String, Integer> actual = new Left<String, Integer>("1").right().map(i -> i + 1).toEither();
         assertThat(actual).isEqualTo(new Left<>("1"));
+    }
+
+    // iterator
+
+    @Test
+    public void shouldReturnIteratorOfRightOfRightProjection() {
+        assertThat(new Right<>(1).right().iterator()).isNotNull();
+    }
+
+    @Test
+    public void shouldReturnIteratorOfLeftOfRightProjection() {
+        assertThat(new Left<>(1).right().iterator()).isNotNull();
     }
 
     // equals

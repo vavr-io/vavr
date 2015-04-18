@@ -9,7 +9,6 @@ import javaslang.Serializables;
 import javaslang.Tuple;
 import javaslang.algebra.Monad;
 import javaslang.algebra.MonadLaws;
-import javaslang.collection.List;
 import javaslang.test.Arbitrary;
 import javaslang.test.CheckResult;
 import javaslang.test.CheckResultAssertions;
@@ -316,6 +315,18 @@ public class OptionTest implements MonadLaws<Option<?>> {
         final Option<Integer> testee = Option.<Integer>none().peek(i -> actual[0] = i);
         assertThat(actual[0]).isEqualTo(-1);
         assertThat(testee).isEqualTo(Option.none());
+    }
+
+    // -- iterator
+
+    @Test
+    public void shouldReturnIteratorOfSome() {
+        assertThat(new Some<>(1).iterator()).isNotNull();
+    }
+
+    @Test
+    public void shouldReturnIteratorOfNone() {
+        assertThat(None.instance().iterator()).isNotNull();
     }
 
     // -- unapply
