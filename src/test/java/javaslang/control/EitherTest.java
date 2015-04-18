@@ -274,6 +274,40 @@ public class EitherTest {
         assertThat(actual).isEqualTo(new Right<>("1"));
     }
 
+    // -- exists
+
+    @Test
+    public void shouldBeAwareOfPropertyThatHoldsExistsOfLeftProjectionOfLeft() {
+        assertThat(new Left<>(1).left().exists(i -> i == 1)).isTrue();
+    }
+
+    @Test
+    public void shouldBeAwareOfPropertyThatNotHoldsExistsOfLeftProjectionOfLeft() {
+        assertThat(new Left<>(1).left().exists(i -> i == 2)).isFalse();
+    }
+
+    @Test
+    public void shouldNotHoldPropertyExistsOfLeftProjectionOfRight() {
+        assertThat(new Left<>(1).right().exists(e -> true)).isFalse();
+    }
+
+    // -- forall
+
+    @Test
+    public void shouldBeAwareOfPropertyThatHoldsForAllOfLeftProjectionOfLeft() {
+        assertThat(new Left<>(1).left().forAll(i -> i == 1)).isTrue();
+    }
+
+    @Test
+    public void shouldBeAwareOfPropertyThatNotHoldsForAllOfLeftProjectionOfLeft() {
+        assertThat(new Left<>(1).left().forAll(i -> i == 2)).isFalse();
+    }
+
+    @Test
+    public void shouldNotHoldPropertyForAllOfLeftProjectionOfRight() {
+        assertThat(new Left<>(1).right().forAll(e -> true)).isFalse();
+    }
+
     // forEach
 
     @Test
@@ -673,6 +707,40 @@ public class EitherTest {
     public void shouldFlatMapOnRightProjectionOfLeft() {
         final Either<String, Integer> actual = new Left<String, Integer>("1").right().flatMap(i -> new Right<String, Integer>(i + 1).right()).toEither();
         assertThat(actual).isEqualTo(new Left<>("1"));
+    }
+
+        // -- exists
+
+    @Test
+    public void shouldBeAwareOfPropertyThatHoldsExistsOfRightProjectionOfRight() {
+        assertThat(new Right<>(1).right().exists(i -> i == 1)).isTrue();
+    }
+
+    @Test
+    public void shouldBeAwareOfPropertyThatNotHoldsExistsOfRightProjectionOfRight() {
+        assertThat(new Right<>(1).right().exists(i -> i == 2)).isFalse();
+    }
+
+    @Test
+    public void shouldNotHoldPropertyExistsOfRightProjectionOfLeft() {
+        assertThat(new Right<>(1).left().exists(e -> true)).isFalse();
+    }
+
+    // -- forall
+
+    @Test
+    public void shouldBeAwareOfPropertyThatHoldsForAllOfRightProjectionOfRight() {
+        assertThat(new Right<>(1).right().forAll(i -> i == 1)).isTrue();
+    }
+
+    @Test
+    public void shouldBeAwareOfPropertyThatNotHoldsForAllOfRightProjectionOfRight() {
+        assertThat(new Right<>(1).right().forAll(i -> i == 2)).isFalse();
+    }
+
+    @Test
+    public void shouldNotHoldPropertyForAllOfRightProjectionOfLeft() {
+        assertThat(new Right<>(1).left().forAll(e -> true)).isFalse();
     }
 
     // forEach

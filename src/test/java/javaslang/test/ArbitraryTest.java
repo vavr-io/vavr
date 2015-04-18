@@ -72,6 +72,20 @@ public class ArbitraryTest {
         assertThat(Arbitrary.integer().flatten(i -> Gen.of(i).arbitrary()).apply(1).apply(new Random())).isNotNull();
     }
 
+    // -- exists
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldThrowOnExists() {
+        Arbitrary.integer().exists(i -> true);
+    }
+
+    // -- forAll
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldThrowOnForAll() {
+        Arbitrary.integer().forAll(i -> true);
+    }
+
     // -- forEach
 
     @Test(expected = UnsupportedOperationException.class)

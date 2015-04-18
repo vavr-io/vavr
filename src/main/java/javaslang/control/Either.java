@@ -174,6 +174,7 @@ public interface Either<L, R> extends ValueObject {
          */
         @Override
         public L orElseGet(Function<? super R, ? extends L> other) {
+            Objects.requireNonNull(other, "other is null");
             if (either.isLeft()) {
                 return asLeft();
             } else {
@@ -188,6 +189,7 @@ public interface Either<L, R> extends ValueObject {
          */
         @Override
         public void orElseRun(Consumer<? super R> action) {
+            Objects.requireNonNull(action, "action is null");
             if (either.isRight()) {
                 action.accept(asRight());
             }
@@ -204,6 +206,7 @@ public interface Either<L, R> extends ValueObject {
          */
         @Override
         public <X extends Throwable> L orElseThrow(Function<? super R, X> exceptionFunction) throws X {
+            Objects.requireNonNull(exceptionFunction, "exceptionFunction is null");
             if (either.isLeft()) {
                 return asLeft();
             } else {
@@ -265,7 +268,7 @@ public interface Either<L, R> extends ValueObject {
          * @return a LeftProjection of an {@code Either} with an optional value
          */
         public LeftProjection<Option<L>, Option<R>> filter(Predicate<? super L> predicate) {
-            Objects.requireNonNull(predicate);
+            Objects.requireNonNull(predicate, "predicate is null");
             if (either.isRight() || (either.isLeft() && predicate.test(asLeft()))) {
                 return new LeftProjection<>(either.bimap(Some::new, Some::new));
             } else {
@@ -305,11 +308,24 @@ public interface Either<L, R> extends ValueObject {
         @SuppressWarnings("unchecked")
         @Override
         public <U, LEFT_PROJECTION extends HigherKinded<U, LeftProjection<?, R>>> LeftProjection<U, R> flatten(Function<? super L, ? extends LEFT_PROJECTION> f) {
+            Objects.requireNonNull(f, "f is null");
             if (either.isRight()) {
                 return (LeftProjection<U, R>) this;
             } else {
                 return (LeftProjection<U, R>) f.apply(get());
             }
+        }
+
+        @Override
+        public boolean exists(Predicate<? super L> predicate) {
+            Objects.requireNonNull(predicate, "predicate is null");
+            return either.isLeft() && predicate.test(asLeft());
+        }
+
+        @Override
+        public boolean forAll(Predicate<? super L> predicate) {
+            Objects.requireNonNull(predicate, "predicate is null");
+            return either.isLeft() && predicate.test(asLeft());
         }
 
         /**
@@ -319,7 +335,7 @@ public interface Either<L, R> extends ValueObject {
          */
         @Override
         public void forEach(Consumer<? super L> action) {
-            Objects.requireNonNull(action);
+            Objects.requireNonNull(action, "action is null");
             if (either.isLeft()) {
                 action.accept(asLeft());
             }
@@ -333,7 +349,7 @@ public interface Either<L, R> extends ValueObject {
          */
         @Override
         public LeftProjection<L, R> peek(Consumer<? super L> action) {
-            Objects.requireNonNull(action);
+            Objects.requireNonNull(action, "action is null");
             if (either.isLeft()) {
                 action.accept(asLeft());
             }
@@ -350,7 +366,7 @@ public interface Either<L, R> extends ValueObject {
         @SuppressWarnings("unchecked")
         @Override
         public <U> LeftProjection<U, R> map(Function<? super L, ? extends U> mapper) {
-            Objects.requireNonNull(mapper);
+            Objects.requireNonNull(mapper, "mapper is null");
             if (either.isLeft())
                 return new Left<U, R>(mapper.apply(asLeft())).left();
             else {
@@ -368,7 +384,7 @@ public interface Either<L, R> extends ValueObject {
         @SuppressWarnings("unchecked")
         @Override
         public <U, LEFT_PROJECTION extends HigherKinded<U, LeftProjection<?, R>>> LeftProjection<U, R> flatMap(Function<? super L, ? extends LEFT_PROJECTION> mapper) {
-            Objects.requireNonNull(mapper);
+            Objects.requireNonNull(mapper, "mapper is null");
             if (either.isLeft()) {
                 return (LeftProjection<U, R>) mapper.apply(asLeft());
             } else {
@@ -451,6 +467,7 @@ public interface Either<L, R> extends ValueObject {
          */
         @Override
         public R orElseGet(Function<? super L, ? extends R> other) {
+            Objects.requireNonNull(other, "other is null");
             if (either.isRight()) {
                 return asRight();
             } else {
@@ -465,6 +482,7 @@ public interface Either<L, R> extends ValueObject {
          */
         @Override
         public void orElseRun(Consumer<? super L> action) {
+            Objects.requireNonNull(action, "action is null");
             if (either.isLeft()) {
                 action.accept(asLeft());
             }
@@ -481,6 +499,7 @@ public interface Either<L, R> extends ValueObject {
          */
         @Override
         public <X extends Throwable> R orElseThrow(Function<? super L, X> exceptionFunction) throws X {
+            Objects.requireNonNull(exceptionFunction, "exceptionFunction is null");
             if (either.isRight()) {
                 return asRight();
             } else {
@@ -542,7 +561,7 @@ public interface Either<L, R> extends ValueObject {
          * @return a RightProjection of an {@code Either} with an optional value
          */
         public RightProjection<Option<L>, Option<R>> filter(Predicate<? super R> predicate) {
-            Objects.requireNonNull(predicate);
+            Objects.requireNonNull(predicate, "predicate is null");
             if (either.isLeft() || (either.isRight() && predicate.test(asRight()))) {
                 return new RightProjection<>(either.bimap(Some::new, Some::new));
             } else {
@@ -582,6 +601,7 @@ public interface Either<L, R> extends ValueObject {
         @SuppressWarnings("unchecked")
         @Override
         public <U, RIGHT_PROJECTION extends HigherKinded<U, RightProjection<L, ?>>> RightProjection<L, U> flatten(Function<? super R, ? extends RIGHT_PROJECTION> f) {
+            Objects.requireNonNull(f, "f is null");
             if (either.isLeft()) {
                 return (RightProjection<L, U>) this;
             } else {
@@ -589,13 +609,26 @@ public interface Either<L, R> extends ValueObject {
             }
         }
 
+        @Override
+        public boolean exists(Predicate<? super R> predicate) {
+            Objects.requireNonNull(predicate, "predicate is null");
+            return either.isRight() && predicate.test(asRight());
+        }
+
+        @Override
+        public boolean forAll(Predicate<? super R> predicate) {
+            Objects.requireNonNull(predicate, "predicate is null");
+            return either.isRight() && predicate.test(asRight());
+        }
+
         /**
          * Applies the given action to the value if the projected either is a Right. Otherwise nothing happens.
          *
          * @param action An action which takes a right value
          */
+        @Override
         public void forEach(Consumer<? super R> action) {
-            Objects.requireNonNull(action);
+            Objects.requireNonNull(action, "action is null");
             if (either.isRight()) {
                 action.accept(asRight());
             }
@@ -609,7 +642,7 @@ public interface Either<L, R> extends ValueObject {
          */
         @Override
         public RightProjection<L, R> peek(Consumer<? super R> action) {
-            Objects.requireNonNull(action);
+            Objects.requireNonNull(action, "action is null");
             if (either.isRight()) {
                 action.accept(asRight());
             }
@@ -626,7 +659,7 @@ public interface Either<L, R> extends ValueObject {
         @SuppressWarnings("unchecked")
         @Override
         public <U> RightProjection<L, U> map(Function<? super R, ? extends U> mapper) {
-            Objects.requireNonNull(mapper);
+            Objects.requireNonNull(mapper, "mapper is null");
             if (either.isRight())
                 return new Right<L, U>(mapper.apply(asRight())).right();
             else {
@@ -644,7 +677,7 @@ public interface Either<L, R> extends ValueObject {
         @SuppressWarnings("unchecked")
         @Override
         public <U, RIGHT_PROJECTION extends HigherKinded<U, RightProjection<L, ?>>> RightProjection<L, U> flatMap(Function<? super R, ? extends RIGHT_PROJECTION> mapper) {
-            Objects.requireNonNull(mapper);
+            Objects.requireNonNull(mapper, "mapper is null");
             if (either.isRight()) {
                 return (RightProjection<L, U>) mapper.apply(asRight());
             } else {

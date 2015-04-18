@@ -11,6 +11,7 @@ package javaslang.algebra;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Defines a Monad by generalizing the flatMap function.
@@ -84,6 +85,22 @@ public interface Monad<T, M extends HigherKinded<?, M>> extends Functor<T>, High
      * @return A monadic structure containing flattened elements.
      */
     <U, MONAD extends HigherKinded<U, M>> Monad<U, M> flatten(Function<? super T, ? extends MONAD> f);
+
+    /**
+     * Checks, if an element exists such that the predicate holds.
+     *
+     * @param predicate A Predicate
+     * @return true, if predicate holds for an element of this, false otherwise
+     */
+    boolean exists(Predicate<? super T> predicate);
+
+    /**
+     * Checks, if the given predicate holds for all elements of this.
+     *
+     * @param predicate A Predicate
+     * @return true, if the predicate holds for all elements of this, false otherwise
+     */
+    boolean forAll(Predicate<? super T> predicate);
 
     /**
      * Performs an action on each element of this monad.

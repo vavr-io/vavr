@@ -280,6 +280,20 @@ public class GenTest {
         assertThat(Gen.of(1).flatten(Gen::of).apply(new Random())).isNotNull();
     }
 
+    // -- exists
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldThrowOnExists() {
+        Gen.of(1).exists(i -> true);
+    }
+
+    // -- forAll
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldThrowOnForAll() {
+        Gen.of(1).forAll(i -> true);
+    }
+
     // -- forEach
 
     @Test(expected = UnsupportedOperationException.class)

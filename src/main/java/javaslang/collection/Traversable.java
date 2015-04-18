@@ -411,7 +411,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * @return the folded monoid value.
      * @throws java.lang.NullPointerException if monoid or mapper is null
      */
-    default <U> U foldMap(Monoid<U> monoid, Function<T, U> mapper) {
+    default <U> U foldMap(Monoid<U> monoid, Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(monoid, "monoid is null");
         Objects.requireNonNull(mapper, "mapper is null");
         return foldLeft(monoid.zero(), (ys, x) -> monoid.combine(ys, mapper.apply(x)));
@@ -463,7 +463,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * @param predicate A Predicate
      * @return true, if predicate holds for an element of this, false otherwise
      */
-    default boolean exists(Predicate<T> predicate) {
+    default boolean exists(Predicate<? super T> predicate) {
         for (T t : this) {
             if (predicate.test(t)) {
                 return true;
@@ -478,7 +478,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * @param predicate A Predicate
      * @return true, if predicate holds for a unique element of this, false otherwise
      */
-    default boolean existsUnique(Predicate<T> predicate) {
+    default boolean existsUnique(Predicate<? super T> predicate) {
         boolean exists = false;
         for (T t : this) {
             if (predicate.test(t)) {
@@ -498,7 +498,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * @param predicate A Predicate
      * @return true, if the predicate holds for all elements of this, false otherwise
      */
-    default boolean forAll(Predicate<T> predicate) {
+    default boolean forAll(Predicate<? super T> predicate) {
         for (T t : this) {
             if (!predicate.test(t)) {
                 return false;

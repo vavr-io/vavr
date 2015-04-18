@@ -94,12 +94,13 @@ public interface Option<T> extends Monad<T, Option<?>>, ValueObject, Univalent<T
      * if this is a {@code None}.</p>
      * <p>Please note, that the other value is lazily evaluated.</p>
      *
-     * @param other An alternative value supplier
+     * @param supplier An alternative value supplier
      * @return This value, if this Option is defined or the {@code other} value, if this Option is empty.
      */
     @Override
-    default T orElseGet(Supplier<? extends T> other) {
-        return isEmpty() ? other.get() : get();
+    default T orElseGet(Supplier<? extends T> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return isEmpty() ? supplier.get() : get();
     }
 
     /**
@@ -112,6 +113,7 @@ public interface Option<T> extends Monad<T, Option<?>>, ValueObject, Univalent<T
      */
     @Override
     default <X extends Throwable> T orElseThrow(Supplier<X> exceptionSupplier) throws X {
+        Objects.requireNonNull(exceptionSupplier, "exceptionSupplier is null");
         if (isEmpty()) {
             throw exceptionSupplier.get();
         } else {
@@ -127,6 +129,7 @@ public interface Option<T> extends Monad<T, Option<?>>, ValueObject, Univalent<T
      * @return {@code Some(value)} or {@code None} as specified
      */
     default Option<T> filter(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty() || predicate.test(get())) {
             return this;
         } else {
@@ -190,6 +193,18 @@ public interface Option<T> extends Monad<T, Option<?>>, ValueObject, Univalent<T
         }
     }
 
+    @Override
+    default boolean exists(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return isDefined() && predicate.test(get());
+    }
+
+    @Override
+    default boolean forAll(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return isDefined() && predicate.test(get());
+    }
+
     /**
      * Applies an action to this value, if this option is defined, otherwise does nothing.
      *
@@ -197,6 +212,7 @@ public interface Option<T> extends Monad<T, Option<?>>, ValueObject, Univalent<T
      */
     @Override
     default void forEach(Consumer<? super T> action) {
+        Objects.requireNonNull(action, "action is null");
         if (isDefined()) {
             action.accept(get());
         }
@@ -231,6 +247,7 @@ public interface Option<T> extends Monad<T, Option<?>>, ValueObject, Univalent<T
     @SuppressWarnings("unchecked")
     @Override
     default <U, OPTION extends HigherKinded<U, Option<?>>> Option<U> flatMap(Function<? super T, ? extends OPTION> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return None.instance();
         } else {
