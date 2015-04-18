@@ -91,7 +91,6 @@ def generateMainClasses(): Unit = {
 
       val functionType = if (checked) im.getType("javaslang.control.Try.CheckedFunction") else im.getType("java.util.function.Function")
       val consumerType = if (checked) im.getType("javaslang.control.Try.CheckedConsumer") else im.getType("java.util.function.Consumer")
-      val predicateType = if (checked) im.getType("javaslang.control.Try.CheckedPredicate") else im.getType("java.util.function.Predicate")
 
       xs"""
         /$javadoc
@@ -129,16 +128,6 @@ def generateMainClasses(): Unit = {
              * @return a new $className instance of component type U and container type M
              */
             <U, MONAD extends HigherKinded<U, M>> $className<U, M> flatMap($functionType<? super T, ? extends MONAD> f);
-
-            /**
-             * Returns a filterned instance of this {@code $name}.
-             * <p>
-             * Note: monadic filtering may be interpreted in another way than just filtering contained elements.
-             *
-             * @param predicate A {@code Predicate}
-             * @return An instance of this monad type
-             */
-            $className<T, M> filter($predicateType<? super T> predicate);
 
             /**
              * Flattens a nested, monadic structure. Assumes that the elements are of type HigherKinded&lt;U, M&gt;

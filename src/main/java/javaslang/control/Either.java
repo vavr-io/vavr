@@ -5,7 +5,6 @@
  */
 package javaslang.control;
 
-import javaslang.Tuple1;
 import javaslang.ValueObject;
 import javaslang.algebra.HigherKinded;
 import javaslang.algebra.Monad;
@@ -95,6 +94,21 @@ public interface Either<L, R> extends ValueObject {
      * @return A new either instance
      */
     <X, Y> Either<X, Y> bimap(Function<? super L, ? extends X> leftMapper, Function<? super R, ? extends Y> rightMapper);
+
+    /**
+     * Returns the left value of type {@code L} if this is a {@code Left},
+     * otherwise returns the right value of type {@code R} if this is a {@code Right}.
+     *
+     * @return the value of this {@code Either}
+     */
+    Object get();
+
+    /**
+     * Converts a {@code Left} to a {@code Right} vice versa by wrapping the value in a new type.
+     *
+     * @return a new {@code Either}
+     */
+    Either<R, L> swap();
 
     // -- Object.*
 
@@ -238,21 +252,24 @@ public interface Either<L, R> extends ValueObject {
         }
 
         /**
-         * Returns {@code LeftProjection(Left(value))}, if the underlying Either of this projection is a Left and the
-         * left value satisfies the given predicate. Otherwise {@code LeftProjection(Left())} (a left projection of
-         * nothing) is returned.
+         * Returns
+         * <ul>
+         * <li>{@code LeftProjection(Left(Some(value)))}, if the underlying {@code Either} of this projection is a
+         * {@code Left} and the left value satisfies the given predicate</li>
+         * <li>{@code LeftProjection(Left(None)))} if the underlying {@code Either} of this projection
+         * is a {@code Left} and the left value does <em>not</em> satisfy the given predicate</li>
+         * <li>{@code LeftProjection(Right(Some(value)))} otherwise, i.e. if the underlying {@code Either} of this
+         * projection is a {@code Right}</li>
          *
          * @param predicate A predicate
-         * @return a LeftProjection
+         * @return a LeftProjection of an {@code Either} with an optional value
          */
-        @SuppressWarnings("unchecked")
-        @Override
-        public LeftProjection<L, R> filter(Predicate<? super L> predicate) {
+        public LeftProjection<Option<L>, Option<R>> filter(Predicate<? super L> predicate) {
             Objects.requireNonNull(predicate);
             if (either.isRight() || (either.isLeft() && predicate.test(asLeft()))) {
-                return this;
+                return new LeftProjection<>(either.bimap(Some::new, Some::new));
             } else {
-                return Nothing.<L, R>instance().left();
+                return new LeftProjection<>(new Left<>(None.instance()));
             }
         }
 
@@ -335,7 +352,7 @@ public interface Either<L, R> extends ValueObject {
         public <U> LeftProjection<U, R> map(Function<? super L, ? extends U> mapper) {
             Objects.requireNonNull(mapper);
             if (either.isLeft())
-                return Left.<U, R>of(mapper.apply(asLeft())).left();
+                return new Left<U, R>(mapper.apply(asLeft())).left();
             else {
                 return (LeftProjection<U, R>) this;
             }
@@ -380,78 +397,6 @@ public interface Either<L, R> extends ValueObject {
 
         private R asRight() {
             return ((Right<L, R>) either).get();
-        }
-
-        /**
-         * Represents an empty filter result of a {@code Left}.
-         *
-         * @param <L> The type of the Left value.
-         * @param <R> The type of the Right value.
-         * @since 1.3.0
-         */
-        private static final class Nothing<L, R> implements Left<L, R> {
-
-            private static final long serialVersionUID = 1L;
-
-            private static Nothing<?, ?> INSTANCE = new Nothing<>();
-
-            private Nothing() {
-            }
-
-            @SuppressWarnings("unchecked")
-            static <L, R> Nothing<L, R> instance() {
-                return (Nothing<L, R>) INSTANCE;
-            }
-
-            @Override
-            public L get() {
-                throw new NoSuchElementException("Left.get() on empty Left.LeftProjection.filter()");
-            }
-
-            @Override
-            public boolean isLeft() {
-                return true;
-            }
-
-            @Override
-            public boolean isRight() {
-                return false;
-            }
-
-            @Override
-            public <X, Y> Left<X, Y> bimap(Function<? super L, ? extends X> leftMapper, Function<? super R, ? extends Y> rightMapper) {
-                throw new NoSuchElementException("Left.bimap() on empty Left.LeftProjection.filter()");
-            }
-
-            @Override
-            public Tuple1<L> unapply() {
-                throw new NoSuchElementException("Left.unapply() on empty Left.LeftProjection.filter()");
-            }
-
-            @Override
-            public boolean equals(Object o) {
-                return o == this;
-            }
-
-            @Override
-            public int hashCode() {
-                return 1;
-            }
-
-            @Override
-            public String toString() {
-                return "Left()";
-            }
-
-            /**
-             * Instance control for object serialization.
-             *
-             * @return The singleton instance of {@code LeftProjection.Nothing}.
-             * @see java.io.Serializable
-             */
-            private Object readResolve() {
-                return INSTANCE;
-            }
         }
     }
 
@@ -584,21 +529,24 @@ public interface Either<L, R> extends ValueObject {
         }
 
         /**
-         * Returns {@code RightProjection(Right(value))}, if the underlying Either of this projection is a Right and
-         * the right value satisfies the given predicate. Otherwise {@code RightProjection(Right())} (a right projection
-         * of nothing) is returned.
+         * Returns
+         * <ul>
+         * <li>{@code RightProjection(Right(Some(value)))}, if the underlying {@code Either} of this projection is a
+         * {@code Right} and the right value satisfies the given predicate</li>
+         * <li>{@code RightProjection(Right(None)))} if the underlying {@code Either} of this projection
+         * is a {@code Right} and the right value does <em>not</em> satisfy the given predicate</li>
+         * <li>{@code RightProjection(Left(Some(value)))} otherwise, i.e. if the underlying {@code Either} of this
+         * projection is a {@code Left}</li>
          *
          * @param predicate A predicate
-         * @return a RightProjection
+         * @return a RightProjection of an {@code Either} with an optional value
          */
-        @SuppressWarnings("unchecked")
-        @Override
-        public RightProjection<L, R> filter(Predicate<? super R> predicate) {
+        public RightProjection<Option<L>, Option<R>> filter(Predicate<? super R> predicate) {
             Objects.requireNonNull(predicate);
             if (either.isLeft() || (either.isRight() && predicate.test(asRight()))) {
-                return this;
+                return new RightProjection<>(either.bimap(Some::new, Some::new));
             } else {
-                return Nothing.<L, R>instance().right();
+                return new RightProjection<>(new Right<>(None.instance()));
             }
         }
 
@@ -680,7 +628,7 @@ public interface Either<L, R> extends ValueObject {
         public <U> RightProjection<L, U> map(Function<? super R, ? extends U> mapper) {
             Objects.requireNonNull(mapper);
             if (either.isRight())
-                return Right.<L, U>of(mapper.apply(asRight())).right();
+                return new Right<L, U>(mapper.apply(asRight())).right();
             else {
                 return (RightProjection<L, U>) this;
             }
@@ -725,78 +673,6 @@ public interface Either<L, R> extends ValueObject {
 
         private R asRight() {
             return ((Right<L, R>) either).get();
-        }
-
-        /**
-         * Represents an empty filter result of a {@code Right}.
-         *
-         * @param <L> The type of the Left value.
-         * @param <R> The type of the Right value.
-         * @since 1.3.0
-         */
-        private static final class Nothing<L, R> implements Right<L, R> {
-
-            private static final long serialVersionUID = 1L;
-
-            private static Nothing<?, ?> INSTANCE = new Nothing<>();
-
-            private Nothing() {
-            }
-
-            @SuppressWarnings("unchecked")
-            static <L, R> Nothing<L, R> instance() {
-                return (Nothing<L, R>) INSTANCE;
-            }
-
-            @Override
-            public R get() {
-                throw new NoSuchElementException("Right.get() on empty Right.RightProjection.filter()");
-            }
-
-            @Override
-            public boolean isLeft() {
-                return false;
-            }
-
-            @Override
-            public boolean isRight() {
-                return true;
-            }
-
-            @Override
-            public <X, Y> Right<X, Y> bimap(Function<? super L, ? extends X> leftMapper, Function<? super R, ? extends Y> rightMapper) {
-                throw new NoSuchElementException("Right.bimap() on empty Right.RightProjection.filter()");
-            }
-
-            @Override
-            public Tuple1<R> unapply() {
-                throw new NoSuchElementException("Right.unapply() on empty Right.RightProjection.filter()");
-            }
-
-            @Override
-            public boolean equals(Object o) {
-                return o == this;
-            }
-
-            @Override
-            public int hashCode() {
-                return 1;
-            }
-
-            @Override
-            public String toString() {
-                return "Right()";
-            }
-
-            /**
-             * Instance control for object serialization.
-             *
-             * @return The singleton instance of {@code RightProjection.Nothing}.
-             * @see java.io.Serializable
-             */
-            private Object readResolve() {
-                return INSTANCE;
-            }
         }
     }
 }

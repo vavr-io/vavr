@@ -102,7 +102,6 @@ public interface Arbitrary<T> extends Monad<T, Arbitrary<?>> {
      * @param predicate A predicate
      * @return A new generator
      */
-    @Override
     default Arbitrary<T> filter(Predicate<? super T> predicate) {
         return n -> apply(n).filter(predicate);
     }

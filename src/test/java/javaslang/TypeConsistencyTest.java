@@ -58,7 +58,13 @@ public class TypeConsistencyTest {
             "javaslang.control.Some//public default javaslang.control.Option javaslang.control.Option.filter(java.util.function.Predicate)",
             "javaslang.control.Some//public default javaslang.control.Option javaslang.control.Option.flatMap(java.util.function.Function)",
             "javaslang.control.Some//public default javaslang.control.Option javaslang.control.Option.flatten()",
-            "javaslang.control.Some//public default javaslang.control.Option javaslang.control.Option.flatten(java.util.function.Function)"
+            "javaslang.control.Some//public default javaslang.control.Option javaslang.control.Option.flatten(java.util.function.Function)",
+
+            // control.Left
+            "javaslang.control.Left//public abstract javaslang.control.Either javaslang.control.Either.swap()",
+
+            // control.Right
+            "javaslang.control.Right//public abstract javaslang.control.Either javaslang.control.Either.swap()"
     );
 
     /**

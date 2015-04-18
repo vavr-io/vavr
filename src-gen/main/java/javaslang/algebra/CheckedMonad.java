@@ -12,7 +12,6 @@ package javaslang.algebra;
 import java.util.function.Consumer;
 import javaslang.control.Try.CheckedConsumer;
 import javaslang.control.Try.CheckedFunction;
-import javaslang.control.Try.CheckedPredicate;
 
 /**
  * Defines a CheckedMonad by generalizing the flatMap function.
@@ -49,16 +48,6 @@ public interface CheckedMonad<T, M extends HigherKinded<?, M>> extends CheckedFu
      * @return a new CheckedMonad instance of component type U and container type M
      */
     <U, MONAD extends HigherKinded<U, M>> CheckedMonad<U, M> flatMap(CheckedFunction<? super T, ? extends MONAD> f);
-
-    /**
-     * Returns a filterned instance of this {@code CheckedMonad}.
-     * <p>
-     * Note: monadic filtering may be interpreted in another way than just filtering contained elements.
-     *
-     * @param predicate A {@code Predicate}
-     * @return An instance of this monad type
-     */
-    CheckedMonad<T, M> filter(CheckedPredicate<? super T> predicate);
 
     /**
      * Flattens a nested, monadic structure. Assumes that the elements are of type HigherKinded&lt;U, M&gt;

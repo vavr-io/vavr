@@ -11,7 +11,6 @@ package javaslang.algebra;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 /**
  * Defines a Monad by generalizing the flatMap function.
@@ -48,16 +47,6 @@ public interface Monad<T, M extends HigherKinded<?, M>> extends Functor<T>, High
      * @return a new Monad instance of component type U and container type M
      */
     <U, MONAD extends HigherKinded<U, M>> Monad<U, M> flatMap(Function<? super T, ? extends MONAD> f);
-
-    /**
-     * Returns a filterned instance of this {@code Monad}.
-     * <p>
-     * Note: monadic filtering may be interpreted in another way than just filtering contained elements.
-     *
-     * @param predicate A {@code Predicate}
-     * @return An instance of this monad type
-     */
-    Monad<T, M> filter(Predicate<? super T> predicate);
 
     /**
      * Flattens a nested, monadic structure. Assumes that the elements are of type HigherKinded&lt;U, M&gt;
