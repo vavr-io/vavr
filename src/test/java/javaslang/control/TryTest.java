@@ -95,6 +95,11 @@ public class TryTest implements CheckedMonadLaws<Try<?>> {
         assertThat(failure().exists(e -> true)).isFalse();
     }
 
+    @Test
+    public void shouldNotHoldPropertyExistsWhenPredicateThrows() {
+        assertThat(new Success<>(1).exists(e -> { throw new Error("error"); })).isFalse();
+    }
+
     // -- forall
 
     @Test
@@ -112,9 +117,14 @@ public class TryTest implements CheckedMonadLaws<Try<?>> {
         assertThat(failure().forAll(e -> true)).isFalse();
     }
 
+    @Test
+    public void shouldNotHoldPropertyForAllWhenPredicateThrows() {
+        assertThat(new Success<>(1).forAll(e -> { throw new Error("error"); })).isFalse();
+    }
+
     // -- iterator
 
-        @Test
+    @Test
     public void shouldReturnIteratorOfSuccess() {
         assertThat(new Success<>(1).iterator()).isNotNull();
     }
