@@ -17,7 +17,9 @@ import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.*;
 
 /**
@@ -103,6 +105,7 @@ import java.util.function.*;
  * <ul>
  * <li>{@link #combinations(int)}</li>
  * <li>{@link #distinct()}</li>
+ * <li>{@link #distinct(Function)}</li>
  * <li>{@link #flatMap(Function)}</li>
  * <li>{@link #flatten()}</li>
  * <li>{@link #flatten(Function)}</li>
@@ -244,7 +247,24 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
                 .isEmpty();
     }
 
+    /**
+     * Returns a new version of this which contains no duplicates. Elements are compared using {@code equals}.
+     *
+     * @return a new {@code Traversable} containing this elements without duplicates
+     */
     Traversable<T> distinct();
+
+    /**
+     * Returns a new version of this which contains no duplicates. Elements mapped to keys which are compared using
+     * {@code equals}.
+     * <p>
+     * The elements of the result are determined in the order of their occurrence - first match wins.
+     *
+     * @param keyExtractor A key extractor
+     * @param <U> key type
+     * @return a new {@code Traversable} containing this elements without duplicates
+     */
+    <U> Traversable<T> distinct(Function<? super T, ? extends U> keyExtractor);
 
     /**
      * Drops the first n elements of this or all elements, if this length &lt; n.

@@ -205,7 +205,13 @@ public interface List<T> extends Seq<T>, ValueObject {
 
     @Override
     default List<T> distinct() {
-        return foldRight(nil(), (x, xs) -> xs.contains(x) ? xs : xs.prepend(x));
+        return distinct(Function.identity());
+    }
+
+    @Override
+    default <U> List<T> distinct(Function<? super T, ? extends U> keyExtractor) {
+        final Set<U> seen = new HashSet<>();
+        return filter(t -> seen.add(keyExtractor.apply(t)));
     }
 
     @Override
@@ -235,7 +241,7 @@ public interface List<T> extends Seq<T>, ValueObject {
     @Override
     default List<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return foldRight(nil(), (x, xs) -> predicate.test(x) ? xs.prepend(x) : xs);
+        return foldLeft(List.<T> nil(), (xs, x) -> predicate.test(x) ? xs.prepend(x) : xs).reverse();
     }
 
     @Override
