@@ -17,23 +17,21 @@ import java.util.function.*;
 import java.util.stream.Collector;
 
 /**
- * <p>
  * An immutable List implementation, suitable for concurrent programming.
- * </p>
  * <p>
  * A List is composed of a {@code head()} element and a {@code tail()} List.
- * </p>
  * <p>
  * There are two implementations of the interface List:
- * </p>
  * <ul>
  * <li>{@link Nil}, which represents a List containing no elements.</li>
  * <li>{@link Cons}, which represents a List containing elements.</li>
  * </ul>
+ * Use {@code List.of(1, 2, 3)} instead of {@code new Cons<>(1, new Cons<>(2, new Cons<>(3, Nil.instance())))}.
  * <p>
- * Use {@code List.of(1, 2, 3)} instead of {@code new Cons<>(1, new Cons<>(2, new Cons<>(3, Nil.instance())))}.<br>
  * Use {@code List.nil()} instead of {@code Nil.instance()}.
- * </p>
+ * <p>
+ * Please use {@code List.cons()} instead of {@code List.of()} to create nested streams, i.e.
+ * {@code List(Nil) = List.cons(List.nil())}.
  *
  * @param <T> Component type of the List.
  * @since 1.1.0
@@ -188,6 +186,11 @@ public interface List<T> extends Seq<T>, ValueObject {
     @Override
     default List<T> clear() {
         return Nil.instance();
+    }
+
+    @Override
+    default List<? extends List<T>> combinations() {
+        return List.rangeClosed(0, length()).map(this::combinations).flatten();
     }
 
     @Override
@@ -449,6 +452,22 @@ public interface List<T> extends Seq<T>, ValueObject {
             action.accept(head());
         }
         return this;
+    }
+
+    @Override
+    default List<List<T>> permutations() {
+        if (isEmpty()) {
+            return Nil.instance();
+        } else {
+            final List<T> tail = tail();
+            if (tail.isEmpty()) {
+                return List.cons(this);
+            } else {
+                final List<List<T>> zero = Nil.instance();
+                // TODO: IntelliJ IDEA 14.1.1 needs a redundant cast here, jdk 1.8.0_40 compiles fine
+                return distinct().foldLeft(zero, (xs, x) -> xs.appendAll(remove(x).permutations().map((Function<List<T>, List<T>>) l -> l.prepend(x))));
+            }
+        }
     }
 
     @Override

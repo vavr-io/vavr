@@ -103,6 +103,7 @@ import java.util.function.*;
  * </ul>
  * <p>Transformation:</p>
  * <ul>
+ * <li>{@link #combinations()}</li>
  * <li>{@link #combinations(int)}</li>
  * <li>{@link #distinct()}</li>
  * <li>{@link #distinct(Function)}</li>
@@ -205,6 +206,27 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * @return an empty Traversable.
      */
     Traversable<T> clear();
+
+    /**
+     * Returns the union of all combinations from k = 0 to length().
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * [].combinations() = [[]]
+     *
+     * [1,2,3].combinations() = [
+     *   [],                  // k = 0
+     *   [1], [2], [3],       // k = 1
+     *   [1,2], [1,3], [2,3], // k = 2
+     *   [1,2,3]              // k = 3
+     * ]
+     * </code>
+     * </pre>
+     *
+     * @return the combinations of this
+     */
+    Traversable<? extends Traversable<T>> combinations();
 
     /**
      * Returns the k-combination of this traversable, i.e. all subset of this of k distinct elements.

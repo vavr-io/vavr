@@ -18,6 +18,9 @@ import java.util.stream.Collector;
 
 /**
  * A Lazy linked list implementation.
+ * <p>
+ * Please use {@code Stream.cons()} instead of {@code Stream.of()} to create nested streams, i.e.
+ * {@code Stream(Nil) = Stream.cons(Stream.nil())}.
  *
  * @param <T> component type of this Stream
  * @since 1.1.0
@@ -171,7 +174,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
 
             @Override
             public boolean hasNext() {
-                final boolean hasNext = (next = Try.of(reader::readLine).orElse(null)) != null;
+                final boolean hasNext = (next = Try.of(() -> reader.readLine()).orElse(null)) != null;
                 if (!hasNext) {
                     Try.run(reader::close);
                 }
@@ -441,6 +444,11 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     @Override
     default Stream<T> clear() {
         return Nil.instance();
+    }
+
+    @Override
+    default Stream<? extends Stream<T>> combinations() {
+        return Stream.rangeClosed(0, length()).map(this::combinations).flatten();
     }
 
     @Override
@@ -727,6 +735,22 @@ public interface Stream<T> extends Seq<T>, ValueObject {
             final T head = head();
             action.accept(head);
             return new Cons<>(head, () -> tail().peek(action));
+        }
+    }
+
+    @Override
+    default Stream<Stream<T>> permutations() {
+        if (isEmpty()) {
+            return Nil.instance();
+        } else {
+            final Stream<T> tail = tail();
+            if (tail.isEmpty()) {
+                return Stream.cons(this);
+            } else {
+                final Stream<Stream<T>> zero = Nil.instance();
+                // TODO: IntelliJ IDEA 14.1.1 needs a redundant cast here, jdk 1.8.0_40 compiles fine
+                return distinct().foldLeft(zero, (xs, x) -> xs.appendAll(remove(x).permutations().map((Function<Stream<T>, Stream<T>>) l -> l.prepend(x))));
+            }
         }
     }
 
