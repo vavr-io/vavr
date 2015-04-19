@@ -38,7 +38,7 @@ import java.util.function.UnaryOperator;
  * </ul>
  * <p>Transformation:</p>
  * <ul>
- * <li>TODO(#111): permutations()</li>
+ * <li>{@link #permutations()}</li>
  * <li>{@link #sort()}</li>
  * <li>{@link #sort(Comparator)}</li>
  * <li>{@link #splitAt(int)}</li>
@@ -146,6 +146,29 @@ public interface Seq<T> extends Traversable<T> {
     int lastIndexOf(T element);
 
     /**
+     * Computes all unique permutations.
+     * <p>
+     * Example:
+     * <pre>
+     * <code>
+     * [].permutations() = []
+     *
+     * [1,2,3].permutations() = [
+     *   [1,2,3],
+     *   [1,3,2],
+     *   [2,1,3],
+     *   [2,3,1],
+     *   [3,1,2],
+     *   [3,2,1]
+     * ]
+     * </code>
+     * </pre>
+     *
+     * @return this unique permutations
+     */
+    Seq<? extends Seq<T>> permutations();
+
+    /**
      * Prepends an element to this.
      *
      * @param element An element
@@ -246,6 +269,9 @@ public interface Seq<T> extends Traversable<T> {
 
     @Override
     Seq<T> clear();
+
+    @Override
+    Seq<? extends Seq<T>> combinations();
 
     @Override
     Seq<? extends Seq<T>> combinations(int k);

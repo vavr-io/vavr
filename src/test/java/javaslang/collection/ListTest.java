@@ -139,19 +139,43 @@ public class ListTest extends AbstractSeqTest implements MonadLaws<Traversable<?
 
     // -- combinations
 
-    @Test
+        @Test
     public void shouldComputeCombinationsOfEmptyList() {
-        assertThat(List.nil().combinations(1)).isEqualTo(List.nil());
+        assertThat(List.nil().combinations()).isEqualTo(List.cons(List.nil()));
     }
 
     @Test
     public void shouldComputeCombinationsOfNonEmptyList() {
+        assertThat(List.of(1, 2, 3).combinations()).isEqualTo(List.of(List.nil(), List.of(1), List.of(2), List.of(3), List.of(1, 2), List.of(1, 3), List.of(2, 3), List.of(1, 2, 3)));
+    }
+
+    // -- combinations(k)
+
+    @Test
+    public void shouldComputeKCombinationsOfEmptyList() {
+        assertThat(List.nil().combinations(1)).isEqualTo(List.nil());
+    }
+
+    @Test
+    public void shouldComputeKCombinationsOfNonEmptyList() {
         assertThat(List.of(1, 2, 3).combinations(2)).isEqualTo(List.of(List.of(1, 2), List.of(1, 3), List.of(2, 3)));
     }
 
     @Test
-    public void shouldComputeCombinationsOfNegativeK() {
+    public void shouldComputeKCombinationsOfNegativeK() {
         assertThat(List.of(1).combinations(-1)).isEqualTo(List.cons(List.nil()));
+    }
+
+    // -- permutations
+
+    @Test
+    public void shouldComputePermutationsOfEmptyList() {
+        assertThat(List.nil().permutations()).isEqualTo(List.nil());
+    }
+
+    @Test
+    public void shouldComputePermutationsOfNonEmptyList() {
+        assertThat(List.of(1, 2, 3).permutations()).isEqualTo(List.of(List.of(List.of(1, 2, 3), List.of(1, 3, 2), List.of(2, 1, 3), List.of(2, 3, 1), List.of(3, 1, 2), List.of(3, 2, 1))));
     }
 
     // -- unapply
