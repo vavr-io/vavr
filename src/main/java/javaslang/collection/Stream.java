@@ -458,8 +458,13 @@ public interface Stream<T> extends Seq<T>, ValueObject {
 
     @Override
     default Stream<T> distinct() {
-        // TODO: better solution?
-        return Stream.of(List.of(this).distinct());
+        return distinct(Function.identity());
+    }
+
+    @Override
+    default <U> Stream<T> distinct(Function<? super T, ? extends U> keyExtractor) {
+        final Set<U> seen = new HashSet<>();
+        return filter(t -> seen.add(keyExtractor.apply(t)));
     }
 
     @Override

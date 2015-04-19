@@ -171,6 +171,18 @@ public abstract class AbstractTraversableTest {
         assertThat(of(1, 1, 2, 2, 3, 3).distinct()).isEqualTo(of(1, 2, 3));
     }
 
+    // -- distinct(Function)
+
+    @Test
+    public void shouldComputeDistinctOfEmptyTraversableUsingKeyExtractor() {
+        assertThat(nil().distinct(Function.identity())).isEqualTo(nil());
+    }
+
+    @Test
+    public void shouldComputeDistinctOfNonEmptyTraversableUsingKeyExtractor() {
+        assertThat(of("1a", "2a", "3a", "3b", "4b", "5c").distinct(c -> c.charAt(1))).isEqualTo(of("1a", "3b", "5c"));
+    }
+
     // -- drop
 
     @Test
