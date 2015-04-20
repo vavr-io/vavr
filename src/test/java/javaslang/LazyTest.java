@@ -65,9 +65,4 @@ public class LazyTest {
         lazy.get();
         assertThat(lazy.toString()).isEqualTo("Lazy(1)");
     }
-
-    @Test
-    public void shouldConvertEagerConstructedLazyToString() {
-        assertThat(Lazy.eval(1).toString()).isEqualTo("Lazy(1)");
-    }
 }

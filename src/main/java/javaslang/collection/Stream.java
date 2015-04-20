@@ -7,28 +7,47 @@ package javaslang.collection;
 
 import javaslang.*;
 import javaslang.algebra.HigherKinded;
-import javaslang.control.None;
-import javaslang.control.Option;
-import javaslang.control.Some;
-import javaslang.control.Try;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
 /**
- * A lazy linked list implementation.
+ * A lazy linked list implementation. This is essentially a {@linkplain List} which may be infinitely long.
  * <p>
- * Please use {@code Stream.cons()} instead of {@code Stream.of()} to create nested streams, i.e.
- * {@code Stream(Nil) = Stream.cons(Stream.nil())}.
+ * A {@code Stream} is composed of a {@code head} element and a lazy evaluated {@code tail} {@code Stream}.
+ * <p>
+ * There are two implementations of the {@code Stream} interface:
+ * <ul>
+ * <li>{@link Nil}, which represents the empty {@code Stream}.</li>
+ * <li>{@link Cons}, which represents a {@code Stream} containing one or more elements.</li>
+ * </ul>
+ * Methods to obtain a {@code Stream}:
+ * <pre>
+ * <code>
+ * // factory methods
+ * Stream.nil()              // = Stream.of() = Nil.instance()
+ * Stream.cons(x)            // = new Cons&lt;&gt;(x, Nil.instance())
+ * Stream.of(Object...)      // e.g. Stream.of(1, 2, 3)
+ * Stream.of(Iterable)       // e.g. Stream.of(List.of(1, 2, 3)) = 1, 2, 3
+ * Stream.of(Iterator)       // e.g. Stream.of(Arrays.asList(1, 2, 3).iterator()) = 1, 2, 3
+ *
+ * // int sequences
+ * Stream.from(0)            // = 0, 1, 2, 3, ...
+ * Stream.range(0, 3)        // = 0, 1, 2
+ * Stream.rangeClosed(0, 3)  // = 0, 1, 2, 3
+ *
+ * // generators
+ * Stream.gen(Supplier)      // e.g. Stream.gen(Math::random);
+ * </code>
+ * </pre>
  *
  * @param <T> component type of this Stream
  * @since 1.1.0
  */
 // DEV-NOTE: Beware of serializing IO streams.
-public interface Stream<T> extends Seq<T>, ValueObject, AutoCloseable {
+public interface Stream<T> extends Seq<T>, ValueObject {
 
     /**
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
@@ -113,7 +132,7 @@ public interface Stream<T> extends Seq<T>, ValueObject, AutoCloseable {
 
     /**
      * <p>
-     * Use {@code cons(Object)} instead of {@linkplain Stream#of(Iterable)} in order to create nested structures of
+     * Use {@code cons(Iterable)} instead of {@linkplain Stream#of(Iterable)} in order to create nested structures of
      * the form {@code Stream<Stream<T>>}.
      * </p>
      * <p>
@@ -193,42 +212,6 @@ public interface Stream<T> extends Seq<T>, ValueObject, AutoCloseable {
         } else {
             return Nil.instance();
         }
-    }
-
-    static <T> Lazy<Stream<T>> of(Chunked<? extends T> chunked) {
-        Objects.requireNonNull(chunked, "chunked is null");
-        return Lazy.<Stream<T>> of(() -> {
-            if (chunked.hasNext()) {
-                return new Cons<T>(Lazy.of(chunked::next), Stream.of(chunked), new Some<>(chunked));
-            } else {
-                return Nil.instance();
-            }
-        });
-    }
-
-    /**
-     * Creates a Stream of strings by reading lines from the standard input {@linkplain System#in}.
-     * The default charset is used to decode bytes to characters.
-     * <p>
-     * Note: Because Stream is lazy, this method is not blocking.
-     *
-     * @return a new Stream of strings
-     */
-    static Lazy<Stream<String>> stdin() {
-        return Stream.of(Chunked.lines(System.in, Charset.defaultCharset()));
-    }
-
-    /**
-     * Creates a Stream of strings by reading lines from the standard input {@linkplain System#in}
-     * using the given charset to decode bytes to characters.
-     * <p>
-     * Note: Because Stream is lazy, this method is not blocking.
-     *
-     * @param charset A Charset
-     * @return a new Stream of strings
-     */
-    static Lazy<Stream<String>> stdin(Charset charset) {
-        return Stream.of(Chunked.lines(System.in, charset));
     }
 
     /**
@@ -877,15 +860,8 @@ public interface Stream<T> extends Seq<T>, ValueObject, AutoCloseable {
 
         private static final long serialVersionUID = 1L;
 
-        private final Lazy<T> head;
+        private final T head;
         private final Lazy<Stream<T>> tail;
-        private final Option<AutoCloseable> autoCloseable;
-
-        private Cons(Lazy<T> head, Lazy<Stream<T>> tail, Option<AutoCloseable> autoCloseable) {
-            this.head = head;
-            this.tail = tail;
-            this.autoCloseable = autoCloseable;
-        }
 
         /**
          * Creates a new {@code Stream} consisting of a head element and a lazy trailing {@code Stream}.
@@ -894,12 +870,13 @@ public interface Stream<T> extends Seq<T>, ValueObject, AutoCloseable {
          * @param tail A tail {@code Stream} supplier, {@linkplain Nil} denotes the end of the {@code Stream}
          */
         public Cons(T head, Supplier<Stream<T>> tail) {
-            this(Lazy.eval(head), Lazy.of(Objects.requireNonNull(tail, "tail is null")), None.instance());
+            this.head = head;
+            this.tail = Lazy.of(Objects.requireNonNull(tail, "tail is null"));
         }
 
         @Override
         public T head() {
-            return head.get();
+            return head;
         }
 
         @Override
@@ -914,12 +891,7 @@ public interface Stream<T> extends Seq<T>, ValueObject, AutoCloseable {
 
         @Override
         public Tuple2<T, Stream<T>> unapply() {
-            return Tuple.of(head(), tail());
-        }
-
-        @Override
-        public void close() {
-            autoCloseable.forEach(closeable -> Try.run(closeable::close));
+            return Tuple.of(head, tail.get());
         }
 
         /**
@@ -1062,7 +1034,7 @@ public interface Stream<T> extends Seq<T>, ValueObject, AutoCloseable {
 
         @Override
         public T head() {
-            throw new UnsupportedOperationException("head of empty stream");
+            throw new NoSuchElementException("head of empty stream");
         }
 
         @Override
@@ -1078,11 +1050,6 @@ public interface Stream<T> extends Seq<T>, ValueObject, AutoCloseable {
         @Override
         public Tuple0 unapply() {
             return Tuple.empty();
-        }
-
-        @Override
-        public void close() {
-            // nothing to do, a Chunked is already closed on empty Stream
         }
 
         /**
@@ -1144,135 +1111,22 @@ public interface Stream<T> extends Seq<T>, ValueObject, AutoCloseable {
 
         @Override
         public String toString() {
-            final StringBuilder buf = new StringBuilder("Stream(");
+            final StringBuilder builder = new StringBuilder("Stream(");
             Stream<T> stream = this;
             while (stream != null && !stream.isEmpty()) {
                 final Cons<T> cons = (Cons<T>) stream;
-                buf.append(cons.head.isEvaluated() ? cons.head.get() : "?");
-                if (cons.tail.isEvaluated()) {
+                builder.append(cons.head);
+                if (cons.tail.isDefined()) {
                     stream = cons.tail.get();
                     if (!stream.isEmpty()) {
-                        buf.append(", ");
+                        builder.append(", ");
                     }
                 } else {
-                    buf.append(", ?");
+                    builder.append(", ?");
                     stream = null;
                 }
             }
-            return buf.append(")").toString();
-        }
-    }
-
-    /**
-     * Represents a possibly infinitely long sequence of data chunks.
-     * <p>
-     * {@code Chunked} implements {@code Iterator} and {@code Autoclosable}, i.e. all elements can be processed once
-     * and it supports automatic resource management.
-     *
-     * @param <T> chunk type
-     */
-    interface Chunked<T> extends Iterator<T>, AutoCloseable {
-
-        @Override
-        boolean hasNext();
-
-        @Override
-        T next();
-
-        @Override
-        void close();
-
-        /**
-         * Combines two chunked data sequences.
-         *
-         * @param that another {@code Chunked}
-         * @param <U>  that chunk type
-         * @return a new {@code Chunked}, reading from {@code this} and {@code that}
-         */
-        default <U> Chunked<Tuple2<T, U>> combine(Chunked<U> that) {
-            final Try.CheckedRunnable close = () -> {
-                Try.run(this::close);
-                Try.run(that::close);
-            };
-            final Try.CheckedSupplier<Boolean> hasNext = () -> this.hasNext() && that.hasNext();
-            final Try.CheckedSupplier<Tuple2<T, U>> next = () -> Tuple.of(this.next(), that.next());
-            return Chunked.of(hasNext, next, close);
-        }
-
-        /**
-         * Creates a Stream of strings by reading lines from the given InputStream {@code in} using the given
-         * charset to decode bytes to characters.</p>
-         * <p>Note: Because Stream is lazy, this method is not blocking.</p>
-         *
-         * @param in      An InputStream
-         * @param charset A Charset
-         * @return a new Stream of strings
-         */
-        static Chunked<String> lines(InputStream in, Charset charset) {
-            Objects.requireNonNull(in, "in is null");
-            Objects.requireNonNull(charset, "charset is null");
-            return new Chunked<String>() {
-                final BufferedReader reader = new BufferedReader(new InputStreamReader(in, charset));
-                String next;
-
-                @Override
-                public boolean hasNext() {
-                    final boolean hasNext = (next = Try.of(() -> reader.readLine()).onFailure(x -> close()).orElse(null)) != null;
-                    if (!hasNext) {
-                        close();
-                    }
-                    return hasNext;
-                }
-
-                @Override
-                public String next() {
-                    // user can never call this Iterator.next() directly => no check of hasNext here
-                    return next;
-                }
-
-                @Override
-                public void close() {
-                    Try.run(reader::close);
-                }
-            };
-        }
-
-        /**
-         * Creates a {@code Chunked} based on functions, that check if there are more element, that get the next element
-         * and that closes the {@code Chunked}.
-         *
-         * @param hasNext a {@code Supplier} which indicates if there are more elements
-         * @param next    a {@code Supplier} which provides the next element (if present)
-         * @param close   a {@code Runnable} which releases all resources bound to this {@code Chunked}
-         * @param <T>     chunk type
-         * @return a new {@code Chunked}
-         */
-        static <T> Chunked<T> of (Try.CheckedSupplier<Boolean> hasNext, Try.CheckedSupplier<? extends T> next, Try.CheckedRunnable close) {
-            Objects.requireNonNull(hasNext, "hasNext is null");
-            Objects.requireNonNull(next, "next is null");
-            Objects.requireNonNull(close, "close is null");
-            return new Chunked<T>() {
-
-                @Override
-                public boolean hasNext() {
-                    return Try.of(hasNext)
-                            .onFailure(x -> close())
-                            .map(b -> { if (!b) { close(); } return b; })
-                            .get();
-                }
-
-                @Override
-                public T next() {
-                    return Try.of(next)
-                            .onFailure(x -> close())
-                            .get();
-                }
-
-                @Override
-                public void close() {
-                    Try.run(close);
-                }
-            };
+            return builder.append(")").toString();
         }
     }
 }

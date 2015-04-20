@@ -5,9 +5,6 @@
  */
 package javaslang;
 
-import javaslang.control.Option;
-import javaslang.control.Some;
-
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -17,22 +14,11 @@ import java.util.function.Supplier;
  *
  * <pre>
  * <code>
- * final Lazy&lt;Double&gt; lazyDouble = Lazy.of(Math::random);
- * lazyDouble.isEvaluated(); // = false
- * lazyDouble.get();         // = 0.123 (random generated)
- * lazyDouble.isEvaluated(); // = true
- * lazyDouble.get();         // = 0.123 (memoized)
- * </code>
- * </pre>
- *
- * In some situations it may also come handy to create a {@code Lazy} that is already evaluated.
- * (For example, Javaslang uses this internally for String representations of Stream.)
- *
- * <pre>
- * <code>
- * final Lazy&lt;Double&gt; lazyDouble = Lazy.eval(1);
- * lazyDouble.isEvaluated(); // = true
- * lazyDouble.get();         // = 1
+ * final Lazy&lt;Double&gt; l = Lazy.of(Math::random);
+ * l.isDefined(); // = false
+ * l.get();       // = 0.123 (random generated)
+ * l.isDefined(); // = true
+ * l.get();       // = 0.123 (memoized)
  * </code>
  * </pre>
  *
@@ -42,14 +28,12 @@ public final class Lazy<T> implements Supplier<T>, ValueObject {
 
     private static final long serialVersionUID = 1L;
 
-    private Supplier<T> supplier;
-
     // read http://javarevisited.blogspot.de/2014/05/double-checked-locking-on-singleton-in-java.html
-    private volatile Option<T> value;
+    private volatile Supplier<T> supplier;
+    private volatile T value = null;
 
-    private Lazy(Supplier<T> supplier, Option<T> value) {
-        this.supplier = supplier;
-        this.value = value;
+    private Lazy(Supplier<T> supplier) {
+        this.supplier = Objects.requireNonNull(supplier, "supplier is null");
     }
 
     /**
@@ -61,20 +45,7 @@ public final class Lazy<T> implements Supplier<T>, ValueObject {
      * @return A new instance of Lazy
      */
     public static <T> Lazy<T> of(Supplier<T> supplier) {
-        Objects.requireNonNull(supplier, "supplier is null");
-        return new Lazy<>(supplier, Option.none());
-    }
-
-    /**
-     * Creates a {@code Lazy} that contains a specific value. The value is stored directly at the time this {@code Lazy}
-     * is constructed, the {@code Lazy} is accordingly marked as evaluated.
-     *
-     * @param value the value of the {@code Lazy}
-     * @param <T> type of the value
-     * @return a new {@code Lazy} containing the given value
-     */
-    public static <T> Lazy<T> eval(T value) {
-        return new Lazy<>(null, new Some<>(value));
+        return new Lazy<>(supplier);
     }
 
     /**
@@ -82,8 +53,8 @@ public final class Lazy<T> implements Supplier<T>, ValueObject {
      *
      * @return true, if this lazy value is evaluated, false otherwise
      */
-    public boolean isEvaluated() {
-        return value.isDefined();
+    public boolean isDefined() {
+        return supplier == null;
     }
 
     /**
@@ -94,15 +65,15 @@ public final class Lazy<T> implements Supplier<T>, ValueObject {
      */
     @Override
     public T get() {
-        if (value.isEmpty()) {
+        if (!isDefined()) {
             synchronized (this) {
-                if (value.isEmpty()) {
-                    value = new Some<>(supplier.get());
+                if (!isDefined()) {
+                    value = supplier.get();
                     supplier = null; // free mem
                 }
             }
         }
-        return value.get();
+        return value;
     }
 
     @Override
@@ -112,7 +83,7 @@ public final class Lazy<T> implements Supplier<T>, ValueObject {
 
     @Override
     public boolean equals(Object o) {
-        return (o instanceof Lazy && ((Lazy) o).get().equals(get()));
+        return (o == this) || (o instanceof Lazy && Objects.equals(((Lazy) o).get(), get()));
     }
 
     @Override
@@ -122,6 +93,6 @@ public final class Lazy<T> implements Supplier<T>, ValueObject {
 
     @Override
     public String toString() {
-        return String.format("Lazy(%s)", isEvaluated() ? get() : "?");
+        return String.format("Lazy(%s)", isDefined() ? value : "?");
     }
 }

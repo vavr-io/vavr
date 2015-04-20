@@ -19,19 +19,31 @@ import java.util.stream.Collector;
 /**
  * An immutable List implementation, suitable for concurrent programming.
  * <p>
- * A List is composed of a {@code head()} element and a {@code tail()} List.
+ * A {@code List} is composed of a {@code head} element and a {@code tail} {@code List}.
  * <p>
- * There are two implementations of the interface List:
+ * There are two implementations of the {@code List} interface:
  * <ul>
- * <li>{@link Nil}, which represents a List containing no elements.</li>
- * <li>{@link Cons}, which represents a List containing elements.</li>
+ * <li>{@link Nil}, which represents the empty {@code List}.</li>
+ * <li>{@link Cons}, which represents a {@code List} containing one or more elements.</li>
  * </ul>
- * Use {@code List.of(1, 2, 3)} instead of {@code new Cons<>(1, new Cons<>(2, new Cons<>(3, Nil.instance())))}.
- * <p>
- * Use {@code List.nil()} instead of {@code Nil.instance()}.
- * <p>
- * Please use {@code List.cons()} instead of {@code List.of()} to create nested streams, i.e.
- * {@code List(Nil) = List.cons(List.nil())}.
+ * Methods to obtain a {@code List}:
+ * <pre>
+ * <code>
+ * // factory methods
+ * List.nil()              // = List.of() = Nil.instance()
+ * List.cons(x)            // = new Cons&lt;&gt;(x, Nil.instance())
+ * List.of(Object...)      // e.g. List.of(1, 2, 3)
+ * List.of(Iterable)       // e.g. List.of(Stream.of(1, 2, 3)) = 1, 2, 3
+ *
+ * // int sequences
+ * List.from(0)            // = 0, 1, 2, 3, ...
+ * List.range(0, 3)        // = 0, 1, 2
+ * List.rangeClosed(0, 3)  // = 0, 1, 2, 3
+ *
+ * // generators
+ * List.gen(Supplier)      // e.g. List.gen(Math::random);
+ * </code>
+ * </pre>
  *
  * @param <T> Component type of the List.
  * @since 1.1.0
@@ -955,7 +967,7 @@ public interface List<T> extends Seq<T>, ValueObject {
 
         @Override
         public T head() {
-            throw new UnsupportedOperationException("head of empty list");
+            throw new NoSuchElementException("head of empty list");
         }
 
         @Override

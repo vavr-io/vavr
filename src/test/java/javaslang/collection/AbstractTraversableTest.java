@@ -566,7 +566,7 @@ public abstract class AbstractTraversableTest {
 
     // -- head
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = NoSuchElementException.class)
     public void shouldThrowWhenHeadOnNil() {
         nil().head();
     }

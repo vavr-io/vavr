@@ -65,7 +65,7 @@ public class StreamTest extends AbstractSeqTest implements MonadLaws<Traversable
         assertThat(actual).isEqualTo(Stream.of(1, 2, 3));
     }
 
-    // -- static gen(int)
+    // -- static from(int)
 
     @Test
     public void shouldGenerateIntStream() {
@@ -83,111 +83,6 @@ public class StreamTest extends AbstractSeqTest implements MonadLaws<Traversable
     public void shouldGenerateInfiniteStreamBasedOnSupplier() {
         assertThat(Stream.gen(() -> 1).take(13).reduce((i, j) -> i + j)).isEqualTo(13);
     }
-
-    // -- static stdin()
-
-// TODO
-//    @Test
-//    @Ignore
-//    public void shouldCreateNonBlockingStreamOfStringLinesFromStdin() {
-//        assertThat(Stream.stdin()).isNotNull();
-//    }
-//
-//    // -- static stdin(Charset)
-//
-//    @Test
-//    @Ignore
-//    public void shouldCreateNonBlockingStreamOfStringLinesFromStdinUsingCharset() {
-//        assertThat(Stream.stdin(Charset.defaultCharset())).isNotNull();
-//    }
-//
-//    // -- static lines(InputStream)
-//
-//    @Test
-//    @Ignore
-//    public void shouldCreateNonBlockingStreamOfStringLinesFromInputStream() {
-//        assertThat(Stream.lines(System.in)).isNotNull();
-//    }
-//
-//    // -- static lines(InputStream, Charset)
-//
-//    @Test
-//    @Ignore
-//    public void shouldCreateNonBlockingStreamOfStringLinesFromInputStreamUsingCharset() {
-//        assertThat(Stream.lines(System.in, Charset.defaultCharset())).isNotNull();
-//    }
-//
-//    @Test
-//    public void shouldReadLineFromStringLinesByReadingInputStreamUsingCharset() {
-//        assertThat(Stream.lines(new OneElement(), Charset.defaultCharset()).head()).isNotNull();
-//    }
-//
-//    @Test
-//    public void shouldHandleEndOfStringLinesByReadingInputStreamUsingCharset() {
-//        assertThat(Stream.lines(new OneElement(), Charset.defaultCharset()).tail().isEmpty()).isTrue();
-//    }
-//
-//    // -- static chars(InputStream)
-//
-//    @Test
-//    @Ignore
-//    public void shouldCreateNonBlockingStreamOfCharsFromInputStream() {
-//        assertThat(Stream.chars(System.in)).isNotNull();
-//    }
-//
-//    // -- static chars(InputStream, Charset)
-//
-//    @Test
-//    @Ignore
-//    public void shouldCreateNonBlockingStreamOfCharsFromInputStreamUsingCharset() {
-//        assertThat(Stream.chars(System.in, Charset.defaultCharset())).isNotNull();
-//    }
-//
-//    @Test
-//    public void shouldReadCharByReadingInputStreamUsingCharset() {
-//        assertThat(Stream.chars(new OneElement(), Charset.defaultCharset()).head()).isNotNull();
-//    }
-//
-//    @Test
-//    public void shouldHandleEndOfCharsByReadingInputStreamUsingCharset() {
-//        assertThat(Stream.chars(new OneElement(), Charset.defaultCharset()).tail().isEmpty()).isTrue();
-//    }
-//
-//    // -- static bytes(InputStream)
-//
-//    @Test
-//    @Ignore
-//    public void shouldCreateNonBlockingStreamOfBytesFromInputStream() {
-//        assertThat(Stream.bytes(System.in)).isNotNull();
-//    }
-//
-//    @Test
-//    public void shouldReadByteByReadingInputStream() {
-//        assertThat(Stream.bytes(new OneElement()).head()).isNotNull();
-//    }
-//
-//    @Test
-//    public void shouldHandleEndOfBytesByReadingInputStream() {
-//        assertThat(Stream.bytes(new OneElement()).tail().isEmpty()).isTrue();
-//    }
-//
-//    // -- static ints(InputStream)
-//
-//    @Test
-//    @Ignore
-//    public void shouldCreateNonBlockingStreamOfIntsFromInputStream() {
-//        assertThat(Stream.ints(System.in)).isNotNull();
-//    }
-//
-//    @Test
-//    public void shouldReadIntByReadingInputStream() {
-//        assertThat(Stream.ints(new OneElement()).head()).isNotNull();
-//    }
-//
-//    @Test
-//    public void shouldHandleEndOfIntsByReadingInputStream() {
-//        assertThat(Stream.ints(new OneElement()).tail().isEmpty()).isTrue();
-//    }
 
     // -- static nil()
 
@@ -212,7 +107,7 @@ public class StreamTest extends AbstractSeqTest implements MonadLaws<Traversable
         assertThat(actual).isEqualTo(expected);
     }
 
-    // -- static of(Iterable)
+    // -- static lift(Iterable)
 
     @Test
     public void shouldCreateStreamOfIterable() {
@@ -220,7 +115,7 @@ public class StreamTest extends AbstractSeqTest implements MonadLaws<Traversable
         assertThat(Stream.of(arrayList)).isEqualTo(Stream.of(1, 2, 3));
     }
 
-    // -- static of(Iterator)
+    // -- static lift(Iterator)
 
     @Test
     public void shouldCreateStreamOfIterator() {

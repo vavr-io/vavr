@@ -17,9 +17,7 @@ import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.*;
 
 /**
@@ -132,25 +130,6 @@ import java.util.function.*;
  * @since 1.1.0
  */
 public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
-
-    /**
-     * Returns a Traversable based on an Iterable. Returns the given Iterable, if it is already a Traversable,
-     * otherwise {@link Stream#of(Iterable)}.
-     *
-     * @param iterable An Iterable.
-     * @param <T>      Component type
-     * @return a Traversable
-     */
-    static <T> Traversable<T> of(Iterable<? extends T> iterable) {
-        Objects.requireNonNull(iterable, "iterable is null");
-        if (iterable instanceof Traversable) {
-            @SuppressWarnings("unchecked")
-            final Traversable<T> traversable = (Traversable<T>) iterable;
-            return traversable;
-        } else {
-            return Stream.of(iterable);
-        }
-    }
 
     /**
      * <p>Calculates the average of this elements by computing the arithmetic mean.</p>
