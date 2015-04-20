@@ -7,20 +7,41 @@ package javaslang.collection;
 
 import javaslang.*;
 import javaslang.algebra.HigherKinded;
-import javaslang.control.Try;
 
 import java.io.*;
-import java.math.BigInteger;
-import java.nio.charset.Charset;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
 /**
- * A Lazy linked list implementation.
+ * A lazy linked list implementation. This is essentially a {@linkplain List} which may be infinitely long.
  * <p>
- * Please use {@code Stream.cons()} instead of {@code Stream.of()} to create nested streams, i.e.
- * {@code Stream(Nil) = Stream.cons(Stream.nil())}.
+ * A {@code Stream} is composed of a {@code head} element and a lazy evaluated {@code tail} {@code Stream}.
+ * <p>
+ * There are two implementations of the {@code Stream} interface:
+ * <ul>
+ * <li>{@link Nil}, which represents the empty {@code Stream}.</li>
+ * <li>{@link Cons}, which represents a {@code Stream} containing one or more elements.</li>
+ * </ul>
+ * Methods to obtain a {@code Stream}:
+ * <pre>
+ * <code>
+ * // factory methods
+ * Stream.nil()              // = Stream.of() = Nil.instance()
+ * Stream.cons(x)            // = new Cons&lt;&gt;(x, Nil.instance())
+ * Stream.of(Object...)      // e.g. Stream.of(1, 2, 3)
+ * Stream.of(Iterable)       // e.g. Stream.of(List.of(1, 2, 3)) = 1, 2, 3
+ * Stream.of(Iterator)       // e.g. Stream.of(Arrays.asList(1, 2, 3).iterator()) = 1, 2, 3
+ *
+ * // int sequences
+ * Stream.from(0)            // = 0, 1, 2, 3, ...
+ * Stream.range(0, 3)        // = 0, 1, 2
+ * Stream.rangeClosed(0, 3)  // = 0, 1, 2, 3
+ *
+ * // generators
+ * Stream.gen(Supplier)      // e.g. Stream.gen(Math::random);
+ * </code>
+ * </pre>
  *
  * @param <T> component type of this Stream
  * @since 1.1.0
@@ -54,12 +75,12 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     /**
      * Returns an (theoretically) infinitely long Stream of int values starting from {@code from}.
      *
-     * @param from a start int value
-     * @return A new Stream of int values starting from {@code from}
+     * @param value a start int value
+     * @return a new Stream of int values starting from {@code from}
      */
-    static Stream<Integer> gen(int from) {
+    static Stream<Integer> from(int value) {
         return Stream.of(new Iterator<Integer>() {
-            int i = from;
+            int i = value;
             boolean hasNext = true;
 
             @Override
@@ -78,30 +99,6 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     /**
-     * Returns an (theoretically) infinitely long Stream of BigInteger values starting from {@code from}.
-     *
-     * @param from a start BigInteger value
-     * @return A new Stream of BigInteger values starting from {@code from}
-     */
-    static Stream<BigInteger> gen(BigInteger from) {
-        return Stream.of(new Iterator<BigInteger>() {
-            BigInteger i = from;
-
-            @Override
-            public boolean hasNext() {
-                return true;
-            }
-
-            @Override
-            public BigInteger next() {
-                final BigInteger value = i;
-                i = i.add(BigInteger.ONE);
-                return value;
-            }
-        });
-    }
-
-    /**
      * Generates an (theoretically) infinitely long Stream using a value Supplier.
      *
      * @param supplier A Supplier of Stream values
@@ -109,6 +106,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
      * @return A new Stream
      */
     static <T> Stream<T> gen(Supplier<T> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
         return Stream.of(new Iterator<T>() {
             @Override
             public boolean hasNext() {
@@ -118,173 +116,6 @@ public interface Stream<T> extends Seq<T>, ValueObject {
             @Override
             public T next() {
                 return supplier.get();
-            }
-        });
-    }
-
-
-    /**
-     * <p>Creates a Stream of strings by reading lines from the standard input {@linkplain System#in}.
-     * The default charset is used to decode bytes to characters.</p>
-     * <p>Note: Because Stream is lazy, this method is not blocking.</p>
-     *
-     * @return a new Stream of strings
-     */
-    static Stream<String> stdin() {
-        return lines(System.in);
-    }
-
-    /**
-     * <p>Creates a Stream of strings by reading lines from the standard input {@linkplain System#in}
-     * using the given charsetto decode bytes to characters.</p>
-     * <p>Note: Because Stream is lazy, this method is not blocking.</p>
-     *
-     * @param charset A Charset
-     * @return a new Stream of strings
-     */
-    static Stream<String> stdin(Charset charset) {
-        return lines(System.in, charset);
-    }
-
-    /**
-     * <p>Creates a Stream of strings by reading lines from the given InputStream {@code in}.
-     * The default charset is used to decode bytes to characters.</p>
-     * <p>Note: Because Stream is lazy, this method is not blocking.</p>
-     *
-     * @param in An InputStream
-     * @return a new Stream of strings
-     */
-    static Stream<String> lines(InputStream in) {
-        return lines(in, Charset.defaultCharset());
-    }
-
-    /**
-     * <p>Creates a Stream of strings by reading lines from the given InputStream {@code in} using the given
-     * charset to decode bytes to characters.</p>
-     * <p>Note: Because Stream is lazy, this method is not blocking.</p>
-     *
-     * @param in      An InputStream
-     * @param charset A Charset
-     * @return a new Stream of strings
-     */
-    static Stream<String> lines(InputStream in, Charset charset) {
-        return Stream.of(new Iterator<String>() {
-            final BufferedReader reader = new BufferedReader(new InputStreamReader(in, charset));
-            String next;
-
-            @Override
-            public boolean hasNext() {
-                final boolean hasNext = (next = Try.of(() -> reader.readLine()).orElse(null)) != null;
-                if (!hasNext) {
-                    Try.run(reader::close);
-                }
-                return hasNext;
-            }
-
-            @Override
-            public String next() {
-                // user can never call this Iterator.next() directly => no check of hasNext here
-                return next;
-            }
-        });
-    }
-
-    /**
-     * <p>Creates a Stream of characters by reading from the given InputStream {@code in}.
-     * The default charset is used to decode bytes to characters.</p>
-     * <p>Note: Because Stream is lazy, this method is not blocking.</p>
-     *
-     * @param in An InputStream
-     * @return a new Stream of characters
-     */
-    static Stream<Character> chars(InputStream in) {
-        return chars(in, Charset.defaultCharset());
-    }
-
-    /**
-     * <p>Creates a Stream of characters by reading from the given InputStream {@code in} using the given
-     * charset to decode bytes to characters.</p>
-     * <p>Note: Because Stream is lazy, this method is not blocking.</p>
-     *
-     * @param in      An InputStream
-     * @param charset A Charset
-     * @return a new Stream of characters
-     */
-    static Stream<Character> chars(InputStream in, Charset charset) {
-        return Stream.of(new Iterator<Character>() {
-            final InputStreamReader reader = new InputStreamReader(in, charset);
-            int next;
-
-            @Override
-            public boolean hasNext() {
-                final boolean hasNext = (next = Try.of(reader::read).orElse(-1)) != -1;
-                if (!hasNext) {
-                    Try.run(reader::close);
-                }
-                return hasNext;
-            }
-
-            @Override
-            public Character next() {
-                // user can never call this Iterator.next() directly => no check of hasNext here
-                return (char) next;
-            }
-        });
-    }
-
-    /**
-     * <p>Creates a Stream of bytes by reading raw bytes from the given InputStream {@code in}.</p>
-     * <p>Note: Because Stream is lazy, this method is not blocking.</p>
-     *
-     * @param in An InputStream
-     * @return a new Stream of bytes
-     */
-    static Stream<Byte> bytes(InputStream in) {
-        return Stream.of(new Iterator<Byte>() {
-            int next;
-
-            @Override
-            public boolean hasNext() {
-                final boolean hasNext = (next = Try.of(in::read).orElse(-1)) != -1;
-                if (!hasNext) {
-                    Try.run(in::close);
-                }
-                return hasNext;
-            }
-
-            @Override
-            public Byte next() {
-                // user can never call this Iterator.next() directly => no check of hasNext here
-                return (byte) next;
-            }
-        });
-    }
-
-    /**
-     * <p>Creates a Stream of integers by reading raw bytes from the given InputStream {@code in} and casting them to
-     * integer values.</p>
-     * <p>Note: Because Stream is lazy, this method is not blocking.</p>
-     *
-     * @param in An InputStream
-     * @return a new Stream of integers
-     */
-    static Stream<Integer> ints(InputStream in) {
-        return Stream.of(new Iterator<Integer>() {
-            int next;
-
-            @Override
-            public boolean hasNext() {
-                final boolean hasNext = (next = Try.of(in::read).orElse(-1)) != -1;
-                if (!hasNext) {
-                    Try.run(in::close);
-                }
-                return hasNext;
-            }
-
-            @Override
-            public Integer next() {
-                // user can never call this Iterator.next() directly => no check of hasNext here
-                return next;
             }
         });
     }
@@ -301,11 +132,11 @@ public interface Stream<T> extends Seq<T>, ValueObject {
 
     /**
      * <p>
-     * Use {@linkplain Stream#cons(Object)} instead of {@linkplain Stream#of(Iterable)} in order to create nested structures of
+     * Use {@code cons(Iterable)} instead of {@linkplain Stream#of(Iterable)} in order to create nested structures of
      * the form {@code Stream<Stream<T>>}.
      * </p>
      * <p>
-     * {@linkplain Stream#cons(Object)} produces the same result as {@linkplain Stream#of(Iterable)} if T is not Iterable and
+     * {@code cons(Object)} produces the same result as {@linkplain Stream#of(Iterable)} if T is not Iterable and
      * the Iterable contains only one element.
      * </p>
      *
@@ -356,12 +187,11 @@ public interface Stream<T> extends Seq<T>, ValueObject {
      * @param elements An Iterable of elements.
      * @return A list containing the given elements in the same order.
      */
+    @SuppressWarnings("unchecked")
     static <T> Stream<T> of(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof Stream) {
-            @SuppressWarnings("unchecked")
-            final Stream<T> stream = (Stream<T>) elements;
-            return stream;
+            return (Stream<T>) elements;
         } else {
             return Stream.of(elements.iterator());
         }
@@ -377,13 +207,11 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     // providing this method to save resources creating a Stream - makes no sense for collections in general
     static <T> Stream<T> of(Iterator<? extends T> iterator) {
         Objects.requireNonNull(iterator, "iterator is null");
-        return new Deferred<>(() -> {
-            if (iterator.hasNext()) {
-                return new Cons<>(iterator.next(), () -> Stream.of(iterator));
-            } else {
-                return Nil.instance();
-            }
-        });
+        if (iterator.hasNext()) {
+            return new Cons<>(iterator.next(), () -> Stream.of(iterator));
+        } else {
+            return Nil.instance();
+        }
     }
 
     /**
@@ -480,7 +308,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
         if (n <= 0 || isEmpty()) {
             return this;
         } else {
-            return new Deferred<>(() -> tail().drop(n - 1));
+            return tail().drop(n - 1);
         }
     }
 
@@ -494,7 +322,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
         if (isEmpty() || !predicate.test(head())) {
             return this;
         } else {
-            return new Deferred<>(() -> tail().dropWhile(predicate));
+            return tail().dropWhile(predicate);
         }
     }
 
@@ -570,9 +398,9 @@ public interface Stream<T> extends Seq<T>, ValueObject {
      * </code>
      * </pre>
      *
-     * @param <U> component type of the result {@code Stream}
+     * @param <U>           component type of the result {@code Stream}
      * @param <TRAVERSABLE> a {@code Traversable&lt;U&gt;}
-     * @param f a function which maps elements of this Stream to Traversables
+     * @param f             a function which maps elements of this Stream to Traversables
      * @return a new {@code Stream}
      */
     @SuppressWarnings("unchecked")
@@ -1020,7 +848,8 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     /**
-     * Non-empty Stream.
+     * Non-empty {@code Stream}, consisting of a {@code head}, a {@code tail} and an optional
+     * {@link java.lang.AutoCloseable}.
      *
      * @param <T> Component type of the Stream.
      * @since 1.1.0
@@ -1035,14 +864,14 @@ public interface Stream<T> extends Seq<T>, ValueObject {
         private final Lazy<Stream<T>> tail;
 
         /**
-         * Creates a new Stream consisting of a head element and a lazy trailing Stream.
+         * Creates a new {@code Stream} consisting of a head element and a lazy trailing {@code Stream}.
          *
          * @param head A head element
-         * @param tail A tail Supplier
+         * @param tail A tail {@code Stream} supplier, {@linkplain Nil} denotes the end of the {@code Stream}
          */
         public Cons(T head, Supplier<Stream<T>> tail) {
             this.head = head;
-            this.tail = Lazy.of(tail);
+            this.tail = Lazy.of(Objects.requireNonNull(tail, "tail is null"));
         }
 
         @Override
@@ -1062,7 +891,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
 
         @Override
         public Tuple2<T, Stream<T>> unapply() {
-            return Tuple.of(head(), tail());
+            return Tuple.of(head, tail.get());
         }
 
         /**
@@ -1175,9 +1004,8 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     /**
-     * <p>
      * The empty Stream.
-     * </p>
+     * <p>
      * This is a singleton, i.e. not Cloneable.
      *
      * @param <T> Component type of the Stream.
@@ -1206,7 +1034,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
 
         @Override
         public T head() {
-            throw new UnsupportedOperationException("head of empty stream");
+            throw new NoSuchElementException("head of empty stream");
         }
 
         @Override
@@ -1232,74 +1060,6 @@ public interface Stream<T> extends Seq<T>, ValueObject {
          */
         private Object readResolve() {
             return INSTANCE;
-        }
-    }
-
-    /**
-     * Deferred Stream for lazy evaluation of blocking input.
-     *
-     * @param <T> Component type of the Stream.
-     * @since 1.1.0
-     */
-    final class Deferred<T> extends AbstractStream<T> {
-
-        private static final long serialVersionUID = 1L;
-
-        private final Lazy<Stream<T>> stream;
-
-        /**
-         * Creates a Deferred stream which may be empty or non-empty, depending on the given supplier.
-         *
-         * @param streamSupplier A supplier of a stream.
-         */
-        public Deferred(Supplier<Stream<T>> streamSupplier) {
-            this.stream = Lazy.of(streamSupplier);
-        }
-
-        @Override
-        public T head() {
-            return stream.get().head();
-        }
-
-        @Override
-        public Stream<T> tail() {
-            return stream.get().tail();
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return stream.get().isEmpty();
-        }
-
-        @Override
-        public Tuple2<T, Stream<T>> unapply() {
-            return Tuple.of(head(), tail());
-        }
-
-        /**
-         * <p>
-         * {@code writeReplace} method for serializing wrapped Stream.
-         * </p>
-         * The presence of this method causes the serialization system to delegate tp the wrapped Stream instance
-         * instead of an instance of the enclosing class.
-         *
-         * @return A SerialiationProxy for this enclosing class.
-         */
-        private Object writeReplace() {
-            return stream.get();
-        }
-
-        /**
-         * <p>
-         * {@code readObject} method for preventing serialization of the enclosing class.
-         * </p>
-         * Guarantees that the serialization system will never generate a serialized instance of the enclosing class.
-         *
-         * @param stream An object serialization stream.
-         * @throws java.io.InvalidObjectException This method will throw with the message "Not deserializable".
-         */
-        private void readObject(ObjectInputStream stream) throws InvalidObjectException {
-            throw new InvalidObjectException("No direct serialization");
         }
     }
 
@@ -1351,7 +1111,22 @@ public interface Stream<T> extends Seq<T>, ValueObject {
 
         @Override
         public String toString() {
-            return Stream.class.getSimpleName() + map(String::valueOf).join(", ", "(", ")");
+            final StringBuilder builder = new StringBuilder("Stream(");
+            Stream<T> stream = this;
+            while (stream != null && !stream.isEmpty()) {
+                final Cons<T> cons = (Cons<T>) stream;
+                builder.append(cons.head);
+                if (cons.tail.isDefined()) {
+                    stream = cons.tail.get();
+                    if (!stream.isEmpty()) {
+                        builder.append(", ");
+                    }
+                } else {
+                    builder.append(", ?");
+                    stream = null;
+                }
+            }
+            return builder.append(")").toString();
         }
     }
 }

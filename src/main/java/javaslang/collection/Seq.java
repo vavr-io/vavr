@@ -10,7 +10,6 @@ import javaslang.algebra.HigherKinded;
 
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -52,25 +51,6 @@ import java.util.function.UnaryOperator;
  * @since 1.1.0
  */
 public interface Seq<T> extends Traversable<T> {
-
-    /**
-     * Returns a Seq based on an Iterable. Returns the given Iterable, if it is already a Seq,
-     * otherwise {@link Stream#of(Iterable)}.
-     *
-     * @param iterable An Iterable.
-     * @param <T>      Component type
-     * @return a new Seq
-     */
-    static <T> Seq<T> of(Iterable<? extends T> iterable) {
-        Objects.requireNonNull(iterable, "iterable is null");
-        if (iterable instanceof Seq) {
-            @SuppressWarnings("unchecked")
-            final Seq<T> seq = (Seq<T>) iterable;
-            return seq;
-        } else {
-            return Stream.of(iterable);
-        }
-    }
 
     /**
      * Appends an element to this.

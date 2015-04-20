@@ -245,7 +245,7 @@ public interface Try<T> extends CheckedMonad<T, Try<?>>, ValueObject, Bivalent<T
     }
 
     /**
-     * Runs the given runnable if this is a Success, otherwise returns this Failure.
+     * Runs the given runnable if this is a {@code Success}, otherwise returns this {@code Failure}.
      * Shorthand for {@code flatMap(ignored -> Try.run(runnable))}.
      * The main use case is chaining runnables using method references:
      *
@@ -272,7 +272,7 @@ public interface Try<T> extends CheckedMonad<T, Try<?>>, ValueObject, Bivalent<T
      * </pre>
      *
      * @param runnable A checked runnable
-     * @return a new Try
+     * @return a new {@code Try}
      */
     default Try<Void> andThen(CheckedRunnable runnable) {
         return flatMap(ignored -> Try.run(runnable));

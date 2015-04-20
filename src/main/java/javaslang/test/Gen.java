@@ -9,7 +9,6 @@ import javaslang.Tuple2;
 import javaslang.algebra.HigherKinded;
 import javaslang.algebra.Monad;
 import javaslang.collection.Stream;
-import javaslang.collection.Traversable;
 
 import java.util.Objects;
 import java.util.Random;
@@ -201,21 +200,21 @@ public interface Gen<T> extends Monad<T, Gen<?>> {
      */
     static <T> Gen<T> frequency(Iterable<Tuple2<Integer, Gen<T>>> generators) {
         Objects.requireNonNull(generators, "generators is null");
-        final Traversable<Tuple2<Integer, Gen<T>>> traversable = Traversable.of(generators);
-        if (traversable.isEmpty()) {
+        final Stream<Tuple2<Integer, Gen<T>>> stream = Stream.of(generators);
+        if (stream.isEmpty()) {
             throw new IllegalArgumentException("generators is empty");
         }
         final class Frequency {
-            Gen<T> gen(int n, Traversable<Tuple2<Integer, Gen<T>>> list) {
-                final int k = list.head()._1;
+            Gen<T> gen(int n, Stream<Tuple2<Integer, Gen<T>>> stream) {
+                final int k = stream.head()._1;
                 if (k < 0) {
                     throw new IllegalArgumentException("negative frequency: " + k);
                 }
-                return (n <= k) ? list.head()._2 : gen(n - k, list.tail());
+                return (n <= k) ? stream.head()._2 : gen(n - k, stream.tail());
             }
         }
-        final int size = traversable.map(t -> t._1).sum();
-        return choose(1, size).flatMap(n -> new Frequency().gen(n, traversable));
+        final int size = stream.map(t -> t._1).sum();
+        return choose(1, size).flatMap(n -> new Frequency().gen(n, stream));
     }
 
     /**
@@ -247,12 +246,12 @@ public interface Gen<T> extends Monad<T, Gen<?>> {
      */
     static <T> Gen<T> oneOf(Iterable<Gen<T>> generators) {
         Objects.requireNonNull(generators, "generators is null");
-        final Traversable<Gen<T>> traversable = Traversable.of(generators);
-        if (traversable.isEmpty()) {
+        final Stream<Gen<T>> stream = Stream.of(generators);
+        if (stream.isEmpty()) {
             throw new IllegalArgumentException("generators is empty");
         }
         @SuppressWarnings("unchecked")
-        final Gen<T>[] array = traversable.toJavaArray((Class<Gen<T>>) (Class) Gen.class);
+        final Gen<T>[] array = stream.toJavaArray((Class<Gen<T>>) (Class) Gen.class);
         return oneOf(array);
     }
 
