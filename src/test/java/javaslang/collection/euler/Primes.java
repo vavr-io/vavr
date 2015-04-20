@@ -15,7 +15,7 @@ final class Primes {
     }
 
     public static Stream<Integer> asStream() {
-        return sieve(Stream.gen(2));
+        return sieve(Stream.from(2));
     }
 
     // TODO: prevent stack overflow

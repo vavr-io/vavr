@@ -14,11 +14,25 @@ import java.util.function.Supplier;
 /**
  * Represents a lazy evaluated value. Compared to a Supplier, Lazy is memoizing, i.e. it evaluates only once and
  * therefore is referential transparent.
+ *
  * <pre>
  * <code>
- * final Lazy&lt;Double&gt; lazyDouble = Lazy.of(Math::random)
- * lazyDouble.get() // returns a random double, e.g. 0.123
- * lazyDouble.get() // returns the memoized value, e.g. 0.123
+ * final Lazy&lt;Double&gt; lazyDouble = Lazy.of(Math::random);
+ * lazyDouble.isEvaluated(); // = false
+ * lazyDouble.get();         // = 0.123 (random generated)
+ * lazyDouble.isEvaluated(); // = true
+ * lazyDouble.get();         // = 0.123 (memoized)
+ * </code>
+ * </pre>
+ *
+ * In some situations it may also come handy to create a {@code Lazy} that is already evaluated.
+ * (For example, Javaslang uses this internally for String representations of Stream.)
+ *
+ * <pre>
+ * <code>
+ * final Lazy&lt;Double&gt; lazyDouble = Lazy.eval(1);
+ * lazyDouble.isEvaluated(); // = true
+ * lazyDouble.get();         // = 1
  * </code>
  * </pre>
  *
@@ -31,14 +45,16 @@ public final class Lazy<T> implements Supplier<T>, ValueObject {
     private Supplier<T> supplier;
 
     // read http://javarevisited.blogspot.de/2014/05/double-checked-locking-on-singleton-in-java.html
-    private volatile Option<T> value = Option.none();
+    private volatile Option<T> value;
 
-    private Lazy(Supplier<T> supplier) {
+    private Lazy(Supplier<T> supplier, Option<T> value) {
         this.supplier = supplier;
+        this.value = value;
     }
 
     /**
-     * Creates a Lazy, because it is easier to write {@code Lazy.of(xxx)} than {@code new Lazy<>(xxx)}.
+     * Creates a {@code Lazy} that requests its value from a given {@code Supplier}. The supplier is asked only once,
+     * the value is memoized. Initially the {@code Lazy} is marked as not evaluated.
      *
      * @param <T>      type of the lazy value
      * @param supplier A supplier
@@ -46,7 +62,28 @@ public final class Lazy<T> implements Supplier<T>, ValueObject {
      */
     public static <T> Lazy<T> of(Supplier<T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
-        return new Lazy<>(supplier);
+        return new Lazy<>(supplier, Option.none());
+    }
+
+    /**
+     * Creates a {@code Lazy} that contains a specific value. The value is stored directly at the time this {@code Lazy}
+     * is constructed, the {@code Lazy} is accordingly marked as evaluated.
+     *
+     * @param value the value of the {@code Lazy}
+     * @param <T> type of the value
+     * @return a new {@code Lazy} containing the given value
+     */
+    public static <T> Lazy<T> eval(T value) {
+        return new Lazy<>(null, new Some<>(value));
+    }
+
+    /**
+     * Returns whether this lazy value was already evaluated.
+     *
+     * @return true, if this lazy value is evaluated, false otherwise
+     */
+    public boolean isEvaluated() {
+        return value.isDefined();
     }
 
     /**
@@ -85,6 +122,6 @@ public final class Lazy<T> implements Supplier<T>, ValueObject {
 
     @Override
     public String toString() {
-        return String.format("Lazy(%s)", get());
+        return String.format("Lazy(%s)", isEvaluated() ? get() : "?");
     }
 }

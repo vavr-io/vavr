@@ -20,8 +20,6 @@ import org.junit.Test;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InvalidObjectException;
-import java.math.BigInteger;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.function.Function;
@@ -71,22 +69,15 @@ public class StreamTest extends AbstractSeqTest implements MonadLaws<Traversable
 
     @Test
     public void shouldGenerateIntStream() {
-        assertThat(Stream.gen(-1).take(3)).isEqualTo(Stream.of(-1, 0, 1));
+        assertThat(Stream.from(-1).take(3)).isEqualTo(Stream.of(-1, 0, 1));
     }
 
     @Test
     public void shouldGenerateTerminatingIntStream() {
-        assertThat(Stream.gen(Integer.MAX_VALUE).take(2)).isEqualTo(Stream.of(Integer.MAX_VALUE));
+        assertThat(Stream.from(Integer.MAX_VALUE).take(2)).isEqualTo(Stream.of(Integer.MAX_VALUE));
     }
 
-    // -- static gen(BigInteger)
-
-    @Test
-    public void shouldGenerateBigIntegerStream() {
-        assertThat(Stream.gen(BigInteger.ZERO.subtract(BigInteger.ONE)).map(BigInteger::intValue).take(3)).isEqualTo(Stream.of(-1, 0, 1));
-    }
-
-    // -- static gen(BigInteger)
+    // -- static gen(Supplier)
 
     @Test
     public void shouldGenerateInfiniteStreamBasedOnSupplier() {
@@ -95,99 +86,108 @@ public class StreamTest extends AbstractSeqTest implements MonadLaws<Traversable
 
     // -- static stdin()
 
-    @Test
-    public void shouldCreateNonBlockingStreamOfStringLinesFromStdin() {
-        assertThat(Stream.stdin()).isNotNull();
-    }
-
-    // -- static stdin(Charset)
-
-    @Test
-    public void shouldCreateNonBlockingStreamOfStringLinesFromStdinUsingCharset() {
-        assertThat(Stream.stdin(Charset.defaultCharset())).isNotNull();
-    }
-
-    // -- static lines(InputStream)
-
-    @Test
-    public void shouldCreateNonBlockingStreamOfStringLinesFromInputStream() {
-        assertThat(Stream.lines(System.in)).isNotNull();
-    }
-
-    // -- static lines(InputStream, Charset)
-
-    @Test
-    public void shouldCreateNonBlockingStreamOfStringLinesFromInputStreamUsingCharset() {
-        assertThat(Stream.lines(System.in, Charset.defaultCharset())).isNotNull();
-    }
-
-    @Test
-    public void shouldReadLineFromStringLinesByReadingInputStreamUsingCharset() {
-        assertThat(Stream.lines(new OneElement(), Charset.defaultCharset()).head()).isNotNull();
-    }
-
-    @Test
-    public void shouldHandleEndOfStringLinesByReadingInputStreamUsingCharset() {
-        assertThat(Stream.lines(new OneElement(), Charset.defaultCharset()).tail().isEmpty()).isTrue();
-    }
-
-    // -- static chars(InputStream)
-
-    @Test
-    public void shouldCreateNonBlockingStreamOfCharsFromInputStream() {
-        assertThat(Stream.chars(System.in)).isNotNull();
-    }
-
-    // -- static chars(InputStream, Charset)
-
-    @Test
-    public void shouldCreateNonBlockingStreamOfCharsFromInputStreamUsingCharset() {
-        assertThat(Stream.chars(System.in, Charset.defaultCharset())).isNotNull();
-    }
-
-    @Test
-    public void shouldReadCharByReadingInputStreamUsingCharset() {
-        assertThat(Stream.chars(new OneElement(), Charset.defaultCharset()).head()).isNotNull();
-    }
-
-    @Test
-    public void shouldHandleEndOfCharsByReadingInputStreamUsingCharset() {
-        assertThat(Stream.chars(new OneElement(), Charset.defaultCharset()).tail().isEmpty()).isTrue();
-    }
-
-    // -- static bytes(InputStream)
-
-    @Test
-    public void shouldCreateNonBlockingStreamOfBytesFromInputStream() {
-        assertThat(Stream.bytes(System.in)).isNotNull();
-    }
-
-    @Test
-    public void shouldReadByteByReadingInputStream() {
-        assertThat(Stream.bytes(new OneElement()).head()).isNotNull();
-    }
-
-    @Test
-    public void shouldHandleEndOfBytesByReadingInputStream() {
-        assertThat(Stream.bytes(new OneElement()).tail().isEmpty()).isTrue();
-    }
-
-    // -- static ints(InputStream)
-
-    @Test
-    public void shouldCreateNonBlockingStreamOfIntsFromInputStream() {
-        assertThat(Stream.ints(System.in)).isNotNull();
-    }
-
-    @Test
-    public void shouldReadIntByReadingInputStream() {
-        assertThat(Stream.ints(new OneElement()).head()).isNotNull();
-    }
-
-    @Test
-    public void shouldHandleEndOfIntsByReadingInputStream() {
-        assertThat(Stream.ints(new OneElement()).tail().isEmpty()).isTrue();
-    }
+// TODO
+//    @Test
+//    @Ignore
+//    public void shouldCreateNonBlockingStreamOfStringLinesFromStdin() {
+//        assertThat(Stream.stdin()).isNotNull();
+//    }
+//
+//    // -- static stdin(Charset)
+//
+//    @Test
+//    @Ignore
+//    public void shouldCreateNonBlockingStreamOfStringLinesFromStdinUsingCharset() {
+//        assertThat(Stream.stdin(Charset.defaultCharset())).isNotNull();
+//    }
+//
+//    // -- static lines(InputStream)
+//
+//    @Test
+//    @Ignore
+//    public void shouldCreateNonBlockingStreamOfStringLinesFromInputStream() {
+//        assertThat(Stream.lines(System.in)).isNotNull();
+//    }
+//
+//    // -- static lines(InputStream, Charset)
+//
+//    @Test
+//    @Ignore
+//    public void shouldCreateNonBlockingStreamOfStringLinesFromInputStreamUsingCharset() {
+//        assertThat(Stream.lines(System.in, Charset.defaultCharset())).isNotNull();
+//    }
+//
+//    @Test
+//    public void shouldReadLineFromStringLinesByReadingInputStreamUsingCharset() {
+//        assertThat(Stream.lines(new OneElement(), Charset.defaultCharset()).head()).isNotNull();
+//    }
+//
+//    @Test
+//    public void shouldHandleEndOfStringLinesByReadingInputStreamUsingCharset() {
+//        assertThat(Stream.lines(new OneElement(), Charset.defaultCharset()).tail().isEmpty()).isTrue();
+//    }
+//
+//    // -- static chars(InputStream)
+//
+//    @Test
+//    @Ignore
+//    public void shouldCreateNonBlockingStreamOfCharsFromInputStream() {
+//        assertThat(Stream.chars(System.in)).isNotNull();
+//    }
+//
+//    // -- static chars(InputStream, Charset)
+//
+//    @Test
+//    @Ignore
+//    public void shouldCreateNonBlockingStreamOfCharsFromInputStreamUsingCharset() {
+//        assertThat(Stream.chars(System.in, Charset.defaultCharset())).isNotNull();
+//    }
+//
+//    @Test
+//    public void shouldReadCharByReadingInputStreamUsingCharset() {
+//        assertThat(Stream.chars(new OneElement(), Charset.defaultCharset()).head()).isNotNull();
+//    }
+//
+//    @Test
+//    public void shouldHandleEndOfCharsByReadingInputStreamUsingCharset() {
+//        assertThat(Stream.chars(new OneElement(), Charset.defaultCharset()).tail().isEmpty()).isTrue();
+//    }
+//
+//    // -- static bytes(InputStream)
+//
+//    @Test
+//    @Ignore
+//    public void shouldCreateNonBlockingStreamOfBytesFromInputStream() {
+//        assertThat(Stream.bytes(System.in)).isNotNull();
+//    }
+//
+//    @Test
+//    public void shouldReadByteByReadingInputStream() {
+//        assertThat(Stream.bytes(new OneElement()).head()).isNotNull();
+//    }
+//
+//    @Test
+//    public void shouldHandleEndOfBytesByReadingInputStream() {
+//        assertThat(Stream.bytes(new OneElement()).tail().isEmpty()).isTrue();
+//    }
+//
+//    // -- static ints(InputStream)
+//
+//    @Test
+//    @Ignore
+//    public void shouldCreateNonBlockingStreamOfIntsFromInputStream() {
+//        assertThat(Stream.ints(System.in)).isNotNull();
+//    }
+//
+//    @Test
+//    public void shouldReadIntByReadingInputStream() {
+//        assertThat(Stream.ints(new OneElement()).head()).isNotNull();
+//    }
+//
+//    @Test
+//    public void shouldHandleEndOfIntsByReadingInputStream() {
+//        assertThat(Stream.ints(new OneElement()).tail().isEmpty()).isTrue();
+//    }
 
     // -- static nil()
 
@@ -200,7 +200,7 @@ public class StreamTest extends AbstractSeqTest implements MonadLaws<Traversable
 
     @Test
     public void shouldCreateStreamOfStreamUsingCons() {
-        assertThat(Stream.cons(Stream.nil()).toString()).isEqualTo("Stream(Stream())");
+        assertThat(Stream.cons(Stream.nil()).toString()).isEqualTo("Stream(Stream(), ?)");
     }
 
     // -- static of(T...)
@@ -339,7 +339,14 @@ public class StreamTest extends AbstractSeqTest implements MonadLaws<Traversable
 
     @Test
     public void shouldStringifyNonNil() {
-        assertThat(this.of(1, 2, 3).toString()).isEqualTo("Stream(1, 2, 3)");
+        assertThat(this.of(1, 2, 3).toString()).isEqualTo("Stream(1, ?)");
+    }
+
+    @Test
+    public void shouldStringifyNonNilEvaluatingFirstTail() {
+        final Stream<Integer> stream = this.of(1, 2, 3);
+        stream.tail(); // evaluates second head element
+        assertThat(stream.toString()).isEqualTo("Stream(1, 2, ?)");
     }
 
     // -- Serializable
@@ -381,11 +388,6 @@ public class StreamTest extends AbstractSeqTest implements MonadLaws<Traversable
         } catch (IllegalStateException x) {
             throw (x.getCause() != null) ? x.getCause() : x;
         }
-    }
-
-    @Test(expected = InvalidObjectException.class)
-    public void shouldNotSerializeEnclosingClassOfDeferred() throws Throwable {
-        Serializables.callReadObject(new Stream.Deferred<>(Nil::instance));
     }
 
     // -- FunctorLaws

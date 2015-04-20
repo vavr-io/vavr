@@ -54,7 +54,20 @@ public class LazyTest {
     }
 
     @Test
-    public void shouldConvertToString() {
-        assertThat(Lazy.of(() -> 1).toString()).isEqualTo("Lazy(1)");
+    public void shouldConvertNonEvaluatedValueToString() {
+        final Lazy<Integer> lazy = Lazy.of(() -> 1);
+        assertThat(lazy.toString()).isEqualTo("Lazy(?)");
+    }
+
+    @Test
+    public void shouldConvertEvaluatedValueToString() {
+        final Lazy<Integer> lazy = Lazy.of(() -> 1);
+        lazy.get();
+        assertThat(lazy.toString()).isEqualTo("Lazy(1)");
+    }
+
+    @Test
+    public void shouldConvertEagerConstructedLazyToString() {
+        assertThat(Lazy.eval(1).toString()).isEqualTo("Lazy(1)");
     }
 }

@@ -774,7 +774,7 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     /**
-     * Non-empty List.
+     * Non-empty {@code List}, consisting of a {@code head} and a {@code tail}.
      *
      * @param <T> Component type of the List.
      * @since 1.1.0
@@ -927,7 +927,7 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     /**
-     * Representation of the singleton empty List.
+     * Representation of the singleton empty {@code List}.
      *
      * @param <T> Component type of the List.
      * @since 1.1.0
@@ -948,10 +948,9 @@ public interface List<T> extends Seq<T>, ValueObject {
          * @param <T> Component type of the List
          * @return the singleton instance of the linked list.
          */
+        @SuppressWarnings("unchecked")
         public static <T> Nil<T> instance() {
-            @SuppressWarnings("unchecked")
-            final Nil<T> instance = (Nil<T>) INSTANCE;
-            return instance;
+            return (Nil<T>) INSTANCE;
         }
 
         @Override
@@ -1033,7 +1032,7 @@ public interface List<T> extends Seq<T>, ValueObject {
 
         @Override
         public String toString() {
-            return List.class.getSimpleName() + map(String::valueOf).join(", ", "(", ")");
+            return map(String::valueOf).join(", ", "List(", ")");
         }
     }
 }
