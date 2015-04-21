@@ -72,6 +72,7 @@ def generateMainClasses(): Unit = {
              * @param <U> type of the component of the resulting $name
              * @param f a ${checked.gen("Checked")}Function which maps the component of this $name
              * @return a new $className
+             * @throws NullPointerException if {@code f} is null
              */
             <U> $className<U> map($functionType<? super T, ? extends U> f);
         }
@@ -127,6 +128,7 @@ def generateMainClasses(): Unit = {
              * @param <MONAD> placeholder for the monad type of component type T and container type M
              * @param f a ${checked.gen("checked ")}function that maps the monad value to a new monad instance
              * @return a new $className instance of component type U and container type M
+             * @throws NullPointerException if {@code f} is null
              */
             <U, MONAD extends HigherKinded<U, M>> $className<U, M> flatMap($functionType<? super T, ? extends MONAD> f);
 
@@ -164,6 +166,7 @@ def generateMainClasses(): Unit = {
              * @param <MONAD> {@code Monad} type
              * @param f a function which maps elements of this monad to monads of the same kind
              * @return A monadic structure containing flattened elements.
+             * @throws NullPointerException if {@code f} is null
              */
             <U, MONAD extends HigherKinded<U, M>> $name<U, M> flatten($functionType<? super T, ? extends MONAD> f);
 
@@ -172,6 +175,7 @@ def generateMainClasses(): Unit = {
              *
              * @param predicate A Predicate
              * @return true, if predicate holds for an element of this, false otherwise
+             * @throws NullPointerException if {@code predicate} is null
              */
             boolean exists($predicateType<? super T> predicate);
 
@@ -180,6 +184,7 @@ def generateMainClasses(): Unit = {
              *
              * @param predicate A Predicate
              * @return true, if the predicate holds for all elements of this, false otherwise
+             * @throws NullPointerException if {@code predicate} is null
              */
             boolean forAll($predicateType<? super T> predicate);
 
@@ -187,6 +192,7 @@ def generateMainClasses(): Unit = {
              * Performs an action on each element of this monad.
              *
              * @param action A {@code Consumer}
+             * @throws NullPointerException if {@code action} is null
              */
             void forEach(${im.getType("java.util.function.Consumer")}<? super T> action);
 
@@ -194,6 +200,7 @@ def generateMainClasses(): Unit = {
              * Performs an action on each element of this monad.
              * @param action A {@code Consumer}
              * @return An instance of this monad type
+             * @throws NullPointerException if {@code action} is null
              */
             $className<T, M> peek($consumerType<? super T> action);
 

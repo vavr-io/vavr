@@ -65,6 +65,7 @@ public interface Seq<T> extends Traversable<T> {
      *
      * @param elements An Iterable of elements
      * @return A new Seq containing the given elements appended to this elements
+     * @throws NullPointerException if {@code elements} is null
      */
     Seq<T> appendAll(Iterable<? extends T> elements);
 
@@ -187,11 +188,10 @@ public interface Seq<T> extends Traversable<T> {
      * Sorts this elements according to the provided {@code Comparator}. If this elements are not
      * {@code Comparable}, a {@code java.lang.ClassCastException} may be thrown.
      *
-     * @param c A comparator
+     * @param comparator A comparator
      * @return a sorted version of this
-     * @throws ClassCastException if this elements are not {@code Comparable}
      */
-    Seq<T> sort(Comparator<? super T> c);
+    Seq<T> sort(Comparator<? super T> comparator);
 
     /**
      * Splits a Seq at the specified index. The result of {@code splitAt(n)} is equivalent to

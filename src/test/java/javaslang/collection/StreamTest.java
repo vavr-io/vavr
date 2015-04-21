@@ -107,7 +107,7 @@ public class StreamTest extends AbstractSeqTest implements MonadLaws<Traversable
         assertThat(actual).isEqualTo(expected);
     }
 
-    // -- static lift(Iterable)
+    // -- static of(Iterable)
 
     @Test
     public void shouldCreateStreamOfIterable() {
@@ -115,7 +115,7 @@ public class StreamTest extends AbstractSeqTest implements MonadLaws<Traversable
         assertThat(Stream.of(arrayList)).isEqualTo(Stream.of(1, 2, 3));
     }
 
-    // -- static lift(Iterator)
+    // -- static of(Iterator)
 
     @Test
     public void shouldCreateStreamOfIterator() {
@@ -145,6 +145,11 @@ public class StreamTest extends AbstractSeqTest implements MonadLaws<Traversable
         assertThat(Stream.rangeClosed(Integer.MIN_VALUE, Integer.MIN_VALUE)).isEqualTo(Stream.of(Integer.MIN_VALUE));
     }
 
+    @Test
+    public void shouldCreateStreamOfRangeWhereFromEqualsToEqualsInteger_MAX_VALUE() {
+        assertThat(Stream.rangeClosed(Integer.MAX_VALUE, Integer.MAX_VALUE)).isEqualTo(Stream.of(Integer.MAX_VALUE));
+    }
+
     // -- static range(int, int)
 
     @Test
@@ -165,6 +170,11 @@ public class StreamTest extends AbstractSeqTest implements MonadLaws<Traversable
     @Test
     public void shouldCreateStreamOfUntilWhereFromEqualsToEqualsInteger_MIN_VALUE() {
         assertThat(Stream.range(Integer.MIN_VALUE, Integer.MIN_VALUE)).isEqualTo(Stream.nil());
+    }
+
+    @Test
+    public void shouldCreateStreamOfUntilWhereFromEqualsToEqualsInteger_MAX_VALUE() {
+        assertThat(Stream.range(Integer.MAX_VALUE, Integer.MAX_VALUE)).isEqualTo(Stream.nil());
     }
 
     // -- combinations

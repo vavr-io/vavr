@@ -46,6 +46,7 @@ public interface Monad<T, M extends HigherKinded<?, M>> extends Functor<T>, High
      * @param <MONAD> placeholder for the monad type of component type T and container type M
      * @param f a function that maps the monad value to a new monad instance
      * @return a new Monad instance of component type U and container type M
+     * @throws NullPointerException if {@code f} is null
      */
     <U, MONAD extends HigherKinded<U, M>> Monad<U, M> flatMap(Function<? super T, ? extends MONAD> f);
 
@@ -83,6 +84,7 @@ public interface Monad<T, M extends HigherKinded<?, M>> extends Functor<T>, High
      * @param <MONAD> {@code Monad} type
      * @param f a function which maps elements of this monad to monads of the same kind
      * @return A monadic structure containing flattened elements.
+     * @throws NullPointerException if {@code f} is null
      */
     <U, MONAD extends HigherKinded<U, M>> Monad<U, M> flatten(Function<? super T, ? extends MONAD> f);
 
@@ -91,6 +93,7 @@ public interface Monad<T, M extends HigherKinded<?, M>> extends Functor<T>, High
      *
      * @param predicate A Predicate
      * @return true, if predicate holds for an element of this, false otherwise
+     * @throws NullPointerException if {@code predicate} is null
      */
     boolean exists(Predicate<? super T> predicate);
 
@@ -99,6 +102,7 @@ public interface Monad<T, M extends HigherKinded<?, M>> extends Functor<T>, High
      *
      * @param predicate A Predicate
      * @return true, if the predicate holds for all elements of this, false otherwise
+     * @throws NullPointerException if {@code predicate} is null
      */
     boolean forAll(Predicate<? super T> predicate);
 
@@ -106,6 +110,7 @@ public interface Monad<T, M extends HigherKinded<?, M>> extends Functor<T>, High
      * Performs an action on each element of this monad.
      *
      * @param action A {@code Consumer}
+     * @throws NullPointerException if {@code action} is null
      */
     void forEach(Consumer<? super T> action);
 
@@ -113,6 +118,7 @@ public interface Monad<T, M extends HigherKinded<?, M>> extends Functor<T>, High
      * Performs an action on each element of this monad.
      * @param action A {@code Consumer}
      * @return An instance of this monad type
+     * @throws NullPointerException if {@code action} is null
      */
     Monad<T, M> peek(Consumer<? super T> action);
 

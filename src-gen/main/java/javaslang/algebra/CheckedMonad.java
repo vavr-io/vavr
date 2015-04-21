@@ -47,6 +47,7 @@ public interface CheckedMonad<T, M extends HigherKinded<?, M>> extends CheckedFu
      * @param <MONAD> placeholder for the monad type of component type T and container type M
      * @param f a checked function that maps the monad value to a new monad instance
      * @return a new CheckedMonad instance of component type U and container type M
+     * @throws NullPointerException if {@code f} is null
      */
     <U, MONAD extends HigherKinded<U, M>> CheckedMonad<U, M> flatMap(CheckedFunction<? super T, ? extends MONAD> f);
 
@@ -84,6 +85,7 @@ public interface CheckedMonad<T, M extends HigherKinded<?, M>> extends CheckedFu
      * @param <MONAD> {@code Monad} type
      * @param f a function which maps elements of this monad to monads of the same kind
      * @return A monadic structure containing flattened elements.
+     * @throws NullPointerException if {@code f} is null
      */
     <U, MONAD extends HigherKinded<U, M>> CheckedMonad<U, M> flatten(CheckedFunction<? super T, ? extends MONAD> f);
 
@@ -92,6 +94,7 @@ public interface CheckedMonad<T, M extends HigherKinded<?, M>> extends CheckedFu
      *
      * @param predicate A Predicate
      * @return true, if predicate holds for an element of this, false otherwise
+     * @throws NullPointerException if {@code predicate} is null
      */
     boolean exists(CheckedPredicate<? super T> predicate);
 
@@ -100,6 +103,7 @@ public interface CheckedMonad<T, M extends HigherKinded<?, M>> extends CheckedFu
      *
      * @param predicate A Predicate
      * @return true, if the predicate holds for all elements of this, false otherwise
+     * @throws NullPointerException if {@code predicate} is null
      */
     boolean forAll(CheckedPredicate<? super T> predicate);
 
@@ -107,6 +111,7 @@ public interface CheckedMonad<T, M extends HigherKinded<?, M>> extends CheckedFu
      * Performs an action on each element of this monad.
      *
      * @param action A {@code Consumer}
+     * @throws NullPointerException if {@code action} is null
      */
     void forEach(Consumer<? super T> action);
 
@@ -114,6 +119,7 @@ public interface CheckedMonad<T, M extends HigherKinded<?, M>> extends CheckedFu
      * Performs an action on each element of this monad.
      * @param action A {@code Consumer}
      * @return An instance of this monad type
+     * @throws NullPointerException if {@code action} is null
      */
     CheckedMonad<T, M> peek(CheckedConsumer<? super T> action);
 

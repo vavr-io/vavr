@@ -37,7 +37,7 @@ public abstract class AbstractTraversableTest {
 
     // -- average
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = NoSuchElementException.class)
     public void shouldThrowWhenAverageOfNil() {
         nil().average();
     }
@@ -683,7 +683,7 @@ public abstract class AbstractTraversableTest {
 
     // -- last
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = NoSuchElementException.class)
     public void shouldThrowWhenLastOnNil() {
         nil().last();
     }
@@ -719,7 +719,7 @@ public abstract class AbstractTraversableTest {
 
     // -- max
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = NoSuchElementException.class)
     public void shouldThrowWhenMaxOfNil() {
         nil().max();
     }
@@ -796,7 +796,7 @@ public abstract class AbstractTraversableTest {
         of(1).maxBy(null);
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = NoSuchElementException.class)
     public void shouldThrowWhenMaxByOfNil() {
         nil().maxBy((o1, o2) -> 0);
     }
@@ -808,7 +808,7 @@ public abstract class AbstractTraversableTest {
 
     // -- min
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = NoSuchElementException.class)
     public void shouldThrowWhenMinOfNil() {
         nil().min();
     }
@@ -885,7 +885,7 @@ public abstract class AbstractTraversableTest {
         of(1).minBy(null);
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = NoSuchElementException.class)
     public void shouldThrowWhenMinByOfNil() {
         nil().minBy((o1, o2) -> 0);
     }
@@ -916,7 +916,7 @@ public abstract class AbstractTraversableTest {
 
     // -- product
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = NoSuchElementException.class)
     public void shouldThrowWhenProductOfNil() {
         nil().product();
     }
@@ -988,7 +988,7 @@ public abstract class AbstractTraversableTest {
 
     // -- reduce
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = NoSuchElementException.class)
     public void shouldThrowWhenReduceNil() {
         this.<String>nil().reduce((a, b) -> a + b);
     }
@@ -1005,7 +1005,7 @@ public abstract class AbstractTraversableTest {
 
     // -- reduceLeft
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = NoSuchElementException.class)
     public void shouldThrowWhenReduceLeftNil() {
         this.<String>nil().reduceLeft((a, b) -> a + b);
     }
@@ -1022,7 +1022,7 @@ public abstract class AbstractTraversableTest {
 
     // -- reduceRight
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = NoSuchElementException.class)
     public void shouldThrowWhenReduceRightNil() {
         this.<String>nil().reduceRight((a, b) -> a + b);
     }
@@ -1313,7 +1313,7 @@ public abstract class AbstractTraversableTest {
 
     // -- sum
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = NoSuchElementException.class)
     public void shouldThrowWhenSumOfNil() {
         nil().sum();
     }

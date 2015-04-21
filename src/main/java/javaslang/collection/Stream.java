@@ -79,23 +79,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
      * @return a new Stream of int values starting from {@code from}
      */
     static Stream<Integer> from(int value) {
-        return Stream.of(new Iterator<Integer>() {
-            int i = value;
-            boolean hasNext = true;
-
-            @Override
-            public boolean hasNext() {
-                return hasNext;
-            }
-
-            @Override
-            public Integer next() {
-                if (i == Integer.MAX_VALUE) {
-                    hasNext = false;
-                }
-                return i++;
-            }
-        });
+        return new Cons<>(value, () -> (value == Integer.MAX_VALUE) ? Nil.instance() : from(value + 1));
     }
 
     /**
@@ -107,17 +91,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
      */
     static <T> Stream<T> gen(Supplier<T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
-        return Stream.of(new Iterator<T>() {
-            @Override
-            public boolean hasNext() {
-                return true;
-            }
-
-            @Override
-            public T next() {
-                return supplier.get();
-            }
-        });
+        return new Cons<>(supplier.get(), () -> gen(supplier));
     }
 
     /**
@@ -239,22 +213,10 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     static Stream<Integer> rangeClosed(int from, int toInclusive) {
         if (from > toInclusive) {
             return Nil.instance();
-        } else if (from == Integer.MIN_VALUE && toInclusive == Integer.MIN_VALUE) {
-            return new Cons<>(Integer.MIN_VALUE, Nil::instance);
+        } else if (from == Integer.MAX_VALUE) {
+            return new Cons<>(Integer.MAX_VALUE, Nil::instance);
         } else {
-            return Stream.of(new Iterator<Integer>() {
-                int i = from;
-
-                @Override
-                public boolean hasNext() {
-                    return i <= toInclusive;
-                }
-
-                @Override
-                public Integer next() {
-                    return i++;
-                }
-            });
+            return new Cons<>(from, () -> rangeClosed(from + 1, toInclusive));
         }
     }
 
@@ -305,11 +267,11 @@ public interface Stream<T> extends Seq<T>, ValueObject {
 
     @Override
     default Stream<T> drop(int n) {
-        if (n <= 0 || isEmpty()) {
-            return this;
-        } else {
-            return tail().drop(n - 1);
+        Stream<T> stream = this;
+        while (n-- > 0 && !stream.isEmpty()) {
+            stream = stream.tail();
         }
+        return stream;
     }
 
     @Override
@@ -706,9 +668,9 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default Stream<T> sort(Comparator<? super T> c) {
-        Objects.requireNonNull(c, "comparator is null");
-        return toJavaStream().sorted(c).collect(Stream.collector());
+    default Stream<T> sort(Comparator<? super T> comparator) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        return toJavaStream().sorted(comparator).collect(Stream.collector());
     }
 
     @Override
@@ -781,6 +743,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
 
     @Override
     default Stream<T> takeWhile(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {
             return this;
         } else {

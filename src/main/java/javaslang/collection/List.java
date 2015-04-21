@@ -116,7 +116,7 @@ public interface List<T> extends Seq<T>, ValueObject {
      * @param <T>      Component type of the List.
      * @param elements Zero or more elements.
      * @return A list containing the given elements in the same order.
-     * @throws NullPointerException if elements is null
+     * @throws NullPointerException if {@code elements} is null
      */
     @SafeVarargs
     static <T> List<T> of(T... elements) {
@@ -134,6 +134,7 @@ public interface List<T> extends Seq<T>, ValueObject {
      * @param <T>      Component type of the List.
      * @param elements An Iterable of elements.
      * @return A list containing the given elements in the same order.
+     * @throws NullPointerException if {@code elements} is null
      */
     static <T> List<T> of(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
@@ -225,6 +226,7 @@ public interface List<T> extends Seq<T>, ValueObject {
 
     @Override
     default <U> List<T> distinct(Function<? super T, ? extends U> keyExtractor) {
+        Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         final Set<U> seen = new HashSet<>();
         return filter(t -> seen.add(keyExtractor.apply(t)));
     }
@@ -261,12 +263,14 @@ public interface List<T> extends Seq<T>, ValueObject {
 
     @Override
     default List<T> findAll(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     default <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> List<U> flatMap(Function<? super T, ? extends TRAVERSABLE> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
         return foldRight(nil(), (t, xs) -> xs.prependAll((Traversable<U>) mapper.apply(t)));
     }
 
@@ -314,6 +318,7 @@ public interface List<T> extends Seq<T>, ValueObject {
      * @param <TRAVERSABLE> a {@code Traversable&lt;U&gt;}
      * @param f             a function which maps elements of this List to Traversables
      * @return a new {@code List}
+     * @throws NullPointerException if {@code f} is null
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -460,6 +465,7 @@ public interface List<T> extends Seq<T>, ValueObject {
      */
     @Override
     default List<T> peek(Consumer<? super T> action) {
+        Objects.requireNonNull(action, "action is null");
         if (!isEmpty()) {
             action.accept(head());
         }
@@ -649,9 +655,9 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default List<T> sort(Comparator<? super T> c) {
-        Objects.requireNonNull(c, "comparator is null");
-        return toJavaStream().sorted(c).collect(List.collector());
+    default List<T> sort(Comparator<? super T> comparator) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        return toJavaStream().sorted(comparator).collect(List.collector());
     }
 
     @Override
