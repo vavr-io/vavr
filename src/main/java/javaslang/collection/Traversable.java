@@ -17,6 +17,7 @@ import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.*;
@@ -611,6 +612,30 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * @return true, if this Traversable contains no elements, falso otherwise.
      */
     boolean isEmpty();
+
+    @Override
+    default Iterator<T> iterator() {
+        return new Iterator<T>() {
+
+            Traversable<T> traversable = Traversable.this;
+
+            @Override
+            public boolean hasNext() {
+                return !traversable.isEmpty();
+            }
+
+            @Override
+            public T next() {
+                if (traversable.isEmpty()) {
+                    throw new NoSuchElementException();
+                } else {
+                    final T result = traversable.head();
+                    traversable = traversable.tail();
+                    return result;
+                }
+            }
+        };
+    }
 
     /**
      * Joins the elements of this by concatenating their string representations.

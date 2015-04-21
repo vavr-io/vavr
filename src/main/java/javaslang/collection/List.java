@@ -417,30 +417,6 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default Iterator<T> iterator() {
-        final class ListIterator implements Iterator<T> {
-            List<T> list = List.this;
-
-            @Override
-            public boolean hasNext() {
-                return !list.isEmpty();
-            }
-
-            @Override
-            public T next() {
-                if (list.isEmpty()) {
-                    throw new NoSuchElementException();
-                } else {
-                    final T result = list.head();
-                    list = list.tail();
-                    return result;
-                }
-            }
-        }
-        return new ListIterator();
-    }
-
-    @Override
     default int lastIndexOf(T element) {
         int result = -1, index = 0;
         for (List<T> list = this; !list.isEmpty(); list = list.tail(), index++) {

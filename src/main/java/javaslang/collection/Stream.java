@@ -281,26 +281,22 @@ public interface Stream<T> extends Seq<T>, ValueObject {
 
     @Override
     default Stream<T> dropWhile(Predicate<? super T> predicate) {
-        if (isEmpty() || !predicate.test(head())) {
-            return this;
-        } else {
-            return tail().dropWhile(predicate);
+        Stream<T> stream = this;
+        while (!stream.isEmpty() && predicate.test(stream.head())) {
+            stream = stream.tail();
         }
+        return stream;
     }
 
     @Override
     default Stream<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        if (isEmpty()) {
-            return Nil.instance();
-        } else {
-            final T head = head();
-            if (predicate.test(head)) {
-                return new Cons<>(head, () -> tail().filter(predicate));
-            } else {
-                return tail().filter(predicate);
-            }
+        Stream<T> stream = this;
+        while (!stream.isEmpty() && !predicate.test(stream.head())) {
+            stream = stream.tail();
         }
+        final Stream<T> finalStream = stream;
+        return stream.isEmpty() ? stream : new Cons<>(stream.head(), () -> finalStream.tail().filter(predicate));
     }
 
     @Override
@@ -466,34 +462,6 @@ public interface Stream<T> extends Seq<T>, ValueObject {
                 return tail.isEmpty() ? tail : new Cons<>(element, () -> tail.intersperse(element));
             });
         }
-    }
-
-    @Override
-    default Iterator<T> iterator() {
-
-        final class StreamIterator implements Iterator<T> {
-
-            Supplier<Stream<T>> streamSupplier = () -> Stream.this;
-
-            @Override
-            public boolean hasNext() {
-                return !streamSupplier.get().isEmpty();
-            }
-
-            @Override
-            public T next() {
-                final Stream<T> stream = streamSupplier.get();
-                if (stream.isEmpty()) {
-                    throw new NoSuchElementException();
-                } else {
-                    // defer computation of stream = stream.tail() because computation of new head may be blocking!
-                    streamSupplier = stream::tail;
-                    return stream.head();
-                }
-            }
-        }
-
-        return new StreamIterator();
     }
 
     @Override
@@ -795,19 +763,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
 
     @Override
     default Stream<Tuple2<T, Integer>> zipWithIndex() {
-        return zip(() -> new Iterator<Integer>() {
-            int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return true;
-            }
-
-            @Override
-            public Integer next() {
-                return i++;
-            }
-        });
+        return zip(Stream.from(0));
     }
 
     /**
