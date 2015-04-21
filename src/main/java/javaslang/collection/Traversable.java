@@ -17,12 +17,13 @@ import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Comparator;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.*;
 
 /**
  * <p>An interface for inherently recursive data structures. The order of elements is determined by
- * {@link java.lang.Iterable#iterator()}, which may vary each time it is called.</p>
+ * {@link Iterable#iterator()}, which may vary each time it is called.</p>
  * <p>Conversion:</p>
  * <ul>
  * <li>{@link #toJavaArray(Class)}</li>
@@ -148,12 +149,13 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * <p>BigInteger and BigDecimal are not treated special.</p>
      *
      * @return the average of this elements.
-     * @throws java.lang.UnsupportedOperationException if no elements are present or the elements are not numeric
+     * @throws NoSuchElementException        if no elements are present
+     * @throws UnsupportedOperationException if the elements are not numeric
      */
     @SuppressWarnings("unchecked")
     default T average() {
         if (isEmpty()) {
-            throw new UnsupportedOperationException("average of nothing");
+            throw new NoSuchElementException("average of nothing");
         } else {
             final T head = head();
             final int n = length();
@@ -238,7 +240,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      *
      * @param elements A List of values of type E.
      * @return true, if this List contains all given elements, false otherwise.
-     * @throws NullPointerException if elements is null
+     * @throws NullPointerException if {@code elements} is null
      */
     default boolean containsAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
@@ -262,8 +264,9 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * The elements of the result are determined in the order of their occurrence - first match wins.
      *
      * @param keyExtractor A key extractor
-     * @param <U> key type
+     * @param <U>          key type
      * @return a new {@code Traversable} containing this elements without duplicates
+     * @throws NullPointerException if {@code keyExtractor} is null
      */
     <U> Traversable<T> distinct(Function<? super T, ? extends U> keyExtractor);
 
@@ -291,6 +294,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * @param predicate A condition tested subsequently for this elements starting with the first.
      * @return a new instance consisting of all elements starting from the first one which does not satisfy the
      * given predicate.
+     * @throws NullPointerException if {@code predicate} is null
      */
     Traversable<T> dropWhile(Predicate<? super T> predicate);
 
@@ -299,6 +303,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      *
      * @param predicate A predicate
      * @return a new traversable
+     * @throws NullPointerException if {@code predicate} is null
      */
     Traversable<T> filter(Predicate<? super T> predicate);
 
@@ -308,6 +313,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      *
      * @param predicate A predicate.
      * @return all elements of this which satisfy the given predicate.
+     * @throws NullPointerException if {@code predicate} is null
      */
     Traversable<T> findAll(Predicate<? super T> predicate);
 
@@ -316,8 +322,10 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      *
      * @param predicate A predicate.
      * @return Some(element) or None, where element may be null (i.e. {@code List.of(null).findFirst(e -> e == null)}).
+     * @throws NullPointerException if {@code predicate} is null
      */
     default Option<T> findFirst(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
         for (T a : this) {
             if (predicate.test(a)) {
                 return new Some<>(a); // may be Some(null)
@@ -336,8 +344,10 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      *
      * @param predicate A predicate.
      * @return Some(element) or None, where element may be null (i.e. {@code List.of(null).findFirst(e -> e == null)}).
+     * @throws NullPointerException if {@code predicate} is null
      */
     default Option<T> findLast(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
         return reverse().findFirst(predicate);
     }
 
@@ -378,6 +388,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * @param <U> new component type (UNSAFE!)
      * @param f   An unboxing function that maps elements T to Iterables of elements U that will be unboxed.
      * @return a flattened version of this traversable
+     * @throws NullPointerException if {@code f} is null
      */
     <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Traversable<U> flatten(Function<? super T, ? extends TRAVERSABLE> f);
 
@@ -392,8 +403,10 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * @param zero Value to start the accumulation with.
      * @param op   The accumulator operator.
      * @return an accumulated version of this.
+     * @throws NullPointerException if {@code op} is null
      */
     default T fold(T zero, BiFunction<? super T, ? super T, ? extends T> op) {
+        Objects.requireNonNull(op, "op is null");
         return foldLeft(zero, op);
     }
 
@@ -410,9 +423,10 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * @param f    The accumulator function.
      * @param <U>  Result type of the accumulator.
      * @return an accumulated version of this.
+     * @throws NullPointerException if {@code f} is null
      */
     default <U> U foldLeft(U zero, BiFunction<? super U, ? super T, ? extends U> f) {
-        Objects.requireNonNull(f, "function is null");
+        Objects.requireNonNull(f, "f is null");
         U xs = zero;
         for (T x : this) {
             xs = f.apply(xs, x);
@@ -430,7 +444,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * @param mapper A mapper
      * @param <U>    Component type of the given monoid.
      * @return the folded monoid value.
-     * @throws java.lang.NullPointerException if monoid or mapper is null
+     * @throws NullPointerException if {@code monoid} or {@code mapper} is null
      */
     default <U> U foldMap(Monoid<U> monoid, Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(monoid, "monoid is null");
@@ -461,10 +475,10 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * @param f    The accumulator function.
      * @param <U>  Result type of the accumulator.
      * @return an accumulated version of this.
-     * @throws java.lang.NullPointerException if f is null
+     * @throws NullPointerException if {@code f} is null
      */
     default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
-        Objects.requireNonNull(f, "function is null");
+        Objects.requireNonNull(f, "f is null");
         return reverse().foldLeft(zero, (xs, x) -> f.apply(x, xs));
     }
 
@@ -472,9 +486,11 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * Calls {@code Iterable.super.forEach(action)}.
      *
      * @param action A Consumer
+     * @throws NullPointerException if {@code action} is null
      */
     @Override
     default void forEach(Consumer<? super T> action) {
+        Objects.requireNonNull(action, "action is null");
         Iterable.super.forEach(action);
     }
 
@@ -483,8 +499,10 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      *
      * @param predicate A Predicate
      * @return true, if predicate holds for an element of this, false otherwise
+     * @throws NullPointerException if {@code predicate} is null
      */
     default boolean exists(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
         for (T t : this) {
             if (predicate.test(t)) {
                 return true;
@@ -498,8 +516,10 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      *
      * @param predicate A Predicate
      * @return true, if predicate holds for a unique element of this, false otherwise
+     * @throws NullPointerException if {@code predicate} is null
      */
     default boolean existsUnique(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
         boolean exists = false;
         for (T t : this) {
             if (predicate.test(t)) {
@@ -518,8 +538,10 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      *
      * @param predicate A Predicate
      * @return true, if the predicate holds for all elements of this, false otherwise
+     * @throws NullPointerException if {@code predicate} is null
      */
     default boolean forAll(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
         for (T t : this) {
             if (!predicate.test(t)) {
                 return false;
@@ -555,7 +577,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      *
      * @param size a positive block size
      * @return A new Traversable of sliced blocks of the given size
-     * @throws IllegalArgumentException if size is negative or zero
+     * @throws IllegalArgumentException if {@code size} is negative or zero
      */
     Traversable<? extends Traversable<T>> grouped(int size);
 
@@ -563,7 +585,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * Returns the first element of a non-empty Traversable.
      *
      * @return The first element of this Traversable.
-     * @throws UnsupportedOperationException if this Traversable is empty
+     * @throws NoSuchElementException if this is empty
      */
     T head();
 
@@ -571,6 +593,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * Dual of {@linkplain #tail()}, returning all elements except the last.
      *
      * @return a new instance containing all elements except the last.
+     * @throws UnsupportedOperationException if this is empty
      */
     Traversable<T> init();
 
@@ -634,11 +657,11 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * Dual of {@linkplain #head()}, returning the last element.
      *
      * @return the last element.
-     * @throws UnsupportedOperationException is this is empty
+     * @throws NoSuchElementException is this is empty
      */
     default T last() {
         if (isEmpty()) {
-            throw new UnsupportedOperationException("last of empty Traversable");
+            throw new NoSuchElementException("last of empty Traversable");
         } else {
             Traversable<T> traversable = this;
             { // don't let escape tail
@@ -666,6 +689,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * @param mapper A mapper.
      * @param <U>    Component type of the target Traversable
      * @return a mapped Traversable
+     * @throws NullPointerException if {@code mapper} is null
      */
     @Override
     <U> Traversable<U> map(Function<? super T, ? extends U> mapper);
@@ -676,12 +700,13 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * <p>If the component type is boolean, the maximum is defined to be {@code this.reduce((i, j) -> i || j)}.</p>
      *
      * @return the maximum of this elements.
-     * @throws java.lang.UnsupportedOperationException if no elements are present or the elements are not numeric
+     * @throws NoSuchElementException        if no elements are present
+     * @throws UnsupportedOperationException if the elements are not numeric
      */
     @SuppressWarnings("unchecked")
     default T max() {
         if (isEmpty()) {
-            throw new UnsupportedOperationException("max of nothing");
+            throw new NoSuchElementException("max of nothing");
         } else {
             final T head = head();
             return Match
@@ -707,13 +732,13 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      *
      * @param comparator A non-null element comparator
      * @return the maximum of this elements.
-     * @throws java.lang.NullPointerException          if comparator is null
-     * @throws java.lang.UnsupportedOperationException if no elements are present
+     * @throws NullPointerException   if {@code comparator} is null
+     * @throws NoSuchElementException if no elements are present
      */
     default T maxBy(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         if (isEmpty()) {
-            throw new UnsupportedOperationException("maxBy of nothing");
+            throw new NoSuchElementException("maxBy of nothing");
         }
         return reduce((t1, t2) -> comparator.compare(t1, t2) >= 0 ? t1 : t2);
     }
@@ -724,12 +749,13 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * <p>If the component type is boolean, the minimum is defined to be {@code this.reduce((i, j) -> i && j)}.</p>
      *
      * @return the minimum of this elements.
-     * @throws java.lang.UnsupportedOperationException if no elements are present or the elements are not numeric
+     * @throws NoSuchElementException        if no elements are present
+     * @throws UnsupportedOperationException if the elements are not numeric
      */
     @SuppressWarnings("unchecked")
     default T min() {
         if (isEmpty()) {
-            throw new UnsupportedOperationException("min of nothing");
+            throw new NoSuchElementException("min of nothing");
         } else {
             final T head = head();
             return Match
@@ -755,13 +781,13 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      *
      * @param comparator A non-null element comparator
      * @return the minimum of this elements.
-     * @throws java.lang.NullPointerException          if comparator is null
-     * @throws java.lang.UnsupportedOperationException if no elements are present
+     * @throws NullPointerException   if {@code comparator} is null
+     * @throws NoSuchElementException if no elements are present
      */
     default T minBy(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         if (isEmpty()) {
-            throw new UnsupportedOperationException("minBy of nothing");
+            throw new NoSuchElementException("minBy of nothing");
         }
         return reduce((t1, t2) -> comparator.compare(t1, t2) <= 0 ? t1 : t2);
     }
@@ -778,12 +804,13 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * The resulting value is converted to the component type of this Traversable.</p>
      *
      * @return the product of this elements.
-     * @throws java.lang.UnsupportedOperationException if no elements are present or the elements are not numeric
+     * @throws NoSuchElementException        if no elements are present
+     * @throws UnsupportedOperationException if the elements are not numeric
      */
     @SuppressWarnings("unchecked")
     default T product() {
         if (isEmpty()) {
-            throw new UnsupportedOperationException("product of nothing");
+            throw new NoSuchElementException("product of nothing");
         } else {
             T head = head();
             return Match
@@ -826,6 +853,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      *
      * @param elements Elements to be removed from this Traversable.
      * @return a Traversable containing all elements of this but none of the given elements.
+     * @throws NullPointerException if {@code elements} is null
      */
     Traversable<T> removeAll(Iterable<? extends T> elements);
 
@@ -835,10 +863,11 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      *
      * @param op A BiFunction of type T
      * @return the reduced value.
-     * @throws UnsupportedOperationException  if this Traversable is empty
-     * @throws java.lang.NullPointerException if op is null
+     * @throws UnsupportedOperationException if this is empty
+     * @throws NullPointerException          if {@code op} is null
      */
     default T reduce(BiFunction<? super T, ? super T, ? extends T> op) {
+        Objects.requireNonNull(op, "op is null");
         return reduceLeft(op);
     }
 
@@ -847,13 +876,13 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      *
      * @param op A BiFunction of type T
      * @return the reduced value.
-     * @throws UnsupportedOperationException  if this Traversable is empty
-     * @throws java.lang.NullPointerException if op is null
+     * @throws NoSuchElementException if this is empty
+     * @throws NullPointerException   if {@code op} is null
      */
     default T reduceLeft(BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "operator is null");
+        Objects.requireNonNull(op, "op is null");
         if (isEmpty()) {
-            throw new UnsupportedOperationException("reduceLeft on Nil");
+            throw new NoSuchElementException("reduceLeft on Nil");
         } else {
             return tail().foldLeft(head(), op);
         }
@@ -864,13 +893,13 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      *
      * @param op An operation of type T
      * @return the reduced value.
-     * @throws UnsupportedOperationException  if this Traversable is empty
-     * @throws java.lang.NullPointerException if op is null
+     * @throws NoSuchElementException if this is empty
+     * @throws NullPointerException   if {@code op} is null
      */
     default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "operator is null");
+        Objects.requireNonNull(op, "op is null");
         if (isEmpty()) {
-            throw new UnsupportedOperationException("reduceRight on empty List");
+            throw new NoSuchElementException("reduceRight on empty List");
         } else {
             final Traversable<T> reversed = reverse();
             return reversed.tail().foldLeft(reversed.head(), (xs, x) -> op.apply(x, xs));
@@ -901,6 +930,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      *
      * @param operator An operator.
      * @return a Traversable containing all elements of this transformed within the same domain.
+     * @throws NullPointerException if {@code operator} is null
      */
     Traversable<T> replaceAll(UnaryOperator<T> operator);
 
@@ -909,6 +939,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      *
      * @param elements Elements to be kept.
      * @return a Traversable containing all occurreces of the given elements.
+     * @throws NullPointerException if {@code elements} is null
      */
     Traversable<T> retainAll(Iterable<? extends T> elements);
 
@@ -925,7 +956,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      *
      * @param size a positive window size
      * @return a new Traversable of windows of a specific size using step size 1
-     * @throws IllegalArgumentException if size is negative or zero
+     * @throws IllegalArgumentException if {@code size} is negative or zero
      */
     Traversable<? extends Traversable<T>> sliding(int size);
 
@@ -946,7 +977,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * @param size a positive window size
      * @param step a positive step size
      * @return a new Traversable of windows of a specific size using a specific step size
-     * @throws IllegalArgumentException if size or step are negative or zero
+     * @throws IllegalArgumentException if {@code size} or {@code step} are negative or zero
      */
     Traversable<? extends Traversable<T>> sliding(int size, int step);
 
@@ -955,6 +986,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      *
      * @param predicate A predicate.
      * @return a Tuple containing the longest prefix of elements that satisfy p and the remainder.
+     * @throws NullPointerException if {@code predicate} is null
      */
     Tuple2<? extends Traversable<T>, ? extends Traversable<T>> span(Predicate<? super T> predicate);
 
@@ -967,12 +999,13 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * The resulting value is converted to the component type of this Traversable.</p>
      *
      * @return the sum of this elements.
-     * @throws java.lang.UnsupportedOperationException if no elements are present or the elements are not numeric
+     * @throws NoSuchElementException        if no elements are present
+     * @throws UnsupportedOperationException if the elements are not numeric
      */
     @SuppressWarnings({"unchecked"})
     default T sum() {
         if (isEmpty()) {
-            throw new UnsupportedOperationException("sum of nothing");
+            throw new NoSuchElementException("sum of nothing");
         } else {
             T head = head();
             return Match
@@ -996,6 +1029,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
     /**
      * Sends the string representations of these elements to the sandard error stream {@linkplain System#err},
      * each in a new line.
+     * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stderr.
      */
     default void stderr() {
         try (PrintStream writer = System.err) {
@@ -1011,9 +1045,8 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
     /**
      * Sends the string representations of these elements to the sandard output stream {@linkplain System#out},
      * each in a new line.
+     * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stdout.
      */
-    // TODO(#79): See also http://stackoverflow.com/questions/3643939/java-process-with-input-output-stream.
-    @SuppressWarnings("InfiniteLoopStatement")
     default void stdout() {
         try (PrintStream writer = System.out) {
             for (T t : this) {
@@ -1029,7 +1062,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * Drops the first element of a non-empty Traversable.
      *
      * @return A new instance of Traversable containing all elements except the first.
-     * @throws UnsupportedOperationException if this Traversable is empty
+     * @throws UnsupportedOperationException if this is empty
      */
     Traversable<T> tail();
 
@@ -1065,6 +1098,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * @param predicate A condition tested subsequently for this elements starting with the last.
      * @return a new instance consisting of all elements starting from the last one which does not satisfy the
      * given predicate.
+     * @throws NullPointerException if {@code predicate} is null
      */
     Traversable<T> takeWhile(Predicate<? super T> predicate);
 
@@ -1075,8 +1109,10 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      *
      * @param componentType Type of resulting array's elements.
      * @return a new array containing this elements
+     * @throws NullPointerException if {@code componentType} is null
      */
     default T[] toJavaArray(Class<T> componentType) {
+        Objects.requireNonNull(componentType, "componentType is null");
         final java.util.List<T> list = toJavaList();
         @SuppressWarnings("unchecked")
         final T[] array = list.toArray((T[]) java.lang.reflect.Array.newInstance(componentType, list.size()));
@@ -1103,8 +1139,10 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * @param <V> value type
      * @param f   a function which converts elements of this to key-value pairs inserted into the resulting Map
      * @return a new {@linkplain java.util.HashMap} containing this key-value representations of this elements
+     * @throws NullPointerException if {@code f} is null
      */
     default <K, V> java.util.Map<K, V> toJavaMap(Function<? super T, Tuple2<K, V>> f) {
+        Objects.requireNonNull(f, "f is null");
         final java.util.Map<K, V> map = new java.util.HashMap<>();
         for (T a : this) {
             final Tuple2<K, V> entry = f.apply(a);
@@ -1143,18 +1181,20 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * @param <T1>     1st element type of a pair returned by unzipper
      * @param <T2>     2nd element type of a pair returned by unzipper
      * @return A pair of traversables containing elements split by unzipper
+     * @throws NullPointerException if {@code unzipper} is null
      */
     <T1, T2> Tuple2<? extends Traversable<T1>, ? extends Traversable<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
 
     /**
      * Returns a Traversable formed from this Traversable and another Iterable collection by combining corresponding elements
      * in pairs. If one of the two Traversables is longer than the other, its remaining elements are ignored.
+     * <p>
+     * The length of the returned collection is the minimum of the lengths of this Traversable and that.
      *
      * @param <U>  The type of the second half of the returned pairs.
      * @param that The Iterable providing the second half of each result pair.
      * @return a new Traversable containing pairs consisting of corresponding elements of this list and that.
-     * The length of the returned collection is the minimum of the lengths of this Traversable and that.
-     * @throws java.lang.NullPointerException if that is null.
+     * @throws NullPointerException if {@code that} is null
      */
     <U> Traversable<Tuple2<T, U>> zip(Iterable<U> that);
 
@@ -1162,16 +1202,17 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * Returns a Traversable formed from this Traversable and another Iterable by combining corresponding elements in
      * pairs. If one of the two collections is shorter than the other, placeholder elements are used to extend the
      * shorter collection to the length of the longer.
+     * <p>
+     * The length of the returned Traversable is the maximum of the lengths of this Traversable and that.
+     * If this Traversable is shorter than that, thisElem values are used to fill the result.
+     * If that is shorter than this Traversable, thatElem values are used to fill the result.
      *
      * @param <U>      The type of the second half of the returned pairs.
      * @param that     The Iterable providing the second half of each result pair.
      * @param thisElem The element to be used to fill up the result if this Traversable is shorter than that.
      * @param thatElem The element to be used to fill up the result if that is shorter than this Traversable.
      * @return A new Traversable containing pairs consisting of corresponding elements of this Traversable and that.
-     * The length of the returned Traversable is the maximum of the lengths of this Traversable and that.
-     * If this Traversable is shorter than that, thisElem values are used to fill the result.
-     * If that is shorter than this Traversable, thatElem values are used to fill the result.
-     * @throws java.lang.NullPointerException if that is null.
+     * @throws NullPointerException if {@code that} is null
      */
     <U> Traversable<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
 

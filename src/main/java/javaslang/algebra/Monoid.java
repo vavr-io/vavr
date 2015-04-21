@@ -5,6 +5,7 @@
  */
 package javaslang.algebra;
 
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -51,8 +52,10 @@ public interface Monoid<A> extends Semigroup<A> {
      * @param semigroup The associative binary operation of the Monoid. Please note that
      *                  {@linkplain javaslang.algebra.Semigroup} is a {@linkplain java.lang.FunctionalInterface}.
      * @return a new Monoid on type A
+     * @throws NullPointerException if {@code semigroup} is null
      */
     static <A> Monoid<A> of(A zero, Semigroup<A> semigroup) {
+        Objects.requireNonNull(semigroup, "semigroup is null");
         return new Monoid<A>() {
             @Override
             public A combine(A a1, A a2) {

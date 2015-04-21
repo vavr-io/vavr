@@ -33,6 +33,7 @@ public interface Functor<T> {
      * @param <U> type of the component of the resulting Functor
      * @param f a Function which maps the component of this Functor
      * @return a new Functor
+     * @throws NullPointerException if {@code f} is null
      */
     <U> Functor<U> map(Function<? super T, ? extends U> f);
 }
