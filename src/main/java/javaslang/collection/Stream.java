@@ -74,13 +74,15 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     /**
-     * Returns an (theoretically) infinitely long Stream of int values starting from {@code from}.
+     * Returns an infinitely long Stream of int values starting from {@code from}.
+     * <p>
+     * The {@code Stream} extends to {@code Integer.MIN_VALUE} when passing {@code Integer.MAX_VALUE}.
      *
      * @param value a start int value
      * @return a new Stream of int values starting from {@code from}
      */
     static Stream<Integer> from(int value) {
-        return new Cons<>(value, () -> (value == Integer.MAX_VALUE) ? Nil.instance() : from(value + 1));
+        return new Cons<>(value, () -> from(value + 1));
     }
 
     /**
@@ -197,10 +199,10 @@ public interface Stream<T> extends Seq<T>, ValueObject {
      *
      * @param from        the first number
      * @param toExclusive the last number + 1
-     * @return A range of int values as specified
+     * @return a range of int values as specified or {@code Nil} if {@code from >= toExclusive}
      */
     static Stream<Integer> range(int from, int toExclusive) {
-        if (toExclusive == Integer.MIN_VALUE) {
+        if (from >= toExclusive) {
             return Nil.instance();
         } else {
             return Stream.rangeClosed(from, toExclusive - 1);
@@ -212,13 +214,13 @@ public interface Stream<T> extends Seq<T>, ValueObject {
      *
      * @param from        the first number
      * @param toInclusive the last number
-     * @return A range of int values as specified
+     * @return a range of int values as specified or {@code Nil} if {@code from > toInclusive}
      */
     static Stream<Integer> rangeClosed(int from, int toInclusive) {
         if (from > toInclusive) {
             return Nil.instance();
         } else if (from == Integer.MAX_VALUE) {
-            return new Cons<>(Integer.MAX_VALUE, Nil::instance);
+            return Stream.cons(Integer.MAX_VALUE);
         } else {
             return new Cons<>(from, () -> rangeClosed(from + 1, toInclusive));
         }
