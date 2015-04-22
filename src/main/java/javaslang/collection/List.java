@@ -36,12 +36,8 @@ import java.util.stream.Collector;
  * List.of(Iterable)       // e.g. List.of(Stream.of(1, 2, 3)) = 1, 2, 3
  *
  * // int sequences
- * List.from(0)            // = 0, 1, 2, 3, ...
  * List.range(0, 3)        // = 0, 1, 2
  * List.rangeClosed(0, 3)  // = 0, 1, 2, 3
- *
- * // generators
- * List.gen(Supplier)      // e.g. List.gen(Math::random);
  * </code>
  * </pre>
  *
@@ -79,7 +75,7 @@ public interface List<T> extends Seq<T>, ValueObject {
      * <p>
      * Note: this method intentionally returns type {@code List} and not {@code Nil}. This comes handy when folding.
      * If you explicitely need type {@code Nil} use {@linkplain Nil#instance()}.
-
+     *
      * @param <T> Component type of Nil, determined by type inference in the particular context.
      * @return The empty list.
      */
@@ -159,10 +155,10 @@ public interface List<T> extends Seq<T>, ValueObject {
      *
      * @param from        the first number
      * @param toExclusive the last number + 1
-     * @return A range of int values as specified
+     * @return a range of int values as specified or {@code Nil} if {@code from >= toExclusive}
      */
     static List<Integer> range(int from, int toExclusive) {
-        if (toExclusive == Integer.MIN_VALUE) {
+        if (from >= toExclusive) {
             return Nil.instance();
         } else {
             return List.rangeClosed(from, toExclusive - 1);
@@ -174,11 +170,13 @@ public interface List<T> extends Seq<T>, ValueObject {
      *
      * @param from        the first number
      * @param toInclusive the last number
-     * @return A range of int values as specified
+     * @return a range of int values as specified or {@code Nil} if {@code from > toInclusive}
      */
     static List<Integer> rangeClosed(int from, int toInclusive) {
-        if (from == Integer.MIN_VALUE && toInclusive == Integer.MIN_VALUE) {
-            return List.of(Integer.MIN_VALUE);
+        if (from > toInclusive) {
+            return Nil.instance();
+        } else if (toInclusive == Integer.MIN_VALUE) {
+            return List.cons(Integer.MIN_VALUE);
         } else {
             List<Integer> result = Nil.instance();
             for (int i = toInclusive; i >= from; i--) {
@@ -261,7 +259,7 @@ public interface List<T> extends Seq<T>, ValueObject {
     @Override
     default List<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return isEmpty() ? this : foldLeft(List.<T> nil(), (xs, x) -> predicate.test(x) ? xs.prepend(x) : xs).reverse();
+        return isEmpty() ? this : foldLeft(List.<T>nil(), (xs, x) -> predicate.test(x) ? xs.prepend(x) : xs).reverse();
     }
 
     @Override

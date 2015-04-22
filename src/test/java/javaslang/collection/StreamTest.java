@@ -74,7 +74,7 @@ public class StreamTest extends AbstractSeqTest implements MonadLaws<Traversable
 
     @Test
     public void shouldGenerateTerminatingIntStream() {
-        assertThat(Stream.from(Integer.MAX_VALUE).take(2)).isEqualTo(Stream.of(Integer.MAX_VALUE));
+        assertThat(Stream.from(Integer.MAX_VALUE).take(2)).isEqualTo(Stream.of(Integer.MAX_VALUE, Integer.MAX_VALUE + 1));
     }
 
     // -- static gen(Supplier)
