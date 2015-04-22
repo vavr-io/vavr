@@ -17,7 +17,7 @@ import java.util.function.*;
 import java.util.stream.Collector;
 
 /**
- * An immutable List implementation, suitable for concurrent programming.
+ * A {@code List} is an eager sequence of elements. Its immutability makes it suitable for concurrent programming.
  * <p>
  * A {@code List} is composed of a {@code head} element and a {@code tail} {@code List}.
  * <p>
@@ -76,7 +76,10 @@ public interface List<T> extends Seq<T>, ValueObject {
 
     /**
      * Returns the single instance of Nil. Convenience method for {@code Nil.instance()} .
-     *
+     * <p>
+     * Note: this method intentionally returns type {@code List} and not {@code Nil}. This comes handy when folding.
+     * If you explicitely need type {@code Nil} use {@linkplain Nil#instance()}.
+
      * @param <T> Component type of Nil, determined by type inference in the particular context.
      * @return The empty list.
      */
@@ -258,7 +261,7 @@ public interface List<T> extends Seq<T>, ValueObject {
     @Override
     default List<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return foldLeft(List.<T> nil(), (xs, x) -> predicate.test(x) ? xs.prepend(x) : xs).reverse();
+        return isEmpty() ? this : foldLeft(List.<T> nil(), (xs, x) -> predicate.test(x) ? xs.prepend(x) : xs).reverse();
     }
 
     @Override
@@ -271,7 +274,7 @@ public interface List<T> extends Seq<T>, ValueObject {
     @Override
     default <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> List<U> flatMap(Function<? super T, ? extends TRAVERSABLE> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return foldRight(nil(), (t, xs) -> xs.prependAll((Traversable<U>) mapper.apply(t)));
+        return isEmpty() ? Nil.instance() : foldRight(nil(), (t, xs) -> xs.prependAll((Traversable<U>) mapper.apply(t)));
     }
 
     /**
@@ -294,7 +297,7 @@ public interface List<T> extends Seq<T>, ValueObject {
     @SuppressWarnings("unchecked")
     @Override
     default <U> List<U> flatten() {
-        return ((List<? extends List<U>>) this).flatten(Function.identity());
+        return isEmpty() ? Nil.instance() : ((List<? extends List<U>>) this).flatten(Function.identity());
     }
 
     /**
@@ -324,7 +327,7 @@ public interface List<T> extends Seq<T>, ValueObject {
     @Override
     default <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> List<U> flatten(Function<? super T, ? extends TRAVERSABLE> f) {
         Objects.requireNonNull(f, "f is null");
-        return foldRight(nil(), (t, xs) -> xs.prependAll((Traversable<U>) f.apply(t)));
+        return isEmpty() ? Nil.instance() : foldRight(nil(), (t, xs) -> xs.prependAll((Traversable<U>) f.apply(t)));
     }
 
     @Override
@@ -413,7 +416,7 @@ public interface List<T> extends Seq<T>, ValueObject {
 
     @Override
     default List<T> intersperse(T element) {
-        return foldRight(nil(), (x, xs) -> xs.isEmpty() ? xs.prepend(x) : xs.prepend(element).prepend(x));
+        return isEmpty() ? Nil.instance() : foldRight(nil(), (x, xs) -> xs.isEmpty() ? xs.prepend(x) : xs.prepend(element).prepend(x));
     }
 
     @Override
@@ -472,7 +475,7 @@ public interface List<T> extends Seq<T>, ValueObject {
     @Override
     default List<T> prependAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return List.of(elements).reverse().foldLeft(this, List::prepend);
+        return isEmpty() ? List.of(elements) : List.of(elements).reverse().foldLeft(this, List::prepend);
     }
 
     @Override
@@ -575,7 +578,7 @@ public interface List<T> extends Seq<T>, ValueObject {
 
     @Override
     default List<T> reverse() {
-        return foldLeft(nil(), List::prepend);
+        return isEmpty() ? this : foldLeft(nil(), List::prepend);
     }
 
     @Override
@@ -627,13 +630,13 @@ public interface List<T> extends Seq<T>, ValueObject {
 
     @Override
     default List<T> sort() {
-        return toJavaStream().sorted().collect(List.collector());
+        return isEmpty() ? this : toJavaStream().sorted().collect(List.collector());
     }
 
     @Override
     default List<T> sort(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        return toJavaStream().sorted(comparator).collect(List.collector());
+        return isEmpty() ? this : toJavaStream().sorted(comparator).collect(List.collector());
     }
 
     @Override
