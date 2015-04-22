@@ -307,13 +307,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     @Override
     default <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Stream<U> flatMap(Function<? super T, ? extends TRAVERSABLE> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        if (isEmpty()) {
-            return Nil.instance();
-        } else {
-            @SuppressWarnings("unchecked")
-            final Traversable<U> mapped = (Traversable<U>) mapper.apply(head());
-            return Nil.<U>instance().appendAll(mapped).appendAll(tail().flatMap(mapper));
-        }
+        return map(mapper).flatten();
     }
 
     /**
@@ -364,13 +358,34 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     @SuppressWarnings("unchecked")
     @Override
     default <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Stream<U> flatten(Function<? super T, ? extends TRAVERSABLE> f) {
-        Objects.requireNonNull(f, "f is null");
-        if (isEmpty()) {
-            return Nil.instance();
-        } else {
-            final Iterable<U> mapped = (Traversable<U>) f.apply(head());
-            return Nil.<U>instance().appendAll(mapped).appendAll(tail().flatten(f));
-        }
+        final Iterator<U> iterator = new Iterator<U>() {
+
+            Iterator<? extends T> inputs = Stream.this.iterator();
+            Iterator<? extends U> current = Collections.emptyIterator();
+
+            @Override
+            public boolean hasNext() {
+                boolean currentHasNext;
+                while (!(currentHasNext = current.hasNext()) && inputs.hasNext()) {
+                    current = ((Traversable<U>) f.apply(inputs.next())).iterator();
+                }
+                return currentHasNext;
+            }
+
+            @Override
+            public U next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+                return current.next();
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
+        return Stream.of(iterator);
     }
 
     @Override
