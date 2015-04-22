@@ -358,9 +358,9 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     @SuppressWarnings("unchecked")
     @Override
     default <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Stream<U> flatten(Function<? super T, ? extends TRAVERSABLE> f) {
-        final Iterator<U> iterator = new Iterator<U>() {
+        return Stream.of(new Iterator<U>() {
 
-            Iterator<? extends T> inputs = Stream.this.iterator();
+            final Iterator<? extends T> inputs = Stream.this.iterator();
             Iterator<? extends U> current = Collections.emptyIterator();
 
             @Override
@@ -374,18 +374,9 @@ public interface Stream<T> extends Seq<T>, ValueObject {
 
             @Override
             public U next() {
-                if (!hasNext()) {
-                    throw new NoSuchElementException();
-                }
                 return current.next();
             }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-        };
-        return Stream.of(iterator);
+        });
     }
 
     @Override
