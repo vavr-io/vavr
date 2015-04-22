@@ -14,7 +14,8 @@ import java.util.function.*;
 import java.util.stream.Collector;
 
 /**
- * A lazy linked list implementation. This is essentially a {@linkplain List} which may be infinitely long.
+ * A {@code Stream} is lazy sequence of elements which may be infinitely long. Its immutability makes it suitable for
+ * concurrent programming.
  * <p>
  * A {@code Stream} is composed of a {@code head} element and a lazy evaluated {@code tail} {@code Stream}.
  * <p>
@@ -95,7 +96,10 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     /**
-     * Returns the single instance of Nil. Convenience method for {@code Nil.instance()} .
+     * Returns the single instance of Nil. Convenience method for {@code Nil.instance()}.
+     * <p>
+     * Note: this method intentionally returns type {@code Stream} and not {@code Nil}. This comes handy when folding.
+     * If you explicitely need type {@code Nil} use {@linkplain Nil#instance()}.
      *
      * @param <T> Component type of Nil, determined by type inference in the particular context.
      * @return The empty list.
@@ -222,7 +226,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
 
     @Override
     default Stream<T> append(T element) {
-        return isEmpty() ? new Cons<>(element, Nil::instance) : new Cons<>(head(), () -> tail().append(element));
+        return isEmpty() ? Stream.cons(element) : new Cons<>(head(), () -> tail().append(element));
     }
 
     @Override
@@ -307,7 +311,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     @Override
     default <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Stream<U> flatMap(Function<? super T, ? extends TRAVERSABLE> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return map(mapper).flatten();
+        return isEmpty() ? Nil.instance() : map(mapper).flatten();
     }
 
     /**
@@ -330,7 +334,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     @SuppressWarnings("unchecked")
     @Override
     default <U> Stream<U> flatten() {
-        return ((Stream<? extends Stream<U>>) this).flatten(Function.identity());
+        return isEmpty() ? Nil.instance() : ((Stream<? extends Stream<U>>) this).flatten(Function.identity());
     }
 
     /**
@@ -358,7 +362,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     @SuppressWarnings("unchecked")
     @Override
     default <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Stream<U> flatten(Function<? super T, ? extends TRAVERSABLE> f) {
-        return Stream.of(new Iterator<U>() {
+        return isEmpty() ? Nil.instance() : Stream.of(new Iterator<U>() {
 
             final Iterator<? extends T> inputs = Stream.this.iterator();
             Iterator<? extends U> current = Collections.emptyIterator();
@@ -587,13 +591,18 @@ public interface Stream<T> extends Seq<T>, ValueObject {
 
     @Override
     default Stream<T> retainAll(Iterable<? extends T> elements) {
-        final Stream<T> retained = Stream.of(elements).distinct();
-        return filter(retained::contains);
+        Objects.requireNonNull(elements, "elements is null");
+        if (isEmpty()) {
+            return this;
+        } else {
+            final Stream<T> retained = Stream.of(elements).distinct();
+            return filter(retained::contains);
+        }
     }
 
     @Override
     default Stream<T> reverse() {
-        return foldLeft(nil(), Stream::prepend);
+        return isEmpty() ? this : foldLeft(Stream.nil(), Stream::prepend);
     }
 
     @Override
@@ -638,13 +647,13 @@ public interface Stream<T> extends Seq<T>, ValueObject {
 
     @Override
     default Stream<T> sort() {
-        return toJavaStream().sorted().collect(Stream.collector());
+        return isEmpty() ? this : toJavaStream().sorted().collect(Stream.collector());
     }
 
     @Override
     default Stream<T> sort(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        return toJavaStream().sorted(comparator).collect(Stream.collector());
+        return isEmpty() ? this : toJavaStream().sorted(comparator).collect(Stream.collector());
     }
 
     @Override
