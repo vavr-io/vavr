@@ -67,11 +67,13 @@ Javaslang needs to be compiled with **jdk 1.8.0_40** at minimum, which fixes man
 
 [Fork](https://help.github.com/articles/fork-a-repo) the GitHub repo and send a [pull request](https://help.github.com/articles/using-pull-requests).
 
-Keeping in sync with the upstream:
+[Sync your fork with the upstream repository](https://help.github.com/articles/syncing-a-fork/):
 
 ```shell
 git remote add upstream https://github.com/javaslang/javaslang.git
 git fetch upstream
+git checkout master
+git merge upstream/master
 ```
 
 ### Useful Maven Goals
