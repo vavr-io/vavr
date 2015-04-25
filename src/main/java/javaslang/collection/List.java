@@ -7,8 +7,6 @@ package javaslang.collection;
 
 import javaslang.*;
 import javaslang.algebra.HigherKinded;
-import javaslang.algebra.Monad;
-import javaslang.control.Match;
 
 import java.io.*;
 import java.util.*;

@@ -8,9 +8,7 @@ package javaslang.control;
 import javaslang.Tuple;
 import javaslang.Tuple1;
 import javaslang.ValueObject;
-import javaslang.algebra.CheckedMonad;
 import javaslang.algebra.HigherKinded;
-import javaslang.unsafe;
 
 import java.util.Objects;
 import java.util.Optional;

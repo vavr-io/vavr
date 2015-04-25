@@ -7,7 +7,6 @@ package javaslang.control;
 
 import javaslang.Tuple;
 import javaslang.Tuple1;
-import javaslang.algebra.Monad;
 import javaslang.unsafe;
 
 import java.util.Objects;

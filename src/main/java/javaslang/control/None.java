@@ -7,7 +7,6 @@ package javaslang.control;
 
 import javaslang.Tuple;
 import javaslang.Tuple0;
-import javaslang.unsafe;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;

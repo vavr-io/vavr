@@ -8,7 +8,6 @@ package javaslang.control;
 import javaslang.ValueObject;
 import javaslang.algebra.CheckedMonad;
 import javaslang.algebra.HigherKinded;
-import javaslang.algebra.Monad;
 import javaslang.control.Valences.Bivalent;
 import javaslang.unsafe;
 
