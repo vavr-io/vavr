@@ -70,11 +70,11 @@ def generateMainClasses(): Unit = {
              * Applies a function f to the components of this $name.
              *
              * @param <U> type of the component of the resulting $name
-             * @param f a ${checked.gen("Checked")}Function which maps the component of this $name
+             * @param mapper a ${checked.gen("Checked")}Function which maps the component of this $name
              * @return a new $className
              * @throws NullPointerException if {@code f} is null
              */
-            <U> $className<U> map($functionType<? super T, ? extends U> f);
+            <U> $className<U> map($functionType<? super T, ? extends U> mapper);
         }
       """
     }
@@ -90,7 +90,9 @@ def generateMainClasses(): Unit = {
 
     def genMonad(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
 
-      val functionType = if (checked) im.getType("javaslang.control.Try.CheckedFunction") else im.getType("java.util.function.Function")
+      val function = im.getType("java.util.function.Function")
+      val checkedFunction = im.getType("javaslang.control.Try.CheckedFunction")
+      val functionType = if (checked) checkedFunction else function
       val consumerType = if (checked) im.getType("javaslang.control.Try.CheckedConsumer") else im.getType("java.util.function.Consumer")
       val predicateType = if (checked) im.getType("javaslang.control.Try.CheckedPredicate") else im.getType("java.util.function.Predicate")
 
@@ -124,13 +126,34 @@ def generateMainClasses(): Unit = {
             /**
              * Returns the result of applying f to M's value of type T and returns a new M with value of type U.
              *
-             * @param <U> component type of this monad
-             * @param <MONAD> placeholder for the monad type of component type T and container type M
-             * @param f a ${checked.gen("checked ")}function that maps the monad value to a new monad instance
+             * @param <U> component type of the resulting monad
+             * @param <MONAD> placeholder for the monad type of component type U and container type M
+             * @param mapper a ${checked.gen("checked ")}function that maps the monad value to a new monad instance
              * @return a new $className instance of component type U and container type M
              * @throws NullPointerException if {@code f} is null
              */
-            <U, MONAD extends HigherKinded<U, M>> $className<U, M> flatMap($functionType<? super T, ? extends MONAD> f);
+            <U, MONAD extends HigherKinded<U, M>> $className<U, M> flatMap($functionType<? super T, ? extends MONAD> mapper);
+
+            ${(!checked).gen(xs"""
+            /$javadoc
+             * Maps a nested, monadic structure.
+             *
+             * @param <U> component type of the (possibly deeply) nested object
+             * @param <Z> component type of result
+             * @param mapper a ${checked.gen("checked ")}function that maps a nested value to a value of another type
+             * @return a new $className instance of component type Z
+             * @throws NullPointerException if {@code f} is null
+             */
+            @SuppressWarnings("unchecked")
+            default <U, Z> $className<Z, M> treeMap($functionType<U, Object> mapper) {
+                return ($className<Z, M>) map(${im.getType("javaslang.control.Match")}
+                        .<Object> caze((Monad m) -> m.treeMap(($function<U, Object>) f::apply))
+                        //.caze((CheckedMonad m) -> m.treeMap(($checkedFunction<U, Object>) f::apply))
+                        .caze((U u) -> f.apply(u))
+                        .build()
+                );
+            }
+            """)}
 
             /**
              * Flattens a nested, monadic structure. Assumes that the elements are of type HigherKinded&lt;U, M&gt;
@@ -205,7 +228,7 @@ def generateMainClasses(): Unit = {
             $className<T, M> peek($consumerType<? super T> action);
 
             @Override
-            <U> $className<U, M> map($functionType<? super T, ? extends U> f);
+            <U> $className<U, M> map($functionType<? super T, ? extends U> mapper);
         }
       """
     }

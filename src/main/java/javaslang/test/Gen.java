@@ -292,6 +292,11 @@ public interface Gen<T> extends Monad<T, Gen<?>> {
         return random -> ((Gen<U>) mapper.apply(apply(random))).apply(random);
     }
 
+    @Override
+    default <U, Z> Gen<Z> treeMap(Function<U, Object> mapper) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
     /**
      * Returns a generator based on this generator which produces values that fulfill the given predicate.
      *

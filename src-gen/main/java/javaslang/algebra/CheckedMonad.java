@@ -10,6 +10,7 @@ package javaslang.algebra;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 import javaslang.control.Try.CheckedConsumer;
 import javaslang.control.Try.CheckedFunction;
 import javaslang.control.Try.CheckedPredicate;
@@ -43,13 +44,13 @@ public interface CheckedMonad<T, M extends HigherKinded<?, M>> extends CheckedFu
     /**
      * Returns the result of applying f to M's value of type T and returns a new M with value of type U.
      *
-     * @param <U> component type of this monad
-     * @param <MONAD> placeholder for the monad type of component type T and container type M
-     * @param f a checked function that maps the monad value to a new monad instance
+     * @param <U> component type of the resulting monad
+     * @param <MONAD> placeholder for the monad type of component type U and container type M
+     * @param mapper a checked function that maps the monad value to a new monad instance
      * @return a new CheckedMonad instance of component type U and container type M
      * @throws NullPointerException if {@code f} is null
      */
-    <U, MONAD extends HigherKinded<U, M>> CheckedMonad<U, M> flatMap(CheckedFunction<? super T, ? extends MONAD> f);
+    <U, MONAD extends HigherKinded<U, M>> CheckedMonad<U, M> flatMap(CheckedFunction<? super T, ? extends MONAD> mapper);
 
     /**
      * Flattens a nested, monadic structure. Assumes that the elements are of type HigherKinded&lt;U, M&gt;
@@ -124,5 +125,5 @@ public interface CheckedMonad<T, M extends HigherKinded<?, M>> extends CheckedFu
     CheckedMonad<T, M> peek(CheckedConsumer<? super T> action);
 
     @Override
-    <U> CheckedMonad<U, M> map(CheckedFunction<? super T, ? extends U> f);
+    <U> CheckedMonad<U, M> map(CheckedFunction<? super T, ? extends U> mapper);
 }

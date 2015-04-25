@@ -347,6 +347,11 @@ public interface Seq<T> extends Traversable<T> {
     Seq<T> takeWhile(Predicate<? super T> predicate);
 
     @Override
+    default <U, Z> Seq<Z> treeMap(Function<U, Object> mapper) {
+        return (Seq<Z>) Traversable.super.treeMap(mapper);
+    }
+
+    @Override
     <T1, T2> Tuple2<? extends Seq<T1>, ? extends Seq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
 
     @Override

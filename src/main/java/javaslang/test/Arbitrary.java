@@ -96,6 +96,11 @@ public interface Arbitrary<T> extends Monad<T, Arbitrary<?>> {
         };
     }
 
+    @Override
+    default <U, Z> Arbitrary<Z> treeMap(Function<U, Object> mapper) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
     /**
      * Returns an Arbitrary based on this Arbitrary which produces values that fulfill the given predicate.
      *

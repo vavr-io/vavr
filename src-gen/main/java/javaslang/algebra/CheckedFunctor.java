@@ -31,9 +31,9 @@ public interface CheckedFunctor<T> {
      * Applies a function f to the components of this CheckedFunctor.
      *
      * @param <U> type of the component of the resulting CheckedFunctor
-     * @param f a CheckedFunction which maps the component of this CheckedFunctor
+     * @param mapper a CheckedFunction which maps the component of this CheckedFunctor
      * @return a new CheckedFunctor
      * @throws NullPointerException if {@code f} is null
      */
-    <U> CheckedFunctor<U> map(CheckedFunction<? super T, ? extends U> f);
+    <U> CheckedFunctor<U> map(CheckedFunction<? super T, ? extends U> mapper);
 }

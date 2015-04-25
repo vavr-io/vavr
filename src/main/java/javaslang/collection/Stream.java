@@ -7,6 +7,8 @@ package javaslang.collection;
 
 import javaslang.*;
 import javaslang.algebra.HigherKinded;
+import javaslang.algebra.Monad;
+import javaslang.control.Match;
 
 import java.io.*;
 import java.util.*;
@@ -317,7 +319,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     /**
-     * Flattens a {@code Stream}, assuming that the elements are of type Stream&lt;U&gt;
+     * Flattens a {@code Stream}, assuming that the elements are of type Traversable&lt;U&gt;
      * <p>
      * Examples:
      * <pre>
@@ -331,12 +333,12 @@ public interface Stream<T> extends Seq<T>, ValueObject {
      *
      * @param <U> component type of the result {@code Stream}
      * @return a new {@code Stream}
-     * @throws java.lang.ClassCastException if this {@code Stream} is not of type {@code Stream<? extends Stream<U>>}
+     * @throws java.lang.ClassCastException if this {@code Stream} is not of type {@code Stream<? extends Traversable<U>>}
      */
     @SuppressWarnings("unchecked")
     @Override
     default <U> Stream<U> flatten() {
-        return isEmpty() ? Nil.instance() : ((Stream<? extends Stream<U>>) this).flatten(Function.identity());
+        return isEmpty() ? Nil.instance() : ((Stream<? extends Traversable<U>>) this).flatten(Function.identity());
     }
 
     /**
@@ -739,6 +741,11 @@ public interface Stream<T> extends Seq<T>, ValueObject {
                 return Nil.instance();
             }
         }
+    }
+
+    @Override
+    default <U, Z> Stream<Z> treeMap(Function<U, Object> mapper) {
+        return (Stream<Z>) Seq.super.treeMap(mapper);
     }
 
     @Override

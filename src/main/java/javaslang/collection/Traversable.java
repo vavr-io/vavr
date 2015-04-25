@@ -122,6 +122,7 @@ import java.util.function.*;
  * <li>{@link #sliding(int)}</li>
  * <li>{@link #sliding(int, int)}</li>
  * <li>{@link #span(Predicate)}</li>
+ * <li>{@link #treeMap(Function)}</li>
  * <li>{@link #unzip(Function)}</li>
  * <li>{@link #zip(Iterable)}</li>
  * <li>{@link #zipAll(Iterable, Object, Object)}</li>
@@ -356,39 +357,21 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
     <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Traversable<U> flatMap(Function<? super T, ? extends TRAVERSABLE> mapper);
 
     /**
-     * <p>Flattens this Traversable, i.e. unboxes iterable elements. If this Traversable contains elements and
-     * iterables of elements of the same type, flattening works as expected.</p>
-     * Examples:
-     * <ul>
-     * <li>{@code List.of(1, 2, 3).flatten() = List.of(1, 2, 3)}</li>
-     * <li>{@code List.of(List.of(1), Stream.of(2, 3)).flatten() = List.of(1, 2, 3)}</li>
-     * <li>{@code List.of(1, List.of(2), Stream.of(3, 4)).flatten() = List.of(1, 2, 3, 4)}</li>
-     * </ul>
+     * Flattens a {@code Traversable}, assuming that the elements are of type Traversable&lt;U&gt;
      *
-     * @param <U> new component type (!!UNSAFE!! {@code of(1, 2, 3).map(Object::toString).<Integer> flatten()})
-     * @return a flattened version of this traversable
+     * @param <U> component type of the result {@code Traversable}
+     * @return a new {@code Traversable}
+     * @throws java.lang.ClassCastException if this {@code Traversable} is not of type {@code Traversable<? extends Traversable<U>>}
      */
     <U> Traversable<U> flatten();
 
     /**
-     * <p>Flattens this Traversable using a function as hint how to obtain iterable elements.</p>
-     * Examples:
-     * <ul>
-     * <li>{@code List.of(1, 2, 3).flatten(i -> List.of(i)) = List.of(1, 2, 3)}</li>
-     * <li>{@code List.of(List.of(1), Stream.of(2, 3)).flatten(Function.identity()) = List.of(1, 2, 3)}</li>
-     * <li>
-     * <pre><code>List.of(1, List.of(2), Stream.of(3, 4))
-     *     .flatten(x -&gt; Match
-     *         .caze((Iterable&lt;Integer&gt; ys) -&gt; ys)
-     *         .caze((Integer i) -&gt; List.of(i))
-     *         .apply(x)
-     *     ) = List.of(1, 2, 3, 4)}</code></pre>
-     * </li>
-     * </ul>
+     * Flattens a {@code Traversable} using a function.
      *
-     * @param <U> new component type (UNSAFE!)
-     * @param f   An unboxing function that maps elements T to Iterables of elements U that will be unboxed.
-     * @return a flattened version of this traversable
+     * @param <U>           component type of the result {@code Traversable}
+     * @param <TRAVERSABLE> a {@code Traversable&lt;U&gt;}
+     * @param f             a function which maps elements of this Traversable to Traversables
+     * @return a new {@code Traversable}
      * @throws NullPointerException if {@code f} is null
      */
     <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Traversable<U> flatten(Function<? super T, ? extends TRAVERSABLE> f);
@@ -1014,6 +997,12 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * @throws NullPointerException if {@code predicate} is null
      */
     Tuple2<? extends Traversable<T>, ? extends Traversable<T>> span(Predicate<? super T> predicate);
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U, Z> Traversable<Z> treeMap(Function<U, Object> mapper) {
+        return (Traversable<Z>) (Object) Monad.super.treeMap(mapper);
+    }
 
     /**
      * <p>Calculates the sum of this elements.</p>

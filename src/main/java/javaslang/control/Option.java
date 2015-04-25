@@ -257,6 +257,12 @@ public interface Option<T> extends Monad<T, Option<?>>, ValueObject, Univalent<T
         }
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U, Z> Option<Z> treeMap(Function<U, Object> mapper) {
+        return (Option<Z>) (Object) Monad.super.treeMap(mapper);
+    }
+
     @Override
     default Iterator<T> iterator() {
         if (isDefined()) {
