@@ -6,6 +6,7 @@
 package javaslang.control;
 
 import javaslang.Function1;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -14,6 +15,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 public class MatchTest {
+
+    // -- type hint
+
+    @Test
+    @Ignore
+    public void shouldSpecifyMatchExpressionType() {
+// TODO
+//        final Match<Number> toNumber = Match.ofType(Number.class)
+//                .caze((Integer i) -> i)
+//                .caze((String s) -> new BigDecimal(s));
+//
+    }
 
     // -- null handling
 
@@ -336,19 +349,19 @@ public class MatchTest {
     public void shouldCompileObjectIntegerPrototypeCase() {
         // This does *not* compile: new Match.Builder<>().caze(1, (int i) -> i);
         // Use this instead: Match.Builder<>().caze(1, i -> i);
-        new Match.Builder<>().caze(1, (Integer i) -> i);
+        Match.caze(1, (Integer i) -> i);
     }
 
     @Test
     public void shouldCompileUnqualifiedIntegerPrototypeCase() {
-        new Match.Builder<>().caze(1, i -> i);
+        Match.caze(1, i -> i);
     }
 
     // -- matching arrays
 
     @Test
     public void shouldMatchBooleanArray() {
-        final int actual = new Match.Builder<Integer>().caze((boolean[] b) -> 1).build().apply(new boolean[]{true});
+        final int actual = Match.caze((boolean[] b) -> 1).apply(new boolean[]{true});
         assertThat(actual).isEqualTo(1);
     }
 
@@ -356,20 +369,18 @@ public class MatchTest {
 
     @Test
     public void shouldAllowCommonReturnTypeUsingBuilder() {
-        final Match<Number> toNumber = new Match.Builder<Number>()
+        final Match<Number> toNumber = Match.ofType(Number.class)
                 .caze((Integer i) -> i)
-                .caze((String s) -> new BigDecimal(s))
-                .build();
+                .caze((String s) -> new BigDecimal(s));
         final Number number = toNumber.apply("1.0E10");
         assertThat(number).isEqualTo(new BigDecimal("1.0E10"));
     }
 
     @Test
     public void shouldAllowCommonReturnTypeUsingBuilderAndPrototype() {
-        final Match<Number> toNumber = new Match.Builder<Number>()
+        final Match<Number> toNumber = Match.ofType(Number.class)
                 .caze(1, (Integer i) -> i)
-                .caze("1", (String s) -> new BigDecimal(s))
-                .build();
+                .caze("1", (String s) -> new BigDecimal(s));
         final Number number = toNumber.apply("1");
         assertThat(number).isEqualTo(new BigDecimal("1"));
     }
@@ -378,8 +389,7 @@ public class MatchTest {
     public void shouldAllowCommonReturnTypeUsingMatchs() {
         final Match<Number> toNumber = Match
                 .<Number>caze((Integer i) -> i)
-                .caze((String s) -> new BigDecimal(s))
-                .build();
+                .caze((String s) -> new BigDecimal(s));
         final Number number = toNumber.apply("1");
         assertThat(number).isEqualTo(new BigDecimal("1"));
     }
@@ -388,8 +398,7 @@ public class MatchTest {
     public void shouldAllowCommonReturnTypeUsingMatchsWithPrototype() {
         final Match<Number> toNumber = Match
                 .<Integer, Number>caze(1, (Integer i) -> i)
-                .caze("1", (String s) -> new BigDecimal(s))
-                .build();
+                .caze("1", (String s) -> new BigDecimal(s));
         final Number number = toNumber.apply("1");
         assertThat(number).isEqualTo(new BigDecimal("1"));
     }
