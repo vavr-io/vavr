@@ -337,6 +337,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
      */
     @SuppressWarnings("unchecked")
     @Override
+    @unsafe
     default <U> Stream<U> flatten() {
         return isEmpty() ? Nil.instance() : ((Stream<? extends Traversable<U>>) this).flatten(Function.identity());
     }
@@ -743,7 +744,9 @@ public interface Stream<T> extends Seq<T>, ValueObject {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
+    @unsafe
     default <U, Z> Stream<Z> treeMap(Function<U, Object> mapper) {
         return (Stream<Z>) Seq.super.treeMap(mapper);
     }

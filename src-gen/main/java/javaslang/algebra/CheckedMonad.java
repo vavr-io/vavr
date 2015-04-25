@@ -10,10 +10,12 @@ package javaslang.algebra;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import java.util.function.Consumer;
-import java.util.function.Function;
+import javaslang.control.Match;
+import javaslang.control.Try;
 import javaslang.control.Try.CheckedConsumer;
 import javaslang.control.Try.CheckedFunction;
 import javaslang.control.Try.CheckedPredicate;
+import javaslang.unsafe;
 
 /**
  * Defines a CheckedMonad by generalizing the flatMap function.
@@ -48,9 +50,28 @@ public interface CheckedMonad<T, M extends HigherKinded<?, M>> extends CheckedFu
      * @param <MONAD> placeholder for the monad type of component type U and container type M
      * @param mapper a checked function that maps the monad value to a new monad instance
      * @return a new CheckedMonad instance of component type U and container type M
-     * @throws NullPointerException if {@code f} is null
+     * @throws NullPointerException if {@code mapper} is null
      */
     <U, MONAD extends HigherKinded<U, M>> CheckedMonad<U, M> flatMap(CheckedFunction<? super T, ? extends MONAD> mapper);
+
+    /**
+     * Maps a nested, monadic structure.
+     *
+     * @param <U> component type of the (possibly deeply) nested object
+     * @param <Z> component type of result
+     * @param mapper a checked function that maps a nested value to a value of another type
+     * @return a new CheckedMonad instance of component type Z
+     * @throws NullPointerException if {@code mapper} is null
+     */
+    @SuppressWarnings("unchecked")
+    @unsafe
+    default <U, Z> CheckedMonad<Z, M> treeMap(CheckedFunction<U, Object> mapper) {
+        final Match<?> match = Match.ofType(Object.class)
+                .caze((Monad<?, ?> m) -> m.treeMap((U u) -> Try.of(() -> mapper.apply(u)).get()))
+                .caze((CheckedMonad<?, ?> m) -> m.treeMap(mapper))
+                .caze((U u) -> Try.of(() -> mapper.apply(u)).get());
+        return (CheckedMonad<Z, M>) map(match::apply);
+    }
 
     /**
      * Flattens a nested, monadic structure. Assumes that the elements are of type HigherKinded&lt;U, M&gt;
@@ -66,6 +87,7 @@ public interface CheckedMonad<T, M extends HigherKinded<?, M>> extends CheckedFu
      * @param <U> component type of the resulting {@code Monad}
      * @return A monadic structure containing flattened elements.
      */
+    @unsafe
     <U> CheckedMonad<U, M> flatten();
 
     /**

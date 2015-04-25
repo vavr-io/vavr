@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import javaslang.control.Match;
-import javaslang.control.Try.CheckedFunction;
+import javaslang.unsafe;
 
 /**
  * Defines a Monad by generalizing the flatMap function.
@@ -48,7 +48,7 @@ public interface Monad<T, M extends HigherKinded<?, M>> extends Functor<T>, High
      * @param <MONAD> placeholder for the monad type of component type U and container type M
      * @param mapper a function that maps the monad value to a new monad instance
      * @return a new Monad instance of component type U and container type M
-     * @throws NullPointerException if {@code f} is null
+     * @throws NullPointerException if {@code mapper} is null
      */
     <U, MONAD extends HigherKinded<U, M>> Monad<U, M> flatMap(Function<? super T, ? extends MONAD> mapper);
 
@@ -59,16 +59,15 @@ public interface Monad<T, M extends HigherKinded<?, M>> extends Functor<T>, High
      * @param <Z> component type of result
      * @param mapper a function that maps a nested value to a value of another type
      * @return a new Monad instance of component type Z
-     * @throws NullPointerException if {@code f} is null
+     * @throws NullPointerException if {@code mapper} is null
      */
     @SuppressWarnings("unchecked")
+    @unsafe
     default <U, Z> Monad<Z, M> treeMap(Function<U, Object> mapper) {
-        return (Monad<Z, M>) map(Match
-                .<Object> caze((Monad m) -> m.treeMap((Function<U, Object>) f::apply))
-                //.caze((CheckedMonad m) -> m.treeMap((CheckedFunction<U, Object>) f::apply))
-                .caze((U u) -> f.apply(u))
-                .build()
-        );
+        return (Monad<Z, M>) map(Match.ofType(Object.class)
+                .caze((Monad<?, ?> m) -> m.treeMap(mapper))
+                .caze((CheckedMonad<?, ?> m) -> m.treeMap(mapper::apply))
+                .caze((U u) -> mapper.apply(u)));
     }
 
     /**
@@ -85,6 +84,7 @@ public interface Monad<T, M extends HigherKinded<?, M>> extends Functor<T>, High
      * @param <U> component type of the resulting {@code Monad}
      * @return A monadic structure containing flattened elements.
      */
+    @unsafe
     <U> Monad<U, M> flatten();
 
     /**

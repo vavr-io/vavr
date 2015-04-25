@@ -7,6 +7,7 @@ package javaslang.control;
 
 import javaslang.Tuple;
 import javaslang.Tuple0;
+import javaslang.unsafe;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -71,6 +72,12 @@ public final class None<T> implements Option<T> {
 
     @Override
     public <U> None<U> map(Function<? super T, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return None.instance();
+    }
+
+    @Override
+    public <U, Z> None<Z> treeMap(Function<U, Object> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return None.instance();
     }

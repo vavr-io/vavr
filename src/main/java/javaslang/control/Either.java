@@ -9,6 +9,7 @@ import javaslang.ValueObject;
 import javaslang.algebra.HigherKinded;
 import javaslang.algebra.Monad;
 import javaslang.control.Valences.Bivalent;
+import javaslang.unsafe;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -294,6 +295,7 @@ public interface Either<L, R> extends ValueObject {
          */
         @SuppressWarnings("unchecked")
         @Override
+        @unsafe
         public <U> LeftProjection<U, R> flatten() {
             return ((LeftProjection<? extends LeftProjection<U, R>, R>) this).flatten(Function.identity());
         }
@@ -393,6 +395,7 @@ public interface Either<L, R> extends ValueObject {
 
         @SuppressWarnings("unchecked")
         @Override
+        @unsafe
         public <U, Z> LeftProjection<Z, R> treeMap(Function<U, Object> mapper) {
             return (LeftProjection<Z, R>) (Object) Monad.super.treeMap(mapper);
         }
@@ -603,6 +606,7 @@ public interface Either<L, R> extends ValueObject {
          */
         @SuppressWarnings("unchecked")
         @Override
+        @unsafe
         public <U> RightProjection<L, U> flatten() {
             return ((RightProjection<L, ? extends RightProjection<L, U>>) this).flatten(Function.identity());
         }
@@ -702,6 +706,7 @@ public interface Either<L, R> extends ValueObject {
 
         @SuppressWarnings("unchecked")
         @Override
+        @unsafe
         public <U, Z> RightProjection<L, Z> treeMap(Function<U, Object> mapper) {
             return (RightProjection<L, Z>) (Object) Monad.super.treeMap(mapper);
         }

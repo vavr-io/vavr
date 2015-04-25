@@ -10,6 +10,7 @@ import javaslang.algebra.CheckedMonad;
 import javaslang.algebra.HigherKinded;
 import javaslang.algebra.Monad;
 import javaslang.control.Valences.Bivalent;
+import javaslang.unsafe;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -138,6 +139,7 @@ public interface Try<T> extends CheckedMonad<T, Try<?>>, ValueObject, Bivalent<T
      */
     @SuppressWarnings("unchecked")
     @Override
+    @unsafe
     default <U> Try<U> flatten() {
         return ((Try<? extends Try<U>>) this).flatten(CheckedFunction.identity());
     }
@@ -236,12 +238,12 @@ public interface Try<T> extends CheckedMonad<T, Try<?>>, ValueObject, Bivalent<T
     @Override
     <U, TRY extends HigherKinded<U, Try<?>>> Try<U> flatMap(CheckedFunction<? super T, ? extends TRY> mapper);
 
-// TODO:
-//    @SuppressWarnings("unchecked")
-//    @Override
-//    default <U, Z> Try<Z> treeMap(CheckedFunction<U, Object> mapper) {
-//        return (Try<Z>) (Object) CheckedMonad.super.treeMap(mapper);
-//    }
+    @SuppressWarnings("unchecked")
+    @Override
+    @unsafe
+    default <U, Z> Try<Z> treeMap(CheckedFunction<U, Object> mapper) {
+        return (Try<Z>) (Object) CheckedMonad.super.treeMap(mapper);
+    }
 
     @Override
     default Iterator<T> iterator() {

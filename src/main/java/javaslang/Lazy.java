@@ -22,7 +22,7 @@ import java.util.function.Supplier;
  * </code>
  * </pre>
  *
- * @since 1.3.0
+ * @since 1.2.1
  */
 public final class Lazy<T> implements Supplier<T>, ValueObject {
 

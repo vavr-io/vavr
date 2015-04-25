@@ -5,10 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple;
-import javaslang.Tuple0;
-import javaslang.Tuple2;
-import javaslang.ValueObject;
+import javaslang.*;
 import javaslang.algebra.HigherKinded;
 import javaslang.algebra.Monad;
 import javaslang.control.Match;
@@ -296,6 +293,7 @@ public interface List<T> extends Seq<T>, ValueObject {
      */
     @SuppressWarnings("unchecked")
     @Override
+    @unsafe
     default <U> List<U> flatten() {
         return isEmpty() ? Nil.instance() : ((List<? extends Traversable<U>>) this).flatten(Function.identity());
     }
@@ -719,7 +717,9 @@ public interface List<T> extends Seq<T>, ValueObject {
         return result.reverse();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
+    @unsafe
     default <U, Z> List<Z> treeMap(Function<U, Object> mapper) {
         return (List<Z>) Seq.super.treeMap(mapper);
     }

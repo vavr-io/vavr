@@ -9,6 +9,7 @@ import javaslang.Tuple2;
 import javaslang.algebra.HigherKinded;
 import javaslang.algebra.Monad;
 import javaslang.collection.Stream;
+import javaslang.unsafe;
 
 import java.util.Objects;
 import java.util.Random;
@@ -293,6 +294,7 @@ public interface Gen<T> extends Monad<T, Gen<?>> {
     }
 
     @Override
+    @unsafe
     default <U, Z> Gen<Z> treeMap(Function<U, Object> mapper) {
         throw new UnsupportedOperationException("not implemented");
     }
@@ -320,6 +322,7 @@ public interface Gen<T> extends Monad<T, Gen<?>> {
 
     @SuppressWarnings("unchecked")
     @Override
+    @unsafe
     default <U> Gen<U> flatten() {
         return ((Gen<? extends Gen<U>>) this).flatten(Function.identity());
     }
