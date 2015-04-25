@@ -146,6 +146,7 @@ def generateMainClasses(): Unit = {
              * @param <U> component type of the resulting {@code Monad}
              * @return A monadic structure containing flattened elements.
              */
+            @${im.getType("javaslang.unsafe")}
             <U> $name<U, M> flatten();
 
             /**

@@ -7,6 +7,7 @@ package javaslang.collection;
 
 import javaslang.Tuple2;
 import javaslang.algebra.HigherKinded;
+import javaslang.unsafe;
 
 import java.util.Comparator;
 import java.util.Iterator;
@@ -281,6 +282,7 @@ public interface Seq<T> extends Traversable<T> {
     <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Seq<U> flatMap(Function<? super T, ? extends TRAVERSABLE> mapper);
 
     @Override
+    @unsafe
     <U> Seq<U> flatten();
 
     @Override

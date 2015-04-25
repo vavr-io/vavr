@@ -335,6 +335,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
      */
     @SuppressWarnings("unchecked")
     @Override
+    @unsafe
     default <U> Stream<U> flatten() {
         return isEmpty() ? Nil.instance() : ((Stream<? extends Stream<U>>) this).flatten(Function.identity());
     }

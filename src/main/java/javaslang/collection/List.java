@@ -5,10 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple;
-import javaslang.Tuple0;
-import javaslang.Tuple2;
-import javaslang.ValueObject;
+import javaslang.*;
 import javaslang.algebra.HigherKinded;
 
 import java.io.*;
@@ -294,6 +291,7 @@ public interface List<T> extends Seq<T>, ValueObject {
      */
     @SuppressWarnings("unchecked")
     @Override
+    @unsafe
     default <U> List<U> flatten() {
         return isEmpty() ? Nil.instance() : ((List<? extends List<U>>) this).flatten(Function.identity());
     }
