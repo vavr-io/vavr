@@ -1,7 +1,12 @@
 /**
- * <p>Control structures like the disjoint union type {@linkplain javaslang.control.Either}, the optional value type
+ * <p>Control structures like {@linkplain javaslang.control.Match}, the disjoint union type {@linkplain javaslang.control.Either}, the optional value type
  * {@linkplain javaslang.control.Option} and {@linkplain javaslang.control.Try} for exception handling.
  * The {@linkplain javaslang.control.Match} provides pattern matching.</p>
+ *
+ * <strong>Match</strong>
+ * <p>
+ * The match control is a more mature switch expression with pattern matching capabilities.
+ * </p>
  *
  * <strong>Either</strong>
  * <p>
@@ -30,11 +35,6 @@
  * A Cause is unchecked, i.e. a RuntimeException, and is Fatal or NonFatal.
  * Fatal exceptions cannot be handled and are thrown without further processing.
  * NonFatal exceptions are wrapped in a Failure.
- * </p>
- *
- * <strong>Match</strong>
- * <p>
- * The match control is a more mature switch expression with pattern matching capabilities.
  * </p>
  *
  * @since 1.0.0

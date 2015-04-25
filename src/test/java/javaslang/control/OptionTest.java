@@ -202,8 +202,7 @@ public class OptionTest implements MonadLaws<Option<?>> {
 
     static final Match<Option<Integer>> MATCH = Match
         .caze((Option<Integer> o) -> o)
-        .caze((Integer i) -> new Some<>(i))
-        .build();
+        .caze((Integer i) -> new Some<>(i));
 
     @Test
     public void shouldFlattenUnnestedSomeWithFunction() {
