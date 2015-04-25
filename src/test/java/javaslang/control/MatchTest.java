@@ -19,13 +19,11 @@ public class MatchTest {
     // -- type hint
 
     @Test
-    @Ignore
     public void shouldSpecifyMatchExpressionType() {
-// TODO
-//        final Match<Number> toNumber = Match.ofType(Number.class)
-//                .caze((Integer i) -> i)
-//                .caze((String s) -> new BigDecimal(s));
-//
+        final Match<Number> toNumber = Match.ofType(Number.class)
+                .caze((Integer i) -> i)
+                .caze((String s) -> new BigDecimal(s));
+        assertThat(toNumber.apply("1")).isNotNull();
     }
 
     // -- null handling

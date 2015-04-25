@@ -20,12 +20,50 @@ import javaslang.Lazy;
 import javaslang.collection.List;
 
 /**
- * TODO
+ * {@code Match} is a better switch for Java. Some characteristics of {@code Match} are:
+ * <ul>
+ * <li>it has a fluent API</li>
+ * <li>it is a {@code Function<Object, R>}</li>
+ * <li>it is able to match types, i.e. {@code Match.caze((byte b) -> "a byte: " + b)}</li>
+ * <li>it is able to match values, i.e. {@code Match.caze(BigDecimal.ZERO, b -> "Zero: " + b)}</li>
+ * </ul>
  *
- * @param <R> The result type of the Match expression.
+ * Example of a Match as <a href="http://en.wikipedia.org/wiki/Partial_function"><strong>partial</strong> function</a>:
+ *
+ * <pre>
+ * <code>
+ * final Match&lt;Number&gt; toNumber = Match.ofType(Number.class)
+ *     .caze((Integer i) -&gt; i)
+ *     .caze((String s) -&gt; new BigDecimal(s));
+ * final Number number = toNumber.apply(1.0d); // throws a MatchError
+ * </code>
+ * </pre>
+ *
+ * Example of a Match as <a href="http://en.wikipedia.org/wiki/Function_(mathematics)"><strong>total</strong> function</a>:
+ *
+ * <pre>
+ * <code>
+ * Match.ofType(Number.class)
+ *     .caze((Integer i) -&gt; i)
+ *     .caze((String s) -&gt; new BigDecimal(s))
+ *     .orElse(() -&gt; -1)
+ *     .apply(1.0d); // result: -1
+ * </code>
+ * </pre>
+ *
+ * @param <R> The result type of the {@code Match}.
  * @since 1.0.0
  */
 public interface Match<R> extends Function<Object, R> {
+
+    /**
+     * Applies this {@code Match} to an {@code Object}.
+     *
+     * @param o an {@code Object}
+     * @throws MatchError if no {@code Case} matched
+     */
+    @Override
+    R apply(Object o);
 
     /**
      * Specifies the type of the match expression. In many cases it is not necessary to call {@code ofType}. This
@@ -35,7 +73,7 @@ public interface Match<R> extends Function<Object, R> {
      * <pre>
      * <code>
      * final Match&lt;Number&gt; toNumber = Match
-     *         .&lt;Number&gt;caze((Integer i) -&gt; i)
+     *         .&lt;Number&gt; caze((Integer i) -&gt; i)
      *         .caze((String s) -&gt; new BigDecimal(s))
      * </code>
      * </pre>
@@ -44,7 +82,7 @@ public interface Match<R> extends Function<Object, R> {
      *
      * <pre>
      * <code>
-     * final Match&lt;Number&gt; toNumber = ofType(Number.class)
+     * final Match&lt;Number&gt; toNumber = Match.ofType(Number.class)
      *         .caze((Integer i) -&gt; i)
      *         .caze((String s) -&gt; new BigDecimal(s))
      * </code>
@@ -59,73 +97,168 @@ public interface Match<R> extends Function<Object, R> {
         return new Typed<>();
     }
 
-    static <R> Case<R> caze(Function1<?, R> function) {
-        Objects.requireNonNull(function, "function is null");
-        return Case.of(function);
-    }
-
+    /**
+     * Creates a {@code Match.Case} by value.
+     *
+     * @param <T> type of the prototype value
+     * @param <R> result type of the matched case
+     * @param prototype A specific value to be matched
+     * @param function A function which is applied to the value given a match
+     * @return a new {@code Case}
+     * @throws NullPointerException if {@code function} is null
+     */
     static <T, R> Case<R> caze(T prototype, Function1<T, R> function) {
         Objects.requireNonNull(function, "function is null");
         return Case.of(prototype, function);
     }
 
+    /**
+     * Creates a {@code Match.Case} by type.
+     *
+     * @param <R> result type of the matched case
+     * @param function An {@code Object} to {@code R} function
+     * @return a new {@code Case}
+     * @throws NullPointerException if {@code function} is null
+     */
+    @SuppressWarnings("overloads")
+    static <R> Case<R> caze(Function1<?, R> function) {
+        Objects.requireNonNull(function, "function is null");
+        return Case.of(function);
+    }
+
+    /**
+     * Creates a {@code Match.Case} by primitive type {@code boolean}.
+     *
+     * @param <R> result type of the matched case
+     * @param function An {@code boolean} to {@code R} function
+     * @return a new {@code Case}
+     * @throws NullPointerException if {@code function} is null
+     */
+    @SuppressWarnings("overloads")
     static <R> Case<R> caze(BooleanFunction<R> function) {
         Objects.requireNonNull(function, "function is null");
         return Case.of(function);
     }
 
+    /**
+     * Creates a {@code Match.Case} by primitive type {@code byte}.
+     *
+     * @param <R> result type of the matched case
+     * @param function An {@code byte} to {@code R} function
+     * @return a new {@code Case}
+     * @throws NullPointerException if {@code function} is null
+     */
+    @SuppressWarnings("overloads")
     static <R> Case<R> caze(ByteFunction<R> function) {
         Objects.requireNonNull(function, "function is null");
         return Case.of(function);
     }
 
+    /**
+     * Creates a {@code Match.Case} by primitive type {@code char}.
+     *
+     * @param <R> result type of the matched case
+     * @param function An {@code char} to {@code R} function
+     * @return a new {@code Case}
+     * @throws NullPointerException if {@code function} is null
+     */
+    @SuppressWarnings("overloads")
     static <R> Case<R> caze(CharFunction<R> function) {
         Objects.requireNonNull(function, "function is null");
         return Case.of(function);
     }
 
+    /**
+     * Creates a {@code Match.Case} by primitive type {@code double}.
+     *
+     * @param <R> result type of the matched case
+     * @param function An {@code double} to {@code R} function
+     * @return a new {@code Case}
+     * @throws NullPointerException if {@code function} is null
+     */
+    @SuppressWarnings("overloads")
     static <R> Case<R> caze(DoubleFunction<R> function) {
         Objects.requireNonNull(function, "function is null");
         return Case.of(function);
     }
 
+    /**
+     * Creates a {@code Match.Case} by primitive type {@code float}.
+     *
+     * @param <R> result type of the matched case
+     * @param function An {@code float} to {@code R} function
+     * @return a new {@code Case}
+     * @throws NullPointerException if {@code function} is null
+     */
+    @SuppressWarnings("overloads")
     static <R> Case<R> caze(FloatFunction<R> function) {
         Objects.requireNonNull(function, "function is null");
         return Case.of(function);
     }
 
+    /**
+     * Creates a {@code Match.Case} by primitive type {@code int}.
+     *
+     * @param <R> result type of the matched case
+     * @param function An {@code int} to {@code R} function
+     * @return a new {@code Case}
+     * @throws NullPointerException if {@code function} is null
+     */
+    @SuppressWarnings("overloads")
     static <R> Case<R> caze(IntFunction<R> function) {
         Objects.requireNonNull(function, "function is null");
         return Case.of(function);
     }
 
+    /**
+     * Creates a {@code Match.Case} by primitive type {@code long}.
+     *
+     * @param <R> result type of the matched case
+     * @param function An {@code long} to {@code R} function
+     * @return a new {@code Case}
+     * @throws NullPointerException if {@code function} is null
+     */
+    @SuppressWarnings("overloads")
     static <R> Case<R> caze(LongFunction<R> function) {
         Objects.requireNonNull(function, "function is null");
         return Case.of(function);
     }
 
+    /**
+     * Creates a {@code Match.Case} by primitive type {@code short}.
+     *
+     * @param <R> result type of the matched case
+     * @param function An {@code short} to {@code R} function
+     * @return a new {@code Case}
+     * @throws NullPointerException if {@code function} is null
+     */
+    @SuppressWarnings("overloads")
     static <R> Case<R> caze(ShortFunction<R> function) {
         Objects.requireNonNull(function, "function is null");
         return Case.of(function);
     }
 
     /**
-     * TODO
+     * The result of {@code Match.ofType(Class)}, which explicitely sets the {@code Match} result type.
      *
-     * @param <R>
+     * @param <R> the result type
+     * @since 1.2.1
      */
-    class Typed<R> implements Expression.HasCases<R> {
+    final class Typed<R> implements Expression.HasCases<R> {
 
-        @Override
-        public Case<R> caze(Function1<?, R> function) {
-            Objects.requireNonNull(function, "function is null");
-            return Case.of(function);
+        private Typed() {
         }
 
         @Override
         public <T> Case<R> caze(T prototype, Function1<T, R> function) {
             Objects.requireNonNull(function, "function is null");
             return Case.of(prototype, function);
+        }
+
+        @Override
+        public Case<R> caze(Function1<?, R> function) {
+            Objects.requireNonNull(function, "function is null");
+            return Case.of(function);
         }
 
         @Override
@@ -178,11 +311,16 @@ public interface Match<R> extends Function<Object, R> {
     }
 
     /**
-     * TODO
+     * A {@code Match.Case} which matches an {@code Object} by <em>type</em> or by <em>value</em>.
+     * <p>
+     * Typically there is a chain of match cases. The first applicable match is applied to an object.
+     * <p>
+     * The {@code orElse()} methods provide a default value which is returned if no case matches.
      *
-     * @param <R>
+     * @param <R> result type of the {@code Match.Case}
+     * @since 1.0.0
      */
-    class Case<R> implements Match<R>, Expression.HasCases<R> {
+    final class Case<R> implements Match<R>, Expression.HasCases<R> {
 
         private final List<Function<Object, Option<R>>> cases;
         private final Lazy<Expression<R>> match;
@@ -192,42 +330,51 @@ public interface Match<R> extends Function<Object, R> {
             this.match = Lazy.of(() -> new Expression<>(cases.reverse(), None.instance()));
         }
 
-        private static <R> Case<R> of(Function1<?, R> function) {
-            return new Case<>(List.of(Case.caze(None.instance(), function)));
-        }
-
         private static <T, R> Case<R> of(T prototype, Function1<?, R> function) {
             return new Case<>(List.of(Case.caze(new Some<>(prototype), function)));
         }
 
+        @SuppressWarnings("overloads")
+        private static <R> Case<R> of(Function1<?, R> function) {
+            return new Case<>(List.of(Case.caze(None.instance(), function)));
+        }
+
+        @SuppressWarnings("overloads")
         private static <R> Case<R> of(BooleanFunction<R> function) {
           return new Case<>(List.of(Case.caze(None.instance(), (Function1<Boolean, R>) function::apply, Boolean.class)));
         }
 
+        @SuppressWarnings("overloads")
         private static <R> Case<R> of(ByteFunction<R> function) {
           return new Case<>(List.of(Case.caze(None.instance(), (Function1<Byte, R>) function::apply, Byte.class)));
         }
 
+        @SuppressWarnings("overloads")
         private static <R> Case<R> of(CharFunction<R> function) {
           return new Case<>(List.of(Case.caze(None.instance(), (Function1<Character, R>) function::apply, Character.class)));
         }
 
+        @SuppressWarnings("overloads")
         private static <R> Case<R> of(DoubleFunction<R> function) {
           return new Case<>(List.of(Case.caze(None.instance(), (Function1<Double, R>) function::apply, Double.class)));
         }
 
+        @SuppressWarnings("overloads")
         private static <R> Case<R> of(FloatFunction<R> function) {
           return new Case<>(List.of(Case.caze(None.instance(), (Function1<Float, R>) function::apply, Float.class)));
         }
 
+        @SuppressWarnings("overloads")
         private static <R> Case<R> of(IntFunction<R> function) {
           return new Case<>(List.of(Case.caze(None.instance(), (Function1<Integer, R>) function::apply, Integer.class)));
         }
 
+        @SuppressWarnings("overloads")
         private static <R> Case<R> of(LongFunction<R> function) {
           return new Case<>(List.of(Case.caze(None.instance(), (Function1<Long, R>) function::apply, Long.class)));
         }
 
+        @SuppressWarnings("overloads")
         private static <R> Case<R> of(ShortFunction<R> function) {
           return new Case<>(List.of(Case.caze(None.instance(), (Function1<Short, R>) function::apply, Short.class)));
         }
@@ -238,61 +385,71 @@ public interface Match<R> extends Function<Object, R> {
         }
 
         @Override
-        public Case<R> caze(Function1<?, R> function) {
-            final Function<Object, Option<R>> caze = caze(None.instance(), function);
-            return new Case<>(cases.prepend(caze));
-        }
-
-        @Override
         public <T> Case<R> caze(T prototype, Function1<T, R> function) {
+            Objects.requireNonNull(function, "function is null");
             final Function<Object, Option<R>> caze = caze(new Some<>(prototype), function);
             return new Case<>(cases.prepend(caze));
         }
 
         @Override
+        public Case<R> caze(Function1<?, R> function) {
+            Objects.requireNonNull(function, "function is null");
+            final Function<Object, Option<R>> caze = caze(None.instance(), function);
+            return new Case<>(cases.prepend(caze));
+        }
+
+        @Override
         public Case<R> caze(BooleanFunction<R> function) {
+            Objects.requireNonNull(function, "function is null");
             final Function<Object, Option<R>> caze = caze(None.instance(), (Function1<Boolean, R>) function::apply, Boolean.class);
             return new Case<>(cases.prepend(caze));
         }
 
         @Override
         public Case<R> caze(ByteFunction<R> function) {
+            Objects.requireNonNull(function, "function is null");
             final Function<Object, Option<R>> caze = caze(None.instance(), (Function1<Byte, R>) function::apply, Byte.class);
             return new Case<>(cases.prepend(caze));
         }
 
         @Override
         public Case<R> caze(CharFunction<R> function) {
+            Objects.requireNonNull(function, "function is null");
             final Function<Object, Option<R>> caze = caze(None.instance(), (Function1<Character, R>) function::apply, Character.class);
             return new Case<>(cases.prepend(caze));
         }
 
         @Override
         public Case<R> caze(DoubleFunction<R> function) {
+            Objects.requireNonNull(function, "function is null");
             final Function<Object, Option<R>> caze = caze(None.instance(), (Function1<Double, R>) function::apply, Double.class);
             return new Case<>(cases.prepend(caze));
         }
 
         @Override
         public Case<R> caze(FloatFunction<R> function) {
+            Objects.requireNonNull(function, "function is null");
             final Function<Object, Option<R>> caze = caze(None.instance(), (Function1<Float, R>) function::apply, Float.class);
             return new Case<>(cases.prepend(caze));
         }
 
         @Override
         public Case<R> caze(IntFunction<R> function) {
+            Objects.requireNonNull(function, "function is null");
             final Function<Object, Option<R>> caze = caze(None.instance(), (Function1<Integer, R>) function::apply, Integer.class);
             return new Case<>(cases.prepend(caze));
         }
 
         @Override
         public Case<R> caze(LongFunction<R> function) {
+            Objects.requireNonNull(function, "function is null");
             final Function<Object, Option<R>> caze = caze(None.instance(), (Function1<Long, R>) function::apply, Long.class);
             return new Case<>(cases.prepend(caze));
         }
 
         @Override
         public Case<R> caze(ShortFunction<R> function) {
+            Objects.requireNonNull(function, "function is null");
             final Function<Object, Option<R>> caze = caze(None.instance(), (Function1<Short, R>) function::apply, Short.class);
             return new Case<>(cases.prepend(caze));
         }
@@ -302,6 +459,7 @@ public interface Match<R> extends Function<Object, R> {
         }
 
         public Expression<R> orElse(Supplier<R> defaultSupplier) {
+            Objects.requireNonNull(defaultSupplier, "defaultSupplier is null");
             return new Expression<>(cases.reverse(), new Some<>(Lazy.of(defaultSupplier)));
         }
 
@@ -331,11 +489,12 @@ public interface Match<R> extends Function<Object, R> {
     }
 
     /**
-     * TODO
+     * A final {@code Match} expression which may be applied to an {@code Object}.
      *
-     * @param <R>
+     * @param <R> result type of the {@code Match}
+     * @since 1.0.0
      */
-    class Expression<R> implements Match<R> {
+    final class Expression<R> implements Match<R> {
 
         private Iterable<Function<Object, Option<R>>> cases;
         private Option<Lazy<R>> orElse;
@@ -359,32 +518,113 @@ public interface Match<R> extends Function<Object, R> {
         // Note: placed this interface here, because interface Match cannot have private inner interfaces
         private interface HasCases<R> {
 
-            HasCases<R> caze(Function1<?, R> function);
-
+            /**
+             * Creates a {@code Match.Case} by value.
+             *
+             * @param <T> type of the prototype value
+             * @param prototype A specific value to be matched
+             * @param function A function which is applied to the value given a match
+             * @return a new {@code Case}
+             * @throws NullPointerException if {@code function} is null
+             */
             <T> HasCases<R> caze(T prototype, Function1<T, R> function);
 
+            /**
+             * Creates a {@code Match.Case} by type.
+             *
+             * @param function An {@code Object} to {@code R} function
+             * @return a new {@code Case}
+             * @throws NullPointerException if {@code function} is null
+             */
+            @SuppressWarnings("overloads")
+            HasCases<R> caze(Function1<?, R> function);
+
+            /**
+             * Creates a {@code Match.Case} by primitive type {@code boolean}.
+             *
+             * @param function An {@code boolean} to {@code R} function
+             * @return a new {@code Case}
+             * @throws NullPointerException if {@code function} is null
+             */
+            @SuppressWarnings("overloads")
             HasCases<R> caze(BooleanFunction<R> function);
 
+            /**
+             * Creates a {@code Match.Case} by primitive type {@code byte}.
+             *
+             * @param function An {@code byte} to {@code R} function
+             * @return a new {@code Case}
+             * @throws NullPointerException if {@code function} is null
+             */
+            @SuppressWarnings("overloads")
             HasCases<R> caze(ByteFunction<R> function);
 
+            /**
+             * Creates a {@code Match.Case} by primitive type {@code char}.
+             *
+             * @param function An {@code char} to {@code R} function
+             * @return a new {@code Case}
+             * @throws NullPointerException if {@code function} is null
+             */
+            @SuppressWarnings("overloads")
             HasCases<R> caze(CharFunction<R> function);
 
+            /**
+             * Creates a {@code Match.Case} by primitive type {@code double}.
+             *
+             * @param function An {@code double} to {@code R} function
+             * @return a new {@code Case}
+             * @throws NullPointerException if {@code function} is null
+             */
+            @SuppressWarnings("overloads")
             HasCases<R> caze(DoubleFunction<R> function);
 
+            /**
+             * Creates a {@code Match.Case} by primitive type {@code float}.
+             *
+             * @param function An {@code float} to {@code R} function
+             * @return a new {@code Case}
+             * @throws NullPointerException if {@code function} is null
+             */
+            @SuppressWarnings("overloads")
             HasCases<R> caze(FloatFunction<R> function);
 
+            /**
+             * Creates a {@code Match.Case} by primitive type {@code int}.
+             *
+             * @param function An {@code int} to {@code R} function
+             * @return a new {@code Case}
+             * @throws NullPointerException if {@code function} is null
+             */
+            @SuppressWarnings("overloads")
             HasCases<R> caze(IntFunction<R> function);
 
+            /**
+             * Creates a {@code Match.Case} by primitive type {@code long}.
+             *
+             * @param function An {@code long} to {@code R} function
+             * @return a new {@code Case}
+             * @throws NullPointerException if {@code function} is null
+             */
+            @SuppressWarnings("overloads")
             HasCases<R> caze(LongFunction<R> function);
 
+            /**
+             * Creates a {@code Match.Case} by primitive type {@code short}.
+             *
+             * @param function An {@code short} to {@code R} function
+             * @return a new {@code Case}
+             * @throws NullPointerException if {@code function} is null
+             */
+            @SuppressWarnings("overloads")
             HasCases<R> caze(ShortFunction<R> function);
         }
     }
 
     /**
-     * A function {@code f: boolean -&gt; R} that takes a primitive boolean value and returns a value of type R.
+     * A function {@code f: boolean -> R} that takes a primitive {@code boolean} value and returns a value of type {@code R}.
      *
-     * @param <R> Return type of the function.
+     * @param <R> return type of this function
      * @since 1.0.0
      */
     @FunctionalInterface
@@ -405,9 +645,9 @@ public interface Match<R> extends Function<Object, R> {
     }
 
     /**
-     * A function {@code f: byte -&gt; R} that takes a primitive byte value and returns a value of type R.
+     * A function {@code f: byte -> R} that takes a primitive {@code byte} value and returns a value of type {@code R}.
      *
-     * @param <R> Return type of the function.
+     * @param <R> return type of this function
      * @since 1.0.0
      */
     @FunctionalInterface
@@ -428,9 +668,9 @@ public interface Match<R> extends Function<Object, R> {
     }
 
     /**
-     * A function {@code f: char -&gt; R} that takes a primitive char value and returns a value of type R.
+     * A function {@code f: char -> R} that takes a primitive {@code char} value and returns a value of type {@code R}.
      *
-     * @param <R> Return type of the function.
+     * @param <R> return type of this function
      * @since 1.0.0
      */
     @FunctionalInterface
@@ -451,9 +691,9 @@ public interface Match<R> extends Function<Object, R> {
     }
 
     /**
-     * A function {@code f: double -&gt; R} that takes a primitive double value and returns a value of type R.
+     * A function {@code f: double -> R} that takes a primitive {@code double} value and returns a value of type {@code R}.
      *
-     * @param <R> Return type of the function.
+     * @param <R> return type of this function
      * @since 1.0.0
      */
     @FunctionalInterface
@@ -474,9 +714,9 @@ public interface Match<R> extends Function<Object, R> {
     }
 
     /**
-     * A function {@code f: float -&gt; R} that takes a primitive float value and returns a value of type R.
+     * A function {@code f: float -> R} that takes a primitive {@code float} value and returns a value of type {@code R}.
      *
-     * @param <R> Return type of the function.
+     * @param <R> return type of this function
      * @since 1.0.0
      */
     @FunctionalInterface
@@ -497,9 +737,9 @@ public interface Match<R> extends Function<Object, R> {
     }
 
     /**
-     * A function {@code f: int -&gt; R} that takes a primitive int value and returns a value of type R.
+     * A function {@code f: int -> R} that takes a primitive {@code int} value and returns a value of type {@code R}.
      *
-     * @param <R> Return type of the function.
+     * @param <R> return type of this function
      * @since 1.0.0
      */
     @FunctionalInterface
@@ -520,9 +760,9 @@ public interface Match<R> extends Function<Object, R> {
     }
 
     /**
-     * A function {@code f: long -&gt; R} that takes a primitive long value and returns a value of type R.
+     * A function {@code f: long -> R} that takes a primitive {@code long} value and returns a value of type {@code R}.
      *
-     * @param <R> Return type of the function.
+     * @param <R> return type of this function
      * @since 1.0.0
      */
     @FunctionalInterface
@@ -543,9 +783,9 @@ public interface Match<R> extends Function<Object, R> {
     }
 
     /**
-     * A function {@code f: short -&gt; R} that takes a primitive short value and returns a value of type R.
+     * A function {@code f: short -> R} that takes a primitive {@code short} value and returns a value of type {@code R}.
      *
-     * @param <R> Return type of the function.
+     * @param <R> return type of this function
      * @since 1.0.0
      */
     @FunctionalInterface

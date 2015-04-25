@@ -63,12 +63,50 @@ def generateMainClasses(): Unit = {
 
       xs"""
         /**
-         * TODO
+         * {@code Match} is a better switch for Java. Some characteristics of {@code Match} are:
+         * <ul>
+         * <li>it has a fluent API</li>
+         * <li>it is a {@code Function<Object, R>}</li>
+         * <li>it is able to match types, i.e. {@code Match.caze((byte b) -> "a byte: " + b)}</li>
+         * <li>it is able to match values, i.e. {@code Match.caze(BigDecimal.ZERO, b -> "Zero: " + b)}</li>
+         * </ul>
          *
-         * @param <R> The result type of the Match expression.
+         * Example of a Match as <a href="http://en.wikipedia.org/wiki/Partial_function"><strong>partial</strong> function</a>:
+         *
+         * <pre>
+         * <code>
+         * final Match&lt;Number&gt; toNumber = Match.ofType(Number.class)
+         *     .caze((Integer i) -&gt; i)
+         *     .caze((String s) -&gt; new BigDecimal(s));
+         * final Number number = toNumber.apply(1.0d); // throws a MatchError
+         * </code>
+         * </pre>
+         *
+         * Example of a Match as <a href="http://en.wikipedia.org/wiki/Function_(mathematics)"><strong>total</strong> function</a>:
+         *
+         * <pre>
+         * <code>
+         * Match.ofType(Number.class)
+         *     .caze((Integer i) -&gt; i)
+         *     .caze((String s) -&gt; new BigDecimal(s))
+         *     .orElse(() -&gt; -1)
+         *     .apply(1.0d); // result: -1
+         * </code>
+         * </pre>
+         *
+         * @param <R> The result type of the {@code Match}.
          * @since 1.0.0
          */
         public interface Match<R> extends $function<Object, R> {
+
+            /**
+             * Applies this {@code Match} to an {@code Object}.
+             *
+             * @param o an {@code Object}
+             * @throws MatchError if no {@code Case} matched
+             */
+            @Override
+            R apply(Object o);
 
             /**
              * Specifies the type of the match expression. In many cases it is not necessary to call {@code ofType}. This
@@ -78,7 +116,7 @@ def generateMainClasses(): Unit = {
              * <pre>
              * <code>
              * final Match&lt;Number&gt; toNumber = Match
-             *         .&lt;Number&gt;caze((Integer i) -&gt; i)
+             *         .&lt;Number&gt; caze((Integer i) -&gt; i)
              *         .caze((String s) -&gt; new BigDecimal(s))
              * </code>
              * </pre>
@@ -87,7 +125,7 @@ def generateMainClasses(): Unit = {
              *
              * <pre>
              * <code>
-             * final Match&lt;Number&gt; toNumber = ofType(Number.class)
+             * final Match&lt;Number&gt; toNumber = Match.ofType(Number.class)
              *         .caze((Integer i) -&gt; i)
              *         .caze((String s) -&gt; new BigDecimal(s))
              * </code>
@@ -102,17 +140,45 @@ def generateMainClasses(): Unit = {
                 return new Typed<>();
             }
 
-            static <R> Case<R> caze($function1<?, R> function) {
-                $objects.requireNonNull(function, "function is null");
-                return Case.of(function);
-            }
-
+            /**
+             * Creates a {@code Match.Case} by value.
+             *
+             * @param <T> type of the prototype value
+             * @param <R> result type of the matched case
+             * @param prototype A specific value to be matched
+             * @param function A function which is applied to the value given a match
+             * @return a new {@code Case}
+             * @throws NullPointerException if {@code function} is null
+             */
             static <T, R> Case<R> caze(T prototype, $function1<T, R> function) {
                 $objects.requireNonNull(function, "function is null");
                 return Case.of(prototype, function);
             }
 
+            /**
+             * Creates a {@code Match.Case} by type.
+             *
+             * @param <R> result type of the matched case
+             * @param function An {@code Object} to {@code R} function
+             * @return a new {@code Case}
+             * @throws NullPointerException if {@code function} is null
+             */
+            @SuppressWarnings("overloads")
+            static <R> Case<R> caze($function1<?, R> function) {
+                $objects.requireNonNull(function, "function is null");
+                return Case.of(function);
+            }
+
             ${primitiveTypes.gen(name => xs"""
+              /$javadoc
+               * Creates a {@code Match.Case} by primitive type {@code $name}.
+               *
+               * @param <R> result type of the matched case
+               * @param function An {@code $name} to {@code R} function
+               * @return a new {@code Case}
+               * @throws NullPointerException if {@code function} is null
+               */
+              @SuppressWarnings("overloads")
               static <R> Case<R> caze(${name.firstUpper}Function<R> function) {
                   $objects.requireNonNull(function, "function is null");
                   return Case.of(function);
@@ -120,22 +186,26 @@ def generateMainClasses(): Unit = {
             """)("\n\n")}
 
             /**
-             * TODO
+             * The result of {@code Match.ofType(Class)}, which explicitely sets the {@code Match} result type.
              *
-             * @param <R>
+             * @param <R> the result type
+             * @since 1.2.1
              */
-            class Typed<R> implements Expression.HasCases<R> {
+            final class Typed<R> implements Expression.HasCases<R> {
 
-                @Override
-                public Case<R> caze($function1<?, R> function) {
-                    $objects.requireNonNull(function, "function is null");
-                    return Case.of(function);
+                private Typed() {
                 }
 
                 @Override
                 public <T> Case<R> caze(T prototype, $function1<T, R> function) {
                     $objects.requireNonNull(function, "function is null");
                     return Case.of(prototype, function);
+                }
+
+                @Override
+                public Case<R> caze($function1<?, R> function) {
+                    $objects.requireNonNull(function, "function is null");
+                    return Case.of(function);
                 }
 
                 ${primitiveTypes.gen(name => xs"""
@@ -148,11 +218,16 @@ def generateMainClasses(): Unit = {
             }
 
             /**
-             * TODO
+             * A {@code Match.Case} which matches an {@code Object} by <em>type</em> or by <em>value</em>.
+             * <p>
+             * Typically there is a chain of match cases. The first applicable match is applied to an object.
+             * <p>
+             * The {@code orElse()} methods provide a default value which is returned if no case matches.
              *
-             * @param <R>
+             * @param <R> result type of the {@code Match.Case}
+             * @since 1.0.0
              */
-            class Case<R> implements Match<R>, Expression.HasCases<R> {
+            final class Case<R> implements Match<R>, Expression.HasCases<R> {
 
                 private final $list<$function<Object, $option<R>>> cases;
                 private final $lazyy<Expression<R>> match;
@@ -162,15 +237,17 @@ def generateMainClasses(): Unit = {
                     this.match = $lazyy.of(() -> new Expression<>(cases.reverse(), $none.instance()));
                 }
 
-                private static <R> Case<R> of($function1<?, R> function) {
-                    return new Case<>($list.of(Case.caze($none.instance(), function)));
-                }
-
                 private static <T, R> Case<R> of(T prototype, $function1<?, R> function) {
                     return new Case<>($list.of(Case.caze(new $some<>(prototype), function)));
                 }
 
+                @SuppressWarnings("overloads")
+                private static <R> Case<R> of($function1<?, R> function) {
+                    return new Case<>($list.of(Case.caze($none.instance(), function)));
+                }
+
                 ${primitiveTypes.gen(name => xs"""
+                  @SuppressWarnings("overloads")
                   private static <R> Case<R> of(${name.firstUpper}Function<R> function) {
                     return new Case<>($list.of(Case.caze($none.instance(), ($function1<${toObject(name)}, R>) function::apply, ${toObject(name)}.class)));
                   }
@@ -182,20 +259,23 @@ def generateMainClasses(): Unit = {
                 }
 
                 @Override
-                public Case<R> caze($function1<?, R> function) {
-                    final $function<Object, $option<R>> caze = caze($none.instance(), function);
+                public <T> Case<R> caze(T prototype, $function1<T, R> function) {
+                    $objects.requireNonNull(function, "function is null");
+                    final $function<Object, $option<R>> caze = caze(new $some<>(prototype), function);
                     return new Case<>(cases.prepend(caze));
                 }
 
                 @Override
-                public <T> Case<R> caze(T prototype, $function1<T, R> function) {
-                    final $function<Object, $option<R>> caze = caze(new $some<>(prototype), function);
+                public Case<R> caze($function1<?, R> function) {
+                    $objects.requireNonNull(function, "function is null");
+                    final $function<Object, $option<R>> caze = caze($none.instance(), function);
                     return new Case<>(cases.prepend(caze));
                 }
 
                 ${primitiveTypes.gen(name => xs"""
                   @Override
                   public Case<R> caze(${name.firstUpper}Function<R> function) {
+                      $objects.requireNonNull(function, "function is null");
                       final $function<Object, $option<R>> caze = caze($none.instance(), ($function1<${toObject(name)}, R>) function::apply, ${toObject(name)}.class);
                       return new Case<>(cases.prepend(caze));
                   }
@@ -206,6 +286,7 @@ def generateMainClasses(): Unit = {
                 }
 
                 public Expression<R> orElse($supplier<R> defaultSupplier) {
+                    $objects.requireNonNull(defaultSupplier, "defaultSupplier is null");
                     return new Expression<>(cases.reverse(), new $some<>($lazyy.of(defaultSupplier)));
                 }
 
@@ -235,11 +316,12 @@ def generateMainClasses(): Unit = {
             }
 
             /**
-             * TODO
+             * A final {@code Match} expression which may be applied to an {@code Object}.
              *
-             * @param <R>
+             * @param <R> result type of the {@code Match}
+             * @since 1.0.0
              */
-            class Expression<R> implements Match<R> {
+            final class Expression<R> implements Match<R> {
 
                 private Iterable<$function<Object, $option<R>>> cases;
                 private $option<$lazyy<R>> orElse;
@@ -263,11 +345,36 @@ def generateMainClasses(): Unit = {
                 // Note: placed this interface here, because interface Match cannot have private inner interfaces
                 private interface HasCases<R> {
 
-                    HasCases<R> caze($function1<?, R> function);
-
+                    /**
+                     * Creates a {@code Match.Case} by value.
+                     *
+                     * @param <T> type of the prototype value
+                     * @param prototype A specific value to be matched
+                     * @param function A function which is applied to the value given a match
+                     * @return a new {@code Case}
+                     * @throws NullPointerException if {@code function} is null
+                     */
                     <T> HasCases<R> caze(T prototype, $function1<T, R> function);
 
+                    /**
+                     * Creates a {@code Match.Case} by type.
+                     *
+                     * @param function An {@code Object} to {@code R} function
+                     * @return a new {@code Case}
+                     * @throws NullPointerException if {@code function} is null
+                     */
+                    @SuppressWarnings("overloads")
+                    HasCases<R> caze($function1<?, R> function);
+
                     ${primitiveTypes.gen(name => xs"""
+                      /$javadoc
+                       * Creates a {@code Match.Case} by primitive type {@code $name}.
+                       *
+                       * @param function An {@code $name} to {@code R} function
+                       * @return a new {@code Case}
+                       * @throws NullPointerException if {@code function} is null
+                       */
+                      @SuppressWarnings("overloads")
                       HasCases<R> caze(${name.firstUpper}Function<R> function);
                     """)("\n\n")}
                 }
@@ -275,9 +382,9 @@ def generateMainClasses(): Unit = {
 
             ${primitiveTypes.gen(name => xs"""
               /$javadoc
-               * A function {@code f: $name -&gt; R} that takes a primitive $name value and returns a value of type R.
+               * A function {@code f: $name -> R} that takes a primitive {@code $name} value and returns a value of type {@code R}.
                *
-               * @param <R> Return type of the function.
+               * @param <R> return type of this function
                * @since 1.0.0
                */
               @FunctionalInterface
