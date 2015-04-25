@@ -12,6 +12,7 @@ import javaslang.algebra.Monoid;
 import javaslang.control.Match;
 import javaslang.control.Option;
 import javaslang.control.Some;
+import javaslang.unsafe;
 
 import java.io.PrintStream;
 import java.math.BigDecimal;
@@ -154,6 +155,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * @throws UnsupportedOperationException if the elements are not numeric
      */
     @SuppressWarnings("unchecked")
+    @unsafe
     default T average() {
         if (isEmpty()) {
             throw new NoSuchElementException("average of nothing");
@@ -365,9 +367,10 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * <li>{@code List.of(1, List.of(2), Stream.of(3, 4)).flatten() = List.of(1, 2, 3, 4)}</li>
      * </ul>
      *
-     * @param <U> new component type (!!UNSAFE!! {@code of(1, 2, 3).map(Object::toString).<Integer> flatten()})
+     * @param <U> new component type (UNSAFE: {@code of(1, 2, 3).map(Object::toString).<Integer> flatten()})
      * @return a flattened version of this traversable
      */
+    @unsafe
     <U> Traversable<U> flatten();
 
     /**
@@ -386,7 +389,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * </li>
      * </ul>
      *
-     * @param <U> new component type (UNSAFE!)
+     * @param <U> new component type
      * @param f   An unboxing function that maps elements T to Iterables of elements U that will be unboxed.
      * @return a flattened version of this traversable
      * @throws NullPointerException if {@code f} is null
@@ -1054,6 +1057,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
     /**
      * Sends the string representations of these elements to the sandard error stream {@linkplain System#err},
      * each in a new line.
+     *
      * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stderr.
      */
     default void stderr() {
@@ -1070,6 +1074,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
     /**
      * Sends the string representations of these elements to the sandard output stream {@linkplain System#out},
      * each in a new line.
+     *
      * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stdout.
      */
     default void stdout() {

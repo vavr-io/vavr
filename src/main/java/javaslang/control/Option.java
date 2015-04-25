@@ -9,6 +9,7 @@ import javaslang.ValueObject;
 import javaslang.algebra.HigherKinded;
 import javaslang.algebra.Monad;
 import javaslang.control.Valences.Univalent;
+import javaslang.unsafe;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -158,6 +159,7 @@ public interface Option<T> extends Monad<T, Option<?>>, ValueObject, Univalent<T
      */
     @SuppressWarnings("unchecked")
     @Override
+    @unsafe
     default <U> Option<U> flatten() {
         return ((Option<? extends Option<U>>) this).flatten(Function.identity());
     }

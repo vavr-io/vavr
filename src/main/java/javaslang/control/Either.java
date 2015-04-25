@@ -9,6 +9,7 @@ import javaslang.ValueObject;
 import javaslang.algebra.HigherKinded;
 import javaslang.algebra.Monad;
 import javaslang.control.Valences.Bivalent;
+import javaslang.unsafe;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -294,6 +295,7 @@ public interface Either<L, R> extends ValueObject {
          */
         @SuppressWarnings("unchecked")
         @Override
+        @unsafe
         public <U> LeftProjection<U, R> flatten() {
             return ((LeftProjection<? extends LeftProjection<U, R>, R>) this).flatten(Function.identity());
         }
@@ -597,6 +599,7 @@ public interface Either<L, R> extends ValueObject {
          */
         @SuppressWarnings("unchecked")
         @Override
+        @unsafe
         public <U> RightProjection<L, U> flatten() {
             return ((RightProjection<L, ? extends RightProjection<L, U>>) this).flatten(Function.identity());
         }

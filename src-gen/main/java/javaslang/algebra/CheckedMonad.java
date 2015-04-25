@@ -13,6 +13,7 @@ import java.util.function.Consumer;
 import javaslang.control.Try.CheckedConsumer;
 import javaslang.control.Try.CheckedFunction;
 import javaslang.control.Try.CheckedPredicate;
+import javaslang.unsafe;
 
 /**
  * Defines a CheckedMonad by generalizing the flatMap function.
@@ -65,6 +66,7 @@ public interface CheckedMonad<T, M extends HigherKinded<?, M>> extends CheckedFu
      * @param <U> component type of the resulting {@code Monad}
      * @return A monadic structure containing flattened elements.
      */
+    @unsafe
     <U> CheckedMonad<U, M> flatten();
 
     /**

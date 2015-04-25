@@ -9,6 +9,7 @@ import javaslang.algebra.HigherKinded;
 import javaslang.algebra.Monad;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
+import javaslang.unsafe;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -108,6 +109,7 @@ public interface Arbitrary<T> extends Monad<T, Arbitrary<?>> {
 
     @SuppressWarnings("unchecked")
     @Override
+    @unsafe
     default <U> Arbitrary<U> flatten() {
         return ((Arbitrary<? extends Arbitrary<U>>) this).flatten(Function.identity());
     }

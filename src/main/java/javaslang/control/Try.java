@@ -9,6 +9,7 @@ import javaslang.ValueObject;
 import javaslang.algebra.CheckedMonad;
 import javaslang.algebra.HigherKinded;
 import javaslang.control.Valences.Bivalent;
+import javaslang.unsafe;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -137,6 +138,7 @@ public interface Try<T> extends CheckedMonad<T, Try<?>>, ValueObject, Bivalent<T
      */
     @SuppressWarnings("unchecked")
     @Override
+    @unsafe
     default <U> Try<U> flatten() {
         return ((Try<? extends Try<U>>) this).flatten(CheckedFunction.identity());
     }

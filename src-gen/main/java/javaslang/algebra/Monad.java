@@ -12,6 +12,7 @@ package javaslang.algebra;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import javaslang.unsafe;
 
 /**
  * Defines a Monad by generalizing the flatMap function.
@@ -64,6 +65,7 @@ public interface Monad<T, M extends HigherKinded<?, M>> extends Functor<T>, High
      * @param <U> component type of the resulting {@code Monad}
      * @return A monadic structure containing flattened elements.
      */
+    @unsafe
     <U> Monad<U, M> flatten();
 
     /**
