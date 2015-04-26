@@ -237,7 +237,7 @@ def generateMainClasses(): Unit = {
                     this.match = $lazyy.of(() -> new Expression<>(cases.reverse(), $none.instance()));
                 }
 
-                private static <T, R> Case<R> of(T prototype, $function1<?, R> function) {
+                private static <T, R> Case<R> of(T prototype, $function1<T, R> function) {
                     return new Case<>($list.of(Case.caze(new $some<>(prototype), function)));
                 }
 
@@ -290,14 +290,14 @@ def generateMainClasses(): Unit = {
                     return new Expression<>(cases.reverse(), new $some<>($lazyy.of(defaultSupplier)));
                 }
 
-                private static <R> $function<Object, $option<R>> caze($option<?> prototype, $function1<?, R> function) {
+                private static <T, R> $function<Object, $option<R>> caze($option<T> prototype, $function1<T, R> function) {
                     final ${im.getType("java.lang.invoke.MethodType")} type = function.getType();
                     // the compiler may add additional parameters to the lambda, our parameter is the last one
                     final Class<?> parameterType = type.parameterType(type.parameterCount() - 1);
                     return caze(prototype, function, parameterType);
                 }
 
-                private static <R> $function<Object, $option<R>> caze($option<?> prototype, $function1<?, R> function, Class<?> parameterType) {
+                private static <T, R> $function<Object, $option<R>> caze($option<T> prototype, $function1<T, R> function, Class<?> parameterType) {
                     final $predicate<Object> applicable = obj -> {
                         final boolean isCompatible = obj == null || parameterType.isAssignableFrom(obj.getClass());
                         return isCompatible

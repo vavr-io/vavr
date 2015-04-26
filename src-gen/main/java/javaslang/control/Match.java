@@ -330,7 +330,7 @@ public interface Match<R> extends Function<Object, R> {
             this.match = Lazy.of(() -> new Expression<>(cases.reverse(), None.instance()));
         }
 
-        private static <T, R> Case<R> of(T prototype, Function1<?, R> function) {
+        private static <T, R> Case<R> of(T prototype, Function1<T, R> function) {
             return new Case<>(List.of(Case.caze(new Some<>(prototype), function)));
         }
 
@@ -463,14 +463,14 @@ public interface Match<R> extends Function<Object, R> {
             return new Expression<>(cases.reverse(), new Some<>(Lazy.of(defaultSupplier)));
         }
 
-        private static <R> Function<Object, Option<R>> caze(Option<?> prototype, Function1<?, R> function) {
+        private static <T, R> Function<Object, Option<R>> caze(Option<T> prototype, Function1<T, R> function) {
             final MethodType type = function.getType();
             // the compiler may add additional parameters to the lambda, our parameter is the last one
             final Class<?> parameterType = type.parameterType(type.parameterCount() - 1);
             return caze(prototype, function, parameterType);
         }
 
-        private static <R> Function<Object, Option<R>> caze(Option<?> prototype, Function1<?, R> function, Class<?> parameterType) {
+        private static <T, R> Function<Object, Option<R>> caze(Option<T> prototype, Function1<T, R> function, Class<?> parameterType) {
             final Predicate<Object> applicable = obj -> {
                 final boolean isCompatible = obj == null || parameterType.isAssignableFrom(obj.getClass());
                 return isCompatible
