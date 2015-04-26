@@ -911,8 +911,14 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldPeekNonNilPerformingAnAction() {
-        assertThat(of(1).peek(System.out::println)).isEqualTo(of(1));
+        final int[] effect = { 0 };
+        final Traversable<Integer> actual = of(1, 2, 3).peek(i -> effect[0] = i);
+        assertThat(actual).isEqualTo(of(1, 2, 3)); // traverses all elements in the lazy case
+        assertThat(effect[0]).isEqualTo(getPeekNonNilPerformingAnAction());
     }
+
+    // returns the peek result of the specific Traversable implementation
+    abstract int getPeekNonNilPerformingAnAction();
 
     // -- product
 

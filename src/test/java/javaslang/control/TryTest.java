@@ -366,7 +366,9 @@ public class TryTest implements CheckedMonadLaws<Try<?>> {
 
     @Test
     public void shouldPeekFailure() {
-        assertThat(failure().peek(t -> {})).isEqualTo(failure());
+        final List<Object> list = new ArrayList<>();
+        assertThat(failure().peek(list::add)).isEqualTo(failure());
+        assertThat(list.isEmpty()).isTrue();
     }
 
     // unapply
@@ -575,7 +577,9 @@ public class TryTest implements CheckedMonadLaws<Try<?>> {
 
     @Test
     public void shouldPeekSuccess() {
-        assertThat(success().peek(t -> {})).isEqualTo(success());
+        final List<Object> list = new ArrayList<>();
+        assertThat(success().peek(list::add)).isEqualTo(success());
+        assertThat(list.isEmpty()).isFalse();
     }
 
     @Test
