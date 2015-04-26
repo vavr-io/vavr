@@ -150,7 +150,7 @@ def generateMainClasses(): Unit = {
              * @return a new {@code Case}
              * @throws NullPointerException if {@code function} is null
              */
-            static <T, R> Case<R> caze(T prototype, $function1<T, R> function) {
+            static <T, R> Case<R> caze(T prototype, $function1<? super T, ? extends R> function) {
                 $objects.requireNonNull(function, "function is null");
                 return Case.of(prototype, function);
             }
@@ -164,7 +164,7 @@ def generateMainClasses(): Unit = {
              * @throws NullPointerException if {@code function} is null
              */
             @SuppressWarnings("overloads")
-            static <R> Case<R> caze($function1<?, R> function) {
+            static <R> Case<R> caze($function1<?, ? extends R> function) {
                 $objects.requireNonNull(function, "function is null");
                 return Case.of(function);
             }
@@ -179,7 +179,7 @@ def generateMainClasses(): Unit = {
                * @throws NullPointerException if {@code function} is null
                */
               @SuppressWarnings("overloads")
-              static <R> Case<R> caze(${name.firstUpper}Function<R> function) {
+              static <R> Case<R> caze(${name.firstUpper}Function<? extends R> function) {
                   $objects.requireNonNull(function, "function is null");
                   return Case.of(function);
               }
@@ -197,20 +197,20 @@ def generateMainClasses(): Unit = {
                 }
 
                 @Override
-                public <T> Case<R> caze(T prototype, $function1<T, R> function) {
+                public <T> Case<R> caze(T prototype, $function1<? super T, ? extends R> function) {
                     $objects.requireNonNull(function, "function is null");
                     return Case.of(prototype, function);
                 }
 
                 @Override
-                public Case<R> caze($function1<?, R> function) {
+                public Case<R> caze($function1<?, ? extends R> function) {
                     $objects.requireNonNull(function, "function is null");
                     return Case.of(function);
                 }
 
                 ${primitiveTypes.gen(name => xs"""
                   @Override
-                  public Case<R> caze(${name.firstUpper}Function<R> function) {
+                  public Case<R> caze(${name.firstUpper}Function<? extends R> function) {
                       $objects.requireNonNull(function, "function is null");
                       return Case.of(function);
                   }
@@ -237,18 +237,18 @@ def generateMainClasses(): Unit = {
                     this.match = $lazyy.of(() -> new Expression<>(cases.reverse(), $none.instance()));
                 }
 
-                private static <T, R> Case<R> of(T prototype, $function1<T, R> function) {
+                private static <T, R> Case<R> of(T prototype, $function1<? super T, ? extends R> function) {
                     return new Case<>($list.of(Case.caze(new $some<>(prototype), function)));
                 }
 
                 @SuppressWarnings("overloads")
-                private static <R> Case<R> of($function1<?, R> function) {
+                private static <R> Case<R> of($function1<?, ? extends R> function) {
                     return new Case<>($list.of(Case.caze($none.instance(), function)));
                 }
 
                 ${primitiveTypes.gen(name => xs"""
                   @SuppressWarnings("overloads")
-                  private static <R> Case<R> of(${name.firstUpper}Function<R> function) {
+                  private static <R> Case<R> of(${name.firstUpper}Function<? extends R> function) {
                     return new Case<>($list.of(Case.caze($none.instance(), ($function1<${toObject(name)}, R>) function::apply, ${toObject(name)}.class)));
                   }
                 """)("\n\n")}
@@ -259,14 +259,14 @@ def generateMainClasses(): Unit = {
                 }
 
                 @Override
-                public <T> Case<R> caze(T prototype, $function1<T, R> function) {
+                public <T> Case<R> caze(T prototype, $function1<? super T, ? extends R> function) {
                     $objects.requireNonNull(function, "function is null");
                     final $function<Object, $option<R>> caze = caze(new $some<>(prototype), function);
                     return new Case<>(cases.prepend(caze));
                 }
 
                 @Override
-                public Case<R> caze($function1<?, R> function) {
+                public Case<R> caze($function1<?, ? extends R> function) {
                     $objects.requireNonNull(function, "function is null");
                     final $function<Object, $option<R>> caze = caze($none.instance(), function);
                     return new Case<>(cases.prepend(caze));
@@ -274,7 +274,7 @@ def generateMainClasses(): Unit = {
 
                 ${primitiveTypes.gen(name => xs"""
                   @Override
-                  public Case<R> caze(${name.firstUpper}Function<R> function) {
+                  public Case<R> caze(${name.firstUpper}Function<? extends R> function) {
                       $objects.requireNonNull(function, "function is null");
                       final $function<Object, $option<R>> caze = caze($none.instance(), ($function1<${toObject(name)}, R>) function::apply, ${toObject(name)}.class);
                       return new Case<>(cases.prepend(caze));
@@ -290,14 +290,14 @@ def generateMainClasses(): Unit = {
                     return new Expression<>(cases.reverse(), new $some<>($lazyy.of(defaultSupplier)));
                 }
 
-                private static <T, R> $function<Object, $option<R>> caze($option<T> prototype, $function1<T, R> function) {
+                private static <T, R> $function<Object, $option<R>> caze($option<T> prototype, $function1<T, ? extends R> function) {
                     final ${im.getType("java.lang.invoke.MethodType")} type = function.getType();
                     // the compiler may add additional parameters to the lambda, our parameter is the last one
                     final Class<?> parameterType = type.parameterType(type.parameterCount() - 1);
                     return caze(prototype, function, parameterType);
                 }
 
-                private static <T, R> $function<Object, $option<R>> caze($option<T> prototype, $function1<T, R> function, Class<?> parameterType) {
+                private static <T, R> $function<Object, $option<R>> caze($option<T> prototype, $function1<T, ? extends R> function, Class<?> parameterType) {
                     final $predicate<Object> applicable = obj -> {
                         final boolean isCompatible = obj == null || parameterType.isAssignableFrom(obj.getClass());
                         return isCompatible
@@ -354,7 +354,7 @@ def generateMainClasses(): Unit = {
                      * @return a new {@code Case}
                      * @throws NullPointerException if {@code function} is null
                      */
-                    <T> HasCases<R> caze(T prototype, $function1<T, R> function);
+                    <T> HasCases<R> caze(T prototype, $function1<? super T, ? extends R> function);
 
                     /**
                      * Creates a {@code Match.Case} by type.
@@ -364,7 +364,7 @@ def generateMainClasses(): Unit = {
                      * @throws NullPointerException if {@code function} is null
                      */
                     @SuppressWarnings("overloads")
-                    HasCases<R> caze($function1<?, R> function);
+                    HasCases<R> caze($function1<?, ? extends R> function);
 
                     ${primitiveTypes.gen(name => xs"""
                       /$javadoc
@@ -375,7 +375,7 @@ def generateMainClasses(): Unit = {
                        * @throws NullPointerException if {@code function} is null
                        */
                       @SuppressWarnings("overloads")
-                      HasCases<R> caze(${name.firstUpper}Function<R> function);
+                      HasCases<R> caze(${name.firstUpper}Function<? extends R> function);
                     """)("\n\n")}
                 }
             }
