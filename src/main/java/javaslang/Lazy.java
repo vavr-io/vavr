@@ -22,17 +22,17 @@ import java.util.function.Supplier;
  * </code>
  * </pre>
  *
- * @since 1.3.0
+ * @since 1.2.1
  */
 public final class Lazy<T> implements Supplier<T>, ValueObject {
 
     private static final long serialVersionUID = 1L;
 
     // read http://javarevisited.blogspot.de/2014/05/double-checked-locking-on-singleton-in-java.html
-    private volatile Supplier<T> supplier;
+    private volatile Supplier<? extends T> supplier;
     private volatile T value = null;
 
-    private Lazy(Supplier<T> supplier) {
+    private Lazy(Supplier<? extends T> supplier) {
         this.supplier = Objects.requireNonNull(supplier, "supplier is null");
     }
 
@@ -44,7 +44,7 @@ public final class Lazy<T> implements Supplier<T>, ValueObject {
      * @param supplier A supplier
      * @return A new instance of Lazy
      */
-    public static <T> Lazy<T> of(Supplier<T> supplier) {
+    public static <T> Lazy<T> of(Supplier<? extends T> supplier) {
         return new Lazy<>(supplier);
     }
 

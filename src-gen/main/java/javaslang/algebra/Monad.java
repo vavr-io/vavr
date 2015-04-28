@@ -9,9 +9,11 @@ package javaslang.algebra;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import javaslang.control.Match;
 import javaslang.unsafe;
 
 /**
@@ -43,13 +45,32 @@ public interface Monad<T, M extends HigherKinded<?, M>> extends Functor<T>, High
     /**
      * Returns the result of applying f to M's value of type T and returns a new M with value of type U.
      *
-     * @param <U> component type of this monad
-     * @param <MONAD> placeholder for the monad type of component type T and container type M
-     * @param f a function that maps the monad value to a new monad instance
+     * @param <U> component type of the resulting monad
+     * @param <MONAD> placeholder for the monad type of component type U and container type M
+     * @param mapper a function that maps the monad value to a new monad instance
      * @return a new Monad instance of component type U and container type M
-     * @throws NullPointerException if {@code f} is null
+     * @throws NullPointerException if {@code mapper} is null
      */
-    <U, MONAD extends HigherKinded<U, M>> Monad<U, M> flatMap(Function<? super T, ? extends MONAD> f);
+    <U, MONAD extends HigherKinded<U, M>> Monad<U, M> flatMap(Function<? super T, ? extends MONAD> mapper);
+
+    /**
+     * Maps a nested, monadic structure.
+     *
+     * @param <U> component type of the (possibly deeply) nested object
+     * @param <Z> component type of result
+     * @param mapper a function that maps a nested value to a value of another type
+     * @return a new Monad instance of component type Z
+     * @throws NullPointerException if {@code mapper} is null
+     */
+    @SuppressWarnings("unchecked")
+    @unsafe
+    default <U, Z> Monad<Z, M> treeMap(Function<? super U, ? extends Object> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return (Monad<Z, M>) map(Match.ofType(Object.class)
+                .caze((Monad<?, ?> m) -> m.treeMap(mapper))
+                .caze((CheckedMonad<?, ?> m) -> m.treeMap(mapper::apply))
+                .caze((U u) -> mapper.apply(u)));
+    }
 
     /**
      * Flattens a nested, monadic structure. Assumes that the elements are of type HigherKinded&lt;U, M&gt;
@@ -125,5 +146,5 @@ public interface Monad<T, M extends HigherKinded<?, M>> extends Functor<T>, High
     Monad<T, M> peek(Consumer<? super T> action);
 
     @Override
-    <U> Monad<U, M> map(Function<? super T, ? extends U> f);
+    <U> Monad<U, M> map(Function<? super T, ? extends U> mapper);
 }

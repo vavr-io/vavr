@@ -393,6 +393,13 @@ public interface Either<L, R> extends ValueObject {
             }
         }
 
+        @SuppressWarnings("unchecked")
+        @Override
+        @unsafe
+        public <U, Z> LeftProjection<Z, R> treeMap(Function<? super U, ? extends Object> mapper) {
+            return (LeftProjection<Z, R>) (Object) Monad.super.treeMap(mapper);
+        }
+
         @Override
         public Iterator<L> iterator() {
             if (either.isLeft()) {
@@ -566,7 +573,7 @@ public interface Either<L, R> extends ValueObject {
          * is a {@code Right} and the right value does <em>not</em> satisfy the given predicate</li>
          * <li>{@code RightProjection(Left(Some(value)))} otherwise, i.e. if the underlying {@code Either} of this
          * projection is a {@code Left}</li>
-         *</ul>
+         * </ul>
          *
          * @param predicate A predicate
          * @return a RightProjection of an {@code Either} with an optional value
@@ -695,6 +702,13 @@ public interface Either<L, R> extends ValueObject {
             } else {
                 return (RightProjection<L, U>) this;
             }
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        @unsafe
+        public <U, Z> RightProjection<L, Z> treeMap(Function<? super U, ? extends Object> mapper) {
+            return (RightProjection<L, Z>) (Object) Monad.super.treeMap(mapper);
         }
 
         @Override

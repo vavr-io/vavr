@@ -9,7 +9,10 @@ package javaslang.algebra;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import java.util.Objects;
 import java.util.function.Consumer;
+import javaslang.control.Match;
+import javaslang.control.Try;
 import javaslang.control.Try.CheckedConsumer;
 import javaslang.control.Try.CheckedFunction;
 import javaslang.control.Try.CheckedPredicate;
@@ -44,13 +47,33 @@ public interface CheckedMonad<T, M extends HigherKinded<?, M>> extends CheckedFu
     /**
      * Returns the result of applying f to M's value of type T and returns a new M with value of type U.
      *
-     * @param <U> component type of this monad
-     * @param <MONAD> placeholder for the monad type of component type T and container type M
-     * @param f a checked function that maps the monad value to a new monad instance
+     * @param <U> component type of the resulting monad
+     * @param <MONAD> placeholder for the monad type of component type U and container type M
+     * @param mapper a checked function that maps the monad value to a new monad instance
      * @return a new CheckedMonad instance of component type U and container type M
-     * @throws NullPointerException if {@code f} is null
+     * @throws NullPointerException if {@code mapper} is null
      */
-    <U, MONAD extends HigherKinded<U, M>> CheckedMonad<U, M> flatMap(CheckedFunction<? super T, ? extends MONAD> f);
+    <U, MONAD extends HigherKinded<U, M>> CheckedMonad<U, M> flatMap(CheckedFunction<? super T, ? extends MONAD> mapper);
+
+    /**
+     * Maps a nested, monadic structure.
+     *
+     * @param <U> component type of the (possibly deeply) nested object
+     * @param <Z> component type of result
+     * @param mapper a checked function that maps a nested value to a value of another type
+     * @return a new CheckedMonad instance of component type Z
+     * @throws NullPointerException if {@code mapper} is null
+     */
+    @SuppressWarnings("unchecked")
+    @unsafe
+    default <U, Z> CheckedMonad<Z, M> treeMap(CheckedFunction<? super U, ? extends Object> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        final Match<?> match = Match.ofType(Object.class)
+                .caze((Monad<?, ?> m) -> m.treeMap((U u) -> Try.of(() -> mapper.apply(u)).get()))
+                .caze((CheckedMonad<?, ?> m) -> m.treeMap(mapper))
+                .caze((U u) -> Try.of(() -> mapper.apply(u)).get());
+        return (CheckedMonad<Z, M>) map(match::apply);
+    }
 
     /**
      * Flattens a nested, monadic structure. Assumes that the elements are of type HigherKinded&lt;U, M&gt;
@@ -126,5 +149,5 @@ public interface CheckedMonad<T, M extends HigherKinded<?, M>> extends CheckedFu
     CheckedMonad<T, M> peek(CheckedConsumer<? super T> action);
 
     @Override
-    <U> CheckedMonad<U, M> map(CheckedFunction<? super T, ? extends U> f);
+    <U> CheckedMonad<U, M> map(CheckedFunction<? super T, ? extends U> mapper);
 }

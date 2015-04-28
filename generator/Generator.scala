@@ -150,7 +150,7 @@ def generateMainClasses(): Unit = {
              * @return a new {@code Case}
              * @throws NullPointerException if {@code function} is null
              */
-            static <T, R> Case<R> caze(T prototype, $function1<T, R> function) {
+            static <T, R> Case<R> caze(T prototype, $function1<? super T, ? extends R> function) {
                 $objects.requireNonNull(function, "function is null");
                 return Case.of(prototype, function);
             }
@@ -164,7 +164,7 @@ def generateMainClasses(): Unit = {
              * @throws NullPointerException if {@code function} is null
              */
             @SuppressWarnings("overloads")
-            static <R> Case<R> caze($function1<?, R> function) {
+            static <R> Case<R> caze($function1<?, ? extends R> function) {
                 $objects.requireNonNull(function, "function is null");
                 return Case.of(function);
             }
@@ -179,7 +179,7 @@ def generateMainClasses(): Unit = {
                * @throws NullPointerException if {@code function} is null
                */
               @SuppressWarnings("overloads")
-              static <R> Case<R> caze(${name.firstUpper}Function<R> function) {
+              static <R> Case<R> caze(${name.firstUpper}Function<? extends R> function) {
                   $objects.requireNonNull(function, "function is null");
                   return Case.of(function);
               }
@@ -197,20 +197,20 @@ def generateMainClasses(): Unit = {
                 }
 
                 @Override
-                public <T> Case<R> caze(T prototype, $function1<T, R> function) {
+                public <T> Case<R> caze(T prototype, $function1<? super T, ? extends R> function) {
                     $objects.requireNonNull(function, "function is null");
                     return Case.of(prototype, function);
                 }
 
                 @Override
-                public Case<R> caze($function1<?, R> function) {
+                public Case<R> caze($function1<?, ? extends R> function) {
                     $objects.requireNonNull(function, "function is null");
                     return Case.of(function);
                 }
 
                 ${primitiveTypes.gen(name => xs"""
                   @Override
-                  public Case<R> caze(${name.firstUpper}Function<R> function) {
+                  public Case<R> caze(${name.firstUpper}Function<? extends R> function) {
                       $objects.requireNonNull(function, "function is null");
                       return Case.of(function);
                   }
@@ -237,18 +237,18 @@ def generateMainClasses(): Unit = {
                     this.match = $lazyy.of(() -> new Expression<>(cases.reverse(), $none.instance()));
                 }
 
-                private static <T, R> Case<R> of(T prototype, $function1<?, R> function) {
+                private static <T, R> Case<R> of(T prototype, $function1<? super T, ? extends R> function) {
                     return new Case<>($list.of(Case.caze(new $some<>(prototype), function)));
                 }
 
                 @SuppressWarnings("overloads")
-                private static <R> Case<R> of($function1<?, R> function) {
+                private static <R> Case<R> of($function1<?, ? extends R> function) {
                     return new Case<>($list.of(Case.caze($none.instance(), function)));
                 }
 
                 ${primitiveTypes.gen(name => xs"""
                   @SuppressWarnings("overloads")
-                  private static <R> Case<R> of(${name.firstUpper}Function<R> function) {
+                  private static <R> Case<R> of(${name.firstUpper}Function<? extends R> function) {
                     return new Case<>($list.of(Case.caze($none.instance(), ($function1<${toObject(name)}, R>) function::apply, ${toObject(name)}.class)));
                   }
                 """)("\n\n")}
@@ -259,14 +259,14 @@ def generateMainClasses(): Unit = {
                 }
 
                 @Override
-                public <T> Case<R> caze(T prototype, $function1<T, R> function) {
+                public <T> Case<R> caze(T prototype, $function1<? super T, ? extends R> function) {
                     $objects.requireNonNull(function, "function is null");
                     final $function<Object, $option<R>> caze = caze(new $some<>(prototype), function);
                     return new Case<>(cases.prepend(caze));
                 }
 
                 @Override
-                public Case<R> caze($function1<?, R> function) {
+                public Case<R> caze($function1<?, ? extends R> function) {
                     $objects.requireNonNull(function, "function is null");
                     final $function<Object, $option<R>> caze = caze($none.instance(), function);
                     return new Case<>(cases.prepend(caze));
@@ -274,7 +274,7 @@ def generateMainClasses(): Unit = {
 
                 ${primitiveTypes.gen(name => xs"""
                   @Override
-                  public Case<R> caze(${name.firstUpper}Function<R> function) {
+                  public Case<R> caze(${name.firstUpper}Function<? extends R> function) {
                       $objects.requireNonNull(function, "function is null");
                       final $function<Object, $option<R>> caze = caze($none.instance(), ($function1<${toObject(name)}, R>) function::apply, ${toObject(name)}.class);
                       return new Case<>(cases.prepend(caze));
@@ -290,14 +290,14 @@ def generateMainClasses(): Unit = {
                     return new Expression<>(cases.reverse(), new $some<>($lazyy.of(defaultSupplier)));
                 }
 
-                private static <R> $function<Object, $option<R>> caze($option<?> prototype, $function1<?, R> function) {
+                private static <T, R> $function<Object, $option<R>> caze($option<T> prototype, $function1<T, ? extends R> function) {
                     final ${im.getType("java.lang.invoke.MethodType")} type = function.getType();
                     // the compiler may add additional parameters to the lambda, our parameter is the last one
                     final Class<?> parameterType = type.parameterType(type.parameterCount() - 1);
                     return caze(prototype, function, parameterType);
                 }
 
-                private static <R> $function<Object, $option<R>> caze($option<?> prototype, $function1<?, R> function, Class<?> parameterType) {
+                private static <T, R> $function<Object, $option<R>> caze($option<T> prototype, $function1<T, ? extends R> function, Class<?> parameterType) {
                     final $predicate<Object> applicable = obj -> {
                         final boolean isCompatible = obj == null || parameterType.isAssignableFrom(obj.getClass());
                         return isCompatible
@@ -354,7 +354,7 @@ def generateMainClasses(): Unit = {
                      * @return a new {@code Case}
                      * @throws NullPointerException if {@code function} is null
                      */
-                    <T> HasCases<R> caze(T prototype, $function1<T, R> function);
+                    <T> HasCases<R> caze(T prototype, $function1<? super T, ? extends R> function);
 
                     /**
                      * Creates a {@code Match.Case} by type.
@@ -364,7 +364,7 @@ def generateMainClasses(): Unit = {
                      * @throws NullPointerException if {@code function} is null
                      */
                     @SuppressWarnings("overloads")
-                    HasCases<R> caze($function1<?, R> function);
+                    HasCases<R> caze($function1<?, ? extends R> function);
 
                     ${primitiveTypes.gen(name => xs"""
                       /$javadoc
@@ -375,7 +375,7 @@ def generateMainClasses(): Unit = {
                        * @throws NullPointerException if {@code function} is null
                        */
                       @SuppressWarnings("overloads")
-                      HasCases<R> caze(${name.firstUpper}Function<R> function);
+                      HasCases<R> caze(${name.firstUpper}Function<? extends R> function);
                     """)("\n\n")}
                 }
             }
@@ -441,11 +441,11 @@ def generateMainClasses(): Unit = {
              * Applies a function f to the components of this $name.
              *
              * @param <U> type of the component of the resulting $name
-             * @param f a ${checked.gen("Checked")}Function which maps the component of this $name
+             * @param mapper a ${checked.gen("Checked")}Function which maps the component of this $name
              * @return a new $className
              * @throws NullPointerException if {@code f} is null
              */
-            <U> $className<U> map($functionType<? super T, ? extends U> f);
+            <U> $className<U> map($functionType<? super T, ? extends U> mapper);
         }
       """
     }
@@ -464,6 +464,8 @@ def generateMainClasses(): Unit = {
       val functionType = if (checked) im.getType("javaslang.control.Try.CheckedFunction") else im.getType("java.util.function.Function")
       val consumerType = if (checked) im.getType("javaslang.control.Try.CheckedConsumer") else im.getType("java.util.function.Consumer")
       val predicateType = if (checked) im.getType("javaslang.control.Try.CheckedPredicate") else im.getType("java.util.function.Predicate")
+      val unsafe = im.getType("javaslang.unsafe")
+      val Match = im.getType("javaslang.control.Match")
 
       xs"""
         /$javadoc
@@ -495,13 +497,45 @@ def generateMainClasses(): Unit = {
             /**
              * Returns the result of applying f to M's value of type T and returns a new M with value of type U.
              *
-             * @param <U> component type of this monad
-             * @param <MONAD> placeholder for the monad type of component type T and container type M
-             * @param f a ${checked.gen("checked ")}function that maps the monad value to a new monad instance
+             * @param <U> component type of the resulting monad
+             * @param <MONAD> placeholder for the monad type of component type U and container type M
+             * @param mapper a ${checked.gen("checked ")}function that maps the monad value to a new monad instance
              * @return a new $className instance of component type U and container type M
-             * @throws NullPointerException if {@code f} is null
+             * @throws NullPointerException if {@code mapper} is null
              */
-            <U, MONAD extends HigherKinded<U, M>> $className<U, M> flatMap($functionType<? super T, ? extends MONAD> f);
+            <U, MONAD extends HigherKinded<U, M>> $className<U, M> flatMap($functionType<? super T, ? extends MONAD> mapper);
+
+            /$javadoc
+             * Maps a nested, monadic structure.
+             *
+             * @param <U> component type of the (possibly deeply) nested object
+             * @param <Z> component type of result
+             * @param mapper a ${checked.gen("checked ")}function that maps a nested value to a value of another type
+             * @return a new $className instance of component type Z
+             * @throws NullPointerException if {@code mapper} is null
+             */
+            @SuppressWarnings("unchecked")
+            @$unsafe
+            default <U, Z> $className<Z, M> treeMap($functionType<? super U, ? extends Object> mapper) {
+                ${im.getType("java.util.Objects")}.requireNonNull(mapper, "mapper is null");
+                ${if (checked) {
+                  val Try = im.getType("javaslang.control.Try")
+                  xs"""
+                    final Match<?> match = $Match.ofType(Object.class)
+                            .caze((Monad<?, ?> m) -> m.treeMap((U u) -> $Try.of(() -> mapper.apply(u)).get()))
+                            .caze((CheckedMonad<?, ?> m) -> m.treeMap(mapper))
+                            .caze((U u) -> $Try.of(() -> mapper.apply(u)).get());
+                    return ($className<Z, M>) map(match::apply);
+                  """
+                } else {
+                  xs"""
+                    return ($className<Z, M>) map($Match.ofType(Object.class)
+                            .caze((Monad<?, ?> m) -> m.treeMap(mapper))
+                            .caze((CheckedMonad<?, ?> m) -> m.treeMap(mapper::apply))
+                            .caze((U u) -> mapper.apply(u)));
+                  """
+                }}
+            }
 
             /**
              * Flattens a nested, monadic structure. Assumes that the elements are of type HigherKinded&lt;U, M&gt;
@@ -517,7 +551,7 @@ def generateMainClasses(): Unit = {
              * @param <U> component type of the resulting {@code Monad}
              * @return A monadic structure containing flattened elements.
              */
-            @${im.getType("javaslang.unsafe")}
+            @$unsafe
             <U> $name<U, M> flatten();
 
             /**
@@ -577,7 +611,7 @@ def generateMainClasses(): Unit = {
             $className<T, M> peek($consumerType<? super T> action);
 
             @Override
-            <U> $className<U, M> map($functionType<? super T, ? extends U> f);
+            <U> $className<U, M> map($functionType<? super T, ? extends U> mapper);
         }
       """
     }

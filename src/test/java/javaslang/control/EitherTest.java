@@ -7,11 +7,13 @@ package javaslang.control;
 
 import javaslang.Serializables;
 import javaslang.Tuple;
+import javaslang.collection.*;
 import javaslang.control.Either.LeftProjection;
 import javaslang.control.Either.RightProjection;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.List;
 import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -272,6 +274,30 @@ public class EitherTest {
     public void shouldFlatMapOnLeftProjectionOfRight() {
         final Either<Integer, String> actual = new Right<Integer, String>("1").left().flatMap(i -> new Left<Integer, String>(i + 1).left()).toEither();
         assertThat(actual).isEqualTo(new Right<>("1"));
+    }
+
+    // -- treeMap
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenCallingTreeMapWithNullMapperOnLeftProjectedRight() {
+        new Right<>(1).left().treeMap(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenCallingTreeMapWithNullMapperOnLeftProjectedLeft() {
+        new Left<>(1).left().treeMap(null);
+    }
+
+    @Test
+    public void shouldTreeMapLeftProjectedRight() {
+        assertThat(new Right<>(1).left().treeMap(Function.identity())).isEqualTo(new Right<>(1).left());
+    }
+
+    @Test
+    public void shouldTreeMapLeftProjectedLeft() {
+        final LeftProjection<?, ?> actual = new Left<>(javaslang.collection.List.of(new Right<>("a").left(), new Left<>(1).left())).left().treeMap((Integer i) -> i + 1);
+        final LeftProjection<?, ?> expected = new Left<>(javaslang.collection.List.of(new Right<>("a").left(), new Left<>(2).left())).left();
+        assertThat(actual).isEqualTo(expected);
     }
 
     // -- exists
@@ -721,7 +747,31 @@ public class EitherTest {
         assertThat(actual).isEqualTo(new Left<>("1"));
     }
 
-        // -- exists
+    // -- treeMap
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenCallingTreeMapWithNullMapperOnRightProjectedLeft() {
+        new Left<>(1).right().treeMap(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenCallingTreeMapWithNullMapperOnRightProjectedRight() {
+        new Right<>(1).right().treeMap(null);
+    }
+
+    @Test
+    public void shouldTreeMapRightProjectedLeft() {
+        assertThat(new Left<>(1).right().treeMap(Function.identity())).isEqualTo(new Left<>(1).right());
+    }
+
+    @Test
+    public void shouldTreeMapRightProjectedRight() {
+        final RightProjection<?, ?> actual = new Right<>(javaslang.collection.List.of(new Left<>("a").right(), new Right<>(1).right())).right().treeMap((Integer i) -> i + 1);
+        final RightProjection<?, ?> expected = new Right<>(javaslang.collection.List.of(new Left<>("a").right(), new Right<>(2).right())).right();
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // -- exists
 
     @Test
     public void shouldBeAwareOfPropertyThatHoldsExistsOfRightProjectionOfRight() {

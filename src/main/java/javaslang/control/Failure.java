@@ -138,17 +138,23 @@ public final class Failure<T> implements Try<T> {
         return this;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <U> Failure<U> map(CheckedFunction<? super T, ? extends U> mapper) {
-        @SuppressWarnings("unchecked")
-        final Failure<U> result = (Failure<U>) this;
-        return result;
+        return (Failure<U>) this;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <U, TRY extends HigherKinded<U, Try<?>>> Failure<U> flatMap(CheckedFunction<? super T, ? extends TRY> mapper) {
         return (Failure<U>) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <U, Z> Failure<Z> treeMap(CheckedFunction<? super U, ? extends Object> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return (Failure<Z>) this;
     }
 
     @Override

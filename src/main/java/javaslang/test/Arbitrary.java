@@ -97,6 +97,13 @@ public interface Arbitrary<T> extends Monad<T, Arbitrary<?>> {
         };
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    @unsafe
+    default <U, Z> Arbitrary<Z> treeMap(Function<? super U, ? extends Object> mapper) {
+        return (Arbitrary<Z>) (Object) Monad.super.treeMap(mapper);
+    }
+
     /**
      * Returns an Arbitrary based on this Arbitrary which produces values that fulfill the given predicate.
      *

@@ -201,6 +201,13 @@ public class StreamTest extends AbstractSeqTest implements MonadLaws<Traversable
         assertThat(Stream.of(1, 2, 3).combinations(2)).isEqualTo(Stream.of(Stream.of(1, 2), Stream.of(1, 3), Stream.of(2, 3)));
     }
 
+    // -- peek
+
+    @Override
+    int getPeekNonNilPerformingAnAction() {
+        return 3;
+    }
+
     @Test
     public void shouldComputeKCombinationsOfNegativeK() {
         assertThat(Stream.of(1).combinations(-1)).isEqualTo(Stream.cons(Stream.nil()));

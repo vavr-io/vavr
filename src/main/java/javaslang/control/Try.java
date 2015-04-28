@@ -160,9 +160,9 @@ public interface Try<T> extends CheckedMonad<T, Try<?>>, ValueObject, Bivalent<T
      * </code>
      * </pre>
      *
-     * @param <U> component type of the result {@code Try}
+     * @param <U>   component type of the result {@code Try}
      * @param <TRY> a {@code Try&lt;U&gt;}
-     * @param f a function which maps elements of this Try to Trys
+     * @param f     a function which maps elements of this Try to Trys
      * @return a new {@code Try}
      */
     @SuppressWarnings("unchecked")
@@ -174,7 +174,7 @@ public interface Try<T> extends CheckedMonad<T, Try<?>>, ValueObject, Bivalent<T
         } else {
             try {
                 return (Try<U>) f.apply(get());
-            } catch(Throwable t) {
+            } catch (Throwable t) {
                 return new Failure<>(t);
             }
         }
@@ -185,7 +185,7 @@ public interface Try<T> extends CheckedMonad<T, Try<?>>, ValueObject, Bivalent<T
         Objects.requireNonNull(predicate, "predicate is null");
         try {
             return isSuccess() && predicate.test(get());
-        } catch(Throwable ignored) {
+        } catch (Throwable ignored) {
             return false;
         }
     }
@@ -195,7 +195,7 @@ public interface Try<T> extends CheckedMonad<T, Try<?>>, ValueObject, Bivalent<T
         Objects.requireNonNull(predicate, "predicate is null");
         try {
             return isSuccess() && predicate.test(get());
-        } catch(Throwable ignored) {
+        } catch (Throwable ignored) {
             return false;
         }
     }
@@ -236,6 +236,13 @@ public interface Try<T> extends CheckedMonad<T, Try<?>>, ValueObject, Bivalent<T
      */
     @Override
     <U, TRY extends HigherKinded<U, Try<?>>> Try<U> flatMap(CheckedFunction<? super T, ? extends TRY> mapper);
+
+    @SuppressWarnings("unchecked")
+    @Override
+    @unsafe
+    default <U, Z> Try<Z> treeMap(CheckedFunction<? super U, ? extends Object> mapper) {
+        return (Try<Z>) (Object) CheckedMonad.super.treeMap(mapper);
+    }
 
     @Override
     default Iterator<T> iterator() {

@@ -13,10 +13,10 @@ import java.lang.annotation.Target;
  * <p>
  * <strong>Example:</strong>
  * <p>
- * {@code List.of(1, 2, 3).sum()} returns {@code 6} as expected whereas a call to {@code List.of("a", "b", "c").sum()}
- * does compile but throws at runtime.
+ * {@code List.of(List.of(1)).flatten()} returns {@code List.of(1)} as expected whereas a call to
+ * {@code List.of(1).flatten()} does compile but throws at runtime.
  * <p>
- * Some powerful Javaslang functionality, like the {@code sum()} method, requires the developer to use it with care.
+ * Some powerful Javaslang functionality, like the {@code flatten()} method, requires the developer to use it with care.
  * To make this transparent, such functionality is marked as {@code @unsafe}.
  */
 @Target(ElementType.METHOD)

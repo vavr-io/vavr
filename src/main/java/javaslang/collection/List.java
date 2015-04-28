@@ -273,7 +273,7 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     /**
-     * Flattens a {@code List}, assuming that the elements are of type List&lt;U&gt;
+     * Flattens a {@code List}, assuming that the elements are of type Traversable&lt;U&gt;
      * <p>
      * Examples:
      * <pre>
@@ -287,13 +287,13 @@ public interface List<T> extends Seq<T>, ValueObject {
      *
      * @param <U> component type of the result {@code List}
      * @return a new {@code List}
-     * @throws java.lang.ClassCastException if this {@code List} is not of type {@code List<? extends List<U>>}
+     * @throws java.lang.ClassCastException if this {@code List} is not of type {@code List<? extends Traversable<U>>}
      */
     @SuppressWarnings("unchecked")
     @Override
     @unsafe
     default <U> List<U> flatten() {
-        return isEmpty() ? Nil.instance() : ((List<? extends List<U>>) this).flatten(Function.identity());
+        return isEmpty() ? Nil.instance() : ((List<? extends Traversable<U>>) this).flatten(Function.identity());
     }
 
     /**
@@ -713,6 +713,13 @@ public interface List<T> extends Seq<T>, ValueObject {
             result = result.prepend(list.head());
         }
         return result.reverse();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    @unsafe
+    default <U, Z> List<Z> treeMap(Function<? super U, ? extends Object> mapper) {
+        return (List<Z>) Seq.super.treeMap(mapper);
     }
 
     @Override

@@ -166,6 +166,13 @@ public class ListTest extends AbstractSeqTest implements MonadLaws<Traversable<?
         assertThat(List.of(1).combinations(-1)).isEqualTo(List.cons(List.nil()));
     }
 
+    // -- peek
+
+    @Override
+    int getPeekNonNilPerformingAnAction() {
+        return 1;
+    }
+
     // -- permutations
 
     @Test

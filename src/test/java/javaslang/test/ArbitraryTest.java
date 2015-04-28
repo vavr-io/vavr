@@ -9,6 +9,8 @@ import javaslang.Tuple;
 import javaslang.collection.BinaryTree;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
+import javaslang.control.Option;
+import javaslang.control.Some;
 import org.junit.Test;
 
 import java.util.Random;
@@ -32,6 +34,22 @@ public class ArbitraryTest {
         final Arbitrary<Integer> arbitraryInt = size -> Gen.choose(-size, size);
         final Arbitrary<BinaryTree<Integer>> arbitraryTree = arbitraryInt.flatMap(i -> new ArbitraryBinaryTree(-i, i));
         assertThat(arbitraryTree.apply(0).apply(new Random())).isNotNull();
+    }
+
+    // -- treeMap
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenCallingTreeMapWithNullMapper() {
+        Arbitrary.integer().treeMap(null);
+    }
+
+    @Test
+    public void shouldTreeMapSome() {
+        final Arbitrary<Integer> one = size -> Gen.of(1);
+        final Arbitrary<Option<Arbitrary<Integer>>> arbitrary = size -> Gen.of(new Some<>(one));
+        final Arbitrary<Option<Arbitrary<Integer>>> mapped = arbitrary.treeMap((Integer i) -> i + 1);
+        final Random random = new Random();
+        assertThat(mapped.apply(1).apply(random).get().apply(1).apply(random)).isEqualTo(2);
     }
 
     // -- map

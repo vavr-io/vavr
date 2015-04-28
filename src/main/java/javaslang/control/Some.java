@@ -7,6 +7,7 @@ package javaslang.control;
 
 import javaslang.Tuple;
 import javaslang.Tuple1;
+import javaslang.unsafe;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -57,6 +58,13 @@ public final class Some<T> implements Option<T> {
     public <U> Some<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return new Some<>(mapper.apply(get()));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    @unsafe
+    public <U, Z> Some<Z> treeMap(Function<? super U, ? extends Object> mapper) {
+        return (Some<Z>) Option.super.treeMap(mapper);
     }
 
     @Override
