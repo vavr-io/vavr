@@ -69,11 +69,11 @@ public class ListTest extends AbstractSeqTest implements MonadLaws<Traversable<?
         assertThat(List.nil()).isEqualTo(Nil.instance());
     }
 
-    // -- static cons()
+    // -- static of()
 
     @Test
     public void shouldCreateListOfListUsingCons() {
-        assertThat(List.cons(List.nil()).toString()).isEqualTo("List(List())");
+        assertThat(List.of(List.nil()).toString()).isEqualTo("List(List())");
     }
 
     // -- static of(T...)
@@ -90,7 +90,7 @@ public class ListTest extends AbstractSeqTest implements MonadLaws<Traversable<?
     @Test
     public void shouldCreateListOfIterable() {
         final java.util.List<Integer> arrayList = Arrays.asList(1, 2, 3);
-        assertThat(List.of(arrayList)).isEqualTo(List.of(1, 2, 3));
+        assertThat(List.ofAll(arrayList)).isEqualTo(List.of(1, 2, 3));
     }
 
     // -- static rangeClosed(int, int)
@@ -141,7 +141,7 @@ public class ListTest extends AbstractSeqTest implements MonadLaws<Traversable<?
 
         @Test
     public void shouldComputeCombinationsOfEmptyList() {
-        assertThat(List.nil().combinations()).isEqualTo(List.cons(List.nil()));
+        assertThat(List.nil().combinations()).isEqualTo(List.of(List.nil()));
     }
 
     @Test
@@ -163,7 +163,7 @@ public class ListTest extends AbstractSeqTest implements MonadLaws<Traversable<?
 
     @Test
     public void shouldComputeKCombinationsOfNegativeK() {
-        assertThat(List.of(1).combinations(-1)).isEqualTo(List.cons(List.nil()));
+        assertThat(List.of(1).combinations(-1)).isEqualTo(List.of(List.nil()));
     }
 
     // -- peek
@@ -182,7 +182,7 @@ public class ListTest extends AbstractSeqTest implements MonadLaws<Traversable<?
 
     @Test
     public void shouldComputePermutationsOfNonEmptyList() {
-        assertThat(List.of(1, 2, 3).permutations()).isEqualTo(List.of(List.of(List.of(1, 2, 3), List.of(1, 3, 2), List.of(2, 1, 3), List.of(2, 3, 1), List.of(3, 1, 2), List.of(3, 2, 1))));
+        assertThat(List.of(1, 2, 3).permutations()).isEqualTo(List.ofAll(List.of(List.of(1, 2, 3), List.of(1, 3, 2), List.of(2, 1, 3), List.of(2, 3, 1), List.of(3, 1, 2), List.of(3, 2, 1))));
     }
 
     // -- unapply

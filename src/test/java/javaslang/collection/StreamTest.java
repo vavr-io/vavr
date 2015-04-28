@@ -91,11 +91,11 @@ public class StreamTest extends AbstractSeqTest implements MonadLaws<Traversable
         assertThat(Stream.nil()).isEqualTo(Nil.instance());
     }
 
-    // -- static cons()
+    // -- static of()
 
     @Test
     public void shouldCreateStreamOfStreamUsingCons() {
-        assertThat(Stream.cons(Stream.nil()).toString()).isEqualTo("Stream(Stream(), ?)");
+        assertThat(Stream.of(Stream.nil()).toString()).isEqualTo("Stream(Stream(), ?)");
     }
 
     // -- static of(T...)
@@ -112,7 +112,7 @@ public class StreamTest extends AbstractSeqTest implements MonadLaws<Traversable
     @Test
     public void shouldCreateStreamOfIterable() {
         final java.util.List<Integer> arrayList = Arrays.asList(1, 2, 3);
-        assertThat(Stream.of(arrayList)).isEqualTo(Stream.of(1, 2, 3));
+        assertThat(Stream.ofAll(arrayList)).isEqualTo(Stream.of(1, 2, 3));
     }
 
     // -- static of(Iterator)
@@ -120,7 +120,7 @@ public class StreamTest extends AbstractSeqTest implements MonadLaws<Traversable
     @Test
     public void shouldCreateStreamOfIterator() {
         final Iterator<Integer> iterator = Arrays.asList(1, 2, 3).iterator();
-        assertThat(Stream.of(iterator)).isEqualTo(Stream.of(1, 2, 3));
+        assertThat(Stream.ofAll(iterator)).isEqualTo(Stream.of(1, 2, 3));
     }
 
     // -- static rangeClosed(int, int)
@@ -181,7 +181,7 @@ public class StreamTest extends AbstractSeqTest implements MonadLaws<Traversable
 
     @Test
     public void shouldComputeCombinationsOfEmptyStream() {
-        assertThat(Stream.nil().combinations()).isEqualTo(Stream.cons(Stream.nil()));
+        assertThat(Stream.nil().combinations()).isEqualTo(Stream.of(Stream.nil()));
     }
 
     @Test
@@ -210,7 +210,7 @@ public class StreamTest extends AbstractSeqTest implements MonadLaws<Traversable
 
     @Test
     public void shouldComputeKCombinationsOfNegativeK() {
-        assertThat(Stream.of(1).combinations(-1)).isEqualTo(Stream.cons(Stream.nil()));
+        assertThat(Stream.of(1).combinations(-1)).isEqualTo(Stream.of(Stream.nil()));
     }
 
     // -- permutations
@@ -222,7 +222,7 @@ public class StreamTest extends AbstractSeqTest implements MonadLaws<Traversable
 
     @Test
     public void shouldComputePermutationsOfNonEmptyStream() {
-        assertThat(Stream.of(1, 2, 3).permutations()).isEqualTo(Stream.of(Stream.of(Stream.of(1, 2, 3), Stream.of(1, 3, 2), Stream.of(2, 1, 3), Stream.of(2, 3, 1), Stream.of(3, 1, 2), Stream.of(3, 2, 1))));
+        assertThat(Stream.of(1, 2, 3).permutations()).isEqualTo(Stream.ofAll(Stream.of(Stream.of(1, 2, 3), Stream.of(1, 3, 2), Stream.of(2, 1, 3), Stream.of(2, 3, 1), Stream.of(3, 1, 2), Stream.of(3, 2, 1))));
     }
 
     // -- unapply

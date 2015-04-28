@@ -29,7 +29,7 @@ import java.util.stream.Collector;
  * <code>
  * // factory methods
  * Stream.nil()              // = Stream.of() = Nil.instance()
- * Stream.cons(x)            // = new Cons&lt;&gt;(x, Nil.instance())
+ * Stream.of(x)            // = new Cons&lt;&gt;(x, Nil.instance())
  * Stream.of(Object...)      // e.g. Stream.of(1, 2, 3)
  * Stream.of(Iterable)       // e.g. Stream.of(List.of(1, 2, 3)) = 1, 2, 3
  * Stream.of(Iterator)       // e.g. Stream.of(Arrays.asList(1, 2, 3).iterator()) = 1, 2, 3
@@ -69,7 +69,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
             left.addAll(right);
             return left;
         };
-        final Function<ArrayList<T>, Stream<T>> finisher = Stream::of;
+        final Function<ArrayList<T>, Stream<T>> finisher = Stream::ofAll;
         return Collector.of(supplier, accumulator, combiner, finisher);
     }
 
@@ -111,20 +111,13 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     /**
-     * <p>
-     * Use {@code cons(Iterable)} instead of {@linkplain Stream#of(Iterable)} in order to create nested structures of
-     * the form {@code Stream<Stream<T>>}.
-     * </p>
-     * <p>
-     * {@code cons(Object)} produces the same result as {@linkplain Stream#of(Iterable)} if T is not Iterable and
-     * the Iterable contains only one element.
-     * </p>
+     * Returns a singleton {@code Stream}, i.e. a {@code Stream} of one element.
      *
      * @param element An element.
      * @param <T>     The component type
      * @return A new Stream instance containing the given element
      */
-    static <T> Stream<T> cons(T element) {
+    static <T> Stream<T> of(T element) {
         return new Cons<>(element, Nil::instance);
     }
 
@@ -145,7 +138,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     @SafeVarargs
     static <T> Stream<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return Stream.of(new Iterator<T>() {
+        return Stream.ofAll(new Iterator<T>() {
             int i = 0;
 
             @Override
@@ -168,12 +161,12 @@ public interface Stream<T> extends Seq<T>, ValueObject {
      * @return A list containing the given elements in the same order.
      */
     @SuppressWarnings("unchecked")
-    static <T> Stream<T> of(Iterable<? extends T> elements) {
+    static <T> Stream<T> ofAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof Stream) {
             return (Stream<T>) elements;
         } else {
-            return Stream.of(elements.iterator());
+            return Stream.ofAll(elements.iterator());
         }
     }
 
@@ -185,10 +178,10 @@ public interface Stream<T> extends Seq<T>, ValueObject {
      * @return A new Stream
      */
     // providing this method to save resources creating a Stream - makes no sense for collections in general
-    static <T> Stream<T> of(Iterator<? extends T> iterator) {
+    static <T> Stream<T> ofAll(Iterator<? extends T> iterator) {
         Objects.requireNonNull(iterator, "iterator is null");
         if (iterator.hasNext()) {
-            return new Cons<>(iterator.next(), () -> Stream.of(iterator));
+            return new Cons<>(iterator.next(), () -> Stream.ofAll(iterator));
         } else {
             return Nil.instance();
         }
@@ -220,7 +213,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
         if (from > toInclusive) {
             return Nil.instance();
         } else if (from == Integer.MAX_VALUE) {
-            return Stream.cons(Integer.MAX_VALUE);
+            return Stream.of(Integer.MAX_VALUE);
         } else {
             return new Cons<>(from, () -> rangeClosed(from + 1, toInclusive));
         }
@@ -228,13 +221,13 @@ public interface Stream<T> extends Seq<T>, ValueObject {
 
     @Override
     default Stream<T> append(T element) {
-        return isEmpty() ? Stream.cons(element) : new Cons<>(head(), () -> tail().append(element));
+        return isEmpty() ? Stream.of(element) : new Cons<>(head(), () -> tail().append(element));
     }
 
     @Override
     default Stream<T> appendAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return isEmpty() ? Stream.of(elements) : new Cons<>(head(), () -> tail().appendAll(elements));
+        return isEmpty() ? Stream.ofAll(elements) : new Cons<>(head(), () -> tail().appendAll(elements));
     }
 
     @Override
@@ -251,7 +244,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     default Stream<Stream<T>> combinations(int k) {
         class Recursion {
             Stream<Stream<T>> combinations(Stream<T> elements, int k) {
-                return (k == 0) ? Stream.cons(Stream.nil()) :
+                return (k == 0) ? Stream.of(Stream.nil()) :
                         elements.zipWithIndex().flatMap(t ->
                                 combinations(elements.drop(t._2 + 1), (k - 1))
                                         .map((Stream<T> c) -> c.prepend(t._1)));
@@ -365,7 +358,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     @SuppressWarnings("unchecked")
     @Override
     default <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Stream<U> flatten(Function<? super T, ? extends TRAVERSABLE> f) {
-        return isEmpty() ? Nil.instance() : Stream.of(new Iterator<U>() {
+        return isEmpty() ? Nil.instance() : Stream.ofAll(new Iterator<U>() {
 
             final Iterator<? extends T> inputs = Stream.this.iterator();
             Iterator<? extends U> current = Collections.emptyIterator();
@@ -459,7 +452,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements) on empty stream");
         }
         if (index == 0) {
-            return Stream.of(elements).appendAll(this);
+            return Stream.ofAll(elements).appendAll(this);
         } else {
             return new Cons<>(head(), () -> tail().insertAll(index - 1, elements));
         }
@@ -516,7 +509,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
         } else {
             final Stream<T> tail = tail();
             if (tail.isEmpty()) {
-                return Stream.cons(this);
+                return Stream.of(this);
             } else {
                 final Stream<Stream<T>> zero = Nil.instance();
                 // TODO: IntelliJ IDEA 14.1.1 needs a redundant cast here, jdk 1.8.0_40 compiles fine
@@ -533,7 +526,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     @Override
     default Stream<T> prependAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return Stream.of(elements).appendAll(this);
+        return Stream.ofAll(elements).appendAll(this);
     }
 
     @Override
@@ -554,7 +547,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     @Override
     default Stream<T> removeAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        final Stream<T> distinct = Stream.of(elements).distinct();
+        final Stream<T> distinct = Stream.ofAll(elements).distinct();
         return filter(e -> !distinct.contains(e));
     }
 
@@ -598,7 +591,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
         if (isEmpty()) {
             return this;
         } else {
-            final Stream<T> retained = Stream.of(elements).distinct();
+            final Stream<T> retained = Stream.ofAll(elements).distinct();
             return filter(retained::contains);
         }
     }
@@ -761,7 +754,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     @Override
     default <U> Stream<Tuple2<T, U>> zip(Iterable<U> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
-        final Stream<U> that = Stream.of(iterable);
+        final Stream<U> that = Stream.ofAll(iterable);
         if (this.isEmpty() || that.isEmpty()) {
             return Nil.instance();
         } else {
@@ -772,7 +765,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     @Override
     default <U> Stream<Tuple2<T, U>> zipAll(Iterable<U> iterable, T thisElem, U thatElem) {
         Objects.requireNonNull(iterable, "iterable is null");
-        final Stream<U> that = Stream.of(iterable);
+        final Stream<U> that = Stream.ofAll(iterable);
         final boolean isThisEmpty = this.isEmpty();
         final boolean isThatEmpty = that.isEmpty();
         if (isThisEmpty && isThatEmpty) {
