@@ -155,7 +155,7 @@ public class TypeConsistencyTest {
                         return FileVisitResult.CONTINUE;
                     }
                 }));
-        return Stream.of(classes);
+        return Stream.ofAll(classes);
     }
 
     static class ComparableMethod implements Comparable<ComparableMethod> {

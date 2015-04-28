@@ -28,9 +28,9 @@ import java.util.stream.Collector;
  * <code>
  * // factory methods
  * List.nil()              // = List.of() = Nil.instance()
- * List.cons(x)            // = new Cons&lt;&gt;(x, Nil.instance())
+ * List.of(x)              // = new Cons&lt;&gt;(x, Nil.instance())
  * List.of(Object...)      // e.g. List.of(1, 2, 3)
- * List.of(Iterable)       // e.g. List.of(Stream.of(1, 2, 3)) = 1, 2, 3
+ * List.ofAll(Iterable)    // e.g. List.ofAll(Stream.of(1, 2, 3)) = 1, 2, 3
  *
  * // int sequences
  * List.range(0, 3)        // = 0, 1, 2
@@ -63,7 +63,7 @@ public interface List<T> extends Seq<T>, ValueObject {
             left.addAll(right);
             return left;
         };
-        final Function<ArrayList<T>, List<T>> finisher = List::of;
+        final Function<ArrayList<T>, List<T>> finisher = List::ofAll;
         return Collector.of(supplier, accumulator, combiner, finisher);
     }
 
@@ -81,20 +81,13 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     /**
-     * <p>
-     * Use {@code cons(Object)} instead of {@linkplain List#of(Iterable)} in order to create nested structures
-     * of the form {@code List<List<T>>}.
-     * </p>
-     * <p>
-     * {@code cons(Object)} produces the same result as {@linkplain List#of(Iterable)} if T is not Iterable
-     * and the Iterable contains only one element.
-     * </p>
+     * Returns a singleton {@code List}, i.e. a {@code List} of one element.
      *
      * @param element An element.
      * @param <T>     The component type
      * @return A new List instance containing the given element
      */
-    static <T> List<T> cons(T element) {
+    static <T> List<T> of(T element) {
         return new Cons<>(element, Nil.instance());
     }
 
@@ -132,7 +125,7 @@ public interface List<T> extends Seq<T>, ValueObject {
      * @return A list containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
-    static <T> List<T> of(Iterable<? extends T> elements) {
+    static <T> List<T> ofAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof List) {
             @SuppressWarnings("unchecked")
@@ -173,7 +166,7 @@ public interface List<T> extends Seq<T>, ValueObject {
         if (from > toInclusive) {
             return Nil.instance();
         } else if (toInclusive == Integer.MIN_VALUE) {
-            return List.cons(Integer.MIN_VALUE);
+            return List.of(Integer.MIN_VALUE);
         } else {
             List<Integer> result = Nil.instance();
             for (int i = toInclusive; i >= from; i--) {
@@ -191,7 +184,7 @@ public interface List<T> extends Seq<T>, ValueObject {
     @Override
     default List<T> appendAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return foldRight(List.of(elements), (x, xs) -> xs.prepend(x));
+        return foldRight(List.ofAll(elements), (x, xs) -> xs.prepend(x));
     }
 
     @Override
@@ -209,7 +202,7 @@ public interface List<T> extends Seq<T>, ValueObject {
         class Recursion {
             List<List<T>> combinations(List<T> elements, int k) {
                 return (k == 0)
-                        ? List.cons(List.nil())
+                        ? List.of(List.nil())
                         : elements.zipWithIndex().flatMap(t -> combinations(elements.drop(t._2 + 1), (k - 1))
                         .map((List<T> c) -> c.prepend(t._1)));
             }
@@ -454,7 +447,7 @@ public interface List<T> extends Seq<T>, ValueObject {
         } else {
             final List<T> tail = tail();
             if (tail.isEmpty()) {
-                return List.cons(this);
+                return List.of(this);
             } else {
                 final List<List<T>> zero = Nil.instance();
                 // TODO: IntelliJ IDEA 14.1.1 needs a redundant cast here, jdk 1.8.0_40 compiles fine
@@ -471,7 +464,7 @@ public interface List<T> extends Seq<T>, ValueObject {
     @Override
     default List<T> prependAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return isEmpty() ? List.of(elements) : List.of(elements).reverse().foldLeft(this, List::prepend);
+        return isEmpty() ? List.ofAll(elements) : List.ofAll(elements).reverse().foldLeft(this, List::prepend);
     }
 
     @Override
@@ -509,7 +502,7 @@ public interface List<T> extends Seq<T>, ValueObject {
     @Override
     default List<T> removeAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        List<T> removed = List.of(elements).distinct();
+        List<T> removed = List.ofAll(elements).distinct();
         List<T> result = Nil.instance();
         for (T element : this) {
             if (!removed.contains(element)) {
@@ -562,7 +555,7 @@ public interface List<T> extends Seq<T>, ValueObject {
     @Override
     default List<T> retainAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        final List<T> keeped = List.of(elements).distinct();
+        final List<T> keeped = List.ofAll(elements).distinct();
         List<T> result = Nil.instance();
         for (T element : this) {
             if (keeped.contains(element)) {

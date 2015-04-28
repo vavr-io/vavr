@@ -106,7 +106,7 @@ public interface BinaryTree<T> extends Tree<T> {
      * @return A balanced tree containing all elements of the given iterable.
      */
     static <T> BinaryTree<T> balance(Iterable<T> iterable) {
-        final List<T> list = List.of(iterable);
+        final List<T> list = List.ofAll(iterable);
         if (list.isEmpty()) {
             return Nil.instance();
         } else {

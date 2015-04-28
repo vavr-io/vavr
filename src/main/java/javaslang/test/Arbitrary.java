@@ -249,7 +249,7 @@ public interface Arbitrary<T> extends Monad<T, Arbitrary<?>> {
     static <T> Arbitrary<Stream<T>> stream(Arbitrary<T> arbitraryT) {
         return size -> {
             final Gen<T> genT = arbitraryT.apply(size);
-            return random -> Gen.choose(0, size).map(i -> Stream.of(() -> new Iterator<T>() {
+            return random -> Gen.choose(0, size).map(i -> Stream.ofAll(() -> new Iterator<T>() {
 
                 int count = i;
 

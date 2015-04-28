@@ -247,7 +247,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      */
     default boolean containsAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return List.of(elements)
+        return List.ofAll(elements)
                 .distinct()
                 .findFirst(e -> !this.contains(e))
                 .isEmpty();

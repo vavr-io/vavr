@@ -201,7 +201,7 @@ public interface Gen<T> extends Monad<T, Gen<?>> {
      */
     static <T> Gen<T> frequency(Iterable<Tuple2<Integer, Gen<T>>> generators) {
         Objects.requireNonNull(generators, "generators is null");
-        final Stream<Tuple2<Integer, Gen<T>>> stream = Stream.of(generators);
+        final Stream<Tuple2<Integer, Gen<T>>> stream = Stream.ofAll(generators);
         if (stream.isEmpty()) {
             throw new IllegalArgumentException("generators is empty");
         }
@@ -247,7 +247,7 @@ public interface Gen<T> extends Monad<T, Gen<?>> {
      */
     static <T> Gen<T> oneOf(Iterable<Gen<T>> generators) {
         Objects.requireNonNull(generators, "generators is null");
-        final Stream<Gen<T>> stream = Stream.of(generators);
+        final Stream<Gen<T>> stream = Stream.ofAll(generators);
         if (stream.isEmpty()) {
             throw new IllegalArgumentException("generators is empty");
         }
