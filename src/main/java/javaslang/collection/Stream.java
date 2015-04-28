@@ -745,7 +745,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     @SuppressWarnings("unchecked")
     @Override
     @unsafe
-    default <U, Z> Stream<Z> treeMap(Function<U, Object> mapper) {
+    default <U, Z> Stream<Z> treeMap(Function<? super U, ? extends Object> mapper) {
         return (Stream<Z>) Seq.super.treeMap(mapper);
     }
 

@@ -9,6 +9,7 @@ import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.algebra.Monoid;
 import javaslang.control.Match;
+import javaslang.control.None;
 import javaslang.control.Option;
 import org.junit.Test;
 
@@ -1526,6 +1527,32 @@ public abstract class AbstractTraversableTest {
         expected.add(1);
         expected.add(3);
         assertThat(of(1, 2, 2, 3).toJavaSet()).isEqualTo(expected);
+    }
+
+    // -- treeMap
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenCallingTreeMapWithNullMapperOnNil() {
+        nil().treeMap(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenCallingTreeMapWithNullMapperOnNonNil() {
+        of(1).treeMap(null);
+    }
+
+    @Test
+    public void shouldTreeMapNil() {
+        assertThat(nil().treeMap(Function.identity())).isEqualTo(nil());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldTreeMapNonNil() {
+        // [None, Some([1])]
+        final Traversable<Option<Traversable<Integer>>> actual = of(None.instance(), Option.of(of(1))).treeMap((Integer i) -> i + 1);
+        final Traversable<Option<Traversable<Integer>>> expected = of(None.instance(), Option.of(of(2)));
+        assertThat(actual).isEqualTo(expected);
     }
 
     // -- unzip

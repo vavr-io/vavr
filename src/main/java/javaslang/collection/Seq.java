@@ -351,7 +351,7 @@ public interface Seq<T> extends Traversable<T> {
     @SuppressWarnings("unchecked")
     @Override
     @unsafe
-    default <U, Z> Seq<Z> treeMap(Function<U, Object> mapper) {
+    default <U, Z> Seq<Z> treeMap(Function<? super U, ? extends Object> mapper) {
         return (Seq<Z>) Traversable.super.treeMap(mapper);
     }
 

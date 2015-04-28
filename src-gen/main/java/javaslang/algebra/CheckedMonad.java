@@ -9,6 +9,7 @@ package javaslang.algebra;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import java.util.Objects;
 import java.util.function.Consumer;
 import javaslang.control.Match;
 import javaslang.control.Try;
@@ -65,7 +66,8 @@ public interface CheckedMonad<T, M extends HigherKinded<?, M>> extends CheckedFu
      */
     @SuppressWarnings("unchecked")
     @unsafe
-    default <U, Z> CheckedMonad<Z, M> treeMap(CheckedFunction<U, Object> mapper) {
+    default <U, Z> CheckedMonad<Z, M> treeMap(CheckedFunction<? super U, ? extends Object> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
         final Match<?> match = Match.ofType(Object.class)
                 .caze((Monad<?, ?> m) -> m.treeMap((U u) -> Try.of(() -> mapper.apply(u)).get()))
                 .caze((CheckedMonad<?, ?> m) -> m.treeMap(mapper))

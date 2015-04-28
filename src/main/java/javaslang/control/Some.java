@@ -63,8 +63,8 @@ public final class Some<T> implements Option<T> {
     @SuppressWarnings("unchecked")
     @Override
     @unsafe
-    public <U, Z> Some<Z> treeMap(Function<U, Object> mapper) {
-        return (Some<Z>) (Object) Option.super.treeMap(mapper);
+    public <U, Z> Some<Z> treeMap(Function<? super U, ? extends Object> mapper) {
+        return (Some<Z>) Option.super.treeMap(mapper);
     }
 
     @Override

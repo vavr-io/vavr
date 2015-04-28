@@ -1003,7 +1003,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
     @SuppressWarnings("unchecked")
     @Override
     @unsafe
-    default <U, Z> Traversable<Z> treeMap(Function<U, Object> mapper) {
+    default <U, Z> Traversable<Z> treeMap(Function<? super U, ? extends Object> mapper) {
         return (Traversable<Z>) (Object) Monad.super.treeMap(mapper);
     }
 

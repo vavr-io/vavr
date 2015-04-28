@@ -16,6 +16,7 @@ import javaslang.test.Gen;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -75,6 +76,31 @@ public class TryTest implements CheckedMonadLaws<Try<?>> {
     @Test
     public void shouldFlattenFailureWithFunction() {
         assertThat(failure().flatten(MATCH::apply)).isEqualTo(failure());
+    }
+
+    // -- treeMap
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenCallingTreeMapWithNullMapperOnFailure() {
+        failure().treeMap(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenCallingTreeMapWithNullMapperOnSuccess() {
+        success().treeMap(null);
+    }
+
+    @Test
+    public void shouldTreeMapFailure() {
+        assertThat(failure().treeMap(Try.CheckedFunction.identity())).isEqualTo(failure());
+    }
+
+    @Test
+    public void shouldTreeMapSuccess() {
+        // Success([Failure, Success("1")])
+        final Try<javaslang.collection.List<Try<String>>> actual = Try.of(() -> javaslang.collection.List.of(failure(), new Success<>("1"))).treeMap(String::length);
+        final Try<javaslang.collection.List<Try<Integer>>> expected = Try.of(() -> javaslang.collection.List.of(failure(), new Success<>(1)));
+        assertThat(actual).isEqualTo(expected);
     }
 
     // -- exists
@@ -256,7 +282,7 @@ public class TryTest implements CheckedMonadLaws<Try<?>> {
 
     @Test
     public void shouldRecoverWithOnFailure() {
-        assertThat(failure().recoverWith(x -> success()).get()).isEqualTo(OK);
+        assertThat(TryTest.<String> failure().recoverWith(x -> success()).get()).isEqualTo(OK);
     }
 
     @Test
@@ -330,7 +356,7 @@ public class TryTest implements CheckedMonadLaws<Try<?>> {
     @Test
     public void shouldForEachOnFailure() {
         final List<String> actual = new ArrayList<>();
-        failure().forEach(actual::add);
+        TryTest.<String> failure().forEach(actual::add);
         assertThat(actual.isEmpty()).isTrue();
     }
 
@@ -645,7 +671,7 @@ public class TryTest implements CheckedMonadLaws<Try<?>> {
         return new RuntimeException("error");
     }
 
-    private Try<String> failure() {
+    private static <T> Try<T> failure() {
         return Try.of(() -> {
             throw new RuntimeException();
         });

@@ -157,7 +157,7 @@ public final class Success<T> implements Try<T> {
     @SuppressWarnings("unchecked")
     @Override
     @unsafe
-    public <U, Z> Success<Z> treeMap(CheckedFunction<U, Object> mapper) {
+    public <U, Z> Success<Z> treeMap(CheckedFunction<? super U, ? extends Object> mapper) {
         return (Success<Z>) Try.super.treeMap(mapper);
     }
 

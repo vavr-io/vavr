@@ -9,6 +9,7 @@ package javaslang.algebra;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -63,7 +64,8 @@ public interface Monad<T, M extends HigherKinded<?, M>> extends Functor<T>, High
      */
     @SuppressWarnings("unchecked")
     @unsafe
-    default <U, Z> Monad<Z, M> treeMap(Function<U, Object> mapper) {
+    default <U, Z> Monad<Z, M> treeMap(Function<? super U, ? extends Object> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
         return (Monad<Z, M>) map(Match.ofType(Object.class)
                 .caze((Monad<?, ?> m) -> m.treeMap(mapper))
                 .caze((CheckedMonad<?, ?> m) -> m.treeMap(mapper::apply))

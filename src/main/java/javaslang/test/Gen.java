@@ -293,10 +293,11 @@ public interface Gen<T> extends Monad<T, Gen<?>> {
         return random -> ((Gen<U>) mapper.apply(apply(random))).apply(random);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     @unsafe
-    default <U, Z> Gen<Z> treeMap(Function<U, Object> mapper) {
-        throw new UnsupportedOperationException("not implemented");
+    default <U, Z> Gen<Z> treeMap(Function<? super U, ? extends Object> mapper) {
+        return (Gen<Z>) (Object) Monad.super.treeMap(mapper);
     }
 
     /**

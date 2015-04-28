@@ -76,7 +76,7 @@ public final class None<T> implements Option<T> {
     }
 
     @Override
-    public <U, Z> None<Z> treeMap(Function<U, Object> mapper) {
+    public <U, Z> None<Z> treeMap(Function<? super U, ? extends Object> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return None.instance();
     }

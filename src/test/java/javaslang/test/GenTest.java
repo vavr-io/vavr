@@ -9,9 +9,13 @@ import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
+import javaslang.control.None;
+import javaslang.control.Option;
+import javaslang.control.Some;
 import org.junit.Test;
 
 import java.util.Random;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -240,6 +244,19 @@ public class GenTest {
     public void shouldFlatMapGen() {
         final Gen<Integer> gen = Gen.of(1).flatMap(i -> Gen.of(i * 2));
         assertForAll(() -> gen.apply(RANDOM), i -> i % 2 == 0);
+    }
+
+    // -- treeMap
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenCallingTreeMapWithNullMapper() {
+        Gen.of(1).treeMap(null);
+    }
+
+    @Test
+    public void shouldTreeMapSome() {
+        final Gen<Option<Gen<Integer>>> gen = Gen.of(new Some<>(Gen.of(1))).treeMap((Integer i) -> i + 1);
+        assertThat(gen.apply(RANDOM).get().apply(RANDOM)).isEqualTo(2);
     }
 
     // -- filter

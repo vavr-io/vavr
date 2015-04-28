@@ -152,7 +152,8 @@ public final class Failure<T> implements Try<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U, Z> Failure<Z> treeMap(CheckedFunction<U, Object> mapper) {
+    public <U, Z> Failure<Z> treeMap(CheckedFunction<? super U, ? extends Object> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
         return (Failure<Z>) this;
     }
 

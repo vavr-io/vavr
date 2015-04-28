@@ -240,7 +240,7 @@ public interface Try<T> extends CheckedMonad<T, Try<?>>, ValueObject, Bivalent<T
     @SuppressWarnings("unchecked")
     @Override
     @unsafe
-    default <U, Z> Try<Z> treeMap(CheckedFunction<U, Object> mapper) {
+    default <U, Z> Try<Z> treeMap(CheckedFunction<? super U, ? extends Object> mapper) {
         return (Try<Z>) (Object) CheckedMonad.super.treeMap(mapper);
     }
 

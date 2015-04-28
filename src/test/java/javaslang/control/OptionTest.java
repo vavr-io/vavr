@@ -9,6 +9,8 @@ import javaslang.Serializables;
 import javaslang.Tuple;
 import javaslang.algebra.Monad;
 import javaslang.algebra.MonadLaws;
+import javaslang.collection.List;
+import javaslang.collection.Traversable;
 import javaslang.test.Arbitrary;
 import javaslang.test.CheckResult;
 import javaslang.test.CheckResultAssertions;
@@ -246,6 +248,31 @@ public class OptionTest implements MonadLaws<Option<?>> {
     @Test
     public void shouldFlatMapNone() {
         assertThat(Option.<Integer>none().flatMap(i -> Option.of(String.valueOf(i)))).isEqualTo(Option.none());
+    }
+
+    // -- treeMap
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenCallingTreeMapWithNullMapperOnNone() {
+        None.instance().treeMap(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenCallingTreeMapWithNullMapperOnSome() {
+        new Some<>(1).treeMap(null);
+    }
+
+    @Test
+    public void shouldTreeMapNone() {
+        assertThat(None.instance().treeMap(Function.identity())).isEqualTo(None.instance());
+    }
+
+    @Test
+    public void shouldTreeMapSome() {
+        // Some([None, Some(1)])
+        final Option<List<Option<Integer>>> actual = Option.of(List.of(Option.none(), Option.of(1))).treeMap((Integer i) -> i + 1);
+        final Option<List<Option<Integer>>> expected = Option.of(List.of(Option.none(), Option.of(2)));
+        assertThat(actual).isEqualTo(expected);
     }
 
     // -- exists

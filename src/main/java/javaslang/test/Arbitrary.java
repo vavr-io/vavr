@@ -97,10 +97,11 @@ public interface Arbitrary<T> extends Monad<T, Arbitrary<?>> {
         };
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     @unsafe
-    default <U, Z> Arbitrary<Z> treeMap(Function<U, Object> mapper) {
-        throw new UnsupportedOperationException("not implemented");
+    default <U, Z> Arbitrary<Z> treeMap(Function<? super U, ? extends Object> mapper) {
+        return (Arbitrary<Z>) (Object) Monad.super.treeMap(mapper);
     }
 
     /**

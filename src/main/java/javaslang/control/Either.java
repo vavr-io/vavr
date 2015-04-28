@@ -396,7 +396,7 @@ public interface Either<L, R> extends ValueObject {
         @SuppressWarnings("unchecked")
         @Override
         @unsafe
-        public <U, Z> LeftProjection<Z, R> treeMap(Function<U, Object> mapper) {
+        public <U, Z> LeftProjection<Z, R> treeMap(Function<? super U, ? extends Object> mapper) {
             return (LeftProjection<Z, R>) (Object) Monad.super.treeMap(mapper);
         }
 
@@ -707,7 +707,7 @@ public interface Either<L, R> extends ValueObject {
         @SuppressWarnings("unchecked")
         @Override
         @unsafe
-        public <U, Z> RightProjection<L, Z> treeMap(Function<U, Object> mapper) {
+        public <U, Z> RightProjection<L, Z> treeMap(Function<? super U, ? extends Object> mapper) {
             return (RightProjection<L, Z>) (Object) Monad.super.treeMap(mapper);
         }
 

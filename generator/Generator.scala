@@ -516,7 +516,8 @@ def generateMainClasses(): Unit = {
              */
             @SuppressWarnings("unchecked")
             @$unsafe
-            default <U, Z> $className<Z, M> treeMap($functionType<U, Object> mapper) {
+            default <U, Z> $className<Z, M> treeMap($functionType<? super U, ? extends Object> mapper) {
+                ${im.getType("java.util.Objects")}.requireNonNull(mapper, "mapper is null");
                 ${if (checked) {
                   val Try = im.getType("javaslang.control.Try")
                   xs"""

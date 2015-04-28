@@ -718,7 +718,7 @@ public interface List<T> extends Seq<T>, ValueObject {
     @SuppressWarnings("unchecked")
     @Override
     @unsafe
-    default <U, Z> List<Z> treeMap(Function<U, Object> mapper) {
+    default <U, Z> List<Z> treeMap(Function<? super U, ? extends Object> mapper) {
         return (List<Z>) Seq.super.treeMap(mapper);
     }
 
