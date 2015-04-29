@@ -104,6 +104,58 @@ public class MatchTest {
         assertThat(actual).isEqualTo(1);
     }
 
+    // -- ofType()
+
+    @Test
+    public void shouldCreateCazeOfTypeUsingPrototype() {
+        assertThat(Match.ofType(Object.class).caze(null, Function1.identity())).isNotNull();
+    }
+
+    @Test
+    public void shouldCreateCazeOfTypeUsingFunction() {
+        assertThat(Match.ofType(Object.class).caze((Object o) -> null)).isNotNull();
+    }
+
+    @Test
+    public void shouldCreateCazeOfTypeUsingBooleanFunction() {
+        assertThat(Match.ofType(Object.class).caze((boolean b) -> null)).isNotNull();
+    }
+
+    @Test
+    public void shouldCreateCazeOfTypeUsingByteFunction() {
+        assertThat(Match.ofType(Object.class).caze((byte b) -> null)).isNotNull();
+    }
+
+    @Test
+    public void shouldCreateCazeOfTypeUsingCharFunction() {
+        assertThat(Match.ofType(Object.class).caze((char b) -> null)).isNotNull();
+    }
+
+    @Test
+    public void shouldCreateCazeOfTypeUsingDoubleFunction() {
+        assertThat(Match.ofType(Object.class).caze((double b) -> null)).isNotNull();
+    }
+
+    @Test
+    public void shouldCreateCazeOfTypeUsingFloatFunction() {
+        assertThat(Match.ofType(Object.class).caze((float b) -> null)).isNotNull();
+    }
+
+    @Test
+    public void shouldCreateCazeOfTypeUsingIntFunction() {
+        assertThat(Match.ofType(Object.class).caze((int b) -> null)).isNotNull();
+    }
+
+    @Test
+    public void shouldCreateCazeOfTypeUsingLongFunction() {
+        assertThat(Match.ofType(Object.class).caze((long b) -> null)).isNotNull();
+    }
+
+    @Test
+    public void shouldCreateCazeOfTypeUsingShortFunction() {
+        assertThat(Match.ofType(Object.class).caze((short b) -> null)).isNotNull();
+    }
+
     // -- primitive types vs objects
 
     // boolean / Boolean
