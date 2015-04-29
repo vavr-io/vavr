@@ -11,10 +11,7 @@ import javaslang.unsafe;
 
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
+import java.util.function.*;
 
 /**
  * Interface for sequential, traversable data structures.
@@ -51,7 +48,20 @@ import java.util.function.UnaryOperator;
  * @param <T> Component type
  * @since 1.1.0
  */
-public interface Seq<T> extends Traversable<T> {
+public interface Seq<T> extends Traversable<T>, IntFunction<T> {
+
+    /**
+     * A {@code Seq} is a partial function which returns the element at the specified index by calling
+     * {@linkplain #get(int)}.
+     *
+     * @param index an index
+     * @return the element at the given index
+     * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
+     */
+    @Override
+    default T apply(int index) {
+        return get(index);
+    }
 
     /**
      * Appends an element to this.

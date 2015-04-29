@@ -75,6 +75,13 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    // -- apply
+
+    @Test
+    public void shouldUseSeqAsPartialFunction() {
+        assertThat(of(1, 2, 3).apply(1)).isEqualTo(2);
+    }
+
     // -- get
 
     @Test(expected = IndexOutOfBoundsException.class)
