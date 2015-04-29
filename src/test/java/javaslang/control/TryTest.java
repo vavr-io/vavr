@@ -16,7 +16,6 @@ import javaslang.test.Gen;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

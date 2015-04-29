@@ -9,13 +9,11 @@ import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
-import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
 import org.junit.Test;
 
 import java.util.Random;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -299,23 +297,23 @@ public class GenTest {
 
     // -- exists
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void shouldThrowOnExists() {
         Gen.of(1).exists(i -> true);
     }
 
     // -- forAll
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void shouldThrowOnForAll() {
-        Gen.of(1).forAll(i -> true);
+        Gen.of(1).forAll(i -> false);
     }
 
     // -- forEach
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = RuntimeException.class)
     public void shouldThrowOnForEach() {
-        Gen.of(1).forEach(i -> {});
+        Gen.of(1).forEach(i -> { throw new RuntimeException("OK"); });
     }
 
     // -- peek

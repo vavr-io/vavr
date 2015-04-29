@@ -10,7 +10,6 @@ import javaslang.Tuple;
 import javaslang.algebra.Monad;
 import javaslang.algebra.MonadLaws;
 import javaslang.collection.List;
-import javaslang.collection.Traversable;
 import javaslang.test.Arbitrary;
 import javaslang.test.CheckResult;
 import javaslang.test.CheckResultAssertions;

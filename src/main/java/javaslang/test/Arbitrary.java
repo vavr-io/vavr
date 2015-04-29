@@ -24,7 +24,7 @@ import java.util.function.Predicate;
  * @since 1.2.0
  */
 @FunctionalInterface
-public interface Arbitrary<T> extends Monad<T, Arbitrary<?>> {
+public interface Arbitrary<T> extends Monad<T, Arbitrary<?>>, Iterable<T> {
 
     /**
      * <p>
@@ -132,34 +132,41 @@ public interface Arbitrary<T> extends Monad<T, Arbitrary<?>> {
     }
 
     /**
-     * OPERATION NOT SUPPORTED!
+     * Checks if there exists an element which satisfies the given {@code predicate}.
+     * <p>
+     * <strong>CAUTION:</strong> This operation will take infinitely long if no such element exists.
      *
      * @param predicate A {@code Predicate}
-     * @return nothing
-     * @throws UnsupportedOperationException because this operation could take infinitely long
+     * @return true, if there exists an element which meets the predicate
      */
     @Override
     default boolean exists(Predicate<? super T> predicate) {
-        throw new UnsupportedOperationException();
+        return !forAll(predicate.negate());
     }
 
     /**
-     * OPERATION NOT SUPPORTED!
+     * Checks if all elements satisfy the given {@code predicate}.
+     * <p>
+     * <strong>CAUTION:</strong> This operation will take infinitely long if no element satisfies the given predicate.
      *
      * @param predicate A {@code Predicate}
-     * @return nothing
-     * @throws UnsupportedOperationException because this operation would take infinitely long
+     * @return false, if there exists an element which does not meet the predicate
      */
     @Override
     default boolean forAll(Predicate<? super T> predicate) {
-        throw new UnsupportedOperationException();
+        for (T t : this) {
+            if (!predicate.test(t)) {
+                return false;
+            }
+        }
+        // at the end of the universe ...
+        return true;
     }
 
     /**
-     * OPERATION NOT SUPPORTED!
+     * <strong>CAUTION:</strong> Performs the given {@code action} infinitely long on arbitrary elements.
      *
      * @param action A {@code Consumer}
-     * @throws UnsupportedOperationException because this operation would take infinitely long
      */
     @Override
     default void forEach(Consumer<? super T> action) {
@@ -169,6 +176,11 @@ public interface Arbitrary<T> extends Monad<T, Arbitrary<?>> {
     @Override
     default Arbitrary<T> peek(Consumer<? super T> action) {
         return size -> apply(size).peek(action);
+    }
+
+    @Override
+    default Iterator<T> iterator() {
+        return apply(Checkable.DEFAULT_SIZE).iterator();
     }
 
     /**

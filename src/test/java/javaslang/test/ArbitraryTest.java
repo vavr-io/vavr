@@ -92,23 +92,23 @@ public class ArbitraryTest {
 
     // -- exists
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void shouldThrowOnExists() {
         Arbitrary.integer().exists(i -> true);
     }
 
     // -- forAll
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void shouldThrowOnForAll() {
-        Arbitrary.integer().forAll(i -> true);
+        Arbitrary.integer().forAll(i -> false);
     }
 
     // -- forEach
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = RuntimeException.class)
     public void shouldThrowOnForEach() {
-        Arbitrary.integer().forEach(i -> {});
+        Arbitrary.integer().forEach(i -> { throw new RuntimeException("OK"); });
     }
 
     // -- peek

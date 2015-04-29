@@ -11,6 +11,7 @@ import javaslang.algebra.Monad;
 import javaslang.collection.Stream;
 import javaslang.unsafe;
 
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Random;
 import java.util.function.Consumer;
@@ -31,7 +32,7 @@ import java.util.function.Predicate;
  * @since 1.2.0
  */
 @FunctionalInterface
-public interface Gen<T> extends Monad<T, Gen<?>> {
+public interface Gen<T> extends Monad<T, Gen<?>>, Iterable<T> {
 
     int FILTER_THRESHOLD = Integer.MAX_VALUE;
 
@@ -338,38 +339,47 @@ public interface Gen<T> extends Monad<T, Gen<?>> {
     }
 
     /**
-     * OPERATION NOT SUPPORTED!
+     * Checks if there exists an element which satisfies the given {@code predicate}.
+     * <p>
+     * <strong>CAUTION:</strong> This operation will take infinitely long if no such element exists.
      *
      * @param predicate A {@code Predicate}
-     * @return nothing
-     * @throws UnsupportedOperationException because this operation could take infinitely long
+     * @return true, if there exists an element which meets the predicate
      */
     @Override
     default boolean exists(Predicate<? super T> predicate) {
-        throw new UnsupportedOperationException();
+        return !forAll(predicate.negate());
     }
 
     /**
-     * OPERATION NOT SUPPORTED!
+     * Checks if all elements satisfy the given {@code predicate}.
+     * <p>
+     * <strong>CAUTION:</strong> This operation will take infinitely long if no element satisfies the given predicate.
      *
      * @param predicate A {@code Predicate}
-     * @return nothing
-     * @throws UnsupportedOperationException because this operation would take infinitely long
+     * @return false, if there exists an element which does not meet the predicate
      */
     @Override
     default boolean forAll(Predicate<? super T> predicate) {
-        throw new UnsupportedOperationException();
+        for (T t : this) {
+            if (!predicate.test(t)) {
+                return false;
+            }
+        }
+        // at the end of the universe ...
+        return true;
     }
 
     /**
-     * OPERATION NOT SUPPORTED!
+     * <strong>CAUTION:</strong> Performs the given {@code action} infinitely long on generated elements.
      *
      * @param action A {@code Consumer}
-     * @throws UnsupportedOperationException because this operation would take infinitely long
      */
     @Override
     default void forEach(Consumer<? super T> action) {
-        throw new UnsupportedOperationException();
+        for (T t : this) {
+            action.accept(t);
+        }
     }
 
     @Override
@@ -378,6 +388,23 @@ public interface Gen<T> extends Monad<T, Gen<?>> {
             final T t = apply(random);
             action.accept(t);
             return t;
+        };
+    }
+
+    @Override
+    default Iterator<T> iterator() {
+        final Random random = Checkable.RNG.get();
+        return new Iterator<T>() {
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public T next() {
+                return apply(random);
+            }
         };
     }
 }
