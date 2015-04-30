@@ -11,6 +11,7 @@ import javaslang.algebra.Monoid;
 import javaslang.control.Match;
 import javaslang.control.None;
 import javaslang.control.Option;
+import javaslang.control.Some;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -577,6 +578,18 @@ public abstract class AbstractTraversableTest {
         assertThat(of(1, 2, 3).head()).isEqualTo(1);
     }
 
+    // -- headOption
+
+    @Test
+    public void shouldReturnNoneWhenCallingHeadOptionOnNil() {
+        assertThat(nil().headOption().isEmpty()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnSomeHeadWhenCallingHeadOptionOnNonNil() {
+        assertThat(of(1, 2, 3).headOption()).isEqualTo(new Some<>(1));
+    }
+
     // -- init
 
     @Test(expected = UnsupportedOperationException.class)
@@ -587,6 +600,18 @@ public abstract class AbstractTraversableTest {
     @Test
     public void shouldGetInitOfNonNil() {
         assertThat(of(1, 2, 3).init()).isEqualTo(of(1, 2));
+    }
+
+    // -- initOption
+
+    @Test
+    public void shouldReturnNoneWhenCallingInitOptionOnNil() {
+        assertThat(nil().initOption().isEmpty()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnSomeInitWhenCallingInitOptionOnNonNil() {
+        assertThat(of(1, 2, 3).initOption()).isEqualTo(new Some<>(of(1, 2)));
     }
 
     // -- intersperse
@@ -692,6 +717,18 @@ public abstract class AbstractTraversableTest {
     @Test
     public void shouldReturnLastOfNonNil() {
         assertThat(of(1, 2, 3).last()).isEqualTo(3);
+    }
+
+    // -- lastOption
+
+    @Test
+    public void shouldReturnNoneWhenCallingLastOptionOnNil() {
+        assertThat(nil().lastOption().isEmpty()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnSomeLastWhenCallingLastOptionOnNonNil() {
+        assertThat(of(1, 2, 3).lastOption()).isEqualTo(new Some<>(3));
     }
 
     // -- length
@@ -1471,9 +1508,19 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldReturnTailOfNonNil() {
-        final Traversable<Integer> actual = of(1, 2, 3).tail();
-        final Traversable<Integer> expected = of(2, 3);
-        assertThat(actual).isEqualTo(expected);
+        assertThat(of(1, 2, 3).tail()).isEqualTo(of(2, 3));
+    }
+
+    // -- tailOption
+
+    @Test
+    public void shouldReturnNoneWhenCallingTailOptionOnNil() {
+        assertThat(nil().tailOption().isEmpty()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnSomeTailWhenCallingTailOptionOnNonNil() {
+        assertThat(of(1, 2, 3).tailOption()).isEqualTo(new Some<>(of(2, 3)));
     }
 
     // -- toJavaArray(Class)

@@ -7,6 +7,9 @@ package javaslang.collection;
 
 import javaslang.*;
 import javaslang.algebra.HigherKinded;
+import javaslang.control.None;
+import javaslang.control.Option;
+import javaslang.control.Some;
 
 import java.io.*;
 import java.util.*;
@@ -360,6 +363,11 @@ public interface List<T> extends Seq<T>, ValueObject {
         } else {
             return dropRight(1);
         }
+    }
+
+    @Override
+    default Option<List<T>> initOption() {
+        return isEmpty() ? None.instance() : new Some<>(init());
     }
 
     @Override
@@ -797,8 +805,18 @@ public interface List<T> extends Seq<T>, ValueObject {
         }
 
         @Override
+        public Option<T> headOption() {
+            return new Some<>(head);
+        }
+
+        @Override
         public List<T> tail() {
             return tail;
+        }
+
+        @Override
+        public Option<List<T>> tailOption() {
+            return new Some<>(tail);
         }
 
         @Override
@@ -952,8 +970,18 @@ public interface List<T> extends Seq<T>, ValueObject {
         }
 
         @Override
+        public Option<T> headOption() {
+            return None.instance();
+        }
+
+        @Override
         public List<T> tail() {
             throw new UnsupportedOperationException("tail of empty list");
+        }
+
+        @Override
+        public Option<List<T>> tailOption() {
+            return None.instance();
         }
 
         @Override
