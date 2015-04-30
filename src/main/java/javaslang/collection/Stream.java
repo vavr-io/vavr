@@ -637,7 +637,8 @@ public interface Stream<T> extends Seq<T>, ValueObject {
         if (isEmpty()) {
             return Nil.instance();
         } else {
-            return new Cons<>(take(size), () -> drop(step).sliding(size, step));
+            final Tuple2<Stream<T>, Stream<T>> split = splitAt(size);
+            return new Cons<>(split._1, () -> split._2.isEmpty() ? Nil.instance() : drop(step).sliding(size, step));
         }
     }
 

@@ -607,12 +607,12 @@ public interface List<T> extends Seq<T>, ValueObject {
         if (size <= 0 || step <= 0) {
             throw new IllegalArgumentException(String.format("size: %s or step: %s not positive", size, step));
         }
-        List<List<T>> result = nil();
+        List<List<T>> result = Nil.instance();
         List<T> list = this;
         while (!list.isEmpty()) {
-            final List<T> group = list.take(size);
-            result = result.prepend(group);
-            list = list.drop(step);
+            final Tuple2<List<T>, List<T>> split = list.splitAt(size);
+            result = result.prepend(split._1);
+            list = split._2.isEmpty() ? Nil.instance() : list.drop(step);
         }
         return result.reverse();
     }
@@ -719,8 +719,8 @@ public interface List<T> extends Seq<T>, ValueObject {
     default <T1, T2> Tuple2<List<T1>, List<T2>> unzip(
             Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
-        List<T1> xs = nil();
-        List<T2> ys = nil();
+        List<T1> xs = Nil.instance();
+        List<T2> ys = Nil.instance();
         for (T element : this) {
             final Tuple2<? extends T1, ? extends T2> t = unzipper.apply(element);
             xs = xs.prepend(t._1);

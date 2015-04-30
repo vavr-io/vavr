@@ -1199,8 +1199,14 @@ public abstract class AbstractTraversableTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void shouldSlideNonNilBySize() {
+    public void shouldSlideNonNilBySize1() {
         assertThat(of(1, 2, 3).sliding(1)).isEqualTo(of(of(1), of(2), of(3)));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test // #201
+    public void shouldSlideNonNilBySize2() {
+        assertThat(of(1, 2, 3, 4, 5).sliding(2)).isEqualTo(of(of(1, 2), of(2, 3), of(3, 4), of(4, 5)));
     }
 
     // -- sliding(size, step)
@@ -1231,7 +1237,7 @@ public abstract class AbstractTraversableTest {
     @SuppressWarnings("unchecked")
     @Test
     public void shouldSlide4ElementsBySize5AndStep3() {
-        assertThat(of(1, 2, 3, 4).sliding(5, 3)).isEqualTo(of(of(1, 2, 3, 4), of(4)));
+        assertThat(of(1, 2, 3, 4).sliding(5, 3)).isEqualTo(of(of(1, 2, 3, 4)));
     }
 
     // -- span
