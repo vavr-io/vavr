@@ -10,6 +10,7 @@ import javaslang.algebra.HigherKinded;
 import javaslang.algebra.Monad;
 import javaslang.algebra.Monoid;
 import javaslang.control.Match;
+import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
 import javaslang.unsafe;
@@ -40,11 +41,15 @@ import java.util.function.*;
  * <li>{@link #contains(Object)}</li>
  * <li>{@link #containsAll(Iterable)}</li>
  * <li>{@link #head()}</li>
+ * <li>{@link #headOption()}</li>
  * <li>{@link #init()}</li>
+ * <li>{@link #initOption()}</li>
  * <li>{@link #isEmpty()}</li>
  * <li>{@link #last()}</li>
+ * <li>{@link #lastOption()}</li>
  * <li>{@link #length()}</li>
  * <li>{@link #tail()}</li>
+ * <li>{@link #tailOption()}</li>
  * </ul>
  * <p>Filtering</p>
  * <ul>
@@ -576,12 +581,26 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
     T head();
 
     /**
+     * Returns the first element of a non-empty Traversable as {@code Option}.
+     *
+     * @return {@code Some(element)} or {@code None} if this is empty.
+     */
+    Option<T> headOption();
+
+    /**
      * Dual of {@linkplain #tail()}, returning all elements except the last.
      *
      * @return a new instance containing all elements except the last.
      * @throws UnsupportedOperationException if this is empty
      */
     Traversable<T> init();
+
+    /**
+     * Dual of {@linkplain #tailOption()}, returning all elements except the last as {@code Option}.
+     *
+     * @return {@code Some(traversable)} or {@code None} if this is empty.
+     */
+    Option<? extends Traversable<T>> initOption();
 
     /**
      * Inserts an element between all elements of this Traversable.
@@ -682,6 +701,15 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
             }
             return traversable.head();
         }
+    }
+
+    /**
+     * Dual of {@linkplain #headOption()}, returning the last element as {@code Opiton}.
+     *
+     * @return {@code Some(element)} or {@code None} if this is empty.
+     */
+    default Option<T> lastOption() {
+        return isEmpty() ? None.instance() : new Some<>(last());
     }
 
     /**
@@ -1084,6 +1112,13 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * @throws UnsupportedOperationException if this is empty
      */
     Traversable<T> tail();
+
+    /**
+     * Drops the first element of a non-empty Traversable and returns an {@code Option}.
+     *
+     * @return {@code Some(traversable)} or {@code None} if this is empty.
+     */
+    Option<? extends Traversable<T>> tailOption();
 
     /**
      * Takes the first n elements of this or all elements, if this length &lt; n.

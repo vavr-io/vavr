@@ -7,6 +7,9 @@ package javaslang.collection;
 
 import javaslang.*;
 import javaslang.algebra.HigherKinded;
+import javaslang.control.None;
+import javaslang.control.Option;
+import javaslang.control.Some;
 
 import java.io.*;
 import java.util.*;
@@ -428,6 +431,11 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     @Override
+    default Option<Stream<T>> initOption() {
+        return isEmpty() ? None.instance() : new Some<>(init());
+    }
+
+    @Override
     default Stream<T> insert(int index, T element) {
         if (index < 0) {
             throw new IndexOutOfBoundsException("insert(" + index + ", e)");
@@ -818,8 +826,18 @@ public interface Stream<T> extends Seq<T>, ValueObject {
         }
 
         @Override
+        public Option<T> headOption() {
+            return new Some<>(head);
+        }
+
+        @Override
         public Stream<T> tail() {
             return tail.get();
+        }
+
+        @Override
+        public Option<Stream<T>> tailOption() {
+            return new Some<>(tail.get());
         }
 
         @Override
@@ -976,8 +994,18 @@ public interface Stream<T> extends Seq<T>, ValueObject {
         }
 
         @Override
+        public Option<T> headOption() {
+            return None.instance();
+        }
+
+        @Override
         public Stream<T> tail() {
             throw new UnsupportedOperationException("tail of empty stream");
+        }
+
+        @Override
+        public Option<Stream<T>> tailOption() {
+            return None.instance();
         }
 
         @Override

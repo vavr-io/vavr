@@ -7,6 +7,7 @@ package javaslang.collection;
 
 import javaslang.Tuple2;
 import javaslang.algebra.HigherKinded;
+import javaslang.control.Option;
 import javaslang.unsafe;
 
 import java.util.Comparator;
@@ -305,6 +306,9 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     Seq<T> init();
 
     @Override
+    Option<? extends Seq<T>> initOption();
+
+    @Override
     Seq<T> intersperse(T element);
 
     @Override
@@ -348,6 +352,9 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
 
     @Override
     Seq<T> tail();
+
+    @Override
+    Option<? extends Seq<T>> tailOption();
 
     @Override
     Seq<T> take(int n);
