@@ -755,6 +755,33 @@ public abstract class AbstractTraversableTest {
         assertThat(of(1, 2, 3).map(i -> i + 1)).isEqualTo(of(2, 3, 4));
     }
 
+    // -- partition
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenPartitionNilAndPredicateIsNull() {
+        nil().partition(null);
+    }
+
+    @Test
+    public void shouldPartitionNil() {
+        assertThat(nil().partition(e -> true)).isEqualTo(Tuple.of(nil(), nil()));
+    }
+
+    @Test
+    public void shouldPartitionIntsInOddAndEvenHavingOddAndEventNumbers() {
+        assertThat(of(1, 2, 3, 4).partition(i -> i % 2 != 0)).isEqualTo(Tuple.of(of(1, 3), of(2, 4)));
+    }
+
+    @Test
+    public void shouldPartitionIntsInOddAndEvenHavingOnlyOddNumbers() {
+        assertThat(of(1, 3).partition(i -> i % 2 != 0)).isEqualTo(Tuple.of(of(1, 3), nil()));
+    }
+
+    @Test
+    public void shouldPartitionIntsInOddAndEvenHavingOnlyEvenNumbers() {
+        assertThat(of(2, 4).partition(i -> i % 2 != 0)).isEqualTo(Tuple.of(nil(), of(2, 4)));
+    }
+
     // -- max
 
     @Test(expected = NoSuchElementException.class)
@@ -949,7 +976,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldPeekNonNilPerformingAnAction() {
-        final int[] effect = { 0 };
+        final int[] effect = {0};
         final Traversable<Integer> actual = of(1, 2, 3).peek(i -> effect[0] = i);
         assertThat(actual).isEqualTo(of(1, 2, 3)); // traverses all elements in the lazy case
         assertThat(effect[0]).isEqualTo(getPeekNonNilPerformingAnAction());
