@@ -500,6 +500,12 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     @Override
+    default Tuple2<Stream<T>, Stream<T>> partition(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return Tuple.of(filter(predicate), filter(predicate.negate()));
+    }
+
+    @Override
     default Stream<T> peek(Consumer<? super T> action) {
         if (isEmpty()) {
             return this;

@@ -433,6 +433,12 @@ public interface List<T> extends Seq<T>, ValueObject {
         return foldRight(nil(), (x, xs) -> xs.prepend(mapper.apply(x)));
     }
 
+    @Override
+    default Tuple2<List<T>, List<T>> partition(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return Tuple.of(filter(predicate), filter(predicate.negate()));
+    }
+
     /**
      * Performs an action on the head element of this {@code List}.
      *

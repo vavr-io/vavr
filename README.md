@@ -15,7 +15,7 @@ The .jar is available at [Maven Central](http://search.maven.org/#search|ga|1|a:
 ### Gradle
 
 ```gradle
-compile "com.javaslang:javaslang:1.2.0"
+compile "com.javaslang:javaslang:1.2.2"
 ```
 
 ### Maven
@@ -24,7 +24,7 @@ compile "com.javaslang:javaslang:1.2.0"
 <dependency>
     <groupId>com.javaslang</groupId>
     <artifactId>javaslang</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.2</version>
 </dependency>
 ```
 

@@ -120,7 +120,7 @@ import java.util.function.*;
  * <li>TODO(#110): #groupBy</li>
  * <li>{@link #intersperse(Object)}</li>
  * <li>{@link #map(Function)}</li>
- * <li>TODO(#110): #partition (generalization of groupBy)</li>
+ * <li>{@link #partition(Predicate)}</li>
  * <li>{@link #replace(Object, Object)}</li>
  * <li>{@link #replaceAll(Object, Object)}</li>
  * <li>{@link #replaceAll(UnaryOperator)}</li>
@@ -731,6 +731,16 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      */
     @Override
     <U> Traversable<U> map(Function<? super T, ? extends U> mapper);
+
+    /**
+     * Creates a partition of this {@code Traversable} by splitting this elements in two in distinct tarversables
+     * according to a predicate.
+     *
+     * @param predicate A predicate which classifies an element if it is in the first or the second traversable.
+     * @return A disjoint union of two traversables. The first {@code Traversable} contains all elements that satisfy the given {@code predicate}, the second {@code Traversable} contains all elements that don't. The original order of elements is preserved.
+     * @throws NullPointerException if predicate is null
+     */
+    Tuple2<? extends Traversable<T>, ? extends Traversable<T>> partition(Predicate<? super T> predicate);
 
     /**
      * <p>Calculates the maximum of this elements.</p>
