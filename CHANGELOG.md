@@ -1,5 +1,15 @@
 # Javaslang Changelog
 
+## 1.2.2 (Release date: 02.05.2015)
+
+Resources: [Maven Central](http://search.maven.org/#artifactdetails%7Ccom.javaslang%7Cjavaslang%7C1.2.2%7Cjar) &middot; [Javadoc](http://javaslang.com/javadoc/1.2.2/index.html) &middot; [Complete list of changes](https://github.com/javaslang/javaslang/issues?utf8=✓&q=milestone%3A1.2.2)
+
+| Major enhancements |
+| :--- |
+| Fixed Traversable.sliding() |
+| Improved numerical operations of Traversables |
+| Added Traversable headOption(), tailOption(), initOption(), lastOption() |
+
 ## 1.2.1 (Release date: 30.04.2015)
 
 Resources: [Maven Central](http://search.maven.org/#artifactdetails%7Ccom.javaslang%7Cjavaslang%7C1.2.1%7Cjar) &middot; [Javadoc](http://javaslang.com/javadoc/1.2.1/index.html) &middot; [Complete list of changes](https://github.com/javaslang/javaslang/issues?utf8=✓&q=milestone%3A1.2.1)
