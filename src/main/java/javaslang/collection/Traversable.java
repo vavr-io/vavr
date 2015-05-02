@@ -145,34 +145,14 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
 
     /**
      * A lazy instance of a 'nashorn' JavaScript engine which is internally called to perform numerical operations.
-     * TODO: In a future release of Java this should be made private
+     * <p>
+     * Please do not rely on the {@code JS} constant. Most probably it will be made private in a future release of Java.
      */
     Lazy<Invocable> JS = Lazy.of(() -> Try.of(() -> {
         final ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
         engine.eval(new InputStreamReader(Traversable.class.getResourceAsStream("traversable.js")));
         return (Invocable) engine;
     }).get());
-
-    /**
-     * <p>Calculates the average of this elements by computing the arithmetic mean.</p>
-     * <p>Supported component types are boolean, byte, char, double, float, int, long, short, BigInteger, BigDecimal.</p>
-     * <p>The arithmetic mean of boolean is defined here to be {@code this.filter(Boolean::booleanValue).length() >= n / 2)}.</p>
-     * <p>In order to preserve summation results, the value space is expanded as follows:</p>
-     * <ul>
-     * <li><strong>element type, summation type</strong></li>
-     * <li>byte, long</li>
-     * <li>char, int</li>
-     * <li>double, double</li>
-     * <li>float, double</li>
-     * <li>int, long</li>
-     * <li>short, int</li>
-     * </ul>
-     * <p>BigInteger and BigDecimal are not treated special.</p>
-     *
-     * @return the average of this elements.
-     * @throws NoSuchElementException        if no elements are present
-     * @throws UnsupportedOperationException if the elements are not numeric
-     */
 
     /**
      * Calculates the average of this elements by converting them to double values according to the JavaScript function
