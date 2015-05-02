@@ -40,7 +40,7 @@ public class GenTest {
             }
         };
         final Gen<Integer> gen = Gen.choose(1, 2);
-        final int actual = Stream.gen(() -> gen.apply(rng)).take(10).sum();
+        final double actual = Stream.gen(() -> gen.apply(rng)).take(10).sum();
         assertThat(actual).isEqualTo(10);
     }
 

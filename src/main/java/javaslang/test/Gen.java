@@ -215,7 +215,7 @@ public interface Gen<T> extends Monad<T, Gen<?>>, Iterable<T> {
                 return (n <= k) ? stream.head()._2 : gen(n - k, stream.tail());
             }
         }
-        final int size = stream.map(t -> t._1).sum();
+        final int size = stream.foldLeft(0, (i, t) -> i + t._1);
         return choose(1, size).flatMap(n -> new Frequency().gen(n, stream));
     }
 
