@@ -1,5 +1,5 @@
 /*
- * Computes the sum of iterable elements as double.
+ * Computes the average of iterable elements as double.
  */
 var avg = function(iterable) {
     // division by zero is NaN
