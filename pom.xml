@@ -16,7 +16,7 @@
     </parent>
     <groupId>com.javaslang</groupId>
     <artifactId>javaslang</artifactId>
-    <version>1.2.1-SNAPSHOT</version>
+    <version>1.2.2-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Javaslang</name>
     <description>Javaslang is a Java standard library extension built for Java 8 and above.</description>
@@ -59,6 +59,11 @@
         <scala.version>2.11.6</scala.version>
     </properties>
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/javascript</directory>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
