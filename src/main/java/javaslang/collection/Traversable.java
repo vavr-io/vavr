@@ -5,19 +5,22 @@
  */
 package javaslang.collection;
 
+import javaslang.Lazy;
 import javaslang.Tuple2;
 import javaslang.algebra.HigherKinded;
 import javaslang.algebra.Monad;
 import javaslang.algebra.Monoid;
-import javaslang.control.Match;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
+import javaslang.control.Try;
 import javaslang.unsafe;
 
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -141,51 +144,39 @@ import java.util.function.*;
 public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
 
     /**
-     * <p>Calculates the average of this elements by computing the arithmetic mean.</p>
-     * <p>Supported component types are boolean, byte, char, double, float, int, long, short, BigInteger, BigDecimal.</p>
-     * <p>The arithmetic mean of boolean is defined here to be {@code this.filter(Boolean::booleanValue).length() >= n / 2)}.</p>
-     * <p>In order to preserve summation results, the value space is expanded as follows:</p>
-     * <ul>
-     * <li><strong>element type, summation type</strong></li>
-     * <li>byte, long</li>
-     * <li>char, int</li>
-     * <li>double, double</li>
-     * <li>float, double</li>
-     * <li>int, long</li>
-     * <li>short, int</li>
-     * </ul>
-     * <p>BigInteger and BigDecimal are not treated special.</p>
-     *
-     * @return the average of this elements.
-     * @throws NoSuchElementException        if no elements are present
-     * @throws UnsupportedOperationException if the elements are not numeric
+     * A lazy instance of a 'nashorn' JavaScript engine which is internally called to perform numerical operations.
+     * <p>
+     * Please do not rely on the {@code JS} constant. Most probably it will be made private in a future release of Java.
      */
-    @SuppressWarnings("unchecked")
-    default T average() {
+    Lazy<Invocable> JS = Lazy.of(() -> Try.of(() -> {
+        final ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
+        engine.eval(new InputStreamReader(Traversable.class.getResourceAsStream("traversable.js")));
+        return (Invocable) engine;
+    }).get());
+
+    /**
+     * Calculates the average of this elements by converting them to double values according to the JavaScript function
+     * <a href="http://www.w3schools.com/jsref/jsref_parsefloat.asp">{@code parseFloat()}</a>.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.empty().average()                     // = None
+     * List.of(0.1, 0.2, 0.3).average()           // = Some(0.2)
+     * List.of('0', '1', '2').average()           // = Some(1)
+     * List.of("1 kg", "2 kg", "3 kg").average()  // = Some(2)
+     * List.of("apple", "pear").average()         // = Some(NaN)
+     * </code>
+     * </pre>
+     *
+     * @return {@code Some(average)} or {@code None}, if there are no elements
+     */
+    default Option<Double> average() {
         if (isEmpty()) {
-            throw new NoSuchElementException("average of nothing");
+            return None.instance();
         } else {
-            final T head = head();
-            final int n = length();
-            return Match
-                    .<T>caze((boolean t) -> (T) (Boolean) (((Traversable<Boolean>) this).filter(Boolean::booleanValue).length() >= n / 2))
-                    .caze((byte t) -> (T) (Byte) (byte) (((Traversable<Byte>) this).foldLeft(0, (i, j) -> i + j) / n))
-                    .caze((char t) -> (T) (Character) (char) (((Traversable<Character>) this).foldLeft(0, (i, j) -> i + j) / n))
-                    .caze((double t) -> (T) (Double) (((Traversable<Double>) this).foldLeft(0d, (i, j) -> i + j) / n))
-                    .caze((float t) -> (T) (Float) (float) (((Traversable<Float>) this).foldLeft(0d, (i, j) -> i + j) / n))
-                    .caze((int t) -> (T) (Integer) (int) (((Traversable<Integer>) this).foldLeft(0L, (i, j) -> i + j) / n))
-                    .caze((long t) -> (T) (Long) (((Traversable<Long>) this).foldLeft(0L, (i, j) -> i + j) / n))
-                    .caze((short t) -> (T) (Short) (short) (((Traversable<Short>) this).foldLeft(0, (i, j) -> i + j) / n))
-                    .caze((BigInteger t) -> (T) ((Traversable<BigInteger>) this).reduce(BigInteger::add).divide(BigInteger.valueOf(n)))
-                    .caze((BigDecimal t) -> {
-                        final Traversable<BigDecimal> traversable = (Traversable<BigDecimal>) this;
-                        final int scale = traversable.map(BigDecimal::scale).max();
-                        return (T) traversable.reduce(BigDecimal::add).divide(BigDecimal.valueOf(n), scale + 1, BigDecimal.ROUND_HALF_EVEN);
-                    })
-                    .orElse(() -> {
-                        throw new UnsupportedOperationException("not numeric");
-                    })
-                    .apply(head);
+            final double value = Try.of(() -> (double) JS.get().invokeFunction("avg", this)).get();
+            return new Some<>(value); // may be Some(NaN)
         }
     }
 
@@ -743,140 +734,89 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
     Tuple2<? extends Traversable<T>, ? extends Traversable<T>> partition(Predicate<? super T> predicate);
 
     /**
-     * <p>Calculates the maximum of this elements.</p>
-     * <p>Supported component types are boolean, byte, char, double, float, int, long, short, BigInteger, BigDecimal.</p>
-     * <p>If the component type is boolean, the maximum is defined to be {@code this.reduce((i, j) -> i || j)}.</p>
+     * Calculates the maximum of this elements according to their natural order.
      *
-     * @return the maximum of this elements.
-     * @throws NoSuchElementException        if no elements are present
-     * @throws UnsupportedOperationException if the elements are not numeric
+     * @return {@code Some(maximum)} of this elements or {@code None} if this is empty or this elements are not comparable
      */
     @SuppressWarnings("unchecked")
-    default T max() {
-        if (isEmpty()) {
-            throw new NoSuchElementException("max of nothing");
+    default Option<T> max() {
+        if (isEmpty() || !(head() instanceof Comparable)) {
+            return None.instance();
         } else {
-            final T head = head();
-            return Match
-                    .<T>caze((boolean t) -> (T) ((Traversable<Boolean>) this).reduce((i, j) -> i || j))
-                    .caze((byte t) -> (T) ((Traversable<Byte>) this).reduce((i, j) -> (i > j) ? i : j))
-                    .caze((char t) -> (T) ((Traversable<Character>) this).reduce((i, j) -> (i > j) ? i : j))
-                    .caze((double t) -> (T) ((Traversable<Double>) this).reduce((i, j) -> (i > j) ? i : j))
-                    .caze((float t) -> (T) ((Traversable<Float>) this).reduce((i, j) -> (i > j) ? i : j))
-                    .caze((int t) -> (T) ((Traversable<Integer>) this).reduce((i, j) -> (i > j) ? i : j))
-                    .caze((long t) -> (T) ((Traversable<Long>) this).reduce((i, j) -> (i > j) ? i : j))
-                    .caze((short t) -> (T) ((Traversable<Short>) this).reduce((i, j) -> (i > j) ? i : j))
-                    .caze((BigInteger t) -> (T) ((Traversable<BigInteger>) this).reduce(BigInteger::max))
-                    .caze((BigDecimal t) -> (T) ((Traversable<BigDecimal>) this).reduce(BigDecimal::max))
-                    .orElse(() -> {
-                        throw new UnsupportedOperationException("not numeric");
-                    })
-                    .apply(head);
+            return maxBy((o1, o2) -> ((Comparable<T>) o1).compareTo(o2));
         }
     }
 
     /**
-     * <p>Calculates the maximum of this elements.</p>
+     * Calculates the maximum of this elements using a specific comparator.
      *
      * @param comparator A non-null element comparator
-     * @return the maximum of this elements.
-     * @throws NullPointerException   if {@code comparator} is null
-     * @throws NoSuchElementException if no elements are present
+     * @return {@code Some(maximum)} of this elements or {@code None} if this is empty
+     * @throws NullPointerException if {@code comparator} is null
      */
-    default T maxBy(Comparator<? super T> comparator) {
+    default Option<T> maxBy(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         if (isEmpty()) {
-            throw new NoSuchElementException("maxBy of nothing");
+            return None.instance();
+        } else {
+            final T value = reduce((t1, t2) -> comparator.compare(t1, t2) >= 0 ? t1 : t2);
+            return new Some<>(value);
         }
-        return reduce((t1, t2) -> comparator.compare(t1, t2) >= 0 ? t1 : t2);
     }
 
     /**
-     * Calculates the minimum of this elements.
-     * <p>Supported component types are boolean, byte, char, double, float, int, long, short, BigInteger, BigDecimal.</p>
-     * <p>If the component type is boolean, the minimum is defined to be {@code this.reduce((i, j) -> i && j)}.</p>
+     * Calculates the minimum of this elements according to their natural order.
      *
-     * @return the minimum of this elements.
-     * @throws NoSuchElementException        if no elements are present
-     * @throws UnsupportedOperationException if the elements are not numeric
+     * @return {@code Some(minimum)} of this elements or {@code None} if this is empty or this elements are not comparable
      */
     @SuppressWarnings("unchecked")
-    default T min() {
-        if (isEmpty()) {
-            throw new NoSuchElementException("min of nothing");
+    default Option<T> min() {
+        if (isEmpty() || !(head() instanceof Comparable)) {
+            return None.instance();
         } else {
-            final T head = head();
-            return Match
-                    .<T>caze((boolean t) -> (T) ((Traversable<Boolean>) this).reduce((i, j) -> i && j))
-                    .caze((byte t) -> (T) ((Traversable<Byte>) this).reduce((i, j) -> (i < j) ? i : j))
-                    .caze((char t) -> (T) ((Traversable<Character>) this).reduce((i, j) -> (i < j) ? i : j))
-                    .caze((double t) -> (T) ((Traversable<Double>) this).reduce((i, j) -> (i < j) ? i : j))
-                    .caze((float t) -> (T) ((Traversable<Float>) this).reduce((i, j) -> (i < j) ? i : j))
-                    .caze((int t) -> (T) ((Traversable<Integer>) this).reduce((i, j) -> (i < j) ? i : j))
-                    .caze((long t) -> (T) ((Traversable<Long>) this).reduce((i, j) -> (i < j) ? i : j))
-                    .caze((short t) -> (T) ((Traversable<Short>) this).reduce((i, j) -> (i < j) ? i : j))
-                    .caze((BigInteger t) -> (T) ((Traversable<BigInteger>) this).reduce(BigInteger::min))
-                    .caze((BigDecimal t) -> (T) ((Traversable<BigDecimal>) this).reduce(BigDecimal::min))
-                    .orElse(() -> {
-                        throw new UnsupportedOperationException("not numeric");
-                    })
-                    .apply(head);
+            return minBy((o1, o2) -> ((Comparable<T>) o1).compareTo(o2));
         }
     }
 
     /**
-     * <p>Calculates the minimum of this elements.</p>
+     * Calculates the minimum of this elements using a specific comparator.
      *
      * @param comparator A non-null element comparator
-     * @return the minimum of this elements.
-     * @throws NullPointerException   if {@code comparator} is null
-     * @throws NoSuchElementException if no elements are present
+     * @return {@code Some(minimum)} of this elements or {@code None} if this is empty
+     * @throws NullPointerException if {@code comparator} is null
      */
-    default T minBy(Comparator<? super T> comparator) {
+    default Option<T> minBy(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         if (isEmpty()) {
-            throw new NoSuchElementException("minBy of nothing");
+            return None.instance();
+        } else {
+            final T value = reduce((t1, t2) -> comparator.compare(t1, t2) <= 0 ? t1 : t2);
+            return new Some<>(value);
         }
-        return reduce((t1, t2) -> comparator.compare(t1, t2) <= 0 ? t1 : t2);
     }
 
     @Override
     Traversable<T> peek(Consumer<? super T> action);
 
     /**
-     * <p>Calculates the product of this elements.</p>
-     * <p>Supported component types are boolean, byte, char, double, float, int, long, short, BigInteger, BigDecimal.</p>
-     * <p>If b1 and b2 are of type boolean, {@code b1 * b2 := b1 &amp;&amp; b2}.</p>
-     * <p>The product operation is applied to this elements according to the Java Language Secification
-     * <a href="http://docs.oracle.com/javase/specs/jls/se8/html/jls-5.html#jls-5.6.2">Chapter 5. Conversions and Contexts</a>.
-     * The resulting value is converted to the component type of this Traversable.</p>
+     * Calculates the product of this elements by converting them to double values according to the JavaScript function
+     * <a href="http://www.w3schools.com/jsref/jsref_parsefloat.asp">{@code parseFloat()}</a>.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.empty().product()                     // = 1
+     * List.of(0.1, 0.2, 0.3).product()           // = 0.006
+     * List.of('0', '1', '2').product()           // = 0
+     * List.of("1 kg", "2 kg", "3 kg").product()  // = 6
+     * List.of("apple", "pear").product()         // = NaN
+     * </code>
+     * </pre>
      *
-     * @return the product of this elements.
-     * @throws NoSuchElementException        if no elements are present
-     * @throws UnsupportedOperationException if the elements are not numeric
+     * @return the product of this elements or {@code NaN}
      */
-    @SuppressWarnings("unchecked")
-    default T product() {
-        if (isEmpty()) {
-            throw new NoSuchElementException("product of nothing");
-        } else {
-            T head = head();
-            return Match
-                    .<T>caze((boolean t) -> (T) ((Traversable<Boolean>) this).reduce((i, j) -> i && j))
-                    .caze((byte t) -> (T) Byte.valueOf(((Traversable<Byte>) this).foldLeft(1, (i, j) -> i * j).byteValue()))
-                    .caze((char t) -> (T) Character.valueOf((char) ((Traversable<Character>) this).foldLeft(1, (i, j) -> i * j).shortValue()))
-                    .caze((double t) -> (T) ((Traversable<Double>) this).reduce((i, j) -> i * j))
-                    .caze((float t) -> (T) ((Traversable<Float>) this).reduce((i, j) -> i * j))
-                    .caze((int t) -> (T) ((Traversable<Integer>) this).reduce((i, j) -> i * j))
-                    .caze((long t) -> (T) ((Traversable<Long>) this).reduce((i, j) -> i * j))
-                    .caze((short t) -> (T) Short.valueOf(((Traversable<Short>) this).foldLeft(1, (i, j) -> i * j).shortValue()))
-                    .caze((BigInteger t) -> (T) ((Traversable<BigInteger>) this).reduce(BigInteger::multiply))
-                    .caze((BigDecimal t) -> (T) ((Traversable<BigDecimal>) this).reduce(BigDecimal::multiply))
-                    .orElse(() -> {
-                        throw new UnsupportedOperationException("not numeric");
-                    })
-                    .apply(head);
-        }
+    default double product() {
+        return Try.of(() -> (double) JS.get().invokeFunction("product", this)).get();
     }
 
     /**
@@ -1046,39 +986,24 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
     }
 
     /**
-     * <p>Calculates the sum of this elements.</p>
-     * <p>Supported component types are boolean, byte, char, double, float, int, long, short, BigInteger, BigDecimal.</p>
-     * <p>If b1 and b2 are of type boolean, {@code b1 + b2 := b1 || b2}.</p>
-     * <p>The sum operation is applied to this elements according to the Java Language Secification
-     * <a href="http://docs.oracle.com/javase/specs/jls/se8/html/jls-5.html#jls-5.6.2">Chapter 5. Conversions and Contexts</a>.
-     * The resulting value is converted to the component type of this Traversable.</p>
+     * Calculates the sum of this elements by converting them to double values according to the JavaScript function
+     * <a href="http://www.w3schools.com/jsref/jsref_parsefloat.asp">{@code parseFloat()}</a>.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.empty().sum()                     // = 0
+     * List.of(0.1, 0.2, 0.3).sum()           // = 0.6
+     * List.of('0', '1', '2').sum()           // = 3
+     * List.of("1 kg", "2 kg", "3 kg").sum()  // = 6
+     * List.of("apple", "pear").sum()         // = NaN
+     * </code>
+     * </pre>
      *
-     * @return the sum of this elements.
-     * @throws NoSuchElementException        if no elements are present
-     * @throws UnsupportedOperationException if the elements are not numeric
+     * @return the sum of this elements or {@code NaN}
      */
-    @SuppressWarnings({"unchecked"})
-    default T sum() {
-        if (isEmpty()) {
-            throw new NoSuchElementException("sum of nothing");
-        } else {
-            T head = head();
-            return Match
-                    .<T>caze((boolean t) -> (T) ((Traversable<Boolean>) this).reduce((i, j) -> i || j))
-                    .caze((byte t) -> (T) Byte.valueOf(((Traversable<Byte>) this).foldLeft(0, (i, j) -> i + j).byteValue()))
-                    .caze((char t) -> (T) Character.valueOf((char) ((Traversable<Character>) this).foldLeft(0, (i, j) -> i + j).shortValue()))
-                    .caze((double t) -> (T) ((Traversable<Double>) this).reduce((i, j) -> i + j))
-                    .caze((float t) -> (T) ((Traversable<Float>) this).reduce((i, j) -> i + j))
-                    .caze((int t) -> (T) ((Traversable<Integer>) this).reduce((i, j) -> i + j))
-                    .caze((long t) -> (T) ((Traversable<Long>) this).reduce((i, j) -> i + j))
-                    .caze((short t) -> (T) Short.valueOf(((Traversable<Short>) this).foldLeft(0, (i, j) -> i + j).shortValue()))
-                    .caze((BigInteger t) -> (T) ((Traversable<BigInteger>) this).reduce(BigInteger::add))
-                    .caze((BigDecimal t) -> (T) ((Traversable<BigDecimal>) this).reduce(BigDecimal::add))
-                    .orElse(() -> {
-                        throw new UnsupportedOperationException("not numeric");
-                    })
-                    .apply(head);
-        }
+    default double sum() {
+        return Try.of(() -> (double) JS.get().invokeFunction("sum", this)).get();
     }
 
     /**

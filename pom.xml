@@ -58,6 +58,11 @@
         <scala.version>2.11.6</scala.version>
     </properties>
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/javascript</directory>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

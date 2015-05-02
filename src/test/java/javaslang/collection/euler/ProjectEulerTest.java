@@ -26,7 +26,7 @@ public class ProjectEulerTest {
      */
     @Test
     public void shouldSolveProblem1() {
-        final int actual = List.range(1, 10).filter(n -> n % 3 == 0 || n % 5 == 0).sum();
+        final double actual = List.range(1, 10).filter(n -> n % 3 == 0 || n % 5 == 0).sum();
         assertThat(actual).isEqualTo(23);
     }
 
