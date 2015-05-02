@@ -1007,7 +1007,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
     }
 
     /**
-     * Sends the string representations of these elements to the sandard error stream {@linkplain System#err},
+     * Sends the string representations of these elements to the standard error stream {@linkplain System#err},
      * each in a new line.
      *
      * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stderr.
@@ -1024,7 +1024,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
     }
 
     /**
-     * Sends the string representations of these elements to the sandard output stream {@linkplain System#out},
+     * Sends the string representations of these elements to the standard output stream {@linkplain System#out},
      * each in a new line.
      *
      * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stdout.
