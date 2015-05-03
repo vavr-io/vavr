@@ -5,26 +5,20 @@
  */
 package javaslang.collection;
 
-import javaslang.Lazy;
 import javaslang.Tuple2;
 import javaslang.algebra.HigherKinded;
 import javaslang.algebra.Monad;
 import javaslang.algebra.Monoid;
+import javaslang.control.Match;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
-import javaslang.control.Try;
 import javaslang.unsafe;
 
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.*;
 import java.util.function.*;
 
 /**
@@ -144,39 +138,42 @@ import java.util.function.*;
 public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
 
     /**
-     * A lazy instance of a 'nashorn' JavaScript engine which is internally called to perform numerical operations.
-     * <p>
-     * Please do not rely on the {@code JS} constant. Most probably it will be made private in a future release of Java.
-     */
-    Lazy<Invocable> JS = Lazy.of(() -> Try.of(() -> {
-        final ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
-        engine.eval(new InputStreamReader(Traversable.class.getResourceAsStream("traversable.js")));
-        return (Invocable) engine;
-    }).get());
-
-    /**
-     * Calculates the average of this elements by converting them to double values according to the JavaScript function
-     * <a href="http://www.w3schools.com/jsref/jsref_parsefloat.asp">{@code parseFloat()}</a>.
+     * Calculates the average of this elements. Returns {@code None} if this is empty, otherwise {@code Some(average)}.
+     * Supported component types are {@code Byte}, {@code Double}, {@code Float}, {@code Integer}, {@code Long},
+     * {@code Short}, {@code BigInteger} and {@code BigDecimal}.
      * <p>
      * Examples:
      * <pre>
      * <code>
-     * List.empty().average()                     // = None
-     * List.of(0.1, 0.2, 0.3).average()           // = Some(0.2)
-     * List.of('0', '1', '2').average()           // = Some(1)
-     * List.of("1 kg", "2 kg", "3 kg").average()  // = Some(2)
-     * List.of("apple", "pear").average()         // = Some(NaN)
+     * List.empty().average()              // = None
+     * List.of(1, 2, 3).average()          // = Some(2.0)
+     * List.of(0.1, 0.2, 0.3).average()    // = Some(0.2)
+     * List.of("apple", "pear").average()  // throws
      * </code>
      * </pre>
      *
      * @return {@code Some(average)} or {@code None}, if there are no elements
+     * @throws UnsupportedOperationException if this elements are not numeric
      */
+    @SuppressWarnings("unchecked")
     default Option<Double> average() {
         if (isEmpty()) {
             return None.instance();
         } else {
-            final double value = Try.of(() -> (double) JS.get().invokeFunction("avg", this)).get();
-            return new Some<>(value); // may be Some(NaN)
+            final OptionalDouble average = Match
+                    .caze((byte t) -> ((java.util.stream.Stream<Byte>) toJavaStream()).mapToInt(Number::intValue).average())
+                    .caze((double t) -> ((java.util.stream.Stream<Double>) toJavaStream()).mapToDouble(Number::doubleValue).average())
+                    .caze((float t) -> ((java.util.stream.Stream<Float>) toJavaStream()).mapToDouble(Number::doubleValue).average())
+                    .caze((int t) -> ((java.util.stream.Stream<Integer>) toJavaStream()).mapToInt(Number::intValue).average())
+                    .caze((long t) -> ((java.util.stream.Stream<Long>) toJavaStream()).mapToLong(Number::longValue).average())
+                    .caze((short t) -> ((java.util.stream.Stream<Short>) toJavaStream()).mapToInt(Number::intValue).average())
+                    .caze((BigInteger t) -> ((java.util.stream.Stream<BigInteger>) toJavaStream()).mapToLong(Number::longValue).average())
+                    .caze((BigDecimal t) -> ((java.util.stream.Stream<BigDecimal>) toJavaStream()).mapToDouble(Number::doubleValue).average())
+                    .orElse(() -> {
+                        throw new UnsupportedOperationException("not numeric");
+                    })
+                    .apply(head());
+            return new Some<>(average.getAsDouble());
         }
     }
 
@@ -799,24 +796,41 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
     Traversable<T> peek(Consumer<? super T> action);
 
     /**
-     * Calculates the product of this elements by converting them to double values according to the JavaScript function
-     * <a href="http://www.w3schools.com/jsref/jsref_parsefloat.asp">{@code parseFloat()}</a>.
+     * Calculates the product of this elements. Supported component types are {@code Byte}, {@code Double}, {@code Float},
+     * {@code Integer}, {@code Long}, {@code Short}, {@code BigInteger} and {@code BigDecimal}.
      * <p>
      * Examples:
      * <pre>
      * <code>
-     * List.empty().product()                     // = 1
-     * List.of(0.1, 0.2, 0.3).product()           // = 0.006
-     * List.of('0', '1', '2').product()           // = 0
-     * List.of("1 kg", "2 kg", "3 kg").product()  // = 6
-     * List.of("apple", "pear").product()         // = NaN
+     * List.empty().product()              // = 1
+     * List.of(1, 2, 3).product()          // = 6
+     * List.of(0.1, 0.2, 0.3).product()    // = 0.006
+     * List.of("apple", "pear").product()  // throws
      * </code>
      * </pre>
      *
-     * @return the product of this elements or {@code NaN}
+     * @return a {@code Number} representing the sum of this elements
+     * @throws UnsupportedOperationException if this elements are not numeric
      */
-    default double product() {
-        return Try.of(() -> (double) JS.get().invokeFunction("product", this)).get();
+    @SuppressWarnings("unchecked")
+    default Number product() {
+        if (isEmpty()) {
+            return 1;
+        } else {
+            return Match.ofType(Number.class)
+                    .caze((byte t) -> ((java.util.stream.Stream<Byte>) toJavaStream()).mapToInt(Number::intValue).reduce(1, (i1, i2) -> i1 * i2))
+                    .caze((double t) -> ((java.util.stream.Stream<Double>) toJavaStream()).mapToDouble(Number::doubleValue).reduce(1.0, (d1, d2) -> d1 * d2))
+                    .caze((float t) -> ((java.util.stream.Stream<Float>) toJavaStream()).mapToDouble(Number::doubleValue).reduce(1.0, (d1, d2) -> d1 * d2))
+                    .caze((int t) -> ((java.util.stream.Stream<Integer>) toJavaStream()).mapToInt(Number::intValue).reduce(1, (i1, i2) -> i1 * i2))
+                    .caze((long t) -> ((java.util.stream.Stream<Long>) toJavaStream()).mapToLong(Number::longValue).reduce(1L, (l1, l2) -> l1 * l2))
+                    .caze((short t) -> ((java.util.stream.Stream<Short>) toJavaStream()).mapToInt(Number::intValue).reduce(1, (i1, i2) -> i1 * i2))
+                    .caze((BigInteger t) -> ((java.util.stream.Stream<BigInteger>) toJavaStream()).mapToLong(Number::longValue).reduce(1L, (l1, l2) -> l1 * l2))
+                    .caze((BigDecimal t) -> ((java.util.stream.Stream<BigDecimal>) toJavaStream()).mapToDouble(Number::doubleValue).reduce(1.0, (d1, d2) -> d1 * d2))
+                    .orElse(() -> {
+                        throw new UnsupportedOperationException("not numeric");
+                    })
+                    .apply(head());
+        }
     }
 
     /**
@@ -986,24 +1000,41 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
     }
 
     /**
-     * Calculates the sum of this elements by converting them to double values according to the JavaScript function
-     * <a href="http://www.w3schools.com/jsref/jsref_parsefloat.asp">{@code parseFloat()}</a>.
+     * Calculates the sum of this elements. Supported component types are {@code Byte}, {@code Double}, {@code Float},
+     * {@code Integer}, {@code Long}, {@code Short}, {@code BigInteger} and {@code BigDecimal}.
      * <p>
      * Examples:
      * <pre>
      * <code>
-     * List.empty().sum()                     // = 0
-     * List.of(0.1, 0.2, 0.3).sum()           // = 0.6
-     * List.of('0', '1', '2').sum()           // = 3
-     * List.of("1 kg", "2 kg", "3 kg").sum()  // = 6
-     * List.of("apple", "pear").sum()         // = NaN
+     * List.empty().sum()              // = 0
+     * List.of(1, 2, 3).sum()          // = 6
+     * List.of(0.1, 0.2, 0.3).sum()    // = 0.6
+     * List.of("apple", "pear").sum()  // throws
      * </code>
      * </pre>
      *
-     * @return the sum of this elements or {@code NaN}
+     * @return a {@code Number} representing the sum of this elements
+     * @throws UnsupportedOperationException if this elements are not numeric
      */
-    default double sum() {
-        return Try.of(() -> (double) JS.get().invokeFunction("sum", this)).get();
+    @SuppressWarnings("unchecked")
+    default Number sum() {
+        if (isEmpty()) {
+            return 0;
+        } else {
+            return Match.ofType(Number.class)
+                    .caze((byte t) -> ((java.util.stream.Stream<Byte>) toJavaStream()).mapToInt(Number::intValue).sum())
+                    .caze((double t) -> ((java.util.stream.Stream<Double>) toJavaStream()).mapToDouble(Number::doubleValue).sum())
+                    .caze((float t) -> ((java.util.stream.Stream<Float>) toJavaStream()).mapToDouble(Number::doubleValue).sum())
+                    .caze((int t) -> ((java.util.stream.Stream<Integer>) toJavaStream()).mapToInt(Number::intValue).sum())
+                    .caze((long t) -> ((java.util.stream.Stream<Long>) toJavaStream()).mapToLong(Number::longValue).sum())
+                    .caze((short t) -> ((java.util.stream.Stream<Short>) toJavaStream()).mapToInt(Number::intValue).sum())
+                    .caze((BigInteger t) -> ((java.util.stream.Stream<BigInteger>) toJavaStream()).mapToLong(Number::longValue).sum())
+                    .caze((BigDecimal t) -> ((java.util.stream.Stream<BigDecimal>) toJavaStream()).mapToDouble(Number::doubleValue).sum())
+                    .orElse(() -> {
+                        throw new UnsupportedOperationException("not numeric");
+                    })
+                    .apply(head());
+        }
     }
 
     /**

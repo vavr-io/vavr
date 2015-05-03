@@ -40,89 +40,53 @@ public abstract class AbstractTraversableTest {
     // -- average
 
     @Test
-    public void shouldComputeAverageOfNil() {
+    public void shouldReturnNoneWhenComputingAverageOfNil() {
         assertThat(nil().average()).isEqualTo(None.instance());
     }
 
-    @Test
-    public void shouldComputeAverageOfNumberStrings() {
-        assertThat(of("1", "2", "3").average()).isEqualTo(new Some<>(2.0));
-    }
-
-    @Test
-    public void shouldGracefullyComputeAverageOfSemiNumberStrings() {
-        assertThat(of("1a", "2b", "3c").average()).isEqualTo(new Some<>(2.0));
-    }
-
-    @Test
-    public void shouldComputeNaNWhenAveragingNonNumberStrings() {
-        assertThat(of("1", "b2", "3").average()).isEqualTo(new Some<>(Double.NaN));
-    }
-
-    @Test
-    public void shouldComputeNaNWhenAveragingBooleans() {
-        final Option<Double> actual = of(true, false).average();
-        assertThat(actual).isEqualTo(new Some<>(Double.NaN));
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldThrowWhenComputingAverageOfStrings() {
+        of("1", "2", "3").average();
     }
 
     @Test
     public void shouldComputeAverageOfByte() {
-        final Option<Double> actual = of((byte) 1, (byte) 2).average();
-        assertThat(actual).isEqualTo(new Some<>(1.5));
-    }
-
-    @Test
-    public void shouldComputeAverageOfNumericChars() {
-        final Option<Double> actual = of('1', '2', '3').average();
-        assertThat(actual).isEqualTo(new Some<>(2.0));
-    }
-
-    @Test
-    public void shouldComputeNaNWhenAveragingNonNumericChars() {
-        final Option<Double> actual = of('a', 'b', 'c').average();
-        assertThat(actual).isEqualTo(new Some<>(Double.NaN));
+        assertThat(of((byte) 1, (byte) 2).average().get()).isEqualTo(1.5);
     }
 
     @Test
     public void shouldComputeAverageOfDouble() {
-        final Option<Double> actual = of(.1, .2, .3).average();
-        assertThat(actual.get()).isEqualTo(.2, within(10e-17));
+        assertThat(of(.1, .2, .3).average().get()).isEqualTo(.2, within(10e-17));
     }
 
     @Test
     public void shouldComputeAverageOfFloat() {
-        final Option<Double> actual = of(.1f, .2f, .3f).average();
-        assertThat(actual.get()).isEqualTo(.2, within(10e-9));
+        assertThat(of(.1f, .2f, .3f).average().get()).isEqualTo(.2, within(10e-9));
     }
 
     @Test
     public void shouldComputeAverageOfInt() {
-        final Option<Double> actual = of(1, 2, 3).average();
-        assertThat(actual).isEqualTo(new Some<>(2.0));
+        assertThat(of(1, 2, 3).average().get()).isEqualTo(2);
     }
 
     @Test
     public void shouldComputeAverageOfLong() {
-        final Option<Double> actual = of(1L, 2L, 3L).average();
-        assertThat(actual).isEqualTo(new Some<>(2.0));
+        assertThat(of(1L, 2L, 3L).average().get()).isEqualTo(2);
     }
 
     @Test
     public void shouldComputeAverageOfShort() {
-        final Option<Double> actual = of((short) 1, (short) 2, (short) 3).average();
-        assertThat(actual).isEqualTo(new Some<>(2.0));
+        assertThat(of((short) 1, (short) 2, (short) 3).average().get()).isEqualTo(2);
     }
 
     @Test
     public void shouldComputeAverageOfBigInteger() {
-        final Option<Double> actual = of(BigInteger.ZERO, BigInteger.ONE).average();
-        assertThat(actual).isEqualTo(new Some<>(.5));
+        assertThat(of(BigInteger.ZERO, BigInteger.ONE).average().get()).isEqualTo(.5);
     }
 
     @Test
     public void shouldComputeAverageOfBigDecimal() {
-        final Option<Double> actual = of(BigDecimal.ZERO, BigDecimal.ONE).average();
-        assertThat(actual).isEqualTo(new Some<>(.5));
+        assertThat(of(BigDecimal.ZERO, BigDecimal.ONE).average().get()).isEqualTo(.5);
     }
 
     // -- clear
@@ -998,84 +962,49 @@ public abstract class AbstractTraversableTest {
         assertThat(nil().product()).isEqualTo(1);
     }
 
-    @Test
-    public void shouldComputeProductOfNumberStrings() {
-        assertThat(of("1", "2", "3").product()).isEqualTo(6);
-    }
-
-    @Test
-    public void shouldGracefullyComputeMultiplyingOfSemiNumberStrings() {
-        assertThat(of("1a", "2b", "3c").product()).isEqualTo(6);
-    }
-
-    @Test
-    public void shouldComputeNaNWhenMultiplyingNonNumberStrings() {
-        assertThat(of("1", "b2", "3").product()).isEqualTo(Double.NaN);
-    }
-
-    @Test
-    public void shouldComputeNaNWhenMultiplyingBooleans() {
-        final double actual = of(true, false).product();
-        assertThat(actual).isEqualTo(Double.NaN);
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldThrowWhenComputingProductOfStrings() {
+        of("1", "2", "3").product();
     }
 
     @Test
     public void shouldComputeProductOfByte() {
-        final double actual = of((byte) 1, (byte) 2).product();
-        assertThat(actual).isEqualTo(2);
-    }
-
-    @Test
-    public void shouldComputeProductOfNumericChars() {
-        assertThat(of('1', '2', '3').product()).isEqualTo(6);
-    }
-
-    @Test
-    public void shouldComputeNaNWhenMultiplyingNonNumericChars() {
-        final double actual = of('a', 'b', 'c').product();
-        assertThat(Double.isNaN(actual)).isTrue();
+        assertThat(of((byte) 1, (byte) 2).product()).isEqualTo(2);
     }
 
     @Test
     public void shouldComputeProductOfDouble() {
-        final double actual = of(.1, .2, .3).product();
-        assertThat(actual).isEqualTo(.006, within(10e-18));
+        assertThat(of(.1, .2, .3).product().doubleValue()).isEqualTo(.006, within(10e-18));
     }
 
     @Test
     public void shouldComputeProductOfFloat() {
-        final double actual = of(.1f, .2f, .3f).product();
-        assertThat(actual).isEqualTo(.006, within(10e-10));
+        assertThat(of(.1f, .2f, .3f).product().doubleValue()).isEqualTo(.006, within(10e-10));
     }
 
     @Test
     public void shouldComputeProductOfInt() {
-        final double actual = of(1, 2, 3).product();
-        assertThat(actual).isEqualTo(6);
+        assertThat(of(1, 2, 3).product()).isEqualTo(6);
     }
 
     @Test
     public void shouldComputeProductOfLong() {
-        final double actual = of(1L, 2L, 3L).product();
-        assertThat(actual).isEqualTo(6);
+        assertThat(of(1L, 2L, 3L).product()).isEqualTo(6L);
     }
 
     @Test
     public void shouldComputeProductOfShort() {
-        final double actual = of((short) 1, (short) 2, (short) 3).product();
-        assertThat(actual).isEqualTo(6);
+        assertThat(of((short) 1, (short) 2, (short) 3).product()).isEqualTo(6);
     }
 
     @Test
     public void shouldComputeProductOfBigInteger() {
-        final double actual = of(BigInteger.ZERO, BigInteger.ONE).product();
-        assertThat(actual).isEqualTo(0);
+        assertThat(of(BigInteger.ZERO, BigInteger.ONE).product()).isEqualTo(0L);
     }
 
     @Test
     public void shouldComputeProductOfBigDecimal() {
-        final double actual = of(BigDecimal.ZERO, BigDecimal.ONE).product();
-        assertThat(actual).isEqualTo(0);
+        assertThat(of(BigDecimal.ZERO, BigDecimal.ONE).product()).isEqualTo(0.0);
     }
 
     // -- reduce
@@ -1416,84 +1345,49 @@ public abstract class AbstractTraversableTest {
         assertThat(nil().sum()).isEqualTo(0);
     }
 
-    @Test
-    public void shouldComputeSumOfNumberStrings() {
-        assertThat(of("1", "2", "3").sum()).isEqualTo(6);
-    }
-
-    @Test
-    public void shouldGracefullyComputeSumOfSemiNumberStrings() {
-        assertThat(of("1a", "2b", "3c").sum()).isEqualTo(6);
-    }
-
-    @Test
-    public void shouldComputeNaNWhenSummmingNonNumberStrings() {
-        assertThat(of("1", "b2", "3").sum()).isEqualTo(Double.NaN);
-    }
-
-    @Test
-    public void shouldComputeNaNWhenSummingBooleans() {
-        final double actual = of(true, false).sum();
-        assertThat(actual).isEqualTo(Double.NaN);
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldThrowWhenComputingSumOfStrings() {
+        of("1", "2", "3").sum();
     }
 
     @Test
     public void shouldComputeSumOfByte() {
-        final double actual = of((byte) 1, (byte) 2).sum();
-        assertThat(actual).isEqualTo(3);
-    }
-
-    @Test
-    public void shouldComputeSumOfNumericChars() {
-        assertThat(of('1', '2', '3').sum()).isEqualTo(6);
-    }
-
-    @Test
-    public void shouldComputeNaNWhenSummingNonNumericChars() {
-        final double actual = of('a', 'b', 'c').sum();
-        assertThat(Double.isNaN(actual)).isTrue();
+        assertThat(of((byte) 1, (byte) 2).sum()).isEqualTo(3);
     }
 
     @Test
     public void shouldComputeSumOfDouble() {
-        final double actual = of(.1, .2, .3).sum();
-        assertThat(actual).isEqualTo(.6, within(10e-16));
+        assertThat(of(.1, .2, .3).sum().doubleValue()).isEqualTo(.6, within(10e-16));
     }
 
     @Test
     public void shouldComputeSumOfFloat() {
-        final double actual = of(.1f, .2f, .3f).sum();
-        assertThat(actual).isEqualTo(.6, within(10e-8));
+        assertThat(of(.1f, .2f, .3f).sum().doubleValue()).isEqualTo(.6, within(10e-8));
     }
 
     @Test
     public void shouldComputeSumOfInt() {
-        final double actual = of(1, 2, 3).sum();
-        assertThat(actual).isEqualTo(6);
+        assertThat(of(1, 2, 3).sum()).isEqualTo(6);
     }
 
     @Test
     public void shouldComputeSumOfLong() {
-        final double actual = of(1L, 2L, 3L).sum();
-        assertThat(actual).isEqualTo(6);
+        assertThat(of(1L, 2L, 3L).sum()).isEqualTo(6L);
     }
 
     @Test
     public void shouldComputeSumOfShort() {
-        final double actual = of((short) 1, (short) 2, (short) 3).sum();
-        assertThat(actual).isEqualTo(6);
+        assertThat(of((short) 1, (short) 2, (short) 3).sum()).isEqualTo(6);
     }
 
     @Test
     public void shouldComputeSumOfBigInteger() {
-        final double actual = of(BigInteger.ZERO, BigInteger.ONE).sum();
-        assertThat(actual).isEqualTo(1);
+        assertThat(of(BigInteger.ZERO, BigInteger.ONE).sum()).isEqualTo(1L);
     }
 
     @Test
     public void shouldComputeSumOfBigDecimal() {
-        final double actual = of(BigDecimal.ZERO, BigDecimal.ONE).sum();
-        assertThat(actual).isEqualTo(1);
+        assertThat(of(BigDecimal.ZERO, BigDecimal.ONE).sum()).isEqualTo(1.0);
     }
 
     // -- take
