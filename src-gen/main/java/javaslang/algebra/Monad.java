@@ -12,7 +12,6 @@ package javaslang.algebra;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import javaslang.control.Match;
 
 /**
  * Defines a Monad by generalizing the flatMap function.

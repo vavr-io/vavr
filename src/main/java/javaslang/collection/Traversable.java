@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.function.*;
+import java.util.stream.StreamSupport;
 
 /**
  * <p>An interface for inherently recursive data structures. The order of elements is determined by
@@ -1170,7 +1171,7 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * @return a new {@linkplain java.util.stream.Stream} containing this elements
      */
     default java.util.stream.Stream<T> toJavaStream() {
-        return toJavaList().stream();
+        return StreamSupport.stream(spliterator(), false);
     }
 
     /**
