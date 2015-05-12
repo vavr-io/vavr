@@ -464,7 +464,6 @@ def generateMainClasses(): Unit = {
       val functionType = if (checked) im.getType("javaslang.control.Try.CheckedFunction") else im.getType("java.util.function.Function")
       val consumerType = if (checked) im.getType("javaslang.control.Try.CheckedConsumer") else im.getType("java.util.function.Consumer")
       val predicateType = if (checked) im.getType("javaslang.control.Try.CheckedPredicate") else im.getType("java.util.function.Predicate")
-      val unsafe = im.getType("javaslang.unsafe")
       val Match = im.getType("javaslang.control.Match")
 
       xs"""
@@ -504,55 +503,6 @@ def generateMainClasses(): Unit = {
              * @throws NullPointerException if {@code mapper} is null
              */
             <U, MONAD extends HigherKinded<U, M>> $className<U, M> flatMap($functionType<? super T, ? extends MONAD> mapper);
-
-            /$javadoc
-             * Maps a nested, monadic structure.
-             *
-             * @param <U> component type of the (possibly deeply) nested object
-             * @param <Z> component type of result
-             * @param mapper a ${checked.gen("checked ")}function that maps a nested value to a value of another type
-             * @return a new $className instance of component type Z
-             * @throws NullPointerException if {@code mapper} is null
-             */
-            @SuppressWarnings("unchecked")
-            @$unsafe
-            default <U, Z> $className<Z, M> treeMap($functionType<? super U, ? extends Object> mapper) {
-                ${im.getType("java.util.Objects")}.requireNonNull(mapper, "mapper is null");
-                ${if (checked) {
-                  val Try = im.getType("javaslang.control.Try")
-                  xs"""
-                    final Match<?> match = $Match.ofType(Object.class)
-                            .caze((Monad<?, ?> m) -> m.treeMap((U u) -> $Try.of(() -> mapper.apply(u)).get()))
-                            .caze((CheckedMonad<?, ?> m) -> m.treeMap(mapper))
-                            .caze((U u) -> $Try.of(() -> mapper.apply(u)).get());
-                    return ($className<Z, M>) map(match::apply);
-                  """
-                } else {
-                  xs"""
-                    return ($className<Z, M>) map($Match.ofType(Object.class)
-                            .caze((Monad<?, ?> m) -> m.treeMap(mapper))
-                            .caze((CheckedMonad<?, ?> m) -> m.treeMap(mapper::apply))
-                            .caze((U u) -> mapper.apply(u)));
-                  """
-                }}
-            }
-
-            /**
-             * Flattens a nested, monadic structure. Assumes that the elements are of type HigherKinded&lt;U, M&gt;
-             *
-             * <p>
-             * A vivid example showing a simple container type:
-             * <pre>
-             * <code>
-             * [[1],[2,3]].flatten() = [1,2,3]
-             * </code>
-             * </pre>
-             *
-             * @param <U> component type of the resulting {@code Monad}
-             * @return A monadic structure containing flattened elements.
-             */
-            @$unsafe
-            <U> $name<U, M> flatten();
 
             /**
              * Flattens a nested, monadic structure using a function.

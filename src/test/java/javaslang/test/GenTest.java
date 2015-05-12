@@ -244,19 +244,6 @@ public class GenTest {
         assertForAll(() -> gen.apply(RANDOM), i -> i % 2 == 0);
     }
 
-    // -- treeMap
-
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenCallingTreeMapWithNullMapper() {
-        Gen.of(1).treeMap(null);
-    }
-
-    @Test
-    public void shouldTreeMapSome() {
-        final Gen<Option<Gen<Integer>>> gen = Gen.of(new Some<>(Gen.of(1))).treeMap((Integer i) -> i + 1);
-        assertThat(gen.apply(RANDOM).get().apply(RANDOM)).isEqualTo(2);
-    }
-
     // -- filter
 
     @Test(expected = NullPointerException.class)
@@ -273,19 +260,6 @@ public class GenTest {
     @Test(expected = IllegalStateException.class)
     public void shouldDetectEmptyFilter() {
         Gen.of(1).filter(ignored -> false).apply(RANDOM);
-    }
-
-    // -- flatten
-
-    @Test(expected = ClassCastException.class)
-    public void shouldThrowWhenFlatteningGen() {
-        Gen.of(1).flatten().apply(new Random());
-    }
-
-    @Test
-    public void shouldFlattenNestedGen() {
-        final Gen<Gen<Integer>> nestedGen = random -> Gen.of(Gen.of(1)).apply(random);
-        assertThat(nestedGen.flatten().apply(new Random())).isNotNull();
     }
 
     // -- flatten(Function)

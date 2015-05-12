@@ -9,7 +9,6 @@ import javaslang.ValueObject;
 import javaslang.algebra.HigherKinded;
 import javaslang.algebra.Monad;
 import javaslang.control.Valences.Univalent;
-import javaslang.unsafe;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -141,30 +140,6 @@ public interface Option<T> extends Monad<T, Option<?>>, ValueObject, Univalent<T
     }
 
     /**
-     * Flattens an {@code Option}, assuming that the elements are of type Option&lt;U&gt;
-     * <p>
-     * Examples:
-     * <pre>
-     * <code>
-     * new Some&lt;&gt;(1).flatten();                   // throws
-     * new Some&lt;&gt;(new Some&lt;&gt;(1)).flatten(); // = Some&lt;&gt;(1)
-     * new Some&lt;&gt;(None.instance()).flatten();     // = None
-     * None.instance().flatten();                       // = None
-     * </code>
-     * </pre>
-     *
-     * @param <U> component type of the result {@code Option}
-     * @return a new {@code Option}
-     * @throws java.lang.ClassCastException if this {@code Option} is not of type {@code Option<? extends Option<U>>}
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    @unsafe
-    default <U> Option<U> flatten() {
-        return ((Option<? extends Option<U>>) this).flatten(Function.identity());
-    }
-
-    /**
      * Flattens an {@code Option} using a function.
      * <p>
      * Examples:
@@ -257,13 +232,6 @@ public interface Option<T> extends Monad<T, Option<?>>, ValueObject, Univalent<T
         } else {
             return (Option<U>) mapper.apply(get());
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    @unsafe
-    default <U, Z> Option<Z> treeMap(Function<? super U, ? extends Object> mapper) {
-        return (Option<Z>) (Object) Monad.super.treeMap(mapper);
     }
 
     @Override

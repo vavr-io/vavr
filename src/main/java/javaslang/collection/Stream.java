@@ -240,7 +240,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
 
     @Override
     default Stream<? extends Stream<T>> combinations() {
-        return Stream.rangeClosed(0, length()).map(this::combinations).flatten();
+        return Stream.rangeClosed(0, length()).map(this::combinations).flatten(Function.identity());
     }
 
     @Override
@@ -309,31 +309,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     @Override
     default <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Stream<U> flatMap(Function<? super T, ? extends TRAVERSABLE> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return isEmpty() ? Nil.instance() : map(mapper).flatten();
-    }
-
-    /**
-     * Flattens a {@code Stream}, assuming that the elements are of type Traversable&lt;U&gt;
-     * <p>
-     * Examples:
-     * <pre>
-     * <code>
-     * Stream.of(1).flatten();              // throws
-     * Stream.of(Stream.of(1)).flatten();   // = Stream(1)
-     * Stream.of(Nil.instance()).flatten(); // = Nil
-     * Nil.instance().flatten();            // = Nil
-     * </code>
-     * </pre>
-     *
-     * @param <U> component type of the result {@code Stream}
-     * @return a new {@code Stream}
-     * @throws java.lang.ClassCastException if this {@code Stream} is not of type {@code Stream<? extends Traversable<U>>}
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    @unsafe
-    default <U> Stream<U> flatten() {
-        return isEmpty() ? Nil.instance() : ((Stream<? extends Traversable<U>>) this).flatten(Function.identity());
+        return isEmpty() ? Nil.instance() : map(mapper).flatten(Function.identity());
     }
 
     /**
@@ -748,13 +724,6 @@ public interface Stream<T> extends Seq<T>, ValueObject {
                 return Nil.instance();
             }
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    @unsafe
-    default <U, Z> Stream<Z> treeMap(Function<? super U, ? extends Object> mapper) {
-        return (Stream<Z>) Seq.super.treeMap(mapper);
     }
 
     @Override

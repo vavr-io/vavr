@@ -9,7 +9,6 @@ import javaslang.ValueObject;
 import javaslang.algebra.CheckedMonad;
 import javaslang.algebra.HigherKinded;
 import javaslang.control.Valences.Bivalent;
-import javaslang.unsafe;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -121,29 +120,6 @@ public interface Try<T> extends CheckedMonad<T, Try<?>>, ValueObject, Bivalent<T
     Try<T> filter(CheckedPredicate<? super T> predicate);
 
     /**
-     * Flattens a {@code Try}, assuming that the elements are of type Try&lt;U&gt;
-     * <p>
-     * Examples:
-     * <pre>
-     * <code>
-     * new Success&lt;&gt;(1).flatten();                                  // throws
-     * new Success&lt;&gt;(new Success&lt;&gt;(1)).flatten();             // = Success (1)
-     * new Success&lt;&gt;(new Failure&lt;&gt;(new Error(""))).flatten(); // = Failure("Error")
-     * new Failure&lt;&gt;(new Error("")).flatten();                      // = Failure("Error")
-     * </code>
-     * </pre>
-     *
-     * @param <U> component type of the result {@code Try}
-     * @return a new {@code Try}
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    @unsafe
-    default <U> Try<U> flatten() {
-        return ((Try<? extends Try<U>>) this).flatten(CheckedFunction.identity());
-    }
-
-    /**
      * Flattens a nested, monadic structure using a function.
      * <p>
      * Examples:
@@ -236,13 +212,6 @@ public interface Try<T> extends CheckedMonad<T, Try<?>>, ValueObject, Bivalent<T
      */
     @Override
     <U, TRY extends HigherKinded<U, Try<?>>> Try<U> flatMap(CheckedFunction<? super T, ? extends TRY> mapper);
-
-    @SuppressWarnings("unchecked")
-    @Override
-    @unsafe
-    default <U, Z> Try<Z> treeMap(CheckedFunction<? super U, ? extends Object> mapper) {
-        return (Try<Z>) (Object) CheckedMonad.super.treeMap(mapper);
-    }
 
     @Override
     default Iterator<T> iterator() {

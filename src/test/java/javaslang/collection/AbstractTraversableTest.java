@@ -333,39 +333,6 @@ public abstract class AbstractTraversableTest {
         })).isEqualTo(of(1, 2, 3, 4, 5, 6));
     }
 
-    // -- flatten
-
-    @Test
-    public <T> void shouldFlattenEmptyTraversable() {
-        final Traversable<? extends Traversable<? extends T>> nil = nil();
-        final Traversable<T> actual = nil.flatten();
-        assertThat(actual).isEqualTo(nil());
-    }
-
-    @Test(expected = ClassCastException.class)
-    public void shouldThrowOnFlattenTraversableOfPlainElements() {
-        of(1, 2, 3).flatten();
-    }
-
-    @Test
-    public void shouldFlattenTraversableOfTraversables() {
-        @SuppressWarnings("unchecked")
-        final Traversable<? extends Traversable<? extends Integer>> xs = of(of(1), of(2, 3));
-        final Traversable<Integer> actual = xs.flatten();
-        final Traversable<Integer> expected = of(1, 2, 3);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test(expected = ClassCastException.class)
-    public void shouldThrowOnFlattenTraversableOfTraversablesAndPlainElements() {
-        of(1, of(2, 3)).flatten();
-    }
-
-    @Test(expected = ClassCastException.class)
-    public void shouldThrowOnFlattenWithBadImplicitReturnType() {
-        of(1, 2, 3).map(Object::toString).flatten();
-    }
-
     // -- flatten(Function1)
 
     @Test
@@ -1537,32 +1504,6 @@ public abstract class AbstractTraversableTest {
         expected.add(1);
         expected.add(3);
         assertThat(of(1, 2, 2, 3).toJavaSet()).isEqualTo(expected);
-    }
-
-    // -- treeMap
-
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenCallingTreeMapWithNullMapperOnNil() {
-        nil().treeMap(null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenCallingTreeMapWithNullMapperOnNonNil() {
-        of(1).treeMap(null);
-    }
-
-    @Test
-    public void shouldTreeMapNil() {
-        assertThat(nil().treeMap(Function.identity())).isEqualTo(nil());
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void shouldTreeMapNonNil() {
-        // [None, Some([1])]
-        final Traversable<Option<Traversable<Integer>>> actual = of(None.instance(), Option.of(of(1))).treeMap((Integer i) -> i + 1);
-        final Traversable<Option<Traversable<Integer>>> expected = of(None.instance(), Option.of(of(2)));
-        assertThat(actual).isEqualTo(expected);
     }
 
     // -- unzip
