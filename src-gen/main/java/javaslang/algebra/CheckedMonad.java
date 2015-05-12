@@ -10,7 +10,6 @@ package javaslang.algebra;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import java.util.function.Consumer;
-import javaslang.control.Match;
 import javaslang.control.Try.CheckedConsumer;
 import javaslang.control.Try.CheckedFunction;
 import javaslang.control.Try.CheckedPredicate;
