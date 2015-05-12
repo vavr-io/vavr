@@ -36,22 +36,6 @@ public class ArbitraryTest {
         assertThat(arbitraryTree.apply(0).apply(new Random())).isNotNull();
     }
 
-    // -- treeMap
-
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenCallingTreeMapWithNullMapper() {
-        Arbitrary.integer().treeMap(null);
-    }
-
-    @Test
-    public void shouldTreeMapSome() {
-        final Arbitrary<Integer> one = size -> Gen.of(1);
-        final Arbitrary<Option<Arbitrary<Integer>>> arbitrary = size -> Gen.of(new Some<>(one));
-        final Arbitrary<Option<Arbitrary<Integer>>> mapped = arbitrary.treeMap((Integer i) -> i + 1);
-        final Random random = new Random();
-        assertThat(mapped.apply(1).apply(random).get().apply(1).apply(random)).isEqualTo(2);
-    }
-
     // -- map
 
     @Test
@@ -68,19 +52,6 @@ public class ArbitraryTest {
         final Arbitrary<BinaryTree<Integer>> arbitraryTree = new ArbitraryBinaryTree(0, 1000);
         final Arbitrary<BinaryTree<Integer>> arbitraryTreeWithEvenNodeCount = arbitraryTree.filter(tree -> tree.nodeCount() % 3 == 0);
         assertThat(arbitraryTreeWithEvenNodeCount.apply(10).apply(new Random())).isNotNull();
-    }
-
-    // -- flatten
-
-    @Test(expected = ClassCastException.class)
-    public void shouldThrowWhenFlatteningArbitraryInteger() {
-        Arbitrary.integer().flatten().apply(1).apply(new Random());
-    }
-
-    @Test
-    public void shouldFlattenNestedArbitraryInteger() {
-        final Arbitrary<Arbitrary<Integer>> nestedArbitrary = size -> random -> Arbitrary.integer();
-        assertThat(nestedArbitrary.flatten().apply(1).apply(new Random())).isNotNull();
     }
 
     // -- flatten(Function)

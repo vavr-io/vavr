@@ -29,28 +29,6 @@ public class TryTest implements CheckedMonadLaws<Try<?>> {
     private static final String OK = "ok";
     private static final String FAILURE = "failure";
 
-    // -- flatten
-
-    @Test
-    public void shouldThrowWhenFlatteningUnnestedSuccess() {
-        assertThat(Try.of(() -> 1).flatten().isFailure()).isTrue();
-    }
-
-    @Test
-    public void shouldFlattenSuccessOfSuccess() {
-        assertThat(new Success<>(new Success<>(1)).flatten()).isEqualTo(new Success<>(1));
-    }
-
-    @Test
-    public void shouldFlattenSuccessOfFailure() {
-        assertThat(new Success<>(failure()).flatten()).isEqualTo(failure());
-    }
-
-    @Test
-    public void shouldFlattenFailure() {
-        assertThat(failure().flatten()).isEqualTo(failure());
-    }
-
     // -- flatten(Function)
 
     static final Match<Try<Integer>> MATCH = Match
@@ -75,31 +53,6 @@ public class TryTest implements CheckedMonadLaws<Try<?>> {
     @Test
     public void shouldFlattenFailureWithFunction() {
         assertThat(failure().flatten(MATCH::apply)).isEqualTo(failure());
-    }
-
-    // -- treeMap
-
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenCallingTreeMapWithNullMapperOnFailure() {
-        failure().treeMap(null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenCallingTreeMapWithNullMapperOnSuccess() {
-        success().treeMap(null);
-    }
-
-    @Test
-    public void shouldTreeMapFailure() {
-        assertThat(failure().treeMap(Try.CheckedFunction.identity())).isEqualTo(failure());
-    }
-
-    @Test
-    public void shouldTreeMapSuccess() {
-        // Success([Failure, Success("1")])
-        final Try<javaslang.collection.List<Try<String>>> actual = Try.of(() -> javaslang.collection.List.of(failure(), new Success<>("1"))).treeMap(String::length);
-        final Try<javaslang.collection.List<Try<Integer>>> expected = Try.of(() -> javaslang.collection.List.of(failure(), new Success<>(1)));
-        assertThat(actual).isEqualTo(expected);
     }
 
     // -- exists

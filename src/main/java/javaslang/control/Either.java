@@ -9,7 +9,6 @@ import javaslang.ValueObject;
 import javaslang.algebra.HigherKinded;
 import javaslang.algebra.Monad;
 import javaslang.control.Valences.Bivalent;
-import javaslang.unsafe;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -277,30 +276,6 @@ public interface Either<L, R> extends ValueObject {
         }
 
         /**
-         * Flattens a {@code LeftProjection}, assuming that the elements are of type LeftProjection&lt;U&gt;
-         * <p>
-         * Examples:
-         * <pre>
-         * <code>
-         * Left.of(1).left().flatten();                   // throws
-         * Left.of(Left.of(1).left()).left().flatten();   // = LeftProjection(Left(1))
-         * Left.of(Left.of(1).right()).left().flatten();  // throws
-         * Right.of(Right.of(1).left()).left().flatten(); // = LeftProjection(Right(1))
-         * </code>
-         * </pre>
-         *
-         * @return a {@code LeftProjection}
-         * @throws java.lang.ClassCastException if the projected either is not of type
-         *                                      {@code LeftProjection<? extends LeftProjection<U, R>, R>}
-         */
-        @SuppressWarnings("unchecked")
-        @Override
-        @unsafe
-        public <U> LeftProjection<U, R> flatten() {
-            return ((LeftProjection<? extends LeftProjection<U, R>, R>) this).flatten(Function.identity());
-        }
-
-        /**
          * Flattens a {@code LeftProjection} using a function.
          *
          * @param f a function which maps elements of this LeftProjection to LeftProjections
@@ -391,13 +366,6 @@ public interface Either<L, R> extends ValueObject {
             } else {
                 return (LeftProjection<U, R>) this;
             }
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        @unsafe
-        public <U, Z> LeftProjection<Z, R> treeMap(Function<? super U, ? extends Object> mapper) {
-            return (LeftProjection<Z, R>) (Object) Monad.super.treeMap(mapper);
         }
 
         @Override
@@ -588,30 +556,6 @@ public interface Either<L, R> extends ValueObject {
         }
 
         /**
-         * Flattens a {@code RightProjection}, assuming that the elements are of type RightProjection&lt;U&gt;
-         * <p>
-         * Examples:
-         * <pre>
-         * <code>
-         * Right.of(1).right().flatten();                   // throws
-         * Right.of(Right.of(1).right()).right().flatten(); // = RightProjection(Right(1))
-         * Right.of(Right.of(1).left()).right().flatten();  // throws
-         * Left.of(Left.of(1).right()).right().flatten();   // = RightProjection(Left(1))
-         * </code>
-         * </pre>
-         *
-         * @return a {@code RightProjection}
-         * @throws java.lang.ClassCastException if the projected either is not of type
-         *                                      {@code RightProjection<L, ? extends RightProjection<L, U>>}
-         */
-        @SuppressWarnings("unchecked")
-        @Override
-        @unsafe
-        public <U> RightProjection<L, U> flatten() {
-            return ((RightProjection<L, ? extends RightProjection<L, U>>) this).flatten(Function.identity());
-        }
-
-        /**
          * Flattens a {@code RightProjection} using a function.
          *
          * @param f a function which maps elements of this RightProjection to RightProjections
@@ -702,13 +646,6 @@ public interface Either<L, R> extends ValueObject {
             } else {
                 return (RightProjection<L, U>) this;
             }
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        @unsafe
-        public <U, Z> RightProjection<L, Z> treeMap(Function<? super U, ? extends Object> mapper) {
-            return (RightProjection<L, Z>) (Object) Monad.super.treeMap(mapper);
         }
 
         @Override

@@ -150,13 +150,6 @@ public final class Failure<T> implements Try<T> {
         return (Failure<U>) this;
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U, Z> Failure<Z> treeMap(CheckedFunction<? super U, ? extends Object> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return (Failure<Z>) this;
-    }
-
     @Override
     public Tuple1<Throwable> unapply() {
         return Tuple.of(cause.getCause());

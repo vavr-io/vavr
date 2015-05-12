@@ -8,7 +8,6 @@ package javaslang.control;
 import javaslang.Tuple;
 import javaslang.Tuple1;
 import javaslang.algebra.HigherKinded;
-import javaslang.unsafe;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -152,13 +151,6 @@ public final class Success<T> implements Try<T> {
         } catch (Throwable t) {
             return new Failure<>(t);
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    @unsafe
-    public <U, Z> Success<Z> treeMap(CheckedFunction<? super U, ? extends Object> mapper) {
-        return (Success<Z>) Try.super.treeMap(mapper);
     }
 
     @Override

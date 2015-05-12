@@ -236,18 +236,6 @@ public class EitherTest {
         assertThat(actual).isFalse();
     }
 
-    // flatten
-
-    @Test(expected = ClassCastException.class)
-    public void shouldThrowWhenFlatteningUnnestedLeftProjection() {
-        new Left<>(1).left().flatten();
-    }
-
-    @Test
-    public void shouldFlattenNestedLeftProjection() {
-        assertThat(new Left<>(new Left<>(1).left()).left().flatten().toEither()).isEqualTo(new Left<>(1));
-    }
-
     // flatten(Function)
 
     @Test
@@ -272,30 +260,6 @@ public class EitherTest {
     public void shouldFlatMapOnLeftProjectionOfRight() {
         final Either<Integer, String> actual = new Right<Integer, String>("1").left().flatMap(i -> new Left<Integer, String>(i + 1).left()).toEither();
         assertThat(actual).isEqualTo(new Right<>("1"));
-    }
-
-    // -- treeMap
-
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenCallingTreeMapWithNullMapperOnLeftProjectedRight() {
-        new Right<>(1).left().treeMap(null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenCallingTreeMapWithNullMapperOnLeftProjectedLeft() {
-        new Left<>(1).left().treeMap(null);
-    }
-
-    @Test
-    public void shouldTreeMapLeftProjectedRight() {
-        assertThat(new Right<>(1).left().treeMap(Function.identity())).isEqualTo(new Right<>(1).left());
-    }
-
-    @Test
-    public void shouldTreeMapLeftProjectedLeft() {
-        final LeftProjection<?, ?> actual = new Left<>(javaslang.collection.List.of(new Right<>("a").left(), new Left<>(1).left())).left().treeMap((Integer i) -> i + 1);
-        final LeftProjection<?, ?> expected = new Left<>(javaslang.collection.List.of(new Right<>("a").left(), new Left<>(2).left())).left();
-        assertThat(actual).isEqualTo(expected);
     }
 
     // -- exists
@@ -707,18 +671,6 @@ public class EitherTest {
         assertThat(actual).isFalse();
     }
 
-    // flatten
-
-    @Test(expected = ClassCastException.class)
-    public void shouldThrowWhenFlatteningUnnestedRightProjection() {
-        new Right<>(1).right().flatten();
-    }
-
-    @Test
-    public void shouldFlattenNestedRightProjection() {
-        assertThat(new Right<>(new Right<>(1).right()).right().flatten().toEither()).isEqualTo(new Right<>(1));
-    }
-
     // flatten(Function)
 
     @Test
@@ -743,30 +695,6 @@ public class EitherTest {
     public void shouldFlatMapOnRightProjectionOfLeft() {
         final Either<String, Integer> actual = new Left<String, Integer>("1").right().flatMap(i -> new Right<String, Integer>(i + 1).right()).toEither();
         assertThat(actual).isEqualTo(new Left<>("1"));
-    }
-
-    // -- treeMap
-
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenCallingTreeMapWithNullMapperOnRightProjectedLeft() {
-        new Left<>(1).right().treeMap(null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenCallingTreeMapWithNullMapperOnRightProjectedRight() {
-        new Right<>(1).right().treeMap(null);
-    }
-
-    @Test
-    public void shouldTreeMapRightProjectedLeft() {
-        assertThat(new Left<>(1).right().treeMap(Function.identity())).isEqualTo(new Left<>(1).right());
-    }
-
-    @Test
-    public void shouldTreeMapRightProjectedRight() {
-        final RightProjection<?, ?> actual = new Right<>(javaslang.collection.List.of(new Left<>("a").right(), new Right<>(1).right())).right().treeMap((Integer i) -> i + 1);
-        final RightProjection<?, ?> expected = new Right<>(javaslang.collection.List.of(new Left<>("a").right(), new Right<>(2).right())).right();
-        assertThat(actual).isEqualTo(expected);
     }
 
     // -- exists

@@ -9,7 +9,6 @@ import javaslang.Tuple2;
 import javaslang.algebra.HigherKinded;
 import javaslang.algebra.Monad;
 import javaslang.collection.Stream;
-import javaslang.unsafe;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -294,13 +293,6 @@ public interface Gen<T> extends Monad<T, Gen<?>>, Iterable<T> {
         return random -> ((Gen<U>) mapper.apply(apply(random))).apply(random);
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    @unsafe
-    default <U, Z> Gen<Z> treeMap(Function<? super U, ? extends Object> mapper) {
-        return (Gen<Z>) (Object) Monad.super.treeMap(mapper);
-    }
-
     /**
      * Returns a generator based on this generator which produces values that fulfill the given predicate.
      *
@@ -320,13 +312,6 @@ public interface Gen<T> extends Monad<T, Gen<?>>, Iterable<T> {
             }
             return t;
         };
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    @unsafe
-    default <U> Gen<U> flatten() {
-        return ((Gen<? extends Gen<U>>) this).flatten(Function.identity());
     }
 
     @SuppressWarnings("unchecked")

@@ -5,7 +5,10 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Tuple;
+import javaslang.Tuple0;
+import javaslang.Tuple2;
+import javaslang.ValueObject;
 import javaslang.algebra.HigherKinded;
 import javaslang.control.None;
 import javaslang.control.Option;
@@ -197,7 +200,7 @@ public interface List<T> extends Seq<T>, ValueObject {
 
     @Override
     default List<? extends List<T>> combinations() {
-        return List.rangeClosed(0, length()).map(this::combinations).flatten();
+        return List.rangeClosed(0, length()).map(this::combinations).flatten(Function.identity());
     }
 
     @Override
@@ -266,30 +269,6 @@ public interface List<T> extends Seq<T>, ValueObject {
     default <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> List<U> flatMap(Function<? super T, ? extends TRAVERSABLE> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? Nil.instance() : foldRight(nil(), (t, xs) -> xs.prependAll((Traversable<U>) mapper.apply(t)));
-    }
-
-    /**
-     * Flattens a {@code List}, assuming that the elements are of type Traversable&lt;U&gt;
-     * <p>
-     * Examples:
-     * <pre>
-     * <code>
-     * List.of(1).flatten();              // throws
-     * List.of(List.of(1)).flatten();     // = List(1)
-     * List.of(Nil.instance()).flatten(); // = Nil
-     * Nil.instance().flatten();          // = Nil
-     * </code>
-     * </pre>
-     *
-     * @param <U> component type of the result {@code List}
-     * @return a new {@code List}
-     * @throws java.lang.ClassCastException if this {@code List} is not of type {@code List<? extends Traversable<U>>}
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    @unsafe
-    default <U> List<U> flatten() {
-        return isEmpty() ? Nil.instance() : ((List<? extends Traversable<U>>) this).flatten(Function.identity());
     }
 
     /**
@@ -720,13 +699,6 @@ public interface List<T> extends Seq<T>, ValueObject {
             result = result.prepend(list.head());
         }
         return result.reverse();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    @unsafe
-    default <U, Z> List<Z> treeMap(Function<? super U, ? extends Object> mapper) {
-        return (List<Z>) Seq.super.treeMap(mapper);
     }
 
     @Override

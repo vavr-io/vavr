@@ -177,28 +177,6 @@ public class OptionTest implements MonadLaws<Option<?>> {
         assertThat(Option.<Integer>none().filter(i -> i == 1)).isEqualTo(Option.none());
     }
 
-    // -- flatten
-
-    @Test(expected = ClassCastException.class)
-    public void shouldThrowWhenFlatteningUnnestedSome() {
-        new Some<>(1).flatten();
-    }
-
-    @Test
-    public void shouldFlattenSomeOfSome() {
-        assertThat(new Some<>(new Some<>(1)).flatten()).isEqualTo(new Some<>(1));
-    }
-
-    @Test
-    public void shouldFlattenSomeOfNone() {
-        assertThat(new Some<>(None.instance()).flatten()).isEqualTo(None.instance());
-    }
-
-    @Test
-    public void shouldFlattenNone() {
-        assertThat(None.instance().flatten()).isEqualTo(None.instance());
-    }
-
     // -- flatten(Function)
 
     static final Match<Option<Integer>> MATCH = Match
@@ -247,31 +225,6 @@ public class OptionTest implements MonadLaws<Option<?>> {
     @Test
     public void shouldFlatMapNone() {
         assertThat(Option.<Integer>none().flatMap(i -> Option.of(String.valueOf(i)))).isEqualTo(Option.none());
-    }
-
-    // -- treeMap
-
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenCallingTreeMapWithNullMapperOnNone() {
-        None.instance().treeMap(null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenCallingTreeMapWithNullMapperOnSome() {
-        new Some<>(1).treeMap(null);
-    }
-
-    @Test
-    public void shouldTreeMapNone() {
-        assertThat(None.instance().treeMap(Function.identity())).isEqualTo(None.instance());
-    }
-
-    @Test
-    public void shouldTreeMapSome() {
-        // Some([None, Some(1)])
-        final Option<List<Option<Integer>>> actual = Option.of(List.of(Option.none(), Option.of(1))).treeMap((Integer i) -> i + 1);
-        final Option<List<Option<Integer>>> expected = Option.of(List.of(Option.none(), Option.of(2)));
-        assertThat(actual).isEqualTo(expected);
     }
 
     // -- exists

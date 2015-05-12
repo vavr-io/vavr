@@ -9,7 +9,6 @@ import javaslang.algebra.HigherKinded;
 import javaslang.algebra.Monad;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
-import javaslang.unsafe;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -97,13 +96,6 @@ public interface Arbitrary<T> extends Monad<T, Arbitrary<?>>, Iterable<T> {
         };
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    @unsafe
-    default <U, Z> Arbitrary<Z> treeMap(Function<? super U, ? extends Object> mapper) {
-        return (Arbitrary<Z>) (Object) Monad.super.treeMap(mapper);
-    }
-
     /**
      * Returns an Arbitrary based on this Arbitrary which produces values that fulfill the given predicate.
      *
@@ -112,13 +104,6 @@ public interface Arbitrary<T> extends Monad<T, Arbitrary<?>>, Iterable<T> {
      */
     default Arbitrary<T> filter(Predicate<? super T> predicate) {
         return n -> apply(n).filter(predicate);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    @unsafe
-    default <U> Arbitrary<U> flatten() {
-        return ((Arbitrary<? extends Arbitrary<U>>) this).flatten(Function.identity());
     }
 
     @SuppressWarnings("unchecked")

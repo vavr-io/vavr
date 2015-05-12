@@ -13,7 +13,6 @@ import javaslang.control.Match;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
-import javaslang.unsafe;
 
 import java.io.PrintStream;
 import java.math.BigDecimal;
@@ -111,7 +110,6 @@ import java.util.function.*;
  * <li>{@link #distinct()}</li>
  * <li>{@link #distinct(Function)}</li>
  * <li>{@link #flatMap(Function)}</li>
- * <li>{@link #flatten()}</li>
  * <li>{@link #flatten(Function)}</li>
  * <li>{@link #grouped(int)}</li>
  * <li>TODO(#110): #groupBy</li>
@@ -125,7 +123,6 @@ import java.util.function.*;
  * <li>{@link #sliding(int)}</li>
  * <li>{@link #sliding(int, int)}</li>
  * <li>{@link #span(Predicate)}</li>
- * <li>{@link #treeMap(Function)}</li>
  * <li>{@link #unzip(Function)}</li>
  * <li>{@link #zip(Iterable)}</li>
  * <li>{@link #zipAll(Iterable, Object, Object)}</li>
@@ -349,16 +346,6 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
 
     @Override
     <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Traversable<U> flatMap(Function<? super T, ? extends TRAVERSABLE> mapper);
-
-    /**
-     * Flattens a {@code Traversable}, assuming that the elements are of type Traversable&lt;U&gt;
-     *
-     * @param <U> component type of the result {@code Traversable}
-     * @return a new {@code Traversable}
-     * @throws java.lang.ClassCastException if this {@code Traversable} is not of type {@code Traversable<? extends Traversable<U>>}
-     */
-    @unsafe
-    <U> Traversable<U> flatten();
 
     /**
      * Flattens a {@code Traversable} using a function.
@@ -991,13 +978,6 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
      * @throws NullPointerException if {@code predicate} is null
      */
     Tuple2<? extends Traversable<T>, ? extends Traversable<T>> span(Predicate<? super T> predicate);
-
-    @SuppressWarnings("unchecked")
-    @Override
-    @unsafe
-    default <U, Z> Traversable<Z> treeMap(Function<? super U, ? extends Object> mapper) {
-        return (Traversable<Z>) (Object) Monad.super.treeMap(mapper);
-    }
 
     /**
      * Calculates the sum of this elements. Supported component types are {@code Byte}, {@code Double}, {@code Float},
