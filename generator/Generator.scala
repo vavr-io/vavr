@@ -464,7 +464,6 @@ def generateMainClasses(): Unit = {
       val functionType = if (checked) im.getType("javaslang.control.Try.CheckedFunction") else im.getType("java.util.function.Function")
       val consumerType = if (checked) im.getType("javaslang.control.Try.CheckedConsumer") else im.getType("java.util.function.Consumer")
       val predicateType = if (checked) im.getType("javaslang.control.Try.CheckedPredicate") else im.getType("java.util.function.Predicate")
-      val Match = im.getType("javaslang.control.Match")
 
       xs"""
         /$javadoc
