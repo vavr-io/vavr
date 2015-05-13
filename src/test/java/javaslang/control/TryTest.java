@@ -55,6 +55,11 @@ public class TryTest implements CheckedMonadLaws<Try<?>> {
         assertThat(failure().flatten(MATCH::apply)).isEqualTo(failure());
     }
 
+    @Test
+    public void shouldReturnFailureWhenFlatteningSuccessThrows() {
+        assertThat(new Success<>(1).flatten(ignored -> { throw new Error("error"); })).isEqualTo(new Failure<>(new Error("error")));
+    }
+
     // -- exists
 
     @Test
@@ -615,6 +620,18 @@ public class TryTest implements CheckedMonadLaws<Try<?>> {
     public void shouldSerializeDeserializeSuccess() {
         final Object actual = Serializables.deserialize(Serializables.serialize(new Success<>(1)));
         assertThat(actual).isEqualTo(new Success<>(1));
+    }
+
+    // -- Checked Functions
+
+    @Test
+    public void shouldCreateIdentityCheckedFunction() {
+        assertThat(Try.CheckedFunction.identity()).isNotNull();
+    }
+
+    @Test
+    public void shouldEnsureThatIdentityCheckedFunctionReturnsIdentity() throws Throwable {
+        assertThat(Try.CheckedFunction.identity().apply(1)).isEqualTo(1);
     }
 
     // -- helpers
