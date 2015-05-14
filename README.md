@@ -61,7 +61,7 @@ Ensure that your `~/.m2/settings.xml` contains the following:
 </profiles>
 ```
 
-## Howto Contribute
+## How to Contribute
 
 Javaslang needs to be compiled with **jdk 1.8.0_40** at minimum, which fixes many type inference bugs of the java compiler.
 
