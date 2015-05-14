@@ -196,10 +196,10 @@ public interface Tree<T> extends Functor<T>, ValueObject, Iterable<T> {
         } else {
             final Flatten flatten = new Flatten();
             return Match
-                    .caze(Order.PRE_ORDER, (Order o) -> flatten.preOrder(this))
-                    .caze(Order.IN_ORDER, (Order o) -> flatten.inOrder(this))
-                    .caze(Order.POST_ORDER, (Order o) -> flatten.postOrder(this))
-                    .caze(Order.LEVEL_ORDER, (Order o) -> flatten.levelOrder(this))
+                    .when(Order.PRE_ORDER, (Order o) -> flatten.preOrder(this))
+                    .when(Order.IN_ORDER, (Order o) -> flatten.inOrder(this))
+                    .when(Order.POST_ORDER, (Order o) -> flatten.postOrder(this))
+                    .when(Order.LEVEL_ORDER, (Order o) -> flatten.levelOrder(this))
                     .apply(order);
         }
     }

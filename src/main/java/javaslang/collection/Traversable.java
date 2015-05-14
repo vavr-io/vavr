@@ -159,14 +159,14 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
             return None.instance();
         } else {
             final OptionalDouble average = Match
-                    .caze((byte t) -> ((java.util.stream.Stream<Byte>) toJavaStream()).mapToInt(Number::intValue).average())
-                    .caze((double t) -> ((java.util.stream.Stream<Double>) toJavaStream()).mapToDouble(Number::doubleValue).average())
-                    .caze((float t) -> ((java.util.stream.Stream<Float>) toJavaStream()).mapToDouble(Number::doubleValue).average())
-                    .caze((int t) -> ((java.util.stream.Stream<Integer>) toJavaStream()).mapToInt(Number::intValue).average())
-                    .caze((long t) -> ((java.util.stream.Stream<Long>) toJavaStream()).mapToLong(Number::longValue).average())
-                    .caze((short t) -> ((java.util.stream.Stream<Short>) toJavaStream()).mapToInt(Number::intValue).average())
-                    .caze((BigInteger t) -> ((java.util.stream.Stream<BigInteger>) toJavaStream()).mapToLong(Number::longValue).average())
-                    .caze((BigDecimal t) -> ((java.util.stream.Stream<BigDecimal>) toJavaStream()).mapToDouble(Number::doubleValue).average())
+                    .when((byte t) -> ((java.util.stream.Stream<Byte>) toJavaStream()).mapToInt(Number::intValue).average())
+                    .when((double t) -> ((java.util.stream.Stream<Double>) toJavaStream()).mapToDouble(Number::doubleValue).average())
+                    .when((float t) -> ((java.util.stream.Stream<Float>) toJavaStream()).mapToDouble(Number::doubleValue).average())
+                    .when((int t) -> ((java.util.stream.Stream<Integer>) toJavaStream()).mapToInt(Number::intValue).average())
+                    .when((long t) -> ((java.util.stream.Stream<Long>) toJavaStream()).mapToLong(Number::longValue).average())
+                    .when((short t) -> ((java.util.stream.Stream<Short>) toJavaStream()).mapToInt(Number::intValue).average())
+                    .when((BigInteger t) -> ((java.util.stream.Stream<BigInteger>) toJavaStream()).mapToLong(Number::longValue).average())
+                    .when((BigDecimal t) -> ((java.util.stream.Stream<BigDecimal>) toJavaStream()).mapToDouble(Number::doubleValue).average())
                     .orElse(() -> {
                         throw new UnsupportedOperationException("not numeric");
                     })
@@ -806,14 +806,14 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
             return 1;
         } else {
             return Match.ofType(Number.class)
-                    .caze((byte t) -> ((java.util.stream.Stream<Byte>) toJavaStream()).mapToInt(Number::intValue).reduce(1, (i1, i2) -> i1 * i2))
-                    .caze((double t) -> ((java.util.stream.Stream<Double>) toJavaStream()).mapToDouble(Number::doubleValue).reduce(1.0, (d1, d2) -> d1 * d2))
-                    .caze((float t) -> ((java.util.stream.Stream<Float>) toJavaStream()).mapToDouble(Number::doubleValue).reduce(1.0, (d1, d2) -> d1 * d2))
-                    .caze((int t) -> ((java.util.stream.Stream<Integer>) toJavaStream()).mapToInt(Number::intValue).reduce(1, (i1, i2) -> i1 * i2))
-                    .caze((long t) -> ((java.util.stream.Stream<Long>) toJavaStream()).mapToLong(Number::longValue).reduce(1L, (l1, l2) -> l1 * l2))
-                    .caze((short t) -> ((java.util.stream.Stream<Short>) toJavaStream()).mapToInt(Number::intValue).reduce(1, (i1, i2) -> i1 * i2))
-                    .caze((BigInteger t) -> ((java.util.stream.Stream<BigInteger>) toJavaStream()).mapToLong(Number::longValue).reduce(1L, (l1, l2) -> l1 * l2))
-                    .caze((BigDecimal t) -> ((java.util.stream.Stream<BigDecimal>) toJavaStream()).mapToDouble(Number::doubleValue).reduce(1.0, (d1, d2) -> d1 * d2))
+                    .when((byte t) -> ((java.util.stream.Stream<Byte>) toJavaStream()).mapToInt(Number::intValue).reduce(1, (i1, i2) -> i1 * i2))
+                    .when((double t) -> ((java.util.stream.Stream<Double>) toJavaStream()).mapToDouble(Number::doubleValue).reduce(1.0, (d1, d2) -> d1 * d2))
+                    .when((float t) -> ((java.util.stream.Stream<Float>) toJavaStream()).mapToDouble(Number::doubleValue).reduce(1.0, (d1, d2) -> d1 * d2))
+                    .when((int t) -> ((java.util.stream.Stream<Integer>) toJavaStream()).mapToInt(Number::intValue).reduce(1, (i1, i2) -> i1 * i2))
+                    .when((long t) -> ((java.util.stream.Stream<Long>) toJavaStream()).mapToLong(Number::longValue).reduce(1L, (l1, l2) -> l1 * l2))
+                    .when((short t) -> ((java.util.stream.Stream<Short>) toJavaStream()).mapToInt(Number::intValue).reduce(1, (i1, i2) -> i1 * i2))
+                    .when((BigInteger t) -> ((java.util.stream.Stream<BigInteger>) toJavaStream()).mapToLong(Number::longValue).reduce(1L, (l1, l2) -> l1 * l2))
+                    .when((BigDecimal t) -> ((java.util.stream.Stream<BigDecimal>) toJavaStream()).mapToDouble(Number::doubleValue).reduce(1.0, (d1, d2) -> d1 * d2))
                     .orElse(() -> {
                         throw new UnsupportedOperationException("not numeric");
                     })
@@ -1003,14 +1003,14 @@ public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
             return 0;
         } else {
             return Match.ofType(Number.class)
-                    .caze((byte t) -> ((java.util.stream.Stream<Byte>) toJavaStream()).mapToInt(Number::intValue).sum())
-                    .caze((double t) -> ((java.util.stream.Stream<Double>) toJavaStream()).mapToDouble(Number::doubleValue).sum())
-                    .caze((float t) -> ((java.util.stream.Stream<Float>) toJavaStream()).mapToDouble(Number::doubleValue).sum())
-                    .caze((int t) -> ((java.util.stream.Stream<Integer>) toJavaStream()).mapToInt(Number::intValue).sum())
-                    .caze((long t) -> ((java.util.stream.Stream<Long>) toJavaStream()).mapToLong(Number::longValue).sum())
-                    .caze((short t) -> ((java.util.stream.Stream<Short>) toJavaStream()).mapToInt(Number::intValue).sum())
-                    .caze((BigInteger t) -> ((java.util.stream.Stream<BigInteger>) toJavaStream()).mapToLong(Number::longValue).sum())
-                    .caze((BigDecimal t) -> ((java.util.stream.Stream<BigDecimal>) toJavaStream()).mapToDouble(Number::doubleValue).sum())
+                    .when((byte t) -> ((java.util.stream.Stream<Byte>) toJavaStream()).mapToInt(Number::intValue).sum())
+                    .when((double t) -> ((java.util.stream.Stream<Double>) toJavaStream()).mapToDouble(Number::doubleValue).sum())
+                    .when((float t) -> ((java.util.stream.Stream<Float>) toJavaStream()).mapToDouble(Number::doubleValue).sum())
+                    .when((int t) -> ((java.util.stream.Stream<Integer>) toJavaStream()).mapToInt(Number::intValue).sum())
+                    .when((long t) -> ((java.util.stream.Stream<Long>) toJavaStream()).mapToLong(Number::longValue).sum())
+                    .when((short t) -> ((java.util.stream.Stream<Short>) toJavaStream()).mapToInt(Number::intValue).sum())
+                    .when((BigInteger t) -> ((java.util.stream.Stream<BigInteger>) toJavaStream()).mapToLong(Number::longValue).sum())
+                    .when((BigDecimal t) -> ((java.util.stream.Stream<BigDecimal>) toJavaStream()).mapToDouble(Number::doubleValue).sum())
                     .orElse(() -> {
                         throw new UnsupportedOperationException("not numeric");
                     })

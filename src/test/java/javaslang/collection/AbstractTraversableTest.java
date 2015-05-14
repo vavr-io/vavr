@@ -362,8 +362,8 @@ public abstract class AbstractTraversableTest {
     public void shouldFlattenTraversableOfTraversablesAndPlainElementsGivenAFunction() {
         final Traversable<?> xs = of(1, of(2, 3));
         final Traversable<Integer> actual = xs.flatten(x -> Match
-                .caze((Traversable<Integer> ys) -> ys)
-                .caze((Integer i) -> of(i))
+                .when((Traversable<Integer> ys) -> ys)
+                .when((Integer i) -> of(i))
                 .apply(x));
         final Traversable<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
@@ -373,8 +373,8 @@ public abstract class AbstractTraversableTest {
     public void shouldFlattenDifferentElementTypesGivenAFunction() {
         final Traversable<Object> actual = this.<Object>of(1, "2", this.<Object>of(3.1415, 1L))
                 .flatten(x -> Match
-                        .caze((Traversable<Object> ys) -> ys)
-                        .caze((Object i) -> of(i))
+                        .when((Traversable<Object> ys) -> ys)
+                        .when((Object i) -> of(i))
                         .apply(x));
         assertThat(actual).isEqualTo(this.<Object>of(1, "2", 3.1415, 1L));
     }
