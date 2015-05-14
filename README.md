@@ -61,11 +61,13 @@ Ensure that your `~/.m2/settings.xml` contains the following:
 </profiles>
 ```
 
-## Howto Contribute
+## How to Contribute
 
 Javaslang needs to be compiled with **jdk 1.8.0_40** at minimum, which fixes many type inference bugs of the java compiler.
 
 [Fork](https://help.github.com/articles/fork-a-repo) the GitHub, send a [pull request](https://help.github.com/articles/using-pull-requests) and keep your fork in [sync](https://help.github.com/articles/syncing-a-fork/) with the upstream repository.
+
+Refer to [CONTRIBUTING.md](https://github.com/javaslang/javaslang/blob/master/CONTRIBUTING.md) for guidelines.
 
 ### Useful Maven Goals
 
