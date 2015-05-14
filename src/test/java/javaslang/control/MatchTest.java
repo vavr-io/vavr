@@ -107,52 +107,52 @@ public class MatchTest {
     // -- ofType()
 
     @Test
-    public void shouldCreateCazeOfTypeUsingPrototype() {
+    public void shouldCreateWhenOfTypeUsingPrototype() {
         assertThat(Match.ofType(Object.class).when(null, Function1.identity())).isNotNull();
     }
 
     @Test
-    public void shouldCreateCazeOfTypeUsingFunction() {
+    public void shouldCreateWhenOfTypeUsingFunction() {
         assertThat(Match.ofType(Object.class).when((Object o) -> null)).isNotNull();
     }
 
     @Test
-    public void shouldCreateCazeOfTypeUsingBooleanFunction() {
+    public void shouldCreateWhenOfTypeUsingBooleanFunction() {
         assertThat(Match.ofType(Object.class).when((boolean b) -> null)).isNotNull();
     }
 
     @Test
-    public void shouldCreateCazeOfTypeUsingByteFunction() {
+    public void shouldCreateWhenOfTypeUsingByteFunction() {
         assertThat(Match.ofType(Object.class).when((byte b) -> null)).isNotNull();
     }
 
     @Test
-    public void shouldCreateCazeOfTypeUsingCharFunction() {
+    public void shouldCreateWhenOfTypeUsingCharFunction() {
         assertThat(Match.ofType(Object.class).when((char b) -> null)).isNotNull();
     }
 
     @Test
-    public void shouldCreateCazeOfTypeUsingDoubleFunction() {
+    public void shouldCreateWhenOfTypeUsingDoubleFunction() {
         assertThat(Match.ofType(Object.class).when((double b) -> null)).isNotNull();
     }
 
     @Test
-    public void shouldCreateCazeOfTypeUsingFloatFunction() {
+    public void shouldCreateWhenOfTypeUsingFloatFunction() {
         assertThat(Match.ofType(Object.class).when((float b) -> null)).isNotNull();
     }
 
     @Test
-    public void shouldCreateCazeOfTypeUsingIntFunction() {
+    public void shouldCreateWhenOfTypeUsingIntFunction() {
         assertThat(Match.ofType(Object.class).when((int b) -> null)).isNotNull();
     }
 
     @Test
-    public void shouldCreateCazeOfTypeUsingLongFunction() {
+    public void shouldCreateWhenOfTypeUsingLongFunction() {
         assertThat(Match.ofType(Object.class).when((long b) -> null)).isNotNull();
     }
 
     @Test
-    public void shouldCreateCazeOfTypeUsingShortFunction() {
+    public void shouldCreateWhenOfTypeUsingShortFunction() {
         assertThat(Match.ofType(Object.class).when((short b) -> null)).isNotNull();
     }
 

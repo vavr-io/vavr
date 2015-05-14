@@ -280,6 +280,7 @@ public interface Either<L, R> extends ValueObject {
          *
          * @param f a function which maps elements of this LeftProjection to LeftProjections
          * @return a {@code LeftProjection}
+         * @throws NullPointerException if {@code f} is null
          */
         @SuppressWarnings("unchecked")
         @Override
@@ -560,6 +561,7 @@ public interface Either<L, R> extends ValueObject {
          *
          * @param f a function which maps elements of this RightProjection to RightProjections
          * @return a {@code RightProjection}
+         * @throws NullPointerException if {@code f} is null
          */
         @SuppressWarnings("unchecked")
         @Override

@@ -272,25 +272,25 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     /**
-     * Flattens a {@code List} using a function.
+     * Flattens a {@code List} using a function {@code f}. A common use case is to use the identity
+     * {@code list.flatten(Function::identity)} to flatten a {@code List} of {@code List}s.
      * <p>
      * Examples:
      * <pre>
      * <code>
-     * Match&lt;List&lt;U&gt;&gt; f
-     *    .caze((List&lt;U&gt; l) -&gt; l)
-     *    .caze((U u) -&gt; List.of(u))
-     *    .build();
-     * List.of(1).flatten();              // = List(1)
-     * List.of(List.of(1)).flatten();     // = List(1)
-     * List.of(Nil.instance()).flatten(); // = Nil
-     * Nil.instance().flatten();          // = Nil
+     * Match&lt;List&lt;U&gt;&gt; f = Match
+     *    .when((List&lt;U&gt; l) -&gt; l)
+     *    .when((U u) -&gt; List.of(u));
+     * List.of(1).flatten(f);              // = List(1)
+     * List.of(List.of(1)).flatten(f);     // = List(1)
+     * List.of(Nil.instance()).flatten(f); // = Nil
+     * Nil.instance().flatten(f);          // = Nil
      * </code>
      * </pre>
      *
      * @param <U>           component type of the result {@code List}
      * @param <TRAVERSABLE> a {@code Traversable&lt;U&gt;}
-     * @param f             a function which maps elements of this List to Traversables
+     * @param f             a function which maps elements of this {@code List} to {@code List}s
      * @return a new {@code List}
      * @throws NullPointerException if {@code f} is null
      */
