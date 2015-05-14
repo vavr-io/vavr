@@ -140,16 +140,16 @@ public interface Option<T> extends Monad<T, Option<?>>, ValueObject, Univalent<T
     }
 
     /**
-     * Flattens an {@code Option} using a function.
+     * Flattens an {@code Option} using a function. A common use case is to use the identity
+     * {@code option.flatten(Function::identity)} to flatten an {@code Option} of {@code Options}s.
      * <p>
      * Examples:
      * <pre>
      * <code>
-     * Match&lt;Option&lt;U&gt;&gt; f
-     *    .caze((Option&lt;U&gt; o) -&gt; o)
-     *    .caze((U u) -&gt; new Some&lt;&gt;(u))
-     *    .build();
-     * new Some&lt;&gt;(1).flatten();                    // = Some(1)
+     * Match&lt;Option&lt;U&gt;&gt; f = Match
+     *    .when((Option&lt;U&gt; o) -&gt; o)
+     *    .when((U u) -&gt; new Some&lt;&gt;(u));
+     * new Some&lt;&gt;(1).flatten(f);                   // = Some(1)
      * new Some&lt;&gt;(new Some&lt;&gt;(1)).flatten(f); // = Some(1)
      * new Some&lt;&gt;(None.instance()).flatten(f);     // = None
      * new None.instance().flatten(f);                   // = None
@@ -158,8 +158,9 @@ public interface Option<T> extends Monad<T, Option<?>>, ValueObject, Univalent<T
      *
      * @param <U>      component type of the result {@code Option}
      * @param <OPTION> an {@code Option&lt;U&gt;}
-     * @param f        a function which maps elements of this Option to Options
+     * @param f        a function which maps elements of this {@code Option} to {@code Option}s
      * @return a new {@code Option}
+     * @throws NullPointerException if {@code f} is null
      */
     @SuppressWarnings("unchecked")
     @Override

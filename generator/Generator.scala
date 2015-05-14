@@ -67,8 +67,8 @@ def generateMainClasses(): Unit = {
          * <ul>
          * <li>it has a fluent API</li>
          * <li>it is a {@code Function<Object, R>}</li>
-         * <li>it is able to match types, i.e. {@code Match.caze((byte b) -> "a byte: " + b)}</li>
-         * <li>it is able to match values, i.e. {@code Match.caze(BigDecimal.ZERO, b -> "Zero: " + b)}</li>
+         * <li>it is able to match types, i.e. {@code Match.when((byte b) -> "a byte: " + b)}</li>
+         * <li>it is able to match values, i.e. {@code Match.when(BigDecimal.ZERO, b -> "Zero: " + b)}</li>
          * </ul>
          *
          * Example of a Match as <a href="http://en.wikipedia.org/wiki/Partial_function"><strong>partial</strong> function</a>:
@@ -76,8 +76,8 @@ def generateMainClasses(): Unit = {
          * <pre>
          * <code>
          * final Match&lt;Number&gt; toNumber = Match.ofType(Number.class)
-         *     .caze((Integer i) -&gt; i)
-         *     .caze((String s) -&gt; new BigDecimal(s));
+         *     .when((Integer i) -&gt; i)
+         *     .when((String s) -&gt; new BigDecimal(s));
          * final Number number = toNumber.apply(1.0d); // throws a MatchError
          * </code>
          * </pre>
@@ -87,8 +87,8 @@ def generateMainClasses(): Unit = {
          * <pre>
          * <code>
          * Match.ofType(Number.class)
-         *     .caze((Integer i) -&gt; i)
-         *     .caze((String s) -&gt; new BigDecimal(s))
+         *     .when((Integer i) -&gt; i)
+         *     .when((String s) -&gt; new BigDecimal(s))
          *     .orElse(() -&gt; -1)
          *     .apply(1.0d); // result: -1
          * </code>
@@ -116,8 +116,8 @@ def generateMainClasses(): Unit = {
              * <pre>
              * <code>
              * final Match&lt;Number&gt; toNumber = Match
-             *         .&lt;Number&gt; caze((Integer i) -&gt; i)
-             *         .caze((String s) -&gt; new BigDecimal(s))
+             *         .&lt;Number&gt; when((Integer i) -&gt; i)
+             *         .when((String s) -&gt; new BigDecimal(s))
              * </code>
              * </pre>
              *
@@ -126,8 +126,8 @@ def generateMainClasses(): Unit = {
              * <pre>
              * <code>
              * final Match&lt;Number&gt; toNumber = Match.ofType(Number.class)
-             *         .caze((Integer i) -&gt; i)
-             *         .caze((String s) -&gt; new BigDecimal(s))
+             *         .when((Integer i) -&gt; i)
+             *         .when((String s) -&gt; new BigDecimal(s))
              * </code>
              * </pre>
              *
@@ -150,7 +150,7 @@ def generateMainClasses(): Unit = {
              * @return a new {@code Case}
              * @throws NullPointerException if {@code function} is null
              */
-            static <T, R> Case<R> caze(T prototype, $function1<? super T, ? extends R> function) {
+            static <T, R> Case<R> when(T prototype, $function1<? super T, ? extends R> function) {
                 $objects.requireNonNull(function, "function is null");
                 return Case.of(prototype, function);
             }
@@ -164,7 +164,7 @@ def generateMainClasses(): Unit = {
              * @throws NullPointerException if {@code function} is null
              */
             @SuppressWarnings("overloads")
-            static <R> Case<R> caze($function1<?, ? extends R> function) {
+            static <R> Case<R> when($function1<?, ? extends R> function) {
                 $objects.requireNonNull(function, "function is null");
                 return Case.of(function);
             }
@@ -179,7 +179,7 @@ def generateMainClasses(): Unit = {
                * @throws NullPointerException if {@code function} is null
                */
               @SuppressWarnings("overloads")
-              static <R> Case<R> caze(${name.firstUpper}Function<? extends R> function) {
+              static <R> Case<R> when(${name.firstUpper}Function<? extends R> function) {
                   $objects.requireNonNull(function, "function is null");
                   return Case.of(function);
               }
@@ -197,20 +197,20 @@ def generateMainClasses(): Unit = {
                 }
 
                 @Override
-                public <T> Case<R> caze(T prototype, $function1<? super T, ? extends R> function) {
+                public <T> Case<R> when(T prototype, $function1<? super T, ? extends R> function) {
                     $objects.requireNonNull(function, "function is null");
                     return Case.of(prototype, function);
                 }
 
                 @Override
-                public Case<R> caze($function1<?, ? extends R> function) {
+                public Case<R> when($function1<?, ? extends R> function) {
                     $objects.requireNonNull(function, "function is null");
                     return Case.of(function);
                 }
 
                 ${primitiveTypes.gen(name => xs"""
                   @Override
-                  public Case<R> caze(${name.firstUpper}Function<? extends R> function) {
+                  public Case<R> when(${name.firstUpper}Function<? extends R> function) {
                       $objects.requireNonNull(function, "function is null");
                       return Case.of(function);
                   }
@@ -238,18 +238,18 @@ def generateMainClasses(): Unit = {
                 }
 
                 private static <T, R> Case<R> of(T prototype, $function1<? super T, ? extends R> function) {
-                    return new Case<>($list.of(Case.caze(new $some<>(prototype), function)));
+                    return new Case<>($list.of(Case.when(new $some<>(prototype), function)));
                 }
 
                 @SuppressWarnings("overloads")
                 private static <R> Case<R> of($function1<?, ? extends R> function) {
-                    return new Case<>($list.of(Case.caze($none.instance(), function)));
+                    return new Case<>($list.of(Case.when($none.instance(), function)));
                 }
 
                 ${primitiveTypes.gen(name => xs"""
                   @SuppressWarnings("overloads")
                   private static <R> Case<R> of(${name.firstUpper}Function<? extends R> function) {
-                    return new Case<>($list.of(Case.caze($none.instance(), ($function1<${toObject(name)}, R>) function::apply, ${toObject(name)}.class)));
+                    return new Case<>($list.of(Case.when($none.instance(), ($function1<${toObject(name)}, R>) function::apply, ${toObject(name)}.class)));
                   }
                 """)("\n\n")}
 
@@ -259,25 +259,25 @@ def generateMainClasses(): Unit = {
                 }
 
                 @Override
-                public <T> Case<R> caze(T prototype, $function1<? super T, ? extends R> function) {
+                public <T> Case<R> when(T prototype, $function1<? super T, ? extends R> function) {
                     $objects.requireNonNull(function, "function is null");
-                    final $function<Object, $option<R>> caze = caze(new $some<>(prototype), function);
-                    return new Case<>(cases.prepend(caze));
+                    final $function<Object, $option<R>> when = when(new $some<>(prototype), function);
+                    return new Case<>(cases.prepend(when));
                 }
 
                 @Override
-                public Case<R> caze($function1<?, ? extends R> function) {
+                public Case<R> when($function1<?, ? extends R> function) {
                     $objects.requireNonNull(function, "function is null");
-                    final $function<Object, $option<R>> caze = caze($none.instance(), function);
-                    return new Case<>(cases.prepend(caze));
+                    final $function<Object, $option<R>> when = when($none.instance(), function);
+                    return new Case<>(cases.prepend(when));
                 }
 
                 ${primitiveTypes.gen(name => xs"""
                   @Override
-                  public Case<R> caze(${name.firstUpper}Function<? extends R> function) {
+                  public Case<R> when(${name.firstUpper}Function<? extends R> function) {
                       $objects.requireNonNull(function, "function is null");
-                      final $function<Object, $option<R>> caze = caze($none.instance(), ($function1<${toObject(name)}, R>) function::apply, ${toObject(name)}.class);
-                      return new Case<>(cases.prepend(caze));
+                      final $function<Object, $option<R>> when = when($none.instance(), ($function1<${toObject(name)}, R>) function::apply, ${toObject(name)}.class);
+                      return new Case<>(cases.prepend(when));
                   }
                 """)("\n\n")}
 
@@ -290,14 +290,14 @@ def generateMainClasses(): Unit = {
                     return new Expression<>(cases.reverse(), new $some<>($lazyy.of(defaultSupplier)));
                 }
 
-                private static <T, R> $function<Object, $option<R>> caze($option<T> prototype, $function1<T, ? extends R> function) {
+                private static <T, R> $function<Object, $option<R>> when($option<T> prototype, $function1<T, ? extends R> function) {
                     final ${im.getType("java.lang.invoke.MethodType")} type = function.getType();
                     // the compiler may add additional parameters to the lambda, our parameter is the last one
                     final Class<?> parameterType = type.parameterType(type.parameterCount() - 1);
-                    return caze(prototype, function, parameterType);
+                    return when(prototype, function, parameterType);
                 }
 
-                private static <T, R> $function<Object, $option<R>> caze($option<T> prototype, $function1<T, ? extends R> function, Class<?> parameterType) {
+                private static <T, R> $function<Object, $option<R>> when($option<T> prototype, $function1<T, ? extends R> function, Class<?> parameterType) {
                     final $predicate<Object> applicable = obj -> {
                         final boolean isCompatible = obj == null || parameterType.isAssignableFrom(obj.getClass());
                         return isCompatible
@@ -333,8 +333,8 @@ def generateMainClasses(): Unit = {
 
                 @Override
                 public R apply(Object o) {
-                    for ($function<Object, $option<R>> caze : cases) {
-                        final $option<R> result = caze.apply(o);
+                    for ($function<Object, $option<R>> when : cases) {
+                        final $option<R> result = when.apply(o);
                         if (result.isDefined()) {
                             return result.get();
                         }
@@ -354,7 +354,7 @@ def generateMainClasses(): Unit = {
                      * @return a new {@code Case}
                      * @throws NullPointerException if {@code function} is null
                      */
-                    <T> HasCases<R> caze(T prototype, $function1<? super T, ? extends R> function);
+                    <T> HasCases<R> when(T prototype, $function1<? super T, ? extends R> function);
 
                     /**
                      * Creates a {@code Match.Case} by type.
@@ -364,7 +364,7 @@ def generateMainClasses(): Unit = {
                      * @throws NullPointerException if {@code function} is null
                      */
                     @SuppressWarnings("overloads")
-                    HasCases<R> caze($function1<?, ? extends R> function);
+                    HasCases<R> when($function1<?, ? extends R> function);
 
                     ${primitiveTypes.gen(name => xs"""
                       /$javadoc
@@ -375,7 +375,7 @@ def generateMainClasses(): Unit = {
                        * @throws NullPointerException if {@code function} is null
                        */
                       @SuppressWarnings("overloads")
-                      HasCases<R> caze(${name.firstUpper}Function<? extends R> function);
+                      HasCases<R> when(${name.firstUpper}Function<? extends R> function);
                     """)("\n\n")}
                 }
             }
@@ -511,8 +511,8 @@ def generateMainClasses(): Unit = {
              * <code>
              * // given a monad M&lt;T&gt;
              * [a,[b,c],d].flatten( Match
-             *    .caze((M m) -&gt; m)
-             *    .caze((T t) -&gt; new M(t))
+             *    .when((M m) -&gt; m)
+             *    .when((T t) -&gt; new M(t))
              * ) = [a,b,c,d]
              * </code>
              * </pre>

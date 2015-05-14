@@ -58,8 +58,8 @@ public interface Monad<T, M extends HigherKinded<?, M>> extends Functor<T>, High
      * <code>
      * // given a monad M&lt;T&gt;
      * [a,[b,c],d].flatten( Match
-     *    .caze((M m) -&gt; m)
-     *    .caze((T t) -&gt; new M(t))
+     *    .when((M m) -&gt; m)
+     *    .when((T t) -&gt; new M(t))
      * ) = [a,b,c,d]
      * </code>
      * </pre>

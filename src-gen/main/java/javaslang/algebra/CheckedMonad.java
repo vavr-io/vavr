@@ -59,8 +59,8 @@ public interface CheckedMonad<T, M extends HigherKinded<?, M>> extends CheckedFu
      * <code>
      * // given a monad M&lt;T&gt;
      * [a,[b,c],d].flatten( Match
-     *    .caze((M m) -&gt; m)
-     *    .caze((T t) -&gt; new M(t))
+     *    .when((M m) -&gt; m)
+     *    .when((T t) -&gt; new M(t))
      * ) = [a,b,c,d]
      * </code>
      * </pre>

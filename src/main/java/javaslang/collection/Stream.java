@@ -313,30 +313,32 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     /**
-     * Flattens a {@code Stream} using a function.
+     * Flattens a {@code Stream} using a function. A common use case is to use the identity
+     * {@code stream.flatten(Function::identity)} to flatten a {@code Stream} of {@code Stream}s.
      * <p>
      * Examples:
      * <pre>
      * <code>
-     * Match&lt;Stream&lt;U&gt;&gt; f
-     *    .caze((Stream&lt;U&gt; l) -&gt; l)
-     *    .caze((U u) -&gt; Stream.of(u))
-     *    .build();
-     * Stream.of(1).flatten();              // = Stream(1)
-     * Stream.of(Stream.of(1)).flatten();   // = Stream(1)
-     * Stream.of(Nil.instance()).flatten(); // = Nil
-     * Nil.instance().flatten();            // = Nil
+     * Match&lt;Stream&lt;U&gt;&gt; f = Match
+     *    .when((Stream&lt;U&gt; l) -&gt; l)
+     *    .when((U u) -&gt; Stream.of(u));
+     * Stream.of(1).flatten(f);              // = Stream(1)
+     * Stream.of(Stream.of(1)).flatten(f);   // = Stream(1)
+     * Stream.of(Nil.instance()).flatten(f); // = Nil
+     * Nil.instance().flatten(f);            // = Nil
      * </code>
      * </pre>
      *
      * @param <U>           component type of the result {@code Stream}
      * @param <TRAVERSABLE> a {@code Traversable&lt;U&gt;}
-     * @param f             a function which maps elements of this Stream to Traversables
+     * @param f             a function which maps elements of this {@code Stream} to {@code Stream}s
      * @return a new {@code Stream}
+     * @throws NullPointerException if {@code f} is null
      */
     @SuppressWarnings("unchecked")
     @Override
     default <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Stream<U> flatten(Function<? super T, ? extends TRAVERSABLE> f) {
+        Objects.requireNonNull(f, "f is null");
         return isEmpty() ? Nil.instance() : Stream.ofAll(new Iterator<U>() {
 
             final Iterator<? extends T> inputs = Stream.this.iterator();

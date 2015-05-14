@@ -9,7 +9,6 @@ import javaslang.Serializables;
 import javaslang.Tuple;
 import javaslang.algebra.Monad;
 import javaslang.algebra.MonadLaws;
-import javaslang.collection.List;
 import javaslang.test.Arbitrary;
 import javaslang.test.CheckResult;
 import javaslang.test.CheckResultAssertions;
@@ -180,8 +179,8 @@ public class OptionTest implements MonadLaws<Option<?>> {
     // -- flatten(Function)
 
     static final Match<Option<Integer>> MATCH = Match
-        .caze((Option<Integer> o) -> o)
-        .caze((Integer i) -> new Some<>(i));
+        .when((Option<Integer> o) -> o)
+        .when((Integer i) -> new Some<>(i));
 
     @Test
     public void shouldFlattenUnnestedSomeWithFunction() {

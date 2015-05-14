@@ -125,21 +125,21 @@ public interface Try<T> extends CheckedMonad<T, Try<?>>, ValueObject, Bivalent<T
      * Examples:
      * <pre>
      * <code>
-     * Match&lt;Try&lt;U&gt;&gt; f
-     *    .caze((Try&lt;U&gt; o) -&gt; o)
-     *    .caze((U u) -&gt; new Success&lt;&gt;(u))
-     *    .build();
-     * new Success&lt;&gt;(1).flatten();                                  // = Success(1)
-     * new Success&lt;&gt;(new Success&lt;&gt;(1)).flatten(f);            // = Success(1)
-     * new Success&lt;&gt;(new Failure&lt;&gt;(new Error(""))).flatten(); // = Failure("Error")
-     * new Failure&lt;&gt;(new Error("")).flatten();                      // = Failure("Error")
+     * Match&lt;Try&lt;U&gt;&gt; f = Match
+     *    .when((Try&lt;U&gt; o) -&gt; o)
+     *    .when((U u) -&gt; new Success&lt;&gt;(u));
+     * new Success&lt;&gt;(1).flatten(f);                                  // = Success(1)
+     * new Success&lt;&gt;(new Success&lt;&gt;(1)).flatten(f);             // = Success(1)
+     * new Success&lt;&gt;(new Failure&lt;&gt;(new Error(""))).flatten(f); // = Failure("Error")
+     * new Failure&lt;&gt;(new Error("")).flatten(f);                      // = Failure("Error")
      * </code>
      * </pre>
      *
      * @param <U>   component type of the result {@code Try}
      * @param <TRY> a {@code Try&lt;U&gt;}
-     * @param f     a function which maps elements of this Try to Trys
+     * @param f     a function which maps elements of this {@code Try} to {@code Try}s
      * @return a new {@code Try}
+     * @throws NullPointerException if {@code f} is null
      */
     @SuppressWarnings("unchecked")
     @Override

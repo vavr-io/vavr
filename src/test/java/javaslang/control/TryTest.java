@@ -32,8 +32,8 @@ public class TryTest implements CheckedMonadLaws<Try<?>> {
     // -- flatten(Function)
 
     static final Match<Try<Integer>> MATCH = Match
-        .caze((Try<Integer> o) -> o)
-        .caze((Integer i) -> new Success<>(i));
+        .when((Try<Integer> o) -> o)
+        .when((Integer i) -> new Success<>(i));
 
     @Test
     public void shouldFlattenUnnestedSuccessWithFunction() {
