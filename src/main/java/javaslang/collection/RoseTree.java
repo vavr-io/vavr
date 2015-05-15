@@ -5,11 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple;
-import javaslang.Tuple0;
-import javaslang.Tuple1;
-import javaslang.Tuple2;
-
 import java.io.*;
 import java.util.Objects;
 import java.util.function.Function;
@@ -23,11 +18,6 @@ import java.util.function.Function;
  * @since 1.1.0
  */
 public interface RoseTree<T> extends Tree<T> {
-
-    /**
-     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
-     */
-    long serialVersionUID = 1L;
 
     /**
      * Creates a either a rose tree branch or a leaf, depending on the child count.
@@ -117,7 +107,7 @@ public interface RoseTree<T> extends Tree<T> {
      * @param <T> value type
      * @since 1.1.0
      */
-    final class Leaf<T> extends AbstractRoseTree<T> implements NonNil<T> {
+    final class Leaf<T> extends AbstractRoseTree<T> implements NonNil<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -156,11 +146,6 @@ public interface RoseTree<T> extends Tree<T> {
         public <U> NonNil<U> map(Function<? super T, ? extends U> mapper) {
             return new Leaf<>(mapper.apply(getValue()));
         }
-
-        @Override
-        public Tuple1<T> unapply() {
-            return Tuple.of(value);
-        }
     }
 
     /**
@@ -169,7 +154,7 @@ public interface RoseTree<T> extends Tree<T> {
      * @param <T> value type
      * @since 1.1.0
      */
-    final class Branch<T> extends AbstractRoseTree<T> implements NonNil<T> {
+    final class Branch<T> extends AbstractRoseTree<T> implements NonNil<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -218,11 +203,6 @@ public interface RoseTree<T> extends Tree<T> {
             final U value = mapper.apply(getValue());
             final List<NonNil<U>> children = getChildren().map(tree -> tree.map(mapper));
             return new Branch<>(value, children);
-        }
-
-        @Override
-        public Tuple2<T, List<NonNil<T>>> unapply() {
-            return Tuple.of(value, children);
         }
 
         // -- Serializable implementation
@@ -329,7 +309,7 @@ public interface RoseTree<T> extends Tree<T> {
      * @param <T> type of the tree's values
      * @since 1.1.0
      */
-    final class Nil<T> extends AbstractRoseTree<T> {
+    final class Nil<T> extends AbstractRoseTree<T> implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -376,11 +356,6 @@ public interface RoseTree<T> extends Tree<T> {
             return Nil.instance();
         }
 
-        @Override
-        public Tuple0 unapply() {
-            return Tuple0.instance();
-        }
-
         // -- Serializable implementation
 
         /**
@@ -401,8 +376,6 @@ public interface RoseTree<T> extends Tree<T> {
      * @since 1.1.0
      */
     abstract class AbstractRoseTree<T> implements RoseTree<T> {
-
-        private static final long serialVersionUID = 1L;
 
         @Override
         public boolean equals(Object o) {

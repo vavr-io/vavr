@@ -6,7 +6,6 @@
 package javaslang.control;
 
 import javaslang.Serializables;
-import javaslang.Tuple;
 import javaslang.control.Either.LeftProjection;
 import javaslang.control.Either.RightProjection;
 import org.junit.Test;
@@ -54,13 +53,6 @@ public class EitherTest {
     @Test
     public void shouldReturnFalseWhenCallingIsRightOnLeft() {
         assertThat(new Left<>(1).isRight()).isFalse();
-    }
-
-    // unapply
-
-    @Test
-    public void shouldUnapplyLeft() {
-        assertThat(new Left<>(1).unapply()).isEqualTo(Tuple.of(1));
     }
 
     // equals
@@ -452,11 +444,6 @@ public class EitherTest {
     }
 
     @Test
-    public void shouldReturnNoneWhenCallingUnapplyOnNothingLeft() {
-        assertThat(nothingLeft().unapply()._1).isEqualTo(None.instance());
-    }
-
-    @Test
     public void shouldEqualSameInstanceWhenNothingLeft() {
         assertThat(nothingLeft().equals(nothingLeft())).isTrue();
     }
@@ -487,13 +474,6 @@ public class EitherTest {
     @Test
     public void shouldReturnFalseWhenCallingIsLeftOnRight() {
         assertThat(new Right<>(1).isLeft()).isFalse();
-    }
-
-    // unapply
-
-    @Test
-    public void shouldUnapplyRight() {
-        assertThat(new Right<>(1).unapply()).isEqualTo(Tuple.of(1));
     }
 
     // equals
@@ -884,11 +864,6 @@ public class EitherTest {
     @Test
     public void shouldReturnNoneWhenCallingBimapOnNothingRight() {
         assertThat(nothingRight().bimap(Function.identity(), Function.identity()).get()).isEqualTo(None.instance());
-    }
-
-    @Test
-    public void shouldReturnNoneWhenCallingUnapplyOnNothingRight() {
-        assertThat(nothingRight().unapply()._1).isEqualTo(None.instance());
     }
 
     @Test

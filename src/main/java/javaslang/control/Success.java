@@ -5,10 +5,9 @@
  */
 package javaslang.control;
 
-import javaslang.Tuple;
-import javaslang.Tuple1;
 import javaslang.algebra.HigherKinded;
 
+import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
@@ -21,7 +20,7 @@ import java.util.function.Function;
  * @param <T> component type of this Success
  * @since 1.0.0
  */
-public final class Success<T> implements Try<T> {
+public final class Success<T> implements Try<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -151,11 +150,6 @@ public final class Success<T> implements Try<T> {
         } catch (Throwable t) {
             return new Failure<>(t);
         }
-    }
-
-    @Override
-    public Tuple1<T> unapply() {
-        return Tuple.of(value);
     }
 
     @Override

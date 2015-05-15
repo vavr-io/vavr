@@ -5,7 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.ValueObject;
 import javaslang.algebra.Functor;
 import javaslang.control.Match;
 
@@ -18,12 +17,7 @@ import java.util.function.Function;
  * @param <T> component type of this Tree
  * @since 1.1.0
  */
-public interface Tree<T> extends Functor<T>, ValueObject, Iterable<T> {
-
-    /**
-     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
-     */
-    long serialVersionUID = 1L;
+public interface Tree<T> extends Functor<T>, Iterable<T> {
 
     /**
      * Gets the value of this tree.

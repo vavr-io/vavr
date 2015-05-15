@@ -5,6 +5,8 @@
  */
 package javaslang;
 
+import java.io.Serializable;
+
 /**
  * <p>Implementation of an empty tuple, a tuple containing no elements.</p>
  * <p>
@@ -13,7 +15,7 @@ package javaslang;
  * </p>
  * @since 1.1.0
  */
-public final class Tuple0 implements Tuple {
+public final class Tuple0 implements Tuple, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -38,11 +40,6 @@ public final class Tuple0 implements Tuple {
     @Override
     public int arity() {
         return 0;
-    }
-
-    @Override
-    public Tuple0 unapply() {
-        return this;
     }
 
     @Override

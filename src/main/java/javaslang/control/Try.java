@@ -5,7 +5,6 @@
  */
 package javaslang.control;
 
-import javaslang.ValueObject;
 import javaslang.algebra.CheckedMonad;
 import javaslang.algebra.HigherKinded;
 import javaslang.control.Valences.Bivalent;
@@ -20,12 +19,7 @@ import java.util.function.Consumer;
  *
  * @param <T> Value type in the case of success.
  */
-public interface Try<T> extends CheckedMonad<T, Try<?>>, ValueObject, Bivalent<T, Throwable>, Iterable<T> {
-
-    /**
-     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
-     */
-    long serialVersionUID = 1L;
+public interface Try<T> extends CheckedMonad<T, Try<?>>, Bivalent<T, Throwable>, Iterable<T> {
 
     /**
      * Creates a Try of a CheckedSupplier.

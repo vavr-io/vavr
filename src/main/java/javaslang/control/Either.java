@@ -5,7 +5,6 @@
  */
 package javaslang.control;
 
-import javaslang.ValueObject;
 import javaslang.algebra.HigherKinded;
 import javaslang.algebra.Monad;
 import javaslang.control.Valences.Bivalent;
@@ -43,12 +42,7 @@ import java.util.function.Predicate;
  * @param <R> The type of the Right value of an Either.
  * @since 1.0.0
  */
-public interface Either<L, R> extends ValueObject {
-
-    /**
-     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
-     */
-    long serialVersionUID = 1L;
+public interface Either<L, R> {
 
     /**
      * Returns whether this Either is a Left.

@@ -6,7 +6,6 @@
 package javaslang.collection;
 
 import javaslang.Serializables;
-import javaslang.Tuple;
 import org.junit.Test;
 
 import java.io.InvalidObjectException;
@@ -49,13 +48,6 @@ public class BinaryTreeTest extends AbstractTreeTest {
         assertThat(tree.balance().toLispString()).isEqualTo("(1 (2 (4 7) 5) (3 (6 8) 9))");
     }
 
-    // -- Leaf test
-
-    @Test
-    public void shouldUnapplyLeaf() {
-        assertThat(BinaryTree.leaf(1).unapply()).isEqualTo(Tuple.of(1));
-    }
-
     // -- Branch test
 
     @Test(expected = IllegalArgumentException.class)
@@ -68,24 +60,12 @@ public class BinaryTreeTest extends AbstractTreeTest {
         BinaryTree.branch(nil(), 1, nil());
     }
 
-    @Test
-    public void shouldUnapplyBranch() {
-        final Tuple actual = BinaryTree.branch(BinaryTree.leaf(2), 1, BinaryTree.leaf(3)).unapply();
-        final Tuple expected = Tuple.of(BinaryTree.leaf(2), 1, BinaryTree.leaf(3));
-        assertThat(actual).isEqualTo(expected);
-    }
-
     @Test(expected = InvalidObjectException.class)
     public void shouldNotCallReadObjectOnBranchInstance() throws Throwable {
         Serializables.callReadObject(tree());
     }
 
     // -- Nil test
-
-    @Test
-    public void shouldUnapplyNil() {
-        assertThat(BinaryTree.nil().unapply()).isEqualTo(Tuple.empty());
-    }
 
     @Test(expected = UnsupportedOperationException.class)
     public void shouldThrowWhenLeftOfNil() {

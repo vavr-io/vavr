@@ -306,18 +306,6 @@ public class OptionTest implements MonadLaws<Option<?>> {
         assertThat(None.instance().iterator()).isNotNull();
     }
 
-    // -- unapply
-
-    @Test
-    public void shouldUnapplyNone() {
-        assertThat(None.instance().unapply()).isEqualTo(Tuple.empty());
-    }
-
-    @Test
-    public void shouldUnapplySome() {
-        assertThat(new Some<>(1).unapply()).isEqualTo(Tuple.of(1));
-    }
-
     // -- equals
 
     @Test

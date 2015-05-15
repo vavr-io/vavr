@@ -5,7 +5,9 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Lazy;
+import javaslang.Tuple;
+import javaslang.Tuple2;
 import javaslang.algebra.HigherKinded;
 import javaslang.control.None;
 import javaslang.control.Option;
@@ -51,12 +53,7 @@ import java.util.stream.Collector;
  * @since 1.1.0
  */
 // DEV-NOTE: Beware of serializing IO streams.
-public interface Stream<T> extends Seq<T>, ValueObject {
-
-    /**
-     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
-     */
-    long serialVersionUID = 1L;
+public interface Stream<T> extends Seq<T> {
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
@@ -779,7 +776,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
      */
     // DEV NOTE: class declared final because of serialization proxy pattern.
     // (see Effective Java, 2nd ed., p. 315)
-    final class Cons<T> extends AbstractStream<T> {
+    final class Cons<T> extends AbstractStream<T> implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -820,11 +817,6 @@ public interface Stream<T> extends Seq<T>, ValueObject {
         @Override
         public boolean isEmpty() {
             return false;
-        }
-
-        @Override
-        public Tuple2<T, Stream<T>> unapply() {
-            return Tuple.of(head, tail.get());
         }
 
         /**
@@ -944,7 +936,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
      * @param <T> Component type of the Stream.
      * @since 1.1.0
      */
-    final class Nil<T> extends AbstractStream<T> {
+    final class Nil<T> extends AbstractStream<T> implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -990,11 +982,6 @@ public interface Stream<T> extends Seq<T>, ValueObject {
             return true;
         }
 
-        @Override
-        public Tuple0 unapply() {
-            return Tuple.empty();
-        }
-
         /**
          * Instance control for object serialization.
          *
@@ -1018,8 +1005,6 @@ public interface Stream<T> extends Seq<T>, ValueObject {
      * @since 1.1.0
      */
     abstract class AbstractStream<T> implements Stream<T> {
-
-        private static final long serialVersionUID = 1L;
 
         @Override
         public boolean equals(Object o) {
