@@ -6,7 +6,7 @@
  */
 package javaslang.collection.euler;
 
-import javaslang.collection.Stream;
+import javaslang.collection.JStream;
 
 final class Primes {
 
@@ -14,13 +14,13 @@ final class Primes {
         throw new AssertionError(getClass().getName() + " is not intented to be instantiated.");
     }
 
-    public static Stream<Integer> asStream() {
-        return sieve(Stream.from(2));
+    public static JStream<Integer> asStream() {
+        return sieve(JStream.from(2));
     }
 
     // TODO: prevent stack overflow
-    private static Stream<Integer> sieve(Stream<Integer> numbers) {
-        return new Stream.Cons<>(
+    private static JStream<Integer> sieve(JStream<Integer> numbers) {
+        return new JStream.Cons<>(
                 numbers.head(),
                 () -> sieve(numbers.tail().filter(x -> x % numbers.head() > 0)));
     }

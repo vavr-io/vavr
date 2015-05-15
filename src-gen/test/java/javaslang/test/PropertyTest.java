@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Random;
 import javaslang.CheckedFunction1;
 import javaslang.Tuple;
-import javaslang.collection.List;
+import javaslang.collection.JList;
 import org.junit.Test;
 
 public class PropertyTest {
@@ -85,8 +85,8 @@ public class PropertyTest {
     @Test
     public void shouldCheckZipAndThenUnzipIsIdempotentForListsOfSameLength() {
         // ∀is,ss: length(is) = length(ss) → unzip(zip(is, ss)) = (is, ss)
-        final Arbitrary<List<Integer>> ints = Arbitrary.list(size -> Gen.choose(0, size));
-        final Arbitrary<List<String>> strings = Arbitrary.list(
+        final Arbitrary<JList<Integer>> ints = Arbitrary.list(size -> Gen.choose(0, size));
+        final Arbitrary<JList<String>> strings = Arbitrary.list(
                 Arbitrary.string(
                     Gen.frequency(
                         Tuple.of(1, Gen.choose('A', 'Z')),

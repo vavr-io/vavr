@@ -17,7 +17,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import javaslang.Function1;
 import javaslang.Lazy;
-import javaslang.collection.List;
+import javaslang.collection.JList;
 
 /**
  * {@code Match} is a better switch for Java. Some characteristics of {@code Match} are:
@@ -322,61 +322,61 @@ public interface Match<R> extends Function<Object, R> {
      */
     final class Case<R> implements Match<R>, Expression.HasCases<R> {
 
-        private final List<Function<Object, Option<R>>> cases;
+        private final JList<Function<Object, Option<R>>> cases;
         private final Lazy<Expression<R>> match;
 
-        private Case(List<Function<Object, Option<R>>> cases) {
+        private Case(JList<Function<Object, Option<R>>> cases) {
             this.cases = cases;
             this.match = Lazy.of(() -> new Expression<>(cases.reverse(), None.instance()));
         }
 
         private static <T, R> Case<R> of(T prototype, Function1<? super T, ? extends R> function) {
-            return new Case<>(List.of(Case.when(new Some<>(prototype), function)));
+            return new Case<>(JList.of(Case.when(new Some<>(prototype), function)));
         }
 
         @SuppressWarnings("overloads")
         private static <R> Case<R> of(Function1<?, ? extends R> function) {
-            return new Case<>(List.of(Case.when(None.instance(), function)));
+            return new Case<>(JList.of(Case.when(None.instance(), function)));
         }
 
         @SuppressWarnings("overloads")
         private static <R> Case<R> of(BooleanFunction<? extends R> function) {
-          return new Case<>(List.of(Case.when(None.instance(), (Function1<Boolean, R>) function::apply, Boolean.class)));
+          return new Case<>(JList.of(Case.when(None.instance(), (Function1<Boolean, R>) function::apply, Boolean.class)));
         }
 
         @SuppressWarnings("overloads")
         private static <R> Case<R> of(ByteFunction<? extends R> function) {
-          return new Case<>(List.of(Case.when(None.instance(), (Function1<Byte, R>) function::apply, Byte.class)));
+          return new Case<>(JList.of(Case.when(None.instance(), (Function1<Byte, R>) function::apply, Byte.class)));
         }
 
         @SuppressWarnings("overloads")
         private static <R> Case<R> of(CharFunction<? extends R> function) {
-          return new Case<>(List.of(Case.when(None.instance(), (Function1<Character, R>) function::apply, Character.class)));
+          return new Case<>(JList.of(Case.when(None.instance(), (Function1<Character, R>) function::apply, Character.class)));
         }
 
         @SuppressWarnings("overloads")
         private static <R> Case<R> of(DoubleFunction<? extends R> function) {
-          return new Case<>(List.of(Case.when(None.instance(), (Function1<Double, R>) function::apply, Double.class)));
+          return new Case<>(JList.of(Case.when(None.instance(), (Function1<Double, R>) function::apply, Double.class)));
         }
 
         @SuppressWarnings("overloads")
         private static <R> Case<R> of(FloatFunction<? extends R> function) {
-          return new Case<>(List.of(Case.when(None.instance(), (Function1<Float, R>) function::apply, Float.class)));
+          return new Case<>(JList.of(Case.when(None.instance(), (Function1<Float, R>) function::apply, Float.class)));
         }
 
         @SuppressWarnings("overloads")
         private static <R> Case<R> of(IntFunction<? extends R> function) {
-          return new Case<>(List.of(Case.when(None.instance(), (Function1<Integer, R>) function::apply, Integer.class)));
+          return new Case<>(JList.of(Case.when(None.instance(), (Function1<Integer, R>) function::apply, Integer.class)));
         }
 
         @SuppressWarnings("overloads")
         private static <R> Case<R> of(LongFunction<? extends R> function) {
-          return new Case<>(List.of(Case.when(None.instance(), (Function1<Long, R>) function::apply, Long.class)));
+          return new Case<>(JList.of(Case.when(None.instance(), (Function1<Long, R>) function::apply, Long.class)));
         }
 
         @SuppressWarnings("overloads")
         private static <R> Case<R> of(ShortFunction<? extends R> function) {
-          return new Case<>(List.of(Case.when(None.instance(), (Function1<Short, R>) function::apply, Short.class)));
+          return new Case<>(JList.of(Case.when(None.instance(), (Function1<Short, R>) function::apply, Short.class)));
         }
 
         @Override

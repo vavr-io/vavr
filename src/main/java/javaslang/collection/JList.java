@@ -20,34 +20,34 @@ import java.util.function.*;
 import java.util.stream.Collector;
 
 /**
- * A {@code List} is an eager sequence of elements. Its immutability makes it suitable for concurrent programming.
+ * A {@code JList} is an eager sequence of elements. Its immutability makes it suitable for concurrent programming.
  * <p>
- * A {@code List} is composed of a {@code head} element and a {@code tail} {@code List}.
+ * A {@code JList} is composed of a {@code head} element and a {@code tail} {@code JList}.
  * <p>
- * There are two implementations of the {@code List} interface:
+ * There are two implementations of the {@code JList} interface:
  * <ul>
- * <li>{@link Nil}, which represents the empty {@code List}.</li>
- * <li>{@link Cons}, which represents a {@code List} containing one or more elements.</li>
+ * <li>{@link Nil}, which represents the empty {@code JList}.</li>
+ * <li>{@link Cons}, which represents a {@code JList} containing one or more elements.</li>
  * </ul>
- * Methods to obtain a {@code List}:
+ * Methods to obtain a {@code JList}:
  * <pre>
  * <code>
  * // factory methods
- * List.nil()              // = List.of() = Nil.instance()
- * List.of(x)              // = new Cons&lt;&gt;(x, Nil.instance())
- * List.of(Object...)      // e.g. List.of(1, 2, 3)
- * List.ofAll(Iterable)    // e.g. List.ofAll(Stream.of(1, 2, 3)) = 1, 2, 3
+ * JList.nil()              // = JList.of() = Nil.instance()
+ * JList.of(x)              // = new Cons&lt;&gt;(x, Nil.instance())
+ * JList.of(Object...)      // e.g. JList.of(1, 2, 3)
+ * JList.ofAll(Iterable)    // e.g. JList.ofAll(JStream.of(1, 2, 3)) = 1, 2, 3
  *
  * // int sequences
- * List.range(0, 3)        // = 0, 1, 2
- * List.rangeClosed(0, 3)  // = 0, 1, 2, 3
+ * JList.range(0, 3)        // = 0, 1, 2
+ * JList.rangeClosed(0, 3)  // = 0, 1, 2, 3
  * </code>
  * </pre>
  *
  * @param <T> Component type of the List.
  * @since 1.1.0
  */
-public interface List<T> extends Seq<T>, ValueObject {
+public interface JList<T> extends JSeq<T>, ValueObject {
 
     /**
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
@@ -56,44 +56,44 @@ public interface List<T> extends Seq<T>, ValueObject {
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
-     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link javaslang.collection.List}
+     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link JList}
      * .
      *
      * @param <T> Component type of the List.
      * @return A javaslang.collection.List Collector.
      */
-    static <T> Collector<T, ArrayList<T>, List<T>> collector() {
+    static <T> Collector<T, ArrayList<T>, JList<T>> collector() {
         final Supplier<ArrayList<T>> supplier = ArrayList::new;
         final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
         final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
             left.addAll(right);
             return left;
         };
-        final Function<ArrayList<T>, List<T>> finisher = List::ofAll;
+        final Function<ArrayList<T>, JList<T>> finisher = JList::ofAll;
         return Collector.of(supplier, accumulator, combiner, finisher);
     }
 
     /**
      * Returns the single instance of Nil. Convenience method for {@code Nil.instance()} .
      * <p>
-     * Note: this method intentionally returns type {@code List} and not {@code Nil}. This comes handy when folding.
+     * Note: this method intentionally returns type {@code JList} and not {@code Nil}. This comes handy when folding.
      * If you explicitely need type {@code Nil} use {@linkplain Nil#instance()}.
      *
      * @param <T> Component type of Nil, determined by type inference in the particular context.
      * @return The empty list.
      */
-    static <T> List<T> nil() {
+    static <T> JList<T> nil() {
         return Nil.instance();
     }
 
     /**
-     * Returns a singleton {@code List}, i.e. a {@code List} of one element.
+     * Returns a singleton {@code JList}, i.e. a {@code JList} of one element.
      *
      * @param element An element.
      * @param <T>     The component type
      * @return A new List instance containing the given element
      */
-    static <T> List<T> of(T element) {
+    static <T> JList<T> of(T element) {
         return new Cons<>(element, Nil.instance());
     }
 
@@ -114,9 +114,9 @@ public interface List<T> extends Seq<T>, ValueObject {
      * @throws NullPointerException if {@code elements} is null
      */
     @SafeVarargs
-    static <T> List<T> of(T... elements) {
+    static <T> JList<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        List<T> result = Nil.<T>instance();
+        JList<T> result = Nil.<T>instance();
         for (int i = elements.length - 1; i >= 0; i--) {
             result = result.prepend(elements[i]);
         }
@@ -131,14 +131,14 @@ public interface List<T> extends Seq<T>, ValueObject {
      * @return A list containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
-    static <T> List<T> ofAll(Iterable<? extends T> elements) {
+    static <T> JList<T> ofAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        if (elements instanceof List) {
+        if (elements instanceof JList) {
             @SuppressWarnings("unchecked")
-            final List<T> list = (List<T>) elements;
+            final JList<T> list = (JList<T>) elements;
             return list;
         } else {
-            List<T> result = Nil.instance();
+            JList<T> result = Nil.instance();
             for (T element : elements) {
                 result = result.prepend(element);
             }
@@ -153,11 +153,11 @@ public interface List<T> extends Seq<T>, ValueObject {
      * @param toExclusive the last number + 1
      * @return a range of int values as specified or {@code Nil} if {@code from >= toExclusive}
      */
-    static List<Integer> range(int from, int toExclusive) {
+    static JList<Integer> range(int from, int toExclusive) {
         if (from >= toExclusive) {
             return Nil.instance();
         } else {
-            return List.rangeClosed(from, toExclusive - 1);
+            return JList.rangeClosed(from, toExclusive - 1);
         }
     }
 
@@ -168,13 +168,13 @@ public interface List<T> extends Seq<T>, ValueObject {
      * @param toInclusive the last number
      * @return a range of int values as specified or {@code Nil} if {@code from > toInclusive}
      */
-    static List<Integer> rangeClosed(int from, int toInclusive) {
+    static JList<Integer> rangeClosed(int from, int toInclusive) {
         if (from > toInclusive) {
             return Nil.instance();
         } else if (toInclusive == Integer.MIN_VALUE) {
-            return List.of(Integer.MIN_VALUE);
+            return JList.of(Integer.MIN_VALUE);
         } else {
-            List<Integer> result = Nil.instance();
+            JList<Integer> result = Nil.instance();
             for (int i = toInclusive; i >= from; i--) {
                 result = result.prepend(i);
             }
@@ -183,54 +183,54 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default List<T> append(T element) {
-        return foldRight(List.of(element), (x, xs) -> xs.prepend(x));
+    default JList<T> append(T element) {
+        return foldRight(JList.of(element), (x, xs) -> xs.prepend(x));
     }
 
     @Override
-    default List<T> appendAll(Iterable<? extends T> elements) {
+    default JList<T> appendAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return foldRight(List.ofAll(elements), (x, xs) -> xs.prepend(x));
+        return foldRight(JList.ofAll(elements), (x, xs) -> xs.prepend(x));
     }
 
     @Override
-    default List<T> clear() {
+    default JList<T> clear() {
         return Nil.instance();
     }
 
     @Override
-    default List<? extends List<T>> combinations() {
-        return List.rangeClosed(0, length()).map(this::combinations).flatten(Function.identity());
+    default JList<? extends JList<T>> combinations() {
+        return JList.rangeClosed(0, length()).map(this::combinations).flatten(Function.identity());
     }
 
     @Override
-    default List<List<T>> combinations(int k) {
+    default JList<JList<T>> combinations(int k) {
         class Recursion {
-            List<List<T>> combinations(List<T> elements, int k) {
+            JList<JList<T>> combinations(JList<T> elements, int k) {
                 return (k == 0)
-                        ? List.of(List.nil())
+                        ? JList.of(JList.nil())
                         : elements.zipWithIndex().flatMap(t -> combinations(elements.drop(t._2 + 1), (k - 1))
-                        .map((List<T> c) -> c.prepend(t._1)));
+                        .map((JList<T> c) -> c.prepend(t._1)));
             }
         }
         return new Recursion().combinations(this, Math.max(k, 0));
     }
 
     @Override
-    default List<T> distinct() {
+    default JList<T> distinct() {
         return distinct(Function.identity());
     }
 
     @Override
-    default <U> List<T> distinct(Function<? super T, ? extends U> keyExtractor) {
+    default <U> JList<T> distinct(Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         final Set<U> seen = new HashSet<>();
         return filter(t -> seen.add(keyExtractor.apply(t)));
     }
 
     @Override
-    default List<T> drop(int n) {
-        List<T> list = this;
+    default JList<T> drop(int n) {
+        JList<T> list = this;
         for (int i = n; i > 0 && !list.isEmpty(); i--) {
             list = list.tail();
         }
@@ -238,14 +238,14 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default List<T> dropRight(int n) {
+    default JList<T> dropRight(int n) {
         return reverse().drop(n).reverse();
     }
 
     @Override
-    default List<T> dropWhile(Predicate<? super T> predicate) {
+    default JList<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        List<T> list = this;
+        JList<T> list = this;
         while (!list.isEmpty() && predicate.test(list.head())) {
             list = list.tail();
         }
@@ -253,52 +253,52 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default List<T> filter(Predicate<? super T> predicate) {
+    default JList<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return isEmpty() ? this : foldLeft(List.<T>nil(), (xs, x) -> predicate.test(x) ? xs.prepend(x) : xs).reverse();
+        return isEmpty() ? this : foldLeft(JList.<T>nil(), (xs, x) -> predicate.test(x) ? xs.prepend(x) : xs).reverse();
     }
 
     @Override
-    default List<T> findAll(Predicate<? super T> predicate) {
+    default JList<T> findAll(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    default <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> List<U> flatMap(Function<? super T, ? extends TRAVERSABLE> mapper) {
+    default <U, TRAVERSABLE extends HigherKinded<U, JTraversable<?>>> JList<U> flatMap(Function<? super T, ? extends TRAVERSABLE> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return isEmpty() ? Nil.instance() : foldRight(nil(), (t, xs) -> xs.prependAll((Traversable<U>) mapper.apply(t)));
+        return isEmpty() ? Nil.instance() : foldRight(nil(), (t, xs) -> xs.prependAll((JTraversable<U>) mapper.apply(t)));
     }
 
     /**
-     * Flattens a {@code List} using a function {@code f}. A common use case is to use the identity
-     * {@code list.flatten(Function::identity)} to flatten a {@code List} of {@code List}s.
+     * Flattens a {@code JList} using a function {@code f}. A common use case is to use the identity
+     * {@code list.flatten(Function::identity)} to flatten a {@code JList} of {@code JList}s.
      * <p>
      * Examples:
      * <pre>
      * <code>
-     * Match&lt;List&lt;U&gt;&gt; f = Match
-     *    .when((List&lt;U&gt; l) -&gt; l)
-     *    .when((U u) -&gt; List.of(u));
-     * List.of(1).flatten(f);              // = List(1)
-     * List.of(List.of(1)).flatten(f);     // = List(1)
-     * List.of(Nil.instance()).flatten(f); // = Nil
-     * Nil.instance().flatten(f);          // = Nil
+     * Match&lt;JList&lt;U&gt;&gt; f = Match
+     *    .when((JList&lt;U&gt; l) -&gt; l)
+     *    .when((U u) -&gt; JList.of(u));
+     * JList.of(1).flatten(f);              // = List(1)
+     * JList.of(JList.of(1)).flatten(f);    // = List(1)
+     * JList.of(Nil.instance()).flatten(f); // = Nil
+     * Nil.instance().flatten(f);           // = Nil
      * </code>
      * </pre>
      *
-     * @param <U>           component type of the result {@code List}
-     * @param <TRAVERSABLE> a {@code Traversable&lt;U&gt;}
-     * @param f             a function which maps elements of this {@code List} to {@code List}s
-     * @return a new {@code List}
+     * @param <U>           component type of the result {@code JList}
+     * @param <TRAVERSABLE> a {@code JTraversable&lt;U&gt;}
+     * @param f             a function which maps elements of this {@code JList} to {@code JList}s
+     * @return a new {@code JList}
      * @throws NullPointerException if {@code f} is null
      */
     @SuppressWarnings("unchecked")
     @Override
-    default <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> List<U> flatten(Function<? super T, ? extends TRAVERSABLE> f) {
+    default <U, TRAVERSABLE extends HigherKinded<U, JTraversable<?>>> JList<U> flatten(Function<? super T, ? extends TRAVERSABLE> f) {
         Objects.requireNonNull(f, "f is null");
-        return isEmpty() ? Nil.instance() : foldRight(nil(), (t, xs) -> xs.prependAll((Traversable<U>) f.apply(t)));
+        return isEmpty() ? Nil.instance() : foldRight(nil(), (t, xs) -> xs.prependAll((JTraversable<U>) f.apply(t)));
     }
 
     @Override
@@ -309,7 +309,7 @@ public interface List<T> extends Seq<T>, ValueObject {
         if (index < 0) {
             throw new IndexOutOfBoundsException("get(" + index + ")");
         }
-        List<T> list = this;
+        JList<T> list = this;
         for (int i = index - 1; i >= 0; i--) {
             list = list.tail();
             if (list.isEmpty()) {
@@ -320,14 +320,14 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default List<List<T>> grouped(int size) {
+    default JList<JList<T>> grouped(int size) {
         return sliding(size, size);
     }
 
     @Override
     default int indexOf(T element) {
         int index = 0;
-        for (List<T> list = this; !list.isEmpty(); list = list.tail(), index++) {
+        for (JList<T> list = this; !list.isEmpty(); list = list.tail(), index++) {
             if (Objects.equals(list.head(), element)) {
                 return index;
             }
@@ -336,7 +336,7 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default List<T> init() {
+    default JList<T> init() {
         if (isEmpty()) {
             throw new UnsupportedOperationException("init on empty List");
         } else {
@@ -345,24 +345,24 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default Option<List<T>> initOption() {
+    default Option<JList<T>> initOption() {
         return isEmpty() ? None.instance() : new Some<>(init());
     }
 
     @Override
-    default List<T> insert(int index, T element) {
+    default JList<T> insert(int index, T element) {
         if (index < 0) {
             throw new IndexOutOfBoundsException("insert(" + index + ", e)");
         }
-        List<T> preceding = Nil.instance();
-        List<T> tail = this;
+        JList<T> preceding = Nil.instance();
+        JList<T> tail = this;
         for (int i = index; i > 0; i--, tail = tail.tail()) {
             if (tail.isEmpty()) {
                 throw new IndexOutOfBoundsException("insert(" + index + ", e) on list of length " + length());
             }
             preceding = preceding.prepend(tail.head());
         }
-        List<T> result = tail.prepend(element);
+        JList<T> result = tail.prepend(element);
         for (T next : preceding) {
             result = result.prepend(next);
         }
@@ -370,20 +370,20 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default List<T> insertAll(int index, Iterable<? extends T> elements) {
+    default JList<T> insertAll(int index, Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (index < 0) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
         }
-        List<T> preceding = Nil.instance();
-        List<T> tail = this;
+        JList<T> preceding = Nil.instance();
+        JList<T> tail = this;
         for (int i = index; i > 0; i--, tail = tail.tail()) {
             if (tail.isEmpty()) {
                 throw new IndexOutOfBoundsException("insertAll(" + index + ", elements) on list of length " + length());
             }
             preceding = preceding.prepend(tail.head());
         }
-        List<T> result = tail.prependAll(elements);
+        JList<T> result = tail.prependAll(elements);
         for (T next : preceding) {
             result = result.prepend(next);
         }
@@ -391,14 +391,14 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default List<T> intersperse(T element) {
+    default JList<T> intersperse(T element) {
         return isEmpty() ? Nil.instance() : foldRight(nil(), (x, xs) -> xs.isEmpty() ? xs.prepend(x) : xs.prepend(element).prepend(x));
     }
 
     @Override
     default int lastIndexOf(T element) {
         int result = -1, index = 0;
-        for (List<T> list = this; !list.isEmpty(); list = list.tail(), index++) {
+        for (JList<T> list = this; !list.isEmpty(); list = list.tail(), index++) {
             if (Objects.equals(list.head(), element)) {
                 result = index;
             }
@@ -407,25 +407,25 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default <U> List<U> map(Function<? super T, ? extends U> mapper) {
+    default <U> JList<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return foldRight(nil(), (x, xs) -> xs.prepend(mapper.apply(x)));
     }
 
     @Override
-    default Tuple2<List<T>, List<T>> partition(Predicate<? super T> predicate) {
+    default Tuple2<JList<T>, JList<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return Tuple.of(filter(predicate), filter(predicate.negate()));
     }
 
     /**
-     * Performs an action on the head element of this {@code List}.
+     * Performs an action on the head element of this {@code JList}.
      *
      * @param action A {@code Consumer}
-     * @return this {@code List}
+     * @return this {@code JList}
      */
     @Override
-    default List<T> peek(Consumer<? super T> action) {
+    default JList<T> peek(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         if (!isEmpty()) {
             action.accept(head());
@@ -434,36 +434,36 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default List<List<T>> permutations() {
+    default JList<JList<T>> permutations() {
         if (isEmpty()) {
             return Nil.instance();
         } else {
-            final List<T> tail = tail();
+            final JList<T> tail = tail();
             if (tail.isEmpty()) {
-                return List.of(this);
+                return JList.of(this);
             } else {
-                final List<List<T>> zero = Nil.instance();
+                final JList<JList<T>> zero = Nil.instance();
                 // TODO: IntelliJ IDEA 14.1.1 needs a redundant cast here, jdk 1.8.0_40 compiles fine
-                return distinct().foldLeft(zero, (xs, x) -> xs.appendAll(remove(x).permutations().map((Function<List<T>, List<T>>) l -> l.prepend(x))));
+                return distinct().foldLeft(zero, (xs, x) -> xs.appendAll(remove(x).permutations().map((Function<JList<T>, JList<T>>) l -> l.prepend(x))));
             }
         }
     }
 
     @Override
-    default List<T> prepend(T element) {
+    default JList<T> prepend(T element) {
         return new Cons<>(element, this);
     }
 
     @Override
-    default List<T> prependAll(Iterable<? extends T> elements) {
+    default JList<T> prependAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return isEmpty() ? List.ofAll(elements) : List.ofAll(elements).reverse().foldLeft(this, List::prepend);
+        return isEmpty() ? JList.ofAll(elements) : JList.ofAll(elements).reverse().foldLeft(this, JList::prepend);
     }
 
     @Override
-    default List<T> remove(T element) {
-        List<T> preceding = Nil.instance();
-        List<T> tail = this;
+    default JList<T> remove(T element) {
+        JList<T> preceding = Nil.instance();
+        JList<T> tail = this;
         boolean found = false;
         while (!found && !tail.isEmpty()) {
             final T head = tail.head();
@@ -474,7 +474,7 @@ public interface List<T> extends Seq<T>, ValueObject {
             }
             tail = tail.tail();
         }
-        List<T> result = tail;
+        JList<T> result = tail;
         for (T next : preceding) {
             result = result.prepend(next);
         }
@@ -482,8 +482,8 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default List<T> removeAll(T removed) {
-        List<T> result = Nil.instance();
+    default JList<T> removeAll(T removed) {
+        JList<T> result = Nil.instance();
         for (T element : this) {
             if (!element.equals(removed)) {
                 result = result.prepend(element);
@@ -493,10 +493,10 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default List<T> removeAll(Iterable<? extends T> elements) {
+    default JList<T> removeAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        List<T> removed = List.ofAll(elements).distinct();
-        List<T> result = Nil.instance();
+        JList<T> removed = JList.ofAll(elements).distinct();
+        JList<T> result = Nil.instance();
         for (T element : this) {
             if (!removed.contains(element)) {
                 result = result.prepend(element);
@@ -506,9 +506,9 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default List<T> replace(T currentElement, T newElement) {
-        List<T> preceding = Nil.instance();
-        List<T> tail = this;
+    default JList<T> replace(T currentElement, T newElement) {
+        JList<T> preceding = Nil.instance();
+        JList<T> tail = this;
         while (!tail.isEmpty() && !Objects.equals(tail.head(), currentElement)) {
             preceding = preceding.prepend(tail.head());
             tail = tail.tail();
@@ -517,7 +517,7 @@ public interface List<T> extends Seq<T>, ValueObject {
             return this;
         }
         // skip the current head element because it is replaced
-        List<T> result = tail.tail().prepend(newElement);
+        JList<T> result = tail.tail().prepend(newElement);
         for (T next : preceding) {
             result = result.prepend(next);
         }
@@ -525,9 +525,9 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default List<T> replaceAll(T currentElement, T newElement) {
-        List<T> result = Nil.instance();
-        for (List<T> list = this; !list.isEmpty(); list = list.tail()) {
+    default JList<T> replaceAll(T currentElement, T newElement) {
+        JList<T> result = Nil.instance();
+        for (JList<T> list = this; !list.isEmpty(); list = list.tail()) {
             final T head = list.head();
             final T elem = Objects.equals(head, currentElement) ? newElement : head;
             result = result.prepend(elem);
@@ -536,9 +536,9 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default List<T> replaceAll(UnaryOperator<T> operator) {
+    default JList<T> replaceAll(UnaryOperator<T> operator) {
         Objects.requireNonNull(operator, "operator is null");
-        List<T> result = Nil.instance();
+        JList<T> result = Nil.instance();
         for (T element : this) {
             result = result.prepend(operator.apply(element));
         }
@@ -546,10 +546,10 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default List<T> retainAll(Iterable<? extends T> elements) {
+    default JList<T> retainAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        final List<T> keeped = List.ofAll(elements).distinct();
-        List<T> result = Nil.instance();
+        final JList<T> keeped = JList.ofAll(elements).distinct();
+        JList<T> result = Nil.instance();
         for (T element : this) {
             if (keeped.contains(element)) {
                 result = result.prepend(element);
@@ -559,20 +559,20 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default List<T> reverse() {
-        return isEmpty() ? this : foldLeft(nil(), List::prepend);
+    default JList<T> reverse() {
+        return isEmpty() ? this : foldLeft(nil(), JList::prepend);
     }
 
     @Override
-    default List<T> set(int index, T element) {
+    default JList<T> set(int index, T element) {
         if (isEmpty()) {
             throw new IndexOutOfBoundsException("set(" + index + ", e) on empty list");
         }
         if (index < 0) {
             throw new IndexOutOfBoundsException("set(" + index + ", e)");
         }
-        List<T> preceding = Nil.instance();
-        List<T> tail = this;
+        JList<T> preceding = Nil.instance();
+        JList<T> tail = this;
         for (int i = index; i > 0; i--, tail = tail.tail()) {
             if (tail.isEmpty()) {
                 throw new IndexOutOfBoundsException("set(" + index + ", e) on list of length " + length());
@@ -583,7 +583,7 @@ public interface List<T> extends Seq<T>, ValueObject {
             throw new IndexOutOfBoundsException("set(" + index + ", e) on list of length " + length());
         }
         // skip the current head element because it is replaced
-        List<T> result = tail.tail().prepend(element);
+        JList<T> result = tail.tail().prepend(element);
         for (T next : preceding) {
             result = result.prepend(next);
         }
@@ -591,19 +591,19 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default List<List<T>> sliding(int size) {
+    default JList<JList<T>> sliding(int size) {
         return sliding(size, 1);
     }
 
     @Override
-    default List<List<T>> sliding(int size, int step) {
+    default JList<JList<T>> sliding(int size, int step) {
         if (size <= 0 || step <= 0) {
             throw new IllegalArgumentException(String.format("size: %s or step: %s not positive", size, step));
         }
-        List<List<T>> result = Nil.instance();
-        List<T> list = this;
+        JList<JList<T>> result = Nil.instance();
+        JList<T> list = this;
         while (!list.isEmpty()) {
-            final Tuple2<List<T>, List<T>> split = list.splitAt(size);
+            final Tuple2<JList<T>, JList<T>> split = list.splitAt(size);
             result = result.prepend(split._1);
             list = split._2.isEmpty() ? Nil.instance() : list.drop(step);
         }
@@ -611,24 +611,24 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default List<T> sort() {
-        return isEmpty() ? this : toJavaStream().sorted().collect(List.collector());
+    default JList<T> sort() {
+        return isEmpty() ? this : toJavaStream().sorted().collect(JList.collector());
     }
 
     @Override
-    default List<T> sort(Comparator<? super T> comparator) {
+    default JList<T> sort(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        return isEmpty() ? this : toJavaStream().sorted(comparator).collect(List.collector());
+        return isEmpty() ? this : toJavaStream().sorted(comparator).collect(JList.collector());
     }
 
     @Override
-    default Tuple2<List<T>, List<T>> span(Predicate<? super T> predicate) {
+    default Tuple2<JList<T>, JList<T>> span(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return Tuple.of(takeWhile(predicate), dropWhile(predicate));
     }
 
     @Override
-    default Tuple2<List<T>, List<T>> splitAt(int n) {
+    default Tuple2<JList<T>, JList<T>> splitAt(int n) {
         return Tuple.of(take(n), drop(n));
     }
 
@@ -639,11 +639,11 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default List<T> subsequence(int beginIndex) {
+    default JList<T> subsequence(int beginIndex) {
         if (beginIndex < 0) {
             throw new IndexOutOfBoundsException("subsequence(" + beginIndex + ")");
         }
-        List<T> result = this;
+        JList<T> result = this;
         for (int i = 0; i < beginIndex; i++, result = result.tail()) {
             if (result.isEmpty()) {
                 throw new IndexOutOfBoundsException(
@@ -654,13 +654,13 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default List<T> subsequence(int beginIndex, int endIndex) {
+    default JList<T> subsequence(int beginIndex, int endIndex) {
         if (beginIndex < 0 || beginIndex > endIndex) {
             throw new IndexOutOfBoundsException(
                     String.format("subsequence(%s, %s) on list of length %s", beginIndex, endIndex, length()));
         }
-        List<T> result = Nil.instance();
-        List<T> list = this;
+        JList<T> result = Nil.instance();
+        JList<T> list = this;
         for (int i = 0; i < endIndex; i++, list = list.tail()) {
             if (list.isEmpty()) {
                 throw new IndexOutOfBoundsException(
@@ -674,12 +674,12 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    List<T> tail();
+    JList<T> tail();
 
     @Override
-    default List<T> take(int n) {
-        List<T> result = Nil.instance();
-        List<T> list = this;
+    default JList<T> take(int n) {
+        JList<T> result = Nil.instance();
+        JList<T> list = this;
         for (int i = 0; i < n && !list.isEmpty(); i++, list = list.tail()) {
             result = result.prepend(list.head());
         }
@@ -687,26 +687,26 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default List<T> takeRight(int n) {
+    default JList<T> takeRight(int n) {
         return reverse().take(n).reverse();
     }
 
     @Override
-    default List<T> takeWhile(Predicate<? super T> predicate) {
+    default JList<T> takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        List<T> result = Nil.instance();
-        for (List<T> list = this; !list.isEmpty() && predicate.test(list.head()); list = list.tail()) {
+        JList<T> result = Nil.instance();
+        for (JList<T> list = this; !list.isEmpty() && predicate.test(list.head()); list = list.tail()) {
             result = result.prepend(list.head());
         }
         return result.reverse();
     }
 
     @Override
-    default <T1, T2> Tuple2<List<T1>, List<T2>> unzip(
+    default <T1, T2> Tuple2<JList<T1>, JList<T2>> unzip(
             Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
-        List<T1> xs = Nil.instance();
-        List<T2> ys = Nil.instance();
+        JList<T1> xs = Nil.instance();
+        JList<T2> ys = Nil.instance();
         for (T element : this) {
             final Tuple2<? extends T1, ? extends T2> t = unzipper.apply(element);
             xs = xs.prepend(t._1);
@@ -716,10 +716,10 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default <U> List<Tuple2<T, U>> zip(Iterable<U> that) {
+    default <U> JList<Tuple2<T, U>> zip(Iterable<U> that) {
         Objects.requireNonNull(that, "that is null");
-        List<Tuple2<T, U>> result = Nil.instance();
-        List<T> list1 = this;
+        JList<Tuple2<T, U>> result = Nil.instance();
+        JList<T> list1 = this;
         Iterator<U> list2 = that.iterator();
         while (!list1.isEmpty() && list2.hasNext()) {
             result = result.prepend(Tuple.of(list1.head(), list2.next()));
@@ -729,9 +729,9 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default <U> List<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
+    default <U> JList<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
-        List<Tuple2<T, U>> result = Nil.instance();
+        JList<Tuple2<T, U>> result = Nil.instance();
         Iterator<T> list1 = this.iterator();
         Iterator<U> list2 = that.iterator();
         while (list1.hasNext() || list2.hasNext()) {
@@ -743,17 +743,17 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default List<Tuple2<T, Integer>> zipWithIndex() {
-        List<Tuple2<T, Integer>> result = Nil.instance();
+    default JList<Tuple2<T, Integer>> zipWithIndex() {
+        JList<Tuple2<T, Integer>> result = Nil.instance();
         int index = 0;
-        for (List<T> list = this; !list.isEmpty(); list = list.tail()) {
+        for (JList<T> list = this; !list.isEmpty(); list = list.tail()) {
             result = result.prepend(Tuple.of(list.head(), index++));
         }
         return result.reverse();
     }
 
     /**
-     * Non-empty {@code List}, consisting of a {@code head} and a {@code tail}.
+     * Non-empty {@code JList}, consisting of a {@code head} and a {@code tail}.
      *
      * @param <T> Component type of the List.
      * @since 1.1.0
@@ -764,7 +764,7 @@ public interface List<T> extends Seq<T>, ValueObject {
         private static final long serialVersionUID = 1L;
 
         private final T head;
-        private final List<T> tail;
+        private final JList<T> tail;
 
         /**
          * Creates a List consisting of a head value and a trailing List.
@@ -772,7 +772,7 @@ public interface List<T> extends Seq<T>, ValueObject {
          * @param head The head
          * @param tail The tail
          */
-        public Cons(T head, List<T> tail) {
+        public Cons(T head, JList<T> tail) {
             this.head = head;
             this.tail = tail;
         }
@@ -788,12 +788,12 @@ public interface List<T> extends Seq<T>, ValueObject {
         }
 
         @Override
-        public List<T> tail() {
+        public JList<T> tail() {
             return tail;
         }
 
         @Override
-        public Option<List<T>> tailOption() {
+        public Option<JList<T>> tailOption() {
             return new Some<>(tail);
         }
 
@@ -803,7 +803,7 @@ public interface List<T> extends Seq<T>, ValueObject {
         }
 
         @Override
-        public Tuple2<T, List<T>> unapply() {
+        public Tuple2<T, JList<T>> unapply() {
             return Tuple.of(head, tail());
         }
 
@@ -871,7 +871,7 @@ public interface List<T> extends Seq<T>, ValueObject {
             private void writeObject(ObjectOutputStream s) throws IOException {
                 s.defaultWriteObject();
                 s.writeInt(list.length());
-                for (List<T> l = list; !l.isEmpty(); l = l.tail()) {
+                for (JList<T> l = list; !l.isEmpty(); l = l.tail()) {
                     s.writeObject(l.head());
                 }
             }
@@ -890,7 +890,7 @@ public interface List<T> extends Seq<T>, ValueObject {
                 if (size <= 0) {
                     throw new InvalidObjectException("No elements");
                 }
-                List<T> temp = Nil.instance();
+                JList<T> temp = Nil.instance();
                 for (int i = 0; i < size; i++) {
                     @SuppressWarnings("unchecked")
                     final T element = (T) s.readObject();
@@ -916,7 +916,7 @@ public interface List<T> extends Seq<T>, ValueObject {
     }
 
     /**
-     * Representation of the singleton empty {@code List}.
+     * Representation of the singleton empty {@code JList}.
      *
      * @param <T> Component type of the List.
      * @since 1.1.0
@@ -953,12 +953,12 @@ public interface List<T> extends Seq<T>, ValueObject {
         }
 
         @Override
-        public List<T> tail() {
+        public JList<T> tail() {
             throw new UnsupportedOperationException("tail of empty list");
         }
 
         @Override
-        public Option<List<T>> tailOption() {
+        public Option<JList<T>> tailOption() {
             return None.instance();
         }
 
@@ -985,7 +985,7 @@ public interface List<T> extends Seq<T>, ValueObject {
 
     /**
      * <p>
-     * This class is needed because the interface {@link List} cannot use default methods to override Object's non-final
+     * This class is needed because the interface {@link JList} cannot use default methods to override Object's non-final
      * methods equals, hashCode and toString.
      * </p>
      * See <a href="http://mail.openjdk.java.net/pipermail/lambda-dev/2013-March/008435.html">Allow default methods to
@@ -994,7 +994,7 @@ public interface List<T> extends Seq<T>, ValueObject {
      * @param <T> Component type of the List.
      * @since 1.1.0
      */
-    abstract class AbstractList<T> implements List<T> {
+    abstract class AbstractList<T> implements JList<T> {
 
         private static final long serialVersionUID = 1L;
 
@@ -1002,9 +1002,9 @@ public interface List<T> extends Seq<T>, ValueObject {
         public boolean equals(Object o) {
             if (o == this) {
                 return true;
-            } else if (o instanceof List) {
-                List<?> list1 = this;
-                List<?> list2 = (List<?>) o;
+            } else if (o instanceof JList) {
+                JList<?> list1 = this;
+                JList<?> list2 = (JList<?>) o;
                 while (!list1.isEmpty() && !list2.isEmpty()) {
                     final boolean isEqual = Objects.equals(list1.head(), list2.head());
                     if (!isEqual) {
@@ -1022,7 +1022,7 @@ public interface List<T> extends Seq<T>, ValueObject {
         @Override
         public int hashCode() {
             int hashCode = 1;
-            for (List<T> list = this; !list.isEmpty(); list = list.tail()) {
+            for (JList<T> list = this; !list.isEmpty(); list = list.tail()) {
                 final T element = list.head();
                 hashCode = 31 * hashCode + Objects.hashCode(element);
             }

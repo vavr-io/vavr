@@ -5,7 +5,7 @@
  */
 package javaslang.collection.euler;
 
-import javaslang.collection.List;
+import javaslang.collection.JList;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -26,7 +26,7 @@ public class ProjectEulerTest {
      */
     @Test
     public void shouldSolveProblem1() {
-        final Number actual = List.range(1, 10).filter(n -> n % 3 == 0 || n % 5 == 0).sum();
+        final Number actual = JList.range(1, 10).filter(n -> n % 3 == 0 || n % 5 == 0).sum();
         assertThat(actual).isEqualTo(23);
     }
 
