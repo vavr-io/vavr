@@ -73,7 +73,7 @@ public class JListTest extends AbstractJSeqTest implements MonadLaws<JTraversabl
 
     @Test
     public void shouldCreateListOfListUsingCons() {
-        assertThat(JList.of(JList.nil()).toString()).isEqualTo("List(List())");
+        assertThat(JList.of(JList.nil()).toString()).isEqualTo("JList(JList())");
     }
 
     // -- static of(T...)
@@ -201,12 +201,12 @@ public class JListTest extends AbstractJSeqTest implements MonadLaws<JTraversabl
 
     @Test
     public void shouldStringifyNil() {
-        assertThat(this.nil().toString()).isEqualTo("List()");
+        assertThat(this.nil().toString()).isEqualTo("JList()");
     }
 
     @Test
     public void shouldStringifyNonNil() {
-        assertThat(this.of(1, 2, 3).toString()).isEqualTo("List(1, 2, 3)");
+        assertThat(this.of(1, 2, 3).toString()).isEqualTo("JList(1, 2, 3)");
     }
 
     // -- Cons test

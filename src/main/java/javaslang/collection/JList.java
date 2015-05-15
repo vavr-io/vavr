@@ -1031,7 +1031,7 @@ public interface JList<T> extends JSeq<T>, ValueObject {
 
         @Override
         public String toString() {
-            return map(String::valueOf).join(", ", "List(", ")");
+            return map(String::valueOf).join(", ", "JList(", ")");
         }
     }
 }

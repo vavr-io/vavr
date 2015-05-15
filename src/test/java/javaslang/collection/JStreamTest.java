@@ -95,7 +95,7 @@ public class JStreamTest extends AbstractJSeqTest implements MonadLaws<JTraversa
 
     @Test
     public void shouldCreateStreamOfStreamUsingCons() {
-        assertThat(JStream.of(JStream.nil()).toString()).isEqualTo("Stream(Stream(), ?)");
+        assertThat(JStream.of(JStream.nil()).toString()).isEqualTo("JStream(JStream(), ?)");
     }
 
     // -- static of(T...)
@@ -246,19 +246,19 @@ public class JStreamTest extends AbstractJSeqTest implements MonadLaws<JTraversa
 
     @Test
     public void shouldStringifyNil() {
-        assertThat(this.nil().toString()).isEqualTo("Stream()");
+        assertThat(this.nil().toString()).isEqualTo("JStream()");
     }
 
     @Test
     public void shouldStringifyNonNil() {
-        assertThat(this.of(1, 2, 3).toString()).isEqualTo("Stream(1, ?)");
+        assertThat(this.of(1, 2, 3).toString()).isEqualTo("JStream(1, ?)");
     }
 
     @Test
     public void shouldStringifyNonNilEvaluatingFirstTail() {
         final JStream<Integer> stream = this.of(1, 2, 3);
         stream.tail(); // evaluates second head element
-        assertThat(stream.toString()).isEqualTo("Stream(1, 2, ?)");
+        assertThat(stream.toString()).isEqualTo("JStream(1, 2, ?)");
     }
 
     // -- Serializable

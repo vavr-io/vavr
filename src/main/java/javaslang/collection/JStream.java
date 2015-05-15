@@ -1054,7 +1054,7 @@ public interface JStream<T> extends JSeq<T>, ValueObject {
 
         @Override
         public String toString() {
-            final StringBuilder builder = new StringBuilder("Stream(");
+            final StringBuilder builder = new StringBuilder("JStream(");
             JStream<T> stream = this;
             while (stream != null && !stream.isEmpty()) {
                 final Cons<T> cons = (Cons<T>) stream;

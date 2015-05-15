@@ -116,11 +116,11 @@ public class JRoseTreeTest extends AbstractJTreeTest {
 
     @Test
     public void shouldReturnStringRepresentationOfNil() {
-        assertThat(nil().toString()).isEqualTo("RoseTree()");
+        assertThat(nil().toString()).isEqualTo("JRoseTree()");
     }
 
     @Test
     public void shouldReturnStringRepresentationOfBranch() {
-        assertThat(tree().toString()).isEqualTo("RoseTree(1 (2 (4 7) 5) (3 (6 8 9)))");
+        assertThat(tree().toString()).isEqualTo("JRoseTree(1 (2 (4 7) 5) (3 (6 8 9)))");
     }
 }

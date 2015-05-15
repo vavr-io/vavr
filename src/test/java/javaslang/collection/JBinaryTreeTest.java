@@ -132,11 +132,11 @@ public class JBinaryTreeTest extends AbstractJTreeTest {
 
     @Test
     public void shouldReturnStringRepresentationOfNil() {
-        assertThat(nil().toString()).isEqualTo("BinaryTree()");
+        assertThat(nil().toString()).isEqualTo("JBinaryTree()");
     }
 
     @Test
     public void shouldReturnStringRepresentationOfBranch() {
-        assertThat(tree().toString()).isEqualTo("BinaryTree(1 (2 (4 7) 5) (3 (6 8 9)))");
+        assertThat(tree().toString()).isEqualTo("JBinaryTree(1 (2 (4 7) 5) (3 (6 8 9)))");
     }
 }
