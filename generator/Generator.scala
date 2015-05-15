@@ -10,7 +10,7 @@ import JavaGenerator._
 
 import scala.language.implicitConversions
 
-val N = 26
+val N = 6
 val TARGET_MAIN = "src-gen/main/java"
 val TARGET_TEST = "src-gen/test/java"
 val CHARSET = java.nio.charset.StandardCharsets.UTF_8
