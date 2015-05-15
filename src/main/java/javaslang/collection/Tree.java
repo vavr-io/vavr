@@ -18,7 +18,7 @@ import java.util.function.Function;
  * @param <T> component type of this Tree
  * @since 1.1.0
  */
-public interface JTree<T> extends Functor<T>, ValueObject, Iterable<T> {
+public interface Tree<T> extends Functor<T>, ValueObject, Iterable<T> {
 
     /**
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
@@ -41,7 +41,7 @@ public interface JTree<T> extends Functor<T>, ValueObject, Iterable<T> {
     boolean isEmpty();
 
     /**
-     * Checks if this JTree is a leaf. A tree is a leaf if it is a Node with no children.
+     * Checks if this Tree is a leaf. A tree is a leaf if it is a Node with no children.
      * Because the empty tree is no Node, it is not a leaf by definition.
      *
      * @return true if this tree is a leaf, false otherwise.
@@ -49,7 +49,7 @@ public interface JTree<T> extends Functor<T>, ValueObject, Iterable<T> {
     boolean isLeaf();
 
     /**
-     * Checks if this JTree is a branch. A JTree is a branch if it is a Node which has children.
+     * Checks if this Tree is a branch. A Tree is a branch if it is a Node which has children.
      * Because the empty tree is not a Node, it is not a branch by definition.
      *
      * @return true if this tree is a branch, false otherwise.
@@ -63,7 +63,7 @@ public interface JTree<T> extends Functor<T>, ValueObject, Iterable<T> {
      *
      * @return The empty list, if this is the empty tree or a leaf, otherwise the non-empty list of children.
      */
-    JList<? extends JTree<T>> getChildren();
+    List<? extends Tree<T>> getChildren();
 
     /**
      * Counts the number of branches of this tree. The empty tree and a leaf have no branches.
@@ -118,7 +118,7 @@ public interface JTree<T> extends Functor<T>, ValueObject, Iterable<T> {
         } else if (Objects.equals(getValue(), element)) {
             return true;
         } else {
-            for (JTree<T> child : getChildren()) {
+            for (Tree<T> child : getChildren()) {
                 if (child.contains(element)) {
                     return true;
                 }
@@ -138,53 +138,53 @@ public interface JTree<T> extends Functor<T>, ValueObject, Iterable<T> {
     }
 
     /**
-     * Flattens the JTree to a List, traversing the tree in preorder.
+     * Flattens the Tree to a List, traversing the tree in preorder.
      *
      * @return A List containing all elements of this tree, which is List.Nil if this tree is empty.
      * @throws java.lang.NullPointerException if order is null
      */
-    default JList<T> flatten() {
+    default List<T> flatten() {
         return flatten(Order.PRE_ORDER);
     }
 
     /**
-     * Flattens the JTree to a List, traversing the tree in a specific order.
+     * Flattens the Tree to a List, traversing the tree in a specific order.
      *
      * @param order the tree traversal order
      * @return A List containing all elements of this tree, which is List.Nil if this tree is empty.
      * @throws java.lang.NullPointerException if order is null
      */
-    default JList<T> flatten(Order order) {
+    default List<T> flatten(Order order) {
         Objects.requireNonNull(order, "order is null");
         class Flatten {
-            JList<T> preOrder(JTree<T> tree) {
+            List<T> preOrder(Tree<T> tree) {
                 return tree.getChildren()
-                        .foldLeft(JList.of(tree.getValue()), (acc, child) -> acc.appendAll(preOrder(child)));
+                        .foldLeft(List.of(tree.getValue()), (acc, child) -> acc.appendAll(preOrder(child)));
             }
 
-            JList<T> inOrder(JTree<T> tree) {
+            List<T> inOrder(Tree<T> tree) {
                 if (tree.isLeaf()) {
-                    return JList.of(tree.getValue());
+                    return List.of(tree.getValue());
                 } else {
-                    final JList<? extends JTree<T>> children = tree.getChildren();
-                    return children.tail().foldLeft(JList.<T>nil(), (acc, child) -> acc.appendAll(inOrder(child)))
+                    final List<? extends Tree<T>> children = tree.getChildren();
+                    return children.tail().foldLeft(List.<T>nil(), (acc, child) -> acc.appendAll(inOrder(child)))
                             .prepend(tree.getValue())
                             .prependAll(inOrder(children.head()));
                 }
             }
 
-            JList<T> postOrder(JTree<T> tree) {
+            List<T> postOrder(Tree<T> tree) {
                 return tree.getChildren()
-                        .foldLeft(JList.<T>nil(), (acc, child) -> acc.appendAll(postOrder(child)))
+                        .foldLeft(List.<T>nil(), (acc, child) -> acc.appendAll(postOrder(child)))
                         .append(tree.getValue());
             }
 
-            JList<T> levelOrder(JTree<T> tree) {
-                JList<T> result = JList.nil();
-                final Queue<JTree<T>> queue = new LinkedList<>();
+            List<T> levelOrder(Tree<T> tree) {
+                List<T> result = List.nil();
+                final Queue<Tree<T>> queue = new LinkedList<>();
                 queue.add(tree);
                 while (!queue.isEmpty()) {
-                    final JTree<T> next = queue.remove();
+                    final Tree<T> next = queue.remove();
                     result = result.prepend(next.getValue());
                     queue.addAll(next.getChildren().toJavaList());
                 }
@@ -192,7 +192,7 @@ public interface JTree<T> extends Functor<T>, ValueObject, Iterable<T> {
             }
         }
         if (isEmpty()) {
-            return JList.nil();
+            return List.nil();
         } else {
             final Flatten flatten = new Flatten();
             return Match
@@ -205,7 +205,7 @@ public interface JTree<T> extends Functor<T>, ValueObject, Iterable<T> {
     }
 
     @Override
-    <U> JTree<U> map(Function<? super T, ? extends U> mapper);
+    <U> Tree<U> map(Function<? super T, ? extends U> mapper);
 
     /**
      * Returns a list string representation of this tree.
@@ -214,7 +214,7 @@ public interface JTree<T> extends Functor<T>, ValueObject, Iterable<T> {
      */
     default String toLispString() {
         class Local {
-            String toString(JTree<T> tree) {
+            String toString(Tree<T> tree) {
                 if (tree.isEmpty()) {
                     return "()";
                 } else {
@@ -241,7 +241,7 @@ public interface JTree<T> extends Functor<T>, ValueObject, Iterable<T> {
      */
     default String toIndentedString() {
         class Local {
-            String toString(JTree<T> tree, int depth) {
+            String toString(Tree<T> tree, int depth) {
                 if (tree.isEmpty()) {
                     return "";
                 } else {
@@ -268,7 +268,7 @@ public interface JTree<T> extends Functor<T>, ValueObject, Iterable<T> {
     }
 
     /**
-     * <p>JTree traversal order.</p>
+     * <p>Tree traversal order.</p>
      *
      * Example tree:
      * <pre>

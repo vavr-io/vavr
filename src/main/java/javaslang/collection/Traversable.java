@@ -133,7 +133,7 @@ import java.util.stream.StreamSupport;
  * @param <T> Component type
  * @since 1.1.0
  */
-public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> {
+public interface Traversable<T> extends Iterable<T>, Monad<T, Traversable<?>> {
 
     /**
      * Calculates the average of this elements. Returns {@code None} if this is empty, otherwise {@code Some(average)}.
@@ -178,9 +178,9 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
     /**
      * Returns an empty version of this traversable, i.e. {@code this.clear().isEmpty() == true}.
      *
-     * @return an empty JTraversable.
+     * @return an empty Traversable.
      */
-    JTraversable<T> clear();
+    Traversable<T> clear();
 
     /**
      * Returns the union of all combinations from k = 0 to length().
@@ -201,7 +201,7 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
      *
      * @return the combinations of this
      */
-    JTraversable<? extends JTraversable<T>> combinations();
+    Traversable<? extends Traversable<T>> combinations();
 
     /**
      * Returns the k-combination of this traversable, i.e. all subset of this of k distinct elements.
@@ -210,13 +210,13 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
      * @return the k-combination of this elements
      * @see <a href="http://en.wikipedia.org/wiki/Combination">Combination</a>
      */
-    JTraversable<? extends JTraversable<T>> combinations(int k);
+    Traversable<? extends Traversable<T>> combinations(int k);
 
     /**
      * Tests if this Traversable contains a given value.
      *
      * @param element An Object of type A, may be null.
-     * @return true, if element is in this JTraversable, false otherwise.
+     * @return true, if element is in this Traversable, false otherwise.
      */
     default boolean contains(T element) {
         return findFirst(e -> java.util.Objects.equals(e, element)).isDefined();
@@ -224,7 +224,7 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
 
     /**
      * <p>
-     * Tests if this JTraversable contains all given elements.
+     * Tests if this Traversable contains all given elements.
      * </p>
      * <p>
      * The result is equivalent to
@@ -238,7 +238,7 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
      */
     default boolean containsAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return JList.ofAll(elements)
+        return List.ofAll(elements)
                 .distinct()
                 .findFirst(e -> !this.contains(e))
                 .isEmpty();
@@ -247,9 +247,9 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
     /**
      * Returns a new version of this which contains no duplicates. Elements are compared using {@code equals}.
      *
-     * @return a new {@code JTraversable} containing this elements without duplicates
+     * @return a new {@code Traversable} containing this elements without duplicates
      */
-    JTraversable<T> distinct();
+    Traversable<T> distinct();
 
     /**
      * Returns a new version of this which contains no duplicates. Elements mapped to keys which are compared using
@@ -259,10 +259,10 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
      *
      * @param keyExtractor A key extractor
      * @param <U>          key type
-     * @return a new {@code JTraversable} containing this elements without duplicates
+     * @return a new {@code Traversable} containing this elements without duplicates
      * @throws NullPointerException if {@code keyExtractor} is null
      */
-    <U> JTraversable<T> distinct(Function<? super T, ? extends U> keyExtractor);
+    <U> Traversable<T> distinct(Function<? super T, ? extends U> keyExtractor);
 
     /**
      * Drops the first n elements of this or all elements, if this length &lt; n.
@@ -271,7 +271,7 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
      * @return a new instance consisting of all elements of this except the first n ones, or else the empty instance,
      * if this has less than n elements.
      */
-    JTraversable<T> drop(int n);
+    Traversable<T> drop(int n);
 
     /**
      * Drops the last n elements of this or all elements, if this length &lt; n.
@@ -280,7 +280,7 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
      * @return a new instance consisting of all elements of this except the last n ones, or else the empty instance,
      * if this has less than n elements.
      */
-    JTraversable<T> dropRight(int n);
+    Traversable<T> dropRight(int n);
 
     /**
      * Drops elements while the predicate holds for the current element.
@@ -290,7 +290,7 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
      * given predicate.
      * @throws NullPointerException if {@code predicate} is null
      */
-    JTraversable<T> dropWhile(Predicate<? super T> predicate);
+    Traversable<T> dropWhile(Predicate<? super T> predicate);
 
     /**
      * Returns a new traversable consisting of all elements of this which satisfy the given predicate.
@@ -299,7 +299,7 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
      * @return a new traversable
      * @throws NullPointerException if {@code predicate} is null
      */
-    JTraversable<T> filter(Predicate<? super T> predicate);
+    Traversable<T> filter(Predicate<? super T> predicate);
 
     /**
      * Essentially the same as {@link #filter(Predicate)} but the result type may differ,
@@ -309,7 +309,7 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
      * @return all elements of this which satisfy the given predicate.
      * @throws NullPointerException if {@code predicate} is null
      */
-    JTraversable<T> findAll(Predicate<? super T> predicate);
+    Traversable<T> findAll(Predicate<? super T> predicate);
 
     /**
      * Returns the first element of this which satisfies the given predicate.
@@ -346,22 +346,22 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
     }
 
     @Override
-    <U, TRAVERSABLE extends HigherKinded<U, JTraversable<?>>> JTraversable<U> flatMap(Function<? super T, ? extends TRAVERSABLE> mapper);
+    <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Traversable<U> flatMap(Function<? super T, ? extends TRAVERSABLE> mapper);
 
     /**
-     * Flattens a {@code JTraversable} using a function.
+     * Flattens a {@code Traversable} using a function.
      *
-     * @param <U>           component type of the result {@code JTraversable}
-     * @param <TRAVERSABLE> a {@code JTraversable&lt;U&gt;}
-     * @param f             a function which maps elements of this Traversable to JTraversables
-     * @return a new {@code JTraversable}
+     * @param <U>           component type of the result {@code Traversable}
+     * @param <TRAVERSABLE> a {@code Traversable&lt;U&gt;}
+     * @param f             a function which maps elements of this Traversable to Traversables
+     * @return a new {@code Traversable}
      * @throws NullPointerException if {@code f} is null
      */
-    <U, TRAVERSABLE extends HigherKinded<U, JTraversable<?>>> JTraversable<U> flatten(Function<? super T, ? extends TRAVERSABLE> f);
+    <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Traversable<U> flatten(Function<? super T, ? extends TRAVERSABLE> f);
 
     /**
      * <p>
-     * Accumulates the elements of this JTraversable by successively calling the given operator {@code op}.
+     * Accumulates the elements of this Traversable by successively calling the given operator {@code op}.
      * </p>
      * <p>
      * Example: {@code List("a", "b", "c").fold("", (a, b) -> a + b) = "abc"}
@@ -379,7 +379,7 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
 
     /**
      * <p>
-     * Accumulates the elements of this JTraversable by successively calling the given function {@code f} from the left,
+     * Accumulates the elements of this Traversable by successively calling the given function {@code f} from the left,
      * starting with a value {@code zero} of type B.
      * </p>
      * <p>
@@ -421,7 +421,7 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
 
     /**
      * <p>
-     * Accumulates the elements of this JTraversable by successively calling the given function {@code f} from the right,
+     * Accumulates the elements of this Traversable by successively calling the given function {@code f} from the right,
      * starting with a value {@code zero} of type B.
      * </p>
      * <p>
@@ -518,13 +518,13 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
     }
 
     /**
-     * Groups this {@code JTraversable} into fixed size blocks like so:
+     * Groups this {@code Traversable} into fixed size blocks like so:
      * <ul>
-     * <li>If {@code this.isEmpty()}, the resulting {@code JTraversable} is empty.</li>
-     * <li>If {@code size <= this.length()}, the resulting {@code JTraversable} will contain {@code this.length() / size}
+     * <li>If {@code this.isEmpty()}, the resulting {@code Traversable} is empty.</li>
+     * <li>If {@code size <= this.length()}, the resulting {@code Traversable} will contain {@code this.length() / size}
      * blocks of size {@code size} and maybe a non-empty block of size {@code this.length() % size}, if there are
      * remaining elements.</li>
-     * <li>If {@code size > this.length()}, the resulting {@code JTraversable} will contain one block of size
+     * <li>If {@code size > this.length()}, the resulting {@code Traversable} will contain one block of size
      * {@code this.length()}.</li>
      * </ul>
      * Examples:
@@ -543,21 +543,21 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
      * {@code grouped(size)} is the same as {@code sliding(size, size)}.
      *
      * @param size a positive block size
-     * @return A new JTraversable of sliced blocks of the given size
+     * @return A new Traversable of sliced blocks of the given size
      * @throws IllegalArgumentException if {@code size} is negative or zero
      */
-    JTraversable<? extends JTraversable<T>> grouped(int size);
+    Traversable<? extends Traversable<T>> grouped(int size);
 
     /**
-     * Returns the first element of a non-empty JTraversable.
+     * Returns the first element of a non-empty Traversable.
      *
-     * @return The first element of this JTraversable.
+     * @return The first element of this Traversable.
      * @throws NoSuchElementException if this is empty
      */
     T head();
 
     /**
-     * Returns the first element of a non-empty JTraversable as {@code Option}.
+     * Returns the first element of a non-empty Traversable as {@code Option}.
      *
      * @return {@code Some(element)} or {@code None} if this is empty.
      */
@@ -569,27 +569,27 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
      * @return a new instance containing all elements except the last.
      * @throws UnsupportedOperationException if this is empty
      */
-    JTraversable<T> init();
+    Traversable<T> init();
 
     /**
      * Dual of {@linkplain #tailOption()}, returning all elements except the last as {@code Option}.
      *
      * @return {@code Some(traversable)} or {@code None} if this is empty.
      */
-    Option<? extends JTraversable<T>> initOption();
+    Option<? extends Traversable<T>> initOption();
 
     /**
-     * Inserts an element between all elements of this JTraversable.
+     * Inserts an element between all elements of this Traversable.
      *
      * @param element An element.
      * @return an interspersed version of this
      */
-    JTraversable<T> intersperse(T element);
+    Traversable<T> intersperse(T element);
 
     /**
-     * Checks if this JTraversable is empty.
+     * Checks if this Traversable is empty.
      *
-     * @return true, if this JTraversable contains no elements, falso otherwise.
+     * @return true, if this Traversable contains no elements, falso otherwise.
      */
     boolean isEmpty();
 
@@ -597,7 +597,7 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
     default Iterator<T> iterator() {
         return new Iterator<T>() {
 
-            JTraversable<T> traversable = JTraversable.this;
+            Traversable<T> traversable = Traversable.this;
 
             @Override
             public boolean hasNext() {
@@ -668,9 +668,9 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
         if (isEmpty()) {
             throw new NoSuchElementException("last of empty Traversable");
         } else {
-            JTraversable<T> traversable = this;
+            Traversable<T> traversable = this;
             { // don't let escape tail
-                JTraversable<T> tail;
+                Traversable<T> tail;
                 while (!(tail = traversable.tail()).isEmpty()) {
                     traversable = tail;
                 }
@@ -701,22 +701,22 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
      * Maps the elements of this traversable to elements of a new type preserving their order, if any.
      *
      * @param mapper A mapper.
-     * @param <U>    Component type of the target JTraversable
-     * @return a mapped JTraversable
+     * @param <U>    Component type of the target Traversable
+     * @return a mapped Traversable
      * @throws NullPointerException if {@code mapper} is null
      */
     @Override
-    <U> JTraversable<U> map(Function<? super T, ? extends U> mapper);
+    <U> Traversable<U> map(Function<? super T, ? extends U> mapper);
 
     /**
-     * Creates a partition of this {@code JTraversable} by splitting this elements in two in distinct tarversables
+     * Creates a partition of this {@code Traversable} by splitting this elements in two in distinct tarversables
      * according to a predicate.
      *
      * @param predicate A predicate which classifies an element if it is in the first or the second traversable.
-     * @return A disjoint union of two traversables. The first {@code JTraversable} contains all elements that satisfy the given {@code predicate}, the second {@code JTraversable} contains all elements that don't. The original order of elements is preserved.
+     * @return A disjoint union of two traversables. The first {@code Traversable} contains all elements that satisfy the given {@code predicate}, the second {@code Traversable} contains all elements that don't. The original order of elements is preserved.
      * @throws NullPointerException if predicate is null
      */
-    Tuple2<? extends JTraversable<T>, ? extends JTraversable<T>> partition(Predicate<? super T> predicate);
+    Tuple2<? extends Traversable<T>, ? extends Traversable<T>> partition(Predicate<? super T> predicate);
 
     /**
      * Calculates the maximum of this elements according to their natural order.
@@ -781,7 +781,7 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
     }
 
     @Override
-    JTraversable<T> peek(Consumer<? super T> action);
+    Traversable<T> peek(Consumer<? super T> action);
 
     /**
      * Calculates the product of this elements. Supported component types are {@code Byte}, {@code Double}, {@code Float},
@@ -824,31 +824,31 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
     /**
      * Removes the first occurrence of the given element.
      *
-     * @param element An element to be removed from this JTraversable.
-     * @return a JTraversable containing all elements of this without the first occurrence of the given element.
+     * @param element An element to be removed from this Traversable.
+     * @return a Traversable containing all elements of this without the first occurrence of the given element.
      */
-    JTraversable<T> remove(T element);
+    Traversable<T> remove(T element);
 
 
     /**
      * Removes all occurrences of the given element.
      *
-     * @param element An element to be removed from this JTraversable.
-     * @return a JTraversable containing all elements of this but not the given element.
+     * @param element An element to be removed from this Traversable.
+     * @return a Traversable containing all elements of this but not the given element.
      */
-    JTraversable<T> removeAll(T element);
+    Traversable<T> removeAll(T element);
 
     /**
      * Removes all occurrences of the given elements.
      *
-     * @param elements Elements to be removed from this JTraversable.
-     * @return a JTraversable containing all elements of this but none of the given elements.
+     * @param elements Elements to be removed from this Traversable.
+     * @return a Traversable containing all elements of this but none of the given elements.
      * @throws NullPointerException if {@code elements} is null
      */
-    JTraversable<T> removeAll(Iterable<? extends T> elements);
+    Traversable<T> removeAll(Iterable<? extends T> elements);
 
     /**
-     * Accumulates the elements of this JTraversable by successively calling the given operation {@code op}.
+     * Accumulates the elements of this Traversable by successively calling the given operation {@code op}.
      * The order of element iteration is undetermined.
      *
      * @param op A BiFunction of type T
@@ -862,7 +862,7 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
     }
 
     /**
-     * Accumulates the elements of this JTraversable by successively calling the given operation {@code op} from the left.
+     * Accumulates the elements of this Traversable by successively calling the given operation {@code op} from the left.
      *
      * @param op A BiFunction of type T
      * @return the reduced value.
@@ -879,7 +879,7 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
     }
 
     /**
-     * Accumulates the elements of this JTraversable by successively calling the given operation {@code op} from the right.
+     * Accumulates the elements of this Traversable by successively calling the given operation {@code op} from the right.
      *
      * @param op An operation of type T
      * @return the reduced value.
@@ -891,7 +891,7 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
         if (isEmpty()) {
             throw new NoSuchElementException("reduceRight on empty List");
         } else {
-            final JTraversable<T> reversed = reverse();
+            final Traversable<T> reversed = reverse();
             return reversed.tail().foldLeft(reversed.head(), (xs, x) -> op.apply(x, xs));
         }
     }
@@ -901,57 +901,57 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
      *
      * @param currentElement An element to be substituted.
      * @param newElement     A replacement for currentElement.
-     * @return a JTraversable containing all elements of this where the first occurrence of currentElement is replaced with newELement.
+     * @return a Traversable containing all elements of this where the first occurrence of currentElement is replaced with newELement.
      */
-    JTraversable<T> replace(T currentElement, T newElement);
+    Traversable<T> replace(T currentElement, T newElement);
 
     /**
      * Replaces all occurrences of the given currentElement with newElement.
      *
      * @param currentElement An element to be substituted.
      * @param newElement     A replacement for currentElement.
-     * @return a JTraversable containing all elements of this where all occurrences of currentElement are replaced with newELement.
+     * @return a Traversable containing all elements of this where all occurrences of currentElement are replaced with newELement.
      */
-    JTraversable<T> replaceAll(T currentElement, T newElement);
+    Traversable<T> replaceAll(T currentElement, T newElement);
 
     /**
-     * Replaces all occurrences of this JTraversable by applying the given operator to the elements, which is
+     * Replaces all occurrences of this Traversable by applying the given operator to the elements, which is
      * essentially a special case of {@link #map(Function)}.
      *
      * @param operator An operator.
-     * @return a JTraversable containing all elements of this transformed within the same domain.
+     * @return a Traversable containing all elements of this transformed within the same domain.
      * @throws NullPointerException if {@code operator} is null
      */
-    JTraversable<T> replaceAll(UnaryOperator<T> operator);
+    Traversable<T> replaceAll(UnaryOperator<T> operator);
 
     /**
      * Keeps all occurrences of the given elements from this.
      *
      * @param elements Elements to be kept.
-     * @return a JTraversable containing all occurreces of the given elements.
+     * @return a Traversable containing all occurreces of the given elements.
      * @throws NullPointerException if {@code elements} is null
      */
-    JTraversable<T> retainAll(Iterable<? extends T> elements);
+    Traversable<T> retainAll(Iterable<? extends T> elements);
 
     /**
      * Reverses the order of elements.
      *
      * @return the reversed elements.
      */
-    JTraversable<T> reverse();
+    Traversable<T> reverse();
 
     /**
-     * Slides a window of a specific {@code size} and step size 1 over this {@code JTraversable} by calling
+     * Slides a window of a specific {@code size} and step size 1 over this {@code Traversable} by calling
      * {@link #sliding(int, int)}.
      *
      * @param size a positive window size
-     * @return a new JTraversable of windows of a specific size using step size 1
+     * @return a new Traversable of windows of a specific size using step size 1
      * @throws IllegalArgumentException if {@code size} is negative or zero
      */
-    JTraversable<? extends JTraversable<T>> sliding(int size);
+    Traversable<? extends Traversable<T>> sliding(int size);
 
     /**
-     * Slides a window of a specific {@code size} and {@code step} size over this {@code JTraversable}.
+     * Slides a window of a specific {@code size} and {@code step} size over this {@code Traversable}.
      * <p>
      * Examples:
      * <pre>
@@ -966,10 +966,10 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
      *
      * @param size a positive window size
      * @param step a positive step size
-     * @return a new JTraversable of windows of a specific size using a specific step size
+     * @return a new Traversable of windows of a specific size using a specific step size
      * @throws IllegalArgumentException if {@code size} or {@code step} are negative or zero
      */
-    JTraversable<? extends JTraversable<T>> sliding(int size, int step);
+    Traversable<? extends Traversable<T>> sliding(int size, int step);
 
     /**
      * Returns a tuple where the first element is the longest prefix of elements that satisfy p and the second element is the remainder.
@@ -978,7 +978,7 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
      * @return a Tuple containing the longest prefix of elements that satisfy p and the remainder.
      * @throws NullPointerException if {@code predicate} is null
      */
-    Tuple2<? extends JTraversable<T>, ? extends JTraversable<T>> span(Predicate<? super T> predicate);
+    Tuple2<? extends Traversable<T>, ? extends Traversable<T>> span(Predicate<? super T> predicate);
 
     /**
      * Calculates the sum of this elements. Supported component types are {@code Byte}, {@code Double}, {@code Float},
@@ -1053,19 +1053,19 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
     }
 
     /**
-     * Drops the first element of a non-empty JTraversable.
+     * Drops the first element of a non-empty Traversable.
      *
-     * @return A new instance of JTraversable containing all elements except the first.
+     * @return A new instance of Traversable containing all elements except the first.
      * @throws UnsupportedOperationException if this is empty
      */
-    JTraversable<T> tail();
+    Traversable<T> tail();
 
     /**
-     * Drops the first element of a non-empty JTraversable and returns an {@code Option}.
+     * Drops the first element of a non-empty Traversable and returns an {@code Option}.
      *
      * @return {@code Some(traversable)} or {@code None} if this is empty.
      */
-    Option<? extends JTraversable<T>> tailOption();
+    Option<? extends Traversable<T>> tailOption();
 
     /**
      * Takes the first n elements of this or all elements, if this length &lt; n.
@@ -1078,7 +1078,7 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
      * @param n The number of elements to take.
      * @return A new instance consisting the first n elements of this or all elements, if this has less than n elements.
      */
-    JTraversable<T> take(int n);
+    Traversable<T> take(int n);
 
     /**
      * Takes the last n elements of this or all elements, if this length &lt; n.
@@ -1091,7 +1091,7 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
      * @param n The number of elements to take.
      * @return A new instance consisting the first n elements of this or all elements, if this has less than n elements.
      */
-    JTraversable<T> takeRight(int n);
+    Traversable<T> takeRight(int n);
 
     /**
      * Takes elements while the predicate holds for the current element.
@@ -1101,12 +1101,12 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
      * given predicate.
      * @throws NullPointerException if {@code predicate} is null
      */
-    JTraversable<T> takeWhile(Predicate<? super T> predicate);
+    Traversable<T> takeWhile(Predicate<? super T> predicate);
 
     /**
      * Converts this to a Java array.
      * <p>
-     * Tip: Given a {@code JTraversable<M<T>> t} use {@code t.toJavaArray((Class<M<T>>) (Class) M.class)}.
+     * Tip: Given a {@code Traversable<M<T>> t} use {@code t.toJavaArray((Class<M<T>>) (Class) M.class)}.
      *
      * @param componentType Type of resulting array's elements.
      * @return a new array containing this elements
@@ -1184,43 +1184,43 @@ public interface JTraversable<T> extends Iterable<T>, Monad<T, JTraversable<?>> 
      * @return A pair of traversables containing elements split by unzipper
      * @throws NullPointerException if {@code unzipper} is null
      */
-    <T1, T2> Tuple2<? extends JTraversable<T1>, ? extends JTraversable<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
+    <T1, T2> Tuple2<? extends Traversable<T1>, ? extends Traversable<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
 
     /**
-     * Returns a JTraversable formed from this JTraversable and another Iterable collection by combining corresponding elements
-     * in pairs. If one of the two JTraversables is longer than the other, its remaining elements are ignored.
+     * Returns a Traversable formed from this Traversable and another Iterable collection by combining corresponding elements
+     * in pairs. If one of the two Traversables is longer than the other, its remaining elements are ignored.
      * <p>
-     * The length of the returned collection is the minimum of the lengths of this JTraversable and that.
+     * The length of the returned collection is the minimum of the lengths of this Traversable and that.
      *
      * @param <U>  The type of the second half of the returned pairs.
      * @param that The Iterable providing the second half of each result pair.
-     * @return a new JTraversable containing pairs consisting of corresponding elements of this list and that.
+     * @return a new Traversable containing pairs consisting of corresponding elements of this list and that.
      * @throws NullPointerException if {@code that} is null
      */
-    <U> JTraversable<Tuple2<T, U>> zip(Iterable<U> that);
+    <U> Traversable<Tuple2<T, U>> zip(Iterable<U> that);
 
     /**
-     * Returns a JTraversable formed from this JTraversable and another Iterable by combining corresponding elements in
+     * Returns a Traversable formed from this Traversable and another Iterable by combining corresponding elements in
      * pairs. If one of the two collections is shorter than the other, placeholder elements are used to extend the
      * shorter collection to the length of the longer.
      * <p>
-     * The length of the returned JTraversable is the maximum of the lengths of this JTraversable and that.
-     * If this JTraversable is shorter than that, thisElem values are used to fill the result.
-     * If that is shorter than this JTraversable, thatElem values are used to fill the result.
+     * The length of the returned Traversable is the maximum of the lengths of this Traversable and that.
+     * If this Traversable is shorter than that, thisElem values are used to fill the result.
+     * If that is shorter than this Traversable, thatElem values are used to fill the result.
      *
      * @param <U>      The type of the second half of the returned pairs.
      * @param that     The Iterable providing the second half of each result pair.
-     * @param thisElem The element to be used to fill up the result if this JTraversable is shorter than that.
-     * @param thatElem The element to be used to fill up the result if that is shorter than this JTraversable.
-     * @return A new JTraversable containing pairs consisting of corresponding elements of this JTraversable and that.
+     * @param thisElem The element to be used to fill up the result if this Traversable is shorter than that.
+     * @param thatElem The element to be used to fill up the result if that is shorter than this Traversable.
+     * @return A new Traversable containing pairs consisting of corresponding elements of this Traversable and that.
      * @throws NullPointerException if {@code that} is null
      */
-    <U> JTraversable<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
+    <U> Traversable<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
 
     /**
      * Zips this List with its indices.
      *
      * @return A new List containing all elements of this List paired with their index, starting with 0.
      */
-    JTraversable<Tuple2<T, Integer>> zipWithIndex();
+    Traversable<Tuple2<T, Integer>> zipWithIndex();
 }

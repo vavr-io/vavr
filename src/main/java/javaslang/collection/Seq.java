@@ -48,10 +48,10 @@ import java.util.function.*;
  * @param <T> Component type
  * @since 1.1.0
  */
-public interface JSeq<T> extends JTraversable<T>, IntFunction<T> {
+public interface Seq<T> extends Traversable<T>, IntFunction<T> {
 
     /**
-     * A {@code JSeq} is a partial function which returns the element at the specified index by calling
+     * A {@code Seq} is a partial function which returns the element at the specified index by calling
      * {@linkplain #get(int)}.
      *
      * @param index an index
@@ -69,7 +69,7 @@ public interface JSeq<T> extends JTraversable<T>, IntFunction<T> {
      * @param element An element
      * @return A new Seq containing the given element appended to this elements
      */
-    JSeq<T> append(T element);
+    Seq<T> append(T element);
 
     /**
      * Appends all given elements to this.
@@ -78,7 +78,7 @@ public interface JSeq<T> extends JTraversable<T>, IntFunction<T> {
      * @return A new Seq containing the given elements appended to this elements
      * @throws NullPointerException if {@code elements} is null
      */
-    JSeq<T> appendAll(Iterable<? extends T> elements);
+    Seq<T> appendAll(Iterable<? extends T> elements);
 
     /**
      * Returns the element at the specified index.
@@ -105,7 +105,7 @@ public interface JSeq<T> extends JTraversable<T>, IntFunction<T> {
      * @return a new Seq, where the given element is inserted into this at the given index
      * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
      */
-    JSeq<T> insert(int index, T element);
+    Seq<T> insert(int index, T element);
 
     /**
      * Inserts the given elements at the specified index.
@@ -115,7 +115,7 @@ public interface JSeq<T> extends JTraversable<T>, IntFunction<T> {
      * @return a new Seq, where the given elements are inserted into this at the given index
      * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
      */
-    JSeq<T> insertAll(int index, Iterable<? extends T> elements);
+    Seq<T> insertAll(int index, Iterable<? extends T> elements);
 
     /**
      * Returns an iterator of this elements starting at the given index.
@@ -158,7 +158,7 @@ public interface JSeq<T> extends JTraversable<T>, IntFunction<T> {
      *
      * @return this unique permutations
      */
-    JSeq<? extends JSeq<T>> permutations();
+    Seq<? extends Seq<T>> permutations();
 
     /**
      * Prepends an element to this.
@@ -166,7 +166,7 @@ public interface JSeq<T> extends JTraversable<T>, IntFunction<T> {
      * @param element An element
      * @return A new Seq containing the given element prepended to this elements
      */
-    JSeq<T> prepend(T element);
+    Seq<T> prepend(T element);
 
     /**
      * Prepends all given elements to this.
@@ -174,7 +174,7 @@ public interface JSeq<T> extends JTraversable<T>, IntFunction<T> {
      * @param elements An Iterable of elements
      * @return A new Seq containing the given elements prepended to this elements
      */
-    JSeq<T> prependAll(Iterable<? extends T> elements);
+    Seq<T> prependAll(Iterable<? extends T> elements);
 
     /**
      * Sets the given element at the specified index.
@@ -184,7 +184,7 @@ public interface JSeq<T> extends JTraversable<T>, IntFunction<T> {
      * @return a new Seq consisting of this elements and the given element is set at the given index
      * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
      */
-    JSeq<T> set(int index, T element);
+    Seq<T> set(int index, T element);
 
     /**
      * Sorts this elements according to their natural order. If this elements are not
@@ -193,7 +193,7 @@ public interface JSeq<T> extends JTraversable<T>, IntFunction<T> {
      * @return A sorted version of this
      * @throws ClassCastException if this elements are not {@code Comparable}
      */
-    JSeq<T> sort();
+    Seq<T> sort();
 
     /**
      * Sorts this elements according to the provided {@code Comparator}. If this elements are not
@@ -202,7 +202,7 @@ public interface JSeq<T> extends JTraversable<T>, IntFunction<T> {
      * @param comparator A comparator
      * @return a sorted version of this
      */
-    JSeq<T> sort(Comparator<? super T> comparator);
+    Seq<T> sort(Comparator<? super T> comparator);
 
     /**
      * Splits a Seq at the specified index. The result of {@code splitAt(n)} is equivalent to
@@ -211,7 +211,7 @@ public interface JSeq<T> extends JTraversable<T>, IntFunction<T> {
      * @param n An index.
      * @return A Tuple containing the first n and the remaining elements.
      */
-    Tuple2<? extends JSeq<T>, ? extends JSeq<T>> splitAt(int n);
+    Tuple2<? extends Seq<T>, ? extends Seq<T>> splitAt(int n);
 
     /**
      * <p>Returns a Seq that is a subsequence of this. The subsequence begins with the element at the specified index
@@ -230,7 +230,7 @@ public interface JSeq<T> extends JTraversable<T>, IntFunction<T> {
      * @throws IndexOutOfBoundsException if {@code beginIndex} is negative or larger than the length of this
      *                                   {@code String} object.
      */
-    JSeq<T> subsequence(int beginIndex);
+    Seq<T> subsequence(int beginIndex);
 
     /**
      * <p>Returns a Seq that is a subsequence of this. The subsequence begins with the element at the specified index
@@ -254,124 +254,124 @@ public interface JSeq<T> extends JTraversable<T>, IntFunction<T> {
      *                                   {@code beginIndex} is larger than
      *                                   {@code endIndex}.
      */
-    JSeq<T> subsequence(int beginIndex, int endIndex);
+    Seq<T> subsequence(int beginIndex, int endIndex);
 
     // -- Adjusted return types of Traversable methods
 
     @Override
-    JSeq<T> clear();
+    Seq<T> clear();
 
     @Override
-    JSeq<? extends JSeq<T>> combinations();
+    Seq<? extends Seq<T>> combinations();
 
     @Override
-    JSeq<? extends JSeq<T>> combinations(int k);
+    Seq<? extends Seq<T>> combinations(int k);
 
     @Override
-    JSeq<T> distinct();
+    Seq<T> distinct();
 
     @Override
-    <U> JSeq<T> distinct(Function<? super T, ? extends U> keyExtractor);
+    <U> Seq<T> distinct(Function<? super T, ? extends U> keyExtractor);
 
     @Override
-    JSeq<T> drop(int n);
+    Seq<T> drop(int n);
 
     @Override
-    JSeq<T> dropRight(int n);
+    Seq<T> dropRight(int n);
 
     @Override
-    JSeq<T> dropWhile(Predicate<? super T> predicate);
+    Seq<T> dropWhile(Predicate<? super T> predicate);
 
     @Override
-    JSeq<T> filter(Predicate<? super T> predicate);
+    Seq<T> filter(Predicate<? super T> predicate);
 
     @Override
-    JSeq<T> findAll(Predicate<? super T> predicate);
+    Seq<T> findAll(Predicate<? super T> predicate);
 
     @Override
-    <U, TRAVERSABLE extends HigherKinded<U, JTraversable<?>>> JSeq<U> flatMap(Function<? super T, ? extends TRAVERSABLE> mapper);
+    <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Seq<U> flatMap(Function<? super T, ? extends TRAVERSABLE> mapper);
 
     @Override
-    <U, TRAVERSABLE extends HigherKinded<U, JTraversable<?>>> JSeq<U> flatten(Function<? super T, ? extends TRAVERSABLE> f);
+    <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Seq<U> flatten(Function<? super T, ? extends TRAVERSABLE> f);
 
     @Override
-    JSeq<? extends JSeq<T>> grouped(int size);
+    Seq<? extends Seq<T>> grouped(int size);
 
     @Override
-    JSeq<T> init();
+    Seq<T> init();
 
     @Override
-    Option<? extends JSeq<T>> initOption();
+    Option<? extends Seq<T>> initOption();
 
     @Override
-    JSeq<T> intersperse(T element);
+    Seq<T> intersperse(T element);
 
     @Override
-    <U> JSeq<U> map(Function<? super T, ? extends U> mapper);
+    <U> Seq<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
-    Tuple2<? extends JSeq<T>, ? extends JSeq<T>> partition(Predicate<? super T> predicate);
+    Tuple2<? extends Seq<T>, ? extends Seq<T>> partition(Predicate<? super T> predicate);
 
     @Override
-    JSeq<T> peek(Consumer<? super T> action);
+    Seq<T> peek(Consumer<? super T> action);
 
     @Override
-    JSeq<T> remove(T element);
+    Seq<T> remove(T element);
 
     @Override
-    JSeq<T> removeAll(T element);
+    Seq<T> removeAll(T element);
 
     @Override
-    JSeq<T> removeAll(Iterable<? extends T> elements);
+    Seq<T> removeAll(Iterable<? extends T> elements);
 
     @Override
-    JSeq<T> replace(T currentElement, T newElement);
+    Seq<T> replace(T currentElement, T newElement);
 
     @Override
-    JSeq<T> replaceAll(T currentElement, T newElement);
+    Seq<T> replaceAll(T currentElement, T newElement);
 
     @Override
-    JSeq<T> replaceAll(UnaryOperator<T> operator);
+    Seq<T> replaceAll(UnaryOperator<T> operator);
 
     @Override
-    JSeq<T> retainAll(Iterable<? extends T> elements);
+    Seq<T> retainAll(Iterable<? extends T> elements);
 
     @Override
-    JSeq<T> reverse();
+    Seq<T> reverse();
 
     @Override
-    JSeq<? extends JSeq<T>> sliding(int size);
+    Seq<? extends Seq<T>> sliding(int size);
 
     @Override
-    JSeq<? extends JSeq<T>> sliding(int size, int step);
+    Seq<? extends Seq<T>> sliding(int size, int step);
 
     @Override
-    Tuple2<? extends JSeq<T>, ? extends JSeq<T>> span(Predicate<? super T> predicate);
+    Tuple2<? extends Seq<T>, ? extends Seq<T>> span(Predicate<? super T> predicate);
 
     @Override
-    JSeq<T> tail();
+    Seq<T> tail();
 
     @Override
-    Option<? extends JSeq<T>> tailOption();
+    Option<? extends Seq<T>> tailOption();
 
     @Override
-    JSeq<T> take(int n);
+    Seq<T> take(int n);
 
     @Override
-    JSeq<T> takeRight(int n);
+    Seq<T> takeRight(int n);
 
     @Override
-    JSeq<T> takeWhile(Predicate<? super T> predicate);
+    Seq<T> takeWhile(Predicate<? super T> predicate);
 
     @Override
-    <T1, T2> Tuple2<? extends JSeq<T1>, ? extends JSeq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
+    <T1, T2> Tuple2<? extends Seq<T1>, ? extends Seq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
 
     @Override
-    <U> JSeq<Tuple2<T, U>> zip(Iterable<U> that);
+    <U> Seq<Tuple2<T, U>> zip(Iterable<U> that);
 
     @Override
-    <U> JSeq<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
+    <U> Seq<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
 
     @Override
-    JSeq<Tuple2<T, Integer>> zipWithIndex();
+    Seq<Tuple2<T, Integer>> zipWithIndex();
 }
