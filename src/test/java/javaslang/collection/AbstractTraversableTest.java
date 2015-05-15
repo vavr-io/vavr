@@ -28,14 +28,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
 /**
- * Tests all methods defined in {@link JTraversable}.
+ * Tests all methods defined in {@link javaslang.collection.Traversable}.
  */
-public abstract class AbstractJTraversableTest {
+public abstract class AbstractTraversableTest {
 
-    abstract protected <T> JTraversable<T> nil();
+    abstract protected <T> Traversable<T> nil();
 
     @SuppressWarnings("unchecked")
-    abstract protected <T> JTraversable<T> of(T... elements);
+    abstract protected <T> Traversable<T> of(T... elements);
 
     // -- average
 
@@ -337,43 +337,43 @@ public abstract class AbstractJTraversableTest {
 
     @Test
     public <T> void shouldFlattenEmptyTraversableGivenAFunction() {
-        final JTraversable<? extends JTraversable<T>> nil = nil();
-        final JTraversable<T> actual = nil.flatten(Function.identity());
+        final Traversable<? extends Traversable<T>> nil = nil();
+        final Traversable<T> actual = nil.flatten(Function.identity());
         assertThat(actual).isEqualTo(nil());
     }
 
     @Test
     public void shouldFlattenTraversableOfPlainElementsGivenAFunction() {
-        final JTraversable<Integer> actual = of(1, 2, 3).flatten(this::of);
-        final JTraversable<Integer> expected = of(1, 2, 3);
+        final Traversable<Integer> actual = of(1, 2, 3).flatten(this::of);
+        final Traversable<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldFlattenTraversableOfTraversablesGivenAFunction() {
         @SuppressWarnings("unchecked")
-        final JTraversable<? extends JTraversable<Integer>> xs = of(of(1), of(2, 3));
-        final JTraversable<Integer> actual = xs.flatten(Function.identity());
-        final JTraversable<Integer> expected = of(1, 2, 3);
+        final Traversable<? extends Traversable<Integer>> xs = of(of(1), of(2, 3));
+        final Traversable<Integer> actual = xs.flatten(Function.identity());
+        final Traversable<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldFlattenTraversableOfTraversablesAndPlainElementsGivenAFunction() {
-        final JTraversable<?> xs = of(1, of(2, 3));
-        final JTraversable<Integer> actual = xs.flatten(x -> Match
-                .when((JTraversable<Integer> ys) -> ys)
+        final Traversable<?> xs = of(1, of(2, 3));
+        final Traversable<Integer> actual = xs.flatten(x -> Match
+                .when((Traversable<Integer> ys) -> ys)
                 .when((Integer i) -> of(i))
                 .apply(x));
-        final JTraversable<Integer> expected = of(1, 2, 3);
+        final Traversable<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldFlattenDifferentElementTypesGivenAFunction() {
-        final JTraversable<Object> actual = this.<Object>of(1, "2", this.<Object>of(3.1415, 1L))
+        final Traversable<Object> actual = this.<Object>of(1, "2", this.<Object>of(3.1415, 1L))
                 .flatten(x -> Match
-                        .when((JTraversable<Object> ys) -> ys)
+                        .when((Traversable<Object> ys) -> ys)
                         .when((Object i) -> of(i))
                         .apply(x));
         assertThat(actual).isEqualTo(this.<Object>of(1, "2", 3.1415, 1L));
@@ -470,12 +470,12 @@ public abstract class AbstractJTraversableTest {
 
     @Test
     public void shouldBeAwareOfPropertyThatHoldsForAll() {
-        assertThat(JList.of(2, 4).forAll(i -> i % 2 == 0)).isTrue();
+        assertThat(List.of(2, 4).forAll(i -> i % 2 == 0)).isTrue();
     }
 
     @Test
     public void shouldBeAwareOfPropertyThatNotHoldsForAll() {
-        assertThat(JList.of(2, 3).forAll(i -> i % 2 == 0)).isFalse();
+        assertThat(List.of(2, 3).forAll(i -> i % 2 == 0)).isFalse();
     }
 
     // -- grouped
@@ -914,7 +914,7 @@ public abstract class AbstractJTraversableTest {
     @Test
     public void shouldPeekNonNilPerformingAnAction() {
         final int[] effect = {0};
-        final JTraversable<Integer> actual = of(1, 2, 3).peek(i -> effect[0] = i);
+        final Traversable<Integer> actual = of(1, 2, 3).peek(i -> effect[0] = i);
         assertThat(actual).isEqualTo(of(1, 2, 3)); // traverses all elements in the lazy case
         assertThat(effect[0]).isEqualTo(getPeekNonNilPerformingAnAction());
     }
@@ -1451,14 +1451,14 @@ public abstract class AbstractJTraversableTest {
 
     @Test
     public void shouldConvertNilToJavaArray() {
-        final Integer[] actual = JList.<Integer>nil().toJavaArray(Integer.class);
+        final Integer[] actual = List.<Integer>nil().toJavaArray(Integer.class);
         final Integer[] expected = new Integer[]{};
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldConvertNonNilToJavaArray() {
-        final Integer[] array = JList.of(1, 2).toJavaArray(Integer.class);
+        final Integer[] array = List.of(1, 2).toJavaArray(Integer.class);
         final Integer[] expected = new Integer[]{1, 2};
         assertThat(array).isEqualTo(expected);
     }
@@ -1524,43 +1524,43 @@ public abstract class AbstractJTraversableTest {
 
     @Test
     public void shouldZipNils() {
-        final JTraversable<?> actual = nil().zip(nil());
+        final Traversable<?> actual = nil().zip(nil());
         assertThat(actual).isEqualTo(nil());
     }
 
     @Test
     public void shouldZipEmptyAndNonNil() {
-        final JTraversable<?> actual = nil().zip(of(1));
+        final Traversable<?> actual = nil().zip(of(1));
         assertThat(actual).isEqualTo(nil());
     }
 
     @Test
     public void shouldZipNonEmptyAndNil() {
-        final JTraversable<?> actual = of(1).zip(nil());
+        final Traversable<?> actual = of(1).zip(nil());
         assertThat(actual).isEqualTo(nil());
     }
 
     @Test
     public void shouldZipNonNilsIfThisIsSmaller() {
-        final JTraversable<Tuple2<Integer, String>> actual = of(1, 2).zip(of("a", "b", "c"));
+        final Traversable<Tuple2<Integer, String>> actual = of(1, 2).zip(of("a", "b", "c"));
         @SuppressWarnings("unchecked")
-        final JTraversable<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"));
+        final Traversable<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipNonNilsIfThatIsSmaller() {
-        final JTraversable<Tuple2<Integer, String>> actual = of(1, 2, 3).zip(of("a", "b"));
+        final Traversable<Tuple2<Integer, String>> actual = of(1, 2, 3).zip(of("a", "b"));
         @SuppressWarnings("unchecked")
-        final JTraversable<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"));
+        final Traversable<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipNonNilsOfSameSize() {
-        final JTraversable<Tuple2<Integer, String>> actual = of(1, 2, 3).zip(of("a", "b", "c"));
+        final Traversable<Tuple2<Integer, String>> actual = of(1, 2, 3).zip(of("a", "b", "c"));
         @SuppressWarnings("unchecked")
-        final JTraversable<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
+        final Traversable<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -1573,47 +1573,47 @@ public abstract class AbstractJTraversableTest {
 
     @Test
     public void shouldZipAllNils() {
-        final JTraversable<?> actual = nil().zipAll(nil(), null, null);
+        final Traversable<?> actual = nil().zipAll(nil(), null, null);
         assertThat(actual).isEqualTo(nil());
     }
 
     @Test
     public void shouldZipAllEmptyAndNonNil() {
-        final JTraversable<?> actual = nil().zipAll(of(1), null, null);
+        final Traversable<?> actual = nil().zipAll(of(1), null, null);
         @SuppressWarnings("unchecked")
-        final JTraversable<Tuple2<Object, Integer>> expected = of(Tuple.of(null, 1));
+        final Traversable<Tuple2<Object, Integer>> expected = of(Tuple.of(null, 1));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipAllNonEmptyAndNil() {
-        final JTraversable<?> actual = of(1).zipAll(nil(), null, null);
+        final Traversable<?> actual = of(1).zipAll(nil(), null, null);
         @SuppressWarnings("unchecked")
-        final JTraversable<Tuple2<Integer, Object>> expected = of(Tuple.of(1, null));
+        final Traversable<Tuple2<Integer, Object>> expected = of(Tuple.of(1, null));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipAllNonNilsIfThisIsSmaller() {
-        final JTraversable<Tuple2<Integer, String>> actual = of(1, 2).zipAll(of("a", "b", "c"), 9, "z");
+        final Traversable<Tuple2<Integer, String>> actual = of(1, 2).zipAll(of("a", "b", "c"), 9, "z");
         @SuppressWarnings("unchecked")
-        final JTraversable<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(9, "c"));
+        final Traversable<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(9, "c"));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipAllNonNilsIfThatIsSmaller() {
-        final JTraversable<Tuple2<Integer, String>> actual = of(1, 2, 3).zipAll(of("a", "b"), 9, "z");
+        final Traversable<Tuple2<Integer, String>> actual = of(1, 2, 3).zipAll(of("a", "b"), 9, "z");
         @SuppressWarnings("unchecked")
-        final JTraversable<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "z"));
+        final Traversable<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "z"));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipAllNonNilsOfSameSize() {
-        final JTraversable<Tuple2<Integer, String>> actual = of(1, 2, 3).zipAll(of("a", "b", "c"), 9, "z");
+        final Traversable<Tuple2<Integer, String>> actual = of(1, 2, 3).zipAll(of("a", "b", "c"), 9, "z");
         @SuppressWarnings("unchecked")
-        final JTraversable<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
+        final Traversable<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -1631,9 +1631,9 @@ public abstract class AbstractJTraversableTest {
 
     @Test
     public void shouldZipNonNilWithIndex() {
-        final JTraversable<Tuple2<String, Integer>> actual = of("a", "b", "c").zipWithIndex();
+        final Traversable<Tuple2<String, Integer>> actual = of("a", "b", "c").zipWithIndex();
         @SuppressWarnings("unchecked")
-        final JTraversable<Tuple2<String, Integer>> expected = of(Tuple.of("a", 0), Tuple.of("b", 1), Tuple.of("c", 2));
+        final Traversable<Tuple2<String, Integer>> expected = of(Tuple.of("a", 0), Tuple.of("b", 1), Tuple.of("c", 2));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -1643,7 +1643,7 @@ public abstract class AbstractJTraversableTest {
 
     @Test
     public void shouldEqualSameTraversableInstance() {
-        final JTraversable<?> traversable = nil();
+        final Traversable<?> traversable = nil();
         assertThat(traversable).isEqualTo(traversable);
     }
 

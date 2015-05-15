@@ -5,27 +5,24 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Tuple;
+import javaslang.Tuple0;
+import javaslang.Tuple1;
+import javaslang.Tuple2;
 
 import java.io.*;
 import java.util.Objects;
 import java.util.function.Function;
 
 /**
- * A binary tree implementation where each node keeps a value.
+ * A rose tree implementation, i.e. a tree with an arbitrary number of children, where each node keeps a value.
  * <p>
- * A binary tree consists of branches (nodes with children) and leafs (nodes without children).
- * A branch has a left and a right child, at least one child is not Nil. The empty tree is represented by Nil.
- * <pre>
- *     <code>BinaryTree = Nil | Leaf(value) | Branch(BinaryTree left, value, BinaryTree right)</code>
- * </pre>
+ * See <a href="http://en.wikipedia.org/wiki/Rose_tree">Rose tree</a> (wikipedia).
  *
- * See also <a href="http://en.wikipedia.org/wiki/Binary_tree">Binary tree</a> (wikipedia).
- *
- * @param <T> the type of a tree node's value.
+ * @param <T> the type of a Node's value.
  * @since 1.1.0
  */
-public interface JBinaryTree<T> extends JTree<T> {
+public interface RoseTree<T> extends Tree<T> {
 
     /**
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
@@ -33,47 +30,46 @@ public interface JBinaryTree<T> extends JTree<T> {
     long serialVersionUID = 1L;
 
     /**
-     * Creates a either a binary tree branch or a leaf, depending on the children left and right.
-     * By definition, a binary tree node with two Nil children is a leaf.
+     * Creates a either a rose tree branch or a leaf, depending on the child count.
+     * By definition, a node with no children is a leaf.
      *
-     * @param left  Left subtree
-     * @param value A value
-     * @param right Right subtree
-     * @param <T>   The value type
-     * @return A new, non-nil binary tree
+     * @param value    The value of the node.
+     * @param children The tree node's non-nil children, i.e. leafs and branches.
+     * @param <T>      The value type
+     * @return A new, non-nil rose tree
      */
-    static <T> JBinaryTree<T> of(JBinaryTree<T> left, T value, JBinaryTree<T> right) {
-        Objects.requireNonNull(left, "left is null");
-        Objects.requireNonNull(right, "right is null");
-        if (left.isEmpty() && right.isEmpty()) {
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    static <T> NonNil<T> of(T value, NonNil<T>... children) {
+        Objects.requireNonNull(children, "children is null");
+        if (children.length == 0) {
             return new Leaf<>(value);
         } else {
-            return new Branch<>(left, value, right);
+            final List<NonNil<T>> list = List.of(children);
+            return new Branch<>(value, list);
         }
     }
 
     /**
-     * Throws if left and right are Nil - if in doubt, use BinaryTree.of(left, value, right) instead.
+     * Creates a rose tree branch of one or more children.
      *
-     * @param left  Left subtree
-     * @param value A value
-     * @param right Right subtree
-     * @param <T>   Component type
-     * @return A new binary tree branch
-     * @throws NullPointerException     if left or right is null
-     * @throws IllegalArgumentException if left and right are empty (Nil)
+     * @param value    The value of the branch node.
+     * @param child1   The first child
+     * @param children More children, may be none
+     * @param <T>      The value type
+     * @return A new rose tree branch
      */
-    static <T> Branch<T> branch(JBinaryTree<T> left, T value, JBinaryTree<T> right) {
-        Objects.requireNonNull(left, "left is null");
-        Objects.requireNonNull(right, "right is null");
-        if (left.isEmpty() && right.isEmpty()) {
-            throw new IllegalArgumentException("left and right are Nil - use BinaryTree.of(left, value, right) if in doubt.");
-        }
-        return new Branch<>(left, value, right);
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    static <T> Branch<T> branch(T value, NonNil<T> child1, NonNil<T>... children) {
+        Objects.requireNonNull(children, "child1 is null");
+        Objects.requireNonNull(children, "children is null");
+        final List<NonNil<T>> list = List.of(children).prepend(child1);
+        return new Branch<>(value, list);
     }
 
     /**
-     * Creates a binary tree leaf of a given value.
+     * Creates a rose tree leaf of a given value.
      *
      * @param value the leaf's value
      * @param <T>   value type
@@ -84,127 +80,56 @@ public interface JBinaryTree<T> extends JTree<T> {
     }
 
     /**
-     * Returns the empty binary tree
+     * Returns the empty rose tree
      *
      * @param <T> the tree's value type
-     * @return the empty binary tree
+     * @return the empty rose tree
      */
     static <T> Nil<T> nil() {
         return Nil.instance();
     }
 
     /**
-     * <p>
-     * Converts an Iterable to a balanced binary tree.
-     * </p>
-     * <p>
-     * Example: {@code JBinaryTree.balance(List.of(1, 2, 3, 4, 5, 6)) = (1 (2 3 4) (5 6))}
-     * </p>
+     * Returns the children of this tree which are non-nil, i.e. either leafs or branches.
      *
-     * @param iterable An Iterable
-     * @param <T>      Element type
-     * @return A balanced tree containing all elements of the given iterable.
+     * @return the rose tree's children
      */
-    static <T> JBinaryTree<T> balance(Iterable<T> iterable) {
-        final JList<T> list = JList.ofAll(iterable);
-        if (list.isEmpty()) {
-            return Nil.instance();
-        } else {
-            final T value = list.head();
-            // DEV-NOTE: intentionally calling list.length()/2 instead of list.tail().length()/2
-            final Tuple2<JList<T>, JList<T>> split = list.tail().splitAt(list.length() / 2);
-            final JBinaryTree<T> left = JBinaryTree.balance(split._1);
-            final JBinaryTree<T> right = JBinaryTree.balance(split._2);
-            // DEV-NOTE: result may be a Leaf or a Branch
-            return JBinaryTree.of(left, value, right);
-        }
-    }
-
-    /**
-     * <p>
-     * Converts the given elements to a balanced binary tree.
-     * </p>
-     * <p>
-     * Example: {@code JBinaryTree.balance(1, 2, 3, 4, 5, 6) = (1 (2 3 4) (5 6))}
-     * </p>
-     *
-     * @param elements Elements
-     * @param <T>      Element type
-     * @return A balanced tree containing all given elements.
-     */
-    @SafeVarargs
-    @SuppressWarnings("varargs")
-    static <T> JBinaryTree<T> balance(T... elements) {
-        final JList<T> list = JList.of(elements);
-        return JBinaryTree.balance(list);
-    }
-
-    /**
-     * Returns the balanced version of this tree, i.e. the tree where all subtrees have minimal depth.
-     *
-     * @return The balanced version of this binary tree.
-     */
-    default JBinaryTree<T> balance() {
-        return JBinaryTree.balance(flatten());
-    }
+    @Override
+    List<NonNil<T>> getChildren();
 
     @Override
-    JList<JBinaryTree<T>> getChildren();
+    <U> RoseTree<U> map(Function<? super T, ? extends U> mapper);
 
     /**
-     * Gets the left branch of this BinaryTree.
+     * Implementors of this tagging interface indicate that they are not Nil.
      *
-     * @return The left branch if this BinaryTree is a Node.
-     * @throws java.lang.UnsupportedOperationException if this BinaryTree is Nil
+     * @param <T> Component type of the rose tree.
      */
-    JBinaryTree<T> left();
+    interface NonNil<T> extends RoseTree<T> {
 
-    /**
-     * Gets the right branch of this BinaryTree.
-     *
-     * @return The right branch if this BinaryTree is a Node.
-     * @throws java.lang.UnsupportedOperationException if this BinaryTree is Nil
-     */
-    JBinaryTree<T> right();
-
-    @Override
-    default <U> JBinaryTree<U> map(Function<? super T, ? extends U> mapper) {
-        if (isEmpty()) {
-            return Nil.instance();
-        } else {
-            return JBinaryTree.of(left().map(mapper), mapper.apply(getValue()), right().map(mapper));
-        }
+        @Override
+        <U> NonNil<U> map(Function<? super T, ? extends U> mapper);
     }
 
     /**
-     * Representation of a binary tree leaf.
+     * Representation of a rose tree leaf.
      *
      * @param <T> value type
      * @since 1.1.0
      */
-    final class Leaf<T> extends AbstractBinaryTree<T> {
+    final class Leaf<T> extends AbstractRoseTree<T> implements NonNil<T> {
 
         private static final long serialVersionUID = 1L;
 
         private final T value;
 
         /**
-         * Constructs a binary tree leaf.
+         * Constructs a rose tree leaf.
          *
          * @param value a value
          */
         public Leaf(T value) {
             this.value = value;
-        }
-
-        @Override
-        public JBinaryTree<T> left() {
-            return JBinaryTree.nil();
-        }
-
-        @Override
-        public JBinaryTree<T> right() {
-            return JBinaryTree.nil();
         }
 
         @Override
@@ -223,8 +148,13 @@ public interface JBinaryTree<T> extends JTree<T> {
         }
 
         @Override
-        public JList<JBinaryTree<T>> getChildren() {
-            return JList.nil();
+        public List<NonNil<T>> getChildren() {
+            return List.nil();
+        }
+
+        @Override
+        public <U> NonNil<U> map(Function<? super T, ? extends U> mapper) {
+            return new Leaf<>(mapper.apply(getValue()));
         }
 
         @Override
@@ -234,47 +164,33 @@ public interface JBinaryTree<T> extends JTree<T> {
     }
 
     /**
-     * Representation of a binary tree branch.
+     * Representation of a rose tree branch.
      *
      * @param <T> value type
      * @since 1.1.0
      */
-    final class Branch<T> extends AbstractBinaryTree<T> {
+    final class Branch<T> extends AbstractRoseTree<T> implements NonNil<T> {
 
         private static final long serialVersionUID = 1L;
 
-        private final JBinaryTree<T> left;
-        private final JBinaryTree<T> right;
+        private final List<NonNil<T>> children;
         private final T value;
 
         /**
-         * Constructs a binary tree branch consisting of a value, a left and a right subtree.
+         * Constructs a rose tree branch.
          *
-         * @param left  the left tree of this branch
-         * @param value a value
-         * @param right the right tree of this branch
-         * @throws NullPointerException     if left or right is null
-         * @throws IllegalArgumentException if left and right are empty (Nil)
+         * @param value    A value.
+         * @param children A non-empty list of children.
+         * @throws NullPointerException     if children is null
+         * @throws IllegalArgumentException if children is empty
          */
-        public Branch(JBinaryTree<T> left, T value, JBinaryTree<T> right) {
-            Objects.requireNonNull(left, "left is null");
-            Objects.requireNonNull(right, "right is null");
-            if (left.isEmpty() && right.isEmpty()) {
-                throw new IllegalArgumentException("left and right are Nil - use Leaf instead of Branch");
+        public Branch(T value, List<NonNil<T>> children) {
+            Objects.requireNonNull(children, "children is null");
+            if (children.isEmpty()) {
+                throw new IllegalArgumentException("no children");
             }
-            this.left = left;
-            this.right = right;
+            this.children = children;
             this.value = value;
-        }
-
-        @Override
-        public JBinaryTree<T> left() {
-            return left;
-        }
-
-        @Override
-        public JBinaryTree<T> right() {
-            return right;
         }
 
         @Override
@@ -293,14 +209,20 @@ public interface JBinaryTree<T> extends JTree<T> {
         }
 
         @Override
-        public JList<JBinaryTree<T>> getChildren() {
-            // IntelliJ error: List.of(left, right).filter(tree -> !tree.isEmpty());
-            return JList.<JBinaryTree<T>>nil().prepend(right).prepend(left).filter(tree -> !tree.isEmpty());
+        public List<NonNil<T>> getChildren() {
+            return children;
         }
 
         @Override
-        public Tuple3<JBinaryTree<T>, T, JBinaryTree<T>> unapply() {
-            return Tuple.of(left, value, right);
+        public <U> NonNil<U> map(Function<? super T, ? extends U> mapper) {
+            final U value = mapper.apply(getValue());
+            final List<NonNil<U>> children = getChildren().map(tree -> tree.map(mapper));
+            return new Branch<>(value, children);
+        }
+
+        @Override
+        public Tuple2<T, List<NonNil<T>>> unapply() {
+            return Tuple.of(value, children);
         }
 
         // -- Serializable implementation
@@ -347,7 +269,7 @@ public interface JBinaryTree<T> extends JTree<T> {
             private transient Branch<T> branch;
 
             /**
-             * Constructor for the case of serialization, called by {@link JBinaryTree.Branch#writeReplace()}.
+             * Constructor for the case of serialization, called by {@link Branch#writeReplace()}.
              * <p/>
              * The constructor of a SerializationProxy takes an argument that concisely represents the logical state of
              * an instance of the enclosing class.
@@ -367,8 +289,7 @@ public interface JBinaryTree<T> extends JTree<T> {
             private void writeObject(ObjectOutputStream s) throws IOException {
                 s.defaultWriteObject();
                 s.writeObject(branch.value);
-                s.writeObject(branch.left);
-                s.writeObject(branch.right);
+                s.writeObject(branch.children);
             }
 
             /**
@@ -382,14 +303,14 @@ public interface JBinaryTree<T> extends JTree<T> {
             private void readObject(ObjectInputStream s) throws ClassNotFoundException, IOException {
                 s.defaultReadObject();
                 final T value = (T) s.readObject();
-                final JBinaryTree<T> left = (JBinaryTree<T>) s.readObject();
-                final JBinaryTree<T> right = (JBinaryTree<T>) s.readObject();
-                branch = new Branch<>(left, value, right);
+                final List<NonNil<T>> children = (List<NonNil<T>>) s.readObject();
+                branch = new Branch<>(value, children);
             }
 
             /**
+             * <p>
              * {@code readResolve} method for the serialization proxy pattern.
-             * <p/>
+             * </p>
              * Returns a logically equivalent instance of the enclosing class. The presence of this method causes the
              * serialization system to translate the serialization proxy back into an instance of the enclosing class
              * upon deserialization.
@@ -403,12 +324,12 @@ public interface JBinaryTree<T> extends JTree<T> {
     }
 
     /**
-     * The singleton instance of the empty binary tree.
+     * The singleton instance of the empty rose tree.
      *
      * @param <T> type of the tree's values
      * @since 1.1.0
      */
-    final class Nil<T> extends AbstractBinaryTree<T> {
+    final class Nil<T> extends AbstractRoseTree<T> {
 
         private static final long serialVersionUID = 1L;
 
@@ -419,25 +340,15 @@ public interface JBinaryTree<T> extends JTree<T> {
         }
 
         /**
-         * Returns the singleton instance of the empty binary tree.
+         * Returns the singleton instance of the empty rose tree.
          *
          * @param <T> type of the tree's values
-         * @return the single binary tree instance
+         * @return the single rose tree instance
          */
         public static <T> Nil<T> instance() {
             @SuppressWarnings("unchecked")
             final Nil<T> instance = (Nil<T>) INSTANCE;
             return instance;
-        }
-
-        @Override
-        public JBinaryTree<T> left() {
-            throw new UnsupportedOperationException("left of Nil");
-        }
-
-        @Override
-        public JBinaryTree<T> right() {
-            throw new UnsupportedOperationException("right of Nil");
         }
 
         @Override
@@ -456,8 +367,13 @@ public interface JBinaryTree<T> extends JTree<T> {
         }
 
         @Override
-        public JList<JBinaryTree<T>> getChildren() {
-            return JList.nil();
+        public List<NonNil<T>> getChildren() {
+            return List.nil();
+        }
+
+        @Override
+        public <U> Nil<U> map(Function<? super T, ? extends U> mapper) {
+            return Nil.instance();
         }
 
         @Override
@@ -479,12 +395,12 @@ public interface JBinaryTree<T> extends JTree<T> {
     }
 
     /**
-     * An abstract binary tree implementation which just overrides equals, hashCode and toString.
+     * An abstract rose tree implementation which just overrides equals, hashCode and toString.
      *
-     * @param <T> value type of the binary tree
+     * @param <T> value type of the rose tree
      * @since 1.1.0
      */
-    abstract class AbstractBinaryTree<T> implements JBinaryTree<T> {
+    abstract class AbstractRoseTree<T> implements RoseTree<T> {
 
         private static final long serialVersionUID = 1L;
 
@@ -492,8 +408,8 @@ public interface JBinaryTree<T> extends JTree<T> {
         public boolean equals(Object o) {
             if (o == this) {
                 return true;
-            } else if (o instanceof JBinaryTree) {
-                final JBinaryTree<?> that = (JBinaryTree<?>) o;
+            } else if (o instanceof RoseTree) {
+                final RoseTree<?> that = (RoseTree<?>) o;
                 return (this.isEmpty() && that.isEmpty()) || (!this.isEmpty() && !that.isEmpty()
                         && Objects.equals(this.getValue(), that.getValue())
                         && this.getChildren().equals(that.getChildren()));
@@ -513,7 +429,7 @@ public interface JBinaryTree<T> extends JTree<T> {
 
         @Override
         public String toString() {
-            return JBinaryTree.class.getSimpleName() + toLispString();
+            return RoseTree.class.getSimpleName() + toLispString();
         }
     }
 }

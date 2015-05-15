@@ -15,16 +15,16 @@ import static javaslang.Serializables.serialize;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests all methods defined in {@link JTree}.
+ * Tests all methods defined in {@link javaslang.collection.Tree}.
  */
-public abstract class AbstractJTreeTest {
+public abstract class AbstractTreeTest {
 
-    abstract protected JTree<Integer> nil();
+    abstract protected Tree<Integer> nil();
 
     /**
      * @return A Leaf(0)
      */
-    abstract protected JTree<Integer> leaf();
+    abstract protected Tree<Integer> leaf();
 
     /**
      * @return 1
@@ -37,7 +37,7 @@ public abstract class AbstractJTreeTest {
      * /       / \
      * 7       8   9
      */
-    abstract protected JTree<Integer> tree();
+    abstract protected Tree<Integer> tree();
 
     // -- getValue
 
@@ -101,12 +101,12 @@ public abstract class AbstractJTreeTest {
 
     @Test
     public void shouldGetChildrenOfLeaf() {
-        assertThat(leaf().getChildren()).isEqualTo(JList.nil());
+        assertThat(leaf().getChildren()).isEqualTo(List.nil());
     }
 
     @Test
     public void shouldGetChildrenOfBranch() {
-        final JList<? extends JTree<Integer>> children = tree().getChildren();
+        final List<? extends Tree<Integer>> children = tree().getChildren();
         assertThat(children.length()).isEqualTo(2);
         assertThat(children.get(0).toLispString()).isEqualTo("(2 (4 7) 5)");
         assertThat(children.get(1).toLispString()).isEqualTo("(3 (6 8 9))");
@@ -114,7 +114,7 @@ public abstract class AbstractJTreeTest {
 
     @Test
     public void shouldIGetChildrenOfNil() {
-        assertThat(nil().getChildren()).isEqualTo(JList.nil());
+        assertThat(nil().getChildren()).isEqualTo(List.nil());
     }
 
     // -- branchCount
@@ -189,7 +189,7 @@ public abstract class AbstractJTreeTest {
 
     @Test
     public void shouldFullyIterateNonNil() {
-        final int length = JList.of(1, 2, 4, 7, 5, 3, 6, 8, 9).zip(() -> tree().iterator()).filter(t -> Objects.equals(t._1, t._2)).length();
+        final int length = List.of(1, 2, 4, 7, 5, 3, 6, 8, 9).zip(() -> tree().iterator()).filter(t -> Objects.equals(t._1, t._2)).length();
         assertThat(length).isEqualTo(9);
     }
 
@@ -197,29 +197,29 @@ public abstract class AbstractJTreeTest {
 
     @Test
     public void shouldFlattenNil() {
-        assertThat(nil().flatten()).isEqualTo(JList.nil());
+        assertThat(nil().flatten()).isEqualTo(List.nil());
     }
 
     // -- flatten(Order)
 
     @Test
     public void shouldFlattenTreeUsingPreOrder() {
-        assertThat(tree().flatten(JTree.Order.PRE_ORDER)).isEqualTo(JList.of(1, 2, 4, 7, 5, 3, 6, 8, 9));
+        assertThat(tree().flatten(Tree.Order.PRE_ORDER)).isEqualTo(List.of(1, 2, 4, 7, 5, 3, 6, 8, 9));
     }
 
     @Test
     public void shouldFlattenTreeUsingInOrder() {
-        assertThat(tree().flatten(JTree.Order.IN_ORDER)).isEqualTo(JList.of(7, 4, 2, 5, 1, 8, 6, 9, 3));
+        assertThat(tree().flatten(Tree.Order.IN_ORDER)).isEqualTo(List.of(7, 4, 2, 5, 1, 8, 6, 9, 3));
     }
 
     @Test
     public void shouldFlattenTreeUsingPostOrder() {
-        assertThat(tree().flatten(JTree.Order.POST_ORDER)).isEqualTo(JList.of(7, 4, 5, 2, 8, 9, 6, 3, 1));
+        assertThat(tree().flatten(Tree.Order.POST_ORDER)).isEqualTo(List.of(7, 4, 5, 2, 8, 9, 6, 3, 1));
     }
 
     @Test
     public void shouldFlattenTreeUsingLevelOrder() {
-        assertThat(tree().flatten(JTree.Order.LEVEL_ORDER)).isEqualTo(JList.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
+        assertThat(tree().flatten(Tree.Order.LEVEL_ORDER)).isEqualTo(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
     }
 
     // -- map

@@ -13,30 +13,30 @@ import java.util.Iterator;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests all methods defined in {@link JSeq}.
+ * Tests all methods defined in {@link javaslang.collection.Seq}.
  */
-public abstract class AbstractJSeqTest extends AbstractJTraversableTest {
+public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Override
-    abstract protected <T> JSeq<T> nil();
+    abstract protected <T> Seq<T> nil();
 
     @SuppressWarnings("unchecked")
     @Override
-    abstract protected <T> JSeq<T> of(T... elements);
+    abstract protected <T> Seq<T> of(T... elements);
 
     // -- append
 
     @Test
     public void shouldAppendElementToNil() {
-        final JSeq<Integer> actual = this.<Integer>nil().append(1);
-        final JSeq<Integer> expected = this.of(1);
+        final Seq<Integer> actual = this.<Integer>nil().append(1);
+        final Seq<Integer> expected = this.of(1);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldAppendElementToNonNil() {
-        final JSeq<Integer> actual = this.of(1, 2).append(3);
-        final JSeq<Integer> expected = this.of(1, 2, 3);
+        final Seq<Integer> actual = this.of(1, 2).append(3);
+        final Seq<Integer> expected = this.of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -49,29 +49,29 @@ public abstract class AbstractJSeqTest extends AbstractJTraversableTest {
 
     @Test
     public void shouldAppendAllNilToNil() {
-        final JSeq<Object> actual = this.nil().appendAll(this.nil());
-        final JSeq<Object> expected = this.nil();
+        final Seq<Object> actual = this.nil().appendAll(this.nil());
+        final Seq<Object> expected = this.nil();
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldAppendAllNonNilToNil() {
-        final JSeq<Integer> actual = this.<Integer>nil().appendAll(this.of(1, 2, 3));
-        final JSeq<Integer> expected = this.of(1, 2, 3);
+        final Seq<Integer> actual = this.<Integer>nil().appendAll(this.of(1, 2, 3));
+        final Seq<Integer> expected = this.of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldAppendAllNilToNonNil() {
-        final JSeq<Integer> actual = this.of(1, 2, 3).appendAll(this.nil());
-        final JSeq<Integer> expected = this.of(1, 2, 3);
+        final Seq<Integer> actual = this.of(1, 2, 3).appendAll(this.nil());
+        final Seq<Integer> expected = this.of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldAppendAllNonNilToNonNil() {
-        final JSeq<Integer> actual = this.of(1, 2, 3).appendAll(this.of(4, 5, 6));
-        final JSeq<Integer> expected = this.of(1, 2, 3, 4, 5, 6);
+        final Seq<Integer> actual = this.of(1, 2, 3).appendAll(this.of(4, 5, 6));
+        final Seq<Integer> expected = this.of(1, 2, 3, 4, 5, 6);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -140,29 +140,29 @@ public abstract class AbstractJSeqTest extends AbstractJTraversableTest {
 
     @Test
     public void shouldInsertIntoNil() {
-        final JSeq<Integer> actual = this.<Integer>nil().insert(0, 1);
-        final JSeq<Integer> expected = this.of(1);
+        final Seq<Integer> actual = this.<Integer>nil().insert(0, 1);
+        final Seq<Integer> expected = this.of(1);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldInsertInFrontOfElement() {
-        final JSeq<Integer> actual = this.of(4).insert(0, 1);
-        final JSeq<Integer> expected = this.of(1, 4);
+        final Seq<Integer> actual = this.of(4).insert(0, 1);
+        final Seq<Integer> expected = this.of(1, 4);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldInsertBehindOfElement() {
-        final JSeq<Integer> actual = this.of(4).insert(1, 1);
-        final JSeq<Integer> expected = this.of(4, 1);
+        final Seq<Integer> actual = this.of(4).insert(1, 1);
+        final Seq<Integer> expected = this.of(4, 1);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldInsertIntoSeq() {
-        final JSeq<Integer> actual = this.of(1, 2, 3).insert(2, 4);
-        final JSeq<Integer> expected = this.of(1, 2, 4, 3);
+        final Seq<Integer> actual = this.of(1, 2, 3).insert(2, 4);
+        final Seq<Integer> expected = this.of(1, 2, 4, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -180,29 +180,29 @@ public abstract class AbstractJSeqTest extends AbstractJTraversableTest {
 
     @Test
     public void shouldInserAlltIntoNil() {
-        final JSeq<Integer> actual = this.<Integer>nil().insertAll(0, this.of(1, 2, 3));
-        final JSeq<Integer> expected = this.of(1, 2, 3);
+        final Seq<Integer> actual = this.<Integer>nil().insertAll(0, this.of(1, 2, 3));
+        final Seq<Integer> expected = this.of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldInsertAllInFrontOfElement() {
-        final JSeq<Integer> actual = this.of(4).insertAll(0, this.of(1, 2, 3));
-        final JSeq<Integer> expected = this.of(1, 2, 3, 4);
+        final Seq<Integer> actual = this.of(4).insertAll(0, this.of(1, 2, 3));
+        final Seq<Integer> expected = this.of(1, 2, 3, 4);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldInsertAllBehindOfElement() {
-        final JSeq<Integer> actual = this.of(4).insertAll(1, this.of(1, 2, 3));
-        final JSeq<Integer> expected = this.of(4, 1, 2, 3);
+        final Seq<Integer> actual = this.of(4).insertAll(1, this.of(1, 2, 3));
+        final Seq<Integer> expected = this.of(4, 1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldInsertAllIntoSeq() {
-        final JSeq<Integer> actual = this.of(1, 2, 3).insertAll(2, this.of(4, 5));
-        final JSeq<Integer> expected = this.of(1, 2, 4, 5, 3);
+        final Seq<Integer> actual = this.of(1, 2, 3).insertAll(2, this.of(4, 5));
+        final Seq<Integer> expected = this.of(1, 2, 4, 5, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -258,15 +258,15 @@ public abstract class AbstractJSeqTest extends AbstractJTraversableTest {
 
     @Test
     public void shouldPrependElementToNil() {
-        final JSeq<Integer> actual = this.<Integer>nil().prepend(1);
-        final JSeq<Integer> expected = this.of(1);
+        final Seq<Integer> actual = this.<Integer>nil().prepend(1);
+        final Seq<Integer> expected = this.of(1);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldPrependElementToNonNil() {
-        final JSeq<Integer> actual = this.of(2, 3).prepend(1);
-        final JSeq<Integer> expected = this.of(1, 2, 3);
+        final Seq<Integer> actual = this.of(2, 3).prepend(1);
+        final Seq<Integer> expected = this.of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -279,29 +279,29 @@ public abstract class AbstractJSeqTest extends AbstractJTraversableTest {
 
     @Test
     public void shouldPrependAllNilToNil() {
-        final JSeq<Integer> actual = this.<Integer>nil().prependAll(this.nil());
-        final JSeq<Integer> expected = this.nil();
+        final Seq<Integer> actual = this.<Integer>nil().prependAll(this.nil());
+        final Seq<Integer> expected = this.nil();
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldPrependAllNilToNonNil() {
-        final JSeq<Integer> actual = this.of(1, 2, 3).prependAll(this.nil());
-        final JSeq<Integer> expected = this.of(1, 2, 3);
+        final Seq<Integer> actual = this.of(1, 2, 3).prependAll(this.nil());
+        final Seq<Integer> expected = this.of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldPrependAllNonNilToNil() {
-        final JSeq<Integer> actual = this.<Integer>nil().prependAll(this.of(1, 2, 3));
-        final JSeq<Integer> expected = this.of(1, 2, 3);
+        final Seq<Integer> actual = this.<Integer>nil().prependAll(this.of(1, 2, 3));
+        final Seq<Integer> expected = this.of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldPrependAllNonNilToNonNil() {
-        final JSeq<Integer> actual = this.of(4, 5, 6).prependAll(this.of(1, 2, 3));
-        final JSeq<Integer> expected = this.of(1, 2, 3, 4, 5, 6);
+        final Seq<Integer> actual = this.of(4, 5, 6).prependAll(this.of(1, 2, 3));
+        final Seq<Integer> expected = this.of(1, 2, 3, 4, 5, 6);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -382,31 +382,31 @@ public abstract class AbstractJSeqTest extends AbstractJTraversableTest {
 
     @Test
     public void shouldReturnNilWhenSubsequenceFrom0OnNil() {
-        final JSeq<Integer> actual = this.<Integer>nil().subsequence(0);
+        final Seq<Integer> actual = this.<Integer>nil().subsequence(0);
         assertThat(actual).isEqualTo(this.nil());
     }
 
     @Test
     public void shouldReturnIdentityWhenSubsequenceFrom0OnNonNil() {
-        final JSeq<Integer> actual = this.of(1).subsequence(0);
+        final Seq<Integer> actual = this.of(1).subsequence(0);
         assertThat(actual).isEqualTo(this.of(1));
     }
 
     @Test
     public void shouldReturnNilWhenSubsequenceFrom1OnSeqOf1() {
-        final JSeq<Integer> actual = this.of(1).subsequence(1);
+        final Seq<Integer> actual = this.of(1).subsequence(1);
         assertThat(actual).isEqualTo(this.nil());
     }
 
     @Test
     public void shouldReturnSubsequenceWhenIndexIsWithinRange() {
-        final JSeq<Integer> actual = this.of(1, 2, 3).subsequence(1);
+        final Seq<Integer> actual = this.of(1, 2, 3).subsequence(1);
         assertThat(actual).isEqualTo(this.of(2, 3));
     }
 
     @Test
     public void shouldReturnNilWhenSubsequenceBeginningWithSize() {
-        final JSeq<Integer> actual = this.of(1, 2, 3).subsequence(3);
+        final Seq<Integer> actual = this.of(1, 2, 3).subsequence(3);
         assertThat(actual).isEqualTo(this.nil());
     }
 
@@ -429,37 +429,37 @@ public abstract class AbstractJSeqTest extends AbstractJTraversableTest {
 
     @Test
     public void shouldReturnNilWhenSubsequenceFrom0To0OnNil() {
-        final JSeq<Integer> actual = this.<Integer>nil().subsequence(0, 0);
+        final Seq<Integer> actual = this.<Integer>nil().subsequence(0, 0);
         assertThat(actual).isEqualTo(this.nil());
     }
 
     @Test
     public void shouldReturnNilWhenSubsequenceFrom0To0OnNonNil() {
-        final JSeq<Integer> actual = this.of(1).subsequence(0, 0);
+        final Seq<Integer> actual = this.of(1).subsequence(0, 0);
         assertThat(actual).isEqualTo(this.nil());
     }
 
     @Test
     public void shouldReturnSeqWithFirstElementWhenSubsequenceFrom0To1OnNonNil() {
-        final JSeq<Integer> actual = this.of(1).subsequence(0, 1);
+        final Seq<Integer> actual = this.of(1).subsequence(0, 1);
         assertThat(actual).isEqualTo(this.of(1));
     }
 
     @Test
     public void shouldReturnNilWhenSubsequenceFrom1To1OnNonNil() {
-        final JSeq<Integer> actual = this.of(1).subsequence(1, 1);
+        final Seq<Integer> actual = this.of(1).subsequence(1, 1);
         assertThat(actual).isEqualTo(this.nil());
     }
 
     @Test
     public void shouldReturnSubsequenceWhenIndicesAreWithinRange() {
-        final JSeq<Integer> actual = this.of(1, 2, 3).subsequence(1, 3);
+        final Seq<Integer> actual = this.of(1, 2, 3).subsequence(1, 3);
         assertThat(actual).isEqualTo(this.of(2, 3));
     }
 
     @Test
     public void shouldReturnNilWhenIndicesBothAreUpperBound() {
-        final JSeq<Integer> actual = this.of(1, 2, 3).subsequence(3, 3);
+        final Seq<Integer> actual = this.of(1, 2, 3).subsequence(3, 3);
         assertThat(actual).isEqualTo(this.nil());
     }
 

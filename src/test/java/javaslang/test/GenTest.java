@@ -7,8 +7,10 @@ package javaslang.test;
 
 import javaslang.Tuple;
 import javaslang.Tuple2;
-import javaslang.collection.JList;
-import javaslang.collection.JStream;
+import javaslang.collection.List;
+import javaslang.collection.Stream;
+import javaslang.control.Option;
+import javaslang.control.Some;
 import org.junit.Test;
 
 import java.util.Random;
@@ -38,7 +40,7 @@ public class GenTest {
             }
         };
         final Gen<Integer> gen = Gen.choose(1, 2);
-        final Number actual = JStream.gen(() -> gen.apply(rng)).take(10).sum();
+        final Number actual = Stream.gen(() -> gen.apply(rng)).take(10).sum();
         assertThat(actual).isEqualTo(10);
     }
 
@@ -162,12 +164,12 @@ public class GenTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowWhenCallingFrequencyOfIterableAndArgIsEmpty() {
-        Gen.frequency(JList.nil());
+        Gen.frequency(List.nil());
     }
 
     @Test
     public void shouldGenerateElementsAccordingToFrequencyGivenAnIterable() {
-        final Gen<Integer> gen = Gen.frequency(JList.of(Tuple.of(0, Gen.of(-1)), Tuple.of(1, Gen.of(1))));
+        final Gen<Integer> gen = Gen.frequency(List.of(Tuple.of(0, Gen.of(-1)), Tuple.of(1, Gen.of(1))));
         assertForAll(() -> gen.apply(RANDOM), i -> i != -1);
     }
 
@@ -200,12 +202,12 @@ public class GenTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowWhenCallingOneOfAndIterableIsEmpty() {
-        Gen.oneOf(JList.nil());
+        Gen.oneOf(List.nil());
     }
 
     @Test
     public void shouldReturnOneOfGivenIterable() {
-        final Gen<Integer> gen = Gen.oneOf(JList.of(Gen.of(1), Gen.of(2)));
+        final Gen<Integer> gen = Gen.oneOf(List.of(Gen.of(1), Gen.of(2)));
         assertForAll(() -> gen.apply(RANDOM), i -> i == 1 || i == 2);
     }
 
