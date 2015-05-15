@@ -13,22 +13,22 @@ import java.io.InvalidObjectException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class BinaryTreeTest extends AbstractTreeTest {
+public class JBinaryTreeTest extends AbstractJTreeTest {
 
-    final BinaryTree<Integer> tree = BinaryTree.branch(BinaryTree.branch(BinaryTree.branch(BinaryTree.leaf(7), 4, BinaryTree.nil()), 2, BinaryTree.leaf(5)), 1, BinaryTree.branch(BinaryTree.branch(BinaryTree.leaf(8), 6, BinaryTree.leaf(9)), 3, BinaryTree.nil()));
+    final JBinaryTree<Integer> tree = JBinaryTree.branch(JBinaryTree.branch(JBinaryTree.branch(JBinaryTree.leaf(7), 4, JBinaryTree.nil()), 2, JBinaryTree.leaf(5)), 1, JBinaryTree.branch(JBinaryTree.branch(JBinaryTree.leaf(8), 6, JBinaryTree.leaf(9)), 3, JBinaryTree.nil()));
 
     @Override
-    protected BinaryTree<Integer> nil() {
-        return BinaryTree.nil();
+    protected JBinaryTree<Integer> nil() {
+        return JBinaryTree.nil();
     }
 
     @Override
-    protected BinaryTree<Integer> leaf() {
-        return BinaryTree.leaf(1);
+    protected JBinaryTree<Integer> leaf() {
+        return JBinaryTree.leaf(1);
     }
 
     @Override
-    protected BinaryTree<Integer> tree() {
+    protected JBinaryTree<Integer> tree() {
         return tree;
     }
 
@@ -36,12 +36,12 @@ public class BinaryTreeTest extends AbstractTreeTest {
 
     @Test
     public void shouldBalanceIterable() {
-        assertThat(BinaryTree.balance(List.of(1, 2, 3, 4, 5, 6)).toLispString()).isEqualTo("(1 (2 3 4) (5 6))");
+        assertThat(JBinaryTree.balance(JList.of(1, 2, 3, 4, 5, 6)).toLispString()).isEqualTo("(1 (2 3 4) (5 6))");
     }
 
     @Test
     public void shouldBalanceVarargs() {
-        assertThat(BinaryTree.balance(1, 2, 3, 4, 5, 6).toLispString()).isEqualTo("(1 (2 3 4) (5 6))");
+        assertThat(JBinaryTree.balance(1, 2, 3, 4, 5, 6).toLispString()).isEqualTo("(1 (2 3 4) (5 6))");
     }
 
     @Test
@@ -53,25 +53,25 @@ public class BinaryTreeTest extends AbstractTreeTest {
 
     @Test
     public void shouldUnapplyLeaf() {
-        assertThat(BinaryTree.leaf(1).unapply()).isEqualTo(Tuple.of(1));
+        assertThat(JBinaryTree.leaf(1).unapply()).isEqualTo(Tuple.of(1));
     }
 
     // -- Branch test
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldNotCreateBranchWithEmptySubTrees() {
-        new BinaryTree.Branch<>(BinaryTree.nil(), 1, BinaryTree.nil());
+        new JBinaryTree.Branch<>(JBinaryTree.nil(), 1, JBinaryTree.nil());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldNotCreateBranchUsingBranchFactoryMethodAndBothSubtreesAreNil() {
-        BinaryTree.branch(nil(), 1, nil());
+        JBinaryTree.branch(nil(), 1, nil());
     }
 
     @Test
     public void shouldUnapplyBranch() {
-        final Tuple actual = BinaryTree.branch(BinaryTree.leaf(2), 1, BinaryTree.leaf(3)).unapply();
-        final Tuple expected = Tuple.of(BinaryTree.leaf(2), 1, BinaryTree.leaf(3));
+        final Tuple actual = JBinaryTree.branch(JBinaryTree.leaf(2), 1, JBinaryTree.leaf(3)).unapply();
+        final Tuple expected = Tuple.of(JBinaryTree.leaf(2), 1, JBinaryTree.leaf(3));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -84,17 +84,17 @@ public class BinaryTreeTest extends AbstractTreeTest {
 
     @Test
     public void shouldUnapplyNil() {
-        assertThat(BinaryTree.nil().unapply()).isEqualTo(Tuple.empty());
+        assertThat(JBinaryTree.nil().unapply()).isEqualTo(Tuple.empty());
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void shouldThrowWhenLeftOfNil() {
-        BinaryTree.nil().left();
+        JBinaryTree.nil().left();
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void shouldThrowWhenRightOfNil() {
-        BinaryTree.nil().right();
+        JBinaryTree.nil().right();
     }
 
     // -- AbstractBinaryTree test
@@ -132,11 +132,11 @@ public class BinaryTreeTest extends AbstractTreeTest {
 
     @Test
     public void shouldReturnStringRepresentationOfNil() {
-        assertThat(nil().toString()).isEqualTo("BinaryTree()");
+        assertThat(nil().toString()).isEqualTo("JBinaryTree()");
     }
 
     @Test
     public void shouldReturnStringRepresentationOfBranch() {
-        assertThat(tree().toString()).isEqualTo("BinaryTree(1 (2 (4 7) 5) (3 (6 8 9)))");
+        assertThat(tree().toString()).isEqualTo("JBinaryTree(1 (2 (4 7) 5) (3 (6 8 9)))");
     }
 }

@@ -8,7 +8,7 @@ package javaslang.test;
 import javaslang.Tuple2;
 import javaslang.algebra.HigherKinded;
 import javaslang.algebra.Monad;
-import javaslang.collection.Stream;
+import javaslang.collection.JStream;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -186,7 +186,7 @@ public interface Gen<T> extends Monad<T, Gen<?>>, Iterable<T> {
         if (generators.length == 0) {
             throw new IllegalArgumentException("generators is empty");
         }
-        final Iterable<Tuple2<Integer, Gen<T>>> iterable = Stream.of(generators);
+        final Iterable<Tuple2<Integer, Gen<T>>> iterable = JStream.of(generators);
         return frequency(iterable);
     }
 
@@ -201,12 +201,12 @@ public interface Gen<T> extends Monad<T, Gen<?>>, Iterable<T> {
      */
     static <T> Gen<T> frequency(Iterable<Tuple2<Integer, Gen<T>>> generators) {
         Objects.requireNonNull(generators, "generators is null");
-        final Stream<Tuple2<Integer, Gen<T>>> stream = Stream.ofAll(generators);
+        final JStream<Tuple2<Integer, Gen<T>>> stream = JStream.ofAll(generators);
         if (stream.isEmpty()) {
             throw new IllegalArgumentException("generators is empty");
         }
         final class Frequency {
-            Gen<T> gen(int n, Stream<Tuple2<Integer, Gen<T>>> stream) {
+            Gen<T> gen(int n, JStream<Tuple2<Integer, Gen<T>>> stream) {
                 final int k = stream.head()._1;
                 if (k < 0) {
                     throw new IllegalArgumentException("negative frequency: " + k);
@@ -247,7 +247,7 @@ public interface Gen<T> extends Monad<T, Gen<?>>, Iterable<T> {
      */
     static <T> Gen<T> oneOf(Iterable<Gen<T>> generators) {
         Objects.requireNonNull(generators, "generators is null");
-        final Stream<Gen<T>> stream = Stream.ofAll(generators);
+        final JStream<Gen<T>> stream = JStream.ofAll(generators);
         if (stream.isEmpty()) {
             throw new IllegalArgumentException("generators is empty");
         }

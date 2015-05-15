@@ -17,33 +17,33 @@ import java.util.function.*;
 import java.util.stream.Collector;
 
 /**
- * A {@code Stream} is lazy sequence of elements which may be infinitely long. Its immutability makes it suitable for
+ * A {@code JStream} is lazy sequence of elements which may be infinitely long. Its immutability makes it suitable for
  * concurrent programming.
  * <p>
- * A {@code Stream} is composed of a {@code head} element and a lazy evaluated {@code tail} {@code Stream}.
+ * A {@code JStream} is composed of a {@code head} element and a lazy evaluated {@code tail} {@code JStream}.
  * <p>
- * There are two implementations of the {@code Stream} interface:
+ * There are two implementations of the {@code JStream} interface:
  * <ul>
- * <li>{@link Nil}, which represents the empty {@code Stream}.</li>
- * <li>{@link Cons}, which represents a {@code Stream} containing one or more elements.</li>
+ * <li>{@link Nil}, which represents the empty {@code JStream}.</li>
+ * <li>{@link Cons}, which represents a {@code JStream} containing one or more elements.</li>
  * </ul>
- * Methods to obtain a {@code Stream}:
+ * Methods to obtain a {@code JStream}:
  * <pre>
  * <code>
  * // factory methods
- * Stream.nil()              // = Stream.of() = Nil.instance()
- * Stream.of(x)            // = new Cons&lt;&gt;(x, Nil.instance())
- * Stream.of(Object...)      // e.g. Stream.of(1, 2, 3)
- * Stream.of(Iterable)       // e.g. Stream.of(List.of(1, 2, 3)) = 1, 2, 3
- * Stream.of(Iterator)       // e.g. Stream.of(Arrays.asList(1, 2, 3).iterator()) = 1, 2, 3
+ * JStream.nil()              // = JStream.of() = Nil.instance()
+ * JStream.of(x)              // = new Cons&lt;&gt;(x, Nil.instance())
+ * JStream.of(Object...)      // e.g. JStream.of(1, 2, 3)
+ * JStream.of(Iterable)       // e.g. JStream.of(List.of(1, 2, 3)) = 1, 2, 3
+ * JStream.of(Iterator)       // e.g. JStream.of(Arrays.asList(1, 2, 3).iterator()) = 1, 2, 3
  *
  * // int sequences
- * Stream.from(0)            // = 0, 1, 2, 3, ...
- * Stream.range(0, 3)        // = 0, 1, 2
- * Stream.rangeClosed(0, 3)  // = 0, 1, 2, 3
+ * JStream.from(0)            // = 0, 1, 2, 3, ...
+ * JStream.range(0, 3)        // = 0, 1, 2
+ * JStream.rangeClosed(0, 3)  // = 0, 1, 2, 3
  *
  * // generators
- * Stream.gen(Supplier)      // e.g. Stream.gen(Math::random);
+ * JStream.gen(Supplier)      // e.g. JStream.gen(Math::random);
  * </code>
  * </pre>
  *
@@ -51,7 +51,7 @@ import java.util.stream.Collector;
  * @since 1.1.0
  */
 // DEV-NOTE: Beware of serializing IO streams.
-public interface Stream<T> extends Seq<T>, ValueObject {
+public interface JStream<T> extends JSeq<T>, ValueObject {
 
     /**
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
@@ -60,42 +60,42 @@ public interface Stream<T> extends Seq<T>, ValueObject {
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
-     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link javaslang.collection.Stream}.
+     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link JStream}.
      *
      * @param <T> Component type of the Stream.
      * @return A javaslang.collection.Stream Collector.
      */
-    static <T> Collector<T, ArrayList<T>, Stream<T>> collector() {
+    static <T> Collector<T, ArrayList<T>, JStream<T>> collector() {
         final Supplier<ArrayList<T>> supplier = ArrayList::new;
         final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
         final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
             left.addAll(right);
             return left;
         };
-        final Function<ArrayList<T>, Stream<T>> finisher = Stream::ofAll;
+        final Function<ArrayList<T>, JStream<T>> finisher = JStream::ofAll;
         return Collector.of(supplier, accumulator, combiner, finisher);
     }
 
     /**
-     * Returns an infinitely long Stream of int values starting from {@code from}.
+     * Returns an infinitely long JStream of int values starting from {@code from}.
      * <p>
-     * The {@code Stream} extends to {@code Integer.MIN_VALUE} when passing {@code Integer.MAX_VALUE}.
+     * The {@code JStream} extends to {@code Integer.MIN_VALUE} when passing {@code Integer.MAX_VALUE}.
      *
      * @param value a start int value
-     * @return a new Stream of int values starting from {@code from}
+     * @return a new JStream of int values starting from {@code from}
      */
-    static Stream<Integer> from(int value) {
+    static JStream<Integer> from(int value) {
         return new Cons<>(value, () -> from(value + 1));
     }
 
     /**
-     * Generates an (theoretically) infinitely long Stream using a value Supplier.
+     * Generates an (theoretically) infinitely long JStream using a value Supplier.
      *
-     * @param supplier A Supplier of Stream values
+     * @param supplier A Supplier of JStream values
      * @param <T>      value type
-     * @return A new Stream
+     * @return A new JStream
      */
-    static <T> Stream<T> gen(Supplier<T> supplier) {
+    static <T> JStream<T> gen(Supplier<T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return new Cons<>(supplier.get(), () -> gen(supplier));
     }
@@ -103,45 +103,45 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     /**
      * Returns the single instance of Nil. Convenience method for {@code Nil.instance()}.
      * <p>
-     * Note: this method intentionally returns type {@code Stream} and not {@code Nil}. This comes handy when folding.
+     * Note: this method intentionally returns type {@code JStream} and not {@code Nil}. This comes handy when folding.
      * If you explicitely need type {@code Nil} use {@linkplain Nil#instance()}.
      *
      * @param <T> Component type of Nil, determined by type inference in the particular context.
      * @return The empty list.
      */
-    static <T> Stream<T> nil() {
+    static <T> JStream<T> nil() {
         return Nil.instance();
     }
 
     /**
-     * Returns a singleton {@code Stream}, i.e. a {@code Stream} of one element.
+     * Returns a singleton {@code JStream}, i.e. a {@code JStream} of one element.
      *
      * @param element An element.
      * @param <T>     The component type
-     * @return A new Stream instance containing the given element
+     * @return A new JStream instance containing the given element
      */
-    static <T> Stream<T> of(T element) {
+    static <T> JStream<T> of(T element) {
         return new Cons<>(element, Nil::instance);
     }
 
     /**
      * <p>
-     * Creates a Stream of the given elements.
+     * Creates a JStream of the given elements.
      * </p>
      * <pre>
-     * <code>  Stream.of(1, 2, 3, 4)
+     * <code>  JStream.of(1, 2, 3, 4)
      * = Nil.instance().prepend(4).prepend(3).prepend(2).prepend(1)
      * = new Cons(1, new Cons(2, new Cons(3, new Cons(4, Nil.instance()))))</code>
      * </pre>
      *
-     * @param <T>      Component type of the Stream.
+     * @param <T>      Component type of the JStream.
      * @param elements Zero or more elements.
      * @return A list containing the given elements in the same order.
      */
     @SafeVarargs
-    static <T> Stream<T> of(T... elements) {
+    static <T> JStream<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return Stream.ofAll(new Iterator<T>() {
+        return JStream.ofAll(new Iterator<T>() {
             int i = 0;
 
             @Override
@@ -157,119 +157,119 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     /**
-     * Creates a Stream of the given elements.
+     * Creates a JStream of the given elements.
      *
-     * @param <T>      Component type of the Stream.
+     * @param <T>      Component type of the JStream.
      * @param elements An Iterable of elements.
      * @return A list containing the given elements in the same order.
      */
     @SuppressWarnings("unchecked")
-    static <T> Stream<T> ofAll(Iterable<? extends T> elements) {
+    static <T> JStream<T> ofAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        if (elements instanceof Stream) {
-            return (Stream<T>) elements;
+        if (elements instanceof JStream) {
+            return (JStream<T>) elements;
         } else {
-            return Stream.ofAll(elements.iterator());
+            return JStream.ofAll(elements.iterator());
         }
     }
 
     /**
-     * Creates a Stream based on an Iterator.
+     * Creates a JStream based on an Iterator.
      *
      * @param iterator An Iterator
      * @param <T>      Component type
-     * @return A new Stream
+     * @return A new JStream
      */
-    // providing this method to save resources creating a Stream - makes no sense for collections in general
-    static <T> Stream<T> ofAll(Iterator<? extends T> iterator) {
+    // providing this method to save resources creating a JStream - makes no sense for collections in general
+    static <T> JStream<T> ofAll(Iterator<? extends T> iterator) {
         Objects.requireNonNull(iterator, "iterator is null");
         if (iterator.hasNext()) {
-            return new Cons<>(iterator.next(), () -> Stream.ofAll(iterator));
+            return new Cons<>(iterator.next(), () -> JStream.ofAll(iterator));
         } else {
             return Nil.instance();
         }
     }
 
     /**
-     * Creates a Stream of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * Creates a JStream of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
      *
      * @param from        the first number
      * @param toExclusive the last number + 1
      * @return a range of int values as specified or {@code Nil} if {@code from >= toExclusive}
      */
-    static Stream<Integer> range(int from, int toExclusive) {
+    static JStream<Integer> range(int from, int toExclusive) {
         if (from >= toExclusive) {
             return Nil.instance();
         } else {
-            return Stream.rangeClosed(from, toExclusive - 1);
+            return JStream.rangeClosed(from, toExclusive - 1);
         }
     }
 
     /**
-     * Creates a Stream of int numbers starting from {@code from}, extending to {@code toInclusive}.
+     * Creates a JStream of int numbers starting from {@code from}, extending to {@code toInclusive}.
      *
      * @param from        the first number
      * @param toInclusive the last number
      * @return a range of int values as specified or {@code Nil} if {@code from > toInclusive}
      */
-    static Stream<Integer> rangeClosed(int from, int toInclusive) {
+    static JStream<Integer> rangeClosed(int from, int toInclusive) {
         if (from > toInclusive) {
             return Nil.instance();
         } else if (from == Integer.MAX_VALUE) {
-            return Stream.of(Integer.MAX_VALUE);
+            return JStream.of(Integer.MAX_VALUE);
         } else {
             return new Cons<>(from, () -> rangeClosed(from + 1, toInclusive));
         }
     }
 
     @Override
-    default Stream<T> append(T element) {
-        return isEmpty() ? Stream.of(element) : new Cons<>(head(), () -> tail().append(element));
+    default JStream<T> append(T element) {
+        return isEmpty() ? JStream.of(element) : new Cons<>(head(), () -> tail().append(element));
     }
 
     @Override
-    default Stream<T> appendAll(Iterable<? extends T> elements) {
+    default JStream<T> appendAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return isEmpty() ? Stream.ofAll(elements) : new Cons<>(head(), () -> tail().appendAll(elements));
+        return isEmpty() ? JStream.ofAll(elements) : new Cons<>(head(), () -> tail().appendAll(elements));
     }
 
     @Override
-    default Stream<T> clear() {
+    default JStream<T> clear() {
         return Nil.instance();
     }
 
     @Override
-    default Stream<? extends Stream<T>> combinations() {
-        return Stream.rangeClosed(0, length()).map(this::combinations).flatten(Function.identity());
+    default JStream<? extends JStream<T>> combinations() {
+        return JStream.rangeClosed(0, length()).map(this::combinations).flatten(Function.identity());
     }
 
     @Override
-    default Stream<Stream<T>> combinations(int k) {
+    default JStream<JStream<T>> combinations(int k) {
         class Recursion {
-            Stream<Stream<T>> combinations(Stream<T> elements, int k) {
-                return (k == 0) ? Stream.of(Stream.nil()) :
+            JStream<JStream<T>> combinations(JStream<T> elements, int k) {
+                return (k == 0) ? JStream.of(JStream.nil()) :
                         elements.zipWithIndex().flatMap(t ->
                                 combinations(elements.drop(t._2 + 1), (k - 1))
-                                        .map((Stream<T> c) -> c.prepend(t._1)));
+                                        .map((JStream<T> c) -> c.prepend(t._1)));
             }
         }
         return new Recursion().combinations(this, Math.max(k, 0));
     }
 
     @Override
-    default Stream<T> distinct() {
+    default JStream<T> distinct() {
         return distinct(Function.identity());
     }
 
     @Override
-    default <U> Stream<T> distinct(Function<? super T, ? extends U> keyExtractor) {
+    default <U> JStream<T> distinct(Function<? super T, ? extends U> keyExtractor) {
         final Set<U> seen = new HashSet<>();
         return filter(t -> seen.add(keyExtractor.apply(t)));
     }
 
     @Override
-    default Stream<T> drop(int n) {
-        Stream<T> stream = this;
+    default JStream<T> drop(int n) {
+        JStream<T> stream = this;
         while (n-- > 0 && !stream.isEmpty()) {
             stream = stream.tail();
         }
@@ -277,13 +277,13 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default Stream<T> dropRight(int n) {
+    default JStream<T> dropRight(int n) {
         return reverse().drop(n).reverse();
     }
 
     @Override
-    default Stream<T> dropWhile(Predicate<? super T> predicate) {
-        Stream<T> stream = this;
+    default JStream<T> dropWhile(Predicate<? super T> predicate) {
+        JStream<T> stream = this;
         while (!stream.isEmpty() && predicate.test(stream.head())) {
             stream = stream.tail();
         }
@@ -291,64 +291,64 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default Stream<T> filter(Predicate<? super T> predicate) {
+    default JStream<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        Stream<T> stream = this;
+        JStream<T> stream = this;
         while (!stream.isEmpty() && !predicate.test(stream.head())) {
             stream = stream.tail();
         }
-        final Stream<T> finalStream = stream;
+        final JStream<T> finalStream = stream;
         return stream.isEmpty() ? stream : new Cons<>(stream.head(), () -> finalStream.tail().filter(predicate));
     }
 
     @Override
-    default Stream<T> findAll(Predicate<? super T> predicate) {
+    default JStream<T> findAll(Predicate<? super T> predicate) {
         return filter(predicate);
     }
 
     @Override
-    default <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Stream<U> flatMap(Function<? super T, ? extends TRAVERSABLE> mapper) {
+    default <U, TRAVERSABLE extends HigherKinded<U, JTraversable<?>>> JStream<U> flatMap(Function<? super T, ? extends TRAVERSABLE> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? Nil.instance() : map(mapper).flatten(Function.identity());
     }
 
     /**
-     * Flattens a {@code Stream} using a function. A common use case is to use the identity
-     * {@code stream.flatten(Function::identity)} to flatten a {@code Stream} of {@code Stream}s.
+     * Flattens a {@code JStream} using a function. A common use case is to use the identity
+     * {@code stream.flatten(Function::identity)} to flatten a {@code JStream} of {@code JStream}s.
      * <p>
      * Examples:
      * <pre>
      * <code>
-     * Match&lt;Stream&lt;U&gt;&gt; f = Match
-     *    .when((Stream&lt;U&gt; l) -&gt; l)
-     *    .when((U u) -&gt; Stream.of(u));
-     * Stream.of(1).flatten(f);              // = Stream(1)
-     * Stream.of(Stream.of(1)).flatten(f);   // = Stream(1)
-     * Stream.of(Nil.instance()).flatten(f); // = Nil
-     * Nil.instance().flatten(f);            // = Nil
+     * Match&lt;JStream&lt;U&gt;&gt; f = Match
+     *    .when((JStream&lt;U&gt; l) -&gt; l)
+     *    .when((U u) -&gt; JStream.of(u));
+     * JStream.of(1).flatten(f);              // = JStream(1)
+     * JStream.of(JStream.of(1)).flatten(f);  // = JStream(1)
+     * JStream.of(Nil.instance()).flatten(f); // = Nil
+     * Nil.instance().flatten(f);             // = Nil
      * </code>
      * </pre>
      *
-     * @param <U>           component type of the result {@code Stream}
+     * @param <U>           component type of the result {@code JStream}
      * @param <TRAVERSABLE> a {@code Traversable&lt;U&gt;}
-     * @param f             a function which maps elements of this {@code Stream} to {@code Stream}s
-     * @return a new {@code Stream}
+     * @param f             a function which maps elements of this {@code JStream} to {@code JStream}s
+     * @return a new {@code JStream}
      * @throws NullPointerException if {@code f} is null
      */
     @SuppressWarnings("unchecked")
     @Override
-    default <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Stream<U> flatten(Function<? super T, ? extends TRAVERSABLE> f) {
+    default <U, TRAVERSABLE extends HigherKinded<U, JTraversable<?>>> JStream<U> flatten(Function<? super T, ? extends TRAVERSABLE> f) {
         Objects.requireNonNull(f, "f is null");
-        return isEmpty() ? Nil.instance() : Stream.ofAll(new Iterator<U>() {
+        return isEmpty() ? Nil.instance() : JStream.ofAll(new Iterator<U>() {
 
-            final Iterator<? extends T> inputs = Stream.this.iterator();
+            final Iterator<? extends T> inputs = JStream.this.iterator();
             Iterator<? extends U> current = Collections.emptyIterator();
 
             @Override
             public boolean hasNext() {
                 boolean currentHasNext;
                 while (!(currentHasNext = current.hasNext()) && inputs.hasNext()) {
-                    current = ((Traversable<U>) f.apply(inputs.next())).iterator();
+                    current = ((JTraversable<U>) f.apply(inputs.next())).iterator();
                 }
                 return currentHasNext;
             }
@@ -368,7 +368,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
         if (index < 0) {
             throw new IndexOutOfBoundsException("get(" + index + ")");
         }
-        Stream<T> stream = this;
+        JStream<T> stream = this;
         for (int i = index - 1; i >= 0; i--) {
             stream = stream.tail();
             if (stream.isEmpty()) {
@@ -379,14 +379,14 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default Stream<Stream<T>> grouped(int size) {
+    default JStream<JStream<T>> grouped(int size) {
         return sliding(size, size);
     }
 
     @Override
     default int indexOf(T element) {
         int index = 0;
-        for (Stream<T> stream = this; !stream.isEmpty(); stream = stream.tail(), index++) {
+        for (JStream<T> stream = this; !stream.isEmpty(); stream = stream.tail(), index++) {
             if (Objects.equals(stream.head(), element)) {
                 return index;
             }
@@ -395,11 +395,11 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default Stream<T> init() {
+    default JStream<T> init() {
         if (isEmpty()) {
             throw new UnsupportedOperationException("init on empty Stream");
         } else {
-            final Stream<T> tail = tail();
+            final JStream<T> tail = tail();
             if (tail.isEmpty()) {
                 return Nil.instance();
             } else {
@@ -409,12 +409,12 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default Option<Stream<T>> initOption() {
+    default Option<JStream<T>> initOption() {
         return isEmpty() ? None.instance() : new Some<>(init());
     }
 
     @Override
-    default Stream<T> insert(int index, T element) {
+    default JStream<T> insert(int index, T element) {
         if (index < 0) {
             throw new IndexOutOfBoundsException("insert(" + index + ", e)");
         }
@@ -429,7 +429,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default Stream<T> insertAll(int index, Iterable<? extends T> elements) {
+    default JStream<T> insertAll(int index, Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (index < 0) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
@@ -438,19 +438,19 @@ public interface Stream<T> extends Seq<T>, ValueObject {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements) on empty stream");
         }
         if (index == 0) {
-            return Stream.ofAll(elements).appendAll(this);
+            return JStream.ofAll(elements).appendAll(this);
         } else {
             return new Cons<>(head(), () -> tail().insertAll(index - 1, elements));
         }
     }
 
     @Override
-    default Stream<T> intersperse(T element) {
+    default JStream<T> intersperse(T element) {
         if (isEmpty()) {
             return Nil.instance();
         } else {
             return new Cons<>(head(), () -> {
-                final Stream<T> tail = tail();
+                final JStream<T> tail = tail();
                 return tail.isEmpty() ? tail : new Cons<>(element, () -> tail.intersperse(element));
             });
         }
@@ -459,7 +459,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     @Override
     default int lastIndexOf(T element) {
         int result = -1, index = 0;
-        for (Stream<T> stream = this; !stream.isEmpty(); stream = stream.tail(), index++) {
+        for (JStream<T> stream = this; !stream.isEmpty(); stream = stream.tail(), index++) {
             if (Objects.equals(stream.head(), element)) {
                 result = index;
             }
@@ -468,7 +468,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default <U> Stream<U> map(Function<? super T, ? extends U> mapper) {
+    default <U> JStream<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return Nil.instance();
@@ -478,13 +478,13 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default Tuple2<Stream<T>, Stream<T>> partition(Predicate<? super T> predicate) {
+    default Tuple2<JStream<T>, JStream<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return Tuple.of(filter(predicate), filter(predicate.negate()));
     }
 
     @Override
-    default Stream<T> peek(Consumer<? super T> action) {
+    default JStream<T> peek(Consumer<? super T> action) {
         if (isEmpty()) {
             return this;
         } else {
@@ -495,34 +495,34 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default Stream<Stream<T>> permutations() {
+    default JStream<JStream<T>> permutations() {
         if (isEmpty()) {
             return Nil.instance();
         } else {
-            final Stream<T> tail = tail();
+            final JStream<T> tail = tail();
             if (tail.isEmpty()) {
-                return Stream.of(this);
+                return JStream.of(this);
             } else {
-                final Stream<Stream<T>> zero = Nil.instance();
+                final JStream<JStream<T>> zero = Nil.instance();
                 // TODO: IntelliJ IDEA 14.1.1 needs a redundant cast here, jdk 1.8.0_40 compiles fine
-                return distinct().foldLeft(zero, (xs, x) -> xs.appendAll(remove(x).permutations().map((Function<Stream<T>, Stream<T>>) l -> l.prepend(x))));
+                return distinct().foldLeft(zero, (xs, x) -> xs.appendAll(remove(x).permutations().map((Function<JStream<T>, JStream<T>>) l -> l.prepend(x))));
             }
         }
     }
 
     @Override
-    default Stream<T> prepend(T element) {
+    default JStream<T> prepend(T element) {
         return new Cons<>(element, () -> this);
     }
 
     @Override
-    default Stream<T> prependAll(Iterable<? extends T> elements) {
+    default JStream<T> prependAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return Stream.ofAll(elements).appendAll(this);
+        return JStream.ofAll(elements).appendAll(this);
     }
 
     @Override
-    default Stream<T> remove(T element) {
+    default JStream<T> remove(T element) {
         if (isEmpty()) {
             return this;
         } else {
@@ -532,19 +532,19 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default Stream<T> removeAll(T removed) {
+    default JStream<T> removeAll(T removed) {
         return filter(e -> !Objects.equals(e, removed));
     }
 
     @Override
-    default Stream<T> removeAll(Iterable<? extends T> elements) {
+    default JStream<T> removeAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        final Stream<T> distinct = Stream.ofAll(elements).distinct();
+        final JStream<T> distinct = JStream.ofAll(elements).distinct();
         return filter(e -> !distinct.contains(e));
     }
 
     @Override
-    default Stream<T> replace(T currentElement, T newElement) {
+    default JStream<T> replace(T currentElement, T newElement) {
         if (isEmpty()) {
             return this;
         } else {
@@ -558,7 +558,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default Stream<T> replaceAll(T currentElement, T newElement) {
+    default JStream<T> replaceAll(T currentElement, T newElement) {
         if (isEmpty()) {
             return this;
         } else {
@@ -569,7 +569,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default Stream<T> replaceAll(UnaryOperator<T> operator) {
+    default JStream<T> replaceAll(UnaryOperator<T> operator) {
         if (isEmpty()) {
             return this;
         } else {
@@ -578,31 +578,31 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default Stream<T> retainAll(Iterable<? extends T> elements) {
+    default JStream<T> retainAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (isEmpty()) {
             return this;
         } else {
-            final Stream<T> retained = Stream.ofAll(elements).distinct();
+            final JStream<T> retained = JStream.ofAll(elements).distinct();
             return filter(retained::contains);
         }
     }
 
     @Override
-    default Stream<T> reverse() {
-        return isEmpty() ? this : foldLeft(Stream.nil(), Stream::prepend);
+    default JStream<T> reverse() {
+        return isEmpty() ? this : foldLeft(JStream.nil(), JStream::prepend);
     }
 
     @Override
-    default Stream<T> set(int index, T element) {
+    default JStream<T> set(int index, T element) {
         if (isEmpty()) {
             throw new IndexOutOfBoundsException("set(" + index + ", e) on empty stream");
         }
         if (index < 0) {
             throw new IndexOutOfBoundsException("set(" + index + ", e)");
         }
-        Stream<T> preceding = Nil.instance();
-        Stream<T> tail = this;
+        JStream<T> preceding = Nil.instance();
+        JStream<T> tail = this;
         for (int i = index; i > 0; i--, tail = tail.tail()) {
             if (tail.isEmpty()) {
                 throw new IndexOutOfBoundsException("set(" + index + ", e) on stream of size " + length());
@@ -617,42 +617,42 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default Stream<Stream<T>> sliding(int size) {
+    default JStream<JStream<T>> sliding(int size) {
         return sliding(size, 1);
     }
 
     @Override
-    default Stream<Stream<T>> sliding(int size, int step) {
+    default JStream<JStream<T>> sliding(int size, int step) {
         if (size <= 0 || step <= 0) {
             throw new IllegalArgumentException(String.format("size: %s or step: %s not positive", size, step));
         }
         if (isEmpty()) {
             return Nil.instance();
         } else {
-            final Tuple2<Stream<T>, Stream<T>> split = splitAt(size);
+            final Tuple2<JStream<T>, JStream<T>> split = splitAt(size);
             return new Cons<>(split._1, () -> split._2.isEmpty() ? Nil.instance() : drop(step).sliding(size, step));
         }
     }
 
     @Override
-    default Stream<T> sort() {
-        return isEmpty() ? this : toJavaStream().sorted().collect(Stream.collector());
+    default JStream<T> sort() {
+        return isEmpty() ? this : toJavaStream().sorted().collect(JStream.collector());
     }
 
     @Override
-    default Stream<T> sort(Comparator<? super T> comparator) {
+    default JStream<T> sort(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        return isEmpty() ? this : toJavaStream().sorted(comparator).collect(Stream.collector());
+        return isEmpty() ? this : toJavaStream().sorted(comparator).collect(JStream.collector());
     }
 
     @Override
-    default Tuple2<Stream<T>, Stream<T>> span(Predicate<? super T> predicate) {
+    default Tuple2<JStream<T>, JStream<T>> span(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return Tuple.of(takeWhile(predicate), dropWhile(predicate));
     }
 
     @Override
-    default Tuple2<Stream<T>, Stream<T>> splitAt(int n) {
+    default Tuple2<JStream<T>, JStream<T>> splitAt(int n) {
         return Tuple.of(take(n), drop(n));
     }
 
@@ -663,11 +663,11 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default Stream<T> subsequence(int beginIndex) {
+    default JStream<T> subsequence(int beginIndex) {
         if (beginIndex < 0) {
             throw new IndexOutOfBoundsException("subsequence(" + beginIndex + ")");
         }
-        Stream<T> result = this;
+        JStream<T> result = this;
         for (int i = 0; i < beginIndex; i++, result = result.tail()) {
             if (result.isEmpty()) {
                 throw new IndexOutOfBoundsException(String.format("subsequence(%s) on stream of size %s", beginIndex, i));
@@ -677,7 +677,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default Stream<T> subsequence(int beginIndex, int endIndex) {
+    default JStream<T> subsequence(int beginIndex, int endIndex) {
         if (beginIndex < 0 || beginIndex > endIndex) {
             throw new IndexOutOfBoundsException(String.format("subsequence(%s, %s)", beginIndex, endIndex));
         }
@@ -695,10 +695,10 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    Stream<T> tail();
+    JStream<T> tail();
 
     @Override
-    default Stream<T> take(int n) {
+    default JStream<T> take(int n) {
         if (isEmpty()) {
             return this;
         } else if (n < 1) {
@@ -709,12 +709,12 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default Stream<T> takeRight(int n) {
+    default JStream<T> takeRight(int n) {
         return reverse().take(n).reverse();
     }
 
     @Override
-    default Stream<T> takeWhile(Predicate<? super T> predicate) {
+    default JStream<T> takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {
             return this;
@@ -729,18 +729,18 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default <T1, T2> Tuple2<Stream<T1>, Stream<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+    default <T1, T2> Tuple2<JStream<T1>, JStream<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
-        final Stream<Tuple2<? extends T1, ? extends T2>> stream = map(unzipper);
-        final Stream<T1> stream1 = stream.map(t -> t._1);
-        final Stream<T2> stream2 = stream.map(t -> t._2);
+        final JStream<Tuple2<? extends T1, ? extends T2>> stream = map(unzipper);
+        final JStream<T1> stream1 = stream.map(t -> t._1);
+        final JStream<T2> stream2 = stream.map(t -> t._2);
         return Tuple.of(stream1, stream2);
     }
 
     @Override
-    default <U> Stream<Tuple2<T, U>> zip(Iterable<U> iterable) {
+    default <U> JStream<Tuple2<T, U>> zip(Iterable<U> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
-        final Stream<U> that = Stream.ofAll(iterable);
+        final JStream<U> that = JStream.ofAll(iterable);
         if (this.isEmpty() || that.isEmpty()) {
             return Nil.instance();
         } else {
@@ -749,9 +749,9 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     @Override
-    default <U> Stream<Tuple2<T, U>> zipAll(Iterable<U> iterable, T thisElem, U thatElem) {
+    default <U> JStream<Tuple2<T, U>> zipAll(Iterable<U> iterable, T thisElem, U thatElem) {
         Objects.requireNonNull(iterable, "iterable is null");
-        final Stream<U> that = Stream.ofAll(iterable);
+        final JStream<U> that = JStream.ofAll(iterable);
         final boolean isThisEmpty = this.isEmpty();
         final boolean isThatEmpty = that.isEmpty();
         if (isThisEmpty && isThatEmpty) {
@@ -759,22 +759,22 @@ public interface Stream<T> extends Seq<T>, ValueObject {
         } else {
             final T head1 = isThisEmpty ? thisElem : this.head();
             final U head2 = isThatEmpty ? thatElem : that.head();
-            final Stream<T> tail1 = isThisEmpty ? this : this.tail();
-            final Stream<U> tail2 = isThatEmpty ? that : that.tail();
+            final JStream<T> tail1 = isThisEmpty ? this : this.tail();
+            final JStream<U> tail2 = isThatEmpty ? that : that.tail();
             return new Cons<>(Tuple.of(head1, head2), () -> tail1.zipAll(tail2, thisElem, thatElem));
         }
     }
 
     @Override
-    default Stream<Tuple2<T, Integer>> zipWithIndex() {
-        return zip(Stream.from(0));
+    default JStream<Tuple2<T, Integer>> zipWithIndex() {
+        return zip(JStream.from(0));
     }
 
     /**
-     * Non-empty {@code Stream}, consisting of a {@code head}, a {@code tail} and an optional
+     * Non-empty {@code JStream}, consisting of a {@code head}, a {@code tail} and an optional
      * {@link java.lang.AutoCloseable}.
      *
-     * @param <T> Component type of the Stream.
+     * @param <T> Component type of the JStream.
      * @since 1.1.0
      */
     // DEV NOTE: class declared final because of serialization proxy pattern.
@@ -784,15 +784,15 @@ public interface Stream<T> extends Seq<T>, ValueObject {
         private static final long serialVersionUID = 1L;
 
         private final T head;
-        private final Lazy<Stream<T>> tail;
+        private final Lazy<JStream<T>> tail;
 
         /**
-         * Creates a new {@code Stream} consisting of a head element and a lazy trailing {@code Stream}.
+         * Creates a new {@code JStream} consisting of a head element and a lazy trailing {@code JStream}.
          *
          * @param head A head element
-         * @param tail A tail {@code Stream} supplier, {@linkplain Nil} denotes the end of the {@code Stream}
+         * @param tail A tail {@code JStream} supplier, {@linkplain Nil} denotes the end of the {@code JStream}
          */
-        public Cons(T head, Supplier<Stream<T>> tail) {
+        public Cons(T head, Supplier<JStream<T>> tail) {
             this.head = head;
             this.tail = Lazy.of(Objects.requireNonNull(tail, "tail is null"));
         }
@@ -808,12 +808,12 @@ public interface Stream<T> extends Seq<T>, ValueObject {
         }
 
         @Override
-        public Stream<T> tail() {
+        public JStream<T> tail() {
             return tail.get();
         }
 
         @Override
-        public Option<Stream<T>> tailOption() {
+        public Option<JStream<T>> tailOption() {
             return new Some<>(tail.get());
         }
 
@@ -823,7 +823,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
         }
 
         @Override
-        public Tuple2<T, Stream<T>> unapply() {
+        public Tuple2<T, JStream<T>> unapply() {
             return Tuple.of(head, tail.get());
         }
 
@@ -890,7 +890,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
             private void writeObject(ObjectOutputStream s) throws IOException {
                 s.defaultWriteObject();
                 s.writeInt(stream.length());
-                for (Stream<T> l = stream; !l.isEmpty(); l = l.tail()) {
+                for (JStream<T> l = stream; !l.isEmpty(); l = l.tail()) {
                     s.writeObject(l.head());
                 }
             }
@@ -910,7 +910,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
                 if (size <= 0) {
                     throw new InvalidObjectException("No elements");
                 }
-                Stream<T> temp = Nil.instance();
+                JStream<T> temp = Nil.instance();
                 for (int i = 0; i < size; i++) {
                     @SuppressWarnings("unchecked")
                     final T element = (T) s.readObject();
@@ -937,11 +937,11 @@ public interface Stream<T> extends Seq<T>, ValueObject {
     }
 
     /**
-     * The empty Stream.
+     * The empty JStream.
      * <p>
      * This is a singleton, i.e. not Cloneable.
      *
-     * @param <T> Component type of the Stream.
+     * @param <T> Component type of the JStream.
      * @since 1.1.0
      */
     final class Nil<T> extends AbstractStream<T> {
@@ -955,10 +955,10 @@ public interface Stream<T> extends Seq<T>, ValueObject {
         }
 
         /**
-         * Returns the singleton empty Stream instance.
+         * Returns the singleton empty JStream instance.
          *
-         * @param <T> Component type of the Stream
-         * @return The empty Stream
+         * @param <T> Component type of the JStream
+         * @return The empty JStream
          */
         @SuppressWarnings("unchecked")
         public static <T> Nil<T> instance() {
@@ -976,12 +976,12 @@ public interface Stream<T> extends Seq<T>, ValueObject {
         }
 
         @Override
-        public Stream<T> tail() {
+        public JStream<T> tail() {
             throw new UnsupportedOperationException("tail of empty stream");
         }
 
         @Override
-        public Option<Stream<T>> tailOption() {
+        public Option<JStream<T>> tailOption() {
             return None.instance();
         }
 
@@ -1008,16 +1008,16 @@ public interface Stream<T> extends Seq<T>, ValueObject {
 
     /**
      * <p>
-     * This class is needed because the interface {@link Stream} cannot use default methods to override Object's non-final
+     * This class is needed because the interface {@link JStream} cannot use default methods to override Object's non-final
      * methods equals, hashCode and toString.
      * </p>
      * See <a href="http://mail.openjdk.java.net/pipermail/lambda-dev/2013-March/008435.html">Allow default methods to
      * override Object's methods</a>.
      *
-     * @param <T> Component type of the Stream.
+     * @param <T> Component type of the JStream.
      * @since 1.1.0
      */
-    abstract class AbstractStream<T> implements Stream<T> {
+    abstract class AbstractStream<T> implements JStream<T> {
 
         private static final long serialVersionUID = 1L;
 
@@ -1025,9 +1025,9 @@ public interface Stream<T> extends Seq<T>, ValueObject {
         public boolean equals(Object o) {
             if (o == this) {
                 return true;
-            } else if (o instanceof Stream) {
-                Stream<?> stream1 = this;
-                Stream<?> stream2 = (Stream<?>) o;
+            } else if (o instanceof JStream) {
+                JStream<?> stream1 = this;
+                JStream<?> stream2 = (JStream<?>) o;
                 while (!stream1.isEmpty() && !stream2.isEmpty()) {
                     final boolean isEqual = Objects.equals(stream1.head(), stream2.head());
                     if (!isEqual) {
@@ -1045,7 +1045,7 @@ public interface Stream<T> extends Seq<T>, ValueObject {
         @Override
         public int hashCode() {
             int hashCode = 1;
-            for (Stream<T> stream = this; !stream.isEmpty(); stream = stream.tail()) {
+            for (JStream<T> stream = this; !stream.isEmpty(); stream = stream.tail()) {
                 final T element = stream.head();
                 hashCode = 31 * hashCode + Objects.hashCode(element);
             }
@@ -1054,8 +1054,8 @@ public interface Stream<T> extends Seq<T>, ValueObject {
 
         @Override
         public String toString() {
-            final StringBuilder builder = new StringBuilder("Stream(");
-            Stream<T> stream = this;
+            final StringBuilder builder = new StringBuilder("JStream(");
+            JStream<T> stream = this;
             while (stream != null && !stream.isEmpty()) {
                 final Cons<T> cons = (Cons<T>) stream;
                 builder.append(cons.head);

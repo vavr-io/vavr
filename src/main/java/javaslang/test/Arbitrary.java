@@ -7,8 +7,8 @@ package javaslang.test;
 
 import javaslang.algebra.HigherKinded;
 import javaslang.algebra.Monad;
-import javaslang.collection.List;
-import javaslang.collection.Stream;
+import javaslang.collection.JList;
+import javaslang.collection.JStream;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -216,11 +216,11 @@ public interface Arbitrary<T> extends Monad<T, Arbitrary<?>>, Iterable<T> {
      * @param <T>        Component type of the List
      * @return a new Arbitrary of List&lt;T&gt;
      */
-    static <T> Arbitrary<List<T>> list(Arbitrary<T> arbitraryT) {
+    static <T> Arbitrary<JList<T>> list(Arbitrary<T> arbitraryT) {
         return size -> {
             final Gen<T> genT = arbitraryT.apply(size);
             return random -> Gen.choose(0, size).map(i -> {
-                List<T> list = List.nil();
+                JList<T> list = JList.nil();
                 for (int j = 0; j < i; j++) {
                     final T element = genT.apply(random);
                     list = list.prepend(element);
@@ -243,10 +243,10 @@ public interface Arbitrary<T> extends Monad<T, Arbitrary<?>>, Iterable<T> {
      * @param <T>        Component type of the Stream
      * @return a new Arbitrary of Stream&lt;T&gt;
      */
-    static <T> Arbitrary<Stream<T>> stream(Arbitrary<T> arbitraryT) {
+    static <T> Arbitrary<JStream<T>> stream(Arbitrary<T> arbitraryT) {
         return size -> {
             final Gen<T> genT = arbitraryT.apply(size);
-            return random -> Gen.choose(0, size).map(i -> Stream.ofAll(() -> new Iterator<T>() {
+            return random -> Gen.choose(0, size).map(i -> JStream.ofAll(() -> new Iterator<T>() {
 
                 int count = i;
 

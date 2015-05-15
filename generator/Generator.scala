@@ -43,7 +43,7 @@ def generateMainClasses(): Unit = {
 
       val function1 = im.getType("javaslang.Function1")
       val lazyy = im.getType("javaslang.Lazy")
-      val list = im.getType("javaslang.collection.List")
+      val list = im.getType("javaslang.collection.JList")
       val option = im.getType("javaslang.control.Option")
       val none = im.getType("javaslang.control.None")
       val some = im.getType("javaslang.control.Some")
@@ -232,7 +232,7 @@ def generateMainClasses(): Unit = {
                 private final $list<$function<Object, $option<R>>> cases;
                 private final $lazyy<Expression<R>> match;
 
-                private Case(List<$function<Object, $option<R>>> cases) {
+                private Case($list<$function<Object, $option<R>>> cases) {
                     this.cases = cases;
                     this.match = $lazyy.of(() -> new Expression<>(cases.reverse(), $none.instance()));
                 }
@@ -1241,7 +1241,7 @@ def generateTestClasses(): Unit = {
     genJavaslangFile("javaslang.test", "PropertyTest", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
 
       // main classes
-      val list = im.getType("javaslang.collection.List")
+      val list = im.getType("javaslang.collection.JList")
       val predicate = im.getType("javaslang.CheckedFunction1")
       val random = im.getType("java.util.Random")
       val tuple = im.getType("javaslang.Tuple")

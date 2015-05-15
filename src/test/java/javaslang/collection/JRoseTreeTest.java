@@ -13,22 +13,22 @@ import java.io.InvalidObjectException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class RoseTreeTest extends AbstractTreeTest {
+public class JRoseTreeTest extends AbstractJTreeTest {
 
-    final RoseTree<Integer> tree = RoseTree.branch(1, RoseTree.branch(2, RoseTree.branch(4, RoseTree.leaf(7)), RoseTree.leaf(5)), RoseTree.branch(3, RoseTree.branch(6, RoseTree.leaf(8), RoseTree.leaf(9))));
+    final JRoseTree<Integer> tree = JRoseTree.branch(1, JRoseTree.branch(2, JRoseTree.branch(4, JRoseTree.leaf(7)), JRoseTree.leaf(5)), JRoseTree.branch(3, JRoseTree.branch(6, JRoseTree.leaf(8), JRoseTree.leaf(9))));
 
     @Override
-    protected RoseTree<Integer> nil() {
-        return RoseTree.nil();
+    protected JRoseTree<Integer> nil() {
+        return JRoseTree.nil();
     }
 
     @Override
-    protected RoseTree<Integer> leaf() {
-        return RoseTree.leaf(0);
+    protected JRoseTree<Integer> leaf() {
+        return JRoseTree.leaf(0);
     }
 
     @Override
-    protected RoseTree<Integer> tree() {
+    protected JRoseTree<Integer> tree() {
         return tree;
     }
 
@@ -36,8 +36,8 @@ public class RoseTreeTest extends AbstractTreeTest {
 
     @Test
     public void shouldInstantiateRoseTreeBranchWithOf() {
-        final RoseTree<Integer> actual = RoseTree.of(1, RoseTree.leaf(2), RoseTree.leaf(3));
-        final RoseTree<Integer> expected = new RoseTree.Branch<>(1, List.of(new RoseTree.Leaf<>(2), new RoseTree.Leaf<>(3)));
+        final JRoseTree<Integer> actual = JRoseTree.of(1, JRoseTree.leaf(2), JRoseTree.leaf(3));
+        final JRoseTree<Integer> expected = new JRoseTree.Branch<>(1, JList.of(new JRoseTree.Leaf<>(2), new JRoseTree.Leaf<>(3)));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -45,27 +45,27 @@ public class RoseTreeTest extends AbstractTreeTest {
 
     @Test
     public void shouldInstantiateRoseTreeLeafWithOf() {
-        final RoseTree<Integer> actual = RoseTree.of(1);
-        final RoseTree<Integer> expected = new RoseTree.Leaf<>(1);
+        final JRoseTree<Integer> actual = JRoseTree.of(1);
+        final JRoseTree<Integer> expected = new JRoseTree.Leaf<>(1);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldUnapplyLeaf() {
-        assertThat(RoseTree.leaf(1).unapply()).isEqualTo(Tuple.of(1));
+        assertThat(JRoseTree.leaf(1).unapply()).isEqualTo(Tuple.of(1));
     }
 
     // -- Branch test
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldNotCreateABranchWithoutChildren() {
-        new RoseTree.Branch<>(1, List.nil());
+        new JRoseTree.Branch<>(1, JList.nil());
     }
 
     @Test
     public void shouldUnapplyBranch() {
-        final Tuple actual = RoseTree.branch(1, RoseTree.leaf(2), RoseTree.leaf(3)).unapply();
-        final Tuple expected = Tuple.of(1, List.of(RoseTree.leaf(2), RoseTree.leaf(3)));
+        final Tuple actual = JRoseTree.branch(1, JRoseTree.leaf(2), JRoseTree.leaf(3)).unapply();
+        final Tuple expected = Tuple.of(1, JList.of(JRoseTree.leaf(2), JRoseTree.leaf(3)));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -78,7 +78,7 @@ public class RoseTreeTest extends AbstractTreeTest {
 
     @Test
     public void shouldUnapplyNil() {
-        assertThat(RoseTree.nil().unapply()).isEqualTo(Tuple.empty());
+        assertThat(JRoseTree.nil().unapply()).isEqualTo(Tuple.empty());
     }
 
     // -- AbstractBinaryTree test
@@ -116,11 +116,11 @@ public class RoseTreeTest extends AbstractTreeTest {
 
     @Test
     public void shouldReturnStringRepresentationOfNil() {
-        assertThat(nil().toString()).isEqualTo("RoseTree()");
+        assertThat(nil().toString()).isEqualTo("JRoseTree()");
     }
 
     @Test
     public void shouldReturnStringRepresentationOfBranch() {
-        assertThat(tree().toString()).isEqualTo("RoseTree(1 (2 (4 7) 5) (3 (6 8 9)))");
+        assertThat(tree().toString()).isEqualTo("JRoseTree(1 (2 (4 7) 5) (3 (6 8 9)))");
     }
 }
