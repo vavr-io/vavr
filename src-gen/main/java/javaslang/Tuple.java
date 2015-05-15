@@ -13,12 +13,7 @@ package javaslang;
  * The base interface of all tuples.
  * @since 1.1.0
  */
-public interface Tuple extends ValueObject {
-
-    /**
-     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
-     */
-    long serialVersionUID = 1L;
+public interface Tuple {
 
     /**
      * Returns the number of elements of this tuple.

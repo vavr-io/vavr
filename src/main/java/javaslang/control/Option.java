@@ -5,7 +5,6 @@
  */
 package javaslang.control;
 
-import javaslang.ValueObject;
 import javaslang.algebra.HigherKinded;
 import javaslang.algebra.Monad;
 import javaslang.control.Valences.Univalent;
@@ -34,12 +33,7 @@ import java.util.function.Supplier;
  * @param <T> The type of the optional value.
  * @since 1.0.0
  */
-public interface Option<T> extends Monad<T, Option<?>>, ValueObject, Univalent<T>, Iterable<T> {
-
-    /**
-     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
-     */
-    long serialVersionUID = 1L;
+public interface Option<T> extends Monad<T, Option<?>>, Univalent<T>, Iterable<T> {
 
     /**
      * Creates a new Option of a given value.

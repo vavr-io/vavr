@@ -5,9 +5,7 @@
  */
 package javaslang.control;
 
-import javaslang.Tuple;
-import javaslang.Tuple0;
-
+import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
@@ -21,7 +19,7 @@ import java.util.function.Function;
  * @param <T> The type of the optional value.
  * @since 1.0.0
  */
-public final class None<T> implements Option<T> {
+public final class None<T> implements Option<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -83,11 +81,6 @@ public final class None<T> implements Option<T> {
     @Override
     public Optional<T> toJavaOptional() {
         return Optional.empty();
-    }
-
-    @Override
-    public Tuple0 unapply() {
-        return Tuple.empty();
     }
 
     @Override

@@ -991,7 +991,7 @@ def generateMainClasses(): Unit = {
          ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> type of the ${j.ordinal} element")("\n")}
          * @since 1.1.0
          */
-        public final class $className<$generics> implements Tuple {
+        public final class $className<$generics> implements Tuple, ${im.getType("java.io.Serializable")} {
 
             private static final long serialVersionUID = 1L;
 
@@ -1028,11 +1028,6 @@ def generateMainClasses(): Unit = {
                   return map((${(1 to i).gen(j => s"t$j")(", ")}) -> ${im.getType("javaslang.Tuple")}.of(${(1 to i).gen(j => s"f$j.apply(t$j)")(", ")}));
               }
             """)}
-
-            @Override
-            public $className<$generics> unapply() {
-                return this;
-            }
 
             @Override
             public boolean equals(Object o) {
@@ -1087,12 +1082,7 @@ def generateMainClasses(): Unit = {
          * The base interface of all tuples.
          * @since 1.1.0
          */
-        public interface $className extends ValueObject {
-
-            /**
-             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
-             */
-            long serialVersionUID = 1L;
+        public interface $className {
 
             /**
              * Returns the number of elements of this tuple.
@@ -1624,12 +1614,6 @@ def generateTestClasses(): Unit = {
                   $assertThat(actual).isEqualTo(tuple);
                 }
               """)}
-
-              @$test
-              public void shouldUnapply() {
-                  final Tuple$i<$generics> tuple = createTuple();
-                  $assertThat(tuple.unapply()).isEqualTo(tuple);
-              }
 
               @$test
               public void shouldRecognizeEquality() {

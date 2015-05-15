@@ -5,11 +5,9 @@
  */
 package javaslang.control;
 
-import javaslang.Tuple;
-import javaslang.Tuple1;
-import javaslang.ValueObject;
 import javaslang.algebra.HigherKinded;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -21,7 +19,7 @@ import java.util.function.Function;
  * @param <T> component type of this Failure
  * @since 1.0.0
  */
-public final class Failure<T> implements Try<T> {
+public final class Failure<T> implements Try<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -151,11 +149,6 @@ public final class Failure<T> implements Try<T> {
     }
 
     @Override
-    public Tuple1<Throwable> unapply() {
-        return Tuple.of(cause.getCause());
-    }
-
-    @Override
     public boolean equals(Object obj) {
         return (obj == this) || (obj instanceof Failure && equals(cause.getCause(), ((Failure<?>) obj).cause.getCause()));
     }
@@ -188,7 +181,7 @@ public final class Failure<T> implements Try<T> {
      * <p>
      * {@link #isFatal()} states, if this Cause is considered to be non-recoverable.
      */
-    public static abstract class Cause extends RuntimeException implements ValueObject {
+    public static abstract class Cause extends RuntimeException implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -203,11 +196,6 @@ public final class Failure<T> implements Try<T> {
          * @return true, if this instance is Fatal, false otherwise.
          */
         public abstract boolean isFatal();
-
-        @Override
-        public Tuple1<Throwable> unapply() {
-            return Tuple.of(super.getCause());
-        }
 
         /**
          * Wraps t in a Cause which is either a {@link Fatal} or a {@link NonFatal}. The given Throwable t is

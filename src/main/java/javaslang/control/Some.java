@@ -5,9 +5,7 @@
  */
 package javaslang.control;
 
-import javaslang.Tuple;
-import javaslang.Tuple1;
-
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -21,9 +19,9 @@ import java.util.function.Function;
  * @param <T> The type of the optional value.
  * @since 1.0.0
  */
-public final class Some<T> implements Option<T> {
+public final class Some<T> implements Option<T>, Serializable {
 
-    private static final long serialVersionUID = 8703728987837576700L;
+    private static final long serialVersionUID = 1L;
 
     private final T value;
 
@@ -67,11 +65,6 @@ public final class Some<T> implements Option<T> {
     @Override
     public Optional<T> toJavaOptional() {
         return Optional.ofNullable(value);
-    }
-
-    @Override
-    public Tuple1<T> unapply() {
-        return Tuple.of(value);
     }
 
     @Override

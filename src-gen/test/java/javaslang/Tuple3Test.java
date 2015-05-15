@@ -47,12 +47,6 @@ public class Tuple3Test {
     }
 
     @Test
-    public void shouldUnapply() {
-        final Tuple3<Object, Object, Object> tuple = createTuple();
-        assertThat(tuple.unapply()).isEqualTo(tuple);
-    }
-
-    @Test
     public void shouldRecognizeEquality() {
         final Tuple3<Object, Object, Object> tuple1 = createTuple();
         final Tuple3<Object, Object, Object> tuple2 = createTuple();

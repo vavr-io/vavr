@@ -6,9 +6,7 @@
 package javaslang.collection;
 
 import javaslang.Tuple;
-import javaslang.Tuple0;
 import javaslang.Tuple2;
-import javaslang.ValueObject;
 import javaslang.algebra.HigherKinded;
 import javaslang.control.None;
 import javaslang.control.Option;
@@ -47,12 +45,7 @@ import java.util.stream.Collector;
  * @param <T> Component type of the List.
  * @since 1.1.0
  */
-public interface List<T> extends Seq<T>, ValueObject {
-
-    /**
-     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
-     */
-    long serialVersionUID = 1L;
+public interface List<T> extends Seq<T> {
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
@@ -759,7 +752,7 @@ public interface List<T> extends Seq<T>, ValueObject {
      * @since 1.1.0
      */
     // DEV NOTE: class declared final because of serialization proxy pattern (see Effective Java, 2nd ed., p. 315)
-    final class Cons<T> extends AbstractList<T> {
+    final class Cons<T> extends AbstractList<T> implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -800,11 +793,6 @@ public interface List<T> extends Seq<T>, ValueObject {
         @Override
         public boolean isEmpty() {
             return false;
-        }
-
-        @Override
-        public Tuple2<T, List<T>> unapply() {
-            return Tuple.of(head, tail());
         }
 
         /**
@@ -921,7 +909,7 @@ public interface List<T> extends Seq<T>, ValueObject {
      * @param <T> Component type of the List.
      * @since 1.1.0
      */
-    final class Nil<T> extends AbstractList<T> {
+    final class Nil<T> extends AbstractList<T> implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -967,11 +955,6 @@ public interface List<T> extends Seq<T>, ValueObject {
             return true;
         }
 
-        @Override
-        public Tuple0 unapply() {
-            return Tuple.empty();
-        }
-
         /**
          * Instance control for object serialization.
          *
@@ -995,8 +978,6 @@ public interface List<T> extends Seq<T>, ValueObject {
      * @since 1.1.0
      */
     abstract class AbstractList<T> implements List<T> {
-
-        private static final long serialVersionUID = 1L;
 
         @Override
         public boolean equals(Object o) {

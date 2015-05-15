@@ -6,13 +6,11 @@
 package javaslang.test;
 
 import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
-import javaslang.ValueObject;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -30,12 +28,7 @@ import java.util.Objects;
  *
  * @since 1.2.0
  */
-public interface CheckResult extends ValueObject {
-
-    /**
-     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
-     */
-    long serialVersionUID = 1L;
+public interface CheckResult {
 
     /**
      * If this check result is satisfied as specified above.
@@ -97,7 +90,7 @@ public interface CheckResult extends ValueObject {
     /**
      * Represents a satisfied property check.
      */
-    class Satisfied implements CheckResult {
+    class Satisfied implements CheckResult, Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -152,11 +145,6 @@ public interface CheckResult extends ValueObject {
         }
 
         @Override
-        public Tuple2<Integer, Boolean> unapply() {
-            return Tuple.of(count, exhausted);
-        }
-
-        @Override
         public boolean equals(Object o) {
             if (o == this) {
                 return true;
@@ -186,7 +174,7 @@ public interface CheckResult extends ValueObject {
      *
      * @since 1.2.0
      */
-    class Falsified implements CheckResult {
+    class Falsified implements CheckResult, Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -241,11 +229,6 @@ public interface CheckResult extends ValueObject {
         }
 
         @Override
-        public Tuple2<Integer, Tuple> unapply() {
-            return Tuple.of(count, sample);
-        }
-
-        @Override
         public boolean equals(Object o) {
             if (o == this) {
                 return true;
@@ -275,7 +258,7 @@ public interface CheckResult extends ValueObject {
      *
      * @since 1.2.0
      */
-    class Erroneous implements CheckResult {
+    class Erroneous implements CheckResult, Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -329,11 +312,6 @@ public interface CheckResult extends ValueObject {
         @Override
         public Some<Error> error() {
             return new Some<>(error);
-        }
-
-        @Override
-        public Tuple3<Integer, Error, Option<Tuple>> unapply() {
-            return Tuple.of(count, error, sample);
         }
 
         @Override

@@ -5,9 +5,7 @@
  */
 package javaslang.control;
 
-import javaslang.Tuple;
-import javaslang.Tuple1;
-
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -18,7 +16,7 @@ import java.util.function.Function;
  * @param <R> right component type
  * @since 1.0.0
  */
-public final class Right<L, R> implements Either<L, R> {
+public final class Right<L, R> implements Either<L, R>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -68,11 +66,6 @@ public final class Right<L, R> implements Either<L, R> {
     @Override
     public Left<R, L> swap() {
         return new Left<>(value);
-    }
-
-    @Override
-    public Tuple1<R> unapply() {
-        return Tuple.of(value);
     }
 
     @Override

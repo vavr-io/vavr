@@ -6,7 +6,6 @@
 package javaslang.collection;
 
 import javaslang.Serializables;
-import javaslang.Tuple;
 import org.junit.Test;
 
 import java.io.InvalidObjectException;
@@ -50,11 +49,6 @@ public class RoseTreeTest extends AbstractTreeTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test
-    public void shouldUnapplyLeaf() {
-        assertThat(RoseTree.leaf(1).unapply()).isEqualTo(Tuple.of(1));
-    }
-
     // -- Branch test
 
     @Test(expected = IllegalArgumentException.class)
@@ -62,23 +56,9 @@ public class RoseTreeTest extends AbstractTreeTest {
         new RoseTree.Branch<>(1, List.nil());
     }
 
-    @Test
-    public void shouldUnapplyBranch() {
-        final Tuple actual = RoseTree.branch(1, RoseTree.leaf(2), RoseTree.leaf(3)).unapply();
-        final Tuple expected = Tuple.of(1, List.of(RoseTree.leaf(2), RoseTree.leaf(3)));
-        assertThat(actual).isEqualTo(expected);
-    }
-
     @Test(expected = InvalidObjectException.class)
     public void shouldNotCallReadObjectOnBranchInstance() throws Throwable {
         Serializables.callReadObject(tree());
-    }
-
-    // -- Nil test
-
-    @Test
-    public void shouldUnapplyNil() {
-        assertThat(RoseTree.nil().unapply()).isEqualTo(Tuple.empty());
     }
 
     // -- AbstractBinaryTree test

@@ -68,11 +68,6 @@ public class CheckResultTest {
     }
 
     @Test
-    public void shouldUnapplySatisfied() {
-        assertThat(SATISFIED.unapply()).isEqualTo(Tuple.of(0, false));
-    }
-
-    @Test
     public void shouldIdentififyEqualSatisfiedObjectsWhenObjectsAreIdentical() {
         final CheckResult.Satisfied satisfied = SATISFIED;
         //noinspection EqualsWithItself
@@ -149,11 +144,6 @@ public class CheckResultTest {
     @Test
     public void shouldHaveNoErrorWhenIsFalsified() {
         assertThat(FALSIFIED.error()).isEqualTo(None.instance());
-    }
-
-    @Test
-    public void shouldUnapplyFalsified() {
-        assertThat(FALSIFIED.unapply()).isEqualTo(Tuple.of(0, Tuple.of(1)));
     }
 
     @Test
@@ -239,15 +229,6 @@ public class CheckResultTest {
     @Test
     public void shouldHaveAnErrorWhenIsErroneous() {
         assertThat(ERRONEOUS.error().get().getMessage()).isEqualTo("test");
-    }
-
-    @Test
-    public void shouldUnapplyErroneous() {
-        final int count = 0;
-        final Error error = new Error("test");
-        final Option<Tuple> sample = None.instance();
-        final CheckResult.Erroneous erroneous = new CheckResult.Erroneous("test", count, error, sample);
-        assertThat(erroneous.unapply()).isEqualTo(Tuple.of(count, error, sample));
     }
 
     @Test

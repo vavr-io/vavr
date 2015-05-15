@@ -8,7 +8,7 @@ package javaslang.test;
 import java.util.Objects;
 
 /**
- * Assertions targerting on unit tests.
+ * Assertions targeting on unit tests.
  *
  * @since 1.2.0
  */

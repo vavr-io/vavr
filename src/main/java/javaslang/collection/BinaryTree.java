@@ -5,7 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Tuple2;
 
 import java.io.*;
 import java.util.Objects;
@@ -26,11 +26,6 @@ import java.util.function.Function;
  * @since 1.1.0
  */
 public interface BinaryTree<T> extends Tree<T> {
-
-    /**
-     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
-     */
-    long serialVersionUID = 1L;
 
     /**
      * Creates a either a binary tree branch or a leaf, depending on the children left and right.
@@ -182,7 +177,7 @@ public interface BinaryTree<T> extends Tree<T> {
      * @param <T> value type
      * @since 1.1.0
      */
-    final class Leaf<T> extends AbstractBinaryTree<T> {
+    final class Leaf<T> extends AbstractBinaryTree<T> implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -226,11 +221,6 @@ public interface BinaryTree<T> extends Tree<T> {
         public List<BinaryTree<T>> getChildren() {
             return List.nil();
         }
-
-        @Override
-        public Tuple1<T> unapply() {
-            return Tuple.of(value);
-        }
     }
 
     /**
@@ -239,7 +229,7 @@ public interface BinaryTree<T> extends Tree<T> {
      * @param <T> value type
      * @since 1.1.0
      */
-    final class Branch<T> extends AbstractBinaryTree<T> {
+    final class Branch<T> extends AbstractBinaryTree<T> implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -296,11 +286,6 @@ public interface BinaryTree<T> extends Tree<T> {
         public List<BinaryTree<T>> getChildren() {
             // IntelliJ error: List.of(left, right).filter(tree -> !tree.isEmpty());
             return List.<BinaryTree<T>>nil().prepend(right).prepend(left).filter(tree -> !tree.isEmpty());
-        }
-
-        @Override
-        public Tuple3<BinaryTree<T>, T, BinaryTree<T>> unapply() {
-            return Tuple.of(left, value, right);
         }
 
         // -- Serializable implementation
@@ -408,7 +393,7 @@ public interface BinaryTree<T> extends Tree<T> {
      * @param <T> type of the tree's values
      * @since 1.1.0
      */
-    final class Nil<T> extends AbstractBinaryTree<T> {
+    final class Nil<T> extends AbstractBinaryTree<T> implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -460,11 +445,6 @@ public interface BinaryTree<T> extends Tree<T> {
             return List.nil();
         }
 
-        @Override
-        public Tuple0 unapply() {
-            return Tuple0.instance();
-        }
-
         // -- Serializable implementation
 
         /**
@@ -485,8 +465,6 @@ public interface BinaryTree<T> extends Tree<T> {
      * @since 1.1.0
      */
     abstract class AbstractBinaryTree<T> implements BinaryTree<T> {
-
-        private static final long serialVersionUID = 1L;
 
         @Override
         public boolean equals(Object o) {

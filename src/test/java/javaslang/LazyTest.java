@@ -29,16 +29,6 @@ public class LazyTest {
     }
 
     @Test
-    public void shouldUnapplyLazyNull() {
-        assertThat(Lazy.of(() -> null).unapply()).isEqualTo(Tuple.of(null));
-    }
-
-    @Test
-    public void shouldUnapplyLazyInt() {
-        assertThat(Lazy.of(() -> 1).unapply()).isEqualTo(Tuple.of(1));
-    }
-
-    @Test
     public void shouldDetectEqualObject() {
         assertThat(Lazy.of(() -> 1).equals(Lazy.of(() -> 1))).isTrue();
     }

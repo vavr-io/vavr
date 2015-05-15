@@ -6,7 +6,6 @@
 package javaslang.collection;
 
 import javaslang.Serializables;
-import javaslang.Tuple;
 import javaslang.algebra.Functor;
 import javaslang.algebra.Monad;
 import javaslang.algebra.MonadLaws;
@@ -223,23 +222,6 @@ public class StreamTest extends AbstractSeqTest implements MonadLaws<Traversable
     @Test
     public void shouldComputePermutationsOfNonEmptyStream() {
         assertThat(Stream.of(1, 2, 3).permutations()).isEqualTo(Stream.ofAll(Stream.of(Stream.of(1, 2, 3), Stream.of(1, 3, 2), Stream.of(2, 1, 3), Stream.of(2, 3, 1), Stream.of(3, 1, 2), Stream.of(3, 2, 1))));
-    }
-
-    // -- unapply
-
-    @Test
-    public void shouldUnapplyNil() {
-        assertThat(Nil.instance().unapply()).isEqualTo(Tuple.empty());
-    }
-
-    @Test
-    public void shouldUnapplyCons() {
-        assertThat(new Cons<>(1, Nil::instance).unapply()).isEqualTo(Tuple.of(1, Nil.instance()));
-    }
-
-    @Test
-    public void shouldUnapplyDeferred() {
-        assertThat(Stream.of(1, 2, 3).unapply()).isEqualTo(Tuple.of(1, Stream.of(2, 3)));
     }
 
     // -- toString

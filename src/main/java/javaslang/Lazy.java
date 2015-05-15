@@ -5,6 +5,7 @@
  */
 package javaslang;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -24,7 +25,7 @@ import java.util.function.Supplier;
  *
  * @since 1.2.1
  */
-public final class Lazy<T> implements Supplier<T>, ValueObject {
+public final class Lazy<T> implements Supplier<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -74,11 +75,6 @@ public final class Lazy<T> implements Supplier<T>, ValueObject {
             }
         }
         return value;
-    }
-
-    @Override
-    public Tuple1<T> unapply() {
-        return Tuple.of(get());
     }
 
     @Override

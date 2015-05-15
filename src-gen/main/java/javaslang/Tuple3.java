@@ -9,6 +9,7 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -19,7 +20,7 @@ import java.util.Objects;
  * @param <T3> type of the 3rd element
  * @since 1.1.0
  */
-public final class Tuple3<T1, T2, T3> implements Tuple {
+public final class Tuple3<T1, T2, T3> implements Tuple, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -62,11 +63,6 @@ public final class Tuple3<T1, T2, T3> implements Tuple {
 
     public <U1, U2, U3> Tuple3<U1, U2, U3> map(Function1<? super T1, ? extends U1> f1, Function1<? super T2, ? extends U2> f2, Function1<? super T3, ? extends U3> f3) {
         return map((t1, t2, t3) -> Tuple.of(f1.apply(t1), f2.apply(t2), f3.apply(t3)));
-    }
-
-    @Override
-    public Tuple3<T1, T2, T3> unapply() {
-        return this;
     }
 
     @Override

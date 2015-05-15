@@ -160,12 +160,6 @@ public class TryTest implements CheckedMonadLaws<Try<?>> {
     }
 
     @Test
-    public void shouldUnapplyCause() {
-        final Exception exception = new Exception();
-        assertThat(Failure.Cause.of(exception).unapply()).isEqualTo(Tuple.of(exception));
-    }
-
-    @Test
     public void shouldSubsequentlyHandOverCause() {
         final Supplier<?> inner = () -> {
             throw new UnknownError("\uD83D\uDCA9");
@@ -352,14 +346,6 @@ public class TryTest implements CheckedMonadLaws<Try<?>> {
         final List<Object> list = new ArrayList<>();
         assertThat(failure().peek(list::add)).isEqualTo(failure());
         assertThat(list.isEmpty()).isTrue();
-    }
-
-    // unapply
-
-    @Test
-    public void shouldUnapplyFailure() {
-        final Try<?> failure = failure();
-        assertThat(failure.unapply()).isEqualTo(Tuple.of(failure.failed().get()));
     }
 
     // equals
@@ -568,13 +554,6 @@ public class TryTest implements CheckedMonadLaws<Try<?>> {
     @Test
     public void shouldPeekSuccessAndThrow() {
         assertThat(success().peek(t -> { failure().get(); })).isEqualTo(failure());
-    }
-
-    // unapply
-
-    @Test
-    public void shouldUnapplySuccess() {
-        assertThat(success().unapply()).isEqualTo(Tuple.of(success().get()));
     }
 
     // equals

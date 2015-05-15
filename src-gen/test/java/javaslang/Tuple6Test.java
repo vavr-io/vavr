@@ -50,12 +50,6 @@ public class Tuple6Test {
     }
 
     @Test
-    public void shouldUnapply() {
-        final Tuple6<Object, Object, Object, Object, Object, Object> tuple = createTuple();
-        assertThat(tuple.unapply()).isEqualTo(tuple);
-    }
-
-    @Test
     public void shouldRecognizeEquality() {
         final Tuple6<Object, Object, Object, Object, Object, Object> tuple1 = createTuple();
         final Tuple6<Object, Object, Object, Object, Object, Object> tuple2 = createTuple();
