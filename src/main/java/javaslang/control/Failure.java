@@ -168,7 +168,7 @@ public final class Failure<T> implements Try<T>, Serializable {
 
     @Override
     public String toString() {
-        return String.format("Failure(%s)", cause.getCause());
+        return "Failure("+cause.getCause()+")";
     }
 
     /**
