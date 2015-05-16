@@ -101,7 +101,7 @@ public interface Stream<T> extends Seq<T> {
      * Returns the single instance of Nil. Convenience method for {@code Nil.instance()}.
      * <p>
      * Note: this method intentionally returns type {@code Stream} and not {@code Nil}. This comes handy when folding.
-     * If you explicitely need type {@code Nil} use {@linkplain Nil#instance()}.
+     * If you explicitly need type {@code Nil} use {@linkplain Nil#instance()}.
      *
      * @param <T> Component type of Nil, determined by type inference in the particular context.
      * @return The empty list.
@@ -148,6 +148,9 @@ public interface Stream<T> extends Seq<T> {
 
             @Override
             public T next() {
+                if (i >= elements.length) {
+                    throw new NoSuchElementException();
+                }
                 return elements[i++];
             }
         });

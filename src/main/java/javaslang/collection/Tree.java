@@ -101,7 +101,7 @@ public interface Tree<T> extends Functor<T>, Iterable<T> {
     }
 
     /**
-     * Checks, if the given element occurs in this tree.
+     * Checks whether the given element occurs in this tree.
      *
      * @param element An element.
      * @return true, if this tree contains
@@ -122,7 +122,7 @@ public interface Tree<T> extends Functor<T>, Iterable<T> {
     }
 
     /**
-     * Iterates the elements of this tree in pre-order.
+     * Iterates over the elements of this tree in pre-order.
      *
      * @return An iterator of this tree's node values.
      */
@@ -132,7 +132,7 @@ public interface Tree<T> extends Functor<T>, Iterable<T> {
     }
 
     /**
-     * Flattens the Tree to a List, traversing the tree in preorder.
+     * Flattens the Tree to a List, traversing the tree in pre-order.
      *
      * @return A List containing all elements of this tree, which is List.Nil if this tree is empty.
      * @throws java.lang.NullPointerException if order is null
@@ -229,7 +229,7 @@ public interface Tree<T> extends Functor<T>, Iterable<T> {
     }
 
     /**
-     * Returns a indented multiline string representation of this tree.
+     * Returns an indented multiline string representation of this tree.
      *
      * @return A new string
      */
@@ -247,7 +247,7 @@ public interface Tree<T> extends Functor<T>, Iterable<T> {
                         final String children = tree.getChildren()
                                 .map(child -> toString(child, depth + 1))
                                 .join();
-                        return String.format("\n%s%s%s", indent, value, children);
+                        return String.format("%n%s%s%s", indent, value, children);
                     }
                 }
             }
