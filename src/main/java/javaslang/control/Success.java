@@ -164,6 +164,6 @@ public final class Success<T> implements Try<T>, Serializable {
 
     @Override
     public String toString() {
-        return String.format("Success(%s)", value);
+        return "Success("+value+")";
     }
 }

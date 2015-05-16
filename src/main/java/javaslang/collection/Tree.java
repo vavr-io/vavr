@@ -219,7 +219,7 @@ public interface Tree<T> extends Functor<T>, Iterable<T> {
                         final String children = tree.getChildren()
                                 .map(Local.this::toString)
                                 .join(" ");
-                        return String.format("(%s %s)", value, children);
+                        return "(" + value + " " + children + ")";
                     }
                 }
             }
@@ -247,7 +247,7 @@ public interface Tree<T> extends Functor<T>, Iterable<T> {
                         final String children = tree.getChildren()
                                 .map(child -> toString(child, depth + 1))
                                 .join();
-                        return String.format("\n%s%s%s", indent, value, children);
+                        return "\n" + indent + value + children;
                     }
                 }
             }
