@@ -54,7 +54,7 @@ public interface λ<R> extends Serializable {
 
     /**
      * <p>
-     * Gets the runtime method signature of the given lambda instance. Especially this function is handy when the
+     * Gets the runtime method signature of the given lambda instance. This function is especially handy when the
      * functional interface is generic and the parameter and/or return types cannot be determined directly.
      * </p>
      * <p>
@@ -72,7 +72,7 @@ public interface λ<R> extends Serializable {
     }
 
     /**
-     * @return the numper of function arguments.
+     * @return the number of function arguments.
      * @see <a href="http://en.wikipedia.org/wiki/Arity">Arity</a>
      */
     int arity();
