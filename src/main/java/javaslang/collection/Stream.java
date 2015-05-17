@@ -8,7 +8,7 @@ package javaslang.collection;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
-import javaslang.algebra.Kind;
+import javaslang.Kind;
 import javaslang.algebra.Monad;
 import javaslang.control.None;
 import javaslang.control.Option;

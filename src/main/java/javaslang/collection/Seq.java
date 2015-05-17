@@ -6,7 +6,7 @@
 package javaslang.collection;
 
 import javaslang.Tuple2;
-import javaslang.algebra.Kind;
+import javaslang.Kind;
 import javaslang.control.Option;
 
 import java.util.Comparator;

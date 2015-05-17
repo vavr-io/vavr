@@ -6,7 +6,7 @@
 package javaslang.control;
 
 import javaslang.algebra.CheckedMonad;
-import javaslang.algebra.Kind;
+import javaslang.Kind;
 import javaslang.control.Valences.Bivalent;
 
 import java.util.Collections;

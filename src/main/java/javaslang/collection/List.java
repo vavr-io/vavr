@@ -7,7 +7,7 @@ package javaslang.collection;
 
 import javaslang.Tuple;
 import javaslang.Tuple2;
-import javaslang.algebra.Kind;
+import javaslang.Kind;
 import javaslang.algebra.Monad;
 import javaslang.control.None;
 import javaslang.control.Option;
@@ -46,7 +46,7 @@ import java.util.stream.Collector;
  * @param <T> Component type of the List.
  * @since 1.1.0
  */
-public interface List<T> extends Seq<List<?>, T>, Monad<List<?>, T> {
+public interface List<T> extends Kind<List<?>, T>, Seq<List<?>, T>, Monad<List<?>, T> {
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with

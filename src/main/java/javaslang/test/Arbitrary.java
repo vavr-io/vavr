@@ -5,7 +5,7 @@
  */
 package javaslang.test;
 
-import javaslang.algebra.Kind;
+import javaslang.Kind;
 import javaslang.algebra.Monad;
 import javaslang.collection.List;
 import javaslang.collection.Stream;

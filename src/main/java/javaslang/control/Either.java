@@ -5,7 +5,7 @@
  */
 package javaslang.control;
 
-import javaslang.algebra.Kind;
+import javaslang.Kind;
 import javaslang.algebra.Monad;
 import javaslang.control.Valences.Bivalent;
 

@@ -6,7 +6,7 @@
 package javaslang.test;
 
 import javaslang.Tuple2;
-import javaslang.algebra.Kind;
+import javaslang.Kind;
 import javaslang.algebra.Monad;
 import javaslang.collection.Stream;
 

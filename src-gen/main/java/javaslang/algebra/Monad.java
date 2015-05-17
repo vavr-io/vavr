@@ -12,6 +12,7 @@ package javaslang.algebra;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import javaslang.Kind;
 
 /**
  * Defines a Monad by generalizing the flatMap function.
@@ -24,7 +25,7 @@ import java.util.function.Predicate;
  * </ul>
  * given
  * <ul>
- * <li>an object {@code m} of type {@code HigherKinded<T, M>}</li>
+ * <li>an object {@code m} of type {@code Kind<M, T>}</li>
  * <li>an object {@code a} of type T</li>
  * <li>a constructor {@code unit} taking an {@code a} and producing an object of type {@code M}</li>
  * <li>a function {@code f: T → M}

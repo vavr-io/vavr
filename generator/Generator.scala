@@ -464,6 +464,7 @@ def generateMainClasses(): Unit = {
       val functionType = if (checked) im.getType("javaslang.control.Try.CheckedFunction") else im.getType("java.util.function.Function")
       val consumerType = if (checked) im.getType("javaslang.control.Try.CheckedConsumer") else im.getType("java.util.function.Consumer")
       val predicateType = if (checked) im.getType("javaslang.control.Try.CheckedPredicate") else im.getType("java.util.function.Predicate")
+      val kind = im.getType("javaslang.Kind")
 
       xs"""
         /$javadoc
@@ -477,7 +478,7 @@ def generateMainClasses(): Unit = {
          * </ul>
          * given
          * <ul>
-         * <li>an object {@code m} of type {@code HigherKinded<T, M>}</li>
+         * <li>an object {@code m} of type {@code Kind<M, T>}</li>
          * <li>an object {@code a} of type T</li>
          * <li>a constructor {@code unit} taking an {@code a} and producing an object of type {@code M}</li>
          * <li>a function {@code f: T → M}
@@ -490,7 +491,7 @@ def generateMainClasses(): Unit = {
          * @param <T> component type of this ${checked.gen("checked ")}monad
          * @since 1.1.0
          */
-        public interface $className<M extends Kind<M, ?>, T> extends Kind<M, T>, ${checked.gen("Checked")}Functor<T> {
+        public interface $className<M extends $kind<M, ?>, T> extends $kind<M, T>, ${checked.gen("Checked")}Functor<T> {
 
             /**
              * Returns the result of applying f to M's value of type T and returns a new M with value of type U.
@@ -500,7 +501,7 @@ def generateMainClasses(): Unit = {
              * @return a new $className instance of component type U and container type M
              * @throws NullPointerException if {@code mapper} is null
              */
-            <U> $className<M, U> flatMap($functionType<? super T, ? extends Kind<M, U>> mapper);
+            <U> $className<M, U> flatMap($functionType<? super T, ? extends $kind<M, U>> mapper);
 
             /**
              * Flattens a nested, monadic structure using a function.
@@ -521,7 +522,7 @@ def generateMainClasses(): Unit = {
              * @return A monadic structure containing flattened elements.
              * @throws NullPointerException if {@code f} is null
              */
-            <U> $name<M, U> flatten($functionType<? super T, ? extends Kind<M, U>> f);
+            <U> $name<M, U> flatten($functionType<? super T, ? extends $kind<M, U>> f);
 
             /**
              * Checks, if an element exists such that the predicate holds.

@@ -5,7 +5,7 @@
  */
 package javaslang.control;
 
-import javaslang.algebra.Kind;
+import javaslang.Kind;
 
 import java.io.Serializable;
 import java.util.Objects;

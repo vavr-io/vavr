@@ -6,7 +6,7 @@
 package javaslang.collection;
 
 import javaslang.Tuple2;
-import javaslang.algebra.Kind;
+import javaslang.Kind;
 import javaslang.algebra.Monoid;
 import javaslang.control.Match;
 import javaslang.control.None;
