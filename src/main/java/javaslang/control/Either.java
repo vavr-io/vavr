@@ -5,7 +5,7 @@
  */
 package javaslang.control;
 
-import javaslang.algebra.HigherKinded;
+import javaslang.Kind;
 import javaslang.algebra.Monad;
 import javaslang.control.Valences.Bivalent;
 
@@ -122,7 +122,7 @@ public interface Either<L, R> {
      * @param <R> The type of the Right value of an Either.
      * @since 1.0.0
      */
-    final class LeftProjection<L, R> implements Bivalent<L, R>, Monad<L, LeftProjection<?, R>>, Iterable<L> {
+    final class LeftProjection<L, R> implements Kind<LeftProjection<?, R>, L>, Bivalent<L, R>, Monad<LeftProjection<?, R>, L>, Iterable<L> {
 
         private final Either<L, R> either;
 
@@ -278,7 +278,7 @@ public interface Either<L, R> {
          */
         @SuppressWarnings("unchecked")
         @Override
-        public <U, LEFT_PROJECTION extends HigherKinded<U, LeftProjection<?, R>>> LeftProjection<U, R> flatten(Function<? super L, ? extends LEFT_PROJECTION> f) {
+        public <U> LeftProjection<U, R> flatten(Function<? super L, ? extends Kind<LeftProjection<?, R>, U>> f) {
             Objects.requireNonNull(f, "f is null");
             if (either.isRight()) {
                 return (LeftProjection<U, R>) this;
@@ -354,7 +354,7 @@ public interface Either<L, R> {
          */
         @SuppressWarnings("unchecked")
         @Override
-        public <U, LEFT_PROJECTION extends HigherKinded<U, LeftProjection<?, R>>> LeftProjection<U, R> flatMap(Function<? super L, ? extends LEFT_PROJECTION> mapper) {
+        public <U> LeftProjection<U, R> flatMap(Function<? super L, ? extends Kind<LeftProjection<?, R>, U>> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
             if (either.isLeft()) {
                 return (LeftProjection<U, R>) mapper.apply(asLeft());
@@ -403,7 +403,7 @@ public interface Either<L, R> {
      * @param <R> The type of the Right value of an Either.
      * @since 1.0.0
      */
-    final class RightProjection<L, R> implements Bivalent<R, L>, Monad<R, RightProjection<L, ?>>, Iterable<R> {
+    final class RightProjection<L, R> implements Kind<RightProjection<L, ?>, R>, Bivalent<R, L>, Monad<RightProjection<L, ?>, R>, Iterable<R> {
 
         private final Either<L, R> either;
 
@@ -559,7 +559,7 @@ public interface Either<L, R> {
          */
         @SuppressWarnings("unchecked")
         @Override
-        public <U, RIGHT_PROJECTION extends HigherKinded<U, RightProjection<L, ?>>> RightProjection<L, U> flatten(Function<? super R, ? extends RIGHT_PROJECTION> f) {
+        public <U> RightProjection<L, U> flatten(Function<? super R, ? extends Kind<RightProjection<L, ?>, U>> f) {
             Objects.requireNonNull(f, "f is null");
             if (either.isLeft()) {
                 return (RightProjection<L, U>) this;
@@ -635,7 +635,7 @@ public interface Either<L, R> {
          */
         @SuppressWarnings("unchecked")
         @Override
-        public <U, RIGHT_PROJECTION extends HigherKinded<U, RightProjection<L, ?>>> RightProjection<L, U> flatMap(Function<? super R, ? extends RIGHT_PROJECTION> mapper) {
+        public <U> RightProjection<L, U> flatMap(Function<? super R, ? extends Kind<RightProjection<L, ?>, U>> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
             if (either.isRight()) {
                 return (RightProjection<L, U>) mapper.apply(asRight());

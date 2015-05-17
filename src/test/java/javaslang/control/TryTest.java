@@ -673,7 +673,7 @@ public class TryTest implements CheckedMonadLaws<Try<?>> {
             Tuple.of(4, Gen.choose(-size, size))
     ).apply(random);
 
-    static <T> Try.CheckedFunction<? super T, ? extends CheckedMonad<T, Try<?>>> unit() {
+    static <T> Try.CheckedFunction<? super T, ? extends CheckedMonad<Try<?>, T>> unit() {
         return i -> Try.of(() -> {
             if (i == null) {
                 throw new Error("test");
@@ -683,14 +683,14 @@ public class TryTest implements CheckedMonadLaws<Try<?>> {
         });
     }
 
-    static <T, R> CheckedMonad<R, Try<?>> mapTry(T t, Try.CheckedFunction<? super T, R> mapper) throws Throwable {
+    static <T, R> CheckedMonad<Try<?>, R> mapTry(T t, Try.CheckedFunction<? super T, R> mapper) throws Throwable {
         return TryTest.<T>unit().apply(t).map(mapper::apply);
     }
 
     @Test
     @Override
     public void shouldSatisfyCheckedMonadLeftIdentity() {
-        final Arbitrary<Try.CheckedFunction<? super Integer, ? extends CheckedMonad<String, Try<?>>>> mappers =
+        final Arbitrary<Try.CheckedFunction<? super Integer, ? extends CheckedMonad<Try<?>, String>>> mappers =
                 size -> random -> i -> TryTest.mapTry(i, String::valueOf);
         final CheckResult result = checkCheckedMonadLeftIdentity(TryTest.<Integer>unit(), INTEGERS, mappers);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
@@ -706,9 +706,9 @@ public class TryTest implements CheckedMonadLaws<Try<?>> {
     @Test
     @Override
     public void shouldSatisfyCheckedMonadAssociativity() {
-        final Arbitrary<Try.CheckedFunction<? super Integer, ? extends CheckedMonad<Double, Try<?>>>> before =
+        final Arbitrary<Try.CheckedFunction<? super Integer, ? extends CheckedMonad<Try<?>, Double>>> before =
                 size -> random -> i -> TryTest.mapTry(i, Double::valueOf);
-        final Arbitrary<Try.CheckedFunction<? super Double, ? extends CheckedMonad<String, Try<?>>>> after =
+        final Arbitrary<Try.CheckedFunction<? super Double, ? extends CheckedMonad<Try<?>, String>>> after =
                 size -> random -> d -> TryTest.mapTry(d, String::valueOf);
         final CheckResult result = checkCheckedMonadAssociativity(TRIES, before, after);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);

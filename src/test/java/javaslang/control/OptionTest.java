@@ -418,7 +418,7 @@ public class OptionTest implements MonadLaws<Option<?>> {
     @Test
     @Override
     public void shouldSatisfyMonadLeftIdentity() {
-        final Arbitrary<Function<? super Integer, ? extends Monad<String, Option<?>>>> mappers =
+        final Arbitrary<Function<? super Integer, ? extends Monad<Option<?>, String>>> mappers =
                 size -> random -> i -> Option.of(i).map(String::valueOf);
         final CheckResult result = checkMonadLeftIdentity(Option::of, INTEGERS, mappers);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
@@ -434,9 +434,9 @@ public class OptionTest implements MonadLaws<Option<?>> {
     @Test
     @Override
     public void shouldSatisfyMonadAssociativity() {
-        final Arbitrary<Function<? super Integer, ? extends Monad<Double, Option<?>>>> before =
+        final Arbitrary<Function<? super Integer, ? extends Monad<Option<?>, Double>>> before =
                 size -> random -> i -> Option.of(i).map(Double::valueOf);
-        final Arbitrary<Function<? super Double, ? extends Monad<String, Option<?>>>> after =
+        final Arbitrary<Function<? super Double, ? extends Monad<Option<?>, String>>> after =
                 size -> random -> d -> Option.of(d).map(String::valueOf);
         final CheckResult result = checkMonadAssociativity(OPTIONS, before, after);
         CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);

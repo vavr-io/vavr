@@ -5,7 +5,7 @@
  */
 package javaslang.control;
 
-import javaslang.algebra.HigherKinded;
+import javaslang.Kind;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -144,7 +144,7 @@ public final class Failure<T> implements Try<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U, TRY extends HigherKinded<U, Try<?>>> Failure<U> flatMap(CheckedFunction<? super T, ? extends TRY> mapper) {
+    public <U> Failure<U> flatMap(CheckedFunction<? super T, ? extends Kind<Try<?>, U>> mapper) {
         return (Failure<U>) this;
     }
 
