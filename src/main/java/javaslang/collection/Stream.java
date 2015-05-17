@@ -148,9 +148,6 @@ public interface Stream<T> extends Seq<T> {
 
             @Override
             public T next() {
-                if (i >= elements.length) {
-                    throw new NoSuchElementException();
-                }
                 return elements[i++];
             }
         });
