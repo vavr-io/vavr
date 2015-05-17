@@ -491,7 +491,7 @@ def generateMainClasses(): Unit = {
          * @param <T> component type of this ${checked.gen("checked ")}monad
          * @since 1.1.0
          */
-        public interface $className<M extends $kind<M, ?>, T> extends $kind<M, T>, ${checked.gen("Checked")}Functor<T> {
+        public interface $className<M extends $className<M, ?>, T> extends $kind<M, T>, ${checked.gen("Checked")}Functor<T> {
 
             /**
              * Returns the result of applying f to M's value of type T and returns a new M with value of type U.
