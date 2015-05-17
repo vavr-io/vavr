@@ -35,6 +35,7 @@ public class TypeConsistencyTest {
             "javaslang.control.Failure//public default javaslang.control.Try javaslang.control.Try.flatten()",
             "javaslang.control.Failure//public default javaslang.control.Try javaslang.control.Try.flatten(javaslang.control.Try$CheckedFunction)",
             "javaslang.control.Failure//public abstract javaslang.control.Try javaslang.control.Try.map(javaslang.control.Try$CheckedFunction)",
+            "javaslang.control.Failure//public default javaslang.control.Try javaslang.control.Try.transform(javaslang.control.Try$CheckedFunction)",
             "javaslang.control.Failure//public default javaslang.control.Try javaslang.control.Try.andThen(javaslang.control.Try$CheckedRunnable)",
 
             // control.Success
@@ -45,6 +46,7 @@ public class TypeConsistencyTest {
             "javaslang.control.Success//public default javaslang.control.Try javaslang.control.Try.flatten(javaslang.control.Try$CheckedFunction)",
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.map(javaslang.control.Try$CheckedFunction)",
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.peek(javaslang.control.Try$CheckedConsumer)",
+            "javaslang.control.Success//public default javaslang.control.Try javaslang.control.Try.transform(javaslang.control.Try$CheckedFunction)",
             "javaslang.control.Success//public default javaslang.control.Try javaslang.control.Try.andThen(javaslang.control.Try$CheckedRunnable)",
 
             // control.None
@@ -52,12 +54,14 @@ public class TypeConsistencyTest {
             "javaslang.control.None//public default javaslang.control.Option javaslang.control.Option.flatMap(java.util.function.Function)",
             "javaslang.control.None//public default javaslang.control.Option javaslang.control.Option.flatten()",
             "javaslang.control.None//public default javaslang.control.Option javaslang.control.Option.flatten(java.util.function.Function)",
+            "javaslang.control.None//public default javaslang.control.Option javaslang.control.Option.transform(java.util.function.Function)",
 
             // control.Some
             "javaslang.control.Some//public default javaslang.control.Option javaslang.control.Option.filter(java.util.function.Predicate)",
             "javaslang.control.Some//public default javaslang.control.Option javaslang.control.Option.flatMap(java.util.function.Function)",
             "javaslang.control.Some//public default javaslang.control.Option javaslang.control.Option.flatten()",
             "javaslang.control.Some//public default javaslang.control.Option javaslang.control.Option.flatten(java.util.function.Function)",
+            "javaslang.control.Some//public default javaslang.control.Option javaslang.control.Option.transform(java.util.function.Function)",
 
             // control.Left
             "javaslang.control.Left//public abstract javaslang.control.Either javaslang.control.Either.swap()",

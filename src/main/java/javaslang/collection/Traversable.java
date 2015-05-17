@@ -123,6 +123,7 @@ import java.util.stream.StreamSupport;
  * <li>{@link #sliding(int)}</li>
  * <li>{@link #sliding(int, int)}</li>
  * <li>{@link #span(Predicate)}</li>
+ * <li>{@link #transform(Function)}</li>
  * <li>{@link #unzip(Function)}</li>
  * <li>{@link #zip(Iterable)}</li>
  * <li>{@link #zipAll(Iterable, Object, Object)}</li>
@@ -1162,6 +1163,16 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
     default java.util.stream.Stream<T> toJavaStream() {
         return StreamSupport.stream(spliterator(), false);
     }
+
+    /**
+     * Transforms this type to another type of the same {@code Kind}.
+     *
+     * @param <U> Resulting component type
+     * @param f A transformation
+     * @return A new, transformed instance of this type
+     * @throws NullPointerException if {@code f} is null
+     */
+    <U> Traversable<M, U> transform(Function<? super Kind<M, T>, ? extends Kind<M, U>> f);
 
     /**
      * Unzips this elements by mapping this elements to pairs which are subsequentially split into to distinct

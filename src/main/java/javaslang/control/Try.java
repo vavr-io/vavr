@@ -5,8 +5,8 @@
  */
 package javaslang.control;
 
-import javaslang.algebra.CheckedMonad;
 import javaslang.Kind;
+import javaslang.algebra.CheckedMonad;
 import javaslang.control.Valences.Bivalent;
 
 import java.util.Collections;
@@ -212,6 +212,21 @@ public interface Try<T> extends Kind<Try<?>, T>, CheckedMonad<Try<?>, T>, Bivale
             return Collections.singleton(get()).iterator();
         } else {
             return Collections.emptyIterator();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Try<U> transform(CheckedFunction<? super Kind<Try<?>, T>, ? extends Kind<Try<?>, U>> f) {
+        Objects.requireNonNull(f, "f is null");
+        if (isFailure()) {
+            return (Failure<U>) this;
+        } else {
+            try {
+                return (Try<U>) f.apply(this);
+            } catch (Throwable t) {
+                return new Failure<>(t);
+            }
         }
     }
 

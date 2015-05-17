@@ -5,8 +5,8 @@
  */
 package javaslang.test;
 
-import javaslang.Tuple2;
 import javaslang.Kind;
+import javaslang.Tuple2;
 import javaslang.algebra.Monad;
 import javaslang.collection.Stream;
 
@@ -374,6 +374,12 @@ public interface Gen<T> extends Kind<Gen<?>, T>, Monad<Gen<?>, T>, Iterable<T> {
             action.accept(t);
             return t;
         };
+    }
+
+    @Override
+    default <U> Gen<U> transform(Function<? super Kind<Gen<?>, T>, ? extends Kind<Gen<?>, U>> f) {
+        Objects.requireNonNull(f, "f is null");
+        return (Gen<U>) f.apply(this);
     }
 
     @Override

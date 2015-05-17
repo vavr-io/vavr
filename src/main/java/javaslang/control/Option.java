@@ -229,6 +229,12 @@ public interface Option<T> extends Kind<Option<?>, T>, Monad<Option<?>, T>, Univ
     }
 
     @Override
+    default <U> Option<U> transform(Function<? super Kind<Option<?>, T>, ? extends Kind<Option<?>, U>> f) {
+        Objects.requireNonNull(f, "f is null");
+        return (Option<U>) f.apply(this);
+    }
+
+    @Override
     default Iterator<T> iterator() {
         if (isDefined()) {
             return Collections.singleton(get()).iterator();

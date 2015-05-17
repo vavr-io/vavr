@@ -713,6 +713,12 @@ public interface List<T> extends Kind<List<?>, T>, Seq<List<?>, T>, Monad<List<?
     }
 
     @Override
+    default <U> List<U> transform(Function<? super Kind<List<?>, T>, ? extends Kind<List<?>, U>> f) {
+        Objects.requireNonNull(f, "f is null");
+        return (List<U>) f.apply(this);
+    }
+
+    @Override
     default <T1, T2> Tuple2<List<T1>, List<T2>> unzip(
             Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");

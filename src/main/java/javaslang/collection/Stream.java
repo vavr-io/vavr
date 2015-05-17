@@ -5,10 +5,10 @@
  */
 package javaslang.collection;
 
+import javaslang.Kind;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
-import javaslang.Kind;
 import javaslang.algebra.Monad;
 import javaslang.control.None;
 import javaslang.control.Option;
@@ -741,6 +741,12 @@ public interface Stream<T> extends Kind<Stream<?>, T>, Seq<Stream<?>, T>, Monad<
                 return Nil.instance();
             }
         }
+    }
+
+    @Override
+    default <U> Stream<U> transform(Function<? super Kind<Stream<?>, T>, ? extends Kind<Stream<?>, U>> f) {
+        Objects.requireNonNull(f, "f is null");
+        return (Stream<U>) f.apply(this);
     }
 
     @Override
