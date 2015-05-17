@@ -40,7 +40,7 @@ import java.util.function.*;
  * <li>{@link #sort(Comparator)}</li>
  * <li>{@link #splitAt(int)}</li>
  * </ul>
- * <p>Traversion:</p>
+ * <p>Traversal:</p>
  * <ul>
  * <li>{@link #iterator(int)}</li>
  * </ul>

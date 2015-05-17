@@ -45,7 +45,7 @@
 * The private constructor of class Xxx is:
 ```java
 /**
- * This class is not intendet to be instantiated.
+ * This class is not intended to be instantiated.
  */
 private Xxx() {
 	requireNotInstantiable();

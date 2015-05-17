@@ -59,7 +59,7 @@ public final class Lazy<T> implements Supplier<T>, Serializable {
     }
 
     /**
-     * Evaluates this lazy value and caches it, when called the first type.
+     * Evaluates this lazy value and caches it, when called the first time.
      * On subsequent calls, returns the cached value.
      *
      * @return the lazy evaluated value
