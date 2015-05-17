@@ -470,12 +470,12 @@ public abstract class AbstractTraversableTest<M extends Traversable<M, ?>> {
 
     @Test
     public void shouldBeAwareOfPropertyThatHoldsForAll() {
-        assertThat(List.of(2, 4).forAll(i -> i % 2 == 0)).isTrue();
+        assertThat(of(2, 4).forAll(i -> i % 2 == 0)).isTrue();
     }
 
     @Test
     public void shouldBeAwareOfPropertyThatNotHoldsForAll() {
-        assertThat(List.of(2, 3).forAll(i -> i % 2 == 0)).isFalse();
+        assertThat(of(2, 3).forAll(i -> i % 2 == 0)).isFalse();
     }
 
     // -- grouped
@@ -1458,7 +1458,7 @@ public abstract class AbstractTraversableTest<M extends Traversable<M, ?>> {
 
     @Test
     public void shouldConvertNonNilToJavaArray() {
-        final Integer[] array = List.of(1, 2).toJavaArray(Integer.class);
+        final Integer[] array = of(1, 2).toJavaArray(Integer.class);
         final Integer[] expected = new Integer[]{1, 2};
         assertThat(array).isEqualTo(expected);
     }
