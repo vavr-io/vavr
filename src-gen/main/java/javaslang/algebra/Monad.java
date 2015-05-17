@@ -12,6 +12,7 @@ package javaslang.algebra;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import javaslang.Kind;
 
 /**
  * Defines a Monad by generalizing the flatMap function.
@@ -24,7 +25,7 @@ import java.util.function.Predicate;
  * </ul>
  * given
  * <ul>
- * <li>an object {@code m} of type {@code HigherKinded<T, M>}</li>
+ * <li>an object {@code m} of type {@code Kind<M, T>}</li>
  * <li>an object {@code a} of type T</li>
  * <li>a constructor {@code unit} taking an {@code a} and producing an object of type {@code M}</li>
  * <li>a function {@code f: T → M}
@@ -33,22 +34,21 @@ import java.util.function.Predicate;
  * To read further about monads in Java please refer to
  * <a href="http://java.dzone.com/articles/whats-wrong-java-8-part-iv">What's Wrong in Java 8, Part IV: Monads</a>.
  *
- * @param <T> component type of this monad
  * @param <M> placeholder for the type that implements this
+ * @param <T> component type of this monad
  * @since 1.1.0
  */
-public interface Monad<T, M extends HigherKinded<?, M>> extends Functor<T>, HigherKinded<T, M> {
+public interface Monad<M extends Monad<M, ?>, T> extends Kind<M, T>, Functor<T> {
 
     /**
      * Returns the result of applying f to M's value of type T and returns a new M with value of type U.
      *
      * @param <U> component type of the resulting monad
-     * @param <MONAD> placeholder for the monad type of component type U and container type M
      * @param mapper a function that maps the monad value to a new monad instance
      * @return a new Monad instance of component type U and container type M
      * @throws NullPointerException if {@code mapper} is null
      */
-    <U, MONAD extends HigherKinded<U, M>> Monad<U, M> flatMap(Function<? super T, ? extends MONAD> mapper);
+    <U> Monad<M, U> flatMap(Function<? super T, ? extends Kind<M, U>> mapper);
 
     /**
      * Flattens a nested, monadic structure using a function.
@@ -65,12 +65,11 @@ public interface Monad<T, M extends HigherKinded<?, M>> extends Functor<T>, High
      * </pre>
      *
      * @param <U> component type of the resulting {@code Monad}
-     * @param <MONAD> {@code Monad} type
      * @param f a function which maps elements of this monad to monads of the same kind
      * @return A monadic structure containing flattened elements.
      * @throws NullPointerException if {@code f} is null
      */
-    <U, MONAD extends HigherKinded<U, M>> Monad<U, M> flatten(Function<? super T, ? extends MONAD> f);
+    <U> Monad<M, U> flatten(Function<? super T, ? extends Kind<M, U>> f);
 
     /**
      * Checks, if an element exists such that the predicate holds.
@@ -104,8 +103,8 @@ public interface Monad<T, M extends HigherKinded<?, M>> extends Functor<T>, High
      * @return An instance of this monad type
      * @throws NullPointerException if {@code action} is null
      */
-    Monad<T, M> peek(Consumer<? super T> action);
+    Monad<M, T> peek(Consumer<? super T> action);
 
     @Override
-    <U> Monad<U, M> map(Function<? super T, ? extends U> mapper);
+    <U> Monad<M, U> map(Function<? super T, ? extends U> mapper);
 }

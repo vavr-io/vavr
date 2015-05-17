@@ -43,6 +43,6 @@ interface Errors {
      * @return a new Error instance.
      */
     static Error predicateError(Throwable cause) {
-        return new Error(String.format("Applying predicate: %s", cause.getMessage()), cause);
+        return new Error("Applying predicate: " + cause.getMessage(), cause);
     }
 }

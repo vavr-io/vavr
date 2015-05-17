@@ -6,7 +6,7 @@
 package javaslang.test;
 
 import javaslang.Tuple2;
-import javaslang.algebra.HigherKinded;
+import javaslang.Kind;
 import javaslang.algebra.Monad;
 import javaslang.collection.Stream;
 
@@ -31,7 +31,7 @@ import java.util.function.Predicate;
  * @since 1.2.0
  */
 @FunctionalInterface
-public interface Gen<T> extends Monad<T, Gen<?>>, Iterable<T> {
+public interface Gen<T> extends Kind<Gen<?>, T>, Monad<Gen<?>, T>, Iterable<T> {
 
     int FILTER_THRESHOLD = Integer.MAX_VALUE;
 
@@ -287,7 +287,7 @@ public interface Gen<T> extends Monad<T, Gen<?>>, Iterable<T> {
      */
     @SuppressWarnings("unchecked")
     @Override
-    default <U, GEN extends HigherKinded<U, Gen<?>>> Gen<U> flatMap(Function<? super T, ? extends GEN> mapper) {
+    default <U> Gen<U> flatMap(Function<? super T, ? extends Kind<Gen<?>, U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         //noinspection Convert2MethodRef
         return random -> ((Gen<U>) mapper.apply(apply(random))).apply(random);
@@ -316,7 +316,7 @@ public interface Gen<T> extends Monad<T, Gen<?>>, Iterable<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    default <U, GEN extends HigherKinded<U, Gen<?>>> Gen<U> flatten(Function<? super T, ? extends GEN> f) {
+    default <U> Gen<U> flatten(Function<? super T, ? extends Kind<Gen<?>, U>> f) {
         return random -> {
             final Gen<U> gen = (Gen<U>) f.apply(apply(random));
             return gen.apply(random);
