@@ -6,7 +6,7 @@
 package javaslang;
 
 /**
- * <strong>A {@code Kind} is the type of a type constructor.</strong>
+ * A {@code Kind} is the type of a type constructor.
  * <p>
  * It is denoted as decomposition of a type constructor, i.e. {@code List<T>} is {@code Kind<List<?>, T>}.
  * <p>
@@ -14,13 +14,11 @@ package javaslang;
  * <p>
  * <strong>Example:</strong>
  * <p>
- * Javaslang uses {@code Kind} to define a function {@code flatMap(Function)}. The special thing about the
- * {@code Function} argument is, that it returns an instance of the type {@code flatMap()} is defined in.
+ * Javaslang uses {@code Kind} to define a function {@code flatMap(Function)} in several related classes. The special
+ * thing about the {@code Function} argument is, that it returns an instance of the type {@code flatMap()} is defined in.
  * <p>
  * In particular, {@code flatMap()} is defined in {@code Monad}, {@code Traversable}, {@code Seq} and {@code List},
  * where {@code List extends Seq, Monad} and {@code Seq extends Traversable}.
- * <p>
- * Exercise: Try to implement this example without the help of {@code Kind}.
  * <p>
  * Here is how it looks like:
  * <pre>
@@ -38,7 +36,7 @@ package javaslang;
  *     &lt;U&gt; Seq&lt;M, U&gt; flatMap(Function&lt;? super T, ? extends Kind&lt;M, U&gt;&gt; mapper);
  * }
  *
- * interface List&lt;T&gt; extends Seq&lt;List&lt;?&gt;, T&gt;, Monad&lt;List&lt;?&gt;, T&gt; {
+ * interface List&lt;T&gt; extends Kind&lt;List&lt;?&gt;, T&gt;, Seq&lt;List&lt;?&gt;, T&gt;, Monad&lt;List&lt;?&gt;, T&gt; {
  *     &#64;Override
  *     &lt;U&gt; List&lt;U&gt; flatMap(Function&lt;? super T, ? extends Kind&lt;List&lt;?&gt;, U&gt;&gt; mapper);
  * }
