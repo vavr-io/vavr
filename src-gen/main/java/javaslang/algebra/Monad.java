@@ -99,6 +99,7 @@ public interface Monad<M extends Monad<M, ?>, T> extends Kind<M, T>, Functor<T> 
 
     /**
      * Performs an action on each element of this monad.
+     *
      * @param action A {@code Consumer}
      * @return An instance of this monad type
      * @throws NullPointerException if {@code action} is null
@@ -107,4 +108,27 @@ public interface Monad<M extends Monad<M, ?>, T> extends Kind<M, T>, Functor<T> 
 
     @Override
     <U> Monad<M, U> map(Function<? super T, ? extends U> mapper);
+
+    /**
+     * Transforms this {@code Monad} to another type of the same {@code Kind}.
+     *
+     * @param <U> Resulting component type
+     * @param f A transformation
+     * @return A new, transformed instance of this type
+     * @throws NullPointerException if {@code f} is null
+     */
+    <U> Monad<M, U> transform(Function<? super Kind<M, T>, ? extends Kind<M, U>> f);
+
+    /**
+     * Flattens this {@code Monad} of the shape {@code Monad<? extends Monad<T>>}.
+     * Works best using {@code monad.transform(Monad.flatten())}.
+     *
+     * @param <M> placeholder for the {@code Monad} type
+     * @param <T> component type of the nested structure
+     * @param monad a {@code Monad} instance
+     * @return a flattened version of the given {@code monad}
+     */
+    static <M extends Monad<M, ?>, T> Monad<M, T> flatten(Monad<M, ? extends Monad<M, T>> monad) {
+        return monad.flatMap(Function.identity());
+    }
 }

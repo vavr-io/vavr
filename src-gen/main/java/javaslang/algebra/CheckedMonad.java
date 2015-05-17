@@ -100,6 +100,7 @@ public interface CheckedMonad<M extends CheckedMonad<M, ?>, T> extends Kind<M, T
 
     /**
      * Performs an action on each element of this monad.
+     *
      * @param action A {@code Consumer}
      * @return An instance of this monad type
      * @throws NullPointerException if {@code action} is null
@@ -108,4 +109,27 @@ public interface CheckedMonad<M extends CheckedMonad<M, ?>, T> extends Kind<M, T
 
     @Override
     <U> CheckedMonad<M, U> map(CheckedFunction<? super T, ? extends U> mapper);
+
+    /**
+     * Transforms this {@code Monad} to another type of the same {@code Kind}.
+     *
+     * @param <U> Resulting component type
+     * @param f A transformation
+     * @return A new, transformed instance of this type
+     * @throws NullPointerException if {@code f} is null
+     */
+    <U> CheckedMonad<M, U> transform(CheckedFunction<? super Kind<M, T>, ? extends Kind<M, U>> f);
+
+    /**
+     * Flattens this {@code Monad} of the shape {@code Monad<? extends Monad<T>>}.
+     * Works best using {@code monad.transform(Monad.flatten())}.
+     *
+     * @param <M> placeholder for the {@code Monad} type
+     * @param <T> component type of the nested structure
+     * @param monad a {@code Monad} instance
+     * @return a flattened version of the given {@code monad}
+     */
+    static <M extends CheckedMonad<M, ?>, T> CheckedMonad<M, T> flatten(CheckedMonad<M, ? extends CheckedMonad<M, T>> monad) {
+        return monad.flatMap(CheckedFunction.identity());
+    }
 }

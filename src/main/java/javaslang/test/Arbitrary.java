@@ -164,6 +164,12 @@ public interface Arbitrary<T> extends Kind<Arbitrary<?>, T>, Monad<Arbitrary<?>,
     }
 
     @Override
+    default <U> Arbitrary<U> transform(Function<? super Kind<Arbitrary<?>, T>, ? extends Kind<Arbitrary<?>, U>> f) {
+        Objects.requireNonNull(f, "f is null");
+        return (Arbitrary<U>) f.apply(this);
+    }
+
+    @Override
     default Iterator<T> iterator() {
         return apply(Checkable.DEFAULT_SIZE).iterator();
     }

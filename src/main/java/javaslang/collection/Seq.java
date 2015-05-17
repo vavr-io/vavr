@@ -364,6 +364,9 @@ public interface Seq<M extends Seq<M, ?>, T> extends Kind<M, T>, Traversable<M, 
     Seq<M, T> takeWhile(Predicate<? super T> predicate);
 
     @Override
+    <U> Seq<M, U> transform(Function<? super Kind<M, T>, ? extends Kind<M, U>> f);
+
+    @Override
     <T1, T2> Tuple2<? extends Seq<M, T1>, ? extends Seq<M, T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
 
     @Override

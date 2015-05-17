@@ -364,6 +364,12 @@ public interface Either<L, R> {
         }
 
         @Override
+        public <U> LeftProjection<U, R> transform(Function<? super Kind<LeftProjection<?, R>, L>, ? extends Kind<LeftProjection<?, R>, U>> f) {
+            Objects.requireNonNull(f, "f is null");
+            return (LeftProjection<U, R>) f.apply(this);
+        }
+
+        @Override
         public Iterator<L> iterator() {
             if (either.isLeft()) {
                 return Collections.singleton(asLeft()).iterator();
@@ -642,6 +648,12 @@ public interface Either<L, R> {
             } else {
                 return (RightProjection<L, U>) this;
             }
+        }
+
+        @Override
+        public <U> RightProjection<L, U> transform(Function<? super Kind<RightProjection<L, ?>, R>, ? extends Kind<RightProjection<L, ?>, U>> f) {
+            Objects.requireNonNull(f, "f is null");
+            return (RightProjection<L, U>) f.apply(this);
         }
 
         @Override

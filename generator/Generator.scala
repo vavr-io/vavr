@@ -552,6 +552,7 @@ def generateMainClasses(): Unit = {
 
             /**
              * Performs an action on each element of this monad.
+             *
              * @param action A {@code Consumer}
              * @return An instance of this monad type
              * @throws NullPointerException if {@code action} is null
@@ -560,6 +561,29 @@ def generateMainClasses(): Unit = {
 
             @Override
             <U> $className<M, U> map($functionType<? super T, ? extends U> mapper);
+
+            /**
+             * Transforms this {@code Monad} to another type of the same {@code Kind}.
+             *
+             * @param <U> Resulting component type
+             * @param f A transformation
+             * @return A new, transformed instance of this type
+             * @throws NullPointerException if {@code f} is null
+             */
+            <U> $className<M, U> transform($functionType<? super $kind<M, T>, ? extends $kind<M, U>> f);
+
+            /**
+             * Flattens this {@code Monad} of the shape {@code Monad<? extends Monad<T>>}.
+             * Works best using {@code monad.transform(Monad.flatten())}.
+             *
+             * @param <M> placeholder for the {@code Monad} type
+             * @param <T> component type of the nested structure
+             * @param monad a {@code Monad} instance
+             * @return a flattened version of the given {@code monad}
+             */
+            static <M extends $className<M, ?>, T> $className<M, T> flatten($className<M, ? extends $className<M, T>> monad) {
+                return monad.flatMap($functionType.identity());
+            }
         }
       """
     }
