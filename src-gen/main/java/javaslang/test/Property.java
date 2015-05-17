@@ -154,6 +154,54 @@ public class Property {
     }
 
     /**
+     * Returns a logical for all quantor of 7 given variables.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param a1 1st variable of this for all quantor
+     * @param a2 2nd variable of this for all quantor
+     * @param a3 3rd variable of this for all quantor
+     * @param a4 4th variable of this for all quantor
+     * @param a5 5th variable of this for all quantor
+     * @param a6 6th variable of this for all quantor
+     * @param a7 7th variable of this for all quantor
+     * @return a new {@code ForAll7} instance of 7 variables
+     */
+    public <T1, T2, T3, T4, T5, T6, T7> ForAll7<T1, T2, T3, T4, T5, T6, T7> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7) {
+        return new ForAll7<>(name, a1, a2, a3, a4, a5, a6, a7);
+    }
+
+    /**
+     * Returns a logical for all quantor of 8 given variables.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @param a1 1st variable of this for all quantor
+     * @param a2 2nd variable of this for all quantor
+     * @param a3 3rd variable of this for all quantor
+     * @param a4 4th variable of this for all quantor
+     * @param a5 5th variable of this for all quantor
+     * @param a6 6th variable of this for all quantor
+     * @param a7 7th variable of this for all quantor
+     * @param a8 8th variable of this for all quantor
+     * @return a new {@code ForAll8} instance of 8 variables
+     */
+    public <T1, T2, T3, T4, T5, T6, T7, T8> ForAll8<T1, T2, T3, T4, T5, T6, T7, T8> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8) {
+        return new ForAll8<>(name, a1, a2, a3, a4, a5, a6, a7, a8);
+    }
+
+    /**
      * Represents a logical for all quantor.
      *
      * @param <T1> 1st variable type of this for all quantor
@@ -363,6 +411,101 @@ public class Property {
         public Property6<T1, T2, T3, T4, T5, T6> suchThat(CheckedFunction6<T1, T2, T3, T4, T5, T6, Boolean> predicate) {
             final CheckedFunction6<T1, T2, T3, T4, T5, T6, Condition> proposition = (t1, t2, t3, t4, t5, t6) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6));
             return new Property6<>(name, a1, a2, a3, a4, a5, a6, proposition);
+        }
+    }
+
+    /**
+     * Represents a logical for all quantor.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @since 1.2.0
+     */
+    public static class ForAll7<T1, T2, T3, T4, T5, T6, T7> {
+
+        private final String name;
+        private final Arbitrary<T1> a1;
+        private final Arbitrary<T2> a2;
+        private final Arbitrary<T3> a3;
+        private final Arbitrary<T4> a4;
+        private final Arbitrary<T5> a5;
+        private final Arbitrary<T6> a6;
+        private final Arbitrary<T7> a7;
+
+        ForAll7(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7) {
+            this.name = name;
+            this.a1 = a1;
+            this.a2 = a2;
+            this.a3 = a3;
+            this.a4 = a4;
+            this.a5 = a5;
+            this.a6 = a6;
+            this.a7 = a7;
+        }
+
+        /**
+         * Returns a checkable property that checks values of the 7 variables of this {@code ForAll} quantor.
+         *
+         * @param predicate A 7-ary predicate
+         * @return a new {@code Property7} of 7 variables.
+         */
+        public Property7<T1, T2, T3, T4, T5, T6, T7> suchThat(CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, Boolean> predicate) {
+            final CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7));
+            return new Property7<>(name, a1, a2, a3, a4, a5, a6, a7, proposition);
+        }
+    }
+
+    /**
+     * Represents a logical for all quantor.
+     *
+     * @param <T1> 1st variable type of this for all quantor
+     * @param <T2> 2nd variable type of this for all quantor
+     * @param <T3> 3rd variable type of this for all quantor
+     * @param <T4> 4th variable type of this for all quantor
+     * @param <T5> 5th variable type of this for all quantor
+     * @param <T6> 6th variable type of this for all quantor
+     * @param <T7> 7th variable type of this for all quantor
+     * @param <T8> 8th variable type of this for all quantor
+     * @since 1.2.0
+     */
+    public static class ForAll8<T1, T2, T3, T4, T5, T6, T7, T8> {
+
+        private final String name;
+        private final Arbitrary<T1> a1;
+        private final Arbitrary<T2> a2;
+        private final Arbitrary<T3> a3;
+        private final Arbitrary<T4> a4;
+        private final Arbitrary<T5> a5;
+        private final Arbitrary<T6> a6;
+        private final Arbitrary<T7> a7;
+        private final Arbitrary<T8> a8;
+
+        ForAll8(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8) {
+            this.name = name;
+            this.a1 = a1;
+            this.a2 = a2;
+            this.a3 = a3;
+            this.a4 = a4;
+            this.a5 = a5;
+            this.a6 = a6;
+            this.a7 = a7;
+            this.a8 = a8;
+        }
+
+        /**
+         * Returns a checkable property that checks values of the 8 variables of this {@code ForAll} quantor.
+         *
+         * @param predicate A 8-ary predicate
+         * @return a new {@code Property8} of 8 variables.
+         */
+        public Property8<T1, T2, T3, T4, T5, T6, T7, T8> suchThat(CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, Boolean> predicate) {
+            final CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8));
+            return new Property8<>(name, a1, a2, a3, a4, a5, a6, a7, a8, proposition);
         }
     }
 
@@ -849,6 +992,204 @@ public class Property {
                         } catch(Failure.NonFatal nonFatal) {
                             logErroneous(name, i, nonFatal.getCause().getMessage());
                             return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6)));
+                        }
+                    } catch(Failure.NonFatal nonFatal) {
+                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
+                    }
+                }
+                logSatisfied(name, tries, exhausted);
+                return new CheckResult.Satisfied(name, tries, exhausted);
+            } catch(Failure.NonFatal nonFatal) {
+                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
+            }
+        }
+    }
+
+    /**
+     * Represents a 7-ary checkable property.
+     * @since 1.2.0
+     */
+    public static class Property7<T1, T2, T3, T4, T5, T6, T7> implements Checkable {
+
+        private final String name;
+        private final Arbitrary<T1> a1;
+        private final Arbitrary<T2> a2;
+        private final Arbitrary<T3> a3;
+        private final Arbitrary<T4> a4;
+        private final Arbitrary<T5> a5;
+        private final Arbitrary<T6> a6;
+        private final Arbitrary<T7> a7;
+        private final CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, Condition> predicate;
+
+        Property7(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, Condition> predicate) {
+            this.name = name;
+            this.a1 = a1;
+            this.a2 = a2;
+            this.a3 = a3;
+            this.a4 = a4;
+            this.a5 = a5;
+            this.a6 = a6;
+            this.a7 = a7;
+            this.predicate = predicate;
+        }
+
+        /**
+         * Returns an implication which composes this Property as pre-condition and a given post-condition.
+         *
+         * @param postcondition The postcondition of this implication
+         * @return A new Checkable implication
+         */
+        public Checkable implies(CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, Boolean> postcondition) {
+            final CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, Condition> implication = (t1, t2, t3, t4, t5, t6, t7) -> {
+                final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7);
+                if (precondition.isFalse()) {
+                    return Condition.EX_FALSO_QUODLIBET;
+                } else {
+                    return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7));
+                }
+            };
+            return new Property7<>(name, a1, a2, a3, a4, a5, a6, a7, implication);
+        }
+
+        @Override
+        public CheckResult check(Random random, int size, int tries) {
+            Objects.requireNonNull(random, "random is null");
+            if (tries < 0) {
+                throw new IllegalArgumentException("tries < 0");
+            }
+            try {
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
+                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
+                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).get();
+                boolean exhausted = true;
+                for (int i = 1; i <= tries; i++) {
+                    try {
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        try {
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (condition.precondition) {
+                                exhausted = false;
+                                if (!condition.postcondition) {
+                                    logFalsified(name, i);
+                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6, val7));
+                                }
+                            }
+                        } catch(Failure.NonFatal nonFatal) {
+                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7)));
+                        }
+                    } catch(Failure.NonFatal nonFatal) {
+                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
+                    }
+                }
+                logSatisfied(name, tries, exhausted);
+                return new CheckResult.Satisfied(name, tries, exhausted);
+            } catch(Failure.NonFatal nonFatal) {
+                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
+            }
+        }
+    }
+
+    /**
+     * Represents a 8-ary checkable property.
+     * @since 1.2.0
+     */
+    public static class Property8<T1, T2, T3, T4, T5, T6, T7, T8> implements Checkable {
+
+        private final String name;
+        private final Arbitrary<T1> a1;
+        private final Arbitrary<T2> a2;
+        private final Arbitrary<T3> a3;
+        private final Arbitrary<T4> a4;
+        private final Arbitrary<T5> a5;
+        private final Arbitrary<T6> a6;
+        private final Arbitrary<T7> a7;
+        private final Arbitrary<T8> a8;
+        private final CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, Condition> predicate;
+
+        Property8(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, Condition> predicate) {
+            this.name = name;
+            this.a1 = a1;
+            this.a2 = a2;
+            this.a3 = a3;
+            this.a4 = a4;
+            this.a5 = a5;
+            this.a6 = a6;
+            this.a7 = a7;
+            this.a8 = a8;
+            this.predicate = predicate;
+        }
+
+        /**
+         * Returns an implication which composes this Property as pre-condition and a given post-condition.
+         *
+         * @param postcondition The postcondition of this implication
+         * @return A new Checkable implication
+         */
+        public Checkable implies(CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, Boolean> postcondition) {
+            final CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8) -> {
+                final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8);
+                if (precondition.isFalse()) {
+                    return Condition.EX_FALSO_QUODLIBET;
+                } else {
+                    return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8));
+                }
+            };
+            return new Property8<>(name, a1, a2, a3, a4, a5, a6, a7, a8, implication);
+        }
+
+        @Override
+        public CheckResult check(Random random, int size, int tries) {
+            Objects.requireNonNull(random, "random is null");
+            if (tries < 0) {
+                throw new IllegalArgumentException("tries < 0");
+            }
+            try {
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
+                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
+                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).get();
+                final Gen<T8> gen8 = Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).get();
+                boolean exhausted = true;
+                for (int i = 1; i <= tries; i++) {
+                    try {
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.apply(random)).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        try {
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            if (condition.precondition) {
+                                exhausted = false;
+                                if (!condition.postcondition) {
+                                    logFalsified(name, i);
+                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8));
+                                }
+                            }
+                        } catch(Failure.NonFatal nonFatal) {
+                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
                         logErroneous(name, i, nonFatal.getCause().getMessage());
