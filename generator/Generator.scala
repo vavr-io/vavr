@@ -486,22 +486,21 @@ def generateMainClasses(): Unit = {
          * To read further about monads in Java please refer to
          * <a href="http://java.dzone.com/articles/whats-wrong-java-8-part-iv">What's Wrong in Java 8, Part IV: Monads</a>.
          *
-         * @param <T> component type of this ${checked.gen("checked ")}monad
          * @param <M> placeholder for the type that implements this
+         * @param <T> component type of this ${checked.gen("checked ")}monad
          * @since 1.1.0
          */
-        public interface $className<T, M extends HigherKinded<?, M>> extends ${checked.gen("Checked")}Functor<T>, HigherKinded<T, M> {
+        public interface $className<M extends Kind<M, ?>, T> extends Kind<M, T>, ${checked.gen("Checked")}Functor<T> {
 
             /**
              * Returns the result of applying f to M's value of type T and returns a new M with value of type U.
              *
              * @param <U> component type of the resulting monad
-             * @param <MONAD> placeholder for the monad type of component type U and container type M
              * @param mapper a ${checked.gen("checked ")}function that maps the monad value to a new monad instance
              * @return a new $className instance of component type U and container type M
              * @throws NullPointerException if {@code mapper} is null
              */
-            <U, MONAD extends HigherKinded<U, M>> $className<U, M> flatMap($functionType<? super T, ? extends MONAD> mapper);
+            <U> $className<M, U> flatMap($functionType<? super T, ? extends Kind<M, U>> mapper);
 
             /**
              * Flattens a nested, monadic structure using a function.
@@ -518,12 +517,11 @@ def generateMainClasses(): Unit = {
              * </pre>
              *
              * @param <U> component type of the resulting {@code Monad}
-             * @param <MONAD> {@code Monad} type
              * @param f a function which maps elements of this monad to monads of the same kind
              * @return A monadic structure containing flattened elements.
              * @throws NullPointerException if {@code f} is null
              */
-            <U, MONAD extends HigherKinded<U, M>> $name<U, M> flatten($functionType<? super T, ? extends MONAD> f);
+            <U> $name<M, U> flatten($functionType<? super T, ? extends Kind<M, U>> f);
 
             /**
              * Checks, if an element exists such that the predicate holds.
@@ -557,10 +555,10 @@ def generateMainClasses(): Unit = {
              * @return An instance of this monad type
              * @throws NullPointerException if {@code action} is null
              */
-            $className<T, M> peek($consumerType<? super T> action);
+            $className<M, T> peek($consumerType<? super T> action);
 
             @Override
-            <U> $className<U, M> map($functionType<? super T, ? extends U> mapper);
+            <U> $className<M, U> map($functionType<? super T, ? extends U> mapper);
         }
       """
     }

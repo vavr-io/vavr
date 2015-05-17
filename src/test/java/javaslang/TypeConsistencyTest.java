@@ -6,7 +6,6 @@
 package javaslang;
 
 import javaslang.collection.List;
-import javaslang.collection.Seq;
 import javaslang.collection.Stream;
 import javaslang.control.Try;
 import org.junit.Test;
@@ -73,14 +72,14 @@ public class TypeConsistencyTest {
      */
     @Test
     public void shouldHaveAConsistentTypeSystem() {
-        final Seq<Class<?>> classes = loadClasses("src-gen/main/java")
+        final Stream<Class<?>> classes = loadClasses("src-gen/main/java")
                 .appendAll(loadClasses("src/main/java"))
                 .filter(c -> {
                     final String name = c.getName();
                     return !name.startsWith("javaslang.Function") && !name.startsWith("javaslang.CheckedFunction") &&
                            !name.startsWith("javaslang.Consumer") && !name.startsWith("javaslang.CheckedConsumer");
                 });
-        final Seq<String> msgs = classes
+        final Stream<String> msgs = classes
                 .map(clazz -> Tuple.of(clazz, getUnoverriddenMethods(clazz)))
                 .filter(findings -> !findings._2.isEmpty())
                 .map(findings -> Tuple.of(findings._1, findings._2.filter(method -> {
@@ -96,18 +95,18 @@ public class TypeConsistencyTest {
         }
     }
 
-    Seq<Method> getUnoverriddenMethods(Class<?> clazz) {
-        final Seq<Class<?>> superClasses = Stream.of(clazz.getInterfaces())
+    Stream<Method> getUnoverriddenMethods(Class<?> clazz) {
+        final Stream<Class<?>> superClasses = Stream.of(clazz.getInterfaces())
                 .append(clazz.getSuperclass())
                 .filter(c -> c != null);
         if (superClasses.isEmpty()) {
             return Stream.nil();
         } else {
-            final Seq<ComparableMethod> superMethods = getOverridableMethods(superClasses).filter(comparableMethod ->
+            final Stream<ComparableMethod> superMethods = getOverridableMethods(superClasses).filter(comparableMethod ->
                     // We're interested in methods that should be overridden with actual type as return type.
                     // Because we check this recursively, the class hierarchy is consistent here.
                     comparableMethod.m.getDeclaringClass().equals(comparableMethod.m.getReturnType()));
-            final Seq<ComparableMethod> thisMethods = getOverridableMethods(Stream.of(clazz));
+            final Stream<ComparableMethod> thisMethods = getOverridableMethods(Stream.of(clazz));
             return superMethods.filter(superMethod -> thisMethods
                     .findFirst(thisMethod -> thisMethod.equals(superMethod))
                             // TODO: special case if visibility is package private and classes are in different package
@@ -118,7 +117,7 @@ public class TypeConsistencyTest {
         }
     }
 
-    Seq<ComparableMethod> getOverridableMethods(Seq<Class<?>> classes) {
+    Stream<ComparableMethod> getOverridableMethods(Stream<Class<?>> classes) {
         return classes
                 .flatMap(clazz ->
                         Stream.of(clazz.getDeclaredMethods()).filter((Method m) ->
@@ -131,7 +130,7 @@ public class TypeConsistencyTest {
                                 .map(ComparableMethod::new));
     }
 
-    Seq<Class<?>> loadClasses(String srcDir) {
+    Stream<Class<?>> loadClasses(String srcDir) {
         final Path path = Paths.get(srcDir);
         final java.util.List<Class<?>> classes = new ArrayList<>();
         Try.of(() ->

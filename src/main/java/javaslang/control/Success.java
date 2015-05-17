@@ -5,7 +5,7 @@
  */
 package javaslang.control;
 
-import javaslang.algebra.HigherKinded;
+import javaslang.algebra.Kind;
 
 import java.io.Serializable;
 import java.util.NoSuchElementException;
@@ -144,7 +144,7 @@ public final class Success<T> implements Try<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U, TRY extends HigherKinded<U, Try<?>>> Try<U> flatMap(CheckedFunction<? super T, ? extends TRY> mapper) {
+    public <U> Try<U> flatMap(CheckedFunction<? super T, ? extends Kind<Try<?>, U>> mapper) {
         try {
             return (Try<U>) mapper.apply(value);
         } catch (Throwable t) {

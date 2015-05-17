@@ -5,7 +5,7 @@
  */
 package javaslang.control;
 
-import javaslang.algebra.HigherKinded;
+import javaslang.algebra.Kind;
 import javaslang.algebra.Monad;
 import javaslang.control.Valences.Univalent;
 
@@ -33,7 +33,7 @@ import java.util.function.Supplier;
  * @param <T> The type of the optional value.
  * @since 1.0.0
  */
-public interface Option<T> extends Monad<T, Option<?>>, Univalent<T>, Iterable<T> {
+public interface Option<T> extends Kind<Option<?>, T>, Monad<Option<?>, T>, Univalent<T>, Iterable<T> {
 
     /**
      * Creates a new Option of a given value.
@@ -151,14 +151,13 @@ public interface Option<T> extends Monad<T, Option<?>>, Univalent<T>, Iterable<T
      * </pre>
      *
      * @param <U>      component type of the result {@code Option}
-     * @param <OPTION> an {@code Option&lt;U&gt;}
      * @param f        a function which maps elements of this {@code Option} to {@code Option}s
      * @return a new {@code Option}
      * @throws NullPointerException if {@code f} is null
      */
     @SuppressWarnings("unchecked")
     @Override
-    default <U, OPTION extends HigherKinded<U, Option<?>>> Option<U> flatten(Function<? super T, ? extends OPTION> f) {
+    default <U> Option<U> flatten(Function<? super T, ? extends Kind<Option<?>, U>> f) {
         Objects.requireNonNull(f, "f is null");
         if (isEmpty()) {
             return None.instance();
@@ -220,7 +219,7 @@ public interface Option<T> extends Monad<T, Option<?>>, Univalent<T>, Iterable<T
      */
     @SuppressWarnings("unchecked")
     @Override
-    default <U, OPTION extends HigherKinded<U, Option<?>>> Option<U> flatMap(Function<? super T, ? extends OPTION> mapper) {
+    default <U> Option<U> flatMap(Function<? super T, ? extends Kind<Option<?>, U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return None.instance();

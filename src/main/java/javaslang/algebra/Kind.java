@@ -6,11 +6,12 @@
 package javaslang.algebra;
 
 /**
- * <p>The <em>HigherKinded</em> type declares a generic type constructor, which consists of
- * on component type and one container type. Subtypes of HigherKinded are expected to be of type {@code TYPE}.</p>
- * <p>HigherKinded is used to approximately simulate higher-kinded/higher-order types, which cannot be
- * expressed with Java.</p>
- *
+ * <strong>A {@code Kind} is the type of a type constructor.</strong>
+ * <p>
+ * It is denoted as decomposition of a type constructor, i.e. {@code List<T>} is {@code Kind<List<?>, T>}.
+ * <p>
+ * Higher-kinded/higher-order types cannot be expressed with Java. This is an approximation, it has its limitations.
+ * <p>
  * See also
  * <ul>
  * <li><a href="http://adriaanm.github.io/files/higher.pdf">Generics of a Higher Kind</a> (Moors, Piessens, Odersky)</li>
@@ -18,12 +19,9 @@ package javaslang.algebra;
  * <li><a href="http://en.wikipedia.org/wiki/Type_constructor">Type constructor</a> (wikipedia)</li>
  * </ul>
  *
- * @param <T>    component type of the type to be constructed
- * @param <TYPE> the container type, i.e. the type to be constructed.
+ * @param <TYPE> container type
+ * @param <T>    component type
  * @since 1.1.0
  */
-@SuppressWarnings("unused")
-public interface HigherKinded<T, TYPE extends HigherKinded<?, TYPE>> {
-
-    // used for type declaration only
+public interface Kind<TYPE extends Kind<TYPE, ?>, T> {
 }

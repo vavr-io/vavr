@@ -6,7 +6,7 @@
 package javaslang.control;
 
 import javaslang.algebra.CheckedMonad;
-import javaslang.algebra.HigherKinded;
+import javaslang.algebra.Kind;
 import javaslang.control.Valences.Bivalent;
 
 import java.util.Collections;
@@ -19,7 +19,7 @@ import java.util.function.Consumer;
  *
  * @param <T> Value type in the case of success.
  */
-public interface Try<T> extends CheckedMonad<T, Try<?>>, Bivalent<T, Throwable>, Iterable<T> {
+public interface Try<T> extends Kind<Try<?>, T>, CheckedMonad<Try<?>, T>, Bivalent<T, Throwable>, Iterable<T> {
 
     /**
      * Creates a Try of a CheckedSupplier.
@@ -130,14 +130,13 @@ public interface Try<T> extends CheckedMonad<T, Try<?>>, Bivalent<T, Throwable>,
      * </pre>
      *
      * @param <U>   component type of the result {@code Try}
-     * @param <TRY> a {@code Try&lt;U&gt;}
      * @param f     a function which maps elements of this {@code Try} to {@code Try}s
      * @return a new {@code Try}
      * @throws NullPointerException if {@code f} is null
      */
     @SuppressWarnings("unchecked")
     @Override
-    default <U, TRY extends HigherKinded<U, Try<?>>> Try<U> flatten(CheckedFunction<? super T, ? extends TRY> f) {
+    default <U> Try<U> flatten(CheckedFunction<? super T, ? extends Kind<Try<?>, U>> f) {
         Objects.requireNonNull(f, "f is null");
         if (isFailure()) {
             return (Failure<U>) this;
@@ -205,7 +204,7 @@ public interface Try<T> extends CheckedMonad<T, Try<?>>, Bivalent<T, Throwable>,
      * @return a new Try
      */
     @Override
-    <U, TRY extends HigherKinded<U, Try<?>>> Try<U> flatMap(CheckedFunction<? super T, ? extends TRY> mapper);
+    <U> Try<U> flatMap(CheckedFunction<? super T, ? extends Kind<Try<?>, U>> mapper);
 
     @Override
     default Iterator<T> iterator() {

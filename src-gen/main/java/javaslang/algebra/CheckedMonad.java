@@ -34,22 +34,21 @@ import javaslang.control.Try.CheckedPredicate;
  * To read further about monads in Java please refer to
  * <a href="http://java.dzone.com/articles/whats-wrong-java-8-part-iv">What's Wrong in Java 8, Part IV: Monads</a>.
  *
- * @param <T> component type of this checked monad
  * @param <M> placeholder for the type that implements this
+ * @param <T> component type of this checked monad
  * @since 1.1.0
  */
-public interface CheckedMonad<T, M extends HigherKinded<?, M>> extends CheckedFunctor<T>, HigherKinded<T, M> {
+public interface CheckedMonad<M extends Kind<M, ?>, T> extends Kind<M, T>, CheckedFunctor<T> {
 
     /**
      * Returns the result of applying f to M's value of type T and returns a new M with value of type U.
      *
      * @param <U> component type of the resulting monad
-     * @param <MONAD> placeholder for the monad type of component type U and container type M
      * @param mapper a checked function that maps the monad value to a new monad instance
      * @return a new CheckedMonad instance of component type U and container type M
      * @throws NullPointerException if {@code mapper} is null
      */
-    <U, MONAD extends HigherKinded<U, M>> CheckedMonad<U, M> flatMap(CheckedFunction<? super T, ? extends MONAD> mapper);
+    <U> CheckedMonad<M, U> flatMap(CheckedFunction<? super T, ? extends Kind<M, U>> mapper);
 
     /**
      * Flattens a nested, monadic structure using a function.
@@ -66,12 +65,11 @@ public interface CheckedMonad<T, M extends HigherKinded<?, M>> extends CheckedFu
      * </pre>
      *
      * @param <U> component type of the resulting {@code Monad}
-     * @param <MONAD> {@code Monad} type
      * @param f a function which maps elements of this monad to monads of the same kind
      * @return A monadic structure containing flattened elements.
      * @throws NullPointerException if {@code f} is null
      */
-    <U, MONAD extends HigherKinded<U, M>> CheckedMonad<U, M> flatten(CheckedFunction<? super T, ? extends MONAD> f);
+    <U> CheckedMonad<M, U> flatten(CheckedFunction<? super T, ? extends Kind<M, U>> f);
 
     /**
      * Checks, if an element exists such that the predicate holds.
@@ -105,8 +103,8 @@ public interface CheckedMonad<T, M extends HigherKinded<?, M>> extends CheckedFu
      * @return An instance of this monad type
      * @throws NullPointerException if {@code action} is null
      */
-    CheckedMonad<T, M> peek(CheckedConsumer<? super T> action);
+    CheckedMonad<M, T> peek(CheckedConsumer<? super T> action);
 
     @Override
-    <U> CheckedMonad<U, M> map(CheckedFunction<? super T, ? extends U> mapper);
+    <U> CheckedMonad<M, U> map(CheckedFunction<? super T, ? extends U> mapper);
 }

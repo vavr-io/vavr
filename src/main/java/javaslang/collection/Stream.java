@@ -8,7 +8,8 @@ package javaslang.collection;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
-import javaslang.algebra.HigherKinded;
+import javaslang.algebra.Kind;
+import javaslang.algebra.Monad;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -53,7 +54,7 @@ import java.util.stream.Collector;
  * @since 1.1.0
  */
 // DEV-NOTE: Beware of serializing IO streams.
-public interface Stream<T> extends Seq<T> {
+public interface Stream<T> extends Kind<Stream<?>, T>, Seq<Stream<?>, T>, Monad<Stream<?>, T> {
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
@@ -288,6 +289,12 @@ public interface Stream<T> extends Seq<T> {
     }
 
     @Override
+    default boolean exists(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return Seq.super.exists(predicate);
+    }
+
+    @Override
     default Stream<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         Stream<T> stream = this;
@@ -304,7 +311,7 @@ public interface Stream<T> extends Seq<T> {
     }
 
     @Override
-    default <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Stream<U> flatMap(Function<? super T, ? extends TRAVERSABLE> mapper) {
+    default <U> Stream<U> flatMap(Function<? super T, ? extends Kind<Stream<?>, U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? Nil.instance() : map(mapper).flatten(Function.identity());
     }
@@ -327,14 +334,13 @@ public interface Stream<T> extends Seq<T> {
      * </pre>
      *
      * @param <U>           component type of the result {@code Stream}
-     * @param <TRAVERSABLE> a {@code Traversable&lt;U&gt;}
      * @param f             a function which maps elements of this {@code Stream} to {@code Stream}s
      * @return a new {@code Stream}
      * @throws NullPointerException if {@code f} is null
      */
     @SuppressWarnings("unchecked")
     @Override
-    default <U, TRAVERSABLE extends HigherKinded<U, Traversable<?>>> Stream<U> flatten(Function<? super T, ? extends TRAVERSABLE> f) {
+    default <U> Stream<U> flatten(Function<? super T, ? extends Kind<Stream<?>, U>> f) {
         Objects.requireNonNull(f, "f is null");
         return isEmpty() ? Nil.instance() : Stream.ofAll(new Iterator<U>() {
 
@@ -345,7 +351,7 @@ public interface Stream<T> extends Seq<T> {
             public boolean hasNext() {
                 boolean currentHasNext;
                 while (!(currentHasNext = current.hasNext()) && inputs.hasNext()) {
-                    current = ((Traversable<U>) f.apply(inputs.next())).iterator();
+                    current = ((Stream<U>) f.apply(inputs.next())).iterator();
                 }
                 return currentHasNext;
             }
@@ -355,6 +361,18 @@ public interface Stream<T> extends Seq<T> {
                 return current.next();
             }
         });
+    }
+
+    @Override
+    default void forEach(Consumer<? super T> action) {
+        Objects.requireNonNull(action, "action is null");
+        Seq.super.forEach(action);
+    }
+
+    @Override
+    default boolean forAll(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return Seq.super.forAll(predicate);
     }
 
     @Override

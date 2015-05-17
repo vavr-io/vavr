@@ -5,7 +5,7 @@
  */
 package javaslang.test;
 
-import javaslang.algebra.HigherKinded;
+import javaslang.algebra.Kind;
 import javaslang.algebra.Monad;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
@@ -23,7 +23,7 @@ import java.util.function.Predicate;
  * @since 1.2.0
  */
 @FunctionalInterface
-public interface Arbitrary<T> extends Monad<T, Arbitrary<?>>, Iterable<T> {
+public interface Arbitrary<T> extends Kind<Arbitrary<?>, T>, Monad<Arbitrary<?>, T>, Iterable<T> {
 
     /**
      * <p>
@@ -89,7 +89,7 @@ public interface Arbitrary<T> extends Monad<T, Arbitrary<?>>, Iterable<T> {
      */
     @SuppressWarnings("unchecked")
     @Override
-    default <U, ARBITRARY extends HigherKinded<U, Arbitrary<?>>> Arbitrary<U> flatMap(Function<? super T, ? extends ARBITRARY> mapper) {
+    default <U> Arbitrary<U> flatMap(Function<? super T, ? extends Kind<Arbitrary<?>, U>> mapper) {
         return n -> {
             final Gen<T> generator = apply(n);
             return random -> ((Arbitrary<U>) mapper.apply(generator.apply(random))).apply(n).apply(random);
@@ -108,7 +108,7 @@ public interface Arbitrary<T> extends Monad<T, Arbitrary<?>>, Iterable<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    default <U, ARBITRARY extends HigherKinded<U, Arbitrary<?>>> Arbitrary<U> flatten(Function<? super T, ? extends ARBITRARY> f) {
+    default <U> Arbitrary<U> flatten(Function<? super T, ? extends Kind<Arbitrary<?>, U>> f) {
         return size -> random -> {
             final Gen<T> gen = apply(size);
             final Arbitrary<U> arbitrary = (Arbitrary<U>) f.apply(gen.apply(random));
