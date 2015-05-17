@@ -38,7 +38,7 @@ import javaslang.Kind;
  * @param <T> component type of this monad
  * @since 1.1.0
  */
-public interface Monad<M extends Kind<M, ?>, T> extends Kind<M, T>, Functor<T> {
+public interface Monad<M extends Monad<M, ?>, T> extends Kind<M, T>, Functor<T> {
 
     /**
      * Returns the result of applying f to M's value of type T and returns a new M with value of type U.

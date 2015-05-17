@@ -23,7 +23,7 @@ package javaslang;
  * Here is how it looks like:
  * <pre>
  * <code>
- * interface Monad&lt;M extends Kind&lt;M, ?&gt;, T&gt; extends Kind&lt;M, T&gt; {
+ * interface Monad&lt;M extends Monad&lt;M, ?&gt;, T&gt; extends Kind&lt;M, T&gt; {
  *     &lt;U&gt; Monad&lt;M, U&gt; flatMap(Function&lt;? super T, ? extends Kind&lt;M, U&gt;&gt; mapper);
  * }
  *
@@ -43,6 +43,14 @@ package javaslang;
  * </code>
  * </pre>
  *
+ * <strong>Limitations:</strong>
+ * <ul>
+ * <li>Once a type extends {@code Kind} with a concrete first generic parameter type, like {@code List} does, the
+ * {@code Kind} is fixated. There is no way for subclasses to implement a more specific {@code Kind}.</li>
+ * <li>We can construct illegal relationships, like {@code interface Option<T> extends Monad<List<?>, T>}. The compiler
+ * will detect this, if {@code Kind} is also extended appropriately:
+ * {@code interface Option<T> extends Kind<Option<?>, T>, Monad<Option<?>, T>}.</li>
+ * </ul>
  * <p>
  * See also
  * <ul>

@@ -39,7 +39,7 @@ import javaslang.control.Try.CheckedPredicate;
  * @param <T> component type of this checked monad
  * @since 1.1.0
  */
-public interface CheckedMonad<M extends Kind<M, ?>, T> extends Kind<M, T>, CheckedFunctor<T> {
+public interface CheckedMonad<M extends CheckedMonad<M, ?>, T> extends Kind<M, T>, CheckedFunctor<T> {
 
     /**
      * Returns the result of applying f to M's value of type T and returns a new M with value of type U.
