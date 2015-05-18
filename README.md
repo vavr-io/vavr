@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/javaslang/javaslang.png)](https://travis-ci.org/javaslang/javaslang)
 [![Coverage Status](https://img.shields.io/coveralls/javaslang/javaslang.svg)](https://coveralls.io/r/javaslang/javaslang)
 
-# Javaslang
+# [Javaslang](http://javaslang.com/)
 
 Feature-rich & self-contained functional programming in Java&trade; 8 and above.
 
