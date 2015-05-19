@@ -13,7 +13,6 @@ import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
 
-import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
@@ -388,8 +387,8 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
     /**
      * Flattens a {@code Traversable} using a function.
      *
-     * @param <U>           component type of the result {@code Traversable}
-     * @param f             a function which maps elements of this Traversable to Traversables
+     * @param <U> component type of the result {@code Traversable}
+     * @param f   a function which maps elements of this Traversable to Traversables
      * @return a new {@code Traversable}
      * @throws NullPointerException if {@code f} is null
      */
@@ -1014,12 +1013,10 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stderr.
      */
     default void stderr() {
-        try (PrintStream writer = System.err) {
-            for (T t : this) {
-                writer.println(String.valueOf(t));
-                if (writer.checkError()) {
-                    throw new IllegalStateException("Error writing to stderr");
-                }
+        for (T t : this) {
+            System.err.println(String.valueOf(t));
+            if (System.err.checkError()) {
+                throw new IllegalStateException("Error writing to stderr");
             }
         }
     }
@@ -1031,12 +1028,10 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stdout.
      */
     default void stdout() {
-        try (PrintStream writer = System.out) {
-            for (T t : this) {
-                writer.println(String.valueOf(t));
-                if (writer.checkError()) {
-                    throw new IllegalStateException("Error writing to stdout");
-                }
+        for (T t : this) {
+            System.out.println(String.valueOf(t));
+            if (System.out.checkError()) {
+                throw new IllegalStateException("Error writing to stdout");
             }
         }
     }
