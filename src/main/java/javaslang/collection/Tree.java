@@ -5,7 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.algebra.Functor;
 import javaslang.control.Match;
 
 import java.util.*;
@@ -17,7 +16,7 @@ import java.util.function.Function;
  * @param <T> component type of this Tree
  * @since 1.1.0
  */
-public interface Tree<T> extends Functor<T>, Iterable<T> {
+public interface Tree<T> extends Iterable<T> {
 
     /**
      * Gets the value of this tree.
@@ -198,7 +197,6 @@ public interface Tree<T> extends Functor<T>, Iterable<T> {
         }
     }
 
-    @Override
     <U> Tree<U> map(Function<? super T, ? extends U> mapper);
 
     /**

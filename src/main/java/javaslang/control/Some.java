@@ -58,11 +58,6 @@ public final class Some<T> implements Option<T>, Serializable {
     }
 
     @Override
-    public Some<T> toOption() {
-        return this;
-    }
-
-    @Override
     public Optional<T> toJavaOptional() {
         return Optional.ofNullable(value);
     }

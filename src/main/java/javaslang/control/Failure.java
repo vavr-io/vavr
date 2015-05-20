@@ -5,8 +5,6 @@
  */
 package javaslang.control;
 
-import javaslang.Kind;
-
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Optional;
@@ -143,8 +141,7 @@ public final class Failure<T> implements Try<T>, Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    @Override
-    public <U> Failure<U> flatMap(CheckedFunction<? super T, ? extends Kind<Try<?>, U>> mapper) {
+    public <U> Failure<U> flatMap(CheckedFunction<? super T, ? extends Try<U>> mapper) {
         return (Failure<U>) this;
     }
 
