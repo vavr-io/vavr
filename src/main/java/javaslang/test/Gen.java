@@ -6,8 +6,6 @@
 package javaslang.test;
 
 import javaslang.Tuple2;
-import javaslang.Kind;
-import javaslang.algebra.Monad;
 import javaslang.collection.Stream;
 
 import java.util.Iterator;
@@ -31,7 +29,7 @@ import java.util.function.Predicate;
  * @since 1.2.0
  */
 @FunctionalInterface
-public interface Gen<T> extends Kind<Gen<?>, T>, Monad<Gen<?>, T>, Iterable<T> {
+public interface Gen<T> extends Iterable<T> {
 
     int FILTER_THRESHOLD = Integer.MAX_VALUE;
 
@@ -272,7 +270,6 @@ public interface Gen<T> extends Kind<Gen<?>, T>, Monad<Gen<?>, T>, Iterable<T> {
      * @param <U>    Type of the mapped object
      * @return A new generator
      */
-    @Override
     default <U> Gen<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return random -> mapper.apply(apply(random));
@@ -285,12 +282,9 @@ public interface Gen<T> extends Kind<Gen<?>, T>, Monad<Gen<?>, T>, Iterable<T> {
      * @param <U>    Type of generated objects of the new generator
      * @return A new generator
      */
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> Gen<U> flatMap(Function<? super T, ? extends Kind<Gen<?>, U>> mapper) {
+    default <U> Gen<U> flatMap(Function<? super T, ? extends Gen<U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        //noinspection Convert2MethodRef
-        return random -> ((Gen<U>) mapper.apply(apply(random))).apply(random);
+        return random -> mapper.apply(apply(random)).apply(random);
     }
 
     /**
@@ -314,11 +308,9 @@ public interface Gen<T> extends Kind<Gen<?>, T>, Monad<Gen<?>, T>, Iterable<T> {
         };
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> Gen<U> flatten(Function<? super T, ? extends Kind<Gen<?>, U>> f) {
+    default <U> Gen<U> flatten(Function<? super T, ? extends Gen<U>> f) {
         return random -> {
-            final Gen<U> gen = (Gen<U>) f.apply(apply(random));
+            final Gen<U> gen = f.apply(apply(random));
             return gen.apply(random);
         };
     }
@@ -331,7 +323,6 @@ public interface Gen<T> extends Kind<Gen<?>, T>, Monad<Gen<?>, T>, Iterable<T> {
      * @param predicate A {@code Predicate}
      * @return true, if there exists an element which meets the predicate
      */
-    @Override
     default boolean exists(Predicate<? super T> predicate) {
         return !forAll(predicate.negate());
     }
@@ -344,7 +335,6 @@ public interface Gen<T> extends Kind<Gen<?>, T>, Monad<Gen<?>, T>, Iterable<T> {
      * @param predicate A {@code Predicate}
      * @return false, if there exists an element which does not meet the predicate
      */
-    @Override
     default boolean forAll(Predicate<? super T> predicate) {
         for (T t : this) {
             if (!predicate.test(t)) {
@@ -367,7 +357,6 @@ public interface Gen<T> extends Kind<Gen<?>, T>, Monad<Gen<?>, T>, Iterable<T> {
         }
     }
 
-    @Override
     default Gen<T> peek(Consumer<? super T> action) {
         return random -> {
             final T t = apply(random);

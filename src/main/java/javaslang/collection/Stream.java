@@ -8,8 +8,6 @@ package javaslang.collection;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
-import javaslang.Kind;
-import javaslang.algebra.Monad;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -54,7 +52,7 @@ import java.util.stream.Collector;
  * @since 1.1.0
  */
 // DEV-NOTE: Beware of serializing IO streams.
-public interface Stream<T> extends Kind<Stream<?>, T>, Seq<Stream<?>, T>, Monad<Stream<?>, T> {
+public interface Stream<T> extends Seq<T> {
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
@@ -311,7 +309,7 @@ public interface Stream<T> extends Kind<Stream<?>, T>, Seq<Stream<?>, T>, Monad<
     }
 
     @Override
-    default <U> Stream<U> flatMap(Function<? super T, ? extends Kind<Stream<?>, U>> mapper) {
+    default <U> Stream<U> flatMap(Function<? super T, ? extends Iterable<U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? Nil.instance() : map(mapper).flatten(Function.identity());
     }
@@ -340,7 +338,7 @@ public interface Stream<T> extends Kind<Stream<?>, T>, Seq<Stream<?>, T>, Monad<
      */
     @SuppressWarnings("unchecked")
     @Override
-    default <U> Stream<U> flatten(Function<? super T, ? extends Kind<Stream<?>, U>> f) {
+    default <U> Stream<U> flatten(Function<? super T, ? extends Iterable<U>> f) {
         Objects.requireNonNull(f, "f is null");
         return isEmpty() ? Nil.instance() : Stream.ofAll(new Iterator<U>() {
 
@@ -351,7 +349,7 @@ public interface Stream<T> extends Kind<Stream<?>, T>, Seq<Stream<?>, T>, Monad<
             public boolean hasNext() {
                 boolean currentHasNext;
                 while (!(currentHasNext = current.hasNext()) && inputs.hasNext()) {
-                    current = ((Stream<U>) f.apply(inputs.next())).iterator();
+                    current = f.apply(inputs.next()).iterator();
                 }
                 return currentHasNext;
             }
@@ -519,7 +517,7 @@ public interface Stream<T> extends Kind<Stream<?>, T>, Seq<Stream<?>, T>, Monad<
                 return Stream.of(this);
             } else {
                 final Stream<Stream<T>> zero = Nil.instance();
-                // TODO: IntelliJ IDEA 14.1.1 needs a redundant cast here, jdk 1.8.0_40 compiles fine
+                // TODO: IntelliJ IDEA 14.1.3 needs a redundant cast here, jdk 1.8.0_40 compiles fine
                 return distinct().foldLeft(zero, (xs, x) -> xs.appendAll(remove(x).permutations().map((Function<Stream<T>, Stream<T>>) l -> l.prepend(x))));
             }
         }

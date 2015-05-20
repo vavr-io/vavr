@@ -5,21 +5,19 @@
  */
 package javaslang.control;
 
-import javaslang.algebra.CheckedMonad;
-import javaslang.Kind;
-import javaslang.control.Valences.Bivalent;
-
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * An implementation similar to Scala's Try control.
  *
  * @param <T> Value type in the case of success.
  */
-public interface Try<T> extends Kind<Try<?>, T>, CheckedMonad<Try<?>, T>, Bivalent<T, Throwable>, Iterable<T> {
+public interface Try<T> extends Iterable<T> {
 
     /**
      * Creates a Try of a CheckedSupplier.
@@ -67,6 +65,16 @@ public interface Try<T> extends Kind<Try<?>, T>, CheckedMonad<Try<?>, T>, Bivale
      */
     boolean isSuccess();
 
+    T get();
+
+    T orElse(T other);
+
+    T orElseGet(Function<? super Throwable, ? extends T> other);
+
+    void orElseRun(Consumer<? super Throwable> action);
+
+    <X extends Throwable> T orElseThrow(Function<? super Throwable, X> exceptionProvider) throws X;
+
     /**
      * Returns {@code this}, if this is a Success, otherwise tries to recover the exception of the failure with {@code f},
      * i.e. calling {@code Try.of(() -> f.apply(throwable))}.
@@ -103,6 +111,12 @@ public interface Try<T> extends Kind<Try<?>, T>, CheckedMonad<Try<?>, T>, Bivale
      */
     Try<T> onFailure(CheckedConsumer<Throwable> f);
 
+    Option<T> toOption();
+
+    Either<Throwable, T> toEither();
+
+    Optional<T> toJavaOptional();
+
     /**
      * <p>Returns {@code this} if this is a Failure or this is a Success and the value satisfies the predicate.</p>
      * <p>Returns a new Failure, if this is a Success and the value does not satisfy the Predicate or an exception
@@ -135,21 +149,19 @@ public interface Try<T> extends Kind<Try<?>, T>, CheckedMonad<Try<?>, T>, Bivale
      * @throws NullPointerException if {@code f} is null
      */
     @SuppressWarnings("unchecked")
-    @Override
-    default <U> Try<U> flatten(CheckedFunction<? super T, ? extends Kind<Try<?>, U>> f) {
+    default <U> Try<U> flatten(CheckedFunction<? super T, ? extends Try<U>> f) {
         Objects.requireNonNull(f, "f is null");
         if (isFailure()) {
             return (Failure<U>) this;
         } else {
             try {
-                return (Try<U>) f.apply(get());
+                return f.apply(get());
             } catch (Throwable t) {
                 return new Failure<>(t);
             }
         }
     }
 
-    @Override
     default boolean exists(CheckedPredicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         try {
@@ -159,7 +171,6 @@ public interface Try<T> extends Kind<Try<?>, T>, CheckedMonad<Try<?>, T>, Bivale
         }
     }
 
-    @Override
     default boolean forAll(CheckedPredicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         try {
@@ -183,7 +194,6 @@ public interface Try<T> extends Kind<Try<?>, T>, CheckedMonad<Try<?>, T>, Bivale
      * @param action A Consumer
      * @return this Try
      */
-    @Override
     Try<T> peek(CheckedConsumer<? super T> action);
 
     /**
@@ -193,7 +203,6 @@ public interface Try<T> extends Kind<Try<?>, T>, CheckedMonad<Try<?>, T>, Bivale
      * @param <U>    The new component type
      * @return a new Try
      */
-    @Override
     <U> Try<U> map(CheckedFunction<? super T, ? extends U> mapper);
 
     /**
@@ -203,8 +212,7 @@ public interface Try<T> extends Kind<Try<?>, T>, CheckedMonad<Try<?>, T>, Bivale
      * @param <U>    The new component type
      * @return a new Try
      */
-    @Override
-    <U> Try<U> flatMap(CheckedFunction<? super T, ? extends Kind<Try<?>, U>> mapper);
+    <U> Try<U> flatMap(CheckedFunction<? super T, ? extends Try<U>> mapper);
 
     @Override
     default Iterator<T> iterator() {

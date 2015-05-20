@@ -32,7 +32,6 @@ public class TypeConsistencyTest {
             "javaslang.control.Failure//public abstract javaslang.control.Try javaslang.control.Try.recover(javaslang.control.Try$CheckedFunction)",
             "javaslang.control.Failure//public abstract javaslang.control.Try javaslang.control.Try.recoverWith(javaslang.control.Try$CheckedFunction)",
             "javaslang.control.Failure//public abstract javaslang.control.Try javaslang.control.Try.failed()",
-            "javaslang.control.Failure//public default javaslang.control.Try javaslang.control.Try.flatten()",
             "javaslang.control.Failure//public default javaslang.control.Try javaslang.control.Try.flatten(javaslang.control.Try$CheckedFunction)",
             "javaslang.control.Failure//public abstract javaslang.control.Try javaslang.control.Try.map(javaslang.control.Try$CheckedFunction)",
             "javaslang.control.Failure//public default javaslang.control.Try javaslang.control.Try.andThen(javaslang.control.Try$CheckedRunnable)",
@@ -41,7 +40,6 @@ public class TypeConsistencyTest {
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.failed()",
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.filter(javaslang.control.Try$CheckedPredicate)",
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.flatMap(javaslang.control.Try$CheckedFunction)",
-            "javaslang.control.Success//public default javaslang.control.Try javaslang.control.Try.flatten()",
             "javaslang.control.Success//public default javaslang.control.Try javaslang.control.Try.flatten(javaslang.control.Try$CheckedFunction)",
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.map(javaslang.control.Try$CheckedFunction)",
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.peek(javaslang.control.Try$CheckedConsumer)",
@@ -50,13 +48,11 @@ public class TypeConsistencyTest {
             // control.None
             "javaslang.control.None//public default javaslang.control.Option javaslang.control.Option.filter(java.util.function.Predicate)",
             "javaslang.control.None//public default javaslang.control.Option javaslang.control.Option.flatMap(java.util.function.Function)",
-            "javaslang.control.None//public default javaslang.control.Option javaslang.control.Option.flatten()",
             "javaslang.control.None//public default javaslang.control.Option javaslang.control.Option.flatten(java.util.function.Function)",
 
             // control.Some
             "javaslang.control.Some//public default javaslang.control.Option javaslang.control.Option.filter(java.util.function.Predicate)",
             "javaslang.control.Some//public default javaslang.control.Option javaslang.control.Option.flatMap(java.util.function.Function)",
-            "javaslang.control.Some//public default javaslang.control.Option javaslang.control.Option.flatten()",
             "javaslang.control.Some//public default javaslang.control.Option javaslang.control.Option.flatten(java.util.function.Function)",
 
             // control.Left
