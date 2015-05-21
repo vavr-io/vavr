@@ -5,6 +5,8 @@
  */
 package javaslang.control;
 
+import javaslang.Kind;
+
 import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -142,7 +144,7 @@ public final class Success<T> implements Try<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U> Try<U> flatMap(CheckedFunction<? super T, ? extends Try<U>> mapper) {
+    public <U> Try<U> flatMap(CheckedFunction<? super T, ? extends Kind<Try<?>, U>> mapper) {
         try {
             return (Try<U>) mapper.apply(value);
         } catch (Throwable t) {

@@ -5,6 +5,8 @@
  */
 package javaslang.test;
 
+import javaslang.Kind;
+import javaslang.algebra.Monad;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
 
@@ -21,7 +23,7 @@ import java.util.function.Predicate;
  * @since 1.2.0
  */
 @FunctionalInterface
-public interface Arbitrary<T> extends Iterable<T> {
+public interface Arbitrary<T> extends Kind<Arbitrary<?>, T>, Monad<Arbitrary<?>, T>, Iterable<T> {
 
     /**
      * <p>
@@ -69,6 +71,7 @@ public interface Arbitrary<T> extends Iterable<T> {
      * @param <U>    Type of the mapped object
      * @return A new generator
      */
+    @Override
     default <U> Arbitrary<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return n -> {
@@ -84,10 +87,12 @@ public interface Arbitrary<T> extends Iterable<T> {
      * @param <U>    New type of arbitrary objects
      * @return A new Arbitrary
      */
-    default <U> Arbitrary<U> flatMap(Function<? super T, ? extends Arbitrary<U>> mapper) {
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Arbitrary<U> flatMap(Function<? super T, ? extends Kind<Arbitrary<?>, U>> mapper) {
         return n -> {
             final Gen<T> generator = apply(n);
-            return random -> mapper.apply(generator.apply(random)).apply(n).apply(random);
+            return random -> ((Arbitrary<U>) mapper.apply(generator.apply(random))).apply(n).apply(random);
         };
     }
 
@@ -101,10 +106,12 @@ public interface Arbitrary<T> extends Iterable<T> {
         return n -> apply(n).filter(predicate);
     }
 
-    default <U> Arbitrary<U> flatten(Function<? super T, ? extends Arbitrary<U>> f) {
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Arbitrary<U> flatten(Function<? super T, ? extends Kind<Arbitrary<?>, U>> f) {
         return size -> random -> {
             final Gen<T> gen = apply(size);
-            final Arbitrary<U> arbitrary = f.apply(gen.apply(random));
+            final Arbitrary<U> arbitrary = (Arbitrary<U>) f.apply(gen.apply(random));
             return arbitrary.apply(size).apply(random);
         };
     }
@@ -117,6 +124,7 @@ public interface Arbitrary<T> extends Iterable<T> {
      * @param predicate A {@code Predicate}
      * @return true, if there exists an element which meets the predicate
      */
+    @Override
     default boolean exists(Predicate<? super T> predicate) {
         return !forAll(predicate.negate());
     }
@@ -129,6 +137,7 @@ public interface Arbitrary<T> extends Iterable<T> {
      * @param predicate A {@code Predicate}
      * @return false, if there exists an element which does not meet the predicate
      */
+    @Override
     default boolean forAll(Predicate<? super T> predicate) {
         for (T t : this) {
             if (!predicate.test(t)) {
@@ -149,6 +158,7 @@ public interface Arbitrary<T> extends Iterable<T> {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     default Arbitrary<T> peek(Consumer<? super T> action) {
         return size -> apply(size).peek(action);
     }

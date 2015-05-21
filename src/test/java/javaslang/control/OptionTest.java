@@ -6,15 +6,23 @@
 package javaslang.control;
 
 import javaslang.Serializables;
+import javaslang.Tuple;
+import javaslang.algebra.Monad;
+import javaslang.algebra.MonadLaws;
+import javaslang.test.Arbitrary;
+import javaslang.test.CheckResult;
+import javaslang.test.CheckResultAssertions;
+import javaslang.test.Gen;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class OptionTest {
+public class OptionTest implements MonadLaws<Option<?>> {
 
     // -- construction
 
@@ -81,6 +89,20 @@ public class OptionTest {
     @Test(expected = RuntimeException.class)
     public void shouldThrowOnOrElseThrowWhenValueIsNotPresent() {
         Option.none().orElseThrow(() -> new RuntimeException("none"));
+    }
+
+    // -- toOption
+
+    @Test
+    public void shouldConvertNoneToOption() {
+        final None<Object> none = None.instance();
+        assertThat(none.toOption()).isEqualTo(none);
+    }
+
+    @Test
+    public void shouldConvertSomeToOption() {
+        final Some<Integer> some = new Some<>(1);
+        assertThat(some.toOption()).isEqualTo(some);
     }
 
     // -- toJavaOptional
@@ -355,5 +377,68 @@ public class OptionTest {
     public void shouldPreserveSingletonWhenDeserializingNone() {
         final Object none = Serializables.deserialize(Serializables.serialize(None.instance()));
         assertThat(none == None.instance()).isTrue();
+    }
+
+    // -- FunctorLaws
+
+    static final Arbitrary<Option<Integer>> OPTIONS = size -> random -> {
+        final Gen<Option<Integer>> noneInt = Gen.of(None.instance());
+        final Gen<Option<Integer>> someInt = Gen.choose(-size, size).map(Some::new);
+        return Gen.frequency(
+                Tuple.of(1, noneInt),
+                Tuple.of(4, someInt)
+        ).apply(random);
+    };
+
+    @Test
+    @Override
+    public void shouldSatisfyFunctorIdentity() {
+        final CheckResult result = checkFunctorIdentity(OPTIONS);
+        CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
+    }
+
+    @Test
+    @Override
+    public void shouldSatisfyFunctorComposition() {
+        final Arbitrary<Function<? super Integer, ? extends Double>> before =
+                size -> random -> Double::valueOf;
+        final Arbitrary<Function<? super Double, ? extends String>> after =
+                size -> random -> String::valueOf;
+        final CheckResult result = checkFunctorComposition(OPTIONS, before, after);
+        CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
+    }
+
+    // -- MonadLaws
+
+    static final Arbitrary<Integer> INTEGERS = size -> random -> Gen.frequency(
+            Tuple.of(1, Gen.of(null)),
+            Tuple.of(4, Gen.choose(-size, size))
+    ).apply(random);
+
+    @Test
+    @Override
+    public void shouldSatisfyMonadLeftIdentity() {
+        final Arbitrary<Function<? super Integer, ? extends Monad<Option<?>, String>>> mappers =
+                size -> random -> i -> Option.of(i).map(String::valueOf);
+        final CheckResult result = checkMonadLeftIdentity(Option::of, INTEGERS, mappers);
+        CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
+    }
+
+    @Test
+    @Override
+    public void shouldSatisfyMonadRightIdentity() {
+        final CheckResult result = checkMonadRightIdentity(Option::of, OPTIONS);
+        CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
+    }
+
+    @Test
+    @Override
+    public void shouldSatisfyMonadAssociativity() {
+        final Arbitrary<Function<? super Integer, ? extends Monad<Option<?>, Double>>> before =
+                size -> random -> i -> Option.of(i).map(Double::valueOf);
+        final Arbitrary<Function<? super Double, ? extends Monad<Option<?>, String>>> after =
+                size -> random -> d -> Option.of(d).map(String::valueOf);
+        final CheckResult result = checkMonadAssociativity(OPTIONS, before, after);
+        CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
     }
 }

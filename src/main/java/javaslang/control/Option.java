@@ -5,10 +5,13 @@
  */
 package javaslang.control;
 
+import javaslang.Kind;
+import javaslang.algebra.Monad;
+import javaslang.control.Valences.Univalent;
+
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -30,7 +33,7 @@ import java.util.function.Supplier;
  * @param <T> The type of the optional value.
  * @since 1.0.0
  */
-public interface Option<T> extends Iterable<T> {
+public interface Option<T> extends Kind<Option<?>, T>, Monad<Option<?>, T>, Univalent<T>, Iterable<T> {
 
     /**
      * Creates a new Option of a given value.
@@ -70,8 +73,6 @@ public interface Option<T> extends Iterable<T> {
         return !isEmpty();
     }
 
-    T get();
-
     /**
      * <p>Returns the value if this is a {@code Some} or the {@code other} value if this is a {@code None}.</p>
      * <p>Please note, that the other value is eagerly evaluated.</p>
@@ -79,6 +80,7 @@ public interface Option<T> extends Iterable<T> {
      * @param other An alternative value
      * @return This value, if this Option is defined or the {@code other} value, if this Option is empty.
      */
+    @Override
     default T orElse(T other) {
         return isEmpty() ? other : get();
     }
@@ -91,6 +93,7 @@ public interface Option<T> extends Iterable<T> {
      * @param supplier An alternative value supplier
      * @return This value, if this Option is defined or the {@code other} value, if this Option is empty.
      */
+    @Override
     default T orElseGet(Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return isEmpty() ? supplier.get() : get();
@@ -104,6 +107,7 @@ public interface Option<T> extends Iterable<T> {
      * @return This value, if this Option is defined, otherwise throws X
      * @throws X a throwable
      */
+    @Override
     default <X extends Throwable> T orElseThrow(Supplier<X> exceptionSupplier) throws X {
         Objects.requireNonNull(exceptionSupplier, "exceptionSupplier is null");
         if (isEmpty()) {
@@ -152,20 +156,23 @@ public interface Option<T> extends Iterable<T> {
      * @throws NullPointerException if {@code f} is null
      */
     @SuppressWarnings("unchecked")
-    default <U> Option<U> flatten(Function<? super T, ? extends Option<U>> f) {
+    @Override
+    default <U> Option<U> flatten(Function<? super T, ? extends Kind<Option<?>, U>> f) {
         Objects.requireNonNull(f, "f is null");
         if (isEmpty()) {
             return None.instance();
         } else {
-            return f.apply(get());
+            return (Option<U>) f.apply(get());
         }
     }
 
+    @Override
     default boolean exists(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return isDefined() && predicate.test(get());
     }
 
+    @Override
     default boolean forAll(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return isDefined() && predicate.test(get());
@@ -190,6 +197,7 @@ public interface Option<T> extends Iterable<T> {
      * @param action An action which can be applied to an optional value
      * @return this {@code Option}
      */
+    @Override
     Option<T> peek(Consumer<? super T> action);
 
     /**
@@ -199,6 +207,7 @@ public interface Option<T> extends Iterable<T> {
      * @param <U>    The new value type
      * @return a new {@code Some} containing the mapped value if this Option is defined, otherwise {@code None}, if this is empty.
      */
+    @Override
     <U> Option<U> map(Function<? super T, ? extends U> mapper);
 
     /**
@@ -208,21 +217,16 @@ public interface Option<T> extends Iterable<T> {
      * @param <U>    Component type of the resulting Option
      * @return a new {@code Option}
      */
-    default <U> Option<U> flatMap(Function<? super T, ? extends Option<U>> mapper) {
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Option<U> flatMap(Function<? super T, ? extends Kind<Option<?>, U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return None.instance();
         } else {
-            return mapper.apply(get());
+            return (Option<U>) mapper.apply(get());
         }
     }
-
-    /**
-     * Converts this {@code Option} to a {@code java.util.Optional}.
-     *
-     * @return a new {@code Optional}
-     */
-    Optional<T> toJavaOptional();
 
     @Override
     default Iterator<T> iterator() {
