@@ -7,6 +7,8 @@ package javaslang.collection;
 
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.Kind;
+import javaslang.algebra.Monad;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -44,7 +46,7 @@ import java.util.stream.Collector;
  * @param <T> Component type of the List.
  * @since 1.1.0
  */
-public interface List<T> extends Seq<T> {
+public interface List<T> extends Kind<List<?>, T>, Seq<List<?>, T>, Monad<List<?>, T> {
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
@@ -264,7 +266,7 @@ public interface List<T> extends Seq<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    default <U> List<U> flatMap(Function<? super T, ? extends Iterable<U>> mapper) {
+    default <U> List<U> flatMap(Function<? super T, ? extends Kind<List<?>, U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? Nil.instance() : foldRight(nil(), (t, xs) -> xs.prependAll((List<U>) mapper.apply(t)));
     }
@@ -293,7 +295,7 @@ public interface List<T> extends Seq<T> {
      */
     @SuppressWarnings("unchecked")
     @Override
-    default <U> List<U> flatten(Function<? super T, ? extends Iterable<U>> f) {
+    default <U> List<U> flatten(Function<? super T, ? extends Kind<List<?>, U>> f) {
         Objects.requireNonNull(f, "f is null");
         return isEmpty() ? Nil.instance() : foldRight(nil(), (t, xs) -> xs.prependAll((List<U>) f.apply(t)));
     }

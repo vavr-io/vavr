@@ -6,17 +6,26 @@
 package javaslang.collection;
 
 import javaslang.Serializables;
+import javaslang.algebra.Functor;
+import javaslang.algebra.Monad;
+import javaslang.algebra.MonadLaws;
 import javaslang.collection.Stream.Cons;
 import javaslang.collection.Stream.Nil;
+import javaslang.test.Arbitrary;
+import javaslang.test.CheckResult;
+import javaslang.test.CheckResultAssertions;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InvalidObjectException;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class StreamTest extends AbstractSeqTest {
+public class StreamTest extends AbstractSeqTest<Stream<?>> implements MonadLaws<Stream<?>> {
 
     @Override
     protected <T> Stream<T> nil() {
@@ -64,7 +73,6 @@ public class StreamTest extends AbstractSeqTest {
 
     @Test
     public void shouldGenerateTerminatingIntStream() {
-        //noinspection NumericOverflow
         assertThat(Stream.from(Integer.MAX_VALUE).take(2)).isEqualTo(Stream.of(Integer.MAX_VALUE, Integer.MAX_VALUE + 1));
     }
 
@@ -273,6 +281,75 @@ public class StreamTest extends AbstractSeqTest {
             Serializables.deserialize(listWithOneElement);
         } catch (IllegalStateException x) {
             throw (x.getCause() != null) ? x.getCause() : x;
+        }
+    }
+
+    // -- FunctorLaws
+
+    @Test
+    @Override
+    public void shouldSatisfyFunctorIdentity() {
+        final Arbitrary<? extends Functor<Integer>> streams = Arbitrary.stream(Arbitrary.integer());
+        final CheckResult result = checkFunctorIdentity(streams);
+        CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
+    }
+
+    @Test
+    @Override
+    public void shouldSatisfyFunctorComposition() {
+        final Arbitrary<? extends Functor<Integer>> streams = Arbitrary.stream(Arbitrary.integer());
+        final Arbitrary<Function<? super Integer, ? extends Double>> before =
+                size -> random -> Double::valueOf;
+        final Arbitrary<Function<? super Double, ? extends String>> after =
+                size -> random -> String::valueOf;
+        final CheckResult result = checkFunctorComposition(streams, before, after);
+        CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
+    }
+
+    // -- MonadLaws
+
+    @Test
+    @Override
+    public void shouldSatisfyMonadLeftIdentity() {
+        final Arbitrary<Function<? super Integer, ? extends Monad<Stream<?>, String>>> mappers =
+                size -> random -> i -> Stream.of(i).map(String::valueOf);
+        final CheckResult result = checkMonadLeftIdentity(Stream::of, Arbitrary.integer(), mappers);
+        CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
+    }
+
+    @Test
+    @Override
+    public void shouldSatisfyMonadRightIdentity() {
+        final Arbitrary<? extends Monad<Stream<?>, Integer>> streams = Arbitrary.stream(Arbitrary.integer());
+        final CheckResult result = checkMonadRightIdentity(Stream::of, streams);
+        CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
+    }
+
+    @Test
+    @Override
+    public void shouldSatisfyMonadAssociativity() {
+        final Arbitrary<? extends Monad<Stream<?>, Integer>> streams = Arbitrary.stream(Arbitrary.integer());
+        final Arbitrary<Function<? super Integer, ? extends Monad<Stream<?>, Double>>> before =
+                size -> random -> i -> Stream.of(i).map(Double::valueOf);
+        final Arbitrary<Function<? super Double, ? extends Monad<Stream<?>, String>>> after =
+                size -> random -> d -> Stream.of(d).map(String::valueOf);
+        final CheckResult result = checkMonadAssociativity(streams, before, after);
+        CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
+    }
+
+    // helpers
+
+    static class OneElement extends InputStream {
+
+        int count = 0;
+
+        @Override
+        public int read() throws IOException {
+            if (count-- > -1) {
+                return '\n';
+            } else {
+                throw new IOException("end of stream");
+            }
         }
     }
 }

@@ -5,6 +5,10 @@
  */
 package javaslang.control;
 
+import javaslang.Kind;
+import javaslang.algebra.Monad;
+import javaslang.control.Valences.Bivalent;
+
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -13,6 +17,9 @@ import java.util.function.Predicate;
 /**
  * Either represents a value of two possible types. An Either is either a {@link javaslang.control.Left} or a
  * {@link javaslang.control.Right}.
+ * <p>
+ * It is possible to project an Either to a Left or a Right. Both cases can be further processed with
+ * {@link javaslang.algebra.Monad} operations.
  * <p>
  * If the given Either is a Right and projected to a Left, the Left operations have no effect on the Right value.<br>
  * If the given Either is a Left and projected to a Right, the Right operations have no effect on the Left value.<br>
@@ -115,7 +122,7 @@ public interface Either<L, R> {
      * @param <R> The type of the Right value of an Either.
      * @since 1.0.0
      */
-    final class LeftProjection<L, R> implements Iterable<L> {
+    final class LeftProjection<L, R> implements Kind<LeftProjection<?, R>, L>, Bivalent<L, R>, Monad<LeftProjection<?, R>, L>, Iterable<L> {
 
         private final Either<L, R> either;
 
@@ -129,6 +136,7 @@ public interface Either<L, R> {
          * @return the left value, if the underlying Either is a Left
          * @throws NoSuchElementException if the underlying either of this LeftProjection is a Right
          */
+        @Override
         public L get() {
             if (either.isLeft()) {
                 return asLeft();
@@ -144,6 +152,7 @@ public interface Either<L, R> {
          * @return the left value, if the underlying Either is a Left or else {@code other}
          * @throws NoSuchElementException if the underlying either of this LeftProjection is a Right
          */
+        @Override
         public L orElse(L other) {
             return either.isLeft() ? asLeft() : other;
         }
@@ -155,6 +164,7 @@ public interface Either<L, R> {
          * @return the left value, if the underlying Either is a Left or else the alternative Left value provided by
          * {@code other} by applying the Right value.
          */
+        @Override
         public L orElseGet(Function<? super R, ? extends L> other) {
             Objects.requireNonNull(other, "other is null");
             if (either.isLeft()) {
@@ -169,6 +179,7 @@ public interface Either<L, R> {
          *
          * @param action an action which consumes a Right value
          */
+        @Override
         public void orElseRun(Consumer<? super R> action) {
             Objects.requireNonNull(action, "action is null");
             if (either.isRight()) {
@@ -185,6 +196,7 @@ public interface Either<L, R> {
          * {@code exceptionFunction} by applying the Right value.
          * @throws X if the projected Either is a Right
          */
+        @Override
         public <X extends Throwable> L orElseThrow(Function<? super R, X> exceptionFunction) throws X {
             Objects.requireNonNull(exceptionFunction, "exceptionFunction is null");
             if (either.isLeft()) {
@@ -200,6 +212,7 @@ public interface Either<L, R> {
          * @return {@linkplain javaslang.control.Some} of the left value if this is a projection of a Left,
          * {@linkplain javaslang.control.None} otherwise.
          */
+        @Override
         public Option<L> toOption() {
             if (either.isLeft()) {
                 return new Some<>(asLeft());
@@ -213,6 +226,7 @@ public interface Either<L, R> {
          *
          * @return the underlying either
          */
+        @Override
         public Either<L, R> toEither() {
             return either;
         }
@@ -223,6 +237,7 @@ public interface Either<L, R> {
          * @return {@code Optional.ofNullable(leftValue)} if this is a projection of a Left,
          * {@code Optional.empty()} otherwise.
          */
+        @Override
         public Optional<L> toJavaOptional() {
             if (either.isLeft()) {
                 return Optional.ofNullable(asLeft());
@@ -257,26 +272,28 @@ public interface Either<L, R> {
         /**
          * Flattens a {@code LeftProjection} using a function.
          *
-         * @param <U> the new type of the left value
          * @param f a function which maps elements of this LeftProjection to LeftProjections
          * @return a {@code LeftProjection}
          * @throws NullPointerException if {@code f} is null
          */
         @SuppressWarnings("unchecked")
-        public <U> LeftProjection<U, R> flatten(Function<? super L, ? extends LeftProjection<U, R>> f) {
+        @Override
+        public <U> LeftProjection<U, R> flatten(Function<? super L, ? extends Kind<LeftProjection<?, R>, U>> f) {
             Objects.requireNonNull(f, "f is null");
             if (either.isRight()) {
                 return (LeftProjection<U, R>) this;
             } else {
-                return f.apply(get());
+                return (LeftProjection<U, R>) f.apply(get());
             }
         }
 
+        @Override
         public boolean exists(Predicate<? super L> predicate) {
             Objects.requireNonNull(predicate, "predicate is null");
             return either.isLeft() && predicate.test(asLeft());
         }
 
+        @Override
         public boolean forAll(Predicate<? super L> predicate) {
             Objects.requireNonNull(predicate, "predicate is null");
             return either.isLeft() && predicate.test(asLeft());
@@ -301,6 +318,7 @@ public interface Either<L, R> {
          * @param action An action which takes a left value
          * @return this LeftProjection
          */
+        @Override
         public LeftProjection<L, R> peek(Consumer<? super L> action) {
             Objects.requireNonNull(action, "action is null");
             if (either.isLeft()) {
@@ -317,6 +335,7 @@ public interface Either<L, R> {
          * @return A new LeftProjection
          */
         @SuppressWarnings("unchecked")
+        @Override
         public <U> LeftProjection<U, R> map(Function<? super L, ? extends U> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
             if (either.isLeft())
@@ -334,10 +353,11 @@ public interface Either<L, R> {
          * @return A new LeftProjection
          */
         @SuppressWarnings("unchecked")
-        public <U> LeftProjection<U, R> flatMap(Function<? super L, ? extends LeftProjection<U, R>> mapper) {
+        @Override
+        public <U> LeftProjection<U, R> flatMap(Function<? super L, ? extends Kind<LeftProjection<?, R>, U>> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
             if (either.isLeft()) {
-                return mapper.apply(asLeft());
+                return (LeftProjection<U, R>) mapper.apply(asLeft());
             } else {
                 return (LeftProjection<U, R>) this;
             }
@@ -383,7 +403,7 @@ public interface Either<L, R> {
      * @param <R> The type of the Right value of an Either.
      * @since 1.0.0
      */
-    final class RightProjection<L, R> implements Iterable<R> {
+    final class RightProjection<L, R> implements Kind<RightProjection<L, ?>, R>, Bivalent<R, L>, Monad<RightProjection<L, ?>, R>, Iterable<R> {
 
         private final Either<L, R> either;
 
@@ -397,6 +417,7 @@ public interface Either<L, R> {
          * @return the left value, if the underlying Either is a Right
          * @throws NoSuchElementException if the underlying either of this RightProjection is a Left
          */
+        @Override
         public R get() {
             if (either.isRight()) {
                 return asRight();
@@ -412,6 +433,7 @@ public interface Either<L, R> {
          * @return the right value, if the underlying Either is a Right or else {@code other}
          * @throws NoSuchElementException if the underlying either of this RightProjection is a Left
          */
+        @Override
         public R orElse(R other) {
             return either.isRight() ? asRight() : other;
         }
@@ -423,6 +445,7 @@ public interface Either<L, R> {
          * @return the right value, if the underlying Either is a Right or else the alternative Right value provided by
          * {@code other} by applying the Left value.
          */
+        @Override
         public R orElseGet(Function<? super L, ? extends R> other) {
             Objects.requireNonNull(other, "other is null");
             if (either.isRight()) {
@@ -437,6 +460,7 @@ public interface Either<L, R> {
          *
          * @param action an action which consumes a Left value
          */
+        @Override
         public void orElseRun(Consumer<? super L> action) {
             Objects.requireNonNull(action, "action is null");
             if (either.isLeft()) {
@@ -453,6 +477,7 @@ public interface Either<L, R> {
          * {@code exceptionFunction} by applying the Left value.
          * @throws X if the projected Either is a Left
          */
+        @Override
         public <X extends Throwable> R orElseThrow(Function<? super L, X> exceptionFunction) throws X {
             Objects.requireNonNull(exceptionFunction, "exceptionFunction is null");
             if (either.isRight()) {
@@ -468,6 +493,7 @@ public interface Either<L, R> {
          * @return {@linkplain javaslang.control.Some} of the right value if this is a projection of a Right,
          * {@linkplain javaslang.control.None} otherwise.
          */
+        @Override
         public Option<R> toOption() {
             if (either.isRight()) {
                 return new Some<>(asRight());
@@ -481,6 +507,7 @@ public interface Either<L, R> {
          *
          * @return the underlying either
          */
+        @Override
         public Either<L, R> toEither() {
             return either;
         }
@@ -491,6 +518,7 @@ public interface Either<L, R> {
          * @return {@code Optional.ofNullable(rightValue)} if this is a projection of a Right,
          * {@code Optional.empty()} otherwise.
          */
+        @Override
         public Optional<R> toJavaOptional() {
             if (either.isRight()) {
                 return Optional.ofNullable(asRight());
@@ -525,26 +553,28 @@ public interface Either<L, R> {
         /**
          * Flattens a {@code RightProjection} using a function.
          *
-         * @param <U> the new type of the right value
          * @param f a function which maps elements of this RightProjection to RightProjections
          * @return a {@code RightProjection}
          * @throws NullPointerException if {@code f} is null
          */
         @SuppressWarnings("unchecked")
-        public <U> RightProjection<L, U> flatten(Function<? super R, ? extends RightProjection<L, U>> f) {
+        @Override
+        public <U> RightProjection<L, U> flatten(Function<? super R, ? extends Kind<RightProjection<L, ?>, U>> f) {
             Objects.requireNonNull(f, "f is null");
             if (either.isLeft()) {
                 return (RightProjection<L, U>) this;
             } else {
-                return f.apply(get());
+                return (RightProjection<L, U>) f.apply(get());
             }
         }
 
+        @Override
         public boolean exists(Predicate<? super R> predicate) {
             Objects.requireNonNull(predicate, "predicate is null");
             return either.isRight() && predicate.test(asRight());
         }
 
+        @Override
         public boolean forAll(Predicate<? super R> predicate) {
             Objects.requireNonNull(predicate, "predicate is null");
             return either.isRight() && predicate.test(asRight());
@@ -569,6 +599,7 @@ public interface Either<L, R> {
          * @param action An action which takes a right value
          * @return this {@code Either} instance
          */
+        @Override
         public RightProjection<L, R> peek(Consumer<? super R> action) {
             Objects.requireNonNull(action, "action is null");
             if (either.isRight()) {
@@ -585,6 +616,7 @@ public interface Either<L, R> {
          * @return A new RightProjection
          */
         @SuppressWarnings("unchecked")
+        @Override
         public <U> RightProjection<L, U> map(Function<? super R, ? extends U> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
             if (either.isRight())
@@ -602,10 +634,11 @@ public interface Either<L, R> {
          * @return A new RightProjection
          */
         @SuppressWarnings("unchecked")
-        public <U> RightProjection<L, U> flatMap(Function<? super R, ? extends RightProjection<L, U>> mapper) {
+        @Override
+        public <U> RightProjection<L, U> flatMap(Function<? super R, ? extends Kind<RightProjection<L, ?>, U>> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
             if (either.isRight()) {
-                return mapper.apply(asRight());
+                return (RightProjection<L, U>) mapper.apply(asRight());
             } else {
                 return (RightProjection<L, U>) this;
             }
