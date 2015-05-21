@@ -20,7 +20,7 @@ import java.util.function.Function;
 public interface RoseTree<T> extends Tree<T> {
 
     /**
-     * Creates a either a rose tree branch or a leaf, depending on the child count.
+     * Creates either a rose tree branch or a leaf, depending on the child count.
      * By definition, a node with no children is a leaf.
      *
      * @param value    The value of the node.
