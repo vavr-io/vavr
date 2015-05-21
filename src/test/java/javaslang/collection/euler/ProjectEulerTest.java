@@ -20,15 +20,25 @@ public class ProjectEulerTest {
 
     /**
      * <strong>Problem 1: Multiples of 3 and 5</strong>
-     * <p>If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9.</p>
-     * <p>The sum of these multiples is 23.</p>
+     * <p>If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9.
+     * The sum of these multiples is 23.</p>
+     * <p>Find the sum of all the multiples of 3 or 5 below 1000.</p>
      * <p>See also <a href="https://projecteuler.net/problem=1">projecteuler.net problem 1</a>.</p>
      */
     @Test
     public void shouldSolveProblem1() {
-        final Number actual = List.range(1, 10).filter(n -> n % 3 == 0 || n % 5 == 0).sum();
-        assertThat(actual).isEqualTo(23);
+        assertThat(sumOfMultiplesOf3and5Below(10)).isEqualTo(23);
+        assertThat(sumOfMultiplesOf3and5Below(1000)).isEqualTo(233168);
     }
+
+    private static int sumOfMultiplesOf3and5Below(int limit) {
+        return List.range(0, limit).filter(ProjectEulerTest::isMultipleOf3or5).sum().intValue();
+    }
+
+    private static boolean isMultipleOf3or5(int num) {
+        return num != 0 && (num % 3 == 0 || num % 5 == 0);
+    }
+
 
     /**
      * <strong>Problem 7: 10001st prime</strong>
