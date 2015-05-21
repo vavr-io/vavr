@@ -931,12 +931,10 @@ public interface Traversable<T> extends TraversableOnce<T> {
      * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stderr.
      */
     default void stderr() {
-        try (PrintStream writer = System.err) {
-            for (T t : this) {
-                writer.println(String.valueOf(t));
-                if (writer.checkError()) {
-                    throw new IllegalStateException("Error writing to stderr");
-                }
+        for (T t : this) {
+            System.err.println(String.valueOf(t));
+            if (System.err.checkError()) {
+                throw new IllegalStateException("Error writing to stderr");
             }
         }
     }
@@ -948,12 +946,10 @@ public interface Traversable<T> extends TraversableOnce<T> {
      * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stdout.
      */
     default void stdout() {
-        try (PrintStream writer = System.out) {
-            for (T t : this) {
-                writer.println(String.valueOf(t));
-                if (writer.checkError()) {
-                    throw new IllegalStateException("Error writing to stdout");
-                }
+        for (T t : this) {
+            System.out.println(String.valueOf(t));
+            if (System.out.checkError()) {
+                throw new IllegalStateException("Error writing to stdout");
             }
         }
     }

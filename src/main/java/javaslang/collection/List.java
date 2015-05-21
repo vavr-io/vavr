@@ -69,7 +69,7 @@ public interface List<T> extends Seq<T> {
      * Returns the single instance of Nil. Convenience method for {@code Nil.instance()} .
      * <p>
      * Note: this method intentionally returns type {@code List} and not {@code Nil}. This comes handy when folding.
-     * If you explicitely need type {@code Nil} use {@linkplain Nil#instance()}.
+     * If you explicitly need type {@code Nil} use {@linkplain Nil#instance()}.
      *
      * @param <T> Component type of Nil, determined by type inference in the particular context.
      * @return The empty list.
@@ -245,12 +245,6 @@ public interface List<T> extends Seq<T> {
     }
 
     @Override
-    default boolean exists(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return Seq.super.exists(predicate);
-    }
-
-    @Override
     default List<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return isEmpty() ? this : foldLeft(List.<T>nil(), (xs, x) -> predicate.test(x) ? xs.prepend(x) : xs).reverse();
@@ -262,11 +256,10 @@ public interface List<T> extends Seq<T> {
         return filter(predicate);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     default <U> List<U> flatMap(Function<? super T, ? extends Iterable<U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return isEmpty() ? Nil.instance() : foldRight(nil(), (t, xs) -> xs.prependAll((List<U>) mapper.apply(t)));
+        return isEmpty() ? Nil.instance() : foldRight(nil(), (t, xs) -> xs.prependAll(mapper.apply(t)));
     }
 
     /**
@@ -291,11 +284,10 @@ public interface List<T> extends Seq<T> {
      * @return a new {@code List}
      * @throws NullPointerException if {@code f} is null
      */
-    @SuppressWarnings("unchecked")
     @Override
     default <U> List<U> flatten(Function<? super T, ? extends Iterable<U>> f) {
         Objects.requireNonNull(f, "f is null");
-        return isEmpty() ? Nil.instance() : foldRight(nil(), (t, xs) -> xs.prependAll((List<U>) f.apply(t)));
+        return isEmpty() ? Nil.instance() : foldRight(nil(), (t, xs) -> xs.prependAll(f.apply(t)));
     }
 
     @Override

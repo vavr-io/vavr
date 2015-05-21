@@ -260,7 +260,7 @@ public interface Either<L, R> {
          * Flattens a {@code LeftProjection} using a function.
          *
          * @param <U> the new type of the left value
-         * @param f a function which maps elements of this LeftProjection to LeftProjections
+         * @param f   a function which maps elements of this LeftProjection to LeftProjections
          * @return a {@code LeftProjection}
          * @throws NullPointerException if {@code f} is null
          */
@@ -343,7 +343,7 @@ public interface Either<L, R> {
 
         @Override
         public String toString() {
-            return String.format("LeftProjection(%s)", either);
+            return "LeftProjection(" + either + ")";
         }
 
         private L asLeft() {
@@ -505,7 +505,7 @@ public interface Either<L, R> {
          * Flattens a {@code RightProjection} using a function.
          *
          * @param <U> the new type of the right value
-         * @param f a function which maps elements of this RightProjection to RightProjections
+         * @param f   a function which maps elements of this RightProjection to RightProjections
          * @return a {@code RightProjection}
          * @throws NullPointerException if {@code f} is null
          */
@@ -588,7 +588,7 @@ public interface Either<L, R> {
 
         @Override
         public String toString() {
-            return String.format("RightProjection(%s)", either);
+            return "RightProjection(" + either + ")";
         }
 
         private L asLeft() {
