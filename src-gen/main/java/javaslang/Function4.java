@@ -9,7 +9,10 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import javaslang.control.Try;
 
 /**
  * Represents a function with 4 arguments.
@@ -43,6 +46,24 @@ public interface Function4<T1, T2, T3, T4, R> extends λ<R> {
      */
     static <T1, T2, T3, T4, R> Function4<T1, T2, T3, T4, R> lift(Function4<T1, T2, T3, T4, R> methodReference) {
         return methodReference;
+    }
+
+    /**
+     * Returns a memoizing function, which computes the return value for given arguments only one time.
+     * On subsequent calls given the same arguments the memoized value is returned.
+     *
+     * @param <R> return type
+     * @param <T1> 1st argument
+     * @param <T2> 2nd argument
+     * @param <T3> 3rd argument
+     * @param <T4> 4th argument
+     * @param f a function
+     * @return a memoizing function
+     */
+    static <T1, T2, T3, T4, R> Function4<T1, T2, T3, T4, R> memoize(Function4<T1, T2, T3, T4, R> f) {
+        final Map<Tuple4<T1, T2, T3, T4>, R> cache = new ConcurrentHashMap<>();
+        final Function1<Tuple4<T1, T2, T3, T4>, R> tupled = f.tupled();
+        return (t1, t2, t3, t4) -> cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4), tupled::apply);
     }
 
     /**

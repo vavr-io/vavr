@@ -6,7 +6,6 @@
 package javaslang.collection;
 
 import javaslang.Tuple2;
-import javaslang.Kind;
 import javaslang.control.Option;
 
 import java.util.Comparator;
@@ -48,7 +47,7 @@ import java.util.function.*;
  * @param <T> Component type
  * @since 1.1.0
  */
-public interface Seq<M extends Seq<M, ?>, T> extends Kind<M, T>, Traversable<M, T>, IntFunction<T> {
+public interface Seq<T> extends Traversable<T>, IntFunction<T> {
 
     /**
      * A {@code Seq} is a partial function which returns the element at the specified index by calling
@@ -69,7 +68,7 @@ public interface Seq<M extends Seq<M, ?>, T> extends Kind<M, T>, Traversable<M, 
      * @param element An element
      * @return A new Seq containing the given element appended to this elements
      */
-    Seq<M, T> append(T element);
+    Seq<T> append(T element);
 
     /**
      * Appends all given elements to this.
@@ -78,7 +77,7 @@ public interface Seq<M extends Seq<M, ?>, T> extends Kind<M, T>, Traversable<M, 
      * @return A new Seq containing the given elements appended to this elements
      * @throws NullPointerException if {@code elements} is null
      */
-    Seq<M, T> appendAll(Iterable<? extends T> elements);
+    Seq<T> appendAll(Iterable<? extends T> elements);
 
     /**
      * Returns the element at the specified index.
@@ -105,7 +104,7 @@ public interface Seq<M extends Seq<M, ?>, T> extends Kind<M, T>, Traversable<M, 
      * @return a new Seq, where the given element is inserted into this at the given index
      * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
      */
-    Seq<M, T> insert(int index, T element);
+    Seq<T> insert(int index, T element);
 
     /**
      * Inserts the given elements at the specified index.
@@ -115,7 +114,7 @@ public interface Seq<M extends Seq<M, ?>, T> extends Kind<M, T>, Traversable<M, 
      * @return a new Seq, where the given elements are inserted into this at the given index
      * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
      */
-    Seq<M, T> insertAll(int index, Iterable<? extends T> elements);
+    Seq<T> insertAll(int index, Iterable<? extends T> elements);
 
     /**
      * Returns an iterator of this elements starting at the given index.
@@ -158,7 +157,7 @@ public interface Seq<M extends Seq<M, ?>, T> extends Kind<M, T>, Traversable<M, 
      *
      * @return this unique permutations
      */
-    Seq<M, ? extends Seq<M, T>> permutations();
+    Seq<? extends Seq<T>> permutations();
 
     /**
      * Prepends an element to this.
@@ -166,7 +165,7 @@ public interface Seq<M extends Seq<M, ?>, T> extends Kind<M, T>, Traversable<M, 
      * @param element An element
      * @return A new Seq containing the given element prepended to this elements
      */
-    Seq<M, T> prepend(T element);
+    Seq<T> prepend(T element);
 
     /**
      * Prepends all given elements to this.
@@ -174,7 +173,7 @@ public interface Seq<M extends Seq<M, ?>, T> extends Kind<M, T>, Traversable<M, 
      * @param elements An Iterable of elements
      * @return A new Seq containing the given elements prepended to this elements
      */
-    Seq<M, T> prependAll(Iterable<? extends T> elements);
+    Seq<T> prependAll(Iterable<? extends T> elements);
 
     /**
      * Sets the given element at the specified index.
@@ -184,7 +183,7 @@ public interface Seq<M extends Seq<M, ?>, T> extends Kind<M, T>, Traversable<M, 
      * @return a new Seq consisting of this elements and the given element is set at the given index
      * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
      */
-    Seq<M, T> set(int index, T element);
+    Seq<T> set(int index, T element);
 
     /**
      * Sorts this elements according to their natural order. If this elements are not
@@ -193,7 +192,7 @@ public interface Seq<M extends Seq<M, ?>, T> extends Kind<M, T>, Traversable<M, 
      * @return A sorted version of this
      * @throws ClassCastException if this elements are not {@code Comparable}
      */
-    Seq<M, T> sort();
+    Seq<T> sort();
 
     /**
      * Sorts this elements according to the provided {@code Comparator}. If this elements are not
@@ -202,7 +201,7 @@ public interface Seq<M extends Seq<M, ?>, T> extends Kind<M, T>, Traversable<M, 
      * @param comparator A comparator
      * @return a sorted version of this
      */
-    Seq<M, T> sort(Comparator<? super T> comparator);
+    Seq<T> sort(Comparator<? super T> comparator);
 
     /**
      * Splits a Seq at the specified index. The result of {@code splitAt(n)} is equivalent to
@@ -211,7 +210,7 @@ public interface Seq<M extends Seq<M, ?>, T> extends Kind<M, T>, Traversable<M, 
      * @param n An index.
      * @return A Tuple containing the first n and the remaining elements.
      */
-    Tuple2<? extends Seq<M, T>, ? extends Seq<M, T>> splitAt(int n);
+    Tuple2<? extends Seq<T>, ? extends Seq<T>> splitAt(int n);
 
     /**
      * <p>Returns a Seq that is a subsequence of this. The subsequence begins with the element at the specified index
@@ -230,7 +229,7 @@ public interface Seq<M extends Seq<M, ?>, T> extends Kind<M, T>, Traversable<M, 
      * @throws IndexOutOfBoundsException if {@code beginIndex} is negative or larger than the length of this
      *                                   {@code String} object.
      */
-    Seq<M, T> subsequence(int beginIndex);
+    Seq<T> subsequence(int beginIndex);
 
     /**
      * <p>Returns a Seq that is a subsequence of this. The subsequence begins with the element at the specified index
@@ -254,124 +253,124 @@ public interface Seq<M extends Seq<M, ?>, T> extends Kind<M, T>, Traversable<M, 
      *                                   {@code beginIndex} is larger than
      *                                   {@code endIndex}.
      */
-    Seq<M, T> subsequence(int beginIndex, int endIndex);
+    Seq<T> subsequence(int beginIndex, int endIndex);
 
     // -- Adjusted return types of Traversable methods
 
     @Override
-    Seq<M, T> clear();
+    Seq<T> clear();
 
     @Override
-    Seq<M, ? extends Seq<M, T>> combinations();
+    Seq<? extends Seq<T>> combinations();
 
     @Override
-    Seq<M, ? extends Seq<M, T>> combinations(int k);
+    Seq<? extends Seq<T>> combinations(int k);
 
     @Override
-    Seq<M, T> distinct();
+    Seq<T> distinct();
 
     @Override
-    <U> Seq<M, T> distinct(Function<? super T, ? extends U> keyExtractor);
+    <U> Seq<T> distinct(Function<? super T, ? extends U> keyExtractor);
 
     @Override
-    Seq<M, T> drop(int n);
+    Seq<T> drop(int n);
 
     @Override
-    Seq<M, T> dropRight(int n);
+    Seq<T> dropRight(int n);
 
     @Override
-    Seq<M, T> dropWhile(Predicate<? super T> predicate);
+    Seq<T> dropWhile(Predicate<? super T> predicate);
 
     @Override
-    Seq<M, T> filter(Predicate<? super T> predicate);
+    Seq<T> filter(Predicate<? super T> predicate);
 
     @Override
-    Seq<M, T> findAll(Predicate<? super T> predicate);
+    Seq<T> findAll(Predicate<? super T> predicate);
 
     @Override
-    <U> Seq<M, U> flatMap(Function<? super T, ? extends Kind<M, U>> mapper);
+    <U> Seq<U> flatMap(Function<? super T, ? extends Iterable<U>> mapper);
 
     @Override
-    <U> Seq<M, U> flatten(Function<? super T, ? extends Kind<M, U>> f);
+    <U> Seq<U> flatten(Function<? super T, ? extends Iterable<U>> f);
 
     @Override
-    Seq<M, ? extends Seq<M, T>> grouped(int size);
+    Seq<? extends Seq<T>> grouped(int size);
 
     @Override
-    Seq<M, T> init();
+    Seq<T> init();
 
     @Override
-    Option<? extends Seq<M, T>> initOption();
+    Option<? extends Seq<T>> initOption();
 
     @Override
-    Seq<M, T> intersperse(T element);
+    Seq<T> intersperse(T element);
 
     @Override
-    <U> Seq<M, U> map(Function<? super T, ? extends U> mapper);
+    <U> Seq<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
-    Tuple2<? extends Seq<M, T>, ? extends Seq<M, T>> partition(Predicate<? super T> predicate);
+    Tuple2<? extends Seq<T>, ? extends Seq<T>> partition(Predicate<? super T> predicate);
 
     @Override
-    Seq<M, T> peek(Consumer<? super T> action);
+    Seq<T> peek(Consumer<? super T> action);
 
     @Override
-    Seq<M, T> remove(T element);
+    Seq<T> remove(T element);
 
     @Override
-    Seq<M, T> removeAll(T element);
+    Seq<T> removeAll(T element);
 
     @Override
-    Seq<M, T> removeAll(Iterable<? extends T> elements);
+    Seq<T> removeAll(Iterable<? extends T> elements);
 
     @Override
-    Seq<M, T> replace(T currentElement, T newElement);
+    Seq<T> replace(T currentElement, T newElement);
 
     @Override
-    Seq<M, T> replaceAll(T currentElement, T newElement);
+    Seq<T> replaceAll(T currentElement, T newElement);
 
     @Override
-    Seq<M, T> replaceAll(UnaryOperator<T> operator);
+    Seq<T> replaceAll(UnaryOperator<T> operator);
 
     @Override
-    Seq<M, T> retainAll(Iterable<? extends T> elements);
+    Seq<T> retainAll(Iterable<? extends T> elements);
 
     @Override
-    Seq<M, T> reverse();
+    Seq<T> reverse();
 
     @Override
-    Seq<M, ? extends Seq<M, T>> sliding(int size);
+    Seq<? extends Seq<T>> sliding(int size);
 
     @Override
-    Seq<M, ? extends Seq<M, T>> sliding(int size, int step);
+    Seq<? extends Seq<T>> sliding(int size, int step);
 
     @Override
-    Tuple2<? extends Seq<M, T>, ? extends Seq<M, T>> span(Predicate<? super T> predicate);
+    Tuple2<? extends Seq<T>, ? extends Seq<T>> span(Predicate<? super T> predicate);
 
     @Override
-    Seq<M, T> tail();
+    Seq<T> tail();
 
     @Override
-    Option<? extends Seq<M, T>> tailOption();
+    Option<? extends Seq<T>> tailOption();
 
     @Override
-    Seq<M, T> take(int n);
+    Seq<T> take(int n);
 
     @Override
-    Seq<M, T> takeRight(int n);
+    Seq<T> takeRight(int n);
 
     @Override
-    Seq<M, T> takeWhile(Predicate<? super T> predicate);
+    Seq<T> takeWhile(Predicate<? super T> predicate);
 
     @Override
-    <T1, T2> Tuple2<? extends Seq<M, T1>, ? extends Seq<M, T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
+    <T1, T2> Tuple2<? extends Seq<T1>, ? extends Seq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
 
     @Override
-    <U> Seq<M, Tuple2<T, U>> zip(Iterable<U> that);
+    <U> Seq<Tuple2<T, U>> zip(Iterable<U> that);
 
     @Override
-    <U> Seq<M, Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
+    <U> Seq<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
 
     @Override
-    Seq<M, Tuple2<T, Integer>> zipWithIndex();
+    Seq<Tuple2<T, Integer>> zipWithIndex();
 }

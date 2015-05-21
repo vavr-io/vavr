@@ -7,8 +7,6 @@ package javaslang.collection;
 
 import javaslang.Tuple;
 import javaslang.Tuple2;
-import javaslang.Kind;
-import javaslang.algebra.Monad;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -46,7 +44,7 @@ import java.util.stream.Collector;
  * @param <T> Component type of the List.
  * @since 1.1.0
  */
-public interface List<T> extends Kind<List<?>, T>, Seq<List<?>, T>, Monad<List<?>, T> {
+public interface List<T> extends Seq<T> {
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
@@ -247,12 +245,6 @@ public interface List<T> extends Kind<List<?>, T>, Seq<List<?>, T>, Monad<List<?
     }
 
     @Override
-    default boolean exists(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return Seq.super.exists(predicate);
-    }
-
-    @Override
     default List<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return isEmpty() ? this : foldLeft(List.<T>nil(), (xs, x) -> predicate.test(x) ? xs.prepend(x) : xs).reverse();
@@ -264,11 +256,10 @@ public interface List<T> extends Kind<List<?>, T>, Seq<List<?>, T>, Monad<List<?
         return filter(predicate);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    default <U> List<U> flatMap(Function<? super T, ? extends Kind<List<?>, U>> mapper) {
+    default <U> List<U> flatMap(Function<? super T, ? extends Iterable<U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return isEmpty() ? Nil.instance() : foldRight(nil(), (t, xs) -> xs.prependAll((List<U>) mapper.apply(t)));
+        return isEmpty() ? Nil.instance() : foldRight(nil(), (t, xs) -> xs.prependAll(mapper.apply(t)));
     }
 
     /**
@@ -288,16 +279,15 @@ public interface List<T> extends Kind<List<?>, T>, Seq<List<?>, T>, Monad<List<?
      * </code>
      * </pre>
      *
-     * @param <U>           component type of the result {@code List}
-     * @param f             a function which maps elements of this {@code List} to {@code List}s
+     * @param <U> component type of the result {@code List}
+     * @param f   a function which maps elements of this {@code List} to {@code List}s
      * @return a new {@code List}
      * @throws NullPointerException if {@code f} is null
      */
-    @SuppressWarnings("unchecked")
     @Override
-    default <U> List<U> flatten(Function<? super T, ? extends Kind<List<?>, U>> f) {
+    default <U> List<U> flatten(Function<? super T, ? extends Iterable<U>> f) {
         Objects.requireNonNull(f, "f is null");
-        return isEmpty() ? Nil.instance() : foldRight(nil(), (t, xs) -> xs.prependAll((List<U>) f.apply(t)));
+        return isEmpty() ? Nil.instance() : foldRight(nil(), (t, xs) -> xs.prependAll(f.apply(t)));
     }
 
     @Override

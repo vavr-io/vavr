@@ -10,6 +10,7 @@ package javaslang;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import java.util.Objects;
+import javaslang.control.Try;
 
 /**
  * Represents a function with no arguments.
@@ -35,6 +36,19 @@ public interface CheckedFunction0<R> extends λ<R> {
      */
     static <R> CheckedFunction0<R> lift(CheckedFunction0<R> methodReference) {
         return methodReference;
+    }
+
+    /**
+     * Returns a memoizing function, which computes the return value for given arguments only one time.
+     * On subsequent calls given the same arguments the memoized value is returned.
+     *
+     * @param <R> return type
+     * @param f a function
+     * @return a memoizing function
+     */
+    static <R> CheckedFunction0<R> memoize(CheckedFunction0<R> f) {
+        final Lazy<R> cache = Lazy.of(Try.of(f::apply)::get);
+        return cache::get;
     }
 
     /**

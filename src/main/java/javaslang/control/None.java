@@ -74,11 +74,6 @@ public final class None<T> implements Option<T>, Serializable {
     }
 
     @Override
-    public None<T> toOption() {
-        return this;
-    }
-
-    @Override
     public Optional<T> toJavaOptional() {
         return Optional.empty();
     }

@@ -9,7 +9,10 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import javaslang.control.Try;
 
 /**
  * Represents a function with 5 arguments.
@@ -45,6 +48,25 @@ public interface CheckedFunction5<T1, T2, T3, T4, T5, R> extends λ<R> {
      */
     static <T1, T2, T3, T4, T5, R> CheckedFunction5<T1, T2, T3, T4, T5, R> lift(CheckedFunction5<T1, T2, T3, T4, T5, R> methodReference) {
         return methodReference;
+    }
+
+    /**
+     * Returns a memoizing function, which computes the return value for given arguments only one time.
+     * On subsequent calls given the same arguments the memoized value is returned.
+     *
+     * @param <R> return type
+     * @param <T1> 1st argument
+     * @param <T2> 2nd argument
+     * @param <T3> 3rd argument
+     * @param <T4> 4th argument
+     * @param <T5> 5th argument
+     * @param f a function
+     * @return a memoizing function
+     */
+    static <T1, T2, T3, T4, T5, R> CheckedFunction5<T1, T2, T3, T4, T5, R> memoize(CheckedFunction5<T1, T2, T3, T4, T5, R> f) {
+        final Map<Tuple5<T1, T2, T3, T4, T5>, R> cache = new ConcurrentHashMap<>();
+        final CheckedFunction1<Tuple5<T1, T2, T3, T4, T5>, R> tupled = f.tupled();
+        return (t1, t2, t3, t4, t5) -> cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4, t5), t -> Try.of(() -> tupled.apply(t)).get());
     }
 
     /**

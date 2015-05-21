@@ -6,23 +6,16 @@
 package javaslang.collection;
 
 import javaslang.Serializables;
-import javaslang.algebra.Functor;
-import javaslang.algebra.Monad;
-import javaslang.algebra.MonadLaws;
 import javaslang.collection.List.Cons;
 import javaslang.collection.List.Nil;
-import javaslang.test.Arbitrary;
-import javaslang.test.CheckResult;
-import javaslang.test.CheckResultAssertions;
 import org.junit.Test;
 
 import java.io.InvalidObjectException;
 import java.util.Arrays;
-import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ListTest extends AbstractSeqTest<List<?>> implements MonadLaws<List<?>> {
+public class ListTest extends AbstractSeqTest {
 
     @Override
     protected <T> List<T> nil() {
@@ -235,58 +228,5 @@ public class ListTest extends AbstractSeqTest<List<?>> implements MonadLaws<List
         } catch (IllegalStateException x) {
             throw (x.getCause() != null) ? x.getCause() : x;
         }
-    }
-
-    // -- FunctorLaws
-
-    @Test
-    @Override
-    public void shouldSatisfyFunctorIdentity() {
-        final Arbitrary<? extends Functor<Integer>> lists = Arbitrary.list(Arbitrary.integer());
-        final CheckResult result = checkFunctorIdentity(lists);
-        CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
-    }
-
-    @Test
-    @Override
-    public void shouldSatisfyFunctorComposition() {
-        final Arbitrary<? extends Functor<Integer>> lists = Arbitrary.list(Arbitrary.integer());
-        final Arbitrary<Function<? super Integer, ? extends Double>> before =
-                size -> random -> Double::valueOf;
-        final Arbitrary<Function<? super Double, ? extends String>> after =
-                size -> random -> String::valueOf;
-        final CheckResult result = checkFunctorComposition(lists, before, after);
-        CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
-    }
-
-    // -- MonadLaws
-
-    @Test
-    @Override
-    public void shouldSatisfyMonadLeftIdentity() {
-        final Arbitrary<Function<? super Integer, ? extends Monad<List<?>, String>>> mappers =
-                size -> random -> i -> List.of(i).map(String::valueOf);
-        final CheckResult result = checkMonadLeftIdentity(List::of, Arbitrary.integer(), mappers);
-        CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
-    }
-
-    @Test
-    @Override
-    public void shouldSatisfyMonadRightIdentity() {
-        final Arbitrary<? extends Monad<List<?>, Integer>> lists = Arbitrary.list(Arbitrary.integer());
-        final CheckResult result = checkMonadRightIdentity(List::of, lists);
-        CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
-    }
-
-    @Test
-    @Override
-    public void shouldSatisfyMonadAssociativity() {
-        final Arbitrary<? extends Monad<List<?>, Integer>> lists = Arbitrary.list(Arbitrary.integer());
-        final Arbitrary<Function<? super Integer, ? extends Monad<List<?>, Double>>> before =
-                size -> random -> i -> List.of(i).map(Double::valueOf);
-        final Arbitrary<Function<? super Double, ? extends Monad<List<?>, String>>> after =
-                size -> random -> d -> List.of(d).map(String::valueOf);
-        final CheckResult result = checkMonadAssociativity(lists, before, after);
-        CheckResultAssertions.assertThat(result).isSatisfiedWithExhaustion(false);
     }
 }
