@@ -43,6 +43,7 @@ public interface Function0<R> extends λ<R> {
      * On subsequent calls given the same arguments the memoized value is returned.
      *
      * @param <R> return type
+     * @param f a function
      * @return a memoizing function
      */
     static <R> Function0<R> memoize(Function0<R> f) {

@@ -43,6 +43,7 @@ public interface CheckedFunction0<R> extends λ<R> {
      * On subsequent calls given the same arguments the memoized value is returned.
      *
      * @param <R> return type
+     * @param f a function
      * @return a memoizing function
      */
     static <R> CheckedFunction0<R> memoize(CheckedFunction0<R> f) {

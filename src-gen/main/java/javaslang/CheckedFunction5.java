@@ -60,6 +60,7 @@ public interface CheckedFunction5<T1, T2, T3, T4, T5, R> extends λ<R> {
      * @param <T3> 3rd argument
      * @param <T4> 4th argument
      * @param <T5> 5th argument
+     * @param f a function
      * @return a memoizing function
      */
     static <T1, T2, T3, T4, T5, R> CheckedFunction5<T1, T2, T3, T4, T5, R> memoize(CheckedFunction5<T1, T2, T3, T4, T5, R> f) {

@@ -66,6 +66,7 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends λ<R> {
      * @param <T5> 5th argument
      * @param <T6> 6th argument
      * @param <T7> 7th argument
+     * @param f a function
      * @return a memoizing function
      */
     static <T1, T2, T3, T4, T5, T6, T7, R> Function7<T1, T2, T3, T4, T5, T6, T7, R> memoize(Function7<T1, T2, T3, T4, T5, T6, T7, R> f) {

@@ -51,6 +51,7 @@ public interface Function2<T1, T2, R> extends λ<R> {
      * @param <R> return type
      * @param <T1> 1st argument
      * @param <T2> 2nd argument
+     * @param f a function
      * @return a memoizing function
      */
     static <T1, T2, R> Function2<T1, T2, R> memoize(Function2<T1, T2, R> f) {

@@ -58,6 +58,7 @@ public interface CheckedFunction1<T1, R> extends λ<R> {
      *
      * @param <R> return type
      * @param <T1> 1st argument
+     * @param f a function
      * @return a memoizing function
      */
     static <T1, R> CheckedFunction1<T1, R> memoize(CheckedFunction1<T1, R> f) {

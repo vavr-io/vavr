@@ -725,6 +725,7 @@ def generateMainClasses(): Unit = {
                * On subsequent calls given the same arguments the memoized value is returned.
                *
                ${(0 to i).gen(j => if (j == 0) "* @param <R> return type" else s"* @param <T$j> ${j.ordinal} argument")("\n")}
+               * @param f a function
                * @return a memoizing function
                */
               static $fullGenerics $className$fullGenerics memoize($className$fullGenerics f) {
