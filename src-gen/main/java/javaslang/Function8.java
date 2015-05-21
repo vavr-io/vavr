@@ -9,7 +9,10 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import javaslang.control.Try;
 
 /**
  * Represents a function with 8 arguments.
@@ -51,6 +54,27 @@ public interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<R> {
      */
     static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> lift(Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> methodReference) {
         return methodReference;
+    }
+
+    /**
+     * Returns a memoizing function, which computes the return value for given arguments only one time.
+     * On subsequent calls given the same arguments the memoized value is returned.
+     *
+     * @param <R> return type
+     * @param <T1> 1st argument
+     * @param <T2> 2nd argument
+     * @param <T3> 3rd argument
+     * @param <T4> 4th argument
+     * @param <T5> 5th argument
+     * @param <T6> 6th argument
+     * @param <T7> 7th argument
+     * @param <T8> 8th argument
+     * @return a memoizing function
+     */
+    static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> memoize(Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> f) {
+        final Map<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>, R> cache = new ConcurrentHashMap<>();
+        final Function1<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>, R> tupled = f.tupled();
+        return (t1, t2, t3, t4, t5, t6, t7, t8) -> cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4, t5, t6, t7, t8), tupled::apply);
     }
 
     /**
