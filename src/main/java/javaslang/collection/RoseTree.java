@@ -20,7 +20,7 @@ import java.util.function.Function;
 public interface RoseTree<T> extends Tree<T> {
 
     /**
-     * Creates either a rose tree branch or a leaf, depending on the child count.
+     * Creates a either a rose tree branch or a leaf, depending on the child count.
      * By definition, a node with no children is a leaf.
      *
      * @param value    The value of the node.
@@ -52,7 +52,7 @@ public interface RoseTree<T> extends Tree<T> {
     @SafeVarargs
     @SuppressWarnings("varargs")
     static <T> Branch<T> branch(T value, NonNil<T> child1, NonNil<T>... children) {
-        Objects.requireNonNull(child1, "child1 is null");
+        Objects.requireNonNull(children, "child1 is null");
         Objects.requireNonNull(children, "children is null");
         final List<NonNil<T>> list = List.of(children).prepend(child1);
         return new Branch<>(value, list);

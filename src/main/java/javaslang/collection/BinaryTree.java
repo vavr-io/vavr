@@ -14,7 +14,7 @@ import java.util.function.Function;
 /**
  * A binary tree implementation where each node keeps a value.
  * <p>
- * A binary tree consists of branches (nodes with children) and leaves (nodes without children).
+ * A binary tree consists of branches (nodes with children) and leafs (nodes without children).
  * A branch has a left and a right child, at least one child is not Nil. The empty tree is represented by Nil.
  * <pre>
  *     <code>BinaryTree = Nil | Leaf(value) | Branch(BinaryTree left, value, BinaryTree right)</code>

@@ -6,13 +6,12 @@
 package javaslang.collection;
 
 import javaslang.Tuple2;
-import javaslang.Kind;
-import javaslang.algebra.Monoid;
 import javaslang.control.Match;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
 
+import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
@@ -69,7 +68,6 @@ import java.util.stream.StreamSupport;
  * <li>{@link #fold(Object, BiFunction)}</li>
  * <li>{@link #foldLeft(Object, BiFunction)}</li>
  * <li>{@link #foldRight(Object, BiFunction)}</li>
- * <li>{@link #foldMap(javaslang.algebra.Monoid, Function)}</li>
  * <li>{@link #join()}</li>
  * <li>{@link #join(CharSequence)}</li>
  * <li>{@link #join(CharSequence, CharSequence, CharSequence)}</li>
@@ -131,7 +129,7 @@ import java.util.stream.StreamSupport;
  * @param <T> Component type
  * @since 1.1.0
  */
-public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>, Iterable<T> {
+public interface Traversable<T> extends TraversableOnce<T> {
 
     /**
      * Calculates the average of this elements. Returns {@code None} if this is empty, otherwise {@code Some(average)}.
@@ -178,7 +176,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      *
      * @return an empty Traversable.
      */
-    Traversable<M, T> clear();
+    Traversable<T> clear();
 
     /**
      * Returns the union of all combinations from k = 0 to length().
@@ -199,7 +197,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      *
      * @return the combinations of this
      */
-    Traversable<M, ? extends Traversable<M, T>> combinations();
+    Traversable<? extends Traversable<T>> combinations();
 
     /**
      * Returns the k-combination of this traversable, i.e. all subset of this of k distinct elements.
@@ -208,7 +206,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @return the k-combination of this elements
      * @see <a href="http://en.wikipedia.org/wiki/Combination">Combination</a>
      */
-    Traversable<M, ? extends Traversable<M, T>> combinations(int k);
+    Traversable<? extends Traversable<T>> combinations(int k);
 
     /**
      * Tests if this Traversable contains a given value.
@@ -247,7 +245,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      *
      * @return a new {@code Traversable} containing this elements without duplicates
      */
-    Traversable<M, T> distinct();
+    Traversable<T> distinct();
 
     /**
      * Returns a new version of this which contains no duplicates. Elements mapped to keys which are compared using
@@ -260,7 +258,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @return a new {@code Traversable} containing this elements without duplicates
      * @throws NullPointerException if {@code keyExtractor} is null
      */
-    <U> Traversable<M, T> distinct(Function<? super T, ? extends U> keyExtractor);
+    <U> Traversable<T> distinct(Function<? super T, ? extends U> keyExtractor);
 
     /**
      * Drops the first n elements of this or all elements, if this length &lt; n.
@@ -269,7 +267,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @return a new instance consisting of all elements of this except the first n ones, or else the empty instance,
      * if this has less than n elements.
      */
-    Traversable<M, T> drop(int n);
+    Traversable<T> drop(int n);
 
     /**
      * Drops the last n elements of this or all elements, if this length &lt; n.
@@ -278,7 +276,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @return a new instance consisting of all elements of this except the last n ones, or else the empty instance,
      * if this has less than n elements.
      */
-    Traversable<M, T> dropRight(int n);
+    Traversable<T> dropRight(int n);
 
     /**
      * Drops elements while the predicate holds for the current element.
@@ -288,46 +286,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * given predicate.
      * @throws NullPointerException if {@code predicate} is null
      */
-    Traversable<M, T> dropWhile(Predicate<? super T> predicate);
-
-    /**
-     * Checks, if at least one element exists such that the predicate holds.
-     *
-     * @param predicate A Predicate
-     * @return true, if predicate holds for an element of this, false otherwise
-     * @throws NullPointerException if {@code predicate} is null
-     */
-    default boolean exists(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        for (T t : this) {
-            if (predicate.test(t)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Checks, if a unique elements exists such that the predicate holds.
-     *
-     * @param predicate A Predicate
-     * @return true, if predicate holds for a unique element of this, false otherwise
-     * @throws NullPointerException if {@code predicate} is null
-     */
-    default boolean existsUnique(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        boolean exists = false;
-        for (T t : this) {
-            if (predicate.test(t)) {
-                if (exists) {
-                    return false;
-                } else {
-                    exists = true;
-                }
-            }
-        }
-        return exists;
-    }
+    Traversable<T> dropWhile(Predicate<? super T> predicate);
 
     /**
      * Returns a new traversable consisting of all elements of this which satisfy the given predicate.
@@ -336,7 +295,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @return a new traversable
      * @throws NullPointerException if {@code predicate} is null
      */
-    Traversable<M, T> filter(Predicate<? super T> predicate);
+    Traversable<T> filter(Predicate<? super T> predicate);
 
     /**
      * Essentially the same as {@link #filter(Predicate)} but the result type may differ,
@@ -346,7 +305,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @return all elements of this which satisfy the given predicate.
      * @throws NullPointerException if {@code predicate} is null
      */
-    Traversable<M, T> findAll(Predicate<? super T> predicate);
+    Traversable<T> findAll(Predicate<? super T> predicate);
 
     /**
      * Returns the first element of this which satisfies the given predicate.
@@ -382,17 +341,17 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
         return reverse().findFirst(predicate);
     }
 
-    <U> Traversable<M, U> flatMap(Function<? super T, ? extends Kind<M, U>> mapper);
+    <U> Traversable<U> flatMap(Function<? super T, ? extends Iterable<U>> mapper);
 
     /**
      * Flattens a {@code Traversable} using a function.
      *
-     * @param <U> component type of the result {@code Traversable}
-     * @param f   a function which maps elements of this Traversable to Traversables
+     * @param <U>           component type of the result {@code Traversable}
+     * @param f             a function which maps elements of this Traversable to Traversables
      * @return a new {@code Traversable}
      * @throws NullPointerException if {@code f} is null
      */
-    <U> Traversable<M, U> flatten(Function<? super T, ? extends Kind<M, U>> f);
+    <U> Traversable<U> flatten(Function<? super T, ? extends Iterable<U>> f);
 
     /**
      * <p>
@@ -437,24 +396,6 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
     }
 
     /**
-     * Maps this elements to a Monoid and applies foldLeft, starting with monoid.zero():
-     * <pre>
-     * <code>foldLeft(monoid.zero(), (ys, x) -&gt; monoid.combine(ys, mapper.apply(x)))</code>
-     * </pre>
-     *
-     * @param monoid A Monoid
-     * @param mapper A mapper
-     * @param <U>    Component type of the given monoid.
-     * @return the folded monoid value.
-     * @throws NullPointerException if {@code monoid} or {@code mapper} is null
-     */
-    default <U> U foldMap(Monoid<U> monoid, Function<? super T, ? extends U> mapper) {
-        Objects.requireNonNull(monoid, "monoid is null");
-        Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(monoid.zero(), (ys, x) -> monoid.combine(ys, mapper.apply(x)));
-    }
-
-    /**
      * <p>
      * Accumulates the elements of this Traversable by successively calling the given function {@code f} from the right,
      * starting with a value {@code zero} of type B.
@@ -482,29 +423,6 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
     default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return reverse().foldLeft(zero, (xs, x) -> f.apply(x, xs));
-    }
-
-    @Override
-    default void forEach(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
-        Iterable.super.forEach(action);
-    }
-
-    /**
-     * Checks, if the given predicate holds for all elements of this.
-     *
-     * @param predicate A Predicate
-     * @return true, if the predicate holds for all elements of this, false otherwise
-     * @throws NullPointerException if {@code predicate} is null
-     */
-    default boolean forAll(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        for (T t : this) {
-            if (!predicate.test(t)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     /**
@@ -536,7 +454,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @return A new Traversable of sliced blocks of the given size
      * @throws IllegalArgumentException if {@code size} is negative or zero
      */
-    Traversable<M, ? extends Traversable<M, T>> grouped(int size);
+    Traversable<? extends Traversable<T>> grouped(int size);
 
     /**
      * Returns the first element of a non-empty Traversable.
@@ -559,14 +477,14 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @return a new instance containing all elements except the last.
      * @throws UnsupportedOperationException if this is empty
      */
-    Traversable<M, T> init();
+    Traversable<T> init();
 
     /**
      * Dual of {@linkplain #tailOption()}, returning all elements except the last as {@code Option}.
      *
      * @return {@code Some(traversable)} or {@code None} if this is empty.
      */
-    Option<? extends Traversable<M, T>> initOption();
+    Option<? extends Traversable<T>> initOption();
 
     /**
      * Inserts an element between all elements of this Traversable.
@@ -574,7 +492,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @param element An element.
      * @return an interspersed version of this
      */
-    Traversable<M, T> intersperse(T element);
+    Traversable<T> intersperse(T element);
 
     /**
      * Checks if this Traversable is empty.
@@ -587,7 +505,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
     default Iterator<T> iterator() {
         return new Iterator<T>() {
 
-            Traversable<M, T> traversable = Traversable.this;
+            Traversable<T> traversable = Traversable.this;
 
             @Override
             public boolean hasNext() {
@@ -658,9 +576,9 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
         if (isEmpty()) {
             throw new NoSuchElementException("last of empty Traversable");
         } else {
-            Traversable<M, T> traversable = this;
+            Traversable<T> traversable = this;
             { // don't let escape tail
-                Traversable<M, T> tail;
+                Traversable<T> tail;
                 while (!(tail = traversable.tail()).isEmpty()) {
                     traversable = tail;
                 }
@@ -695,7 +613,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @return a mapped Traversable
      * @throws NullPointerException if {@code mapper} is null
      */
-    <U> Traversable<M, U> map(Function<? super T, ? extends U> mapper);
+    <U> Traversable<U> map(Function<? super T, ? extends U> mapper);
 
     /**
      * Creates a partition of this {@code Traversable} by splitting this elements in two in distinct tarversables
@@ -705,7 +623,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @return A disjoint union of two traversables. The first {@code Traversable} contains all elements that satisfy the given {@code predicate}, the second {@code Traversable} contains all elements that don't. The original order of elements is preserved.
      * @throws NullPointerException if predicate is null
      */
-    Tuple2<? extends Traversable<M, T>, ? extends Traversable<M, T>> partition(Predicate<? super T> predicate);
+    Tuple2<? extends Traversable<T>, ? extends Traversable<T>> partition(Predicate<? super T> predicate);
 
     /**
      * Calculates the maximum of this elements according to their natural order.
@@ -769,7 +687,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
         }
     }
 
-    Traversable<M, T> peek(Consumer<? super T> action);
+    Traversable<T> peek(Consumer<? super T> action);
 
     /**
      * Calculates the product of this elements. Supported component types are {@code Byte}, {@code Double}, {@code Float},
@@ -815,7 +733,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @param element An element to be removed from this Traversable.
      * @return a Traversable containing all elements of this without the first occurrence of the given element.
      */
-    Traversable<M, T> remove(T element);
+    Traversable<T> remove(T element);
 
 
     /**
@@ -824,7 +742,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @param element An element to be removed from this Traversable.
      * @return a Traversable containing all elements of this but not the given element.
      */
-    Traversable<M, T> removeAll(T element);
+    Traversable<T> removeAll(T element);
 
     /**
      * Removes all occurrences of the given elements.
@@ -833,7 +751,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @return a Traversable containing all elements of this but none of the given elements.
      * @throws NullPointerException if {@code elements} is null
      */
-    Traversable<M, T> removeAll(Iterable<? extends T> elements);
+    Traversable<T> removeAll(Iterable<? extends T> elements);
 
     /**
      * Accumulates the elements of this Traversable by successively calling the given operation {@code op}.
@@ -879,7 +797,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
         if (isEmpty()) {
             throw new NoSuchElementException("reduceRight on empty List");
         } else {
-            final Traversable<M, T> reversed = reverse();
+            final Traversable<T> reversed = reverse();
             return reversed.tail().foldLeft(reversed.head(), (xs, x) -> op.apply(x, xs));
         }
     }
@@ -891,7 +809,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @param newElement     A replacement for currentElement.
      * @return a Traversable containing all elements of this where the first occurrence of currentElement is replaced with newELement.
      */
-    Traversable<M, T> replace(T currentElement, T newElement);
+    Traversable<T> replace(T currentElement, T newElement);
 
     /**
      * Replaces all occurrences of the given currentElement with newElement.
@@ -900,7 +818,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @param newElement     A replacement for currentElement.
      * @return a Traversable containing all elements of this where all occurrences of currentElement are replaced with newELement.
      */
-    Traversable<M, T> replaceAll(T currentElement, T newElement);
+    Traversable<T> replaceAll(T currentElement, T newElement);
 
     /**
      * Replaces all occurrences of this Traversable by applying the given operator to the elements, which is
@@ -910,7 +828,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @return a Traversable containing all elements of this transformed within the same domain.
      * @throws NullPointerException if {@code operator} is null
      */
-    Traversable<M, T> replaceAll(UnaryOperator<T> operator);
+    Traversable<T> replaceAll(UnaryOperator<T> operator);
 
     /**
      * Keeps all occurrences of the given elements from this.
@@ -919,14 +837,14 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @return a Traversable containing all occurreces of the given elements.
      * @throws NullPointerException if {@code elements} is null
      */
-    Traversable<M, T> retainAll(Iterable<? extends T> elements);
+    Traversable<T> retainAll(Iterable<? extends T> elements);
 
     /**
      * Reverses the order of elements.
      *
      * @return the reversed elements.
      */
-    Traversable<M, T> reverse();
+    Traversable<T> reverse();
 
     /**
      * Slides a window of a specific {@code size} and step size 1 over this {@code Traversable} by calling
@@ -936,7 +854,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @return a new Traversable of windows of a specific size using step size 1
      * @throws IllegalArgumentException if {@code size} is negative or zero
      */
-    Traversable<M, ? extends Traversable<M, T>> sliding(int size);
+    Traversable<? extends Traversable<T>> sliding(int size);
 
     /**
      * Slides a window of a specific {@code size} and {@code step} size over this {@code Traversable}.
@@ -957,7 +875,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @return a new Traversable of windows of a specific size using a specific step size
      * @throws IllegalArgumentException if {@code size} or {@code step} are negative or zero
      */
-    Traversable<M, ? extends Traversable<M, T>> sliding(int size, int step);
+    Traversable<? extends Traversable<T>> sliding(int size, int step);
 
     /**
      * Returns a tuple where the first element is the longest prefix of elements that satisfy p and the second element is the remainder.
@@ -966,7 +884,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @return a Tuple containing the longest prefix of elements that satisfy p and the remainder.
      * @throws NullPointerException if {@code predicate} is null
      */
-    Tuple2<? extends Traversable<M, T>, ? extends Traversable<M, T>> span(Predicate<? super T> predicate);
+    Tuple2<? extends Traversable<T>, ? extends Traversable<T>> span(Predicate<? super T> predicate);
 
     /**
      * Calculates the sum of this elements. Supported component types are {@code Byte}, {@code Double}, {@code Float},
@@ -1013,10 +931,12 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stderr.
      */
     default void stderr() {
-        for (T t : this) {
-            System.err.println(String.valueOf(t));
-            if (System.err.checkError()) {
-                throw new IllegalStateException("Error writing to stderr");
+        try (PrintStream writer = System.err) {
+            for (T t : this) {
+                writer.println(String.valueOf(t));
+                if (writer.checkError()) {
+                    throw new IllegalStateException("Error writing to stderr");
+                }
             }
         }
     }
@@ -1028,10 +948,12 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stdout.
      */
     default void stdout() {
-        for (T t : this) {
-            System.out.println(String.valueOf(t));
-            if (System.out.checkError()) {
-                throw new IllegalStateException("Error writing to stdout");
+        try (PrintStream writer = System.out) {
+            for (T t : this) {
+                writer.println(String.valueOf(t));
+                if (writer.checkError()) {
+                    throw new IllegalStateException("Error writing to stdout");
+                }
             }
         }
     }
@@ -1042,14 +964,14 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @return A new instance of Traversable containing all elements except the first.
      * @throws UnsupportedOperationException if this is empty
      */
-    Traversable<M, T> tail();
+    Traversable<T> tail();
 
     /**
      * Drops the first element of a non-empty Traversable and returns an {@code Option}.
      *
      * @return {@code Some(traversable)} or {@code None} if this is empty.
      */
-    Option<? extends Traversable<M, T>> tailOption();
+    Option<? extends Traversable<T>> tailOption();
 
     /**
      * Takes the first n elements of this or all elements, if this length &lt; n.
@@ -1062,7 +984,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @param n The number of elements to take.
      * @return A new instance consisting the first n elements of this or all elements, if this has less than n elements.
      */
-    Traversable<M, T> take(int n);
+    Traversable<T> take(int n);
 
     /**
      * Takes the last n elements of this or all elements, if this length &lt; n.
@@ -1075,7 +997,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @param n The number of elements to take.
      * @return A new instance consisting the first n elements of this or all elements, if this has less than n elements.
      */
-    Traversable<M, T> takeRight(int n);
+    Traversable<T> takeRight(int n);
 
     /**
      * Takes elements while the predicate holds for the current element.
@@ -1085,7 +1007,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * given predicate.
      * @throws NullPointerException if {@code predicate} is null
      */
-    Traversable<M, T> takeWhile(Predicate<? super T> predicate);
+    Traversable<T> takeWhile(Predicate<? super T> predicate);
 
     /**
      * Converts this to a Java array.
@@ -1168,7 +1090,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @return A pair of traversables containing elements split by unzipper
      * @throws NullPointerException if {@code unzipper} is null
      */
-    <T1, T2> Tuple2<? extends Traversable<M, T1>, ? extends Traversable<M, T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
+    <T1, T2> Tuple2<? extends Traversable<T1>, ? extends Traversable<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
 
     /**
      * Returns a Traversable formed from this Traversable and another Iterable collection by combining corresponding elements
@@ -1181,7 +1103,7 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @return a new Traversable containing pairs consisting of corresponding elements of this list and that.
      * @throws NullPointerException if {@code that} is null
      */
-    <U> Traversable<M, Tuple2<T, U>> zip(Iterable<U> that);
+    <U> Traversable<Tuple2<T, U>> zip(Iterable<U> that);
 
     /**
      * Returns a Traversable formed from this Traversable and another Iterable by combining corresponding elements in
@@ -1199,12 +1121,12 @@ public interface Traversable<M extends Traversable<M, ?>, T> extends Kind<M, T>,
      * @return A new Traversable containing pairs consisting of corresponding elements of this Traversable and that.
      * @throws NullPointerException if {@code that} is null
      */
-    <U> Traversable<M, Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
+    <U> Traversable<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
 
     /**
      * Zips this List with its indices.
      *
      * @return A new List containing all elements of this List paired with their index, starting with 0.
      */
-    Traversable<M, Tuple2<T, Integer>> zipWithIndex();
+    Traversable<Tuple2<T, Integer>> zipWithIndex();
 }
