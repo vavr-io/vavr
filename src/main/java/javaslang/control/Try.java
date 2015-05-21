@@ -5,21 +5,22 @@
  */
 package javaslang.control;
 
-import javaslang.algebra.CheckedMonad;
-import javaslang.Kind;
-import javaslang.control.Valences.Bivalent;
+import javaslang.collection.TraversableOnce;
 
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * An implementation similar to Scala's Try control.
  *
  * @param <T> Value type in the case of success.
  */
-public interface Try<T> extends Kind<Try<?>, T>, CheckedMonad<Try<?>, T>, Bivalent<T, Throwable>, Iterable<T> {
+public interface Try<T> extends TraversableOnce<T> {
 
     /**
      * Creates a Try of a CheckedSupplier.
@@ -67,14 +68,24 @@ public interface Try<T> extends Kind<Try<?>, T>, CheckedMonad<Try<?>, T>, Bivale
      */
     boolean isSuccess();
 
+    T get();
+
+    T orElse(T other);
+
+    T orElseGet(Function<? super Throwable, ? extends T> other);
+
+    void orElseRun(Consumer<? super Throwable> action);
+
+    <X extends Throwable> T orElseThrow(Function<? super Throwable, X> exceptionProvider) throws X;
+
     /**
-     * Returns {@code this}, if this is a Success, otherwise tries to recover the exception of the failure with {@code f},
+     * Returns {@code this}, if this is a {@code Success}, otherwise tries to recover the exception of the failure with {@code f},
      * i.e. calling {@code Try.of(() -> f.apply(throwable))}.
      *
      * @param f A recovery function taking a Throwable
      * @return a new Try
      */
-    Try<T> recover(CheckedFunction<Throwable, ? extends T> f);
+    Try<T> recover(Function<Throwable, ? extends T> f);
 
     /**
      * Returns {@code this}, if this is a Success, otherwise tries to recover the exception of the failure with {@code f},
@@ -84,7 +95,7 @@ public interface Try<T> extends Kind<Try<?>, T>, CheckedMonad<Try<?>, T>, Bivale
      * @param f A recovery function taking a Throwable
      * @return a new Try
      */
-    Try<T> recoverWith(CheckedFunction<Throwable, Try<T>> f);
+    Try<T> recoverWith(Function<Throwable, Try<T>> f);
 
     /**
      * Returns {@code Success(throwable)} if this is a {@code Failure(throwable)}, otherwise
@@ -101,7 +112,13 @@ public interface Try<T> extends Kind<Try<?>, T>, CheckedMonad<Try<?>, T>, Bivale
      * @return a new Failure, if this is a Failure and the consumer throws, otherwise this, which may be a Success or
      * a Failure.
      */
-    Try<T> onFailure(CheckedConsumer<Throwable> f);
+    Try<T> onFailure(Consumer<Throwable> f);
+
+    Option<T> toOption();
+
+    Either<Throwable, T> toEither();
+
+    Optional<T> toJavaOptional();
 
     /**
      * <p>Returns {@code this} if this is a Failure or this is a Success and the value satisfies the predicate.</p>
@@ -111,7 +128,7 @@ public interface Try<T> extends Kind<Try<?>, T>, CheckedMonad<Try<?>, T>, Bivale
      * @param predicate A predicate
      * @return a new Try
      */
-    Try<T> filter(CheckedPredicate<? super T> predicate);
+    Try<T> filter(Predicate<? super T> predicate);
 
     /**
      * Flattens a nested, monadic structure using a function.
@@ -129,53 +146,24 @@ public interface Try<T> extends Kind<Try<?>, T>, CheckedMonad<Try<?>, T>, Bivale
      * </code>
      * </pre>
      *
-     * @param <U>   component type of the result {@code Try}
-     * @param f     a function which maps elements of this {@code Try} to {@code Try}s
+     * @param <U> component type of the result {@code Try}
+     * @param f   a function which maps elements of this {@code Try} to {@code Try}s
      * @return a new {@code Try}
      * @throws NullPointerException if {@code f} is null
      */
     @SuppressWarnings("unchecked")
-    @Override
-    default <U> Try<U> flatten(CheckedFunction<? super T, ? extends Kind<Try<?>, U>> f) {
+    default <U> Try<U> flatten(Function<? super T, ? extends Try<U>> f) {
         Objects.requireNonNull(f, "f is null");
         if (isFailure()) {
             return (Failure<U>) this;
         } else {
             try {
-                return (Try<U>) f.apply(get());
+                return f.apply(get());
             } catch (Throwable t) {
                 return new Failure<>(t);
             }
         }
     }
-
-    @Override
-    default boolean exists(CheckedPredicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        try {
-            return isSuccess() && predicate.test(get());
-        } catch (Throwable ignored) {
-            return false;
-        }
-    }
-
-    @Override
-    default boolean forAll(CheckedPredicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        try {
-            return isSuccess() && predicate.test(get());
-        } catch (Throwable ignored) {
-            return false;
-        }
-    }
-
-    /**
-     * Applies the action to the value of a Success or does nothing in the case of a Failure.
-     *
-     * @param action A Consumer
-     */
-    @Override
-    void forEach(Consumer<? super T> action);
 
     /**
      * Applies the action to the value of a Success or does nothing in the case of a Failure.
@@ -183,8 +171,7 @@ public interface Try<T> extends Kind<Try<?>, T>, CheckedMonad<Try<?>, T>, Bivale
      * @param action A Consumer
      * @return this Try
      */
-    @Override
-    Try<T> peek(CheckedConsumer<? super T> action);
+    Try<T> peek(Consumer<? super T> action);
 
     /**
      * Maps the value of a Success or returns a Failure.
@@ -193,8 +180,7 @@ public interface Try<T> extends Kind<Try<?>, T>, CheckedMonad<Try<?>, T>, Bivale
      * @param <U>    The new component type
      * @return a new Try
      */
-    @Override
-    <U> Try<U> map(CheckedFunction<? super T, ? extends U> mapper);
+    <U> Try<U> map(Function<? super T, ? extends U> mapper);
 
     /**
      * FlatMaps the value of a Success or returns a Failure.
@@ -203,8 +189,7 @@ public interface Try<T> extends Kind<Try<?>, T>, CheckedMonad<Try<?>, T>, Bivale
      * @param <U>    The new component type
      * @return a new Try
      */
-    @Override
-    <U> Try<U> flatMap(CheckedFunction<? super T, ? extends Kind<Try<?>, U>> mapper);
+    <U> Try<U> flatMap(Function<? super T, ? extends Try<U>> mapper);
 
     @Override
     default Iterator<T> iterator() {
@@ -257,70 +242,6 @@ public interface Try<T> extends Kind<Try<?>, T>, CheckedMonad<Try<?>, T>, Bivale
 
     @Override
     String toString();
-
-    /**
-     * A {@linkplain java.util.function.Function} which may throw.
-     *
-     * @param <T> the type of the input of the operation
-     * @param <R> the type of results supplied by this supplier
-     */
-    @FunctionalInterface
-    interface CheckedFunction<T, R> {
-
-        /**
-         * Applies this function to the given argument.
-         *
-         * @param t the function argument
-         * @return the function result
-         * @throws Throwable if an error occurs
-         */
-        R apply(T t) throws Throwable;
-
-        /**
-         * Creates the checked identity function.
-         *
-         * @param <T> the type of the input of the operation
-         * @return The identity function
-         */
-        static <T> CheckedFunction<T, T> identity() {
-            return t -> t;
-        }
-    }
-
-    /**
-     * A {@linkplain java.util.function.Consumer} which may throw.
-     *
-     * @param <T> the type of the input of the operation
-     */
-    @FunctionalInterface
-    interface CheckedConsumer<T> {
-
-        /**
-         * Performs this operation on the given argument.
-         *
-         * @param t the input argument
-         * @throws Throwable if an error occurs
-         */
-        void accept(T t) throws Throwable;
-    }
-
-    /**
-     * A {@linkplain java.util.function.Predicate} which may throw.
-     *
-     * @param <T> the type of the input of the predicate
-     */
-    @FunctionalInterface
-    interface CheckedPredicate<T> {
-
-        /**
-         * Evaluates this predicate on the given argument.
-         *
-         * @param t the input argument
-         * @return {@code true} if the input argument matches the predicate, otherwise {@code false}
-         * @throws Throwable if an error occurs
-         */
-        boolean test(T t) throws Throwable;
-    }
 
     /**
      * A {@linkplain java.lang.Runnable} which may throw.

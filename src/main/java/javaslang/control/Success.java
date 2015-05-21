@@ -5,14 +5,13 @@
  */
 package javaslang.control;
 
-import javaslang.Kind;
-
 import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * A succeeded Try.
@@ -71,17 +70,17 @@ public final class Success<T> implements Try<T>, Serializable {
     }
 
     @Override
-    public Success<T> recover(CheckedFunction<Throwable, ? extends T> f) {
+    public Success<T> recover(Function<Throwable, ? extends T> f) {
         return this;
     }
 
     @Override
-    public Success<T> recoverWith(CheckedFunction<Throwable, Try<T>> f) {
+    public Success<T> recoverWith(Function<Throwable, Try<T>> f) {
         return this;
     }
 
     @Override
-    public Success<T> onFailure(CheckedConsumer<Throwable> f) {
+    public Success<T> onFailure(Consumer<Throwable> f) {
         return this;
     }
 
@@ -101,7 +100,7 @@ public final class Success<T> implements Try<T>, Serializable {
     }
 
     @Override
-    public Try<T> filter(CheckedPredicate<? super T> predicate) {
+    public Try<T> filter(Predicate<? super T> predicate) {
         try {
             if (predicate.test(value)) {
                 return this;
@@ -119,12 +118,7 @@ public final class Success<T> implements Try<T>, Serializable {
     }
 
     @Override
-    public void forEach(Consumer<? super T> action) {
-        action.accept(value);
-    }
-
-    @Override
-    public Try<T> peek(CheckedConsumer<? super T> action) {
+    public Try<T> peek(Consumer<? super T> action) {
         try {
             action.accept(value);
             return this;
@@ -134,7 +128,7 @@ public final class Success<T> implements Try<T>, Serializable {
     }
 
     @Override
-    public <U> Try<U> map(CheckedFunction<? super T, ? extends U> mapper) {
+    public <U> Try<U> map(Function<? super T, ? extends U> mapper) {
         try {
             return new Success<>(mapper.apply(value));
         } catch (Throwable t) {
@@ -144,7 +138,7 @@ public final class Success<T> implements Try<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U> Try<U> flatMap(CheckedFunction<? super T, ? extends Kind<Try<?>, U>> mapper) {
+    public <U> Try<U> flatMap(Function<? super T, ? extends Try<U>> mapper) {
         try {
             return (Try<U>) mapper.apply(value);
         } catch (Throwable t) {
@@ -164,6 +158,6 @@ public final class Success<T> implements Try<T>, Serializable {
 
     @Override
     public String toString() {
-        return "Success("+value+")";
+        return String.format("Success(%s)", value);
     }
 }

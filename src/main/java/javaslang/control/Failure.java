@@ -5,13 +5,12 @@
  */
 package javaslang.control;
 
-import javaslang.Kind;
-
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * A failed Try.
@@ -78,12 +77,12 @@ public final class Failure<T> implements Try<T>, Serializable {
     }
 
     @Override
-    public Try<T> recover(CheckedFunction<Throwable, ? extends T> f) {
+    public Try<T> recover(Function<Throwable, ? extends T> f) {
         return Try.of(() -> f.apply(cause.getCause()));
     }
 
     @Override
-    public Try<T> recoverWith(CheckedFunction<Throwable, Try<T>> f) {
+    public Try<T> recoverWith(Function<Throwable, Try<T>> f) {
         try {
             return f.apply(cause.getCause());
         } catch (Throwable t) {
@@ -92,7 +91,7 @@ public final class Failure<T> implements Try<T>, Serializable {
     }
 
     @Override
-    public Failure<T> onFailure(CheckedConsumer<Throwable> f) {
+    public Failure<T> onFailure(Consumer<Throwable> f) {
         try {
             f.accept(cause.getCause());
             return this;
@@ -122,29 +121,23 @@ public final class Failure<T> implements Try<T>, Serializable {
     }
 
     @Override
-    public Failure<T> filter(CheckedPredicate<? super T> predicate) {
+    public Failure<T> filter(Predicate<? super T> predicate) {
         return this;
     }
 
     @Override
-    public void forEach(Consumer<? super T> action) {
-        // nothing to do
-    }
-
-    @Override
-    public Failure<T> peek(CheckedConsumer<? super T> action) {
+    public Failure<T> peek(Consumer<? super T> action) {
         return this;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U> Failure<U> map(CheckedFunction<? super T, ? extends U> mapper) {
+    public <U> Failure<U> map(Function<? super T, ? extends U> mapper) {
         return (Failure<U>) this;
     }
 
     @SuppressWarnings("unchecked")
-    @Override
-    public <U> Failure<U> flatMap(CheckedFunction<? super T, ? extends Kind<Try<?>, U>> mapper) {
+    public <U> Failure<U> flatMap(Function<? super T, ? extends Try<U>> mapper) {
         return (Failure<U>) this;
     }
 
@@ -168,7 +161,7 @@ public final class Failure<T> implements Try<T>, Serializable {
 
     @Override
     public String toString() {
-        return "Failure("+cause.getCause()+")";
+        return String.format("Failure(%s)", cause.getCause());
     }
 
     /**
