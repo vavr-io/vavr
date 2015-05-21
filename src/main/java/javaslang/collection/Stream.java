@@ -287,12 +287,6 @@ public interface Stream<T> extends Seq<T> {
     }
 
     @Override
-    default boolean exists(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return Seq.super.exists(predicate);
-    }
-
-    @Override
     default Stream<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         Stream<T> stream = this;
