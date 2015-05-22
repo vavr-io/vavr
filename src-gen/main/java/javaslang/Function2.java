@@ -45,22 +45,6 @@ public interface Function2<T1, T2, R> extends λ<R> {
     }
 
     /**
-     * Returns a memoizing function, which computes the return value for given arguments only one time.
-     * On subsequent calls given the same arguments the memoized value is returned.
-     *
-     * @param <R> return type
-     * @param <T1> 1st argument
-     * @param <T2> 2nd argument
-     * @param f a function
-     * @return a memoizing function
-     */
-    static <T1, T2, R> Function2<T1, T2, R> memoize(Function2<T1, T2, R> f) {
-        final Map<Tuple2<T1, T2>, R> cache = new ConcurrentHashMap<>();
-        final Function1<Tuple2<T1, T2>, R> tupled = f.tupled();
-        return (t1, t2) -> cache.computeIfAbsent(Tuple.of(t1, t2), tupled::apply);
-    }
-
-    /**
      * Applies this function to two arguments and returns the result.
      *
      * @param t1 argument 1
@@ -99,6 +83,13 @@ public interface Function2<T1, T2, R> extends λ<R> {
     @Override
     default Function2<T2, T1, R> reversed() {
         return (t2, t1) -> apply(t1, t2);
+    }
+
+    @Override
+    default Function2<T1, T2, R> memoized() {
+        final Map<Tuple2<T1, T2>, R> cache = new ConcurrentHashMap<>();
+        final Function1<Tuple2<T1, T2>, R> tupled = tupled();
+        return (t1, t2) -> cache.computeIfAbsent(Tuple.of(t1, t2), tupled::apply);
     }
 
     /**

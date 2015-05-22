@@ -39,18 +39,6 @@ public interface Function0<R> extends λ<R> {
     }
 
     /**
-     * Returns a memoizing function, which computes the return value for given arguments only one time.
-     * On subsequent calls given the same arguments the memoized value is returned.
-     *
-     * @param <R> return type
-     * @param f a function
-     * @return a memoizing function
-     */
-    static <R> Function0<R> memoize(Function0<R> f) {
-        return Lazy.of(f::apply)::get;
-    }
-
-    /**
      * Applies this function to no arguments and returns the result.
      *
      * @return the result of function application
@@ -76,6 +64,11 @@ public interface Function0<R> extends λ<R> {
     @Override
     default Function0<R> reversed() {
         return this;
+    }
+
+    @Override
+    default Function0<R> memoized() {
+        return Lazy.of(this::apply)::get;
     }
 
     /**
