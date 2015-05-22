@@ -56,7 +56,7 @@ public class ProjectEulerTest {
     @Test
     public void shouldSolveProblem2() {
         assertThat(sumOfEvenFibonacciValuesNotExceeding(90)).isEqualTo(2 + 8 + 34);
-        assertThat(sumOfEvenFibonacciValuesNotExceeding(4000000)).isEqualTo(4613732);
+        assertThat(sumOfEvenFibonacciValuesNotExceeding(4_000_000)).isEqualTo(4_613_732);
     }
 
     private static long sumOfEvenFibonacciValuesNotExceeding(final int max) {
