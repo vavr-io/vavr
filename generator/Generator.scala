@@ -657,8 +657,6 @@ def generateMainClasses(): Unit = {
         val paramsReversed = (1 to i).reverse.gen(j => s"t$j")(", ")
         val tupled = (1 to i).gen(j => s"t._$j")(", ")
         val compositionType = s"${checked.gen("Checked")}Function1"
-        val cacheKey = if (i == 1) params else s"Tuple.of($params)"
-        val cacheGenerics = if (i == 1) s"<$generics, R>" else s"<Tuple$i<$generics>, R>"
         val Try = im.getType("javaslang.control.Try")
 
         def curriedType(max: Int, function: String): String = {
@@ -721,33 +719,6 @@ def generateMainClasses(): Unit = {
               }""")}
 
               /$javadoc
-               * Returns a memoizing function, which computes the return value for given arguments only one time.
-               * On subsequent calls given the same arguments the memoized value is returned.
-               *
-               ${(0 to i).gen(j => if (j == 0) "* @param <R> return type" else s"* @param <T$j> ${j.ordinal} argument")("\n")}
-               * @param f a function
-               * @return a memoizing function
-               */
-              static $fullGenerics $className$fullGenerics memoize($className$fullGenerics f) {
-                  ${if (i == 0) xs"""
-                    ${if (checked) xs"""
-                      final Lazy<R> cache = Lazy.of($Try.of(f::apply)::get);
-                      return cache::get;
-                    """ else xs"""
-                      return Lazy.of(f::apply)::get;
-                    """}
-                  """ else xs"""
-                    final ${im.getType("java.util.Map")}$cacheGenerics cache = new ${im.getType("java.util.concurrent.ConcurrentHashMap")}<>();
-                    ${(i > 1).gen(s"final ${checked.gen("Checked")}Function1<Tuple$i<$generics>, R> tupled = f.tupled();")}
-                    ${if (checked) xs"""
-                      return ($params) -> cache.computeIfAbsent($cacheKey, t -> $Try.of(() -> ${if (i == 1) "f" else "tupled"}.apply(t)).get());
-                    """ else xs"""
-                      return ($params) -> cache.computeIfAbsent($cacheKey, ${if (i == 1) "f::apply" else "tupled::apply"});
-                    """}
-                  """}
-              }
-
-              /$javadoc
                * Applies this function to ${arguments(i)} and returns the result.
                ${(0 to i).gen(j => if (j == 0) "*" else s"* @param t$j argument $j")("\n")}
                * @return the result of function application
@@ -793,6 +764,26 @@ def generateMainClasses(): Unit = {
               @Override
               default $className<${genericsReversedFunction}R> reversed() {
                   return ${if (i < 2) "this" else s"($paramsReversed) -> apply($params)"};
+              }
+
+              @Override
+              default $className$fullGenerics memoized() {
+                  ${if (i == 0) xs"""
+                    ${if (checked) xs"""
+                      final Lazy<R> cache = Lazy.of(() -> $Try.of(this::apply).get());
+                      return cache::get;
+                    """ else xs"""
+                      return Lazy.of(this::apply)::get;
+                    """}
+                  """ else xs"""
+                    final ${im.getType("java.util.Map")}<Tuple$i<$generics>, R> cache = new ${im.getType("java.util.concurrent.ConcurrentHashMap")}<>();
+                    final ${checked.gen("Checked")}Function1<Tuple$i<$generics>, R> tupled = tupled();
+                    ${if (checked) xs"""
+                      return ($params) -> cache.computeIfAbsent(Tuple.of($params), t -> $Try.of(() -> tupled.apply(t)).get());
+                    """ else xs"""
+                      return ($params) -> cache.computeIfAbsent(Tuple.of($params), tupled::apply);
+                    """}
+                  """}
               }
 
               /$javadoc

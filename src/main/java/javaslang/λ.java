@@ -80,7 +80,7 @@ public interface λ<R> extends Serializable {
     /**
      * Returns a curried version of this function.
      *
-     * @return A curried function equivalent to this.
+     * @return a curried function equivalent to this.
      */
     // generic argument count varies
     @SuppressWarnings("rawtypes")
@@ -89,16 +89,24 @@ public interface λ<R> extends Serializable {
     /**
      * Returns a tupled version of this function.
      *
-     * @return A tupled function equivalent to this.
+     * @return a tupled function equivalent to this.
      */
     λ<R> tupled();
 
     /**
      * Returns a reversed version of this function. This may be useful in a recursive context.
      *
-     * @return A reversed function equivalent to this.
+     * @return a reversed function equivalent to this.
      */
     λ<R> reversed();
+
+    /**
+     * Returns a memoizing version of this function, which computes the return value for given arguments only one time.
+     * On subsequent calls given the same arguments the memoized value is returned.
+     *
+     * @return a memoizing function equivalent to this.
+     */
+    λ<R> memoized();
 
     /**
      * Get reflective type information about lambda parameters and return type.

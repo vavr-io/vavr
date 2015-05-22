@@ -53,26 +53,6 @@ public interface Function6<T1, T2, T3, T4, T5, T6, R> extends λ<R> {
     }
 
     /**
-     * Returns a memoizing function, which computes the return value for given arguments only one time.
-     * On subsequent calls given the same arguments the memoized value is returned.
-     *
-     * @param <R> return type
-     * @param <T1> 1st argument
-     * @param <T2> 2nd argument
-     * @param <T3> 3rd argument
-     * @param <T4> 4th argument
-     * @param <T5> 5th argument
-     * @param <T6> 6th argument
-     * @param f a function
-     * @return a memoizing function
-     */
-    static <T1, T2, T3, T4, T5, T6, R> Function6<T1, T2, T3, T4, T5, T6, R> memoize(Function6<T1, T2, T3, T4, T5, T6, R> f) {
-        final Map<Tuple6<T1, T2, T3, T4, T5, T6>, R> cache = new ConcurrentHashMap<>();
-        final Function1<Tuple6<T1, T2, T3, T4, T5, T6>, R> tupled = f.tupled();
-        return (t1, t2, t3, t4, t5, t6) -> cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4, t5, t6), tupled::apply);
-    }
-
-    /**
      * Applies this function to 6 arguments and returns the result.
      *
      * @param t1 argument 1
@@ -169,6 +149,13 @@ public interface Function6<T1, T2, T3, T4, T5, T6, R> extends λ<R> {
     @Override
     default Function6<T6, T5, T4, T3, T2, T1, R> reversed() {
         return (t6, t5, t4, t3, t2, t1) -> apply(t1, t2, t3, t4, t5, t6);
+    }
+
+    @Override
+    default Function6<T1, T2, T3, T4, T5, T6, R> memoized() {
+        final Map<Tuple6<T1, T2, T3, T4, T5, T6>, R> cache = new ConcurrentHashMap<>();
+        final Function1<Tuple6<T1, T2, T3, T4, T5, T6>, R> tupled = tupled();
+        return (t1, t2, t3, t4, t5, t6) -> cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4, t5, t6), tupled::apply);
     }
 
     /**
