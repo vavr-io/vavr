@@ -5,6 +5,7 @@
  */
 package javaslang.collection.euler;
 
+import javaslang.Function1;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
 import javaslang.control.Match;
@@ -66,7 +67,7 @@ public class ProjectEulerTest {
                 .sum().longValue();
     }
 
-    private static final Function<Integer, Long> memoizedFibonacci = Memoizer.memoize(ProjectEulerTest::fibonacci);
+    private static final Function<Integer, Long> memoizedFibonacci = Function1.lift(ProjectEulerTest::fibonacci).memoized();
 
     private static long fibonacci(int order) {
         return Match

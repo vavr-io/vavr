@@ -658,6 +658,12 @@ def generateMainClasses(): Unit = {
         val tupled = (1 to i).gen(j => s"t._$j")(", ")
         val compositionType = s"${checked.gen("Checked")}Function1"
         val Try = im.getType("javaslang.control.Try")
+        val additionalExtends = (checked, i) match {
+          // TODO: (false, 0) => ", " + im.getType("java.util.function.Supplier") + "<R>"
+          case (false, 1) => ", " + im.getType("java.util.function.Function") + "<T1, R>"
+          case (false, 2) => ", " + im.getType("java.util.function.BiFunction") + "<T1, T2, R>"
+          case _ => ""
+        }
 
         def curriedType(max: Int, function: String): String = {
           if (max == 0) {
@@ -688,7 +694,7 @@ def generateMainClasses(): Unit = {
            * @since 1.1.0
            */
           @FunctionalInterface
-          public interface $className$fullGenerics extends λ<R> {
+          public interface $className$fullGenerics extends λ<R>$additionalExtends {
 
               /**
                * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
