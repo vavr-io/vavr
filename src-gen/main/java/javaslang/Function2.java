@@ -12,6 +12,7 @@ package javaslang;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiFunction;
 import javaslang.control.Try;
 
 /**
@@ -23,7 +24,7 @@ import javaslang.control.Try;
  * @since 1.1.0
  */
 @FunctionalInterface
-public interface Function2<T1, T2, R> extends λ<R> {
+public interface Function2<T1, T2, R> extends λ<R>, BiFunction<T1, T2, R> {
 
     /**
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
