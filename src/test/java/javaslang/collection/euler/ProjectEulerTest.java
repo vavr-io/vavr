@@ -9,7 +9,6 @@ import javaslang.Function1;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
 import javaslang.control.Match;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.function.Function;
@@ -85,9 +84,34 @@ public class ProjectEulerTest {
      * <p>See also <a href="https://projecteuler.net/problem=7">projecteuler.net problem 7</a>.</p>
      */
     @Test
-    @Ignore
-    public void shouldSolveProblem7() {
-        final int actual = Primes.asStream().drop(10_000).head();
-        assertThat(actual).isEqualTo(0); // TODO, see Primes#sieve(Stream)
+    public void test7() {
+        assertThat(primeNo(1)).isEqualTo(2);
+        assertThat(primeNo(2)).isEqualTo(3);
+        assertThat(primeNo(3)).isEqualTo(5);
+        assertThat(primeNo(4)).isEqualTo(7);
+        assertThat(primeNo(5)).isEqualTo(11);
+        assertThat(primeNo(6)).isEqualTo(13);
+        assertThat(primeNo(10_001)).isEqualTo(104_743);
+    }
+
+    private static int primeNo(int index) {
+        return Match
+                .when(1, (i) -> 2)
+                .orElse(() -> knownPrimes.drop(index - 1).head())
+                .apply(index);
+    }
+
+    private static final Stream<Integer> knownPrimes = new Stream.Cons<>(2, () -> nextPrime(2));
+
+    private static Stream<Integer> nextPrime(int previousPrime) {
+        final Integer nextPrime = Stream.from(previousPrime + 1)
+                .filter((i) -> !isEvenlyDiversableByKnownPrimes(previousPrime, i))
+                .take(1).head();
+        return new Stream.Cons<>(nextPrime, () -> nextPrime(nextPrime));
+    }
+
+    private static boolean isEvenlyDiversableByKnownPrimes(int previousPrime, int val) {
+        return knownPrimes.takeWhile((p) -> p < previousPrime).append(previousPrime)
+                .exists((p) -> val % p == 0);
     }
 }
