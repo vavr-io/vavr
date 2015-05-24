@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Function1;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
@@ -94,6 +95,20 @@ public interface Stream<T> extends Seq<T> {
     static <T> Stream<T> gen(Supplier<T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return new Cons<>(supplier.get(), () -> gen(supplier));
+    }
+
+    /**
+     * Generates an (theoretically) infinitely long Stream using a function to calculate the next value
+     * based on the previous.
+     *
+     * @param seed The first value in the Stream
+     * @param supplier A function to calculate the next value based on the previous
+     * @param <T>      value type
+     * @return A new Stream
+     */
+    static <T> Stream<T> gen(T seed, Function1<T, T> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return new Stream.Cons<>(seed, () -> gen(supplier.apply(seed), supplier));
     }
 
     /**
@@ -325,8 +340,8 @@ public interface Stream<T> extends Seq<T> {
      * </code>
      * </pre>
      *
-     * @param <U>           component type of the result {@code Stream}
-     * @param f             a function which maps elements of this {@code Stream} to {@code Stream}s
+     * @param <U> component type of the result {@code Stream}
+     * @param f   a function which maps elements of this {@code Stream} to {@code Stream}s
      * @return a new {@code Stream}
      * @throws NullPointerException if {@code f} is null
      */

@@ -101,13 +101,15 @@ public class ProjectEulerTest {
                 .apply(index);
     }
 
-    private static final Stream<Integer> knownPrimes = new Stream.Cons<>(2, () -> nextPrime(2));
+    private static final Stream<Integer> knownPrimes = Stream.gen(2, (p) -> nextPrime(p));
 
-    private static Stream<Integer> nextPrime(int previousPrime) {
-        final Integer nextPrime = Stream.from(previousPrime + 1)
-                .filter((i) -> !isEvenlyDiversableByKnownPrimes(previousPrime, i))
-                .take(1).head();
-        return new Stream.Cons<>(nextPrime, () -> nextPrime(nextPrime));
+    private static int nextPrime(int previousPrime) {
+        final Integer nextPrime = Match
+                .when(2, (i) -> 3)
+                .orElse(() -> Stream.gen(previousPrime + 2, (v) -> v + 2)
+                        .filter((i) -> !isEvenlyDiversableByKnownPrimes(previousPrime, i))
+                        .take(1).head()).apply(previousPrime);
+        return nextPrime;
     }
 
     private static boolean isEvenlyDiversableByKnownPrimes(int previousPrime, int val) {
