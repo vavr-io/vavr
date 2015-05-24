@@ -9,16 +9,15 @@ package javaslang.control;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.Function1;
-import javaslang.Lazy;
-import javaslang.collection.List;
-
 import java.io.Serializable;
 import java.lang.invoke.MethodType;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import javaslang.Function1;
+import javaslang.Lazy;
+import javaslang.collection.List;
 
 /**
  * {@code Match} is a better switch for Java. Some characteristics of {@code Match} are:
@@ -471,7 +470,6 @@ public interface Match<R> extends Function<Object, R> {
 
         /**
          * <p>Provides a default value which is returned if no case matches.</p>
-         *
          * @param defaultSupplier A Supplier returning the default value.
          * @return a Match-expression
          */
