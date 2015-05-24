@@ -108,7 +108,8 @@ public class ProjectEulerTest {
                 .when(2, (i) -> 3)
                 .orElse(() -> Stream.gen(previousPrime + 2, (v) -> v + 2)
                         .filter((i) -> !isEvenlyDiversableByKnownPrimes(previousPrime, i))
-                        .take(1).head()).apply(previousPrime);
+                        .take(1).head())
+                .apply(previousPrime);
         return nextPrime;
     }
 
