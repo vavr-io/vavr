@@ -68,8 +68,7 @@ public interface CheckedFunction0<R> extends λ<R> {
 
     @Override
     default CheckedFunction0<R> memoized() {
-        final Lazy<R> cache = Lazy.of(() -> Try.of(this::apply).get());
-        return cache::get;
+        return Lazy.of(() -> Try.of(this::apply).get())::get;
     }
 
     /**

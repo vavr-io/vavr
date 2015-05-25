@@ -83,9 +83,8 @@ public interface CheckedFunction1<T1, R> extends λ<R> {
 
     @Override
     default CheckedFunction1<T1, R> memoized() {
-        final Map<Tuple1<T1>, R> cache = new ConcurrentHashMap<>();
-        final CheckedFunction1<Tuple1<T1>, R> tupled = tupled();
-        return (t1) -> cache.computeIfAbsent(Tuple.of(t1), t -> Try.of(() -> tupled.apply(t)).get());
+        final Map<T1, R> cache = new ConcurrentHashMap<>();
+        return t1 -> cache.computeIfAbsent(t1, t -> Try.of(() -> this.apply(t)).get());
     }
 
     /**
