@@ -657,9 +657,9 @@ def generateMainClasses(): Unit = {
         val paramsReversed = (1 to i).reverse.gen(j => s"t$j")(", ")
         val tupled = (1 to i).gen(j => s"t._$j")(", ")
         val compositionType = s"${checked.gen("Checked")}Function1"
-        val Try = im.getType("javaslang.control.Try")
+        val Try = if (checked) im.getType("javaslang.control.Try") else ""
         val additionalExtends = (checked, i) match {
-          // TODO: (false, 0) => ", " + im.getType("java.util.function.Supplier") + "<R>"
+          case (false, 0) => ", " + im.getType("java.util.function.Supplier") + "<R>"
           case (false, 1) => ", " + im.getType("java.util.function.Function") + "<T1, R>"
           case (false, 2) => ", " + im.getType("java.util.function.BiFunction") + "<T1, T2, R>"
           case _ => ""
@@ -752,6 +752,18 @@ def generateMainClasses(): Unit = {
                 """
               })("\n\n")}
 
+              ${(!checked && i == 0).gen(xs"""
+                /$javadoc
+                 * Implementation of {@linkplain java.util.function.Supplier#get()}, just calls {@linkplain #apply()}.
+                 *
+                 * @return the result of {@code apply()}
+                 */
+                @Override
+                default R get() {
+                    return apply();
+                }
+              """)}
+
               @Override
               default int arity() {
                   return $i;
@@ -774,22 +786,25 @@ def generateMainClasses(): Unit = {
 
               @Override
               default $className$fullGenerics memoized() {
-                  ${if (i == 0) xs"""
-                    ${if (checked) xs"""
-                      final Lazy<R> cache = Lazy.of(() -> $Try.of(this::apply).get());
-                      return cache::get;
+                  ${val mappingFunction = (checked, i) match {
+                      case (true, 0) => s"() -> $Try.of(this::apply).get()"
+                      case (true, 1) => s"t -> $Try.of(() -> this.apply(t)).get()"
+                      case (true, _) => s"t -> $Try.of(() -> tupled.apply(t)).get()"
+                      case (false, 0) => s"this::apply"
+                      case (false, 1) => s"this::apply"
+                      case (false, _) => s"tupled::apply"
+                    }
+                    if (i == 0) xs"""
+                      return Lazy.of($mappingFunction)::get;
+                    """ else if (i == 1) xs"""
+                      final ${im.getType("java.util.Map")}<$generics, R> cache = new ${im.getType("java.util.concurrent.ConcurrentHashMap")}<>();
+                      return $params -> cache.computeIfAbsent($params, $mappingFunction);
                     """ else xs"""
-                      return Lazy.of(this::apply)::get;
-                    """}
-                  """ else xs"""
-                    final ${im.getType("java.util.Map")}<Tuple$i<$generics>, R> cache = new ${im.getType("java.util.concurrent.ConcurrentHashMap")}<>();
-                    final ${checked.gen("Checked")}Function1<Tuple$i<$generics>, R> tupled = tupled();
-                    ${if (checked) xs"""
-                      return ($params) -> cache.computeIfAbsent(Tuple.of($params), t -> $Try.of(() -> tupled.apply(t)).get());
-                    """ else xs"""
-                      return ($params) -> cache.computeIfAbsent(Tuple.of($params), tupled::apply);
-                    """}
-                  """}
+                      final ${im.getType("java.util.Map")}<Tuple$i<$generics>, R> cache = new ${im.getType("java.util.concurrent.ConcurrentHashMap")}<>();
+                      final ${checked.gen("Checked")}Function1<Tuple$i<$generics>, R> tupled = tupled();
+                      return ($params) -> cache.computeIfAbsent(Tuple.of($params), $mappingFunction);
+                    """
+                  }
               }
 
               /$javadoc

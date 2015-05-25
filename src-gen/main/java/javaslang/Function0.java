@@ -10,7 +10,7 @@ package javaslang;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import java.util.Objects;
-import javaslang.control.Try;
+import java.util.function.Supplier;
 
 /**
  * Represents a function with no arguments.
@@ -19,7 +19,7 @@ import javaslang.control.Try;
  * @since 1.1.0
  */
 @FunctionalInterface
-public interface Function0<R> extends λ<R> {
+public interface Function0<R> extends λ<R>, Supplier<R> {
 
     /**
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
@@ -45,6 +45,16 @@ public interface Function0<R> extends λ<R> {
      * 
      */
     R apply();
+
+    /**
+     * Implementation of {@linkplain java.util.function.Supplier#get()}, just calls {@linkplain #apply()}.
+     *
+     * @return the result of {@code apply()}
+     */
+    @Override
+    default R get() {
+        return apply();
+    }
 
     @Override
     default int arity() {

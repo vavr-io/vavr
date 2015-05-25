@@ -12,7 +12,6 @@ package javaslang;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import javaslang.control.Try;
 
 /**
  * Represents a function with 5 arguments.

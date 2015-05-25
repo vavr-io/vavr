@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
-import javaslang.control.Try;
 
 /**
  * Represents a function with one argument.
@@ -84,9 +83,8 @@ public interface Function1<T1, R> extends λ<R>, Function<T1, R> {
 
     @Override
     default Function1<T1, R> memoized() {
-        final Map<Tuple1<T1>, R> cache = new ConcurrentHashMap<>();
-        final Function1<Tuple1<T1>, R> tupled = tupled();
-        return (t1) -> cache.computeIfAbsent(Tuple.of(t1), tupled::apply);
+        final Map<T1, R> cache = new ConcurrentHashMap<>();
+        return t1 -> cache.computeIfAbsent(t1, this::apply);
     }
 
     /**
