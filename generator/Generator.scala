@@ -73,7 +73,7 @@ def generateMainClasses(): Unit = {
          *
          * <pre>
          * <code>
-         * final Match&lt;Number&gt; toNumber = Match.ofType(Number.class)
+         * final Match&lt;Number&gt; toNumber = Match.as(Number.class)
          *     .when((Integer i) -&gt; i)
          *     .when((String s) -&gt; new BigDecimal(s));
          * final Number number = toNumber.apply(1.0d); // throws a MatchError
@@ -84,10 +84,10 @@ def generateMainClasses(): Unit = {
          *
          * <pre>
          * <code>
-         * Match.ofType(Number.class)
+         * Match.as(Number.class)
          *     .when((Integer i) -&gt; i)
          *     .when((String s) -&gt; new BigDecimal(s))
-         *     .orElse(() -&gt; -1)
+         *     .otherwise(() -&gt; -1)
          *     .apply(1.0d); // result: -1
          * </code>
          * </pre>
@@ -107,7 +107,7 @@ def generateMainClasses(): Unit = {
             R apply(Object o);
 
             /**
-             * Specifies the type of the match expression. In many cases it is not necessary to call {@code ofType}. This
+             * Specifies the type of the match expression. In many cases it is not necessary to call {@code as}. This
              * method is intended to be used for readability reasons when the upper bound of the cases cannot be inferred,
              * i.e. instead of
              *
@@ -123,7 +123,7 @@ def generateMainClasses(): Unit = {
              *
              * <pre>
              * <code>
-             * final Match&lt;Number&gt; toNumber = Match.ofType(Number.class)
+             * final Match&lt;Number&gt; toNumber = Match.as(Number.class)
              *         .when((Integer i) -&gt; i)
              *         .when((String s) -&gt; new BigDecimal(s))
              * </code>
@@ -133,7 +133,7 @@ def generateMainClasses(): Unit = {
              * @param <R>  the type of the {@code Match} expression
              * @return a new match builder
              */
-            static <R> Typed<R> ofType(Class<R> type) {
+            static <R> Typed<R> as(Class<R> type) {
                 $objects.requireNonNull(type, "type is null");
                 return new Typed<>();
             }
@@ -184,7 +184,7 @@ def generateMainClasses(): Unit = {
             """)("\n\n")}
 
             /**
-             * The result of {@code Match.ofType(Class)}, which explicitely sets the {@code Match} result type.
+             * The result of {@code Match.as(Class)}, which explicitly sets the {@code Match} result type.
              *
              * @param <R> the result type
              * @since 1.2.1
@@ -220,7 +220,7 @@ def generateMainClasses(): Unit = {
              * <p>
              * Typically there is a chain of match cases. The first applicable match is applied to an object.
              * <p>
-             * The {@code orElse()} methods provide a default value which is returned if no case matches.
+             * The {@code otherwise()} methods provide a default value which is returned if no case matches.
              *
              * @param <R> result type of the {@code Match.Case}
              * @since 1.0.0
@@ -282,14 +282,14 @@ def generateMainClasses(): Unit = {
                 /**
                  * <p>Provides a default value which is returned if no case matches.</p>
                  * <p>Note that this method takes the default by value which means that the input is
-                 * <em>eagerly evaluated</em> even if the orElse clause of the expression is not executed.
+                 * <em>eagerly evaluated</em> even if the {@code otherwise} clause of the expression is not executed.
                  * Unless you already have a default value calculated or as a literal it might be better
-                 * to use the {@link Match.Case#orElse(Supplier)} alternative to gain lazy evaluation.</p>
+                 * to use the {@link Match.Case#otherwise(Supplier)} alternative to gain lazy evaluation.</p>
                  *
                  * @param defaultValue The default value.
                  * @return a Match-expression
                  */
-                public Expression<R> orElse(R defaultValue) {
+                public Expression<R> otherwise(R defaultValue) {
                     return new Expression<>(cases.reverse(), new $some<>($lazyy.of(() -> defaultValue)));
                 }
 
@@ -298,7 +298,7 @@ def generateMainClasses(): Unit = {
                  * @param defaultSupplier A Supplier returning the default value.
                  * @return a Match-expression
                  */
-                public Expression<R> orElse($supplier<R> defaultSupplier) {
+                public Expression<R> otherwise($supplier<R> defaultSupplier) {
                     $objects.requireNonNull(defaultSupplier, "defaultSupplier is null");
                     return new Expression<>(cases.reverse(), new $some<>($lazyy.of(defaultSupplier)));
                 }
@@ -337,11 +337,11 @@ def generateMainClasses(): Unit = {
             final class Expression<R> implements Match<R> {
 
                 private Iterable<$function<Object, $option<R>>> cases;
-                private $option<$lazyy<R>> orElse;
+                private $option<$lazyy<R>> otherwise;
 
-                private Expression(Iterable<$function<Object, $option<R>>> cases, $option<$lazyy<R>> orElse) {
+                private Expression(Iterable<$function<Object, $option<R>>> cases, $option<$lazyy<R>> otherwise) {
                     this.cases = cases;
-                    this.orElse = orElse;
+                    this.otherwise = otherwise;
                 }
 
                 @Override
@@ -352,7 +352,7 @@ def generateMainClasses(): Unit = {
                             return result.get();
                         }
                     }
-                    return orElse.orElseThrow(() -> new MatchError(o)).get();
+                    return otherwise.orElseThrow(() -> new MatchError(o)).get();
                 }
 
                 // Note: placed this interface here, because interface Match cannot have private inner interfaces
