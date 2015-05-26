@@ -11,7 +11,6 @@ import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
 
-import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
@@ -163,7 +162,7 @@ public interface Traversable<T> extends TraversableOnce<T> {
                     .when((short t) -> ((java.util.stream.Stream<Short>) toJavaStream()).mapToInt(Number::intValue).average())
                     .when((BigInteger t) -> ((java.util.stream.Stream<BigInteger>) toJavaStream()).mapToLong(Number::longValue).average())
                     .when((BigDecimal t) -> ((java.util.stream.Stream<BigDecimal>) toJavaStream()).mapToDouble(Number::doubleValue).average())
-                    .orElse(() -> {
+                    .otherwise(() -> {
                         throw new UnsupportedOperationException("not numeric");
                     })
                     .apply(head());
@@ -711,7 +710,7 @@ public interface Traversable<T> extends TraversableOnce<T> {
         if (isEmpty()) {
             return 1;
         } else {
-            return Match.ofType(Number.class)
+            return Match.as(Number.class)
                     .when((byte t) -> ((java.util.stream.Stream<Byte>) toJavaStream()).mapToInt(Number::intValue).reduce(1, (i1, i2) -> i1 * i2))
                     .when((double t) -> ((java.util.stream.Stream<Double>) toJavaStream()).mapToDouble(Number::doubleValue).reduce(1.0, (d1, d2) -> d1 * d2))
                     .when((float t) -> ((java.util.stream.Stream<Float>) toJavaStream()).mapToDouble(Number::doubleValue).reduce(1.0, (d1, d2) -> d1 * d2))
@@ -720,7 +719,7 @@ public interface Traversable<T> extends TraversableOnce<T> {
                     .when((short t) -> ((java.util.stream.Stream<Short>) toJavaStream()).mapToInt(Number::intValue).reduce(1, (i1, i2) -> i1 * i2))
                     .when((BigInteger t) -> ((java.util.stream.Stream<BigInteger>) toJavaStream()).mapToLong(Number::longValue).reduce(1L, (l1, l2) -> l1 * l2))
                     .when((BigDecimal t) -> ((java.util.stream.Stream<BigDecimal>) toJavaStream()).mapToDouble(Number::doubleValue).reduce(1.0, (d1, d2) -> d1 * d2))
-                    .orElse(() -> {
+                    .otherwise(() -> {
                         throw new UnsupportedOperationException("not numeric");
                     })
                     .apply(head());
@@ -908,7 +907,7 @@ public interface Traversable<T> extends TraversableOnce<T> {
         if (isEmpty()) {
             return 0;
         } else {
-            return Match.ofType(Number.class)
+            return Match.as(Number.class)
                     .when((byte t) -> ((java.util.stream.Stream<Byte>) toJavaStream()).mapToInt(Number::intValue).sum())
                     .when((double t) -> ((java.util.stream.Stream<Double>) toJavaStream()).mapToDouble(Number::doubleValue).sum())
                     .when((float t) -> ((java.util.stream.Stream<Float>) toJavaStream()).mapToDouble(Number::doubleValue).sum())
@@ -917,7 +916,7 @@ public interface Traversable<T> extends TraversableOnce<T> {
                     .when((short t) -> ((java.util.stream.Stream<Short>) toJavaStream()).mapToInt(Number::intValue).sum())
                     .when((BigInteger t) -> ((java.util.stream.Stream<BigInteger>) toJavaStream()).mapToLong(Number::longValue).sum())
                     .when((BigDecimal t) -> ((java.util.stream.Stream<BigDecimal>) toJavaStream()).mapToDouble(Number::doubleValue).sum())
-                    .orElse(() -> {
+                    .otherwise(() -> {
                         throw new UnsupportedOperationException("not numeric");
                     })
                     .apply(head());

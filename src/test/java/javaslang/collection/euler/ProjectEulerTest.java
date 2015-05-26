@@ -73,7 +73,7 @@ public class ProjectEulerTest {
                 .when(0, i -> 0L)
                 .when(1, i -> 1L)
                 .when(2, i -> 1L)
-                .orElse(() -> memoizedFibonacci.apply(order - 2) + memoizedFibonacci.apply(order - 1))
+                .otherwise(() -> memoizedFibonacci.apply(order - 2) + memoizedFibonacci.apply(order - 1))
                 .apply(order);
     }
 
@@ -103,7 +103,7 @@ public class ProjectEulerTest {
     private static int nextPrime(int previousPrime) {
         return Match
                 .when(2, i -> 3)
-                .orElse(() -> Stream.gen(previousPrime + 2, v -> v + 2)
+                .otherwise(() -> Stream.gen(previousPrime + 2, v -> v + 2)
                         .filter(i -> !isEvenlyDiversableByKnownPrimes(previousPrime, i))
                         .take(1).head())
                 .apply(previousPrime);

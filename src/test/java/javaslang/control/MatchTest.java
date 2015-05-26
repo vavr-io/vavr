@@ -19,7 +19,7 @@ public class MatchTest {
 
     @Test
     public void shouldSpecifyMatchExpressionType() {
-        final Match<Number> toNumber = Match.ofType(Number.class)
+        final Match<Number> toNumber = Match.as(Number.class)
                 .when((Integer i) -> i)
                 .when((String s) -> new BigDecimal(s));
         assertThat(toNumber.apply("1")).isNotNull();
@@ -83,13 +83,13 @@ public class MatchTest {
 
     @Test
     public void shouldMatchDefaultCaseUsingEagerDefaultValue() {
-        final int actual = Match.when(null, o -> 1).orElse(2).apply("default");
+        final int actual = Match.when(null, o -> 1).otherwise(2).apply("default");
         assertThat(actual).isEqualTo(2);
     }
 
     @Test
     public void shouldMatchDefaultCaseUsingLazyDefaultValue() {
-        final int actual = Match.when(null, o -> 1).orElse(() -> 2).apply("default");
+        final int actual = Match.when(null, o -> 1).otherwise(() -> 2).apply("default");
         assertThat(actual).isEqualTo(2);
     }
 
@@ -104,56 +104,56 @@ public class MatchTest {
         assertThat(actual).isEqualTo(1);
     }
 
-    // -- ofType()
+    // -- as()
 
     @Test
     public void shouldCreateWhenOfTypeUsingPrototype() {
-        assertThat(Match.ofType(Object.class).when(null, Function1.identity())).isNotNull();
+        assertThat(Match.as(Object.class).when(null, Function1.identity())).isNotNull();
     }
 
     @Test
     public void shouldCreateWhenOfTypeUsingFunction() {
-        assertThat(Match.ofType(Object.class).when((Object o) -> null)).isNotNull();
+        assertThat(Match.as(Object.class).when((Object o) -> null)).isNotNull();
     }
 
     @Test
     public void shouldCreateWhenOfTypeUsingBooleanFunction() {
-        assertThat(Match.ofType(Object.class).when((boolean b) -> null)).isNotNull();
+        assertThat(Match.as(Object.class).when((boolean b) -> null)).isNotNull();
     }
 
     @Test
     public void shouldCreateWhenOfTypeUsingByteFunction() {
-        assertThat(Match.ofType(Object.class).when((byte b) -> null)).isNotNull();
+        assertThat(Match.as(Object.class).when((byte b) -> null)).isNotNull();
     }
 
     @Test
     public void shouldCreateWhenOfTypeUsingCharFunction() {
-        assertThat(Match.ofType(Object.class).when((char b) -> null)).isNotNull();
+        assertThat(Match.as(Object.class).when((char b) -> null)).isNotNull();
     }
 
     @Test
     public void shouldCreateWhenOfTypeUsingDoubleFunction() {
-        assertThat(Match.ofType(Object.class).when((double b) -> null)).isNotNull();
+        assertThat(Match.as(Object.class).when((double b) -> null)).isNotNull();
     }
 
     @Test
     public void shouldCreateWhenOfTypeUsingFloatFunction() {
-        assertThat(Match.ofType(Object.class).when((float b) -> null)).isNotNull();
+        assertThat(Match.as(Object.class).when((float b) -> null)).isNotNull();
     }
 
     @Test
     public void shouldCreateWhenOfTypeUsingIntFunction() {
-        assertThat(Match.ofType(Object.class).when((int b) -> null)).isNotNull();
+        assertThat(Match.as(Object.class).when((int b) -> null)).isNotNull();
     }
 
     @Test
     public void shouldCreateWhenOfTypeUsingLongFunction() {
-        assertThat(Match.ofType(Object.class).when((long b) -> null)).isNotNull();
+        assertThat(Match.as(Object.class).when((long b) -> null)).isNotNull();
     }
 
     @Test
     public void shouldCreateWhenOfTypeUsingShortFunction() {
-        assertThat(Match.ofType(Object.class).when((short b) -> null)).isNotNull();
+        assertThat(Match.as(Object.class).when((short b) -> null)).isNotNull();
     }
 
     // -- primitive types vs objects
@@ -418,7 +418,7 @@ public class MatchTest {
 
     @Test
     public void shouldAllowCommonReturnTypeUsingBuilder() {
-        final Match<Number> toNumber = Match.ofType(Number.class)
+        final Match<Number> toNumber = Match.as(Number.class)
                 .when((Integer i) -> i)
                 .when((String s) -> new BigDecimal(s));
         final Number number = toNumber.apply("1.0E10");
@@ -427,7 +427,7 @@ public class MatchTest {
 
     @Test
     public void shouldAllowCommonReturnTypeUsingBuilderAndPrototype() {
-        final Match<Number> toNumber = Match.ofType(Number.class)
+        final Match<Number> toNumber = Match.as(Number.class)
                 .when(1, (Integer i) -> i)
                 .when("1", (String s) -> new BigDecimal(s));
         final Number number = toNumber.apply("1");
