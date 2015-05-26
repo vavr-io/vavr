@@ -9,7 +9,6 @@ import javaslang.Function1;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
 import javaslang.control.Match;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.function.Function;
@@ -56,13 +55,13 @@ public class ProjectEulerTest {
     @Test
     public void shouldSolveProblem2() {
         assertThat(sumOfEvenFibonacciValuesNotExceeding(90)).isEqualTo(2 + 8 + 34);
-        assertThat(sumOfEvenFibonacciValuesNotExceeding(4000000)).isEqualTo(4613732);
+        assertThat(sumOfEvenFibonacciValuesNotExceeding(4_000_000)).isEqualTo(4_613_732);
     }
 
     private static long sumOfEvenFibonacciValuesNotExceeding(final int max) {
         return Stream.from(2)
                 .map(memoizedFibonacci)
-                .takeWhile((f) -> f <= max)
+                .takeWhile(f -> f <= max)
                 .filter(f -> f % 2 == 0)
                 .sum().longValue();
     }
@@ -71,9 +70,9 @@ public class ProjectEulerTest {
 
     private static long fibonacci(int order) {
         return Match
-                .when(0, (i) -> 0L)
-                .when(1, (i) -> 1L)
-                .when(2, (i) -> 1L)
+                .when(0, i -> 0L)
+                .when(1, i -> 1L)
+                .when(2, i -> 1L)
                 .orElse(() -> memoizedFibonacci.apply(order - 2) + memoizedFibonacci.apply(order - 1))
                 .apply(order);
     }
@@ -85,9 +84,33 @@ public class ProjectEulerTest {
      * <p>See also <a href="https://projecteuler.net/problem=7">projecteuler.net problem 7</a>.</p>
      */
     @Test
-    @Ignore
     public void shouldSolveProblem7() {
-        final int actual = Primes.asStream().drop(10_000).head();
-        assertThat(actual).isEqualTo(0); // TODO, see Primes#sieve(Stream)
+        assertThat(primeNo(1)).isEqualTo(2);
+        assertThat(primeNo(2)).isEqualTo(3);
+        assertThat(primeNo(3)).isEqualTo(5);
+        assertThat(primeNo(4)).isEqualTo(7);
+        assertThat(primeNo(5)).isEqualTo(11);
+        assertThat(primeNo(6)).isEqualTo(13);
+        assertThat(primeNo(10_001)).isEqualTo(104_743);
+    }
+
+    private static int primeNo(int index) {
+        return knownPrimes.drop(index - 1).head();
+    }
+
+    private static final Stream<Integer> knownPrimes = Stream.gen(2, p -> nextPrime(p));
+
+    private static int nextPrime(int previousPrime) {
+        return Match
+                .when(2, i -> 3)
+                .orElse(() -> Stream.gen(previousPrime + 2, v -> v + 2)
+                        .filter(i -> !isEvenlyDiversableByKnownPrimes(previousPrime, i))
+                        .take(1).head())
+                .apply(previousPrime);
+    }
+
+    private static boolean isEvenlyDiversableByKnownPrimes(int previousPrime, int val) {
+        return knownPrimes.takeWhile(p -> p < previousPrime).append(previousPrime)
+                .exists(p -> val % p == 0);
     }
 }

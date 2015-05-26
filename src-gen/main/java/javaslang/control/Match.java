@@ -454,10 +454,25 @@ public interface Match<R> extends Function<Object, R> {
             return new Case<>(cases.prepend(when));
         }
 
+        /**
+         * <p>Provides a default value which is returned if no case matches.</p>
+         * <p>Note that this method takes the default by value which means that the input is
+         * <em>eagerly evaluated</em> even if the orElse clause of the expression is not executed.
+         * Unless you already have a default value calculated or as a literal it might be better
+         * to use the {@link Match.Case#orElse(Supplier)} alternative to gain lazy evaluation.</p>
+         *
+         * @param defaultValue The default value.
+         * @return a Match-expression
+         */
         public Expression<R> orElse(R defaultValue) {
             return new Expression<>(cases.reverse(), new Some<>(Lazy.of(() -> defaultValue)));
         }
 
+        /**
+         * <p>Provides a default value which is returned if no case matches.</p>
+         * @param defaultSupplier A Supplier returning the default value.
+         * @return a Match-expression
+         */
         public Expression<R> orElse(Supplier<R> defaultSupplier) {
             Objects.requireNonNull(defaultSupplier, "defaultSupplier is null");
             return new Expression<>(cases.reverse(), new Some<>(Lazy.of(defaultSupplier)));

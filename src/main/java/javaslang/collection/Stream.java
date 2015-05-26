@@ -97,6 +97,20 @@ public interface Stream<T> extends Seq<T> {
     }
 
     /**
+     * Generates an (theoretically) infinitely long Stream using a function to calculate the next value
+     * based on the previous.
+     *
+     * @param seed The first value in the Stream
+     * @param supplier A function to calculate the next value based on the previous
+     * @param <T>      value type
+     * @return A new Stream
+     */
+    static <T> Stream<T> gen(T seed, Function<T, T> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return new Stream.Cons<>(seed, () -> gen(supplier.apply(seed), supplier));
+    }
+
+    /**
      * Returns the single instance of Nil. Convenience method for {@code Nil.instance()}.
      * <p>
      * Note: this method intentionally returns type {@code Stream} and not {@code Nil}. This comes handy when folding.
@@ -325,8 +339,8 @@ public interface Stream<T> extends Seq<T> {
      * </code>
      * </pre>
      *
-     * @param <U>           component type of the result {@code Stream}
-     * @param f             a function which maps elements of this {@code Stream} to {@code Stream}s
+     * @param <U> component type of the result {@code Stream}
+     * @param f   a function which maps elements of this {@code Stream} to {@code Stream}s
      * @return a new {@code Stream}
      * @throws NullPointerException if {@code f} is null
      */
