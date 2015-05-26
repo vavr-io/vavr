@@ -5,7 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.Function1;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
@@ -106,7 +105,7 @@ public interface Stream<T> extends Seq<T> {
      * @param <T>      value type
      * @return A new Stream
      */
-    static <T> Stream<T> gen(T seed, Function1<T, T> supplier) {
+    static <T> Stream<T> gen(T seed, Function<T, T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return new Stream.Cons<>(seed, () -> gen(supplier.apply(seed), supplier));
     }

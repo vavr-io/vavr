@@ -61,7 +61,7 @@ public class ProjectEulerTest {
     private static long sumOfEvenFibonacciValuesNotExceeding(final int max) {
         return Stream.from(2)
                 .map(memoizedFibonacci)
-                .takeWhile((f) -> f <= max)
+                .takeWhile(f -> f <= max)
                 .filter(f -> f % 2 == 0)
                 .sum().longValue();
     }
@@ -70,9 +70,9 @@ public class ProjectEulerTest {
 
     private static long fibonacci(int order) {
         return Match
-                .when(0, (i) -> 0L)
-                .when(1, (i) -> 1L)
-                .when(2, (i) -> 1L)
+                .when(0, i -> 0L)
+                .when(1, i -> 1L)
+                .when(2, i -> 1L)
                 .orElse(() -> memoizedFibonacci.apply(order - 2) + memoizedFibonacci.apply(order - 1))
                 .apply(order);
     }
@@ -84,7 +84,7 @@ public class ProjectEulerTest {
      * <p>See also <a href="https://projecteuler.net/problem=7">projecteuler.net problem 7</a>.</p>
      */
     @Test
-    public void test7() {
+    public void shouldSolveProblem7() {
         assertThat(primeNo(1)).isEqualTo(2);
         assertThat(primeNo(2)).isEqualTo(3);
         assertThat(primeNo(3)).isEqualTo(5);
@@ -95,26 +95,22 @@ public class ProjectEulerTest {
     }
 
     private static int primeNo(int index) {
-        return Match
-                .when(1, (i) -> 2)
-                .orElse(() -> knownPrimes.drop(index - 1).head())
-                .apply(index);
+        return knownPrimes.drop(index - 1).head();
     }
 
-    private static final Stream<Integer> knownPrimes = Stream.gen(2, (p) -> nextPrime(p));
+    private static final Stream<Integer> knownPrimes = Stream.gen(2, p -> nextPrime(p));
 
     private static int nextPrime(int previousPrime) {
-        final Integer nextPrime = Match
-                .when(2, (i) -> 3)
-                .orElse(() -> Stream.gen(previousPrime + 2, (v) -> v + 2)
-                        .filter((i) -> !isEvenlyDiversableByKnownPrimes(previousPrime, i))
+        return Match
+                .when(2, i -> 3)
+                .orElse(() -> Stream.gen(previousPrime + 2, v -> v + 2)
+                        .filter(i -> !isEvenlyDiversableByKnownPrimes(previousPrime, i))
                         .take(1).head())
                 .apply(previousPrime);
-        return nextPrime;
     }
 
     private static boolean isEvenlyDiversableByKnownPrimes(int previousPrime, int val) {
-        return knownPrimes.takeWhile((p) -> p < previousPrime).append(previousPrime)
-                .exists((p) -> val % p == 0);
+        return knownPrimes.takeWhile(p -> p < previousPrime).append(previousPrime)
+                .exists(p -> val % p == 0);
     }
 }
