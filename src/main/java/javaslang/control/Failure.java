@@ -199,7 +199,7 @@ public final class Failure<T> implements Try<T>, Serializable {
          * <li>InterruptedException</li>
          * <li>LinkageError</li>
          * <li>ThreadDeath</li>
-         * <li>VirtualMachineError (i.e. OutOfMemoryError)</li>
+         * <li>VirtualMachineError (i.e. OutOfMemoryError or StackOverflowError)</li>
          * </ul>
          *
          * However, StackOverflowError is considered as a non-fatal.
@@ -213,7 +213,7 @@ public final class Failure<T> implements Try<T>, Serializable {
             if (t instanceof Cause) {
                 return (Cause) t;
             }
-            final boolean isFatal = (t instanceof VirtualMachineError && !(t instanceof StackOverflowError))
+            final boolean isFatal = t instanceof VirtualMachineError
                     || t instanceof ThreadDeath
                     || t instanceof InterruptedException
                     || t instanceof LinkageError;
