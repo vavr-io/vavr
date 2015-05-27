@@ -95,7 +95,10 @@ public class ProjectEulerTest {
     }
 
     private static int primeNo(int index) {
-        return knownPrimes.drop(index - 1).head();
+        if (index < 1) {
+            throw new IllegalArgumentException("index < 1");
+        }
+        return knownPrimes.get(index - 1);
     }
 
     private static final Stream<Integer> knownPrimes = Stream.gen(2, p -> nextPrime(p));
