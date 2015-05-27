@@ -151,7 +151,7 @@ public class TryTest {
 
     @Test
     public void shouldDetectNonFatalException() throws Exception {
-        final Failure.Cause cause = Failure.Cause.of(new StackOverflowError());
+        final Failure.Cause cause = Failure.Cause.of(new Exception());
         assertThat(cause.isFatal()).isFalse();
     }
 
