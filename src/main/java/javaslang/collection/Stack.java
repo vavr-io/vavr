@@ -8,11 +8,11 @@ package javaslang.collection;
 import javaslang.Tuple2;
 import javaslang.control.Option;
 
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
+import java.util.Objects;
+import java.util.function.*;
+import java.util.stream.Collector;
 
 /**
  * A {@code Stack} interface which sits between {@code Seq} and {@code List} for technical reasons.
@@ -28,8 +28,106 @@ import java.util.function.UnaryOperator;
  * </ul>
  *
  * @param <T> component type
+ * @since 1.3.0
  */
 public interface Stack<T> extends Seq<T> {
+
+    /**
+     * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
+     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link javaslang.collection.Stack}
+     * .
+     *
+     * @param <T> Component type of the Stack.
+     * @return A javaslang.collection.Stack Collector.
+     */
+    static <T> Collector<T, ArrayList<T>, Stack<T>> collector() {
+        final Supplier<ArrayList<T>> supplier = ArrayList::new;
+        final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
+        final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
+            left.addAll(right);
+            return left;
+        };
+        final Function<ArrayList<T>, Stack<T>> finisher = Stack::ofAll;
+        return Collector.of(supplier, accumulator, combiner, finisher);
+    }
+
+    /**
+     * Returns the empty Stack.
+     *
+     * @param <T> Component type
+     * @return The empty Stack.
+     */
+    static <T> Stack<T> nil() {
+        return List.nil();
+    }
+
+    /**
+     * Returns a singleton {@code Stack}, i.e. a {@code Stack} of one element.
+     *
+     * @param element An element.
+     * @param <T>     The component type
+     * @return A new Stack instance containing the given element
+     */
+    static <T> Stack<T> of(T element) {
+        return List.of(element);
+    }
+
+    /**
+     * <p>
+     * Creates a Stack of the given elements.
+     * </p>
+     *
+     * @param <T>      Component type of the Stack.
+     * @param elements Zero or more elements.
+     * @return A stack containing the given elements in the same order.
+     * @throws NullPointerException if {@code elements} is null
+     */
+    @SafeVarargs
+    static <T> Stack<T> of(T... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return List.of(elements);
+    }
+
+    /**
+     * Creates a Stack of the given elements.
+     *
+     * @param <T>      Component type of the Stack.
+     * @param elements An Iterable of elements.
+     * @return A stack containing the given elements in the same order.
+     * @throws NullPointerException if {@code elements} is null
+     */
+    static <T> Stack<T> ofAll(Iterable<? extends T> elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        if (elements instanceof Stack) {
+            @SuppressWarnings("unchecked")
+            final Stack<T> stack = (Stack<T>) elements;
+            return stack;
+        } else {
+            return List.ofAll(elements);
+        }
+    }
+
+    /**
+     * Creates a Stack of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @return a range of int values as specified or {@code Nil} if {@code from >= toExclusive}
+     */
+    static Stack<Integer> range(int from, int toExclusive) {
+        return List.range(from, toExclusive);
+    }
+
+    /**
+     * Creates a Stack of int numbers starting from {@code from}, extending to {@code toInclusive}.
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @return a range of int values as specified or {@code Nil} if {@code from > toInclusive}
+     */
+    static Stack<Integer> rangeClosed(int from, int toInclusive) {
+        return List.rangeClosed(from, toInclusive);
+    }
 
     /**
      * Returns the head element without modifying the stack.

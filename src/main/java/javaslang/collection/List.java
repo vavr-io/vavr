@@ -41,10 +41,12 @@ import java.util.stream.Collector;
  * </code>
  * </pre>
  *
+ * Note: A {@code List} is primary a {@code Seq} and extends {@code Stack} for technical reasons (so {@code Stack} does not need to wrap {@code List}).
+ *
  * @param <T> Component type of the List.
  * @since 1.1.0
  */
-public interface List<T> extends Stack<T> {
+public interface List<T> extends Seq<T>, Stack<T> {
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
