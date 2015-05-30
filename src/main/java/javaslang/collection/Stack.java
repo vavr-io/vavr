@@ -19,10 +19,11 @@ import java.util.function.UnaryOperator;
  *
  * <ul>
  * <li>{@link #peek()}</li>
+ * <li>{@link #peekOption()}</li>
  * <li>{@link #pop()}</li>
  * <li>{@link #popOption()}</li>
- * <li>{@link #peek()}</li>
- * <li>{@link #peekOption()}</li>
+ * <li>{@link #pop2()}</li>
+ * <li>{@link #pop2Option()}</li>
  * <li>{@link #push(Object)}</li>
  * </ul>
  *
