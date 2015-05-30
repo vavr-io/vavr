@@ -95,19 +95,19 @@ public class ProjectEulerTest {
     }
 
     private static long largestPrimeFactorOf(long val) {
-        final Tuple2 head = new Tuple2(1L, val);
-        return new Stream.Cons<Tuple2<Long, Long>>(head, () -> primeFactorsAndResultingValTail(head))
+        return Stream.<Tuple2<Long, Long>>build(new Tuple2(1L, val), ProjectEulerTest::primeFactorsAndResultingValTail)
                 .map(t -> t._1)
-                .reduce((p1, p2) -> Math.max(p1, p2));
+                .reduce(Math::max);
     }
 
-    private static Stream<Tuple2<Long, Long>> primeFactorsAndResultingValTail(Tuple2<Long, Long> previous) {
-        if (previous._2 == 1) {
-            return Stream.nil();
-        }
-        final long nextPrimeFactor = knownPrimes.filter(p -> previous._2 % p == 0).take(1).head();
-        final Tuple2 head = new Tuple2(nextPrimeFactor, previous._2 / nextPrimeFactor);
-        return new Stream.Cons(head, () -> primeFactorsAndResultingValTail(head));
+    private static Stream<Tuple2<Long, Long>> primeFactorsAndResultingValTail(Tuple2<Long, Long> previousFactorAndResultingVal) {
+        return Match
+                .when(1L, p -> Stream.<Tuple2<Long, Long>>nil())
+                .otherwise(() -> {
+                    final long nextPrimeFactor = knownPrimes.filter(p -> previousFactorAndResultingVal._2 % p == 0).take(1).head();
+                    return Stream.<Tuple2<Long, Long>>build(new Tuple2(nextPrimeFactor, previousFactorAndResultingVal._2 / nextPrimeFactor), ProjectEulerTest::primeFactorsAndResultingValTail);
+                })
+                .apply(previousFactorAndResultingVal._2);
     }
 
     /**

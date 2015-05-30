@@ -111,6 +111,21 @@ public interface Stream<T> extends Seq<T> {
     }
 
     /**
+     * Builds an (theoretically) infinitely long Stream using a function to calculate the tail of the stream
+     * based on the head.
+     *
+     * @param head         The first value in the Stream
+     * @param tailFunction A function to calculate the tail values based on the head. To end the stream,
+     *                     return {@link Stream#nil}.
+     * @param <T>          value type
+     * @return A new Stream
+     */
+    static <T> Stream<T> build(T head, Function<T, Stream<T>> tailFunction) {
+        Objects.requireNonNull(tailFunction, "tailFunction is null");
+        return new Stream.Cons<>(head, () -> tailFunction.apply(head));
+    }
+
+    /**
      * Returns the single instance of Nil. Convenience method for {@code Nil.instance()}.
      * <p>
      * Note: this method intentionally returns type {@code Stream} and not {@code Nil}. This comes handy when folding.
