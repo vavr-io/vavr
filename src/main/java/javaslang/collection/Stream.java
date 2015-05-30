@@ -44,7 +44,9 @@ import java.util.stream.Collector;
  * Stream.rangeClosed(0, 3)  // = 0, 1, 2, 3
  *
  * // generators
- * Stream.gen(Supplier)      // e.g. Stream.gen(Math::random);
+ * Stream.gen(Supplier)          // e.g. Stream.gen(Math::random);
+ * Stream.gen(Object, Function)  // e.g. Stream.gen(1, i -> i * 2);
+ * Stream.gen(Object, Supplier)  // e.g. Stream.gen(current, () -> next(current));
  * </code>
  * </pre>
  *
