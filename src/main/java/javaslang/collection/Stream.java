@@ -33,7 +33,7 @@ import java.util.stream.Collector;
  * <code>
  * // factory methods
  * Stream.nil()              // = Stream.of() = Nil.instance()
- * Stream.of(x)            // = new Cons&lt;&gt;(x, Nil.instance())
+ * Stream.of(x)              // = new Cons&lt;&gt;(x, Nil.instance())
  * Stream.of(Object...)      // e.g. Stream.of(1, 2, 3)
  * Stream.of(Iterable)       // e.g. Stream.of(List.of(1, 2, 3)) = 1, 2, 3
  * Stream.of(Iterator)       // e.g. Stream.of(Arrays.asList(1, 2, 3).iterator()) = 1, 2, 3
@@ -44,7 +44,9 @@ import java.util.stream.Collector;
  * Stream.rangeClosed(0, 3)  // = 0, 1, 2, 3
  *
  * // generators
- * Stream.gen(Supplier)      // e.g. Stream.gen(Math::random);
+ * Stream.gen(Supplier)          // e.g. Stream.gen(Math::random);
+ * Stream.gen(Object, Function)  // e.g. Stream.gen(1, i -> i * 2);
+ * Stream.gen(Object, Supplier)  // e.g. Stream.gen(current, () -> next(current));
  * </code>
  * </pre>
  *
@@ -263,7 +265,7 @@ public interface Stream<T> extends Seq<T> {
     }
 
     @Override
-    default Stream<? extends Stream<T>> combinations() {
+    default Stream<Stream<T>> combinations() {
         return Stream.rangeClosed(0, length()).map(this::combinations).flatten(Function.identity());
     }
 
@@ -287,7 +289,7 @@ public interface Stream<T> extends Seq<T> {
 
     @Override
     default <U> Stream<T> distinct(Function<? super T, ? extends U> keyExtractor) {
-        final Set<U> seen = new HashSet<>();
+        final java.util.Set<U> seen = new java.util.HashSet<>();
         return filter(t -> seen.add(keyExtractor.apply(t)));
     }
 
@@ -398,7 +400,7 @@ public interface Stream<T> extends Seq<T> {
     @Override
     default T get(int index) {
         if (isEmpty()) {
-            throw new IndexOutOfBoundsException("get(" + index + ") on empty stream");
+            throw new IndexOutOfBoundsException("get(" + index + ") on Nil");
         }
         if (index < 0) {
             throw new IndexOutOfBoundsException("get(" + index + ")");
@@ -407,7 +409,7 @@ public interface Stream<T> extends Seq<T> {
         for (int i = index - 1; i >= 0; i--) {
             stream = stream.tail();
             if (stream.isEmpty()) {
-                throw new IndexOutOfBoundsException(String.format("get(%s) on stream of size %s", index, index - i));
+                throw new IndexOutOfBoundsException(String.format("get(%s) on Stream of size %s", index, index - i));
             }
         }
         return stream.head();
@@ -432,7 +434,7 @@ public interface Stream<T> extends Seq<T> {
     @Override
     default Stream<T> init() {
         if (isEmpty()) {
-            throw new UnsupportedOperationException("init on empty Stream");
+            throw new UnsupportedOperationException("init on Nil");
         } else {
             final Stream<T> tail = tail();
             if (tail.isEmpty()) {
@@ -444,9 +446,7 @@ public interface Stream<T> extends Seq<T> {
     }
 
     @Override
-    default Option<Stream<T>> initOption() {
-        return isEmpty() ? None.instance() : new Some<>(init());
-    }
+    Option<Stream<T>> initOption();
 
     @Override
     default Stream<T> insert(int index, T element) {
@@ -454,7 +454,7 @@ public interface Stream<T> extends Seq<T> {
             throw new IndexOutOfBoundsException("insert(" + index + ", e)");
         }
         if (index > 0 && isEmpty()) {
-            throw new IndexOutOfBoundsException("insert(" + index + ", e) on empty stream");
+            throw new IndexOutOfBoundsException("insert(" + index + ", e) on Nil");
         }
         if (index == 0) {
             return new Cons<>(element, () -> this);
@@ -470,7 +470,7 @@ public interface Stream<T> extends Seq<T> {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
         }
         if (index > 0 && isEmpty()) {
-            throw new IndexOutOfBoundsException("insertAll(" + index + ", elements) on empty stream");
+            throw new IndexOutOfBoundsException("insertAll(" + index + ", elements) on Nil");
         }
         if (index == 0) {
             return Stream.ofAll(elements).appendAll(this);
@@ -631,7 +631,7 @@ public interface Stream<T> extends Seq<T> {
     @Override
     default Stream<T> set(int index, T element) {
         if (isEmpty()) {
-            throw new IndexOutOfBoundsException("set(" + index + ", e) on empty stream");
+            throw new IndexOutOfBoundsException("set(" + index + ", e) on Nil");
         }
         if (index < 0) {
             throw new IndexOutOfBoundsException("set(" + index + ", e)");
@@ -640,12 +640,12 @@ public interface Stream<T> extends Seq<T> {
         Stream<T> tail = this;
         for (int i = index; i > 0; i--, tail = tail.tail()) {
             if (tail.isEmpty()) {
-                throw new IndexOutOfBoundsException("set(" + index + ", e) on stream of size " + length());
+                throw new IndexOutOfBoundsException("set(" + index + ", e) on Stream of size " + length());
             }
             preceding = preceding.prepend(tail.head());
         }
         if (tail.isEmpty()) {
-            throw new IndexOutOfBoundsException("set(" + index + ", e) on stream of size " + length());
+            throw new IndexOutOfBoundsException("set(" + index + ", e) on Stream of size " + length());
         }
         // skip the current head element because it is replaced
         return preceding.reverse().appendAll(tail.tail().prepend(element));
@@ -665,7 +665,7 @@ public interface Stream<T> extends Seq<T> {
             return Nil.instance();
         } else {
             final Tuple2<Stream<T>, Stream<T>> split = splitAt(size);
-            return new Cons<>(split._1, () -> split._2.isEmpty() ? Nil.instance() : drop(step).sliding(size, step));
+            return new Cons<>(split._1, () -> split._2.isEmpty() ? nil() : drop(step).sliding(size, step));
         }
     }
 
@@ -705,7 +705,7 @@ public interface Stream<T> extends Seq<T> {
         Stream<T> result = this;
         for (int i = 0; i < beginIndex; i++, result = result.tail()) {
             if (result.isEmpty()) {
-                throw new IndexOutOfBoundsException(String.format("subsequence(%s) on stream of size %s", beginIndex, i));
+                throw new IndexOutOfBoundsException(String.format("subsequence(%s) on Stream of size %s", beginIndex, i));
             }
         }
         return result;
@@ -720,7 +720,7 @@ public interface Stream<T> extends Seq<T> {
             return Nil.instance();
         }
         if (isEmpty()) {
-            throw new IndexOutOfBoundsException("subsequence of empty stream");
+            throw new IndexOutOfBoundsException("subsequence of Nil");
         }
         if (beginIndex == 0) {
             return new Cons<>(head(), () -> tail().subsequence(0, endIndex - 1));
@@ -731,6 +731,9 @@ public interface Stream<T> extends Seq<T> {
 
     @Override
     Stream<T> tail();
+
+    @Override
+    Option<Stream<T>> tailOption();
 
     @Override
     default Stream<T> take(int n) {
@@ -838,8 +841,13 @@ public interface Stream<T> extends Seq<T> {
         }
 
         @Override
-        public Option<T> headOption() {
+        public Some<T> headOption() {
             return new Some<>(head);
+        }
+
+        @Override
+        public Some<Stream<T>> initOption() {
+            return new Some<>(init());
         }
 
         @Override
@@ -848,7 +856,7 @@ public interface Stream<T> extends Seq<T> {
         }
 
         @Override
-        public Option<Stream<T>> tailOption() {
+        public Some<Stream<T>> tailOption() {
             return new Some<>(tail.get());
         }
 
@@ -1001,7 +1009,12 @@ public interface Stream<T> extends Seq<T> {
         }
 
         @Override
-        public Option<T> headOption() {
+        public None<T> headOption() {
+            return None.instance();
+        }
+
+        @Override
+        public None<Stream<T>> initOption() {
             return None.instance();
         }
 
@@ -1011,7 +1024,7 @@ public interface Stream<T> extends Seq<T> {
         }
 
         @Override
-        public Option<Stream<T>> tailOption() {
+        public None<Stream<T>> tailOption() {
             return None.instance();
         }
 

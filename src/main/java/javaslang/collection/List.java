@@ -44,7 +44,7 @@ import java.util.stream.Collector;
  * @param <T> Component type of the List.
  * @since 1.1.0
  */
-public interface List<T> extends Seq<T> {
+public interface List<T> extends Stack<T> {
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
@@ -191,7 +191,7 @@ public interface List<T> extends Seq<T> {
     }
 
     @Override
-    default List<? extends List<T>> combinations() {
+    default List<List<T>> combinations() {
         return List.rangeClosed(0, length()).map(this::combinations).flatten(Function.identity());
     }
 
@@ -216,7 +216,7 @@ public interface List<T> extends Seq<T> {
     @Override
     default <U> List<T> distinct(Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
-        final Set<U> seen = new HashSet<>();
+        final java.util.Set<U> seen = new java.util.HashSet<>();
         return filter(t -> seen.add(keyExtractor.apply(t)));
     }
 
@@ -293,19 +293,19 @@ public interface List<T> extends Seq<T> {
     @Override
     default void forEach(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
-        Seq.super.forEach(action);
+        Stack.super.forEach(action);
     }
 
     @Override
     default boolean forAll(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return Seq.super.forAll(predicate);
+        return Stack.super.forAll(predicate);
     }
 
     @Override
     default T get(int index) {
         if (isEmpty()) {
-            throw new IndexOutOfBoundsException("get(" + index + ") on empty list");
+            throw new IndexOutOfBoundsException("get(" + index + ") on Nil");
         }
         if (index < 0) {
             throw new IndexOutOfBoundsException("get(" + index + ")");
@@ -314,7 +314,7 @@ public interface List<T> extends Seq<T> {
         for (int i = index - 1; i >= 0; i--) {
             list = list.tail();
             if (list.isEmpty()) {
-                throw new IndexOutOfBoundsException(String.format("get(%s) on list of length %s", index, index - i));
+                throw new IndexOutOfBoundsException(String.format("get(%s) on List of length %s", index, index - i));
             }
         }
         return list.head();
@@ -339,16 +339,14 @@ public interface List<T> extends Seq<T> {
     @Override
     default List<T> init() {
         if (isEmpty()) {
-            throw new UnsupportedOperationException("init on empty List");
+            throw new UnsupportedOperationException("init on Nil");
         } else {
             return dropRight(1);
         }
     }
 
     @Override
-    default Option<List<T>> initOption() {
-        return isEmpty() ? None.instance() : new Some<>(init());
-    }
+    Option<List<T>> initOption();
 
     @Override
     default List<T> insert(int index, T element) {
@@ -359,7 +357,7 @@ public interface List<T> extends Seq<T> {
         List<T> tail = this;
         for (int i = index; i > 0; i--, tail = tail.tail()) {
             if (tail.isEmpty()) {
-                throw new IndexOutOfBoundsException("insert(" + index + ", e) on list of length " + length());
+                throw new IndexOutOfBoundsException("insert(" + index + ", e) on List of length " + length());
             }
             preceding = preceding.prepend(tail.head());
         }
@@ -380,7 +378,7 @@ public interface List<T> extends Seq<T> {
         List<T> tail = this;
         for (int i = index; i > 0; i--, tail = tail.tail()) {
             if (tail.isEmpty()) {
-                throw new IndexOutOfBoundsException("insertAll(" + index + ", elements) on list of length " + length());
+                throw new IndexOutOfBoundsException("insertAll(" + index + ", elements) on List of length " + length());
             }
             preceding = preceding.prepend(tail.head());
         }
@@ -419,6 +417,11 @@ public interface List<T> extends Seq<T> {
         return Tuple.of(filter(predicate), filter(predicate.negate()));
     }
 
+    @Override
+    default T peek() {
+        return head();
+    }
+
     /**
      * Performs an action on the head element of this {@code List}.
      *
@@ -451,6 +454,22 @@ public interface List<T> extends Seq<T> {
     }
 
     @Override
+    default List<T> pop() {
+        return tail();
+    }
+
+    @Override
+    Option<List<T>> popOption();
+
+    @Override
+    default Tuple2<T, List<T>> pop2() {
+        return Tuple.of(head(), tail());
+    }
+
+    @Override
+    Option<Tuple2<T, List<T>>> pop2Option();
+
+    @Override
     default List<T> prepend(T element) {
         return new Cons<>(element, this);
     }
@@ -459,6 +478,11 @@ public interface List<T> extends Seq<T> {
     default List<T> prependAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         return isEmpty() ? List.ofAll(elements) : List.ofAll(elements).reverse().foldLeft(this, List::prepend);
+    }
+
+    @Override
+    default List<T> push(T element) {
+        return new Cons<>(element, this);
     }
 
     @Override
@@ -567,7 +591,7 @@ public interface List<T> extends Seq<T> {
     @Override
     default List<T> set(int index, T element) {
         if (isEmpty()) {
-            throw new IndexOutOfBoundsException("set(" + index + ", e) on empty list");
+            throw new IndexOutOfBoundsException("set(" + index + ", e) on Nil");
         }
         if (index < 0) {
             throw new IndexOutOfBoundsException("set(" + index + ", e)");
@@ -576,12 +600,12 @@ public interface List<T> extends Seq<T> {
         List<T> tail = this;
         for (int i = index; i > 0; i--, tail = tail.tail()) {
             if (tail.isEmpty()) {
-                throw new IndexOutOfBoundsException("set(" + index + ", e) on list of length " + length());
+                throw new IndexOutOfBoundsException("set(" + index + ", e) on List of length " + length());
             }
             preceding = preceding.prepend(tail.head());
         }
         if (tail.isEmpty()) {
-            throw new IndexOutOfBoundsException("set(" + index + ", e) on list of length " + length());
+            throw new IndexOutOfBoundsException("set(" + index + ", e) on List of length " + length());
         }
         // skip the current head element because it is replaced
         List<T> result = tail.tail().prepend(element);
@@ -648,7 +672,7 @@ public interface List<T> extends Seq<T> {
         for (int i = 0; i < beginIndex; i++, result = result.tail()) {
             if (result.isEmpty()) {
                 throw new IndexOutOfBoundsException(
-                        String.format("subsequence(%s) on list of length %s", beginIndex, i));
+                        String.format("subsequence(%s) on List of length %s", beginIndex, i));
             }
         }
         return result;
@@ -658,14 +682,14 @@ public interface List<T> extends Seq<T> {
     default List<T> subsequence(int beginIndex, int endIndex) {
         if (beginIndex < 0 || beginIndex > endIndex) {
             throw new IndexOutOfBoundsException(
-                    String.format("subsequence(%s, %s) on list of length %s", beginIndex, endIndex, length()));
+                    String.format("subsequence(%s, %s) on List of length %s", beginIndex, endIndex, length()));
         }
         List<T> result = Nil.instance();
         List<T> list = this;
         for (int i = 0; i < endIndex; i++, list = list.tail()) {
             if (list.isEmpty()) {
                 throw new IndexOutOfBoundsException(
-                        String.format("subsequence(%s, %s) on list of length %s", beginIndex, endIndex, i));
+                        String.format("subsequence(%s, %s) on List of length %s", beginIndex, endIndex, i));
             }
             if (i >= beginIndex) {
                 result = result.prepend(list.head());
@@ -676,6 +700,9 @@ public interface List<T> extends Seq<T> {
 
     @Override
     List<T> tail();
+
+    @Override
+    Option<List<T>> tailOption();
 
     @Override
     default List<T> take(int n) {
@@ -784,8 +811,28 @@ public interface List<T> extends Seq<T> {
         }
 
         @Override
-        public Option<T> headOption() {
+        public Some<T> headOption() {
             return new Some<>(head);
+        }
+
+        @Override
+        public Some<List<T>> initOption() {
+            return new Some<>(init());
+        }
+
+        @Override
+        public Some<T> peekOption() {
+            return new Some<>(head());
+        }
+
+        @Override
+        public Some<List<T>> popOption() {
+            return new Some<>(tail());
+        }
+
+        @Override
+        public Some<Tuple2<T, List<T>>> pop2Option() {
+            return new Some<>(Tuple.of(head(), tail()));
         }
 
         @Override
@@ -794,7 +841,7 @@ public interface List<T> extends Seq<T> {
         }
 
         @Override
-        public Option<List<T>> tailOption() {
+        public Some<List<T>> tailOption() {
             return new Some<>(tail);
         }
 
@@ -944,7 +991,27 @@ public interface List<T> extends Seq<T> {
         }
 
         @Override
-        public Option<T> headOption() {
+        public None<T> headOption() {
+            return None.instance();
+        }
+
+        @Override
+        public None<List<T>> initOption() {
+            return None.instance();
+        }
+
+        @Override
+        public None<T> peekOption() {
+            return None.instance();
+        }
+
+        @Override
+        public None<List<T>> popOption() {
+            return None.instance();
+        }
+
+        @Override
+        public None<Tuple2<T, List<T>>> pop2Option() {
             return None.instance();
         }
 
@@ -954,7 +1021,7 @@ public interface List<T> extends Seq<T> {
         }
 
         @Override
-        public Option<List<T>> tailOption() {
+        public None<List<T>> tailOption() {
             return None.instance();
         }
 

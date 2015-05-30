@@ -14,7 +14,9 @@ import java.util.function.*;
 
 /**
  * Interface for sequential, traversable data structures.
- * <p>Mutation:</p>
+ * <p>
+ * Mutation:
+ *
  * <ul>
  * <li>{@link #append(Object)}</li>
  * <li>{@link #appendAll(Iterable)}</li>
@@ -24,7 +26,9 @@ import java.util.function.*;
  * <li>{@link #prependAll(Iterable)}</li>
  * <li>{@link #set(int, Object)}</li>
  * </ul>
- * <p>Selection:</p>
+ *
+ * Selection:
+ *
  * <ul>
  * <li>{@link #get(int)}</li>
  * <li>{@link #indexOf(Object)}</li>
@@ -32,14 +36,18 @@ import java.util.function.*;
  * <li>{@link #subsequence(int)}</li>
  * <li>{@link #subsequence(int, int)}</li>
  * </ul>
- * <p>Transformation:</p>
+ *
+ * Transformation:
+ *
  * <ul>
  * <li>{@link #permutations()}</li>
  * <li>{@link #sort()}</li>
  * <li>{@link #sort(Comparator)}</li>
  * <li>{@link #splitAt(int)}</li>
  * </ul>
- * <p>Traversal:</p>
+ *
+ * Traversal:
+ *
  * <ul>
  * <li>{@link #iterator(int)}</li>
  * </ul>

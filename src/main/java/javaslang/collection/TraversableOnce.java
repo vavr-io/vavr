@@ -16,6 +16,8 @@ import java.util.function.Predicate;
  */
 public interface TraversableOnce<T> extends Iterable<T> {
 
+    // TODO: isEmpty()
+
     /**
      * Checks, if an element exists such that the predicate holds.
      *
