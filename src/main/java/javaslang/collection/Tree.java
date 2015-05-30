@@ -7,7 +7,9 @@ package javaslang.collection;
 
 import javaslang.control.Match;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -174,7 +176,7 @@ public interface Tree<T> extends Iterable<T> {
 
             List<T> levelOrder(Tree<T> tree) {
                 List<T> result = List.nil();
-                final Queue<Tree<T>> queue = new LinkedList<>();
+                final java.util.Queue<Tree<T>> queue = new java.util.LinkedList<>();
                 queue.add(tree);
                 while (!queue.isEmpty()) {
                     final Tree<T> next = queue.remove();

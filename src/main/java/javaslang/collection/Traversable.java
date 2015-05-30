@@ -18,17 +18,11 @@ import java.util.function.*;
 import java.util.stream.StreamSupport;
 
 /**
- * <p>An interface for inherently recursive data structures. The order of elements is determined by
- * {@link Iterable#iterator()}, which may vary each time it is called.</p>
- * <p>Conversion:</p>
- * <ul>
- * <li>{@link #toJavaArray(Class)}</li>
- * <li>{@link #toJavaList()}</li>
- * <li>{@link #toJavaMap(Function)}</li>
- * <li>{@link #toJavaSet()}</li>
- * <li>{@link #toJavaStream()}</li>
- * </ul>
- * <p>Basic operations:</p>
+ * An interface for inherently recursive data structures. The order of elements is determined by
+ * {@link Iterable#iterator()}, which may vary each time it is called.
+ * <p>
+ * Basic operations:
+ *
  * <ul>
  * <li>{@link #clear()}</li>
  * <li>{@link #contains(Object)}</li>
@@ -44,7 +38,19 @@ import java.util.stream.StreamSupport;
  * <li>{@link #tail()}</li>
  * <li>{@link #tailOption()}</li>
  * </ul>
- * <p>Filtering</p>
+ *
+ * Conversion:
+ *
+ * <ul>
+ * <li>{@link #toJavaArray(Class)}</li>
+ * <li>{@link #toJavaList()}</li>
+ * <li>{@link #toJavaMap(Function)}</li>
+ * <li>{@link #toJavaSet()}</li>
+ * <li>{@link #toJavaStream()}</li>
+ * </ul>
+ *
+ * Filtering:
+ *
  * <ul>
  * <li>{@link #filter(Predicate)}</li>
  * <li>{@link #remove(Object)}</li>
@@ -52,7 +58,9 @@ import java.util.stream.StreamSupport;
  * <li>{@link #removeAll(Iterable)}</li>
  * <li>{@link #retainAll(Iterable)}</li>
  * </ul>
- * <p>Numeric operations:</p>
+ *
+ * Numeric operations:
+ *
  * <ul>
  * <li>{@link #average()}</li>
  * <li>{@link #max()}</li>
@@ -62,7 +70,9 @@ import java.util.stream.StreamSupport;
  * <li>{@link #product()}</li>
  * <li>{@link #sum()}</li>
  * </ul>
- * <p>Reduction:</p>
+ *
+ * Reduction:
+ *
  * <ul>
  * <li>{@link #fold(Object, BiFunction)}</li>
  * <li>{@link #foldLeft(Object, BiFunction)}</li>
@@ -74,7 +84,9 @@ import java.util.stream.StreamSupport;
  * <li>{@link #reduceLeft(BiFunction)}</li>
  * <li>{@link #reduceRight(BiFunction)}</li>
  * </ul>
- * <p>Selection:</p>
+ *
+ * Selection:
+ *
  * <ul>
  * <li>{@link #drop(int)}</li>
  * <li>{@link #dropRight(int)}</li>
@@ -86,20 +98,26 @@ import java.util.stream.StreamSupport;
  * <li>{@link #takeRight(int)}</li>
  * <li>{@link #takeWhile(Predicate)}</li>
  * </ul>
- * <p>Side-effects:</p>
+ *
+ * Side-effects:
+ *
  * <ul>
  * <li>{@link #forEach(Consumer)}</li>
  * <li>{@link #peek(Consumer)}</li>
  * <li>{@link #stderr()}</li>
  * <li>{@link #stdout()}</li>
  * </ul>
- * <p>Tests:</p>
+ *
+ * Tests:
+ *
  * <ul>
  * <li>{@link #exists(Predicate)}</li>
  * <li>{@link #existsUnique(Predicate)}</li>
  * <li>{@link #forAll(Predicate)}</li>
  * </ul>
- * <p>Transformation:</p>
+ *
+ * Transformation:
+ *
  * <ul>
  * <li>{@link #combinations()}</li>
  * <li>{@link #combinations(int)}</li>
@@ -345,8 +363,8 @@ public interface Traversable<T> extends TraversableOnce<T> {
     /**
      * Flattens a {@code Traversable} using a function.
      *
-     * @param <U>           component type of the result {@code Traversable}
-     * @param f             a function which maps elements of this Traversable to Traversables
+     * @param <U> component type of the result {@code Traversable}
+     * @param f   a function which maps elements of this Traversable to Traversables
      * @return a new {@code Traversable}
      * @throws NullPointerException if {@code f} is null
      */
@@ -573,7 +591,7 @@ public interface Traversable<T> extends TraversableOnce<T> {
      */
     default T last() {
         if (isEmpty()) {
-            throw new NoSuchElementException("last of empty Traversable");
+            throw new NoSuchElementException("last of Nil");
         } else {
             Traversable<T> traversable = this;
             { // don't let escape tail
@@ -613,16 +631,6 @@ public interface Traversable<T> extends TraversableOnce<T> {
      * @throws NullPointerException if {@code mapper} is null
      */
     <U> Traversable<U> map(Function<? super T, ? extends U> mapper);
-
-    /**
-     * Creates a partition of this {@code Traversable} by splitting this elements in two in distinct tarversables
-     * according to a predicate.
-     *
-     * @param predicate A predicate which classifies an element if it is in the first or the second traversable.
-     * @return A disjoint union of two traversables. The first {@code Traversable} contains all elements that satisfy the given {@code predicate}, the second {@code Traversable} contains all elements that don't. The original order of elements is preserved.
-     * @throws NullPointerException if predicate is null
-     */
-    Tuple2<? extends Traversable<T>, ? extends Traversable<T>> partition(Predicate<? super T> predicate);
 
     /**
      * Calculates the maximum of this elements according to their natural order.
@@ -686,6 +694,23 @@ public interface Traversable<T> extends TraversableOnce<T> {
         }
     }
 
+    /**
+     * Creates a partition of this {@code Traversable} by splitting this elements in two in distinct tarversables
+     * according to a predicate.
+     *
+     * @param predicate A predicate which classifies an element if it is in the first or the second traversable.
+     * @return A disjoint union of two traversables. The first {@code Traversable} contains all elements that satisfy the given {@code predicate}, the second {@code Traversable} contains all elements that don't. The original order of elements is preserved.
+     * @throws NullPointerException if predicate is null
+     */
+    Tuple2<? extends Traversable<T>, ? extends Traversable<T>> partition(Predicate<? super T> predicate);
+
+    /**
+     * Performs the given action on the first element of eager collections (like {@code List}) or on all elements of
+     * lazy collections (like {@code Stream}).
+     *
+     * @param action An action
+     * @return this instance
+     */
     Traversable<T> peek(Consumer<? super T> action);
 
     /**
@@ -794,7 +819,7 @@ public interface Traversable<T> extends TraversableOnce<T> {
     default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
         if (isEmpty()) {
-            throw new NoSuchElementException("reduceRight on empty List");
+            throw new NoSuchElementException("reduceRight on Nil");
         } else {
             final Traversable<T> reversed = reverse();
             return reversed.tail().foldLeft(reversed.head(), (xs, x) -> op.apply(x, xs));
@@ -1013,12 +1038,11 @@ public interface Traversable<T> extends TraversableOnce<T> {
      * @return a new array containing this elements
      * @throws NullPointerException if {@code componentType} is null
      */
+    @SuppressWarnings("unchecked")
     default T[] toJavaArray(Class<T> componentType) {
         Objects.requireNonNull(componentType, "componentType is null");
         final java.util.List<T> list = toJavaList();
-        @SuppressWarnings("unchecked")
-        final T[] array = list.toArray((T[]) java.lang.reflect.Array.newInstance(componentType, list.size()));
-        return array;
+        return list.toArray((T[]) java.lang.reflect.Array.newInstance(componentType, list.size()));
     }
 
     /**
