@@ -45,8 +45,8 @@ import java.util.stream.Collector;
  *
  * // generators
  * Stream.gen(Supplier)          // e.g. Stream.gen(Math::random);
- * Stream.gen(Object, Function)  // e.g. Stream.gen(1, i -> i * 2);
- * Stream.gen(Object, Supplier)  // e.g. Stream.gen(current, () -> next(current));
+ * Stream.gen(Object, Function)  // e.g. Stream.gen(1, i -&gt; i * 2);
+ * Stream.gen(Object, Supplier)  // e.g. Stream.gen(current, () -&gt; next(current));
  * </code>
  * </pre>
  *
