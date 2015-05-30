@@ -121,7 +121,7 @@ public interface Stream<T> extends Seq<T> {
      */
     static <T> Stream<T> gen(T head, Supplier<Stream<T>> tailSupplier) {
         Objects.requireNonNull(tailSupplier, "tailSupplier is null");
-        return new Stream.Cons<>(head, () -> tailSupplier.get());
+        return new Stream.Cons<>(head, tailSupplier);
     }
 
     /**
