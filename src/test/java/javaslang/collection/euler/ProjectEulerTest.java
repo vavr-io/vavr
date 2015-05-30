@@ -6,6 +6,7 @@
 package javaslang.collection.euler;
 
 import javaslang.Function1;
+import javaslang.Tuple2;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
 import javaslang.control.Match;
@@ -78,6 +79,40 @@ public class ProjectEulerTest {
     }
 
     /**
+     * <strong>Problem 3: Largest prime factor</strong>
+     * The prime factors of 13195 are 5, 7, 13 and 29.
+     * <p>
+     * What is the largest prime factor of the number 600851475143?
+     * <p>
+     * See also <a href="https://projecteuler.net/problem=3">projecteuler.net problem 3</a>.
+     */
+    @Test
+    public void shouldSolveProblem3() {
+        assertThat(largestPrimeFactorOf(24)).isEqualTo(3);
+        assertThat(largestPrimeFactorOf(29)).isEqualTo(29);
+        assertThat(largestPrimeFactorOf(13195)).isEqualTo(29);
+        assertThat(largestPrimeFactorOf(600_851_475_143L)).isEqualTo(6857);
+    }
+
+    private static long largestPrimeFactorOf(long val) {
+        final Tuple2<Long, Long> head = new Tuple2<>(1L, val);
+        return Stream.gen(head, () -> primeFactorsAndResultingValTail(head))
+                .map(t -> t._1)
+                .reduce(Math::max);
+    }
+
+    private static Stream<Tuple2<Long, Long>> primeFactorsAndResultingValTail(Tuple2<Long, Long> previousFactorAndResultingVal) {
+        return Match
+                .when(1L, p -> Stream.<Tuple2<Long, Long>>nil())
+                .otherwise(() -> {
+                    final long nextPrimeFactor = knownPrimes.filter(p -> previousFactorAndResultingVal._2 % p == 0).take(1).head();
+                    final Tuple2<Long, Long> head = new Tuple2<>(nextPrimeFactor, previousFactorAndResultingVal._2 / nextPrimeFactor);
+                    return Stream.gen(head, () -> primeFactorsAndResultingValTail(head));
+                })
+                .apply(previousFactorAndResultingVal._2);
+    }
+
+    /**
      * <strong>Problem 7: 10001st prime</strong>
      * <p>By listing the first six prime numbers: 2, 3, 5, 7, 11, and 13, we can see that the 6th prime is 13.</p>
      * <p>What is the 10 001st prime number?</p>
@@ -94,25 +129,25 @@ public class ProjectEulerTest {
         assertThat(primeNo(10_001)).isEqualTo(104_743);
     }
 
-    private static int primeNo(int index) {
+    private static long primeNo(int index) {
         if (index < 1) {
             throw new IllegalArgumentException("index < 1");
         }
         return knownPrimes.get(index - 1);
     }
 
-    private static final Stream<Integer> knownPrimes = Stream.gen(2, p -> nextPrime(p));
+    private static final Stream<Long> knownPrimes = Stream.gen(2L, ProjectEulerTest::nextPrime);
 
-    private static int nextPrime(int previousPrime) {
+    private static long nextPrime(long previousPrime) {
         return Match
-                .when(2, i -> 3)
+                .when(2L, i -> 3L)
                 .otherwise(() -> Stream.gen(previousPrime + 2, v -> v + 2)
                         .filter(i -> !isEvenlyDiversableByKnownPrimes(previousPrime, i))
                         .take(1).head())
                 .apply(previousPrime);
     }
 
-    private static boolean isEvenlyDiversableByKnownPrimes(int previousPrime, int val) {
+    private static boolean isEvenlyDiversableByKnownPrimes(long previousPrime, long val) {
         return knownPrimes.takeWhile(p -> p < previousPrime).append(previousPrime)
                 .exists(p -> val % p == 0);
     }
