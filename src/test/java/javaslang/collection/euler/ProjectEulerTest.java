@@ -95,7 +95,8 @@ public class ProjectEulerTest {
     }
 
     private static long largestPrimeFactorOf(long val) {
-        return Stream.build(new Tuple2<>(1L, val), ProjectEulerTest::primeFactorsAndResultingValTail)
+        final Tuple2<Long, Long> head = new Tuple2<>(1L, val);
+        return Stream.gen(head, () -> primeFactorsAndResultingValTail(head))
                 .map(t -> t._1)
                 .reduce(Math::max);
     }
@@ -105,9 +106,8 @@ public class ProjectEulerTest {
                 .when(1L, p -> Stream.<Tuple2<Long, Long>>nil())
                 .otherwise(() -> {
                     final long nextPrimeFactor = knownPrimes.filter(p -> previousFactorAndResultingVal._2 % p == 0).take(1).head();
-                    return Stream.build(
-                            new Tuple2<>(nextPrimeFactor, previousFactorAndResultingVal._2 / nextPrimeFactor),
-                            ProjectEulerTest::primeFactorsAndResultingValTail);
+                    final Tuple2<Long, Long> head = new Tuple2<>(nextPrimeFactor, previousFactorAndResultingVal._2 / nextPrimeFactor);
+                    return Stream.gen(head, () -> primeFactorsAndResultingValTail(head));
                 })
                 .apply(previousFactorAndResultingVal._2);
     }
