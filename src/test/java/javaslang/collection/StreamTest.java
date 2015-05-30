@@ -75,11 +75,17 @@ public class StreamTest extends AbstractSeqTest {
         assertThat(Stream.gen(() -> 1).take(13).reduce((i, j) -> i + j)).isEqualTo(13);
     }
 
-    // -- static gen(T, Function1)
+    // -- static gen(T, Function)
 
     @Test
     public void shouldGenerateInfiniteStreamBasedOnSupplierWithAccessToPreviousValue() {
         assertThat(Stream.gen(2, (i) -> i + 2).take(3).reduce((i, j) -> i + j)).isEqualTo(12);
+    }
+
+    // -- static build(T, Function)
+    @Test
+    public void shouldBuildStreamBasedOnHeadAndTailSupplierWithAccessToHead() {
+        assertThat(Stream.build(1, (head1) -> Stream.build(head1 + 1, (head2) -> Stream.nil()))).isEqualTo(Stream.of(1, 2));
     }
 
     // -- static nil()
