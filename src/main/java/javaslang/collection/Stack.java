@@ -15,7 +15,9 @@ import java.util.function.*;
 import java.util.stream.Collector;
 
 /**
- * A {@code Stack} interface which sits between {@code Seq} and {@code List} for technical reasons.
+ * A {@code Stack} stores elements allowing a last-in-first-out (LIFO) retrieval.
+ * <p>
+ * Stack API:
  *
  * <ul>
  * <li>{@link #peek()}</li>
@@ -25,7 +27,11 @@ import java.util.stream.Collector;
  * <li>{@link #pop2()}</li>
  * <li>{@link #pop2Option()}</li>
  * <li>{@link #push(Object)}</li>
+ * <li>{@link #push(Object[])}</li>
+ * <li>{@link #pushAll(Iterable)}</li>
  * </ul>
+ *
+ * See Okasaki, Chris: <em>Purely Functional Data Structures</em> (p. 7 ff.). Cambridge, 2003.
  *
  * @param <T> component type
  * @since 1.3.0
@@ -131,57 +137,77 @@ public interface Stack<T> extends Seq<T> {
     }
 
     /**
-     * Returns the head element without modifying the stack.
+     * Returns the head element without modifying the Stack.
      *
      * @return the first element
-     * @throws java.util.NoSuchElementException if this stack is empty
+     * @throws java.util.NoSuchElementException if this Stack is empty
      */
     T peek();
 
     /**
-     * Returns the head element without modifying the stack.
+     * Returns the head element without modifying the Stack.
      *
-     * @return {@code None} if this stack is empty, otherwise a {@code Some} containing the head element
+     * @return {@code None} if this Stack is empty, otherwise a {@code Some} containing the head element
      */
     Option<T> peekOption();
 
     /**
-     * Removes the head element from this stack.
+     * Removes the head element from this Stack.
      *
-     * @return the elements of this stack without the head element
-     * @throws java.util.NoSuchElementException if this stack is empty
+     * @return the elements of this Stack without the head element
+     * @throws java.util.NoSuchElementException if this Stack is empty
      */
     Stack<T> pop();
 
     /**
-     * Removes the head element from this stack.
+     * Removes the head element from this Stack.
      *
-     * @return {@code None} if this stack is empty, otherwise a {@code Some} containing the elements of this stack without the head element
+     * @return {@code None} if this Stack is empty, otherwise a {@code Some} containing the elements of this Stack without the head element
      */
     Option<? extends Stack<T>> popOption();
 
     /**
-     * Removes the head element from this stack.
+     * Removes the head element from this Stack.
      *
-     * @return a tuple containing the head element and the remaining elements of this stack
-     * @throws java.util.NoSuchElementException if this stack is empty
+     * @return a tuple containing the head element and the remaining elements of this Stack
+     * @throws java.util.NoSuchElementException if this Stack is empty
      */
     Tuple2<T, ? extends Stack<T>> pop2();
 
     /**
-     * Removes the head element from this stack.
+     * Removes the head element from this Stack.
      *
-     * @return {@code None} if this stack is empty, otherwise {@code Some} {@code Tuple} containing the head element and the remaining elements of this stack
+     * @return {@code None} if this Stack is empty, otherwise {@code Some} {@code Tuple} containing the head element and the remaining elements of this Stack
      */
     Option<? extends Tuple2<T, ? extends Stack<T>>> pop2Option();
 
     /**
-     * Pushes a new element on top of this stack.
+     * Pushes a new element on top of this Stack.
      *
      * @param element The new element
-     * @return a new {@code Stack} instance, containing the new element on top of this elements
+     * @return a new {@code Stack} instance, containing the new element on top of this Stack
      */
     Stack<T> push(T element);
+
+    /**
+     * Pushes the given elements on top of this Stack. A Stack has LIFO order, i.e. the last of the given elements is
+     * the first which will be retrieved.
+     *
+     * @param elements Elements, may be empty
+     * @return a new {@code Stack} instance, containing the new elements on top of this Stack
+     * @throws NullPointerException if elements is null
+     */
+    Stack<T> push(T... elements);
+
+    /**
+     * Pushes the given elements on top of this Stack. A Stack has LIFO order, i.e. the last of the given elements is
+     * the first which will be retrieved.
+     *
+     * @param elements An Iterable of elements, may be empty
+     * @return a new {@code Stack} instance, containing the new elements on top of this Stack
+     * @throws NullPointerException if elements is null
+     */
+    Stack<T> pushAll(Iterable<T> elements);
 
     // -- Adjusted return types of Seq methods
 

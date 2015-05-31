@@ -325,6 +325,11 @@ public interface Gen<T> extends TraversableOnce<T> {
     }
 
     @Override
+    default boolean isEmpty() {
+        return false;
+    }
+
+    @Override
     default Iterator<T> iterator() {
         final Random random = Checkable.RNG.get();
         return new Iterator<T>() {

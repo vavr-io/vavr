@@ -35,6 +35,11 @@ public final class Success<T> implements Try<T>, Serializable {
     }
 
     @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
+    @Override
     public boolean isFailure() {
         return false;
     }
