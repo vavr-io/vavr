@@ -52,7 +52,7 @@ public class PropertyCheck2Test {
     @Test
     public void shouldCheckErroneousProperty2() {
         final Property.ForAll2<Object, Object> forAll = new Property("test").forAll(OBJECTS, OBJECTS);
-        final CheckedFunction2<Object, Object, Boolean> predicate = (o1, o2) -> { throw new RuntimeException("woops"); };
+        final CheckedFunction2<Object, Object, Boolean> predicate = (o1, o2) -> { throw new RuntimeException("yay! (this is a negative test)"); };
         final CheckResult result = forAll.suchThat(predicate).check();
         assertThat(result.isErroneous()).isTrue();
     }
@@ -87,7 +87,7 @@ public class PropertyCheck2Test {
 
     @Test
     public void shouldReturnErroneousProperty2CheckResultIfGenFails() {
-        final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+        final Arbitrary<Object> failingGen = Gen.fail("yay! (this is a negative test)").arbitrary();
         final CheckResult result = new Property("test")
             .forAll(failingGen, OBJECTS)
             .suchThat((o1, o2) -> true)
@@ -97,7 +97,7 @@ public class PropertyCheck2Test {
 
     @Test
     public void shouldReturnErroneousProperty2CheckResultIfArbitraryFails() {
-        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("yay! (this is a negative test)"); };
         final CheckResult result = new Property("test")
             .forAll(failingArbitrary, OBJECTS)
             .suchThat((o1, o2) -> true)
