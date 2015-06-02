@@ -290,27 +290,27 @@ public class Queue<T> implements Seq<T>implements Serializable {
 
     @Override
     public Queue<T> drop(int n) {
-
+        return new Queue<>(front.drop(n), rear.dropRight(n - front.length()));
     }
 
     @Override
     public Queue<T> dropRight(int n) {
-
+        return new Queue<>(front.dropRight(n), rear.drop(n - front.length()));
     }
 
     @Override
     public Queue<T> dropWhile(Predicate<? super T> predicate) {
-
+        return toList().dropWhile(predicate).toQueue();
     }
 
     @Override
     public Queue<T> filter(Predicate<? super T> predicate) {
-
+        return toList().filter(predicate).toQueue();
     }
 
     @Override
     public Queue<T> findAll(Predicate<? super T> predicate) {
-
+        return toList().findAll(predicate).toQueue();
     }
 
     @Override
@@ -325,7 +325,19 @@ public class Queue<T> implements Seq<T>implements Serializable {
 
     @Override
     public T get(int index) {
-
+        final int length = front.length();
+        if (index < length) {
+            return front.get(index);
+        } else {
+            final int rearIndex = index - length;
+            final int rearLength = rear.length();
+            if (rearIndex < rearLength) {
+                final int reverseRearIndex = rearLength - rearIndex - 1;
+                return rear.get(reverseRearIndex);
+            } else {
+                throw new IndexOutOfBoundsException(String.format("get(%s) on Queue of length %s", index, length()));
+            }
+        }
     }
 
     @Override
