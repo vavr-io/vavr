@@ -123,13 +123,13 @@ public class ProjectEulerTest {
      */
     @Test
     public void shouldSolveProblem4() {
-        assertThat(largetsPalindromeOfProductsFromFactorsInRange(10, 99)).isEqualTo(9009);
-        assertThat(largetsPalindromeOfProductsFromFactorsInRange(100, 999)).isEqualTo(906609);
+        assertThat(largestPalindromeOfProductsFromFactorsInRange(10, 99)).isEqualTo(9009);
+        assertThat(largestPalindromeOfProductsFromFactorsInRange(100, 999)).isEqualTo(906609);
     }
 
-    private static int largetsPalindromeOfProductsFromFactorsInRange(final int min, final int max) {
+    private static int largestPalindromeOfProductsFromFactorsInRange(final int min, final int max) {
         return Stream.rangeClosed(min, max)
-                .flatMap((i) -> Stream.rangeClosed(i, max).map((j) -> i * j))
+                .flatMap(i -> Stream.rangeClosed(i, max).map(j -> i * j))
                 .filter(ProjectEulerTest::isPalindrome)
                 .max().get();
     }
