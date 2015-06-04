@@ -342,7 +342,7 @@ public class Queue<T> implements Seq<T>implements Serializable {
 
     @Override
     public Queue<Queue<T>> grouped(int size) {
-
+        return toList().grouped(size).map(Queue::ofAll).toQueue();
     }
 
     @Override
@@ -356,7 +356,14 @@ public class Queue<T> implements Seq<T>implements Serializable {
 
     @Override
     public int indexOf(T element) {
-
+        final int frontIndex = front.indexOf(element);
+        if (frontIndex != -1) {
+            return frontIndex;
+        } else {
+            // we need to reverse because we search the first occurrence
+            final int rearIndex = rear.reverse().indexOf(element);
+            return (rearIndex == -1) ? -1 : rearIndex + front.length();
+        }
     }
 
     @Override
@@ -522,12 +529,27 @@ public class Queue<T> implements Seq<T>implements Serializable {
 
     @Override
     public Queue<T> take(int n) {
+        final int frontLength = front.length();
+        if (n < frontLength) {
+            return new Queue<>(front.take(n), List.nil());
+        } else if (n == frontLength) {
+            return new Queue<>(front, List.nil());
+        } else {
+            return new Queue<>(front, rear.takeRight(n - frontLength));
+        }
 
     }
 
     @Override
     public Queue<T> takeRight(int n) {
-
+        final int rearLength = rear.length();
+        if (n < rearLength) {
+            return new Queue<>(rear.take(n).reverse(), List.nil());
+        } else if (n == rearLength) {
+            return new Queue<>(rear.reverse(), List.nil());
+        } else {
+            return new Queue<>(front.takeRight(n - rearLength), rear);
+        }
     }
 
     @Override
