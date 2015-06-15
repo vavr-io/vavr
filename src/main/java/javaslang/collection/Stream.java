@@ -1001,7 +1001,7 @@ public interface Stream<T> extends Seq<T> {
 
         @Override
         public Stream<T> init() {
-            throw new NoSuchElementException("init of empty stream");
+            throw new UnsupportedOperationException("init of empty stream");
         }
 
         @Override
@@ -1047,9 +1047,6 @@ public interface Stream<T> extends Seq<T> {
      * @since 1.1.0
      */
     abstract class AbstractStream<T> implements Stream<T> {
-
-        private AbstractStream() {
-        }
 
         @Override
         public boolean equals(Object o) {

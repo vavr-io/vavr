@@ -483,8 +483,9 @@ public interface List<T> extends Seq<T>, Stack<T> {
         return new Cons<>(element, this);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    default Stack<T> push(T... elements) {
+    default List<T> push(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
         List<T> result = Nil.<T>instance();
         for (T element : elements) {
@@ -494,7 +495,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
     }
 
     @Override
-    default Stack<T> pushAll(Iterable<T> elements) {
+    default List<T> pushAll(Iterable<T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         List<T> result = Nil.<T>instance();
         for (T element : elements) {
@@ -1081,9 +1082,6 @@ public interface List<T> extends Seq<T>, Stack<T> {
      * @since 1.1.0
      */
     abstract class AbstractList<T> implements List<T> {
-
-        private AbstractList() {
-        }
 
         @Override
         public boolean equals(Object o) {

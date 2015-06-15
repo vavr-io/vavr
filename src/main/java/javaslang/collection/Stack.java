@@ -197,6 +197,7 @@ public interface Stack<T> extends Seq<T> {
      * @return a new {@code Stack} instance, containing the new elements on top of this Stack
      * @throws NullPointerException if elements is null
      */
+    @SuppressWarnings("unchecked")
     Stack<T> push(T... elements);
 
     /**

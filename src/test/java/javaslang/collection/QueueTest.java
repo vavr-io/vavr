@@ -9,11 +9,13 @@ public class QueueTest extends AbstractSeqTest {
 
     @Override
     protected <T> Queue<T> nil() {
-        return Queue.nil();
+        return Queue.empty();
     }
 
+    @SafeVarargs
+    @SuppressWarnings({"unchecked", "varargs"})
     @Override
-    protected <T> Queue<T> of(T... elements) {
+    protected final <T> Queue<T> of(T... elements) {
         return Queue.of(elements);
     }
 
