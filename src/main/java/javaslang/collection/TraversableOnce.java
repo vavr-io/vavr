@@ -13,10 +13,16 @@ import java.util.function.Predicate;
  * Interface to reduce code duplication of Iterables and Traversables.
  *
  * @param <T> element type of Iterable
+ * @since 1.3.0
  */
 public interface TraversableOnce<T> extends Iterable<T> {
 
-    // TODO: isEmpty()
+    /**
+     * Indicates if this {@code TraversableOnce} is empty
+     *
+     * @return true, if this is empty, false otherwise
+     */
+    boolean isEmpty();
 
     /**
      * Checks, if an element exists such that the predicate holds.
@@ -82,5 +88,19 @@ public interface TraversableOnce<T> extends Iterable<T> {
         }
     }
 
-    // TODO: toXxx methods?
+    default List<T> toList() {
+        return List.ofAll(this);
+    }
+
+    default Queue<T> toQueue() {
+        return Queue.ofAll(this);
+    }
+
+    default Stream<T> toStream() {
+        return Stream.ofAll(this);
+    }
+
+    default Stack<T> toStack() {
+        return Stack.ofAll(this);
+    }
 }

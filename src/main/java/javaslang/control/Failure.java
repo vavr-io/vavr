@@ -41,6 +41,11 @@ public final class Failure<T> implements Try<T>, Serializable {
     }
 
     @Override
+    public boolean isEmpty() {
+        return true;
+    }
+
+    @Override
     public boolean isFailure() {
         return true;
     }

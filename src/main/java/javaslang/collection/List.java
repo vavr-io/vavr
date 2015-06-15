@@ -42,8 +42,10 @@ import java.util.stream.Collector;
  * </pre>
  *
  * Note: A {@code List} is primary a {@code Seq} and extends {@code Stack} for technical reasons (so {@code Stack} does not need to wrap {@code List}).
+ * <p>
+ * See Okasaki, Chris: <em>Purely Functional Data Structures</em> (p. 7 ff.). Cambridge, 2003.
  *
- * @param <T> Component type of the List.
+ * @param <T> Component type of the List
  * @since 1.1.0
  */
 public interface List<T> extends Seq<T>, Stack<T> {
@@ -339,13 +341,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> init() {
-        if (isEmpty()) {
-            throw new UnsupportedOperationException("init on Nil");
-        } else {
-            return dropRight(1);
-        }
-    }
+    List<T> init();
 
     @Override
     Option<List<T>> initOption();
@@ -485,6 +481,27 @@ public interface List<T> extends Seq<T>, Stack<T> {
     @Override
     default List<T> push(T element) {
         return new Cons<>(element, this);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default List<T> push(T... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        List<T> result = Nil.<T>instance();
+        for (T element : elements) {
+            result = result.prepend(element);
+        }
+        return result;
+    }
+
+    @Override
+    default List<T> pushAll(Iterable<T> elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        List<T> result = Nil.<T>instance();
+        for (T element : elements) {
+            result = result.prepend(element);
+        }
+        return result;
     }
 
     @Override
@@ -802,7 +819,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
          * @param head The head
          * @param tail The tail
          */
-        public Cons(T head, List<T> tail) {
+        Cons(T head, List<T> tail) {
             this.head = head;
             this.tail = tail;
         }
@@ -815,6 +832,11 @@ public interface List<T> extends Seq<T>, Stack<T> {
         @Override
         public Some<T> headOption() {
             return new Some<>(head);
+        }
+
+        @Override
+        public List<T> init() {
+            return dropRight(1);
         }
 
         @Override
@@ -998,6 +1020,11 @@ public interface List<T> extends Seq<T>, Stack<T> {
         }
 
         @Override
+        public List<T> init() {
+            throw new UnsupportedOperationException("init of empty list");
+        }
+
+        @Override
         public None<List<T>> initOption() {
             return None.instance();
         }
@@ -1080,8 +1107,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
         @Override
         public int hashCode() {
             int hashCode = 1;
-            for (List<T> list = this; !list.isEmpty(); list = list.tail()) {
-                final T element = list.head();
+            for (T element : this) {
                 hashCode = 31 * hashCode + Objects.hashCode(element);
             }
             return hashCode;
