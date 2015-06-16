@@ -349,10 +349,10 @@ public class TryTest {
     public void shouldChainFailureWithAndThen() {
         final Try<Integer> actual = Try.of(() -> 100)
                 .andThen(x -> x + 100)
-                .andThen(x -> x / 0)   //Div by zero, throws exception.
-                .andThen(x -> x + 50);
+                .andThen(x -> Integer.parseInt("aaa") + x)   //Throws exception.
+                .andThen(x -> x / 2);
 
-        final Try<Integer> expected = new Failure<>(new ArithmeticException("/ by zero"));
+        final Try<Integer> expected = new Failure<>(new NumberFormatException("For input string: \"aaa\""));
         assertThat(actual).isEqualTo(expected);
     }
 
