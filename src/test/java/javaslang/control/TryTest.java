@@ -335,6 +335,27 @@ public class TryTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    @Test
+    public void shouldChainSuccessWithAndThen() {
+        final Try<Integer> actual = Try.of(() -> 100)
+                .andThen(x -> x + 100)
+                .andThen(x -> x + 50);
+
+        final Try<Integer> expected = new Success<>(250);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldChainFailureWithAndThen() {
+        final Try<Integer> actual = Try.of(() -> 100)
+                .andThen(x -> x + 100)
+                .andThen(x -> x / 0)   //Div by zero, throws exception.
+                .andThen(x -> x + 50);
+
+        final Try<Integer> expected = new Failure<>(new ArithmeticException("/ by zero"));
+        assertThat(actual).isEqualTo(expected);
+    }
+
     // peek
 
     @Test
