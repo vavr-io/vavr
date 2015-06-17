@@ -5,6 +5,7 @@
  */
 package javaslang.control;
 
+import javaslang.CheckedFunction1;
 import javaslang.collection.TraversableOnce;
 
 import java.util.Collections;
@@ -233,6 +234,28 @@ public interface Try<T> extends TraversableOnce<T> {
     default Try<Void> andThen(CheckedRunnable runnable) {
         return flatMap(ignored -> Try.run(runnable));
     }
+
+    /**
+     * Runs the given checked function if this is a {@code Success},
+     * passing the result of the current expression to it.
+     * If this expression is a {@code Failure} then it'll return a new
+     * {@code Failure} of type R with the original exception.
+     *
+     * The main use case is chaining checked functions using method references:
+     *
+     * <pre>
+     * <code>
+     * Try.of(() -&gt; 100)
+     *    .andThen(x -&gt; x + 100)
+     *    .andThen(x -&gt; x * 20);
+     *
+     * </code>
+     * </pre>
+     *
+     * @param f A checked function taking a single argument.
+     * @return a new {@code Try}
+     */
+    <R> Try<R> andThen(CheckedFunction1<T, R> f);
 
     @Override
     boolean equals(Object o);
