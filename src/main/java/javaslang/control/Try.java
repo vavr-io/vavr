@@ -255,14 +255,7 @@ public interface Try<T> extends TraversableOnce<T> {
      * @param f A checked function taking a single argument.
      * @return a new {@code Try}
      */
-    default <R> Try<R> andThen(CheckedFunction1<T, R> f) {
-
-        if (this.isFailure()) {
-            return new Failure<>(this.failed().get());
-        }
-
-        return Try.of(() -> f.apply(this.get()));
-    }
+    <R> Try<R> andThen(CheckedFunction1<T, R> f);
 
     @Override
     boolean equals(Object o);

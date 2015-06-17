@@ -5,6 +5,8 @@
  */
 package javaslang.control;
 
+import javaslang.CheckedFunction1;
+
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Optional;
@@ -144,6 +146,12 @@ public final class Failure<T> implements Try<T>, Serializable {
     @SuppressWarnings("unchecked")
     public <U> Failure<U> flatMap(Function<? super T, ? extends Try<U>> mapper) {
         return (Failure<U>) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <R> Failure<R> andThen(CheckedFunction1<T, R> f) {
+        return (Failure<R>) this;
     }
 
     @Override

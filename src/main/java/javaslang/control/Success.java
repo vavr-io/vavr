@@ -5,6 +5,8 @@
  */
 package javaslang.control;
 
+import javaslang.CheckedFunction1;
+
 import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -148,6 +150,11 @@ public final class Success<T> implements Try<T>, Serializable {
         } catch (Throwable t) {
             return new Failure<>(t);
         }
+    }
+
+    @Override
+    public <R> Try<R> andThen(CheckedFunction1<T, R> f) {
+        return flatMap(value -> Try.of(() -> f.apply(value)));
     }
 
     @Override
