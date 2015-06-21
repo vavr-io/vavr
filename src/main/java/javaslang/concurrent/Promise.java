@@ -3,14 +3,17 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014-2015 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.control;
+package javaslang.concurrent;
+
+import javaslang.control.Failure;
+import javaslang.control.Option;
+import javaslang.control.Success;
+import javaslang.control.Try;
 
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 
 /**
- * Promise is a way of creating a {@link javaslang.control.Future} that can be fulfilled with either a success or failure later.
+ * Promise is a way of creating a {@link javaslang.concurrent.Future} that can be fulfilled with either a success or failure later.
  * The Future can be obtained with {@link #future()} and completed with {@link #success(T t)} or {@link #failure(Throwable e}.
  *
  *
@@ -30,15 +33,7 @@ public class Promise<T> {
     }
 
     /**
-     * Creates a new Promise with an inner Future.
-     * @param ex This Executor will be given to the created Future and used as it's default for all Async operations.
-     */
-    public Promise(Executor ex){
-        this.future = new Future<>(ex);
-    }
-
-    /**
-     * @return The {@link javaslang.control.Future} created by this Promise
+     * @return The {@link javaslang.concurrent.Future} created by this Promise
      */
     public Future<T> future(){
         return future;
@@ -50,7 +45,7 @@ public class Promise<T> {
      * @param t Value to complete the Future with.
      */
     public void success(T t){
-        future.complete(new Success<>(t));
+        complete(new Success<>(t));
     }
 
     /**
@@ -59,7 +54,7 @@ public class Promise<T> {
      * @param e Exception to complete the Future with.
      */
     public void failure(Throwable e){
-        future.complete(new Failure<>(e));
+        complete(new Failure<>(e));
     }
 
     /**
@@ -68,8 +63,7 @@ public class Promise<T> {
      * @param source Try containing either a successful value or a failure exception.
      */
     public void complete(Try<T> source){
-        source.forEach(this::success);
-        source.onFailure(this::failure);
+        future.complete(source);
     }
 
     /**

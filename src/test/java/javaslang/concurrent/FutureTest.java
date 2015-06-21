@@ -3,20 +3,21 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014-2015 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.control;
+package javaslang.concurrent;
 
 
-import javaslang.Function1;
 import javaslang.collection.List;
+import javaslang.control.Try;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import static org.junit.Assert.assertEquals;
 
 public class FutureTest {
 
@@ -61,7 +62,8 @@ public class FutureTest {
             return 6;
         });
 
-        Future<Integer> second = first.map(f -> {Try.run(() -> Thread.sleep(1500)); System.out.println("Finishing Second calc"); return f * 2;});
+        Future<Integer> second = first.map(f -> {
+            Try.run(() -> Thread.sleep(1500)); System.out.println("Finishing Second calc"); return f * 2;});
 
         Future<Integer> third = first.map(s -> {Try.run(() -> Thread.sleep(1000)); System.out.println("Finishing Third calc");return s / 3;});
         Future<Integer> fourth = first.map(s -> {Try.run(() -> Thread.sleep(500)); System.out.println("Finishing Fourth calc");return s * 3;});
@@ -97,13 +99,20 @@ public class FutureTest {
 
     @Test
     @Ignore
+    public void massiveTest() throws InterruptedException, ExecutionException, TimeoutException {
+        for(int i = 0; i < 100; i++) {
+            traverseTest();
+        }
+    }
+
+    @Test
     public void traverseTest() throws InterruptedException, ExecutionException, TimeoutException {
         System.out.println("Starting FutureTest.traverseTest");
 
         Random rand = new Random();
         List<Integer> source = List.range(0, 10);
 
-        Future<List<Integer>> total = Futures.flatTraverse(source, i -> new Future<>(() -> {
+        Future<List<Integer>> total = Future.flatTraverse(source, i -> new Future<>(() -> {
             int pauseTime = rand.nextInt(1000);
             System.out.println("Pausing for " + pauseTime + " while calculating value: " + i);
             Thread.sleep(pauseTime);
