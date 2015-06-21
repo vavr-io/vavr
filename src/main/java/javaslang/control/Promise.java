@@ -5,6 +5,7 @@
  */
 package javaslang.control;
 
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -20,14 +21,12 @@ import java.util.concurrent.Executor;
 public class Promise<T> {
 
     private final Future<T> future;
-    private final CompletableFuture<T> inner;
 
     /**
      * Creates a new Promise with an inner Future.
      */
     public Promise(){
-        this.inner = new CompletableFuture<>();
-        this.future = new Future<>(inner);
+        this.future = new Future<>();
     }
 
     /**
@@ -35,8 +34,7 @@ public class Promise<T> {
      * @param ex This Executor will be given to the created Future and used as it's default for all Async operations.
      */
     public Promise(Executor ex){
-        this.inner = new CompletableFuture<>();
-        this.future = new Future<>(inner, ex);
+        this.future = new Future<>(ex);
     }
 
     /**
@@ -52,7 +50,7 @@ public class Promise<T> {
      * @param t Value to complete the Future with.
      */
     public void success(T t){
-        inner.complete(t);
+        future.complete(new Success<>(t));
     }
 
     /**
@@ -61,7 +59,7 @@ public class Promise<T> {
      * @param e Exception to complete the Future with.
      */
     public void failure(Throwable e){
-        inner.completeExceptionally(e);
+        future.complete(new Failure<>(e));
     }
 
     /**
@@ -104,6 +102,6 @@ public class Promise<T> {
      * Completes this Promise with a {@link java.util.concurrent.CancellationException}.
      */
     public void cancel(){
-        inner.cancel(true);
+        failure(new CancellationException("Promise was broken!"));
     }
 }

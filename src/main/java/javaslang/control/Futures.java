@@ -57,25 +57,22 @@ public class Futures {
     }
 
     public static <T1> Future<Tuple1<T1>> sequence(Tuple1<Future<T1>> source){
-        Promise<Tuple1<T1>> result = new Promise<>();
-
-        source._1.onCompleted(t -> result.success(new Tuple1<>(t)), result::failure);
-
-        return result.future();
+        return source._1.map(v -> new Tuple1<>(v));
     }
 
     public static <T1, T2> Future<Tuple2<T1, T2>> sequence(Tuple2<Future<T1>, Future<T2>> source){
-        Promise<Tuple2<T1, T2>> result = new Promise<>();
-
-        source._1.onCompleted(v1 -> source._2.onCompleted(v2 -> result.success(Tuple.of(v1, v2)), result::failure), result::failure);
-
-        return result.future();
-
+        return source._1.flatMap(v1 -> source._2.map(v2 -> new Tuple2<>(v1, v2)));
     }
 
     public static <T1, T2, T3> Future<Tuple3<T1, T2, T3>> sequence(Tuple3<Future<T1>, Future<T2>, Future<T3>> source){
         return sequence(Tuple.of(sequence(Tuple.of(source._1, source._2)), source._3))
                 .map(nested -> Tuple.of(nested._1._1, nested._1._2, nested._2));
+
+    }
+
+    public static <T1, T2, T3, T4> Future<Tuple4<T1, T2, T3, T4>> sequence(Tuple4<Future<T1>, Future<T2>, Future<T3>, Future<T4>> source){
+        return sequence(Tuple.of(sequence(Tuple.of(source._1, source._2, source._3)), source._4))
+                .map(nested -> Tuple.of(nested._1._1, nested._1._2, nested._1._3, nested._2));
 
     }
 }

@@ -29,7 +29,8 @@ import javaslang.control.Try.CheckedSupplier;
 public class Future<T> {
 
     private final Executor ex;
-    private final CompletableFuture<T> inner;
+    private final java.util.concurrent.Future<?> inner;
+    private final ConcurrentLinkedQueue<Consumer<Try<T>>> callBacks = new ConcurrentLinkedQueue<>();
     private Option<Try<T>> value = Option.none();
 
 
@@ -39,10 +40,14 @@ public class Future<T> {
      * @param ex An {@link java.util.concurrent.Executor} that will be used as the default Executor for all asynchronous methods on this Future.
      */
     public Future(CompletableFuture<T> source, Executor ex){
-        this.inner = source;
+        source.whenComplete((s, f) -> {
+            if(s != null)
+                complete(new Success<>(s));
+            else
+                complete(new Failure<>(f));
+        });
         this.ex = ex;
-
-        onCompletedTry(r -> value = new Some<>(r));
+        this.inner = source;
     }
 
     /**
@@ -59,17 +64,10 @@ public class Future<T> {
      * @param ex An {@link java.util.concurrent.Executor} that will be used to calculate the value of the supplier and will serve
      *           as the default Executor for all asynchronous methods on this Future.
      */
-    public Future(CheckedSupplier<T> source, Executor ex){
-        this(CompletableFuture.supplyAsync(() -> {
-            try {
-                return source.get();
-            } catch (RuntimeException | Error e) {
-                throw e;
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
-        }, ex));
+    public Future(CheckedSupplier<T> source, ExecutorService ex){
+        this.ex = ex;
 
+        this.inner = ex.submit(() -> complete(Try.of(source)));
     }
 
     /**
@@ -78,6 +76,15 @@ public class Future<T> {
      */
     public Future(CheckedSupplier<T> source){
         this(source, ForkJoinPool.commonPool());
+    }
+
+    Future(Executor ex){
+        this.ex = ex;
+        this.inner = null;
+    }
+
+    Future(){
+        this(ForkJoinPool.commonPool());
     }
 
     /**
@@ -133,6 +140,16 @@ public class Future<T> {
         CompletableFuture<T> fail = new CompletableFuture<>();
         fail.completeExceptionally(t);
         return of(fail);
+    }
+
+    void complete(Try<T> result){
+        if(value.isEmpty()){
+            value = new Some<>(result);
+
+            callBacks.forEach(c -> c.accept(result));
+            //callBacks = null;
+        }
+        //TODO: else throw exception maybe?
     }
 
     /**
@@ -400,12 +417,17 @@ public class Future<T> {
     public void onCompletedTry(Consumer<Try<T>> func, Executor ex){
         Objects.requireNonNull(func, "func is null");
 
-        inner.whenCompleteAsync((t, e) -> {
-            if(t != null)
-                func.accept(new Success<>(t));
-            else
-                func.accept(new Failure<>(e));
-        });
+        if(value.isEmpty()){
+            synchronized (callBacks){
+                if(value.isEmpty()){
+                    callBacks.add(func);
+                    return;
+                }
+            }
+
+        }
+
+        value.forEach(func);
     }
 
     /**
