@@ -626,7 +626,7 @@ public class Future<T> {
     }
 
     public static <T1> Future<Tuple1<T1>> sequence(Tuple1<Future<T1>> source){
-        return source._1.map(v -> new Tuple1<>(v));
+        return source._1.map(Tuple1::new);
     }
 
     public static <T1, T2> Future<Tuple2<T1, T2>> sequence(Tuple2<Future<T1>, Future<T2>> source){
@@ -649,6 +649,23 @@ public class Future<T> {
         return sequence(Tuple.of(sequence(Tuple.of(source._1, source._2, source._3, source._4)), source._5))
                 .map(nested -> Tuple.of(nested._1._1, nested._1._2, nested._1._3, nested._1._4, nested._2));
 
+    }
+
+    public static <T1, T2, T3, T4, T5, T6> Future<Tuple6<T1, T2, T3, T4, T5, T6>> sequence(Tuple6<Future<T1>, Future<T2>, Future<T3>, Future<T4>, Future<T5>, Future<T6>> source){
+        return sequence(Tuple.of(sequence(Tuple.of(source._1, source._2, source._3, source._4, source._5)), source._6))
+                .map(nested -> Tuple.of(nested._1._1, nested._1._2, nested._1._3, nested._1._4, nested._1._5, nested._2));
+
+    }
+
+    public static <T1, T2, T3, T4, T5, T6, T7> Future<Tuple7<T1, T2, T3, T4, T5, T6, T7>> sequence(Tuple7<Future<T1>, Future<T2>, Future<T3>, Future<T4>, Future<T5>, Future<T6>, Future<T7>> source){
+        return sequence(Tuple.of(sequence(Tuple.of(source._1, source._2, source._3, source._4, source._5, source._6)), source._7))
+                .map(nested -> Tuple.of(nested._1._1, nested._1._2, nested._1._3, nested._1._4, nested._1._5, nested._1._6, nested._2));
+    }
+
+
+    public static <T1, T2, T3, T4, T5, T6, T7, T8> Future<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> sequence(Tuple8<Future<T1>, Future<T2>, Future<T3>, Future<T4>, Future<T5>, Future<T6>, Future<T7>, Future<T8>> source){
+        return sequence(Tuple.of(sequence(Tuple.of(source._1, source._2, source._3, source._4, source._5, source._6, source._7)), source._8))
+                .map(nested -> Tuple.of(nested._1._1, nested._1._2, nested._1._3, nested._1._4, nested._1._5, nested._1._6, nested._1._7, nested._2));
     }
 
     private static class FutureConverter {
