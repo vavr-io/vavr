@@ -581,48 +581,22 @@ public class Future<T> {
         return recoverWith(t -> that);
     }
 
-    public static <T> Future<List<Try<T>>> sequence(Iterable<Future<T>> source, Executor ex){
-        Future<List<Try<T>>> start = Future.completed(List.<Try<T>>nil());
-
-        return List.ofAll(source).foldLeft(start, (accumulator, next) -> {
-            Promise<List<Try<T>>> result = new Promise<>(); //Each input needs to return a new promise. This is to ensure that the list returns in the same order as the input.
-
-            accumulator.andThen(mainTry -> {
-                mainTry.onFailure(result::failure);
-                mainTry.forEach(list -> next.onCompletedTry(nextTry -> result.success(list.append(nextTry)), ex));
-            }, ex);
-
-            return result.future();
-        });
+    public static <T> Future<List<T>> sequence(Iterable<Future<T>> source, Executor ex){
+        return List.ofAll(source)
+                .foldLeft(Future.completed(List.nil()), (accumulator, next) -> accumulator.flatMap(list -> next.map(list::append, ex), ex));
     }
 
-    public static <T> Future<List<Try<T>>> sequence(Iterable<Future<T>> source){
+    public static <T> Future<List<T>> sequence(Iterable<Future<T>> source){
         return sequence(source, ForkJoinPool.commonPool());
     }
 
-    public static <T> Future<List<T>> flatSequence(Iterable<Future<T>> source, Executor ex){
-        return sequence(source, ex).map(list -> list.flatMap(Function1.identity()));
-    }
-
-    public static <T> Future<List<T>> flatSequence(Iterable<Future<T>> source){
-        return flatSequence(source, ForkJoinPool.commonPool());
-    }
-
-    public static <T> Future<List<Try<T>>> traverse(Iterable<T> source, Function1<T, Future<T>> func, Executor ex){
+    public static <T> Future<List<T>> traverse(Iterable<T> source, Function1<T, Future<T>> func, Executor ex){
         Objects.requireNonNull(func, "func is null");
         return sequence(List.ofAll(source).map(func), ex);
     }
 
-    public static <T> Future<List<Try<T>>> traverse(Iterable<T> source, Function1<T, Future<T>> func){
+    public static <T> Future<List<T>> traverse(Iterable<T> source, Function1<T, Future<T>> func){
         return traverse(source, func, ForkJoinPool.commonPool());
-    }
-
-    public static <T> Future<List<T>> flatTraverse(Iterable<T> source, Function1<T, Future<T>> func, Executor ex){
-        return traverse(source, func, ex).map(list -> list.flatMap(Function1.identity()));
-    }
-
-    public static <T> Future<List<T>> flatTraverse(Iterable<T> source, Function1<T, Future<T>> func){
-        return flatTraverse(source, func, ForkJoinPool.commonPool());
     }
 
     public static <T1> Future<Tuple1<T1>> sequence(Tuple1<Future<T1>> source){

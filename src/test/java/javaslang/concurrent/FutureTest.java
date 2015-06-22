@@ -112,7 +112,7 @@ public class FutureTest {
         Random rand = new Random();
         List<Integer> source = List.range(0, 10);
 
-        Future<List<Integer>> total = Future.flatTraverse(source, i -> new Future<>(() -> {
+        Future<List<Integer>> total = Future.traverse(source, i -> new Future<>(() -> {
             int pauseTime = rand.nextInt(1000);
             System.out.println("Pausing for " + pauseTime + " while calculating value: " + i);
             Thread.sleep(pauseTime);
