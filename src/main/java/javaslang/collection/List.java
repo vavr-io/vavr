@@ -263,7 +263,17 @@ public interface List<T> extends Seq<T>, Stack<T> {
     @Override
     default <U> List<U> flatMap(Function<? super T, ? extends Iterable<U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return isEmpty() ? Nil.instance() : foldRight(nil(), (t, xs) -> xs.prependAll(mapper.apply(t)));
+        if (isEmpty()) {
+            return nil();
+        } else {
+            List<U> list = nil();
+            for (T t : this) {
+                for (U u : mapper.apply(t)) {
+                    list = list.prepend(u);
+                }
+            }
+            return list.reverse();
+        }
     }
 
     /**
@@ -406,7 +416,11 @@ public interface List<T> extends Seq<T>, Stack<T> {
     @Override
     default <U> List<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return foldRight(nil(), (x, xs) -> xs.prepend(mapper.apply(x)));
+        List<U> list = nil();
+        for (T t : this) {
+            list = list.prepend(mapper.apply(t));
+        }
+        return list.reverse();
     }
 
     @Override
