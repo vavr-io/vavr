@@ -426,7 +426,15 @@ public interface List<T> extends Seq<T>, Stack<T> {
     @Override
     default Tuple2<List<T>, List<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return Tuple.of(filter(predicate), filter(predicate.negate()));
+        List<T> left = nil(), right = nil();
+        for (T t : this) {
+            if (predicate.test(t)) {
+                left = left.prepend(t);
+            } else {
+                right = right.prepend(t);
+            }
+        }
+        return Tuple.of(left.reverse(), right.reverse());
     }
 
     @Override
