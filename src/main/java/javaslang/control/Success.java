@@ -5,6 +5,8 @@
  */
 package javaslang.control;
 
+import javaslang.CheckedFunction1;
+
 import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -32,6 +34,11 @@ public final class Success<T> implements Try<T>, Serializable {
      */
     public Success(T value) {
         this.value = value;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return false;
     }
 
     @Override
@@ -136,14 +143,18 @@ public final class Success<T> implements Try<T>, Serializable {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <U> Try<U> flatMap(Function<? super T, ? extends Try<U>> mapper) {
         try {
-            return (Try<U>) mapper.apply(value);
+            return mapper.apply(value);
         } catch (Throwable t) {
             return new Failure<>(t);
         }
+    }
+
+    @Override
+    public <R> Try<R> andThen(CheckedFunction1<T, R> f) {
+        return flatMap(value -> Try.of(() -> f.apply(value)));
     }
 
     @Override

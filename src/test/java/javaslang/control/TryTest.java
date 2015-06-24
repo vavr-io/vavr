@@ -335,6 +335,27 @@ public class TryTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    @Test
+    public void shouldChainSuccessWithAndThen() {
+        final Try<Integer> actual = Try.of(() -> 100)
+                .andThen(x -> x + 100)
+                .andThen(x -> x + 50);
+
+        final Try<Integer> expected = new Success<>(250);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldChainFailureWithAndThen() {
+        final Try<Integer> actual = Try.of(() -> 100)
+                .andThen(x -> x + 100)
+                .andThen(x -> Integer.parseInt("aaa") + x)   //Throws exception.
+                .andThen(x -> x / 2);
+
+        final Try<Integer> expected = new Failure<>(new NumberFormatException("For input string: \"aaa\""));
+        assertThat(actual).isEqualTo(expected);
+    }
+
     // peek
 
     @Test

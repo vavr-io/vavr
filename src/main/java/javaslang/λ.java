@@ -104,7 +104,7 @@ public interface λ<R> extends Serializable {
      * Returns a memoizing version of this function, which computes the return value for given arguments only one time.
      * On subsequent calls given the same arguments the memoized value is returned.
      * <p>
-     * Please not that memoizing functions do not permit `null` as single argument or return value.
+     * Please note that memoizing functions do not permit `null` as single argument or return value.
      *
      * @return a memoizing function equivalent to this.
      */

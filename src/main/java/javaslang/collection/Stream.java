@@ -50,10 +50,11 @@ import java.util.stream.Collector;
  * </code>
  * </pre>
  *
+ * See Okasaki, Chris: <em>Purely Functional Data Structures</em> (p. 34 ff.). Cambridge, 2003.
+ *
  * @param <T> component type of this Stream
  * @since 1.1.0
  */
-// DEV-NOTE: Beware of serializing IO streams.
 public interface Stream<T> extends Seq<T> {
 
     /**
@@ -432,18 +433,7 @@ public interface Stream<T> extends Seq<T> {
     }
 
     @Override
-    default Stream<T> init() {
-        if (isEmpty()) {
-            throw new UnsupportedOperationException("init on Nil");
-        } else {
-            final Stream<T> tail = tail();
-            if (tail.isEmpty()) {
-                return Nil.instance();
-            } else {
-                return new Cons<>(head(), tail::init);
-            }
-        }
-    }
+    Stream<T> init();
 
     @Override
     Option<Stream<T>> initOption();
@@ -830,7 +820,7 @@ public interface Stream<T> extends Seq<T> {
          * @param head A head element
          * @param tail A tail {@code Stream} supplier, {@linkplain Nil} denotes the end of the {@code Stream}
          */
-        public Cons(T head, Supplier<Stream<T>> tail) {
+        Cons(T head, Supplier<Stream<T>> tail) {
             this.head = head;
             this.tail = Lazy.of(Objects.requireNonNull(tail, "tail is null"));
         }
@@ -843,6 +833,16 @@ public interface Stream<T> extends Seq<T> {
         @Override
         public Some<T> headOption() {
             return new Some<>(head);
+        }
+
+        @Override
+        public Stream<T> init() {
+            final Stream<T> tail = tail();
+            if (tail.isEmpty()) {
+                return Nil.instance();
+            } else {
+                return new Cons<>(head(), tail::init);
+            }
         }
 
         @Override
@@ -1014,6 +1014,11 @@ public interface Stream<T> extends Seq<T> {
         }
 
         @Override
+        public Stream<T> init() {
+            throw new UnsupportedOperationException("init of empty stream");
+        }
+
+        @Override
         public None<Stream<T>> initOption() {
             return None.instance();
         }
@@ -1081,8 +1086,7 @@ public interface Stream<T> extends Seq<T> {
         @Override
         public int hashCode() {
             int hashCode = 1;
-            for (Stream<T> stream = this; !stream.isEmpty(); stream = stream.tail()) {
-                final T element = stream.head();
+            for (T element : this) {
                 hashCode = 31 * hashCode + Objects.hashCode(element);
             }
             return hashCode;

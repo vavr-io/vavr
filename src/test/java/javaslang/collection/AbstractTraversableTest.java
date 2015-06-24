@@ -19,6 +19,7 @@ import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 import static javaslang.Serializables.deserialize;
@@ -330,6 +331,14 @@ public abstract class AbstractTraversableTest {
                 return of(6);
             }
         })).isEqualTo(of(1, 2, 3, 4, 5, 6));
+    }
+
+    @Test
+    public void shouldFlatMapElementsToSequentialValuesInTheRightOrder() {
+        final AtomicInteger seq = new AtomicInteger(0);
+        final Traversable<Integer> actualInts = of(0, 1, 2).flatMap(ignored -> of(seq.getAndIncrement(), seq.getAndIncrement()));
+        final Traversable<Integer> expectedInts = of(0, 1, 2, 3, 4, 5);
+        assertThat(actualInts).isEqualTo(expectedInts);
     }
 
     // -- flatten(Function1)
@@ -663,6 +672,14 @@ public abstract class AbstractTraversableTest {
     @Test
     public void shouldMapNonNil() {
         assertThat(of(1, 2, 3).map(i -> i + 1)).isEqualTo(of(2, 3, 4));
+    }
+
+    @Test
+    public void shouldMapElementsToSequentialValuesInTheRightOrder() {
+        final AtomicInteger seq = new AtomicInteger(0);
+        final Traversable<Integer> expectedInts = of(0, 1, 2, 3, 4);
+        final Traversable<Integer> actualInts = expectedInts.map(ignored -> seq.getAndIncrement());
+        assertThat(actualInts).isEqualTo(expectedInts);
     }
 
     // -- partition

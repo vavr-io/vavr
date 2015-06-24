@@ -1143,7 +1143,7 @@ def generateTestClasses(): Unit = {
             returnType(1, max)
           }
         }
-
+        
         xs"""
           public class $className {
 
@@ -1233,6 +1233,7 @@ def generateTestClasses(): Unit = {
       // test classes
       val test = im.getType("org.junit.Test")
       val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
+      val woops  = "yay! (this is a negative test)"
 
       xs"""
         public class $className {
@@ -1344,7 +1345,7 @@ def generateTestClasses(): Unit = {
 
             @$test
             public void shouldRecognizeArbitraryError() {
-                final Arbitrary<?> arbitrary = n -> { throw new RuntimeException("woops"); };
+                final Arbitrary<?> arbitrary = n -> { throw new RuntimeException("$woops"); };
                 final CheckResult result = new Property("test").forAll(arbitrary).suchThat(tautology()).check();
                 $assertThat(result.isErroneous()).isTrue();
                 $assertThat(result.isExhausted()).isFalse();
@@ -1354,7 +1355,7 @@ def generateTestClasses(): Unit = {
 
             @$test
             public void shouldRecognizeGenError() {
-                final Arbitrary<?> arbitrary = Gen.fail("woops").arbitrary();
+                final Arbitrary<?> arbitrary = Gen.fail("$woops").arbitrary();
                 final CheckResult result = new Property("test").forAll(arbitrary).suchThat(tautology()).check();
                 $assertThat(result.isErroneous()).isTrue();
                 $assertThat(result.isExhausted()).isFalse();
@@ -1367,7 +1368,7 @@ def generateTestClasses(): Unit = {
                 final Arbitrary<Integer> a1 = n -> random -> 1;
                 final Arbitrary<Integer> a2 = n -> random -> 2;
                 final CheckResult result = new Property("test").forAll(a1, a2).suchThat((a, b) -> {
-                    throw new RuntimeException("woops");
+                    throw new RuntimeException("$woops");
                 }).check();
                 $assertThat(result.isErroneous()).isTrue();
                 $assertThat(result.isExhausted()).isFalse();
@@ -1458,6 +1459,7 @@ def generateTestClasses(): Unit = {
         // test classes
         val test = im.getType("org.junit.Test")
         val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
+        val woops = "yay! (this is a negative test)"
 
         xs"""
           public class $className {
@@ -1498,7 +1500,7 @@ def generateTestClasses(): Unit = {
               @$test
               public void shouldCheckErroneousProperty$i() {
                   final Property.ForAll$i<$generics> forAll = new Property("test").forAll($arbitraries);
-                  final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> predicate = ($args) -> { throw new RuntimeException("woops"); };
+                  final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> predicate = ($args) -> { throw new RuntimeException("$woops"); };
                   final CheckResult result = forAll.suchThat(predicate).check();
                   $assertThat(result.isErroneous()).isTrue();
               }
@@ -1533,7 +1535,7 @@ def generateTestClasses(): Unit = {
 
               @$test
               public void shouldReturnErroneousProperty${i}CheckResultIfGenFails() {
-                  final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+                  final Arbitrary<Object> failingGen = Gen.fail("$woops").arbitrary();
                   final CheckResult result = new Property("test")
                       .forAll(failingGen${(i > 1).gen(s", $arbitrariesMinus1")})
                       .suchThat(($args) -> true)
@@ -1543,7 +1545,7 @@ def generateTestClasses(): Unit = {
 
               @$test
               public void shouldReturnErroneousProperty${i}CheckResultIfArbitraryFails() {
-                  final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+                  final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("$woops"); };
                   final CheckResult result = new Property("test")
                       .forAll(failingArbitrary${(i > 1).gen(s", $arbitrariesMinus1")})
                       .suchThat(($args) -> true)
