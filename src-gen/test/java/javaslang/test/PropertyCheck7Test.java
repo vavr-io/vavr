@@ -52,7 +52,7 @@ public class PropertyCheck7Test {
     @Test
     public void shouldCheckErroneousProperty7() {
         final Property.ForAll7<Object, Object, Object, Object, Object, Object, Object> forAll = new Property("test").forAll(OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS);
-        final CheckedFunction7<Object, Object, Object, Object, Object, Object, Object, Boolean> predicate = (o1, o2, o3, o4, o5, o6, o7) -> { throw new RuntimeException("woops"); };
+        final CheckedFunction7<Object, Object, Object, Object, Object, Object, Object, Boolean> predicate = (o1, o2, o3, o4, o5, o6, o7) -> { throw new RuntimeException("yay! (this is a negative test)"); };
         final CheckResult result = forAll.suchThat(predicate).check();
         assertThat(result.isErroneous()).isTrue();
     }
@@ -87,7 +87,7 @@ public class PropertyCheck7Test {
 
     @Test
     public void shouldReturnErroneousProperty7CheckResultIfGenFails() {
-        final Arbitrary<Object> failingGen = Gen.fail("woops").arbitrary();
+        final Arbitrary<Object> failingGen = Gen.fail("yay! (this is a negative test)").arbitrary();
         final CheckResult result = new Property("test")
             .forAll(failingGen, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS)
             .suchThat((o1, o2, o3, o4, o5, o6, o7) -> true)
@@ -97,7 +97,7 @@ public class PropertyCheck7Test {
 
     @Test
     public void shouldReturnErroneousProperty7CheckResultIfArbitraryFails() {
-        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("woops"); };
+        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("yay! (this is a negative test)"); };
         final CheckResult result = new Property("test")
             .forAll(failingArbitrary, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS)
             .suchThat((o1, o2, o3, o4, o5, o6, o7) -> true)

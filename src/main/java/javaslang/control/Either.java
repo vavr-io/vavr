@@ -139,6 +139,11 @@ public interface Either<L, R> {
             }
         }
 
+        @Override
+        public boolean isEmpty() {
+            return either.isRight();
+        }
+
         /**
          * Gets the Left value or an alternate value, if the projected Either is a Right.
          *
@@ -368,6 +373,11 @@ public interface Either<L, R> {
 
         private RightProjection(Either<L, R> either) {
             this.either = either;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return either.isLeft();
         }
 
         /**

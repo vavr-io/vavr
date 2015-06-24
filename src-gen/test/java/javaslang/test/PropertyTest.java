@@ -126,7 +126,7 @@ public class PropertyTest {
 
     @Test
     public void shouldRecognizeArbitraryError() {
-        final Arbitrary<?> arbitrary = n -> { throw new RuntimeException("woops"); };
+        final Arbitrary<?> arbitrary = n -> { throw new RuntimeException("yay! (this is a negative test)"); };
         final CheckResult result = new Property("test").forAll(arbitrary).suchThat(tautology()).check();
         assertThat(result.isErroneous()).isTrue();
         assertThat(result.isExhausted()).isFalse();
@@ -136,7 +136,7 @@ public class PropertyTest {
 
     @Test
     public void shouldRecognizeGenError() {
-        final Arbitrary<?> arbitrary = Gen.fail("woops").arbitrary();
+        final Arbitrary<?> arbitrary = Gen.fail("yay! (this is a negative test)").arbitrary();
         final CheckResult result = new Property("test").forAll(arbitrary).suchThat(tautology()).check();
         assertThat(result.isErroneous()).isTrue();
         assertThat(result.isExhausted()).isFalse();
@@ -149,7 +149,7 @@ public class PropertyTest {
         final Arbitrary<Integer> a1 = n -> random -> 1;
         final Arbitrary<Integer> a2 = n -> random -> 2;
         final CheckResult result = new Property("test").forAll(a1, a2).suchThat((a, b) -> {
-            throw new RuntimeException("woops");
+            throw new RuntimeException("yay! (this is a negative test)");
         }).check();
         assertThat(result.isErroneous()).isTrue();
         assertThat(result.isExhausted()).isFalse();

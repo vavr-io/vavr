@@ -115,6 +115,11 @@ public interface Arbitrary<T> extends TraversableOnce<T> {
     }
 
     @Override
+    default boolean isEmpty() {
+        return false;
+    }
+
+    @Override
     default Iterator<T> iterator() {
         return apply(Checkable.DEFAULT_SIZE).iterator();
     }

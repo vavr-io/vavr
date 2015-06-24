@@ -113,6 +113,37 @@ public class ProjectEulerTest {
     }
 
     /**
+     * <strong>Problem 4: Largest palindrome product</strong>
+     * A palindromic number reads the same both ways. The largest palindrome made
+     * from the product of two 2-digit numbers is 9009 = 91 × 99.
+     * <p>
+     * Find the largest palindrome made from the product of two 3-digit numbers.
+     * <p>
+     * See also <a href="https://projecteuler.net/problem=4">projecteuler.net problem 4</a>.
+     */
+    @Test
+    public void shouldSolveProblem4() {
+        assertThat(largestPalindromeOfProductsFromFactorsInRange(10, 99)).isEqualTo(9009);
+        assertThat(largestPalindromeOfProductsFromFactorsInRange(100, 999)).isEqualTo(906609);
+    }
+
+    private static int largestPalindromeOfProductsFromFactorsInRange(final int min, final int max) {
+        return Stream.rangeClosed(min, max)
+                .flatMap(i -> Stream.rangeClosed(i, max).map(j -> i * j))
+                .filter(ProjectEulerTest::isPalindrome)
+                .max().get();
+    }
+
+    private static boolean isPalindrome(int val) {
+        final String valAsString = Long.toString(val);
+        return valAsString.equals(reverse(valAsString));
+    }
+
+    private static String reverse(String s) {
+        return new StringBuilder(s).reverse().toString();
+    }
+
+    /**
      * <strong>Problem 7: 10001st prime</strong>
      * <p>By listing the first six prime numbers: 2, 3, 5, 7, 11, and 13, we can see that the 6th prime is 13.</p>
      * <p>What is the 10 001st prime number?</p>
