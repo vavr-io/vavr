@@ -133,6 +133,15 @@ public interface List<T> extends Seq<T>, Stack<T> {
             @SuppressWarnings("unchecked")
             final List<T> list = (List<T>) elements;
             return list;
+        } else if (elements instanceof ArrayList) {
+            @SuppressWarnings("unchecked")
+            final ArrayList<T> arrayList = (ArrayList<T>) elements;
+            List<T> result = Nil.instance();
+            for (int i = arrayList.size() - 1; i >= 0; i--) {
+                final T element = arrayList.get(i);
+                result = result.prepend(element);
+            }
+            return result;
         } else {
             List<T> result = Nil.instance();
             for (T element : elements) {
@@ -426,15 +435,11 @@ public interface List<T> extends Seq<T>, Stack<T> {
     @Override
     default Tuple2<List<T>, List<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        List<T> left = nil(), right = nil();
+        final java.util.List<T> left = new ArrayList<>(), right = new ArrayList<>();
         for (T t : this) {
-            if (predicate.test(t)) {
-                left = left.prepend(t);
-            } else {
-                right = right.prepend(t);
-            }
+            (predicate.test(t) ? left : right).add(t);
         }
-        return Tuple.of(left.reverse(), right.reverse());
+        return Tuple.of(List.ofAll(left), List.ofAll(right));
     }
 
     @Override
