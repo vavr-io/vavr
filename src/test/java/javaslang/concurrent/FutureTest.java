@@ -98,14 +98,6 @@ public class FutureTest {
     }
 
     @Test
-    @Ignore
-    public void massiveTest() throws InterruptedException, ExecutionException, TimeoutException {
-        for(int i = 0; i < 100; i++) {
-            traverseTest();
-        }
-    }
-
-    @Test
     public void traverseTest() throws InterruptedException, ExecutionException, TimeoutException {
         System.out.println("Starting FutureTest.traverseTest");
 
@@ -129,6 +121,30 @@ public class FutureTest {
         Thread.sleep(1000);
         System.out.println("Finished FutureTest.traverseTest");
 
+    }
+
+    @Test
+    public void callBackTest() throws InterruptedException, TimeoutException {
+        System.out.println("Starting FutureTest.callBackTest");
+
+        Random rand = new Random();
+        List<Integer> source = List.range(0, 100);
+
+        List<Future<Integer>> list = source.map(i -> new Future<Integer>(() -> {
+            int pauseTime = rand.nextInt(1000);
+            System.out.println("Pausing for " + pauseTime + " while calculating value: " + i);
+            Thread.sleep(pauseTime);
+            System.out.println("Finished calculating value: " + i);
+            return i;
+        })).map(f -> {
+            source.forEach(j ->
+                            f.onCompletedTry(t ->
+                                    System.out.println("Is success: " + t.isSuccess()))
+            );
+            return f;
+        });
+
+        Future.sequence(list).await(20, TimeUnit.SECONDS);
     }
 
 

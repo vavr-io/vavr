@@ -6,6 +6,9 @@
 package javaslang.concurrent;
 
 import javaslang.*;
+import javaslang.collection.List;
+import javaslang.control.*;
+import javaslang.control.Try.CheckedSupplier;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -14,19 +17,14 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import javaslang.collection.List;
-import javaslang.control.*;
-import javaslang.control.Try.CheckedSupplier;
-
 /**
  * Futures represent asynchronous computations that will result in a value at some unknown point in the future.
  * Methods on {@link Future} return new Futures that will perform their operations or call backs when the value is available.
  *
- * @see {@link Promise} if you want Futures that can be completed by some other method.
- *
  * @param <T> The type of this Future's eventual value.
- * @since 1.3.0
  * @author LordBlackhole
+ * @see {@link Promise} if you want Futures that can be completed by some other method.
+ * @since 1.3.0
  */
 public class Future<T> {
 
@@ -36,11 +34,12 @@ public class Future<T> {
 
     /**
      * Create a new Future based on a {@link java.util.concurrent.CompletableFuture}.
+     *
      * @param source A {@link java.util.concurrent.CompletableFuture} that will be wrapped up in this Future
      */
-    public Future(CompletableFuture<? extends T> source){
+    public Future(CompletableFuture<? extends T> source) {
         source.whenComplete((s, f) -> {
-            if(s != null)
+            if (s != null)
                 complete(new Success<>(s));
             else
                 complete(new Failure<>(f));
@@ -49,31 +48,34 @@ public class Future<T> {
 
     /**
      * Create a new Future who's value will be calculated asynchronously from the given {@link java.util.function.Supplier}
+     *
      * @param source A {@link java.util.function.Supplier} that will asynchronously provide the final value.
-     * @param ex An {@link java.util.concurrent.Executor} that will be used to calculate the value of the supplier and will serve
-     *           as the default Executor for all asynchronous methods on this Future.
+     * @param ex     An {@link java.util.concurrent.Executor} that will be used to calculate the value of the supplier and will serve
+     *               as the default Executor for all asynchronous methods on this Future.
      */
-    public Future(CheckedSupplier<T> source, Executor ex){
+    public Future(CheckedSupplier<T> source, Executor ex) {
         ex.execute(() -> complete(Try.of(source)));
     }
 
     /**
      * Create a new Future who's value will be calculated asynchronously from the given {@link java.util.function.Supplier}
+     *
      * @param source A {@link java.util.function.Supplier} that will asynchronously provide the final value.
      */
-    public Future(CheckedSupplier<T> source){
+    public Future(CheckedSupplier<T> source) {
         this(source, ForkJoinPool.commonPool());
     }
 
-    Future(){
+    Future() {
         //Should only be called from Promise
     }
 
     /**
      * A static form of {@link Future #new(CompletableFuture<T> source, Executor ex} and is identical.
+     *
      * @see {@link Future #new(CompletableFuture<T> source, Executor ex}
      */
-    public static <T> Future<T> of(CompletableFuture<? extends T> source){
+    public static <T> Future<T> of(CompletableFuture<? extends T> source) {
         return new Future<>(source);
     }
 
@@ -82,25 +84,32 @@ public class Future<T> {
      * Not recommended, as a thread must be used poll for a response.
      * Only use when necessary to bridge legacy apis that use {@link java.util.concurrent.Future}.
      * If there is any way to use a {@link Promise} instead, do that.
+     *
      * @param source A {@link java.util.concurrent.Future} to fulfil this Future.
-     * @param <T> The Type of both Futures.
+     * @param <T>    The Type of both Futures.
      * @return A new Future that will poll and wait for the result of the given {@link java.util.concurrent.Future}.
      */
-    public static <T> Future<T> of(java.util.concurrent.Future<T> source){
-        Promise<T> result = new Promise<>();
+    @SuppressWarnings("unchecked")
+    public static <T> Future<T> of(java.util.concurrent.Future<? extends T> source) {
+	    if(source instanceof   CompletableFuture)
+		    return new Future<>((CompletableFuture<T>) source);
+	    else {
+		    Promise<T> result = new Promise<>();
 
-        FutureConverter.instance().addFuture(source, result);
+		    FutureConverter.instance().addFuture(source, result);
 
-        return result.future();
+		    return result.future();
+	    }
     }
 
     /**
      * Create a new Future that is already finished with the given value.
+     *
      * @param obj A value to finish this new Future with.
      * @param <T> The type of obj.
      * @return A new pre-completed Future.
      */
-    public static <T> Future<T> completed(T obj){
+    public static <T> Future<T> completed(T obj) {
         Future<T> result = new Future<>();
 
         result.complete(new Success<>(obj));
@@ -110,11 +119,12 @@ public class Future<T> {
 
     /**
      * Create a new Future that is already finished with the given exception.
-     * @param t An exception to hold in this Future.
+     *
+     * @param t   An exception to hold in this Future.
      * @param <T> The type of the Future, always empty.
      * @return A new pre-failed Future.
      */
-    public static <T> Future<T> failed(Throwable t){
+    public static <T> Future<T> failed(Throwable t) {
         Future<T> result = new Future<>();
 
         result.complete(new Failure<>(t));
@@ -122,12 +132,24 @@ public class Future<T> {
         return result;
     }
 
-    synchronized void complete(Try<T> result){
-        if(value.isEmpty()){
+    synchronized void complete(Try<T> result) {
+        if (value.isEmpty()) {
             value = new Some<>(result);
             notifyAll();
-            callBacks.forEach(pair -> pair._1.execute(() -> pair._2.accept(result)));
-            //callBacks = null;
+
+            while (!callBacks.isEmpty()) {
+                Tuple2<Executor, Consumer<Try<T>>> pair = callBacks.poll();
+                pair._1.execute(() -> pair._2.accept(result));
+            }
+
+            //These lines were using in testing to ensure that no callBacks were slipping through.
+//            try {
+//                Thread.sleep(100);
+//            } catch (Throwable t){
+//                throw new RuntimeException(t);
+//            }
+//
+//            assert callBacks.isEmpty();
         }
         //TODO: else throw exception maybe?
     }
@@ -135,12 +157,13 @@ public class Future<T> {
     /**
      * Creates a new Future by applying a function to the successful result of this Future.
      * If this Future fails with an exception the resulting Future will contain the same exception instead.
+     *
      * @param func Function to apply to the result
-     * @param ex Executor to use for this operation. Becomes the default Executor for the resulting Future.
-     * @param <R> The result type of the Function
+     * @param ex   Executor to use for this operation. Becomes the default Executor for the resulting Future.
+     * @param <R>  The result type of the Function
      * @return A new Future who's value will be calculated with the supplied function once this Future's result is evaluated.
      */
-    public <R> Future<R> map(Function<? super T, ? extends R> func, Executor ex){
+    public <R> Future<R> map(Function<? super T, ? extends R> func, Executor ex) {
         Objects.requireNonNull(func, "func is null");
         Promise<R> result = new Promise<>();
 
@@ -152,23 +175,25 @@ public class Future<T> {
     /**
      * Creates a new Future by applying a function to the successful result of this Future.
      * If this Future fails with an exception the resulting Future will contain the same exception instead.
+     *
      * @param func Function to apply to the result
-     * @param <R> The result type of the Function
+     * @param <R>  The result type of the Function
      * @return A new Future who's value will be calculated with the supplied function once this Future's result is evaluated.
      */
-    public <R> Future<R> map(Function<? super T, ? extends R> func){
+    public <R> Future<R> map(Function<? super T, ? extends R> func) {
         return map(func, ForkJoinPool.commonPool());
     }
 
     /**
      * Creates a new Future by applying a function to the successful result of this Future and returning the value of that Future.
      * If this Future fails with an exception the resulting Future will contain the same exception instead.
+     *
      * @param func Function to apply to the result
-     * @param ex Executor to use for this operation. Becomes the default Executor for the resulting Future.
-     * @param <R> The result type of the Function
+     * @param ex   Executor to use for this operation. Becomes the default Executor for the resulting Future.
+     * @param <R>  The result type of the Function
      * @return A new Future who's value will be calculated with the supplied function once this Future's result is evaluated.
      */
-    public <R> Future<R> flatMap(Function<? super T, ? extends Future<R>> func, Executor ex){
+    public <R> Future<R> flatMap(Function<? super T, ? extends Future<R>> func, Executor ex) {
         Objects.requireNonNull(func, "func is null");
 
         Promise<R> result = new Promise<>();
@@ -181,23 +206,25 @@ public class Future<T> {
     /**
      * Creates a new Future by applying a function to the successful result of this Future and returning the value of that Future.
      * If this Future fails with an exception the resulting Future will contain the same exception instead.
+     *
      * @param func Function to apply to the result
-     * @param <R> The result type of the Function
+     * @param <R>  The result type of the Function
      * @return A new Future who's value will be calculated with the supplied function once this Future's result is evaluated.
      */
-    public <R> Future<R> flatMap(Function<? super T, ? extends Future<R>> func){
+    public <R> Future<R> flatMap(Function<? super T, ? extends Future<R>> func) {
         return flatMap(func, ForkJoinPool.commonPool());
     }
 
     /**
      * Creates a new Future by applying a function to the result of this Future.
      * Both input and output Try can contain success or failure, so it's possible to map success to failure or any other combination.
+     *
      * @param func Function to apply to the result
-     * @param ex Executor to use for this operation. Becomes the default Executor for the resulting Future.
-     * @param <R> The result type of the Function
+     * @param ex   Executor to use for this operation. Becomes the default Executor for the resulting Future.
+     * @param <R>  The result type of the Function
      * @return A new Future who's value will be calculated with the supplied function once this Future's result is evaluated.
      */
-    public <R> Future<R> mapTry(Function<? super Try<T>, ? extends Try<R>> func, Executor ex){
+    public <R> Future<R> mapTry(Function<? super Try<T>, ? extends Try<R>> func, Executor ex) {
         Objects.requireNonNull(func, "func is null");
         Promise<R> result = new Promise<>();
 
@@ -209,23 +236,25 @@ public class Future<T> {
     /**
      * Creates a new Future by applying a function to the result of this Future.
      * Both input and output Try can contain success or failure, so it's possible to map success to failure or any other combination.
+     *
      * @param func Function to apply to the result
-     * @param <R> The result type of the Function
+     * @param <R>  The result type of the Function
      * @return A new Future who's value will be calculated with the supplied function once this Future's result is evaluated.
      */
-    public <R> Future<R> mapTry(Function<? super Try<T>, ? extends Try<R>> func){
+    public <R> Future<R> mapTry(Function<? super Try<T>, ? extends Try<R>> func) {
         return mapTry(func, ForkJoinPool.commonPool());
     }
 
     /**
      * Creates a new Future by applying a function to the result of this Future.
      * Both input and output Try can contain success or failure, so it's possible to map success to failure or any other combination.
+     *
      * @param func Function to apply to the result
-     * @param ex Executor to use for this operation. Becomes the default Executor for the resulting Future.
-     * @param <R> The result type of the Function
+     * @param ex   Executor to use for this operation. Becomes the default Executor for the resulting Future.
+     * @param <R>  The result type of the Function
      * @return A new Future who's value will be calculated with the supplied function once this Future's result is evaluated.
      */
-    public <R> Future<R> flatMapTry(Function<? super Try<T>, ? extends Future<Try<R>>> func, Executor ex){
+    public <R> Future<R> flatMapTry(Function<? super Try<T>, ? extends Future<Try<R>>> func, Executor ex) {
         Objects.requireNonNull(func, "func is null");
         Promise<R> result = new Promise<>();
 
@@ -242,11 +271,12 @@ public class Future<T> {
     /**
      * Creates a new Future by applying a function to the result of this Future.
      * Both input and output Try can contain success or failure, so it's possible to map success to failure or any other combination.
+     *
      * @param func Function to apply to the result
-     * @param <R> The result type of the Function
+     * @param <R>  The result type of the Function
      * @return A new Future who's value will be calculated with the supplied function once this Future's result is evaluated.
      */
-    public <R> Future<R> flatMapTry(Function<? super Try<T>, ? extends Future<Try<R>>> func){
+    public <R> Future<R> flatMapTry(Function<? super Try<T>, ? extends Future<Try<R>>> func) {
         return flatMapTry(func, ForkJoinPool.commonPool());
     }
 
@@ -254,10 +284,11 @@ public class Future<T> {
      * Asynchronously processes the value in the future once the value becomes available.
      * Will not be called if the future fails.
      * Identical to {@link Future #onSuccess(Consumer<T> func, Executor ex)}.
+     *
      * @param func Function to be applied when the Future completes.
-     * @param ex Executor to use for this operation.
+     * @param ex   Executor to use for this operation.
      */
-    public void forEach(Consumer<? super T> func, Executor ex){
+    public void forEach(Consumer<? super T> func, Executor ex) {
         onSuccess(func, ex);
     }
 
@@ -265,9 +296,10 @@ public class Future<T> {
      * Asynchronously processes the value in the future once the value becomes available.
      * Will not be called if the future fails.
      * Identical to {@link Future #onSuccess(Consumer<T> func)}.
+     *
      * @param func Function to be applied when the Future completes.
      */
-    public void forEach(Consumer<? super T> func){
+    public void forEach(Consumer<? super T> func) {
         onSuccess(func);
     }
 
@@ -276,10 +308,11 @@ public class Future<T> {
      * The failed projection is a future holding a value of type Throwable.
      * It is completed with a value which is the throwable of the original future in case the original future is failed.
      * It is failed with a NoSuchElementException if the original future is completed successfully.
+     *
      * @param ex Executor to use for this operation. Becomes the default Executor for the resulting Future.
      * @return A failed projection of this future.
      */
-    public Future<Throwable> failed(Executor ex){
+    public Future<Throwable> failed(Executor ex) {
         Promise<Throwable> result = new Promise<>();
 
         onCompleted(t -> result.failure(new NoSuchElementException("Future was successful.")), result::success, ex);
@@ -292,18 +325,20 @@ public class Future<T> {
      * The failed projection is a future holding a value of type Throwable.
      * It is completed with a value which is the throwable of the original future in case the original future is failed.
      * It is failed with a NoSuchElementException if the original future is completed successfully.
+     *
      * @return A failed projection of this future.
      */
-    public Future<Throwable> failed(){
+    public Future<Throwable> failed() {
         return failed(ForkJoinPool.commonPool());
     }
 
     /**
      * Creates a new future that will handle any matching throwable that this future might contain.
+     *
      * @param func A Function to handle any exception and return some value.
-     * @param ex Executor to use for this operation. Becomes the default Executor for the resulting Future.
+     * @param ex   Executor to use for this operation. Becomes the default Executor for the resulting Future.
      */
-    public Future<T> recover(Function<? super Throwable, ? extends T> func, Executor ex){
+    public Future<T> recover(Function<? super Throwable, ? extends T> func, Executor ex) {
         Objects.requireNonNull(func, "func is null");
 
         Promise<T> result = new Promise<>();
@@ -315,18 +350,20 @@ public class Future<T> {
 
     /**
      * Creates a new future that will handle any matching throwable that this future might contain.
+     *
      * @param func A Function to handle any exception and return some value.
      */
-    public Future<T> recover(Function<? super Throwable, ? extends T> func){
+    public Future<T> recover(Function<? super Throwable, ? extends T> func) {
         return recover(func, ForkJoinPool.commonPool());
     }
 
     /**
      * Creates a new future that will handle any matching throwable that this future might contain.
+     *
      * @param func A Function to handle any exception and return some value.
-     * @param ex Executor to use for this operation. Becomes the default Executor for the resulting Future.
+     * @param ex   Executor to use for this operation. Becomes the default Executor for the resulting Future.
      */
-    public Future<T> recoverWith(Function<? super Throwable, ? extends Future<T>> func, Executor ex){
+    public Future<T> recoverWith(Function<? super Throwable, ? extends Future<T>> func, Executor ex) {
         Objects.requireNonNull(func, "func is null");
 
         Promise<T> result = new Promise<>();
@@ -342,19 +379,21 @@ public class Future<T> {
 
     /**
      * Creates a new future that will handle any matching throwable that this future might contain.
+     *
      * @param func A Function to handle any exception and return some value.
      */
-    public Future<T> recoverWith(Function<? super Throwable, ? extends Future<T>> func){
+    public Future<T> recoverWith(Function<? super Throwable, ? extends Future<T>> func) {
         return recoverWith(func, ForkJoinPool.commonPool());
     }
 
     /**
      * Asynchronously processes the value in the future once the value becomes available.
      * Will not be called if the future fails.
+     *
      * @param func Function to be applied when the Future completes.
-     * @param ex Executor to use for this operation.
+     * @param ex   Executor to use for this operation.
      */
-    public void onSuccess(Consumer<? super T> func, Executor ex){
+    public void onSuccess(Consumer<? super T> func, Executor ex) {
         Objects.requireNonNull(func, "func is null");
         onCompletedTry(r -> r.forEach(func), ex);
     }
@@ -362,19 +401,21 @@ public class Future<T> {
     /**
      * Asynchronously processes the value in the future once the value becomes available.
      * Will not be called if the future fails.
+     *
      * @param func Function to be applied when the Future completes.
      */
-    public void onSuccess(Consumer<? super T> func){
+    public void onSuccess(Consumer<? super T> func) {
         onSuccess(func, ForkJoinPool.commonPool());
     }
 
     /**
      * Asynchronously processes the exception in the future once the value becomes available.
      * Will not be called if the future does not throw an exception.
+     *
      * @param func Function to be applied if the Future fails.
-     * @param ex Executor to use for this operation.
+     * @param ex   Executor to use for this operation.
      */
-    public void onFailure(Consumer<Throwable> func, Executor ex){
+    public void onFailure(Consumer<Throwable> func, Executor ex) {
         Objects.requireNonNull(func, "func is null");
         onCompletedTry(r -> r.onFailure(func), ex);
     }
@@ -382,24 +423,26 @@ public class Future<T> {
     /**
      * Asynchronously processes the exception in the future once the value becomes available.
      * Will not be called if the future does not throw an exception.
+     *
      * @param func Function to be applied if the Future fails.
      */
-    public void onFailure(Consumer<Throwable> func){
+    public void onFailure(Consumer<Throwable> func) {
         onFailure(func, ForkJoinPool.commonPool());
     }
 
     /**
      * Asynchronously processes the value in the future once the value becomes available.
      * Will be called for success or failure.
+     *
      * @param func Function to be applied when the Future completes.
-     * @param ex Executor to use for this operation.
+     * @param ex   Executor to use for this operation.
      */
-    public void onCompletedTry(Consumer<Try<T>> func, Executor ex){
+    public void onCompletedTry(Consumer<Try<T>> func, Executor ex) {
         Objects.requireNonNull(func, "func is null");
         //TODO: Test the heck out this to make sure that the synchronization works properly.
-        if(value.isEmpty()){
-            synchronized (callBacks){
-                if(value.isEmpty()){
+        if (value.isEmpty()) {
+            synchronized (callBacks) {
+                if (value.isEmpty()) {
                     callBacks.add(Tuple.of(ex, func));
                     return;
                 }
@@ -413,20 +456,22 @@ public class Future<T> {
     /**
      * Asynchronously processes the value in the future once the value becomes available.
      * Will be called for success or failure.
+     *
      * @param func Function to be applied when the Future completes.
      */
-    public void onCompletedTry(Consumer<Try<T>> func){
+    public void onCompletedTry(Consumer<Try<T>> func) {
         onCompletedTry(func, ForkJoinPool.commonPool());
     }
 
     /**
      * Asynchronously processes the value in the future once the value becomes available.
      * Either success or failure will be called.
+     *
      * @param success Function to be applied if the Future completes successfully.
      * @param failure Function to be applied if the Future completes with an exception.
-     * @param ex Executor to use for this operation.
+     * @param ex      Executor to use for this operation.
      */
-    public void onCompleted(Consumer<? super T> success, Consumer<Throwable> failure, Executor ex){
+    public void onCompleted(Consumer<? super T> success, Consumer<Throwable> failure, Executor ex) {
         Objects.requireNonNull(success, "success is null");
         Objects.requireNonNull(failure, "failure is null");
         onCompletedTry(r -> {
@@ -438,10 +483,11 @@ public class Future<T> {
     /**
      * Asynchronously processes the value in the future once the value becomes available.
      * Either success or failure will be called.
+     *
      * @param success Function to be applied if the Future completes successfully.
      * @param failure Function to be applied if the Future completes with an exception.
      */
-    public void onCompleted(Consumer<? super T> success, Consumer<Throwable> failure){
+    public void onCompleted(Consumer<? super T> success, Consumer<Throwable> failure) {
         onCompleted(success, failure, ForkJoinPool.commonPool());
     }
 
@@ -449,11 +495,12 @@ public class Future<T> {
      * Creates a new Future by applying a predicate to the successful result of this Future.
      * If the value fails the test the resulting Future will contain a NoSuchElementException. Otherwise it will be the same value.
      * If this Future fails with an exception the resulting Future will contain the same exception instead.
+     *
      * @param func Function to apply to the result
-     * @param ex Executor to use for this operation. Becomes the default Executor for the resulting Future.
+     * @param ex   Executor to use for this operation. Becomes the default Executor for the resulting Future.
      * @return A new Future who's value will be calculated with the supplied function once this Future's result is evaluated.
      */
-    public Future<T> filter(Predicate<? super T> func, Executor ex){
+    public Future<T> filter(Predicate<? super T> func, Executor ex) {
         Objects.requireNonNull(func, "func is null");
 
         Promise<T> result = new Promise<>();
@@ -472,10 +519,11 @@ public class Future<T> {
      * Creates a new Future by applying a predicate to the successful result of this Future.
      * If the value fails the test the resulting Future will contain a NoSuchElementException. Otherwise it will be the same value.
      * If this Future fails with an exception the resulting Future will contain the same exception instead.
+     *
      * @param func Function to apply to the result
      * @return A new Future who's value will be calculated with the supplied function once this Future's result is evaluated.
      */
-    public Future<T> filter(Predicate<? super T> func){
+    public Future<T> filter(Predicate<? super T> func) {
         return filter(func, ForkJoinPool.commonPool());
     }
 
@@ -484,11 +532,12 @@ public class Future<T> {
      * This method allows one to enforce that the callbacks are executed in a specified order.
      * Note that if one of the chained andThen callbacks throws an exception, that exception is not propagated to the subsequent andThen callbacks.
      * Instead, the subsequent andThen callbacks are given the original value of this future.
+     *
      * @param func Function to apply to the result
-     * @param ex Executor to use for this operation. Becomes the default Executor for the resulting Future.
+     * @param ex   Executor to use for this operation. Becomes the default Executor for the resulting Future.
      * @return A new Future who's value will be calculated with the supplied function once this Future's result is evaluated.
      */
-    public Future<T> andThen(Consumer<? super Try<T>> func, Executor ex){
+    public Future<T> andThen(Consumer<? super Try<T>> func, Executor ex) {
         Objects.requireNonNull(func, "func is null");
 
         Promise<T> result = new Promise<>();
@@ -506,45 +555,47 @@ public class Future<T> {
      * This method allows one to enforce that the callbacks are executed in a specified order.
      * Note that if one of the chained andThen callbacks throws an exception, that exception is not propagated to the subsequent andThen callbacks.
      * Instead, the subsequent andThen callbacks are given the original value of this future.
+     *
      * @param func Function to apply to the result
      * @return A new Future who's value will be calculated with the supplied function once this Future's result is evaluated.
      */
-    public Future<T> andThen(Consumer<? super Try<T>> func){
+    public Future<T> andThen(Consumer<? super Try<T>> func) {
         return andThen(func, ForkJoinPool.commonPool());
     }
 
     /**
      * @return If this Future has finished.
      */
-    public boolean isCompleted(){
+    public boolean isCompleted() {
         return value.isDefined();
     }
 
     /**
      * @return If this Future has finished AND contains a Success.
      */
-    public boolean isSuccess(){
+    public boolean isSuccess() {
         return value.isDefined() && value.get().isSuccess();
     }
 
     /**
      * @return If this Future has finished AND contains a Failure.
      */
-    public boolean isFailure(){
+    public boolean isFailure() {
         return value.isDefined() && value.get().isFailure();
     }
 
     /**
      * @return The resulting value of this Future. Will be None until the Future finishes. After finishing, it will be a Some of either Success or Failure.
      */
-    public Option<Try<T>> value(){
+    public Option<Try<T>> value() {
         return value;
     }
 
     /**
      * Block and wait for this Future to finish. Not recommended.
+     *
      * @param timeOut Time to wait
-     * @param unit TimeUnit that timeOut is in.
+     * @param unit    TimeUnit that timeOut is in.
      * @return this, but after blocking until completed.
      * @throws InterruptedException
      * @throws TimeoutException
@@ -555,15 +606,16 @@ public class Future<T> {
         synchronized (this) {
             unit.timedWait(this, timeOut);
         }
-        if(!isCompleted())
+        if (!isCompleted())
             throw new TimeoutException("");
         return this;
     }
 
     /**
      * Block and wait for this Future to finish. Not recommended.
+     *
      * @param timeOut Time to wait
-     * @param unit TimeUnit that timeOut is in.
+     * @param unit    TimeUnit that timeOut is in.
      * @return The result value of this Future after blocking.
      * @throws InterruptedException
      * @throws TimeoutException
@@ -575,71 +627,72 @@ public class Future<T> {
 
     /**
      * Returns a new Future which will take the result of #that if and only if this Future fails.
+     *
      * @param that An alternative value.
      */
-    public Future<T> fallbackTo(Future<T> that){
+    public Future<T> fallbackTo(Future<T> that) {
         return recoverWith(t -> that);
     }
 
-    public static <T> Future<List<T>> sequence(Iterable<Future<T>> source, Executor ex){
+    public static <T> Future<List<T>> sequence(Iterable<Future<T>> source, Executor ex) {
         return List.ofAll(source)
-                .foldLeft(Future.completed(List.nil()), (accumulator, next) -> accumulator.flatMap(list -> next.map(list::append, ex), ex));
+		        .foldLeft(Future.completed(List.nil()), (accumulator, next) -> accumulator.flatMap(list -> next.map(list::append, ex), ex));
     }
 
-    public static <T> Future<List<T>> sequence(Iterable<Future<T>> source){
+    public static <T> Future<List<T>> sequence(Iterable<Future<T>> source) {
         return sequence(source, ForkJoinPool.commonPool());
     }
 
-    public static <T> Future<List<T>> traverse(Iterable<T> source, Function1<T, Future<T>> func, Executor ex){
+    public static <T> Future<List<T>> traverse(Iterable<T> source, Function1<T, Future<T>> func, Executor ex) {
         Objects.requireNonNull(func, "func is null");
         return sequence(List.ofAll(source).map(func), ex);
     }
 
-    public static <T> Future<List<T>> traverse(Iterable<T> source, Function1<T, Future<T>> func){
+    public static <T> Future<List<T>> traverse(Iterable<T> source, Function1<T, Future<T>> func) {
         return traverse(source, func, ForkJoinPool.commonPool());
     }
 
-    public static <T1> Future<Tuple1<T1>> sequence(Tuple1<Future<T1>> source){
+    public static <T1> Future<Tuple1<T1>> sequence(Tuple1<Future<T1>> source) {
         return source._1.map(Tuple1::new);
     }
 
-    public static <T1, T2> Future<Tuple2<T1, T2>> sequence(Tuple2<Future<T1>, Future<T2>> source){
+    public static <T1, T2> Future<Tuple2<T1, T2>> sequence(Tuple2<Future<T1>, Future<T2>> source) {
         return source._1.flatMap(v1 -> source._2.map(v2 -> new Tuple2<>(v1, v2)));
     }
 
-    public static <T1, T2, T3> Future<Tuple3<T1, T2, T3>> sequence(Tuple3<Future<T1>, Future<T2>, Future<T3>> source){
+    public static <T1, T2, T3> Future<Tuple3<T1, T2, T3>> sequence(Tuple3<Future<T1>, Future<T2>, Future<T3>> source) {
         return sequence(Tuple.of(sequence(Tuple.of(source._1, source._2)), source._3))
-                .map(nested -> Tuple.of(nested._1._1, nested._1._2, nested._2));
+		        .map(nested -> Tuple.of(nested._1._1, nested._1._2, nested._2));
 
     }
 
-    public static <T1, T2, T3, T4> Future<Tuple4<T1, T2, T3, T4>> sequence(Tuple4<Future<T1>, Future<T2>, Future<T3>, Future<T4>> source){
+    public static <T1, T2, T3, T4> Future<Tuple4<T1, T2, T3, T4>> sequence(Tuple4<Future<T1>, Future<T2>, Future<T3>, Future<T4>> source) {
         return sequence(Tuple.of(sequence(Tuple.of(source._1, source._2, source._3)), source._4))
-                .map(nested -> Tuple.of(nested._1._1, nested._1._2, nested._1._3, nested._2));
+		        .map(nested -> Tuple.of(nested._1._1, nested._1._2, nested._1._3, nested._2));
 
     }
 
-    public static <T1, T2, T3, T4, T5> Future<Tuple5<T1, T2, T3, T4, T5>> sequence(Tuple5<Future<T1>, Future<T2>, Future<T3>, Future<T4>, Future<T5>> source){
+    public static <T1, T2, T3, T4, T5> Future<Tuple5<T1, T2, T3, T4, T5>> sequence(Tuple5<Future<T1>, Future<T2>, Future<T3>, Future<T4>, Future<T5>> source) {
         return sequence(Tuple.of(sequence(Tuple.of(source._1, source._2, source._3, source._4)), source._5))
-                .map(nested -> Tuple.of(nested._1._1, nested._1._2, nested._1._3, nested._1._4, nested._2));
+		        .map(nested -> Tuple.of(nested._1._1, nested._1._2, nested._1._3, nested._1._4, nested._2));
 
     }
 
-    public static <T1, T2, T3, T4, T5, T6> Future<Tuple6<T1, T2, T3, T4, T5, T6>> sequence(Tuple6<Future<T1>, Future<T2>, Future<T3>, Future<T4>, Future<T5>, Future<T6>> source){
+    public static <T1, T2, T3, T4, T5, T6> Future<Tuple6<T1, T2, T3, T4, T5, T6>> sequence(Tuple6<Future<T1>, Future<T2>, Future<T3>, Future<T4>, Future<T5>, Future<T6>> source) {
         return sequence(Tuple.of(sequence(Tuple.of(source._1, source._2, source._3, source._4, source._5)), source._6))
-                .map(nested -> Tuple.of(nested._1._1, nested._1._2, nested._1._3, nested._1._4, nested._1._5, nested._2));
+		        .map(nested -> Tuple.of(nested._1._1, nested._1._2, nested._1._3, nested._1._4, nested._1._5, nested._2));
 
     }
 
-    public static <T1, T2, T3, T4, T5, T6, T7> Future<Tuple7<T1, T2, T3, T4, T5, T6, T7>> sequence(Tuple7<Future<T1>, Future<T2>, Future<T3>, Future<T4>, Future<T5>, Future<T6>, Future<T7>> source){
+    public static <T1, T2, T3, T4, T5, T6, T7> Future<Tuple7<T1, T2, T3, T4, T5, T6, T7>> sequence(Tuple7<Future<T1>, Future<T2>, Future<T3>, Future<T4>, Future<T5>, Future<T6>, Future<T7>> source) {
         return sequence(Tuple.of(sequence(Tuple.of(source._1, source._2, source._3, source._4, source._5, source._6)), source._7))
-                .map(nested -> Tuple.of(nested._1._1, nested._1._2, nested._1._3, nested._1._4, nested._1._5, nested._1._6, nested._2));
+		        .map(nested -> Tuple.of(nested._1._1, nested._1._2, nested._1._3, nested._1._4, nested._1._5, nested._1._6, nested._2));
     }
 
 
-    public static <T1, T2, T3, T4, T5, T6, T7, T8> Future<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> sequence(Tuple8<Future<T1>, Future<T2>, Future<T3>, Future<T4>, Future<T5>, Future<T6>, Future<T7>, Future<T8>> source){
+    public static <T1, T2, T3, T4, T5, T6, T7, T8> Future<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> sequence(Tuple8<Future<T1>, Future<T2>, Future<T3>, Future<T4>, Future<T5>, Future<T6>, Future<T7>, Future<T8>> source) {
         return sequence(Tuple.of(sequence(Tuple.of(source._1, source._2, source._3, source._4, source._5, source._6, source._7)), source._8))
-                .map(nested -> Tuple.of(nested._1._1, nested._1._2, nested._1._3, nested._1._4, nested._1._5, nested._1._6, nested._1._7, nested._2));
+		        .map(nested -> Tuple.of(nested._1._1, nested._1._2, nested._1._3, nested._1._4, nested._1._5, nested._1._6, nested._1._7, nested._2));
     }
 
     private static class FutureConverter {
@@ -648,16 +701,16 @@ public class Future<T> {
 
         private final Executor ex = Executors.newSingleThreadExecutor();
 
-        protected static FutureConverter instance(){
+        protected static FutureConverter instance() {
             return instance.get();
         }
 
-        protected <T> void addFuture(java.util.concurrent.Future<T> in, Promise<T> out){
+        protected <T> void addFuture(java.util.concurrent.Future<? extends T> in, Promise<T> out) {
             ex.execute(() -> {
-                if(in.isDone())
+                if (in.isDone())
                     try {
                         out.success(in.get());
-                    } catch (Throwable e){
+                    } catch (Throwable e) {
                         out.failure(e);
                     }
                 else {
@@ -667,8 +720,6 @@ public class Future<T> {
         }
 
     }
-
-
 
 
 }
