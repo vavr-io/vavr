@@ -133,12 +133,12 @@ public interface List<T> extends Seq<T>, Stack<T> {
             @SuppressWarnings("unchecked")
             final List<T> list = (List<T>) elements;
             return list;
-        } else if (elements instanceof ArrayList) {
+        } else if (elements instanceof ArrayList || elements instanceof Vector) {
             @SuppressWarnings("unchecked")
-            final ArrayList<T> arrayList = (ArrayList<T>) elements;
+            final java.util.List<T> indexedList = (java.util.List<T>) elements;
             List<T> result = Nil.instance();
-            for (int i = arrayList.size() - 1; i >= 0; i--) {
-                final T element = arrayList.get(i);
+            for (int i = indexedList.size() - 1; i >= 0; i--) {
+                final T element = indexedList.get(i);
                 result = result.prepend(element);
             }
             return result;
