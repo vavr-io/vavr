@@ -122,6 +122,9 @@ public interface List<T> extends Seq<T>, Stack<T> {
     /**
      * Creates a List of the given elements.
      *
+     * The resulting list has the same iteration order as the given iterable of elements
+     * if the iteration order of the elements is stable.
+     *
      * @param <T>      Component type of the List.
      * @param elements An Iterable of elements.
      * @return A list containing the given elements in the same order.
@@ -133,13 +136,19 @@ public interface List<T> extends Seq<T>, Stack<T> {
             @SuppressWarnings("unchecked")
             final List<T> list = (List<T>) elements;
             return list;
-        } else if (elements instanceof ArrayList || elements instanceof Vector) {
-            @SuppressWarnings("unchecked")
-            final java.util.List<T> indexedList = (java.util.List<T>) elements;
+        } else if (elements instanceof java.util.List<?>) {
             List<T> result = Nil.instance();
-            for (int i = indexedList.size() - 1; i >= 0; i--) {
-                final T element = indexedList.get(i);
-                result = result.prepend(element);
+            final java.util.List<? extends T> list = (java.util.List<? extends T>) elements;
+            final ListIterator<? extends T> iter = list.listIterator(list.size());
+            while (iter.hasPrevious()) {
+                result = result.prepend(iter.previous());
+            }
+            return result;
+        } else if (elements instanceof NavigableSet<?>) {
+            List<T> result = Nil.instance();
+            final Iterator<? extends T> iter = ((NavigableSet<? extends T>) elements).descendingIterator();
+            while (iter.hasNext()) {
+                result = result.prepend(iter.next());
             }
             return result;
         } else {
