@@ -158,8 +158,9 @@ public final class Success<T> implements Try<T>, Serializable {
     }
 
     @Override
-    public Try<Void> thenRun(CheckedConsumer<T> f) {
-        return flatMap(value -> Try.run(() -> f.accept(value)));
+    public Try<T> thenRun(CheckedConsumer<T> f) {
+        Try<Void> result = flatMap(value -> Try.run(() -> f.accept(value)));
+        return result.isSuccess() ? this : new Failure<T>(result.failed().get());
     }
 
     @Override

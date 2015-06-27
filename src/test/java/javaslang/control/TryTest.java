@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -51,7 +52,9 @@ public class TryTest {
 
     @Test
     public void shouldReturnFailureWhenFlatteningSuccessThrows() {
-        assertThat(new Success<>(1).flatten(ignored -> { throw new Error("error"); })).isEqualTo(new Failure<>(new Error("error")));
+        assertThat(new Success<>(1).flatten(ignored -> {
+            throw new Error("error");
+        })).isEqualTo(new Failure<>(new Error("error")));
     }
 
     // -- exists
@@ -73,7 +76,9 @@ public class TryTest {
 
     @Test(expected = Error.class)
     public void shouldNotHoldPropertyExistsWhenPredicateThrows() {
-        new Success<>(1).exists(e -> { throw new Error("error"); });
+        new Success<>(1).exists(e -> {
+            throw new Error("error");
+        });
     }
 
     // -- forall
@@ -351,6 +356,30 @@ public class TryTest {
                 .then(x -> x + 100)
                 .then(x -> Integer.parseInt("aaa") + x)   //Throws exception.
                 .then(x -> x / 2);
+
+        final Try<Integer> expected = new Failure<>(new NumberFormatException("For input string: \"aaa\""));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldChainConsumableSuccessWithThen() {
+        final Try<Integer> actual = Try.of(() -> new ArrayList<Integer>())
+                .thenRun(arr -> arr.add(10))
+                .thenRun(arr -> arr.add(30))
+                .thenRun(arr -> arr.add(20))
+                .then(arr -> arr.get(1));
+
+        final Try<Integer> expected = new Success<>(30);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldChainConsumableFailureWithThen() {
+        final Try<Integer> actual = Try.of(() -> new ArrayList<Integer>())
+                .thenRun(arr -> arr.add(10))
+                .thenRun(arr -> arr.add(Integer.parseInt("aaa"))) //Throws exception.
+                .thenRun(arr -> arr.add(20))
+                .then(arr -> arr.get(1));
 
         final Try<Integer> expected = new Failure<>(new NumberFormatException("For input string: \"aaa\""));
         assertThat(actual).isEqualTo(expected);

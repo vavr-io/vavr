@@ -276,7 +276,7 @@ public interface Try<T> extends TraversableOnce<T> {
      * @param f A checked consumer taking a single argument.
      * @return a new {@code Try}
      */
-    Try<Void> thenRun(CheckedConsumer<T> f);
+    Try<T> thenRun(CheckedConsumer<T> f);
 
     @Override
     boolean equals(Object o);
