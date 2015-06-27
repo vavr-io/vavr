@@ -261,7 +261,7 @@ public interface Try<T> extends TraversableOnce<T> {
      * Runs the given checked consumer if this is a {@code Success},
      * passing the result of the current expression to it.
      * If this expression is a {@code Failure} then it'll return a new
-     * {@code Failure} of type Void with the original exception.
+     * {@code Failure} of type T with the original exception.
      *
      * The main use case is chaining checked functions using method references:
      *
