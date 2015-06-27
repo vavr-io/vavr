@@ -328,7 +328,7 @@ public class TryTest {
     public void shouldComposeFailureWithAndThenWhenFailing() {
         final Try<Void> actual = Try.run(() -> {
             throw new Error("err1");
-        }).andThen(() -> {
+        }).then(() -> {
             throw new Error("err2");
         });
         final Try<Void> expected = new Failure<>(new Error("err1"));
@@ -338,8 +338,8 @@ public class TryTest {
     @Test
     public void shouldChainSuccessWithAndThen() {
         final Try<Integer> actual = Try.of(() -> 100)
-                .andThen(x -> x + 100)
-                .andThen(x -> x + 50);
+                .then(x -> x + 100)
+                .then(x -> x + 50);
 
         final Try<Integer> expected = new Success<>(250);
         assertThat(actual).isEqualTo(expected);
@@ -348,9 +348,9 @@ public class TryTest {
     @Test
     public void shouldChainFailureWithAndThen() {
         final Try<Integer> actual = Try.of(() -> 100)
-                .andThen(x -> x + 100)
-                .andThen(x -> Integer.parseInt("aaa") + x)   //Throws exception.
-                .andThen(x -> x / 2);
+                .then(x -> x + 100)
+                .then(x -> Integer.parseInt("aaa") + x)   //Throws exception.
+                .then(x -> x / 2);
 
         final Try<Integer> expected = new Failure<>(new NumberFormatException("For input string: \"aaa\""));
         assertThat(actual).isEqualTo(expected);
@@ -543,7 +543,7 @@ public class TryTest {
     @Test
     public void shouldComposeSuccessWithAndThenWhenFailing() {
         final Try<Void> actual = Try.run(() -> {
-        }).andThen(() -> {
+        }).then(() -> {
             throw new Error("failure");
         });
         final Try<Void> expected = new Failure<>(new Error("failure"));
@@ -553,7 +553,7 @@ public class TryTest {
     @Test
     public void shouldComposeSuccessWithAndThenWhenSucceeding() {
         final Try<Void> actual = Try.run(() -> {
-        }).andThen(() -> {
+        }).then(() -> {
         });
         final Try<Void> expected = new Success<>(null);
         assertThat(actual).isEqualTo(expected);

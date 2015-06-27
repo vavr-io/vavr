@@ -208,7 +208,7 @@ public interface Try<T> extends TraversableOnce<T> {
      *
      * <pre>
      * <code>
-     * Try.run(A::methodRef).andThen(B::methodRef).andThen(C::methodRef);
+     * Try.run(A::methodRef).then(B::methodRef).then(C::methodRef);
      * </code>
      * </pre>
      *
@@ -217,8 +217,8 @@ public interface Try<T> extends TraversableOnce<T> {
      * <pre>
      * <code>
      * Try.run(() -&gt; { doStuff(); })
-     *    .andThen(() -&gt; { doMoreStuff(); })
-     *    .andThen(() -&gt; { doEvenMoreStuff(); });
+     *    .then(() -&gt; { doMoreStuff(); })
+     *    .then(() -&gt; { doEvenMoreStuff(); });
      *
      * Try.run(() -&gt; {
      *     doStuff();
@@ -231,7 +231,7 @@ public interface Try<T> extends TraversableOnce<T> {
      * @param runnable A checked runnable
      * @return a new {@code Try}
      */
-    default Try<Void> andThen(CheckedRunnable runnable) {
+    default Try<Void> then(CheckedRunnable runnable) {
         return flatMap(ignored -> Try.run(runnable));
     }
 
@@ -246,8 +246,8 @@ public interface Try<T> extends TraversableOnce<T> {
      * <pre>
      * <code>
      * Try.of(() -&gt; 100)
-     *    .andThen(x -&gt; x + 100)
-     *    .andThen(x -&gt; x * 20);
+     *    .then(x -&gt; x + 100)
+     *    .then(x -&gt; x * 20);
      *
      * </code>
      * </pre>
@@ -255,7 +255,28 @@ public interface Try<T> extends TraversableOnce<T> {
      * @param f A checked function taking a single argument.
      * @return a new {@code Try}
      */
-    <R> Try<R> andThen(CheckedFunction1<T, R> f);
+    <R> Try<R> then(CheckedFunction1<T, R> f);
+
+    /**
+     * Runs the given checked consumer if this is a {@code Success},
+     * passing the result of the current expression to it.
+     * If this expression is a {@code Failure} then it'll return a new
+     * {@code Failure} of type Void with the original exception.
+     *
+     * The main use case is chaining checked functions using method references:
+     *
+     * <pre>
+     * <code>
+     * Try.of(() -&gt; 100)
+     *    .thenRun(i -&gt; System.out.println(i));
+     *
+     * </code>
+     * </pre>
+     *
+     * @param f A checked consumer taking a single argument.
+     * @return a new {@code Try}
+     */
+    Try<Void> thenRun(CheckedConsumer<T> f);
 
     @Override
     boolean equals(Object o);
@@ -278,6 +299,22 @@ public interface Try<T> extends TraversableOnce<T> {
          * @throws Throwable if an error occurs
          */
         void run() throws Throwable;
+    }
+
+    /**
+     * A {@linkplain java.util.function.Consumer} which may throw.
+     *
+     * @param <R> the type of value supplied to this consumer.
+     */
+    @FunctionalInterface
+    interface CheckedConsumer<R> {
+
+        /**
+         * Performs side-effects.
+         *
+         * @throws Throwable if an error occurs
+         */
+        void accept(R value) throws Throwable;
     }
 
     /**
