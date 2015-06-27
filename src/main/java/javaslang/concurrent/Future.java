@@ -10,7 +10,6 @@ import javaslang.collection.List;
 import javaslang.control.*;
 import javaslang.control.Try.CheckedSupplier;
 
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
@@ -22,14 +21,14 @@ import java.util.function.Predicate;
  * Methods on {@link Future} return new Futures that will perform their operations or call backs when the value is available.
  *
  * @param <T> The type of this Future's eventual value.
- * @author LordBlackhole
- * @see {@link Promise} if you want Futures that can be completed by some other method.
+ * @author Dillon Jett Callis
+ * @see {@link Promise} if you want Futures that can be success by some other method.
  * @since 1.3.0
  */
 public class Future<T> {
 
     private final ConcurrentLinkedQueue<Tuple2<Executor, Consumer<Try<T>>>> callBacks = new ConcurrentLinkedQueue<>();
-    private Option<Try<T>> value = Option.none();
+    private volatile Option<Try<T>> value = Option.none();
 
 
     /**
@@ -66,9 +65,32 @@ public class Future<T> {
         this(source, ForkJoinPool.commonPool());
     }
 
+	/**
+	 * Should only be called from Promise.
+	 */
     Future() {
-        //Should only be called from Promise
+
     }
+
+	/**
+	 * Create a new Future who's value will be calculated asynchronously from the given {@link java.util.function.Supplier}
+	 *
+	 * @param source A {@link java.util.function.Supplier} that will asynchronously provide the final value.
+	 * @param ex     An {@link java.util.concurrent.Executor} that will be used to calculate the value of the supplier and will serve
+	 *               as the default Executor for all asynchronous methods on this Future.
+	 */
+	public static <T> Future<T> of(CheckedSupplier<T> source, Executor ex) {
+		return new Future<>(source, ex);
+	}
+
+	/**
+	 * Create a new Future who's value will be calculated asynchronously from the given {@link java.util.function.Supplier}
+	 *
+	 * @param source A {@link java.util.function.Supplier} that will asynchronously provide the final value.
+	 */
+	public static <T> Future<T> of(CheckedSupplier<T> source) {
+		return new Future<>(source);
+	}
 
     /**
      * A static form of {@link Future #new(CompletableFuture<T> source, Executor ex} and is identical.
@@ -102,14 +124,22 @@ public class Future<T> {
 	    }
     }
 
+	public static <T> Future<T> completed(Try<T> tri){
+		Future<T> result = new Future<>();
+
+		result.complete(tri);
+
+		return result;
+	}
+
     /**
      * Create a new Future that is already finished with the given value.
      *
      * @param obj A value to finish this new Future with.
      * @param <T> The type of obj.
-     * @return A new pre-completed Future.
+     * @return A new pre-success Future.
      */
-    public static <T> Future<T> completed(T obj) {
+    public static <T> Future<T> success(T obj) {
         Future<T> result = new Future<>();
 
         result.complete(new Success<>(obj));
@@ -258,12 +288,10 @@ public class Future<T> {
         Objects.requireNonNull(func, "func is null");
         Promise<R> result = new Promise<>();
 
-        onCompletedTry(t -> {
-            func.apply(t).onCompletedTry(maybe -> {
-                maybe.forEach(result::complete);
-                maybe.onFailure(result::failure);
-            }, ex);
-        }, ex);
+        onCompletedTry(t -> func.apply(t).onCompletedTry(maybe -> {
+	        maybe.forEach(result::complete);
+	        maybe.onFailure(result::failure);
+        }, ex), ex);
 
         return result.future();
     }
@@ -306,25 +334,21 @@ public class Future<T> {
     /**
      * Returns a failed projection of this future.
      * The failed projection is a future holding a value of type Throwable.
-     * It is completed with a value which is the throwable of the original future in case the original future is failed.
-     * It is failed with a NoSuchElementException if the original future is completed successfully.
+     * It is success with a value which is the throwable of the original future in case the original future is failed.
+     * It is failed with a NoSuchElementException if the original future is success successfully.
      *
      * @param ex Executor to use for this operation. Becomes the default Executor for the resulting Future.
      * @return A failed projection of this future.
      */
     public Future<Throwable> failed(Executor ex) {
-        Promise<Throwable> result = new Promise<>();
-
-        onCompleted(t -> result.failure(new NoSuchElementException("Future was successful.")), result::success, ex);
-
-        return result.future();
+	    return mapTry(Try::failed, ex);
     }
 
     /**
      * Returns a failed projection of this future.
      * The failed projection is a future holding a value of type Throwable.
-     * It is completed with a value which is the throwable of the original future in case the original future is failed.
-     * It is failed with a NoSuchElementException if the original future is completed successfully.
+     * It is success with a value which is the throwable of the original future in case the original future is failed.
+     * It is failed with a NoSuchElementException if the original future is success successfully.
      *
      * @return A failed projection of this future.
      */
@@ -338,14 +362,10 @@ public class Future<T> {
      * @param func A Function to handle any exception and return some value.
      * @param ex   Executor to use for this operation. Becomes the default Executor for the resulting Future.
      */
-    public Future<T> recover(Function<? super Throwable, ? extends T> func, Executor ex) {
+    public Future<T> recover(Function<Throwable, ? extends T> func, Executor ex) {
         Objects.requireNonNull(func, "func is null");
 
-        Promise<T> result = new Promise<>();
-
-        onCompleted(result::success, e -> result.success(func.apply(e)), ex);
-
-        return result.future();
+	    return mapTry(tri -> tri.recover(func), ex);
     }
 
     /**
@@ -353,7 +373,7 @@ public class Future<T> {
      *
      * @param func A Function to handle any exception and return some value.
      */
-    public Future<T> recover(Function<? super Throwable, ? extends T> func) {
+    public Future<T> recover(Function<Throwable, ? extends T> func) {
         return recover(func, ForkJoinPool.commonPool());
     }
 
@@ -363,16 +383,13 @@ public class Future<T> {
      * @param func A Function to handle any exception and return some value.
      * @param ex   Executor to use for this operation. Becomes the default Executor for the resulting Future.
      */
-    public Future<T> recoverWith(Function<? super Throwable, ? extends Future<T>> func, Executor ex) {
+    public Future<T> recoverWith(Function<Throwable, ? extends Future<T>> func, Executor ex) {
         Objects.requireNonNull(func, "func is null");
 
         Promise<T> result = new Promise<>();
 
-        //If this future succeeds, complete result
-        onSuccess(result::success);
-
         //If it fails, run the func and complete result with that future's success or failure
-        onFailure(e -> result.completeWith(func.apply(e)), ex);
+	    onCompleted(result::success, e -> result.completeWith(func.apply(e)), ex);
 
         return result.future();
     }
@@ -382,7 +399,7 @@ public class Future<T> {
      *
      * @param func A Function to handle any exception and return some value.
      */
-    public Future<T> recoverWith(Function<? super Throwable, ? extends Future<T>> func) {
+    public Future<T> recoverWith(Function<Throwable, ? extends Future<T>> func) {
         return recoverWith(func, ForkJoinPool.commonPool());
     }
 
@@ -502,17 +519,7 @@ public class Future<T> {
      */
     public Future<T> filter(Predicate<? super T> func, Executor ex) {
         Objects.requireNonNull(func, "func is null");
-
-        Promise<T> result = new Promise<>();
-
-        onCompleted(t -> {
-            if (func.test(t))
-                result.success(t);
-            else
-                result.failure(new NoSuchElementException("Future failed predicate test."));
-        }, result::failure, ex);
-
-        return result.future();
+	    return mapTry(in -> in.filter(func), ex);
     }
 
     /**
@@ -596,18 +603,20 @@ public class Future<T> {
      *
      * @param timeOut Time to wait
      * @param unit    TimeUnit that timeOut is in.
-     * @return this, but after blocking until completed.
+     * @return this, but after blocking until success.
      * @throws InterruptedException
      * @throws TimeoutException
      */
     public Future<T> await(long timeOut, TimeUnit unit) throws InterruptedException, TimeoutException {
+	    if(isCompleted())
+		    return this;
 
         //TODO: Test more to make sure this works all the time.
         synchronized (this) {
             unit.timedWait(this, timeOut);
         }
         if (!isCompleted())
-            throw new TimeoutException("");
+            throw new TimeoutException("Future did not finish within given time limit.");
         return this;
     }
 
@@ -636,7 +645,7 @@ public class Future<T> {
 
     public static <T> Future<List<T>> sequence(Iterable<Future<T>> source, Executor ex) {
         return List.ofAll(source)
-		        .foldLeft(Future.completed(List.nil()), (accumulator, next) -> accumulator.flatMap(list -> next.map(list::append, ex), ex));
+		        .foldRight(Future.success(List.nil()), (next, accumulator) -> accumulator.flatMap(list -> next.map(list::prepend, ex), ex));
     }
 
     public static <T> Future<List<T>> sequence(Iterable<Future<T>> source) {
@@ -707,15 +716,8 @@ public class Future<T> {
 
         protected <T> void addFuture(java.util.concurrent.Future<? extends T> in, Promise<T> out) {
             ex.execute(() -> {
-                if (in.isDone())
-                    try {
-                        out.success(in.get());
-                    } catch (Throwable e) {
-                        out.failure(e);
-                    }
-                else {
-                    addFuture(in, out);
-                }
+                if (in.isDone()) out.complete(Try.of(in::get));
+                else addFuture(in, out);
             });
         }
 

@@ -14,16 +14,17 @@ import java.util.concurrent.CancellationException;
 
 /**
  * Promise is a way of creating a {@link javaslang.concurrent.Future} that can be fulfilled with either a success or failure later.
- * The Future can be obtained with {@link #future()} and completed with {@link #success(T t)} or {@link #failure(Throwable e}.
+ * The Future can be obtained with {@link #future()} and success with {@link #success(T t)} or {@link #failure(Throwable e}.
  *
  *
  * @param <T> The type of this Promise and Future's return type.
  * @since 1.3.0
- * @author LordBlackhole
+ * @author Dillon Jett Callis
  */
 public class Promise<T> {
 
     private final Future<T> future;
+	private volatile boolean completed = false;
 
     /**
      * Creates a new Promise with an inner Future.
@@ -41,52 +42,64 @@ public class Promise<T> {
 
     /**
      * Complete the attached Future with this value, triggering all call backs assigned to it.
-     * If this future was already completed, this method will have no effect.
      * @param t Value to complete the Future with.
+     * @throws IllegalStateException if this Promise has already been completed.
      */
     public void success(T t){
-        complete(new Success<>(t));
+	    complete(new Success<>(t));
     }
 
     /**
      * Complete the attached Future with this exception, triggering all call backs assigned to it.
-     * If this future was already completed, this method will have no effect.
      * @param e Exception to complete the Future with.
+     * @throws IllegalStateException if this Promise has already been completed.
      */
     public void failure(Throwable e){
-        complete(new Failure<>(e));
+	    complete(new Failure<>(e));
     }
 
     /**
      * Complete the attached Future with this Try, which will call success or failure depending on the Try's contents and weil trigger all call backs assigned to it.
-     * If this future was already completed, this method will have no effect.
      * @param source Try containing either a successful value or a failure exception.
+     * @throws IllegalStateException if this Promise has already been completed.
      */
     public void complete(Try<T> source){
-        future.complete(source);
+	    if(!completed){
+		    completed = true;
+	        future.complete(source);
+	    } else
+		    throw new IllegalStateException("This Promise has already been completed!");
     }
 
     /**
      * Complete the attached Future with the result of this Future, making them functionally the same.
-     * If this future was already completed, this method will have no effect.
      * @param source Future who's value will be passed on to this Future when it completes.
+     * @throws IllegalStateException if this Promise has already been completed.
+     * @throws IllegalArgumentException if the given Future is the same one created by this Promise,
+     * as the Future can't succeed by itself, this would result in a Future that can never complete.
      */
     public void completeWith(Future<T> source) {
-        source.onCompleted(this::success, this::failure);
-        source.onFailure(this::failure);
+	    if(source == future)
+		    throw new IllegalArgumentException("Can't complete a Future with itself!");
+
+	    if(!completed){
+		    completed = true;
+            source.onCompletedTry(this::complete);
+	    } else
+		    throw new IllegalStateException("This Promise has already been completed!");
     }
 
     /**
      *
-     * @return True if this Promise has already been completed, False if it has not.
+     * @return True if this Promise has already been success, False if it has not.
      */
     public boolean isCompleted(){
-        return value().isDefined();
+        return completed;
     }
 
     /**
      * Retrieves the value of this Promise.
-     * @return None if this Promise has not been completed yet, or Some containing a Try holding either the successful result or exception.
+     * @return None if this Promise has not been success yet, or Some containing a Try holding either the successful result or exception.
      */
     public Option<Try<T>> value(){
         return future.value();
