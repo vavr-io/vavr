@@ -181,6 +181,8 @@ public class Future<T> {
 //
 //            assert callBacks.isEmpty();
         }
+	    else
+	        throw new IllegalStateException("This Future has already been completed!");
         //TODO: else throw exception maybe?
     }
 

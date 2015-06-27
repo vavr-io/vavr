@@ -83,7 +83,6 @@ public class Promise<T> {
 		    throw new IllegalArgumentException("Can't complete a Future with itself!");
 
 	    if(!completed){
-		    completed = true;
             source.onCompletedTry(this::complete);
 	    } else
 		    throw new IllegalStateException("This Promise has already been completed!");
