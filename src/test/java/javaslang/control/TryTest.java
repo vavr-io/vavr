@@ -358,6 +358,30 @@ public class TryTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    @Test
+    public void shouldChainConsumableSuccessWithAndThen() {
+        final Try<Integer> actual = Try.of(() -> new ArrayList<Integer>())
+                .andThen(arr -> arr.add(10))
+                .andThen(arr -> arr.add(30))
+                .andThen(arr -> arr.add(20))
+                .mapTry(arr -> arr.get(1));
+
+        final Try<Integer> expected = new Success<>(30);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldChainConsumableFailureWithAndThen() {
+        final Try<Integer> actual = Try.of(() -> new ArrayList<Integer>())
+                .andThen(arr -> arr.add(10))
+                .andThen(arr -> arr.add(Integer.parseInt("aaa"))) //Throws exception.
+                .andThen(arr -> arr.add(20))
+                .mapTry(arr -> arr.get(1));
+
+        final Try<Integer> expected = new Failure<>(new NumberFormatException("For input string: \"aaa\""));
+        assertThat(actual).isEqualTo(expected);
+    }
+
     // peek
 
     @Test

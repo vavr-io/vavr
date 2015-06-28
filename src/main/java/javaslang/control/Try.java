@@ -255,7 +255,28 @@ public interface Try<T> extends TraversableOnce<T> {
      * @param f A checked function taking a single argument.
      * @return a new {@code Try}
      */
-    <R> Try<R> mapTry(CheckedFunction1<T, R> f);
+    <R> Try<R> mapTry(CheckedFunction1<? super T, ? extends R> f);
+
+    /**
+     * Runs the given checked consumer if this is a {@code Success},
+     * passing the result of the current expression to it.
+     * If this expression is a {@code Failure} then it'll return a new
+     * {@code Failure} of type Void with the original exception.
+     *
+     * The main use case is chaining checked functions using method references:
+     *
+     * <pre>
+     * <code>
+     * Try.of(() -&gt; 100)
+     *    .andThen(i -&gt; System.out.println(i));
+     *
+     * </code>
+     * </pre>
+     *
+     * @param consumer A checked consumer taking a single argument.
+     * @return a new {@code Try}
+     */
+    Try<T> andThen(CheckedConsumer<? super T> consumer);
 
     @Override
     boolean equals(Object o);
