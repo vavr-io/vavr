@@ -5,12 +5,15 @@
  */
 package javaslang;
 
+import javaslang.collection.List;
 import javaslang.control.Try;
 
 import java.io.Serializable;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * <p>
@@ -116,6 +119,7 @@ public interface λ<R> extends Serializable {
      * @return A {@link java.lang.invoke.MethodType}
      */
     default MethodType getType() {
-        return λ.getLambdaSignature(this);
+        final MethodType methodType = λ.getLambdaSignature(this);
+        return methodType.dropParameterTypes(0, methodType.parameterCount() - arity());
     }
 }

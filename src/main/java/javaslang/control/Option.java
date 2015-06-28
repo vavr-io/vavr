@@ -205,10 +205,10 @@ public interface Option<T> extends TraversableOnce<T> {
 
     @Override
     default Iterator<T> iterator() {
-        if (isDefined()) {
-            return Collections.singleton(get()).iterator();
-        } else {
+        if (isEmpty()) {
             return Collections.emptyIterator();
+        } else {
+            return Collections.singleton(get()).iterator();
         }
     }
 

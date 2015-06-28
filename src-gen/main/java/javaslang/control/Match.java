@@ -10,14 +10,18 @@ package javaslang.control;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import java.io.Serializable;
-import java.lang.invoke.MethodType;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import javaslang.Function1;
 import javaslang.Lazy;
 import javaslang.collection.List;
+import javaslang.collection.TraversableOnce;
 
 /**
  * {@code Match} is a better switch for Java. Some characteristics of {@code Match} are:
@@ -64,6 +68,16 @@ public interface Match<R> extends Function<Object, R> {
      */
     @Override
     R apply(Object o);
+
+    /**
+     * Creates a type-safe match by fixating the value to be matched.
+     * 
+     * @param value the value to be matched
+     * @return a new type-safe match builder
+     */
+    static <T> SafeMatch.Of<T> of(T value) {
+        return new SafeMatch.Of<>(value);
+    }
 
     /**
      * Specifies the type of the match expression. In many cases it is not necessary to call {@code as}. This
@@ -479,9 +493,7 @@ public interface Match<R> extends Function<Object, R> {
         }
 
         private static <T, R> Function<Object, Option<R>> when(Option<T> prototype, Function1<T, ? extends R> function) {
-            final MethodType type = function.getType();
-            // the compiler may add additional parameters to the lambda, our parameter is the last one
-            final Class<?> parameterType = type.parameterType(type.parameterCount() - 1);
+            final Class<?> parameterType = function.getType().parameterType(0);
             return when(prototype, function, parameterType);
         }
 
@@ -633,6 +645,267 @@ public interface Match<R> extends Function<Object, R> {
              */
             @SuppressWarnings("overloads")
             HasCases<R> when(ShortFunction<? extends R> function);
+        }
+    }
+
+    // intentionally not made Serializable
+    // TODO: generate when() for primitive lambda types
+    interface SafeMatch<T, R> extends TraversableOnce<R> {
+
+        <U extends T> SafeMatch<T, R> when(Function1<? super U, ? extends R> f);
+
+        <U extends T> SafeMatch<T, R> when(U protoType, Function1<? super U, ? extends R> f);
+
+        <U> SafeMatch<T, U> flatMap(Function<? super R, ? extends SafeMatch<T, U>> mapper);
+
+        <U> SafeMatch<T, U> flatten(Function<? super R, ? extends SafeMatch<T, U>> f);
+
+        SafeMatch<T, R> peek(Consumer<? super R> action);
+
+        <U> SafeMatch<T, U> map(Function<? super R, ? extends U> mapper);
+
+        final class Of<T> {
+
+            private final T value;
+
+            private Of(T value) {
+                this.value = value;
+            }
+
+            public <R> Typed<T, R> as(Class<R> resultType) {
+                Objects.requireNonNull(resultType, "resultType is null");
+                return new Typed<>(value);
+            }
+
+            @SuppressWarnings("unchecked")
+            public <U extends T, R> SafeMatch<T, R> when(Function1<? super U, ? extends R> f) {
+                Objects.requireNonNull(f, "f is null");
+                final Class<?> paramType = f.getType().parameterType(0);
+                return matches(value, paramType) ? new Matched<>(f.apply((U) value)) : new Unmatched<>(value);
+            }
+
+            @SuppressWarnings("unchecked")
+            public <U extends T, R> SafeMatch<T, R> when(U protoType, Function1<? super U, ? extends R> f) {
+                Objects.requireNonNull(protoType, "protoType is null");
+                Objects.requireNonNull(f, "f is null");
+                return Objects.equals(value, protoType) ? new Matched<>(f.apply((U) value)) : new Unmatched<>(value);
+            }
+
+            // method declared here because Java 8 does not support private interface methods
+            private static boolean matches(Object obj, Class<?> type) {
+                return obj != null && type.isAssignableFrom(obj.getClass());
+            }
+        }
+
+        final class Typed<T, R> {
+
+            private final T value;
+
+            private Typed(T value) {
+                this.value = value;
+            }
+
+            @SuppressWarnings("unchecked")
+            public <U extends T> SafeMatch<T, R> when(Function1<? super U, ? extends R> f) {
+                Objects.requireNonNull(f, "f is null");
+                final Class<?> paramType = f.getType().parameterType(0);
+                return Of.matches(value, paramType) ? new Matched<>(f.apply((U) value)) : new Unmatched<>(value);
+            }
+
+            @SuppressWarnings("unchecked")
+            public <U extends T> SafeMatch<T, R> when(U protoType, Function1<? super U, ? extends R> f) {
+                Objects.requireNonNull(protoType, "protoType is null");
+                Objects.requireNonNull(f, "f is null");
+                return Objects.equals(value, protoType) ? new Matched<>(f.apply((U) value)) : new Unmatched<>(value);
+            }
+        }
+
+        final class Matched<T, R> implements SafeMatch<T, R> {
+
+            private final R result;
+
+            private Matched(R result) {
+                this.result = result;
+            }
+
+            @Override
+            public <U extends T> Matched<T, R> when(Function1<? super U, ? extends R> f) {
+                // fast forward / no argument checks
+                return this;
+            }
+
+            @Override
+            public <U extends T> SafeMatch<T, R> when(U protoType, Function1<? super U, ? extends R> f) {
+                // fast forward / no argument checks
+                return this;
+            }
+
+            public R get() {
+                return result;
+            }
+
+            public R orElse(R other) {
+                return result;
+            }
+
+            public R orElseGet(Supplier<? extends R> other) {
+                return result;
+            }
+
+            public <X extends Throwable> R orElseThrow(Supplier<X> exceptionSupplier) throws X {
+                return result;
+            }
+
+            public Option<R> toOption() {
+                return new Some<>(result);
+            }
+
+            public Optional<R> toJavaOptional() {
+                return Optional.ofNullable(result); // caution: may be empty if result is null
+            }
+
+            @Override
+            public <U> SafeMatch<T, U> flatMap(Function<? super R, ? extends SafeMatch<T, U>> mapper) {
+                return mapper.apply(result);
+            }
+
+            @Override
+            public <U> SafeMatch<T, U> flatten(Function<? super R, ? extends SafeMatch<T, U>> f) {
+                return f.apply(result);
+            }
+
+            @Override
+            public boolean isEmpty() {
+                return false;
+            }
+
+            @Override
+            public boolean exists(Predicate<? super R> predicate) {
+                return predicate.test(result);
+            }
+
+            @Override
+            public boolean forAll(Predicate<? super R> predicate) {
+                return predicate.test(result);
+            }
+
+            @Override
+            public Iterator<R> iterator() {
+                return Collections.singleton(result).iterator();
+            }
+
+            @Override
+            public void forEach(Consumer<? super R> action) {
+                action.accept(result);
+            }
+
+            @Override
+            public SafeMatch<T, R> peek(Consumer<? super R> action) {
+                action.accept(result);
+                return this;
+            }
+
+            @Override
+            public <U> SafeMatch<T, U> map(Function<? super R, ? extends U> mapper) {
+                return new Matched<>(mapper.apply(result));
+            }
+        }
+
+        final class Unmatched<T, R> implements SafeMatch<T, R> {
+
+            private final T value;
+
+            private Unmatched(T value) {
+                this.value = value;
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public <U extends T> SafeMatch<T, R> when(Function1<? super U, ? extends R> f) {
+                Objects.requireNonNull(f, "f is null");
+                final Class<?> paramType = f.getType().parameterType(0);
+                return Of.matches(value, paramType) ? new Matched<>(f.apply((U) value)) : this;
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public <U extends T> SafeMatch<T, R> when(U protoType, Function1<? super U, ? extends R> f) {
+                Objects.requireNonNull(protoType, "protoType is null");
+                Objects.requireNonNull(f, "f is null");
+                return Objects.equals(value, protoType) ? new Matched<>(f.apply((U) value)) : this;
+            }
+
+            public R get() {
+                throw new MatchError(value);
+            }
+
+            public R orElse(R other) {
+                return other;
+            }
+
+            public R orElseGet(Supplier<? extends R> other) {
+                return other.get();
+            }
+
+            public <X extends Throwable> R orElseThrow(Supplier<X> exceptionSupplier) throws X {
+                throw exceptionSupplier.get();
+            }
+
+            public Option<R> toOption() {
+                return None.instance();
+            }
+
+            public Optional<R> toJavaOptional() {
+                return Optional.empty();
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public <U> SafeMatch<T, U> flatMap(Function<? super R, ? extends SafeMatch<T, U>> mapper) {
+                return (SafeMatch<T, U>) this;
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public <U> SafeMatch<T, U> flatten(Function<? super R, ? extends SafeMatch<T, U>> f) {
+                return (SafeMatch<T, U>) this;
+            }
+
+            @Override
+            public boolean isEmpty() {
+                return true;
+            }
+
+            @Override
+            public boolean exists(Predicate<? super R> predicate) {
+                return false;
+            }
+
+            @Override
+            public boolean forAll(Predicate<? super R> predicate) {
+                return false;
+            }
+
+            @Override
+            public Iterator<R> iterator() {
+                return Collections.emptyIterator();
+            }
+
+            @Override
+            public void forEach(Consumer<? super R> action) {
+                // nothing to do
+            }
+
+            @Override
+            public SafeMatch<T, R> peek(Consumer<? super R> action) {
+                return this;
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public <U> SafeMatch<T, U> map(Function<? super R, ? extends U> mapper) {
+                return (SafeMatch<T, U>) this;
+            }
         }
     }
 
