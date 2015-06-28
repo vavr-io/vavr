@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -52,9 +51,7 @@ public class TryTest {
 
     @Test
     public void shouldReturnFailureWhenFlatteningSuccessThrows() {
-        assertThat(new Success<>(1).flatten(ignored -> {
-            throw new Error("error");
-        })).isEqualTo(new Failure<>(new Error("error")));
+        assertThat(new Success<>(1).flatten(ignored -> { throw new Error("error"); })).isEqualTo(new Failure<>(new Error("error")));
     }
 
     // -- exists
@@ -333,7 +330,7 @@ public class TryTest {
     public void shouldComposeFailureWithAndThenWhenFailing() {
         final Try<Void> actual = Try.run(() -> {
             throw new Error("err1");
-        }).then(() -> {
+        }).andThen(() -> {
             throw new Error("err2");
         });
         final Try<Void> expected = new Failure<>(new Error("err1"));
@@ -341,45 +338,21 @@ public class TryTest {
     }
 
     @Test
-    public void shouldChainSuccessWithAndThen() {
+    public void shouldChainSuccessWithMapTry() {
         final Try<Integer> actual = Try.of(() -> 100)
-                .then(x -> x + 100)
-                .then(x -> x + 50);
+                .mapTry(x -> x + 100)
+                .mapTry(x -> x + 50);
 
         final Try<Integer> expected = new Success<>(250);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    public void shouldChainFailureWithAndThen() {
+    public void shouldChainFailureWithMapTry() {
         final Try<Integer> actual = Try.of(() -> 100)
-                .then(x -> x + 100)
-                .then(x -> Integer.parseInt("aaa") + x)   //Throws exception.
-                .then(x -> x / 2);
-
-        final Try<Integer> expected = new Failure<>(new NumberFormatException("For input string: \"aaa\""));
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldChainConsumableSuccessWithThen() {
-        final Try<Integer> actual = Try.of(() -> new ArrayList<Integer>())
-                .thenRun(arr -> arr.add(10))
-                .thenRun(arr -> arr.add(30))
-                .thenRun(arr -> arr.add(20))
-                .then(arr -> arr.get(1));
-
-        final Try<Integer> expected = new Success<>(30);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldChainConsumableFailureWithThen() {
-        final Try<Integer> actual = Try.of(() -> new ArrayList<Integer>())
-                .thenRun(arr -> arr.add(10))
-                .thenRun(arr -> arr.add(Integer.parseInt("aaa"))) //Throws exception.
-                .thenRun(arr -> arr.add(20))
-                .then(arr -> arr.get(1));
+                .mapTry(x -> x + 100)
+                .mapTry(x -> Integer.parseInt("aaa") + x)   //Throws exception.
+                .mapTry(x -> x / 2);
 
         final Try<Integer> expected = new Failure<>(new NumberFormatException("For input string: \"aaa\""));
         assertThat(actual).isEqualTo(expected);
@@ -572,7 +545,7 @@ public class TryTest {
     @Test
     public void shouldComposeSuccessWithAndThenWhenFailing() {
         final Try<Void> actual = Try.run(() -> {
-        }).then(() -> {
+        }).andThen(() -> {
             throw new Error("failure");
         });
         final Try<Void> expected = new Failure<>(new Error("failure"));
@@ -582,7 +555,7 @@ public class TryTest {
     @Test
     public void shouldComposeSuccessWithAndThenWhenSucceeding() {
         final Try<Void> actual = Try.run(() -> {
-        }).then(() -> {
+        }).andThen(() -> {
         });
         final Try<Void> expected = new Success<>(null);
         assertThat(actual).isEqualTo(expected);

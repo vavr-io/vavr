@@ -208,7 +208,7 @@ public interface Try<T> extends TraversableOnce<T> {
      *
      * <pre>
      * <code>
-     * Try.run(A::methodRef).then(B::methodRef).then(C::methodRef);
+     * Try.run(A::methodRef).andThen(B::methodRef).andThen(C::methodRef);
      * </code>
      * </pre>
      *
@@ -217,8 +217,8 @@ public interface Try<T> extends TraversableOnce<T> {
      * <pre>
      * <code>
      * Try.run(() -&gt; { doStuff(); })
-     *    .then(() -&gt; { doMoreStuff(); })
-     *    .then(() -&gt; { doEvenMoreStuff(); });
+     *    .andThen(() -&gt; { doMoreStuff(); })
+     *    .andThen(() -&gt; { doEvenMoreStuff(); });
      *
      * Try.run(() -&gt; {
      *     doStuff();
@@ -231,7 +231,7 @@ public interface Try<T> extends TraversableOnce<T> {
      * @param runnable A checked runnable
      * @return a new {@code Try}
      */
-    default Try<Void> then(CheckedRunnable runnable) {
+    default Try<Void> andThen(CheckedRunnable runnable) {
         return flatMap(ignored -> Try.run(runnable));
     }
 
@@ -246,8 +246,8 @@ public interface Try<T> extends TraversableOnce<T> {
      * <pre>
      * <code>
      * Try.of(() -&gt; 100)
-     *    .then(x -&gt; x + 100)
-     *    .then(x -&gt; x * 20);
+     *    .mapTry(x -&gt; x + 100)
+     *    .mapTry(x -&gt; x * 20);
      *
      * </code>
      * </pre>
@@ -255,28 +255,7 @@ public interface Try<T> extends TraversableOnce<T> {
      * @param f A checked function taking a single argument.
      * @return a new {@code Try}
      */
-    <R> Try<R> then(CheckedFunction1<T, R> f);
-
-    /**
-     * Runs the given checked consumer if this is a {@code Success},
-     * passing the result of the current expression to it.
-     * If this expression is a {@code Failure} then it'll return a new
-     * {@code Failure} of type T with the original exception.
-     *
-     * The main use case is chaining checked functions using method references:
-     *
-     * <pre>
-     * <code>
-     * Try.of(() -&gt; 100)
-     *    .thenRun(i -&gt; System.out.println(i));
-     *
-     * </code>
-     * </pre>
-     *
-     * @param f A checked consumer taking a single argument.
-     * @return a new {@code Try}
-     */
-    Try<T> thenRun(CheckedConsumer<T> f);
+    <R> Try<R> mapTry(CheckedFunction1<T, R> f);
 
     @Override
     boolean equals(Object o);

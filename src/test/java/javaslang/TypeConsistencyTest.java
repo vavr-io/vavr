@@ -34,7 +34,7 @@ public class TypeConsistencyTest {
             "javaslang.control.Failure//public abstract javaslang.control.Try javaslang.control.Try.failed()",
             "javaslang.control.Failure//public default javaslang.control.Try javaslang.control.Try.flatten(java.util.function.Function)",
             "javaslang.control.Failure//public abstract javaslang.control.Try javaslang.control.Try.map(java.util.function.Function)",
-            "javaslang.control.Failure//public default javaslang.control.Try javaslang.control.Try.then(javaslang.control.Try$CheckedRunnable)",
+            "javaslang.control.Failure//public default javaslang.control.Try javaslang.control.Try.andThen(javaslang.control.Try$CheckedRunnable)",
 
             // control.Success
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.failed()",
@@ -43,9 +43,8 @@ public class TypeConsistencyTest {
             "javaslang.control.Success//public default javaslang.control.Try javaslang.control.Try.flatten(java.util.function.Function)",
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.map(java.util.function.Function)",
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.peek(java.util.function.Consumer)",
-            "javaslang.control.Success//public default javaslang.control.Try javaslang.control.Try.then(javaslang.control.Try$CheckedRunnable)",
-            "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.then(javaslang.CheckedFunction1)",
-            "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.thenRun(javaslang.control.Try$CheckedConsumer)",
+            "javaslang.control.Success//public default javaslang.control.Try javaslang.control.Try.andThen(javaslang.control.Try$CheckedRunnable)",
+            "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.mapTry(javaslang.CheckedFunction1)",
 
             // control.None
             "javaslang.control.None//public default javaslang.control.Option javaslang.control.Option.filter(java.util.function.Predicate)",

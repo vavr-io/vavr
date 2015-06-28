@@ -150,14 +150,8 @@ public final class Failure<T> implements Try<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <R> Failure<R> then(CheckedFunction1<T, R> f) {
+    public <R> Failure<R> mapTry(CheckedFunction1<T, R> f) {
         return (Failure<R>) this;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Failure<T> thenRun(CheckedConsumer<T> f) {
-        return this;
     }
 
     @Override
