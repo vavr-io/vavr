@@ -452,6 +452,27 @@ public class MatchTest {
         assertThat(number).isEqualTo(new BigDecimal("1"));
     }
 
+    @Test
+    public void shouldAllowValidMatchWithMultiPrototypes() {
+        final String result = Match
+                .whenIn(new Integer[] { 1, 3, 5, 7 }, x -> "true")
+                .whenIn(new Integer[] { 2, 4, 6, 8 }, x -> "false")
+                .apply(6);
+
+        assertThat(result).isEqualTo("false");
+    }
+
+    @Test
+    public void shouldAllowInvalidMatchWithMultiPrototypes() {
+        final String result = Match
+                .whenIn(new Integer[] { 1, 3, 5, 7 }, x -> "true")
+                .whenIn(new Integer[] { 2, 4, 6, 8 }, x -> "false")
+                .otherwise("Not Found")
+                .apply(9);
+
+        assertThat(result).isEqualTo("Not Found");
+    }
+
     // -- lambda type
 
     @Test
