@@ -246,8 +246,8 @@ public interface Try<T> extends TraversableOnce<T> {
      * <pre>
      * <code>
      * Try.of(() -&gt; 100)
-     *    .andThen(x -&gt; x + 100)
-     *    .andThen(x -&gt; x * 20);
+     *    .mapTry(x -&gt; x + 100)
+     *    .mapTry(x -&gt; x * 20);
      *
      * </code>
      * </pre>
@@ -255,7 +255,28 @@ public interface Try<T> extends TraversableOnce<T> {
      * @param f A checked function taking a single argument.
      * @return a new {@code Try}
      */
-    <R> Try<R> andThen(CheckedFunction1<T, R> f);
+    <R> Try<R> mapTry(CheckedFunction1<? super T, ? extends R> f);
+
+    /**
+     * Runs the given checked consumer if this is a {@code Success},
+     * passing the result of the current expression to it.
+     * If this expression is a {@code Failure} then it'll return a new
+     * {@code Failure} of type T with the original exception.
+     *
+     * The main use case is chaining checked functions using method references:
+     *
+     * <pre>
+     * <code>
+     * Try.of(() -&gt; 100)
+     *    .andThen(i -&gt; System.out.println(i));
+     *
+     * </code>
+     * </pre>
+     *
+     * @param consumer A checked consumer taking a single argument.
+     * @return a new {@code Try}
+     */
+    Try<T> andThen(CheckedConsumer<? super T> consumer);
 
     @Override
     boolean equals(Object o);
@@ -278,6 +299,22 @@ public interface Try<T> extends TraversableOnce<T> {
          * @throws Throwable if an error occurs
          */
         void run() throws Throwable;
+    }
+
+    /**
+     * A {@linkplain java.util.function.Consumer} which may throw.
+     *
+     * @param <R> the type of value supplied to this consumer.
+     */
+    @FunctionalInterface
+    interface CheckedConsumer<R> {
+
+        /**
+         * Performs side-effects.
+         *
+         * @throws Throwable if an error occurs
+         */
+        void accept(R value) throws Throwable;
     }
 
     /**

@@ -153,8 +153,14 @@ public final class Success<T> implements Try<T>, Serializable {
     }
 
     @Override
-    public <R> Try<R> andThen(CheckedFunction1<T, R> f) {
+    public <R> Try<R> mapTry(CheckedFunction1<? super T, ? extends R> f) {
         return flatMap(value -> Try.of(() -> f.apply(value)));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Try<T> andThen(CheckedConsumer<? super T> consumer) {
+        return Try.run(() -> consumer.accept(value)).flatMap(ignored -> this);
     }
 
     @Override

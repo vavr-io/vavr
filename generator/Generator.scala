@@ -2050,7 +2050,8 @@ object JavaGenerator {
 
     import java.io.File
 
-    val dirName = packageName.replaceAll("\\.", File.separator)
+    // DEV-NOTE: using File.separator instead of "/" does *not* work on windows!
+    val dirName = packageName.replaceAll("[.]", "/")
     val fileName = className + ".java"
     val importManager = new ImportManager(packageName, knownSimpleClassNames)
     val classBody = gen.apply(importManager, packageName, className)

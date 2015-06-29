@@ -73,7 +73,9 @@ public class TryTest {
 
     @Test(expected = Error.class)
     public void shouldNotHoldPropertyExistsWhenPredicateThrows() {
-        new Success<>(1).exists(e -> { throw new Error("error"); });
+        new Success<>(1).exists(e -> {
+            throw new Error("error");
+        });
     }
 
     // -- forall
@@ -336,21 +338,45 @@ public class TryTest {
     }
 
     @Test
-    public void shouldChainSuccessWithAndThen() {
+    public void shouldChainSuccessWithMapTry() {
         final Try<Integer> actual = Try.of(() -> 100)
-                .andThen(x -> x + 100)
-                .andThen(x -> x + 50);
+                .mapTry(x -> x + 100)
+                .mapTry(x -> x + 50);
 
         final Try<Integer> expected = new Success<>(250);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    public void shouldChainFailureWithAndThen() {
+    public void shouldChainFailureWithMapTry() {
         final Try<Integer> actual = Try.of(() -> 100)
-                .andThen(x -> x + 100)
-                .andThen(x -> Integer.parseInt("aaa") + x)   //Throws exception.
-                .andThen(x -> x / 2);
+                .mapTry(x -> x + 100)
+                .mapTry(x -> Integer.parseInt("aaa") + x)   //Throws exception.
+                .mapTry(x -> x / 2);
+
+        final Try<Integer> expected = new Failure<>(new NumberFormatException("For input string: \"aaa\""));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldChainConsumableSuccessWithAndThen() {
+        final Try<Integer> actual = Try.of(() -> new ArrayList<Integer>())
+                .andThen(arr -> arr.add(10))
+                .andThen(arr -> arr.add(30))
+                .andThen(arr -> arr.add(20))
+                .mapTry(arr -> arr.get(1));
+
+        final Try<Integer> expected = new Success<>(30);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldChainConsumableFailureWithAndThen() {
+        final Try<Integer> actual = Try.of(() -> new ArrayList<Integer>())
+                .andThen(arr -> arr.add(10))
+                .andThen(arr -> arr.add(Integer.parseInt("aaa"))) //Throws exception.
+                .andThen(arr -> arr.add(20))
+                .mapTry(arr -> arr.get(1));
 
         final Try<Integer> expected = new Failure<>(new NumberFormatException("For input string: \"aaa\""));
         assertThat(actual).isEqualTo(expected);
