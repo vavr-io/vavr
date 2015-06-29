@@ -45,8 +45,13 @@ def generateMainClasses(): Unit = {
       val option = im.getType("javaslang.control.Option")
       val none = im.getType("javaslang.control.None")
       val some = im.getType("javaslang.control.Some")
+      val traversableOnce = im.getType("javaslang.collection.TraversableOnce")
 
+      val collections = im.getType("java.util.Collections")
+      val iterator = im.getType("java.util.Iterator")
       val objects = im.getType("java.util.Objects")
+      val optional = im.getType("java.util.Optional")
+      val consumer = im.getType("java.util.function.Consumer")
       val function = im.getType("java.util.function.Function")
       val predicate = im.getType("java.util.function.Predicate")
       val supplier = im.getType("java.util.function.Supplier")
@@ -58,6 +63,448 @@ def generateMainClasses(): Unit = {
         case "int" => "Integer"
         case _ => primitiveType.firstUpper
       }
+
+      def genWhen(isUnmatchedType: Boolean, isOverride: Boolean, isTyped: Boolean): String = {
+
+        val Override = isOverride.gen("@Override")
+        val R = (!isTyped).gen(", R")
+
+        xs"""
+          // -- when cases
+
+          @SuppressWarnings("unchecked")
+          $Override
+          public <U extends T$R> SafeMatch<T, R> when($function<? super U, ? extends R> f) {
+              $objects.requireNonNull(f, "f is null");
+              final Class<?> paramType = $function1.lift(f::apply).getType().parameterType(0);
+              return Of.matches(value, paramType) ? new Matched<>(f.apply((U) value)) : ${if (isUnmatchedType) "this" else "new Unmatched<>(value)"};
+          }
+
+          @SuppressWarnings("unchecked")
+          $Override
+          public <U extends T$R> SafeMatch<T, R> when(U protoType, $function<? super U, ? extends R> f) {
+              $objects.requireNonNull(f, "f is null");
+              return Objects.equals(value, protoType) ? new Matched<>(f.apply((U) value)) : ${if (isUnmatchedType) "this" else "new Unmatched<>(value)"};
+          }
+        """
+      }
+
+      def genWhenPrimitive(primitiveType: String, isUnmatchedType: Boolean, isOverride: Boolean, isTyped: Boolean): String = {
+
+        val typeName = primitiveType.firstUpper
+        val objectType = toObject(primitiveType)
+        val Override = isOverride.gen("@Override")
+        val R = (!isTyped).gen("<R>")
+
+        xs"""
+            // -- when cases
+
+            @SuppressWarnings("overloads")$Override
+            public $R Matched$typeName<R> when(Function<? super $objectType, ? extends R> f) {
+                $objects.requireNonNull(f, "f is null");
+                return new Matched$typeName<>(f.apply(value));
+            }
+
+            @SuppressWarnings("overloads")$Override
+            public $R Matched$typeName<R> when(${typeName}Function<? extends R> f) {
+                $objects.requireNonNull(f, "f is null");
+                return new Matched$typeName<>(f.apply(value));
+            }
+
+            @SuppressWarnings("overloads")$Override
+            public $R SafeMatch$typeName<R> when($objectType protoType, $function<? super $objectType, ? extends R> f) {
+                $objects.requireNonNull(f, "f is null");
+                return Objects.equals(value, protoType) ? new Matched$typeName<>(f.apply(value)) : ${if (isUnmatchedType) "this" else s"new Unmatched$typeName<>(value)"};
+            }
+
+            @SuppressWarnings("overloads")$Override
+            public $R SafeMatch$typeName<R> when($primitiveType protoType, ${typeName}Function<? extends R> f) {
+                $objects.requireNonNull(f, "f is null");
+                return (value == protoType) ? new Matched$typeName<>(f.apply(value)) : ${if (isUnmatchedType) "this" else s"new Unmatched$typeName<>(value)"};
+            }
+        """
+      }
+
+      def genGetters(isMatched: Boolean): String = xs"""
+        // -- getters
+
+        @Override
+        public R get() {
+            ${if (isMatched) xs"""
+              return result;
+            """ else xs"""
+              throw new MatchError(value);
+            """}
+        }
+
+        @Override
+        public R orElse(R other) {
+            ${if (isMatched) xs"""
+              return result;
+            """ else xs"""
+              return other;
+            """}
+        }
+
+        @Override
+        public R orElseGet($supplier<? extends R> other) {
+            ${if (isMatched) xs"""
+              return result;
+            """ else xs"""
+              return other.get();
+            """}
+        }
+
+        @Override
+        public <X extends Throwable> R orElseThrow($supplier<X> exceptionSupplier) throws X {
+            ${if (isMatched) xs"""
+              return result;
+            """ else xs"""
+              throw exceptionSupplier.get();
+            """}
+        }
+
+        @Override
+        public Option<R> toOption() {
+            ${if (isMatched) xs"""
+              return new Some<>(result);
+            """ else xs"""
+              return None.instance();
+            """}
+        }
+
+        @Override
+        public $optional <R> toJavaOptional() {
+            ${if (isMatched) xs"""
+              return $optional.ofNullable(result); // caution: may be empty if result is null
+            """ else xs"""
+              return $optional.empty();
+            """}
+        }
+      """
+
+      def genFilterMonadicOperations(isMatched: Boolean, targetType: String, exactTargetType: String): String = {
+
+        val SuppressWarnings = (!isMatched).gen("""@SuppressWarnings("unchecked")""")
+
+        xs"""
+          // -- filter monadic operations
+
+          $SuppressWarnings
+          @Override
+          public <U> $targetType flatMap($function<? super R, ? extends $targetType> mapper) {
+              ${if (isMatched) xs"""
+                return mapper.apply(result);
+              """ else xs"""
+                return ($targetType) this;
+              """}
+          }
+
+          $SuppressWarnings
+          @Override
+          public <U> $targetType flatten($function<? super R, ? extends $targetType> f) {
+              ${if (isMatched) xs"""
+                return f.apply(result);
+              """ else xs"""
+                return ($targetType) this;
+              """}
+          }
+
+          $SuppressWarnings
+          @Override
+          public <U> $exactTargetType map($function<? super R, ? extends U> mapper) {
+              ${if (isMatched) xs"""
+                return new $exactTargetType(mapper.apply(result));
+              """ else xs"""
+                return ($exactTargetType) this;
+              """}
+          }
+        """
+      }
+
+      def genTraversableOnce(isMatched: Boolean): String = xs"""
+        // -- traversable once
+
+        @Override
+        public boolean isEmpty() {
+            return ${!isMatched};
+        }
+
+        @Override
+        public $iterator<R> iterator() {
+            ${if (isMatched) xs"""
+              return $collections.singleton(result).iterator();
+            """ else xs"""
+              return $collections.emptyIterator();
+            """}
+        }
+      """
+
+      def genSafeMatch: String = xs"""
+        // intentionally not made Serializable
+        // TODO: generate when() for primitive lambda types
+        /**
+         * @since 1.3.0
+         */
+        interface SafeMatch<T, R> extends HasGetters<R>, $traversableOnce<R> {
+
+            // -- when cases
+
+            <U extends T> SafeMatch<T, R> when($function<? super U, ? extends R> f);
+
+            <U extends T> SafeMatch<T, R> when(U protoType, $function<? super U, ? extends R> f);
+
+            // -- filter monadic operations
+
+            // TODO: <U> SafeMatch<T, R> filter($predicate<? super R> predicate);
+
+            <U> SafeMatch<T, U> flatMap($function<? super R, ? extends SafeMatch<T, U>> mapper);
+
+            <U> SafeMatch<T, U> flatten($function<? super R, ? extends SafeMatch<T, U>> f);
+
+            <U> SafeMatch<T, U> map($function<? super R, ? extends U> mapper);
+
+            // TODO: SafeMatch<T, R> peek($consumer<? super R> action);
+
+            /**
+             * @since 1.3.0
+             */
+            final class Of<T> {
+
+                private final T value;
+
+                private Of(T value) {
+                    this.value = value;
+                }
+
+                public <R> Typed<T, R> as(Class<R> resultType) {
+                    $objects.requireNonNull(resultType, "resultType is null");
+                    return new Typed<>(value);
+                }
+
+                ${genWhen(isUnmatchedType = false, isOverride = false, isTyped = false)}
+
+                // method declared here because Java 8 does not support private interface methods
+                private static boolean matches(Object obj, Class<?> type) {
+                    return obj != null && type.isAssignableFrom(obj.getClass());
+                }
+            }
+
+            /**
+             * @since 1.3.0
+             */
+            final class Typed<T, R> {
+
+                private final T value;
+
+                private Typed(T value) {
+                    this.value = value;
+                }
+
+                ${genWhen(isUnmatchedType = false, isOverride = false, isTyped = true)}
+            }
+
+            /**
+             * @since 1.3.0
+             */
+            final class Matched<T, R> implements SafeMatch<T, R> {
+
+                private final R result;
+
+                private Matched(R result) {
+                    this.result = result;
+                }
+
+                ${genGetters(isMatched = true)}
+
+                // -- when cases
+
+                @Override
+                public <U extends T> Matched<T, R> when($function<? super U, ? extends R> f) {
+                    // fast forward / no argument checks
+                    return this;
+                }
+
+                @Override
+                public <U extends T> SafeMatch<T, R> when(U protoType, $function<? super U, ? extends R> f) {
+                    // fast forward / no argument checks
+                    return this;
+                }
+
+                ${genFilterMonadicOperations(isMatched = true, targetType = "SafeMatch<T, U>", exactTargetType = "Matched<T, U>")}
+
+                ${genTraversableOnce(isMatched = true)}
+            }
+
+            /**
+             * @since 1.3.0
+             */
+            final class Unmatched<T, R> implements SafeMatch<T, R> {
+
+                private final T value;
+
+                private Unmatched(T value) {
+                    this.value = value;
+                }
+
+                ${genGetters(isMatched = false)}
+
+                ${genWhen(isUnmatchedType = true, isOverride = true, isTyped = true)}
+
+                ${genFilterMonadicOperations(isMatched = false, targetType = "SafeMatch<T, U>", exactTargetType = "Unmatched<T, U>")}
+
+                ${genTraversableOnce(isMatched = false)}
+            }
+        }
+
+        ${primitiveTypes.gen(primitiveType => {
+
+          val typeName = primitiveType.firstUpper
+          val objectType = toObject(primitiveType)
+
+          xs"""
+            /$javadoc
+             * @since 1.3.0
+             */
+            interface SafeMatch$typeName<R> extends HasGetters<R>, $traversableOnce<R> {
+
+                // -- when cases
+
+                @SuppressWarnings("overloads")
+                Matched$typeName<R> when($function<? super $objectType, ? extends R> f);
+
+                @SuppressWarnings("overloads")
+                Matched$typeName<R> when(${typeName}Function<? extends R> f);
+
+                @SuppressWarnings("overloads")
+                SafeMatch$typeName<R> when($objectType protoType, $function<? super $objectType, ? extends R> f);
+
+                @SuppressWarnings("overloads")
+                SafeMatch$typeName<R> when($primitiveType protoType, ${typeName}Function<? extends R> f);
+
+                // -- filter monadic operations
+
+                // TODO: @Override <U> SafeMatch$typeName<R> filter($predicate<? super R> predicate);
+
+                <U> SafeMatch$typeName<U> flatMap($function<? super R, ? extends SafeMatch$typeName<U>> mapper);
+
+                <U> SafeMatch$typeName<U> flatten($function<? super R, ? extends SafeMatch$typeName<U>> f);
+
+                <U> SafeMatch$typeName<U> map($function<? super R, ? extends U> mapper);
+
+                // TODO: SafeMatch$typeName<R> peek($consumer<? super R> action);
+
+                /$javadoc
+                 * @since 1.3.0
+                 */
+                final class Of$typeName {
+
+                    private final $primitiveType value;
+
+                    private Of$typeName($primitiveType value) {
+                        this.value = value;
+                    }
+
+                    public <R> Typed$typeName<R> as(Class<R> resultType) {
+                        $objects.requireNonNull(resultType, "resultType is null");
+                        return new Typed$typeName<>(value);
+                    }
+
+                    ${genWhenPrimitive(primitiveType, isUnmatchedType = false, isOverride = false, isTyped = false)}
+                }
+
+                /$javadoc
+                 * @since 1.3.0
+                 */
+                final class Typed$typeName<R> {
+
+                    private final $primitiveType value;
+
+                    private Typed$typeName($primitiveType value) {
+                        this.value = value;
+                    }
+
+                    ${genWhenPrimitive(primitiveType, isUnmatchedType = false, isOverride = false, isTyped = true)}
+                }
+
+                /$javadoc
+                 * @since 1.3.0
+                 */
+                final class Matched$typeName<R> implements SafeMatch$typeName<R> {
+
+                    private final R result;
+
+                    private Matched$typeName(R result) {
+                        this.result = result;
+                    }
+
+                    ${genGetters(isMatched = true)}
+
+                    // -- when cases
+
+                    @Override
+                    public Matched$typeName<R> when(Function<? super $objectType, ? extends R> f) {
+                        return this;
+                    }
+
+                    @Override
+                    public Matched$typeName<R> when(${typeName}Function<? extends R> f) {
+                        return this;
+                    }
+
+                    @Override
+                    public SafeMatch$typeName<R> when($objectType protoType, Function<? super $objectType, ? extends R> f) {
+                        return this;
+                    }
+
+                    @Override
+                    public SafeMatch$typeName<R> when($primitiveType protoType, ${typeName}Function<? extends R> f) {
+                        return this;
+                    }
+
+                    ${genFilterMonadicOperations(isMatched = true, targetType = s"SafeMatch$typeName<U>", exactTargetType = s"Matched$typeName<U>")}
+
+                    ${genTraversableOnce(isMatched = false)}
+                }
+
+                /$javadoc
+                 * @since 1.3.0
+                 */
+                final class Unmatched$typeName<R> implements SafeMatch$typeName<R> {
+
+                    private final $primitiveType value;
+
+                    private Unmatched$typeName($primitiveType value) {
+                        this.value = value;
+                    }
+
+                    ${genGetters(isMatched = false)}
+
+                    ${genWhenPrimitive(primitiveType, isUnmatchedType = true, isOverride = true, isTyped = true)}
+
+                    ${genFilterMonadicOperations(isMatched = false, targetType = s"SafeMatch$typeName<U>", exactTargetType = s"Unmatched$typeName<U>")}
+
+                    ${genTraversableOnce(isMatched = false)}
+                }
+            }
+          """
+        })("\n\n")}
+
+        interface HasGetters<R> {
+
+            R get();
+
+            R orElse(R other);
+
+            R orElseGet($supplier<? extends R> other);
+
+            <X extends Throwable> R orElseThrow($supplier<X> exceptionSupplier) throws X;
+
+            $option<R> toOption();
+
+            $optional<R> toJavaOptional();
+        }
+      """
 
       xs"""
         /**
@@ -105,6 +552,22 @@ def generateMainClasses(): Unit = {
              */
             @Override
             R apply(Object o);
+
+            /**
+             * Creates a type-safe match by fixating the value to be matched.
+             * 
+             * @param value the value to be matched
+             * @return a new type-safe match builder
+             */
+            static <T> SafeMatch.Of<T> of(T value) {
+                return new SafeMatch.Of<>(value);
+            }
+
+            ${primitiveTypes.gen(name => xs"""
+              static SafeMatch${name.firstUpper}.Of${name.firstUpper} of($name value) {
+                  return new SafeMatch${name.firstUpper}.Of${name.firstUpper}(value);
+              }
+            """)("\n\n")}
 
             /**
              * Specifies the type of the match expression. In many cases it is not necessary to call {@code as}. This
@@ -304,9 +767,7 @@ def generateMainClasses(): Unit = {
                 }
 
                 private static <T, R> $function<Object, $option<R>> when($option<T> prototype, $function1<T, ? extends R> function) {
-                    final ${im.getType("java.lang.invoke.MethodType")} type = function.getType();
-                    // the compiler may add additional parameters to the lambda, our parameter is the last one
-                    final Class<?> parameterType = type.parameterType(type.parameterCount() - 1);
+                    final Class<?> parameterType = function.getType().parameterType(0);
                     return when(prototype, function, parameterType);
                 }
 
@@ -392,6 +853,8 @@ def generateMainClasses(): Unit = {
                     """)("\n\n")}
                 }
             }
+
+            ${genSafeMatch}
 
             ${primitiveTypes.gen(name => xs"""
               /$javadoc
