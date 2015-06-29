@@ -42,7 +42,7 @@
     </developers>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <assertj.core.version>3.0.0</assertj.core.version>
+        <assertj.core.version>3.1.0</assertj.core.version>
         <eclipse.lifecycle.mapping.version>1.0.0</eclipse.lifecycle.mapping.version>
         <java.version>1.8</java.version>
         <junit.version>4.12</junit.version>
@@ -54,7 +54,7 @@
         <maven.jacoco.version>0.7.2.201409121644</maven.jacoco.version>
         <maven.release.version>2.5.1</maven.release.version>
         <maven.versions.version>2.1</maven.versions.version>
-        <scala.maven.version>3.2.1</scala.maven.version>
+        <scala.maven.version>3.2.2</scala.maven.version>
         <scala.version>2.11.6</scala.version>
     </properties>
     <build>
