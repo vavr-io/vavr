@@ -11,7 +11,6 @@ package javaslang.control;
 
 import java.io.Serializable;
 import java.lang.invoke.MethodType;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -19,7 +18,6 @@ import java.util.function.Supplier;
 import javaslang.Function1;
 import javaslang.Lazy;
 import javaslang.collection.List;
-import javaslang.collection.Stream;
 
 /**
  * {@code Match} is a better switch for Java. Some characteristics of {@code Match} are:
