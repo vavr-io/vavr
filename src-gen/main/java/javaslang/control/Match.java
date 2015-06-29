@@ -11,6 +11,7 @@ package javaslang.control;
 
 import java.io.Serializable;
 import java.lang.invoke.MethodType;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -18,6 +19,7 @@ import java.util.function.Supplier;
 import javaslang.Function1;
 import javaslang.Lazy;
 import javaslang.collection.List;
+import javaslang.collection.Stream;
 
 /**
  * {@code Match} is a better switch for Java. Some characteristics of {@code Match} are:
@@ -110,6 +112,21 @@ public interface Match<R> extends Function<Object, R> {
     static <T, R> Case<R> when(T prototype, Function1<? super T, ? extends R> function) {
         Objects.requireNonNull(function, "function is null");
         return Case.of(prototype, function);
+    }
+
+    /**
+     * Creates a {@code Match.Case} by a collection of values.
+     *
+     * @param <T> type of the prototype values
+     * @param <R> result type of the matched case
+     * @param prototypes A specific set of values to be matched
+     * @param function A function which is applied to the values given a match
+     * @return a new {@code Case}
+     * @throws NullPointerException if {@code function} is null
+     */
+    static <T, R> Case<R> whenIn(T[] prototypes, Function1<? super T, ? extends R> function) {
+        Objects.requireNonNull(function, "function is null");
+        return Case.of(prototypes, function);
     }
 
     /**
@@ -256,6 +273,12 @@ public interface Match<R> extends Function<Object, R> {
         }
 
         @Override
+        public <T> Case<R> whenIn(T[] prototypes, Function1<? super T, ? extends R> function) {
+            Objects.requireNonNull(function, "function is null");
+            return Case.of(prototypes, function);
+        }
+
+        @Override
         public Case<R> when(Function1<?, ? extends R> function) {
             Objects.requireNonNull(function, "function is null");
             return Case.of(function);
@@ -334,6 +357,10 @@ public interface Match<R> extends Function<Object, R> {
             return new Case<>(List.of(Case.when(new Some<>(prototype), function)));
         }
 
+        private static <T, R> Case<R> of(T[] prototypes, Function1<? super T, ? extends R> function) {
+            return new Case<>(List.of(prototypes).map(t -> Case.when(new Some<>(t), function)));
+        }
+
         @SuppressWarnings("overloads")
         private static <R> Case<R> of(Function1<?, ? extends R> function) {
             return new Case<>(List.of(Case.when(None.instance(), function)));
@@ -389,6 +416,13 @@ public interface Match<R> extends Function<Object, R> {
             Objects.requireNonNull(function, "function is null");
             final Function<Object, Option<R>> when = when(new Some<>(prototype), function);
             return new Case<>(cases.prepend(when));
+        }
+
+        @Override
+        public <T> Case<R> whenIn(T[] prototypes, Function1<? super T, ? extends R> function) {
+            Objects.requireNonNull(function, "function is null");
+            List<Function<Object, Option<R>>> when = List.of(prototypes).map(p -> when(new Some<>(p), function));
+            return new Case<>(cases.prependAll(when));
         }
 
         @Override
@@ -543,6 +577,17 @@ public interface Match<R> extends Function<Object, R> {
              * @throws NullPointerException if {@code function} is null
              */
             <T> HasCases<R> when(T prototype, Function1<? super T, ? extends R> function);
+
+            /**
+             * Creates a {@code Match.Case} by values.
+             *
+             * @param <T> type of the prototype value
+             * @param prototypes A specific value to be matched
+             * @param function A function which is applied to the value given a match
+             * @return a new {@code Case}
+             * @throws NullPointerException if {@code function} is null
+             */
+            <T> HasCases<R> whenIn(T[] prototypes, Function1<? super T, ? extends R> function);
 
             /**
              * Creates a {@code Match.Case} by type.
