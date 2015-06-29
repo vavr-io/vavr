@@ -961,11 +961,13 @@ public interface Match<R> extends Function<Object, R> {
 
         // -- when cases
 
+        @SuppressWarnings("overloads")
         MatchedBoolean<R> when(Function<? super Boolean, ? extends R> f);
 
         @SuppressWarnings("overloads")
         MatchedBoolean<R> when(BooleanFunction<? extends R> f);
 
+        @SuppressWarnings("overloads")
         SafeMatchBoolean<R> when(Boolean protoType, Function<? super Boolean, ? extends R> f);
 
         @SuppressWarnings("overloads")
@@ -1001,25 +1003,25 @@ public interface Match<R> extends Function<Object, R> {
 
             // -- when cases
 
+            @SuppressWarnings("overloads")
             public <R> MatchedBoolean<R> when(Function<? super Boolean, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedBoolean<>(f.apply(value));
             }
 
             @SuppressWarnings("overloads")
-
             public <R> MatchedBoolean<R> when(BooleanFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedBoolean<>(f.apply(value));
             }
 
+            @SuppressWarnings("overloads")
             public <R> SafeMatchBoolean<R> when(Boolean protoType, Function<? super Boolean, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return Objects.equals(value, protoType) ? new MatchedBoolean<>(f.apply(value)) : new UnmatchedBoolean<>(value);
             }
 
             @SuppressWarnings("overloads")
-
             public <R> SafeMatchBoolean<R> when(boolean protoType, BooleanFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return (value == protoType) ? new MatchedBoolean<>(f.apply(value)) : new UnmatchedBoolean<>(value);
@@ -1039,25 +1041,25 @@ public interface Match<R> extends Function<Object, R> {
 
             // -- when cases
 
+            @SuppressWarnings("overloads")
             public  MatchedBoolean<R> when(Function<? super Boolean, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedBoolean<>(f.apply(value));
             }
 
             @SuppressWarnings("overloads")
-
             public  MatchedBoolean<R> when(BooleanFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedBoolean<>(f.apply(value));
             }
 
+            @SuppressWarnings("overloads")
             public  SafeMatchBoolean<R> when(Boolean protoType, Function<? super Boolean, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return Objects.equals(value, protoType) ? new MatchedBoolean<>(f.apply(value)) : new UnmatchedBoolean<>(value);
             }
 
             @SuppressWarnings("overloads")
-
             public  SafeMatchBoolean<R> when(boolean protoType, BooleanFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return (value == protoType) ? new MatchedBoolean<>(f.apply(value)) : new UnmatchedBoolean<>(value);
@@ -1204,27 +1206,25 @@ public interface Match<R> extends Function<Object, R> {
 
             // -- when cases
 
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  MatchedBoolean<R> when(Function<? super Boolean, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedBoolean<>(f.apply(value));
             }
 
-            @SuppressWarnings("overloads")
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  MatchedBoolean<R> when(BooleanFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedBoolean<>(f.apply(value));
             }
 
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  SafeMatchBoolean<R> when(Boolean protoType, Function<? super Boolean, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return Objects.equals(value, protoType) ? new MatchedBoolean<>(f.apply(value)) : this;
             }
 
-            @SuppressWarnings("overloads")
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  SafeMatchBoolean<R> when(boolean protoType, BooleanFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return (value == protoType) ? new MatchedBoolean<>(f.apply(value)) : this;
@@ -1271,11 +1271,13 @@ public interface Match<R> extends Function<Object, R> {
 
         // -- when cases
 
+        @SuppressWarnings("overloads")
         MatchedByte<R> when(Function<? super Byte, ? extends R> f);
 
         @SuppressWarnings("overloads")
         MatchedByte<R> when(ByteFunction<? extends R> f);
 
+        @SuppressWarnings("overloads")
         SafeMatchByte<R> when(Byte protoType, Function<? super Byte, ? extends R> f);
 
         @SuppressWarnings("overloads")
@@ -1311,25 +1313,25 @@ public interface Match<R> extends Function<Object, R> {
 
             // -- when cases
 
+            @SuppressWarnings("overloads")
             public <R> MatchedByte<R> when(Function<? super Byte, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedByte<>(f.apply(value));
             }
 
             @SuppressWarnings("overloads")
-
             public <R> MatchedByte<R> when(ByteFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedByte<>(f.apply(value));
             }
 
+            @SuppressWarnings("overloads")
             public <R> SafeMatchByte<R> when(Byte protoType, Function<? super Byte, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return Objects.equals(value, protoType) ? new MatchedByte<>(f.apply(value)) : new UnmatchedByte<>(value);
             }
 
             @SuppressWarnings("overloads")
-
             public <R> SafeMatchByte<R> when(byte protoType, ByteFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return (value == protoType) ? new MatchedByte<>(f.apply(value)) : new UnmatchedByte<>(value);
@@ -1349,25 +1351,25 @@ public interface Match<R> extends Function<Object, R> {
 
             // -- when cases
 
+            @SuppressWarnings("overloads")
             public  MatchedByte<R> when(Function<? super Byte, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedByte<>(f.apply(value));
             }
 
             @SuppressWarnings("overloads")
-
             public  MatchedByte<R> when(ByteFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedByte<>(f.apply(value));
             }
 
+            @SuppressWarnings("overloads")
             public  SafeMatchByte<R> when(Byte protoType, Function<? super Byte, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return Objects.equals(value, protoType) ? new MatchedByte<>(f.apply(value)) : new UnmatchedByte<>(value);
             }
 
             @SuppressWarnings("overloads")
-
             public  SafeMatchByte<R> when(byte protoType, ByteFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return (value == protoType) ? new MatchedByte<>(f.apply(value)) : new UnmatchedByte<>(value);
@@ -1514,27 +1516,25 @@ public interface Match<R> extends Function<Object, R> {
 
             // -- when cases
 
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  MatchedByte<R> when(Function<? super Byte, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedByte<>(f.apply(value));
             }
 
-            @SuppressWarnings("overloads")
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  MatchedByte<R> when(ByteFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedByte<>(f.apply(value));
             }
 
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  SafeMatchByte<R> when(Byte protoType, Function<? super Byte, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return Objects.equals(value, protoType) ? new MatchedByte<>(f.apply(value)) : this;
             }
 
-            @SuppressWarnings("overloads")
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  SafeMatchByte<R> when(byte protoType, ByteFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return (value == protoType) ? new MatchedByte<>(f.apply(value)) : this;
@@ -1581,11 +1581,13 @@ public interface Match<R> extends Function<Object, R> {
 
         // -- when cases
 
+        @SuppressWarnings("overloads")
         MatchedChar<R> when(Function<? super Character, ? extends R> f);
 
         @SuppressWarnings("overloads")
         MatchedChar<R> when(CharFunction<? extends R> f);
 
+        @SuppressWarnings("overloads")
         SafeMatchChar<R> when(Character protoType, Function<? super Character, ? extends R> f);
 
         @SuppressWarnings("overloads")
@@ -1621,25 +1623,25 @@ public interface Match<R> extends Function<Object, R> {
 
             // -- when cases
 
+            @SuppressWarnings("overloads")
             public <R> MatchedChar<R> when(Function<? super Character, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedChar<>(f.apply(value));
             }
 
             @SuppressWarnings("overloads")
-
             public <R> MatchedChar<R> when(CharFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedChar<>(f.apply(value));
             }
 
+            @SuppressWarnings("overloads")
             public <R> SafeMatchChar<R> when(Character protoType, Function<? super Character, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return Objects.equals(value, protoType) ? new MatchedChar<>(f.apply(value)) : new UnmatchedChar<>(value);
             }
 
             @SuppressWarnings("overloads")
-
             public <R> SafeMatchChar<R> when(char protoType, CharFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return (value == protoType) ? new MatchedChar<>(f.apply(value)) : new UnmatchedChar<>(value);
@@ -1659,25 +1661,25 @@ public interface Match<R> extends Function<Object, R> {
 
             // -- when cases
 
+            @SuppressWarnings("overloads")
             public  MatchedChar<R> when(Function<? super Character, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedChar<>(f.apply(value));
             }
 
             @SuppressWarnings("overloads")
-
             public  MatchedChar<R> when(CharFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedChar<>(f.apply(value));
             }
 
+            @SuppressWarnings("overloads")
             public  SafeMatchChar<R> when(Character protoType, Function<? super Character, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return Objects.equals(value, protoType) ? new MatchedChar<>(f.apply(value)) : new UnmatchedChar<>(value);
             }
 
             @SuppressWarnings("overloads")
-
             public  SafeMatchChar<R> when(char protoType, CharFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return (value == protoType) ? new MatchedChar<>(f.apply(value)) : new UnmatchedChar<>(value);
@@ -1824,27 +1826,25 @@ public interface Match<R> extends Function<Object, R> {
 
             // -- when cases
 
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  MatchedChar<R> when(Function<? super Character, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedChar<>(f.apply(value));
             }
 
-            @SuppressWarnings("overloads")
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  MatchedChar<R> when(CharFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedChar<>(f.apply(value));
             }
 
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  SafeMatchChar<R> when(Character protoType, Function<? super Character, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return Objects.equals(value, protoType) ? new MatchedChar<>(f.apply(value)) : this;
             }
 
-            @SuppressWarnings("overloads")
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  SafeMatchChar<R> when(char protoType, CharFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return (value == protoType) ? new MatchedChar<>(f.apply(value)) : this;
@@ -1891,11 +1891,13 @@ public interface Match<R> extends Function<Object, R> {
 
         // -- when cases
 
+        @SuppressWarnings("overloads")
         MatchedDouble<R> when(Function<? super Double, ? extends R> f);
 
         @SuppressWarnings("overloads")
         MatchedDouble<R> when(DoubleFunction<? extends R> f);
 
+        @SuppressWarnings("overloads")
         SafeMatchDouble<R> when(Double protoType, Function<? super Double, ? extends R> f);
 
         @SuppressWarnings("overloads")
@@ -1931,25 +1933,25 @@ public interface Match<R> extends Function<Object, R> {
 
             // -- when cases
 
+            @SuppressWarnings("overloads")
             public <R> MatchedDouble<R> when(Function<? super Double, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedDouble<>(f.apply(value));
             }
 
             @SuppressWarnings("overloads")
-
             public <R> MatchedDouble<R> when(DoubleFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedDouble<>(f.apply(value));
             }
 
+            @SuppressWarnings("overloads")
             public <R> SafeMatchDouble<R> when(Double protoType, Function<? super Double, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return Objects.equals(value, protoType) ? new MatchedDouble<>(f.apply(value)) : new UnmatchedDouble<>(value);
             }
 
             @SuppressWarnings("overloads")
-
             public <R> SafeMatchDouble<R> when(double protoType, DoubleFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return (value == protoType) ? new MatchedDouble<>(f.apply(value)) : new UnmatchedDouble<>(value);
@@ -1969,25 +1971,25 @@ public interface Match<R> extends Function<Object, R> {
 
             // -- when cases
 
+            @SuppressWarnings("overloads")
             public  MatchedDouble<R> when(Function<? super Double, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedDouble<>(f.apply(value));
             }
 
             @SuppressWarnings("overloads")
-
             public  MatchedDouble<R> when(DoubleFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedDouble<>(f.apply(value));
             }
 
+            @SuppressWarnings("overloads")
             public  SafeMatchDouble<R> when(Double protoType, Function<? super Double, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return Objects.equals(value, protoType) ? new MatchedDouble<>(f.apply(value)) : new UnmatchedDouble<>(value);
             }
 
             @SuppressWarnings("overloads")
-
             public  SafeMatchDouble<R> when(double protoType, DoubleFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return (value == protoType) ? new MatchedDouble<>(f.apply(value)) : new UnmatchedDouble<>(value);
@@ -2134,27 +2136,25 @@ public interface Match<R> extends Function<Object, R> {
 
             // -- when cases
 
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  MatchedDouble<R> when(Function<? super Double, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedDouble<>(f.apply(value));
             }
 
-            @SuppressWarnings("overloads")
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  MatchedDouble<R> when(DoubleFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedDouble<>(f.apply(value));
             }
 
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  SafeMatchDouble<R> when(Double protoType, Function<? super Double, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return Objects.equals(value, protoType) ? new MatchedDouble<>(f.apply(value)) : this;
             }
 
-            @SuppressWarnings("overloads")
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  SafeMatchDouble<R> when(double protoType, DoubleFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return (value == protoType) ? new MatchedDouble<>(f.apply(value)) : this;
@@ -2201,11 +2201,13 @@ public interface Match<R> extends Function<Object, R> {
 
         // -- when cases
 
+        @SuppressWarnings("overloads")
         MatchedFloat<R> when(Function<? super Float, ? extends R> f);
 
         @SuppressWarnings("overloads")
         MatchedFloat<R> when(FloatFunction<? extends R> f);
 
+        @SuppressWarnings("overloads")
         SafeMatchFloat<R> when(Float protoType, Function<? super Float, ? extends R> f);
 
         @SuppressWarnings("overloads")
@@ -2241,25 +2243,25 @@ public interface Match<R> extends Function<Object, R> {
 
             // -- when cases
 
+            @SuppressWarnings("overloads")
             public <R> MatchedFloat<R> when(Function<? super Float, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedFloat<>(f.apply(value));
             }
 
             @SuppressWarnings("overloads")
-
             public <R> MatchedFloat<R> when(FloatFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedFloat<>(f.apply(value));
             }
 
+            @SuppressWarnings("overloads")
             public <R> SafeMatchFloat<R> when(Float protoType, Function<? super Float, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return Objects.equals(value, protoType) ? new MatchedFloat<>(f.apply(value)) : new UnmatchedFloat<>(value);
             }
 
             @SuppressWarnings("overloads")
-
             public <R> SafeMatchFloat<R> when(float protoType, FloatFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return (value == protoType) ? new MatchedFloat<>(f.apply(value)) : new UnmatchedFloat<>(value);
@@ -2279,25 +2281,25 @@ public interface Match<R> extends Function<Object, R> {
 
             // -- when cases
 
+            @SuppressWarnings("overloads")
             public  MatchedFloat<R> when(Function<? super Float, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedFloat<>(f.apply(value));
             }
 
             @SuppressWarnings("overloads")
-
             public  MatchedFloat<R> when(FloatFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedFloat<>(f.apply(value));
             }
 
+            @SuppressWarnings("overloads")
             public  SafeMatchFloat<R> when(Float protoType, Function<? super Float, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return Objects.equals(value, protoType) ? new MatchedFloat<>(f.apply(value)) : new UnmatchedFloat<>(value);
             }
 
             @SuppressWarnings("overloads")
-
             public  SafeMatchFloat<R> when(float protoType, FloatFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return (value == protoType) ? new MatchedFloat<>(f.apply(value)) : new UnmatchedFloat<>(value);
@@ -2444,27 +2446,25 @@ public interface Match<R> extends Function<Object, R> {
 
             // -- when cases
 
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  MatchedFloat<R> when(Function<? super Float, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedFloat<>(f.apply(value));
             }
 
-            @SuppressWarnings("overloads")
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  MatchedFloat<R> when(FloatFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedFloat<>(f.apply(value));
             }
 
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  SafeMatchFloat<R> when(Float protoType, Function<? super Float, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return Objects.equals(value, protoType) ? new MatchedFloat<>(f.apply(value)) : this;
             }
 
-            @SuppressWarnings("overloads")
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  SafeMatchFloat<R> when(float protoType, FloatFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return (value == protoType) ? new MatchedFloat<>(f.apply(value)) : this;
@@ -2511,11 +2511,13 @@ public interface Match<R> extends Function<Object, R> {
 
         // -- when cases
 
+        @SuppressWarnings("overloads")
         MatchedInt<R> when(Function<? super Integer, ? extends R> f);
 
         @SuppressWarnings("overloads")
         MatchedInt<R> when(IntFunction<? extends R> f);
 
+        @SuppressWarnings("overloads")
         SafeMatchInt<R> when(Integer protoType, Function<? super Integer, ? extends R> f);
 
         @SuppressWarnings("overloads")
@@ -2551,25 +2553,25 @@ public interface Match<R> extends Function<Object, R> {
 
             // -- when cases
 
+            @SuppressWarnings("overloads")
             public <R> MatchedInt<R> when(Function<? super Integer, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedInt<>(f.apply(value));
             }
 
             @SuppressWarnings("overloads")
-
             public <R> MatchedInt<R> when(IntFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedInt<>(f.apply(value));
             }
 
+            @SuppressWarnings("overloads")
             public <R> SafeMatchInt<R> when(Integer protoType, Function<? super Integer, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return Objects.equals(value, protoType) ? new MatchedInt<>(f.apply(value)) : new UnmatchedInt<>(value);
             }
 
             @SuppressWarnings("overloads")
-
             public <R> SafeMatchInt<R> when(int protoType, IntFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return (value == protoType) ? new MatchedInt<>(f.apply(value)) : new UnmatchedInt<>(value);
@@ -2589,25 +2591,25 @@ public interface Match<R> extends Function<Object, R> {
 
             // -- when cases
 
+            @SuppressWarnings("overloads")
             public  MatchedInt<R> when(Function<? super Integer, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedInt<>(f.apply(value));
             }
 
             @SuppressWarnings("overloads")
-
             public  MatchedInt<R> when(IntFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedInt<>(f.apply(value));
             }
 
+            @SuppressWarnings("overloads")
             public  SafeMatchInt<R> when(Integer protoType, Function<? super Integer, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return Objects.equals(value, protoType) ? new MatchedInt<>(f.apply(value)) : new UnmatchedInt<>(value);
             }
 
             @SuppressWarnings("overloads")
-
             public  SafeMatchInt<R> when(int protoType, IntFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return (value == protoType) ? new MatchedInt<>(f.apply(value)) : new UnmatchedInt<>(value);
@@ -2754,27 +2756,25 @@ public interface Match<R> extends Function<Object, R> {
 
             // -- when cases
 
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  MatchedInt<R> when(Function<? super Integer, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedInt<>(f.apply(value));
             }
 
-            @SuppressWarnings("overloads")
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  MatchedInt<R> when(IntFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedInt<>(f.apply(value));
             }
 
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  SafeMatchInt<R> when(Integer protoType, Function<? super Integer, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return Objects.equals(value, protoType) ? new MatchedInt<>(f.apply(value)) : this;
             }
 
-            @SuppressWarnings("overloads")
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  SafeMatchInt<R> when(int protoType, IntFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return (value == protoType) ? new MatchedInt<>(f.apply(value)) : this;
@@ -2821,11 +2821,13 @@ public interface Match<R> extends Function<Object, R> {
 
         // -- when cases
 
+        @SuppressWarnings("overloads")
         MatchedLong<R> when(Function<? super Long, ? extends R> f);
 
         @SuppressWarnings("overloads")
         MatchedLong<R> when(LongFunction<? extends R> f);
 
+        @SuppressWarnings("overloads")
         SafeMatchLong<R> when(Long protoType, Function<? super Long, ? extends R> f);
 
         @SuppressWarnings("overloads")
@@ -2861,25 +2863,25 @@ public interface Match<R> extends Function<Object, R> {
 
             // -- when cases
 
+            @SuppressWarnings("overloads")
             public <R> MatchedLong<R> when(Function<? super Long, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedLong<>(f.apply(value));
             }
 
             @SuppressWarnings("overloads")
-
             public <R> MatchedLong<R> when(LongFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedLong<>(f.apply(value));
             }
 
+            @SuppressWarnings("overloads")
             public <R> SafeMatchLong<R> when(Long protoType, Function<? super Long, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return Objects.equals(value, protoType) ? new MatchedLong<>(f.apply(value)) : new UnmatchedLong<>(value);
             }
 
             @SuppressWarnings("overloads")
-
             public <R> SafeMatchLong<R> when(long protoType, LongFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return (value == protoType) ? new MatchedLong<>(f.apply(value)) : new UnmatchedLong<>(value);
@@ -2899,25 +2901,25 @@ public interface Match<R> extends Function<Object, R> {
 
             // -- when cases
 
+            @SuppressWarnings("overloads")
             public  MatchedLong<R> when(Function<? super Long, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedLong<>(f.apply(value));
             }
 
             @SuppressWarnings("overloads")
-
             public  MatchedLong<R> when(LongFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedLong<>(f.apply(value));
             }
 
+            @SuppressWarnings("overloads")
             public  SafeMatchLong<R> when(Long protoType, Function<? super Long, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return Objects.equals(value, protoType) ? new MatchedLong<>(f.apply(value)) : new UnmatchedLong<>(value);
             }
 
             @SuppressWarnings("overloads")
-
             public  SafeMatchLong<R> when(long protoType, LongFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return (value == protoType) ? new MatchedLong<>(f.apply(value)) : new UnmatchedLong<>(value);
@@ -3064,27 +3066,25 @@ public interface Match<R> extends Function<Object, R> {
 
             // -- when cases
 
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  MatchedLong<R> when(Function<? super Long, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedLong<>(f.apply(value));
             }
 
-            @SuppressWarnings("overloads")
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  MatchedLong<R> when(LongFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedLong<>(f.apply(value));
             }
 
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  SafeMatchLong<R> when(Long protoType, Function<? super Long, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return Objects.equals(value, protoType) ? new MatchedLong<>(f.apply(value)) : this;
             }
 
-            @SuppressWarnings("overloads")
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  SafeMatchLong<R> when(long protoType, LongFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return (value == protoType) ? new MatchedLong<>(f.apply(value)) : this;
@@ -3131,11 +3131,13 @@ public interface Match<R> extends Function<Object, R> {
 
         // -- when cases
 
+        @SuppressWarnings("overloads")
         MatchedShort<R> when(Function<? super Short, ? extends R> f);
 
         @SuppressWarnings("overloads")
         MatchedShort<R> when(ShortFunction<? extends R> f);
 
+        @SuppressWarnings("overloads")
         SafeMatchShort<R> when(Short protoType, Function<? super Short, ? extends R> f);
 
         @SuppressWarnings("overloads")
@@ -3171,25 +3173,25 @@ public interface Match<R> extends Function<Object, R> {
 
             // -- when cases
 
+            @SuppressWarnings("overloads")
             public <R> MatchedShort<R> when(Function<? super Short, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedShort<>(f.apply(value));
             }
 
             @SuppressWarnings("overloads")
-
             public <R> MatchedShort<R> when(ShortFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedShort<>(f.apply(value));
             }
 
+            @SuppressWarnings("overloads")
             public <R> SafeMatchShort<R> when(Short protoType, Function<? super Short, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return Objects.equals(value, protoType) ? new MatchedShort<>(f.apply(value)) : new UnmatchedShort<>(value);
             }
 
             @SuppressWarnings("overloads")
-
             public <R> SafeMatchShort<R> when(short protoType, ShortFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return (value == protoType) ? new MatchedShort<>(f.apply(value)) : new UnmatchedShort<>(value);
@@ -3209,25 +3211,25 @@ public interface Match<R> extends Function<Object, R> {
 
             // -- when cases
 
+            @SuppressWarnings("overloads")
             public  MatchedShort<R> when(Function<? super Short, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedShort<>(f.apply(value));
             }
 
             @SuppressWarnings("overloads")
-
             public  MatchedShort<R> when(ShortFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedShort<>(f.apply(value));
             }
 
+            @SuppressWarnings("overloads")
             public  SafeMatchShort<R> when(Short protoType, Function<? super Short, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return Objects.equals(value, protoType) ? new MatchedShort<>(f.apply(value)) : new UnmatchedShort<>(value);
             }
 
             @SuppressWarnings("overloads")
-
             public  SafeMatchShort<R> when(short protoType, ShortFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return (value == protoType) ? new MatchedShort<>(f.apply(value)) : new UnmatchedShort<>(value);
@@ -3374,27 +3376,25 @@ public interface Match<R> extends Function<Object, R> {
 
             // -- when cases
 
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  MatchedShort<R> when(Function<? super Short, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedShort<>(f.apply(value));
             }
 
-            @SuppressWarnings("overloads")
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  MatchedShort<R> when(ShortFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return new MatchedShort<>(f.apply(value));
             }
 
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  SafeMatchShort<R> when(Short protoType, Function<? super Short, ? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return Objects.equals(value, protoType) ? new MatchedShort<>(f.apply(value)) : this;
             }
 
-            @SuppressWarnings("overloads")
-            @Override
+            @SuppressWarnings("overloads")@Override
             public  SafeMatchShort<R> when(short protoType, ShortFunction<? extends R> f) {
                 Objects.requireNonNull(f, "f is null");
                 return (value == protoType) ? new MatchedShort<>(f.apply(value)) : this;

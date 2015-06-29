@@ -99,27 +99,25 @@ def generateMainClasses(): Unit = {
         xs"""
             // -- when cases
 
-            $Override
+            @SuppressWarnings("overloads")$Override
             public $R Matched$typeName<R> when(Function<? super $objectType, ? extends R> f) {
                 $objects.requireNonNull(f, "f is null");
                 return new Matched$typeName<>(f.apply(value));
             }
 
-            @SuppressWarnings("overloads")
-            $Override
+            @SuppressWarnings("overloads")$Override
             public $R Matched$typeName<R> when(${typeName}Function<? extends R> f) {
                 $objects.requireNonNull(f, "f is null");
                 return new Matched$typeName<>(f.apply(value));
             }
 
-            $Override
+            @SuppressWarnings("overloads")$Override
             public $R SafeMatch$typeName<R> when($objectType protoType, $function<? super $objectType, ? extends R> f) {
                 $objects.requireNonNull(f, "f is null");
                 return Objects.equals(value, protoType) ? new Matched$typeName<>(f.apply(value)) : ${if (isUnmatchedType) "this" else s"new Unmatched$typeName<>(value)"};
             }
 
-            @SuppressWarnings("overloads")
-            $Override
+            @SuppressWarnings("overloads")$Override
             public $R SafeMatch$typeName<R> when($primitiveType protoType, ${typeName}Function<? extends R> f) {
                 $objects.requireNonNull(f, "f is null");
                 return (value == protoType) ? new Matched$typeName<>(f.apply(value)) : ${if (isUnmatchedType) "this" else s"new Unmatched$typeName<>(value)"};
@@ -372,11 +370,13 @@ def generateMainClasses(): Unit = {
 
                 // -- when cases
 
+                @SuppressWarnings("overloads")
                 Matched$typeName<R> when($function<? super $objectType, ? extends R> f);
 
                 @SuppressWarnings("overloads")
                 Matched$typeName<R> when(${typeName}Function<? extends R> f);
 
+                @SuppressWarnings("overloads")
                 SafeMatch$typeName<R> when($objectType protoType, $function<? super $objectType, ? extends R> f);
 
                 @SuppressWarnings("overloads")
