@@ -29,7 +29,7 @@ public class MatchTest {
 
     @Test
     public void shouldMatchNullAsPrototype() {
-        final int actual = Match.when((String s) -> s.length()).when(null, o -> 1).apply(null);
+        final int actual = Match.when((String s) -> s.length()).whenNull().then(o -> 1).apply(null);
         assertThat(actual).isEqualTo(1);
     }
 
@@ -42,13 +42,13 @@ public class MatchTest {
 
     @Test(expected = MatchError.class)
     public void shouldThrowOnNoMatchByValue() {
-        Match.when("1", o -> 1).apply("2");
+        Match.when("1").then(o -> 1).apply("2");
     }
 
     @Test
     public void shouldGetObjectWhenMatchErrorOccurs() {
         try {
-            Match.when("1", o -> 1).apply("2");
+            Match.when("1").then(o -> 1).apply("2");
             fail("No MatchError thrown");
         } catch (MatchError x) {
             assertThat(x.getObject()).isEqualTo("2");
@@ -75,7 +75,7 @@ public class MatchTest {
 
     @Test
     public void shouldMatchByAssignableTypeOnMultipleCases() {
-        final int actual = Match.when(1, o -> 'a').when((Number n) -> 'b').when((Object o) -> 'c').apply(2.0d);
+        final int actual = Match.when(1).then(o -> 'a').when((Number n) -> 'b').when((Object o) -> 'c').apply(2.0d);
         assertThat(actual).isEqualTo('b');
     }
 
@@ -83,13 +83,13 @@ public class MatchTest {
 
     @Test
     public void shouldMatchDefaultCaseUsingEagerDefaultValue() {
-        final int actual = Match.when(null, o -> 1).otherwise(2).apply("default");
+        final int actual = Match.when("x").then(o -> 1).otherwise(2).apply("default");
         assertThat(actual).isEqualTo(2);
     }
 
     @Test
     public void shouldMatchDefaultCaseUsingLazyDefaultValue() {
-        final int actual = Match.when(null, o -> 1).otherwise(() -> 2).apply("default");
+        final int actual = Match.when("x").then(o -> 1).otherwise(() -> 2).apply("default");
         assertThat(actual).isEqualTo(2);
     }
 
@@ -108,7 +108,7 @@ public class MatchTest {
 
     @Test
     public void shouldCreateWhenOfTypeUsingPrototype() {
-        assertThat(Match.as(Object.class).when(null, Function1.identity())).isNotNull();
+        assertThat(Match.as(Object.class).when(1).then(Function1.identity())).isNotNull();
     }
 
     @Test
@@ -154,6 +154,29 @@ public class MatchTest {
     @Test
     public void shouldCreateWhenOfTypeUsingShortFunction() {
         assertThat(Match.as(Object.class).when((short b) -> null)).isNotNull();
+    }
+
+    // -- whenIn
+
+    @Test
+    public void shouldAllowValidMatchWithMultiPrototypes() {
+        final String result = Match
+                .whenIn(1, 3, 5, 7).then(() -> "true")
+                .whenIn(2, 4, 6, 8).then(() -> "false")
+                .apply(6);
+
+        assertThat(result).isEqualTo("false");
+    }
+
+    @Test
+    public void shouldAllowInvalidMatchWithMultiPrototypes() {
+        final String result = Match
+                .whenIn(1, 3, 5, 7).then(() -> "true")
+                .whenIn(2, 4, 6, 8).then(() -> "false")
+                .otherwise("Not Found")
+                .apply(9);
+
+        assertThat(result).isEqualTo("Not Found");
     }
 
     // -- primitive types vs objects
@@ -372,25 +395,37 @@ public class MatchTest {
 
     @Test
     public void shouldMatchPrimitiveBooleanValueAndApplyBooleanFunction() {
-        final int actual = Match.when(true, b -> 1).when(Boolean.TRUE, b -> 2).apply(true);
+        final int actual = Match
+                .when(true).then(b -> 1)
+                .when(Boolean.TRUE).then(b -> 2)
+                .apply(true);
         assertThat(actual).isEqualTo(1);
     }
 
     @Test
     public void shouldMatchPrimitiveBooleanValueAsBooleanAndApplyBooleanFunction() {
-        final int actual = Match.when(Boolean.TRUE, b -> 1).when(true, b -> 2).apply(true);
+        final int actual = Match
+                .when(Boolean.TRUE).then(b -> 1)
+                .when(true).then(b -> 2)
+                .apply(true);
         assertThat(actual).isEqualTo(1);
     }
 
     @Test
     public void shouldMatchByValuesUsingFunction() {
-        final int actual = Match.when("1", (String s) -> 1).apply("1");
+        final int actual = Match
+                .when("1").then((String s) -> 1)
+                .apply("1");
         assertThat(actual).isEqualTo(1);
     }
 
     @Test
     public void shouldMatchByValueOnMultipleCases() {
-        final int actual = Match.when("1", o -> 1).when("2", o -> 2).when("3", o -> 3).apply("2");
+        final int actual = Match
+                .when("1").then(o -> 1)
+                .when("2").then(o -> 2)
+                .when("3").then(o -> 3)
+                .apply("2");
         assertThat(actual).isEqualTo(2);
     }
 
@@ -398,12 +433,12 @@ public class MatchTest {
     public void shouldCompileObjectIntegerPrototypeCase() {
         // This does *not* compile: new Match.Builder<>().when(1, (int i) -> i);
         // Use this instead: Match.Builder<>().when(1, i -> i);
-        Match.when(1, (Integer i) -> i);
+        Match.when(1).then((Integer i) -> i);
     }
 
     @Test
     public void shouldCompileUnqualifiedIntegerPrototypeCase() {
-        Match.when(1, i -> i);
+        Match.when(1).then(i -> i);
     }
 
     // -- matching arrays
@@ -428,8 +463,8 @@ public class MatchTest {
     @Test
     public void shouldAllowCommonReturnTypeUsingBuilderAndPrototype() {
         final Match<Number> toNumber = Match.as(Number.class)
-                .when(1, (Integer i) -> i)
-                .when("1", (String s) -> new BigDecimal(s));
+                .when(1).then((Integer i) -> i)
+                .when("1").then((String s) -> new BigDecimal(s));
         final Number number = toNumber.apply("1");
         assertThat(number).isEqualTo(new BigDecimal("1"));
     }
@@ -446,8 +481,8 @@ public class MatchTest {
     @Test
     public void shouldAllowCommonReturnTypeUsingMatchsWithPrototype() {
         final Match<Number> toNumber = Match
-                .<Integer, Number>when(1, (Integer i) -> i)
-                .when("1", (String s) -> new BigDecimal(s));
+                .when(1).<Number> then((Integer i) -> i)
+                .when("1").then((String s) -> new BigDecimal(s));
         final Number number = toNumber.apply("1");
         assertThat(number).isEqualTo(new BigDecimal("1"));
     }

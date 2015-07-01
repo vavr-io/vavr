@@ -143,19 +143,26 @@ public interface Match<R> extends Function<Object, R> {
         return new Typed<>();
     }
 
+    static <T> WhenUntyped<T> whenNull() {
+        return new WhenUntyped<>(null);
+    }
+
     /**
      * Creates a {@code Match.Case} by value.
      *
      * @param <T> type of the prototype value
-     * @param <R> result type of the matched case
      * @param prototype A specific value to be matched
-     * @param function A function which is applied to the value given a match
      * @return a new {@code Case}
      * @throws NullPointerException if {@code function} is null
      */
-    static <T, R> Case<R> when(T prototype, Function1<? super T, ? extends R> function) {
-        Objects.requireNonNull(function, "function is null");
-        return Case.of(prototype, function);
+    static <T> WhenUntyped<T> when(T prototype) {
+        return new WhenUntyped<>(prototype);
+    }
+
+    @SuppressWarnings("unchecked")
+    static <T> WhenInUntyped<T> whenIn(T... prototypes) {
+        Objects.requireNonNull(prototypes, "prototypes is null");
+        return new WhenInUntyped<>(prototypes);
     }
 
     /**
@@ -296,9 +303,20 @@ public interface Match<R> extends Function<Object, R> {
         }
 
         @Override
-        public <T> Case<R> when(T prototype, Function1<? super T, ? extends R> function) {
-            Objects.requireNonNull(function, "function is null");
-            return Case.of(prototype, function);
+        public <T> When<T, R> whenNull() {
+            return new When<>(null, List.nil());
+        }
+
+        @Override
+        public <T> When<T, R> when(T prototype) {
+            return new When<>(prototype, List.nil());
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T> WhenIn<T, R> whenIn(T... prototypes) {
+            Objects.requireNonNull(prototypes, "prototypes is null");
+            return new WhenIn<>(prototypes, List.nil());
         }
 
         @Override
@@ -353,6 +371,92 @@ public interface Match<R> extends Function<Object, R> {
         public Case<R> when(ShortFunction<? extends R> function) {
             Objects.requireNonNull(function, "function is null");
             return Case.of(function);
+        }
+    }
+
+    interface WithThenUntyped<T> {
+
+        <R> Case<R> then(Function1<? super T, ? extends R> function);
+
+        default <R> Case<R> then(Supplier<? extends R> supplier) {
+            Objects.requireNonNull(supplier, "supplier is null");
+            return then(ignored -> supplier.get());
+        }
+    }
+
+    interface WithThen<T, R> {
+
+        Case<R> then(Function1<? super T, ? extends R> function);
+
+        default Case<R> then(Supplier<? extends R> supplier) {
+            Objects.requireNonNull(supplier, "supplier is null");
+            return then(ignored -> supplier.get());
+        }
+    }
+
+    final class WhenUntyped<T> implements WithThenUntyped<T> {
+
+        private final T prototype;
+
+        private WhenUntyped(T prototype) {
+            this.prototype = prototype;
+        }
+
+        @Override
+        public <R> Case<R> then(Function1<? super T, ? extends R> function) {
+            Objects.requireNonNull(function, "function is null");
+            return Case.of(prototype, function);
+        }
+    }
+
+    final class WhenInUntyped<T> implements WithThenUntyped<T> {
+
+        private final T[] prototypes;
+
+        private WhenInUntyped(T[] prototypes) {
+            this.prototypes = prototypes;
+        }
+
+        @Override
+        public <R> Case<R> then(Function1<? super T, ? extends R> function) {
+            Objects.requireNonNull(function, "function is null");
+            return new Case<>(List.of(prototypes).map(t -> Case.when(new Some<>(t), function)));
+        }
+    }
+
+    final class When<T, R> implements WithThen<T, R> {
+
+        private final T prototype;
+        private final List<Function<Object, Option<R>>> cases;
+
+        private When(T prototype, List<Function<Object, Option<R>>> cases) {
+            this.prototype = prototype;
+            this.cases = cases;
+        }
+
+        @Override
+        public Case<R> then(Function1<? super T, ? extends R> function) {
+            Objects.requireNonNull(function, "function is null");
+            final Function<Object, Option<R>> when = Case.when(new Some<>(prototype), function);
+            return new Case<>(cases.prepend(when));
+        }
+    }
+
+    final class WhenIn<T, R> implements WithThen<T, R> {
+
+        private final T[] prototypes;
+        private final List<Function<Object, Option<R>>> cases;
+
+        private WhenIn(T[] prototypes, List<Function<Object, Option<R>>> cases) {
+            this.prototypes = prototypes;
+            this.cases = cases;
+        }
+
+        @Override
+        public Case<R> then(Function1<? super T, ? extends R> function) {
+            Objects.requireNonNull(function, "function is null");
+            final List<Function<Object, Option<R>>> list = List.of(prototypes).map(t -> Case.when(new Some<>(t), function));
+            return new Case<>(list.foldLeft(cases, List::prepend));
         }
     }
 
@@ -431,10 +535,20 @@ public interface Match<R> extends Function<Object, R> {
         }
 
         @Override
-        public <T> Case<R> when(T prototype, Function1<? super T, ? extends R> function) {
-            Objects.requireNonNull(function, "function is null");
-            final Function<Object, Option<R>> when = when(new Some<>(prototype), function);
-            return new Case<>(cases.prepend(when));
+        public <T> When<T, R> whenNull() {
+            return new When<>(null, cases);
+        }
+
+        @Override
+        public <T> When<T, R> when(T prototype) {
+            return new When<>(prototype, cases);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T> WhenIn<T, R> whenIn(T... prototypes) {
+            Objects.requireNonNull(prototypes, "prototypes is null");
+            return new WhenIn<>(prototypes, cases);
         }
 
         @Override
@@ -577,16 +691,20 @@ public interface Match<R> extends Function<Object, R> {
         // Note: placed this interface here, because interface Match cannot have private inner interfaces
         private interface HasCases<R> {
 
+            <T> When<T, R> whenNull();
+
             /**
-             * Creates a {@code Match.Case} by value.
+             * Creates a {@code Match.When} by value.
              *
              * @param <T> type of the prototype value
              * @param prototype A specific value to be matched
-             * @param function A function which is applied to the value given a match
              * @return a new {@code Case}
              * @throws NullPointerException if {@code function} is null
              */
-            <T> HasCases<R> when(T prototype, Function1<? super T, ? extends R> function);
+            <T> When<T, R> when(T prototype);
+
+            @SuppressWarnings("unchecked")
+            <T> WhenIn<T, R> whenIn(T... prototypes);
 
             /**
              * Creates a {@code Match.Case} by type.
