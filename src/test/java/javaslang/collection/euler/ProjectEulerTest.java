@@ -71,9 +71,8 @@ public class ProjectEulerTest {
 
     private static long fibonacci(int order) {
         return Match
-                .when(0, i -> 0L)
-                .when(1, i -> 1L)
-                .when(2, i -> 1L)
+                .when(0).then(() -> 0L)
+                .whenIn(1, 2).then(() -> 1L)
                 .otherwise(() -> memoizedFibonacci.apply(order - 2) + memoizedFibonacci.apply(order - 1))
                 .apply(order);
     }
@@ -103,7 +102,7 @@ public class ProjectEulerTest {
 
     private static Stream<Tuple2<Long, Long>> primeFactorsAndResultingValTail(Tuple2<Long, Long> previousFactorAndResultingVal) {
         return Match
-                .when(1L, p -> Stream.<Tuple2<Long, Long>>nil())
+                .when(1L).then(() -> Stream.<Tuple2<Long, Long>>nil())
                 .otherwise(() -> {
                     final long nextPrimeFactor = knownPrimes.filter(p -> previousFactorAndResultingVal._2 % p == 0).take(1).head();
                     final Tuple2<Long, Long> head = new Tuple2<>(nextPrimeFactor, previousFactorAndResultingVal._2 / nextPrimeFactor);
@@ -171,7 +170,7 @@ public class ProjectEulerTest {
 
     private static long nextPrime(long previousPrime) {
         return Match
-                .when(2L, i -> 3L)
+                .when(2L).then(() -> 3L)
                 .otherwise(() -> Stream.gen(previousPrime + 2, v -> v + 2)
                         .filter(i -> !isEvenlyDiversableByKnownPrimes(previousPrime, i))
                         .take(1).head())
