@@ -84,7 +84,7 @@ public interface Stream<T> extends Seq<T> {
      * @return a new Stream of int values starting from {@code from}
      */
     static Stream<Integer> from(int value) {
-        return new Cons<>(value, () -> from(value + 1));
+        return new Cons<>(() -> value, () -> from(value + 1));
     }
 
     /**
@@ -96,7 +96,7 @@ public interface Stream<T> extends Seq<T> {
      */
     static <T> Stream<T> gen(Supplier<T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
-        return new Cons<>(supplier.get(), () -> gen(supplier));
+        return new Cons<>(supplier, () -> gen(supplier));
     }
 
     /**
@@ -110,7 +110,7 @@ public interface Stream<T> extends Seq<T> {
      */
     static <T> Stream<T> gen(T seed, Function<T, T> f) {
         Objects.requireNonNull(f, "f is null");
-        return new Stream.Cons<>(seed, () -> gen(f.apply(seed), f));
+        return new Stream.Cons<>(() -> seed, () -> gen(f.apply(seed), f));
     }
 
     /**
@@ -124,7 +124,7 @@ public interface Stream<T> extends Seq<T> {
      */
     static <T> Stream<T> gen(T head, Supplier<Stream<T>> tailSupplier) {
         Objects.requireNonNull(tailSupplier, "tailSupplier is null");
-        return new Stream.Cons<>(head, tailSupplier);
+        return new Stream.Cons<>(() -> head, tailSupplier);
     }
 
     /**
@@ -148,7 +148,7 @@ public interface Stream<T> extends Seq<T> {
      * @return A new Stream instance containing the given element
      */
     static <T> Stream<T> of(T element) {
-        return new Cons<>(element, Nil::instance);
+        return new Cons<>(() -> element, Nil::instance);
     }
 
     /**
@@ -211,7 +211,9 @@ public interface Stream<T> extends Seq<T> {
     static <T> Stream<T> ofAll(Iterator<? extends T> iterator) {
         Objects.requireNonNull(iterator, "iterator is null");
         if (iterator.hasNext()) {
-            return new Cons<>(iterator.next(), () -> Stream.ofAll(iterator));
+            // we need to get the head, otherwise a tail call would get the head instead
+            final T head = iterator.next();
+            return new Cons<>(() -> head, () -> Stream.ofAll(iterator));
         } else {
             return Nil.instance();
         }
@@ -245,20 +247,15 @@ public interface Stream<T> extends Seq<T> {
         } else if (from == Integer.MAX_VALUE) {
             return Stream.of(Integer.MAX_VALUE);
         } else {
-            return new Cons<>(from, () -> rangeClosed(from + 1, toInclusive));
+            return new Cons<>(() -> from, () -> rangeClosed(from + 1, toInclusive));
         }
     }
 
     @Override
-    default Stream<T> append(T element) {
-        return isEmpty() ? Stream.of(element) : new Cons<>(head(), () -> tail().append(element));
-    }
+    Stream<T> append(T element);
 
     @Override
-    default Stream<T> appendAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        return isEmpty() ? Stream.ofAll(elements) : new Cons<>(head(), () -> tail().appendAll(elements));
-    }
+    Stream<T> appendAll(Iterable<? extends T> elements);
 
     @Override
     default Stream<T> clear() {
@@ -325,7 +322,7 @@ public interface Stream<T> extends Seq<T> {
             stream = stream.tail();
         }
         final Stream<T> finalStream = stream;
-        return stream.isEmpty() ? stream : new Cons<>(stream.head(), () -> finalStream.tail().filter(predicate));
+        return stream.isEmpty() ? stream : new Cons<>(stream::head, () -> finalStream.tail().filter(predicate));
     }
 
     @Override
@@ -439,47 +436,13 @@ public interface Stream<T> extends Seq<T> {
     Option<Stream<T>> initOption();
 
     @Override
-    default Stream<T> insert(int index, T element) {
-        if (index < 0) {
-            throw new IndexOutOfBoundsException("insert(" + index + ", e)");
-        }
-        if (index > 0 && isEmpty()) {
-            throw new IndexOutOfBoundsException("insert(" + index + ", e) on Nil");
-        }
-        if (index == 0) {
-            return new Cons<>(element, () -> this);
-        } else {
-            return new Cons<>(head(), () -> tail().insert(index - 1, element));
-        }
-    }
+    Stream<T> insert(int index, T element);
 
     @Override
-    default Stream<T> insertAll(int index, Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        if (index < 0) {
-            throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
-        }
-        if (index > 0 && isEmpty()) {
-            throw new IndexOutOfBoundsException("insertAll(" + index + ", elements) on Nil");
-        }
-        if (index == 0) {
-            return Stream.ofAll(elements).appendAll(this);
-        } else {
-            return new Cons<>(head(), () -> tail().insertAll(index - 1, elements));
-        }
-    }
+    Stream<T> insertAll(int index, Iterable<? extends T> elements);
 
     @Override
-    default Stream<T> intersperse(T element) {
-        if (isEmpty()) {
-            return Nil.instance();
-        } else {
-            return new Cons<>(head(), () -> {
-                final Stream<T> tail = tail();
-                return tail.isEmpty() ? tail : new Cons<>(element, () -> tail.intersperse(element));
-            });
-        }
-    }
+    Stream<T> intersperse(T element);
 
     @Override
     default int lastIndexOf(T element) {
@@ -498,7 +461,7 @@ public interface Stream<T> extends Seq<T> {
         if (isEmpty()) {
             return Nil.instance();
         } else {
-            return new Cons<>(mapper.apply(head()), () -> tail().map(mapper));
+            return new Cons<>(() -> mapper.apply(head()), () -> tail().map(mapper));
         }
     }
 
@@ -509,15 +472,7 @@ public interface Stream<T> extends Seq<T> {
     }
 
     @Override
-    default Stream<T> peek(Consumer<? super T> action) {
-        if (isEmpty()) {
-            return this;
-        } else {
-            final T head = head();
-            action.accept(head);
-            return new Cons<>(head, () -> tail().peek(action));
-        }
-    }
+    Stream<T> peek(Consumer<? super T> action);
 
     @Override
     default Stream<Stream<T>> permutations() {
@@ -537,7 +492,7 @@ public interface Stream<T> extends Seq<T> {
 
     @Override
     default Stream<T> prepend(T element) {
-        return new Cons<>(element, () -> this);
+        return new Cons<>(() -> element, () -> this);
     }
 
     @Override
@@ -547,14 +502,7 @@ public interface Stream<T> extends Seq<T> {
     }
 
     @Override
-    default Stream<T> remove(T element) {
-        if (isEmpty()) {
-            return this;
-        } else {
-            final T head = head();
-            return Objects.equals(head, element) ? tail() : new Cons<>(head, () -> tail().remove(element));
-        }
-    }
+    Stream<T> remove(T element);
 
     @Override
     default Stream<T> removeAll(T removed) {
@@ -569,26 +517,17 @@ public interface Stream<T> extends Seq<T> {
     }
 
     @Override
-    default Stream<T> replace(T currentElement, T newElement) {
-        if (isEmpty()) {
-            return this;
-        } else {
-            final T head = head();
-            if (Objects.equals(head, currentElement)) {
-                return new Cons<>(newElement, this::tail);
-            } else {
-                return new Cons<>(head, () -> tail().replace(currentElement, newElement));
-            }
-        }
-    }
+    Stream<T> replace(T currentElement, T newElement);
 
     @Override
     default Stream<T> replaceAll(T currentElement, T newElement) {
         if (isEmpty()) {
             return this;
         } else {
-            final T head = head();
-            final T newHead = Objects.equals(head, currentElement) ? newElement : head;
+            final Supplier<T> newHead = () -> {
+                final T head = head();
+                return Objects.equals(head, currentElement) ? newElement : head;
+            };
             return new Cons<>(newHead, () -> tail().replaceAll(currentElement, newElement));
         }
     }
@@ -598,7 +537,7 @@ public interface Stream<T> extends Seq<T> {
         if (isEmpty()) {
             return this;
         } else {
-            return new Cons<>(operator.apply(head()), () -> tail().replaceAll(operator));
+            return new Cons<>(() -> operator.apply(head()), () -> tail().replaceAll(operator));
         }
     }
 
@@ -655,7 +594,7 @@ public interface Stream<T> extends Seq<T> {
             return Nil.instance();
         } else {
             final Tuple2<Stream<T>, Stream<T>> split = splitAt(size);
-            return new Cons<>(split._1, () -> split._2.isEmpty() ? nil() : drop(step).sliding(size, step));
+            return new Cons<>(() -> split._1, () -> split._2.isEmpty() ? nil() : drop(step).sliding(size, step));
         }
     }
 
@@ -702,22 +641,7 @@ public interface Stream<T> extends Seq<T> {
     }
 
     @Override
-    default Stream<T> subsequence(int beginIndex, int endIndex) {
-        if (beginIndex < 0 || beginIndex > endIndex) {
-            throw new IndexOutOfBoundsException(String.format("subsequence(%s, %s)", beginIndex, endIndex));
-        }
-        if (beginIndex == endIndex) {
-            return Nil.instance();
-        }
-        if (isEmpty()) {
-            throw new IndexOutOfBoundsException("subsequence of Nil");
-        }
-        if (beginIndex == 0) {
-            return new Cons<>(head(), () -> tail().subsequence(0, endIndex - 1));
-        } else {
-            return tail().subsequence(beginIndex - 1, endIndex - 1);
-        }
-    }
+    Stream<T> subsequence(int beginIndex, int endIndex);
 
     @Override
     Stream<T> tail();
@@ -726,15 +650,7 @@ public interface Stream<T> extends Seq<T> {
     Option<Stream<T>> tailOption();
 
     @Override
-    default Stream<T> take(int n) {
-        if (isEmpty()) {
-            return this;
-        } else if (n < 1) {
-            return Nil.instance();
-        } else {
-            return new Cons<>(head(), () -> tail().take(n - 1));
-        }
-    }
+    Stream<T> take(int n);
 
     @Override
     default Stream<T> takeRight(int n) {
@@ -742,19 +658,7 @@ public interface Stream<T> extends Seq<T> {
     }
 
     @Override
-    default Stream<T> takeWhile(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        if (isEmpty()) {
-            return this;
-        } else {
-            final T head = head();
-            if (predicate.test(head)) {
-                return new Cons<>(head, () -> tail().takeWhile(predicate));
-            } else {
-                return Nil.instance();
-            }
-        }
-    }
+    Stream<T> takeWhile(Predicate<? super T> predicate);
 
     @Override
     default <T1, T2> Tuple2<Stream<T1>, Stream<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
@@ -772,7 +676,7 @@ public interface Stream<T> extends Seq<T> {
         if (this.isEmpty() || that.isEmpty()) {
             return Nil.instance();
         } else {
-            return new Cons<>(Tuple.of(this.head(), that.head()), () -> this.tail().zip(that.tail()));
+            return new Cons<>(() -> Tuple.of(this.head(), that.head()), () -> this.tail().zip(that.tail()));
         }
     }
 
@@ -785,11 +689,16 @@ public interface Stream<T> extends Seq<T> {
         if (isThisEmpty && isThatEmpty) {
             return Nil.instance();
         } else {
-            final T head1 = isThisEmpty ? thisElem : this.head();
-            final U head2 = isThatEmpty ? thatElem : that.head();
-            final Stream<T> tail1 = isThisEmpty ? this : this.tail();
-            final Stream<U> tail2 = isThatEmpty ? that : that.tail();
-            return new Cons<>(Tuple.of(head1, head2), () -> tail1.zipAll(tail2, thisElem, thatElem));
+            final Supplier<Tuple2<T, U>> zippedHead = () -> Tuple.of(
+                    isThisEmpty ? thisElem : this.head(),
+                    isThatEmpty ? thatElem : that.head()
+            );
+            final Supplier<Stream<Tuple2<T, U>>> zippedTail = () -> {
+                final Stream<T> tail1 = isThisEmpty ? this : this.tail();
+                final Stream<U> tail2 = isThatEmpty ? that : that.tail();
+                return tail1.zipAll(tail2, thisElem, thatElem);
+            };
+            return new Cons<>(zippedHead, zippedTail);
         }
     }
 
@@ -811,7 +720,7 @@ public interface Stream<T> extends Seq<T> {
 
         private static final long serialVersionUID = 1L;
 
-        private final T head;
+        private final Lazy<T> head;
         private final Lazy<Stream<T>> tail;
 
         /**
@@ -820,19 +729,30 @@ public interface Stream<T> extends Seq<T> {
          * @param head A head element
          * @param tail A tail {@code Stream} supplier, {@linkplain Nil} denotes the end of the {@code Stream}
          */
-        Cons(T head, Supplier<Stream<T>> tail) {
-            this.head = head;
+        Cons(Supplier<T> head, Supplier<Stream<T>> tail) {
+            this.head = Lazy.of(head);
             this.tail = Lazy.of(Objects.requireNonNull(tail, "tail is null"));
         }
 
         @Override
+        public Stream<T> append(T element) {
+            return new Cons<>(head, () -> tail().append(element));
+        }
+
+        @Override
+        public Stream<T> appendAll(Iterable<? extends T> elements) {
+            Objects.requireNonNull(elements, "elements is null");
+            return new Cons<>(head, () -> tail().appendAll(elements));
+        }
+
+        @Override
         public T head() {
-            return head;
+            return head.get();
         }
 
         @Override
         public Some<T> headOption() {
-            return new Some<>(head);
+            return new Some<>(head.get());
         }
 
         @Override
@@ -841,13 +761,86 @@ public interface Stream<T> extends Seq<T> {
             if (tail.isEmpty()) {
                 return Nil.instance();
             } else {
-                return new Cons<>(head(), tail::init);
+                return new Cons<>(head, tail::init);
             }
         }
 
         @Override
         public Some<Stream<T>> initOption() {
             return new Some<>(init());
+        }
+
+        @Override
+        public Stream<T> insert(int index, T element) {
+            if (index < 0) {
+                throw new IndexOutOfBoundsException("insert(" + index + ", e)");
+            }
+            if (index == 0) {
+                return new Cons<>(() -> element, () -> this);
+            } else {
+                return new Cons<>(head, () -> tail().insert(index - 1, element));
+            }
+        }
+
+        @Override
+        public Stream<T> insertAll(int index, Iterable<? extends T> elements) {
+            Objects.requireNonNull(elements, "elements is null");
+            if (index < 0) {
+                throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
+            }
+            if (index == 0) {
+                return Stream.ofAll(elements).appendAll(this);
+            } else {
+                return new Cons<>(head, () -> tail().insertAll(index - 1, elements));
+            }
+        }
+
+        @Override
+        public Stream<T> intersperse(T element) {
+            return new Cons<>(head, () -> {
+                final Stream<T> tail = tail();
+                return tail.isEmpty() ? tail : new Cons<>(() -> element, () -> tail.intersperse(element));
+            });
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return false;
+        }
+
+        @Override
+        public Stream<T> peek(Consumer<? super T> action) {
+            action.accept(head.get());
+            return new Cons<>(head, () -> tail().peek(action));
+        }
+
+        @Override
+        public Stream<T> remove(T element) {
+            return Objects.equals(head.get(), element) ? tail() : new Cons<>(head, () -> tail().remove(element));
+        }
+
+        @Override
+        public Stream<T> replace(T currentElement, T newElement) {
+            if (Objects.equals(head.get(), currentElement)) {
+                return new Cons<>(() -> newElement, this::tail);
+            } else {
+                return new Cons<>(head, () -> tail().replace(currentElement, newElement));
+            }
+        }
+
+        @Override
+        public Stream<T> subsequence(int beginIndex, int endIndex) {
+            if (beginIndex < 0 || beginIndex > endIndex) {
+                throw new IndexOutOfBoundsException(String.format("subsequence(%s, %s)", beginIndex, endIndex));
+            }
+            if (beginIndex == endIndex) {
+                return Nil.instance();
+            }
+            if (beginIndex == 0) {
+                return new Cons<>(head, () -> tail().subsequence(0, endIndex - 1));
+            } else {
+                return tail().subsequence(beginIndex - 1, endIndex - 1);
+            }
         }
 
         @Override
@@ -861,8 +854,22 @@ public interface Stream<T> extends Seq<T> {
         }
 
         @Override
-        public boolean isEmpty() {
-            return false;
+        public Stream<T> take(int n) {
+            if (n < 1) {
+                return Nil.instance();
+            } else {
+                return new Cons<>(head, () -> tail().take(n - 1));
+            }
+        }
+
+        @Override
+        public Stream<T> takeWhile(Predicate<? super T> predicate) {
+            Objects.requireNonNull(predicate, "predicate is null");
+            if (predicate.test(head.get())) {
+                return new Cons<>(head, () -> tail().takeWhile(predicate));
+            } else {
+                return Nil.instance();
+            }
         }
 
         /**
@@ -1004,6 +1011,17 @@ public interface Stream<T> extends Seq<T> {
         }
 
         @Override
+        public Stream<T> append(T element) {
+            return Stream.of(element);
+        }
+
+        @Override
+        public Stream<T> appendAll(Iterable<? extends T> elements) {
+            Objects.requireNonNull(elements, "elements is null");
+            return Stream.ofAll(elements);
+        }
+
+        @Override
         public T head() {
             throw new NoSuchElementException("head of empty stream");
         }
@@ -1024,6 +1042,61 @@ public interface Stream<T> extends Seq<T> {
         }
 
         @Override
+        public Stream<T> insert(int index, T element) {
+            if (index != 0) {
+                throw new IndexOutOfBoundsException("insert(" + index + ", e) on Nil");
+            } else {
+                return new Cons<>(() -> element, Nil::instance);
+            }
+        }
+
+        @Override
+        public Stream<T> insertAll(int index, Iterable<? extends T> elements) {
+            Objects.requireNonNull(elements, "elements is null");
+            if (index != 0) {
+                throw new IndexOutOfBoundsException("insertAll(" + index + ", elements) on Nil");
+            } else {
+                return Stream.ofAll(elements);
+            }
+        }
+
+        @Override
+        public Stream<T> intersperse(T element) {
+            return Nil.instance();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return true;
+        }
+
+        @Override
+        public Stream<T> peek(Consumer<? super T> action) {
+            return this;
+        }
+
+        @Override
+        public Stream<T> remove(T element) {
+            return this;
+        }
+
+        @Override
+        public Stream<T> replace(T currentElement, T newElement) {
+            return this;
+        }
+
+        @Override
+        public Stream<T> subsequence(int beginIndex, int endIndex) {
+            if (beginIndex < 0 || beginIndex > endIndex) {
+                throw new IndexOutOfBoundsException(String.format("subsequence(%s, %s)", beginIndex, endIndex));
+            }
+            if (beginIndex == endIndex) {
+                return this;
+            }
+            throw new IndexOutOfBoundsException("subsequence of Nil");
+        }
+
+        @Override
         public Stream<T> tail() {
             throw new UnsupportedOperationException("tail of empty stream");
         }
@@ -1034,8 +1107,14 @@ public interface Stream<T> extends Seq<T> {
         }
 
         @Override
-        public boolean isEmpty() {
-            return true;
+        public Stream<T> take(int n) {
+            return this;
+        }
+
+        @Override
+        public Stream<T> takeWhile(Predicate<? super T> predicate) {
+            Objects.requireNonNull(predicate, "predicate is null");
+            return this;
         }
 
         /**
@@ -1098,7 +1177,7 @@ public interface Stream<T> extends Seq<T> {
             Stream<T> stream = this;
             while (stream != null && !stream.isEmpty()) {
                 final Cons<T> cons = (Cons<T>) stream;
-                builder.append(cons.head);
+                builder.append(cons.head.get());
                 if (cons.tail.isDefined()) {
                     stream = cons.tail.get();
                     if (!stream.isEmpty()) {
