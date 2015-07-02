@@ -23,6 +23,11 @@ public final class Some<T> implements Option<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * The singleton instance of {@code Some<Void>}.
+     */
+    public static final Some<Void> NOTHING = new Some<>(null);
+
     private final T value;
 
     /**
@@ -32,6 +37,15 @@ public final class Some<T> implements Option<T>, Serializable {
      */
     public Some(T value) {
         this.value = value;
+    }
+
+    /**
+     * Return the singleton instance of {@code Some<Void>}.
+     *
+     * @return {@link #NOTHING}
+     */
+    public static Some<Void> nothing() {
+        return NOTHING;
     }
 
     @Override
