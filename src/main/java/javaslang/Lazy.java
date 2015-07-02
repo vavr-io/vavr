@@ -45,8 +45,13 @@ public final class Lazy<T> implements Supplier<T>, Serializable {
      * @param supplier A supplier
      * @return A new instance of Lazy
      */
+    @SuppressWarnings("unchecked")
     public static <T> Lazy<T> of(Supplier<? extends T> supplier) {
-        return new Lazy<>(supplier);
+        if (supplier instanceof Lazy) {
+            return (Lazy<T>) supplier;
+        } else {
+            return new Lazy<>(supplier);
+        }
     }
 
     /**

@@ -85,7 +85,7 @@ public class StreamTest extends AbstractSeqTest {
     // -- static gen(T, Supplier)
     @Test
     public void shouldBuildStreamBasedOnHeadAndTailSupplierWithAccessToHead() {
-        assertThat(Stream.gen(1, () -> Stream.gen(2, () -> Stream.nil()))).isEqualTo(Stream.of(1, 2));
+        assertThat(Stream.gen(1, () -> Stream.gen(2, Stream::nil))).isEqualTo(Stream.of(1, 2));
     }
 
     // -- static nil()
@@ -107,7 +107,7 @@ public class StreamTest extends AbstractSeqTest {
     @Test
     public void shouldCreateStreamOfElements() {
         final Stream<Integer> actual = Stream.of(1, 2);
-        final Stream<Integer> expected = new Cons<>(1, () -> new Cons<>(2, Nil::instance));
+        final Stream<Integer> expected = new Cons<>(() -> 1, () -> new Cons<>(() -> 2, Nil::instance));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -252,7 +252,7 @@ public class StreamTest extends AbstractSeqTest {
 
     @Test(expected = InvalidObjectException.class)
     public void shouldNotSerializeEnclosingClassOfCons() throws Throwable {
-        Serializables.callReadObject(new Cons<>(1, Nil::instance));
+        Serializables.callReadObject(new Cons<>(() -> 1, Nil::instance));
     }
 
     @Test(expected = InvalidObjectException.class)
