@@ -56,14 +56,6 @@ def generateMainClasses(): Unit = {
       val predicate = im.getType("java.util.function.Predicate")
       val supplier = im.getType("java.util.function.Supplier")
 
-      val primitiveTypes = Seq("boolean", "byte", "char", "double", "float", "int", "long", "short")
-
-      def toObject(primitiveType: String): String = primitiveType match {
-        case "char" => "Character"
-        case "int" => "Integer"
-        case _ => primitiveType.firstUpper
-      }
-
       def genWhen(isUnmatchedType: Boolean, isOverride: Boolean, isTyped: Boolean): String = {
 
         val Override = isOverride.gen("@Override")
@@ -86,42 +78,6 @@ def generateMainClasses(): Unit = {
               $objects.requireNonNull(f, "f is null");
               return Objects.equals(value, protoType) ? new Matched<>(f.apply((U) value)) : ${if (isUnmatchedType) "this" else "new Unmatched<>(value)"};
           }
-        """
-      }
-
-      def genWhenPrimitive(primitiveType: String, isUnmatchedType: Boolean, isOverride: Boolean, isTyped: Boolean): String = {
-
-        val typeName = primitiveType.firstUpper
-        val objectType = toObject(primitiveType)
-        val Override = isOverride.gen("@Override")
-        val R = (!isTyped).gen("<R>")
-
-        xs"""
-            // -- when cases
-
-            @SuppressWarnings("overloads")$Override
-            public $R Matched$typeName<R> when(Function<? super $objectType, ? extends R> f) {
-                $objects.requireNonNull(f, "f is null");
-                return new Matched$typeName<>(f.apply(value));
-            }
-
-            @SuppressWarnings("overloads")$Override
-            public $R Matched$typeName<R> when(${typeName}Function<? extends R> f) {
-                $objects.requireNonNull(f, "f is null");
-                return new Matched$typeName<>(f.apply(value));
-            }
-
-            @SuppressWarnings("overloads")$Override
-            public $R SafeMatch$typeName<R> when($objectType protoType, $function<? super $objectType, ? extends R> f) {
-                $objects.requireNonNull(f, "f is null");
-                return Objects.equals(value, protoType) ? new Matched$typeName<>(f.apply(value)) : ${if (isUnmatchedType) "this" else s"new Unmatched$typeName<>(value)"};
-            }
-
-            @SuppressWarnings("overloads")$Override
-            public $R SafeMatch$typeName<R> when($primitiveType protoType, ${typeName}Function<? extends R> f) {
-                $objects.requireNonNull(f, "f is null");
-                return (value == protoType) ? new Matched$typeName<>(f.apply(value)) : ${if (isUnmatchedType) "this" else s"new Unmatched$typeName<>(value)"};
-            }
         """
       }
 
@@ -357,139 +313,6 @@ def generateMainClasses(): Unit = {
             }
         }
 
-        ${primitiveTypes.gen(primitiveType => {
-
-          val typeName = primitiveType.firstUpper
-          val objectType = toObject(primitiveType)
-
-          xs"""
-            /$javadoc
-             * @since 1.3.0
-             */
-            interface SafeMatch$typeName<R> extends HasGetters<R>, $traversableOnce<R> {
-
-                // -- when cases
-
-                @SuppressWarnings("overloads")
-                Matched$typeName<R> when($function<? super $objectType, ? extends R> f);
-
-                @SuppressWarnings("overloads")
-                Matched$typeName<R> when(${typeName}Function<? extends R> f);
-
-                @SuppressWarnings("overloads")
-                SafeMatch$typeName<R> when($objectType protoType, $function<? super $objectType, ? extends R> f);
-
-                @SuppressWarnings("overloads")
-                SafeMatch$typeName<R> when($primitiveType protoType, ${typeName}Function<? extends R> f);
-
-                // -- filter monadic operations
-
-                // TODO: @Override <U> SafeMatch$typeName<R> filter($predicate<? super R> predicate);
-
-                <U> SafeMatch$typeName<U> flatMap($function<? super R, ? extends SafeMatch$typeName<U>> mapper);
-
-                <U> SafeMatch$typeName<U> flatten($function<? super R, ? extends SafeMatch$typeName<U>> f);
-
-                <U> SafeMatch$typeName<U> map($function<? super R, ? extends U> mapper);
-
-                // TODO: SafeMatch$typeName<R> peek($consumer<? super R> action);
-
-                /$javadoc
-                 * @since 1.3.0
-                 */
-                final class Of$typeName {
-
-                    private final $primitiveType value;
-
-                    private Of$typeName($primitiveType value) {
-                        this.value = value;
-                    }
-
-                    public <R> Typed$typeName<R> as(Class<R> resultType) {
-                        $objects.requireNonNull(resultType, "resultType is null");
-                        return new Typed$typeName<>(value);
-                    }
-
-                    ${genWhenPrimitive(primitiveType, isUnmatchedType = false, isOverride = false, isTyped = false)}
-                }
-
-                /$javadoc
-                 * @since 1.3.0
-                 */
-                final class Typed$typeName<R> {
-
-                    private final $primitiveType value;
-
-                    private Typed$typeName($primitiveType value) {
-                        this.value = value;
-                    }
-
-                    ${genWhenPrimitive(primitiveType, isUnmatchedType = false, isOverride = false, isTyped = true)}
-                }
-
-                /$javadoc
-                 * @since 1.3.0
-                 */
-                final class Matched$typeName<R> implements SafeMatch$typeName<R> {
-
-                    private final R result;
-
-                    private Matched$typeName(R result) {
-                        this.result = result;
-                    }
-
-                    ${genGetters(isMatched = true)}
-
-                    // -- when cases
-
-                    @Override
-                    public Matched$typeName<R> when(Function<? super $objectType, ? extends R> f) {
-                        return this;
-                    }
-
-                    @Override
-                    public Matched$typeName<R> when(${typeName}Function<? extends R> f) {
-                        return this;
-                    }
-
-                    @Override
-                    public SafeMatch$typeName<R> when($objectType protoType, Function<? super $objectType, ? extends R> f) {
-                        return this;
-                    }
-
-                    @Override
-                    public SafeMatch$typeName<R> when($primitiveType protoType, ${typeName}Function<? extends R> f) {
-                        return this;
-                    }
-
-                    ${genFilterMonadicOperations(isMatched = true, targetType = s"SafeMatch$typeName<U>", exactTargetType = s"Matched$typeName<U>")}
-
-                    ${genTraversableOnce(isMatched = false)}
-                }
-
-                /$javadoc
-                 * @since 1.3.0
-                 */
-                final class Unmatched$typeName<R> implements SafeMatch$typeName<R> {
-
-                    private final $primitiveType value;
-
-                    private Unmatched$typeName($primitiveType value) {
-                        this.value = value;
-                    }
-
-                    ${genGetters(isMatched = false)}
-
-                    ${genWhenPrimitive(primitiveType, isUnmatchedType = true, isOverride = true, isTyped = true)}
-
-                    ${genFilterMonadicOperations(isMatched = false, targetType = s"SafeMatch$typeName<U>", exactTargetType = s"Unmatched$typeName<U>")}
-
-                    ${genTraversableOnce(isMatched = false)}
-                }
-            }
-          """
-        })("\n\n")}
-
         interface HasGetters<R> {
 
             R get();
@@ -563,12 +386,6 @@ def generateMainClasses(): Unit = {
                 return new SafeMatch.Of<>(value);
             }
 
-            ${primitiveTypes.gen(name => xs"""
-              static SafeMatch${name.firstUpper}.Of${name.firstUpper} of($name value) {
-                  return new SafeMatch${name.firstUpper}.Of${name.firstUpper}(value);
-              }
-            """)("\n\n")}
-
             /**
              * Specifies the type of the match expression. In many cases it is not necessary to call {@code as}. This
              * method is intended to be used for readability reasons when the upper bound of the cases cannot be inferred,
@@ -637,22 +454,6 @@ def generateMainClasses(): Unit = {
                 return Case.of(function);
             }
 
-            ${primitiveTypes.gen(name => xs"""
-              /$javadoc
-               * Creates a {@code Match.Case} by primitive type {@code $name}.
-               *
-               * @param <R> result type of the matched case
-               * @param function An {@code $name} to {@code R} function
-               * @return a new {@code Case}
-               * @throws NullPointerException if {@code function} is null
-               */
-              @SuppressWarnings("overloads")
-              static <R> Case<R> when(${name.firstUpper}Function<? extends R> function) {
-                  $objects.requireNonNull(function, "function is null");
-                  return Case.of(function);
-              }
-            """)("\n\n")}
-
             /**
              * The result of {@code Match.as(Class)}, which explicitly sets the {@code Match} result type.
              *
@@ -686,14 +487,6 @@ def generateMainClasses(): Unit = {
                     $objects.requireNonNull(function, "function is null");
                     return Case.of(function);
                 }
-
-                ${primitiveTypes.gen(name => xs"""
-                  @Override
-                  public Case<R> when(${name.firstUpper}Function<? extends R> function) {
-                      $objects.requireNonNull(function, "function is null");
-                      return Case.of(function);
-                  }
-                """)("\n\n")}
             }
 
             interface WithThenUntyped<T> {
@@ -811,13 +604,6 @@ def generateMainClasses(): Unit = {
                     return new Case<>($list.of(Case.when($none.instance(), function)));
                 }
 
-                ${primitiveTypes.gen(name => xs"""
-                  @SuppressWarnings("overloads")
-                  private static <R> Case<R> of(${name.firstUpper}Function<? extends R> function) {
-                    return new Case<>($list.of(Case.when($none.instance(), ($function1<${toObject(name)}, R>) function::apply, ${toObject(name)}.class)));
-                  }
-                """)("\n\n")}
-
                 @Override
                 public R apply(Object o) {
                     return match.get().apply(o);
@@ -846,15 +632,6 @@ def generateMainClasses(): Unit = {
                     final $function<Object, $option<R>> when = when($none.instance(), function);
                     return new Case<>(cases.prepend(when));
                 }
-
-                ${primitiveTypes.gen(name => xs"""
-                  @Override
-                  public Case<R> when(${name.firstUpper}Function<? extends R> function) {
-                      $objects.requireNonNull(function, "function is null");
-                      final $function<Object, $option<R>> when = when($none.instance(), ($function1<${toObject(name)}, R>) function::apply, ${toObject(name)}.class);
-                      return new Case<>(cases.prepend(when));
-                  }
-                """)("\n\n")}
 
                 /**
                  * <p>Provides a default value which is returned if no case matches.</p>
@@ -957,47 +734,10 @@ def generateMainClasses(): Unit = {
                      */
                     @SuppressWarnings("overloads")
                     HasCases<R> when($function1<?, ? extends R> function);
-
-                    ${primitiveTypes.gen(name => xs"""
-                      /$javadoc
-                       * Creates a {@code Match.Case} by primitive type {@code $name}.
-                       *
-                       * @param function An {@code $name} to {@code R} function
-                       * @return a new {@code Case}
-                       * @throws NullPointerException if {@code function} is null
-                       */
-                      @SuppressWarnings("overloads")
-                      HasCases<R> when(${name.firstUpper}Function<? extends R> function);
-                    """)("\n\n")}
                 }
             }
 
             ${genSafeMatch}
-
-            ${primitiveTypes.gen(name => xs"""
-              /$javadoc
-               * A function {@code f: $name -> R} that takes a primitive {@code $name} value and returns a value of type {@code R}.
-               *
-               * @param <R> return type of this function
-               * @since 1.0.0
-               */
-              @FunctionalInterface
-              interface ${name.firstUpper}Function<R> extends ${im.getType("java.io.Serializable")} {
-
-                  /$javadoc
-                   * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
-                   */
-                  long serialVersionUID = 1L;
-
-                  /$javadoc
-                   * Applies this function to the given value.
-                   *
-                   * @param value A $name value
-                   * @return A new value of type R
-                   */
-                  R apply($name value);
-              }
-            """)("\n\n")}
         }
       """
     })
