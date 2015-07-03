@@ -65,8 +65,10 @@ import java.util.stream.StreamSupport;
  * <li>{@link #average()}</li>
  * <li>{@link #max()}</li>
  * <li>{@link #maxBy(Comparator)}</li>
+ * <li>{@link #maxBy(Function)}</li>
  * <li>{@link #min()}</li>
  * <li>{@link #minBy(Comparator)}</li>
+ * <li>{@link #minBy(Function)}</li>
  * <li>{@link #product()}</li>
  * <li>{@link #sum()}</li>
  * </ul>
@@ -665,6 +667,22 @@ public interface Traversable<T> extends TraversableOnce<T> {
     }
 
     /**
+     * Calculates the maximum of this elements within the co-domain of a specific function.
+     *
+     * @param f A function that maps this elements to comparable elements
+     * @param <U> The type where elements are compared
+     * @return The element of type T which is the maximum within U
+     */
+    default <U extends Comparable<? super U>> Option<T> maxBy(Function<? super T, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        if (isEmpty()) {
+            return None.instance();
+        } else {
+            return maxBy((t1, t2) -> f.apply(t1).compareTo(f.apply(t2)));
+        }
+    }
+
+    /**
      * Calculates the minimum of this elements according to their natural order.
      *
      * @return {@code Some(minimum)} of this elements or {@code None} if this is empty or this elements are not comparable
@@ -692,6 +710,22 @@ public interface Traversable<T> extends TraversableOnce<T> {
         } else {
             final T value = reduce((t1, t2) -> comparator.compare(t1, t2) <= 0 ? t1 : t2);
             return new Some<>(value);
+        }
+    }
+
+    /**
+     * Calculates the minimum of this elements within the co-domain of a specific function.
+     *
+     * @param f A function that maps this elements to comparable elements
+     * @param <U> The type where elements are compared
+     * @return The element of type T which is the minimum within U
+     */
+    default <U extends Comparable<? super U>> Option<T> minBy(Function<? super T, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        if (isEmpty()) {
+            return None.instance();
+        } else {
+            return minBy((t1, t2) -> f.apply(t1).compareTo(f.apply(t2)));
         }
     }
 

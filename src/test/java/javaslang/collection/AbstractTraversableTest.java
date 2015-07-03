@@ -771,11 +771,11 @@ public abstract class AbstractTraversableTest {
         assertThat(of(BigDecimal.ZERO, BigDecimal.ONE).max()).isEqualTo(new Some<>(BigDecimal.ONE));
     }
 
-    // -- maxBy
+    // -- maxBy(Comparator)
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenMaxByWithNullComparator() {
-        of(1).maxBy(null);
+        of(1).maxBy((Comparator<Integer>) null);
     }
 
     @Test
@@ -791,6 +791,28 @@ public abstract class AbstractTraversableTest {
     @Test
     public void shouldCalculateInverseMaxByOfInts() {
         assertThat(of(1, 2, 3).maxBy((i1, i2) -> i2 - i1)).isEqualTo(new Some<>(1));
+    }
+
+    // -- maxBy(Function)
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenMaxByWithNullFunction() {
+        of(1).maxBy((Function<Integer, Integer>) null);
+    }
+
+    @Test
+    public void shouldThrowWhenMaxByFunctionOfNil() {
+        assertThat(this.<Integer> nil().maxBy(i -> i)).isEqualTo(None.instance());
+    }
+
+    @Test
+    public void shouldCalculateMaxByFunctionOfInts() {
+        assertThat(of(1, 2, 3).maxBy(i -> i)).isEqualTo(new Some<>(3));
+    }
+
+    @Test
+    public void shouldCalculateInverseMaxByFunctionOfInts() {
+        assertThat(of(1, 2, 3).maxBy(i -> -i)).isEqualTo(new Some<>(1));
     }
 
     // -- min
@@ -855,11 +877,11 @@ public abstract class AbstractTraversableTest {
         assertThat(of(BigDecimal.ZERO, BigDecimal.ONE).min()).isEqualTo(new Some<>(BigDecimal.ZERO));
     }
 
-    // -- minBy
+    // -- minBy(Comparator)
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenMinByWithNullComparator() {
-        of(1).minBy(null);
+        of(1).minBy((Comparator<Integer>) null);
     }
 
     @Test
@@ -875,6 +897,28 @@ public abstract class AbstractTraversableTest {
     @Test
     public void shouldCalculateInverseMinByOfInts() {
         assertThat(of(1, 2, 3).minBy((i1, i2) -> i2 - i1)).isEqualTo(new Some<>(3));
+    }
+
+    // -- minBy(Function)
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenMinByWithNullFunction() {
+        of(1).minBy((Function<Integer, Integer>) null);
+    }
+
+    @Test
+    public void shouldThrowWhenMinByFunctionOfNil() {
+        assertThat(this.<Integer> nil().minBy(i -> i)).isEqualTo(None.instance());
+    }
+
+    @Test
+    public void shouldCalculateMinByFunctionOfInts() {
+        assertThat(of(1, 2, 3).minBy(i -> i)).isEqualTo(new Some<>(1));
+    }
+
+    @Test
+    public void shouldCalculateInverseMinByFunctionOfInts() {
+        assertThat(of(1, 2, 3).minBy(i -> -i)).isEqualTo(new Some<>(3));
     }
 
     // -- peek
