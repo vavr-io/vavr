@@ -35,7 +35,7 @@ public class MatchTest {
 
     @Test(expected = MatchError.class)
     public void shouldNotMatchNullAsType() {
-        Match.when((int i) -> false).when((Integer i) -> true).apply(null);
+        Match.when((Integer i) -> false).when((Integer i) -> true).apply(null);
     }
 
     // -- no match
@@ -116,46 +116,6 @@ public class MatchTest {
         assertThat(Match.as(Object.class).when((Object o) -> null)).isNotNull();
     }
 
-    @Test
-    public void shouldCreateWhenOfTypeUsingBooleanFunction() {
-        assertThat(Match.as(Object.class).when((boolean b) -> null)).isNotNull();
-    }
-
-    @Test
-    public void shouldCreateWhenOfTypeUsingByteFunction() {
-        assertThat(Match.as(Object.class).when((byte b) -> null)).isNotNull();
-    }
-
-    @Test
-    public void shouldCreateWhenOfTypeUsingCharFunction() {
-        assertThat(Match.as(Object.class).when((char b) -> null)).isNotNull();
-    }
-
-    @Test
-    public void shouldCreateWhenOfTypeUsingDoubleFunction() {
-        assertThat(Match.as(Object.class).when((double b) -> null)).isNotNull();
-    }
-
-    @Test
-    public void shouldCreateWhenOfTypeUsingFloatFunction() {
-        assertThat(Match.as(Object.class).when((float b) -> null)).isNotNull();
-    }
-
-    @Test
-    public void shouldCreateWhenOfTypeUsingIntFunction() {
-        assertThat(Match.as(Object.class).when((int b) -> null)).isNotNull();
-    }
-
-    @Test
-    public void shouldCreateWhenOfTypeUsingLongFunction() {
-        assertThat(Match.as(Object.class).when((long b) -> null)).isNotNull();
-    }
-
-    @Test
-    public void shouldCreateWhenOfTypeUsingShortFunction() {
-        assertThat(Match.as(Object.class).when((short b) -> null)).isNotNull();
-    }
-
     // -- whenIn
 
     @Test
@@ -184,210 +144,113 @@ public class MatchTest {
     // boolean / Boolean
 
     @Test
-    public void shouldMatchPrimitiveBoolean() {
-        final boolean actual = Match.when((boolean b) -> true).when((Boolean b) -> false).apply(true);
-        assertThat(actual).isTrue();
-    }
-
-    @Test
     public void shouldMatchBoxedPrimitiveBooleanAsBoolean() {
-        final boolean actual = Match.when((Boolean b) -> true).when((boolean b) -> false).apply(true);
-        assertThat(actual).isTrue();
-    }
-
-    @Test
-    public void shouldMatchBooleanAsPrimitiveBoolean() {
-        final boolean actual = Match.when((boolean b) -> true).when((Boolean b) -> false).apply(Boolean.TRUE);
+        final boolean actual = Match.when((Boolean b) -> true).apply(true);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldMatchBoolean() {
-        final boolean actual = Match.when((Boolean b) -> true).when((boolean b) -> false).apply(Boolean.TRUE);
+        final boolean actual = Match.when((Boolean b) -> true).apply(Boolean.TRUE);
         assertThat(actual).isTrue();
     }
 
     // byte / Byte
 
     @Test
-    public void shouldMatchPrimitiveByte() {
-        final boolean actual = Match.when((byte b) -> true).when((Byte b) -> false).apply((byte) 1);
-        assertThat(actual).isTrue();
-    }
-
-    @Test
     public void shouldMatchBoxedPrimitiveByteAsByte() {
-        final boolean actual = Match.when((Byte b) -> true).when((byte b) -> false).apply((byte) 1);
-        assertThat(actual).isTrue();
-    }
-
-    @Test
-    public void shouldMatchByteAsPrimitiveByte() {
-        final Byte one = 1;
-        final boolean actual = Match.when((byte b) -> true).when((Byte b) -> false).apply(one);
+        final boolean actual = Match.when((Byte b) -> true).apply((byte) 1);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldMatchByte() {
         final Byte one = 1;
-        final boolean actual = Match.when((Byte b) -> true).when((byte b) -> false).apply(one);
+        final boolean actual = Match.when((Byte b) -> true).apply(one);
         assertThat(actual).isTrue();
     }
 
     // char / Character
 
     @Test
-    public void shouldMatchPrimitiveChar() {
-        final boolean actual = Match.when((char c) -> true).when((Character c) -> false).apply('#');
-        assertThat(actual).isTrue();
-    }
-
-    @Test
     public void shouldMatchBoxedPrimitiveCharAsCharacter() {
-        final boolean actual = Match.when((Character c) -> true).when((char c) -> false).apply('#');
-        assertThat(actual).isTrue();
-    }
-
-    @Test
-    public void shouldMatchCharacterAsPrimitiveChar() {
-        final boolean actual = Match.when((char c) -> true).when((Character c) -> false).apply(Character.valueOf('#'));
+        final boolean actual = Match.when((Character c) -> true).apply('#');
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldMatchCharacter() {
-        final boolean actual = Match.when((Character c) -> true).when((char c) -> false).apply(Character.valueOf('#'));
+        final boolean actual = Match.when((Character c) -> true).apply(Character.valueOf('#'));
         assertThat(actual).isTrue();
     }
 
     // double / Double
 
     @Test
-    public void shouldMatchPrimitiveDouble() {
-        final boolean actual = Match.when((double d) -> true).when((Double d) -> false).apply((double) 1);
-        assertThat(actual).isTrue();
-    }
-
-    @Test
     public void shouldMatchBoxedPrimitiveDoubleAsDouble() {
-        final boolean actual = Match.when((Double d) -> true).when((double d) -> false).apply((double) 1);
-        assertThat(actual).isTrue();
-    }
-
-    @Test
-    public void shouldMatchDoubleAsPrimitiveDouble() {
-        final boolean actual = Match.when((double d) -> true).when((Double d) -> false).apply(new Double(1));
+        final boolean actual = Match.when((Double d) -> true).apply((double) 1);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldMatchDouble() {
-        final boolean actual = Match.when((Double d) -> true).when((double d) -> false).apply(new Double(1));
+        final boolean actual = Match.when((Double d) -> true).apply(new Double(1));
         assertThat(actual).isTrue();
     }
 
     // float / Float
 
     @Test
-    public void shouldMatchPrimitiveFloat() {
-        final boolean actual = Match.when((float f) -> true).when((Float f) -> false).apply((float) 1);
-        assertThat(actual).isTrue();
-    }
-
-    @Test
     public void shouldMatchBoxedPrimitiveFloatAsFloat() {
-        final boolean actual = Match.when((Float f) -> true).when((float f) -> false).apply((float) 1);
-        assertThat(actual).isTrue();
-    }
-
-    @Test
-    public void shouldMatchFloatAsPrimitiveFloat() {
-        final boolean actual = Match.when((float f) -> true).when((Float f) -> false).apply(new Float(1));
+        final boolean actual = Match.when((Float f) -> true).apply((float) 1);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldMatchFloat() {
-        final boolean actual = Match.when((Float f) -> true).when((float f) -> false).apply(new Float(1));
+        final boolean actual = Match.when((Float f) -> true).apply(new Float(1));
         assertThat(actual).isTrue();
     }
 
     // int / Integer
 
     @Test
-    public void shouldMatchPrimitiveInt() {
-        final boolean actual = Match.when((int i) -> true).when((Integer i) -> false).apply(1);
-        assertThat(actual).isTrue();
-    }
-
-    @Test
     public void shouldMatchBoxedPrimitiveIntAsInteger() {
-        final boolean actual = Match.when((Integer i) -> true).when((int i) -> false).apply(1);
-        assertThat(actual).isTrue();
-    }
-
-    @Test
-    public void shouldMatchIntegerAsPrimitiveInt() {
-        final boolean actual = Match.when((int i) -> true).when((Integer i) -> false).apply(new Integer(1));
+        final boolean actual = Match.when((Integer i) -> true).apply(1);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldMatchInteger() {
-        final boolean actual = Match.when((Integer i) -> true).when((int i) -> false).apply(new Integer(1));
+        final boolean actual = Match.when((Integer i) -> true).apply(new Integer(1));
         assertThat(actual).isTrue();
     }
 
     // long / Long
 
     @Test
-    public void shouldMatchPrimitiveLong() {
-        final boolean actual = Match.when((long l) -> true).when((Long l) -> false).apply(1L);
-        assertThat(actual).isTrue();
-    }
-
-    @Test
     public void shouldMatchBoxedPrimitiveLongAsLong() {
-        final boolean actual = Match.when((Long l) -> true).when((long l) -> false).apply(1L);
-        assertThat(actual).isTrue();
-    }
-
-    @Test
-    public void shouldMatchLongAsPrimitiveLong() {
-        final boolean actual = Match.when((long l) -> true).when((Long l) -> false).apply(new Long(1));
+        final boolean actual = Match.when((Long l) -> true).apply(1L);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldMatchLong() {
-        final boolean actual = Match.when((Long l) -> true).when((long l) -> false).apply(new Long(1));
+        final boolean actual = Match.when((Long l) -> true).apply(new Long(1));
         assertThat(actual).isTrue();
     }
 
     // short / Short
 
     @Test
-    public void shouldMatchPrimitiveShort() {
-        final boolean actual = Match.when((short s) -> true).when((Short s) -> false).apply((short) 1);
-        assertThat(actual).isTrue();
-    }
-
-    @Test
     public void shouldMatchBoxedPrimitiveShortAsShort() {
-        final boolean actual = Match.when((Short s) -> true).when((short s) -> false).apply((short) 1);
-        assertThat(actual).isTrue();
-    }
-
-    @Test
-    public void shouldMatchShortAsPrimitiveShort() {
-        final boolean actual = Match.when((short s) -> true).when((Short s) -> false).apply(new Short((short) 1));
+        final boolean actual = Match.when((Short s) -> true).apply((short) 1);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldMatchShort() {
-        final boolean actual = Match.when((Short s) -> true).when((short s) -> false).apply(new Short((short) 1));
+        final boolean actual = Match.when((Short s) -> true).apply(new Short((short) 1));
         assertThat(actual).isTrue();
     }
 
