@@ -26,7 +26,7 @@ public final class Some<T> implements Option<T>, Serializable {
     /**
      * The singleton instance of {@code Some<Void>}.
      */
-    public static final Some<Void> NOTHING = new Some<>(null);
+    private static final Some<Void> NOTHING = new Some<>(null);
 
     private final T value;
 
