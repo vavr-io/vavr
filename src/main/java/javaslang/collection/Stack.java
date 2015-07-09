@@ -34,7 +34,7 @@ import java.util.stream.Collector;
  * See Okasaki, Chris: <em>Purely Functional Data Structures</em> (p. 7 ff.). Cambridge, 2003.
  *
  * @param <T> component type
- * @since 1.3.0
+ * @since 1.9.9
  */
 public interface Stack<T> extends Seq<T> {
 

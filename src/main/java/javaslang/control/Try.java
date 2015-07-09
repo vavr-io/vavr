@@ -6,12 +6,12 @@
 package javaslang.control;
 
 import javaslang.CheckedFunction1;
+import javaslang.Value;
 import javaslang.collection.TraversableOnce;
 
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -21,7 +21,7 @@ import java.util.function.Predicate;
  *
  * @param <T> Value type in the case of success.
  */
-public interface Try<T> extends TraversableOnce<T> {
+public interface Try<T> extends TraversableOnce<T>, Value<T> {
 
     /**
      * Creates a Try of a CheckedSupplier.
@@ -69,10 +69,6 @@ public interface Try<T> extends TraversableOnce<T> {
      */
     boolean isSuccess();
 
-    T get();
-
-    T orElse(T other);
-
     T orElseGet(Function<? super Throwable, ? extends T> other);
 
     void orElseRun(Consumer<? super Throwable> action);
@@ -115,11 +111,7 @@ public interface Try<T> extends TraversableOnce<T> {
      */
     Try<T> onFailure(Consumer<Throwable> f);
 
-    Option<T> toOption();
-
     Either<Throwable, T> toEither();
-
-    Optional<T> toJavaOptional();
 
     /**
      * <p>Returns {@code this} if this is a Failure or this is a Success and the value satisfies the predicate.</p>

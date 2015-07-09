@@ -5,6 +5,7 @@
  */
 package javaslang.control;
 
+import javaslang.Value;
 import javaslang.collection.TraversableOnce;
 
 import java.util.Collections;
@@ -32,7 +33,7 @@ import java.util.function.Supplier;
  * @param <T> The type of the optional value.
  * @since 1.0.0
  */
-public interface Option<T> extends TraversableOnce<T> {
+public interface Option<T> extends TraversableOnce<T>, Value<T> {
 
     /**
      * Creates a new Option of a given value.

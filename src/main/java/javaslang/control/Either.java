@@ -5,6 +5,7 @@
  */
 package javaslang.control;
 
+import javaslang.Value;
 import javaslang.collection.TraversableOnce;
 
 import java.util.*;
@@ -117,12 +118,17 @@ public interface Either<L, R> {
      * @param <R> The type of the Right value of an Either.
      * @since 1.0.0
      */
-    final class LeftProjection<L, R> implements TraversableOnce<L> {
+    final class LeftProjection<L, R> implements TraversableOnce<L>, Value<L> {
 
         private final Either<L, R> either;
 
         private LeftProjection(Either<L, R> either) {
             this.either = either;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return either.isRight();
         }
 
         /**
@@ -131,17 +137,13 @@ public interface Either<L, R> {
          * @return the left value, if the underlying Either is a Left
          * @throws NoSuchElementException if the underlying either of this LeftProjection is a Right
          */
+        @Override
         public L get() {
             if (either.isLeft()) {
                 return asLeft();
             } else {
                 throw new NoSuchElementException("Either.left().get() on Right");
             }
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return either.isRight();
         }
 
         /**
@@ -367,7 +369,7 @@ public interface Either<L, R> {
      * @param <R> The type of the Right value of an Either.
      * @since 1.0.0
      */
-    final class RightProjection<L, R> implements TraversableOnce<R> {
+    final class RightProjection<L, R> implements TraversableOnce<R>, Value<R> {
 
         private final Either<L, R> either;
 
@@ -386,6 +388,7 @@ public interface Either<L, R> {
          * @return the left value, if the underlying Either is a Right
          * @throws NoSuchElementException if the underlying either of this RightProjection is a Left
          */
+        @Override
         public R get() {
             if (either.isRight()) {
                 return asRight();
