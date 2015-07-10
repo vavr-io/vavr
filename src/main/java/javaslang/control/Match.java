@@ -151,7 +151,7 @@ public interface Match<R> extends Function<Object, R> {
      */
     interface MatchFunction {
 
-        interface HasCases<R> {
+        interface WithWhen<R> {
 
             /**
              * Creates a {@code Match.When} by value.
@@ -198,7 +198,7 @@ public interface Match<R> extends Function<Object, R> {
          * @param <R> the result type
          * @since 1.2.1
          */
-        final class Typed<R> implements HasCases<R> {
+        final class Typed<R> implements WithWhen<R> {
 
             private Typed() {
             }
@@ -367,7 +367,7 @@ public interface Match<R> extends Function<Object, R> {
             }
         }
 
-        final class Then<R> implements Match<R>, HasCases<R> {
+        final class Then<R> implements Match<R>, WithWhen<R> {
 
             private final List<Case<R>> cases;
 
@@ -409,18 +409,22 @@ public interface Match<R> extends Function<Object, R> {
                 return new WhenTypeIn<>(types, cases);
             }
 
+            public Otherwise<R> otherwise(Function<? super Object, ? extends R> function) {
+                return new Otherwise<>(function, cases);
+            }
+
             public Otherwise<R> otherwise(Supplier<? extends R> supplier) {
-                return new Otherwise<>(supplier, cases);
+                return new Otherwise<>(ignored -> supplier.get(), cases);
             }
         }
 
         final class Otherwise<R> implements Match<R> {
 
-            private final Supplier<? extends R> supplier;
+            private final Function<? super Object, ? extends R> function;
             private final List<Case<R>> cases;
 
-            private Otherwise(Supplier<? extends R> supplier, List<Case<R>> cases) {
-                this.supplier = supplier;
+            private Otherwise(Function<? super Object, ? extends R> function, List<Case<R>> cases) {
+                this.function = function;
                 this.cases = cases;
             }
 
@@ -430,7 +434,7 @@ public interface Match<R> extends Function<Object, R> {
                         .reverse()
                         .findFirst(caze -> caze.isApplicable(o))
                         .map(caze -> caze.apply(o))
-                        .orElseGet(supplier);
+                        .orElseGet(() -> function.apply(o));
             }
         }
 
@@ -473,23 +477,25 @@ public interface Match<R> extends Function<Object, R> {
         interface MatchMonadWithWhen<T, R> extends MatchMonad<R>, WithWhen<T, R> {
 
             Otherwise<R> otherwise(Supplier<? extends R> supplier);
+
+            Otherwise<R> otherwise(Function<? super T, ? extends R> function);
         }
 
         interface WithWhenUntyped<T> {
 
-            <U extends T> WhenUntyped<T> when(U prototype);
+            <U> WhenUntyped<T, U> when(U prototype);
 
             @SuppressWarnings("unchecked")
-            <U extends T> WhenUntyped<T> whenIn(U... prototypes);
+            <U> WhenUntyped<T, U> whenIn(U... prototypes);
 
-            <U extends T> WhenUntyped<T> whenType(Class<? super U> type);
+            <U> WhenUntyped<T, U> whenType(Class<U> type);
 
             @SuppressWarnings("unchecked")
-            <U extends T> WhenUntyped<T> whenTypeIn(Class<U>... type);
+            <U> WhenUntyped<T, U> whenTypeIn(Class<? extends U>... type);
 
-            interface WhenUntyped<T> {
+            interface WhenUntyped<T, U> {
 
-                <R> MatchMonadWithWhen<T, R> then(Function<? super T, ? extends R> function);
+                <R> MatchMonadWithWhen<T, R> then(Function<? super U, ? extends R> function);
 
                 default <R> MatchMonadWithWhen<T, R> then(Supplier<? extends R> supplier) {
                     Objects.requireNonNull(supplier, "supplier is null");
@@ -500,19 +506,19 @@ public interface Match<R> extends Function<Object, R> {
 
         interface WithWhen<T, R> {
 
-            <U extends T> When<T, R> when(U prototype);
+            <U> When<T, U, R> when(U prototype);
 
             @SuppressWarnings("unchecked")
-            <U extends T> When<T, R> whenIn(U... prototypes);
+            <U> When<T, U, R> whenIn(U... prototypes);
 
-            <U extends T> When<T, R> whenType(Class<? super U> type);
+            <U> When<T, U, R> whenType(Class<U> type);
 
             @SuppressWarnings("unchecked")
-            <U extends T> When<T, R> whenTypeIn(Class<? super U>... type);
+            <U> When<T, U, R> whenTypeIn(Class<? extends U>... type);
 
-            interface When<T, R> {
+            interface When<T, U, R> {
 
-                MatchMonadWithWhen<T, R> then(Function<? super T, ? extends R> function);
+                MatchMonadWithWhen<T, R> then(Function<? super U, ? extends R> function);
 
                 default MatchMonadWithWhen<T, R> then(Supplier<? extends R> supplier) {
                     Objects.requireNonNull(supplier, "supplier is null");
@@ -523,7 +529,7 @@ public interface Match<R> extends Function<Object, R> {
 
         // -- filter monadic operations
 
-        // TODO: <U> MatchMonad<R> filter(Predicate<? super R> predicate);
+        // TODO: MatchMonad<R> filter(Predicate<? super R> predicate);
 
         <U> MatchMonad<U> flatMap(Function<? super R, ? extends MatchMonad<U>> mapper);
 
@@ -546,33 +552,35 @@ public interface Match<R> extends Function<Object, R> {
                 return new Typed<>(value);
             }
 
+            @SuppressWarnings("unchecked")
             @Override
-            public <U extends T> WhenUnmatchedUntyped<T> when(U prototype) {
+            public <U> WhenUnmatchedUntyped<T, U> when(U prototype) {
                 final boolean isMatching = MATCH_BY_VALUE.apply(prototype, value);
-                return new WhenUnmatchedUntyped<>(value, isMatching);
+                return new WhenUnmatchedUntyped<>((U) value, isMatching);
             }
 
             @SuppressWarnings("unchecked")
             @Override
-            public <U extends T> WhenUnmatchedUntyped<T> whenIn(U... prototypes) {
+            public <U> WhenUnmatchedUntyped<T, U> whenIn(U... prototypes) {
                 Objects.requireNonNull(prototypes, "prototypes is null");
                 final boolean isMatching = List.of(prototypes).findFirst(p -> MATCH_BY_VALUE.apply(p, value)).isDefined();
-                return new WhenUnmatchedUntyped<>(value, isMatching);
-            }
-
-            @Override
-            public <U extends T> WhenUnmatchedUntyped<T> whenType(Class<? super U> type) {
-                Objects.requireNonNull(type, "type is null");
-                final boolean isMatching = MATCH_BY_TYPE.apply(type, value);
-                return new WhenUnmatchedUntyped<>(value, isMatching);
+                return new WhenUnmatchedUntyped<>((U) value, isMatching);
             }
 
             @SuppressWarnings("unchecked")
             @Override
-            public <U extends T> WhenUnmatchedUntyped<T> whenTypeIn(Class<U>... types) {
+            public <U> WhenUnmatchedUntyped<T, U> whenType(Class<U> type) {
+                Objects.requireNonNull(type, "type is null");
+                final boolean isMatching = MATCH_BY_TYPE.apply(type, value);
+                return new WhenUnmatchedUntyped<>((U) value, isMatching);
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public <U> WhenUnmatchedUntyped<T, U> whenTypeIn(Class<? extends U>... types) {
                 Objects.requireNonNull(types, "types is null");
                 final boolean isMatching = List.of(types).findFirst(type -> MATCH_BY_TYPE.apply(type, value)).isDefined();
-                return new WhenUnmatchedUntyped<>(value, isMatching);
+                return new WhenUnmatchedUntyped<>((U) value, isMatching);
             }
         }
 
@@ -584,69 +592,73 @@ public interface Match<R> extends Function<Object, R> {
                 this.value = value;
             }
 
+            @SuppressWarnings("unchecked")
             @Override
-            public <U extends T> WhenUnmatched<T, R> when(U prototype) {
+            public <U> WhenUnmatched<T, U, R> when(U prototype) {
                 final boolean isMatching = MATCH_BY_VALUE.apply(prototype, value);
-                return new WhenUnmatched<>(value, isMatching);
+                return new WhenUnmatched<>((U) value, isMatching);
             }
 
             @SuppressWarnings("unchecked")
             @Override
-            public <U extends T> WhenUnmatched<T, R> whenIn(U... prototypes) {
+            public <U> WhenUnmatched<T, U, R> whenIn(U... prototypes) {
                 Objects.requireNonNull(prototypes, "prototypes is null");
                 final boolean isMatching = List.of(prototypes).findFirst(p -> MATCH_BY_VALUE.apply(p, value)).isDefined();
-                return new WhenUnmatched<>(value, isMatching);
-            }
-
-            @Override
-            public <U extends T> WhenUnmatched<T, R> whenType(Class<? super U> type) {
-                Objects.requireNonNull(type, "type is null");
-                final boolean isMatching = MATCH_BY_TYPE.apply(type, value);
-                return new WhenUnmatched<>(value, isMatching);
+                return new WhenUnmatched<>((U) value, isMatching);
             }
 
             @SuppressWarnings("unchecked")
             @Override
-            public <U extends T> WhenUnmatched<T, R> whenTypeIn(Class<? super U>... types) {
+            public <U> WhenUnmatched<T, U, R> whenType(Class<U> type) {
+                Objects.requireNonNull(type, "type is null");
+                final boolean isMatching = MATCH_BY_TYPE.apply(type, value);
+                return new WhenUnmatched<>((U) value, isMatching);
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public <U> WhenUnmatched<T, U, R> whenTypeIn(Class<? extends U>... types) {
                 Objects.requireNonNull(types, "types is null");
                 final boolean isMatching = List.of(types).findFirst(type -> MATCH_BY_TYPE.apply(type, value)).isDefined();
-                return new WhenUnmatched<>(value, isMatching);
+                return new WhenUnmatched<>((U) value, isMatching);
             }
         }
 
-        final class WhenUnmatchedUntyped<T> implements WithWhenUntyped.WhenUntyped<T> {
+        final class WhenUnmatchedUntyped<T, U> implements WithWhenUntyped.WhenUntyped<T, U> {
 
-            private final T value;
+            private final U value;
             private final boolean isMatching;
 
-            private WhenUnmatchedUntyped(T value, boolean isMatching) {
+            private WhenUnmatchedUntyped(U value, boolean isMatching) {
                 this.value = value;
                 this.isMatching = isMatching;
             }
 
+            @SuppressWarnings("unchecked")
             @Override
-            public <R> MatchMonadWithWhen<T, R> then(Function<? super T, ? extends R> function) {
-                return isMatching ? new MatchedWithWhen<>(function.apply(value)) : new Unmatched<>(value);
+            public <R> MatchMonadWithWhen<T, R> then(Function<? super U, ? extends R> function) {
+                return isMatching ? new MatchedWithWhen<>(function.apply(value)) : new Unmatched<>((T) value);
             }
         }
 
-        final class WhenUnmatched<T, R> implements WithWhen.When<T, R> {
+        final class WhenUnmatched<T, U, R> implements WithWhen.When<T, U, R> {
 
-            private final T value;
+            private final U value;
             private final boolean isMatching;
 
-            private WhenUnmatched(T value, boolean isMatching) {
+            private WhenUnmatched(U value, boolean isMatching) {
                 this.value = value;
                 this.isMatching = isMatching;
             }
 
+            @SuppressWarnings("unchecked")
             @Override
-            public MatchMonadWithWhen<T, R> then(Function<? super T, ? extends R> function) {
-                return isMatching ? new MatchedWithWhen<>(function.apply(value)) : new Unmatched<>(value);
+            public MatchMonadWithWhen<T, R> then(Function<? super U, ? extends R> function) {
+                return isMatching ? new MatchedWithWhen<>(function.apply(value)) : new Unmatched<>((T) value);
             }
         }
 
-        final class WhenMatched<T, R> implements WithWhen.When<T, R> {
+        final class WhenMatched<T, U, R> implements WithWhen.When<T, U, R> {
 
             private final MatchedWithWhen<T, R> matched;
 
@@ -655,7 +667,7 @@ public interface Match<R> extends Function<Object, R> {
             }
 
             @Override
-            public MatchedWithWhen<T, R> then(Function<? super T, ? extends R> function) {
+            public MatchedWithWhen<T, R> then(Function<? super U, ? extends R> function) {
                 return matched;
             }
         }
@@ -663,7 +675,7 @@ public interface Match<R> extends Function<Object, R> {
         final class MatchedWithWhen<T, R> implements MatchMonadWithWhen<T, R> {
 
             private final R result;
-            private final Lazy<WhenMatched<T, R>> when;
+            private final Lazy<WhenMatched<T, ?, R>> when;
 
             private MatchedWithWhen(R result) {
                 this.result = result;
@@ -684,33 +696,40 @@ public interface Match<R> extends Function<Object, R> {
 
             // -- when cases
 
+            @SuppressWarnings("unchecked")
             @Override
-            public <U extends T> When<T, R> when(U prototype) {
-                return when.get();
+            public <U> When<T, U, R> when(U prototype) {
+                return (When<T, U, R>) when.get();
             }
 
             @SuppressWarnings("unchecked")
             @Override
-            public <U extends T> When<T, R> whenIn(U... prototypes) {
+            public <U> When<T, U, R> whenIn(U... prototypes) {
                 // fast forward / no argument checks
-                return when.get();
-            }
-
-            @Override
-            public <U extends T> When<T, R> whenType(Class<? super U> type) {
-                // fast forward / no argument checks
-                return when.get();
+                return (When<T, U, R>) when.get();
             }
 
             @SuppressWarnings("unchecked")
             @Override
-            public <U extends T> When<T, R> whenTypeIn(Class<? super U>... types) {
+            public <U> When<T, U, R> whenType(Class<U> type) {
                 // fast forward / no argument checks
-                return when.get();
+                return (When<T, U, R>) when.get();
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public <U> When<T, U, R> whenTypeIn(Class<? extends U>... types) {
+                // fast forward / no argument checks
+                return (When<T, U, R>) when.get();
             }
 
             @Override
             public Otherwise<R> otherwise(Supplier<? extends R> supplier) {
+                return new Otherwise<>(result);
+            }
+
+            @Override
+            public Otherwise<R> otherwise(Function<? super T, ? extends R> function) {
                 return new Otherwise<>(result);
             }
 
@@ -761,38 +780,45 @@ public interface Match<R> extends Function<Object, R> {
 
             // -- when cases
 
+            @SuppressWarnings("unchecked")
             @Override
-            public <U extends T> WhenUnmatched<T, R> when(U prototype) {
+            public <U> WhenUnmatched<T, U, R> when(U prototype) {
                 final boolean isMatching = MATCH_BY_VALUE.apply(prototype, value);
-                return new WhenUnmatched<>(value, isMatching);
+                return new WhenUnmatched<>((U) value, isMatching);
             }
 
             @SuppressWarnings("unchecked")
             @Override
-            public <U extends T> WhenUnmatched<T, R> whenIn(U... prototypes) {
+            public <U> WhenUnmatched<T, U, R> whenIn(U... prototypes) {
                 Objects.requireNonNull(prototypes, "prototypes is null");
                 final boolean isMatching = List.of(prototypes).findFirst(p -> MATCH_BY_VALUE.apply(p, value)).isDefined();
-                return new WhenUnmatched<>(value, isMatching);
-            }
-
-            @Override
-            public <U extends T> WhenUnmatched<T, R> whenType(Class<? super U> type) {
-                Objects.requireNonNull(type, "type is null");
-                final boolean isMatching = MATCH_BY_TYPE.apply(type, value);
-                return new WhenUnmatched<>(value, isMatching);
+                return new WhenUnmatched<>((U) value, isMatching);
             }
 
             @SuppressWarnings("unchecked")
             @Override
-            public <U extends T> WhenUnmatched<T, R> whenTypeIn(Class<? super U>... types) {
+            public <U> WhenUnmatched<T, U, R> whenType(Class<U> type) {
+                Objects.requireNonNull(type, "type is null");
+                final boolean isMatching = MATCH_BY_TYPE.apply(type, value);
+                return new WhenUnmatched<>((U) value, isMatching);
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public <U> WhenUnmatched<T, U, R> whenTypeIn(Class<? extends U>... types) {
                 Objects.requireNonNull(types, "types is null");
                 final boolean isMatching = List.of(types).findFirst(type -> MATCH_BY_TYPE.apply(type, value)).isDefined();
-                return new WhenUnmatched<>(value, isMatching);
+                return new WhenUnmatched<>((U) value, isMatching);
             }
 
             @Override
             public Otherwise<R> otherwise(Supplier<? extends R> supplier) {
                 return new Otherwise<>(supplier.get());
+            }
+
+            @Override
+            public Otherwise<R> otherwise(Function<? super T, ? extends R> function) {
+                return new Otherwise<>(function.apply(value));
             }
 
             // -- filter monadic operations

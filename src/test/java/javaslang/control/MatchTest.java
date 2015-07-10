@@ -20,8 +20,8 @@ public class MatchTest {
     @Test
     public void shouldSpecifyMatchExpressionType() {
         final Match<Number> toNumber = Match.as(Number.class)
-                .when((Integer i) -> i)
-                .when((String s) -> new BigDecimal(s));
+                .whenType(Integer.class).then(i -> i)
+                .whenType(String.class).then(BigDecimal::new);
         assertThat(toNumber.apply("1")).isNotNull();
     }
 
