@@ -61,6 +61,34 @@ public interface Function1<T1, R> extends λ<R>, Function<T1, R> {
      */
     R apply(T1 t1);
 
+    /**
+     * Checks if this function is applicable to the given objects,
+     * i.e. each of the given objects is either null or the object type is assignable to the parameter type.
+     * <p>
+     * Please note that it is not checked if this function is defined for the given objects.
+     *
+     * @param o1 object 1
+     * @return true, if this function is applicable to the given objects, false otherwise.
+     */
+    default boolean isApplicableTo(Object o1) {
+        final Class<?>[] paramTypes = getType().parameterArray();
+        return
+                (o1 == null || paramTypes[0].isAssignableFrom(o1.getClass()));
+    }
+
+    /**
+     * Checks if this function is generally applicable to objects of the given types.
+     *
+     * @param type1 type 1
+     * @return true, if this function is applicable to objects of the given types, false otherwise.
+     */
+    default boolean isApplicableToType(Class<?> type1) {
+        Objects.requireNonNull(type1, "type1 is null");
+        final Class<?>[] paramTypes = getType().parameterArray();
+        return
+                paramTypes[0].isAssignableFrom(type1);
+    }
+
     @Override
     default int arity() {
         return 1;

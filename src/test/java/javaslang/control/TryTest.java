@@ -26,8 +26,8 @@ public class TryTest {
     // -- flatten(Function)
 
     static final Match<Try<Integer>> MATCH = Match
-        .when((Try<Integer> o) -> o)
-        .when((Integer i) -> new Success<>(i));
+        .whenType(Try.class).<Try<Integer>> then(o -> o)
+        .whenType(Integer.class).then(Success::new);
 
     @Test
     public void shouldFlattenUnnestedSuccessWithFunction() {

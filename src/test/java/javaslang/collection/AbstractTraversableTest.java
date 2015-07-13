@@ -370,8 +370,8 @@ public abstract class AbstractTraversableTest {
     public void shouldFlattenTraversableOfTraversablesAndPlainElementsGivenAFunction() {
         final Traversable<?> xs = of(1, of(2, 3));
         final Traversable<Integer> actual = xs.flatten(x -> Match
-                .when((Traversable<Integer> ys) -> ys)
-                .when((Integer i) -> of(i))
+                .whenType(Traversable.class).then(ys -> ys)
+                .whenType(Integer.class).then(i -> of(i))
                 .apply(x));
         final Traversable<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
@@ -381,8 +381,8 @@ public abstract class AbstractTraversableTest {
     public void shouldFlattenDifferentElementTypesGivenAFunction() {
         final Traversable<Object> actual = this.<Object>of(1, "2", this.<Object>of(3.1415, 1L))
                 .flatten(x -> Match
-                        .when((Traversable<Object> ys) -> ys)
-                        .when((Object i) -> of(i))
+                        .whenType(Traversable.class).then(ys -> ys)
+                        .whenType(Object.class).then(i -> of(i))
                         .apply(x));
         assertThat(actual).isEqualTo(this.<Object>of(1, "2", 3.1415, 1L));
     }
@@ -802,7 +802,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldThrowWhenMaxByFunctionOfNil() {
-        assertThat(this.<Integer> nil().maxBy(i -> i)).isEqualTo(None.instance());
+        assertThat(this.<Integer>nil().maxBy(i -> i)).isEqualTo(None.instance());
     }
 
     @Test
@@ -908,7 +908,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldThrowWhenMinByFunctionOfNil() {
-        assertThat(this.<Integer> nil().minBy(i -> i)).isEqualTo(None.instance());
+        assertThat(this.<Integer>nil().minBy(i -> i)).isEqualTo(None.instance());
     }
 
     @Test

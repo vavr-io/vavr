@@ -69,6 +69,64 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends λ<R> {
     R apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7);
 
     /**
+     * Checks if this function is applicable to the given objects,
+     * i.e. each of the given objects is either null or the object type is assignable to the parameter type.
+     * <p>
+     * Please note that it is not checked if this function is defined for the given objects.
+     *
+     * @param o1 object 1
+     * @param o2 object 2
+     * @param o3 object 3
+     * @param o4 object 4
+     * @param o5 object 5
+     * @param o6 object 6
+     * @param o7 object 7
+     * @return true, if this function is applicable to the given objects, false otherwise.
+     */
+    default boolean isApplicableTo(Object o1, Object o2, Object o3, Object o4, Object o5, Object o6, Object o7) {
+        final Class<?>[] paramTypes = getType().parameterArray();
+        return
+                (o1 == null || paramTypes[0].isAssignableFrom(o1.getClass())) &&
+                (o2 == null || paramTypes[1].isAssignableFrom(o2.getClass())) &&
+                (o3 == null || paramTypes[2].isAssignableFrom(o3.getClass())) &&
+                (o4 == null || paramTypes[3].isAssignableFrom(o4.getClass())) &&
+                (o5 == null || paramTypes[4].isAssignableFrom(o5.getClass())) &&
+                (o6 == null || paramTypes[5].isAssignableFrom(o6.getClass())) &&
+                (o7 == null || paramTypes[6].isAssignableFrom(o7.getClass()));
+    }
+
+    /**
+     * Checks if this function is generally applicable to objects of the given types.
+     *
+     * @param type1 type 1
+     * @param type2 type 2
+     * @param type3 type 3
+     * @param type4 type 4
+     * @param type5 type 5
+     * @param type6 type 6
+     * @param type7 type 7
+     * @return true, if this function is applicable to objects of the given types, false otherwise.
+     */
+    default boolean isApplicableToTypes(Class<?> type1, Class<?> type2, Class<?> type3, Class<?> type4, Class<?> type5, Class<?> type6, Class<?> type7) {
+        Objects.requireNonNull(type1, "type1 is null");
+        Objects.requireNonNull(type2, "type2 is null");
+        Objects.requireNonNull(type3, "type3 is null");
+        Objects.requireNonNull(type4, "type4 is null");
+        Objects.requireNonNull(type5, "type5 is null");
+        Objects.requireNonNull(type6, "type6 is null");
+        Objects.requireNonNull(type7, "type7 is null");
+        final Class<?>[] paramTypes = getType().parameterArray();
+        return
+                paramTypes[0].isAssignableFrom(type1) &&
+                paramTypes[1].isAssignableFrom(type2) &&
+                paramTypes[2].isAssignableFrom(type3) &&
+                paramTypes[3].isAssignableFrom(type4) &&
+                paramTypes[4].isAssignableFrom(type5) &&
+                paramTypes[5].isAssignableFrom(type6) &&
+                paramTypes[6].isAssignableFrom(type7);
+    }
+
+    /**
      * Applies this function partially to one argument.
      *
      * @param t1 argument 1

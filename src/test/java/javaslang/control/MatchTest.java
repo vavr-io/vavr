@@ -29,20 +29,26 @@ public class MatchTest {
 
     @Test
     public void shouldMatchNullAsPrototype() {
-        final int actual = Match.when((String s) -> s.length()).whenNull().then(o -> 1).apply(null);
+        final int actual = Match
+                .whenType(String.class).then(String::length)
+                .when(null).then(() -> 1)
+                .apply(null);
         assertThat(actual).isEqualTo(1);
     }
 
     @Test(expected = MatchError.class)
     public void shouldNotMatchNullAsType() {
-        Match.when((Integer i) -> false).when((Integer i) -> true).apply(null);
+        Match
+                .when(Integer.class).then(() -> false)
+                .when(Integer.class).then(() -> true)
+                .apply(null);
     }
 
     // -- no match
 
     @Test(expected = MatchError.class)
     public void shouldThrowOnNoMatchByValue() {
-        Match.when("1").then(o -> 1).apply("2");
+        Match.when("1").then(() -> 1).apply("2");
     }
 
     @Test
@@ -59,23 +65,31 @@ public class MatchTest {
 
     @Test
     public void shouldMatchByDoubleOnMultipleCasesUsingTypedParameter() {
-        final int actual = Match.when((Byte b) -> 1).when((Double d) -> 2).when((Integer i) -> 3).apply(1.0d);
+        final int actual = Match
+                .whenType(Byte.class).then(() -> 1)
+                .whenType(Double.class).then(() -> 2)
+                .whenType(Integer.class).then(() -> 3)
+                .apply(1.0d);
         assertThat(actual).isEqualTo(2);
     }
 
     @Test
     public void shouldMatchByIntOnMultipleCasesUsingTypedParameter() {
         final int actual = Match
-                .when((Byte b) -> (int) b)
-                .when((Double d) -> d.intValue())
-                .when((Integer i) -> i)
+                .whenType(Byte.class).then(b -> (int) b)
+                .whenType(Double.class).then(Double::intValue)
+                .whenType(Integer.class).then(i -> i)
                 .apply(Integer.MAX_VALUE);
         assertThat(actual).isEqualTo(Integer.MAX_VALUE);
     }
 
     @Test
     public void shouldMatchByAssignableTypeOnMultipleCases() {
-        final int actual = Match.when(1).then(o -> 'a').when((Number n) -> 'b').when((Object o) -> 'c').apply(2.0d);
+        final int actual = Match
+                .when(1).then(() -> 'a')
+                .whenType(Number.class).then(() -> 'b')
+                .otherwise(() -> 'c')
+                .apply(2.0d);
         assertThat(actual).isEqualTo('b');
     }
 
@@ -83,25 +97,20 @@ public class MatchTest {
 
     @Test
     public void shouldMatchDefaultCaseUsingEagerDefaultValue() {
-        final int actual = Match.when("x").then(o -> 1).otherwise(2).apply("default");
+        final int actual = Match
+                .when("x").then(() -> 1)
+                .otherwise(() -> 2)
+                .apply("default");
         assertThat(actual).isEqualTo(2);
     }
 
     @Test
     public void shouldMatchDefaultCaseUsingLazyDefaultValue() {
-        final int actual = Match.when("x").then(o -> 1).otherwise(() -> 2).apply("default");
-        assertThat(actual).isEqualTo(2);
-    }
-
-    // -- generics vs type erasure
-
-    @Test
-    public void shouldClarifyHereThatTypeErasureIsPresent() {
         final int actual = Match
-                .when((Some<Integer> some) -> 1)
-                .when((Some<String> some) -> Integer.parseInt(some.get()))
-                .apply(new Some<>("123"));
-        assertThat(actual).isEqualTo(1);
+                .when("x").then(() -> 1)
+                .otherwise(() -> 2)
+                .apply("default");
+        assertThat(actual).isEqualTo(2);
     }
 
     // -- as()
@@ -113,7 +122,7 @@ public class MatchTest {
 
     @Test
     public void shouldCreateWhenOfTypeUsingFunction() {
-        assertThat(Match.as(Object.class).when((Object o) -> null)).isNotNull();
+        assertThat(Match.as(Object.class).whenType(Object.class).then(() -> null)).isNotNull();
     }
 
     // -- whenIn
@@ -121,8 +130,8 @@ public class MatchTest {
     @Test
     public void shouldAllowValidMatchWithMultiPrototypes() {
         final String result = Match
-                .whenIn(1, 3, 5, 7).then(() -> "true")
-                .whenIn(2, 4, 6, 8).then(() -> "false")
+                .whenIn(1, 3, 5, 7).then("true")
+                .whenIn(2, 4, 6, 8).then("false")
                 .apply(6);
 
         assertThat(result).isEqualTo("false");
@@ -131,8 +140,8 @@ public class MatchTest {
     @Test
     public void shouldAllowInvalidMatchWithMultiPrototypes() {
         final String result = Match
-                .whenIn(1, 3, 5, 7).then(() -> "true")
-                .whenIn(2, 4, 6, 8).then(() -> "false")
+                .whenIn(1, 3, 5, 7).then("true")
+                .whenIn(2, 4, 6, 8).then("false")
                 .otherwise("Not Found")
                 .apply(9);
 
@@ -141,116 +150,15 @@ public class MatchTest {
 
     // -- primitive types vs objects
 
-    // boolean / Boolean
-
     @Test
     public void shouldMatchBoxedPrimitiveBooleanAsBoolean() {
-        final boolean actual = Match.when((Boolean b) -> true).apply(true);
+        final boolean actual = Match.whenType(Boolean.class).then(true).apply(true);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldMatchBoolean() {
-        final boolean actual = Match.when((Boolean b) -> true).apply(Boolean.TRUE);
-        assertThat(actual).isTrue();
-    }
-
-    // byte / Byte
-
-    @Test
-    public void shouldMatchBoxedPrimitiveByteAsByte() {
-        final boolean actual = Match.when((Byte b) -> true).apply((byte) 1);
-        assertThat(actual).isTrue();
-    }
-
-    @Test
-    public void shouldMatchByte() {
-        final Byte one = 1;
-        final boolean actual = Match.when((Byte b) -> true).apply(one);
-        assertThat(actual).isTrue();
-    }
-
-    // char / Character
-
-    @Test
-    public void shouldMatchBoxedPrimitiveCharAsCharacter() {
-        final boolean actual = Match.when((Character c) -> true).apply('#');
-        assertThat(actual).isTrue();
-    }
-
-    @Test
-    public void shouldMatchCharacter() {
-        final boolean actual = Match.when((Character c) -> true).apply(Character.valueOf('#'));
-        assertThat(actual).isTrue();
-    }
-
-    // double / Double
-
-    @Test
-    public void shouldMatchBoxedPrimitiveDoubleAsDouble() {
-        final boolean actual = Match.when((Double d) -> true).apply((double) 1);
-        assertThat(actual).isTrue();
-    }
-
-    @Test
-    public void shouldMatchDouble() {
-        final boolean actual = Match.when((Double d) -> true).apply(new Double(1));
-        assertThat(actual).isTrue();
-    }
-
-    // float / Float
-
-    @Test
-    public void shouldMatchBoxedPrimitiveFloatAsFloat() {
-        final boolean actual = Match.when((Float f) -> true).apply((float) 1);
-        assertThat(actual).isTrue();
-    }
-
-    @Test
-    public void shouldMatchFloat() {
-        final boolean actual = Match.when((Float f) -> true).apply(new Float(1));
-        assertThat(actual).isTrue();
-    }
-
-    // int / Integer
-
-    @Test
-    public void shouldMatchBoxedPrimitiveIntAsInteger() {
-        final boolean actual = Match.when((Integer i) -> true).apply(1);
-        assertThat(actual).isTrue();
-    }
-
-    @Test
-    public void shouldMatchInteger() {
-        final boolean actual = Match.when((Integer i) -> true).apply(new Integer(1));
-        assertThat(actual).isTrue();
-    }
-
-    // long / Long
-
-    @Test
-    public void shouldMatchBoxedPrimitiveLongAsLong() {
-        final boolean actual = Match.when((Long l) -> true).apply(1L);
-        assertThat(actual).isTrue();
-    }
-
-    @Test
-    public void shouldMatchLong() {
-        final boolean actual = Match.when((Long l) -> true).apply(new Long(1));
-        assertThat(actual).isTrue();
-    }
-
-    // short / Short
-
-    @Test
-    public void shouldMatchBoxedPrimitiveShortAsShort() {
-        final boolean actual = Match.when((Short s) -> true).apply((short) 1);
-        assertThat(actual).isTrue();
-    }
-
-    @Test
-    public void shouldMatchShort() {
-        final boolean actual = Match.when((Short s) -> true).apply(new Short((short) 1));
+        final boolean actual = Match.whenType(Boolean.class).then(true).apply(Boolean.TRUE);
         assertThat(actual).isTrue();
     }
 
@@ -308,7 +216,7 @@ public class MatchTest {
 
     @Test
     public void shouldMatchBooleanArray() {
-        final int actual = Match.when((boolean[] b) -> 1).apply(new boolean[]{true});
+        final int actual = Match.whenType(boolean[].class).then(1).apply(new boolean[]{true});
         assertThat(actual).isEqualTo(1);
     }
 
@@ -316,9 +224,9 @@ public class MatchTest {
 
     @Test
     public void shouldAllowCommonReturnTypeUsingBuilder() {
-        final Match<Number> toNumber = Match.as(Number.class)
-                .when((Integer i) -> i)
-                .when((String s) -> new BigDecimal(s));
+        final Match<Number> toNumber = Match
+                .whenType(Integer.class).<Number> then(i -> i)
+                .whenType(String.class).then(BigDecimal::new);
         final Number number = toNumber.apply("1.0E10");
         assertThat(number).isEqualTo(new BigDecimal("1.0E10"));
     }
@@ -327,16 +235,16 @@ public class MatchTest {
     public void shouldAllowCommonReturnTypeUsingBuilderAndPrototype() {
         final Match<Number> toNumber = Match.as(Number.class)
                 .when(1).then((Integer i) -> i)
-                .when("1").then((String s) -> new BigDecimal(s));
+                .when("1").then(BigDecimal::new);
         final Number number = toNumber.apply("1");
         assertThat(number).isEqualTo(new BigDecimal("1"));
     }
 
     @Test
     public void shouldAllowCommonReturnTypeUsingMatchs() {
-        final Match<Number> toNumber = Match
-                .<Number>when((Integer i) -> i)
-                .when((String s) -> new BigDecimal(s));
+        final Match<Number> toNumber = Match.as(Number.class)
+                .whenType(Integer.class).then(i -> i)
+                .whenType(String.class).then(BigDecimal::new);
         final Number number = toNumber.apply("1");
         assertThat(number).isEqualTo(new BigDecimal("1"));
     }
@@ -344,8 +252,8 @@ public class MatchTest {
     @Test
     public void shouldAllowCommonReturnTypeUsingMatchsWithPrototype() {
         final Match<Number> toNumber = Match
-                .when(1).<Number> then((Integer i) -> i)
-                .when("1").then((String s) -> new BigDecimal(s));
+                .when(1).<Number>then((Integer i) -> i)
+                .when("1").then(BigDecimal::new);
         final Number number = toNumber.apply("1");
         assertThat(number).isEqualTo(new BigDecimal("1"));
     }
@@ -354,10 +262,10 @@ public class MatchTest {
 
     @Test
     public void shouldMatchLambdaConsideringTypeHierarchy() {
-        final SpecialFunction lambda = i -> String.valueOf(i);
+        final SpecialFunction lambda = String::valueOf;
         final String actual = Match
-                .when((SameSignatureAsSpecialFunction f) -> f.apply(1))
-                .when((Function1<Integer, String> f) -> f.apply(2))
+                .whenType(SameSignatureAsSpecialFunction.class).then(f -> f.apply(1))
+                .when((Function1<Integer, String> f) -> true).then(f -> f.apply(2))
                 .apply(lambda);
         assertThat(actual).isEqualTo("2");
     }

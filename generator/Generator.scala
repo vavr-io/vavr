@@ -274,6 +274,7 @@ def generateMainClasses(): Unit = {
 
       def genFunction(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
 
+        val Objects = im.getType("java.util.Objects")
         val generics = (1 to i).gen(j => s"T$j")(", ")
         val fullGenerics = s"<${(i > 0).gen(s"$generics, ")}R>"
         val genericsReversed = (1 to i).reverse.gen(j => s"T$j")(", ")
@@ -343,15 +344,16 @@ def generateMainClasses(): Unit = {
               }
 
               ${(i == 1).gen(xs"""
-              /$javadoc
-               * Returns the identity $className, i.e. the function that returns its input.
-               *
-               * @param <T> argument type (and return type) of the identity function
-               * @return the identity $className
-               */
-              static <T> ${name}1<T, T> identity() {
-                  return t -> t;
-              }""")}
+                /$javadoc
+                 * Returns the identity $className, i.e. the function that returns its input.
+                 *
+                 * @param <T> argument type (and return type) of the identity function
+                 * @return the identity $className
+                 */
+                static <T> ${name}1<T, T> identity() {
+                    return t -> t;
+                }
+              """)}
 
               /$javadoc
                * Applies this function to ${arguments(i)} and returns the result.
@@ -360,6 +362,38 @@ def generateMainClasses(): Unit = {
                * ${checked.gen("@throws Throwable if something goes wrong applying this function to the given arguments")}
                */
               R apply($paramsDecl)${checked.gen(" throws Throwable")};
+
+              ${(i > 0).gen(xs"""
+                /$javadoc
+                 * Checks if this function is applicable to the given objects,
+                 * i.e. each of the given objects is either null or the object type is assignable to the parameter type.
+                 * <p>
+                 * Please note that it is not checked if this function is defined for the given objects.
+                 ${(0 to i).gen(j => if (j == 0) "*" else s"* @param o$j object $j")("\n")}
+                 * @return true, if this function is applicable to the given objects, false otherwise.
+                 */
+                default boolean isApplicableTo(${(1 to i).gen(j => s"Object o$j")(", ")}) {
+                    final Class<?>[] paramTypes = getType().parameterArray();
+                    return
+                            ${(1 to i).gen(j => xs"""
+                              (o$j == null || paramTypes[${j - 1}].isAssignableFrom(o$j.getClass()))
+                            """)(" &&\n")};
+                }
+
+                /$javadoc
+                 * Checks if this function is generally applicable to objects of the given types.
+                 ${(0 to i).gen(j => if (j == 0) "*" else s"* @param type$j type $j")("\n")}
+                 * @return true, if this function is applicable to objects of the given types, false otherwise.
+                 */
+                default boolean isApplicableToType${(i > 1).gen("s")}(${(1 to i).gen(j => s"Class<?> type$j")(", ")}) {
+                    ${(1 to i).gen(j => xs"""$Objects.requireNonNull(type$j, "type$j is null");""")("\n")}
+                    final Class<?>[] paramTypes = getType().parameterArray();
+                    return
+                            ${(1 to i).gen(j => xs"""
+                              paramTypes[${j - 1}].isAssignableFrom(type$j)
+                            """)(" &&\n")};
+                }
+              """)}
 
               ${(1 to i - 1).gen(j => {
                 val partialApplicationArgs = (1 to j).gen(k => s"T$k t$k")(", ")
@@ -446,7 +480,7 @@ def generateMainClasses(): Unit = {
                * @throws NullPointerException if after is null
                */
               default <V> $className<${genericsFunction}V> andThen($compositionType<? super R, ? extends V> after) {
-                  ${im.getType("java.util.Objects")}.requireNonNull(after, "after is null");
+                  $Objects.requireNonNull(after, "after is null");
                   return ($params) -> after.apply(apply($params));
               }
 
@@ -461,7 +495,7 @@ def generateMainClasses(): Unit = {
                  * @throws NullPointerException if before is null
                  */
                 default <V> ${name}1<V, R> compose($compositionType<? super V, ? extends T1> before) {
-                    ${im.getType("java.util.Objects")}.requireNonNull(before, "before is null");
+                    $Objects.requireNonNull(before, "before is null");
                     return v -> apply(before.apply(v));
                 }
               """)}
