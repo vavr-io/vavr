@@ -26,7 +26,7 @@ public class TryTest {
     // -- flatten(Function)
 
     static final Match<Try<Integer>> MATCH = Match
-        .whenType(Try.class).<Try<Integer>> then(o -> o)
+        .whenIsApplicable((Try<Integer> o) -> o).thenApply()
         .whenType(Integer.class).then(Success::new);
 
     @Test

@@ -156,13 +156,13 @@ public class EitherTest {
 
     @Test
     public void shouldReturnLeftWhenOrElseThrowWithFunctionOnLeftProjectionOfLeft() {
-        final Integer actual = new Left<Integer, String>(1).left().orElseThrow(RuntimeException::new);
+        final Integer actual = new Left<Integer, String>(1).left().orElseThrow(s -> new RuntimeException(s));
         assertThat(actual).isEqualTo(1);
     }
 
     @Test(expected = RuntimeException.class)
     public void shouldThrowWhenOrElseThrowWithFunctionOnLeftProjectionOfRight() {
-        new Right<>("1").left().orElseThrow(RuntimeException::new);
+        new Right<>("1").left().orElseThrow(s -> new RuntimeException(s));
     }
 
     // toOption
@@ -579,13 +579,13 @@ public class EitherTest {
 
     @Test
     public void shouldReturnRightWhenOrElseThrowWithFunctionOnRightProjectionOfRight() {
-        final Integer actual = new Right<String, Integer>(1).right().orElseThrow(RuntimeException::new);
+        final Integer actual = new Right<String, Integer>(1).right().orElseThrow(s -> new RuntimeException(s));
         assertThat(actual).isEqualTo(1);
     }
 
     @Test(expected = RuntimeException.class)
     public void shouldThrowWhenOrElseThrowWithFunctionOnRightProjectionOfLeft() {
-        new Left<String, Integer>("1").right().orElseThrow(RuntimeException::new);
+        new Left<String, Integer>("1").right().orElseThrow(i -> new RuntimeException(String.valueOf(i)));
     }
 
     // toOption

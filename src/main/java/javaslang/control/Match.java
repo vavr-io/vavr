@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
@@ -130,8 +131,8 @@ public interface Match<R> extends Function<Object, R> {
         return new MatchFunction.WhenUntyped<>(prototype);
     }
 
-    static <T> MatchFunction.WhenPredicateUntyped<T> when(Function1<? super T, Boolean> predicate) {
-        return new MatchFunction.WhenPredicateUntyped<>(predicate);
+    static <T> MatchFunction.WhenTrueUntyped<T> when(Predicate<? super T> predicate) {
+        return new MatchFunction.WhenTrueUntyped<>(predicate);
     }
 
     @SuppressWarnings("unchecked")
@@ -151,6 +152,10 @@ public interface Match<R> extends Function<Object, R> {
         return new MatchFunction.WhenTypeInUntyped<>(types);
     }
 
+    static <T, R> MatchFunction.WhenIsApplicable<T, R> whenIsApplicable(Function<? super T, ? extends R> function) {
+        return new MatchFunction.WhenIsApplicable<>(function, List.nil());
+    }
+
     /**
      * @since 1.9.9
      */
@@ -168,7 +173,7 @@ public interface Match<R> extends Function<Object, R> {
              */
             <T> When<T, R> when(T prototype);
 
-            <T> WhenPredicate<T, R> when(Function1<? super T, Boolean> predicate);
+            <T> WhenTrue<T, R> whenTrue(Predicate<? super T> predicate);
 
             @SuppressWarnings("unchecked")
             <T> WhenIn<T, R> whenIn(T... prototypes);
@@ -177,6 +182,8 @@ public interface Match<R> extends Function<Object, R> {
 
             @SuppressWarnings("unchecked")
             <T> WhenTypeIn<T, R> whenTypeIn(Class<T>... types);
+
+            <T> WhenIsApplicable<T, R> whenIsApplicable(Function<? super T, ? extends R> function);
         }
 
         interface WithThenUntyped<T> {
@@ -224,9 +231,9 @@ public interface Match<R> extends Function<Object, R> {
             }
 
             @Override
-            public <T> WhenPredicate<T, R> when(Function1<? super T, Boolean> predicate) {
+            public <T> WhenTrue<T, R> whenTrue(Predicate<? super T> predicate) {
                 Objects.requireNonNull(predicate, "predicate is null");
-                return new WhenPredicate<>(predicate, List.nil());
+                return new WhenTrue<>(predicate, List.nil());
             }
 
             @SuppressWarnings("unchecked")
@@ -247,6 +254,12 @@ public interface Match<R> extends Function<Object, R> {
             public <T> WhenTypeIn<T, R> whenTypeIn(Class<T>... types) {
                 Objects.requireNonNull(types, "types is null");
                 return new WhenTypeIn<>(types, List.nil());
+            }
+
+            @Override
+            public <T> WhenIsApplicable<T, R> whenIsApplicable(Function<? super T, ? extends R> function) {
+                Objects.requireNonNull(function, "function is null");
+                return new WhenIsApplicable<>(function, List.nil());
             }
         }
 
@@ -282,11 +295,11 @@ public interface Match<R> extends Function<Object, R> {
             }
         }
 
-        final class WhenPredicateUntyped<T> implements WithThenUntyped<T> {
+        final class WhenTrueUntyped<T> implements WithThenUntyped<T> {
 
-            private final Function1<? super T, Boolean> predicate;
+            private final Predicate<? super T> predicate;
 
-            private WhenPredicateUntyped(Function1<? super T, Boolean> predicate) {
+            private WhenTrueUntyped(Predicate<? super T> predicate) {
                 this.predicate = predicate;
             }
 
@@ -297,12 +310,12 @@ public interface Match<R> extends Function<Object, R> {
             }
         }
 
-        final class WhenPredicate<T, R> implements WithThen<T, R> {
+        final class WhenTrue<T, R> implements WithThen<T, R> {
 
-            private final Function1<? super T, Boolean> predicate;
+            private final Predicate<? super T> predicate;
             private final List<Case<R>> cases;
 
-            private WhenPredicate(Function1<? super T, Boolean> predicate, List<Case<R>> cases) {
+            private WhenTrue(Predicate<? super T> predicate, List<Case<R>> cases) {
                 this.predicate = predicate;
                 this.cases = cases;
             }
@@ -310,7 +323,7 @@ public interface Match<R> extends Function<Object, R> {
             @Override
             public Then<R> then(Function<? super T, ? extends R> function) {
                 Objects.requireNonNull(function, "function is null");
-                return new Then<>(List.of(Case.byPredicate(predicate, function)));
+                return new Then<>(cases.prepend(Case.byPredicate(predicate, function)));
             }
         }
 
@@ -420,6 +433,19 @@ public interface Match<R> extends Function<Object, R> {
             }
         }
 
+        final class WhenIsApplicable<T, R> {
+
+            private final Then<R> then;
+
+            private WhenIsApplicable(Function<? super T, ? extends R> function, List<Case<R>> cases) {
+                this.then = new Then<>(cases.prepend(Case.byFunction(function)));
+            }
+
+            public Then<R> thenApply() {
+                return then;
+            }
+        }
+
         final class Then<R> implements Match<R>, WithWhen<R> {
 
             private final List<Case<R>> cases;
@@ -443,9 +469,9 @@ public interface Match<R> extends Function<Object, R> {
             }
 
             @Override
-            public <T> WhenPredicate<T, R> when(Function1<? super T, Boolean> predicate) {
+            public <T> WhenTrue<T, R> whenTrue(Predicate<? super T> predicate) {
                 Objects.requireNonNull(predicate, "predicate is null");
-                return new WhenPredicate<>(predicate, cases);
+                return new WhenTrue<>(predicate, cases);
             }
 
             @SuppressWarnings("unchecked")
@@ -466,6 +492,12 @@ public interface Match<R> extends Function<Object, R> {
             public <T> WhenTypeIn<T, R> whenTypeIn(Class<T>... types) {
                 Objects.requireNonNull(types, "types is null");
                 return new WhenTypeIn<>(types, cases);
+            }
+
+            @Override
+            public <T> WhenIsApplicable<T, R> whenIsApplicable(Function<? super T, ? extends R> function) {
+                Objects.requireNonNull(function, "f is null");
+                return new WhenIsApplicable<>(function, cases);
             }
 
             public Otherwise<R> otherwise(R that) {
@@ -523,8 +555,15 @@ public interface Match<R> extends Function<Object, R> {
             }
 
             @SuppressWarnings("unchecked")
-            private static <T, R> Case<R> byPredicate(Function1<? super T, Boolean> predicate, Function<? super T, ? extends R> function) {
-                return new Case<>(predicate::isApplicableTo, (Function<Object, ? extends R>) function);
+            private static <T, R> Case<R> byPredicate(Predicate<? super T> predicate, Function<? super T, ? extends R> function) {
+                final Function1<? super T, Boolean> liftedPredicate = Function1.lift(predicate::test);
+                return new Case<>(liftedPredicate::isApplicableTo, (Function<Object, ? extends R>) function);
+            }
+
+            @SuppressWarnings("unchecked")
+            private static <T, R> Case<R> byFunction(Function<? super T, ? extends R> function) {
+                final Function1<? super T, ? extends R> liftedFunction = Function1.lift(function::apply);
+                return new Case<>(liftedFunction::isApplicableTo, (Function<Object, ? extends R>) function);
             }
 
             boolean isApplicable(Object o) {
@@ -555,7 +594,7 @@ public interface Match<R> extends Function<Object, R> {
 
             <U> WhenUntyped<T, U> when(U prototype);
 
-            <U> WhenUntyped<T, U> when(Function1<? super U, Boolean> predicate);
+            <U> WhenUntyped<T, U> when(Predicate<? super U> predicate);
 
             @SuppressWarnings("unchecked")
             <U> WhenUntyped<T, U> whenIn(U... prototypes);
@@ -564,6 +603,8 @@ public interface Match<R> extends Function<Object, R> {
 
             @SuppressWarnings("unchecked")
             <U> WhenUntyped<T, U> whenTypeIn(Class<? extends U>... type);
+
+            <U, R> WithWhen.When<T, U, R> whenIsApplicable(Function<? super U, ? extends R> function);
 
             interface WhenUntyped<T, U> {
 
@@ -584,7 +625,7 @@ public interface Match<R> extends Function<Object, R> {
 
             <U> When<T, U, R> when(U prototype);
 
-            <U> When<T, U, R> when(Function1<? super U, Boolean> predicate);
+            <U> When<T, U, R> when(Predicate<? super U> predicate);
 
             @SuppressWarnings("unchecked")
             <U> When<T, U, R> whenIn(U... prototypes);
@@ -593,6 +634,8 @@ public interface Match<R> extends Function<Object, R> {
 
             @SuppressWarnings("unchecked")
             <U> When<T, U, R> whenTypeIn(Class<? extends U>... type);
+
+            <U> When<T, U, R> whenIsApplicable(Function<? super U, ? extends R> function);
 
             interface When<T, U, R> {
 
@@ -641,9 +684,9 @@ public interface Match<R> extends Function<Object, R> {
             }
 
             @Override
-            public <U> WhenUnmatchedUntyped<T, U> when(Function1<? super U, Boolean> predicate) {
+            public <U> WhenUnmatchedUntyped<T, U> when(Predicate<? super U> predicate) {
                 Objects.requireNonNull(predicate, "predicate is null");
-                final boolean isMatching = predicate.isApplicableTo(value);
+                final boolean isMatching = Function1.lift(predicate::test).isApplicableTo(value);
                 return new WhenUnmatchedUntyped<>(value, isMatching);
             }
 
@@ -669,6 +712,13 @@ public interface Match<R> extends Function<Object, R> {
                 final boolean isMatching = List.of(types).findFirst(type -> MATCH_BY_TYPE.apply(type, value)).isDefined();
                 return new WhenUnmatchedUntyped<>(value, isMatching);
             }
+            
+            @Override
+            public <U, R> WhenUnmatched<T, U, R> whenIsApplicable(Function<? super U, ? extends R> function) {
+                Objects.requireNonNull(function, "function is null");
+                final boolean isMatching = Function1.lift(function::apply).isApplicableTo(value);
+                return new WhenUnmatched<>(value, isMatching);
+            }
         }
 
         final class Typed<T, R> implements WithWhen<T, R> {
@@ -686,9 +736,9 @@ public interface Match<R> extends Function<Object, R> {
             }
 
             @Override
-            public <U> WhenUnmatched<T, U, R> when(Function1<? super U, Boolean> predicate) {
+            public <U> WhenUnmatched<T, U, R> when(Predicate<? super U> predicate) {
                 Objects.requireNonNull(predicate, "predicate is null");
-                final boolean isMatching = predicate.isApplicableTo(value);
+                final boolean isMatching = Function1.lift(predicate::test).isApplicableTo(value);
                 return new WhenUnmatched<>(value, isMatching);
             }
 
@@ -712,6 +762,13 @@ public interface Match<R> extends Function<Object, R> {
             public <U> WhenUnmatched<T, U, R> whenTypeIn(Class<? extends U>... types) {
                 Objects.requireNonNull(types, "types is null");
                 final boolean isMatching = List.of(types).findFirst(type -> MATCH_BY_TYPE.apply(type, value)).isDefined();
+                return new WhenUnmatched<>(value, isMatching);
+            }
+
+            @Override
+            public <U> WhenUnmatched<T, U, R> whenIsApplicable(Function<? super U, ? extends R> function) {
+                Objects.requireNonNull(function, "function is null");
+                final boolean isMatching = Function1.lift(function::apply).isApplicableTo(value);
                 return new WhenUnmatched<>(value, isMatching);
             }
         }
@@ -796,7 +853,7 @@ public interface Match<R> extends Function<Object, R> {
 
             @SuppressWarnings("unchecked")
             @Override
-            public <U> When<T, U, R> when(Function1<? super U, Boolean> predicate) {
+            public <U> When<T, U, R> when(Predicate<? super U> predicate) {
                 Objects.requireNonNull(predicate, "predicate is null");
                 return (When<T, U, R>) when.get();
             }
@@ -819,6 +876,13 @@ public interface Match<R> extends Function<Object, R> {
             @Override
             public <U> When<T, U, R> whenTypeIn(Class<? extends U>... types) {
                 Objects.requireNonNull(types, "types is null");
+                return (When<T, U, R>) when.get();
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public <U> When<T, U, R> whenIsApplicable(Function<? super U, ? extends R> function) {
+                Objects.requireNonNull(function, "function is null");
                 return (When<T, U, R>) when.get();
             }
 
@@ -891,9 +955,9 @@ public interface Match<R> extends Function<Object, R> {
             }
 
             @Override
-            public <U> When<T, U, R> when(Function1<? super U, Boolean> predicate) {
+            public <U> When<T, U, R> when(Predicate<? super U> predicate) {
                 Objects.requireNonNull(predicate, "predicate is null");
-                final boolean isMatching = predicate.isApplicableTo(value);
+                final boolean isMatching = Function1.lift(predicate::test).isApplicableTo(value);
                 return new WhenUnmatched<>(value, isMatching);
             }
 
@@ -917,6 +981,13 @@ public interface Match<R> extends Function<Object, R> {
             public <U> WhenUnmatched<T, U, R> whenTypeIn(Class<? extends U>... types) {
                 Objects.requireNonNull(types, "types is null");
                 final boolean isMatching = List.of(types).findFirst(type -> MATCH_BY_TYPE.apply(type, value)).isDefined();
+                return new WhenUnmatched<>(value, isMatching);
+            }
+
+            @Override
+            public <U> WhenUnmatched<T, U, R> whenIsApplicable(Function<? super U, ? extends R> function) {
+                Objects.requireNonNull(function, "function is null");
+                final boolean isMatching = Function1.lift(function::apply).isApplicableTo(value);
                 return new WhenUnmatched<>(value, isMatching);
             }
 

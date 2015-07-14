@@ -31,7 +31,7 @@ public class MatchTest {
     public void shouldMatchNullAsPrototype() {
         final int actual = Match
                 .whenType(String.class).then(String::length)
-                .when(null).then(() -> 1)
+                .when(null).then(1)
                 .apply(null);
         assertThat(actual).isEqualTo(1);
     }
@@ -265,7 +265,7 @@ public class MatchTest {
         final SpecialFunction lambda = String::valueOf;
         final String actual = Match
                 .whenType(SameSignatureAsSpecialFunction.class).then(f -> f.apply(1))
-                .when((Function1<Integer, String> f) -> true).then(f -> f.apply(2))
+                .whenIsApplicable((Function1<Integer, String> f) -> f.apply(2)).thenApply()
                 .apply(lambda);
         assertThat(actual).isEqualTo("2");
     }
