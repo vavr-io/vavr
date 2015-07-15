@@ -265,7 +265,7 @@ public class MatchTest {
         final SpecialFunction lambda = String::valueOf;
         final String actual = Match
                 .whenType(SameSignatureAsSpecialFunction.class).then(f -> f.apply(1))
-                .whenIsApplicable((Function1<Integer, String> f) -> f.apply(2)).thenApply()
+                .whenApplicable((Function1<Integer, String> f) -> f.apply(2)).thenApply()
                 .apply(lambda);
         assertThat(actual).isEqualTo("2");
     }

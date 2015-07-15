@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import java.io.Serializable;
 import java.lang.invoke.MethodType;
+import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -318,6 +319,60 @@ public class FunctionsTest {
     }
 
     // -- lambda reflection tests
+
+    @Test
+    public void shouldRecognizeLambdaSignature() {
+        final Function1<Integer, Integer> f = i -> i + 1;
+        assertThat(f.getType().toString()).isEqualTo("(Integer)Integer");
+    }
+
+    @Test
+    public void shouldRecognizeLiftedLambdaSignature() {
+        final Function1<Integer, Integer> f = Function1.lift(i -> i + 1);
+        assertThat(f.getType().toString()).isEqualTo("(Integer)Integer");
+    }
+
+    @Test
+    public void shouldRecognizeSimpleMethodReferenceSignature() {
+        final class Test {
+            Integer method(Integer i) {
+                return i + 1;
+            }
+        }
+        final Test test = new Test();
+        final Function1<Integer, Integer> f = test::method;
+        assertThat(f.getType().toString()).isEqualTo("(Integer)Integer");
+    }
+
+    @Test
+    public void shouldRecognizeLambdaCallSignature() {
+        final Function<Integer, Integer> f1 = i -> i + 1;
+        final Function1<Integer, Integer> f2 = i -> f1.apply(i);
+        assertThat(f2.getType().toString()).isEqualTo("(Integer)Integer");
+    }
+
+    @Test
+    public void shouldRecognizeLiftedLambdaCallSignature() {
+        final Function<Integer, Integer> f1 = i -> i + 1;
+        final Function1<Integer, Integer> f2 = Function1.lift(i -> f1.apply(i));
+        assertThat(f2.getType().toString()).isEqualTo("(Integer)Integer");
+    }
+
+    @Test
+    public void shouldRecognizeMethodReferenceSignature() {
+        final Function<Integer, Integer> f1 = i -> i + 1;
+        final Function1<Integer, Integer> f2 = f1::apply;
+        assertThat(f2.getType().toString()).isEqualTo("(Object)Object");
+    }
+
+    @Test
+    public void shouldRecognizeLiftedMethodReferenceSignature() {
+        final Function<Integer, Integer> f1 = i -> i + 1;
+        final Function1<Integer, Integer> f2 = Function1.lift(f1::apply);
+        assertThat(f2.getType().toString()).isEqualTo("(Object)Object");
+    }
+
+    // -- more lambda reflection tests
 
     @Test
     public void shouldParseReturnTypeVoid() {
