@@ -11,6 +11,7 @@ package javaslang;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 public class Function0Test {
@@ -50,6 +51,15 @@ public class Function0Test {
     public void shouldReverse() {
         final Function0<Object> f = () -> null;
         assertThat(f.reversed()).isNotNull();
+    }
+
+    @Test
+    public void shouldMemoize() {
+        final AtomicInteger integer = new AtomicInteger();
+        final Function0<Integer> f = () -> integer.getAndIncrement();
+        final Function0<Integer> memo = f.memoized();
+        final int expected = memo.apply();
+        assertThat(memo.apply()).isEqualTo(expected);
     }
 
     @Test

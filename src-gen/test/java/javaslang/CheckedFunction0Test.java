@@ -11,6 +11,7 @@ package javaslang;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 public class CheckedFunction0Test {
@@ -50,6 +51,15 @@ public class CheckedFunction0Test {
     public void shouldReverse() {
         final CheckedFunction0<Object> f = () -> null;
         assertThat(f.reversed()).isNotNull();
+    }
+
+    @Test
+    public void shouldMemoize() throws Throwable {
+        final AtomicInteger integer = new AtomicInteger();
+        final CheckedFunction0<Integer> f = () -> integer.getAndIncrement();
+        final CheckedFunction0<Integer> memo = f.memoized();
+        final int expected = memo.apply();
+        assertThat(memo.apply()).isEqualTo(expected);
     }
 
     @Test

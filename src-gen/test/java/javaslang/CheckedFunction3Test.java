@@ -11,6 +11,7 @@ package javaslang;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 public class CheckedFunction3Test {
@@ -39,6 +40,24 @@ public class CheckedFunction3Test {
     }
 
     @Test
+      public void shouldRecognizeApplicabilityOfNull() {
+          final CheckedFunction3<Object, Object, Object, Object> f = (o1, o2, o3) -> null;
+          assertThat(f.isApplicableTo(null, null, null)).isTrue();
+      }
+
+      @Test
+      public void shouldRecognizeApplicabilityOfNonNull() {
+          final CheckedFunction3<Integer, Integer, Integer, Integer> f = (i1, i2, i3) -> null;
+          assertThat(f.isApplicableTo(1, 2, 3)).isTrue();
+      }
+
+      @Test
+      public void shouldRecognizeApplicabilityToTypes() {
+          final CheckedFunction3<Integer, Integer, Integer, Integer> f = (i1, i2, i3) -> null;
+          assertThat(f.isApplicableToTypes(Integer.class, Integer.class, Integer.class)).isTrue();
+      }
+
+    @Test
     public void shouldGetArity() {
         final CheckedFunction3<Object, Object, Object, Object> f = (o1, o2, o3) -> null;
         assertThat(f.arity()).isEqualTo(3);
@@ -62,6 +81,15 @@ public class CheckedFunction3Test {
     public void shouldReverse() {
         final CheckedFunction3<Object, Object, Object, Object> f = (o1, o2, o3) -> null;
         assertThat(f.reversed()).isNotNull();
+    }
+
+    @Test
+    public void shouldMemoize() throws Throwable {
+        final AtomicInteger integer = new AtomicInteger();
+        final CheckedFunction3<Integer, Integer, Integer, Integer> f = (i1, i2, i3) -> i1 + i2 + i3 + integer.getAndIncrement();
+        final CheckedFunction3<Integer, Integer, Integer, Integer> memo = f.memoized();
+        final int expected = memo.apply(1, 2, 3);
+        assertThat(memo.apply(1, 2, 3)).isEqualTo(expected);
     }
 
     @Test

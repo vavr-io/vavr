@@ -698,6 +698,8 @@ def generateTestClasses(): Unit = {
 
       def genFunctionTest(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
 
+        val AtomicInteger = im.getType("java.util.concurrent.atomic.AtomicInteger");
+
         val functionArgsDecl = (1 to i).gen(j => s"Object o$j")(", ")
         val functionArgs = (1 to i).gen(j => s"o$j")(", ")
         val generics = (1 to i + 1).gen(j => "Object")(", ")
@@ -743,6 +745,26 @@ def generateTestClasses(): Unit = {
                 """
               })("\n\n")}
 
+              ${(i > 0).gen(xs"""
+              @$test
+                public void shouldRecognizeApplicabilityOfNull() {
+                    final $name$i<$generics> f = ($functionArgs) -> null;
+                    $assertThat(f.isApplicableTo(${(1 to i).gen(j => "null")(", ")})).isTrue();
+                }
+
+                @$test
+                public void shouldRecognizeApplicabilityOfNonNull() {
+                    final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
+                    $assertThat(f.isApplicableTo(${(1 to i).gen(j => s"$j")(", ")})).isTrue();
+                }
+
+                @$test
+                public void shouldRecognizeApplicabilityToType${(i > 1).gen("s")}() {
+                    final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
+                    $assertThat(f.isApplicableToType${(i > 1).gen("s")}(${(1 to i).gen(j => "Integer.class")(", ")})).isTrue();
+                }
+              """)}
+
               @$test
               public void shouldGetArity() {
                   final $name$i<$generics> f = ($functionArgs) -> null;
@@ -767,6 +789,15 @@ def generateTestClasses(): Unit = {
               public void shouldReverse() {
                   final $name$i<$generics> f = ($functionArgs) -> null;
                   $assertThat(f.reversed()).isNotNull();
+              }
+
+              @$test
+              public void shouldMemoize()${checked.gen(" throws Throwable")} {
+                  final $AtomicInteger integer = new $AtomicInteger();
+                  final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> ${(1 to i).gen(j => s"i$j")(" + ")}${(i > 0).gen(" + ")}integer.getAndIncrement();
+                  final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> memo = f.memoized();
+                  final int expected = memo.apply(${(1 to i).gen(j => s"$j")(", ")});
+                  $assertThat(memo.apply(${(1 to i).gen(j => s"$j")(", ")})).isEqualTo(expected);
               }
 
               @$test

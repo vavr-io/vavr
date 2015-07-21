@@ -11,6 +11,7 @@ package javaslang;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 public class Function4Test {
@@ -45,6 +46,24 @@ public class Function4Test {
     }
 
     @Test
+      public void shouldRecognizeApplicabilityOfNull() {
+          final Function4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
+          assertThat(f.isApplicableTo(null, null, null, null)).isTrue();
+      }
+
+      @Test
+      public void shouldRecognizeApplicabilityOfNonNull() {
+          final Function4<Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4) -> null;
+          assertThat(f.isApplicableTo(1, 2, 3, 4)).isTrue();
+      }
+
+      @Test
+      public void shouldRecognizeApplicabilityToTypes() {
+          final Function4<Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4) -> null;
+          assertThat(f.isApplicableToTypes(Integer.class, Integer.class, Integer.class, Integer.class)).isTrue();
+      }
+
+    @Test
     public void shouldGetArity() {
         final Function4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
         assertThat(f.arity()).isEqualTo(4);
@@ -68,6 +87,15 @@ public class Function4Test {
     public void shouldReverse() {
         final Function4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
         assertThat(f.reversed()).isNotNull();
+    }
+
+    @Test
+    public void shouldMemoize() {
+        final AtomicInteger integer = new AtomicInteger();
+        final Function4<Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4) -> i1 + i2 + i3 + i4 + integer.getAndIncrement();
+        final Function4<Integer, Integer, Integer, Integer, Integer> memo = f.memoized();
+        final int expected = memo.apply(1, 2, 3, 4);
+        assertThat(memo.apply(1, 2, 3, 4)).isEqualTo(expected);
     }
 
     @Test

@@ -11,6 +11,7 @@ package javaslang;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 public class Function2Test {
@@ -31,6 +32,24 @@ public class Function2Test {
         final Function2<Object, Object, Object> f = (o1, o2) -> null;
         assertThat(f.apply(null)).isNotNull();
     }
+
+    @Test
+      public void shouldRecognizeApplicabilityOfNull() {
+          final Function2<Object, Object, Object> f = (o1, o2) -> null;
+          assertThat(f.isApplicableTo(null, null)).isTrue();
+      }
+
+      @Test
+      public void shouldRecognizeApplicabilityOfNonNull() {
+          final Function2<Integer, Integer, Integer> f = (i1, i2) -> null;
+          assertThat(f.isApplicableTo(1, 2)).isTrue();
+      }
+
+      @Test
+      public void shouldRecognizeApplicabilityToTypes() {
+          final Function2<Integer, Integer, Integer> f = (i1, i2) -> null;
+          assertThat(f.isApplicableToTypes(Integer.class, Integer.class)).isTrue();
+      }
 
     @Test
     public void shouldGetArity() {
@@ -56,6 +75,15 @@ public class Function2Test {
     public void shouldReverse() {
         final Function2<Object, Object, Object> f = (o1, o2) -> null;
         assertThat(f.reversed()).isNotNull();
+    }
+
+    @Test
+    public void shouldMemoize() {
+        final AtomicInteger integer = new AtomicInteger();
+        final Function2<Integer, Integer, Integer> f = (i1, i2) -> i1 + i2 + integer.getAndIncrement();
+        final Function2<Integer, Integer, Integer> memo = f.memoized();
+        final int expected = memo.apply(1, 2);
+        assertThat(memo.apply(1, 2)).isEqualTo(expected);
     }
 
     @Test
