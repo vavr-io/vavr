@@ -19,51 +19,48 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * {@code Match} is a Java switch on steroids (without the negative 'side effects').
- * <p>
- * The Match API comes in two flavors, the {@code MatchMonad} and the {@code MatchFunction}.
- * <p>
- * The difference between these two is that {@code MatchMonad} is a {@linkplain javaslang.Value}, obtained by a call of
- * {@code Match.of(someValue)}. The big benefit of knowing the value (including the type) from the beginning is, that
- * the cases are matched in a very efficient way:
- * <pre><code>Match.of(1)
- *      .whenType(String.class).then(s -> "String " + s)
- *      .whenType(Number.class).then(n -> "Number " + n)
- *      .whenType(Integer.class).then(i -> "int " + i)
- *      .orElse("unknown");
- * </code></pre>
- *
- *
- * Some characteristics of {@code Match} are:
+ * {@code Match} is a Java switch on steroids (without the negative 'side effects'). Some characteristics of
+ * {@code Match} are:
  * <ul>
  * <li>it has a fluent API</li>
- * <li>it is a {@code Function<Object, R>}</li>
- * <li>it is able to match types, i.e. {@code Match.when((byte b) -> "a byte: " + b)}</li>
- * <li>it is able to match values, i.e. {@code Match.when(BigDecimal.ZERO, b -> "Zero: " + b)}</li>
+ * <li>it can be {@code Function}</li>
+ * <li>it can be {@code Value}</li>
+ * <li>it is able to match <em>values</em>, i.e. {@code when(Object)} and {@code whenIn(Object...)}</li>
+ * <li>it is able to match <em>types</em>, i.e. {@code whenType(Class)} and {@code whenTypeIn(Class...)}</li>
+ * <li>it is able to match <em>conditions</em>, i.e. {@code whenTrue(Function1)}</li>
+ * <li>it is able to match <em>function applicability</em>, i.e. {@code whenApplicable(Function1)}</li>
+ * <li>results may be specified <em>eagerly</em>, i.e. {@code then(value)}</li>
+ * <li>results may be obtained <em>lazily</em>, i.e. {@code then(() -> value)}</li>
+ * <li>results may be derived from the <em>context</em>, i.e. {@code then(object -> f(object)}</li>
  * </ul>
- *
+ * The Match API comes in two flavors, the {@code MatchMonad} and the {@code MatchFunction}.
+ * <p>
+ * {@code MatchMonad} is a {@linkplain javaslang.Value}, obtained by {@code Match.of(someValue)}. In this case a Match
+ * is terminated {@code get()}, {@code orElse()}, etc.
+ * <pre><code>Match.of(1)
+ *      .whenType(String.class).then(s -&gt; "String " + s)
+ *      .whenType(Number.class).then(n -&gt; "Number " + n)
+ *      .whenType(Integer.class).then(i -&gt; "int " + i)
+ *      .orElse("unknown");
+ * </code></pre>
+ * {@code MatchFunction} is a {@linkplain java.util.function.Function}, obtained by one of {@code Match.whenXxx(...)}.
+ * In this case a Match is terminated by applying it to an object, e.g.
+ * <pre><code>Match.when(...).then(...).otherwise(...).apply(o);</code></pre>
+ * A {@code MatchFunction} is a reusable Match, i.e. it may be applied to different objects.
+ * <p>
  * Example of a Match as <a href="http://en.wikipedia.org/wiki/Partial_function"><strong>partial</strong> function</a>:
- *
- * <pre>
- * <code>
- * final Match&lt;Number&gt; toNumber = Match.as(Number.class)
- *     .when((Integer i) -&gt; i)
- *     .when((String s) -&gt; new BigDecimal(s));
+ * <pre><code>final Match&lt;Number&gt; toNumber = Match.as(Number.class)
+ *     .whenType(Integer.class).then(i -&gt; i)
+ *     .whenType(String.class).then(s -&gt; new BigDecimal(s));
  * final Number number = toNumber.apply(1.0d); // throws a MatchError
- * </code>
- * </pre>
- *
+ * </code></pre>
  * Example of a Match as <a href="http://en.wikipedia.org/wiki/Function_(mathematics)"><strong>total</strong> function</a>:
- *
- * <pre>
- * <code>
- * Match.as(Number.class)
- *     .when((Integer i) -&gt; i)
- *     .when((String s) -&gt; new BigDecimal(s))
- *     .otherwise(() -&gt; -1)
+ * <pre><code>final Match&lt;Number&gt; toNumber = Match.as(Number.class)
+ *     .whenType(Integer.class).then(i -&gt; i)
+ *     .whenType(String.class).then(s -&gt; new BigDecimal(s));
+ *     .otherwise(-1)
  *     .apply(1.0d); // result: -1
- * </code>
- * </pre>
+ * </code></pre>
  *
  * @param <R> The result type of the {@code Match}.
  * @since 1.0.0
