@@ -115,28 +115,6 @@ public interface Stack<T> extends Seq<T> {
     }
 
     /**
-     * Creates a Stack of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
-     *
-     * @param from        the first number
-     * @param toExclusive the last number + 1
-     * @return a range of int values as specified or {@code Nil} if {@code from >= toExclusive}
-     */
-    static Stack<Integer> range(int from, int toExclusive) {
-        return List.range(from, toExclusive);
-    }
-
-    /**
-     * Creates a Stack of int numbers starting from {@code from}, extending to {@code toInclusive}.
-     *
-     * @param from        the first number
-     * @param toInclusive the last number
-     * @return a range of int values as specified or {@code Nil} if {@code from > toInclusive}
-     */
-    static Stack<Integer> rangeClosed(int from, int toInclusive) {
-        return List.rangeClosed(from, toInclusive);
-    }
-
-    /**
      * Returns the head element without modifying the Stack.
      *
      * @return the first element

@@ -176,6 +176,21 @@ public interface List<T> extends Seq<T>, Stack<T> {
     }
 
     /**
+     * Creates a List of long numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @return a range of long values as specified or {@code Nil} if {@code from >= toExclusive}
+     */
+    static List<Long> range(long from, long toExclusive) {
+        if (from >= toExclusive) {
+            return Nil.instance();
+        } else {
+            return List.rangeClosed(from, toExclusive - 1);
+        }
+    }
+
+    /**
      * Creates a List of int numbers starting from {@code from}, extending to {@code toInclusive}.
      *
      * @param from        the first number
@@ -190,6 +205,27 @@ public interface List<T> extends Seq<T>, Stack<T> {
         } else {
             List<Integer> result = Nil.instance();
             for (int i = toInclusive; i >= from; i--) {
+                result = result.prepend(i);
+            }
+            return result;
+        }
+    }
+
+    /**
+     * Creates a List of long numbers starting from {@code from}, extending to {@code toInclusive}.
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @return a range of long values as specified or {@code Nil} if {@code from > toInclusive}
+     */
+    static List<Long> rangeClosed(long from, long toInclusive) {
+        if (from > toInclusive) {
+            return Nil.instance();
+        } else if (toInclusive == Long.MIN_VALUE) {
+            return List.of(Long.MIN_VALUE);
+        } else {
+            List<Long> result = Nil.instance();
+            for (long i = toInclusive; i >= from; i--) {
                 result = result.prepend(i);
             }
             return result;
