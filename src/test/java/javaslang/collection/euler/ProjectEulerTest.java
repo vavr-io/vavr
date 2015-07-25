@@ -143,6 +143,74 @@ public class ProjectEulerTest {
     }
 
     /**
+     * <strong>Problem 5: Smallest multiple</strong>
+     * 2520 is the smallest number that can be divided by each of the numbers from 1
+     * to 10 without any remainder.
+     * <p>
+     * What is the smallest positive number that is evenly divisible by all of the
+     * numbers from 1 to 20?
+     * <p>
+     * See also <a href="https://projecteuler.net/problem=5">projecteuler.net problem 5</a>.
+     */
+    @Test
+    public void shouldSolveProblem5() {
+        assertThat(smallestPositiveNumberEvenlyDivisibleByAllNumbersFrom1To(10)).isEqualTo(2_520L);
+        assertThat(smallestPositiveNumberEvenlyDivisibleByAllNumbersFrom1To(20)).isEqualTo(232_792_560L);
+    }
+
+    private static long smallestPositiveNumberEvenlyDivisibleByAllNumbersFrom1To(int max) {
+        final long smallestStepsNeeded = max * (max - 1);
+        return Stream.gen(smallestStepsNeeded, prev -> prev + smallestStepsNeeded)
+                .findFirst(val -> isEvenlyDivisibleByAllNumbersFrom1To(max, val))
+                .get();
+    }
+
+    private static boolean isEvenlyDivisibleByAllNumbersFrom1To(int max, long val) {
+        return !Stream.rangeClosed(1, max).exists(d -> val % d != 0);
+    }
+
+    /**
+     * <strong>Problem 6: Sum square difference</strong>
+     * The sum of the squares of the first ten natural numbers is,
+     * <p>
+     * 1² + 2² + ... + 10² = 385
+     * <p>
+     * The square of the sum of the first ten natural
+     * numbers is,
+     * <p>
+     * (1 + 2 + ... + 10)² = 55² = 3025
+     * <p>
+     * Hence the difference between the sum of the
+     * squares of the first ten natural numbers and the square of the sum is
+     * <p>
+     * 3025 − 385 = 2640.
+     * <p>
+     * Find the difference between the sum of the squares of the first one hundred
+     * natural numbers and the square of the sum.
+     * <p>
+     * See also <a href="https://projecteuler.net/problem=6">projecteuler.net problem 6</a>.
+     */
+    @Test
+    public void shouldSolveProblem6() {
+        assertThat(differenceBetweenSumOfTheSquaresAndSquareOfTheSumFrom1UpTo(10)).isEqualTo(2640L);
+        assertThat(differenceBetweenSumOfTheSquaresAndSquareOfTheSumFrom1UpTo(100)).isEqualTo(25164150L);
+    }
+
+    private static long differenceBetweenSumOfTheSquaresAndSquareOfTheSumFrom1UpTo(int max) {
+        return squareOfSumFrom1UpTo(max) - sumOfSquaresFrom1UpTo(max);
+    }
+
+    private static long squareOfSumFrom1UpTo(int max) {
+        return (long) Math.pow(Stream.rangeClosed(1, max).sum().longValue(), 2);
+    }
+
+    private static long sumOfSquaresFrom1UpTo(int max) {
+        return Stream.rangeClosed(1, max)
+                .map(i -> (long) Math.pow(i, 2))
+                .sum().longValue();
+    }
+
+    /**
      * <strong>Problem 7: 10001st prime</strong>
      * <p>By listing the first six prime numbers: 2, 3, 5, 7, 11, and 13, we can see that the 6th prime is 13.</p>
      * <p>What is the 10 001st prime number?</p>
