@@ -11,6 +11,7 @@ package javaslang;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 public class CheckedFunction8Test {
@@ -69,6 +70,24 @@ public class CheckedFunction8Test {
     }
 
     @Test
+      public void shouldRecognizeApplicabilityOfNull() {
+          final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8) -> null;
+          assertThat(f.isApplicableTo(null, null, null, null, null, null, null, null)).isTrue();
+      }
+
+      @Test
+      public void shouldRecognizeApplicabilityOfNonNull() {
+          final CheckedFunction8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4, i5, i6, i7, i8) -> null;
+          assertThat(f.isApplicableTo(1, 2, 3, 4, 5, 6, 7, 8)).isTrue();
+      }
+
+      @Test
+      public void shouldRecognizeApplicabilityToTypes() {
+          final CheckedFunction8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4, i5, i6, i7, i8) -> null;
+          assertThat(f.isApplicableToTypes(Integer.class, Integer.class, Integer.class, Integer.class, Integer.class, Integer.class, Integer.class, Integer.class)).isTrue();
+      }
+
+    @Test
     public void shouldGetArity() {
         final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8) -> null;
         assertThat(f.arity()).isEqualTo(8);
@@ -92,6 +111,15 @@ public class CheckedFunction8Test {
     public void shouldReverse() {
         final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8) -> null;
         assertThat(f.reversed()).isNotNull();
+    }
+
+    @Test
+    public void shouldMemoize() throws Throwable {
+        final AtomicInteger integer = new AtomicInteger();
+        final CheckedFunction8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8 + integer.getAndIncrement();
+        final CheckedFunction8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> memo = f.memoized();
+        final int expected = memo.apply(1, 2, 3, 4, 5, 6, 7, 8);
+        assertThat(memo.apply(1, 2, 3, 4, 5, 6, 7, 8)).isEqualTo(expected);
     }
 
     @Test

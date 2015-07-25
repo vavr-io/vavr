@@ -32,7 +32,31 @@ public interface Function2<T1, T2, R> extends λ<R>, BiFunction<T1, T2, R> {
 
     /**
      * Lifts a <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html">method
-     * reference</a> to a {@code Function2}.
+     * reference</a> or a
+     * <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html#syntax">lambda
+     * expression</a> to a {@code Function2}.
+     * <p>
+     * Examples (w.l.o.g. referring to Function1):
+     * <pre><code>// lifting a lambda expression
+     * Function1<Integer, Integer> add1 = Function1.lift(i -> i + 1);
+     *
+     * // lifting a method reference (, e.g. Integer method(Integer i) { return i + 1; })
+     * Function1<Integer, Integer> add2 = Function1.lift(this::method);
+     *
+     * // lifting a lambda reference
+     * Function1<Integer, Integer> add3 = Function1.lift(add1::apply);
+     * </code></pre>
+     * <p>
+     * <strong>Caution:</strong> Reflection loses type information of lifted lambda reference.
+     * <pre><code>// type of lifted a lambda expression
+     * MethodType type1 = add1.getType(); // (Integer)Integer
+     *
+     * // type of lifted method reference
+     * MethodType type2 = add2.getType(); // (Integer)Integer
+     *
+     * // type of lifted lambda reference
+     * MethodType type2 = add3.getType(); // (Object)Object
+     * </code></pre>
      *
      * @param methodReference (typically) a method reference, e.g. {@code Type::method}
      * @param <R> return type
@@ -53,6 +77,39 @@ public interface Function2<T1, T2, R> extends λ<R>, BiFunction<T1, T2, R> {
      * 
      */
     R apply(T1 t1, T2 t2);
+
+    /**
+     * Checks if this function is applicable to the given objects,
+     * i.e. each of the given objects is either null or the object type is assignable to the parameter type.
+     * <p>
+     * Please note that it is not checked if this function is defined for the given objects.
+     *
+     * @param o1 object 1
+     * @param o2 object 2
+     * @return true, if this function is applicable to the given objects, false otherwise.
+     */
+    default boolean isApplicableTo(Object o1, Object o2) {
+        final Class<?>[] paramTypes = getType().parameterArray();
+        return
+                (o1 == null || paramTypes[0].isAssignableFrom(o1.getClass())) &&
+                (o2 == null || paramTypes[1].isAssignableFrom(o2.getClass()));
+    }
+
+    /**
+     * Checks if this function is generally applicable to objects of the given types.
+     *
+     * @param type1 type 1
+     * @param type2 type 2
+     * @return true, if this function is applicable to objects of the given types, false otherwise.
+     */
+    default boolean isApplicableToTypes(Class<?> type1, Class<?> type2) {
+        Objects.requireNonNull(type1, "type1 is null");
+        Objects.requireNonNull(type2, "type2 is null");
+        final Class<?>[] paramTypes = getType().parameterArray();
+        return
+                paramTypes[0].isAssignableFrom(type1) &&
+                paramTypes[1].isAssignableFrom(type2);
+    }
 
     /**
      * Applies this function partially to one argument.

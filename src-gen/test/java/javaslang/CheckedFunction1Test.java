@@ -11,6 +11,7 @@ package javaslang;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 public class CheckedFunction1Test {
@@ -25,6 +26,24 @@ public class CheckedFunction1Test {
         final Type type = new Type();
         assertThat(CheckedFunction1.lift(type::methodReference)).isNotNull();
     }
+
+    @Test
+      public void shouldRecognizeApplicabilityOfNull() {
+          final CheckedFunction1<Object, Object> f = (o1) -> null;
+          assertThat(f.isApplicableTo(null)).isTrue();
+      }
+
+      @Test
+      public void shouldRecognizeApplicabilityOfNonNull() {
+          final CheckedFunction1<Integer, Integer> f = (i1) -> null;
+          assertThat(f.isApplicableTo(1)).isTrue();
+      }
+
+      @Test
+      public void shouldRecognizeApplicabilityToType() {
+          final CheckedFunction1<Integer, Integer> f = (i1) -> null;
+          assertThat(f.isApplicableToType(Integer.class)).isTrue();
+      }
 
     @Test
     public void shouldGetArity() {
@@ -50,6 +69,15 @@ public class CheckedFunction1Test {
     public void shouldReverse() {
         final CheckedFunction1<Object, Object> f = (o1) -> null;
         assertThat(f.reversed()).isNotNull();
+    }
+
+    @Test
+    public void shouldMemoize() throws Throwable {
+        final AtomicInteger integer = new AtomicInteger();
+        final CheckedFunction1<Integer, Integer> f = (i1) -> i1 + integer.getAndIncrement();
+        final CheckedFunction1<Integer, Integer> memo = f.memoized();
+        final int expected = memo.apply(1);
+        assertThat(memo.apply(1)).isEqualTo(expected);
     }
 
     @Test

@@ -157,8 +157,8 @@ public class OptionTest {
     // -- flatten(Function)
 
     static final Match<Option<Integer>> MATCH = Match
-        .when((Option<Integer> o) -> o)
-        .when((Integer i) -> new Some<>(i));
+        .whenApplicable((Option<Integer> o) -> o).thenApply()
+        .whenApplicable((Integer i) -> new Some<>(i)).thenApply();
 
     @Test
     public void shouldFlattenUnnestedSomeWithFunction() {

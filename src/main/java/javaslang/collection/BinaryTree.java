@@ -6,6 +6,10 @@
 package javaslang.collection;
 
 import javaslang.Tuple2;
+import javaslang.control.None;
+import javaslang.control.Option;
+import javaslang.control.Some;
+import javaslang.control.Try;
 
 import java.io.*;
 import java.util.Objects;
@@ -161,6 +165,76 @@ public interface BinaryTree<T> extends Tree<T> {
      * @throws java.lang.UnsupportedOperationException if this BinaryTree is Nil
      */
     BinaryTree<T> right();
+
+    default boolean isBinarySearchTree() {
+
+        class MinMax<U extends Comparable<Object>> {
+
+            final U min;
+            final U max;
+
+            MinMax(U min, U max) {
+                this.min = min;
+                this.max = max;
+            }
+
+            boolean isMaxLessThan(U value) {
+                return isEmpty() || max.compareTo(value) < 0;
+            }
+
+            boolean isMinGreaterThan(U value) {
+                return isEmpty() || min.compareTo(value) > 0;
+            }
+
+            boolean isEmpty() {
+                return min == null && max == null;
+            }
+
+            MinMax<U> minMax(MinMax<U> that) {
+                if (isEmpty()) {
+                    return that;
+                } else if (that.isEmpty()) {
+                    return this;
+                } else {
+                    return new MinMax<>(this.min, that.max);
+                }
+            }
+        }
+
+        class Machine<U extends Comparable<Object>> {
+
+            final Some<MinMax<U>> EMPTY = new Some<>(new MinMax<>(null, null));
+
+            Option<MinMax<U>> compute(BinaryTree<U> tree) {
+                if (tree.isEmpty()) {
+                    return EMPTY;
+                } else {
+                    final U value = tree.getValue();
+                    if (tree.isLeaf()) {
+                        return new Some<>(new MinMax<>(value, value));
+                    } else {
+                        return compute(tree.left()).flatMap(left ->
+                                        compute(tree.right()).flatMap(right -> {
+                                            if (left.isMaxLessThan(value) && right.isMinGreaterThan(value)) {
+                                                return new Some<>(left.minMax(right));
+                                            } else {
+                                                return None.instance();
+                                            }
+                                        })
+                        );
+                    }
+                }
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        final Try.CheckedSupplier<Boolean> computation = () ->
+                new Machine<>()
+                        .compute((BinaryTree<Comparable<Object>>) this)
+                        .isDefined();
+
+        return Try.of(computation).orElse(false);
+    }
 
     @Override
     default <U> BinaryTree<U> map(Function<? super T, ? extends U> mapper) {

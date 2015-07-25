@@ -25,7 +25,7 @@ import java.util.function.Supplier;
  *
  * @since 1.2.1
  */
-public final class Lazy<T> implements Supplier<T>, Serializable {
+public final class Lazy<T> implements Supplier<T>, Value<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -59,8 +59,9 @@ public final class Lazy<T> implements Supplier<T>, Serializable {
      *
      * @return true, if this lazy value is evaluated, false otherwise
      */
-    public boolean isDefined() {
-        return supplier == null;
+    @Override
+    public boolean isEmpty() {
+        return value == null;
     }
 
     /**
@@ -71,9 +72,9 @@ public final class Lazy<T> implements Supplier<T>, Serializable {
      */
     @Override
     public T get() {
-        if (!isDefined()) {
+        if (isEmpty()) {
             synchronized (this) {
-                if (!isDefined()) {
+                if (isEmpty()) {
                     value = supplier.get();
                     supplier = null; // free mem
                 }
@@ -94,6 +95,6 @@ public final class Lazy<T> implements Supplier<T>, Serializable {
 
     @Override
     public String toString() {
-        return String.format("Lazy(%s)", isDefined() ? value : "?");
+        return String.format("Lazy(%s)", isEmpty() ? "?" : value);
     }
 }
