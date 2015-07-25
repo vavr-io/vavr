@@ -13,7 +13,7 @@ import java.util.function.Predicate;
  * Interface to reduce code duplication of Iterables and Traversables.
  *
  * @param <T> element type of Iterable
- * @since 1.9.9
+ * @since 2.0.0
  */
 public interface TraversableOnce<T> extends Iterable<T> {
 

@@ -23,6 +23,45 @@ public class MatchMonadTest {
         assertThat(actual).isTrue();
     }
 
+    // whenIn(Onject...)
+
+    @Test
+    public void shouldMatchByValues() {
+        final int i = 2;
+        final boolean actual = Match.of(i)
+                .whenIn(1, 2, 3).then(true)
+                .get();
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void shouldMatchOrElseByValues() {
+        final int i = 4;
+        final boolean actual = Match.of(i)
+                .whenIn(1, 2, 3).then(false)
+                .orElse(true);
+        assertThat(actual).isTrue();
+    }
+
+    // whenApplicable(Function1)
+
+    @Test
+    public void shouldMatchByFunction() {
+        final int actual = Match.of(1)
+                .whenApplicable((Integer i) -> i + 1).thenApply()
+                .get();
+        assertThat(actual).isEqualTo(2);
+    }
+
+    @Test
+    public void shouldMatchOrElseByFunction() {
+        final int i = 4;
+        final boolean actual = Match.of(i)
+                .whenIn(1, 2, 3).then(false)
+                .orElse(true);
+        assertThat(actual).isTrue();
+    }
+
     // whenTrue(Predicate)
 
     @Test

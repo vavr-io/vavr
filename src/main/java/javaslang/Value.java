@@ -19,7 +19,7 @@ import java.util.function.Supplier;
  * <em>not yet defined</em>, etc.
  *
  * @param <T> The type of the wrapped value.
- * @since 1.9.9
+ * @since 2.0.0
  */
 public interface Value<T> {
 
