@@ -621,7 +621,7 @@ public interface Match<R> extends Function<Object, R> {
             @SuppressWarnings("unchecked")
             <U> WhenUntyped<T, U> whenTypeIn(Class<? extends U>... type);
 
-            <U, R> WithWhen.WhenApplicable<T, U, R> whenApplicable(Function1<? super U, ? extends R> function);
+            <U, R> WhenApplicable<T, U, R> whenApplicable(Function1<? super U, ? extends R> function);
 
             interface WhenUntyped<T, U> {
 
@@ -697,43 +697,68 @@ public interface Match<R> extends Function<Object, R> {
                         return matched;
                     }
                 }
-            }
-
-            interface WhenApplicable<T, U, R> {
-
-                MatchMonadWithWhen<T, R> thenApply();
-
-                final class WhenApplicableUnmatched<T, U, R> implements WhenApplicable<T, U, R> {
-
-                    private final T value;
-
-                    private WhenApplicableUnmatched(T value) {
-                        this.value = value;
-                    }
-
-                    @Override
-                    public MatchMonadWithWhen<T, R> thenApply() {
-                        return null; // TODO
-                    }
-                }
 
                 final class WhenApplicableMatched<T, U, R> implements WhenApplicable<T, U, R> {
 
-                    private final R result;
+                    private final MatchMonad.Matched<T, R> matched;
 
-                    private WhenApplicableMatched(R result) {
-                        this.result = result;
+                    private WhenApplicableMatched(MatchMonad.Matched<T, R> matched) {
+                        this.matched = matched;
                     }
 
                     @Override
-                    public MatchMonadWithWhen<T, R> thenApply() {
-                        return null; // TODO
+                    public MatchMonad.Matched<T, R> thenApply() {
+                        return matched;
                     }
                 }
             }
         }
 
-        // -- filter monadic operations
+        interface WhenApplicable<T, U, R> {
+
+            MatchMonadWithWhen<T, R> thenApply();
+
+            static <T, U, R> WhenApplicable<T, U, R> of(Function1<? super U, ? extends R> function, T value) {
+                final boolean isMatching = function.isApplicableTo(value);
+                if (isMatching) {
+                    @SuppressWarnings("unchecked")
+                    final R result = ((Function<T, R>) function).apply(value);
+                    return new Matched<>(result);
+                } else {
+                    return new Unmatched<>(value);
+                }
+            }
+
+            final class Unmatched<T, U, R> implements WhenApplicable<T, U, R> {
+
+                private final T value;
+
+                private Unmatched(T value) {
+                    this.value = value;
+                }
+
+                @Override
+                public MatchMonadWithWhen<T, R> thenApply() {
+                    return new MatchMonad.Unmatched<>(value);
+                }
+            }
+
+            final class Matched<T, U, R> implements WhenApplicable<T, U, R> {
+
+                private final R result;
+
+                private Matched(R result) {
+                    this.result = result;
+                }
+
+                @Override
+                public MatchMonadWithWhen<T, R> thenApply() {
+                    return new MatchMonad.Matched<>(result);
+                }
+            }
+        }
+
+        // -- TODO: extract filter monadic operations to FilterMonadic interface
 
         // TODO: MatchMonad<R> filter(Predicate<? super R> predicate);
 
@@ -795,16 +820,9 @@ public interface Match<R> extends Function<Object, R> {
             }
 
             @Override
-            public <U, R> WithWhen.WhenApplicable<T, U, R> whenApplicable(Function1<? super U, ? extends R> function) {
+            public <U, R> WhenApplicable<T, U, R> whenApplicable(Function1<? super U, ? extends R> function) {
                 Objects.requireNonNull(function, "function is null");
-                final boolean isMatching = function.isApplicableTo(value);
-                if (isMatching) {
-                    @SuppressWarnings("unchecked")
-                    final R result = ((Function<T, R>) function).apply(value);
-                    return new WithWhen.WhenApplicable.WhenApplicableMatched<>(result);
-                } else {
-                    return new WithWhen.WhenApplicable.WhenApplicableUnmatched<>(value);
-                }
+                return WhenApplicable.of(function, value);
             }
         }
 
@@ -855,14 +873,7 @@ public interface Match<R> extends Function<Object, R> {
             @Override
             public <U> WhenApplicable<T, U, R> whenApplicable(Function1<? super U, ? extends R> function) {
                 Objects.requireNonNull(function, "function is null");
-                final boolean isMatching = function.isApplicableTo(value);
-                if (isMatching) {
-                    @SuppressWarnings("unchecked")
-                    final R result = ((Function<T, R>) function).apply(value);
-                    return new WithWhen.WhenApplicable.WhenApplicableMatched<>(result);
-                } else {
-                    return new WithWhen.WhenApplicable.WhenApplicableUnmatched<>(value);
-                }
+                return WhenApplicable.of(function, value);
             }
         }
 
@@ -887,10 +898,12 @@ public interface Match<R> extends Function<Object, R> {
 
             private final R result;
             private final Lazy<When.WhenMatched<T, ?, R>> when;
+            private final Lazy<When.WhenApplicableMatched<T, ?, R>> whenApplicable;
 
             private Matched(R result) {
                 this.result = result;
                 this.when = Lazy.of(() -> new When.WhenMatched<>(this));
+                this.whenApplicable = Lazy.of(() -> new When.WhenApplicableMatched<>(this));
             }
 
             // -- getters
@@ -945,8 +958,7 @@ public interface Match<R> extends Function<Object, R> {
             @Override
             public <U> WhenApplicable<T, U, R> whenApplicable(Function1<? super U, ? extends R> function) {
                 Objects.requireNonNull(function, "function is null");
-                // TODO
-                return null;
+                return (WhenApplicable<T, U, R>) whenApplicable.get();
             }
 
             @Override
@@ -964,7 +976,7 @@ public interface Match<R> extends Function<Object, R> {
                 return new Otherwise<>(result);
             }
 
-            // -- filter monadic operations
+            // -- TODO: extract filter monadic operations to FilterMonadic interface
 
             @Override
             public <U> MatchMonad<U> flatMap(Function<? super R, ? extends MatchMonad<U>> mapper) {
@@ -1048,10 +1060,9 @@ public interface Match<R> extends Function<Object, R> {
             }
 
             @Override
-            public <U> WhenApplicable.WhenApplicableUnmatched<T, U, R> whenApplicable(Function1<? super U, ? extends R> function) {
+            public <U> WhenApplicable<T, U, R> whenApplicable(Function1<? super U, ? extends R> function) {
                 Objects.requireNonNull(function, "function is null");
-                // TODO
-                return null;
+                return WhenApplicable.of(function, value);
             }
 
             @Override
@@ -1069,7 +1080,7 @@ public interface Match<R> extends Function<Object, R> {
                 return new Otherwise<>(function.apply(value));
             }
 
-            // -- filter monadic operations
+            // -- TODO: extract filter monadic operations to FilterMonadic interface
 
             @SuppressWarnings("unchecked")
             @Override
@@ -1117,7 +1128,7 @@ public interface Match<R> extends Function<Object, R> {
                 return result;
             }
 
-            // -- filter monadic operations
+            // -- TODO: extract filter monadic operations to FilterMonadic interface
 
             @Override
             public <U> MatchMonad<U> flatMap(Function<? super R, ? extends MatchMonad<U>> mapper) {
