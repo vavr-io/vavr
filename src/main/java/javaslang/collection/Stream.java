@@ -88,6 +88,18 @@ public interface Stream<T> extends Seq<T> {
     }
 
     /**
+     * Returns an infinitely long Stream of long values starting from {@code from}.
+     * <p>
+     * The {@code Stream} extends to {@code Integer.MIN_VALUE} when passing {@code Long.MAX_VALUE}.
+     *
+     * @param value a start long value
+     * @return a new Stream of long values starting from {@code from}
+     */
+    static Stream<Long> from(long value) {
+        return new Cons<>(() -> value, () -> from(value + 1));
+    }
+
+    /**
      * Generates an (theoretically) infinitely long Stream using a value Supplier.
      *
      * @param supplier A Supplier of Stream values
@@ -114,15 +126,14 @@ public interface Stream<T> extends Seq<T> {
     }
 
     /**
-     * Generates an (theoretically) infinitely long Stream using a function to calculate the tail of the stream
-     * based on the head.
+     * Constructs a Stream of a head element and a tail supplier.
      *
      * @param head         The first value in the Stream
-     * @param tailSupplier A function to calculate the tail values. To end the stream, return {@link Stream#nil}.
+     * @param tailSupplier A supplier of the tail values. To end the stream, return {@link Stream#nil}.
      * @param <T>          value type
      * @return A new Stream
      */
-    static <T> Stream<T> gen(T head, Supplier<Stream<T>> tailSupplier) {
+    static <T> Stream<T> cons(T head, Supplier<Stream<T>> tailSupplier) {
         Objects.requireNonNull(tailSupplier, "tailSupplier is null");
         return new Stream.Cons<>(() -> head, tailSupplier);
     }
@@ -234,6 +245,22 @@ public interface Stream<T> extends Seq<T> {
         }
     }
 
+
+    /**
+     * Creates a Stream of long numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @return a range of long values as specified or {@code Nil} if {@code from >= toExclusive}
+     */
+    static Stream<Long> range(long from, long toExclusive) {
+        if (from >= toExclusive) {
+            return Nil.instance();
+        } else {
+            return Stream.rangeClosed(from, toExclusive - 1);
+        }
+    }
+
     /**
      * Creates a Stream of int numbers starting from {@code from}, extending to {@code toInclusive}.
      *
@@ -246,6 +273,23 @@ public interface Stream<T> extends Seq<T> {
             return Nil.instance();
         } else if (from == Integer.MAX_VALUE) {
             return Stream.of(Integer.MAX_VALUE);
+        } else {
+            return new Cons<>(() -> from, () -> rangeClosed(from + 1, toInclusive));
+        }
+    }
+
+    /**
+     * Creates a Stream of long numbers starting from {@code from}, extending to {@code toInclusive}.
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @return a range of long values as specified or {@code Nil} if {@code from > toInclusive}
+     */
+    static Stream<Long> rangeClosed(long from, long toInclusive) {
+        if (from > toInclusive) {
+            return Nil.instance();
+        } else if (from == Long.MAX_VALUE) {
+            return Stream.of(Long.MAX_VALUE);
         } else {
             return new Cons<>(() -> from, () -> rangeClosed(from + 1, toInclusive));
         }

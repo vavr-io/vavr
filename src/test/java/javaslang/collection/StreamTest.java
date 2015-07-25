@@ -85,7 +85,7 @@ public class StreamTest extends AbstractSeqTest {
     // -- static gen(T, Supplier)
     @Test
     public void shouldBuildStreamBasedOnHeadAndTailSupplierWithAccessToHead() {
-        assertThat(Stream.gen(1, () -> Stream.gen(2, Stream::nil))).isEqualTo(Stream.of(1, 2));
+        assertThat(Stream.cons(1, () -> Stream.cons(2, Stream::nil))).isEqualTo(Stream.of(1, 2));
     }
 
     // -- static nil()

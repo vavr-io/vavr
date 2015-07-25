@@ -143,28 +143,6 @@ public class Queue<T> implements Seq<T>, Serializable {
     }
 
     /**
-     * Creates a Queue of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
-     *
-     * @param from        the first number
-     * @param toExclusive the last number + 1
-     * @return a range of int values as specified or {@code Nil} if {@code from >= toExclusive}
-     */
-    public static Queue<Integer> range(int from, int toExclusive) {
-        return new Queue<>(List.range(from, toExclusive), List.nil());
-    }
-
-    /**
-     * Creates a Queue of int numbers starting from {@code from}, extending to {@code toInclusive}.
-     *
-     * @param from        the first number
-     * @param toInclusive the last number
-     * @return a range of int values as specified or {@code Nil} if {@code from > toInclusive}
-     */
-    public static Queue<Integer> rangeClosed(int from, int toInclusive) {
-        return new Queue<>(List.rangeClosed(from, toInclusive), List.nil());
-    }
-
-    /**
      * Removes an element from this Queue.
      *
      * @return a tuple containing the first element and the remaining elements of this Queue
