@@ -33,9 +33,9 @@ public class Euler29 {
     }
 
     private static int cnt(int max) {
-        return Stream.range(2, max + 1)
-                .flatMap(a -> Stream.range(2, max + 1)
-                        .map(b -> BigInteger.valueOf(a).pow(b)))
+        return Stream.rangeClosed(2, max)
+                .map(BigInteger::valueOf)
+                .flatMap(a -> Stream.rangeClosed(2, max).map(a::pow))
                 .distinct()
                 .length();
     }
