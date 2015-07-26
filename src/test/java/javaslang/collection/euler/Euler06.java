@@ -14,6 +14,7 @@ public class Euler06 {
 
     /**
      * <strong>Problem 6: Sum square difference</strong>
+     * <p>
      * The sum of the squares of the first ten natural numbers is,
      * <p>
      * 1² + 2² + ... + 10² = 385
