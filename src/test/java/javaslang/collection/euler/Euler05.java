@@ -14,6 +14,7 @@ public class Euler05 {
 
     /**
      * <strong>Problem 5: Smallest multiple</strong>
+     * <p>
      * 2520 is the smallest number that can be divided by each of the numbers from 1
      * to 10 without any remainder.
      * <p>
