@@ -190,15 +190,23 @@ public class StreamTest extends AbstractSeqTest {
         assertThat(Stream.rangeClosedBy(1, 3, 1)).isEqualTo(Stream.of(1, 2, 3));
         assertThat(Stream.rangeClosedBy(1, 5, 2)).isEqualTo(Stream.of(1, 3, 5));
         assertThat(Stream.rangeClosedBy(1, 6, 2)).isEqualTo(Stream.of(1, 3, 5));
+        assertThat(Stream.rangeClosedBy(Integer.MAX_VALUE - 2, Integer.MAX_VALUE, 3)).isEqualTo(Stream.of(Integer.MAX_VALUE - 2));
+        assertThat(Stream.rangeClosedBy(Integer.MAX_VALUE - 3, Integer.MAX_VALUE, 3)).isEqualTo(Stream.of(Integer.MAX_VALUE - 3, Integer.MAX_VALUE));
         assertThat(Stream.rangeClosedBy(3, 1, -1)).isEqualTo(Stream.of(3, 2, 1));
         assertThat(Stream.rangeClosedBy(5, 1, -2)).isEqualTo(Stream.of(5, 3, 1));
         assertThat(Stream.rangeClosedBy(5, 0, -2)).isEqualTo(Stream.of(5, 3, 1));
+        assertThat(Stream.rangeClosedBy(Integer.MIN_VALUE + 2, Integer.MIN_VALUE, -3)).isEqualTo(Stream.of(Integer.MIN_VALUE + 2));
+        assertThat(Stream.rangeClosedBy(Integer.MIN_VALUE + 3, Integer.MIN_VALUE, -3)).isEqualTo(Stream.of(Integer.MIN_VALUE + 3, Integer.MIN_VALUE));
         assertThat(Stream.rangeClosedBy(1L, 3L, 1)).isEqualTo(Stream.of(1L, 2L, 3L));
         assertThat(Stream.rangeClosedBy(1L, 5L, 2)).isEqualTo(Stream.of(1L, 3L, 5L));
         assertThat(Stream.rangeClosedBy(1L, 6L, 2)).isEqualTo(Stream.of(1L, 3L, 5L));
+        assertThat(Stream.rangeClosedBy(Long.MAX_VALUE - 2, Long.MAX_VALUE, 3)).isEqualTo(Stream.of(Long.MAX_VALUE - 2));
+        assertThat(Stream.rangeClosedBy(Long.MAX_VALUE - 3, Long.MAX_VALUE, 3)).isEqualTo(Stream.of(Long.MAX_VALUE - 3, Long.MAX_VALUE));
         assertThat(Stream.rangeClosedBy(3L, 1L, -1)).isEqualTo(Stream.of(3L, 2L, 1L));
         assertThat(Stream.rangeClosedBy(5L, 1L, -2)).isEqualTo(Stream.of(5L, 3L, 1L));
         assertThat(Stream.rangeClosedBy(5L, 0L, -2)).isEqualTo(Stream.of(5L, 3L, 1L));
+        assertThat(Stream.rangeClosedBy(Long.MIN_VALUE + 2, Long.MIN_VALUE, -3)).isEqualTo(Stream.of(Long.MIN_VALUE + 2));
+        assertThat(Stream.rangeClosedBy(Long.MIN_VALUE + 3, Long.MIN_VALUE, -3)).isEqualTo(Stream.of(Long.MIN_VALUE + 3, Long.MIN_VALUE));
     }
 
     @Test

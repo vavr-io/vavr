@@ -391,7 +391,7 @@ public interface Stream<T> extends Seq<T> {
         if (step > 0) {
             if(from > toInclusive) {
                 return Nil.instance();
-            } else if (from > Integer.MAX_VALUE - step) {
+            } else if (from > Long.MAX_VALUE - step) {
                 return Stream.of(from);
             } else {
                 return new Cons<>(() -> from, () -> rangeClosedBy(from + step, toInclusive, step));
@@ -399,7 +399,7 @@ public interface Stream<T> extends Seq<T> {
         } else {
             if(from < toInclusive) {
                 return Nil.instance();
-            } else if (from < Integer.MIN_VALUE - step) {
+            } else if (from < Long.MIN_VALUE - step) {
                 return Stream.of(from);
             } else {
                 return new Cons<>(() -> from, () -> rangeClosedBy(from + step, toInclusive, step));
