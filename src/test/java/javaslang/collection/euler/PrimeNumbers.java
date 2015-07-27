@@ -12,9 +12,9 @@ import java.util.function.Function;
 
 public final class PrimeNumbers {
 
-    private static Function<Integer, Long> MEMOIZED_PRIMES = Function1.lift(
-            Stream.gen(2L, PrimeNumbers::nextPrimeFrom)::get
-    ).memoized();
+    private static final Stream<Long> PRIMES = Stream.gen(2L, PrimeNumbers::nextPrimeFrom);
+
+    private static final Function<Integer, Long> MEMOIZED_PRIMES = Function1.lift(PRIMES::get).memoized();
 
     private PrimeNumbers() {
     }
@@ -26,12 +26,12 @@ public final class PrimeNumbers {
         return MEMOIZED_PRIMES.apply(index - 1);
     }
 
-    private static long nextPrimeFrom(long n) {
-        return Stream.from(n + 1).findFirst(PrimeNumbers::isPrime).get();
+    private static long nextPrimeFrom(long num) {
+        return Stream.from(num + 1).findFirst(PrimeNumbers::isPrime).get();
     }
 
     private static boolean isPrime(long num) {
-        return !Stream.rangeClosed(2L, (int) Math.sqrt(num)).exists(d -> num % d == 0);
+        return !Stream.rangeClosed(2L, (long) Math.sqrt(num)).exists(d -> num % d == 0);
     }
 
     public static Stream<Long> primeFactors(long num) {

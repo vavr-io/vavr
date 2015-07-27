@@ -5,12 +5,10 @@
  */
 package javaslang.collection.euler;
 
-import javaslang.collection.Stream;
-import javaslang.control.Match;
 import org.junit.Test;
 
 import static javaslang.collection.euler.PrimeNumbers.prime;
-import static org.assertj.core.api.StrictAssertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class Euler07 {
 

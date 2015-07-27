@@ -32,21 +32,60 @@ import java.util.stream.Collector;
  * <pre>
  * <code>
  * // factory methods
- * Stream.nil()              // = Stream.of() = Nil.instance()
- * Stream.of(x)              // = new Cons&lt;&gt;(x, Nil.instance())
- * Stream.of(Object...)      // e.g. Stream.of(1, 2, 3)
- * Stream.of(Iterable)       // e.g. Stream.of(List.of(1, 2, 3)) = 1, 2, 3
- * Stream.of(Iterator)       // e.g. Stream.of(Arrays.asList(1, 2, 3).iterator()) = 1, 2, 3
+ * Stream.nil()                    // = Stream.of() = Nil.instance()
+ * Stream.of(x)                    // = new Cons&lt;&gt;(x, Nil.instance())
+ * Stream.of(Object...)            // e.g. Stream.of(1, 2, 3)
+ * Stream.ofAll(Iterable)          // e.g. Stream.of(List.of(1, 2, 3)) = 1, 2, 3
+ * Stream.ofAll(&lt;primitive array&gt;) // e.g. List.ofAll(new int[] {1, 2, 3}) = 1, 2, 3
  *
  * // int sequences
- * Stream.from(0)            // = 0, 1, 2, 3, ...
- * Stream.range(0, 3)        // = 0, 1, 2
- * Stream.rangeClosed(0, 3)  // = 0, 1, 2, 3
+ * Stream.from(0)                  // = 0, 1, 2, 3, ...
+ * Stream.range(0, 3)              // = 0, 1, 2
+ * Stream.rangeClosed(0, 3)        // = 0, 1, 2, 3
  *
  * // generators
- * Stream.gen(Supplier)          // e.g. Stream.gen(Math::random);
- * Stream.gen(Object, Function)  // e.g. Stream.gen(1, i -&gt; i * 2);
- * Stream.gen(Object, Supplier)  // e.g. Stream.gen(current, () -&gt; next(current));
+ * Stream.cons(Object, Supplier)   // e.g. Stream.cons(current, () -&gt; next(current));
+ * Stream.gen(Supplier)            // e.g. Stream.gen(Math::random);
+ * Stream.gen(Object, Function)    // e.g. Stream.gen(1, i -&gt; i * 2);
+ * </code>
+ * </pre>
+ *
+ * Factory method applications:
+ *
+ * <pre>
+ * <code>
+ * Stream&lt;Integer&gt;       s1 = Stream.of(1);
+ * Stream&lt;Integer&gt;       s2 = Stream.of(1, 2, 3);
+ *                       // = Stream.of(new Integer[] {1, 2, 3});
+ *
+ * Stream&lt;int[]&gt;         s3 = Stream.of(new int[] {1, 2, 3});
+ * Stream&lt;List&lt;Integer&gt;&gt; s4 = Stream.of(List.of(1, 2, 3));
+ *
+ * Stream&lt;Integer&gt;       s5 = Stream.ofAll(new int[] {1, 2, 3});
+ * Stream&lt;Integer&gt;       s6 = Stream.ofAll(List.of(1, 2, 3));
+ *
+ * // cuckoo's egg
+ * Stream&lt;Integer[]&gt;     s7 = Stream.&lt;Integer[]&gt; of(new Integer[] {1, 2, 3});
+ *                       //!= Stream.&lt;Integer[]&gt; of(1, 2, 3);
+ * </code>
+ * </pre>
+ *
+ * Example: Generating prime numbers
+ *
+ * <pre>
+ * <code>
+ * // = Stream(2L, 3L, 5L, 7L, ...)
+ * Stream.gen(2L, PrimeNumbers::nextPrimeFrom)
+ *
+ * // helpers
+ *
+ * static long nextPrimeFrom(long num) {
+ *     return Stream.from(num + 1).findFirst(PrimeNumbers::isPrime).get();
+ * }
+ *
+ * static boolean isPrime(long num) {
+ *     return !Stream.rangeClosed(2L, (long) Math.sqrt(num)).exists(d -> num % d == 0);
+ * }
  * </code>
  * </pre>
  *
@@ -128,7 +167,7 @@ public interface Stream<T> extends Seq<T> {
     /**
      * Constructs a Stream of a head element and a tail supplier.
      *
-     * @param head         The first value in the Stream
+     * @param head         The head element of the Stream
      * @param tailSupplier A supplier of the tail values. To end the stream, return {@link Stream#nil}.
      * @param <T>          value type
      * @return A new Stream
@@ -179,7 +218,7 @@ public interface Stream<T> extends Seq<T> {
     @SafeVarargs
     static <T> Stream<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return Stream.ofAll(new Iterator<T>() {
+        return Stream.ofAll(() -> new Iterator<T>() {
             int i = 0;
 
             @Override
@@ -207,27 +246,204 @@ public interface Stream<T> extends Seq<T> {
         if (elements instanceof Stream) {
             return (Stream<T>) elements;
         } else {
-            return Stream.ofAll(elements.iterator());
+            class StreamFactory {
+                // TODO: in a future version of Java this will be a private interface method
+                <T> Stream<T> create(Iterator<? extends T> iterator) {
+                    if (iterator.hasNext()) {
+                        // we need to get the head, otherwise a tail call would get the head instead
+                        final T head = iterator.next();
+                        return new Cons<>(() -> head, () -> create(iterator));
+                    } else {
+                        return Nil.instance();
+                    }
+                }
+            }
+            return new StreamFactory().create(elements.iterator());
         }
     }
 
     /**
-     * Creates a Stream based on an Iterator.
+     * Creates a Stream based on the elements of a boolean array.
      *
-     * @param iterator An Iterator
-     * @param <T>      Component type
-     * @return A new Stream
+     * @param array a boolean array
+     * @return A new Stream of Boolean values
      */
-    // providing this method to save resources creating a Stream - makes no sense for collections in general
-    static <T> Stream<T> ofAll(Iterator<? extends T> iterator) {
-        Objects.requireNonNull(iterator, "iterator is null");
-        if (iterator.hasNext()) {
-            // we need to get the head, otherwise a tail call would get the head instead
-            final T head = iterator.next();
-            return new Cons<>(() -> head, () -> Stream.ofAll(iterator));
-        } else {
-            return Nil.instance();
-        }
+    static Stream<Boolean> ofAll(boolean[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return Stream.ofAll(() -> new Iterator<Boolean>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Boolean next() {
+                return array[i++];
+            }
+        });
+    }
+
+    /**
+     * Creates a Stream based on the elements of a byte array.
+     *
+     * @param array a byte array
+     * @return A new Stream of Byte values
+     */
+    static Stream<Byte> ofAll(byte[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return Stream.ofAll(() -> new Iterator<Byte>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Byte next() {
+                return array[i++];
+            }
+        });
+    }
+
+    /**
+     * Creates a Stream based on the elements of a char array.
+     *
+     * @param array a char array
+     * @return A new Stream of Character values
+     */
+    static Stream<Character> ofAll(char[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return Stream.ofAll(() -> new Iterator<Character>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Character next() {
+                return array[i++];
+            }
+        });
+    }
+
+    /**
+     * Creates a Stream based on the elements of a double array.
+     *
+     * @param array a double array
+     * @return A new Stream of Double values
+     */
+    static Stream<Double> ofAll(double[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return Stream.ofAll(() -> new Iterator<Double>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Double next() {
+                return array[i++];
+            }
+        });
+    }
+
+    /**
+     * Creates a Stream based on the elements of a float array.
+     *
+     * @param array a float array
+     * @return A new Stream of Float values
+     */
+    static Stream<Float> ofAll(float[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return Stream.ofAll(() -> new Iterator<Float>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Float next() {
+                return array[i++];
+            }
+        });
+    }
+
+    /**
+     * Creates a Stream based on the elements of an int array.
+     *
+     * @param array an int array
+     * @return A new Stream of Integer values
+     */
+    static Stream<Integer> ofAll(int[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return Stream.ofAll(() -> new Iterator<Integer>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Integer next() {
+                return array[i++];
+            }
+        });
+    }
+
+    /**
+     * Creates a Stream based on the elements of a long array.
+     *
+     * @param array a long array
+     * @return A new Stream of Long values
+     */
+    static Stream<Long> ofAll(long[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return Stream.ofAll(() -> new Iterator<Long>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Long next() {
+                return array[i++];
+            }
+        });
+    }
+
+    /**
+     * Creates a Stream based on the elements of a short array.
+     *
+     * @param array a short array
+     * @return A new Stream of Short values
+     */
+    static Stream<Short> ofAll(short[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return Stream.ofAll(() -> new Iterator<Short>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Short next() {
+                return array[i++];
+            }
+        });
     }
 
     /**
@@ -518,7 +734,7 @@ public interface Stream<T> extends Seq<T> {
     @Override
     default <U> Stream<U> flatten(Function<? super T, ? extends Iterable<U>> f) {
         Objects.requireNonNull(f, "f is null");
-        return isEmpty() ? Nil.instance() : Stream.ofAll(new Iterator<U>() {
+        return isEmpty() ? Nil.instance() : Stream.ofAll(() -> new Iterator<U>() {
 
             final Iterator<? extends T> inputs = Stream.this.iterator();
             Iterator<? extends U> current = Collections.emptyIterator();
@@ -885,7 +1101,7 @@ public interface Stream<T> extends Seq<T> {
          * @param head A head element
          * @param tail A tail {@code Stream} supplier, {@linkplain Nil} denotes the end of the {@code Stream}
          */
-        Cons(Supplier<T> head, Supplier<Stream<T>> tail) {
+        public Cons(Supplier<T> head, Supplier<Stream<T>> tail) {
             this.head = Lazy.of(head);
             this.tail = Lazy.of(Objects.requireNonNull(tail, "tail is null"));
         }

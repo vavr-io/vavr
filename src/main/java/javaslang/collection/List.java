@@ -30,19 +30,50 @@ import java.util.stream.Collector;
  * <pre>
  * <code>
  * // factory methods
- * List.nil()              // = List.of() = Nil.instance()
- * List.of(x)              // = new Cons&lt;&gt;(x, Nil.instance())
- * List.of(Object...)      // e.g. List.of(1, 2, 3)
- * List.ofAll(Iterable)    // e.g. List.ofAll(Stream.of(1, 2, 3)) = 1, 2, 3
+ * List.nil()                    // = List.of() = Nil.instance()
+ * List.of(x)                    // = new Cons&lt;&gt;(x, Nil.instance())
+ * List.of(Object...)            // e.g. List.of(1, 2, 3)
+ * List.ofAll(Iterable)          // e.g. List.ofAll(Stream.of(1, 2, 3)) = 1, 2, 3
+ * List.ofAll(&lt;primitive array&gt;) // e.g. List.ofAll(new int[] {1, 2, 3}) = 1, 2, 3
  *
  * // int sequences
- * List.range(0, 3)        // = 0, 1, 2
- * List.rangeClosed(0, 3)  // = 0, 1, 2, 3
+ * List.range(0, 3)              // = 0, 1, 2
+ * List.rangeClosed(0, 3)        // = 0, 1, 2, 3
  * </code>
  * </pre>
  *
  * Note: A {@code List} is primary a {@code Seq} and extends {@code Stack} for technical reasons (so {@code Stack} does not need to wrap {@code List}).
- * <p>
+ *
+ *
+ * Factory method applications:
+ *
+ * <pre>
+ * <code>
+ * List&lt;Integer&gt;       s1 = List.of(1);
+ * List&lt;Integer&gt;       s2 = List.of(1, 2, 3);
+ *                     // = List.of(new Integer[] {1, 2, 3});
+ *
+ * List&lt;int[]&gt;         s3 = List.of(new int[] {1, 2, 3});
+ * List&lt;List&lt;Integer&gt;&gt; s4 = List.of(List.of(1, 2, 3));
+ *
+ * List&lt;Integer&gt;       s5 = List.ofAll(new int[] {1, 2, 3});
+ * List&lt;Integer&gt;       s6 = List.ofAll(List.of(1, 2, 3));
+ *
+ * // cuckoo's egg
+ * List&lt;Integer[]&gt;     s7 = List.&lt;Integer[]&gt; of(new Integer[] {1, 2, 3});
+ *                     //!= List.&lt;Integer[]&gt; of(1, 2, 3);
+ * </code>
+ * </pre>
+ *
+ * Example: Converting a String to digits
+ *
+ * <pre>
+ * <code>
+ * // = List(1, 2, 3)
+ * List.of("123".toCharArray()).map(c -&gt; Character.digit(c, 10))
+ * </code>
+ * </pre>
+ *
  * See Okasaki, Chris: <em>Purely Functional Data Structures</em> (p. 7 ff.). Cambridge, 2003.
  *
  * @param <T> Component type of the List
@@ -130,25 +161,25 @@ public interface List<T> extends Seq<T>, Stack<T> {
      * @return A list containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
+    @SuppressWarnings("unchecked")
     static <T> List<T> ofAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof List) {
-            @SuppressWarnings("unchecked")
             final List<T> list = (List<T>) elements;
             return list;
-        } else if (elements instanceof java.util.List<?>) {
+        } else if (elements instanceof java.util.List) {
             List<T> result = Nil.instance();
-            final java.util.List<? extends T> list = (java.util.List<? extends T>) elements;
-            final ListIterator<? extends T> iter = list.listIterator(list.size());
-            while (iter.hasPrevious()) {
-                result = result.prepend(iter.previous());
+            final java.util.List<T> list = (java.util.List<T>) elements;
+            final ListIterator<T> iterator = list.listIterator(list.size());
+            while (iterator.hasPrevious()) {
+                result = result.prepend(iterator.previous());
             }
             return result;
-        } else if (elements instanceof NavigableSet<?>) {
+        } else if (elements instanceof NavigableSet) {
             List<T> result = Nil.instance();
-            final Iterator<? extends T> iter = ((NavigableSet<? extends T>) elements).descendingIterator();
-            while (iter.hasNext()) {
-                result = result.prepend(iter.next());
+            final Iterator<T> iterator = ((NavigableSet<T>) elements).descendingIterator();
+            while (iterator.hasNext()) {
+                result = result.prepend(iterator.next());
             }
             return result;
         } else {
@@ -158,6 +189,190 @@ public interface List<T> extends Seq<T>, Stack<T> {
             }
             return result.reverse();
         }
+    }
+
+    /**
+     * Creates a List based on the elements of a boolean array.
+     *
+     * @param array a boolean array
+     * @return A new List of Boolean values
+     */
+    static List<Boolean> ofAll(boolean[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return List.ofAll(() -> new Iterator<Boolean>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Boolean next() {
+                return array[i++];
+            }
+        });
+    }
+
+    /**
+     * Creates a List based on the elements of a byte array.
+     *
+     * @param array a byte array
+     * @return A new List of Byte values
+     */
+    static List<Byte> ofAll(byte[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return List.ofAll(() -> new Iterator<Byte>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Byte next() {
+                return array[i++];
+            }
+        });
+    }
+
+    /**
+     * Creates a List based on the elements of a char array.
+     *
+     * @param array a char array
+     * @return A new List of Character values
+     */
+    static List<Character> ofAll(char[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return List.ofAll(() -> new Iterator<Character>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Character next() {
+                return array[i++];
+            }
+        });
+    }
+
+    /**
+     * Creates a List based on the elements of a double array.
+     *
+     * @param array a double array
+     * @return A new List of Double values
+     */
+    static List<Double> ofAll(double[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return List.ofAll(() -> new Iterator<Double>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Double next() {
+                return array[i++];
+            }
+        });
+    }
+
+    /**
+     * Creates a List based on the elements of a float array.
+     *
+     * @param array a float array
+     * @return A new List of Float values
+     */
+    static List<Float> ofAll(float[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return List.ofAll(() -> new Iterator<Float>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Float next() {
+                return array[i++];
+            }
+        });
+    }
+
+    /**
+     * Creates a List based on the elements of an int array.
+     *
+     * @param array an int array
+     * @return A new List of Integer values
+     */
+    static List<Integer> ofAll(int[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return List.ofAll(() -> new Iterator<Integer>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Integer next() {
+                return array[i++];
+            }
+        });
+    }
+
+    /**
+     * Creates a List based on the elements of a long array.
+     *
+     * @param array a long array
+     * @return A new List of Long values
+     */
+    static List<Long> ofAll(long[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return List.ofAll(() -> new Iterator<Long>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Long next() {
+                return array[i++];
+            }
+        });
+    }
+
+    /**
+     * Creates a List based on the elements of a short array.
+     *
+     * @param array a short array
+     * @return A new List of Short values
+     */
+    static List<Short> ofAll(short[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return List.ofAll(() -> new Iterator<Short>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Short next() {
+                return array[i++];
+            }
+        });
     }
 
     /**
@@ -891,7 +1106,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
          * @param head The head
          * @param tail The tail
          */
-        Cons(T head, List<T> tail) {
+        public Cons(T head, List<T> tail) {
             this.head = head;
             this.tail = tail;
         }

@@ -60,7 +60,7 @@ public class Queue<T> implements Seq<T>, Serializable {
      * @param front A List of front elements, in correct order.
      * @param rear  A List of rear elements, in reverse order.
      */
-    private Queue(List<T> front, List<T> rear) {
+    public Queue(List<T> front, List<T> rear) {
         final boolean isFrontEmpty = front.isEmpty();
         this.front = isFrontEmpty ? rear.reverse() : front;
         this.rear = isFrontEmpty ? front : rear;
