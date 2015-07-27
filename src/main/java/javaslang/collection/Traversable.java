@@ -392,7 +392,7 @@ public interface Traversable<T> extends TraversableOnce<T> {
      * <p>
      * Example: Reverse and map a Traversable in one pass
      * <pre><code>
-     * List.of("a", "b", "c").foldLeft(List.nil(), (xs, x) -&gt; xs.prepend(x.toUpperCase()))
+     * List.of("a", "b", "c").foldLeft(List.empty(), (xs, x) -&gt; xs.prepend(x.toUpperCase()))
      * // = List("C", "B", "A")
      * </code></pre>
      *

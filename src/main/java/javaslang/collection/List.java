@@ -30,7 +30,7 @@ import java.util.stream.Collector;
  * <pre>
  * <code>
  * // factory methods
- * List.nil()                    // = List.of() = Nil.instance()
+ * List.empty()                  // = List.of() = Nil.instance()
  * List.of(x)                    // = new Cons&lt;&gt;(x, Nil.instance())
  * List.of(Object...)            // e.g. List.of(1, 2, 3)
  * List.ofAll(Iterable)          // e.g. List.ofAll(Stream.of(1, 2, 3)) = 1, 2, 3
@@ -83,8 +83,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
-     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link javaslang.collection.List}
-     * .
+     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link javaslang.collection.List}s.
      *
      * @param <T> Component type of the List.
      * @return A javaslang.collection.List Collector.
@@ -109,7 +108,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
      * @param <T> Component type of Nil, determined by type inference in the particular context.
      * @return The empty list.
      */
-    static <T> List<T> nil() {
+    static <T> List<T> empty() {
         return Nil.instance();
     }
 
@@ -377,49 +376,165 @@ public interface List<T> extends Seq<T>, Stack<T> {
 
     /**
      * Creates a List of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.range(0, 0)  // = List()
+     * List.range(2, 0)  // = List()
+     * List.range(-2, 2) // = List(-2, -1, 0, 1)
+     * </code>
+     * </pre>
      *
      * @param from        the first number
      * @param toExclusive the last number + 1
-     * @return a range of int values as specified or {@code Nil} if {@code from >= toExclusive}
+     * @return a range of int values as specified or the empty range if {@code from >= toExclusive}
      */
     static List<Integer> range(int from, int toExclusive) {
-        if (from >= toExclusive) {
-            return Nil.instance();
+        return List.rangeBy(from, toExclusive, 1);
+    }
+
+    /**
+     * Creates a List of int numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.rangeBy(1, 3, 1)  // = List(1, 2)
+     * List.rangeBy(1, 4, 2)  // = List(1, 3)
+     * List.rangeBy(4, 1, -2) // = List(4, 2)
+     * List.rangeBy(4, 1, 2)  // = List()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @param step        the step
+     * @return a range of long values as specified or the empty range if<br>
+     * {@code from >= toInclusive} and {@code step > 0} or<br>
+     * {@code from <= toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    static List<Integer> rangeBy(int from, int toExclusive, int step) {
+        if (step == 0) {
+            throw new IllegalArgumentException("step cannot be 0.");
+        } else if (from == toExclusive || step * (from - toExclusive) > 0) {
+            return List.empty();
         } else {
-            return List.rangeClosed(from, toExclusive - 1);
+            final int one = (from < toExclusive) ? 1 : -1;
+            return List.rangeClosedBy(from, toExclusive - one, step);
         }
     }
 
     /**
      * Creates a List of long numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.range(0L, 0L)  // = List()
+     * List.range(2L, 0L)  // = List()
+     * List.range(-2L, 2L) // = List(-2L, -1L, 0L, 1L)
+     * </code>
+     * </pre>
      *
      * @param from        the first number
      * @param toExclusive the last number + 1
-     * @return a range of long values as specified or {@code Nil} if {@code from >= toExclusive}
+     * @return a range of long values as specified or the empty range if {@code from >= toExclusive}
      */
     static List<Long> range(long from, long toExclusive) {
-        if (from >= toExclusive) {
-            return Nil.instance();
+        return List.rangeBy(from, toExclusive, 1);
+    }
+
+    /**
+     * Creates a List of long numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.rangeBy(1L, 3L, 1L)  // = List(1L, 2L)
+     * List.rangeBy(1L, 4L, 2L)  // = List(1L, 3L)
+     * List.rangeBy(4L, 1L, -2L) // = List(4L, 2L)
+     * List.rangeBy(4L, 1L, 2L)  // = List()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @param step        the step
+     * @return a range of long values as specified or the empty range if<br>
+     * {@code from >= toInclusive} and {@code step > 0} or<br>
+     * {@code from <= toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    static List<Long> rangeBy(long from, long toExclusive, long step) {
+        if (step == 0) {
+            throw new IllegalArgumentException("step cannot be 0.");
+        } else if (from == toExclusive || step * (from - toExclusive) > 0) {
+            return List.empty();
         } else {
-            return List.rangeClosed(from, toExclusive - 1);
+            final int one = (from < toExclusive) ? 1 : -1;
+            return List.rangeClosedBy(from, toExclusive - one, step);
         }
     }
 
     /**
      * Creates a List of int numbers starting from {@code from}, extending to {@code toInclusive}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.rangeClosed(0, 0)  // = List(0)
+     * List.rangeClosed(2, 0)  // = List()
+     * List.rangeClosed(-2, 2) // = List(-2, -1, 0, 1, 2)
+     * </code>
+     * </pre>
      *
      * @param from        the first number
      * @param toInclusive the last number
-     * @return a range of int values as specified or {@code Nil} if {@code from > toInclusive}
+     * @return a range of int values as specified or the empty range if {@code from > toInclusive}
      */
     static List<Integer> rangeClosed(int from, int toInclusive) {
-        if (from > toInclusive) {
-            return Nil.instance();
-        } else if (toInclusive == Integer.MIN_VALUE) {
-            return List.of(Integer.MIN_VALUE);
+        return List.rangeClosedBy(from, toInclusive, 1);
+    }
+
+    /**
+     * Creates a List of int numbers starting from {@code from}, extending to {@code toInclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.rangeClosedBy(1, 3, 1)  // = List(1, 2, 3)
+     * List.rangeClosedBy(1, 4, 2)  // = List(1, 3)
+     * List.rangeClosedBy(4, 1, -2) // = List(4, 2)
+     * List.rangeClosedBy(4, 1, 2)  // = List()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @param step        the step
+     * @return a range of int values as specified or the empty range if<br>
+     * {@code from > toInclusive} and {@code step > 0} or<br>
+     * {@code from < toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    static List<Integer> rangeClosedBy(int from, int toInclusive, int step) {
+        if (step == 0) {
+            throw new IllegalArgumentException("step cannot be 0.");
+        } else if (from == toInclusive) {
+            return List.of(from);
+        } else if (step * (from - toInclusive) > 0) {
+            return List.empty();
         } else {
-            List<Integer> result = Nil.instance();
-            for (int i = toInclusive; i >= from; i--) {
+            final int gap = (from - toInclusive) % step;
+            final int signum = (from < toInclusive) ? -1 : 1;
+            final int bound = from * signum;
+            List<Integer> result = List.empty();
+            for (int i = toInclusive + gap; i * signum <= bound; i -= step) {
                 result = result.prepend(i);
             }
             return result;
@@ -428,19 +543,59 @@ public interface List<T> extends Seq<T>, Stack<T> {
 
     /**
      * Creates a List of long numbers starting from {@code from}, extending to {@code toInclusive}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.rangeClosed(0L, 0L)  // = List(0L)
+     * List.rangeClosed(2L, 0L)  // = List()
+     * List.rangeClosed(-2L, 2L) // = List(-2L, -1L, 0L, 1L, 2L)
+     * </code>
+     * </pre>
      *
      * @param from        the first number
      * @param toInclusive the last number
-     * @return a range of long values as specified or {@code Nil} if {@code from > toInclusive}
+     * @return a range of long values as specified or the empty range if {@code from > toInclusive}
      */
     static List<Long> rangeClosed(long from, long toInclusive) {
-        if (from > toInclusive) {
-            return Nil.instance();
-        } else if (toInclusive == Long.MIN_VALUE) {
-            return List.of(Long.MIN_VALUE);
+        return List.rangeClosedBy(from, toInclusive, 1L);
+    }
+
+    /**
+     * Creates a List of long numbers starting from {@code from}, extending to {@code toInclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.rangeClosedBy(1L, 3L, 1L)  // = List(1L, 2L, 3L)
+     * List.rangeClosedBy(1L, 4L, 2L)  // = List(1L, 3L)
+     * List.rangeClosedBy(4L, 1L, -2L) // = List(4L, 2L)
+     * List.rangeClosedBy(4L, 1L, 2L)  // = List()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @param step        the step
+     * @return a range of int values as specified or the empty range if<br>
+     * {@code from > toInclusive} and {@code step > 0} or<br>
+     * {@code from < toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    static List<Long> rangeClosedBy(long from, long toInclusive, long step) {
+        if (step == 0) {
+            throw new IllegalArgumentException("step cannot be 0.");
+        } else if (from == toInclusive) {
+            return List.of(from);
+        } else if (step * (from - toInclusive) > 0) {
+            return List.empty();
         } else {
-            List<Long> result = Nil.instance();
-            for (long i = toInclusive; i >= from; i--) {
+            final long gap = (from - toInclusive) % step;
+            final int signum = (from < toInclusive) ? -1 : 1;
+            final long bound = from * signum;
+            List<Long> result = List.empty();
+            for (long i = toInclusive + gap; i * signum <= bound; i -= step) {
                 result = result.prepend(i);
             }
             return result;
@@ -473,7 +628,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
         class Recursion {
             List<List<T>> combinations(List<T> elements, int k) {
                 return (k == 0)
-                        ? List.of(List.nil())
+                        ? List.of(List.empty())
                         : elements.zipWithIndex().flatMap(t -> combinations(elements.drop(t._2 + 1), (k - 1))
                         .map((List<T> c) -> c.prepend(t._1)));
             }
@@ -520,7 +675,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
     @Override
     default List<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return isEmpty() ? this : foldLeft(List.<T>nil(), (xs, x) -> predicate.test(x) ? xs.prepend(x) : xs).reverse();
+        return isEmpty() ? this : foldLeft(List.<T>empty(), (xs, x) -> predicate.test(x) ? xs.prepend(x) : xs).reverse();
     }
 
     @Override
@@ -533,9 +688,9 @@ public interface List<T> extends Seq<T>, Stack<T> {
     default <U> List<U> flatMap(Function<? super T, ? extends Iterable<U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
-            return nil();
+            return empty();
         } else {
-            List<U> list = nil();
+            List<U> list = empty();
             for (T t : this) {
                 for (U u : mapper.apply(t)) {
                     list = list.prepend(u);
@@ -570,7 +725,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
     @Override
     default <U> List<U> flatten(Function<? super T, ? extends Iterable<U>> f) {
         Objects.requireNonNull(f, "f is null");
-        return isEmpty() ? Nil.instance() : foldRight(nil(), (t, xs) -> xs.prependAll(f.apply(t)));
+        return isEmpty() ? Nil.instance() : foldRight(empty(), (t, xs) -> xs.prependAll(f.apply(t)));
     }
 
     @Override
@@ -668,7 +823,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
 
     @Override
     default List<T> intersperse(T element) {
-        return isEmpty() ? Nil.instance() : foldRight(nil(), (x, xs) -> xs.isEmpty() ? xs.prepend(x) : xs.prepend(element).prepend(x));
+        return isEmpty() ? Nil.instance() : foldRight(empty(), (x, xs) -> xs.isEmpty() ? xs.prepend(x) : xs.prepend(element).prepend(x));
     }
 
     @Override
@@ -685,7 +840,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
     @Override
     default <U> List<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        List<U> list = nil();
+        List<U> list = empty();
         for (T t : this) {
             list = list.prepend(mapper.apply(t));
         }
@@ -891,7 +1046,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
 
     @Override
     default List<T> reverse() {
-        return isEmpty() ? this : foldLeft(nil(), List::prepend);
+        return isEmpty() ? this : foldLeft(empty(), List::prepend);
     }
 
     @Override
@@ -965,7 +1120,6 @@ public interface List<T> extends Seq<T>, Stack<T> {
 
     @Override
     default Spliterator<T> spliterator() {
-        // the focus of the Stream API is on random-access collections of *known size*
         return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
     }
 

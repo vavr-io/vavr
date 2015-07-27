@@ -39,7 +39,7 @@ public interface BinaryTree<T> extends Tree<T> {
      * @param value A value
      * @param right Right subtree
      * @param <T>   The value type
-     * @return A new, non-nil binary tree
+     * @return A new, non-empty binary tree
      */
     static <T> BinaryTree<T> of(BinaryTree<T> left, T value, BinaryTree<T> right) {
         Objects.requireNonNull(left, "left is null");
@@ -88,7 +88,7 @@ public interface BinaryTree<T> extends Tree<T> {
      * @param <T> the tree's value type
      * @return the empty binary tree
      */
-    static <T> Nil<T> nil() {
+    static <T> Nil<T> empty() {
         return Nil.instance();
     }
 
@@ -268,12 +268,12 @@ public interface BinaryTree<T> extends Tree<T> {
 
         @Override
         public BinaryTree<T> left() {
-            return BinaryTree.nil();
+            return BinaryTree.empty();
         }
 
         @Override
         public BinaryTree<T> right() {
-            return BinaryTree.nil();
+            return BinaryTree.empty();
         }
 
         @Override
@@ -293,7 +293,7 @@ public interface BinaryTree<T> extends Tree<T> {
 
         @Override
         public List<BinaryTree<T>> getChildren() {
-            return List.nil();
+            return List.empty();
         }
     }
 
@@ -359,7 +359,7 @@ public interface BinaryTree<T> extends Tree<T> {
         @Override
         public List<BinaryTree<T>> getChildren() {
             // IntelliJ error: List.of(left, right).filter(tree -> !tree.isEmpty());
-            return List.<BinaryTree<T>>nil().prepend(right).prepend(left).filter(tree -> !tree.isEmpty());
+            return List.<BinaryTree<T>>empty().prepend(right).prepend(left).filter(tree -> !tree.isEmpty());
         }
 
         // -- Serializable implementation
@@ -516,7 +516,7 @@ public interface BinaryTree<T> extends Tree<T> {
 
         @Override
         public List<BinaryTree<T>> getChildren() {
-            return List.nil();
+            return List.empty();
         }
 
         // -- Serializable implementation

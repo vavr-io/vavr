@@ -154,7 +154,7 @@ public interface Match<R> extends Function<Object, R> {
     }
 
     static <T, R> MatchFunction.WhenApplicable<T, R> whenApplicable(Function1<? super T, ? extends R> function) {
-        return new MatchFunction.WhenApplicable<>(function, List.nil());
+        return new MatchFunction.WhenApplicable<>(function, List.empty());
     }
 
     /**
@@ -228,39 +228,39 @@ public interface Match<R> extends Function<Object, R> {
 
             @Override
             public <T> When<T, R> when(T prototype) {
-                return new When<>(prototype, List.nil());
+                return new When<>(prototype, List.empty());
             }
 
             @SuppressWarnings("unchecked")
             @Override
             public <T> WhenIn<T, R> whenIn(T... prototypes) {
                 Objects.requireNonNull(prototypes, "prototypes is null");
-                return new WhenIn<>(prototypes, List.nil());
+                return new WhenIn<>(prototypes, List.empty());
             }
 
             @Override
             public <T> WhenTrue<T, R> whenTrue(Function1<? super T, ? extends Boolean> predicate) {
                 Objects.requireNonNull(predicate, "predicate is null");
-                return new WhenTrue<>(predicate, List.nil());
+                return new WhenTrue<>(predicate, List.empty());
             }
 
             @Override
             public <T> WhenType<T, R> whenType(Class<T> type) {
                 Objects.requireNonNull(type, "type is null");
-                return new WhenType<>(type, List.nil());
+                return new WhenType<>(type, List.empty());
             }
 
             @SuppressWarnings("unchecked")
             @Override
             public <T> WhenTypeIn<T, R> whenTypeIn(Class<T>... types) {
                 Objects.requireNonNull(types, "types is null");
-                return new WhenTypeIn<>(types, List.nil());
+                return new WhenTypeIn<>(types, List.empty());
             }
 
             @Override
             public <T> WhenApplicable<T, R> whenApplicable(Function1<? super T, ? extends R> function) {
                 Objects.requireNonNull(function, "function is null");
-                return new WhenApplicable<>(function, List.nil());
+                return new WhenApplicable<>(function, List.empty());
             }
         }
 
@@ -340,7 +340,7 @@ public interface Match<R> extends Function<Object, R> {
             public <R> Then<R> then(Function<? super T, ? extends R> function) {
                 Objects.requireNonNull(function, "function is null");
                 final List<Case<R>> cases = List.of(prototypes)
-                        .foldLeft(List.nil(), (ts, t) -> ts.prepend(Case.byValue(t, function)));
+                        .foldLeft(List.empty(), (ts, t) -> ts.prepend(Case.byValue(t, function)));
                 return new Then<>(cases);
             }
         }
@@ -359,7 +359,7 @@ public interface Match<R> extends Function<Object, R> {
             public Then<R> then(Function<? super T, ? extends R> function) {
                 Objects.requireNonNull(function, "function is null");
                 final List<Case<R>> newCases = List.of(prototypes)
-                        .foldLeft(List.nil(), (ts, t) -> ts.prepend(Case.byValue(t, function)));
+                        .foldLeft(List.empty(), (ts, t) -> ts.prepend(Case.byValue(t, function)));
                 return new Then<>(cases.prependAll(newCases));
             }
         }
@@ -410,7 +410,7 @@ public interface Match<R> extends Function<Object, R> {
             public <R> Then<R> then(Function<? super T, ? extends R> function) {
                 Objects.requireNonNull(function, "function is null");
                 final List<Case<R>> cases = List.of(types)
-                        .foldLeft(List.nil(), (ts, t) -> ts.prepend(Case.byType(t, function)));
+                        .foldLeft(List.empty(), (ts, t) -> ts.prepend(Case.byType(t, function)));
                 return new Then<>(cases);
             }
         }
@@ -429,7 +429,7 @@ public interface Match<R> extends Function<Object, R> {
             public Then<R> then(Function<? super T, ? extends R> function) {
                 Objects.requireNonNull(function, "function is null");
                 final List<Case<R>> newCases = List.of(types)
-                        .foldLeft(List.nil(), (ts, t) -> ts.prepend(Case.byType(t, function)));
+                        .foldLeft(List.empty(), (ts, t) -> ts.prepend(Case.byType(t, function)));
                 return new Then<>(cases.prependAll(newCases));
             }
         }

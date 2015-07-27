@@ -176,7 +176,7 @@ public interface Arbitrary<T> extends TraversableOnce<T> {
         return size -> {
             final Gen<T> genT = arbitraryT.apply(size);
             return random -> Gen.choose(0, size).map(i -> {
-                List<T> list = List.nil();
+                List<T> list = List.empty();
                 for (int j = 0; j < i; j++) {
                     final T element = genT.apply(random);
                     list = list.prepend(element);

@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public abstract class AbstractTreeTest {
 
-    abstract protected Tree<Integer> nil();
+    abstract protected Tree<Integer> empty();
 
     /**
      * @return A Leaf(0)
@@ -43,7 +43,7 @@ public abstract class AbstractTreeTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void shouldNotGetValueOfNil() {
-        nil().getValue();
+        empty().getValue();
     }
 
     @Test
@@ -55,7 +55,7 @@ public abstract class AbstractTreeTest {
 
     @Test
     public void shouldIdentifyNilAsEmpty() {
-        assertThat(nil().isEmpty()).isTrue();
+        assertThat(empty().isEmpty()).isTrue();
     }
 
     @Test
@@ -77,7 +77,7 @@ public abstract class AbstractTreeTest {
 
     @Test
     public void shouldIdentifiyNilAsNonLeaf() {
-        assertThat(nil().isLeaf()).isFalse();
+        assertThat(empty().isLeaf()).isFalse();
     }
 
     // -- isBranch
@@ -94,14 +94,14 @@ public abstract class AbstractTreeTest {
 
     @Test
     public void shouldIdentifiyNilAsNonBranch() {
-        assertThat(nil().isBranch()).isFalse();
+        assertThat(empty().isBranch()).isFalse();
     }
 
     // -- getChildren
 
     @Test
     public void shouldGetChildrenOfLeaf() {
-        assertThat(leaf().getChildren()).isEqualTo(List.nil());
+        assertThat(leaf().getChildren()).isEqualTo(List.empty());
     }
 
     @Test
@@ -114,14 +114,14 @@ public abstract class AbstractTreeTest {
 
     @Test
     public void shouldIGetChildrenOfNil() {
-        assertThat(nil().getChildren()).isEqualTo(List.nil());
+        assertThat(empty().getChildren()).isEqualTo(List.empty());
     }
 
     // -- branchCount
 
     @Test
     public void shouldCountBranchesOfNil() {
-        assertThat(nil().branchCount()).isEqualTo(0);
+        assertThat(empty().branchCount()).isEqualTo(0);
     }
 
     @Test
@@ -133,7 +133,7 @@ public abstract class AbstractTreeTest {
 
     @Test
     public void shouldCountLeavesOfNil() {
-        assertThat(nil().leafCount()).isEqualTo(0);
+        assertThat(empty().leafCount()).isEqualTo(0);
     }
 
     @Test
@@ -145,7 +145,7 @@ public abstract class AbstractTreeTest {
 
     @Test
     public void shouldCountNodesOfNil() {
-        assertThat(nil().nodeCount()).isEqualTo(0);
+        assertThat(empty().nodeCount()).isEqualTo(0);
     }
 
     @Test
@@ -157,7 +157,7 @@ public abstract class AbstractTreeTest {
 
     @Test
     public void shouldNotFindNodeInNil() {
-        assertThat(nil().contains(1)).isFalse();
+        assertThat(empty().contains(1)).isFalse();
     }
 
     @Test
@@ -174,12 +174,12 @@ public abstract class AbstractTreeTest {
 
     @Test
     public void shouldNotHasNextWhenNilIterator() {
-        assertThat(nil().iterator().hasNext()).isFalse();
+        assertThat(empty().iterator().hasNext()).isFalse();
     }
 
     @Test(expected = NoSuchElementException.class)
     public void shouldThrowOnNextWhenNilIterator() {
-        nil().iterator().next();
+        empty().iterator().next();
     }
 
     @Test
@@ -197,7 +197,7 @@ public abstract class AbstractTreeTest {
 
     @Test
     public void shouldFlattenNil() {
-        assertThat(nil().flatten()).isEqualTo(List.nil());
+        assertThat(empty().flatten()).isEqualTo(List.empty());
     }
 
     // -- flatten(Order)
@@ -226,7 +226,7 @@ public abstract class AbstractTreeTest {
 
     @Test
     public void shouldMapNil() {
-        assertThat(nil().map(i -> i)).isEqualTo(nil());
+        assertThat(empty().map(i -> i)).isEqualTo(empty());
     }
 
     @Test
@@ -238,7 +238,7 @@ public abstract class AbstractTreeTest {
 
     @Test
     public void shouldConvertNilToLispString() {
-        assertThat(nil().toLispString()).isEqualTo("()");
+        assertThat(empty().toLispString()).isEqualTo("()");
     }
 
     @Test
@@ -250,7 +250,7 @@ public abstract class AbstractTreeTest {
 
     @Test
     public void shouldConvertNilToIndentedString() {
-        assertThat(nil().toIndentedString()).isEqualTo("");
+        assertThat(empty().toIndentedString()).isEqualTo("");
     }
 
     @Test
@@ -262,14 +262,14 @@ public abstract class AbstractTreeTest {
 
     @Test
     public void shouldSerializeDeserializeNil() {
-        final Object actual = deserialize(serialize(nil()));
-        final Object expected = nil();
+        final Object actual = deserialize(serialize(empty()));
+        final Object expected = empty();
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldPreserveSingletonInstanceOnDeserialization() {
-        final boolean actual = deserialize(serialize(nil())) == nil();
+        final boolean actual = deserialize(serialize(empty())) == empty();
         assertThat(actual).isTrue();
     }
 
