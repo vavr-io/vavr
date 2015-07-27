@@ -10,7 +10,7 @@ import org.junit.Test;
 import static javaslang.collection.euler.PrimeNumbers.prime;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class Euler07 {
+public class Euler07Test {
 
     /**
      * <strong>Problem 7: 10001st prime</strong>

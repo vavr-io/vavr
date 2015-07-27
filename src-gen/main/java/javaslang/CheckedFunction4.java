@@ -40,13 +40,13 @@ public interface CheckedFunction4<T1, T2, T3, T4, R> extends λ<R> {
      * <p>
      * Examples (w.l.o.g. referring to Function1):
      * <pre><code>// lifting a lambda expression
-     * Function1<Integer, Integer> add1 = Function1.lift(i -> i + 1);
+     * Function1&lt;Integer, Integer&gt; add1 = Function1.lift(i -&gt; i + 1);
      *
      * // lifting a method reference (, e.g. Integer method(Integer i) { return i + 1; })
-     * Function1<Integer, Integer> add2 = Function1.lift(this::method);
+     * Function1&lt;Integer, Integer&gt; add2 = Function1.lift(this::method);
      *
      * // lifting a lambda reference
-     * Function1<Integer, Integer> add3 = Function1.lift(add1::apply);
+     * Function1&lt;Integer, Integer&gt; add3 = Function1.lift(add1::apply);
      * </code></pre>
      * <p>
      * <strong>Caution:</strong> Reflection loses type information of lifted lambda reference.

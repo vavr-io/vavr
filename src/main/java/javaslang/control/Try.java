@@ -169,11 +169,32 @@ public interface Try<T> extends TraversableOnce<T>, Value<T> {
     /**
      * Maps the value of a Success or returns a Failure.
      *
-     * @param mapper A mapper
      * @param <U>    The new component type
+     * @param mapper A mapper
      * @return a new Try
      */
     <U> Try<U> map(Function<? super T, ? extends U> mapper);
+
+    /**
+     * Runs the given checked function if this is a {@code Success},
+     * passing the result of the current expression to it.
+     * If this expression is a {@code Failure} then it'll return a new
+     * {@code Failure} of type R with the original exception.
+     *
+     * The main use case is chaining checked functions using method references:
+     *
+     * <pre>
+     * <code>
+     * Try.of(() -&gt; 0)
+     *    .mapTry(x -&gt; 1 / x); // division by zero
+     * </code>
+     * </pre>
+     *
+     * @param <U> The new component type
+     * @param f   A checked function taking a single argument.
+     * @return a new {@code Try}
+     */
+    <U> Try<U> mapTry(CheckedFunction1<? super T, ? extends U> f);
 
     /**
      * FlatMaps the value of a Success or returns a Failure.
@@ -228,28 +249,6 @@ public interface Try<T> extends TraversableOnce<T>, Value<T> {
     }
 
     /**
-     * Runs the given checked function if this is a {@code Success},
-     * passing the result of the current expression to it.
-     * If this expression is a {@code Failure} then it'll return a new
-     * {@code Failure} of type R with the original exception.
-     *
-     * The main use case is chaining checked functions using method references:
-     *
-     * <pre>
-     * <code>
-     * Try.of(() -&gt; 100)
-     *    .mapTry(x -&gt; x + 100)
-     *    .mapTry(x -&gt; x * 20);
-     *
-     * </code>
-     * </pre>
-     *
-     * @param f A checked function taking a single argument.
-     * @return a new {@code Try}
-     */
-    <R> Try<R> mapTry(CheckedFunction1<? super T, ? extends R> f);
-
-    /**
      * Runs the given checked consumer if this is a {@code Success},
      * passing the result of the current expression to it.
      * If this expression is a {@code Failure} then it'll return a new
@@ -296,17 +295,18 @@ public interface Try<T> extends TraversableOnce<T>, Value<T> {
     /**
      * A {@linkplain java.util.function.Consumer} which may throw.
      *
-     * @param <R> the type of value supplied to this consumer.
+     * @param <T> the type of value supplied to this consumer.
      */
     @FunctionalInterface
-    interface CheckedConsumer<R> {
+    interface CheckedConsumer<T> {
 
         /**
          * Performs side-effects.
          *
+         * @param value a value
          * @throws Throwable if an error occurs
          */
-        void accept(R value) throws Throwable;
+        void accept(T value) throws Throwable;
     }
 
     /**

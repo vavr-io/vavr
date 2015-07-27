@@ -8,17 +8,20 @@ package javaslang.collection.euler;
 import javaslang.collection.Stream;
 import org.junit.Test;
 
-import static org.assertj.core.api.StrictAssertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class Euler48 {
+public class Euler48Test {
 
     private static long MOD = 10_000_000_000L;
 
     /**
      * <strong>Problem 48: Self powers</strong>
-     * <p>The series, 1<sup>1</sup> + 2<sup>2</sup> + 3<sup>3</sup> + ... + 10<sup>10</sup> = 10405071317.</p>
-     * <p>Find the last ten digits of the series, 1<sup>1</sup> + 2<sup>2</sup> + 3<sup>3</sup> + ... + 1000<sup>1000</sup>.</p>
-     * <p>See also <a href="https://projecteuler.net/problem=48">projecteuler.net problem 48</a>.</p>
+     * <p>
+     * The series, 1<sup>1</sup> + 2<sup>2</sup> + 3<sup>3</sup> + ... + 10<sup>10</sup> = 10405071317.
+     * <p>
+     * Find the last ten digits of the series, 1<sup>1</sup> + 2<sup>2</sup> + 3<sup>3</sup> + ... + 1000<sup>1000</sup>.
+     * <p>
+     * See also <a href="https://projecteuler.net/problem=48">projecteuler.net problem 48</a>.
      */
     @Test
     public void shouldSolveProblem48() {
@@ -28,8 +31,8 @@ public class Euler48 {
 
     private static long sumPowers(int max) {
         return Stream.range(1, max)
-                .map(Euler48::selfPower)
-                .reduce(Euler48::sumMod);
+                .map(Euler48Test::selfPower)
+                .reduce(Euler48Test::sumMod);
     }
 
     private static long selfPower(long v) {
@@ -37,7 +40,7 @@ public class Euler48 {
         return bits(v)
                 .map(powers::get)
                 .prepend(1L)
-                .reduce(Euler48::multMod);
+                .reduce(Euler48Test::multMod);
     }
 
     private static long multMod(long v1, long v2) {
@@ -45,7 +48,7 @@ public class Euler48 {
         return bits(v2)
                 .map(shifts::get)
                 .prepend(0L)
-                .reduce(Euler48::sumMod);
+                .reduce(Euler48Test::sumMod);
     }
 
     private static long sumMod(long v1, long v2) {

@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class Euler06 {
+public class Euler06Test {
 
     /**
      * <strong>Problem 6: Sum square difference</strong>

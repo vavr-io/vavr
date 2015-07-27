@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class Euler05 {
+public class Euler05Test {
 
     /**
      * <strong>Problem 5: Smallest multiple</strong>

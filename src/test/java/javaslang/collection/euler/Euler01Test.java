@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * <p>
  * See also <a href="https://projecteuler.net/problem=1">projecteuler.net problem 1</a>.
  */
-public class Euler01 {
+public class Euler01Test {
 
     @Test
     public void shouldSolveProblem1() {
@@ -29,7 +29,7 @@ public class Euler01 {
     }
 
     private static int sumOfMultiplesOf3and5Below(int limit) {
-        return List.range(1, limit).filter(Euler01::isMultipleOf3or5).sum().intValue();
+        return List.range(1, limit).filter(Euler01Test::isMultipleOf3or5).sum().intValue();
     }
 
     private static boolean isMultipleOf3or5(int num) {
