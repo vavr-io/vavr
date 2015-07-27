@@ -32,7 +32,7 @@ import java.util.stream.Collector;
  * <pre>
  * <code>
  * // factory methods
- * Stream.nil()                    // = Stream.of() = Nil.instance()
+ * Stream.empty()                  // = Stream.of() = Nil.instance()
  * Stream.of(x)                    // = new Cons&lt;&gt;(x, Nil.instance())
  * Stream.of(Object...)            // e.g. Stream.of(1, 2, 3)
  * Stream.ofAll(Iterable)          // e.g. Stream.of(List.of(1, 2, 3)) = 1, 2, 3
@@ -168,7 +168,7 @@ public interface Stream<T> extends Seq<T> {
      * Constructs a Stream of a head element and a tail supplier.
      *
      * @param head         The head element of the Stream
-     * @param tailSupplier A supplier of the tail values. To end the stream, return {@link Stream#nil}.
+     * @param tailSupplier A supplier of the tail values. To end the stream, return {@link Stream#empty}.
      * @param <T>          value type
      * @return A new Stream
      */
@@ -186,7 +186,7 @@ public interface Stream<T> extends Seq<T> {
      * @param <T> Component type of Nil, determined by type inference in the particular context.
      * @return The empty list.
      */
-    static <T> Stream<T> nil() {
+    static <T> Stream<T> empty() {
         return Nil.instance();
     }
 
@@ -448,6 +448,15 @@ public interface Stream<T> extends Seq<T> {
 
     /**
      * Creates a Stream of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Stream.range(0, 0)  // = Stream()
+     * Stream.range(2, 0)  // = Stream()
+     * Stream.range(-2, 2) // = Stream(-2, -1, 0, 1)
+     * </code>
+     * </pre>
      *
      * @param from        the first number
      * @param toExclusive the last number + 1
@@ -457,11 +466,20 @@ public interface Stream<T> extends Seq<T> {
         return rangeBy(from, toExclusive, 1);
     }
 
-
     /**
      * Creates a Stream of int numbers starting from {@code from}, extending to {@code toExclusive - 1},
      * with {@code step}.
-     *
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Stream.rangeBy(1, 3, 1)  // = Stream(1, 2)
+     * Stream.rangeBy(1, 4, 2)  // = Stream(1, 3)
+     * Stream.rangeBy(4, 1, -2) // = Stream(4, 2)
+     * Stream.rangeBy(4, 1, 2)  // = Stream()
+     * </code>
+     * </pre>
+
      * @param from        the first number
      * @param toExclusive the last number + 1
      * @param step        the step
@@ -472,7 +490,7 @@ public interface Stream<T> extends Seq<T> {
      */
     static Stream<Integer> rangeBy(int from, int toExclusive, int step) {
         if (step == 0) {
-            throw new IllegalArgumentException("Step should not be equal to zero");
+            throw new IllegalArgumentException("step is zero");
         }
         if (step > 0) {
             if (from >= toExclusive) {
@@ -491,6 +509,15 @@ public interface Stream<T> extends Seq<T> {
 
     /**
      * Creates a Stream of long numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Stream.range(0L, 0L)  // = Stream()
+     * Stream.range(2L, 0L)  // = Stream()
+     * Stream.range(-2L, 2L) // = Stream(-2L, -1L, 0L, 1L)
+     * </code>
+     * </pre>
      *
      * @param from        the first number
      * @param toExclusive the last number + 1
@@ -503,6 +530,16 @@ public interface Stream<T> extends Seq<T> {
     /**
      * Creates a Stream of long numbers starting from {@code from}, extending to {@code toExclusive - 1},
      * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Stream.rangeBy(1L, 3L, 1L)  // = Stream(1L, 2L)
+     * Stream.rangeBy(1L, 4L, 2L)  // = Stream(1L, 3L)
+     * Stream.rangeBy(4L, 1L, -2L) // = Stream(4L, 2L)
+     * Stream.rangeBy(4L, 1L, 2L)  // = Stream()
+     * </code>
+     * </pre>
      *
      * @param from        the first number
      * @param toExclusive the last number + 1
@@ -512,9 +549,9 @@ public interface Stream<T> extends Seq<T> {
      * {@code from <= toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
-    static Stream<Long> rangeBy(long from, long toExclusive, int step) {
+    static Stream<Long> rangeBy(long from, long toExclusive, long step) {
         if (step == 0) {
-            throw new IllegalArgumentException("Step should not be equal to zero");
+            throw new IllegalArgumentException("step is zero");
         }
         if (step > 0) {
             if (from >= toExclusive) {
@@ -533,6 +570,15 @@ public interface Stream<T> extends Seq<T> {
 
     /**
      * Creates a Stream of int numbers starting from {@code from}, extending to {@code toInclusive}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Stream.rangeClosed(0, 0)  // = Stream(0)
+     * Stream.rangeClosed(2, 0)  // = Stream()
+     * Stream.rangeClosed(-2, 2) // = Stream(-2, -1, 0, 1, 2)
+     * </code>
+     * </pre>
      *
      * @param from        the first number
      * @param toInclusive the last number
@@ -545,6 +591,16 @@ public interface Stream<T> extends Seq<T> {
     /**
      * Creates a Stream of int numbers starting from {@code from}, extending to {@code toInclusive},
      * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Stream.rangeClosedBy(1, 3, 1)  // = Stream(1, 2, 3)
+     * Stream.rangeClosedBy(1, 4, 2)  // = Stream(1, 3)
+     * Stream.rangeClosedBy(4, 1, -2) // = Stream(4, 2)
+     * Stream.rangeClosedBy(4, 1, 2)  // = Stream()
+     * </code>
+     * </pre>
      *
      * @param from        the first number
      * @param toInclusive the last number
@@ -556,7 +612,7 @@ public interface Stream<T> extends Seq<T> {
      */
     static Stream<Integer> rangeClosedBy(int from, int toInclusive, int step) {
         if (step == 0) {
-            throw new IllegalArgumentException("Step should not be equal to zero");
+            throw new IllegalArgumentException("step is zero");
         }
         if (step > 0) {
             if (from > toInclusive) {
@@ -579,6 +635,15 @@ public interface Stream<T> extends Seq<T> {
 
     /**
      * Creates a Stream of long numbers starting from {@code from}, extending to {@code toInclusive}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Stream.rangeClosed(0L, 0L)  // = Stream(0L)
+     * Stream.rangeClosed(2L, 0L)  // = Stream()
+     * Stream.rangeClosed(-2L, 2L) // = Stream(-2L, -1L, 0L, 1L, 2L)
+     * </code>
+     * </pre>
      *
      * @param from        the first number
      * @param toInclusive the last number
@@ -591,6 +656,16 @@ public interface Stream<T> extends Seq<T> {
     /**
      * Creates a Stream of long numbers starting from {@code from}, extending to {@code toInclusive},
      * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Stream.rangeClosedBy(1L, 3L, 1L)  // = Stream(1L, 2L, 3L)
+     * Stream.rangeClosedBy(1L, 4L, 2L)  // = Stream(1L, 3L)
+     * Stream.rangeClosedBy(4L, 1L, -2L) // = Stream(4L, 2L)
+     * Stream.rangeClosedBy(4L, 1L, 2L)  // = Stream()
+     * </code>
+     * </pre>
      *
      * @param from        the first number
      * @param toInclusive the last number
@@ -600,9 +675,9 @@ public interface Stream<T> extends Seq<T> {
      * {@code from < toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
-    static Stream<Long> rangeClosedBy(long from, long toInclusive, int step) {
+    static Stream<Long> rangeClosedBy(long from, long toInclusive, long step) {
         if (step == 0) {
-            throw new IllegalArgumentException("Step should not be equal to zero");
+            throw new IllegalArgumentException("step is zero");
         }
         if (step > 0) {
             if (from > toInclusive) {
@@ -643,7 +718,7 @@ public interface Stream<T> extends Seq<T> {
     default Stream<Stream<T>> combinations(int k) {
         class Recursion {
             Stream<Stream<T>> combinations(Stream<T> elements, int k) {
-                return (k == 0) ? Stream.of(Stream.nil()) :
+                return (k == 0) ? Stream.of(Stream.empty()) :
                         elements.zipWithIndex().flatMap(t ->
                                 combinations(elements.drop(t._2 + 1), (k - 1))
                                         .map((Stream<T> c) -> c.prepend(t._1)));
@@ -926,7 +1001,7 @@ public interface Stream<T> extends Seq<T> {
 
     @Override
     default Stream<T> reverse() {
-        return isEmpty() ? this : foldLeft(Stream.nil(), Stream::prepend);
+        return isEmpty() ? this : foldLeft(Stream.empty(), Stream::prepend);
     }
 
     @Override
@@ -966,7 +1041,7 @@ public interface Stream<T> extends Seq<T> {
             return Nil.instance();
         } else {
             final Tuple2<Stream<T>, Stream<T>> split = splitAt(size);
-            return new Cons<>(() -> split._1, () -> split._2.isEmpty() ? nil() : drop(step).sliding(size, step));
+            return new Cons<>(() -> split._1, () -> split._2.isEmpty() ? empty() : drop(step).sliding(size, step));
         }
     }
 

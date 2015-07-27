@@ -98,7 +98,7 @@ public class TypeConsistencyTest {
                 .append(clazz.getSuperclass())
                 .filter(c -> c != null);
         if (superClasses.isEmpty()) {
-            return Stream.nil();
+            return Stream.empty();
         } else {
             final Stream<ComparableMethod> superMethods = getOverridableMethods(superClasses).filter(comparableMethod ->
                     // We're interested in methods that should be overridden with actual type as return type.

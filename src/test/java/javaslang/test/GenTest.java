@@ -9,8 +9,6 @@ import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
-import javaslang.control.Option;
-import javaslang.control.Some;
 import org.junit.Test;
 
 import java.util.Random;
@@ -164,7 +162,7 @@ public class GenTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowWhenCallingFrequencyOfIterableAndArgIsEmpty() {
-        Gen.frequency(List.nil());
+        Gen.frequency(List.empty());
     }
 
     @Test
@@ -202,7 +200,7 @@ public class GenTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowWhenCallingOneOfAndIterableIsEmpty() {
-        Gen.oneOf(List.nil());
+        Gen.oneOf(List.empty());
     }
 
     @Test

@@ -10,6 +10,7 @@ import javaslang.control.Option;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
@@ -63,8 +64,8 @@ public interface Stack<T> extends Seq<T> {
      * @param <T> Component type
      * @return The empty Stack.
      */
-    static <T> Stack<T> nil() {
-        return List.nil();
+    static <T> Stack<T> empty() {
+        return List.empty();
     }
 
     /**
@@ -103,15 +104,286 @@ public interface Stack<T> extends Seq<T> {
      * @return A stack containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
+    @SuppressWarnings("unchecked")
     static <T> Stack<T> ofAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof Stack) {
-            @SuppressWarnings("unchecked")
-            final Stack<T> stack = (Stack<T>) elements;
-            return stack;
+            return (Stack<T>) elements;
         } else {
             return List.ofAll(elements);
         }
+    }
+
+    /**
+     * Creates a Stack based on the elements of a boolean array.
+     *
+     * @param array a boolean array
+     * @return A new Stack of Boolean values
+     */
+    static Stack<Boolean> ofAll(boolean[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return List.ofAll(array);
+    }
+
+    /**
+     * Creates a Stack based on the elements of a byte array.
+     *
+     * @param array a byte array
+     * @return A new Stack of Byte values
+     */
+    static Stack<Byte> ofAll(byte[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return List.ofAll(array);
+    }
+
+    /**
+     * Creates a Stack based on the elements of a char array.
+     *
+     * @param array a char array
+     * @return A new Stack of Character values
+     */
+    static Stack<Character> ofAll(char[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return List.ofAll(array);
+    }
+
+    /**
+     * Creates a Stack based on the elements of a double array.
+     *
+     * @param array a double array
+     * @return A new Stack of Double values
+     */
+    static Stack<Double> ofAll(double[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return List.ofAll(array);
+    }
+
+    /**
+     * Creates a Stack based on the elements of a float array.
+     *
+     * @param array a float array
+     * @return A new Stack of Float values
+     */
+    static Stack<Float> ofAll(float[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return List.ofAll(array);
+    }
+
+    /**
+     * Creates a Stack based on the elements of an int array.
+     *
+     * @param array an int array
+     * @return A new Stack of Integer values
+     */
+    static Stack<Integer> ofAll(int[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return List.ofAll(array);
+    }
+
+    /**
+     * Creates a Stack based on the elements of a long array.
+     *
+     * @param array a long array
+     * @return A new Stack of Long values
+     */
+    static Stack<Long> ofAll(long[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return List.ofAll(array);
+    }
+
+    /**
+     * Creates a Stack based on the elements of a short array.
+     *
+     * @param array a short array
+     * @return A new Stack of Short values
+     */
+    static Stack<Short> ofAll(short[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return List.ofAll(array);
+    }
+
+    /**
+     * Creates a Stack of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Stack.range(0, 0)  // = Stack()
+     * Stack.range(2, 0)  // = Stack()
+     * Stack.range(-2, 2) // = Stack(-2, -1, 0, 1)
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @return a range of int values as specified or the empty range if {@code from >= toExclusive}
+     */
+    static Stack<Integer> range(int from, int toExclusive) {
+        return List.range(from, toExclusive);
+    }
+
+    /**
+     * Creates a Stack of int numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Stack.rangeBy(1, 3, 1)  // = Stack(1, 2)
+     * Stack.rangeBy(1, 4, 2)  // = Stack(1, 3)
+     * Stack.rangeBy(4, 1, -2) // = Stack(4, 2)
+     * Stack.rangeBy(4, 1, 2)  // = Stack()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @param step        the step
+     * @return a range of long values as specified or the empty range if<br>
+     * {@code from >= toInclusive} and {@code step > 0} or<br>
+     * {@code from <= toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    static Stack<Integer> rangeBy(int from, int toExclusive, int step) {
+        return List.rangeBy(from, toExclusive, step);
+    }
+
+    /**
+     * Creates a Stack of long numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Stack.range(0L, 0L)  // = Stack()
+     * Stack.range(2L, 0L)  // = Stack()
+     * Stack.range(-2L, 2L) // = Stack(-2L, -1L, 0L, 1L)
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @return a range of long values as specified or the empty range if {@code from >= toExclusive}
+     */
+    static Stack<Long> range(long from, long toExclusive) {
+        return List.range(from, toExclusive);
+    }
+
+    /**
+     * Creates a Stack of long numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Stack.rangeBy(1L, 3L, 1L)  // = Stack(1L, 2L)
+     * Stack.rangeBy(1L, 4L, 2L)  // = Stack(1L, 3L)
+     * Stack.rangeBy(4L, 1L, -2L) // = Stack(4L, 2L)
+     * Stack.rangeBy(4L, 1L, 2L)  // = Stack()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @param step        the step
+     * @return a range of long values as specified or the empty range if<br>
+     * {@code from >= toInclusive} and {@code step > 0} or<br>
+     * {@code from <= toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    static Stack<Long> rangeBy(long from, long toExclusive, long step) {
+        return List.rangeBy(from, toExclusive, step);
+    }
+
+    /**
+     * Creates a Stack of int numbers starting from {@code from}, extending to {@code toInclusive}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Stack.rangeClosed(0, 0)  // = Stack(0)
+     * Stack.rangeClosed(2, 0)  // = Stack()
+     * Stack.rangeClosed(-2, 2) // = Stack(-2, -1, 0, 1, 2)
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @return a range of int values as specified or the empty range if {@code from > toInclusive}
+     */
+    static Stack<Integer> rangeClosed(int from, int toInclusive) {
+        return List.rangeClosed(from, toInclusive);
+    }
+
+    /**
+     * Creates a Stack of int numbers starting from {@code from}, extending to {@code toInclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Stack.rangeClosedBy(1, 3, 1)  // = Stack(1, 2, 3)
+     * Stack.rangeClosedBy(1, 4, 2)  // = Stack(1, 3)
+     * Stack.rangeClosedBy(4, 1, -2) // = Stack(4, 2)
+     * Stack.rangeClosedBy(4, 1, 2)  // = Stack()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @param step        the step
+     * @return a range of int values as specified or the empty range if<br>
+     * {@code from > toInclusive} and {@code step > 0} or<br>
+     * {@code from < toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    static Stack<Integer> rangeClosedBy(int from, int toInclusive, int step) {
+        return List.rangeClosedBy(from, toInclusive, step);
+    }
+
+    /**
+     * Creates a Stack of long numbers starting from {@code from}, extending to {@code toInclusive}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Stack.rangeClosed(0L, 0L)  // = Stack(0L)
+     * Stack.rangeClosed(2L, 0L)  // = Stack()
+     * Stack.rangeClosed(-2L, 2L) // = Stack(-2L, -1L, 0L, 1L, 2L)
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @return a range of long values as specified or the empty range if {@code from > toInclusive}
+     */
+    static Stack<Long> rangeClosed(long from, long toInclusive) {
+        return List.rangeClosed(from, toInclusive);
+    }
+
+    /**
+     * Creates a Stack of long numbers starting from {@code from}, extending to {@code toInclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Stack.rangeClosedBy(1L, 3L, 1L)  // = Stack(1L, 2L, 3L)
+     * Stack.rangeClosedBy(1L, 4L, 2L)  // = Stack(1L, 3L)
+     * Stack.rangeClosedBy(4L, 1L, -2L) // = Stack(4L, 2L)
+     * Stack.rangeClosedBy(4L, 1L, 2L)  // = Stack()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @param step        the step
+     * @return a range of int values as specified or the empty range if<br>
+     * {@code from > toInclusive} and {@code step > 0} or<br>
+     * {@code from < toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    static Stack<Long> rangeClosedBy(long from, long toInclusive, long step) {
+        return List.rangeClosedBy(from, toInclusive, step);
     }
 
     /**

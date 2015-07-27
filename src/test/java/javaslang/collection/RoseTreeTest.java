@@ -17,8 +17,8 @@ public class RoseTreeTest extends AbstractTreeTest {
     final RoseTree<Integer> tree = RoseTree.branch(1, RoseTree.branch(2, RoseTree.branch(4, RoseTree.leaf(7)), RoseTree.leaf(5)), RoseTree.branch(3, RoseTree.branch(6, RoseTree.leaf(8), RoseTree.leaf(9))));
 
     @Override
-    protected RoseTree<Integer> nil() {
-        return RoseTree.nil();
+    protected RoseTree<Integer> empty() {
+        return RoseTree.empty();
     }
 
     @Override
@@ -53,7 +53,7 @@ public class RoseTreeTest extends AbstractTreeTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldNotCreateABranchWithoutChildren() {
-        new RoseTree.Branch<>(1, List.nil());
+        new RoseTree.Branch<>(1, List.empty());
     }
 
     @Test(expected = InvalidObjectException.class)
@@ -67,7 +67,7 @@ public class RoseTreeTest extends AbstractTreeTest {
 
     @Test
     public void shouldBeAwareThatTwoTreesOfSameInstanceAreEqual() {
-        assertThat(nil().equals(nil())).isTrue();
+        assertThat(empty().equals(empty())).isTrue();
     }
 
     @Test
@@ -84,7 +84,7 @@ public class RoseTreeTest extends AbstractTreeTest {
 
     @Test
     public void shouldBeAwareThatHashCodeOfNilIsOne() {
-        assertThat(nil().hashCode()).isEqualTo(1);
+        assertThat(empty().hashCode()).isEqualTo(1);
     }
 
     @Test
@@ -96,7 +96,7 @@ public class RoseTreeTest extends AbstractTreeTest {
 
     @Test
     public void shouldReturnStringRepresentationOfNil() {
-        assertThat(nil().toString()).isEqualTo("RoseTree()");
+        assertThat(empty().toString()).isEqualTo("RoseTree()");
     }
 
     @Test

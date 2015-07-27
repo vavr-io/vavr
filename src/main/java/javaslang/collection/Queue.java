@@ -46,7 +46,7 @@ public class Queue<T> implements Seq<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Queue<?> EMPTY = new Queue<>(List.nil(), List.nil());
+    private static final Queue<?> EMPTY = new Queue<>(List.empty(), List.empty());
 
     private final List<T> front;
     private final List<T> rear;
@@ -104,7 +104,7 @@ public class Queue<T> implements Seq<T>, Serializable {
      * @return A new Queue instance containing the given element
      */
     public static <T> Queue<T> of(T element) {
-        return new Queue<>(List.of(element), List.nil());
+        return Queue.ofAll(List.of(element));
     }
 
     /**
@@ -119,7 +119,7 @@ public class Queue<T> implements Seq<T>, Serializable {
     @SuppressWarnings({"unchecked", "varargs"})
     public static <T> Queue<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return new Queue<>(List.of(elements), List.nil());
+        return Queue.ofAll(List.of(elements));
     }
 
     /**
@@ -136,10 +136,290 @@ public class Queue<T> implements Seq<T>, Serializable {
         if (elements instanceof Queue) {
             return (Queue<T>) elements;
         } else if (elements instanceof List) {
-            return new Queue<>((List<T>) elements, List.nil());
+            return new Queue<>((List<T>) elements, List.empty());
         } else {
-            return new Queue<>(List.ofAll(elements), List.nil());
+            return new Queue<>(List.ofAll(elements), List.empty());
         }
+    }
+
+    /**
+     * Creates a Seq based on the elements of a boolean array.
+     *
+     * @param array a boolean array
+     * @return A new Seq of Boolean values
+     * @throws NullPointerException if array is null
+     */
+    public static Queue<Boolean> ofAll(boolean[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return Queue.ofAll(List.ofAll(array));
+    }
+
+    /**
+     * Creates a Queue based on the elements of a byte array.
+     *
+     * @param array a byte array
+     * @return A new Queue of Byte values
+     * @throws NullPointerException if array is null
+     */
+    public static Queue<Byte> ofAll(byte[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return Queue.ofAll(List.ofAll(array));
+    }
+
+    /**
+     * Creates a Queue based on the elements of a char array.
+     *
+     * @param array a char array
+     * @return A new Queue of Character values
+     * @throws NullPointerException if array is null
+     */
+    public static Queue<Character> ofAll(char[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return Queue.ofAll(List.ofAll(array));
+    }
+
+    /**
+     * Creates a Queue based on the elements of a double array.
+     *
+     * @param array a double array
+     * @return A new Queue of Double values
+     * @throws NullPointerException if array is null
+     */
+    public static Queue<Double> ofAll(double[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return Queue.ofAll(List.ofAll(array));
+    }
+
+    /**
+     * Creates a Queue based on the elements of a float array.
+     *
+     * @param array a float array
+     * @return A new Queue of Float values
+     * @throws NullPointerException if array is null
+     */
+    public static Queue<Float> ofAll(float[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return Queue.ofAll(List.ofAll(array));
+    }
+
+    /**
+     * Creates a Queue based on the elements of an int array.
+     *
+     * @param array an int array
+     * @return A new Queue of Integer values
+     * @throws NullPointerException if array is null
+     */
+    public static Queue<Integer> ofAll(int[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return Queue.ofAll(List.ofAll(array));
+    }
+
+    /**
+     * Creates a Queue based on the elements of a long array.
+     *
+     * @param array a long array
+     * @return A new Queue of Long values
+     * @throws NullPointerException if array is null
+     */
+    public static Queue<Long> ofAll(long[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return Queue.ofAll(List.ofAll(array));
+    }
+
+    /**
+     * Creates a Queue based on the elements of a short array.
+     *
+     * @param array a short array
+     * @return A new Queue of Short values
+     * @throws NullPointerException if array is null
+     */
+    public static Queue<Short> ofAll(short[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return Queue.ofAll(List.ofAll(array));
+    }
+
+    /**
+     * Creates a Queue of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Queue.range(0, 0)  // = Queue()
+     * Queue.range(2, 0)  // = Queue()
+     * Queue.range(-2, 2) // = Queue(-2, -1, 0, 1)
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @return a range of int values as specified or {@code Nil} if {@code from >= toExclusive}
+     */
+    public static Queue<Integer> range(int from, int toExclusive) {
+        return Queue.ofAll(List.range(from, toExclusive));
+    }
+
+    /**
+     * Creates a Queue of int numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Queue.rangeBy(1, 3, 1)  // = Queue(1, 2)
+     * Queue.rangeBy(1, 4, 2)  // = Queue(1, 3)
+     * Queue.rangeBy(4, 1, -2) // = Queue(4, 2)
+     * Queue.rangeBy(4, 1, 2)  // = Queue()
+     * </code>
+     * </pre>
+
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @param step        the step
+     * @return a range of long values as specified or {@code Nil} if<br>
+     * {@code from >= toInclusive} and {@code step > 0} or<br>
+     * {@code from <= toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    public static Queue<Integer> rangeBy(int from, int toExclusive, int step) {
+        return Queue.ofAll(List.rangeBy(from, toExclusive, step));
+    }
+
+    /**
+     * Creates a Queue of long numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Queue.range(0L, 0L)  // = Queue()
+     * Queue.range(2L, 0L)  // = Queue()
+     * Queue.range(-2L, 2L) // = Queue(-2L, -1L, 0L, 1L)
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @return a range of long values as specified or {@code Nil} if {@code from >= toExclusive}
+     */
+    public static Queue<Long> range(long from, long toExclusive) {
+        return Queue.ofAll(List.range(from, toExclusive));
+    }
+
+    /**
+     * Creates a Queue of long numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Queue.rangeBy(1L, 3L, 1L)  // = Queue(1L, 2L)
+     * Queue.rangeBy(1L, 4L, 2L)  // = Queue(1L, 3L)
+     * Queue.rangeBy(4L, 1L, -2L) // = Queue(4L, 2L)
+     * Queue.rangeBy(4L, 1L, 2L)  // = Queue()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @param step        the step
+     * @return a range of long values as specified or {@code Nil} if<br>
+     * {@code from >= toInclusive} and {@code step > 0} or<br>
+     * {@code from <= toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    public static Queue<Long> rangeBy(long from, long toExclusive, long step) {
+        return Queue.ofAll(List.rangeBy(from, toExclusive, step));
+    }
+
+    /**
+     * Creates a Queue of int numbers starting from {@code from}, extending to {@code toInclusive}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Queue.rangeClosed(0, 0)  // = Queue(0)
+     * Queue.rangeClosed(2, 0)  // = Queue()
+     * Queue.rangeClosed(-2, 2) // = Queue(-2, -1, 0, 1, 2)
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @return a range of int values as specified or {@code Nil} if {@code from > toInclusive}
+     */
+    public static Queue<Integer> rangeClosed(int from, int toInclusive) {
+        return Queue.ofAll(List.rangeClosed(from, toInclusive));
+    }
+
+    /**
+     * Creates a Queue of int numbers starting from {@code from}, extending to {@code toInclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Queue.rangeClosedBy(1, 3, 1)  // = Queue(1, 2, 3)
+     * Queue.rangeClosedBy(1, 4, 2)  // = Queue(1, 3)
+     * Queue.rangeClosedBy(4, 1, -2) // = Queue(4, 2)
+     * Queue.rangeClosedBy(4, 1, 2)  // = Queue()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @param step        the step
+     * @return a range of int values as specified or {@code Nil} if<br>
+     * {@code from > toInclusive} and {@code step > 0} or<br>
+     * {@code from < toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    public static Queue<Integer> rangeClosedBy(int from, int toInclusive, int step) {
+        return Queue.ofAll(List.rangeClosedBy(from, toInclusive, step));
+    }
+
+    /**
+     * Creates a Queue of long numbers starting from {@code from}, extending to {@code toInclusive}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Queue.rangeClosed(0L, 0L)  // = Queue(0L)
+     * Queue.rangeClosed(2L, 0L)  // = Queue()
+     * Queue.rangeClosed(-2L, 2L) // = Queue(-2L, -1L, 0L, 1L, 2L)
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @return a range of long values as specified or {@code Nil} if {@code from > toInclusive}
+     */
+    public static Queue<Long> rangeClosed(long from, long toInclusive) {
+        return Queue.ofAll(List.rangeClosed(from, toInclusive));
+    }
+
+    /**
+     * Creates a Queue of long numbers starting from {@code from}, extending to {@code toInclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Queue.rangeClosedBy(1L, 3L, 1L)  // = Queue(1L, 2L, 3L)
+     * Queue.rangeClosedBy(1L, 4L, 2L)  // = Queue(1L, 3L)
+     * Queue.rangeClosedBy(4L, 1L, -2L) // = Queue(4L, 2L)
+     * Queue.rangeClosedBy(4L, 1L, 2L)  // = Queue()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @param step        the step
+     * @return a range of int values as specified or {@code Nil} if<br>
+     * {@code from > toInclusive} and {@code step > 0} or<br>
+     * {@code from < toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    public static Queue<Long> rangeClosedBy(long from, long toInclusive, long step) {
+        return Queue.ofAll(List.rangeClosedBy(from, toInclusive, step));
     }
 
     /**
@@ -563,7 +843,6 @@ public class Queue<T> implements Seq<T>, Serializable {
 
     @Override
     public Spliterator<T> spliterator() {
-        // the focus of the Stream API is on random-access collections of *known size*
         return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
     }
 
@@ -595,9 +874,9 @@ public class Queue<T> implements Seq<T>, Serializable {
     public Queue<T> take(int n) {
         final int frontLength = front.length();
         if (n < frontLength) {
-            return new Queue<>(front.take(n), List.nil());
+            return new Queue<>(front.take(n), List.empty());
         } else if (n == frontLength) {
-            return new Queue<>(front, List.nil());
+            return new Queue<>(front, List.empty());
         } else {
             return new Queue<>(front, rear.takeRight(n - frontLength));
         }
@@ -607,9 +886,9 @@ public class Queue<T> implements Seq<T>, Serializable {
     public Queue<T> takeRight(int n) {
         final int rearLength = rear.length();
         if (n < rearLength) {
-            return new Queue<>(rear.take(n).reverse(), List.nil());
+            return new Queue<>(rear.take(n).reverse(), List.empty());
         } else if (n == rearLength) {
-            return new Queue<>(rear.reverse(), List.nil());
+            return new Queue<>(rear.reverse(), List.empty());
         } else {
             return new Queue<>(front.takeRight(n - rearLength), rear);
         }
