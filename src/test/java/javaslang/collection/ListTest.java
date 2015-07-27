@@ -77,12 +77,70 @@ public class ListTest extends AbstractSeqTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    // -- static of(Iterable)
+    // -- static ofAll(Iterable)
 
     @Test
     public void shouldCreateListOfIterable() {
         final java.util.List<Integer> arrayList = Arrays.asList(1, 2, 3);
         assertThat(List.ofAll(arrayList)).isEqualTo(List.of(1, 2, 3));
+    }
+
+    // -- static ofAll(<primitive array>)
+
+    @Test
+    public void shouldCreateListOfPrimitiveBooleanArray() {
+        final List<Boolean> actual = List.ofAll(new boolean[] {true, false});
+        final List<Boolean> expected = List.of(true, false);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldCreateListOfPrimitiveByteArray() {
+        final List<Byte> actual = List.ofAll(new byte[] {1, 2, 3});
+        final List<Byte> expected = List.of((byte) 1, (byte) 2, (byte) 3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldCreateListOfPrimitiveCharArray() {
+        final List<Character> actual = List.ofAll(new char[] {'a', 'b', 'c'});
+        final List<Character> expected = List.of('a', 'b', 'c');
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldCreateListOfPrimitiveDoubleArray() {
+        final List<Double> actual = List.ofAll(new double[] {1d, 2d, 3d});
+        final List<Double> expected = List.of(1d, 2d, 3d);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldCreateListOfPrimitiveFloatArray() {
+        final List<Float> actual = List.ofAll(new float[] {1f, 2f, 3f});
+        final List<Float> expected = List.of(1f, 2f, 3f);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldCreateListOfPrimitiveIntArray() {
+        final List<Integer> actual = List.ofAll(new int[] {1, 2, 3});
+        final List<Integer> expected = List.of(1, 2, 3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldCreateListOfPrimitiveLongArray() {
+        final List<Long> actual = List.ofAll(new long[]{1L, 2L, 3L});
+        final List<Long> expected = List.of(1L, 2L, 3L);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldCreateListOfPrimitiveShortArray() {
+        final List<Short> actual = List.ofAll(new short[] {(short) 1, (short) 2, (short) 3});
+        final List<Short> expected = List.of((short) 1, (short) 2, (short) 3);
+        assertThat(actual).isEqualTo(expected);
     }
 
     // -- static rangeClosed(int, int)

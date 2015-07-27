@@ -5,12 +5,9 @@
  */
 package javaslang.collection.euler;
 
-import javaslang.Tuple2;
-import javaslang.collection.Stream;
-import javaslang.control.Match;
 import org.junit.Test;
 
-import static org.assertj.core.api.StrictAssertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class Euler03 {
 

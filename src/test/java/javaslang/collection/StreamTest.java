@@ -12,7 +12,6 @@ import org.junit.Test;
 
 import java.io.InvalidObjectException;
 import java.util.Arrays;
-import java.util.Iterator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -82,7 +81,8 @@ public class StreamTest extends AbstractSeqTest {
         assertThat(Stream.gen(2, (i) -> i + 2).take(3).reduce((i, j) -> i + j)).isEqualTo(12);
     }
 
-    // -- static gen(T, Supplier)
+    // -- static cons(T, Supplier)
+
     @Test
     public void shouldBuildStreamBasedOnHeadAndTailSupplierWithAccessToHead() {
         assertThat(Stream.cons(1, () -> Stream.cons(2, Stream::nil))).isEqualTo(Stream.of(1, 2));
@@ -111,7 +111,7 @@ public class StreamTest extends AbstractSeqTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    // -- static of(Iterable)
+    // -- static ofAll(Iterable)
 
     @Test
     public void shouldCreateStreamOfIterable() {
@@ -119,12 +119,62 @@ public class StreamTest extends AbstractSeqTest {
         assertThat(Stream.ofAll(arrayList)).isEqualTo(Stream.of(1, 2, 3));
     }
 
-    // -- static of(Iterator)
+    // -- static ofAll(<primitive array>)
 
     @Test
-    public void shouldCreateStreamOfIterator() {
-        final Iterator<Integer> iterator = Arrays.asList(1, 2, 3).iterator();
-        assertThat(Stream.ofAll(iterator)).isEqualTo(Stream.of(1, 2, 3));
+    public void shouldCreateStreamOfPrimitiveBooleanArray() {
+        final Stream<Boolean> actual = Stream.ofAll(new boolean[] {true, false});
+        final Stream<Boolean> expected = Stream.of(true, false);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldCreateStreamOfPrimitiveByteArray() {
+        final Stream<Byte> actual = Stream.ofAll(new byte[] {1, 2, 3});
+        final Stream<Byte> expected = Stream.of((byte) 1, (byte) 2, (byte) 3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldCreateStreamOfPrimitiveCharArray() {
+        final Stream<Character> actual = Stream.ofAll(new char[] {'a', 'b', 'c'});
+        final Stream<Character> expected = Stream.of('a', 'b', 'c');
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldCreateStreamOfPrimitiveDoubleArray() {
+        final Stream<Double> actual = Stream.ofAll(new double[] {1d, 2d, 3d});
+        final Stream<Double> expected = Stream.of(1d, 2d, 3d);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldCreateStreamOfPrimitiveFloatArray() {
+        final Stream<Float> actual = Stream.ofAll(new float[] {1f, 2f, 3f});
+        final Stream<Float> expected = Stream.of(1f, 2f, 3f);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldCreateStreamOfPrimitiveIntArray() {
+        final Stream<Integer> actual = Stream.ofAll(new int[] {1, 2, 3});
+        final Stream<Integer> expected = Stream.of(1, 2, 3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldCreateStreamOfPrimitiveLongArray() {
+        final Stream<Long> actual = Stream.ofAll(new long[] {1L, 2L, 3L});
+        final Stream<Long> expected = Stream.of(1L, 2L, 3L);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldCreateStreamOfPrimitiveShortArray() {
+        final Stream<Short> actual = Stream.ofAll(new short[] {(short) 1, (short) 2, (short) 3});
+        final Stream<Short> expected = Stream.of((short) 1, (short) 2, (short) 3);
+        assertThat(actual).isEqualTo(expected);
     }
 
     // -- static rangeClosed(int, int)

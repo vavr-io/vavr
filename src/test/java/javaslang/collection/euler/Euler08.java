@@ -8,7 +8,7 @@ package javaslang.collection.euler;
 import javaslang.collection.List;
 import org.junit.Test;
 
-import static org.assertj.core.api.StrictAssertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class Euler08 {
 
