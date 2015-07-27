@@ -380,9 +380,9 @@ public interface List<T> extends Seq<T>, Stack<T> {
      * Examples:
      * <pre>
      * <code>
-     * range(0, 0)  // = ()
-     * range(2, 0)  // = ()
-     * range(-2, 2) // = (-2, -1, 0, 1)
+     * List.range(0, 0)  // = List()
+     * List.range(2, 0)  // = List()
+     * List.range(-2, 2) // = List(-2, -1, 0, 1)
      * </code>
      * </pre>
      *
@@ -401,10 +401,10 @@ public interface List<T> extends Seq<T>, Stack<T> {
      * Examples:
      * <pre>
      * <code>
-     * rangeBy(1, 3, 1)  // = (1, 2)
-     * rangeBy(1, 4, 2)  // = (1, 3)
-     * rangeBy(4, 1, -2) // = (4, 2)
-     * rangeBy(4, 1, 2)  // = ()
+     * List.rangeBy(1, 3, 1)  // = List(1, 2)
+     * List.rangeBy(1, 4, 2)  // = List(1, 3)
+     * List.rangeBy(4, 1, -2) // = List(4, 2)
+     * List.rangeBy(4, 1, 2)  // = List()
      * </code>
      * </pre>
      *
@@ -418,9 +418,13 @@ public interface List<T> extends Seq<T>, Stack<T> {
      */
     static List<Integer> rangeBy(int from, int toExclusive, int step) {
         if (step == 0) {
-            throw new IllegalArgumentException("step is zero");
+            throw new IllegalArgumentException("step cannot be 0.");
+        } else if (from == toExclusive || step * (from - toExclusive) > 0) {
+            return List.empty();
+        } else {
+            final int one = (from < toExclusive) ? 1 : -1;
+            return List.rangeClosedBy(from, toExclusive - one, step);
         }
-        return null; // TODO
     }
 
     /**
@@ -429,9 +433,9 @@ public interface List<T> extends Seq<T>, Stack<T> {
      * Examples:
      * <pre>
      * <code>
-     * range(0L, 0L)  // = ()
-     * range(2L, 0L)  // = ()
-     * range(-2L, 2L) // = (-2L, -1L, 0L, 1L)
+     * List.range(0L, 0L)  // = List()
+     * List.range(2L, 0L)  // = List()
+     * List.range(-2L, 2L) // = List(-2L, -1L, 0L, 1L)
      * </code>
      * </pre>
      *
@@ -450,10 +454,10 @@ public interface List<T> extends Seq<T>, Stack<T> {
      * Examples:
      * <pre>
      * <code>
-     * rangeBy(1L, 3L, 1L)  // = (1L, 2L)
-     * rangeBy(1L, 4L, 2L)  // = (1L, 3L)
-     * rangeBy(4L, 1L, -2L) // = (4L, 2L)
-     * rangeBy(4L, 1L, 2L)  // = ()
+     * List.rangeBy(1L, 3L, 1L)  // = List(1L, 2L)
+     * List.rangeBy(1L, 4L, 2L)  // = List(1L, 3L)
+     * List.rangeBy(4L, 1L, -2L) // = List(4L, 2L)
+     * List.rangeBy(4L, 1L, 2L)  // = List()
      * </code>
      * </pre>
      *
@@ -467,10 +471,13 @@ public interface List<T> extends Seq<T>, Stack<T> {
      */
     static List<Long> rangeBy(long from, long toExclusive, long step) {
         if (step == 0) {
-            throw new IllegalArgumentException("step is zero");
+            throw new IllegalArgumentException("step cannot be 0.");
+        } else if (from == toExclusive || step * (from - toExclusive) > 0) {
+            return List.empty();
+        } else {
+            final int one = (from < toExclusive) ? 1 : -1;
+            return List.rangeClosedBy(from, toExclusive - one, step);
         }
-        return null; // TODO
-
     }
 
     /**
@@ -479,9 +486,9 @@ public interface List<T> extends Seq<T>, Stack<T> {
      * Examples:
      * <pre>
      * <code>
-     * rangeClosed(0, 0)  // = (0)
-     * rangeClosed(2, 0)  // = ()
-     * rangeClosed(-2, 2) // = (-2, -1, 0, 1, 2)
+     * List.rangeClosed(0, 0)  // = List(0)
+     * List.rangeClosed(2, 0)  // = List()
+     * List.rangeClosed(-2, 2) // = List(-2, -1, 0, 1, 2)
      * </code>
      * </pre>
      *
@@ -500,10 +507,10 @@ public interface List<T> extends Seq<T>, Stack<T> {
      * Examples:
      * <pre>
      * <code>
-     * rangeClosedBy(1, 3, 1)  // = (1, 2, 3)
-     * rangeClosedBy(1, 4, 2)  // = (1, 3)
-     * rangeClosedBy(4, 1, -2) // = (4, 2)
-     * rangeClosedBy(4, 1, 2)  // = ()
+     * List.rangeClosedBy(1, 3, 1)  // = List(1, 2, 3)
+     * List.rangeClosedBy(1, 4, 2)  // = List(1, 3)
+     * List.rangeClosedBy(4, 1, -2) // = List(4, 2)
+     * List.rangeClosedBy(4, 1, 2)  // = List()
      * </code>
      * </pre>
      *
@@ -517,9 +524,21 @@ public interface List<T> extends Seq<T>, Stack<T> {
      */
     static List<Integer> rangeClosedBy(int from, int toInclusive, int step) {
         if (step == 0) {
-            throw new IllegalArgumentException("step is zero");
+            throw new IllegalArgumentException("step cannot be 0.");
+        } else if (from == toInclusive) {
+            return List.of(from);
+        } else if (step * (from - toInclusive) > 0) {
+            return List.empty();
+        } else {
+            final int gap = (from - toInclusive) % step;
+            final int signum = (from < toInclusive) ? -1 : 1;
+            final int bound = from * signum;
+            List<Integer> result = List.empty();
+            for (int i = toInclusive + gap; i * signum <= bound; i -= step) {
+                result = result.prepend(i);
+            }
+            return result;
         }
-        return null; // TODO
     }
 
     /**
@@ -528,9 +547,9 @@ public interface List<T> extends Seq<T>, Stack<T> {
      * Examples:
      * <pre>
      * <code>
-     * rangeClosed(0L, 0L)  // = (0L)
-     * rangeClosed(2L, 0L)  // = ()
-     * rangeClosed(-2L, 2L) // = (-2L, -1L, 0L, 1L, 2L)
+     * List.rangeClosed(0L, 0L)  // = List(0L)
+     * List.rangeClosed(2L, 0L)  // = List()
+     * List.rangeClosed(-2L, 2L) // = List(-2L, -1L, 0L, 1L, 2L)
      * </code>
      * </pre>
      *
@@ -549,10 +568,10 @@ public interface List<T> extends Seq<T>, Stack<T> {
      * Examples:
      * <pre>
      * <code>
-     * rangeClosedBy(1L, 3L, 1L)  // = (1L, 2L, 3L)
-     * rangeClosedBy(1L, 4L, 2L)  // = (1L, 3L)
-     * rangeClosedBy(4L, 1L, -2L) // = (4L, 2L)
-     * rangeClosedBy(4L, 1L, 2L)  // = ()
+     * List.rangeClosedBy(1L, 3L, 1L)  // = List(1L, 2L, 3L)
+     * List.rangeClosedBy(1L, 4L, 2L)  // = List(1L, 3L)
+     * List.rangeClosedBy(4L, 1L, -2L) // = List(4L, 2L)
+     * List.rangeClosedBy(4L, 1L, 2L)  // = List()
      * </code>
      * </pre>
      *
@@ -566,9 +585,21 @@ public interface List<T> extends Seq<T>, Stack<T> {
      */
     static List<Long> rangeClosedBy(long from, long toInclusive, long step) {
         if (step == 0) {
-            throw new IllegalArgumentException("step is zero");
+            throw new IllegalArgumentException("step cannot be 0.");
+        } else if (from == toInclusive) {
+            return List.of(from);
+        } else if (step * (from - toInclusive) > 0) {
+            return List.empty();
+        } else {
+            final long gap = (from - toInclusive) % step;
+            final int signum = (from < toInclusive) ? -1 : 1;
+            final long bound = from * signum;
+            List<Long> result = List.empty();
+            for (long i = toInclusive + gap; i * signum <= bound; i -= step) {
+                result = result.prepend(i);
+            }
+            return result;
         }
-        return null; // TODO
     }
 
     @Override

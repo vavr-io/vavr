@@ -490,7 +490,7 @@ public interface Stream<T> extends Seq<T> {
      */
     static Stream<Integer> rangeBy(int from, int toExclusive, int step) {
         if (step == 0) {
-            throw new IllegalArgumentException("step is zero");
+            throw new IllegalArgumentException("step cannot be 0.");
         }
         if (step > 0) {
             if (from >= toExclusive) {
@@ -551,7 +551,7 @@ public interface Stream<T> extends Seq<T> {
      */
     static Stream<Long> rangeBy(long from, long toExclusive, long step) {
         if (step == 0) {
-            throw new IllegalArgumentException("step is zero");
+            throw new IllegalArgumentException("step cannot be 0.");
         }
         if (step > 0) {
             if (from >= toExclusive) {
@@ -612,7 +612,7 @@ public interface Stream<T> extends Seq<T> {
      */
     static Stream<Integer> rangeClosedBy(int from, int toInclusive, int step) {
         if (step == 0) {
-            throw new IllegalArgumentException("step is zero");
+            throw new IllegalArgumentException("step cannot be 0.");
         }
         if (step > 0) {
             if (from > toInclusive) {
@@ -677,7 +677,7 @@ public interface Stream<T> extends Seq<T> {
      */
     static Stream<Long> rangeClosedBy(long from, long toInclusive, long step) {
         if (step == 0) {
-            throw new IllegalArgumentException("step is zero");
+            throw new IllegalArgumentException("step cannot be 0.");
         }
         if (step > 0) {
             if (from > toInclusive) {
