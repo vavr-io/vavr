@@ -132,26 +132,97 @@ public class StreamTest extends AbstractSeqTest {
     @Test
     public void shouldCreateStreamOfRangeWhereFromIsGreaterThanTo() {
         assertThat(Stream.rangeClosed(1, 0)).isEqualTo(Stream.nil());
+        assertThat(Stream.rangeClosed(1L, 0L)).isEqualTo(Stream.nil());
     }
 
     @Test
     public void shouldCreateStreamOfRangeWhereFromEqualsTo() {
         assertThat(Stream.rangeClosed(0, 0)).isEqualTo(Stream.of(0));
+        assertThat(Stream.rangeClosed(0L, 0L)).isEqualTo(Stream.of(0L));
     }
 
     @Test
     public void shouldCreateStreamOfRangeWhereFromIsLessThanTo() {
         assertThat(Stream.rangeClosed(1, 3)).isEqualTo(Stream.of(1, 2, 3));
+        assertThat(Stream.rangeClosed(1L, 3L)).isEqualTo(Stream.of(1L, 2L, 3L));
     }
 
     @Test
     public void shouldCreateStreamOfRangeWhereFromEqualsToEqualsInteger_MIN_VALUE() {
         assertThat(Stream.rangeClosed(Integer.MIN_VALUE, Integer.MIN_VALUE)).isEqualTo(Stream.of(Integer.MIN_VALUE));
+        assertThat(Stream.rangeClosed(Long.MIN_VALUE, Long.MIN_VALUE)).isEqualTo(Stream.of(Long.MIN_VALUE));
     }
 
     @Test
     public void shouldCreateStreamOfRangeWhereFromEqualsToEqualsInteger_MAX_VALUE() {
         assertThat(Stream.rangeClosed(Integer.MAX_VALUE, Integer.MAX_VALUE)).isEqualTo(Stream.of(Integer.MAX_VALUE));
+        assertThat(Stream.rangeClosed(Long.MAX_VALUE, Long.MAX_VALUE)).isEqualTo(Stream.of(Long.MAX_VALUE));
+    }
+
+    // -- static rangeClosedBy(int, int)
+
+    @Test
+    public void shouldCreateStreamOfRangeByWhereFromIsGreaterThanTo() {
+        assertThat(Stream.rangeClosedBy(1, 0, 1)).isEqualTo(Stream.nil());
+        assertThat(Stream.rangeClosedBy(1, 0, 3)).isEqualTo(Stream.nil());
+        assertThat(Stream.rangeClosedBy(0, 1, -1)).isEqualTo(Stream.nil());
+        assertThat(Stream.rangeClosedBy(0, 1, -3)).isEqualTo(Stream.nil());
+        assertThat(Stream.rangeClosedBy(1L, 0L, 1)).isEqualTo(Stream.nil());
+        assertThat(Stream.rangeClosedBy(1L, 0L, 3)).isEqualTo(Stream.nil());
+        assertThat(Stream.rangeClosedBy(0L, 1L, -1)).isEqualTo(Stream.nil());
+        assertThat(Stream.rangeClosedBy(0L, 1L, -3)).isEqualTo(Stream.nil());
+    }
+
+    @Test
+    public void shouldCreateStreamOfRangeByWhereFromEqualsTo() {
+        assertThat(Stream.rangeClosedBy(0, 0, 1)).isEqualTo(Stream.of(0));
+        assertThat(Stream.rangeClosedBy(0, 0, 3)).isEqualTo(Stream.of(0));
+        assertThat(Stream.rangeClosedBy(0, 0, -1)).isEqualTo(Stream.of(0));
+        assertThat(Stream.rangeClosedBy(0, 0, -3)).isEqualTo(Stream.of(0));
+        assertThat(Stream.rangeClosedBy(0L, 0L, 1)).isEqualTo(Stream.of(0L));
+        assertThat(Stream.rangeClosedBy(0L, 0L, 3)).isEqualTo(Stream.of(0L));
+        assertThat(Stream.rangeClosedBy(0L, 0L, -1)).isEqualTo(Stream.of(0L));
+        assertThat(Stream.rangeClosedBy(0L, 0L, -3)).isEqualTo(Stream.of(0L));
+    }
+
+    @Test
+    public void shouldCreateStreamOfRangeByWhereFromIsLessThanTo() {
+        assertThat(Stream.rangeClosedBy(1, 3, 1)).isEqualTo(Stream.of(1, 2, 3));
+        assertThat(Stream.rangeClosedBy(1, 5, 2)).isEqualTo(Stream.of(1, 3, 5));
+        assertThat(Stream.rangeClosedBy(1, 6, 2)).isEqualTo(Stream.of(1, 3, 5));
+        assertThat(Stream.rangeClosedBy(3, 1, -1)).isEqualTo(Stream.of(3, 2, 1));
+        assertThat(Stream.rangeClosedBy(5, 1, -2)).isEqualTo(Stream.of(5, 3, 1));
+        assertThat(Stream.rangeClosedBy(5, 0, -2)).isEqualTo(Stream.of(5, 3, 1));
+        assertThat(Stream.rangeClosedBy(1L, 3L, 1)).isEqualTo(Stream.of(1L, 2L, 3L));
+        assertThat(Stream.rangeClosedBy(1L, 5L, 2)).isEqualTo(Stream.of(1L, 3L, 5L));
+        assertThat(Stream.rangeClosedBy(1L, 6L, 2)).isEqualTo(Stream.of(1L, 3L, 5L));
+        assertThat(Stream.rangeClosedBy(3L, 1L, -1)).isEqualTo(Stream.of(3L, 2L, 1L));
+        assertThat(Stream.rangeClosedBy(5L, 1L, -2)).isEqualTo(Stream.of(5L, 3L, 1L));
+        assertThat(Stream.rangeClosedBy(5L, 0L, -2)).isEqualTo(Stream.of(5L, 3L, 1L));
+    }
+
+    @Test
+    public void shouldCreateStreamOfRangeByWhereFromEqualsToEqualsInteger_MIN_VALUE() {
+        assertThat(Stream.rangeClosedBy(Integer.MIN_VALUE, Integer.MIN_VALUE, 1)).isEqualTo(Stream.of(Integer.MIN_VALUE));
+        assertThat(Stream.rangeClosedBy(Integer.MIN_VALUE, Integer.MIN_VALUE, 3)).isEqualTo(Stream.of(Integer.MIN_VALUE));
+        assertThat(Stream.rangeClosedBy(Integer.MIN_VALUE, Integer.MIN_VALUE, -1)).isEqualTo(Stream.of(Integer.MIN_VALUE));
+        assertThat(Stream.rangeClosedBy(Integer.MIN_VALUE, Integer.MIN_VALUE, -3)).isEqualTo(Stream.of(Integer.MIN_VALUE));
+        assertThat(Stream.rangeClosedBy(Long.MIN_VALUE, Long.MIN_VALUE, 1)).isEqualTo(Stream.of(Long.MIN_VALUE));
+        assertThat(Stream.rangeClosedBy(Long.MIN_VALUE, Long.MIN_VALUE, 3)).isEqualTo(Stream.of(Long.MIN_VALUE));
+        assertThat(Stream.rangeClosedBy(Long.MIN_VALUE, Long.MIN_VALUE, -1)).isEqualTo(Stream.of(Long.MIN_VALUE));
+        assertThat(Stream.rangeClosedBy(Long.MIN_VALUE, Long.MIN_VALUE, -3)).isEqualTo(Stream.of(Long.MIN_VALUE));
+    }
+
+    @Test
+    public void shouldCreateStreamOfRangeByWhereFromEqualsToEqualsInteger_MAX_VALUE() {
+        assertThat(Stream.rangeClosedBy(Integer.MAX_VALUE, Integer.MAX_VALUE, 1)).isEqualTo(Stream.of(Integer.MAX_VALUE));
+        assertThat(Stream.rangeClosedBy(Integer.MAX_VALUE, Integer.MAX_VALUE, 3)).isEqualTo(Stream.of(Integer.MAX_VALUE));
+        assertThat(Stream.rangeClosedBy(Integer.MAX_VALUE, Integer.MAX_VALUE, -1)).isEqualTo(Stream.of(Integer.MAX_VALUE));
+        assertThat(Stream.rangeClosedBy(Integer.MAX_VALUE, Integer.MAX_VALUE, -3)).isEqualTo(Stream.of(Integer.MAX_VALUE));
+        assertThat(Stream.rangeClosedBy(Long.MAX_VALUE, Long.MAX_VALUE, 1)).isEqualTo(Stream.of(Long.MAX_VALUE));
+        assertThat(Stream.rangeClosedBy(Long.MAX_VALUE, Long.MAX_VALUE, 3)).isEqualTo(Stream.of(Long.MAX_VALUE));
+        assertThat(Stream.rangeClosedBy(Long.MAX_VALUE, Long.MAX_VALUE, -1)).isEqualTo(Stream.of(Long.MAX_VALUE));
+        assertThat(Stream.rangeClosedBy(Long.MAX_VALUE, Long.MAX_VALUE, -3)).isEqualTo(Stream.of(Long.MAX_VALUE));
     }
 
     // -- static range(int, int)
@@ -179,6 +250,48 @@ public class StreamTest extends AbstractSeqTest {
     @Test
     public void shouldCreateStreamOfUntilWhereFromEqualsToEqualsInteger_MAX_VALUE() {
         assertThat(Stream.range(Integer.MAX_VALUE, Integer.MAX_VALUE)).isEqualTo(Stream.nil());
+    }
+
+    // -- static rangeBy(int, int)
+
+    @Test
+    public void shouldCreateStreamOfUntilByWhereFromIsGreaterThanTo() {
+        assertThat(Stream.rangeBy(1, 0, 1)).isEqualTo(Stream.nil());
+        assertThat(Stream.rangeBy(1, 0, 3)).isEqualTo(Stream.nil());
+        assertThat(Stream.rangeBy(0, 1, -1)).isEqualTo(Stream.nil());
+        assertThat(Stream.rangeBy(0, 1, -3)).isEqualTo(Stream.nil());
+    }
+
+    @Test
+    public void shouldCreateStreamOfUntilByWhereFromEqualsTo() {
+        assertThat(Stream.rangeBy(0, 0, 1)).isEqualTo(Stream.nil());
+        assertThat(Stream.rangeBy(0, 0, 3)).isEqualTo(Stream.nil());
+        assertThat(Stream.rangeBy(0, 0, -1)).isEqualTo(Stream.nil());
+        assertThat(Stream.rangeBy(0, 0, -3)).isEqualTo(Stream.nil());
+    }
+
+    @Test
+    public void shouldCreateStreamOfUntilByWhereFromIsLessThanTo() {
+        assertThat(Stream.rangeBy(1, 3, 1)).isEqualTo(Stream.of(1, 2));
+        assertThat(Stream.rangeBy(1, 4, 2)).isEqualTo(Stream.of(1, 3));
+        assertThat(Stream.rangeBy(3, 1, -1)).isEqualTo(Stream.of(3, 2));
+        assertThat(Stream.rangeBy(4, 1, -2)).isEqualTo(Stream.of(4, 2));
+    }
+
+    @Test
+    public void shouldCreateStreamOfUntilByWhereFromEqualsToEqualsInteger_MIN_VALUE() {
+        assertThat(Stream.rangeBy(Integer.MIN_VALUE, Integer.MIN_VALUE, 1)).isEqualTo(Stream.nil());
+        assertThat(Stream.rangeBy(Integer.MIN_VALUE, Integer.MIN_VALUE, 3)).isEqualTo(Stream.nil());
+        assertThat(Stream.rangeBy(Integer.MIN_VALUE, Integer.MIN_VALUE, -1)).isEqualTo(Stream.nil());
+        assertThat(Stream.rangeBy(Integer.MIN_VALUE, Integer.MIN_VALUE, -3)).isEqualTo(Stream.nil());
+    }
+
+    @Test
+    public void shouldCreateStreamOfUntilByWhereFromEqualsToEqualsInteger_MAX_VALUE() {
+        assertThat(Stream.rangeBy(Integer.MAX_VALUE, Integer.MAX_VALUE, 1)).isEqualTo(Stream.nil());
+        assertThat(Stream.rangeBy(Integer.MAX_VALUE, Integer.MAX_VALUE, 3)).isEqualTo(Stream.nil());
+        assertThat(Stream.rangeBy(Integer.MAX_VALUE, Integer.MAX_VALUE, -1)).isEqualTo(Stream.nil());
+        assertThat(Stream.rangeBy(Integer.MAX_VALUE, Integer.MAX_VALUE, -3)).isEqualTo(Stream.nil());
     }
 
     // -- combinations
