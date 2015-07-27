@@ -31,8 +31,7 @@ public class Euler02Test {
     }
 
     private static long sumOfEvenFibonacciValuesNotExceeding(final int max) {
-        return Stream.from(2)
-                .map(FibonacciNumbers::fibonacci)
+        return Utils.fibonacci()
                 .takeWhile(f -> f <= max)
                 .filter(f -> f % 2 == 0)
                 .sum().longValue();

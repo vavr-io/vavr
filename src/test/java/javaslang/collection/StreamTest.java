@@ -469,6 +469,33 @@ public class StreamTest extends AbstractSeqTest {
         assertThat(Stream.of(1, 2, 3).permutations()).isEqualTo(Stream.ofAll(Stream.of(Stream.of(1, 2, 3), Stream.of(1, 3, 2), Stream.of(2, 1, 3), Stream.of(2, 3, 1), Stream.of(3, 1, 2), Stream.of(3, 2, 1))));
     }
 
+    // -- addSelf
+
+    @Test
+    public void shouldRecurrentlyCalculateFibonacci() {
+        assertThat(Stream.of(1, 1).appendSelf(self -> self.zip(self.tail()).map(t -> t._1 + t._2)).take(10)).isEqualTo(Stream.of(1, 1, 2, 3, 5, 8, 13, 21, 34, 55));
+    }
+
+    @Test
+    public void shouldDoNothingOnNil() {
+        assertThat(Stream.empty().appendSelf(self -> self)).isEqualTo(Stream.empty());
+    }
+
+    @Test
+    public void shouldRecurrentlyCalculateArithmeticProgression() {
+        assertThat(Stream.of(1).appendSelf(self -> self.map(t -> t + 1)).take(4)).isEqualTo(Stream.of(1, 2, 3, 4));
+    }
+
+    @Test
+    public void shouldRecurrentlyCalculateGeometricProgression() {
+        assertThat(Stream.of(1).appendSelf(self -> self.map(t -> t * 2)).take(4)).isEqualTo(Stream.of(1, 2, 4, 8));
+    }
+
+    @Test
+    public void shouldCanStopRecursion() {
+        assertThat(Stream.of(1).appendSelf(self -> self.head() < 8 ? self.map(t -> t * 2) : Stream.empty())).isEqualTo(Stream.of(1, 2, 4, 8));
+    }
+
     // -- toString
 
     @Test
