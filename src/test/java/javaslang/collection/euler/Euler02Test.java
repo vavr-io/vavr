@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class Euler02 {
+public class Euler02Test {
 
     /**
      * <strong>Problem 2: Even Fibonacci numbers</strong>

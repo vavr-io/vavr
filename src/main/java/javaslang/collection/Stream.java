@@ -84,7 +84,7 @@ import java.util.stream.Collector;
  * }
  *
  * static boolean isPrime(long num) {
- *     return !Stream.rangeClosed(2L, (long) Math.sqrt(num)).exists(d -> num % d == 0);
+ *     return !Stream.rangeClosed(2L, (long) Math.sqrt(num)).exists(d -&gt; num % d == 0);
  * }
  * </code>
  * </pre>
@@ -465,9 +465,9 @@ public interface Stream<T> extends Seq<T> {
      * @param from        the first number
      * @param toExclusive the last number + 1
      * @param step        the step
-     * @return a range of long values as specified or {@code Nil} if <br/>
-     * {@code from >= toInclusive} and {@code step > 0} or <br/>
-     * {@code from <= toInclusive} and {@code step < 0}</p>
+     * @return a range of long values as specified or {@code Nil} if<br>
+     * {@code from >= toInclusive} and {@code step > 0} or<br>
+     * {@code from <= toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Stream<Integer> rangeBy(int from, int toExclusive, int step) {
@@ -475,13 +475,13 @@ public interface Stream<T> extends Seq<T> {
             throw new IllegalArgumentException("Step should not be equal to zero");
         }
         if (step > 0) {
-            if(from >= toExclusive) {
+            if (from >= toExclusive) {
                 return Nil.instance();
             } else {
                 return new Cons<>(() -> from, () -> rangeBy(from + step, toExclusive, step));
             }
         } else {
-            if(from <= toExclusive) {
+            if (from <= toExclusive) {
                 return Nil.instance();
             } else {
                 return new Cons<>(() -> from, () -> rangeBy(from + step, toExclusive, step));
@@ -507,9 +507,9 @@ public interface Stream<T> extends Seq<T> {
      * @param from        the first number
      * @param toExclusive the last number + 1
      * @param step        the step
-     * @return a range of long values as specified or {@code Nil} if <br/>
-     * {@code from >= toInclusive} and {@code step > 0} or <br/>
-     * {@code from <= toInclusive} and {@code step < 0}</p>
+     * @return a range of long values as specified or {@code Nil} if<br>
+     * {@code from >= toInclusive} and {@code step > 0} or<br>
+     * {@code from <= toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Stream<Long> rangeBy(long from, long toExclusive, int step) {
@@ -517,13 +517,13 @@ public interface Stream<T> extends Seq<T> {
             throw new IllegalArgumentException("Step should not be equal to zero");
         }
         if (step > 0) {
-            if(from >= toExclusive) {
+            if (from >= toExclusive) {
                 return Nil.instance();
             } else {
                 return new Cons<>(() -> from, () -> rangeBy(from + step, toExclusive, step));
             }
         } else {
-            if(from <= toExclusive) {
+            if (from <= toExclusive) {
                 return Nil.instance();
             } else {
                 return new Cons<>(() -> from, () -> rangeBy(from + step, toExclusive, step));
@@ -549,8 +549,8 @@ public interface Stream<T> extends Seq<T> {
      * @param from        the first number
      * @param toInclusive the last number
      * @param step        the step
-     * @return a range of int values as specified or {@code Nil} if <br/>
-     * {@code from > toInclusive} and {@code step > 0} or <br/>
+     * @return a range of int values as specified or {@code Nil} if<br>
+     * {@code from > toInclusive} and {@code step > 0} or<br>
      * {@code from < toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
@@ -559,7 +559,7 @@ public interface Stream<T> extends Seq<T> {
             throw new IllegalArgumentException("Step should not be equal to zero");
         }
         if (step > 0) {
-            if(from > toInclusive) {
+            if (from > toInclusive) {
                 return Nil.instance();
             } else if (from > Integer.MAX_VALUE - step) {
                 return Stream.of(from);
@@ -567,7 +567,7 @@ public interface Stream<T> extends Seq<T> {
                 return new Cons<>(() -> from, () -> rangeClosedBy(from + step, toInclusive, step));
             }
         } else {
-            if(from < toInclusive) {
+            if (from < toInclusive) {
                 return Nil.instance();
             } else if (from < Integer.MIN_VALUE - step) {
                 return Stream.of(from);
@@ -595,8 +595,8 @@ public interface Stream<T> extends Seq<T> {
      * @param from        the first number
      * @param toInclusive the last number
      * @param step        the step
-     * @return a range of int values as specified or {@code Nil} if <br/>
-     * {@code from > toInclusive} and {@code step > 0} or <br/>
+     * @return a range of int values as specified or {@code Nil} if<br>
+     * {@code from > toInclusive} and {@code step > 0} or<br>
      * {@code from < toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
@@ -605,7 +605,7 @@ public interface Stream<T> extends Seq<T> {
             throw new IllegalArgumentException("Step should not be equal to zero");
         }
         if (step > 0) {
-            if(from > toInclusive) {
+            if (from > toInclusive) {
                 return Nil.instance();
             } else if (from > Long.MAX_VALUE - step) {
                 return Stream.of(from);
@@ -613,7 +613,7 @@ public interface Stream<T> extends Seq<T> {
                 return new Cons<>(() -> from, () -> rangeClosedBy(from + step, toInclusive, step));
             }
         } else {
-            if(from < toInclusive) {
+            if (from < toInclusive) {
                 return Nil.instance();
             } else if (from < Long.MIN_VALUE - step) {
                 return Stream.of(from);

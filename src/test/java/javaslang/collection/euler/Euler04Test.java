@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class Euler04 {
+public class Euler04Test {
 
     /**
      * <strong>Problem 4: Largest palindrome product</strong>
@@ -31,7 +31,7 @@ public class Euler04 {
     private static int largestPalindromeOfProductsFromFactorsInRange(final int min, final int max) {
         return Stream.rangeClosed(min, max)
                 .flatMap(i -> Stream.rangeClosed(i, max).map(j -> i * j))
-                .filter(Euler04::isPalindrome)
+                .filter(Euler04Test::isPalindrome)
                 .max().get();
     }
 

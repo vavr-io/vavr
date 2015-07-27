@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class Euler03 {
+public class Euler03Test {
 
     /**
      * <strong>Problem 3: Largest prime factor</strong>

@@ -80,6 +80,7 @@ public interface Match<R> extends Function<Object, R> {
     /**
      * Creates a type-safe match by fixating the value to be matched.
      *
+     * @param <T>   type of the value to be matched
      * @param value the value to be matched
      * @return a new type-safe match builder
      */
