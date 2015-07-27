@@ -187,50 +187,6 @@ public class ListTest extends AbstractSeqTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    // -- static rangeClosed(int, int)
-
-    @Test
-    public void shouldCreateListOfRangeWhereFromIsGreaterThanTo() {
-        assertThat(List.rangeClosed(1, 0)).isEqualTo(List.empty());
-    }
-
-    @Test
-    public void shouldCreateListOfRangeWhereFromEqualsTo() {
-        assertThat(List.rangeClosed(0, 0)).isEqualTo(List.of(0));
-    }
-
-    @Test
-    public void shouldCreateListOfRangeWhereFromIsLessThanTo() {
-        assertThat(List.rangeClosed(1, 3)).isEqualTo(List.of(1, 2, 3));
-    }
-
-    @Test
-    public void shouldCreateListOfRangeWhereFromEqualsToEqualsInteger_MIN_VALUE() {
-        assertThat(List.rangeClosed(Integer.MIN_VALUE, Integer.MIN_VALUE)).isEqualTo(List.of(Integer.MIN_VALUE));
-    }
-
-    // -- static range(int, int)
-
-    @Test
-    public void shouldCreateListOfUntilWhereFromIsGreaterThanTo() {
-        assertThat(List.range(1, 0)).isEqualTo(List.empty());
-    }
-
-    @Test
-    public void shouldCreateListOfUntilWhereFromEqualsTo() {
-        assertThat(List.range(0, 0)).isEqualTo(List.empty());
-    }
-
-    @Test
-    public void shouldCreateListOfUntilWhereFromIsLessThanTo() {
-        assertThat(List.range(1, 3)).isEqualTo(List.of(1, 2));
-    }
-
-    @Test
-    public void shouldCreateListOfUntilWhereFromEqualsToEqualsInteger_MIN_VALUE() {
-        assertThat(List.range(Integer.MIN_VALUE, Integer.MIN_VALUE)).isEqualTo(List.empty());
-    }
-
     // -- combinations
 
         @Test
