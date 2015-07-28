@@ -87,6 +87,13 @@ public class CheckedFunction2Test {
     }
 
     @Test
+    public void shouldNotMemoizeAlreadyMemoizedFunction() throws Throwable {
+        final CheckedFunction2<Integer, Integer, Integer> f = (i1, i2) -> null;
+        final CheckedFunction2<Integer, Integer, Integer> memo = f.memoized();
+        assertThat(memo.memoized() == memo).isTrue();
+    }
+
+    @Test
     public void shouldComposeWithAndThen() {
         final CheckedFunction2<Object, Object, Object> f = (o1, o2) -> null;
         final CheckedFunction1<Object, Object> after = o -> null;

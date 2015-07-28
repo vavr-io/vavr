@@ -81,6 +81,13 @@ public class Function1Test {
     }
 
     @Test
+    public void shouldNotMemoizeAlreadyMemoizedFunction() {
+        final Function1<Integer, Integer> f = (i1) -> null;
+        final Function1<Integer, Integer> memo = f.memoized();
+        assertThat(memo.memoized() == memo).isTrue();
+    }
+
+    @Test
     public void shouldComposeWithAndThen() {
         final Function1<Object, Object> f = (o1) -> null;
         final Function1<Object, Object> after = o -> null;

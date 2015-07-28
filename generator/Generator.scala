@@ -805,6 +805,13 @@ def generateTestClasses(): Unit = {
               }
 
               @$test
+              public void shouldNotMemoizeAlreadyMemoizedFunction()${checked.gen(" throws Throwable")} {
+                  final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
+                  final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> memo = f.memoized();
+                  $assertThat(memo.memoized() == memo).isTrue();
+              }
+
+              @$test
               public void shouldComposeWithAndThen() {
                   final $name$i<$generics> f = ($functionArgs) -> null;
                   final ${name}1<Object, Object> after = o -> null;

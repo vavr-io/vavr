@@ -117,6 +117,13 @@ public class Function7Test {
     }
 
     @Test
+    public void shouldNotMemoizeAlreadyMemoizedFunction() {
+        final Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4, i5, i6, i7) -> null;
+        final Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> memo = f.memoized();
+        assertThat(memo.memoized() == memo).isTrue();
+    }
+
+    @Test
     public void shouldComposeWithAndThen() {
         final Function7<Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7) -> null;
         final Function1<Object, Object> after = o -> null;
