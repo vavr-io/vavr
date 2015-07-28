@@ -19,20 +19,25 @@ public class OptionTest {
     // -- construction
 
     @Test
-    public void shouldMapNullToNone() throws Exception {
+    public void shouldMapNullToNone() {
         assertThat(Option.of(null)).isEqualTo(None.instance());
     }
 
     @Test
-    public void shouldMapNonNullToSome() throws Exception {
+    public void shouldMapNonNullToSome() {
         final Option<?> option = Option.of(new Object());
         assertThat(option.isDefined()).isTrue();
     }
 
     @Test
-    public void shouldWrapNullInSome() throws Exception {
+    public void shouldWrapNullInSome() {
         final Some<?> some = new Some<>(null);
         assertThat(some.get()).isEqualTo(null);
+    }
+
+    @Test
+    public void shouldCreateNothing() {
+        assertThat(Some.nothing()).isEqualTo(new Some<Void>(null));
     }
 
     // -- get

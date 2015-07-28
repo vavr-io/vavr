@@ -302,6 +302,13 @@ public class GenTest {
         assertThat(actual[0]).isEqualTo(expected);
     }
 
+    // -- isEmpty
+
+    @Test
+    public void shouldNotBeEmpty() {
+        assertThat(Gen.of(1).isEmpty()).isFalse();
+    }
+
     // helpers
 
     <T> void assertForAll(Supplier<T> supplier, Predicate<T> property) {

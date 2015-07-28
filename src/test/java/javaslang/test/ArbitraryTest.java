@@ -79,7 +79,9 @@ public class ArbitraryTest {
 
     @Test(expected = RuntimeException.class)
     public void shouldThrowOnForEach() {
-        Arbitrary.integer().forEach(i -> { throw new RuntimeException("OK"); });
+        Arbitrary.integer().forEach(i -> {
+            throw new RuntimeException("OK");
+        });
     }
 
     // -- peek
@@ -89,6 +91,13 @@ public class ArbitraryTest {
         final int[] actual = new int[] { Integer.MIN_VALUE };
         final int expected = Arbitrary.integer().peek(i -> actual[0] = i).apply(10).apply(new Random());
         assertThat(actual[0]).isEqualTo(expected);
+    }
+
+    // -- isEmpty
+
+    @Test
+    public void shouldNotBeEmpty() {
+        assertThat(Arbitrary.integer().isEmpty()).isFalse();
     }
 
     // factory methods
