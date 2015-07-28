@@ -418,7 +418,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
      */
     static List<Integer> rangeBy(int from, int toExclusive, int step) {
         if (step == 0) {
-            throw new IllegalArgumentException("step cannot be 0.");
+            throw new IllegalArgumentException("step cannot be 0");
         } else if (from == toExclusive || step * (from - toExclusive) > 0) {
             return List.empty();
         } else {
@@ -471,7 +471,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
      */
     static List<Long> rangeBy(long from, long toExclusive, long step) {
         if (step == 0) {
-            throw new IllegalArgumentException("step cannot be 0.");
+            throw new IllegalArgumentException("step cannot be 0");
         } else if (from == toExclusive || step * (from - toExclusive) > 0) {
             return List.empty();
         } else {
@@ -524,7 +524,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
      */
     static List<Integer> rangeClosedBy(int from, int toInclusive, int step) {
         if (step == 0) {
-            throw new IllegalArgumentException("step cannot be 0.");
+            throw new IllegalArgumentException("step cannot be 0");
         } else if (from == toInclusive) {
             return List.of(from);
         } else if (step * (from - toInclusive) > 0) {
@@ -585,7 +585,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
      */
     static List<Long> rangeClosedBy(long from, long toInclusive, long step) {
         if (step == 0) {
-            throw new IllegalArgumentException("step cannot be 0.");
+            throw new IllegalArgumentException("step cannot be 0");
         } else if (from == toInclusive) {
             return List.of(from);
         } else if (step * (from - toInclusive) > 0) {
