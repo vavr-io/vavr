@@ -121,6 +121,8 @@ import java.util.stream.StreamSupport;
  * Transformation:
  *
  * <ul>
+ * <li>{@link #cartesianProduct()}</li>
+ * <li>{@link #cartesianProduct(Traversable)}</li>
  * <li>{@link #combinations()}</li>
  * <li>{@link #combinations(int)}</li>
  * <li>{@link #distinct()}</li>
@@ -185,6 +187,39 @@ public interface Traversable<T> extends TraversableOnce<T> {
                     .toOption();
         }
     }
+
+    /**
+     * Calculates the cartesian product (, i.e. square) of {@code this x this}.
+     * <p>
+     * Example:
+     * <pre>
+     * <code>
+     * // = List of Tuples (1, 1), (1, 2), (1, 3), (2, 1), (2, 2), (2, 3), (3, 1), (3, 2), (3, 3)
+     * List.of(1, 2, 3).cartesianProduct();
+     * </code>
+     * </pre>
+     *
+     * @return a new Traversable containing the square of {@code this}
+     */
+    Traversable<Tuple2<T, T>> cartesianProduct();
+
+    /**
+     * Calculates the cartesian product {@code this x that}.
+     * <p>
+     * Example:
+     * <pre>
+     * <code>
+     * // = List of Tuples (1, 'a'), (1, 'b'), (2, 'a'), (2, 'b'), (3, 'a'), (3, 'b')
+     * List.of(1, 2, 3).cartesianProduct(List.of('a', 'b');
+     * </code>
+     * </pre>
+     *
+     * @param that Another Traversable
+     * @param <U> Component type
+     * @return a new Traversable containing the cartesian product {@code this x that}
+     * @throws NullPointerException if that is null
+     */
+    <U> Traversable<Tuple2<T, U>> cartesianProduct(Iterable<? extends U> that);
 
     /**
      * Returns an empty version of this traversable, i.e. {@code this.clear().isEmpty() == true}.

@@ -614,6 +614,18 @@ public interface List<T> extends Seq<T>, Stack<T> {
     }
 
     @Override
+    default List<Tuple2<T, T>> cartesianProduct() {
+        return cartesianProduct(this);
+    }
+
+    @Override
+    default <U> List<Tuple2<T, U>> cartesianProduct(Iterable<? extends U> that) {
+        Objects.requireNonNull(that, "that is null");
+        final List<? extends U> other = List.ofAll(that);
+        return flatMap(a -> other.map(b -> Tuple.of(a, b)));
+    }
+
+    @Override
     default List<T> clear() {
         return Nil.instance();
     }

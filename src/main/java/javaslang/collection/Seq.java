@@ -269,6 +269,12 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     Seq<T> clear();
 
     @Override
+    Seq<Tuple2<T, T>> cartesianProduct();
+
+    @Override
+    <U> Seq<Tuple2<T, U>> cartesianProduct(Iterable<? extends U> that);
+
+    @Override
     Seq<? extends Seq<T>> combinations();
 
     @Override
