@@ -88,8 +88,28 @@ public class CheckedFunction3Test {
         final AtomicInteger integer = new AtomicInteger();
         final CheckedFunction3<Integer, Integer, Integer, Integer> f = (i1, i2, i3) -> i1 + i2 + i3 + integer.getAndIncrement();
         final CheckedFunction3<Integer, Integer, Integer, Integer> memo = f.memoized();
+        // should apply f on first apply()
         final int expected = memo.apply(1, 2, 3);
+        // should return memoized value of second apply()
         assertThat(memo.apply(1, 2, 3)).isEqualTo(expected);
+        // should calculate new values when called subsequently with different parameters
+        assertThat(memo.apply(2 , 3 , 4 )).isEqualTo(2  + 3  + 4  + 1);
+        // should return memoized value of second apply() (for new value)
+        assertThat(memo.apply(2 , 3 , 4 )).isEqualTo(2  + 3  + 4  + 1);
+    }
+
+    @Test
+    public void shouldNotMemoizeAlreadyMemoizedFunction() throws Throwable {
+        final CheckedFunction3<Integer, Integer, Integer, Integer> f = (i1, i2, i3) -> null;
+        final CheckedFunction3<Integer, Integer, Integer, Integer> memo = f.memoized();
+        assertThat(memo.memoized() == memo).isTrue();
+    }
+
+    @Test
+    public void shouldMemoizeValueGivenNullArguments() throws Throwable {
+        final CheckedFunction3<Integer, Integer, Integer, Integer> f = (i1, i2, i3) -> null;
+        final CheckedFunction3<Integer, Integer, Integer, Integer> memo = f.memoized();
+        assertThat(memo.apply(null, null, null)).isNull();
     }
 
     @Test

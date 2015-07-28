@@ -473,24 +473,34 @@ def generateMainClasses(): Unit = {
 
               @Override
               default $className$fullGenerics memoized() {
-                  ${val mappingFunction = (checked, i) match {
-                      case (true, 0) => s"() -> $Try.of(this::apply).get()"
-                      case (true, 1) => s"t -> $Try.of(() -> this.apply(t)).get()"
-                      case (true, _) => s"t -> $Try.of(() -> tupled.apply(t)).get()"
-                      case (false, 0) => s"this::apply"
-                      case (false, 1) => s"this::apply"
-                      case (false, _) => s"tupled::apply"
-                    }
-                    if (i == 0) xs"""
-                      return Lazy.of($mappingFunction)::get;
-                    """ else if (i == 1) xs"""
-                      final ${im.getType("java.util.Map")}<$generics, R> cache = new ${im.getType("java.util.concurrent.ConcurrentHashMap")}<>();
-                      return $params -> cache.computeIfAbsent($params, $mappingFunction);
-                    """ else xs"""
-                      final ${im.getType("java.util.Map")}<Tuple$i<$generics>, R> cache = new ${im.getType("java.util.concurrent.ConcurrentHashMap")}<>();
-                      final ${checked.gen("Checked")}Function1<Tuple$i<$generics>, R> tupled = tupled();
-                      return ($params) -> cache.computeIfAbsent(Tuple.of($params), $mappingFunction);
-                    """
+                  if (this instanceof Memoized) {
+                      return this;
+                  } else {
+                      ${val mappingFunction = (checked, i) match {
+                          case (true, 0) => s"() -> $Try.of(this::apply).get()"
+                          case (true, 1) => s"t -> $Try.of(() -> this.apply(t)).get()"
+                          case (true, _) => s"t -> $Try.of(() -> tupled.apply(t)).get()"
+                          case (false, 0) => s"this::apply"
+                          case (false, 1) => s"this::apply"
+                          case (false, _) => s"tupled::apply"
+                        }
+                        val forNull = (checked, i) match {
+                          case (true, 1) => s"$Try.of(() -> apply(null))::get"
+                          case (false, 1) => s"() -> apply(null)"
+                          case _ => null
+                        }
+                        if (i == 0) xs"""
+                          return ($className$fullGenerics & Memoized) Lazy.of($mappingFunction)::get;
+                        """ else if (i == 1) xs"""
+                          final Lazy<R> forNull = Lazy.of($forNull);
+                          final ${im.getType("java.util.Map")}<$generics, R> cache = new ${im.getType("java.util.concurrent.ConcurrentHashMap")}<>();
+                          return ($className$fullGenerics & Memoized) t1 -> (t1 == null) ? forNull.get() : cache.computeIfAbsent(t1, $mappingFunction);
+                        """ else xs"""
+                          final ${im.getType("java.util.Map")}<Tuple$i<$generics>, R> cache = new ${im.getType("java.util.concurrent.ConcurrentHashMap")}<>();
+                          final ${checked.gen("Checked")}Function1<Tuple$i<$generics>, R> tupled = tupled();
+                          return ($className$fullGenerics & Memoized) ($params) -> cache.computeIfAbsent(Tuple.of($params), $mappingFunction);
+                        """
+                      }
                   }
               }
 
@@ -796,9 +806,33 @@ def generateTestClasses(): Unit = {
                   final $AtomicInteger integer = new $AtomicInteger();
                   final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> ${(1 to i).gen(j => s"i$j")(" + ")}${(i > 0).gen(" + ")}integer.getAndIncrement();
                   final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> memo = f.memoized();
+                  // should apply f on first apply()
                   final int expected = memo.apply(${(1 to i).gen(j => s"$j")(", ")});
+                  // should return memoized value of second apply()
                   $assertThat(memo.apply(${(1 to i).gen(j => s"$j")(", ")})).isEqualTo(expected);
+                  ${(i > 0).gen(xs"""
+                    // should calculate new values when called subsequently with different parameters
+                    $assertThat(memo.apply(${(1 to i).gen(j => s"${j + 1} ")(", ")})).isEqualTo(${(1 to i).gen(j => s"${j + 1} ")(" + ")} + 1);
+                    // should return memoized value of second apply() (for new value)
+                    $assertThat(memo.apply(${(1 to i).gen(j => s"${j + 1} ")(", ")})).isEqualTo(${(1 to i).gen(j => s"${j + 1} ")(" + ")} + 1);
+                  """)}
               }
+
+              @$test
+              public void shouldNotMemoizeAlreadyMemoizedFunction()${checked.gen(" throws Throwable")} {
+                  final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
+                  final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> memo = f.memoized();
+                  $assertThat(memo.memoized() == memo).isTrue();
+              }
+
+              ${(i > 0).gen(xs"""
+                @$test
+                public void shouldMemoizeValueGivenNullArguments()${checked.gen(" throws Throwable")} {
+                    final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
+                    final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> memo = f.memoized();
+                    $assertThat(memo.apply(${(1 to i).gen(j => "null")(", ")})).isNull();
+                }
+              """)}
 
               @$test
               public void shouldComposeWithAndThen() {

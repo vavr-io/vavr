@@ -135,8 +135,13 @@ public interface Function1<T1, R> extends λ<R>, Function<T1, R> {
 
     @Override
     default Function1<T1, R> memoized() {
-        final Map<T1, R> cache = new ConcurrentHashMap<>();
-        return t1 -> cache.computeIfAbsent(t1, this::apply);
+        if (this instanceof Memoized) {
+            return this;
+        } else {
+            final Lazy<R> forNull = Lazy.of(() -> apply(null));
+            final Map<T1, R> cache = new ConcurrentHashMap<>();
+            return (Function1<T1, R> & Memoized) t1 -> (t1 == null) ? forNull.get() : cache.computeIfAbsent(t1, this::apply);
+        }
     }
 
     /**

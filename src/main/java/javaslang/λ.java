@@ -119,4 +119,10 @@ public interface λ<R> extends Serializable {
         final MethodType methodType = λ.getLambdaSignature(this);
         return methodType.dropParameterTypes(0, methodType.parameterCount() - arity());
     }
+
+    /**
+     * Tagging ZAM interface for Memoized functions.
+     */
+    interface Memoized {
+    }
 }

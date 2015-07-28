@@ -279,9 +279,13 @@ public interface CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<
 
     @Override
     default CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> memoized() {
-        final Map<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>, R> cache = new ConcurrentHashMap<>();
-        final CheckedFunction1<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>, R> tupled = tupled();
-        return (t1, t2, t3, t4, t5, t6, t7, t8) -> cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4, t5, t6, t7, t8), t -> Try.of(() -> tupled.apply(t)).get());
+        if (this instanceof Memoized) {
+            return this;
+        } else {
+            final Map<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>, R> cache = new ConcurrentHashMap<>();
+            final CheckedFunction1<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>, R> tupled = tupled();
+            return (CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> & Memoized) (t1, t2, t3, t4, t5, t6, t7, t8) -> cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4, t5, t6, t7, t8), t -> Try.of(() -> tupled.apply(t)).get());
+        }
     }
 
     /**
