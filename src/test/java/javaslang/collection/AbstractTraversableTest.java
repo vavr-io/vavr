@@ -112,9 +112,65 @@ public abstract class AbstractTraversableTest {
         assertThat(of(BigDecimal.ZERO, BigDecimal.ONE).average().get()).isEqualTo(.5);
     }
 
+    // -- cartesianProduct()
+
+    @Test
+    public void shouldCalculateCartesianProductOfNil() {
+        final Traversable<Tuple2<Object, Object>> actual = empty().cartesianProduct();
+        assertThat(actual).isEqualTo(empty());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldCalculateCartesianProductOfNonNil() {
+        final Traversable<Tuple2<Integer, Integer>> actual = of(1, 2, 3).cartesianProduct();
+        final Traversable<Tuple2<Integer, Integer>> expected = of(
+                Tuple.of(1, 1), Tuple.of(1, 2), Tuple.of(1, 3),
+                Tuple.of(2, 1), Tuple.of(2, 2), Tuple.of(2, 3),
+                Tuple.of(3, 1), Tuple.of(3, 2), Tuple.of(3, 3));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // -- cartesianProduct(Iterable)
+
+    @Test
+    public void shouldCalculateCartesianProductOfNilAndNil() {
+        final Traversable<Tuple2<Object, Object>> actual = empty().cartesianProduct(empty());
+        assertThat(actual).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldCalculateCartesianProductOfNilAndNonNil() {
+        final Traversable<Tuple2<Object, Object>> actual = empty().cartesianProduct(of(1, 2, 3));
+        assertThat(actual).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldCalculateCartesianProductOfNonNilAndNil() {
+        final Traversable<Tuple2<Integer, Integer>> actual = of(1, 2, 3).cartesianProduct(empty());
+        assertThat(actual).isEqualTo(empty());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldCalculateCartesianProductOfNonNilAndNonNil() {
+        final Traversable<Tuple2<Integer, Character>> actual = of(1, 2, 3).cartesianProduct(of('a', 'b'));
+        final Traversable<Tuple2<Integer, Character>> expected = of(
+                Tuple.of(1, 'a'), Tuple.of(1, 'b'),
+                Tuple.of(2, 'a'), Tuple.of(2, 'b'),
+                Tuple.of(3, 'a'), Tuple.of(3, 'b'));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenCalculatingCartesianProductAndThatIsNull() {
+        empty().cartesianProduct(null);
+    }
+
     // -- clear
 
     @Test
+
     public void shouldClearNil() {
         assertThat(empty().clear()).isEqualTo(empty());
     }

@@ -468,6 +468,12 @@ public interface Stack<T> extends Seq<T> {
     Stack<T> appendAll(Iterable<? extends T> elements);
 
     @Override
+    Stack<Tuple2<T, T>> cartesianProduct();
+
+    @Override
+    <U> Stack<Tuple2<T, U>> cartesianProduct(Iterable<? extends U> that);
+
+    @Override
     Stack<T> clear();
 
     @Override

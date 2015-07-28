@@ -726,6 +726,18 @@ public interface Stream<T> extends Seq<T> {
     Stream<T> appendSelf(Function<Stream<T>, Stream<T>> mapper);
 
     @Override
+    default Stream<Tuple2<T, T>> cartesianProduct() {
+        return cartesianProduct(this);
+    }
+
+    @Override
+    default <U> Stream<Tuple2<T, U>> cartesianProduct(Iterable<? extends U> that) {
+        Objects.requireNonNull(that, "that is null");
+        final Stream<? extends U> other = Stream.ofAll(that);
+        return flatMap(a -> other.map(b -> Tuple.of(a, b)));
+    }
+
+    @Override
     default Stream<T> clear() {
         return Nil.instance();
     }

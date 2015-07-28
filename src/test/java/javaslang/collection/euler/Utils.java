@@ -17,9 +17,4 @@ public class Utils {
     public static Stream<Integer> fibonacci() {
         return Stream.of(1, 1).appendSelf(self -> self.zip(self.tail()).map(t -> t._1 + t._2));
     }
-
-    public static <T1, T2> List<Tuple2<T1, T2>> cross(List<T1> v1, List<T2> v2) {
-        return v1.flatMap(a -> v2.map(b -> Tuple.of(a, b)));
-    }
-
 }

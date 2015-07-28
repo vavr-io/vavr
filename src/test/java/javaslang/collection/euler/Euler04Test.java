@@ -29,7 +29,8 @@ public class Euler04Test {
     }
 
     private static int largestPalindromeOfProductsFromFactorsInRange(final int min, final int max) {
-        return Utils.cross(List.rangeClosed(min, max), List.rangeClosed(min, max))
+        return List.rangeClosed(min, max)
+                .cartesianProduct()
                 .filter(t -> t._1 <= t._2)
                 .map(t -> t._1 * t._2)
                 .filter(Euler04Test::isPalindrome)

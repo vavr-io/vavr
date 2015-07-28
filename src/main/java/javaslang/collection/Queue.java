@@ -526,6 +526,16 @@ public class Queue<T> implements Seq<T>, Serializable {
         return enqueueAll(elements);
     }
 
+        @Override
+    public Queue<Tuple2<T, T>> cartesianProduct() {
+        return cartesianProduct(this);
+    }
+
+    @Override
+    public <U> Queue<Tuple2<T, U>> cartesianProduct(Iterable<? extends U> that) {
+        return toList().cartesianProduct(that).toQueue();
+    }
+
     @Override
     public Queue<T> clear() {
         return Queue.empty();
