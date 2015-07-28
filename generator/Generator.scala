@@ -473,24 +473,28 @@ def generateMainClasses(): Unit = {
 
               @Override
               default $className$fullGenerics memoized() {
-                  ${val mappingFunction = (checked, i) match {
-                      case (true, 0) => s"() -> $Try.of(this::apply).get()"
-                      case (true, 1) => s"t -> $Try.of(() -> this.apply(t)).get()"
-                      case (true, _) => s"t -> $Try.of(() -> tupled.apply(t)).get()"
-                      case (false, 0) => s"this::apply"
-                      case (false, 1) => s"this::apply"
-                      case (false, _) => s"tupled::apply"
-                    }
-                    if (i == 0) xs"""
-                      return Lazy.of($mappingFunction)::get;
-                    """ else if (i == 1) xs"""
-                      final ${im.getType("java.util.Map")}<$generics, R> cache = new ${im.getType("java.util.concurrent.ConcurrentHashMap")}<>();
-                      return $params -> cache.computeIfAbsent($params, $mappingFunction);
-                    """ else xs"""
-                      final ${im.getType("java.util.Map")}<Tuple$i<$generics>, R> cache = new ${im.getType("java.util.concurrent.ConcurrentHashMap")}<>();
-                      final ${checked.gen("Checked")}Function1<Tuple$i<$generics>, R> tupled = tupled();
-                      return ($params) -> cache.computeIfAbsent(Tuple.of($params), $mappingFunction);
-                    """
+                  if (this instanceof Memoized) {
+                      return this;
+                  } else {
+                      ${val mappingFunction = (checked, i) match {
+                          case (true, 0) => s"() -> $Try.of(this::apply).get()"
+                          case (true, 1) => s"t -> $Try.of(() -> this.apply(t)).get()"
+                          case (true, _) => s"t -> $Try.of(() -> tupled.apply(t)).get()"
+                          case (false, 0) => s"this::apply"
+                          case (false, 1) => s"this::apply"
+                          case (false, _) => s"tupled::apply"
+                        }
+                        if (i == 0) xs"""
+                          return ($className$fullGenerics & Memoized) Lazy.of($mappingFunction)::get;
+                        """ else if (i == 1) xs"""
+                          final ${im.getType("java.util.Map")}<$generics, R> cache = new ${im.getType("java.util.concurrent.ConcurrentHashMap")}<>();
+                          return ($className$fullGenerics & Memoized) $params -> cache.computeIfAbsent($params, $mappingFunction);
+                        """ else xs"""
+                          final ${im.getType("java.util.Map")}<Tuple$i<$generics>, R> cache = new ${im.getType("java.util.concurrent.ConcurrentHashMap")}<>();
+                          final ${checked.gen("Checked")}Function1<Tuple$i<$generics>, R> tupled = tupled();
+                          return ($className$fullGenerics & Memoized) ($params) -> cache.computeIfAbsent(Tuple.of($params), $mappingFunction);
+                        """
+                      }
                   }
               }
 

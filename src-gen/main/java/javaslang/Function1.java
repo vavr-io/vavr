@@ -135,8 +135,12 @@ public interface Function1<T1, R> extends λ<R>, Function<T1, R> {
 
     @Override
     default Function1<T1, R> memoized() {
-        final Map<T1, R> cache = new ConcurrentHashMap<>();
-        return t1 -> cache.computeIfAbsent(t1, this::apply);
+        if (this instanceof Memoized) {
+            return this;
+        } else {
+            final Map<T1, R> cache = new ConcurrentHashMap<>();
+            return (Function1<T1, R> & Memoized) t1 -> cache.computeIfAbsent(t1, this::apply);
+        }
     }
 
     /**

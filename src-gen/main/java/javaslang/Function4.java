@@ -184,9 +184,13 @@ public interface Function4<T1, T2, T3, T4, R> extends λ<R> {
 
     @Override
     default Function4<T1, T2, T3, T4, R> memoized() {
-        final Map<Tuple4<T1, T2, T3, T4>, R> cache = new ConcurrentHashMap<>();
-        final Function1<Tuple4<T1, T2, T3, T4>, R> tupled = tupled();
-        return (t1, t2, t3, t4) -> cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4), tupled::apply);
+        if (this instanceof Memoized) {
+            return this;
+        } else {
+            final Map<Tuple4<T1, T2, T3, T4>, R> cache = new ConcurrentHashMap<>();
+            final Function1<Tuple4<T1, T2, T3, T4>, R> tupled = tupled();
+            return (Function4<T1, T2, T3, T4, R> & Memoized) (t1, t2, t3, t4) -> cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4), tupled::apply);
+        }
     }
 
     /**

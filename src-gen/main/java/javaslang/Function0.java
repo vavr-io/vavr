@@ -102,7 +102,11 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
 
     @Override
     default Function0<R> memoized() {
-        return Lazy.of(this::apply)::get;
+        if (this instanceof Memoized) {
+            return this;
+        } else {
+            return (Function0<R> & Memoized) Lazy.of(this::apply)::get;
+        }
     }
 
     /**

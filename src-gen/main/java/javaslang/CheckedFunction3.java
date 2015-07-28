@@ -164,9 +164,13 @@ public interface CheckedFunction3<T1, T2, T3, R> extends λ<R> {
 
     @Override
     default CheckedFunction3<T1, T2, T3, R> memoized() {
-        final Map<Tuple3<T1, T2, T3>, R> cache = new ConcurrentHashMap<>();
-        final CheckedFunction1<Tuple3<T1, T2, T3>, R> tupled = tupled();
-        return (t1, t2, t3) -> cache.computeIfAbsent(Tuple.of(t1, t2, t3), t -> Try.of(() -> tupled.apply(t)).get());
+        if (this instanceof Memoized) {
+            return this;
+        } else {
+            final Map<Tuple3<T1, T2, T3>, R> cache = new ConcurrentHashMap<>();
+            final CheckedFunction1<Tuple3<T1, T2, T3>, R> tupled = tupled();
+            return (CheckedFunction3<T1, T2, T3, R> & Memoized) (t1, t2, t3) -> cache.computeIfAbsent(Tuple.of(t1, t2, t3), t -> Try.of(() -> tupled.apply(t)).get());
+        }
     }
 
     /**
