@@ -8,7 +8,10 @@ package javaslang.collection;
 import javaslang.Tuple;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.stream.Collector;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,13 +23,43 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     // -- construction
 
     @Override
+    abstract protected <T> Collector<T, ArrayList<T>, ? extends Seq<T>> collector();
+
+    @Override
     abstract protected <T> Seq<T> empty();
+
+    abstract protected <T> Seq<T> of(T element);
 
     @SuppressWarnings("unchecked")
     @Override
     abstract protected <T> Seq<T> of(T... elements);
 
-    // -- range
+    @Override
+    abstract protected <T> Seq<T> ofAll(Iterable<? extends T> elements);
+
+    @Override
+    abstract protected Seq<Boolean> ofAll(boolean[] array);
+
+    @Override
+    abstract protected Seq<Byte> ofAll(byte[] array);
+
+    @Override
+    abstract protected Seq<Character> ofAll(char[] array);
+
+    @Override
+    abstract protected Seq<Double> ofAll(double[] array);
+
+    @Override
+    abstract protected Seq<Float> ofAll(float[] array);
+
+    @Override
+    abstract protected Seq<Integer> ofAll(int[] array);
+
+    @Override
+    abstract protected Seq<Long> ofAll(long[] array);
+
+    @Override
+    abstract protected Seq<Short> ofAll(short[] array);
 
     abstract protected Seq<Integer> range(int from, int toExclusive);
 
@@ -523,6 +556,127 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
         of(1, 2, 3).subsequence(1, 4).join(); // force computation of last element, e.g. because Stream is lazy
     }
 
+    // -- static collector()
+
+    @Test
+    public void shouldStreamAndCollectNil() {
+        final Seq<?> actual = java.util.stream.Stream.empty().collect(this.<Object>collector());
+        assertThat(actual).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldStreamAndCollectNonNil() {
+        final Seq<?> actual = java.util.stream.Stream.of(1, 2, 3).collect(this.<Object>collector());
+        assertThat(actual).isEqualTo(of(1, 2, 3));
+    }
+
+    @Test
+    public void shouldParallelStreamAndCollectNil() {
+        final Seq<?> actual = java.util.stream.Stream.empty().parallel().collect(this.<Object>collector());
+        assertThat(actual).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldParallelStreamAndCollectNonNil() {
+        final Seq<?> actual = java.util.stream.Stream.of(1, 2, 3).parallel().collect(this.<Object>collector());
+        assertThat(actual).isEqualTo(of(1, 2, 3));
+    }
+
+    // -- static empty()
+
+    @Test
+    public void shouldCreateNil() {
+        final Seq<?> actual = empty();
+        assertThat(actual.length()).isEqualTo(0);
+    }
+
+    // -- static of()
+
+    @Test
+    public void shouldCreateSeqOfSeqUsingCons() {
+        final Seq<List<?>> actual = of(List.empty());
+        assertThat(actual.length()).isEqualTo(1);
+        assertThat(actual.contains(List.empty())).isTrue();
+    }
+
+    // -- static of(T...)
+
+    @Test
+    public void shouldCreateSeqOfElements() {
+        final Seq<Integer> actual = of(1, 2);
+        assertThat(actual.length()).isEqualTo(2);
+        assertThat(actual.get(0)).isEqualTo(1);
+        assertThat(actual.get(1)).isEqualTo(2);
+    }
+
+    // -- static ofAll(Iterable)
+
+    @Test
+    public void shouldCreateListOfIterable() {
+        final java.util.List<Integer> arrayList = Arrays.asList(1, 2);
+        final Seq<Integer> actual = ofAll(arrayList);
+        assertThat(actual.length()).isEqualTo(2);
+        assertThat(actual.get(0)).isEqualTo(1);
+        assertThat(actual.get(1)).isEqualTo(2);
+    }
+
+    // -- static ofAll(<primitive array>)
+
+    @Test
+    public void shouldCreateListOfPrimitiveBooleanArray() {
+        final Seq<Boolean> actual = ofAll(new boolean[] { true, false });
+        final Seq<Boolean> expected = of(true, false);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldCreateListOfPrimitiveByteArray() {
+        final Seq<Byte> actual = ofAll(new byte[] { 1, 2, 3 });
+        final Seq<Byte> expected = of((byte) 1, (byte) 2, (byte) 3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldCreateListOfPrimitiveCharArray() {
+        final Seq<Character> actual = ofAll(new char[] { 'a', 'b', 'c' });
+        final Seq<Character> expected = of('a', 'b', 'c');
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldCreateListOfPrimitiveDoubleArray() {
+        final Seq<Double> actual = ofAll(new double[] { 1d, 2d, 3d });
+        final Seq<Double> expected = of(1d, 2d, 3d);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldCreateListOfPrimitiveFloatArray() {
+        final Seq<Float> actual = ofAll(new float[] { 1f, 2f, 3f });
+        final Seq<Float> expected = of(1f, 2f, 3f);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldCreateListOfPrimitiveIntArray() {
+        final Seq<Integer> actual = ofAll(new int[] { 1, 2, 3 });
+        final Seq<Integer> expected = of(1, 2, 3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldCreateListOfPrimitiveLongArray() {
+        final Seq<Long> actual = ofAll(new long[] { 1L, 2L, 3L });
+        final Seq<Long> expected = of(1L, 2L, 3L);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldCreateListOfPrimitiveShortArray() {
+        final Seq<Short> actual = ofAll(new short[] { (short) 1, (short) 2, (short) 3 });
+        final Seq<Short> expected = of((short) 1, (short) 2, (short) 3);
+        assertThat(actual).isEqualTo(expected);
+    }
     // -- static rangeClosed(int, int)
 
     @Test
@@ -723,7 +877,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
         assertThat(rangeBy(Long.MAX_VALUE, Long.MAX_VALUE, -3L)).isEqualTo(empty());
     }
 
-    // -- rangeBy and rangeClosedBy: step = 0
+    // -- static rangeBy and rangeClosedBy: step = 0
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldProhibitRangeByIntStepZero() {

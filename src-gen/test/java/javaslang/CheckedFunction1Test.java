@@ -9,10 +9,11 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import org.junit.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class CheckedFunction1Test {
 
@@ -28,22 +29,22 @@ public class CheckedFunction1Test {
     }
 
     @Test
-      public void shouldRecognizeApplicabilityOfNull() {
-          final CheckedFunction1<Object, Object> f = (o1) -> null;
-          assertThat(f.isApplicableTo(null)).isTrue();
-      }
+    public void shouldRecognizeApplicabilityOfNull() {
+        final CheckedFunction1<Object, Object> f = (o1) -> null;
+        assertThat(f.isApplicableTo(null)).isTrue();
+    }
 
-      @Test
-      public void shouldRecognizeApplicabilityOfNonNull() {
-          final CheckedFunction1<Integer, Integer> f = (i1) -> null;
-          assertThat(f.isApplicableTo(1)).isTrue();
-      }
+    @Test
+    public void shouldRecognizeApplicabilityOfNonNull() {
+        final CheckedFunction1<Integer, Integer> f = (i1) -> null;
+        assertThat(f.isApplicableTo(1)).isTrue();
+    }
 
-      @Test
-      public void shouldRecognizeApplicabilityToType() {
-          final CheckedFunction1<Integer, Integer> f = (i1) -> null;
-          assertThat(f.isApplicableToType(Integer.class)).isTrue();
-      }
+    @Test
+    public void shouldRecognizeApplicabilityToType() {
+        final CheckedFunction1<Integer, Integer> f = (i1) -> null;
+        assertThat(f.isApplicableToType(Integer.class)).isTrue();
+    }
 
     @Test
     public void shouldGetArity() {

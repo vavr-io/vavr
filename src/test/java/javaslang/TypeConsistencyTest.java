@@ -75,7 +75,7 @@ public class TypeConsistencyTest {
                 .filter(c -> {
                     final String name = c.getName();
                     return !name.startsWith("javaslang.Function") && !name.startsWith("javaslang.CheckedFunction") &&
-                           !name.startsWith("javaslang.Consumer") && !name.startsWith("javaslang.CheckedConsumer");
+                            !name.startsWith("javaslang.Consumer") && !name.startsWith("javaslang.CheckedConsumer");
                 });
         final Stream<String> msgs = classes
                 .map(clazz -> Tuple.of(clazz, getUnoverriddenMethods(clazz)))

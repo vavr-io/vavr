@@ -9,16 +9,17 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import javaslang.control.Try;
+
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import javaslang.control.Try;
 
 /**
  * Represents a function with one argument.
  *
  * @param <T1> argument 1 of the function
- * @param <R> return type of the function
+ * @param <R>  return type of the function
  * @since 1.1.0
  */
 @FunctionalInterface
@@ -58,8 +59,8 @@ public interface CheckedFunction1<T1, R> extends λ<R> {
      * </code></pre>
      *
      * @param methodReference (typically) a method reference, e.g. {@code Type::method}
-     * @param <R> return type
-     * @param <T1> 1st argument
+     * @param <R>             return type
+     * @param <T1>            1st argument
      * @return a {@code CheckedFunction1}
      */
     static <T1, R> CheckedFunction1<T1, R> lift(CheckedFunction1<T1, R> methodReference) {
@@ -143,7 +144,7 @@ public interface CheckedFunction1<T1, R> extends λ<R> {
      * Returns a composed function that first applies this CheckedFunction1 to the given argument and then applies
      * {@linkplain CheckedFunction1} {@code after} to the result.
      *
-     * @param <V> return type of after
+     * @param <V>   return type of after
      * @param after the function applied after this
      * @return a function composed of this and after
      * @throws NullPointerException if after is null
@@ -157,7 +158,7 @@ public interface CheckedFunction1<T1, R> extends λ<R> {
      * Returns a composed function that first applies the {@linkplain CheckedFunction1} {@code before} the
      * given argument and then applies this CheckedFunction1 to the result.
      *
-     * @param <V> argument type of before
+     * @param <V>    argument type of before
      * @param before the function applied before this
      * @return a function composed of before and this
      * @throws NullPointerException if before is null

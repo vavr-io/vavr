@@ -19,7 +19,7 @@ import java.util.function.BiFunction;
  *
  * @param <T1> argument 1 of the function
  * @param <T2> argument 2 of the function
- * @param <R> return type of the function
+ * @param <R>  return type of the function
  * @since 1.1.0
  */
 @FunctionalInterface
@@ -59,9 +59,9 @@ public interface Function2<T1, T2, R> extends λ<R>, BiFunction<T1, T2, R> {
      * </code></pre>
      *
      * @param methodReference (typically) a method reference, e.g. {@code Type::method}
-     * @param <R> return type
-     * @param <T1> 1st argument
-     * @param <T2> 2nd argument
+     * @param <R>             return type
+     * @param <T1>            1st argument
+     * @param <T2>            2nd argument
      * @return a {@code Function2}
      */
     static <T1, T2, R> Function2<T1, T2, R> lift(Function2<T1, T2, R> methodReference) {
@@ -74,7 +74,6 @@ public interface Function2<T1, T2, R> extends λ<R>, BiFunction<T1, T2, R> {
      * @param t1 argument 1
      * @param t2 argument 2
      * @return the result of function application
-     * 
      */
     R apply(T1 t1, T2 t2);
 
@@ -92,7 +91,7 @@ public interface Function2<T1, T2, R> extends λ<R>, BiFunction<T1, T2, R> {
         final Class<?>[] paramTypes = getType().parameterArray();
         return
                 (o1 == null || paramTypes[0].isAssignableFrom(o1.getClass())) &&
-                (o2 == null || paramTypes[1].isAssignableFrom(o2.getClass()));
+                        (o2 == null || paramTypes[1].isAssignableFrom(o2.getClass()));
     }
 
     /**
@@ -108,7 +107,7 @@ public interface Function2<T1, T2, R> extends λ<R>, BiFunction<T1, T2, R> {
         final Class<?>[] paramTypes = getType().parameterArray();
         return
                 paramTypes[0].isAssignableFrom(type1) &&
-                paramTypes[1].isAssignableFrom(type2);
+                        paramTypes[1].isAssignableFrom(type2);
     }
 
     /**
@@ -116,7 +115,6 @@ public interface Function2<T1, T2, R> extends λ<R>, BiFunction<T1, T2, R> {
      *
      * @param t1 argument 1
      * @return a partial application of this function
-     * 
      */
     default Function1<T2, R> apply(T1 t1) {
         return (T2 t2) -> apply(t1, t2);
@@ -153,7 +151,7 @@ public interface Function2<T1, T2, R> extends λ<R>, BiFunction<T1, T2, R> {
      * Returns a composed function that first applies this Function2 to the given argument and then applies
      * {@linkplain Function1} {@code after} to the result.
      *
-     * @param <V> return type of after
+     * @param <V>   return type of after
      * @param after the function applied after this
      * @return a function composed of this and after
      * @throws NullPointerException if after is null

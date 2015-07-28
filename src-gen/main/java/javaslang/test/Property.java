@@ -9,16 +9,18 @@ package javaslang.test;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import java.util.Objects;
-import java.util.Random;
 import javaslang.*;
 import javaslang.control.Failure;
 import javaslang.control.None;
 import javaslang.control.Some;
 import javaslang.control.Try;
 
+import java.util.Objects;
+import java.util.Random;
+
 /**
  * A property builder which provides a fluent API to build checkable properties.
+ *
  * @since 1.2.0
  */
 public class Property {
@@ -27,6 +29,7 @@ public class Property {
 
     /**
      * Construct a named property.
+     *
      * @param name property name
      */
     public Property(String name) {
@@ -61,7 +64,7 @@ public class Property {
      * Returns a logical for all quantor of 1 given variables.
      *
      * @param <T1> 1st variable type of this for all quantor
-     * @param a1 1st variable of this for all quantor
+     * @param a1   1st variable of this for all quantor
      * @return a new {@code ForAll1} instance of 1 variables
      */
     public <T1> ForAll1<T1> forAll(Arbitrary<T1> a1) {
@@ -73,8 +76,8 @@ public class Property {
      *
      * @param <T1> 1st variable type of this for all quantor
      * @param <T2> 2nd variable type of this for all quantor
-     * @param a1 1st variable of this for all quantor
-     * @param a2 2nd variable of this for all quantor
+     * @param a1   1st variable of this for all quantor
+     * @param a2   2nd variable of this for all quantor
      * @return a new {@code ForAll2} instance of 2 variables
      */
     public <T1, T2> ForAll2<T1, T2> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2) {
@@ -87,9 +90,9 @@ public class Property {
      * @param <T1> 1st variable type of this for all quantor
      * @param <T2> 2nd variable type of this for all quantor
      * @param <T3> 3rd variable type of this for all quantor
-     * @param a1 1st variable of this for all quantor
-     * @param a2 2nd variable of this for all quantor
-     * @param a3 3rd variable of this for all quantor
+     * @param a1   1st variable of this for all quantor
+     * @param a2   2nd variable of this for all quantor
+     * @param a3   3rd variable of this for all quantor
      * @return a new {@code ForAll3} instance of 3 variables
      */
     public <T1, T2, T3> ForAll3<T1, T2, T3> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3) {
@@ -103,10 +106,10 @@ public class Property {
      * @param <T2> 2nd variable type of this for all quantor
      * @param <T3> 3rd variable type of this for all quantor
      * @param <T4> 4th variable type of this for all quantor
-     * @param a1 1st variable of this for all quantor
-     * @param a2 2nd variable of this for all quantor
-     * @param a3 3rd variable of this for all quantor
-     * @param a4 4th variable of this for all quantor
+     * @param a1   1st variable of this for all quantor
+     * @param a2   2nd variable of this for all quantor
+     * @param a3   3rd variable of this for all quantor
+     * @param a4   4th variable of this for all quantor
      * @return a new {@code ForAll4} instance of 4 variables
      */
     public <T1, T2, T3, T4> ForAll4<T1, T2, T3, T4> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4) {
@@ -121,11 +124,11 @@ public class Property {
      * @param <T3> 3rd variable type of this for all quantor
      * @param <T4> 4th variable type of this for all quantor
      * @param <T5> 5th variable type of this for all quantor
-     * @param a1 1st variable of this for all quantor
-     * @param a2 2nd variable of this for all quantor
-     * @param a3 3rd variable of this for all quantor
-     * @param a4 4th variable of this for all quantor
-     * @param a5 5th variable of this for all quantor
+     * @param a1   1st variable of this for all quantor
+     * @param a2   2nd variable of this for all quantor
+     * @param a3   3rd variable of this for all quantor
+     * @param a4   4th variable of this for all quantor
+     * @param a5   5th variable of this for all quantor
      * @return a new {@code ForAll5} instance of 5 variables
      */
     public <T1, T2, T3, T4, T5> ForAll5<T1, T2, T3, T4, T5> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5) {
@@ -141,12 +144,12 @@ public class Property {
      * @param <T4> 4th variable type of this for all quantor
      * @param <T5> 5th variable type of this for all quantor
      * @param <T6> 6th variable type of this for all quantor
-     * @param a1 1st variable of this for all quantor
-     * @param a2 2nd variable of this for all quantor
-     * @param a3 3rd variable of this for all quantor
-     * @param a4 4th variable of this for all quantor
-     * @param a5 5th variable of this for all quantor
-     * @param a6 6th variable of this for all quantor
+     * @param a1   1st variable of this for all quantor
+     * @param a2   2nd variable of this for all quantor
+     * @param a3   3rd variable of this for all quantor
+     * @param a4   4th variable of this for all quantor
+     * @param a5   5th variable of this for all quantor
+     * @param a6   6th variable of this for all quantor
      * @return a new {@code ForAll6} instance of 6 variables
      */
     public <T1, T2, T3, T4, T5, T6> ForAll6<T1, T2, T3, T4, T5, T6> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6) {
@@ -163,13 +166,13 @@ public class Property {
      * @param <T5> 5th variable type of this for all quantor
      * @param <T6> 6th variable type of this for all quantor
      * @param <T7> 7th variable type of this for all quantor
-     * @param a1 1st variable of this for all quantor
-     * @param a2 2nd variable of this for all quantor
-     * @param a3 3rd variable of this for all quantor
-     * @param a4 4th variable of this for all quantor
-     * @param a5 5th variable of this for all quantor
-     * @param a6 6th variable of this for all quantor
-     * @param a7 7th variable of this for all quantor
+     * @param a1   1st variable of this for all quantor
+     * @param a2   2nd variable of this for all quantor
+     * @param a3   3rd variable of this for all quantor
+     * @param a4   4th variable of this for all quantor
+     * @param a5   5th variable of this for all quantor
+     * @param a6   6th variable of this for all quantor
+     * @param a7   7th variable of this for all quantor
      * @return a new {@code ForAll7} instance of 7 variables
      */
     public <T1, T2, T3, T4, T5, T6, T7> ForAll7<T1, T2, T3, T4, T5, T6, T7> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7) {
@@ -187,14 +190,14 @@ public class Property {
      * @param <T6> 6th variable type of this for all quantor
      * @param <T7> 7th variable type of this for all quantor
      * @param <T8> 8th variable type of this for all quantor
-     * @param a1 1st variable of this for all quantor
-     * @param a2 2nd variable of this for all quantor
-     * @param a3 3rd variable of this for all quantor
-     * @param a4 4th variable of this for all quantor
-     * @param a5 5th variable of this for all quantor
-     * @param a6 6th variable of this for all quantor
-     * @param a7 7th variable of this for all quantor
-     * @param a8 8th variable of this for all quantor
+     * @param a1   1st variable of this for all quantor
+     * @param a2   2nd variable of this for all quantor
+     * @param a3   3rd variable of this for all quantor
+     * @param a4   4th variable of this for all quantor
+     * @param a5   5th variable of this for all quantor
+     * @param a6   6th variable of this for all quantor
+     * @param a7   7th variable of this for all quantor
+     * @param a8   8th variable of this for all quantor
      * @return a new {@code ForAll8} instance of 8 variables
      */
     public <T1, T2, T3, T4, T5, T6, T7, T8> ForAll8<T1, T2, T3, T4, T5, T6, T7, T8> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8) {
@@ -511,6 +514,7 @@ public class Property {
 
     /**
      * Represents a 1-ary checkable property.
+     *
      * @since 1.2.0
      */
     public static class Property1<T1> implements Checkable {
@@ -550,13 +554,19 @@ public class Property {
                 throw new IllegalArgumentException("tries < 0");
             }
             try {
-                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(1, size, x);
+                }).get();
                 boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> {
+                            throw Errors.genError(1, size, x);
+                        }).get();
                         try {
-                            final Condition condition = Try.of(() -> predicate.apply(val1)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            final Condition condition = Try.of(() -> predicate.apply(val1)).recover(x -> {
+                                throw Errors.predicateError(x);
+                            }).get();
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
@@ -564,18 +574,18 @@ public class Property {
                                     return new CheckResult.Falsified(name, i, Tuple.of(val1));
                                 }
                             }
-                        } catch(Failure.NonFatal nonFatal) {
+                        } catch (Failure.NonFatal nonFatal) {
                             logErroneous(name, i, nonFatal.getCause().getMessage());
                             return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1)));
                         }
-                    } catch(Failure.NonFatal nonFatal) {
+                    } catch (Failure.NonFatal nonFatal) {
                         logErroneous(name, i, nonFatal.getCause().getMessage());
                         return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
                 logSatisfied(name, tries, exhausted);
                 return new CheckResult.Satisfied(name, tries, exhausted);
-            } catch(Failure.NonFatal nonFatal) {
+            } catch (Failure.NonFatal nonFatal) {
                 logErroneous(name, 0, nonFatal.getCause().getMessage());
                 return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
@@ -584,6 +594,7 @@ public class Property {
 
     /**
      * Represents a 2-ary checkable property.
+     *
      * @since 1.2.0
      */
     public static class Property2<T1, T2> implements Checkable {
@@ -625,15 +636,25 @@ public class Property {
                 throw new IllegalArgumentException("tries < 0");
             }
             try {
-                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
-                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(1, size, x);
+                }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(2, size, x);
+                }).get();
                 boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> {
+                            throw Errors.genError(1, size, x);
+                        }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> {
+                            throw Errors.genError(2, size, x);
+                        }).get();
                         try {
-                            final Condition condition = Try.of(() -> predicate.apply(val1, val2)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2)).recover(x -> {
+                                throw Errors.predicateError(x);
+                            }).get();
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
@@ -641,18 +662,18 @@ public class Property {
                                     return new CheckResult.Falsified(name, i, Tuple.of(val1, val2));
                                 }
                             }
-                        } catch(Failure.NonFatal nonFatal) {
+                        } catch (Failure.NonFatal nonFatal) {
                             logErroneous(name, i, nonFatal.getCause().getMessage());
                             return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2)));
                         }
-                    } catch(Failure.NonFatal nonFatal) {
+                    } catch (Failure.NonFatal nonFatal) {
                         logErroneous(name, i, nonFatal.getCause().getMessage());
                         return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
                 logSatisfied(name, tries, exhausted);
                 return new CheckResult.Satisfied(name, tries, exhausted);
-            } catch(Failure.NonFatal nonFatal) {
+            } catch (Failure.NonFatal nonFatal) {
                 logErroneous(name, 0, nonFatal.getCause().getMessage());
                 return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
@@ -661,6 +682,7 @@ public class Property {
 
     /**
      * Represents a 3-ary checkable property.
+     *
      * @since 1.2.0
      */
     public static class Property3<T1, T2, T3> implements Checkable {
@@ -704,17 +726,31 @@ public class Property {
                 throw new IllegalArgumentException("tries < 0");
             }
             try {
-                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
-                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
-                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(1, size, x);
+                }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(2, size, x);
+                }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(3, size, x);
+                }).get();
                 boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> {
+                            throw Errors.genError(1, size, x);
+                        }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> {
+                            throw Errors.genError(2, size, x);
+                        }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> {
+                            throw Errors.genError(3, size, x);
+                        }).get();
                         try {
-                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3)).recover(x -> {
+                                throw Errors.predicateError(x);
+                            }).get();
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
@@ -722,18 +758,18 @@ public class Property {
                                     return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3));
                                 }
                             }
-                        } catch(Failure.NonFatal nonFatal) {
+                        } catch (Failure.NonFatal nonFatal) {
                             logErroneous(name, i, nonFatal.getCause().getMessage());
                             return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3)));
                         }
-                    } catch(Failure.NonFatal nonFatal) {
+                    } catch (Failure.NonFatal nonFatal) {
                         logErroneous(name, i, nonFatal.getCause().getMessage());
                         return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
                 logSatisfied(name, tries, exhausted);
                 return new CheckResult.Satisfied(name, tries, exhausted);
-            } catch(Failure.NonFatal nonFatal) {
+            } catch (Failure.NonFatal nonFatal) {
                 logErroneous(name, 0, nonFatal.getCause().getMessage());
                 return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
@@ -742,6 +778,7 @@ public class Property {
 
     /**
      * Represents a 4-ary checkable property.
+     *
      * @since 1.2.0
      */
     public static class Property4<T1, T2, T3, T4> implements Checkable {
@@ -787,19 +824,37 @@ public class Property {
                 throw new IllegalArgumentException("tries < 0");
             }
             try {
-                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
-                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
-                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
-                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(1, size, x);
+                }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(2, size, x);
+                }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(3, size, x);
+                }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(4, size, x);
+                }).get();
                 boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> {
+                            throw Errors.genError(1, size, x);
+                        }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> {
+                            throw Errors.genError(2, size, x);
+                        }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> {
+                            throw Errors.genError(3, size, x);
+                        }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> {
+                            throw Errors.genError(4, size, x);
+                        }).get();
                         try {
-                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4)).recover(x -> {
+                                throw Errors.predicateError(x);
+                            }).get();
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
@@ -807,18 +862,18 @@ public class Property {
                                     return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4));
                                 }
                             }
-                        } catch(Failure.NonFatal nonFatal) {
+                        } catch (Failure.NonFatal nonFatal) {
                             logErroneous(name, i, nonFatal.getCause().getMessage());
                             return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4)));
                         }
-                    } catch(Failure.NonFatal nonFatal) {
+                    } catch (Failure.NonFatal nonFatal) {
                         logErroneous(name, i, nonFatal.getCause().getMessage());
                         return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
                 logSatisfied(name, tries, exhausted);
                 return new CheckResult.Satisfied(name, tries, exhausted);
-            } catch(Failure.NonFatal nonFatal) {
+            } catch (Failure.NonFatal nonFatal) {
                 logErroneous(name, 0, nonFatal.getCause().getMessage());
                 return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
@@ -827,6 +882,7 @@ public class Property {
 
     /**
      * Represents a 5-ary checkable property.
+     *
      * @since 1.2.0
      */
     public static class Property5<T1, T2, T3, T4, T5> implements Checkable {
@@ -874,21 +930,43 @@ public class Property {
                 throw new IllegalArgumentException("tries < 0");
             }
             try {
-                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
-                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
-                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
-                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
-                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(1, size, x);
+                }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(2, size, x);
+                }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(3, size, x);
+                }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(4, size, x);
+                }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(5, size, x);
+                }).get();
                 boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> {
+                            throw Errors.genError(1, size, x);
+                        }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> {
+                            throw Errors.genError(2, size, x);
+                        }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> {
+                            throw Errors.genError(3, size, x);
+                        }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> {
+                            throw Errors.genError(4, size, x);
+                        }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> {
+                            throw Errors.genError(5, size, x);
+                        }).get();
                         try {
-                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5)).recover(x -> {
+                                throw Errors.predicateError(x);
+                            }).get();
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
@@ -896,18 +974,18 @@ public class Property {
                                     return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5));
                                 }
                             }
-                        } catch(Failure.NonFatal nonFatal) {
+                        } catch (Failure.NonFatal nonFatal) {
                             logErroneous(name, i, nonFatal.getCause().getMessage());
                             return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5)));
                         }
-                    } catch(Failure.NonFatal nonFatal) {
+                    } catch (Failure.NonFatal nonFatal) {
                         logErroneous(name, i, nonFatal.getCause().getMessage());
                         return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
                 logSatisfied(name, tries, exhausted);
                 return new CheckResult.Satisfied(name, tries, exhausted);
-            } catch(Failure.NonFatal nonFatal) {
+            } catch (Failure.NonFatal nonFatal) {
                 logErroneous(name, 0, nonFatal.getCause().getMessage());
                 return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
@@ -916,6 +994,7 @@ public class Property {
 
     /**
      * Represents a 6-ary checkable property.
+     *
      * @since 1.2.0
      */
     public static class Property6<T1, T2, T3, T4, T5, T6> implements Checkable {
@@ -965,23 +1044,49 @@ public class Property {
                 throw new IllegalArgumentException("tries < 0");
             }
             try {
-                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
-                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
-                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
-                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
-                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
-                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(1, size, x);
+                }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(2, size, x);
+                }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(3, size, x);
+                }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(4, size, x);
+                }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(5, size, x);
+                }).get();
+                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(6, size, x);
+                }).get();
                 boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
-                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> {
+                            throw Errors.genError(1, size, x);
+                        }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> {
+                            throw Errors.genError(2, size, x);
+                        }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> {
+                            throw Errors.genError(3, size, x);
+                        }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> {
+                            throw Errors.genError(4, size, x);
+                        }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> {
+                            throw Errors.genError(5, size, x);
+                        }).get();
+                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> {
+                            throw Errors.genError(6, size, x);
+                        }).get();
                         try {
-                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6)).recover(x -> {
+                                throw Errors.predicateError(x);
+                            }).get();
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
@@ -989,18 +1094,18 @@ public class Property {
                                     return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6));
                                 }
                             }
-                        } catch(Failure.NonFatal nonFatal) {
+                        } catch (Failure.NonFatal nonFatal) {
                             logErroneous(name, i, nonFatal.getCause().getMessage());
                             return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6)));
                         }
-                    } catch(Failure.NonFatal nonFatal) {
+                    } catch (Failure.NonFatal nonFatal) {
                         logErroneous(name, i, nonFatal.getCause().getMessage());
                         return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
                 logSatisfied(name, tries, exhausted);
                 return new CheckResult.Satisfied(name, tries, exhausted);
-            } catch(Failure.NonFatal nonFatal) {
+            } catch (Failure.NonFatal nonFatal) {
                 logErroneous(name, 0, nonFatal.getCause().getMessage());
                 return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
@@ -1009,6 +1114,7 @@ public class Property {
 
     /**
      * Represents a 7-ary checkable property.
+     *
      * @since 1.2.0
      */
     public static class Property7<T1, T2, T3, T4, T5, T6, T7> implements Checkable {
@@ -1060,25 +1166,55 @@ public class Property {
                 throw new IllegalArgumentException("tries < 0");
             }
             try {
-                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
-                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
-                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
-                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
-                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
-                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
-                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).get();
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(1, size, x);
+                }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(2, size, x);
+                }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(3, size, x);
+                }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(4, size, x);
+                }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(5, size, x);
+                }).get();
+                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(6, size, x);
+                }).get();
+                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(7, size, x);
+                }).get();
                 boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
-                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw Errors.genError(6, size, x); }).get();
-                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> {
+                            throw Errors.genError(1, size, x);
+                        }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> {
+                            throw Errors.genError(2, size, x);
+                        }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> {
+                            throw Errors.genError(3, size, x);
+                        }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> {
+                            throw Errors.genError(4, size, x);
+                        }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> {
+                            throw Errors.genError(5, size, x);
+                        }).get();
+                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> {
+                            throw Errors.genError(6, size, x);
+                        }).get();
+                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> {
+                            throw Errors.genError(7, size, x);
+                        }).get();
                         try {
-                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7)).recover(x -> {
+                                throw Errors.predicateError(x);
+                            }).get();
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
@@ -1086,18 +1222,18 @@ public class Property {
                                     return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6, val7));
                                 }
                             }
-                        } catch(Failure.NonFatal nonFatal) {
+                        } catch (Failure.NonFatal nonFatal) {
                             logErroneous(name, i, nonFatal.getCause().getMessage());
                             return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7)));
                         }
-                    } catch(Failure.NonFatal nonFatal) {
+                    } catch (Failure.NonFatal nonFatal) {
                         logErroneous(name, i, nonFatal.getCause().getMessage());
                         return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
                 logSatisfied(name, tries, exhausted);
                 return new CheckResult.Satisfied(name, tries, exhausted);
-            } catch(Failure.NonFatal nonFatal) {
+            } catch (Failure.NonFatal nonFatal) {
                 logErroneous(name, 0, nonFatal.getCause().getMessage());
                 return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
@@ -1106,6 +1242,7 @@ public class Property {
 
     /**
      * Represents a 8-ary checkable property.
+     *
      * @since 1.2.0
      */
     public static class Property8<T1, T2, T3, T4, T5, T6, T7, T8> implements Checkable {
@@ -1159,27 +1296,61 @@ public class Property {
                 throw new IllegalArgumentException("tries < 0");
             }
             try {
-                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
-                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
-                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
-                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
-                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
-                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
-                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).get();
-                final Gen<T8> gen8 = Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).get();
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(1, size, x);
+                }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(2, size, x);
+                }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(3, size, x);
+                }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(4, size, x);
+                }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(5, size, x);
+                }).get();
+                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(6, size, x);
+                }).get();
+                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(7, size, x);
+                }).get();
+                final Gen<T8> gen8 = Try.of(() -> a8.apply(size)).recover(x -> {
+                    throw Errors.arbitraryError(8, size, x);
+                }).get();
                 boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
-                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw Errors.genError(6, size, x); }).get();
-                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> { throw Errors.genError(7, size, x); }).get();
-                        final T8 val8 = Try.of(() -> gen8.apply(random)).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> {
+                            throw Errors.genError(1, size, x);
+                        }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> {
+                            throw Errors.genError(2, size, x);
+                        }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> {
+                            throw Errors.genError(3, size, x);
+                        }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> {
+                            throw Errors.genError(4, size, x);
+                        }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> {
+                            throw Errors.genError(5, size, x);
+                        }).get();
+                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> {
+                            throw Errors.genError(6, size, x);
+                        }).get();
+                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> {
+                            throw Errors.genError(7, size, x);
+                        }).get();
+                        final T8 val8 = Try.of(() -> gen8.apply(random)).recover(x -> {
+                            throw Errors.genError(8, size, x);
+                        }).get();
                         try {
-                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8)).recover(x -> {
+                                throw Errors.predicateError(x);
+                            }).get();
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
@@ -1187,18 +1358,18 @@ public class Property {
                                     return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8));
                                 }
                             }
-                        } catch(Failure.NonFatal nonFatal) {
+                        } catch (Failure.NonFatal nonFatal) {
                             logErroneous(name, i, nonFatal.getCause().getMessage());
                             return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8)));
                         }
-                    } catch(Failure.NonFatal nonFatal) {
+                    } catch (Failure.NonFatal nonFatal) {
                         logErroneous(name, i, nonFatal.getCause().getMessage());
                         return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
                 logSatisfied(name, tries, exhausted);
                 return new CheckResult.Satisfied(name, tries, exhausted);
-            } catch(Failure.NonFatal nonFatal) {
+            } catch (Failure.NonFatal nonFatal) {
                 logErroneous(name, 0, nonFatal.getCause().getMessage());
                 return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }

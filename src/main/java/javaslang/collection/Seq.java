@@ -8,12 +8,9 @@ package javaslang.collection;
 import javaslang.Tuple2;
 import javaslang.control.Option;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.function.*;
-import java.util.stream.Collector;
 
 /**
  * Interface for sequential, traversable data structures.

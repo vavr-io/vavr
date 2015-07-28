@@ -149,8 +149,8 @@ public interface Option<T> extends TraversableOnce<T>, Value<T> {
      * </code>
      * </pre>
      *
-     * @param <U>      component type of the result {@code Option}
-     * @param f        a function which maps elements of this {@code Option} to {@code Option}s
+     * @param <U> component type of the result {@code Option}
+     * @param f   a function which maps elements of this {@code Option} to {@code Option}s
      * @return a new {@code Option}
      * @throws NullPointerException if {@code f} is null
      */

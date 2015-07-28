@@ -147,7 +147,7 @@ public interface Match<R> extends Function<Object, R> {
         return new MatchFunction.WhenTypeUntyped<>(type);
     }
 
-    @SuppressWarnings({"unchecked", "ConstantConditions"})
+    @SuppressWarnings({ "unchecked", "ConstantConditions" })
     static <T> MatchFunction.WhenTypeInUntyped<T> whenTypeIn(Class<?>... types) {
         Objects.requireNonNull(types, "types is null");
         return new MatchFunction.WhenTypeInUntyped<T>((Class<T>[]) types);

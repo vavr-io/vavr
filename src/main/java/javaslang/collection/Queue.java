@@ -116,7 +116,7 @@ public class Queue<T> implements Seq<T>, Serializable {
      * @throws NullPointerException if {@code elements} is null
      */
     @SafeVarargs
-    @SuppressWarnings({"unchecked", "varargs"})
+    @SuppressWarnings({ "unchecked", "varargs" })
     public static <T> Queue<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return Queue.ofAll(List.of(elements));
@@ -271,7 +271,7 @@ public class Queue<T> implements Seq<T>, Serializable {
      * Queue.rangeBy(4, 1, 2)  // = Queue()
      * </code>
      * </pre>
-
+     *
      * @param from        the first number
      * @param toExclusive the last number + 1
      * @param step        the step

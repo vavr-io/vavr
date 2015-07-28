@@ -9,10 +9,10 @@ package javaslang.test;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import javaslang.CheckedFunction4;
 import org.junit.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class PropertyCheck4Test {
 
@@ -52,7 +52,9 @@ public class PropertyCheck4Test {
     @Test
     public void shouldCheckErroneousProperty4() {
         final Property.ForAll4<Object, Object, Object, Object> forAll = new Property("test").forAll(OBJECTS, OBJECTS, OBJECTS, OBJECTS);
-        final CheckedFunction4<Object, Object, Object, Object, Boolean> predicate = (o1, o2, o3, o4) -> { throw new RuntimeException("yay! (this is a negative test)"); };
+        final CheckedFunction4<Object, Object, Object, Object, Boolean> predicate = (o1, o2, o3, o4) -> {
+            throw new RuntimeException("yay! (this is a negative test)");
+        };
         final CheckResult result = forAll.suchThat(predicate).check();
         assertThat(result.isErroneous()).isTrue();
     }
@@ -80,28 +82,30 @@ public class PropertyCheck4Test {
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowOnProperty4CheckGivenNegativeTries() {
         new Property("test")
-            .forAll(OBJECTS, OBJECTS, OBJECTS, OBJECTS)
-            .suchThat((o1, o2, o3, o4) -> true)
-            .check(Checkable.RNG.get(), 0, -1);
+                .forAll(OBJECTS, OBJECTS, OBJECTS, OBJECTS)
+                .suchThat((o1, o2, o3, o4) -> true)
+                .check(Checkable.RNG.get(), 0, -1);
     }
 
     @Test
     public void shouldReturnErroneousProperty4CheckResultIfGenFails() {
         final Arbitrary<Object> failingGen = Gen.fail("yay! (this is a negative test)").arbitrary();
         final CheckResult result = new Property("test")
-            .forAll(failingGen, OBJECTS, OBJECTS, OBJECTS)
-            .suchThat((o1, o2, o3, o4) -> true)
-            .check();
+                .forAll(failingGen, OBJECTS, OBJECTS, OBJECTS)
+                .suchThat((o1, o2, o3, o4) -> true)
+                .check();
         assertThat(result.isErroneous()).isTrue();
     }
 
     @Test
     public void shouldReturnErroneousProperty4CheckResultIfArbitraryFails() {
-        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("yay! (this is a negative test)"); };
+        final Arbitrary<Object> failingArbitrary = size -> {
+            throw new RuntimeException("yay! (this is a negative test)");
+        };
         final CheckResult result = new Property("test")
-            .forAll(failingArbitrary, OBJECTS, OBJECTS, OBJECTS)
-            .suchThat((o1, o2, o3, o4) -> true)
-            .check();
+                .forAll(failingArbitrary, OBJECTS, OBJECTS, OBJECTS)
+                .suchThat((o1, o2, o3, o4) -> true)
+                .check();
         assertThat(result.isErroneous()).isTrue();
     }
 }

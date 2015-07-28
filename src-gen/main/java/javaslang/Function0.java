@@ -55,7 +55,7 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
      * </code></pre>
      *
      * @param methodReference (typically) a method reference, e.g. {@code Type::method}
-     * @param <R> return type
+     * @param <R>             return type
      * @return a {@code Function0}
      */
     static <R> Function0<R> lift(Function0<R> methodReference) {
@@ -66,7 +66,6 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
      * Applies this function to no arguments and returns the result.
      *
      * @return the result of function application
-     * 
      */
     R apply();
 
@@ -109,7 +108,7 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
      * Returns a composed function that first applies this Function0 to the given argument and then applies
      * {@linkplain Function1} {@code after} to the result.
      *
-     * @param <V> return type of after
+     * @param <V>   return type of after
      * @param after the function applied after this
      * @return a function composed of this and after
      * @throws NullPointerException if after is null

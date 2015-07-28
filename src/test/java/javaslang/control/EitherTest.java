@@ -138,14 +138,14 @@ public class EitherTest {
 
     @Test
     public void shouldReturnLeftWhenOrElseRunOnLeftProjectionOfLeft() {
-        final boolean[] actual = new boolean[]{true};
+        final boolean[] actual = new boolean[] { true };
         new Left<>(1).left().orElseRun(s -> actual[0] = false);
         assertThat(actual[0]).isTrue();
     }
 
     @Test
     public void shouldReturnOtherWhenOrElseRunOnLeftProjectionOfRight() {
-        final boolean[] actual = new boolean[]{false};
+        final boolean[] actual = new boolean[] { false };
         new Right<>("1").left().orElseRun(s -> {
             actual[0] = true;
         });
@@ -559,7 +559,7 @@ public class EitherTest {
 
     @Test
     public void shouldReturnRightWhenOrElseRunOnRightProjectionOfRight() {
-        final boolean[] actual = new boolean[]{true};
+        final boolean[] actual = new boolean[] { true };
         new Right<String, Integer>(1).right().orElseRun(s -> {
             actual[0] = false;
         });
@@ -568,7 +568,7 @@ public class EitherTest {
 
     @Test
     public void shouldReturnOtherWhenOrElseRunOnRightProjectionOfLeft() {
-        final boolean[] actual = new boolean[]{false};
+        final boolean[] actual = new boolean[] { false };
         new Left<String, Integer>("1").right().orElseRun(s -> {
             actual[0] = true;
         });

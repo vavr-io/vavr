@@ -9,8 +9,6 @@ import javaslang.Tuple;
 import javaslang.collection.BinaryTree;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
-import javaslang.control.Option;
-import javaslang.control.Some;
 import org.junit.Test;
 
 import java.util.Random;

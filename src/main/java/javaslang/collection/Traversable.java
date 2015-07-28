@@ -666,7 +666,7 @@ public interface Traversable<T> extends TraversableOnce<T> {
     /**
      * Calculates the maximum of this elements within the co-domain of a specific function.
      *
-     * @param f A function that maps this elements to comparable elements
+     * @param f   A function that maps this elements to comparable elements
      * @param <U> The type where elements are compared
      * @return The element of type T which is the maximum within U
      */
@@ -713,7 +713,7 @@ public interface Traversable<T> extends TraversableOnce<T> {
     /**
      * Calculates the minimum of this elements within the co-domain of a specific function.
      *
-     * @param f A function that maps this elements to comparable elements
+     * @param f   A function that maps this elements to comparable elements
      * @param <U> The type where elements are compared
      * @return The element of type T which is the minimum within U
      */

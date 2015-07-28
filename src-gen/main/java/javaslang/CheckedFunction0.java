@@ -9,8 +9,9 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import java.util.Objects;
 import javaslang.control.Try;
+
+import java.util.Objects;
 
 /**
  * Represents a function with no arguments.
@@ -55,7 +56,7 @@ public interface CheckedFunction0<R> extends λ<R> {
      * </code></pre>
      *
      * @param methodReference (typically) a method reference, e.g. {@code Type::method}
-     * @param <R> return type
+     * @param <R>             return type
      * @return a {@code CheckedFunction0}
      */
     static <R> CheckedFunction0<R> lift(CheckedFunction0<R> methodReference) {
@@ -99,7 +100,7 @@ public interface CheckedFunction0<R> extends λ<R> {
      * Returns a composed function that first applies this CheckedFunction0 to the given argument and then applies
      * {@linkplain CheckedFunction1} {@code after} to the result.
      *
-     * @param <V> return type of after
+     * @param <V>   return type of after
      * @param after the function applied after this
      * @return a function composed of this and after
      * @throws NullPointerException if after is null

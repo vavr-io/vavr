@@ -9,17 +9,18 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import javaslang.control.Try;
+
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import javaslang.control.Try;
 
 /**
  * Represents a function with two arguments.
  *
  * @param <T1> argument 1 of the function
  * @param <T2> argument 2 of the function
- * @param <R> return type of the function
+ * @param <R>  return type of the function
  * @since 1.1.0
  */
 @FunctionalInterface
@@ -59,9 +60,9 @@ public interface CheckedFunction2<T1, T2, R> extends λ<R> {
      * </code></pre>
      *
      * @param methodReference (typically) a method reference, e.g. {@code Type::method}
-     * @param <R> return type
-     * @param <T1> 1st argument
-     * @param <T2> 2nd argument
+     * @param <R>             return type
+     * @param <T1>            1st argument
+     * @param <T2>            2nd argument
      * @return a {@code CheckedFunction2}
      */
     static <T1, T2, R> CheckedFunction2<T1, T2, R> lift(CheckedFunction2<T1, T2, R> methodReference) {
@@ -92,7 +93,7 @@ public interface CheckedFunction2<T1, T2, R> extends λ<R> {
         final Class<?>[] paramTypes = getType().parameterArray();
         return
                 (o1 == null || paramTypes[0].isAssignableFrom(o1.getClass())) &&
-                (o2 == null || paramTypes[1].isAssignableFrom(o2.getClass()));
+                        (o2 == null || paramTypes[1].isAssignableFrom(o2.getClass()));
     }
 
     /**
@@ -108,7 +109,7 @@ public interface CheckedFunction2<T1, T2, R> extends λ<R> {
         final Class<?>[] paramTypes = getType().parameterArray();
         return
                 paramTypes[0].isAssignableFrom(type1) &&
-                paramTypes[1].isAssignableFrom(type2);
+                        paramTypes[1].isAssignableFrom(type2);
     }
 
     /**
@@ -153,7 +154,7 @@ public interface CheckedFunction2<T1, T2, R> extends λ<R> {
      * Returns a composed function that first applies this CheckedFunction2 to the given argument and then applies
      * {@linkplain CheckedFunction1} {@code after} to the result.
      *
-     * @param <V> return type of after
+     * @param <V>   return type of after
      * @param after the function applied after this
      * @return a function composed of this and after
      * @throws NullPointerException if after is null
