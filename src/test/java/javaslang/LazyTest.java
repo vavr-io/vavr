@@ -55,4 +55,33 @@ public class LazyTest {
         lazy.get();
         assertThat(lazy.toString()).isEqualTo("Lazy(1)");
     }
+
+    // -- proxy
+
+    @Test
+    public void shouldCreateLazyProxy() {
+
+        final String[] evaluated = new String[] { null };
+
+        final CharSequence chars = Lazy.of(() -> {
+            final String value = "Yay!";
+            evaluated[0] = value;
+            return value;
+        }, CharSequence.class);
+
+        assertThat(evaluated[0]).isEqualTo(null);
+        assertThat(chars).isEqualTo("Yay!");
+        assertThat(evaluated[0]).isEqualTo("Yay!");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowWhenCreatingLazyProxyOfObjectType() {
+        Lazy.of(() -> "", String.class);
+    }
+
+    @Test
+    public void shouldBehaveLikeLazyWhenCreatingAProxy() {
+        final CharSequence chars = Lazy.of(() -> "Yay!", CharSequence.class);
+        assertThat(chars.toString()).isEqualTo("Yay!");
+    }
 }
