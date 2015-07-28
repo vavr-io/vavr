@@ -9,14 +9,13 @@ package javaslang.test;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Random;
 import javaslang.CheckedFunction1;
 import javaslang.Tuple;
 import javaslang.collection.List;
 import org.junit.Test;
-
-import java.util.Random;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class PropertyTest {
 
@@ -89,11 +88,11 @@ public class PropertyTest {
         final Arbitrary<List<Integer>> ints = Arbitrary.list(size -> Gen.choose(0, size));
         final Arbitrary<List<String>> strings = Arbitrary.list(
                 Arbitrary.string(
-                        Gen.frequency(
-                                Tuple.of(1, Gen.choose('A', 'Z')),
-                                Tuple.of(1, Gen.choose('a', 'z')),
-                                Tuple.of(1, Gen.choose('0', '9'))
-                        )));
+                    Gen.frequency(
+                        Tuple.of(1, Gen.choose('A', 'Z')),
+                        Tuple.of(1, Gen.choose('a', 'z')),
+                        Tuple.of(1, Gen.choose('0', '9'))
+                    )));
         final CheckResult result = new Property("test")
                 .forAll(ints, strings)
                 .suchThat((is, ss) -> is.length() == ss.length())
@@ -127,9 +126,7 @@ public class PropertyTest {
 
     @Test
     public void shouldRecognizeArbitraryError() {
-        final Arbitrary<?> arbitrary = n -> {
-            throw new RuntimeException("yay! (this is a negative test)");
-        };
+        final Arbitrary<?> arbitrary = n -> { throw new RuntimeException("yay! (this is a negative test)"); };
         final CheckResult result = new Property("test").forAll(arbitrary).suchThat(tautology()).check();
         assertThat(result.isErroneous()).isTrue();
         assertThat(result.isExhausted()).isFalse();

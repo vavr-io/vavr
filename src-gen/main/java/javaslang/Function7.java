@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @param <T5> argument 5 of the function
  * @param <T6> argument 6 of the function
  * @param <T7> argument 7 of the function
- * @param <R>  return type of the function
+ * @param <R> return type of the function
  * @since 1.1.0
  */
 @FunctionalInterface
@@ -63,14 +63,14 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends λ<R> {
      * </code></pre>
      *
      * @param methodReference (typically) a method reference, e.g. {@code Type::method}
-     * @param <R>             return type
-     * @param <T1>            1st argument
-     * @param <T2>            2nd argument
-     * @param <T3>            3rd argument
-     * @param <T4>            4th argument
-     * @param <T5>            5th argument
-     * @param <T6>            6th argument
-     * @param <T7>            7th argument
+     * @param <R> return type
+     * @param <T1> 1st argument
+     * @param <T2> 2nd argument
+     * @param <T3> 3rd argument
+     * @param <T4> 4th argument
+     * @param <T5> 5th argument
+     * @param <T6> 6th argument
+     * @param <T7> 7th argument
      * @return a {@code Function7}
      */
     static <T1, T2, T3, T4, T5, T6, T7, R> Function7<T1, T2, T3, T4, T5, T6, T7, R> lift(Function7<T1, T2, T3, T4, T5, T6, T7, R> methodReference) {
@@ -88,6 +88,7 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends λ<R> {
      * @param t6 argument 6
      * @param t7 argument 7
      * @return the result of function application
+     * 
      */
     R apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7);
 
@@ -110,12 +111,12 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends λ<R> {
         final Class<?>[] paramTypes = getType().parameterArray();
         return
                 (o1 == null || paramTypes[0].isAssignableFrom(o1.getClass())) &&
-                        (o2 == null || paramTypes[1].isAssignableFrom(o2.getClass())) &&
-                        (o3 == null || paramTypes[2].isAssignableFrom(o3.getClass())) &&
-                        (o4 == null || paramTypes[3].isAssignableFrom(o4.getClass())) &&
-                        (o5 == null || paramTypes[4].isAssignableFrom(o5.getClass())) &&
-                        (o6 == null || paramTypes[5].isAssignableFrom(o6.getClass())) &&
-                        (o7 == null || paramTypes[6].isAssignableFrom(o7.getClass()));
+                (o2 == null || paramTypes[1].isAssignableFrom(o2.getClass())) &&
+                (o3 == null || paramTypes[2].isAssignableFrom(o3.getClass())) &&
+                (o4 == null || paramTypes[3].isAssignableFrom(o4.getClass())) &&
+                (o5 == null || paramTypes[4].isAssignableFrom(o5.getClass())) &&
+                (o6 == null || paramTypes[5].isAssignableFrom(o6.getClass())) &&
+                (o7 == null || paramTypes[6].isAssignableFrom(o7.getClass()));
     }
 
     /**
@@ -141,12 +142,12 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends λ<R> {
         final Class<?>[] paramTypes = getType().parameterArray();
         return
                 paramTypes[0].isAssignableFrom(type1) &&
-                        paramTypes[1].isAssignableFrom(type2) &&
-                        paramTypes[2].isAssignableFrom(type3) &&
-                        paramTypes[3].isAssignableFrom(type4) &&
-                        paramTypes[4].isAssignableFrom(type5) &&
-                        paramTypes[5].isAssignableFrom(type6) &&
-                        paramTypes[6].isAssignableFrom(type7);
+                paramTypes[1].isAssignableFrom(type2) &&
+                paramTypes[2].isAssignableFrom(type3) &&
+                paramTypes[3].isAssignableFrom(type4) &&
+                paramTypes[4].isAssignableFrom(type5) &&
+                paramTypes[5].isAssignableFrom(type6) &&
+                paramTypes[6].isAssignableFrom(type7);
     }
 
     /**
@@ -154,6 +155,7 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends λ<R> {
      *
      * @param t1 argument 1
      * @return a partial application of this function
+     * 
      */
     default Function6<T2, T3, T4, T5, T6, T7, R> apply(T1 t1) {
         return (T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7) -> apply(t1, t2, t3, t4, t5, t6, t7);
@@ -165,6 +167,7 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends λ<R> {
      * @param t1 argument 1
      * @param t2 argument 2
      * @return a partial application of this function
+     * 
      */
     default Function5<T3, T4, T5, T6, T7, R> apply(T1 t1, T2 t2) {
         return (T3 t3, T4 t4, T5 t5, T6 t6, T7 t7) -> apply(t1, t2, t3, t4, t5, t6, t7);
@@ -177,6 +180,7 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends λ<R> {
      * @param t2 argument 2
      * @param t3 argument 3
      * @return a partial application of this function
+     * 
      */
     default Function4<T4, T5, T6, T7, R> apply(T1 t1, T2 t2, T3 t3) {
         return (T4 t4, T5 t5, T6 t6, T7 t7) -> apply(t1, t2, t3, t4, t5, t6, t7);
@@ -190,6 +194,7 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends λ<R> {
      * @param t3 argument 3
      * @param t4 argument 4
      * @return a partial application of this function
+     * 
      */
     default Function3<T5, T6, T7, R> apply(T1 t1, T2 t2, T3 t3, T4 t4) {
         return (T5 t5, T6 t6, T7 t7) -> apply(t1, t2, t3, t4, t5, t6, t7);
@@ -204,6 +209,7 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends λ<R> {
      * @param t4 argument 4
      * @param t5 argument 5
      * @return a partial application of this function
+     * 
      */
     default Function2<T6, T7, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) {
         return (T6 t6, T7 t7) -> apply(t1, t2, t3, t4, t5, t6, t7);
@@ -219,6 +225,7 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends λ<R> {
      * @param t5 argument 5
      * @param t6 argument 6
      * @return a partial application of this function
+     * 
      */
     default Function1<T7, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6) {
         return (T7 t7) -> apply(t1, t2, t3, t4, t5, t6, t7);
@@ -255,7 +262,7 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends λ<R> {
      * Returns a composed function that first applies this Function7 to the given argument and then applies
      * {@linkplain Function1} {@code after} to the result.
      *
-     * @param <V>   return type of after
+     * @param <V> return type of after
      * @param after the function applied after this
      * @return a function composed of this and after
      * @throws NullPointerException if after is null

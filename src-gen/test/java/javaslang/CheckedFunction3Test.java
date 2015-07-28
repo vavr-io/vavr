@@ -9,11 +9,10 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.Test;
 
 public class CheckedFunction3Test {
 
@@ -41,22 +40,22 @@ public class CheckedFunction3Test {
     }
 
     @Test
-    public void shouldRecognizeApplicabilityOfNull() {
-        final CheckedFunction3<Object, Object, Object, Object> f = (o1, o2, o3) -> null;
-        assertThat(f.isApplicableTo(null, null, null)).isTrue();
-    }
+      public void shouldRecognizeApplicabilityOfNull() {
+          final CheckedFunction3<Object, Object, Object, Object> f = (o1, o2, o3) -> null;
+          assertThat(f.isApplicableTo(null, null, null)).isTrue();
+      }
 
-    @Test
-    public void shouldRecognizeApplicabilityOfNonNull() {
-        final CheckedFunction3<Integer, Integer, Integer, Integer> f = (i1, i2, i3) -> null;
-        assertThat(f.isApplicableTo(1, 2, 3)).isTrue();
-    }
+      @Test
+      public void shouldRecognizeApplicabilityOfNonNull() {
+          final CheckedFunction3<Integer, Integer, Integer, Integer> f = (i1, i2, i3) -> null;
+          assertThat(f.isApplicableTo(1, 2, 3)).isTrue();
+      }
 
-    @Test
-    public void shouldRecognizeApplicabilityToTypes() {
-        final CheckedFunction3<Integer, Integer, Integer, Integer> f = (i1, i2, i3) -> null;
-        assertThat(f.isApplicableToTypes(Integer.class, Integer.class, Integer.class)).isTrue();
-    }
+      @Test
+      public void shouldRecognizeApplicabilityToTypes() {
+          final CheckedFunction3<Integer, Integer, Integer, Integer> f = (i1, i2, i3) -> null;
+          assertThat(f.isApplicableToTypes(Integer.class, Integer.class, Integer.class)).isTrue();
+      }
 
     @Test
     public void shouldGetArity() {

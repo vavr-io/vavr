@@ -9,10 +9,10 @@ package javaslang.test;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import javaslang.CheckedFunction8;
 import org.junit.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class PropertyCheck8Test {
 
@@ -52,9 +52,7 @@ public class PropertyCheck8Test {
     @Test
     public void shouldCheckErroneousProperty8() {
         final Property.ForAll8<Object, Object, Object, Object, Object, Object, Object, Object> forAll = new Property("test").forAll(OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS);
-        final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Boolean> predicate = (o1, o2, o3, o4, o5, o6, o7, o8) -> {
-            throw new RuntimeException("yay! (this is a negative test)");
-        };
+        final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Boolean> predicate = (o1, o2, o3, o4, o5, o6, o7, o8) -> { throw new RuntimeException("yay! (this is a negative test)"); };
         final CheckResult result = forAll.suchThat(predicate).check();
         assertThat(result.isErroneous()).isTrue();
     }
@@ -82,30 +80,28 @@ public class PropertyCheck8Test {
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowOnProperty8CheckGivenNegativeTries() {
         new Property("test")
-                .forAll(OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS)
-                .suchThat((o1, o2, o3, o4, o5, o6, o7, o8) -> true)
-                .check(Checkable.RNG.get(), 0, -1);
+            .forAll(OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8) -> true)
+            .check(Checkable.RNG.get(), 0, -1);
     }
 
     @Test
     public void shouldReturnErroneousProperty8CheckResultIfGenFails() {
         final Arbitrary<Object> failingGen = Gen.fail("yay! (this is a negative test)").arbitrary();
         final CheckResult result = new Property("test")
-                .forAll(failingGen, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS)
-                .suchThat((o1, o2, o3, o4, o5, o6, o7, o8) -> true)
-                .check();
+            .forAll(failingGen, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8) -> true)
+            .check();
         assertThat(result.isErroneous()).isTrue();
     }
 
     @Test
     public void shouldReturnErroneousProperty8CheckResultIfArbitraryFails() {
-        final Arbitrary<Object> failingArbitrary = size -> {
-            throw new RuntimeException("yay! (this is a negative test)");
-        };
+        final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("yay! (this is a negative test)"); };
         final CheckResult result = new Property("test")
-                .forAll(failingArbitrary, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS)
-                .suchThat((o1, o2, o3, o4, o5, o6, o7, o8) -> true)
-                .check();
+            .forAll(failingArbitrary, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS)
+            .suchThat((o1, o2, o3, o4, o5, o6, o7, o8) -> true)
+            .check();
         assertThat(result.isErroneous()).isTrue();
     }
 }

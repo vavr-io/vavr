@@ -9,11 +9,10 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.Test;
 
 public class Function4Test {
 
@@ -47,22 +46,22 @@ public class Function4Test {
     }
 
     @Test
-    public void shouldRecognizeApplicabilityOfNull() {
-        final Function4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
-        assertThat(f.isApplicableTo(null, null, null, null)).isTrue();
-    }
+      public void shouldRecognizeApplicabilityOfNull() {
+          final Function4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
+          assertThat(f.isApplicableTo(null, null, null, null)).isTrue();
+      }
 
-    @Test
-    public void shouldRecognizeApplicabilityOfNonNull() {
-        final Function4<Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4) -> null;
-        assertThat(f.isApplicableTo(1, 2, 3, 4)).isTrue();
-    }
+      @Test
+      public void shouldRecognizeApplicabilityOfNonNull() {
+          final Function4<Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4) -> null;
+          assertThat(f.isApplicableTo(1, 2, 3, 4)).isTrue();
+      }
 
-    @Test
-    public void shouldRecognizeApplicabilityToTypes() {
-        final Function4<Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4) -> null;
-        assertThat(f.isApplicableToTypes(Integer.class, Integer.class, Integer.class, Integer.class)).isTrue();
-    }
+      @Test
+      public void shouldRecognizeApplicabilityToTypes() {
+          final Function4<Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4) -> null;
+          assertThat(f.isApplicableToTypes(Integer.class, Integer.class, Integer.class, Integer.class)).isTrue();
+      }
 
     @Test
     public void shouldGetArity() {

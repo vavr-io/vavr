@@ -9,11 +9,10 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import javaslang.control.Try;
-
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import javaslang.control.Try;
 
 /**
  * Represents a function with 4 arguments.
@@ -22,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @param <T2> argument 2 of the function
  * @param <T3> argument 3 of the function
  * @param <T4> argument 4 of the function
- * @param <R>  return type of the function
+ * @param <R> return type of the function
  * @since 1.1.0
  */
 @FunctionalInterface
@@ -62,11 +61,11 @@ public interface CheckedFunction4<T1, T2, T3, T4, R> extends λ<R> {
      * </code></pre>
      *
      * @param methodReference (typically) a method reference, e.g. {@code Type::method}
-     * @param <R>             return type
-     * @param <T1>            1st argument
-     * @param <T2>            2nd argument
-     * @param <T3>            3rd argument
-     * @param <T4>            4th argument
+     * @param <R> return type
+     * @param <T1> 1st argument
+     * @param <T2> 2nd argument
+     * @param <T3> 3rd argument
+     * @param <T4> 4th argument
      * @return a {@code CheckedFunction4}
      */
     static <T1, T2, T3, T4, R> CheckedFunction4<T1, T2, T3, T4, R> lift(CheckedFunction4<T1, T2, T3, T4, R> methodReference) {
@@ -101,9 +100,9 @@ public interface CheckedFunction4<T1, T2, T3, T4, R> extends λ<R> {
         final Class<?>[] paramTypes = getType().parameterArray();
         return
                 (o1 == null || paramTypes[0].isAssignableFrom(o1.getClass())) &&
-                        (o2 == null || paramTypes[1].isAssignableFrom(o2.getClass())) &&
-                        (o3 == null || paramTypes[2].isAssignableFrom(o3.getClass())) &&
-                        (o4 == null || paramTypes[3].isAssignableFrom(o4.getClass()));
+                (o2 == null || paramTypes[1].isAssignableFrom(o2.getClass())) &&
+                (o3 == null || paramTypes[2].isAssignableFrom(o3.getClass())) &&
+                (o4 == null || paramTypes[3].isAssignableFrom(o4.getClass()));
     }
 
     /**
@@ -123,9 +122,9 @@ public interface CheckedFunction4<T1, T2, T3, T4, R> extends λ<R> {
         final Class<?>[] paramTypes = getType().parameterArray();
         return
                 paramTypes[0].isAssignableFrom(type1) &&
-                        paramTypes[1].isAssignableFrom(type2) &&
-                        paramTypes[2].isAssignableFrom(type3) &&
-                        paramTypes[3].isAssignableFrom(type4);
+                paramTypes[1].isAssignableFrom(type2) &&
+                paramTypes[2].isAssignableFrom(type3) &&
+                paramTypes[3].isAssignableFrom(type4);
     }
 
     /**
@@ -195,7 +194,7 @@ public interface CheckedFunction4<T1, T2, T3, T4, R> extends λ<R> {
      * Returns a composed function that first applies this CheckedFunction4 to the given argument and then applies
      * {@linkplain CheckedFunction1} {@code after} to the result.
      *
-     * @param <V>   return type of after
+     * @param <V> return type of after
      * @param after the function applied after this
      * @return a function composed of this and after
      * @throws NullPointerException if after is null

@@ -9,11 +9,10 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.Test;
 
 public class CheckedFunction6Test {
 
@@ -59,22 +58,22 @@ public class CheckedFunction6Test {
     }
 
     @Test
-    public void shouldRecognizeApplicabilityOfNull() {
-        final CheckedFunction6<Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6) -> null;
-        assertThat(f.isApplicableTo(null, null, null, null, null, null)).isTrue();
-    }
+      public void shouldRecognizeApplicabilityOfNull() {
+          final CheckedFunction6<Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6) -> null;
+          assertThat(f.isApplicableTo(null, null, null, null, null, null)).isTrue();
+      }
 
-    @Test
-    public void shouldRecognizeApplicabilityOfNonNull() {
-        final CheckedFunction6<Integer, Integer, Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4, i5, i6) -> null;
-        assertThat(f.isApplicableTo(1, 2, 3, 4, 5, 6)).isTrue();
-    }
+      @Test
+      public void shouldRecognizeApplicabilityOfNonNull() {
+          final CheckedFunction6<Integer, Integer, Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4, i5, i6) -> null;
+          assertThat(f.isApplicableTo(1, 2, 3, 4, 5, 6)).isTrue();
+      }
 
-    @Test
-    public void shouldRecognizeApplicabilityToTypes() {
-        final CheckedFunction6<Integer, Integer, Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4, i5, i6) -> null;
-        assertThat(f.isApplicableToTypes(Integer.class, Integer.class, Integer.class, Integer.class, Integer.class, Integer.class)).isTrue();
-    }
+      @Test
+      public void shouldRecognizeApplicabilityToTypes() {
+          final CheckedFunction6<Integer, Integer, Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4, i5, i6) -> null;
+          assertThat(f.isApplicableToTypes(Integer.class, Integer.class, Integer.class, Integer.class, Integer.class, Integer.class)).isTrue();
+      }
 
     @Test
     public void shouldGetArity() {
