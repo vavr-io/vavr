@@ -5,7 +5,7 @@
  */
 package javaslang.collection.euler;
 
-import javaslang.collection.Stream;
+import javaslang.collection.List;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,8 +29,9 @@ public class Euler04Test {
     }
 
     private static int largestPalindromeOfProductsFromFactorsInRange(final int min, final int max) {
-        return Stream.rangeClosed(min, max)
-                .flatMap(i -> Stream.rangeClosed(i, max).map(j -> i * j))
+        return Utils.cross(List.rangeClosed(min, max), List.rangeClosed(min, max))
+                .filter(t -> t._1 < t._2)
+                .map(t -> t._1 * t._2)
                 .filter(Euler04Test::isPalindrome)
                 .max().get();
     }

@@ -54,7 +54,7 @@ public class Euler57Test {
     }
 
     /**
-     * a/b -> 1 + 1/(1 + a/b) = (a+2b)/(a+b)
+     * a/b -> 1 + 1/(1 + a/b) = (a + 2b)/(a + b)
      */
     private static Tuple2<BigDecimal, BigDecimal> it(Tuple2<BigDecimal, BigDecimal> val) {
         return Tuple.of(val._1.add(val._2.add(val._2)), val._1.add(val._2));
