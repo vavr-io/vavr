@@ -12,7 +12,10 @@ import java.util.function.Function;
 
 public final class PrimeNumbers {
 
-    private static final Stream<Long> PRIMES = Stream.gen(2L, PrimeNumbers::nextPrimeFrom);
+    private static final Stream<Long> PRIMES =
+            Stream.of(2L).appendSelf(self -> Stream.gen(3L, i -> i + 2).filter(i ->
+                            self.takeWhile(j -> j * j <= i).forAll(k -> i % k > 0)
+            ));
 
     private static final Function<Integer, Long> MEMOIZED_PRIMES = Function1.lift(PRIMES::get).memoized();
 
@@ -24,14 +27,6 @@ public final class PrimeNumbers {
             throw new IllegalArgumentException("index < 1");
         }
         return MEMOIZED_PRIMES.apply(index - 1);
-    }
-
-    private static long nextPrimeFrom(long num) {
-        return Stream.from(num + 1).findFirst(PrimeNumbers::isPrime).get();
-    }
-
-    private static boolean isPrime(long num) {
-        return !Stream.rangeClosed(2L, (long) Math.sqrt(num)).exists(d -> num % d == 0);
     }
 
     public static Stream<Long> primeFactors(long num) {
