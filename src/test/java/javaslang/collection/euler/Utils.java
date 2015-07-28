@@ -7,7 +7,10 @@ package javaslang.collection.euler;
 
 import javaslang.collection.Stream;
 
-public class Utils {
+public final class Utils {
+
+    private Utils() {
+    }
 
     public static Stream<Integer> fibonacci() {
         return Stream.of(1, 1).appendSelf(self -> self.zip(self.tail()).map(t -> t._1 + t._2));
