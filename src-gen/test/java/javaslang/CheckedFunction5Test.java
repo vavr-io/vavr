@@ -100,8 +100,14 @@ public class CheckedFunction5Test {
         final AtomicInteger integer = new AtomicInteger();
         final CheckedFunction5<Integer, Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5 + integer.getAndIncrement();
         final CheckedFunction5<Integer, Integer, Integer, Integer, Integer, Integer> memo = f.memoized();
+        // should apply f on first apply()
         final int expected = memo.apply(1, 2, 3, 4, 5);
+        // should return memoized value of second apply()
         assertThat(memo.apply(1, 2, 3, 4, 5)).isEqualTo(expected);
+        // should calculate new values when called subsequently with different parameters
+        assertThat(memo.apply(2 , 3 , 4 , 5 , 6 )).isEqualTo(2  + 3  + 4  + 5  + 6  + 1);
+        // should return memoized value of second apply() (for new value)
+        assertThat(memo.apply(2 , 3 , 4 , 5 , 6 )).isEqualTo(2  + 3  + 4  + 5  + 6  + 1);
     }
 
     @Test
@@ -109,6 +115,13 @@ public class CheckedFunction5Test {
         final CheckedFunction5<Integer, Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4, i5) -> null;
         final CheckedFunction5<Integer, Integer, Integer, Integer, Integer, Integer> memo = f.memoized();
         assertThat(memo.memoized() == memo).isTrue();
+    }
+
+    @Test
+    public void shouldMemoizeValueGivenNullArguments() throws Throwable {
+        final CheckedFunction5<Integer, Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4, i5) -> null;
+        final CheckedFunction5<Integer, Integer, Integer, Integer, Integer, Integer> memo = f.memoized();
+        assertThat(memo.apply(null, null, null, null, null)).isNull();
     }
 
     @Test

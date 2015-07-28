@@ -138,8 +138,9 @@ public interface CheckedFunction1<T1, R> extends λ<R> {
         if (this instanceof Memoized) {
             return this;
         } else {
+            final Lazy<R> forNull = Lazy.of(Try.of(() -> apply(null))::get);
             final Map<T1, R> cache = new ConcurrentHashMap<>();
-            return (CheckedFunction1<T1, R> & Memoized) t1 -> cache.computeIfAbsent(t1, t -> Try.of(() -> this.apply(t)).get());
+            return (CheckedFunction1<T1, R> & Memoized) t1 -> (t1 == null) ? forNull.get() : cache.computeIfAbsent(t1, t -> Try.of(() -> this.apply(t)).get());
         }
     }
 

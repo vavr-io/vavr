@@ -58,8 +58,11 @@ public class CheckedFunction0Test {
         final AtomicInteger integer = new AtomicInteger();
         final CheckedFunction0<Integer> f = () -> integer.getAndIncrement();
         final CheckedFunction0<Integer> memo = f.memoized();
+        // should apply f on first apply()
         final int expected = memo.apply();
+        // should return memoized value of second apply()
         assertThat(memo.apply()).isEqualTo(expected);
+
     }
 
     @Test

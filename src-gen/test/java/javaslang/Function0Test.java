@@ -58,8 +58,11 @@ public class Function0Test {
         final AtomicInteger integer = new AtomicInteger();
         final Function0<Integer> f = () -> integer.getAndIncrement();
         final Function0<Integer> memo = f.memoized();
+        // should apply f on first apply()
         final int expected = memo.apply();
+        // should return memoized value of second apply()
         assertThat(memo.apply()).isEqualTo(expected);
+
     }
 
     @Test

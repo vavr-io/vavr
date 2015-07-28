@@ -112,8 +112,14 @@ public class Function7Test {
         final AtomicInteger integer = new AtomicInteger();
         final Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + integer.getAndIncrement();
         final Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> memo = f.memoized();
+        // should apply f on first apply()
         final int expected = memo.apply(1, 2, 3, 4, 5, 6, 7);
+        // should return memoized value of second apply()
         assertThat(memo.apply(1, 2, 3, 4, 5, 6, 7)).isEqualTo(expected);
+        // should calculate new values when called subsequently with different parameters
+        assertThat(memo.apply(2 , 3 , 4 , 5 , 6 , 7 , 8 )).isEqualTo(2  + 3  + 4  + 5  + 6  + 7  + 8  + 1);
+        // should return memoized value of second apply() (for new value)
+        assertThat(memo.apply(2 , 3 , 4 , 5 , 6 , 7 , 8 )).isEqualTo(2  + 3  + 4  + 5  + 6  + 7  + 8  + 1);
     }
 
     @Test
@@ -121,6 +127,13 @@ public class Function7Test {
         final Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4, i5, i6, i7) -> null;
         final Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> memo = f.memoized();
         assertThat(memo.memoized() == memo).isTrue();
+    }
+
+    @Test
+    public void shouldMemoizeValueGivenNullArguments() {
+        final Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4, i5, i6, i7) -> null;
+        final Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> memo = f.memoized();
+        assertThat(memo.apply(null, null, null, null, null, null, null)).isNull();
     }
 
     @Test

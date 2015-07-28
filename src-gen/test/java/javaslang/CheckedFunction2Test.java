@@ -82,8 +82,14 @@ public class CheckedFunction2Test {
         final AtomicInteger integer = new AtomicInteger();
         final CheckedFunction2<Integer, Integer, Integer> f = (i1, i2) -> i1 + i2 + integer.getAndIncrement();
         final CheckedFunction2<Integer, Integer, Integer> memo = f.memoized();
+        // should apply f on first apply()
         final int expected = memo.apply(1, 2);
+        // should return memoized value of second apply()
         assertThat(memo.apply(1, 2)).isEqualTo(expected);
+        // should calculate new values when called subsequently with different parameters
+        assertThat(memo.apply(2 , 3 )).isEqualTo(2  + 3  + 1);
+        // should return memoized value of second apply() (for new value)
+        assertThat(memo.apply(2 , 3 )).isEqualTo(2  + 3  + 1);
     }
 
     @Test
@@ -91,6 +97,13 @@ public class CheckedFunction2Test {
         final CheckedFunction2<Integer, Integer, Integer> f = (i1, i2) -> null;
         final CheckedFunction2<Integer, Integer, Integer> memo = f.memoized();
         assertThat(memo.memoized() == memo).isTrue();
+    }
+
+    @Test
+    public void shouldMemoizeValueGivenNullArguments() throws Throwable {
+        final CheckedFunction2<Integer, Integer, Integer> f = (i1, i2) -> null;
+        final CheckedFunction2<Integer, Integer, Integer> memo = f.memoized();
+        assertThat(memo.apply(null, null)).isNull();
     }
 
     @Test
