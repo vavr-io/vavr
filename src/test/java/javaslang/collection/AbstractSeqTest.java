@@ -49,14 +49,14 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     @Test
     public void shouldAppendElementToNil() {
         final Seq<Integer> actual = this.<Integer>empty().append(1);
-        final Seq<Integer> expected = this.of(1);
+        final Seq<Integer> expected = of(1);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldAppendElementToNonNil() {
-        final Seq<Integer> actual = this.of(1, 2).append(3);
-        final Seq<Integer> expected = this.of(1, 2, 3);
+        final Seq<Integer> actual = of(1, 2).append(3);
+        final Seq<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -64,34 +64,34 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowOnAppendAllOfNull() {
-        this.empty().appendAll(null);
+        empty().appendAll(null);
     }
 
     @Test
     public void shouldAppendAllNilToNil() {
-        final Seq<Object> actual = this.empty().appendAll(this.empty());
-        final Seq<Object> expected = this.empty();
+        final Seq<Object> actual = empty().appendAll(empty());
+        final Seq<Object> expected = empty();
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldAppendAllNonNilToNil() {
-        final Seq<Integer> actual = this.<Integer>empty().appendAll(this.of(1, 2, 3));
-        final Seq<Integer> expected = this.of(1, 2, 3);
+        final Seq<Integer> actual = this.<Integer>empty().appendAll(of(1, 2, 3));
+        final Seq<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldAppendAllNilToNonNil() {
-        final Seq<Integer> actual = this.of(1, 2, 3).appendAll(this.empty());
-        final Seq<Integer> expected = this.of(1, 2, 3);
+        final Seq<Integer> actual = of(1, 2, 3).appendAll(empty());
+        final Seq<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldAppendAllNonNilToNonNil() {
-        final Seq<Integer> actual = this.of(1, 2, 3).appendAll(this.of(4, 5, 6));
-        final Seq<Integer> expected = this.of(1, 2, 3, 4, 5, 6);
+        final Seq<Integer> actual = of(1, 2, 3).appendAll(of(4, 5, 6));
+        final Seq<Integer> expected = of(1, 2, 3, 4, 5, 6);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -106,54 +106,54 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowWhenGetWithNegativeIndexOnNil() {
-        this.empty().get(-1);
+        empty().get(-1);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowWhenGetWithNegativeIndexOnNonNil() {
-        this.of(1).get(-1);
+        of(1).get(-1);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowWhenGetOnNil() {
-        this.empty().get(0);
+        empty().get(0);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowWhenGetWithTooBigIndexOnNonNil() {
-        this.of(1).get(1);
+        of(1).get(1);
     }
 
     @Test
     public void shouldGetFirstElement() {
-        assertThat(this.of(1, 2, 3).get(0)).isEqualTo(1);
+        assertThat(of(1, 2, 3).get(0)).isEqualTo(1);
     }
 
     @Test
     public void shouldGetLastElement() {
-        assertThat(this.of(1, 2, 3).get(2)).isEqualTo(3);
+        assertThat(of(1, 2, 3).get(2)).isEqualTo(3);
     }
 
     // -- indexOf
 
     @Test
     public void shouldNotFindIndexOfElementWhenSeqIsEmpty() {
-        assertThat(this.empty().indexOf(1)).isEqualTo(-1);
+        assertThat(empty().indexOf(1)).isEqualTo(-1);
     }
 
     @Test
     public void shouldFindIndexOfFirstElement() {
-        assertThat(this.of(1, 2, 3).indexOf(1)).isEqualTo(0);
+        assertThat(of(1, 2, 3).indexOf(1)).isEqualTo(0);
     }
 
     @Test
     public void shouldFindIndexOfInnerElement() {
-        assertThat(this.of(1, 2, 3).indexOf(2)).isEqualTo(1);
+        assertThat(of(1, 2, 3).indexOf(2)).isEqualTo(1);
     }
 
     @Test
     public void shouldFindIndexOfLastElement() {
-        assertThat(this.of(1, 2, 3).indexOf(3)).isEqualTo(2);
+        assertThat(of(1, 2, 3).indexOf(3)).isEqualTo(2);
     }
 
     // -- insert
@@ -161,102 +161,112 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     @Test
     public void shouldInsertIntoNil() {
         final Seq<Integer> actual = this.<Integer>empty().insert(0, 1);
-        final Seq<Integer> expected = this.of(1);
+        final Seq<Integer> expected = of(1);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldInsertInFrontOfElement() {
-        final Seq<Integer> actual = this.of(4).insert(0, 1);
-        final Seq<Integer> expected = this.of(1, 4);
+        final Seq<Integer> actual = of(4).insert(0, 1);
+        final Seq<Integer> expected = of(1, 4);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldInsertBehindOfElement() {
-        final Seq<Integer> actual = this.of(4).insert(1, 1);
-        final Seq<Integer> expected = this.of(4, 1);
+        final Seq<Integer> actual = of(4).insert(1, 1);
+        final Seq<Integer> expected = of(4, 1);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldInsertIntoSeq() {
-        final Seq<Integer> actual = this.of(1, 2, 3).insert(2, 4);
-        final Seq<Integer> expected = this.of(1, 2, 4, 3);
+        final Seq<Integer> actual = of(1, 2, 3).insert(2, 4);
+        final Seq<Integer> expected = of(1, 2, 4, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowOnInsertWithNegativeIndex() {
-        this.empty().insert(-1, null);
+    public void shouldThrowWhenInsertOnNonNilWithNegativeIndex() {
+        of(1).insert(-1, null);
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void shouldThrowWhenInsertOnNilWithNegativeIndex() {
+        empty().insert(-1, null);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowOnInsertWhenExceedingUpperBound() {
-        this.empty().insert(1, null);
+        empty().insert(1, null);
     }
 
     // -- insertAll
 
     @Test
     public void shouldInserAlltIntoNil() {
-        final Seq<Integer> actual = this.<Integer>empty().insertAll(0, this.of(1, 2, 3));
-        final Seq<Integer> expected = this.of(1, 2, 3);
+        final Seq<Integer> actual = this.<Integer>empty().insertAll(0, of(1, 2, 3));
+        final Seq<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldInsertAllInFrontOfElement() {
-        final Seq<Integer> actual = this.of(4).insertAll(0, this.of(1, 2, 3));
-        final Seq<Integer> expected = this.of(1, 2, 3, 4);
+        final Seq<Integer> actual = of(4).insertAll(0, of(1, 2, 3));
+        final Seq<Integer> expected = of(1, 2, 3, 4);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldInsertAllBehindOfElement() {
-        final Seq<Integer> actual = this.of(4).insertAll(1, this.of(1, 2, 3));
-        final Seq<Integer> expected = this.of(4, 1, 2, 3);
+        final Seq<Integer> actual = of(4).insertAll(1, of(1, 2, 3));
+        final Seq<Integer> expected = of(4, 1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldInsertAllIntoSeq() {
-        final Seq<Integer> actual = this.of(1, 2, 3).insertAll(2, this.of(4, 5));
-        final Seq<Integer> expected = this.of(1, 2, 4, 5, 3);
+        final Seq<Integer> actual = of(1, 2, 3).insertAll(2, of(4, 5));
+        final Seq<Integer> expected = of(1, 2, 4, 5, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowOnInsertAllWithNil() {
-        this.empty().insertAll(0, null);
+        empty().insertAll(0, null);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowOnInsertAllWithNegativeIndex() {
-        this.empty().insertAll(-1, this.empty());
+    public void shouldThrowWhenInsertOnNonNilAllWithNegativeIndex() {
+        of(1).insertAll(-1, empty());
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void shouldThrowWhenInsertOnNilAllWithNegativeIndex() {
+        empty().insertAll(-1, empty());
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowOnInsertAllWhenExceedingUpperBound() {
-        this.empty().insertAll(1, this.empty());
+        empty().insertAll(1, empty());
     }
 
     // -- iterator(int)
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowWhenNilIteratorStartingAtIndex() {
-        this.empty().iterator(1);
+        empty().iterator(1);
     }
 
     @Test
     public void shouldIterateFirstElementOfNonNilStartingAtIndex() {
-        assertThat(this.of(1, 2, 3).iterator(1).next()).isEqualTo(2);
+        assertThat(of(1, 2, 3).iterator(1).next()).isEqualTo(2);
     }
 
     @Test
     public void shouldFullyIterateNonNilStartingAtIndex() {
         int actual = -1;
-        for (Iterator<Integer> iter = this.of(1, 2, 3).iterator(1); iter.hasNext(); ) {
+        for (Iterator<Integer> iter = of(1, 2, 3).iterator(1); iter.hasNext(); ) {
             actual = iter.next();
         }
         assertThat(actual).isEqualTo(3);
@@ -266,12 +276,12 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldNotFindLastIndexOfElementWhenSeqIsEmpty() {
-        assertThat(this.empty().lastIndexOf(1)).isEqualTo(-1);
+        assertThat(empty().lastIndexOf(1)).isEqualTo(-1);
     }
 
     @Test
     public void shouldFindLastIndexOfElement() {
-        assertThat(this.of(1, 2, 3, 1, 2, 3).lastIndexOf(1)).isEqualTo(3);
+        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOf(1)).isEqualTo(3);
     }
 
     // -- prepend
@@ -279,14 +289,14 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     @Test
     public void shouldPrependElementToNil() {
         final Seq<Integer> actual = this.<Integer>empty().prepend(1);
-        final Seq<Integer> expected = this.of(1);
+        final Seq<Integer> expected = of(1);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldPrependElementToNonNil() {
-        final Seq<Integer> actual = this.of(2, 3).prepend(1);
-        final Seq<Integer> expected = this.of(1, 2, 3);
+        final Seq<Integer> actual = of(2, 3).prepend(1);
+        final Seq<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -294,34 +304,34 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowOnPrependAllOfNull() {
-        this.empty().prependAll(null);
+        empty().prependAll(null);
     }
 
     @Test
     public void shouldPrependAllNilToNil() {
-        final Seq<Integer> actual = this.<Integer>empty().prependAll(this.empty());
-        final Seq<Integer> expected = this.empty();
+        final Seq<Integer> actual = this.<Integer>empty().prependAll(empty());
+        final Seq<Integer> expected = empty();
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldPrependAllNilToNonNil() {
-        final Seq<Integer> actual = this.of(1, 2, 3).prependAll(this.empty());
-        final Seq<Integer> expected = this.of(1, 2, 3);
+        final Seq<Integer> actual = of(1, 2, 3).prependAll(empty());
+        final Seq<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldPrependAllNonNilToNil() {
-        final Seq<Integer> actual = this.<Integer>empty().prependAll(this.of(1, 2, 3));
-        final Seq<Integer> expected = this.of(1, 2, 3);
+        final Seq<Integer> actual = this.<Integer>empty().prependAll(of(1, 2, 3));
+        final Seq<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldPrependAllNonNilToNonNil() {
-        final Seq<Integer> actual = this.of(4, 5, 6).prependAll(this.of(1, 2, 3));
-        final Seq<Integer> expected = this.of(1, 2, 3, 4, 5, 6);
+        final Seq<Integer> actual = of(4, 5, 6).prependAll(of(1, 2, 3));
+        final Seq<Integer> expected = of(1, 2, 3, 4, 5, 6);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -329,73 +339,73 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowWhenSetWithNegativeIndexOnNil() {
-        this.empty().set(-1, null);
+        empty().set(-1, null);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowWhenSetWithNegativeIndexOnNonNil() {
-        this.of(1).set(-1, 2);
+        of(1).set(-1, 2);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowWhenSetOnNil() {
-        this.empty().set(0, null);
+        empty().set(0, null);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowWhenSetWithIndexExceedingByOneOnNonNil() {
-        this.of(1).set(1, 2);
+        of(1).set(1, 2);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowWhenSetWithIndexExceedingByTwoOnNonNil() {
-        this.of(1).set(2, 2);
+        of(1).set(2, 2);
     }
 
     @Test
     public void shouldSetFirstElement() {
-        assertThat(this.of(1, 2, 3).set(0, 4)).isEqualTo(this.of(4, 2, 3));
+        assertThat(of(1, 2, 3).set(0, 4)).isEqualTo(of(4, 2, 3));
     }
 
     @Test
     public void shouldSetLastElement() {
-        assertThat(this.of(1, 2, 3).set(2, 4)).isEqualTo(this.of(1, 2, 4));
+        assertThat(of(1, 2, 3).set(2, 4)).isEqualTo(of(1, 2, 4));
     }
 
     // -- sort()
 
     @Test
     public void shouldSortNil() {
-        assertThat(this.empty().sort()).isEqualTo(this.empty());
+        assertThat(empty().sort()).isEqualTo(empty());
     }
 
     @Test
     public void shouldSortNonNil() {
-        assertThat(this.of(3, 4, 1, 2).sort()).isEqualTo(this.of(1, 2, 3, 4));
+        assertThat(of(3, 4, 1, 2).sort()).isEqualTo(of(1, 2, 3, 4));
     }
 
     // -- sort(Comparator)
 
     @Test
     public void shouldSortNilUsingComparator() {
-        assertThat(this.<Integer>empty().sort((i, j) -> j - i)).isEqualTo(this.empty());
+        assertThat(this.<Integer>empty().sort((i, j) -> j - i)).isEqualTo(empty());
     }
 
     @Test
     public void shouldSortNonNilUsingComparator() {
-        assertThat(this.of(3, 4, 1, 2).sort((i, j) -> j - i)).isEqualTo(this.of(4, 3, 2, 1));
+        assertThat(of(3, 4, 1, 2).sort((i, j) -> j - i)).isEqualTo(of(4, 3, 2, 1));
     }
 
     // -- splitAt(index)
 
     @Test
     public void shouldSplitAtNil() {
-        assertThat(this.empty().splitAt(1)).isEqualTo(Tuple.of(this.empty(), this.empty()));
+        assertThat(empty().splitAt(1)).isEqualTo(Tuple.of(empty(), empty()));
     }
 
     @Test
     public void shouldSplitAtNonNil() {
-        assertThat(this.of(1, 2, 3).splitAt(1)).isEqualTo(Tuple.of(this.of(1), this.of(2, 3)));
+        assertThat(of(1, 2, 3).splitAt(1)).isEqualTo(Tuple.of(of(1), of(2, 3)));
     }
 
     // -- subsequence(beginIndex)
@@ -403,46 +413,46 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     @Test
     public void shouldReturnNilWhenSubsequenceFrom0OnNil() {
         final Seq<Integer> actual = this.<Integer>empty().subsequence(0);
-        assertThat(actual).isEqualTo(this.empty());
+        assertThat(actual).isEqualTo(empty());
     }
 
     @Test
     public void shouldReturnIdentityWhenSubsequenceFrom0OnNonNil() {
-        final Seq<Integer> actual = this.of(1).subsequence(0);
-        assertThat(actual).isEqualTo(this.of(1));
+        final Seq<Integer> actual = of(1).subsequence(0);
+        assertThat(actual).isEqualTo(of(1));
     }
 
     @Test
     public void shouldReturnNilWhenSubsequenceFrom1OnSeqOf1() {
-        final Seq<Integer> actual = this.of(1).subsequence(1);
-        assertThat(actual).isEqualTo(this.empty());
+        final Seq<Integer> actual = of(1).subsequence(1);
+        assertThat(actual).isEqualTo(empty());
     }
 
     @Test
     public void shouldReturnSubsequenceWhenIndexIsWithinRange() {
-        final Seq<Integer> actual = this.of(1, 2, 3).subsequence(1);
-        assertThat(actual).isEqualTo(this.of(2, 3));
+        final Seq<Integer> actual = of(1, 2, 3).subsequence(1);
+        assertThat(actual).isEqualTo(of(2, 3));
     }
 
     @Test
     public void shouldReturnNilWhenSubsequenceBeginningWithSize() {
-        final Seq<Integer> actual = this.of(1, 2, 3).subsequence(3);
-        assertThat(actual).isEqualTo(this.empty());
+        final Seq<Integer> actual = of(1, 2, 3).subsequence(3);
+        assertThat(actual).isEqualTo(empty());
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowWhenSubsequence0OnNil() {
-        this.<Integer>empty().subsequence(1);
+    public void shouldThrowWhenSubsequenceOnNil() {
+        empty().subsequence(1);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowWhenSubsequenceWithOutOfLowerBound() {
-        this.of(1, 2, 3).subsequence(-1);
+        of(1, 2, 3).subsequence(-1);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowWhenSubsequenceWithOutOfUpperBound() {
-        this.of(1, 2, 3).subsequence(4);
+        of(1, 2, 3).subsequence(4);
     }
 
     // -- subsequence(beginIndex, endIndex)
@@ -450,52 +460,67 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     @Test
     public void shouldReturnNilWhenSubsequenceFrom0To0OnNil() {
         final Seq<Integer> actual = this.<Integer>empty().subsequence(0, 0);
-        assertThat(actual).isEqualTo(this.empty());
+        assertThat(actual).isEqualTo(empty());
     }
 
     @Test
     public void shouldReturnNilWhenSubsequenceFrom0To0OnNonNil() {
-        final Seq<Integer> actual = this.of(1).subsequence(0, 0);
-        assertThat(actual).isEqualTo(this.empty());
+        final Seq<Integer> actual = of(1).subsequence(0, 0);
+        assertThat(actual).isEqualTo(empty());
     }
 
     @Test
     public void shouldReturnSeqWithFirstElementWhenSubsequenceFrom0To1OnNonNil() {
-        final Seq<Integer> actual = this.of(1).subsequence(0, 1);
-        assertThat(actual).isEqualTo(this.of(1));
+        final Seq<Integer> actual = of(1).subsequence(0, 1);
+        assertThat(actual).isEqualTo(of(1));
     }
 
     @Test
     public void shouldReturnNilWhenSubsequenceFrom1To1OnNonNil() {
-        final Seq<Integer> actual = this.of(1).subsequence(1, 1);
-        assertThat(actual).isEqualTo(this.empty());
+        final Seq<Integer> actual = of(1).subsequence(1, 1);
+        assertThat(actual).isEqualTo(empty());
     }
 
     @Test
     public void shouldReturnSubsequenceWhenIndicesAreWithinRange() {
-        final Seq<Integer> actual = this.of(1, 2, 3).subsequence(1, 3);
-        assertThat(actual).isEqualTo(this.of(2, 3));
+        final Seq<Integer> actual = of(1, 2, 3).subsequence(1, 3);
+        assertThat(actual).isEqualTo(of(2, 3));
     }
 
     @Test
     public void shouldReturnNilWhenIndicesBothAreUpperBound() {
-        final Seq<Integer> actual = this.of(1, 2, 3).subsequence(3, 3);
-        assertThat(actual).isEqualTo(this.empty());
+        final Seq<Integer> actual = of(1, 2, 3).subsequence(3, 3);
+        assertThat(actual).isEqualTo(empty());
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowOnSubsequenceWhenEndIndexIsGreaterThanBeginIndex() {
-        this.of(1, 2, 3).subsequence(1, 0);
+    public void shouldThrowOnSubsequenceOnNonNilWhenBeginIndexIsGreaterThanEndIndex() {
+        of(1, 2, 3).subsequence(1, 0);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowOnSubsequenceWhenBeginIndexExceedsLowerBound() {
-        this.of(1, 2, 3).subsequence(-1, 2);
+    public void shouldThrowOnSubsequenceOnNilWhenBeginIndexIsGreaterThanEndIndex() {
+        empty().subsequence(1, 0);
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void shouldThrowOnSubsequenceOnNonNilWhenBeginIndexExceedsLowerBound() {
+        of(1, 2, 3).subsequence(-1, 2);
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void shouldThrowOnSubsequenceOnNilWhenBeginIndexExceedsLowerBound() {
+        empty().subsequence(-1, 2);
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void shouldThrowWhenSubsequence2OnNil() {
+        empty().subsequence(0, 1);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowOnSubsequenceWhenEndIndexExceedsUpperBound() {
-        this.of(1, 2, 3).subsequence(1, 4).join(); // force computation of last element, e.g. because Stream is lazy
+        of(1, 2, 3).subsequence(1, 4).join(); // force computation of last element, e.g. because Stream is lazy
     }
 
     // -- static rangeClosed(int, int)
@@ -696,5 +721,27 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
         assertThat(rangeBy(Long.MAX_VALUE, Long.MAX_VALUE, 3L)).isEqualTo(empty());
         assertThat(rangeBy(Long.MAX_VALUE, Long.MAX_VALUE, -1L)).isEqualTo(empty());
         assertThat(rangeBy(Long.MAX_VALUE, Long.MAX_VALUE, -3L)).isEqualTo(empty());
+    }
+
+    // -- rangeBy and rangeClosedBy: step = 0
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldProhibitRangeByIntStepZero() {
+        rangeBy(0, 0, 0);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldProhibitRangeByLongStepZero() {
+        rangeBy(0L, 0L, 0L);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldProhibitRangeClosedByIntStepZero() {
+        rangeClosedBy(0, 0, 0);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldProhibitRangeClosedByLongStepZero() {
+        rangeClosedBy(0L, 0L, 0L);
     }
 }
