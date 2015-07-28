@@ -1216,7 +1216,22 @@ public interface Stream<T> extends Seq<T> {
         @Override
         public Stream<T> appendSelf(Function<Stream<T>, Stream<T>> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
-            return new Cons<>(head, () -> tail().appendAll(mapper.apply(this)).appendSelf(mapper));
+            class Recursion {
+                private Stream<T> headStream;
+                private Supplier<Stream<T>> tail = () -> mapper.apply(headStream);
+                private Stream<T> appendAll(Cons<T> stream, Supplier<Stream<T>> tailSupplier) {
+                    if(stream.tail().isEmpty()) {
+                        return new Cons<>(stream.head, tailSupplier);
+                    } else {
+                        return new Cons<>(stream.head, () -> appendAll((Cons<T>)stream.tail(), tailSupplier));
+                    }
+                }
+                Stream<T> create(Cons<T> stream) {
+                    headStream = appendAll(stream, tail);
+                    return headStream;
+                }
+            }
+            return new Recursion().create(this);
         }
 
         @Override
