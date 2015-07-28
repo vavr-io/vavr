@@ -5,12 +5,7 @@
  */
 package javaslang.collection.euler;
 
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.collection.List;
 import javaslang.collection.Stream;
-
-import java.util.function.Predicate;
 
 public class Utils {
 

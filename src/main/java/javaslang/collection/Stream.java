@@ -723,7 +723,7 @@ public interface Stream<T> extends Seq<T> {
      * @param mapper an mapper
      * @return a new Stream
      */
-    Stream<T> appendSelf(Function<Stream<T>, Stream<T>> mapper);
+    Stream<T> appendSelf(Function<? super Stream<T>, ? extends Stream<T>> mapper);
 
     @Override
     default Stream<Tuple2<T, T>> cartesianProduct() {
@@ -1226,24 +1226,30 @@ public interface Stream<T> extends Seq<T> {
         }
 
         @Override
-        public Stream<T> appendSelf(Function<Stream<T>, Stream<T>> mapper) {
+        public Stream<T> appendSelf(Function<? super Stream<T>, ? extends Stream<T>> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
+
             class Recursion {
-                private Stream<T> headStream;
-                private Supplier<Stream<T>> tail = () -> mapper.apply(headStream);
-                private Stream<T> appendAll(Cons<T> stream, Supplier<Stream<T>> tailSupplier) {
-                    if(stream.tail().isEmpty()) {
-                        return new Cons<>(stream.head, tailSupplier);
-                    } else {
-                        return new Cons<>(stream.head, () -> appendAll((Cons<T>)stream.tail(), tailSupplier));
-                    }
+
+                private final Cons<T> self;
+
+                Recursion(Cons<T> self) {
+                    this.self = appendAll(self);
                 }
-                Stream<T> create(Cons<T> stream) {
-                    headStream = appendAll(stream, tail);
-                    return headStream;
+
+                private Cons<T> appendAll(Cons<T> stream) {
+                    return new Cons<>(stream.head, () -> {
+                        final Stream<T> tail = stream.tail();
+                        return tail.isEmpty() ? mapper.apply(self) : appendAll((Cons<T>) tail);
+                    });
+                }
+
+                Cons<T> stream() {
+                    return self;
                 }
             }
-            return new Recursion().create(this);
+
+            return new Recursion(this).stream();
         }
 
         @Override
@@ -1523,7 +1529,7 @@ public interface Stream<T> extends Seq<T> {
         }
 
         @Override
-        public Stream<T> appendSelf(Function<Stream<T>, Stream<T>> mapper) {
+        public Stream<T> appendSelf(Function<? super Stream<T>, ? extends Stream<T>> mapperr) {
             return this;
         }
 
