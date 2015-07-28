@@ -216,6 +216,11 @@ public class StreamTest extends AbstractSeqTest {
     }
 
     @Test
+    public void shouldRecurrentlyCalculatePrimes() {
+        assertThat(Stream.of(2).appendSelf(self -> Stream.gen(3, i -> i + 2).filter(i -> self.takeWhile(j -> j * j <= i).forAll(k -> i % k > 0))).take(10)).isEqualTo(Stream.of(2, 3, 5, 7, 11, 13, 17, 19, 23, 29));
+    }
+
+    @Test
     public void shouldDoNothingOnNil() {
         assertThat(Stream.empty().appendSelf(self -> self)).isEqualTo(Stream.empty());
     }
@@ -228,11 +233,6 @@ public class StreamTest extends AbstractSeqTest {
     @Test
     public void shouldRecurrentlyCalculateGeometricProgression() {
         assertThat(Stream.of(1).appendSelf(self -> self.map(t -> t * 2)).take(4)).isEqualTo(Stream.of(1, 2, 4, 8));
-    }
-
-    @Test
-    public void shouldCanStopRecursion() {
-        assertThat(Stream.of(1).appendSelf(self -> self.head() < 8 ? self.map(t -> t * 2) : Stream.empty())).isEqualTo(Stream.of(1, 2, 4, 8));
     }
 
     // -- toString
