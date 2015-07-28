@@ -116,7 +116,7 @@ public class Queue<T> implements Seq<T>, Serializable {
      * @throws NullPointerException if {@code elements} is null
      */
     @SafeVarargs
-    @SuppressWarnings({"unchecked", "varargs"})
+    @SuppressWarnings({ "unchecked", "varargs" })
     public static <T> Queue<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return Queue.ofAll(List.of(elements));
@@ -271,7 +271,7 @@ public class Queue<T> implements Seq<T>, Serializable {
      * Queue.rangeBy(4, 1, 2)  // = Queue()
      * </code>
      * </pre>
-
+     *
      * @param from        the first number
      * @param toExclusive the last number + 1
      * @param step        the step
@@ -932,17 +932,8 @@ public class Queue<T> implements Seq<T>, Serializable {
         if (o == this) {
             return true;
         } else if (o instanceof Queue) {
-            List<?> list1 = this.toList();
-            List<?> list2 = ((Queue<?>) o).toList();
-            while (!list1.isEmpty() && !list2.isEmpty()) {
-                final boolean isEqual = Objects.equals(list1.head(), list2.head());
-                if (!isEqual) {
-                    return false;
-                }
-                list1 = list1.tail();
-                list2 = list2.tail();
-            }
-            return list1.isEmpty() && list2.isEmpty();
+            final Queue<?> that = (Queue<?>) o;
+            return this.toList().equals(that.toList());
         } else {
             return false;
         }

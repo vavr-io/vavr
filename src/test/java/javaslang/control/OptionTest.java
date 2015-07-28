@@ -19,20 +19,25 @@ public class OptionTest {
     // -- construction
 
     @Test
-    public void shouldMapNullToNone() throws Exception {
+    public void shouldMapNullToNone() {
         assertThat(Option.of(null)).isEqualTo(None.instance());
     }
 
     @Test
-    public void shouldMapNonNullToSome() throws Exception {
+    public void shouldMapNonNullToSome() {
         final Option<?> option = Option.of(new Object());
         assertThat(option.isDefined()).isTrue();
     }
 
     @Test
-    public void shouldWrapNullInSome() throws Exception {
+    public void shouldWrapNullInSome() {
         final Some<?> some = new Some<>(null);
         assertThat(some.get()).isEqualTo(null);
+    }
+
+    @Test
+    public void shouldCreateNothing() {
+        assertThat(Some.nothing()).isEqualTo(new Some<Void>(null));
     }
 
     // -- get
@@ -125,14 +130,14 @@ public class OptionTest {
 
     @Test
     public void shouldConsumePresentValueOnIsPresentWhenValueIsPresent() {
-        final int[] actual = new int[]{-1};
+        final int[] actual = new int[] { -1 };
         Option.of(1).forEach(i -> actual[0] = i);
         assertThat(actual[0]).isEqualTo(1);
     }
 
     @Test
     public void shouldNotConsumeAnythingOnIsPresentWhenValueIsNotPresent() {
-        final int[] actual = new int[]{-1};
+        final int[] actual = new int[] { -1 };
         Option.<Integer>none().forEach(i -> actual[0] = i);
         assertThat(actual[0]).isEqualTo(-1);
     }
@@ -157,8 +162,8 @@ public class OptionTest {
     // -- flatten(Function)
 
     static final Match<Option<Integer>> MATCH = Match
-        .whenApplicable((Option<Integer> o) -> o).thenApply()
-        .whenApplicable((Integer i) -> new Some<>(i)).thenApply();
+            .whenApplicable((Option<Integer> o) -> o).thenApply()
+            .whenApplicable((Integer i) -> new Some<>(i)).thenApply();
 
     @Test
     public void shouldFlattenUnnestedSomeWithFunction() {
@@ -242,14 +247,14 @@ public class OptionTest {
 
     @Test
     public void shouldConsumePresentValueOnForEachWhenValueIsPresent() {
-        final int[] actual = new int[]{-1};
+        final int[] actual = new int[] { -1 };
         Option.of(1).forEach(i -> actual[0] = i);
         assertThat(actual[0]).isEqualTo(1);
     }
 
     @Test
     public void shouldNotConsumeAnythingOnForEachWhenValueIsNotPresent() {
-        final int[] actual = new int[]{-1};
+        final int[] actual = new int[] { -1 };
         Option.<Integer>none().forEach(i -> actual[0] = i);
         assertThat(actual[0]).isEqualTo(-1);
     }
@@ -258,7 +263,7 @@ public class OptionTest {
 
     @Test
     public void shouldConsumePresentValueOnPeekWhenValueIsPresent() {
-        final int[] actual = new int[]{-1};
+        final int[] actual = new int[] { -1 };
         final Option<Integer> testee = Option.of(1).peek(i -> actual[0] = i);
         assertThat(actual[0]).isEqualTo(1);
         assertThat(testee).isEqualTo(Option.of(1));
@@ -266,7 +271,7 @@ public class OptionTest {
 
     @Test
     public void shouldNotConsumeAnythingOnPeekWhenValueIsNotPresent() {
-        final int[] actual = new int[]{-1};
+        final int[] actual = new int[] { -1 };
         final Option<Integer> testee = Option.<Integer>none().peek(i -> actual[0] = i);
         assertThat(actual[0]).isEqualTo(-1);
         assertThat(testee).isEqualTo(Option.none());

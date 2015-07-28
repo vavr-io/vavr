@@ -5,23 +5,79 @@
  */
 package javaslang.collection;
 
+import java.util.ArrayList;
+import java.util.stream.Collector;
+
 public class QueueTest extends AbstractSeqTest {
 
     // -- construction
+
+    @Override
+    protected <T> Collector<T, ArrayList<T>, Queue<T>> collector() {
+        return Queue.collector();
+    }
 
     @Override
     protected <T> Queue<T> empty() {
         return Queue.empty();
     }
 
+    @Override
+    protected <T> Queue<T> of(T element) {
+        return Queue.of(element);
+    }
+
     @SafeVarargs
-    @SuppressWarnings({"unchecked", "varargs"})
+    @SuppressWarnings({ "unchecked", "varargs" })
     @Override
     protected final <T> Queue<T> of(T... elements) {
         return Queue.of(elements);
     }
 
-    // -- range
+    @Override
+    protected <T> Queue<T> ofAll(Iterable<? extends T> elements) {
+        return Queue.ofAll(elements);
+    }
+
+    @Override
+    protected Queue<Boolean> ofAll(boolean[] array) {
+        return Queue.ofAll(array);
+    }
+
+    @Override
+    protected Queue<Byte> ofAll(byte[] array) {
+        return Queue.ofAll(array);
+    }
+
+    @Override
+    protected Queue<Character> ofAll(char[] array) {
+        return Queue.ofAll(array);
+    }
+
+    @Override
+    protected Queue<Double> ofAll(double[] array) {
+        return Queue.ofAll(array);
+    }
+
+    @Override
+    protected Queue<Float> ofAll(float[] array) {
+        return Queue.ofAll(array);
+    }
+
+    @Override
+    protected Queue<Integer> ofAll(int[] array) {
+        return Queue.ofAll(array);
+    }
+
+    @Override
+    protected Queue<Long> ofAll(long[] array) {
+        return Queue.ofAll(array);
+    }
+
+    @Override
+    protected Queue<Short> ofAll(short[] array) {
+        return Queue.ofAll(array);
+    }
 
     @Override
     protected Queue<Integer> range(int from, int toExclusive) {

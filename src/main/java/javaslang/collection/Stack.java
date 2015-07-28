@@ -10,7 +10,6 @@ import javaslang.control.Option;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
@@ -90,7 +89,7 @@ public interface Stack<T> extends Seq<T> {
      * @throws NullPointerException if {@code elements} is null
      */
     @SafeVarargs
-    @SuppressWarnings({"unchecked", "varargs"})
+    @SuppressWarnings({ "unchecked", "varargs" })
     static <T> Stack<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return List.of(elements);

@@ -5,8 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.Function1;
-import javaslang.Function2;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.Match;
@@ -18,13 +16,12 @@ import org.junit.Test;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.lang.invoke.MethodType;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collector;
 
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
@@ -36,10 +33,32 @@ import static org.assertj.core.api.Assertions.within;
  */
 public abstract class AbstractTraversableTest {
 
+    abstract protected <T> Collector<T, ArrayList<T>, ? extends Traversable<T>> collector();
+
     abstract protected <T> Traversable<T> empty();
+
+    abstract protected <T> Traversable<T> of(T element);
 
     @SuppressWarnings("unchecked")
     abstract protected <T> Traversable<T> of(T... elements);
+
+    abstract protected <T> Traversable<T> ofAll(Iterable<? extends T> elements);
+
+    abstract protected Traversable<Boolean> ofAll(boolean[] array);
+
+    abstract protected Traversable<Byte> ofAll(byte[] array);
+
+    abstract protected Traversable<Character> ofAll(char[] array);
+
+    abstract protected Traversable<Double> ofAll(double[] array);
+
+    abstract protected Traversable<Float> ofAll(float[] array);
+
+    abstract protected Traversable<Integer> ofAll(int[] array);
+
+    abstract protected Traversable<Long> ofAll(long[] array);
+
+    abstract protected Traversable<Short> ofAll(short[] array);
 
     // -- average
 
@@ -943,7 +962,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldPeekNonNilPerformingAnAction() {
-        final int[] effect = {0};
+        final int[] effect = { 0 };
         final Traversable<Integer> actual = of(1, 2, 3).peek(i -> effect[0] = i);
         assertThat(actual).isEqualTo(of(1, 2, 3)); // traverses all elements in the lazy case
         assertThat(effect[0]).isEqualTo(getPeekNonNilPerformingAnAction());
@@ -1482,14 +1501,14 @@ public abstract class AbstractTraversableTest {
     @Test
     public void shouldConvertNilToJavaArray() {
         final Integer[] actual = List.<Integer>empty().toJavaArray(Integer.class);
-        final Integer[] expected = new Integer[]{};
+        final Integer[] expected = new Integer[] {};
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldConvertNonNilToJavaArray() {
         final Integer[] array = of(1, 2).toJavaArray(Integer.class);
-        final Integer[] expected = new Integer[]{1, 2};
+        final Integer[] expected = new Integer[] { 1, 2 };
         assertThat(array).isEqualTo(expected);
     }
 

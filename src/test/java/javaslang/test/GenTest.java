@@ -285,7 +285,7 @@ public class GenTest {
 
     @Test(expected = RuntimeException.class)
     public void shouldThrowOnForEach() {
-        final int[] count = {0};
+        final int[] count = { 0 };
         Gen.of(1).forEach(i -> {
             if (count[0]++ > 0) {
                 throw new RuntimeException("OK");
@@ -297,9 +297,16 @@ public class GenTest {
 
     @Test
     public void shouldPeekArbitrary() {
-        final int[] actual = new int[]{-1};
+        final int[] actual = new int[] { -1 };
         final int expected = Gen.of(1).peek(i -> actual[0] = i).apply(new Random());
         assertThat(actual[0]).isEqualTo(expected);
+    }
+
+    // -- isEmpty
+
+    @Test
+    public void shouldNotBeEmpty() {
+        assertThat(Gen.of(1).isEmpty()).isFalse();
     }
 
     // helpers

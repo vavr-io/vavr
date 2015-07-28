@@ -26,8 +26,8 @@ public class TryTest {
     // -- flatten(Function)
 
     static final Match<Try<Integer>> MATCH = Match
-        .whenApplicable((Try<Integer> o) -> o).thenApply()
-        .whenType(Integer.class).then(Success::new);
+            .whenApplicable((Try<Integer> o) -> o).thenApply()
+            .whenType(Integer.class).then(Success::new);
 
     @Test
     public void shouldFlattenUnnestedSuccessWithFunction() {
@@ -51,7 +51,9 @@ public class TryTest {
 
     @Test
     public void shouldReturnFailureWhenFlatteningSuccessThrows() {
-        assertThat(new Success<>(1).flatten(ignored -> { throw new Error("error"); })).isEqualTo(new Failure<>(new Error("error")));
+        assertThat(new Success<>(1).flatten(ignored -> {
+            throw new Error("error");
+        })).isEqualTo(new Failure<>(new Error("error")));
     }
 
     // -- exists
@@ -231,7 +233,7 @@ public class TryTest {
 
     @Test
     public void shouldRecoverWithOnFailure() {
-        assertThat(TryTest.<String> failure().recoverWith(x -> success()).get()).isEqualTo(OK);
+        assertThat(TryTest.<String>failure().recoverWith(x -> success()).get()).isEqualTo(OK);
     }
 
     @Test
@@ -244,7 +246,7 @@ public class TryTest {
 
     @Test
     public void shouldConsumeThrowableWhenCallingOnFailureGivenFailure() {
-        final String[] result = new String[]{FAILURE};
+        final String[] result = new String[] { FAILURE };
         failure().onFailure(x -> result[0] = OK);
         assertThat(result[0]).isEqualTo(OK);
     }
@@ -305,7 +307,7 @@ public class TryTest {
     @Test
     public void shouldForEachOnFailure() {
         final List<String> actual = new ArrayList<>();
-        TryTest.<String> failure().forEach(actual::add);
+        TryTest.<String>failure().forEach(actual::add);
         assertThat(actual.isEmpty()).isTrue();
     }
 
@@ -471,7 +473,7 @@ public class TryTest {
 
     @Test
     public void shouldOrElseRunOnSuccess() {
-        final String[] result = new String[]{OK};
+        final String[] result = new String[] { OK };
         success().orElseRun(x -> result[0] = FAILURE);
         assertThat(result[0]).isEqualTo(OK);
     }
@@ -493,7 +495,7 @@ public class TryTest {
 
     @Test
     public void shouldNotConsumeThrowableWhenCallingOnFailureGivenSuccess() {
-        final String[] result = new String[]{OK};
+        final String[] result = new String[] { OK };
         success().onFailure(x -> result[0] = FAILURE);
         assertThat(result[0]).isEqualTo(OK);
     }
@@ -596,7 +598,9 @@ public class TryTest {
 
     @Test
     public void shouldPeekSuccessAndThrow() {
-        assertThat(success().peek(t -> { failure().get(); })).isEqualTo(failure());
+        assertThat(success().peek(t -> {
+            failure().get();
+        })).isEqualTo(failure());
     }
 
     // equals

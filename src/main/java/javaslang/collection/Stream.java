@@ -479,7 +479,7 @@ public interface Stream<T> extends Seq<T> {
      * Stream.rangeBy(4, 1, 2)  // = Stream()
      * </code>
      * </pre>
-
+     *
      * @param from        the first number
      * @param toExclusive the last number + 1
      * @param step        the step

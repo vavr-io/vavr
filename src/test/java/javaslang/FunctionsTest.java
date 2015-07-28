@@ -440,7 +440,7 @@ public class FunctionsTest {
 
     @Test
     public void shouldParseReturnTypeArrayOfInt() {
-        final ReturnTypeArrayOfInt lambda = () -> new int[]{};
+        final ReturnTypeArrayOfInt lambda = () -> new int[] {};
         final Class<?> actual = λ.getLambdaSignature(lambda).returnType();
         assertThat(actual.getName()).isEqualTo("[I");
     }
@@ -455,7 +455,7 @@ public class FunctionsTest {
 
     @Test
     public void shouldParseReturnTypeArrayOfArrayReference() {
-        final ReturnTypeArrayOfArrayOfString lambda = () -> new String[][]{};
+        final ReturnTypeArrayOfArrayOfString lambda = () -> new String[][] {};
         final Class<?> actual = λ.getLambdaSignature(lambda).returnType();
         assertThat(actual.getName()).isEqualTo("[[Ljava.lang.String;");
     }

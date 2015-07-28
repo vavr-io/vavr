@@ -6,12 +6,11 @@
 package javaslang.collection;
 
 import javaslang.Serializables;
-import javaslang.collection.List.Cons;
-import javaslang.collection.List.Nil;
 import org.junit.Test;
 
 import java.io.InvalidObjectException;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.stream.Collector;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,8 +19,18 @@ public class ListTest extends AbstractSeqTest {
     // -- construction
 
     @Override
+    protected <T> Collector<T, ArrayList<T>, List<T>> collector() {
+        return List.collector();
+    }
+
+    @Override
     protected <T> List<T> empty() {
         return List.empty();
+    }
+
+    @Override
+    protected <T> List<T> of(T element) {
+        return List.of(element);
     }
 
     @SuppressWarnings("unchecked")
@@ -30,7 +39,50 @@ public class ListTest extends AbstractSeqTest {
         return List.of(elements);
     }
 
-    // -- range
+    @Override
+    protected <T> List<T> ofAll(Iterable<? extends T> elements) {
+        return List.ofAll(elements);
+    }
+
+    @Override
+    protected List<Boolean> ofAll(boolean[] array) {
+        return List.ofAll(array);
+    }
+
+    @Override
+    protected List<Byte> ofAll(byte[] array) {
+        return List.ofAll(array);
+    }
+
+    @Override
+    protected List<Character> ofAll(char[] array) {
+        return List.ofAll(array);
+    }
+
+    @Override
+    protected List<Double> ofAll(double[] array) {
+        return List.ofAll(array);
+    }
+
+    @Override
+    protected List<Float> ofAll(float[] array) {
+        return List.ofAll(array);
+    }
+
+    @Override
+    protected List<Integer> ofAll(int[] array) {
+        return List.ofAll(array);
+    }
+
+    @Override
+    protected List<Long> ofAll(long[] array) {
+        return List.ofAll(array);
+    }
+
+    @Override
+    protected List<Short> ofAll(short[] array) {
+        return List.ofAll(array);
+    }
 
     @Override
     protected List<Integer> range(int from, int toExclusive) {
@@ -72,124 +124,9 @@ public class ListTest extends AbstractSeqTest {
         return List.rangeClosedBy(from, toInclusive, step);
     }
 
-    // -- static collector()
-
-    @Test
-    public void shouldStreamAndCollectNil() {
-        final List<?> actual = List.empty().toJavaStream().collect(List.collector());
-        assertThat(actual).isEqualTo(List.empty());
-    }
-
-    @Test
-    public void shouldStreamAndCollectNonNil() {
-        final List<?> actual = List.of(1, 2, 3).toJavaStream().collect(List.collector());
-        assertThat(actual).isEqualTo(List.of(1, 2, 3));
-    }
-
-    @Test
-    public void shouldParallelStreamAndCollectNil() {
-        final List<?> actual = List.empty().toJavaStream().parallel().collect(List.collector());
-        assertThat(actual).isEqualTo(List.empty());
-    }
-
-    @Test
-    public void shouldParallelStreamAndCollectNonNil() {
-        final List<?> actual = List.of(1, 2, 3).toJavaStream().parallel().collect(List.collector());
-        assertThat(actual).isEqualTo(List.of(1, 2, 3));
-    }
-
-    // -- static empty()
-
-    @Test
-    public void shouldCreateNil() {
-        assertThat(List.empty()).isEqualTo(Nil.instance());
-    }
-
-    // -- static of()
-
-    @Test
-    public void shouldCreateListOfListUsingCons() {
-        assertThat(List.of(List.empty()).toString()).isEqualTo("List(List())");
-    }
-
-    // -- static of(T...)
-
-    @Test
-    public void shouldCreateListOfElements() {
-        final List<Integer> actual = List.of(1, 2);
-        final List<Integer> expected = new Cons<>(1, new Cons<>(2, Nil.instance()));
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    // -- static ofAll(Iterable)
-
-    @Test
-    public void shouldCreateListOfIterable() {
-        final java.util.List<Integer> arrayList = Arrays.asList(1, 2, 3);
-        assertThat(List.ofAll(arrayList)).isEqualTo(List.of(1, 2, 3));
-    }
-
-    // -- static ofAll(<primitive array>)
-
-    @Test
-    public void shouldCreateListOfPrimitiveBooleanArray() {
-        final List<Boolean> actual = List.ofAll(new boolean[] {true, false});
-        final List<Boolean> expected = List.of(true, false);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldCreateListOfPrimitiveByteArray() {
-        final List<Byte> actual = List.ofAll(new byte[] {1, 2, 3});
-        final List<Byte> expected = List.of((byte) 1, (byte) 2, (byte) 3);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldCreateListOfPrimitiveCharArray() {
-        final List<Character> actual = List.ofAll(new char[] {'a', 'b', 'c'});
-        final List<Character> expected = List.of('a', 'b', 'c');
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldCreateListOfPrimitiveDoubleArray() {
-        final List<Double> actual = List.ofAll(new double[] {1d, 2d, 3d});
-        final List<Double> expected = List.of(1d, 2d, 3d);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldCreateListOfPrimitiveFloatArray() {
-        final List<Float> actual = List.ofAll(new float[] {1f, 2f, 3f});
-        final List<Float> expected = List.of(1f, 2f, 3f);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldCreateListOfPrimitiveIntArray() {
-        final List<Integer> actual = List.ofAll(new int[] {1, 2, 3});
-        final List<Integer> expected = List.of(1, 2, 3);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldCreateListOfPrimitiveLongArray() {
-        final List<Long> actual = List.ofAll(new long[]{1L, 2L, 3L});
-        final List<Long> expected = List.of(1L, 2L, 3L);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldCreateListOfPrimitiveShortArray() {
-        final List<Short> actual = List.ofAll(new short[] {(short) 1, (short) 2, (short) 3});
-        final List<Short> expected = List.of((short) 1, (short) 2, (short) 3);
-        assertThat(actual).isEqualTo(expected);
-    }
-
     // -- combinations
 
-        @Test
+    @Test
     public void shouldComputeCombinationsOfEmptyList() {
         assertThat(List.empty().combinations()).isEqualTo(List.of(List.empty()));
     }

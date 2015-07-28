@@ -49,14 +49,14 @@ public class Euler57Test {
                 .length();
     }
 
-    private static Stream<Tuple2<BigDecimal,BigDecimal>> fractions() {
+    private static Stream<Tuple2<BigDecimal, BigDecimal>> fractions() {
         return Stream.gen(Tuple.of(BigDecimal.ONE, BigDecimal.ONE), Euler57Test::it);
     }
 
     /**
      * a/b -> 1 + 1/(1 + a/b) = (a+2b)/(a+b)
      */
-    private static Tuple2<BigDecimal,BigDecimal> it(Tuple2<BigDecimal,BigDecimal> val) {
+    private static Tuple2<BigDecimal, BigDecimal> it(Tuple2<BigDecimal, BigDecimal> val) {
         return Tuple.of(val._1.add(val._2.add(val._2)), val._1.add(val._2));
     }
 }
