@@ -5,14 +5,12 @@
  */
 package javaslang.collection.euler;
 
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.collection.List;
 import javaslang.collection.Stream;
 
-import java.util.function.Predicate;
+public final class Utils {
 
-public class Utils {
+    private Utils() {
+    }
 
     public static Stream<Integer> fibonacci() {
         return Stream.of(1, 1).appendSelf(self -> self.zip(self.tail()).map(t -> t._1 + t._2));
