@@ -704,6 +704,27 @@ public interface Stream<T> extends Seq<T> {
     @Override
     Stream<T> appendAll(Iterable<? extends T> elements);
 
+    /**
+     * Appends itself to the end of stream with {@code mapper} function.
+     * <p>
+     * <strong>Example:</strong>
+     * <p>
+     * Well known scala code for Fibonacci infinite sequence
+     * <pre>
+     * <code>
+     * val fibs:Stream[Int] = 0 #:: 1 #:: (fibs zip fibs.tail).map{ t => t._1 + t._2 }
+     * </code></pre>
+     * can be transformed to
+     * <pre>
+     * <code>
+     * Stream.of(0, 1).appendSelf(self -> self.zip(self.tail()).map(t -> t._1 + t._2));
+     * </code></pre>
+     *
+     * @param mapper an mapper
+     * @return a new Stream
+     */
+    Stream<T> appendSelf(Function<Stream<T>, Stream<T>> mapper);
+
     @Override
     default Stream<T> clear() {
         return Nil.instance();
@@ -1193,6 +1214,12 @@ public interface Stream<T> extends Seq<T> {
         }
 
         @Override
+        public Stream<T> appendSelf(Function<Stream<T>, Stream<T>> mapper) {
+            Objects.requireNonNull(mapper, "mapper is null");
+            return new Cons<>(head, () -> tail().appendAll(mapper.apply(this)).appendSelf(mapper));
+        }
+
+        @Override
         public T head() {
             return head.get();
         }
@@ -1466,6 +1493,11 @@ public interface Stream<T> extends Seq<T> {
         public Stream<T> appendAll(Iterable<? extends T> elements) {
             Objects.requireNonNull(elements, "elements is null");
             return Stream.ofAll(elements);
+        }
+
+        @Override
+        public Stream<T> appendSelf(Function<Stream<T>, Stream<T>> mapper) {
+            return this;
         }
 
         @Override
