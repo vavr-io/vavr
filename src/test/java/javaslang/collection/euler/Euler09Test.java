@@ -32,7 +32,8 @@ public class Euler09Test {
     }
 
     public int abc(int sum) {
-        return Utils.cross(List.rangeClosed(1, sum), List.rangeClosed(1, sum))
+        return List.rangeClosed(1, sum)
+                .cartesianProduct()
                 .filter(t -> t._1 + t._2 < sum)
                 .map(t -> Tuple.of(t._1, t._2, sum - t._1 - t._2))
                 .filter(t -> t._1 * t._1 + t._2 * t._2 == t._3 * t._3)
