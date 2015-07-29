@@ -34,44 +34,6 @@ public interface λ<R> extends Serializable {
     long serialVersionUID = 1L;
 
     /**
-     * Serializes a lambda and returns the corresponding {@link java.lang.invoke.SerializedLambda}.
-     *
-     * @param lambda A serializable lambda
-     * @return The serialized lambda wrapped in a {@link javaslang.control.Success}, or a {@link javaslang.control.Failure}
-     * if an exception occurred.
-     * @see <a
-     * href="http://stackoverflow.com/questions/21860875/printing-debug-info-on-errors-with-java-8-lambda-expressions">printing
-     * debug info on errors with java 8 lambda expressions</a>
-     * @see <a href="http://www.slideshare.net/hendersk/method-handles-in-java">Method Handles in Java</a>
-     */
-    static SerializedLambda getSerializedLambda(Serializable lambda) {
-        return Try.of(() -> {
-            final Method method = lambda.getClass().getDeclaredMethod("writeReplace");
-            method.setAccessible(true);
-            return (SerializedLambda) method.invoke(lambda);
-        }).get();
-    }
-
-    /**
-     * <p>
-     * Gets the runtime method signature of the given lambda instance. This function is especially handy when the
-     * functional interface is generic and the parameter and/or return types cannot be determined directly.
-     * </p>
-     * <p>
-     * Uses internally the {@link java.lang.invoke.SerializedLambda#getImplMethodSignature()} by parsing the JVM field
-     * types of the method signature. The result is a {@link java.lang.invoke.MethodType} which contains the return type
-     * and the parameter types of the given lambda.
-     * </p>
-     *
-     * @param lambda A serializable lambda.
-     * @return The signature of the lambda as {@linkplain java.lang.invoke.MethodType}.
-     */
-    static MethodType getLambdaSignature(Serializable lambda) {
-        final String signature = getSerializedLambda(lambda).getImplMethodSignature();
-        return MethodType.fromMethodDescriptorString(signature, lambda.getClass().getClassLoader());
-    }
-
-    /**
      * @return the number of function arguments.
      * @see <a href="http://en.wikipedia.org/wiki/Arity">Arity</a>
      */
@@ -116,8 +78,45 @@ public interface λ<R> extends Serializable {
      * @return A {@link java.lang.invoke.MethodType}
      */
     default MethodType getType() {
-        final MethodType methodType = λ.getLambdaSignature(this);
-        return methodType.dropParameterTypes(0, methodType.parameterCount() - arity());
+        return λ.getLambdaSignature(this);
+    }
+
+    /**
+     * <p>
+     * Gets the runtime method signature of the given lambda instance. This function is especially handy when the
+     * functional interface is generic and the parameter and/or return types cannot be determined directly.
+     * </p>
+     * <p>
+     * Uses internally the {@link java.lang.invoke.SerializedLambda#getImplMethodSignature()} by parsing the JVM field
+     * types of the method signature. The result is a {@link java.lang.invoke.MethodType} which contains the return type
+     * and the parameter types of the given lambda.
+     * </p>
+     *
+     * @param lambda A serializable lambda.
+     * @return The signature of the lambda as {@linkplain java.lang.invoke.MethodType}.
+     */
+    static MethodType getLambdaSignature(Serializable lambda) {
+        final String signature = getSerializedLambda(lambda).getInstantiatedMethodType();
+        return MethodType.fromMethodDescriptorString(signature, lambda.getClass().getClassLoader());
+    }
+
+    /**
+     * Serializes a lambda and returns the corresponding {@link java.lang.invoke.SerializedLambda}.
+     *
+     * @param lambda A serializable lambda
+     * @return The serialized lambda wrapped in a {@link javaslang.control.Success}, or a {@link javaslang.control.Failure}
+     * if an exception occurred.
+     * @see <a
+     * href="http://stackoverflow.com/questions/21860875/printing-debug-info-on-errors-with-java-8-lambda-expressions">printing
+     * debug info on errors with java 8 lambda expressions</a>
+     * @see <a href="http://www.slideshare.net/hendersk/method-handles-in-java">Method Handles in Java</a>
+     */
+    static SerializedLambda getSerializedLambda(Serializable lambda) {
+        return Try.of(() -> {
+            final Method method = lambda.getClass().getDeclaredMethod("writeReplace");
+            method.setAccessible(true);
+            return (SerializedLambda) method.invoke(lambda);
+        }).get();
     }
 
     /**
