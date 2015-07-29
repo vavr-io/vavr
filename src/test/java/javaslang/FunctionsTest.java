@@ -362,14 +362,14 @@ public class FunctionsTest {
     public void shouldRecognizeMethodReferenceSignature() {
         final Function<Integer, Integer> f1 = i -> i + 1;
         final Function1<Integer, Integer> f2 = f1::apply;
-        assertThat(f2.getType().toString()).isEqualTo("(Object)Object");
+        assertThat(f2.getType().toString()).isEqualTo("(Integer)Integer");
     }
 
     @Test
     public void shouldRecognizeLiftedMethodReferenceSignature() {
         final Function<Integer, Integer> f1 = i -> i + 1;
         final Function1<Integer, Integer> f2 = Function1.lift(f1::apply);
-        assertThat(f2.getType().toString()).isEqualTo("(Object)Object");
+        assertThat(f2.getType().toString()).isEqualTo("(Integer)Integer");
     }
 
     // -- more lambda reflection tests
