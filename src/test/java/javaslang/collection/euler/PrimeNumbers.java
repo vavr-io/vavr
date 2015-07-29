@@ -22,6 +22,10 @@ public final class PrimeNumbers {
     private PrimeNumbers() {
     }
 
+    public static Stream<Long> primes() {
+        return PRIMES;
+    }
+
     public static long prime(int index) {
         if (index < 1) {
             throw new IllegalArgumentException("index < 1");

@@ -37,7 +37,6 @@ public class Euler09Test {
                 .filter(t -> t._1 + t._2 < sum)
                 .map(t -> Tuple.of(t._1, t._2, sum - t._1 - t._2))
                 .filter(t -> t._1 * t._1 + t._2 * t._2 == t._3 * t._3)
-                .filter(t -> t._1 + t._2 + t._3 == sum)
                 .map(t -> t._1 * t._2 * t._3)
                 .head();
     }
