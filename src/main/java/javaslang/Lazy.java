@@ -6,6 +6,7 @@
 package javaslang;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -81,10 +82,8 @@ public final class Lazy<T> implements Supplier<T>, Value<T>, Serializable {
             throw new IllegalArgumentException("type has to be an interface");
         }
         final Lazy<T> lazy = Lazy.of(supplier);
-        return (T) Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] { type },
-                (proxy, method, args) -> {
-                    return method.invoke(lazy.get(), args);
-                });
+        final InvocationHandler handler = (proxy, method, args) -> method.invoke(lazy.get(), args);
+        return (T) Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] { type }, handler);
     }
 
     public boolean isEvaluated() {
