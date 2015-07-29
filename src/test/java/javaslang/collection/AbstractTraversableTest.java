@@ -449,7 +449,6 @@ public abstract class AbstractTraversableTest {
     public void shouldFlattenTraversableOfTraversablesAndPlainElementsGivenAFunction() {
         final Traversable<?> xs = of(1, of(2, 3));
         final Traversable<Integer> actual = xs
-                .peek(System.out::println)
                 .flatten(x -> Match
                         .whenApplicable((Traversable<Integer> ys) -> ys).thenApply()
                         .whenType(Integer.class).then(i -> of(i))

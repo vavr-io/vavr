@@ -25,7 +25,7 @@ public class MatchErrorTest {
     public void shouldReturnCorrectObjectWhenMatchingByFunction() {
         final Object obj = new Object();
         try {
-            Match.when(0).then(0).apply(obj);
+            Match.whenIs(0).then(0).apply(obj);
         } catch (MatchError matchError) {
             assertThat(matchError.getObject()).isEqualTo(obj);
         }

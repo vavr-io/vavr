@@ -5,17 +5,18 @@
  */
 package javaslang.control;
 
-import javaslang.Function1;
-import javaslang.Function2;
-import javaslang.Lazy;
-import javaslang.Value;
+import javaslang.*;
 import javaslang.collection.List;
+import javaslang.collection.Stream;
 import javaslang.collection.TraversableOnce;
 
+import java.lang.invoke.MethodType;
+import java.lang.invoke.SerializedLambda;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
@@ -65,7 +66,6 @@ import java.util.function.Supplier;
  * @param <R> The result type of the {@code Match}.
  * @since 1.0.0
  */
-// DEV-NOTE: because of a Java 'bug' we use whenTrue(Function1) instead of whenTrue(Predicate), see https://gist.github.com/danieldietrich/9f65eeec3d3f822c852f
 public interface Match<R> extends Function<Object, R> {
 
     /**
@@ -89,428 +89,208 @@ public interface Match<R> extends Function<Object, R> {
     }
 
     /**
-     * Specifies the type of the match expression. In many cases it is not necessary to call {@code as}. This
-     * method is intended to be used for readability reasons when the upper bound of the cases cannot be inferred,
-     * i.e. instead of
-     *
-     * <pre>
-     * <code>
-     * final Match&lt;Number&gt; toNumber = Match
-     *         .&lt;Number&gt; when((Integer i) -&gt; i)
-     *         .when((String s) -&gt; new BigDecimal(s))
-     * </code>
-     * </pre>
-     *
-     * we write
-     *
-     * <pre>
-     * <code>
-     * final Match&lt;Number&gt; toNumber = Match.as(Number.class)
-     *         .when((Integer i) -&gt; i)
-     *         .when((String s) -&gt; new BigDecimal(s))
-     * </code>
-     * </pre>
+     * Specifies the type of the match expression. In many cases it is not necessary to call {@code as}.
      *
      * @param type the hint of type {@code R}
      * @param <R>  the type of the {@code Match} expression
      * @return a new match builder
      */
-    static <R> MatchFunction.Typed<R> as(Class<R> type) {
+    static <R> MatchFunction.When.Then<R> as(Class<R> type) {
         Objects.requireNonNull(type, "type is null");
-        return new MatchFunction.Typed<>();
+        return new MatchFunction.When.Then<>(List.empty());
     }
 
-    /**
-     * Creates a {@code Match.Case} by value.
-     *
-     * @param <T>       type of the prototype value
-     * @param prototype A specific value to be matched
-     * @return a new {@code Case}
-     * @throws NullPointerException if {@code function} is null
-     */
-    static <T> MatchFunction.WhenUntyped<T> when(T prototype) {
-        return new MatchFunction.WhenUntyped<>(prototype);
+    static <T> MatchFunction.WhenUntyped<T> when(Function1<? super T, Boolean> predicate) {
+        return new MatchFunction.WhenUntyped<>(MatchFunction.When.of(predicate));
     }
 
-    @SuppressWarnings("unchecked")
-    static <T> MatchFunction.WhenInUntyped<T> whenIn(T... prototypes) {
+    static <T> MatchFunction.WhenUntyped<T> whenIs(T prototype) {
+        return new MatchFunction.WhenUntyped<>(MatchFunction.When.is(prototype));
+    }
+
+    @SuppressWarnings({ "unchecked", "varargs" })
+    @SafeVarargs
+    static <T> MatchFunction.WhenUntyped<T> whenIsIn(T... prototypes) {
         Objects.requireNonNull(prototypes, "prototypes is null");
-        return new MatchFunction.WhenInUntyped<>(prototypes);
+        return new MatchFunction.WhenUntyped<>(MatchFunction.When.isIn(prototypes));
     }
 
-    static <T> MatchFunction.WhenTrueUntyped<T> whenTrue(Function1<? super T, ? extends Boolean> predicate) {
-        return new MatchFunction.WhenTrueUntyped<>(predicate);
-    }
-
-    static <T> MatchFunction.WhenTypeUntyped<T> whenType(Class<T> type) {
+    static <T> MatchFunction.WhenUntyped<T> whenType(Class<T> type) {
         Objects.requireNonNull(type, "type is null");
-        return new MatchFunction.WhenTypeUntyped<>(type);
-    }
-
-    @SuppressWarnings({ "unchecked", "ConstantConditions" })
-    static <T> MatchFunction.WhenTypeInUntyped<T> whenTypeIn(Class<?>... types) {
-        Objects.requireNonNull(types, "types is null");
-        return new MatchFunction.WhenTypeInUntyped<T>((Class<T>[]) types);
+        return new MatchFunction.WhenUntyped<>(MatchFunction.When.type(type));
     }
 
     static <T, R> MatchFunction.WhenApplicable<T, R> whenApplicable(Function1<? super T, ? extends R> function) {
         return new MatchFunction.WhenApplicable<>(function, List.empty());
     }
 
+    static <R> MatchFunction.Otherwise<R> otherwise(R that) {
+        return new MatchFunction.Otherwise<>(ignored -> that, List.empty());
+    }
+
+    static <R> MatchFunction.Otherwise<R> otherwise(Function<? super Object, ? extends R> function) {
+        return new MatchFunction.Otherwise<>(function, List.empty());
+    }
+
+    static <R> MatchFunction.Otherwise<R> otherwise(Supplier<? extends R> supplier) {
+        return new MatchFunction.Otherwise<>(ignored -> supplier.get(), List.empty());
+    }
+
+    static <R> MatchFunction.Otherwise<R> otherwiseThrow(Supplier<? extends RuntimeException> supplier) {
+        return new MatchFunction.Otherwise<>(ignored -> {
+            throw supplier.get();
+        }, List.empty());
+    }
+
     /**
-     * @since 2.0.0
+     * Match as Function
      */
     interface MatchFunction {
 
-        interface WithWhen<R> {
-
-            /**
-             * Creates a {@code Match.When} by value.
-             *
-             * @param <T>       type of the prototype value
-             * @param prototype A specific value to be matched
-             * @return a new {@code Case}
-             * @throws NullPointerException if {@code function} is null
-             */
-            <T> When<T, R> when(T prototype);
-
-            @SuppressWarnings("unchecked")
-            <T> WhenIn<T, R> whenIn(T... prototypes);
-
-            <T> WhenTrue<T, R> whenTrue(Function1<? super T, ? extends Boolean> predicate);
-
-            <T> WhenType<T, R> whenType(Class<T> type);
-
-            @SuppressWarnings("unchecked")
-            <T> WhenTypeIn<T, R> whenTypeIn(Class<T>... types);
-
-            <T> WhenApplicable<T, R> whenApplicable(Function1<? super T, ? extends R> function);
-        }
-
-        interface WithThenUntyped<T> {
-
-            <R> Then<R> then(Function<? super T, ? extends R> function);
-
-            default <R> Then<R> then(R that) {
-                return then(ignored -> that);
-            }
-
-            default <R> Then<R> then(Supplier<? extends R> supplier) {
-                Objects.requireNonNull(supplier, "supplier is null");
-                return then(ignored -> supplier.get());
-            }
-        }
-
-        interface WithThen<T, R> {
-
-            Then<R> then(Function<? super T, ? extends R> function);
-
-            default Then<R> then(R that) {
-                return then(ignored -> that);
-            }
-
-            default Then<R> then(Supplier<? extends R> supplier) {
-                Objects.requireNonNull(supplier, "supplier is null");
-                return then(ignored -> supplier.get());
-            }
-        }
-
         /**
-         * The result of {@code Match.as(Class)}, which explicitly sets the {@code Match} result type.
+         * {@code WhenUntyped} is needed, when the return type of the MatchFunction is still unknown,
+         * i.e. before the first call of {@code then()} or {@link Match#as(Class)}.
          *
-         * @param <R> the result type
-         * @since 1.2.1
+         * @param <T> superset of the domain of the predicate
          */
-        final class Typed<R> implements WithWhen<R> {
+        final class WhenUntyped<T> {
 
-            private Typed() {
-            }
+            private final Predicate<? super T> predicate;
 
-            @Override
-            public <T> When<T, R> when(T prototype) {
-                return new When<>(prototype, List.empty());
-            }
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public <T> WhenIn<T, R> whenIn(T... prototypes) {
-                Objects.requireNonNull(prototypes, "prototypes is null");
-                return new WhenIn<>(prototypes, List.empty());
-            }
-
-            @Override
-            public <T> WhenTrue<T, R> whenTrue(Function1<? super T, ? extends Boolean> predicate) {
-                Objects.requireNonNull(predicate, "predicate is null");
-                return new WhenTrue<>(predicate, List.empty());
-            }
-
-            @Override
-            public <T> WhenType<T, R> whenType(Class<T> type) {
-                Objects.requireNonNull(type, "type is null");
-                return new WhenType<>(type, List.empty());
-            }
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public <T> WhenTypeIn<T, R> whenTypeIn(Class<T>... types) {
-                Objects.requireNonNull(types, "types is null");
-                return new WhenTypeIn<>(types, List.empty());
-            }
-
-            @Override
-            public <T> WhenApplicable<T, R> whenApplicable(Function1<? super T, ? extends R> function) {
-                Objects.requireNonNull(function, "function is null");
-                return new WhenApplicable<>(function, List.empty());
-            }
-        }
-
-        final class WhenUntyped<T> implements WithThenUntyped<T> {
-
-            private final T prototype;
-
-            private WhenUntyped(T prototype) {
-                this.prototype = prototype;
-            }
-
-            @Override
-            public <R> Then<R> then(Function<? super T, ? extends R> function) {
-                Objects.requireNonNull(function, "function is null");
-                return new Then<>(List.of(Case.byValue(prototype, function)));
-            }
-        }
-
-        final class When<T, R> implements WithThen<T, R> {
-
-            private final T prototype;
-            private final List<Case<R>> cases;
-
-            private When(T prototype, List<Case<R>> cases) {
-                this.prototype = prototype;
-                this.cases = cases;
-            }
-
-            @Override
-            public Then<R> then(Function<? super T, ? extends R> function) {
-                Objects.requireNonNull(function, "function is null");
-                return new Then<>(cases.prepend(Case.byValue(prototype, function)));
-            }
-        }
-
-        final class WhenTrueUntyped<T> implements WithThenUntyped<T> {
-
-            private final Function1<? super T, ? extends Boolean> predicate;
-
-            private WhenTrueUntyped(Function1<? super T, ? extends Boolean> predicate) {
+            private WhenUntyped(Predicate<? super T> predicate) {
                 this.predicate = predicate;
             }
 
-            @Override
-            public <R> Then<R> then(Function<? super T, ? extends R> function) {
+            public <R> When.Then<R> then(Function<? super T, ? extends R> function) {
                 Objects.requireNonNull(function, "function is null");
-                return new Then<>(List.of(Case.byPredicate(predicate, function)));
+                final Case<R> caze = new Case<>(predicate, function);
+                return new When.Then<>(List.of(caze));
+            }
+
+            public <R> When.Then<R> then(R that) {
+                return then(ignored -> that);
+            }
+
+            public <R> When.Then<R> then(Supplier<? extends R> supplier) {
+                Objects.requireNonNull(supplier, "supplier is null");
+                return then(ignored -> supplier.get());
+            }
+
+            public <R> When.Then<R> thenThrow(Supplier<? extends RuntimeException> supplier) {
+                Objects.requireNonNull(supplier, "supplier is null");
+                return then(ignored -> {
+                    throw supplier.get();
+                });
             }
         }
 
-        final class WhenTrue<T, R> implements WithThen<T, R> {
+        final class When<T, R> {
 
-            private final Function1<? super T, ? extends Boolean> predicate;
+            private final Predicate<? super T> predicate;
             private final List<Case<R>> cases;
 
-            private WhenTrue(Function1<? super T, ? extends Boolean> predicate, List<Case<R>> cases) {
+            private When(Predicate<? super T> predicate, List<Case<R>> cases) {
                 this.predicate = predicate;
                 this.cases = cases;
             }
 
-            @Override
             public Then<R> then(Function<? super T, ? extends R> function) {
                 Objects.requireNonNull(function, "function is null");
-                return new Then<>(cases.prepend(Case.byPredicate(predicate, function)));
-            }
-        }
-
-        final class WhenInUntyped<T> implements WithThenUntyped<T> {
-
-            private final T[] prototypes;
-
-            private WhenInUntyped(T[] prototypes) {
-                this.prototypes = prototypes;
+                return new Then<>(cases.prepend(new Case<>(predicate, function)));
             }
 
-            @Override
-            public <R> Then<R> then(Function<? super T, ? extends R> function) {
-                Objects.requireNonNull(function, "function is null");
-                final List<Case<R>> cases = List.of(prototypes)
-                        .foldLeft(List.empty(), (ts, t) -> ts.prepend(Case.byValue(t, function)));
-                return new Then<>(cases);
-            }
-        }
-
-        final class WhenIn<T, R> implements WithThen<T, R> {
-
-            private final T[] prototypes;
-            private final List<Case<R>> cases;
-
-            private WhenIn(T[] prototypes, List<Case<R>> cases) {
-                this.prototypes = prototypes;
-                this.cases = cases;
+            public Then<R> then(R that) {
+                return then(ignored -> that);
             }
 
-            @Override
-            public Then<R> then(Function<? super T, ? extends R> function) {
-                Objects.requireNonNull(function, "function is null");
-                final List<Case<R>> newCases = List.of(prototypes)
-                        .foldLeft(List.empty(), (ts, t) -> ts.prepend(Case.byValue(t, function)));
-                return new Then<>(cases.prependAll(newCases));
-            }
-        }
-
-        final class WhenTypeUntyped<T> implements WithThenUntyped<T> {
-
-            private final Class<T> type;
-
-            private WhenTypeUntyped(Class<T> type) {
-                this.type = type;
+            public Then<R> then(Supplier<? extends R> supplier) {
+                Objects.requireNonNull(supplier, "supplier is null");
+                return then(ignored -> supplier.get());
             }
 
-            @Override
-            public <R> Then<R> then(Function<? super T, ? extends R> function) {
-                Objects.requireNonNull(function, "function is null");
-                final List<Case<R>> cases = List.of(Case.byType(type, function));
-                return new Then<>(cases);
-            }
-        }
-
-        final class WhenType<T, R> implements WithThen<T, R> {
-
-            private final Class<T> type;
-            private final List<Case<R>> cases;
-
-            private WhenType(Class<T> type, List<Case<R>> cases) {
-                this.type = type;
-                this.cases = cases;
+            public Then<R> thenThrow(Supplier<? extends RuntimeException> supplier) {
+                Objects.requireNonNull(supplier, "supplier is null");
+                return then(ignored -> {
+                    throw supplier.get();
+                });
             }
 
-            @Override
-            public Then<R> then(Function<? super T, ? extends R> function) {
-                Objects.requireNonNull(function, "function is null");
-                final List<Case<R>> newCases = List.of(Case.byType(type, function));
-                return new Then<>(cases.prependAll(newCases));
-            }
-        }
-
-        final class WhenTypeInUntyped<T> implements WithThenUntyped<T> {
-
-            private final Class<T>[] types;
-
-            private WhenTypeInUntyped(Class<T>[] types) {
-                this.types = types;
+            private static <T> Predicate<? super T> of(Function1<? super T, Boolean> predicate) {
+                final Class<?> type = predicate.getType().parameterType(0);
+                return value -> (value == null || type.isAssignableFrom(value.getClass())) && predicate.apply(value);
             }
 
-            @Override
-            public <R> Then<R> then(Function<? super T, ? extends R> function) {
-                Objects.requireNonNull(function, "function is null");
-                final List<Case<R>> cases = List.of(types)
-                        .foldLeft(List.empty(), (ts, t) -> ts.prepend(Case.byType(t, function)));
-                return new Then<>(cases);
-            }
-        }
-
-        final class WhenTypeIn<T, R> implements WithThen<T, R> {
-
-            private final Class<T>[] types;
-            private final List<Case<R>> cases;
-
-            private WhenTypeIn(Class<T>[] types, List<Case<R>> cases) {
-                this.types = types;
-                this.cases = cases;
+            private static <T> Predicate<? super T> is(T prototype) {
+                return value -> value == prototype || (value != null && value.equals(prototype));
             }
 
-            @Override
-            public Then<R> then(Function<? super T, ? extends R> function) {
-                Objects.requireNonNull(function, "function is null");
-                final List<Case<R>> newCases = List.of(types)
-                        .foldLeft(List.empty(), (ts, t) -> ts.prepend(Case.byType(t, function)));
-                return new Then<>(cases.prependAll(newCases));
-            }
-        }
-
-        final class WhenApplicable<T, R> {
-
-            private final Then<R> then;
-
-            private WhenApplicable(Function1<? super T, ? extends R> function, List<Case<R>> cases) {
-                this.then = new Then<>(cases.prepend(Case.byFunction(function)));
+            @SuppressWarnings({ "unchecked", "varargs" })
+            @SafeVarargs
+            private static <T> Predicate<? super T> isIn(T... prototypes) {
+                return value -> Stream.of(prototypes).findFirst(prototype -> is(prototype).test(value)).isDefined();
             }
 
-            public Then<R> thenApply() {
-                return then;
-            }
-        }
-
-        final class Then<R> implements Match<R>, WithWhen<R> {
-
-            private final List<Case<R>> cases;
-
-            private Then(List<Case<R>> cases) {
-                this.cases = cases;
+            private static <T> Predicate<? super T> type(Class<T> type) {
+                return value -> value != null && type.isAssignableFrom(value.getClass());
             }
 
-            @Override
-            public R apply(Object o) {
-                return cases
-                        .reverse()
-                        .findFirst(caze -> caze.isApplicable(o))
-                        .map(caze -> caze.apply(o))
-                        .orElseThrow(() -> new MatchError(o));
-            }
+            public static final class Then<R> implements Match<R> {
 
-            @Override
-            public <T> When<T, R> when(T prototype) {
-                return new When<>(prototype, cases);
-            }
+                private final List<Case<R>> cases;
 
-            @SuppressWarnings("unchecked")
-            @Override
-            public <T> WhenIn<T, R> whenIn(T... prototypes) {
-                Objects.requireNonNull(prototypes, "prototypes is null");
-                return new WhenIn<>(prototypes, cases);
-            }
+                private Then(List<Case<R>> cases) {
+                    this.cases = cases;
+                }
 
-            @Override
-            public <T> WhenTrue<T, R> whenTrue(Function1<? super T, ? extends Boolean> predicate) {
-                Objects.requireNonNull(predicate, "predicate is null");
-                return new WhenTrue<>(predicate, cases);
-            }
+                @Override
+                public R apply(Object o) {
+                    return cases
+                            .reverse()
+                            .findFirst(caze -> caze.isApplicable(o))
+                            .map(caze -> caze.apply(o))
+                            .orElseThrow(() -> new MatchError(o));
+                }
 
-            @Override
-            public <T> WhenType<T, R> whenType(Class<T> type) {
-                Objects.requireNonNull(type, "type is null");
-                return new WhenType<>(type, cases);
-            }
+                public <T> When<T, R> when(Function1<? super T, Boolean> predicate) {
+                    return new When<>(When.of(predicate), cases);
+                }
 
-            @SuppressWarnings("unchecked")
-            @Override
-            public <T> WhenTypeIn<T, R> whenTypeIn(Class<T>... types) {
-                Objects.requireNonNull(types, "types is null");
-                return new WhenTypeIn<>(types, cases);
-            }
+                public <T> When<T, R> whenIs(T prototype) {
+                    return new When<>(When.is(prototype), cases);
+                }
 
-            @Override
-            public <T> WhenApplicable<T, R> whenApplicable(Function1<? super T, ? extends R> function) {
-                Objects.requireNonNull(function, "f is null");
-                return new WhenApplicable<>(function, cases);
-            }
+                @SuppressWarnings({ "unchecked", "varargs" })
+                public <T> When<T, R> whenIsIn(T... prototypes) {
+                    Objects.requireNonNull(prototypes, "prototypes is null");
+                    return new When<>(When.isIn(prototypes), cases);
+                }
 
-            public Otherwise<R> otherwise(R that) {
-                return new Otherwise<>(ignored -> that, cases);
-            }
+                public <T> When<T, R> whenType(Class<T> type) {
+                    Objects.requireNonNull(type, "type is null");
+                    return new When<>(When.type(type), cases);
+                }
 
-            public Otherwise<R> otherwise(Function<? super Object, ? extends R> function) {
-                return new Otherwise<>(function, cases);
-            }
+                public <T> WhenApplicable<T, R> whenApplicable(Function1<? super T, ? extends R> function) {
+                    return new WhenApplicable<>(function, cases);
+                }
 
-            public Otherwise<R> otherwise(Supplier<? extends R> supplier) {
-                return new Otherwise<>(ignored -> supplier.get(), cases);
+                public Otherwise<R> otherwise(R that) {
+                    return new Otherwise<>(ignored -> that, cases);
+                }
+
+                public Otherwise<R> otherwise(Function<? super Object, ? extends R> function) {
+                    return new Otherwise<>(function, cases);
+                }
+
+                public Otherwise<R> otherwise(Supplier<? extends R> supplier) {
+                    return new Otherwise<>(ignored -> supplier.get(), cases);
+                }
+
+                public Otherwise<R> otherwiseThrow(Supplier<? extends RuntimeException> supplier) {
+                    return new Otherwise<>(ignored -> {
+                        throw supplier.get();
+                    }, cases);
+                }
             }
         }
 
@@ -534,47 +314,49 @@ public interface Match<R> extends Function<Object, R> {
             }
         }
 
+        final class WhenApplicable<T, R> {
+
+            private final Predicate<? super Object> predicate;
+            private final Function1<? super T, ? extends R> function;
+            private final List<Case<R>> cases;
+
+            @SuppressWarnings("unchecked")
+            private WhenApplicable(Function1<? super T, ? extends R> function, List<Case<R>> cases) {
+                final Class<Object> type = (Class<Object>) function.getType().parameterType(0);
+                this.predicate = When.type(type);
+                this.function = function;
+                this.cases = cases;
+            }
+
+            public When.Then<R> thenApply() {
+                return new When.Then<>(cases.prepend(new Case<>(predicate, function)));
+            }
+
+            public When.Then<R> thenThrow(Supplier<? extends RuntimeException> supplier) {
+                Objects.requireNonNull(supplier, "supplier is null");
+                return new When.Then<>(cases.prepend(new Case<>(predicate, ignored -> {
+                    throw supplier.get();
+                })));
+            }
+        }
+
         final class Case<R> {
 
-            private final Function<Object, Boolean> matchBy;
-
-            private final Function<Object, ? extends R> f;
-
-            private Case(Function<Object, Boolean> matchBy, Function<Object, ? extends R> f) {
-                this.matchBy = matchBy;
-                this.f = f;
-            }
+            private final Predicate<? super Object> predicate;
+            private final Function<? super Object, ? extends R> function;
 
             @SuppressWarnings("unchecked")
-            private static <T, R> Case<R> byType(Class<T> type, Function<? super T, ? extends R> function) {
-                final Function<Object, Boolean> matchBy = _internal.MATCH_BY_TYPE.apply(type);
-                return new Case<>(matchBy, (Function<Object, ? extends R>) function);
+            private <T> Case(Predicate<? super T> predicate, Function<? super T, ? extends R> function) {
+                this.predicate = (Predicate<? super Object>) predicate;
+                this.function = (Function<? super Object, ? extends R>) function;
             }
 
-            @SuppressWarnings("unchecked")
-            private static <T, R> Case<R> byValue(T value, Function<? super T, ? extends R> function) {
-                final Function<Object, Boolean> matchBy = _internal.MATCH_BY_VALUE.apply(value);
-                return new Case<>(matchBy, (Function<Object, ? extends R>) function);
+            private boolean isApplicable(Object object) {
+                return predicate.test(object);
             }
 
-            @SuppressWarnings("unchecked")
-            private static <T, R> Case<R> byPredicate(Function1<? super T, ? extends Boolean> predicate, Function<? super T, ? extends R> function) {
-                final Function<Object, Boolean> matchBy = _internal.MATCH_BY_PREDICATE.apply(predicate);
-                return new Case<>(matchBy, (Function<Object, ? extends R>) function);
-            }
-
-            @SuppressWarnings("unchecked")
-            private static <T, R> Case<R> byFunction(Function1<? super T, ? extends R> function) {
-                final Function<Object, Boolean> matchBy = function::isApplicableTo;
-                return new Case<>(matchBy, (Function<Object, ? extends R>) function);
-            }
-
-            boolean isApplicable(Object o) {
-                return matchBy.apply(o);
-            }
-
-            R apply(Object o) {
-                return f.apply(o);
+            private R apply(Object object) {
+                return function.apply(object);
             }
         }
     }
