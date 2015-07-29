@@ -67,8 +67,6 @@ public final class Lazy<T> implements Supplier<T>, Value<T>, Serializable {
     /**
      * Creates a real _lazy value_ of type {@code T}, backed by a {@linkplain java.lang.reflect.Proxy} which delegates
      * to a {@code Lazy} instance.
-     * <p>
-     * Internally it behaves like {@link #of(Supplier)}.
      *
      * @param supplier A supplier
      * @param type     An interface
@@ -76,7 +74,7 @@ public final class Lazy<T> implements Supplier<T>, Value<T>, Serializable {
      * @return A new instance of T
      */
     @SuppressWarnings("unchecked")
-    public static <T> T of(Supplier<? extends T> supplier, Class<T> type) {
+    public static <T> T asVal(Supplier<? extends T> supplier, Class<T> type) {
         Objects.requireNonNull(supplier, "supplier is null");
         Objects.requireNonNull(type, "type is null");
         if (!type.isInterface()) {
