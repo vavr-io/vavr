@@ -37,7 +37,7 @@ public class LazyTest {
 
         final String[] evaluated = new String[] { null };
 
-        final CharSequence chars = Lazy.of(() -> {
+        final CharSequence chars = Lazy.asVal(() -> {
             final String value = "Yay!";
             evaluated[0] = value;
             return value;
@@ -50,22 +50,22 @@ public class LazyTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenCreatingLazyProxyAndSupplierIsNull() {
-        Lazy.of(null, CharSequence.class);
+        Lazy.asVal(null, CharSequence.class);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenCreatingLazyProxyAndTypeIsNull() {
-        Lazy.of(() -> "", null);
+        Lazy.asVal(() -> "", null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowWhenCreatingLazyProxyOfObjectType() {
-        Lazy.of(() -> "", String.class);
+        Lazy.asVal(() -> "", String.class);
     }
 
     @Test
-    public void shouldBehaveLikeLazyWhenCreatingAProxy() {
-        final CharSequence chars = Lazy.of(() -> "Yay!", CharSequence.class);
+    public void shouldBehaveLikeValueWhenCreatingProxy() {
+        final CharSequence chars = Lazy.asVal(() -> "Yay!", CharSequence.class);
         assertThat(chars.toString()).isEqualTo("Yay!");
     }
 
