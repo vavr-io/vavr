@@ -1255,6 +1255,11 @@ public interface Stream<T> extends Seq<T> {
         }
 
         @Override
+        public boolean containsSlice(Iterable<T> that) {
+            return checkSlice(this, Stream.ofAll(that));
+        }
+
+        @Override
         public T head() {
             return head.get();
         }
@@ -1533,6 +1538,11 @@ public interface Stream<T> extends Seq<T> {
         @Override
         public Stream<T> appendSelf(Function<? super Stream<T>, ? extends Stream<T>> mapperr) {
             return this;
+        }
+
+        @Override
+        public boolean containsSlice(Iterable<T> that) {
+            return !that.iterator().hasNext();
         }
 
         @Override

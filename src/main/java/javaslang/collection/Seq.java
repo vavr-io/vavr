@@ -387,4 +387,17 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
 
     @Override
     Seq<Tuple2<T, Integer>> zipWithIndex();
+
+    default boolean checkSlice(Seq<T> seq, Seq<T> slice) {
+        return checkPrefix(seq, slice) || (!seq.isEmpty() && checkSlice(seq.tail(), slice));
+    }
+
+    default boolean checkPrefix(Seq<T> seq, Seq<T> prefix) {
+        if (prefix.isEmpty()) {
+            return true;
+        }
+        return !seq.isEmpty() && java.util.Objects.equals(seq.head(), prefix.head())
+                && checkPrefix(seq.tail(), prefix.tail());
+    }
+
 }

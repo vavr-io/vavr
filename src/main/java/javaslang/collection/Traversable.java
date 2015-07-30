@@ -269,6 +269,15 @@ public interface Traversable<T> extends TraversableOnce<T> {
     }
 
     /**
+     * Tests whether this sequence contains a given sequence as a slice.
+     * <p>
+     * Note: may not terminate for infinite-sized collections.
+     * @param that the sequence to test
+     * @return true if this sequence contains a slice with the same elements as that, otherwise false.
+     */
+    boolean containsSlice(Iterable<T> that);
+
+    /**
      * <p>
      * Tests if this Traversable contains all given elements.
      * </p>
