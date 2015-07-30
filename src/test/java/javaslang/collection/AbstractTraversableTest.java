@@ -220,6 +220,26 @@ public abstract class AbstractTraversableTest {
         assertThat(actual).isTrue();
     }
 
+    // -- containsSlice
+
+    @Test
+    public void shouldRecognizeNilNotContainsSlice() {
+        final boolean actual = empty().containsSlice(of(1, 2, 3));
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void shouldRecognizeNonNilDoesContainSlice() {
+        final boolean actual = of(1, 2, 3, 4, 5).containsSlice(of(2, 3));
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void shouldRecognizeNonNilDoesNotContainSlice() {
+        final boolean actual = of(1, 2, 3, 4, 5).containsSlice(of(2, 1, 4));
+        assertThat(actual).isFalse();
+    }
+
     // -- distinct
 
     @Test

@@ -248,6 +248,14 @@ public class StreamTest extends AbstractSeqTest {
         assertThat(Stream.of(1).appendSelf(self -> self.map(t -> t * 2)).take(4)).isEqualTo(Stream.of(1, 2, 4, 8));
     }
 
+    // -- containsSlice
+
+    @Test
+    public void shouldRecognizeInfiniteDoesContainSlice() {
+        final boolean actual = Stream.gen(1, i -> i + 1).containsSlice(of(12, 13, 14));
+        assertThat(actual).isTrue();
+    }
+
     // -- toString
 
     @Test

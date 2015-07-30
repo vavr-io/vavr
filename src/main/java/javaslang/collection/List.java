@@ -1278,6 +1278,11 @@ public interface List<T> extends Seq<T>, Stack<T> {
         }
 
         @Override
+        public boolean containsSlice(Iterable<T> that) {
+            return checkSlice(this, List.ofAll(that));
+        }
+
+        @Override
         public T head() {
             return head;
         }
@@ -1460,6 +1465,11 @@ public interface List<T> extends Seq<T>, Stack<T> {
         @SuppressWarnings("unchecked")
         public static <T> Nil<T> instance() {
             return (Nil<T>) INSTANCE;
+        }
+
+        @Override
+        public boolean containsSlice(Iterable<T> that) {
+            return !that.iterator().hasNext();
         }
 
         @Override

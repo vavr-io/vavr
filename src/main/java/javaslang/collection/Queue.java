@@ -552,6 +552,11 @@ public class Queue<T> implements Seq<T>, Serializable {
     }
 
     @Override
+    public boolean containsSlice(Iterable<T> that) {
+        return checkSlice(this, Queue.ofAll(that));
+    }
+
+    @Override
     public Queue<T> distinct() {
         return toList().distinct().toQueue();
     }
