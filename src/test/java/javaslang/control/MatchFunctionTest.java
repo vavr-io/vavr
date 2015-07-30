@@ -34,6 +34,11 @@ public class MatchFunctionTest {
         assertThat(actual).isTrue();
     }
 
+    @Test(expected = RuntimeException.class)
+    public void shouldMatchIntByValueAndThenThrow() {
+        Match.whenIs(1).thenThrow(RuntimeException::new).apply(1);
+    }
+
     // whenIsIn(Onject...)
 
     @SuppressWarnings("unchecked")
