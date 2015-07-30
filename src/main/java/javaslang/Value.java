@@ -100,7 +100,7 @@ public interface Value<T> {
     /**
      * Converts this value to an {@link java.util.Optional}.
      *
-     * @return An empty {@code Optional}, if no value is present <string>or the value is null</string>,
+     * @return An empty {@code Optional}, if no value is present <strong>or the value is null</strong>,
      * otherwise a non-empty {@code Option} containing the value.
      */
     default Optional<T> toJavaOptional() {
