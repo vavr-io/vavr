@@ -454,12 +454,12 @@ public interface Match<R> extends Function<Object, R> {
             }
 
             public <R> Otherwise<R> otherwise(R that) {
-                return Otherwise.of(that);
+                return new Otherwise<>(() -> that);
             }
 
             public <R> Otherwise<R> otherwise(Function<? super Object, ? extends R> function) {
                 Objects.requireNonNull(function, "function is null");
-                return Otherwise.of(function.apply(value));
+                return new Otherwise<>(() -> function.apply(value));
             }
 
             public <R> Otherwise<R> otherwise(Supplier<? extends R> supplier) {
@@ -487,7 +487,7 @@ public interface Match<R> extends Function<Object, R> {
 
             public <R> When.Then<T, R> then(Function<? super U, ? extends R> function) {
                 Objects.requireNonNull(function, "function is null");
-                final Option<R> result = When.computeResult(value, None.instance(), isMatching, function);
+                final Option<Supplier<? extends R>> result = When.computeResult(value, None.instance(), isMatching, function);
                 return new When.Then<>(value, result);
             }
 
@@ -511,10 +511,10 @@ public interface Match<R> extends Function<Object, R> {
         final class When<T, U, R> {
 
             private final T value;
-            private final Option<R> result;
+            private final Option<Supplier<? extends R>> result;
             private final boolean isMatching;
 
-            private When(T value, Option<R> result, boolean isMatching) {
+            private When(T value, Option<Supplier<? extends R>> result, boolean isMatching) {
                 this.value = value;
                 this.result = result;
                 this.isMatching = isMatching;
@@ -522,7 +522,7 @@ public interface Match<R> extends Function<Object, R> {
 
             public Then<T, R> then(Function<? super U, ? extends R> function) {
                 Objects.requireNonNull(function, "function is null");
-                final Option<R> updatedResult = When.computeResult(value, result, isMatching, function);
+                final Option<Supplier<? extends R>> updatedResult = When.computeResult(value, result, isMatching, function);
                 return new Then<>(value, updatedResult);
             }
 
@@ -546,10 +546,10 @@ public interface Match<R> extends Function<Object, R> {
             // DEV-NOTE: should move to MatchMonad interface (staying private) with Java 9+
 
             @SuppressWarnings("unchecked")
-            private static <T, R> Option<R> computeResult(Object value, Option<R> result, boolean isMatching, Function<? super T, ? extends R> function) {
+            private static <T, R> Option<Supplier<? extends R>> computeResult(Object value, Option<Supplier<? extends R>> result, boolean isMatching, Function<? super T, ? extends R> function) {
                 if (result.isEmpty() && isMatching) {
                     final Function<? super Object, ? extends R> f = (Function<? super Object, ? extends R>) function;
-                    return Option.of(f.apply(value));
+                    return Option.of(() -> f.apply(value));
                 } else {
                     return result;
                 }
@@ -558,9 +558,9 @@ public interface Match<R> extends Function<Object, R> {
             public static final class Then<T, R> implements MatchMonad<R> {
 
                 private final T value;
-                private final Option<R> result;
+                private final Option<Supplier<? extends R>> result;
 
-                private Then(T value, Option<R> result) {
+                private Then(T value, Option<Supplier<? extends R>> result) {
                     this.value = value;
                     this.result = result;
                 }
@@ -602,22 +602,22 @@ public interface Match<R> extends Function<Object, R> {
                 }
 
                 public Otherwise<R> otherwise(R that) {
-                    return Otherwise.of(result.orElse(that));
+                    return new Otherwise<>(() -> result.orElse(() -> that).get());
                 }
 
                 public Otherwise<R> otherwise(Function<? super T, ? extends R> function) {
                     Objects.requireNonNull(function, "function is null");
-                    return Otherwise.of(result.orElseGet(() -> function.apply(value)));
+                    return new Otherwise<>(() -> result.orElse(() -> function.apply(value)).get());
                 }
 
                 public Otherwise<R> otherwise(Supplier<? extends R> supplier) {
                     Objects.requireNonNull(supplier, "supplier is null");
-                    return Otherwise.of(result.orElseGet(supplier));
+                    return new Otherwise<>(() -> result.orElse(supplier).get());
                 }
 
                 public Otherwise<R> otherwiseThrow(Supplier<? extends RuntimeException> supplier) {
                     Objects.requireNonNull(supplier, "supplier is null");
-                    return Otherwise.of(result.orElseThrow(supplier));
+                    return new Otherwise<>(() -> result.orElseThrow(supplier).get());
                 }
 
                 @SuppressWarnings("unchecked")
@@ -625,7 +625,7 @@ public interface Match<R> extends Function<Object, R> {
                 public <U> MatchMonad<U> flatMap(Function<? super R, ? extends MatchMonad<U>> mapper) {
                     Objects.requireNonNull(mapper, "mapper is null");
                     return result
-                            .map((Function<? super R, MatchMonad<U>>) mapper::apply)
+                            .map(supplier -> (MatchMonad<U>) new Then<>(value, Option.of(() -> mapper.apply(supplier.get()).get())))
                             .orElseGet(() -> (MatchMonad<U>) this);
                 }
 
@@ -634,7 +634,7 @@ public interface Match<R> extends Function<Object, R> {
                 public <U> MatchMonad<U> flatten(Function<? super R, ? extends MatchMonad<U>> f) {
                     Objects.requireNonNull(f, "f is null");
                     return result
-                            .map((Function<? super R, MatchMonad<U>>) f::apply)
+                            .map(supplier -> (MatchMonad<U>) new Then<>(value, Option.of(() -> f.apply(supplier.get()).get())))
                             .orElseGet(() -> (MatchMonad<U>) this);
                 }
 
@@ -643,13 +643,13 @@ public interface Match<R> extends Function<Object, R> {
                 public <U> MatchMonad<U> map(Function<? super R, ? extends U> mapper) {
                     Objects.requireNonNull(mapper, "mapper is null");
                     return result
-                            .map(r -> new Then<T, U>(value, new Some<>((U) mapper.apply(r))))
+                            .map(supplier -> new Then<T, U>(value, new Some<>(() -> (U) mapper.apply(supplier.get()))))
                             .orElseGet(() -> (Then<T, U>) this);
                 }
 
                 @Override
                 public R get() {
-                    return result.orElseThrow(() -> new MatchError(value));
+                    return result.orElseThrow(() -> new MatchError(value)).get();
                 }
 
                 @Override
@@ -671,11 +671,11 @@ public interface Match<R> extends Function<Object, R> {
         final class WhenApplicable<T, U, R> {
 
             private final T value;
-            private final Option<R> result;
+            private final Option<Supplier<? extends R>> result;
             private final boolean isMatching;
             private final Function1<? super U, ? extends R> function;
 
-            public WhenApplicable(T value, Option<R> result, Function1<? super U, ? extends R> function) {
+            public WhenApplicable(T value, Option<Supplier<? extends R>> result, Function1<? super U, ? extends R> function) {
                 this.value = value;
                 this.result = result;
                 this.isMatching = result.isEmpty() && function.isApplicableTo(value);
@@ -683,13 +683,13 @@ public interface Match<R> extends Function<Object, R> {
             }
 
             public When.Then<T, R> thenApply() {
-                final Option<R> updatedResult = MatchMonad.When.computeResult(value, result, isMatching, function);
+                final Option<Supplier<? extends R>> updatedResult = MatchMonad.When.computeResult(value, result, isMatching, function);
                 return new When.Then<>(value, updatedResult);
             }
 
             public When.Then<T, R> thenThrow(Supplier<? extends RuntimeException> supplier) {
                 Objects.requireNonNull(supplier, "supplier is null");
-                final Option<R> updatedResult = MatchMonad.When.computeResult(value, result, isMatching, ignored -> {
+                final Option<Supplier<? extends R>> updatedResult = MatchMonad.When.computeResult(value, result, isMatching, ignored -> {
                     throw supplier.get();
                 });
                 return new When.Then<T, R>(value, updatedResult);
@@ -699,29 +699,25 @@ public interface Match<R> extends Function<Object, R> {
         final class Otherwise<R> implements MatchMonad<R> {
 
             // we need to ensure referential transparency of Otherwise.get()
-            private final Value<R> value;
+            private final Lazy<R> value;
 
             private Otherwise(Supplier<? extends R> supplier) {
                 this.value = Lazy.of(supplier);
             }
 
-            private static <R> Otherwise<R> of(R value) {
-                return new Otherwise<>(() -> value);
-            }
-
             @Override
             public <U> MatchMonad<U> flatMap(Function<? super R, ? extends MatchMonad<U>> mapper) {
-                return mapper.apply(value.get());
+                return new Otherwise<>(() -> mapper.apply(value.get()).get());
             }
 
             @Override
             public <U> MatchMonad<U> flatten(Function<? super R, ? extends MatchMonad<U>> f) {
-                return f.apply(value.get());
+                return new Otherwise<>(() -> f.apply(value.get()).get());
             }
 
             @Override
             public <U> MatchMonad<U> map(Function<? super R, ? extends U> mapper) {
-                return Otherwise.of(mapper.apply(value.get()));
+                return new Otherwise<>(() -> mapper.apply(value.get()));
             }
 
             @Override
