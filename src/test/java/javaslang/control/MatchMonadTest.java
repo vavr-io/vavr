@@ -121,6 +121,35 @@ public class MatchMonadTest {
         assertThat(actual).isEqualTo("unknown");
     }
 
+    // whenTypeIn(Class...)
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenMatchNullVarargsByTypeIn() {
+        Match.of(null)
+                .whenTypeIn((Class<?>[]) null).then(false)
+                .get();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldMatchNumberByTypeIn() {
+        final Number number = 1;
+        final String actual = Match.of(number)
+                .whenTypeIn(Byte.class, Integer.class).then(s -> "matched")
+                .orElse("unknown");
+        assertThat(actual).isEqualTo("matched");
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldMatchOrElseByTypeIn() {
+        final Number number = 1;
+        final String actual = Match.of(number)
+                .whenTypeIn(Byte.class, Short.class).then(s -> "matched")
+                .orElse("unknown");
+        assertThat(actual).isEqualTo("unknown");
+    }
+
     // whenApplicable(Function1)
 
     @Test(expected = NullPointerException.class)
@@ -183,6 +212,15 @@ public class MatchMonadTest {
         assertThat(actual).isTrue();
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldMatchSuperTypeByTypeIn() {
+        final boolean actual = Match.of(new Some<>(1))
+                .whenTypeIn(Boolean.class, Option.class).then(true)
+                .get();
+        assertThat(actual).isTrue();
+    }
+
     @Test
     public void shouldMatchSuperTypeByFunction() {
         final boolean actual = Match.of(new Some<>(1))
@@ -226,6 +264,16 @@ public class MatchMonadTest {
         final Option<Integer> option = Option.of(1);
         final boolean actual = Match.of(option)
                 .whenType(Some.class).then(true)
+                .get();
+        assertThat(actual).isTrue();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldMatchSubTypeByTypeIn() {
+        final Option<Integer> option = Option.of(1);
+        final boolean actual = Match.of(option)
+                .whenTypeIn(Boolean.class, Some.class).then(true)
                 .get();
         assertThat(actual).isTrue();
     }
@@ -370,6 +418,16 @@ public class MatchMonadTest {
         assertThat(actual).isTrue();
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldTransportMatchedTypeIn() {
+        final boolean actual = Match.of(1)
+                .whenTypeIn(Integer.class).then(true)
+                .whenTypeIn(Integer.class).then(false)
+                .get();
+        assertThat(actual).isTrue();
+    }
+
     @Test
     public void shouldTransportMatchedFunction() {
         final boolean actual = Match.of(1)
@@ -413,6 +471,16 @@ public class MatchMonadTest {
         final boolean actual = Match.of(1)
                 .whenType(Boolean.class).then(false)
                 .whenType(Integer.class).then(true)
+                .get();
+        assertThat(actual).isTrue();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldTransportUnmatchedTypeIn() {
+        final boolean actual = Match.of(1)
+                .whenTypeIn(Boolean.class).then(false)
+                .whenTypeIn(Integer.class).then(true)
                 .get();
         assertThat(actual).isTrue();
     }
@@ -493,6 +561,25 @@ public class MatchMonadTest {
         Match.of("x").as(Number.class)
                 .whenType(Boolean.class).then(0.0d)
                 .whenType(Integer.class).then(1)
+                .get();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldMatchTypedResultByTypeIn() {
+        final Number actual = Match.of(1).as(Number.class)
+                .whenTypeIn(Boolean.class).then(0.0d)
+                .whenTypeIn(Integer.class).then(1)
+                .get();
+        assertThat(actual).isEqualTo(1);
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test(expected = MatchError.class)
+    public void shouldMatchTypedResultByTypeInNegativeCase() {
+        Match.of("x").as(Number.class)
+                .whenTypeIn(Boolean.class).then(0.0d)
+                .whenTypeIn(Integer.class).then(1)
                 .get();
     }
 

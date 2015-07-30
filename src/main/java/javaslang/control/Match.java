@@ -120,7 +120,10 @@ public interface Match<R> extends Function<Object, R> {
         return new MatchFunction.WhenUntyped<>(MatchFunction.When.type(type));
     }
 
-    // TODO: whenTypeIn
+    static MatchFunction.WhenUntyped<Object> whenTypeIn(Class<?>... types) {
+        Objects.requireNonNull(types, "types is null");
+        return new MatchFunction.WhenUntyped<>(MatchFunction.When.isIn(types));
+    }
 
     static <T, R> MatchFunction.WhenApplicable<T, R> whenApplicable(Function1<? super T, ? extends R> function) {
         Objects.requireNonNull(function, "function is null");
@@ -221,7 +224,8 @@ public interface Match<R> extends Function<Object, R> {
                 });
             }
 
-            // TODO: these private methods should move to the outer Monad interface with Java 9 because they are used by MatchFunction and MatchMonad
+            // NOTE: These private methods should move to the outer Monad interface with Java 9+ because they are used by MatchFunction and MatchMonad
+
             @SuppressWarnings("unchecked")
             private static <T> Predicate<? super Object> of(Function1<? super T, ? extends Boolean> predicate) {
                 final Class<?> type = predicate.getType().parameterType(0);
@@ -243,8 +247,6 @@ public interface Match<R> extends Function<Object, R> {
                 return value -> value != null && type.isAssignableFrom(value.getClass());
             }
 
-            @SuppressWarnings({ "unchecked", "varargs" })
-            @SafeVarargs
             private static <T> Predicate<? super Object> typeIn(Class<?>... types) {
                 return value -> Stream.of(types).findFirst(type -> type(type).test(value)).isDefined();
             }
@@ -286,7 +288,10 @@ public interface Match<R> extends Function<Object, R> {
                     return new When<>(When.type(type), cases);
                 }
 
-                // TODO: whenTypeIn
+                public When<Object, R> whenTypeIn(Class<?>... types) {
+                    Objects.requireNonNull(types, "types is null");
+                    return new When<>(When.typeIn(types), cases);
+                }
 
                 public <T> WhenApplicable<T, R> whenApplicable(Function1<? super T, ? extends R> function) {
                     Objects.requireNonNull(function, "function is null");
@@ -322,7 +327,6 @@ public interface Match<R> extends Function<Object, R> {
             private final Function1<? super T, ? extends R> function;
             private final List<Case<R>> cases;
 
-            @SuppressWarnings("unchecked")
             private WhenApplicable(Function1<? super T, ? extends R> function, List<Case<R>> cases) {
                 final Class<?> type = function.getType().parameterType(0);
                 this.predicate = When.type(type);
@@ -578,7 +582,6 @@ public interface Match<R> extends Function<Object, R> {
                     return new When<>(value, result, isMatching);
                 }
 
-                @SuppressWarnings({ "unchecked", "varargs" })
                 public When<T, R> whenTypeIn(Class<?>... types) {
                     Objects.requireNonNull(types, "types is null");
                     final boolean isMatching = isMatching(() -> MatchFunction.When.typeIn(types));

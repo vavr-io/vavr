@@ -113,6 +113,24 @@ public class MatchFunctionTest {
         assertThat(actual).isEqualTo("Number 1");
     }
 
+    // whenTypeIn(Class...)
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenMatchNullVarargsByTypeIn() {
+        Match.whenTypeIn((Class<?>[]) null).then(false)
+                .apply(null);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldMatchNumberByTypeIn() {
+        final Number number = 1;
+        final String actual = Match
+                .whenTypeIn(Byte.class, Integer.class).then(s -> "matched")
+                .apply(number);
+        assertThat(actual).isEqualTo("matched");
+    }
+
     // whenApplicable(Function)
 
     @Test(expected = NullPointerException.class)
@@ -212,6 +230,15 @@ public class MatchFunctionTest {
         assertThat(actual).isTrue();
     }
 
+     @SuppressWarnings("unchecked")
+     @Test
+     public void shouldMatchSuperTypeByTypeIn() {
+         final boolean actual = Match
+                 .whenTypeIn(Boolean.class, Option.class).then(true)
+                 .apply(new Some<>(1));
+         assertThat(actual).isTrue();
+     }
+
     @Test
     public void shouldMatchSuperTypeByFunction() {
         final boolean actual = Match
@@ -255,6 +282,16 @@ public class MatchFunctionTest {
         final Option<Integer> option = Option.of(1);
         final boolean actual = Match
                 .whenType(Some.class).then(true)
+                .apply(option);
+        assertThat(actual).isTrue();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldMatchSubTypeByTypeIn() {
+        final Option<Integer> option = Option.of(1);
+        final boolean actual = Match
+                .whenTypeIn(Boolean.class, Some.class).then(true)
                 .apply(option);
         assertThat(actual).isTrue();
     }
@@ -369,6 +406,16 @@ public class MatchFunctionTest {
         assertThat(actual).isTrue();
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldTransportMatchedTypeIn() {
+        final boolean actual = Match
+                .whenTypeIn(Integer.class).then(true)
+                .whenTypeIn(Integer.class).then(false)
+                .apply(1);
+        assertThat(actual).isTrue();
+    }
+
     @Test
     public void shouldTransportMatchedFunction() {
         final boolean actual = Match
@@ -415,6 +462,16 @@ public class MatchFunctionTest {
                 .apply(1);
         assertThat(actual).isTrue();
     }
+
+     @SuppressWarnings("unchecked")
+     @Test
+     public void shouldTransportUnmatchedTypeIn() {
+         final boolean actual = Match
+                 .whenTypeIn(Boolean.class).then(false)
+                 .whenTypeIn(Integer.class).then(true)
+                 .apply(1);
+         assertThat(actual).isTrue();
+     }
 
     @Test
     public void shouldTransportUnmatchedFunction() {
