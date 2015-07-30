@@ -230,14 +230,14 @@ public class MatchFunctionTest {
         assertThat(actual).isTrue();
     }
 
-     @SuppressWarnings("unchecked")
-     @Test
-     public void shouldMatchSuperTypeByTypeIn() {
-         final boolean actual = Match
-                 .whenTypeIn(Boolean.class, Option.class).then(true)
-                 .apply(new Some<>(1));
-         assertThat(actual).isTrue();
-     }
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldMatchSuperTypeByTypeIn() {
+        final boolean actual = Match
+                .whenTypeIn(Boolean.class, Option.class).then(true)
+                .apply(new Some<>(1));
+        assertThat(actual).isTrue();
+    }
 
     @Test
     public void shouldMatchSuperTypeByFunction() {
@@ -463,15 +463,15 @@ public class MatchFunctionTest {
         assertThat(actual).isTrue();
     }
 
-     @SuppressWarnings("unchecked")
-     @Test
-     public void shouldTransportUnmatchedTypeIn() {
-         final boolean actual = Match
-                 .whenTypeIn(Boolean.class).then(false)
-                 .whenTypeIn(Integer.class).then(true)
-                 .apply(1);
-         assertThat(actual).isTrue();
-     }
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldTransportUnmatchedTypeIn() {
+        final boolean actual = Match
+                .whenTypeIn(Boolean.class).then(false)
+                .whenTypeIn(Integer.class).then(true)
+                .apply(1);
+        assertThat(actual).isTrue();
+    }
 
     @Test
     public void shouldTransportUnmatchedFunction() {

@@ -573,7 +573,7 @@ public class MatchMonadTest {
                 .get();
         assertThat(actual).isEqualTo(1);
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test(expected = MatchError.class)
     public void shouldMatchTypedResultByTypeInNegativeCase() {
