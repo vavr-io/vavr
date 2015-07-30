@@ -1143,6 +1143,11 @@ public interface Stream<T> extends Seq<T> {
     Stream<T> takeWhile(Predicate<? super T> predicate);
 
     @Override
+    default Stream<T> unit(Iterable<? extends T> iterable) {
+        return Stream.ofAll(iterable);
+    }
+
+    @Override
     default <T1, T2> Tuple2<Stream<T1>, Stream<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         final Stream<Tuple2<? extends T1, ? extends T2>> stream = map(unzipper);
@@ -1252,11 +1257,6 @@ public interface Stream<T> extends Seq<T> {
             }
 
             return new Recursion(this).stream();
-        }
-
-        @Override
-        public boolean containsSlice(Iterable<T> that) {
-            return checkSlice(this, Stream.ofAll(that));
         }
 
         @Override
@@ -1541,7 +1541,7 @@ public interface Stream<T> extends Seq<T> {
         }
 
         @Override
-        public boolean containsSlice(Iterable<T> that) {
+        public boolean containsSlice(Iterable<? extends T> that) {
             return !that.iterator().hasNext();
         }
 

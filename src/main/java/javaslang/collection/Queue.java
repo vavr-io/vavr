@@ -552,11 +552,6 @@ public class Queue<T> implements Seq<T>, Serializable {
     }
 
     @Override
-    public boolean containsSlice(Iterable<T> that) {
-        return checkSlice(this, Queue.ofAll(that));
-    }
-
-    @Override
     public Queue<T> distinct() {
         return toList().distinct().toQueue();
     }
@@ -913,6 +908,11 @@ public class Queue<T> implements Seq<T>, Serializable {
     public Queue<T> takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return toList().takeWhile(predicate).toQueue();
+    }
+
+    @Override
+    public Queue<T> unit(Iterable<? extends T> iterable) {
+        return Queue.ofAll(iterable);
     }
 
     @Override
