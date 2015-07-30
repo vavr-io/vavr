@@ -38,7 +38,7 @@ import java.util.stream.StreamSupport;
  * <li>{@link #length()}</li>
  * <li>{@link #tail()}</li>
  * <li>{@link #tailOption()}</li>
- * <li>{@link #unit(Iterable)}</li>
+ * <li>{@link #cons(Iterable)}</li>
  * </ul>
  *
  * Conversion:
@@ -295,7 +295,7 @@ public interface Traversable<T> extends TraversableOnce<T> {
             }
         }
 
-        return new Util().checkSlice(this, unit(that));
+        return new Util().checkSlice(this, cons(that));
     }
 
     /**
@@ -1188,7 +1188,7 @@ public interface Traversable<T> extends TraversableOnce<T> {
      * @param iterable an {@code Iterable}
      * @return A new instance of this collection containing the elements of the given {@code iterable}.
      */
-    Traversable<T> unit(Iterable<? extends T> iterable);
+    Traversable<T> cons(Iterable<? extends T> iterable);
 
     /**
      * Unzips this elements by mapping this elements to pairs which are subsequentially split into to distinct
