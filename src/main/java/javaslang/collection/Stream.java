@@ -1143,7 +1143,7 @@ public interface Stream<T> extends Seq<T> {
     Stream<T> takeWhile(Predicate<? super T> predicate);
 
     @Override
-    default Stream<T> unit(Iterable<? extends T> iterable) {
+    default Stream<T> cons(Iterable<? extends T> iterable) {
         return Stream.ofAll(iterable);
     }
 

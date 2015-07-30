@@ -911,7 +911,7 @@ public class Queue<T> implements Seq<T>, Serializable {
     }
 
     @Override
-    public Queue<T> unit(Iterable<? extends T> iterable) {
+    public Queue<T> cons(Iterable<? extends T> iterable) {
         return Queue.ofAll(iterable);
     }
 

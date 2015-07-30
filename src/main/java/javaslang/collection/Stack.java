@@ -612,7 +612,7 @@ public interface Stack<T> extends Seq<T> {
     Stack<T> takeWhile(Predicate<? super T> predicate);
 
     @Override
-    Stack<T> unit(Iterable<? extends T> iterable);
+    Stack<T> cons(Iterable<? extends T> iterable);
 
     @Override
     <T1, T2> Tuple2<? extends Stack<T1>, ? extends Stack<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
