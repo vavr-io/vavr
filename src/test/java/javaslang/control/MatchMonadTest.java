@@ -8,8 +8,10 @@ package javaslang.control;
 import org.junit.Test;
 
 import java.util.Iterator;
+import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.StrictAssertions.fail;
 
 public class MatchMonadTest {
 
@@ -18,7 +20,7 @@ public class MatchMonadTest {
     @Test
     public void shouldMatchNullByValue() {
         final boolean actual = Match.of(null)
-                .when(null).then(true)
+                .whenIs(null).then(true)
                 .get();
         assertThat(actual).isTrue();
     }
@@ -26,8 +28,8 @@ public class MatchMonadTest {
     @Test
     public void shouldMatchIntByValue() {
         final boolean actual = Match.of(2)
-                .when(1).then(false)
-                .when(2).then(true)
+                .whenIs(1).then(false)
+                .whenIs(2).then(true)
                 .get();
         assertThat(actual).isTrue();
     }
@@ -38,7 +40,7 @@ public class MatchMonadTest {
     @Test
     public void shouldMatchNullByValueIn() {
         final boolean actual = Match.of(null)
-                .whenIn((Object) null).then(true)
+                .whenIsIn((Object) null).then(true)
                 .get();
         assertThat(actual).isTrue();
     }
@@ -46,14 +48,14 @@ public class MatchMonadTest {
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenMatchNullVarargsByValueIn() {
         Match.of(null)
-                .whenIn((Object[]) null).then(false)
+                .whenIsIn((Object[]) null).then(false)
                 .get();
     }
 
     @Test
     public void shouldMatchIntByValueIn() {
         final boolean actual = Match.of(2)
-                .whenIn(1, 2, 3).then(true)
+                .whenIsIn(1, 2, 3).then(true)
                 .get();
         assertThat(actual).isTrue();
     }
@@ -61,7 +63,7 @@ public class MatchMonadTest {
     @Test
     public void shouldMatchOrElseByValueIn() {
         final boolean actual = Match.of(4)
-                .whenIn(1, 2, 3).then(false)
+                .whenIsIn(1, 2, 3).then(false)
                 .orElse(true);
         assertThat(actual).isTrue();
     }
@@ -71,15 +73,15 @@ public class MatchMonadTest {
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenMatchNullVarargsByPredicate() {
         Match.of(null)
-                .whenTrue(null).then(false)
+                .when(null).then(false)
                 .get();
     }
 
     @Test
     public void shouldMatchEvenIntByPredicate() {
         final String divisibility = Match.of(0)
-                .whenTrue((String s) -> true).then("oops")
-                .whenTrue((Integer i) -> i % 2 == 0).then("even")
+                .when((String s) -> true).then("oops")
+                .when((Integer i) -> i % 2 == 0).then("even")
                 .orElse("odd");
         assertThat(divisibility).isEqualTo("even");
     }
@@ -87,8 +89,8 @@ public class MatchMonadTest {
     @Test
     public void shouldMatchOddIntWithOrElseHavingUnmatchedPredicates() {
         final String divisibility = Match.of(1)
-                .whenTrue((String s) -> true).then("oops")
-                .whenTrue((Integer i) -> i % 2 == 0).then("even")
+                .when((String s) -> true).then("oops")
+                .when((Integer i) -> i % 2 == 0).then("even")
                 .orElse("odd");
         assertThat(divisibility).isEqualTo("odd");
     }
@@ -170,7 +172,7 @@ public class MatchMonadTest {
     @Test
     public void shouldMatchOrElseByFunction() {
         final boolean actual = Match.of(4)
-                .whenIn(1, 2, 3).then(false)
+                .whenIsIn(1, 2, 3).then(false)
                 .orElse(true);
         assertThat(actual).isTrue();
     }
@@ -181,7 +183,7 @@ public class MatchMonadTest {
     public void shouldMatchSuperTypeByValue() {
         final Option<Integer> option = Option.of(1);
         final boolean actual = Match.of(new Some<>(1))
-                .when(option).then(true)
+                .whenIs(option).then(true)
                 .get();
         assertThat(actual).isTrue();
     }
@@ -191,7 +193,7 @@ public class MatchMonadTest {
     public void shouldMatchSuperTypeByValueIn() {
         final Option<Integer> option = Option.of(1);
         final boolean actual = Match.of(new Some<>(1))
-                .whenIn(None.instance(), option).then(true)
+                .whenIsIn(None.instance(), option).then(true)
                 .get();
         assertThat(actual).isTrue();
     }
@@ -199,7 +201,7 @@ public class MatchMonadTest {
     @Test
     public void shouldMatchSuperTypeByPredicate() {
         final boolean actual = Match.of(new Some<>(1))
-                .whenTrue((Option<?> o) -> true).then(true)
+                .when((Option<?> o) -> true).then(true)
                 .get();
         assertThat(actual).isTrue();
     }
@@ -235,7 +237,7 @@ public class MatchMonadTest {
     public void shouldMatchSubTypeByValue() {
         final Option<Integer> option = Option.of(1);
         final boolean actual = Match.of(option)
-                .when(new Some<>(1)).then(true)
+                .whenIs(new Some<>(1)).then(true)
                 .get();
         assertThat(actual).isTrue();
     }
@@ -245,7 +247,7 @@ public class MatchMonadTest {
     public void shouldMatchSubTypeByValueIn() {
         final Option<Integer> option = Option.of(1);
         final boolean actual = Match.of(option)
-                .whenIn(None.instance(), new Some<>(1)).then(true)
+                .whenIsIn(None.instance(), new Some<>(1)).then(true)
                 .get();
         assertThat(actual).isTrue();
     }
@@ -254,7 +256,7 @@ public class MatchMonadTest {
     public void shouldMatchSubTypeByPredicate() {
         final Option<Integer> option = Option.of(1);
         final boolean actual = Match.of(option)
-                .whenTrue((Some<?> o) -> true).then(true)
+                .when((Some<?> o) -> true).then(true)
                 .get();
         assertThat(actual).isTrue();
     }
@@ -291,19 +293,19 @@ public class MatchMonadTest {
 
     @Test
     public void shouldApplyThenValueWhenMatched() {
-        final boolean actual = Match.of(1).when(1).then(true).get();
+        final boolean actual = Match.of(1).whenIs(1).then(true).get();
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldApplyThenSupplierWhenMatched() {
-        final boolean actual = Match.of(1).when(1).then(() -> true).get();
+        final boolean actual = Match.of(1).whenIs(1).then(() -> true).get();
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldApplyThenFunctionWhenMatched() {
-        final boolean actual = Match.of(true).when(true).then(b -> b).get();
+        final boolean actual = Match.of(true).whenIs(true).then(b -> b).get();
         assertThat(actual).isTrue();
     }
 
@@ -317,19 +319,19 @@ public class MatchMonadTest {
 
     @Test
     public void shouldNotApplyThenValueWhenUnmatched() {
-        final boolean actual = Match.of(0).when(1).then(false).orElse(true);
+        final boolean actual = Match.of(0).whenIs(1).then(false).orElse(true);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldNotApplyThenSupplierWhenUnmatched() {
-        final boolean actual = Match.of(0).when(1).then(() -> false).orElse(true);
+        final boolean actual = Match.of(0).whenIs(1).then(() -> false).orElse(true);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldNotApplyThenFunctionWhenUnmatched() {
-        final boolean actual = Match.of(true).when(false).then(b -> b).orElse(true);
+        final boolean actual = Match.of(true).whenIs(false).then(b -> b).orElse(true);
         assertThat(actual).isTrue();
     }
 
@@ -385,8 +387,8 @@ public class MatchMonadTest {
     @Test
     public void shouldTransportMatchedValue() {
         final boolean actual = Match.of(1)
-                .when(1).then(true)
-                .when(1).then(false)
+                .whenIs(1).then(true)
+                .whenIs(1).then(false)
                 .get();
         assertThat(actual).isTrue();
     }
@@ -394,8 +396,8 @@ public class MatchMonadTest {
     @Test
     public void shouldTransportMatchedValueIn() {
         final boolean actual = Match.of(1)
-                .whenIn(1).then(true)
-                .whenIn(1).then(false)
+                .whenIsIn(1).then(true)
+                .whenIsIn(1).then(false)
                 .get();
         assertThat(actual).isTrue();
     }
@@ -403,8 +405,8 @@ public class MatchMonadTest {
     @Test
     public void shouldTransportMatchedPredicate() {
         final boolean actual = Match.of(1)
-                .whenTrue((Integer i) -> true).then(true)
-                .whenTrue((Integer i) -> true).then(false)
+                .when((Integer i) -> true).then(true)
+                .when((Integer i) -> true).then(false)
                 .get();
         assertThat(actual).isTrue();
     }
@@ -442,8 +444,8 @@ public class MatchMonadTest {
     @Test
     public void shouldTransportUnmatchedValue() {
         final boolean actual = Match.of(1)
-                .when(0).then(false)
-                .when(1).then(true)
+                .whenIs(0).then(false)
+                .whenIs(1).then(true)
                 .get();
         assertThat(actual).isTrue();
     }
@@ -451,8 +453,8 @@ public class MatchMonadTest {
     @Test
     public void shouldTransportUnmatchedValueIn() {
         final boolean actual = Match.of(1)
-                .whenIn(0).then(false)
-                .whenIn(1).then(true)
+                .whenIsIn(0).then(false)
+                .whenIsIn(1).then(true)
                 .get();
         assertThat(actual).isTrue();
     }
@@ -460,8 +462,8 @@ public class MatchMonadTest {
     @Test
     public void shouldTransportUnmatchedPredicate() {
         final boolean actual = Match.of(1)
-                .whenTrue((Boolean b) -> false).then(false)
-                .whenTrue((Integer i) -> true).then(true)
+                .when((Boolean b) -> false).then(false)
+                .when((Integer i) -> true).then(true)
                 .get();
         assertThat(actual).isTrue();
     }
@@ -499,8 +501,8 @@ public class MatchMonadTest {
     @Test
     public void shouldMatchTypedResultByValue() {
         final Number actual = Match.of(1).as(Number.class)
-                .when(0).then(0.0d)
-                .when(1).then(1)
+                .whenIs(0).then(0.0d)
+                .whenIs(1).then(1)
                 .get();
         assertThat(actual).isEqualTo(1);
     }
@@ -508,16 +510,16 @@ public class MatchMonadTest {
     @Test(expected = MatchError.class)
     public void shouldMatchTypedResultByValueNegativeCase() {
         Match.of(-1).as(Number.class)
-                .when(0).then(0.0d)
-                .when(1).then(1)
+                .whenIs(0).then(0.0d)
+                .whenIs(1).then(1)
                 .get();
     }
 
     @Test
     public void shouldMatchTypedResultByValueIn() {
         final Number actual = Match.of(1).as(Number.class)
-                .whenIn(0).then(0.0d)
-                .whenIn(1).then(1)
+                .whenIsIn(0).then(0.0d)
+                .whenIsIn(1).then(1)
                 .get();
         assertThat(actual).isEqualTo(1);
     }
@@ -525,16 +527,16 @@ public class MatchMonadTest {
     @Test(expected = MatchError.class)
     public void shouldMatchTypedResultByValueInNegativeCase() {
         Match.of(-1).as(Number.class)
-                .whenIn(0).then(0.0d)
-                .whenIn(1).then(1)
+                .whenIsIn(0).then(0.0d)
+                .whenIsIn(1).then(1)
                 .get();
     }
 
     @Test
     public void shouldMatchTypedResultByPredicate() {
         final Number actual = Match.of(1).as(Number.class)
-                .whenTrue((Double d) -> true).then(0.0d)
-                .whenTrue((Integer i) -> true).then(1)
+                .when((Double d) -> true).then(0.0d)
+                .when((Integer i) -> true).then(1)
                 .get();
         assertThat(actual).isEqualTo(1);
     }
@@ -542,8 +544,8 @@ public class MatchMonadTest {
     @Test(expected = MatchError.class)
     public void shouldMatchTypedResultByPredicateNegativeCase() {
         Match.of("x").as(Number.class)
-                .whenTrue((Double d) -> true).then(0.0d)
-                .whenTrue((Integer i) -> true).then(1)
+                .when((Double d) -> true).then(0.0d)
+                .when((Integer i) -> true).then(1)
                 .get();
     }
 
@@ -605,7 +607,7 @@ public class MatchMonadTest {
     @Test
     public void shouldHandleOtherwiseValueOfMatched() {
         final boolean actual = Match.of(1)
-                .when(1).then(true)
+                .whenIs(1).then(true)
                 .otherwise(false)
                 .get();
         assertThat(actual).isTrue();
@@ -614,7 +616,7 @@ public class MatchMonadTest {
     @Test
     public void shouldHandleOtherwiseValueOfUnmatched() {
         final boolean actual = Match.of(1)
-                .when(0).then(false)
+                .whenIs(0).then(false)
                 .otherwise(true)
                 .get();
         assertThat(actual).isTrue();
@@ -623,7 +625,7 @@ public class MatchMonadTest {
     @Test
     public void shouldHandleOtherwiseSupplierOfMatched() {
         final boolean actual = Match.of(1)
-                .when(1).then(true)
+                .whenIs(1).then(true)
                 .otherwise(() -> false)
                 .get();
         assertThat(actual).isTrue();
@@ -632,7 +634,7 @@ public class MatchMonadTest {
     @Test
     public void shouldHandleOtherwiseSupplierOfUnmatched() {
         final boolean actual = Match.of(1)
-                .when(0).then(false)
+                .whenIs(0).then(false)
                 .otherwise(() -> true)
                 .get();
         assertThat(actual).isTrue();
@@ -641,7 +643,7 @@ public class MatchMonadTest {
     @Test
     public void shouldHandleOtherwiseFunctionOfMatched() {
         final boolean actual = Match.of(1)
-                .when(1).then(true)
+                .whenIs(1).then(true)
                 .otherwise(i -> i != 1)
                 .get();
         assertThat(actual).isTrue();
@@ -650,7 +652,7 @@ public class MatchMonadTest {
     @Test
     public void shouldHandleOtherwiseFunctionOfUnmatched() {
         final boolean actual = Match.of(1)
-                .when(0).then(false)
+                .whenIs(0).then(false)
                 .otherwise(i -> i == 1)
                 .get();
         assertThat(actual).isTrue();
@@ -661,8 +663,8 @@ public class MatchMonadTest {
     @Test
     public void shouldFlatMapMatched() {
         final int actual = Match.of(1)
-                .when(1).then(1)
-                .flatMap(i -> Match.of(i).when(1).then(2))
+                .whenIs(1).then(1)
+                .flatMap(i -> Match.of(i).whenIs(1).then(2))
                 .get();
         assertThat(actual).isEqualTo(2);
     }
@@ -670,8 +672,8 @@ public class MatchMonadTest {
     @Test
     public void shouldFlatMapUnmatched() {
         final int actual = Match.of(0)
-                .when(1).then(1)
-                .flatMap(i -> Match.of(i).when(1).then(1))
+                .whenIs(1).then(1)
+                .flatMap(i -> Match.of(i).whenIs(1).then(1))
                 .orElse(-1);
         assertThat(actual).isEqualTo(-1);
     }
@@ -679,9 +681,9 @@ public class MatchMonadTest {
     @Test
     public void shouldFlatMapOtherwise() {
         final int actual = Match.of(0)
-                .when(1).then(1)
+                .whenIs(1).then(1)
                 .otherwise(-1)
-                .flatMap(i -> Match.of(i).when(-1).then(2))
+                .flatMap(i -> Match.of(i).whenIs(-1).then(2))
                 .get();
         assertThat(actual).isEqualTo(2);
     }
@@ -689,8 +691,8 @@ public class MatchMonadTest {
     @Test
     public void shouldFlatttenMatched() {
         final int actual = Match.of(1)
-                .when(1).then(1)
-                .flatten(i -> Match.of(i).when(1).then(2))
+                .whenIs(1).then(1)
+                .flatten(i -> Match.of(i).whenIs(1).then(2))
                 .get();
         assertThat(actual).isEqualTo(2);
     }
@@ -698,8 +700,8 @@ public class MatchMonadTest {
     @Test
     public void shouldFlattenUnmatched() {
         final int actual = Match.of(0)
-                .when(1).then(1)
-                .flatten(i -> Match.of(i).when(1).then(1))
+                .whenIs(1).then(1)
+                .flatten(i -> Match.of(i).whenIs(1).then(1))
                 .orElse(-1);
         assertThat(actual).isEqualTo(-1);
     }
@@ -707,9 +709,9 @@ public class MatchMonadTest {
     @Test
     public void shouldFlattenOtherwise() {
         final int actual = Match.of(0)
-                .when(1).then(1)
+                .whenIs(1).then(1)
                 .otherwise(-1)
-                .flatten(i -> Match.of(i).when(-1).then(2))
+                .flatten(i -> Match.of(i).whenIs(-1).then(2))
                 .get();
         assertThat(actual).isEqualTo(2);
     }
@@ -717,7 +719,7 @@ public class MatchMonadTest {
     @Test
     public void shouldMapMatched() {
         final int actual = Match.of(1)
-                .when(1).then(1)
+                .whenIs(1).then(1)
                 .map(i -> i + 1)
                 .get();
         assertThat(actual).isEqualTo(2);
@@ -726,7 +728,7 @@ public class MatchMonadTest {
     @Test
     public void shouldMapUnmatched() {
         final int actual = Match.of(0)
-                .when(1).then(1)
+                .whenIs(1).then(1)
                 .map(i -> i + 1)
                 .orElse(-1);
         assertThat(actual).isEqualTo(-1);
@@ -735,7 +737,7 @@ public class MatchMonadTest {
     @Test
     public void shouldMapOtherwise() {
         final int actual = Match.of(0)
-                .when(1).then(1)
+                .whenIs(1).then(1)
                 .otherwise(-1)
                 .map(i -> i + 1)
                 .get();
@@ -747,7 +749,7 @@ public class MatchMonadTest {
     @Test
     public void shouldGetIteratorOfMatched() {
         final Iterator<Integer> actual = Match.of(1)
-                .when(1).then(1)
+                .whenIs(1).then(1)
                 .iterator();
         assertThat(actual.next()).isEqualTo(1);
         assertThat(actual.hasNext()).isFalse();
@@ -756,7 +758,7 @@ public class MatchMonadTest {
     @Test
     public void shouldGetIteratorOfUnmatched() {
         final Iterator<Integer> actual = Match.of(0)
-                .when(1).then(1)
+                .whenIs(1).then(1)
                 .iterator();
         assertThat(actual.hasNext()).isFalse();
     }
@@ -764,10 +766,37 @@ public class MatchMonadTest {
     @Test
     public void shouldGetIteratorOfOtherwise() {
         final Iterator<Integer> actual = Match.of(0)
-                .when(1).then(1)
+                .whenIs(1).then(1)
                 .otherwise(-1)
                 .iterator();
         assertThat(actual.next()).isEqualTo(-1);
         assertThat(actual.hasNext()).isFalse();
+    }
+
+    // thenThrow
+
+    @Test
+    public void shouldThrowLate() {
+        final Match.MatchMonad<?> match = Match.of(null).whenIs(null).thenThrow(RuntimeException::new);
+        try {
+            match.get();
+            fail("nothing thrown");
+        } catch(RuntimeException x) {
+            // ok
+        }
+    }
+
+    @Test
+    public void shouldThrowLateWhenMultipleCases() {
+        final Match.MatchMonad<?> match = Match.of(null)
+                .whenIs(0).then(0)
+                .whenIs(null).thenThrow(RuntimeException::new)
+                .otherwise(0);
+        try {
+            match.get();
+            fail("nothing thrown");
+        } catch(RuntimeException x) {
+            // ok
+        }
     }
 }

@@ -139,6 +139,19 @@ public class StreamTest extends AbstractSeqTest {
         assertThat(Stream.from(Integer.MAX_VALUE).take(2)).isEqualTo(Stream.of(Integer.MAX_VALUE, Integer.MAX_VALUE + 1));
     }
 
+    // -- static from(long)
+
+    @Test
+    public void shouldGenerateLongStream() {
+        assertThat(Stream.from(-1L).take(3)).isEqualTo(Stream.of(-1L, 0L, 1L));
+    }
+
+    @Test
+    public void shouldGenerateTerminatingLongStream() {
+        //noinspection NumericOverflow
+        assertThat(Stream.from(Long.MAX_VALUE).take(2)).isEqualTo(Stream.of(Long.MAX_VALUE, Long.MAX_VALUE + 1));
+    }
+
     // -- static gen(Supplier)
 
     @Test
