@@ -119,6 +119,14 @@ public class Function4Test {
     }
 
     @Test
+    public void shouldRecognizeMemoizedFunctions() {
+        final Function4<Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4) -> null;
+        final Function4<Integer, Integer, Integer, Integer, Integer> memo = f.memoized();
+        assertThat(f.isMemoized()).isFalse();
+        assertThat(memo.isMemoized()).isTrue();
+    }
+
+    @Test
     public void shouldComposeWithAndThen() {
         final Function4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
         final Function1<Object, Object> after = o -> null;

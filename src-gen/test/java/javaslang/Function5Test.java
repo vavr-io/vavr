@@ -125,6 +125,14 @@ public class Function5Test {
     }
 
     @Test
+    public void shouldRecognizeMemoizedFunctions() {
+        final Function5<Integer, Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4, i5) -> null;
+        final Function5<Integer, Integer, Integer, Integer, Integer, Integer> memo = f.memoized();
+        assertThat(f.isMemoized()).isFalse();
+        assertThat(memo.isMemoized()).isTrue();
+    }
+
+    @Test
     public void shouldComposeWithAndThen() {
         final Function5<Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5) -> null;
         final Function1<Object, Object> after = o -> null;

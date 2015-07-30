@@ -137,6 +137,14 @@ public class CheckedFunction7Test {
     }
 
     @Test
+    public void shouldRecognizeMemoizedFunctions() {
+        final CheckedFunction7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4, i5, i6, i7) -> null;
+        final CheckedFunction7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> memo = f.memoized();
+        assertThat(f.isMemoized()).isFalse();
+        assertThat(memo.isMemoized()).isTrue();
+    }
+
+    @Test
     public void shouldComposeWithAndThen() {
         final CheckedFunction7<Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7) -> null;
         final CheckedFunction1<Object, Object> after = o -> null;
