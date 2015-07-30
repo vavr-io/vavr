@@ -73,6 +73,15 @@ public interface λ<R> extends Serializable {
     λ<R> memoized();
 
     /**
+     * Checks if this function is memoizing computed values.
+     *
+     * @return true, if this instance implements {@link Memoized}, false otherwise
+     */
+    default boolean isMemoized() {
+        return this instanceof Memoized;
+    }
+
+    /**
      * Get reflective type information about lambda parameters and return type.
      *
      * @return A {@link java.lang.invoke.MethodType}

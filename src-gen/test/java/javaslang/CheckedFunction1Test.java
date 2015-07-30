@@ -101,6 +101,14 @@ public class CheckedFunction1Test {
     }
 
     @Test
+    public void shouldRecognizeMemoizedFunctions() {
+        final CheckedFunction1<Integer, Integer> f = (i1) -> null;
+        final CheckedFunction1<Integer, Integer> memo = f.memoized();
+        assertThat(f.isMemoized()).isFalse();
+        assertThat(memo.isMemoized()).isTrue();
+    }
+
+    @Test
     public void shouldComposeWithAndThen() {
         final CheckedFunction1<Object, Object> f = (o1) -> null;
         final CheckedFunction1<Object, Object> after = o -> null;
