@@ -391,7 +391,7 @@ public interface Traversable<T> extends TraversableOnce<T> {
         return reverse().findFirst(predicate);
     }
 
-    <U> Traversable<U> flatMap(Function<? super T, ? extends Iterable<U>> mapper);
+    <U> Traversable<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     /**
      * Flattens a {@code Traversable} using a function.
@@ -401,7 +401,7 @@ public interface Traversable<T> extends TraversableOnce<T> {
      * @return a new {@code Traversable}
      * @throws NullPointerException if {@code f} is null
      */
-    <U> Traversable<U> flatten(Function<? super T, ? extends Iterable<U>> f);
+    <U> Traversable<U> flatten(Function<? super T, ? extends Iterable<? extends U>> f);
 
     /**
      * <p>

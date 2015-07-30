@@ -148,10 +148,11 @@ public final class Success<T> implements Try<T>, Serializable {
         return flatMap(value -> Try.of(() -> f.apply(value)));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <U> Try<U> flatMap(Function<? super T, ? extends Try<U>> mapper) {
+    public <U> Try<U> flatMap(Function<? super T, ? extends Try<? extends U>> mapper) {
         try {
-            return mapper.apply(value);
+            return (Try<U>) mapper.apply(value);
         } catch (Throwable t) {
             return new Failure<>(t);
         }

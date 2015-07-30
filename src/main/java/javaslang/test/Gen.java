@@ -283,7 +283,7 @@ public interface Gen<T> extends TraversableOnce<T> {
      * @param <U>    Type of generated objects of the new generator
      * @return A new generator
      */
-    default <U> Gen<U> flatMap(Function<? super T, ? extends Gen<U>> mapper) {
+    default <U> Gen<U> flatMap(Function<? super T, ? extends Gen<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return random -> mapper.apply(apply(random)).apply(random);
     }
@@ -309,9 +309,9 @@ public interface Gen<T> extends TraversableOnce<T> {
         };
     }
 
-    default <U> Gen<U> flatten(Function<? super T, ? extends Gen<U>> f) {
+    default <U> Gen<U> flatten(Function<? super T, ? extends Gen<? extends U>> f) {
         return random -> {
-            final Gen<U> gen = f.apply(apply(random));
+            final Gen<? extends U> gen = f.apply(apply(random));
             return gen.apply(random);
         };
     }

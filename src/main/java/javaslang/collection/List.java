@@ -697,7 +697,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
     }
 
     @Override
-    default <U> List<U> flatMap(Function<? super T, ? extends Iterable<U>> mapper) {
+    default <U> List<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return empty();
@@ -735,7 +735,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
      * @throws NullPointerException if {@code f} is null
      */
     @Override
-    default <U> List<U> flatten(Function<? super T, ? extends Iterable<U>> f) {
+    default <U> List<U> flatten(Function<? super T, ? extends Iterable<? extends U>> f) {
         Objects.requireNonNull(f, "f is null");
         return isEmpty() ? Nil.instance() : foldRight(empty(), (t, xs) -> xs.prependAll(f.apply(t)));
     }

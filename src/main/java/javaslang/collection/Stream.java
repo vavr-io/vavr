@@ -813,7 +813,7 @@ public interface Stream<T> extends Seq<T> {
     }
 
     @Override
-    default <U> Stream<U> flatMap(Function<? super T, ? extends Iterable<U>> mapper) {
+    default <U> Stream<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? Nil.instance() : map(mapper).flatten(Function.identity());
     }
@@ -842,7 +842,7 @@ public interface Stream<T> extends Seq<T> {
      */
     @SuppressWarnings("unchecked")
     @Override
-    default <U> Stream<U> flatten(Function<? super T, ? extends Iterable<U>> f) {
+    default <U> Stream<U> flatten(Function<? super T, ? extends Iterable<? extends U>> f) {
         Objects.requireNonNull(f, "f is null");
         return isEmpty() ? Nil.instance() : Stream.ofAll(() -> new Iterator<U>() {
 

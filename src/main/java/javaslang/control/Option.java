@@ -155,12 +155,12 @@ public interface Option<T> extends TraversableOnce<T>, Value<T> {
      * @throws NullPointerException if {@code f} is null
      */
     @SuppressWarnings("unchecked")
-    default <U> Option<U> flatten(Function<? super T, ? extends Option<U>> f) {
+    default <U> Option<U> flatten(Function<? super T, ? extends Option<? extends U>> f) {
         Objects.requireNonNull(f, "f is null");
         if (isEmpty()) {
             return None.instance();
         } else {
-            return f.apply(get());
+            return (Option<U>) f.apply(get());
         }
     }
 
@@ -188,12 +188,13 @@ public interface Option<T> extends TraversableOnce<T>, Value<T> {
      * @param <U>    Component type of the resulting Option
      * @return a new {@code Option}
      */
-    default <U> Option<U> flatMap(Function<? super T, ? extends Option<U>> mapper) {
+    @SuppressWarnings("unchecked")
+    default <U> Option<U> flatMap(Function<? super T, ? extends Option<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return None.instance();
         } else {
-            return mapper.apply(get());
+            return (Option<U>) mapper.apply(get());
         }
     }
 

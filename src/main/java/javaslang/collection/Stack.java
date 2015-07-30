@@ -504,10 +504,10 @@ public interface Stack<T> extends Seq<T> {
     Stack<T> findAll(Predicate<? super T> predicate);
 
     @Override
-    <U> Stack<U> flatMap(Function<? super T, ? extends Iterable<U>> mapper);
+    <U> Stack<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
-    <U> Stack<U> flatten(Function<? super T, ? extends Iterable<U>> f);
+    <U> Stack<U> flatten(Function<? super T, ? extends Iterable<? extends U>> f);
 
     @Override
     Stack<? extends Stack<T>> grouped(int size);

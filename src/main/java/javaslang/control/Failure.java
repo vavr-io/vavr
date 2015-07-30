@@ -150,7 +150,7 @@ public final class Failure<T> implements Try<T>, Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    public <U> Failure<U> flatMap(Function<? super T, ? extends Try<U>> mapper) {
+    public <U> Failure<U> flatMap(Function<? super T, ? extends Try<? extends U>> mapper) {
         return (Failure<U>) this;
     }
 
