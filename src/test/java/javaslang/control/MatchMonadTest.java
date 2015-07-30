@@ -8,8 +8,10 @@ package javaslang.control;
 import org.junit.Test;
 
 import java.util.Iterator;
+import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.StrictAssertions.fail;
 
 public class MatchMonadTest {
 
@@ -769,5 +771,32 @@ public class MatchMonadTest {
                 .iterator();
         assertThat(actual.next()).isEqualTo(-1);
         assertThat(actual.hasNext()).isFalse();
+    }
+
+    // thenThrow
+
+    @Test
+    public void shouldThrowLate() {
+        final Match.MatchMonad<?> match = Match.of(null).whenIs(null).thenThrow(RuntimeException::new);
+        try {
+            match.get();
+            fail("nothing thrown");
+        } catch(RuntimeException x) {
+            // ok
+        }
+    }
+
+    @Test
+    public void shouldThrowLateWhenMultipleCases() {
+        final Match.MatchMonad<?> match = Match.of(null)
+                .whenIs(0).then(0)
+                .whenIs(null).thenThrow(RuntimeException::new)
+                .otherwise(0);
+        try {
+            match.get();
+            fail("nothing thrown");
+        } catch(RuntimeException x) {
+            // ok
+        }
     }
 }

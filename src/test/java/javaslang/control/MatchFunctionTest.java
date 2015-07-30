@@ -8,9 +8,10 @@ package javaslang.control;
 import javaslang.Function1;
 import org.junit.Test;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 public class MatchFunctionTest {
 
@@ -650,5 +651,32 @@ public class MatchFunctionTest {
         Match.whenIs(0).then(false)
                 .otherwiseThrow(RuntimeException::new)
                 .apply(1);
+    }
+
+    // thenThrow
+
+    @Test
+    public void shouldThrowLate() {
+        final Function<?, ?> match = Match.whenIs(null).thenThrow(RuntimeException::new);
+        try {
+            match.apply(null);
+            fail("nothing thrown");
+        } catch(RuntimeException x) {
+            // ok
+        }
+    }
+
+    @Test
+    public void shouldThrowLateWhenMultipleCases() {
+        final Function<?, ?> match = Match
+                .whenIs(0).then(0)
+                .whenIs(null).thenThrow(RuntimeException::new)
+                .otherwise(0);
+        try {
+            match.apply(null);
+            fail("nothing thrown");
+        } catch(RuntimeException x) {
+            // ok
+        }
     }
 }
