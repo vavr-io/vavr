@@ -145,13 +145,13 @@ public interface Try<T> extends TraversableOnce<T>, Value<T> {
      * @throws NullPointerException if {@code f} is null
      */
     @SuppressWarnings("unchecked")
-    default <U> Try<U> flatten(Function<? super T, ? extends Try<U>> f) {
+    default <U> Try<U> flatten(Function<? super T, ? extends Try<? extends U>> f) {
         Objects.requireNonNull(f, "f is null");
         if (isFailure()) {
             return (Failure<U>) this;
         } else {
             try {
-                return f.apply(get());
+                return (Try<U>) f.apply(get());
             } catch (Throwable t) {
                 return new Failure<>(t);
             }
@@ -203,7 +203,7 @@ public interface Try<T> extends TraversableOnce<T>, Value<T> {
      * @param <U>    The new component type
      * @return a new Try
      */
-    <U> Try<U> flatMap(Function<? super T, ? extends Try<U>> mapper);
+    <U> Try<U> flatMap(Function<? super T, ? extends Try<? extends U>> mapper);
 
     @Override
     default Iterator<T> iterator() {

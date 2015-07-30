@@ -153,6 +153,7 @@ public interface Either<L, R> {
          * @return the left value, if the underlying Either is a Left or else {@code other}
          * @throws NoSuchElementException if the underlying either of this LeftProjection is a Right
          */
+        @Override
         public L orElse(L other) {
             return either.isLeft() ? asLeft() : other;
         }
@@ -272,12 +273,12 @@ public interface Either<L, R> {
          * @throws NullPointerException if {@code f} is null
          */
         @SuppressWarnings("unchecked")
-        public <U> LeftProjection<U, R> flatten(Function<? super L, ? extends LeftProjection<U, R>> f) {
+        public <U> LeftProjection<U, R> flatten(Function<? super L, ? extends LeftProjection<? extends U, ? extends R>> f) {
             Objects.requireNonNull(f, "f is null");
             if (either.isRight()) {
                 return (LeftProjection<U, R>) this;
             } else {
-                return f.apply(get());
+                return (LeftProjection<U, R>)f.apply(get());
             }
         }
 
@@ -320,10 +321,10 @@ public interface Either<L, R> {
          * @return A new LeftProjection
          */
         @SuppressWarnings("unchecked")
-        public <U> LeftProjection<U, R> flatMap(Function<? super L, ? extends LeftProjection<U, R>> mapper) {
+        public <U> LeftProjection<U, R> flatMap(Function<? super L, ? extends LeftProjection<? extends U, ? extends R>> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
             if (either.isLeft()) {
-                return mapper.apply(asLeft());
+                return (LeftProjection<U, R>)mapper.apply(asLeft());
             } else {
                 return (LeftProjection<U, R>) this;
             }
@@ -404,6 +405,7 @@ public interface Either<L, R> {
          * @return the right value, if the underlying Either is a Right or else {@code other}
          * @throws NoSuchElementException if the underlying either of this RightProjection is a Left
          */
+        @Override
         public R orElse(R other) {
             return either.isRight() ? asRight() : other;
         }
@@ -523,12 +525,12 @@ public interface Either<L, R> {
          * @throws NullPointerException if {@code f} is null
          */
         @SuppressWarnings("unchecked")
-        public <U> RightProjection<L, U> flatten(Function<? super R, ? extends RightProjection<L, U>> f) {
+        public <U> RightProjection<L, U> flatten(Function<? super R, ? extends RightProjection<? extends L, ? extends U>> f) {
             Objects.requireNonNull(f, "f is null");
             if (either.isLeft()) {
                 return (RightProjection<L, U>) this;
             } else {
-                return f.apply(get());
+                return (RightProjection<L, U>) f.apply(get());
             }
         }
 
@@ -571,10 +573,10 @@ public interface Either<L, R> {
          * @return A new RightProjection
          */
         @SuppressWarnings("unchecked")
-        public <U> RightProjection<L, U> flatMap(Function<? super R, ? extends RightProjection<L, U>> mapper) {
+        public <U> RightProjection<L, U> flatMap(Function<? super R, ? extends RightProjection<? extends L, ? extends U>> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
             if (either.isRight()) {
-                return mapper.apply(asRight());
+                return (RightProjection<L, U>) mapper.apply(asRight());
             } else {
                 return (RightProjection<L, U>) this;
             }

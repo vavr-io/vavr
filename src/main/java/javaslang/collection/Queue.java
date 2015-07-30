@@ -591,13 +591,13 @@ public class Queue<T> implements Seq<T>, Serializable {
     }
 
     @Override
-    public <U> Queue<U> flatMap(Function<? super T, ? extends Iterable<U>> mapper) {
+    public <U> Queue<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return new Queue<>(front.flatMap(mapper), rear.flatMap(mapper));
     }
 
     @Override
-    public <U> Queue<U> flatten(Function<? super T, ? extends Iterable<U>> f) {
+    public <U> Queue<U> flatten(Function<? super T, ? extends Iterable<? extends U>> f) {
         Objects.requireNonNull(f, "f is null");
         return new Queue<>(front.flatten(f), rear.flatten(f));
     }
