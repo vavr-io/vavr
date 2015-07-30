@@ -11,6 +11,6 @@ before_install:
   - sudo apt-get install --only-upgrade -y oracle-java8-installer
 after_success:
   - mvn clean test jacoco:report coveralls:report
-  - mvn clean deploy --settings .travis/maven-settings.xml
-  - mvn javadoc:javadoc
+  - mvn clean deploy -DskipTests --settings .travis/maven-settings.xml
+  - mvn javadoc:javadoc -DskipTests
   - .travis/deploy-javadoc-latest.sh
