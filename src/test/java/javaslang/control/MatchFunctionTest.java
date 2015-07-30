@@ -5,8 +5,10 @@
  */
 package javaslang.control;
 
+import javaslang.Function1;
 import org.junit.Test;
 
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -73,6 +75,20 @@ public class MatchFunctionTest {
                 .otherwise("odd")
                 .apply(0);
         assertThat(divisibility).isEqualTo("even");
+    }
+
+    @Test
+    public void shouldMatchIntByMatcher() {
+        class Matcher {
+            Function1<? super Object, Boolean> is(Object prototype) {
+                return value -> value == prototype || (value != null && value.equals(prototype));
+            }
+        }
+        final Matcher matcher = new Matcher();
+        final boolean actual = Match
+                .when(matcher.is(0)).then(true)
+                .apply(0);
+        assertThat(actual).isTrue();
     }
 
     // whenType(Class)
@@ -499,7 +515,7 @@ public class MatchFunctionTest {
                     .whenApplicable((Double d) -> d).thenThrow(() -> new RuntimeException("case1"))
                     .whenApplicable((Integer i) -> i).thenThrow(() -> new RuntimeException("case2"))
                     .apply(1);
-        } catch(RuntimeException x) {
+        } catch (RuntimeException x) {
             assertThat(x.getMessage()).isEqualTo("case2");
         }
     }
