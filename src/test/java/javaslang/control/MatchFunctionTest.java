@@ -8,7 +8,6 @@ package javaslang.control;
 import javaslang.Function1;
 import org.junit.Test;
 
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;

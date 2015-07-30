@@ -15,7 +15,7 @@ public class MatchErrorTest {
     public void shouldReturnCorrectObjectWhenMatchingByMonad() {
         final Object obj = new Object();
         try {
-            Match.of(obj).when(0).then(0).get();
+            Match.of(obj).whenIs(0).then(0).get();
         } catch (MatchError matchError) {
             assertThat(matchError.getObject()).isEqualTo(obj);
         }
