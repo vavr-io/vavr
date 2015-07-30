@@ -7,6 +7,8 @@ package javaslang.control;
 
 import org.junit.Test;
 
+import java.util.function.Supplier;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MatchFunctionTest {
@@ -16,7 +18,7 @@ public class MatchFunctionTest {
     @Test
     public void shouldMatchNullByValue() {
         final boolean actual = Match
-                .when(null).then(true)
+                .whenIs(null).then(true)
                 .apply(null);
         assertThat(actual).isTrue();
     }
@@ -24,50 +26,50 @@ public class MatchFunctionTest {
     @Test
     public void shouldMatchIntByValue() {
         final boolean actual = Match
-                .when(1).then(false)
-                .when(2).then(true)
+                .whenIs(1).then(false)
+                .whenIs(2).then(true)
                 .apply(2);
         assertThat(actual).isTrue();
     }
 
-    // whenIn(Onject...)
+    // whenIsIn(Onject...)
 
     @SuppressWarnings("unchecked")
     @Test
     public void shouldMatchNullByValueIn() {
         final boolean actual = Match
-                .whenIn((Object) null).then(true)
+                .whenIsIn((Object) null).then(true)
                 .apply(null);
         assertThat(actual).isTrue();
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenMatchNullVarargsByValueIn() {
-        Match.whenIn((Object[]) null).then(false)
+        Match.whenIsIn((Object[]) null).then(false)
                 .apply(null);
     }
 
     @Test
     public void shouldMatchIntByValueIn() {
         final boolean actual = Match
-                .whenIn(1, 2, 3).then(true)
+                .whenIsIn(1, 2, 3).then(true)
                 .apply(2);
         assertThat(actual).isTrue();
     }
 
-    // whenTrue(Predicate)
+    // when(Predicate)
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenMatchNullVarargsByPredicate() {
-        Match.whenTrue(null).then(false)
+        Match.when(null).then(false)
                 .apply(null);
     }
 
     @Test
     public void shouldMatchEvenIntByPredicate() {
         final String divisibility = Match
-                .whenTrue((String s) -> true).then("oops")
-                .whenTrue((Integer i) -> i % 2 == 0).then("even")
+                .when((String s) -> true).then("oops")
+                .when((Integer i) -> i % 2 == 0).then("even")
                 .otherwise("odd")
                 .apply(0);
         assertThat(divisibility).isEqualTo("even");
@@ -91,25 +93,7 @@ public class MatchFunctionTest {
         assertThat(actual).isEqualTo("Number 1");
     }
 
-    // whenTypeIn(Class...)
-
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenMatchNullVarargsByTypeIn() {
-        Match.whenTypeIn((Class<?>[]) null).then(false)
-                .apply(null);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void shouldMatchNumberByTypeIn() {
-        final Number number = 1;
-        final String actual = Match
-                .whenTypeIn(Byte.class, Integer.class).then(s -> "matched")
-                .apply(number);
-        assertThat(actual).isEqualTo("matched");
-    }
-
-    // whenApplicable(Function1)
+    // whenApplicable(Function)
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenMatchNullByFunction() {
@@ -125,13 +109,59 @@ public class MatchFunctionTest {
         assertThat(actual).isEqualTo(2);
     }
 
+    // otherwise(R)
+
+    @Test
+    public void shouldMatchDefaultCaseHavingValue() {
+        assertThat(Match.otherwise(true).apply(null)).isTrue();
+        assertThat(Match.otherwise((Object) null).apply(null)).isNull();
+    }
+
+    // otherwise(Function)
+
+    @Test
+    public void shouldMatchDefaultCaseHavingFunction() {
+        assertThat(Match.otherwise(ignored -> true).apply(null)).isTrue();
+    }
+
+    // DOES CALL Match.otherwise(R value) instead of Match.otherwise(Function)
+    //    @Test(expected = NullPointerException.class)
+    //    public void shouldThrowWhenMatchDefaultCaseAndFunctionIsNull() {
+    //        final Function<?, ?> f = null;
+    //        Match.otherwise(f).apply(null);
+    //    }
+
+    // otherwise(Supplier)
+
+    @Test
+    public void shouldMatchDefaultCaseHavingSupplier() {
+        assertThat(Match.otherwise(() -> true).apply(null)).isTrue();
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenMatchDefaultCaseAndSupplierIsNull() {
+        Match.otherwise((Supplier<?>) null).apply(null);
+    }
+
+    // otherwiseThrow(Supplier)
+
+    @Test(expected = RuntimeException.class)
+    public void shouldMatchDefaultCaseHavingExceptionSupplier() {
+        Match.otherwiseThrow(RuntimeException::new).apply(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenMatchDefaultCaseAndExceptionSupplierIsNull() {
+        Match.otherwiseThrow(null).apply(null);
+    }
+
     // match by super-type
 
     @Test
     public void shouldMatchSuperTypeByValue() {
         final Option<Integer> option = Option.of(1);
         final boolean actual = Match
-                .when(option).then(true)
+                .whenIs(option).then(true)
                 .apply(new Some<>(1));
         assertThat(actual).isTrue();
     }
@@ -141,7 +171,7 @@ public class MatchFunctionTest {
     public void shouldMatchSuperTypeByValueIn() {
         final Option<Integer> option = Option.of(1);
         final boolean actual = Match
-                .whenIn(None.instance(), option).then(true)
+                .whenIsIn(None.instance(), option).then(true)
                 .apply(new Some<>(1));
         assertThat(actual).isTrue();
     }
@@ -149,7 +179,7 @@ public class MatchFunctionTest {
     @Test
     public void shouldMatchSuperTypeByPredicate() {
         final boolean actual = Match
-                .whenTrue((Option<?> o) -> true).then(true)
+                .when((Option<?> o) -> true).then(true)
                 .apply(new Some<>(1));
         assertThat(actual).isTrue();
     }
@@ -158,15 +188,6 @@ public class MatchFunctionTest {
     public void shouldMatchSuperTypeByType() {
         final boolean actual = Match
                 .whenType(Option.class).then(true)
-                .apply(new Some<>(1));
-        assertThat(actual).isTrue();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void shouldMatchSuperTypeByTypeIn() {
-        final boolean actual = Match
-                .whenTypeIn(Boolean.class, Option.class).then(true)
                 .apply(new Some<>(1));
         assertThat(actual).isTrue();
     }
@@ -185,7 +206,7 @@ public class MatchFunctionTest {
     public void shouldMatchSubTypeByValue() {
         final Option<Integer> option = Option.of(1);
         final boolean actual = Match
-                .when(new Some<>(1)).then(true)
+                .whenIs(new Some<>(1)).then(true)
                 .apply(option);
         assertThat(actual).isTrue();
     }
@@ -195,7 +216,7 @@ public class MatchFunctionTest {
     public void shouldMatchSubTypeByValueIn() {
         final Option<Integer> option = Option.of(1);
         final boolean actual = Match
-                .whenIn(None.instance(), new Some<>(1)).then(true)
+                .whenIsIn(None.instance(), new Some<>(1)).then(true)
                 .apply(option);
         assertThat(actual).isTrue();
     }
@@ -204,7 +225,7 @@ public class MatchFunctionTest {
     public void shouldMatchSubTypeByPredicate() {
         final Option<Integer> option = Option.of(1);
         final boolean actual = Match
-                .whenTrue((Some<?> o) -> true).then(true)
+                .when((Some<?> o) -> true).then(true)
                 .apply(option);
         assertThat(actual).isTrue();
     }
@@ -214,16 +235,6 @@ public class MatchFunctionTest {
         final Option<Integer> option = Option.of(1);
         final boolean actual = Match
                 .whenType(Some.class).then(true)
-                .apply(option);
-        assertThat(actual).isTrue();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void shouldMatchSubTypeByTypeIn() {
-        final Option<Integer> option = Option.of(1);
-        final boolean actual = Match
-                .whenTypeIn(Boolean.class, Some.class).then(true)
                 .apply(option);
         assertThat(actual).isTrue();
     }
@@ -241,20 +252,25 @@ public class MatchFunctionTest {
 
     @Test
     public void shouldApplyThenValueWhenMatched() {
-        final boolean actual = Match.when(1).then(true).apply(1);
+        final boolean actual = Match.whenIs(1).then(true).apply(1);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldApplyThenSupplierWhenMatched() {
-        final boolean actual = Match.when(1).then(() -> true).apply(1);
+        final boolean actual = Match.whenIs(1).then(() -> true).apply(1);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldApplyThenFunctionWhenMatched() {
-        final boolean actual = Match.when(true).then(b -> b).apply(true);
+        final boolean actual = Match.whenIs(true).then(b -> b).apply(true);
         assertThat(actual).isTrue();
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldApplyThenThrowFunctionWhenMatched() {
+        Match.whenIs(true).thenThrow(RuntimeException::new).apply(true);
     }
 
     @Test
@@ -267,19 +283,25 @@ public class MatchFunctionTest {
 
     @Test
     public void shouldNotApplyThenValueWhenUnmatched() {
-        final boolean actual = Match.when(1).then(false).otherwise(true).apply(0);
+        final boolean actual = Match.whenIs(1).then(false).otherwise(true).apply(0);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldNotApplyThenSupplierWhenUnmatched() {
-        final boolean actual = Match.when(1).then(() -> false).otherwise(true).apply(0);
+        final boolean actual = Match.whenIs(1).then(() -> false).otherwise(true).apply(0);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void shouldNotApplyThenThrowFunctionWhenUnmatched() {
+        final boolean actual = Match.as(Boolean.class).whenIs(false).thenThrow(RuntimeException::new).otherwise(true).apply(true);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldNotApplyThenFunctionWhenUnmatched() {
-        final boolean actual = Match.when(false).then(b -> b).otherwise(true).apply(true);
+        final boolean actual = Match.whenIs(false).then(b -> b).otherwise(true).apply(true);
         assertThat(actual).isTrue();
     }
 
@@ -294,8 +316,8 @@ public class MatchFunctionTest {
     @Test
     public void shouldTransportMatchedValue() {
         final boolean actual = Match
-                .when(1).then(true)
-                .when(1).then(false)
+                .whenIs(1).then(true)
+                .whenIs(1).then(false)
                 .apply(1);
         assertThat(actual).isTrue();
     }
@@ -303,8 +325,8 @@ public class MatchFunctionTest {
     @Test
     public void shouldTransportMatchedValueIn() {
         final boolean actual = Match
-                .whenIn(1).then(true)
-                .whenIn(1).then(false)
+                .whenIsIn(1).then(true)
+                .whenIsIn(1).then(false)
                 .apply(1);
         assertThat(actual).isTrue();
     }
@@ -312,8 +334,8 @@ public class MatchFunctionTest {
     @Test
     public void shouldTransportMatchedPredicate() {
         final boolean actual = Match
-                .whenTrue((Integer i) -> true).then(true)
-                .whenTrue((Integer i) -> true).then(false)
+                .when((Integer i) -> true).then(true)
+                .when((Integer i) -> true).then(false)
                 .apply(1);
         assertThat(actual).isTrue();
     }
@@ -323,16 +345,6 @@ public class MatchFunctionTest {
         final boolean actual = Match
                 .whenType(Integer.class).then(true)
                 .whenType(Integer.class).then(false)
-                .apply(1);
-        assertThat(actual).isTrue();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void shouldTransportMatchedTypeIn() {
-        final boolean actual = Match
-                .whenTypeIn(Integer.class).then(true)
-                .whenTypeIn(Integer.class).then(false)
                 .apply(1);
         assertThat(actual).isTrue();
     }
@@ -351,8 +363,8 @@ public class MatchFunctionTest {
     @Test
     public void shouldTransportUnmatchedValue() {
         final boolean actual = Match
-                .when(0).then(false)
-                .when(1).then(true)
+                .whenIs(0).then(false)
+                .whenIs(1).then(true)
                 .apply(1);
         assertThat(actual).isTrue();
     }
@@ -360,8 +372,8 @@ public class MatchFunctionTest {
     @Test
     public void shouldTransportUnmatchedValueIn() {
         final boolean actual = Match
-                .whenIn(0).then(false)
-                .whenIn(1).then(true)
+                .whenIsIn(0).then(false)
+                .whenIsIn(1).then(true)
                 .apply(1);
         assertThat(actual).isTrue();
     }
@@ -369,8 +381,8 @@ public class MatchFunctionTest {
     @Test
     public void shouldTransportUnmatchedPredicate() {
         final boolean actual = Match
-                .whenTrue((Boolean b) -> false).then(false)
-                .whenTrue((Integer i) -> true).then(true)
+                .when((Boolean b) -> false).then(false)
+                .when((Integer i) -> true).then(true)
                 .apply(1);
         assertThat(actual).isTrue();
     }
@@ -380,16 +392,6 @@ public class MatchFunctionTest {
         final boolean actual = Match
                 .whenType(Boolean.class).then(false)
                 .whenType(Integer.class).then(true)
-                .apply(1);
-        assertThat(actual).isTrue();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void shouldTransportUnmatchedTypeIn() {
-        final boolean actual = Match
-                .whenTypeIn(Boolean.class).then(false)
-                .whenTypeIn(Integer.class).then(true)
                 .apply(1);
         assertThat(actual).isTrue();
     }
@@ -408,8 +410,8 @@ public class MatchFunctionTest {
     @Test
     public void shouldMatchTypedResultByValue() {
         final Number actual = Match.as(Number.class)
-                .when(0).then(0.0d)
-                .when(1).then(1)
+                .whenIs(0).then(0.0d)
+                .whenIs(1).then(1)
                 .apply(1);
         assertThat(actual).isEqualTo(1);
     }
@@ -417,16 +419,16 @@ public class MatchFunctionTest {
     @Test(expected = MatchError.class)
     public void shouldMatchTypedResultByValueNegativeCase() {
         Match.as(Number.class)
-                .when(0).then(0.0d)
-                .when(1).then(1)
+                .whenIs(0).then(0.0d)
+                .whenIs(1).then(1)
                 .apply(-1);
     }
 
     @Test
     public void shouldMatchTypedResultByValueIn() {
         final Number actual = Match.as(Number.class)
-                .whenIn(0).then(0.0d)
-                .whenIn(1).then(1)
+                .whenIsIn(0).then(0.0d)
+                .whenIsIn(1).then(1)
                 .apply(1);
         assertThat(actual).isEqualTo(1);
     }
@@ -434,16 +436,16 @@ public class MatchFunctionTest {
     @Test(expected = MatchError.class)
     public void shouldMatchTypedResultByValueInNegativeCase() {
         Match.as(Number.class)
-                .whenIn(0).then(0.0d)
-                .whenIn(1).then(1)
+                .whenIsIn(0).then(0.0d)
+                .whenIsIn(1).then(1)
                 .apply(-1);
     }
 
     @Test
     public void shouldMatchTypedResultByPredicate() {
         final Number actual = Match.as(Number.class)
-                .whenTrue((Double d) -> true).then(0.0d)
-                .whenTrue((Integer i) -> true).then(1)
+                .when((Double d) -> true).then(0.0d)
+                .when((Integer i) -> true).then(1)
                 .apply(1);
         assertThat(actual).isEqualTo(1);
     }
@@ -451,8 +453,8 @@ public class MatchFunctionTest {
     @Test(expected = MatchError.class)
     public void shouldMatchTypedResultByPredicateNegativeCase() {
         Match.as(Number.class)
-                .whenTrue((Double d) -> true).then(0.0d)
-                .whenTrue((Integer i) -> true).then(1)
+                .when((Double d) -> true).then(0.0d)
+                .when((Integer i) -> true).then(1)
                 .apply("x");
     }
 
@@ -473,25 +475,6 @@ public class MatchFunctionTest {
                 .apply("x");
     }
 
-    @SuppressWarnings("unchecked")
-    @Test
-    public void shouldMatchTypedResultByTypeIn() {
-        final Number actual = Match.as(Number.class)
-                .whenTypeIn(Boolean.class).then(0.0d)
-                .whenTypeIn(Integer.class).then(1)
-                .apply(1);
-        assertThat(actual).isEqualTo(1);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test(expected = MatchError.class)
-    public void shouldMatchTypedResultByTypeInNegativeCase() {
-        Match.as(Number.class)
-                .whenTypeIn(Boolean.class).then(0.0d)
-                .whenTypeIn(Integer.class).then(1)
-                .apply("x");
-    }
-
     @Test
     public void shouldMatchTypedResultByFunction() {
         final Number actual = Match.as(Number.class)
@@ -509,12 +492,32 @@ public class MatchFunctionTest {
                 .apply("x");
     }
 
+    @Test
+    public void shouldMatchTypedResultByFunctionThenThrow() {
+        try {
+            final Number actual = Match.as(Number.class)
+                    .whenApplicable((Double d) -> d).thenThrow(() -> new RuntimeException("case1"))
+                    .whenApplicable((Integer i) -> i).thenThrow(() -> new RuntimeException("case2"))
+                    .apply(1);
+        } catch(RuntimeException x) {
+            assertThat(x.getMessage()).isEqualTo("case2");
+        }
+    }
+
+    @Test(expected = MatchError.class)
+    public void shouldMatchTypedResultByFunctionThenThrowNegativeCase() {
+        Match.as(Number.class)
+                .whenApplicable((Double d) -> d).thenThrow(() -> new RuntimeException("case1"))
+                .whenApplicable((Integer i) -> i).thenThrow(() -> new RuntimeException("case2"))
+                .apply("x");
+    }
+
     // otherwise
 
     @Test
     public void shouldHandleOtherwiseValueOfMatched() {
         final boolean actual = Match
-                .when(1).then(true)
+                .whenIs(1).then(true)
                 .otherwise(false)
                 .apply(1);
         assertThat(actual).isTrue();
@@ -523,7 +526,7 @@ public class MatchFunctionTest {
     @Test
     public void shouldHandleOtherwiseValueOfUnmatched() {
         final boolean actual = Match
-                .when(0).then(false)
+                .whenIs(0).then(false)
                 .otherwise(true)
                 .apply(1);
         assertThat(actual).isTrue();
@@ -532,7 +535,7 @@ public class MatchFunctionTest {
     @Test
     public void shouldHandleOtherwiseSupplierOfMatched() {
         final boolean actual = Match
-                .when(1).then(true)
+                .whenIs(1).then(true)
                 .otherwise(() -> false)
                 .apply(1);
         assertThat(actual).isTrue();
@@ -541,7 +544,7 @@ public class MatchFunctionTest {
     @Test
     public void shouldHandleOtherwiseSupplierOfUnmatched() {
         final boolean actual = Match
-                .when(0).then(false)
+                .whenIs(0).then(false)
                 .otherwise(() -> true)
                 .apply(1);
         assertThat(actual).isTrue();
@@ -550,7 +553,7 @@ public class MatchFunctionTest {
     @Test
     public void shouldHandleOtherwiseFunctionOfMatched() {
         final boolean actual = Match
-                .when(1).then(true)
+                .whenIs(1).then(true)
                 .otherwise(ignored -> false)
                 .apply(1);
         assertThat(actual).isTrue();
@@ -559,9 +562,16 @@ public class MatchFunctionTest {
     @Test
     public void shouldHandleOtherwiseFunctionOfUnmatched() {
         final boolean actual = Match
-                .when(0).then(false)
+                .whenIs(0).then(false)
                 .otherwise(ignored -> true)
                 .apply(1);
         assertThat(actual).isTrue();
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldHandleOtherwiseThrowOfUnmatched() {
+        Match.whenIs(0).then(false)
+                .otherwiseThrow(RuntimeException::new)
+                .apply(1);
     }
 }

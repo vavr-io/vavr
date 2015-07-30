@@ -191,10 +191,10 @@ public interface Tree<T> extends Iterable<T> {
         } else {
             final Flatten flatten = new Flatten();
             return Match
-                    .when(Order.PRE_ORDER).then(ignored -> flatten.preOrder(this))
-                    .when(Order.IN_ORDER).then(ignored -> flatten.inOrder(this))
-                    .when(Order.POST_ORDER).then(ignored -> flatten.postOrder(this))
-                    .when(Order.LEVEL_ORDER).then(ignored -> flatten.levelOrder(this))
+                    .whenIs(Order.PRE_ORDER).then(() -> flatten.preOrder(this))
+                    .whenIs(Order.IN_ORDER).then(() -> flatten.inOrder(this))
+                    .whenIs(Order.POST_ORDER).then(() -> flatten.postOrder(this))
+                    .whenIs(Order.LEVEL_ORDER).then(() -> flatten.levelOrder(this))
                     .apply(order);
         }
     }
