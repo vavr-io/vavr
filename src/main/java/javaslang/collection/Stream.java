@@ -712,13 +712,15 @@ public interface Stream<T> extends Seq<T> {
      * Well known scala code for Fibonacci infinite sequence
      * <pre>
      * <code>
-     * val fibs:Stream[Int] = 0 #:: 1 #:: (fibs zip fibs.tail).map{ t => t._1 + t._2 }
-     * </code></pre>
+     * val fibs:Stream[Int] = 0 #:: 1 #:: (fibs zip fibs.tail).map{ t =&gt; t._1 + t._2 }
+     * </code>
+     * </pre>
      * can be transformed to
      * <pre>
      * <code>
-     * Stream.of(0, 1).appendSelf(self -> self.zip(self.tail()).map(t -> t._1 + t._2));
-     * </code></pre>
+     * Stream.of(0, 1).appendSelf(self -&lt; self.zip(self.tail()).map(t -&lt; t._1 + t._2));
+     * </code>
+     * </pre>
      *
      * @param mapper an mapper
      * @return a new Stream

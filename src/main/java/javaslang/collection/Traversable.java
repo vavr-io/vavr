@@ -122,7 +122,7 @@ import java.util.stream.StreamSupport;
  *
  * <ul>
  * <li>{@link #cartesianProduct()}</li>
- * <li>{@link #cartesianProduct(Traversable)}</li>
+ * <li>{@link #cartesianProduct(Iterable)}</li>
  * <li>{@link #combinations()}</li>
  * <li>{@link #combinations(int)}</li>
  * <li>{@link #distinct()}</li>
