@@ -718,7 +718,7 @@ public interface Stream<T> extends Seq<T> {
      * can be transformed to
      * <pre>
      * <code>
-     * Stream.of(0, 1).appendSelf(self -&lt; self.zip(self.tail()).map(t -&lt; t._1 + t._2));
+     * Stream.of(0, 1).appendSelf(self -&gt; self.zip(self.tail()).map(t -&gt; t._1 + t._2));
      * </code>
      * </pre>
      *
