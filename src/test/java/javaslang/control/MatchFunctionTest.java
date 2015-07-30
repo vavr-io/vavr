@@ -7,6 +7,8 @@ package javaslang.control;
 
 import org.junit.Test;
 
+import java.util.function.Supplier;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MatchFunctionTest {
@@ -105,6 +107,52 @@ public class MatchFunctionTest {
                 .whenApplicable((Integer i) -> i + 1).thenApply()
                 .apply(1);
         assertThat(actual).isEqualTo(2);
+    }
+
+    // otherwise(R)
+
+    @Test
+    public void shouldMatchDefaultCaseHavingValue() {
+        assertThat(Match.otherwise(true).apply(null)).isTrue();
+        assertThat(Match.otherwise((Object) null).apply(null)).isNull();
+    }
+
+    // otherwise(Function)
+
+    @Test
+    public void shouldMatchDefaultCaseHavingFunction() {
+        assertThat(Match.otherwise(ignored -> true).apply(null)).isTrue();
+    }
+
+    // DOES CALL Match.otherwise(R value) instead of Match.otherwise(Function)
+    //    @Test(expected = NullPointerException.class)
+    //    public void shouldThrowWhenMatchDefaultCaseAndFunctionIsNull() {
+    //        final Function<?, ?> f = null;
+    //        Match.otherwise(f).apply(null);
+    //    }
+
+    // otherwise(Supplier)
+
+    @Test
+    public void shouldMatchDefaultCaseHavingSupplier() {
+        assertThat(Match.otherwise(() -> true).apply(null)).isTrue();
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenMatchDefaultCaseAndSupplierIsNull() {
+        Match.otherwise((Supplier<?>) null).apply(null);
+    }
+
+    // otherwiseThrow(Supplier)
+
+    @Test(expected = RuntimeException.class)
+    public void shouldMatchDefaultCaseHavingExceptionSupplier() {
+        Match.otherwiseThrow(RuntimeException::new).apply(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenMatchDefaultCaseAndExceptionSupplierIsNull() {
+        Match.otherwiseThrow(null).apply(null);
     }
 
     // match by super-type
@@ -220,6 +268,11 @@ public class MatchFunctionTest {
         assertThat(actual).isTrue();
     }
 
+    @Test(expected = RuntimeException.class)
+    public void shouldApplyThenThrowFunctionWhenMatched() {
+        Match.whenIs(true).thenThrow(RuntimeException::new).apply(true);
+    }
+
     @Test
     public void shouldApplyFunctionWhenApplicableMatched() {
         final boolean actual = Match.whenApplicable((Boolean b) -> b).thenApply().apply(true);
@@ -237,6 +290,12 @@ public class MatchFunctionTest {
     @Test
     public void shouldNotApplyThenSupplierWhenUnmatched() {
         final boolean actual = Match.whenIs(1).then(() -> false).otherwise(true).apply(0);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void shouldNotApplyThenThrowFunctionWhenUnmatched() {
+        final boolean actual = Match.as(Boolean.class).whenIs(false).thenThrow(RuntimeException::new).otherwise(true).apply(true);
         assertThat(actual).isTrue();
     }
 
@@ -433,6 +492,26 @@ public class MatchFunctionTest {
                 .apply("x");
     }
 
+    @Test
+    public void shouldMatchTypedResultByFunctionThenThrow() {
+        try {
+            final Number actual = Match.as(Number.class)
+                    .whenApplicable((Double d) -> d).thenThrow(() -> new RuntimeException("case1"))
+                    .whenApplicable((Integer i) -> i).thenThrow(() -> new RuntimeException("case2"))
+                    .apply(1);
+        } catch(RuntimeException x) {
+            assertThat(x.getMessage()).isEqualTo("case2");
+        }
+    }
+
+    @Test(expected = MatchError.class)
+    public void shouldMatchTypedResultByFunctionThenThrowNegativeCase() {
+        Match.as(Number.class)
+                .whenApplicable((Double d) -> d).thenThrow(() -> new RuntimeException("case1"))
+                .whenApplicable((Integer i) -> i).thenThrow(() -> new RuntimeException("case2"))
+                .apply("x");
+    }
+
     // otherwise
 
     @Test
@@ -487,5 +566,12 @@ public class MatchFunctionTest {
                 .otherwise(ignored -> true)
                 .apply(1);
         assertThat(actual).isTrue();
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldHandleOtherwiseThrowOfUnmatched() {
+        Match.whenIs(0).then(false)
+                .otherwiseThrow(RuntimeException::new)
+                .apply(1);
     }
 }

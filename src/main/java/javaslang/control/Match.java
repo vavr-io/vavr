@@ -5,13 +5,14 @@
  */
 package javaslang.control;
 
-import javaslang.*;
+import javaslang.Function1;
+import javaslang.Function2;
+import javaslang.Lazy;
+import javaslang.Value;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
 import javaslang.collection.TraversableOnce;
 
-import java.lang.invoke.MethodType;
-import java.lang.invoke.SerializedLambda;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
@@ -121,6 +122,7 @@ public interface Match<R> extends Function<Object, R> {
     }
 
     static <T, R> MatchFunction.WhenApplicable<T, R> whenApplicable(Function1<? super T, ? extends R> function) {
+        Objects.requireNonNull(function, "function is null");
         return new MatchFunction.WhenApplicable<>(function, List.empty());
     }
 
@@ -129,14 +131,17 @@ public interface Match<R> extends Function<Object, R> {
     }
 
     static <R> MatchFunction.Otherwise<R> otherwise(Function<? super Object, ? extends R> function) {
+        Objects.requireNonNull(function, "function is null");
         return new MatchFunction.Otherwise<>(function, List.empty());
     }
 
     static <R> MatchFunction.Otherwise<R> otherwise(Supplier<? extends R> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
         return new MatchFunction.Otherwise<>(ignored -> supplier.get(), List.empty());
     }
 
     static <R> MatchFunction.Otherwise<R> otherwiseThrow(Supplier<? extends RuntimeException> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
         return new MatchFunction.Otherwise<>(ignored -> {
             throw supplier.get();
         }, List.empty());
@@ -252,6 +257,7 @@ public interface Match<R> extends Function<Object, R> {
                 }
 
                 public <T> When<T, R> when(Function1<? super T, Boolean> predicate) {
+                    Objects.requireNonNull(predicate, "predicate is null");
                     return new When<>(When.of(predicate), cases);
                 }
 
@@ -271,6 +277,7 @@ public interface Match<R> extends Function<Object, R> {
                 }
 
                 public <T> WhenApplicable<T, R> whenApplicable(Function1<? super T, ? extends R> function) {
+                    Objects.requireNonNull(function, "function is null");
                     return new WhenApplicable<>(function, cases);
                 }
 
@@ -279,14 +286,17 @@ public interface Match<R> extends Function<Object, R> {
                 }
 
                 public Otherwise<R> otherwise(Function<? super Object, ? extends R> function) {
+                    Objects.requireNonNull(function, "function is null");
                     return new Otherwise<>(function, cases);
                 }
 
                 public Otherwise<R> otherwise(Supplier<? extends R> supplier) {
+                    Objects.requireNonNull(supplier, "supplier is null");
                     return new Otherwise<>(ignored -> supplier.get(), cases);
                 }
 
                 public Otherwise<R> otherwiseThrow(Supplier<? extends RuntimeException> supplier) {
+                    Objects.requireNonNull(supplier, "supplier is null");
                     return new Otherwise<>(ignored -> {
                         throw supplier.get();
                     }, cases);
