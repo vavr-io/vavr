@@ -27,6 +27,7 @@ import java.util.stream.StreamSupport;
  * <li>{@link #clear()}</li>
  * <li>{@link #contains(Object)}</li>
  * <li>{@link #containsAll(Iterable)}</li>
+ * <li>{@link #containsSlice(Iterable)}</li>
  * <li>{@link #head()}</li>
  * <li>{@link #headOption()}</li>
  * <li>{@link #init()}</li>
@@ -37,6 +38,7 @@ import java.util.stream.StreamSupport;
  * <li>{@link #length()}</li>
  * <li>{@link #tail()}</li>
  * <li>{@link #tailOption()}</li>
+ * <li>{@link #unit(Iterable)}</li>
  * </ul>
  *
  * Conversion:
@@ -215,7 +217,7 @@ public interface Traversable<T> extends TraversableOnce<T> {
      * </pre>
      *
      * @param that Another Traversable
-     * @param <U> Component type
+     * @param <U>  Component type
      * @return a new Traversable containing the cartesian product {@code this x that}
      * @throws NullPointerException if that is null
      */
@@ -272,10 +274,29 @@ public interface Traversable<T> extends TraversableOnce<T> {
      * Tests whether this sequence contains a given sequence as a slice.
      * <p>
      * Note: may not terminate for infinite-sized collections.
+     *
      * @param that the sequence to test
      * @return true if this sequence contains a slice with the same elements as that, otherwise false.
      */
-    boolean containsSlice(Iterable<T> that);
+    default boolean containsSlice(Iterable<? extends T> that) {
+
+        class Util {
+            boolean checkSlice(Traversable<T> t, Traversable<T> slice) {
+                return checkPrefix(t, slice) || (!t.isEmpty() && checkSlice(t.tail(), slice));
+            }
+
+            private boolean checkPrefix(Traversable<T> t, Traversable<T> prefix) {
+                if (prefix.isEmpty()) {
+                    return true;
+                } else {
+                    return !t.isEmpty() && java.util.Objects.equals(t.head(), prefix.head())
+                            && checkPrefix(t.tail(), prefix.tail());
+                }
+            }
+        }
+
+        return new Util().checkSlice(this, unit(that));
+    }
 
     /**
      * <p>
@@ -287,7 +308,7 @@ public interface Traversable<T> extends TraversableOnce<T> {
      * without recursion.
      * </p>
      *
-     * @param elements A List of values of type E.
+     * @param elements A List of values of type T.
      * @return true, if this List contains all given elements, false otherwise.
      * @throws NullPointerException if {@code elements} is null
      */
@@ -1160,6 +1181,14 @@ public interface Traversable<T> extends TraversableOnce<T> {
     default java.util.stream.Stream<T> toJavaStream() {
         return StreamSupport.stream(spliterator(), false);
     }
+
+    /**
+     * Creates an instance of this type of an {@code Iterable}.
+     *
+     * @param iterable an {@code Iterable}
+     * @return A new instance of this collection containing the elements of the given {@code iterable}.
+     */
+    Traversable<T> unit(Iterable<? extends T> iterable);
 
     /**
      * Unzips this elements by mapping this elements to pairs which are subsequentially split into to distinct

@@ -1202,6 +1202,11 @@ public interface List<T> extends Seq<T>, Stack<T> {
     }
 
     @Override
+    default List<T> unit(Iterable<? extends T> iterable) {
+        return List.ofAll(iterable);
+    }
+
+    @Override
     default <T1, T2> Tuple2<List<T1>, List<T2>> unzip(
             Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
@@ -1275,11 +1280,6 @@ public interface List<T> extends Seq<T>, Stack<T> {
         public Cons(T head, List<T> tail) {
             this.head = head;
             this.tail = tail;
-        }
-
-        @Override
-        public boolean containsSlice(Iterable<T> that) {
-            return checkSlice(this, List.ofAll(that));
         }
 
         @Override
@@ -1468,7 +1468,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
         }
 
         @Override
-        public boolean containsSlice(Iterable<T> that) {
+        public boolean containsSlice(Iterable<? extends T> that) {
             return !that.iterator().hasNext();
         }
 
