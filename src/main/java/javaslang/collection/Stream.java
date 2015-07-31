@@ -1541,11 +1541,6 @@ public interface Stream<T> extends Seq<T> {
         }
 
         @Override
-        public boolean containsSlice(Iterable<? extends T> that) {
-            return !that.iterator().hasNext();
-        }
-
-        @Override
         public T head() {
             throw new NoSuchElementException("head of empty stream");
         }

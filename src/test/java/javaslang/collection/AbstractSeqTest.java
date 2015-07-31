@@ -167,33 +167,6 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
         assertThat(of(1, 2, 3).get(2)).isEqualTo(3);
     }
 
-    // -- indexOf
-
-    @Test
-    public void shouldNotFindIndexOfElementWhenSeqIsEmpty() {
-        assertThat(empty().indexOf(1)).isEqualTo(-1);
-    }
-
-    @Test
-    public void shouldNotFindIndexOfElementWhenStartIsGreater() {
-        assertThat(of(1, 2, 3, 4).indexOf(2, 2)).isEqualTo(-1);
-    }
-
-    @Test
-    public void shouldFindIndexOfFirstElement() {
-        assertThat(of(1, 2, 3).indexOf(1)).isEqualTo(0);
-    }
-
-    @Test
-    public void shouldFindIndexOfInnerElement() {
-        assertThat(of(1, 2, 3).indexOf(2)).isEqualTo(1);
-    }
-
-    @Test
-    public void shouldFindIndexOfLastElement() {
-        assertThat(of(1, 2, 3).indexOf(3)).isEqualTo(2);
-    }
-
     // -- insert
 
     @Test
@@ -308,28 +281,6 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
             actual = iter.next();
         }
         assertThat(actual).isEqualTo(3);
-    }
-
-    // -- lastIndexOf
-
-    @Test
-    public void shouldNotFindLastIndexOfElementWhenSeqIsEmpty() {
-        assertThat(empty().lastIndexOf(1)).isEqualTo(-1);
-    }
-
-    @Test
-    public void shouldNotFindLastIndexOfElementWhenEndIdLess() {
-        assertThat(of(1, 2, 3, 4).lastIndexOf(3, 1)).isEqualTo(-1);
-    }
-
-    @Test
-    public void shouldFindLastIndexOfElement() {
-        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOf(1)).isEqualTo(3);
-    }
-
-    @Test
-    public void shouldFindLastIndexOfElementWithEnd() {
-        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOf(1, 1)).isEqualTo(0);
     }
 
     // -- prepend

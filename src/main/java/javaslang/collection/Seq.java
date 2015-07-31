@@ -99,26 +99,6 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     T get(int index);
 
     /**
-     * Returns the index of the first occurrence of the given element or -1 if this does not contain the given element.
-     *
-     * @param element an element
-     * @return the index of the first occurrence of the given element
-     */
-    default int indexOf(T element) {
-        return indexOf(element, 0);
-    }
-
-    /**
-     * Returns the index of the first occurrence of the given element after or at some start index
-     * or -1 if this does not contain the given element.
-     *
-     * @param element an element
-     * @param from start index
-     * @return the index of the first occurrence of the given element
-     */
-    int indexOf(T element, int from);
-
-    /**
      * Inserts the given element at the specified index.
      *
      * @param index   an index
@@ -149,26 +129,6 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     default Iterator<T> iterator(int index) {
         return subsequence(index).iterator();
     }
-
-    /**
-     * Returns the index of the last occurrence of the given element or -1 if this does not contain the given element.
-     *
-     * @param element an element
-     * @return the index of the last occurrence of the given element
-     */
-    default int lastIndexOf(T element) {
-        return lastIndexOf(element, Integer.MAX_VALUE);
-    }
-
-    /**
-     * Returns the index of the last occurrence of the given element before or at a given end index
-     * or -1 if this does not contain the given element.
-     *
-     * @param element an element
-     * @param end the end index
-     * @return the index of the last occurrence of the given element
-     */
-    int lastIndexOf(T element, int end);
 
     /**
      * Computes all unique permutations.

@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.Match;
 import javaslang.control.None;
@@ -279,23 +280,7 @@ public interface Traversable<T> extends TraversableOnce<T> {
      * @return true if this sequence contains a slice with the same elements as that, otherwise false.
      */
     default boolean containsSlice(Iterable<? extends T> that) {
-
-        class Util {
-            boolean checkSlice(Traversable<T> t, Traversable<T> slice) {
-                return checkPrefix(t, slice) || (!t.isEmpty() && checkSlice(t.tail(), slice));
-            }
-
-            private boolean checkPrefix(Traversable<T> t, Traversable<T> prefix) {
-                if (prefix.isEmpty()) {
-                    return true;
-                } else {
-                    return !t.isEmpty() && java.util.Objects.equals(t.head(), prefix.head())
-                            && checkPrefix(t.tail(), prefix.tail());
-                }
-            }
-        }
-
-        return new Util().checkSlice(this, unit(that));
+        return indexOfSlice(that) >= 0;
     }
 
     /**
@@ -553,6 +538,73 @@ public interface Traversable<T> extends TraversableOnce<T> {
     Option<T> headOption();
 
     /**
+     * Returns the index of the first occurrence of the given element or -1 if this does not contain the given element.
+     *
+     * @param element an element
+     * @return the index of the first occurrence of the given element
+     */
+    default int indexOf(T element) {
+        return indexOf(element, 0);
+    }
+
+    /**
+     * Returns the index of the first occurrence of the given element after or at some start index
+     * or -1 if this does not contain the given element.
+     *
+     * @param element an element
+     * @param from start index
+     * @return the index of the first occurrence of the given element
+     */
+    int indexOf(T element, int from);
+
+    /**
+     * Finds first index where this sequence contains a given sequence as a slice.
+     * <p>
+     * Note: may not terminate for infinite-sized collections.
+     * @param that the sequence to test
+     * @return the first index such that the elements of this sequence starting at this index match
+     * the elements of sequence that, or -1 of no such subsequence exists.
+     */
+    default int indexOfSlice(Iterable<? extends T> that) {
+        return indexOfSlice(that, 0);
+    }
+
+    /**
+     * Finds first index after or at a start index where this sequence contains a given sequence as a slice.
+     * <p>
+     * Note: may not terminate for infinite-sized collections.
+     * @param that the sequence to test
+     * @param from the start index
+     * @return the first index >= from such that the elements of this sequence starting at this index match
+     * the elements of sequence that, or -1 of no such subsequence exists.
+     */
+    default int indexOfSlice(Iterable<? extends T> that, int from) {
+        class Util {
+            int indexOfSlice(Traversable<T> t, Traversable<T> slice, int from) {
+                if (t.isEmpty()) {
+                    return from == 0 && slice.isEmpty() ? 0 : -1;
+                }
+                if(from <= 0 && checkPrefix(t, slice)) {
+                    return 0;
+                }
+                int idx = indexOfSlice(t.tail(), slice, from - 1);
+                return idx >= 0 ? idx + 1 : -1;
+            }
+
+            private boolean checkPrefix(Traversable<T> t, Traversable<T> prefix) {
+                if (prefix.isEmpty()) {
+                    return true;
+                } else {
+                    return !t.isEmpty() && java.util.Objects.equals(t.head(), prefix.head())
+                            && checkPrefix(t.tail(), prefix.tail());
+                }
+            }
+        }
+
+        return new Util().indexOfSlice(this, unit(that), from);
+    }
+
+    /**
      * Dual of {@linkplain #tail()}, returning all elements except the last.
      *
      * @return a new instance containing all elements except the last.
@@ -667,6 +719,95 @@ public interface Traversable<T> extends TraversableOnce<T> {
             }
             return traversable.head();
         }
+    }
+
+    /**
+     * Returns the index of the last occurrence of the given element or -1 if this does not contain the given element.
+     *
+     * @param element an element
+     * @return the index of the last occurrence of the given element
+     */
+    default int lastIndexOf(T element) {
+        return lastIndexOf(element, Integer.MAX_VALUE);
+    }
+
+    /**
+     * Returns the index of the last occurrence of the given element before or at a given end index
+     * or -1 if this does not contain the given element.
+     *
+     * @param element an element
+     * @param end the end index
+     * @return the index of the last occurrence of the given element
+     */
+    int lastIndexOf(T element, int end);
+
+    /**
+     * Finds last index where this sequence contains a given sequence as a slice.
+     * <p>
+     * Note: will not terminate for infinite-sized collections.
+     * @param that the sequence to test
+     * @return the last index such that the elements of this sequence starting a this index match the elements
+     * of sequence that, or -1 of no such subsequence exists.
+     */
+    default int lastIndexOfSlice(Iterable<T> that) {
+        return lastIndexOfSlice(that, Integer.MAX_VALUE);
+    }
+
+    /**
+     * Finds last index before or at a given end index where this sequence contains a given sequence as a slice.
+     * @param that the sequence to test
+     * @param end the end index
+     * @return the last index &lt;= end such that the elements of this sequence starting at this index match
+     * the elements of sequence that, or -1 of no such subsequence exists.
+     */
+    default int lastIndexOfSlice(Iterable<T> that, int end) {
+        class Util {
+            int lastIndexOfSlice(Traversable<T> t, Traversable<T> slice, int end) {
+                if (end < 0) {
+                    return -1;
+                }
+                if (t.isEmpty()) {
+                    return slice.isEmpty() ? 0 : -1;
+                }
+                if (slice.isEmpty()) {
+                    int len = t.length();
+                    return len < end ? len : end;
+                }
+                Tuple2<Traversable<T>, Integer> r = findSlice(t, slice);
+                if (r == null) {
+                    return -1;
+                }
+                if (r._2 <= end) {
+                    int idx = lastIndexOfSlice(r._1.tail(), slice, end - r._2);
+                    return idx >= 0 ? idx + 1 + r._2: r._2;
+                } else {
+                    return -1;
+                }
+
+            }
+
+            private Tuple2<Traversable<T>, Integer> findSlice(Traversable<T> t, Traversable<T> slice) {
+                if (t.isEmpty()) {
+                    return slice.isEmpty() ? Tuple.of(t, 0) : null;
+                }
+                if(checkPrefix(t, slice)) {
+                    return Tuple.of(t, 0);
+                }
+                Tuple2<Traversable<T>, Integer> idx = findSlice(t.tail(), slice);
+                return idx != null ? Tuple.of(idx._1, idx._2 + 1) : null;
+            }
+
+            private boolean checkPrefix(Traversable<T> t, Traversable<T> prefix) {
+                if (prefix.isEmpty()) {
+                    return true;
+                } else {
+                    return !t.isEmpty() && java.util.Objects.equals(t.head(), prefix.head())
+                            && checkPrefix(t.tail(), prefix.tail());
+                }
+            }
+        }
+
+        return new Util().lastIndexOfSlice(this, unit(that), end);
     }
 
     /**
