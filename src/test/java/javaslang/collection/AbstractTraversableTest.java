@@ -21,6 +21,7 @@ import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.stream.Collector;
 
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
@@ -32,16 +33,38 @@ import static org.assertj.core.api.Assertions.within;
  */
 public abstract class AbstractTraversableTest {
 
-    abstract protected <T> Traversable<T> nil();
+    abstract protected <T> Collector<T, ArrayList<T>, ? extends Traversable<T>> collector();
+
+    abstract protected <T> Traversable<T> empty();
+
+    abstract protected <T> Traversable<T> of(T element);
 
     @SuppressWarnings("unchecked")
     abstract protected <T> Traversable<T> of(T... elements);
+
+    abstract protected <T> Traversable<T> ofAll(Iterable<? extends T> elements);
+
+    abstract protected Traversable<Boolean> ofAll(boolean[] array);
+
+    abstract protected Traversable<Byte> ofAll(byte[] array);
+
+    abstract protected Traversable<Character> ofAll(char[] array);
+
+    abstract protected Traversable<Double> ofAll(double[] array);
+
+    abstract protected Traversable<Float> ofAll(float[] array);
+
+    abstract protected Traversable<Integer> ofAll(int[] array);
+
+    abstract protected Traversable<Long> ofAll(long[] array);
+
+    abstract protected Traversable<Short> ofAll(short[] array);
 
     // -- average
 
     @Test
     public void shouldReturnNoneWhenComputingAverageOfNil() {
-        assertThat(nil().average()).isEqualTo(None.instance());
+        assertThat(empty().average()).isEqualTo(None.instance());
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -89,23 +112,79 @@ public abstract class AbstractTraversableTest {
         assertThat(of(BigDecimal.ZERO, BigDecimal.ONE).average().get()).isEqualTo(.5);
     }
 
+    // -- cartesianProduct()
+
+    @Test
+    public void shouldCalculateCartesianProductOfNil() {
+        final Traversable<Tuple2<Object, Object>> actual = empty().cartesianProduct();
+        assertThat(actual).isEqualTo(empty());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldCalculateCartesianProductOfNonNil() {
+        final Traversable<Tuple2<Integer, Integer>> actual = of(1, 2, 3).cartesianProduct();
+        final Traversable<Tuple2<Integer, Integer>> expected = of(
+                Tuple.of(1, 1), Tuple.of(1, 2), Tuple.of(1, 3),
+                Tuple.of(2, 1), Tuple.of(2, 2), Tuple.of(2, 3),
+                Tuple.of(3, 1), Tuple.of(3, 2), Tuple.of(3, 3));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // -- cartesianProduct(Iterable)
+
+    @Test
+    public void shouldCalculateCartesianProductOfNilAndNil() {
+        final Traversable<Tuple2<Object, Object>> actual = empty().cartesianProduct(empty());
+        assertThat(actual).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldCalculateCartesianProductOfNilAndNonNil() {
+        final Traversable<Tuple2<Object, Object>> actual = empty().cartesianProduct(of(1, 2, 3));
+        assertThat(actual).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldCalculateCartesianProductOfNonNilAndNil() {
+        final Traversable<Tuple2<Integer, Integer>> actual = of(1, 2, 3).cartesianProduct(empty());
+        assertThat(actual).isEqualTo(empty());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldCalculateCartesianProductOfNonNilAndNonNil() {
+        final Traversable<Tuple2<Integer, Character>> actual = of(1, 2, 3).cartesianProduct(of('a', 'b'));
+        final Traversable<Tuple2<Integer, Character>> expected = of(
+                Tuple.of(1, 'a'), Tuple.of(1, 'b'),
+                Tuple.of(2, 'a'), Tuple.of(2, 'b'),
+                Tuple.of(3, 'a'), Tuple.of(3, 'b'));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenCalculatingCartesianProductAndThatIsNull() {
+        empty().cartesianProduct(null);
+    }
+
     // -- clear
 
     @Test
+
     public void shouldClearNil() {
-        assertThat(nil().clear()).isEqualTo(nil());
+        assertThat(empty().clear()).isEqualTo(empty());
     }
 
     @Test
     public void shouldClearNonNil() {
-        assertThat(of(1, 2, 3).clear()).isEqualTo(nil());
+        assertThat(of(1, 2, 3).clear()).isEqualTo(empty());
     }
 
     // -- contains
 
     @Test
     public void shouldRecognizeNilContainsNoElement() {
-        final boolean actual = nil().contains(null);
+        final boolean actual = empty().contains(null);
         assertThat(actual).isFalse();
     }
 
@@ -125,7 +204,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldRecognizeNilNotContainsAllElements() {
-        final boolean actual = nil().containsAll(of(1, 2, 3));
+        final boolean actual = empty().containsAll(of(1, 2, 3));
         assertThat(actual).isFalse();
     }
 
@@ -141,11 +220,31 @@ public abstract class AbstractTraversableTest {
         assertThat(actual).isTrue();
     }
 
+    // -- containsSlice
+
+    @Test
+    public void shouldRecognizeNilNotContainsSlice() {
+        final boolean actual = empty().containsSlice(of(1, 2, 3));
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void shouldRecognizeNonNilDoesContainSlice() {
+        final boolean actual = of(1, 2, 3, 4, 5).containsSlice(of(2, 3));
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void shouldRecognizeNonNilDoesNotContainSlice() {
+        final boolean actual = of(1, 2, 3, 4, 5).containsSlice(of(2, 1, 4));
+        assertThat(actual).isFalse();
+    }
+
     // -- distinct
 
     @Test
     public void shouldComputeDistinctOfEmptyTraversable() {
-        assertThat(nil().distinct()).isEqualTo(nil());
+        assertThat(empty().distinct()).isEqualTo(empty());
     }
 
     @Test
@@ -157,7 +256,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldComputeDistinctOfEmptyTraversableUsingKeyExtractor() {
-        assertThat(nil().distinct(Function.identity())).isEqualTo(nil());
+        assertThat(empty().distinct(Function.identity())).isEqualTo(empty());
     }
 
     @Test
@@ -169,7 +268,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldDropNoneOnNil() {
-        assertThat(nil().drop(1)).isEqualTo(nil());
+        assertThat(empty().drop(1)).isEqualTo(empty());
     }
 
     @Test
@@ -184,14 +283,14 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldDropAllIfCountExceedsSize() {
-        assertThat(of(1, 2, 3).drop(4)).isEqualTo(nil());
+        assertThat(of(1, 2, 3).drop(4)).isEqualTo(empty());
     }
 
     // -- dropRight
 
     @Test
     public void shouldDropRightNoneOnNil() {
-        assertThat(nil().dropRight(1)).isEqualTo(nil());
+        assertThat(empty().dropRight(1)).isEqualTo(empty());
     }
 
     @Test
@@ -206,14 +305,14 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldDropRightAllIfCountExceedsSize() {
-        assertThat(of(1, 2, 3).dropRight(4)).isEqualTo(nil());
+        assertThat(of(1, 2, 3).dropRight(4)).isEqualTo(empty());
     }
 
     // -- dropWhile
 
     @Test
     public void shouldDropWhileNoneOnNil() {
-        assertThat(nil().dropWhile(ignored -> true)).isEqualTo(nil());
+        assertThat(empty().dropWhile(ignored -> true)).isEqualTo(empty());
     }
 
     @Test
@@ -223,7 +322,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldDropWhileAllIfPredicateIsTrue() {
-        assertThat(of(1, 2, 3).dropWhile(ignored -> true)).isEqualTo(nil());
+        assertThat(of(1, 2, 3).dropWhile(ignored -> true)).isEqualTo(empty());
     }
 
     @Test
@@ -240,7 +339,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldBeAwareOfNonExistingElement() {
-        assertThat(this.<Integer>nil().exists(i -> i == 1)).isFalse();
+        assertThat(this.<Integer>empty().exists(i -> i == 1)).isFalse();
     }
 
     // -- existsUnique
@@ -252,7 +351,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldBeAwareOfNonExistingUniqueElement() {
-        assertThat(this.<Integer>nil().existsUnique(i -> i == 1)).isFalse();
+        assertThat(this.<Integer>empty().existsUnique(i -> i == 1)).isFalse();
     }
 
     @Test
@@ -264,7 +363,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldFilterEmptyTraversable() {
-        assertThat(nil().filter(ignored -> true)).isEqualTo(nil());
+        assertThat(empty().filter(ignored -> true)).isEqualTo(empty());
     }
 
     @Test
@@ -276,7 +375,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldFindAllOfNil() {
-        assertThat(nil().findAll(ignored -> true)).isEqualTo(nil());
+        assertThat(empty().findAll(ignored -> true)).isEqualTo(empty());
     }
 
     @Test
@@ -288,7 +387,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldFindFirstOfNil() {
-        assertThat(nil().findFirst(ignored -> true)).isEqualTo(Option.none());
+        assertThat(empty().findFirst(ignored -> true)).isEqualTo(Option.none());
     }
 
     @Test
@@ -300,7 +399,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldFindLastOfNil() {
-        assertThat(nil().findLast(ignored -> true)).isEqualTo(Option.none());
+        assertThat(empty().findLast(ignored -> true)).isEqualTo(Option.none());
     }
 
     @Test
@@ -312,7 +411,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldFlatMapEmptyTraversable() {
-        assertThat(nil().flatMap(this::of)).isEqualTo(nil());
+        assertThat(empty().flatMap(this::of)).isEqualTo(empty());
     }
 
     @Test
@@ -345,9 +444,9 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public <T> void shouldFlattenEmptyTraversableGivenAFunction() {
-        final Traversable<? extends Traversable<T>> nil = nil();
+        final Traversable<? extends Traversable<T>> nil = empty();
         final Traversable<T> actual = nil.flatten(Function.identity());
-        assertThat(actual).isEqualTo(nil());
+        assertThat(actual).isEqualTo(empty());
     }
 
     @Test
@@ -369,10 +468,11 @@ public abstract class AbstractTraversableTest {
     @Test
     public void shouldFlattenTraversableOfTraversablesAndPlainElementsGivenAFunction() {
         final Traversable<?> xs = of(1, of(2, 3));
-        final Traversable<Integer> actual = xs.flatten(x -> Match
-                .when((Traversable<Integer> ys) -> ys)
-                .when((Integer i) -> of(i))
-                .apply(x));
+        final Traversable<Integer> actual = xs
+                .flatten(x -> Match
+                        .whenApplicable((Traversable<Integer> ys) -> ys).thenApply()
+                        .whenType(Integer.class).then(i -> of(i))
+                        .apply(x));
         final Traversable<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
@@ -381,8 +481,8 @@ public abstract class AbstractTraversableTest {
     public void shouldFlattenDifferentElementTypesGivenAFunction() {
         final Traversable<Object> actual = this.<Object>of(1, "2", this.<Object>of(3.1415, 1L))
                 .flatten(x -> Match
-                        .when((Traversable<Object> ys) -> ys)
-                        .when((Object i) -> of(i))
+                        .whenApplicable((Traversable<Object> ys) -> ys).thenApply()
+                        .whenType(Object.class).then(i -> of(i))
                         .apply(x));
         assertThat(actual).isEqualTo(this.<Object>of(1, "2", 3.1415, 1L));
     }
@@ -391,12 +491,12 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldFoldNil() {
-        assertThat(this.<String>nil().fold("", (a, b) -> a + b)).isEqualTo("");
+        assertThat(this.<String>empty().fold("", (a, b) -> a + b)).isEqualTo("");
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenFoldNullOperator() {
-        this.<String>nil().fold(null, null);
+        this.<String>empty().fold(null, null);
     }
 
     @Test
@@ -408,12 +508,12 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldFoldLeftNil() {
-        assertThat(this.<String>nil().foldLeft("", (xs, x) -> xs + x)).isEqualTo("");
+        assertThat(this.<String>empty().foldLeft("", (xs, x) -> xs + x)).isEqualTo("");
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenFoldLeftNullOperator() {
-        this.<String>nil().foldLeft(null, null);
+        this.<String>empty().foldLeft(null, null);
     }
 
     @Test
@@ -425,12 +525,12 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldFoldRightNil() {
-        assertThat(this.<String>nil().foldRight("", (x, xs) -> x + xs)).isEqualTo("");
+        assertThat(this.<String>empty().foldRight("", (x, xs) -> x + xs)).isEqualTo("");
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenFoldRightNullOperator() {
-        this.<String>nil().foldRight(null, null);
+        this.<String>empty().foldRight(null, null);
     }
 
     @Test
@@ -454,17 +554,17 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldGroupedNil() {
-        assertThat(nil().grouped(1)).isEqualTo(nil());
+        assertThat(empty().grouped(1)).isEqualTo(empty());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowWhenGroupedWithSizeZero() {
-        nil().grouped(0);
+        empty().grouped(0);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowWhenGroupedWithNegativeSize() {
-        nil().grouped(-1);
+        empty().grouped(-1);
     }
 
     @SuppressWarnings("unchecked")
@@ -489,7 +589,7 @@ public abstract class AbstractTraversableTest {
 
     @Test(expected = NoSuchElementException.class)
     public void shouldThrowWhenHeadOnNil() {
-        nil().head();
+        empty().head();
     }
 
     @Test
@@ -501,7 +601,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldReturnNoneWhenCallingHeadOptionOnNil() {
-        assertThat(nil().headOption().isEmpty()).isTrue();
+        assertThat(empty().headOption().isEmpty()).isTrue();
     }
 
     @Test
@@ -513,7 +613,7 @@ public abstract class AbstractTraversableTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void shouldThrowWhenInitOfNil() {
-        nil().init();
+        empty().init();
     }
 
     @Test
@@ -525,7 +625,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldReturnNoneWhenCallingInitOptionOnNil() {
-        assertThat(nil().initOption().isEmpty()).isTrue();
+        assertThat(empty().initOption().isEmpty()).isTrue();
     }
 
     @Test
@@ -537,7 +637,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldIntersperseNil() {
-        assertThat(this.<Character>nil().intersperse(',')).isEqualTo(nil());
+        assertThat(this.<Character>empty().intersperse(',')).isEqualTo(empty());
     }
 
     @Test
@@ -554,7 +654,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldRecognizeNil() {
-        assertThat(nil().isEmpty()).isTrue();
+        assertThat(empty().isEmpty()).isTrue();
     }
 
     @Test
@@ -566,12 +666,12 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldNotHasNextWhenNilIterator() {
-        assertThat(nil().iterator().hasNext()).isFalse();
+        assertThat(empty().iterator().hasNext()).isFalse();
     }
 
     @Test(expected = NoSuchElementException.class)
     public void shouldThrowOnNextWhenNilIterator() {
-        nil().iterator().next();
+        empty().iterator().next();
     }
 
     @Test
@@ -594,7 +694,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldJoinNil() {
-        assertThat(nil().join()).isEqualTo("");
+        assertThat(empty().join()).isEqualTo("");
     }
 
     @Test
@@ -606,7 +706,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldJoinWithDelimiterNil() {
-        assertThat(nil().join(",")).isEqualTo("");
+        assertThat(empty().join(",")).isEqualTo("");
     }
 
     @Test
@@ -618,7 +718,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldJoinWithDelimiterAndPrefixAndSuffixNil() {
-        assertThat(nil().join(",", "[", "]")).isEqualTo("[]");
+        assertThat(empty().join(",", "[", "]")).isEqualTo("[]");
     }
 
     @Test
@@ -630,7 +730,7 @@ public abstract class AbstractTraversableTest {
 
     @Test(expected = NoSuchElementException.class)
     public void shouldThrowWhenLastOnNil() {
-        nil().last();
+        empty().last();
     }
 
     @Test
@@ -642,7 +742,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldReturnNoneWhenCallingLastOptionOnNil() {
-        assertThat(nil().lastOption().isEmpty()).isTrue();
+        assertThat(empty().lastOption().isEmpty()).isTrue();
     }
 
     @Test
@@ -654,7 +754,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldComputeLengthOfNil() {
-        assertThat(nil().length()).isEqualTo(0);
+        assertThat(empty().length()).isEqualTo(0);
     }
 
     @Test
@@ -666,7 +766,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldMapNil() {
-        assertThat(this.<Integer>nil().map(i -> i + 1)).isEqualTo(nil());
+        assertThat(this.<Integer>empty().map(i -> i + 1)).isEqualTo(empty());
     }
 
     @Test
@@ -686,12 +786,12 @@ public abstract class AbstractTraversableTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenPartitionNilAndPredicateIsNull() {
-        nil().partition(null);
+        empty().partition(null);
     }
 
     @Test
     public void shouldPartitionNil() {
-        assertThat(nil().partition(e -> true)).isEqualTo(Tuple.of(nil(), nil()));
+        assertThat(empty().partition(e -> true)).isEqualTo(Tuple.of(empty(), empty()));
     }
 
     @Test
@@ -701,19 +801,19 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldPartitionIntsInOddAndEvenHavingOnlyOddNumbers() {
-        assertThat(of(1, 3).partition(i -> i % 2 != 0)).isEqualTo(Tuple.of(of(1, 3), nil()));
+        assertThat(of(1, 3).partition(i -> i % 2 != 0)).isEqualTo(Tuple.of(of(1, 3), empty()));
     }
 
     @Test
     public void shouldPartitionIntsInOddAndEvenHavingOnlyEvenNumbers() {
-        assertThat(of(2, 4).partition(i -> i % 2 != 0)).isEqualTo(Tuple.of(nil(), of(2, 4)));
+        assertThat(of(2, 4).partition(i -> i % 2 != 0)).isEqualTo(Tuple.of(empty(), of(2, 4)));
     }
 
     // -- max
 
     @Test
     public void shouldReturnNoneWhenComputingMaxOfNil() {
-        assertThat(nil().max()).isEqualTo(None.instance());
+        assertThat(empty().max()).isEqualTo(None.instance());
     }
 
     @Test
@@ -771,16 +871,16 @@ public abstract class AbstractTraversableTest {
         assertThat(of(BigDecimal.ZERO, BigDecimal.ONE).max()).isEqualTo(new Some<>(BigDecimal.ONE));
     }
 
-    // -- maxBy
+    // -- maxBy(Comparator)
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenMaxByWithNullComparator() {
-        of(1).maxBy(null);
+        of(1).maxBy((Comparator<Integer>) null);
     }
 
     @Test
     public void shouldThrowWhenMaxByOfNil() {
-        assertThat(nil().maxBy((o1, o2) -> 0)).isEqualTo(None.instance());
+        assertThat(empty().maxBy((o1, o2) -> 0)).isEqualTo(None.instance());
     }
 
     @Test
@@ -793,11 +893,33 @@ public abstract class AbstractTraversableTest {
         assertThat(of(1, 2, 3).maxBy((i1, i2) -> i2 - i1)).isEqualTo(new Some<>(1));
     }
 
+    // -- maxBy(Function)
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenMaxByWithNullFunction() {
+        of(1).maxBy((Function<Integer, Integer>) null);
+    }
+
+    @Test
+    public void shouldThrowWhenMaxByFunctionOfNil() {
+        assertThat(this.<Integer>empty().maxBy(i -> i)).isEqualTo(None.instance());
+    }
+
+    @Test
+    public void shouldCalculateMaxByFunctionOfInts() {
+        assertThat(of(1, 2, 3).maxBy(i -> i)).isEqualTo(new Some<>(3));
+    }
+
+    @Test
+    public void shouldCalculateInverseMaxByFunctionOfInts() {
+        assertThat(of(1, 2, 3).maxBy(i -> -i)).isEqualTo(new Some<>(1));
+    }
+
     // -- min
 
     @Test
     public void shouldReturnNoneWhenComputingMinOfNil() {
-        assertThat(nil().min()).isEqualTo(None.instance());
+        assertThat(empty().min()).isEqualTo(None.instance());
     }
 
     @Test
@@ -855,16 +977,16 @@ public abstract class AbstractTraversableTest {
         assertThat(of(BigDecimal.ZERO, BigDecimal.ONE).min()).isEqualTo(new Some<>(BigDecimal.ZERO));
     }
 
-    // -- minBy
+    // -- minBy(Comparator)
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenMinByWithNullComparator() {
-        of(1).minBy(null);
+        of(1).minBy((Comparator<Integer>) null);
     }
 
     @Test
     public void shouldThrowWhenMinByOfNil() {
-        assertThat(nil().minBy((o1, o2) -> 0)).isEqualTo(None.instance());
+        assertThat(empty().minBy((o1, o2) -> 0)).isEqualTo(None.instance());
     }
 
     @Test
@@ -877,12 +999,34 @@ public abstract class AbstractTraversableTest {
         assertThat(of(1, 2, 3).minBy((i1, i2) -> i2 - i1)).isEqualTo(new Some<>(3));
     }
 
+    // -- minBy(Function)
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenMinByWithNullFunction() {
+        of(1).minBy((Function<Integer, Integer>) null);
+    }
+
+    @Test
+    public void shouldThrowWhenMinByFunctionOfNil() {
+        assertThat(this.<Integer>empty().minBy(i -> i)).isEqualTo(None.instance());
+    }
+
+    @Test
+    public void shouldCalculateMinByFunctionOfInts() {
+        assertThat(of(1, 2, 3).minBy(i -> i)).isEqualTo(new Some<>(1));
+    }
+
+    @Test
+    public void shouldCalculateInverseMinByFunctionOfInts() {
+        assertThat(of(1, 2, 3).minBy(i -> -i)).isEqualTo(new Some<>(3));
+    }
+
     // -- peek
 
     @Test
     public void shouldPeekNil() {
-        assertThat(nil().peek(t -> {
-        })).isEqualTo(nil());
+        assertThat(empty().peek(t -> {
+        })).isEqualTo(empty());
     }
 
     @Test
@@ -893,7 +1037,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldPeekNonNilPerformingAnAction() {
-        final int[] effect = {0};
+        final int[] effect = { 0 };
         final Traversable<Integer> actual = of(1, 2, 3).peek(i -> effect[0] = i);
         assertThat(actual).isEqualTo(of(1, 2, 3)); // traverses all elements in the lazy case
         assertThat(effect[0]).isEqualTo(getPeekNonNilPerformingAnAction());
@@ -906,7 +1050,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldComputeProductOfNil() {
-        assertThat(nil().product()).isEqualTo(1);
+        assertThat(empty().product()).isEqualTo(1);
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -958,12 +1102,12 @@ public abstract class AbstractTraversableTest {
 
     @Test(expected = NoSuchElementException.class)
     public void shouldThrowWhenReduceNil() {
-        this.<String>nil().reduce((a, b) -> a + b);
+        this.<String>empty().reduce((a, b) -> a + b);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenReduceNullOperator() {
-        this.<String>nil().reduce(null);
+        this.<String>empty().reduce(null);
     }
 
     @Test
@@ -975,12 +1119,12 @@ public abstract class AbstractTraversableTest {
 
     @Test(expected = NoSuchElementException.class)
     public void shouldThrowWhenReduceLeftNil() {
-        this.<String>nil().reduceLeft((a, b) -> a + b);
+        this.<String>empty().reduceLeft((a, b) -> a + b);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenReduceLeftNullOperator() {
-        this.<String>nil().reduceLeft(null);
+        this.<String>empty().reduceLeft(null);
     }
 
     @Test
@@ -992,12 +1136,12 @@ public abstract class AbstractTraversableTest {
 
     @Test(expected = NoSuchElementException.class)
     public void shouldThrowWhenReduceRightNil() {
-        this.<String>nil().reduceRight((a, b) -> a + b);
+        this.<String>empty().reduceRight((a, b) -> a + b);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenReduceRightNullOperator() {
-        this.<String>nil().reduceRight(null);
+        this.<String>empty().reduceRight(null);
     }
 
     @Test
@@ -1009,7 +1153,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldRemoveElementFromNil() {
-        assertThat(nil().remove(null)).isEqualTo(nil());
+        assertThat(empty().remove(null)).isEqualTo(empty());
     }
 
     @Test
@@ -1036,7 +1180,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldRemoveAllElementsFromNil() {
-        assertThat(nil().removeAll(of(1, 2, 3))).isEqualTo(nil());
+        assertThat(empty().removeAll(of(1, 2, 3))).isEqualTo(empty());
     }
 
     @Test
@@ -1053,7 +1197,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldRemoveAllObjectsFromNil() {
-        assertThat(nil().removeAll(1)).isEqualTo(nil());
+        assertThat(empty().removeAll(1)).isEqualTo(empty());
     }
 
     @Test
@@ -1070,7 +1214,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldReplaceElementOfNilUsingCurrNew() {
-        assertThat(this.<Integer>nil().replace(1, 2)).isEqualTo(nil());
+        assertThat(this.<Integer>empty().replace(1, 2)).isEqualTo(empty());
     }
 
     @Test
@@ -1082,7 +1226,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldReplaceAllElementsOfNilUsingCurrNew() {
-        assertThat(this.<Integer>nil().replaceAll(1, 2)).isEqualTo(nil());
+        assertThat(this.<Integer>empty().replaceAll(1, 2)).isEqualTo(empty());
     }
 
     @Test
@@ -1094,7 +1238,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldReplaceAllElementsOfNilUsingUnaryOp() {
-        assertThat(this.<Integer>nil().replaceAll(i -> i + 1)).isEqualTo(nil());
+        assertThat(this.<Integer>empty().replaceAll(i -> i + 1)).isEqualTo(empty());
     }
 
     @Test
@@ -1106,7 +1250,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldRetainAllElementsFromNil() {
-        assertThat(nil().retainAll(of(1, 2, 3))).isEqualTo(nil());
+        assertThat(empty().retainAll(of(1, 2, 3))).isEqualTo(empty());
     }
 
     @Test
@@ -1116,14 +1260,14 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldNotRetainAllNonExistingElementsFromNonNil() {
-        assertThat(of(1, 2, 3).retainAll(of(4, 5))).isEqualTo(nil());
+        assertThat(of(1, 2, 3).retainAll(of(4, 5))).isEqualTo(empty());
     }
 
     // -- reverse
 
     @Test
     public void shouldReverseNil() {
-        assertThat(nil().reverse()).isEqualTo(nil());
+        assertThat(empty().reverse()).isEqualTo(empty());
     }
 
     @Test
@@ -1135,12 +1279,12 @@ public abstract class AbstractTraversableTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowWhenSlidingNilByZeroSize() {
-        nil().sliding(0);
+        empty().sliding(0);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowWhenSlidingNilByNegativeSize() {
-        nil().sliding(-1);
+        empty().sliding(-1);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -1155,7 +1299,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldSlideNilBySize() {
-        assertThat(nil().sliding(1)).isEqualTo(nil());
+        assertThat(empty().sliding(1)).isEqualTo(empty());
     }
 
     @SuppressWarnings("unchecked")
@@ -1174,7 +1318,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldSlideNilBySizeAndStep() {
-        assertThat(nil().sliding(1, 1)).isEqualTo(nil());
+        assertThat(empty().sliding(1, 1)).isEqualTo(empty());
     }
 
     @SuppressWarnings("unchecked")
@@ -1205,7 +1349,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldSpanNil() {
-        assertThat(this.<Integer>nil().span(i -> i < 2)).isEqualTo(Tuple.of(nil(), nil()));
+        assertThat(this.<Integer>empty().span(i -> i < 2)).isEqualTo(Tuple.of(empty(), empty()));
     }
 
     @Test
@@ -1218,7 +1362,7 @@ public abstract class AbstractTraversableTest {
     @Test
     public void shouldSplitNil() {
         final java.util.List<Integer> actual = new java.util.ArrayList<>();
-        this.<Integer>nil().spliterator().forEachRemaining(actual::add);
+        this.<Integer>empty().spliterator().forEachRemaining(actual::add);
         assertThat(actual).isEqualTo(Collections.emptyList());
     }
 
@@ -1289,7 +1433,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldComputeSumOfNil() {
-        assertThat(nil().sum()).isEqualTo(0);
+        assertThat(empty().sum()).isEqualTo(0);
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -1341,12 +1485,12 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldTakeNoneOnNil() {
-        assertThat(nil().take(1)).isEqualTo(nil());
+        assertThat(empty().take(1)).isEqualTo(empty());
     }
 
     @Test
     public void shouldTakeNoneIfCountIsNegative() {
-        assertThat(of(1, 2, 3).take(-1)).isEqualTo(nil());
+        assertThat(of(1, 2, 3).take(-1)).isEqualTo(empty());
     }
 
     @Test
@@ -1363,12 +1507,12 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldTakeRightNoneOnNil() {
-        assertThat(nil().takeRight(1)).isEqualTo(nil());
+        assertThat(empty().takeRight(1)).isEqualTo(empty());
     }
 
     @Test
     public void shouldTakeRightNoneIfCountIsNegative() {
-        assertThat(of(1, 2, 3).takeRight(-1)).isEqualTo(nil());
+        assertThat(of(1, 2, 3).takeRight(-1)).isEqualTo(empty());
     }
 
     @Test
@@ -1385,12 +1529,12 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldTakeWhileNoneOnNil() {
-        assertThat(nil().takeWhile(x -> true)).isEqualTo(nil());
+        assertThat(empty().takeWhile(x -> true)).isEqualTo(empty());
     }
 
     @Test
     public void shouldTakeWhileAllOnFalseCondition() {
-        assertThat(of(1, 2, 3).takeWhile(x -> false)).isEqualTo(nil());
+        assertThat(of(1, 2, 3).takeWhile(x -> false)).isEqualTo(empty());
     }
 
     @Test
@@ -1407,7 +1551,7 @@ public abstract class AbstractTraversableTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void shouldThrowWhenTailOnNil() {
-        nil().tail();
+        empty().tail();
     }
 
     @Test
@@ -1419,7 +1563,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldReturnNoneWhenCallingTailOptionOnNil() {
-        assertThat(nil().tailOption().isEmpty()).isTrue();
+        assertThat(empty().tailOption().isEmpty()).isTrue();
     }
 
     @Test
@@ -1431,15 +1575,15 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldConvertNilToJavaArray() {
-        final Integer[] actual = List.<Integer>nil().toJavaArray(Integer.class);
-        final Integer[] expected = new Integer[]{};
+        final Integer[] actual = List.<Integer>empty().toJavaArray(Integer.class);
+        final Integer[] expected = new Integer[] {};
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldConvertNonNilToJavaArray() {
         final Integer[] array = of(1, 2).toJavaArray(Integer.class);
-        final Integer[] expected = new Integer[]{1, 2};
+        final Integer[] expected = new Integer[] { 1, 2 };
         assertThat(array).isEqualTo(expected);
     }
 
@@ -1447,7 +1591,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldConvertNilToArrayList() {
-        assertThat(this.<Integer>nil().toJavaList()).isEqualTo(new ArrayList<Integer>());
+        assertThat(this.<Integer>empty().toJavaList()).isEqualTo(new ArrayList<Integer>());
     }
 
     @Test
@@ -1459,7 +1603,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldConvertNilToHashMap() {
-        assertThat(this.<Integer>nil().toJavaMap(x -> Tuple.of(x, x))).isEqualTo(new HashMap<>());
+        assertThat(this.<Integer>empty().toJavaMap(x -> Tuple.of(x, x))).isEqualTo(new HashMap<>());
     }
 
     @Test
@@ -1474,7 +1618,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldConvertNilToHashSet() {
-        assertThat(this.<Integer>nil().toJavaMap(x -> Tuple.of(x, x))).isEqualTo(new HashMap<>());
+        assertThat(this.<Integer>empty().toJavaMap(x -> Tuple.of(x, x))).isEqualTo(new HashMap<>());
     }
 
     @Test
@@ -1490,7 +1634,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldUnzipNil() {
-        assertThat(nil().unzip(x -> Tuple.of(x, x))).isEqualTo(Tuple.of(nil(), nil()));
+        assertThat(empty().unzip(x -> Tuple.of(x, x))).isEqualTo(Tuple.of(empty(), empty()));
     }
 
     @Test
@@ -1504,20 +1648,20 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldZipNils() {
-        final Traversable<?> actual = nil().zip(nil());
-        assertThat(actual).isEqualTo(nil());
+        final Traversable<?> actual = empty().zip(empty());
+        assertThat(actual).isEqualTo(empty());
     }
 
     @Test
     public void shouldZipEmptyAndNonNil() {
-        final Traversable<?> actual = nil().zip(of(1));
-        assertThat(actual).isEqualTo(nil());
+        final Traversable<?> actual = empty().zip(of(1));
+        assertThat(actual).isEqualTo(empty());
     }
 
     @Test
     public void shouldZipNonEmptyAndNil() {
-        final Traversable<?> actual = of(1).zip(nil());
-        assertThat(actual).isEqualTo(nil());
+        final Traversable<?> actual = of(1).zip(empty());
+        assertThat(actual).isEqualTo(empty());
     }
 
     @Test
@@ -1546,20 +1690,20 @@ public abstract class AbstractTraversableTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowIfZipWithThatIsNull() {
-        nil().zip(null);
+        empty().zip(null);
     }
 
     // -- zipAll
 
     @Test
     public void shouldZipAllNils() {
-        final Traversable<?> actual = nil().zipAll(nil(), null, null);
-        assertThat(actual).isEqualTo(nil());
+        final Traversable<?> actual = empty().zipAll(empty(), null, null);
+        assertThat(actual).isEqualTo(empty());
     }
 
     @Test
     public void shouldZipAllEmptyAndNonNil() {
-        final Traversable<?> actual = nil().zipAll(of(1), null, null);
+        final Traversable<?> actual = empty().zipAll(of(1), null, null);
         @SuppressWarnings("unchecked")
         final Traversable<Tuple2<Object, Integer>> expected = of(Tuple.of(null, 1));
         assertThat(actual).isEqualTo(expected);
@@ -1567,7 +1711,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldZipAllNonEmptyAndNil() {
-        final Traversable<?> actual = of(1).zipAll(nil(), null, null);
+        final Traversable<?> actual = of(1).zipAll(empty(), null, null);
         @SuppressWarnings("unchecked")
         final Traversable<Tuple2<Integer, Object>> expected = of(Tuple.of(1, null));
         assertThat(actual).isEqualTo(expected);
@@ -1599,14 +1743,14 @@ public abstract class AbstractTraversableTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowIfZipAllWithThatIsNull() {
-        nil().zipAll(null, null, null);
+        empty().zipAll(null, null, null);
     }
 
     // -- zipWithIndex
 
     @Test
     public void shouldZipNilWithIndex() {
-        assertThat(this.<String>nil().zipWithIndex()).isEqualTo(this.<Tuple2<String, Integer>>nil());
+        assertThat(this.<String>empty().zipWithIndex()).isEqualTo(this.<Tuple2<String, Integer>>empty());
     }
 
     @Test
@@ -1623,13 +1767,13 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldEqualSameTraversableInstance() {
-        final Traversable<?> traversable = nil();
+        final Traversable<?> traversable = empty();
         assertThat(traversable).isEqualTo(traversable);
     }
 
     @Test
     public void shouldNilNotEqualsNull() {
-        assertThat(nil()).isNotNull();
+        assertThat(empty()).isNotNull();
     }
 
     @Test
@@ -1639,7 +1783,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldEmptyNotEqualsDifferentType() {
-        assertThat(nil()).isNotEqualTo("");
+        assertThat(empty()).isNotEqualTo("");
     }
 
     @Test
@@ -1649,7 +1793,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldRecognizeEqualityOfNils() {
-        assertThat(nil()).isEqualTo(nil());
+        assertThat(empty()).isEqualTo(empty());
     }
 
     @Test
@@ -1671,7 +1815,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldCalculateHashCodeOfNil() {
-        assertThat(nil().hashCode() == nil().hashCode()).isTrue();
+        assertThat(empty().hashCode() == empty().hashCode()).isTrue();
     }
 
     @Test
@@ -1688,14 +1832,14 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldSerializeDeserializeNil() {
-        final Object actual = deserialize(serialize(nil()));
-        final Object expected = nil();
+        final Object actual = deserialize(serialize(empty()));
+        final Object expected = empty();
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldPreserveSingletonInstanceOnDeserialization() {
-        final boolean actual = deserialize(serialize(nil())) == nil();
+        final boolean actual = deserialize(serialize(empty())) == empty();
         assertThat(actual).isTrue();
     }
 

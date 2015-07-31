@@ -11,6 +11,7 @@ package javaslang;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 public class Function0Test {
@@ -50,6 +51,33 @@ public class Function0Test {
     public void shouldReverse() {
         final Function0<Object> f = () -> null;
         assertThat(f.reversed()).isNotNull();
+    }
+
+    @Test
+    public void shouldMemoize() {
+        final AtomicInteger integer = new AtomicInteger();
+        final Function0<Integer> f = () -> integer.getAndIncrement();
+        final Function0<Integer> memo = f.memoized();
+        // should apply f on first apply()
+        final int expected = memo.apply();
+        // should return memoized value of second apply()
+        assertThat(memo.apply()).isEqualTo(expected);
+
+    }
+
+    @Test
+    public void shouldNotMemoizeAlreadyMemoizedFunction() {
+        final Function0<Integer> f = () -> null;
+        final Function0<Integer> memo = f.memoized();
+        assertThat(memo.memoized() == memo).isTrue();
+    }
+
+    @Test
+    public void shouldRecognizeMemoizedFunctions() {
+        final Function0<Integer> f = () -> null;
+        final Function0<Integer> memo = f.memoized();
+        assertThat(f.isMemoized()).isFalse();
+        assertThat(memo.isMemoized()).isTrue();
     }
 
     @Test

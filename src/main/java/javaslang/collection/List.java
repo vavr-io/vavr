@@ -30,19 +30,50 @@ import java.util.stream.Collector;
  * <pre>
  * <code>
  * // factory methods
- * List.nil()              // = List.of() = Nil.instance()
- * List.of(x)              // = new Cons&lt;&gt;(x, Nil.instance())
- * List.of(Object...)      // e.g. List.of(1, 2, 3)
- * List.ofAll(Iterable)    // e.g. List.ofAll(Stream.of(1, 2, 3)) = 1, 2, 3
+ * List.empty()                  // = List.of() = Nil.instance()
+ * List.of(x)                    // = new Cons&lt;&gt;(x, Nil.instance())
+ * List.of(Object...)            // e.g. List.of(1, 2, 3)
+ * List.ofAll(Iterable)          // e.g. List.ofAll(Stream.of(1, 2, 3)) = 1, 2, 3
+ * List.ofAll(&lt;primitive array&gt;) // e.g. List.ofAll(new int[] {1, 2, 3}) = 1, 2, 3
  *
  * // int sequences
- * List.range(0, 3)        // = 0, 1, 2
- * List.rangeClosed(0, 3)  // = 0, 1, 2, 3
+ * List.range(0, 3)              // = 0, 1, 2
+ * List.rangeClosed(0, 3)        // = 0, 1, 2, 3
  * </code>
  * </pre>
  *
  * Note: A {@code List} is primary a {@code Seq} and extends {@code Stack} for technical reasons (so {@code Stack} does not need to wrap {@code List}).
- * <p>
+ *
+ *
+ * Factory method applications:
+ *
+ * <pre>
+ * <code>
+ * List&lt;Integer&gt;       s1 = List.of(1);
+ * List&lt;Integer&gt;       s2 = List.of(1, 2, 3);
+ *                     // = List.of(new Integer[] {1, 2, 3});
+ *
+ * List&lt;int[]&gt;         s3 = List.of(new int[] {1, 2, 3});
+ * List&lt;List&lt;Integer&gt;&gt; s4 = List.of(List.of(1, 2, 3));
+ *
+ * List&lt;Integer&gt;       s5 = List.ofAll(new int[] {1, 2, 3});
+ * List&lt;Integer&gt;       s6 = List.ofAll(List.of(1, 2, 3));
+ *
+ * // cuckoo's egg
+ * List&lt;Integer[]&gt;     s7 = List.&lt;Integer[]&gt; of(new Integer[] {1, 2, 3});
+ *                     //!= List.&lt;Integer[]&gt; of(1, 2, 3);
+ * </code>
+ * </pre>
+ *
+ * Example: Converting a String to digits
+ *
+ * <pre>
+ * <code>
+ * // = List(1, 2, 3)
+ * List.of("123".toCharArray()).map(c -&gt; Character.digit(c, 10))
+ * </code>
+ * </pre>
+ *
  * See Okasaki, Chris: <em>Purely Functional Data Structures</em> (p. 7 ff.). Cambridge, 2003.
  *
  * @param <T> Component type of the List
@@ -52,8 +83,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
-     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link javaslang.collection.List}
-     * .
+     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link javaslang.collection.List}s.
      *
      * @param <T> Component type of the List.
      * @return A javaslang.collection.List Collector.
@@ -78,7 +108,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
      * @param <T> Component type of Nil, determined by type inference in the particular context.
      * @return The empty list.
      */
-    static <T> List<T> nil() {
+    static <T> List<T> empty() {
         return Nil.instance();
     }
 
@@ -122,17 +152,35 @@ public interface List<T> extends Seq<T>, Stack<T> {
     /**
      * Creates a List of the given elements.
      *
+     * The resulting list has the same iteration order as the given iterable of elements
+     * if the iteration order of the elements is stable.
+     *
      * @param <T>      Component type of the List.
      * @param elements An Iterable of elements.
      * @return A list containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
+    @SuppressWarnings("unchecked")
     static <T> List<T> ofAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof List) {
-            @SuppressWarnings("unchecked")
             final List<T> list = (List<T>) elements;
             return list;
+        } else if (elements instanceof java.util.List) {
+            List<T> result = Nil.instance();
+            final java.util.List<T> list = (java.util.List<T>) elements;
+            final ListIterator<T> iterator = list.listIterator(list.size());
+            while (iterator.hasPrevious()) {
+                result = result.prepend(iterator.previous());
+            }
+            return result;
+        } else if (elements instanceof NavigableSet) {
+            List<T> result = Nil.instance();
+            final Iterator<T> iterator = ((NavigableSet<T>) elements).descendingIterator();
+            while (iterator.hasNext()) {
+                result = result.prepend(iterator.next());
+            }
+            return result;
         } else {
             List<T> result = Nil.instance();
             for (T element : elements) {
@@ -143,35 +191,411 @@ public interface List<T> extends Seq<T>, Stack<T> {
     }
 
     /**
+     * Creates a List based on the elements of a boolean array.
+     *
+     * @param array a boolean array
+     * @return A new List of Boolean values
+     */
+    static List<Boolean> ofAll(boolean[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return List.ofAll(() -> new Iterator<Boolean>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Boolean next() {
+                return array[i++];
+            }
+        });
+    }
+
+    /**
+     * Creates a List based on the elements of a byte array.
+     *
+     * @param array a byte array
+     * @return A new List of Byte values
+     */
+    static List<Byte> ofAll(byte[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return List.ofAll(() -> new Iterator<Byte>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Byte next() {
+                return array[i++];
+            }
+        });
+    }
+
+    /**
+     * Creates a List based on the elements of a char array.
+     *
+     * @param array a char array
+     * @return A new List of Character values
+     */
+    static List<Character> ofAll(char[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return List.ofAll(() -> new Iterator<Character>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Character next() {
+                return array[i++];
+            }
+        });
+    }
+
+    /**
+     * Creates a List based on the elements of a double array.
+     *
+     * @param array a double array
+     * @return A new List of Double values
+     */
+    static List<Double> ofAll(double[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return List.ofAll(() -> new Iterator<Double>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Double next() {
+                return array[i++];
+            }
+        });
+    }
+
+    /**
+     * Creates a List based on the elements of a float array.
+     *
+     * @param array a float array
+     * @return A new List of Float values
+     */
+    static List<Float> ofAll(float[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return List.ofAll(() -> new Iterator<Float>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Float next() {
+                return array[i++];
+            }
+        });
+    }
+
+    /**
+     * Creates a List based on the elements of an int array.
+     *
+     * @param array an int array
+     * @return A new List of Integer values
+     */
+    static List<Integer> ofAll(int[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return List.ofAll(() -> new Iterator<Integer>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Integer next() {
+                return array[i++];
+            }
+        });
+    }
+
+    /**
+     * Creates a List based on the elements of a long array.
+     *
+     * @param array a long array
+     * @return A new List of Long values
+     */
+    static List<Long> ofAll(long[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return List.ofAll(() -> new Iterator<Long>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Long next() {
+                return array[i++];
+            }
+        });
+    }
+
+    /**
+     * Creates a List based on the elements of a short array.
+     *
+     * @param array a short array
+     * @return A new List of Short values
+     */
+    static List<Short> ofAll(short[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return List.ofAll(() -> new Iterator<Short>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Short next() {
+                return array[i++];
+            }
+        });
+    }
+
+    /**
      * Creates a List of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.range(0, 0)  // = List()
+     * List.range(2, 0)  // = List()
+     * List.range(-2, 2) // = List(-2, -1, 0, 1)
+     * </code>
+     * </pre>
      *
      * @param from        the first number
      * @param toExclusive the last number + 1
-     * @return a range of int values as specified or {@code Nil} if {@code from >= toExclusive}
+     * @return a range of int values as specified or the empty range if {@code from >= toExclusive}
      */
     static List<Integer> range(int from, int toExclusive) {
-        if (from >= toExclusive) {
-            return Nil.instance();
+        return List.rangeBy(from, toExclusive, 1);
+    }
+
+    /**
+     * Creates a List of int numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.rangeBy(1, 3, 1)  // = List(1, 2)
+     * List.rangeBy(1, 4, 2)  // = List(1, 3)
+     * List.rangeBy(4, 1, -2) // = List(4, 2)
+     * List.rangeBy(4, 1, 2)  // = List()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @param step        the step
+     * @return a range of long values as specified or the empty range if<br>
+     * {@code from >= toInclusive} and {@code step > 0} or<br>
+     * {@code from <= toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    static List<Integer> rangeBy(int from, int toExclusive, int step) {
+        if (step == 0) {
+            throw new IllegalArgumentException("step cannot be 0");
+        } else if (from == toExclusive || step * (from - toExclusive) > 0) {
+            return List.empty();
         } else {
-            return List.rangeClosed(from, toExclusive - 1);
+            final int one = (from < toExclusive) ? 1 : -1;
+            return List.rangeClosedBy(from, toExclusive - one, step);
+        }
+    }
+
+    /**
+     * Creates a List of long numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.range(0L, 0L)  // = List()
+     * List.range(2L, 0L)  // = List()
+     * List.range(-2L, 2L) // = List(-2L, -1L, 0L, 1L)
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @return a range of long values as specified or the empty range if {@code from >= toExclusive}
+     */
+    static List<Long> range(long from, long toExclusive) {
+        return List.rangeBy(from, toExclusive, 1);
+    }
+
+    /**
+     * Creates a List of long numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.rangeBy(1L, 3L, 1L)  // = List(1L, 2L)
+     * List.rangeBy(1L, 4L, 2L)  // = List(1L, 3L)
+     * List.rangeBy(4L, 1L, -2L) // = List(4L, 2L)
+     * List.rangeBy(4L, 1L, 2L)  // = List()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @param step        the step
+     * @return a range of long values as specified or the empty range if<br>
+     * {@code from >= toInclusive} and {@code step > 0} or<br>
+     * {@code from <= toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    static List<Long> rangeBy(long from, long toExclusive, long step) {
+        if (step == 0) {
+            throw new IllegalArgumentException("step cannot be 0");
+        } else if (from == toExclusive || step * (from - toExclusive) > 0) {
+            return List.empty();
+        } else {
+            final int one = (from < toExclusive) ? 1 : -1;
+            return List.rangeClosedBy(from, toExclusive - one, step);
         }
     }
 
     /**
      * Creates a List of int numbers starting from {@code from}, extending to {@code toInclusive}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.rangeClosed(0, 0)  // = List(0)
+     * List.rangeClosed(2, 0)  // = List()
+     * List.rangeClosed(-2, 2) // = List(-2, -1, 0, 1, 2)
+     * </code>
+     * </pre>
      *
      * @param from        the first number
      * @param toInclusive the last number
-     * @return a range of int values as specified or {@code Nil} if {@code from > toInclusive}
+     * @return a range of int values as specified or the empty range if {@code from > toInclusive}
      */
     static List<Integer> rangeClosed(int from, int toInclusive) {
-        if (from > toInclusive) {
-            return Nil.instance();
-        } else if (toInclusive == Integer.MIN_VALUE) {
-            return List.of(Integer.MIN_VALUE);
+        return List.rangeClosedBy(from, toInclusive, 1);
+    }
+
+    /**
+     * Creates a List of int numbers starting from {@code from}, extending to {@code toInclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.rangeClosedBy(1, 3, 1)  // = List(1, 2, 3)
+     * List.rangeClosedBy(1, 4, 2)  // = List(1, 3)
+     * List.rangeClosedBy(4, 1, -2) // = List(4, 2)
+     * List.rangeClosedBy(4, 1, 2)  // = List()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @param step        the step
+     * @return a range of int values as specified or the empty range if<br>
+     * {@code from > toInclusive} and {@code step > 0} or<br>
+     * {@code from < toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    static List<Integer> rangeClosedBy(int from, int toInclusive, int step) {
+        if (step == 0) {
+            throw new IllegalArgumentException("step cannot be 0");
+        } else if (from == toInclusive) {
+            return List.of(from);
+        } else if (step * (from - toInclusive) > 0) {
+            return List.empty();
         } else {
-            List<Integer> result = Nil.instance();
-            for (int i = toInclusive; i >= from; i--) {
+            final int gap = (from - toInclusive) % step;
+            final int signum = (from < toInclusive) ? -1 : 1;
+            final int bound = from * signum;
+            List<Integer> result = List.empty();
+            for (int i = toInclusive + gap; i * signum <= bound; i -= step) {
+                result = result.prepend(i);
+            }
+            return result;
+        }
+    }
+
+    /**
+     * Creates a List of long numbers starting from {@code from}, extending to {@code toInclusive}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.rangeClosed(0L, 0L)  // = List(0L)
+     * List.rangeClosed(2L, 0L)  // = List()
+     * List.rangeClosed(-2L, 2L) // = List(-2L, -1L, 0L, 1L, 2L)
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @return a range of long values as specified or the empty range if {@code from > toInclusive}
+     */
+    static List<Long> rangeClosed(long from, long toInclusive) {
+        return List.rangeClosedBy(from, toInclusive, 1L);
+    }
+
+    /**
+     * Creates a List of long numbers starting from {@code from}, extending to {@code toInclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.rangeClosedBy(1L, 3L, 1L)  // = List(1L, 2L, 3L)
+     * List.rangeClosedBy(1L, 4L, 2L)  // = List(1L, 3L)
+     * List.rangeClosedBy(4L, 1L, -2L) // = List(4L, 2L)
+     * List.rangeClosedBy(4L, 1L, 2L)  // = List()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @param step        the step
+     * @return a range of int values as specified or the empty range if<br>
+     * {@code from > toInclusive} and {@code step > 0} or<br>
+     * {@code from < toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    static List<Long> rangeClosedBy(long from, long toInclusive, long step) {
+        if (step == 0) {
+            throw new IllegalArgumentException("step cannot be 0");
+        } else if (from == toInclusive) {
+            return List.of(from);
+        } else if (step * (from - toInclusive) > 0) {
+            return List.empty();
+        } else {
+            final long gap = (from - toInclusive) % step;
+            final int signum = (from < toInclusive) ? -1 : 1;
+            final long bound = from * signum;
+            List<Long> result = List.empty();
+            for (long i = toInclusive + gap; i * signum <= bound; i -= step) {
                 result = result.prepend(i);
             }
             return result;
@@ -190,6 +614,18 @@ public interface List<T> extends Seq<T>, Stack<T> {
     }
 
     @Override
+    default List<Tuple2<T, T>> cartesianProduct() {
+        return cartesianProduct(this);
+    }
+
+    @Override
+    default <U> List<Tuple2<T, U>> cartesianProduct(Iterable<? extends U> that) {
+        Objects.requireNonNull(that, "that is null");
+        final List<? extends U> other = List.ofAll(that);
+        return flatMap(a -> other.map(b -> Tuple.of(a, b)));
+    }
+
+    @Override
     default List<T> clear() {
         return Nil.instance();
     }
@@ -204,7 +640,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
         class Recursion {
             List<List<T>> combinations(List<T> elements, int k) {
                 return (k == 0)
-                        ? List.of(List.nil())
+                        ? List.of(List.empty())
                         : elements.zipWithIndex().flatMap(t -> combinations(elements.drop(t._2 + 1), (k - 1))
                         .map((List<T> c) -> c.prepend(t._1)));
             }
@@ -251,7 +687,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
     @Override
     default List<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return isEmpty() ? this : foldLeft(List.<T>nil(), (xs, x) -> predicate.test(x) ? xs.prepend(x) : xs).reverse();
+        return isEmpty() ? this : foldLeft(List.<T>empty(), (xs, x) -> predicate.test(x) ? xs.prepend(x) : xs).reverse();
     }
 
     @Override
@@ -261,12 +697,12 @@ public interface List<T> extends Seq<T>, Stack<T> {
     }
 
     @Override
-    default <U> List<U> flatMap(Function<? super T, ? extends Iterable<U>> mapper) {
+    default <U> List<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
-            return nil();
+            return empty();
         } else {
-            List<U> list = nil();
+            List<U> list = empty();
             for (T t : this) {
                 for (U u : mapper.apply(t)) {
                     list = list.prepend(u);
@@ -299,9 +735,9 @@ public interface List<T> extends Seq<T>, Stack<T> {
      * @throws NullPointerException if {@code f} is null
      */
     @Override
-    default <U> List<U> flatten(Function<? super T, ? extends Iterable<U>> f) {
+    default <U> List<U> flatten(Function<? super T, ? extends Iterable<? extends U>> f) {
         Objects.requireNonNull(f, "f is null");
-        return isEmpty() ? Nil.instance() : foldRight(nil(), (t, xs) -> xs.prependAll(f.apply(t)));
+        return isEmpty() ? Nil.instance() : foldRight(empty(), (t, xs) -> xs.prependAll(f.apply(t)));
     }
 
     @Override
@@ -399,7 +835,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
 
     @Override
     default List<T> intersperse(T element) {
-        return isEmpty() ? Nil.instance() : foldRight(nil(), (x, xs) -> xs.isEmpty() ? xs.prepend(x) : xs.prepend(element).prepend(x));
+        return isEmpty() ? Nil.instance() : foldRight(empty(), (x, xs) -> xs.isEmpty() ? xs.prepend(x) : xs.prepend(element).prepend(x));
     }
 
     @Override
@@ -416,7 +852,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
     @Override
     default <U> List<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        List<U> list = nil();
+        List<U> list = empty();
         for (T t : this) {
             list = list.prepend(mapper.apply(t));
         }
@@ -426,7 +862,11 @@ public interface List<T> extends Seq<T>, Stack<T> {
     @Override
     default Tuple2<List<T>, List<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return Tuple.of(filter(predicate), filter(predicate.negate()));
+        final java.util.List<T> left = new ArrayList<>(), right = new ArrayList<>();
+        for (T t : this) {
+            (predicate.test(t) ? left : right).add(t);
+        }
+        return Tuple.of(List.ofAll(left), List.ofAll(right));
     }
 
     @Override
@@ -618,7 +1058,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
 
     @Override
     default List<T> reverse() {
-        return isEmpty() ? this : foldLeft(nil(), List::prepend);
+        return isEmpty() ? this : foldLeft(empty(), List::prepend);
     }
 
     @Override
@@ -692,7 +1132,6 @@ public interface List<T> extends Seq<T>, Stack<T> {
 
     @Override
     default Spliterator<T> spliterator() {
-        // the focus of the Stream API is on random-access collections of *known size*
         return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
     }
 
@@ -760,6 +1199,11 @@ public interface List<T> extends Seq<T>, Stack<T> {
             result = result.prepend(list.head());
         }
         return result.reverse();
+    }
+
+    @Override
+    default List<T> cons(Iterable<? extends T> iterable) {
+        return List.ofAll(iterable);
     }
 
     @Override
@@ -833,7 +1277,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
          * @param head The head
          * @param tail The tail
          */
-        Cons(T head, List<T> tail) {
+        public Cons(T head, List<T> tail) {
             this.head = head;
             this.tail = tail;
         }
@@ -1021,6 +1465,11 @@ public interface List<T> extends Seq<T>, Stack<T> {
         @SuppressWarnings("unchecked")
         public static <T> Nil<T> instance() {
             return (Nil<T>) INSTANCE;
+        }
+
+        @Override
+        public boolean containsSlice(Iterable<? extends T> that) {
+            return !that.iterator().hasNext();
         }
 
         @Override

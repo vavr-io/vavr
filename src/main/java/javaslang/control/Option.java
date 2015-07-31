@@ -5,6 +5,7 @@
  */
 package javaslang.control;
 
+import javaslang.Value;
 import javaslang.collection.TraversableOnce;
 
 import java.util.Collections;
@@ -32,7 +33,7 @@ import java.util.function.Supplier;
  * @param <T> The type of the optional value.
  * @since 1.0.0
  */
-public interface Option<T> extends TraversableOnce<T> {
+public interface Option<T> extends TraversableOnce<T>, Value<T> {
 
     /**
      * Creates a new Option of a given value.
@@ -148,18 +149,18 @@ public interface Option<T> extends TraversableOnce<T> {
      * </code>
      * </pre>
      *
-     * @param <U>      component type of the result {@code Option}
-     * @param f        a function which maps elements of this {@code Option} to {@code Option}s
+     * @param <U> component type of the result {@code Option}
+     * @param f   a function which maps elements of this {@code Option} to {@code Option}s
      * @return a new {@code Option}
      * @throws NullPointerException if {@code f} is null
      */
     @SuppressWarnings("unchecked")
-    default <U> Option<U> flatten(Function<? super T, ? extends Option<U>> f) {
+    default <U> Option<U> flatten(Function<? super T, ? extends Option<? extends U>> f) {
         Objects.requireNonNull(f, "f is null");
         if (isEmpty()) {
             return None.instance();
         } else {
-            return f.apply(get());
+            return (Option<U>) f.apply(get());
         }
     }
 
@@ -187,12 +188,13 @@ public interface Option<T> extends TraversableOnce<T> {
      * @param <U>    Component type of the resulting Option
      * @return a new {@code Option}
      */
-    default <U> Option<U> flatMap(Function<? super T, ? extends Option<U>> mapper) {
+    @SuppressWarnings("unchecked")
+    default <U> Option<U> flatMap(Function<? super T, ? extends Option<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return None.instance();
         } else {
-            return mapper.apply(get());
+            return (Option<U>) mapper.apply(get());
         }
     }
 
@@ -205,10 +207,10 @@ public interface Option<T> extends TraversableOnce<T> {
 
     @Override
     default Iterator<T> iterator() {
-        if (isDefined()) {
-            return Collections.singleton(get()).iterator();
-        } else {
+        if (isEmpty()) {
             return Collections.emptyIterator();
+        } else {
+            return Collections.singleton(get()).iterator();
         }
     }
 

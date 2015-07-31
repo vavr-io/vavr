@@ -6,6 +6,8 @@
 package javaslang;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -23,9 +25,18 @@ import java.util.function.Supplier;
  * </code>
  * </pre>
  *
+ * Since 2.0.0 you may also create <em>real</em> lazy value (works only with interfaces):
+ *
+ * <pre>
+ * <code>
+ * final CharSequence chars = Lazy.of(() -&gt; "Yay!", CharSequence.class);
+ *
+ * </code>
+ * </pre>
+ *
  * @since 1.2.1
  */
-public final class Lazy<T> implements Supplier<T>, Serializable {
+public final class Lazy<T> implements Supplier<T>, Value<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -45,17 +56,51 @@ public final class Lazy<T> implements Supplier<T>, Serializable {
      * @param supplier A supplier
      * @return A new instance of Lazy
      */
+    @SuppressWarnings("unchecked")
     public static <T> Lazy<T> of(Supplier<? extends T> supplier) {
-        return new Lazy<>(supplier);
+        if (supplier instanceof Lazy) {
+            return (Lazy<T>) supplier;
+        } else {
+            return new Lazy<>(supplier);
+        }
     }
 
     /**
-     * Returns whether this lazy value was already evaluated.
+     * Creates a real _lazy value_ of type {@code T}, backed by a {@linkplain java.lang.reflect.Proxy} which delegates
+     * to a {@code Lazy} instance.
      *
-     * @return true, if this lazy value is evaluated, false otherwise
+     * @param supplier A supplier
+     * @param type     An interface
+     * @param <T>      type of the lazy value
+     * @return A new instance of T
      */
-    public boolean isDefined() {
+    @SuppressWarnings("unchecked")
+    public static <T> T asVal(Supplier<? extends T> supplier, Class<T> type) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        Objects.requireNonNull(type, "type is null");
+        if (!type.isInterface()) {
+            throw new IllegalArgumentException("type has to be an interface");
+        }
+        final Lazy<T> lazy = Lazy.of(supplier);
+        final InvocationHandler handler = (proxy, method, args) -> method.invoke(lazy.get(), args);
+        return (T) Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] { type }, handler);
+    }
+
+    public boolean isEvaluated() {
         return supplier == null;
+    }
+
+    /**
+     * Returns {@code false} because a present value cannot be empty, even if it is lazy.
+     * <p>
+     * This implies that {@link #get()} will always succeed, i.e.{@link #orElse(Object)} et.al. will not return an
+     * alternate value.
+     *
+     * @return false
+     */
+    @Override
+    public boolean isEmpty() {
+        return false;
     }
 
     /**
@@ -66,9 +111,9 @@ public final class Lazy<T> implements Supplier<T>, Serializable {
      */
     @Override
     public T get() {
-        if (!isDefined()) {
+        if (!isEvaluated()) {
             synchronized (this) {
-                if (!isDefined()) {
+                if (!isEvaluated()) {
                     value = supplier.get();
                     supplier = null; // free mem
                 }
@@ -89,6 +134,6 @@ public final class Lazy<T> implements Supplier<T>, Serializable {
 
     @Override
     public String toString() {
-        return String.format("Lazy(%s)", isDefined() ? value : "?");
+        return String.format("Lazy(%s)", !isEvaluated() ? "?" : value);
     }
 }

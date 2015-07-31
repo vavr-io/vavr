@@ -44,7 +44,8 @@ public class TypeConsistencyTest {
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.map(java.util.function.Function)",
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.peek(java.util.function.Consumer)",
             "javaslang.control.Success//public default javaslang.control.Try javaslang.control.Try.andThen(javaslang.control.Try$CheckedRunnable)",
-            "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.andThen(javaslang.CheckedFunction1)",
+            "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.andThen(javaslang.control.Try$CheckedConsumer)",
+            "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.mapTry(javaslang.CheckedFunction1)",
 
             // control.None
             "javaslang.control.None//public default javaslang.control.Option javaslang.control.Option.filter(java.util.function.Predicate)",
@@ -74,7 +75,7 @@ public class TypeConsistencyTest {
                 .filter(c -> {
                     final String name = c.getName();
                     return !name.startsWith("javaslang.Function") && !name.startsWith("javaslang.CheckedFunction") &&
-                           !name.startsWith("javaslang.Consumer") && !name.startsWith("javaslang.CheckedConsumer");
+                            !name.startsWith("javaslang.Consumer") && !name.startsWith("javaslang.CheckedConsumer");
                 });
         final Stream<String> msgs = classes
                 .map(clazz -> Tuple.of(clazz, getUnoverriddenMethods(clazz)))
@@ -97,7 +98,7 @@ public class TypeConsistencyTest {
                 .append(clazz.getSuperclass())
                 .filter(c -> c != null);
         if (superClasses.isEmpty()) {
-            return Stream.nil();
+            return Stream.empty();
         } else {
             final Stream<ComparableMethod> superMethods = getOverridableMethods(superClasses).filter(comparableMethod ->
                     // We're interested in methods that should be overridden with actual type as return type.

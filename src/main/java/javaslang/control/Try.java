@@ -6,12 +6,12 @@
 package javaslang.control;
 
 import javaslang.CheckedFunction1;
+import javaslang.Value;
 import javaslang.collection.TraversableOnce;
 
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -21,7 +21,7 @@ import java.util.function.Predicate;
  *
  * @param <T> Value type in the case of success.
  */
-public interface Try<T> extends TraversableOnce<T> {
+public interface Try<T> extends TraversableOnce<T>, Value<T> {
 
     /**
      * Creates a Try of a CheckedSupplier.
@@ -69,10 +69,6 @@ public interface Try<T> extends TraversableOnce<T> {
      */
     boolean isSuccess();
 
-    T get();
-
-    T orElse(T other);
-
     T orElseGet(Function<? super Throwable, ? extends T> other);
 
     void orElseRun(Consumer<? super Throwable> action);
@@ -115,11 +111,7 @@ public interface Try<T> extends TraversableOnce<T> {
      */
     Try<T> onFailure(Consumer<Throwable> f);
 
-    Option<T> toOption();
-
     Either<Throwable, T> toEither();
-
-    Optional<T> toJavaOptional();
 
     /**
      * <p>Returns {@code this} if this is a Failure or this is a Success and the value satisfies the predicate.</p>
@@ -153,13 +145,13 @@ public interface Try<T> extends TraversableOnce<T> {
      * @throws NullPointerException if {@code f} is null
      */
     @SuppressWarnings("unchecked")
-    default <U> Try<U> flatten(Function<? super T, ? extends Try<U>> f) {
+    default <U> Try<U> flatten(Function<? super T, ? extends Try<? extends U>> f) {
         Objects.requireNonNull(f, "f is null");
         if (isFailure()) {
             return (Failure<U>) this;
         } else {
             try {
-                return f.apply(get());
+                return (Try<U>) f.apply(get());
             } catch (Throwable t) {
                 return new Failure<>(t);
             }
@@ -177,11 +169,32 @@ public interface Try<T> extends TraversableOnce<T> {
     /**
      * Maps the value of a Success or returns a Failure.
      *
-     * @param mapper A mapper
      * @param <U>    The new component type
+     * @param mapper A mapper
      * @return a new Try
      */
     <U> Try<U> map(Function<? super T, ? extends U> mapper);
+
+    /**
+     * Runs the given checked function if this is a {@code Success},
+     * passing the result of the current expression to it.
+     * If this expression is a {@code Failure} then it'll return a new
+     * {@code Failure} of type R with the original exception.
+     *
+     * The main use case is chaining checked functions using method references:
+     *
+     * <pre>
+     * <code>
+     * Try.of(() -&gt; 0)
+     *    .mapTry(x -&gt; 1 / x); // division by zero
+     * </code>
+     * </pre>
+     *
+     * @param <U> The new component type
+     * @param f   A checked function taking a single argument.
+     * @return a new {@code Try}
+     */
+    <U> Try<U> mapTry(CheckedFunction1<? super T, ? extends U> f);
 
     /**
      * FlatMaps the value of a Success or returns a Failure.
@@ -190,7 +203,7 @@ public interface Try<T> extends TraversableOnce<T> {
      * @param <U>    The new component type
      * @return a new Try
      */
-    <U> Try<U> flatMap(Function<? super T, ? extends Try<U>> mapper);
+    <U> Try<U> flatMap(Function<? super T, ? extends Try<? extends U>> mapper);
 
     @Override
     default Iterator<T> iterator() {
@@ -236,26 +249,25 @@ public interface Try<T> extends TraversableOnce<T> {
     }
 
     /**
-     * Runs the given checked function if this is a {@code Success},
+     * Runs the given checked consumer if this is a {@code Success},
      * passing the result of the current expression to it.
      * If this expression is a {@code Failure} then it'll return a new
-     * {@code Failure} of type R with the original exception.
+     * {@code Failure} of type T with the original exception.
      *
      * The main use case is chaining checked functions using method references:
      *
      * <pre>
      * <code>
      * Try.of(() -&gt; 100)
-     *    .andThen(x -&gt; x + 100)
-     *    .andThen(x -&gt; x * 20);
+     *    .andThen(i -&gt; System.out.println(i));
      *
      * </code>
      * </pre>
      *
-     * @param f A checked function taking a single argument.
+     * @param consumer A checked consumer taking a single argument.
      * @return a new {@code Try}
      */
-    <R> Try<R> andThen(CheckedFunction1<T, R> f);
+    Try<T> andThen(CheckedConsumer<? super T> consumer);
 
     @Override
     boolean equals(Object o);
@@ -278,6 +290,23 @@ public interface Try<T> extends TraversableOnce<T> {
          * @throws Throwable if an error occurs
          */
         void run() throws Throwable;
+    }
+
+    /**
+     * A {@linkplain java.util.function.Consumer} which may throw.
+     *
+     * @param <T> the type of value supplied to this consumer.
+     */
+    @FunctionalInterface
+    interface CheckedConsumer<T> {
+
+        /**
+         * Performs side-effects.
+         *
+         * @param value a value
+         * @throws Throwable if an error occurs
+         */
+        void accept(T value) throws Throwable;
     }
 
     /**

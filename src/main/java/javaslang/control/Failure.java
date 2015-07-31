@@ -144,14 +144,20 @@ public final class Failure<T> implements Try<T>, Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    public <U> Failure<U> flatMap(Function<? super T, ? extends Try<U>> mapper) {
+    @Override
+    public <U> Failure<U> mapTry(CheckedFunction1<? super T, ? extends U> f) {
+        return (Failure<U>) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <U> Failure<U> flatMap(Function<? super T, ? extends Try<? extends U>> mapper) {
         return (Failure<U>) this;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <R> Failure<R> andThen(CheckedFunction1<T, R> f) {
-        return (Failure<R>) this;
+    public Failure<T> andThen(CheckedConsumer<? super T> f) {
+        return this;
     }
 
     @Override

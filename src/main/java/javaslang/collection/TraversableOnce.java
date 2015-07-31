@@ -13,7 +13,7 @@ import java.util.function.Predicate;
  * Interface to reduce code duplication of Iterables and Traversables.
  *
  * @param <T> element type of Iterable
- * @since 1.3.0
+ * @since 2.0.0
  */
 public interface TraversableOnce<T> extends Iterable<T> {
 
@@ -88,18 +88,38 @@ public interface TraversableOnce<T> extends Iterable<T> {
         }
     }
 
+    /**
+     * Converts this TraversableOnce to a List.
+     *
+     * @return A List of all of this elements.
+     */
     default List<T> toList() {
         return List.ofAll(this);
     }
 
+    /**
+     * Converts this TraversableOnce to a Queue.
+     *
+     * @return A Queue of all of this elements.
+     */
     default Queue<T> toQueue() {
         return Queue.ofAll(this);
     }
 
+    /**
+     * Converts this TraversableOnce to a Stream.
+     *
+     * @return A Stream of all of this elements.
+     */
     default Stream<T> toStream() {
         return Stream.ofAll(this);
     }
 
+    /**
+     * Converts this TraversableOnce to a Stack.
+     *
+     * @return A Stack of all of this elements.
+     */
     default Stack<T> toStack() {
         return Stack.ofAll(this);
     }

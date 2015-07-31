@@ -228,7 +228,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * <code>
      * List.of(1, 2).substring(0) = List.of(1, 2)
      * List.of(1, 2).substring(1) = List.of(2)
-     * List.of(1, 2).substring(2) = List.nil()
+     * List.of(1, 2).substring(2) = List.empty()
      * </code>
      * </pre>
      *
@@ -247,7 +247,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * <code>
      * List.of(1, 2, 3, 4).substring(1, 3) = List.of(2, 3)
      * List.of(1, 2, 3, 4).substring(0, 4) = List.of(1, 2, 3, 4)
-     * List.of(1, 2, 3, 4).substring(2, 2) = List.nil()
+     * List.of(1, 2, 3, 4).substring(2, 2) = List.empty()
      * </code>
      * </pre>
      *
@@ -267,6 +267,12 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
 
     @Override
     Seq<T> clear();
+
+    @Override
+    Seq<Tuple2<T, T>> cartesianProduct();
+
+    @Override
+    <U> Seq<Tuple2<T, U>> cartesianProduct(Iterable<? extends U> that);
 
     @Override
     Seq<? extends Seq<T>> combinations();
@@ -296,10 +302,10 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     Seq<T> findAll(Predicate<? super T> predicate);
 
     @Override
-    <U> Seq<U> flatMap(Function<? super T, ? extends Iterable<U>> mapper);
+    <U> Seq<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
-    <U> Seq<U> flatten(Function<? super T, ? extends Iterable<U>> f);
+    <U> Seq<U> flatten(Function<? super T, ? extends Iterable<? extends U>> f);
 
     @Override
     Seq<? extends Seq<T>> grouped(int size);
@@ -369,6 +375,9 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
 
     @Override
     Seq<T> takeWhile(Predicate<? super T> predicate);
+
+    @Override
+    Seq<T> cons(Iterable<? extends T> iterable);
 
     @Override
     <T1, T2> Tuple2<? extends Seq<T1>, ? extends Seq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);

@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import java.io.Serializable;
 import java.lang.invoke.MethodType;
+import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -48,7 +49,7 @@ public class FunctionsTest {
     public void shouldEnsureThatCheckedFunction0ImplementsTheFunctionInterface() {
         final CheckedFunction0<Integer> x0 = () -> 1;
         assertThat(Try.of(x0::apply).get()).isEqualTo(1);
-        assertThat(x0.andThen(i -> i + 1).getType().toString()).isEqualTo("(CheckedFunction1)Object");
+        assertThat(x0.andThen(i -> i + 1).getType().toString()).isEqualTo("()Object");
         assertThat(x0.arity()).isEqualTo(0);
         assertThat(x0.curried().getType().toString()).isEqualTo("()Integer");
         assertThat(x0.tupled().getType().toString()).isEqualTo("(Tuple0)Object");
@@ -93,7 +94,7 @@ public class FunctionsTest {
     public void shouldEnsureThatCheckedFunction1ImplementsTheFunctionInterface() {
         final CheckedFunction1<Integer, Integer> x1 = i -> i + 1;
         assertThat(Try.of(() -> x1.apply(1)).get()).isEqualTo(2);
-        assertThat(x1.andThen(i -> i + 1).getType().toString()).isEqualTo("(CheckedFunction1,Object)Object");
+        assertThat(x1.andThen(i -> i + 1).getType().toString()).isEqualTo("(Object)Object");
         assertThat(x1.arity()).isEqualTo(1);
         assertThat(x1.curried().getType().toString()).isEqualTo("(Integer)Integer");
         assertThat(x1.tupled().getType().toString()).isEqualTo("(Tuple1)Object");
@@ -149,7 +150,7 @@ public class FunctionsTest {
     public void shouldEnsureThatCheckedFunction2ImplementsTheFunctionInterface() {
         final CheckedFunction2<Integer, Integer, Integer> x2 = (i, j) -> i + j;
         assertThat(Try.of(() -> x2.apply(1, 1)).get()).isEqualTo(2);
-        assertThat(x2.andThen(i -> i + 1).getType().toString()).isEqualTo("(CheckedFunction1,Object,Object)Object");
+        assertThat(x2.andThen(i -> i + 1).getType().toString()).isEqualTo("(Object,Object)Object");
         assertThat(x2.arity()).isEqualTo(2);
         assertThat(x2.curried().getType().toString()).isEqualTo("(Object)CheckedFunction1");
         assertThat(x2.tupled().getType().toString()).isEqualTo("(Tuple2)Object");
@@ -189,7 +190,7 @@ public class FunctionsTest {
     public void shouldEnsureThatCheckedFunction3ImplementsTheFunctionInterface() {
         final CheckedFunction3<Integer, Integer, Integer, Integer> x3 = (i1, i2, i3) -> i1 + i2 + i3;
         assertThat(Try.of(() -> x3.apply(1, 1, 1)).get()).isEqualTo(3);
-        assertThat(x3.andThen(i -> i + 1).getType().toString()).isEqualTo("(CheckedFunction1,Object,Object,Object)Object");
+        assertThat(x3.andThen(i -> i + 1).getType().toString()).isEqualTo("(Object,Object,Object)Object");
         assertThat(x3.arity()).isEqualTo(3);
         assertThat(x3.curried().getType().toString()).isEqualTo("(Object)CheckedFunction1");
         assertThat(x3.tupled().getType().toString()).isEqualTo("(Tuple3)Object");
@@ -229,7 +230,7 @@ public class FunctionsTest {
     public void shouldEnsureThatCheckedFunction4ImplementsTheFunctionInterface() {
         final CheckedFunction4<Integer, Integer, Integer, Integer, Integer> x = (i1, i2, i3, i4) -> i1 + i2 + i3 + i4;
         assertThat(Try.of(() -> x.apply(1, 1, 1, 1)).get()).isEqualTo(4);
-        assertThat(x.andThen(i -> i + 1).getType().toString()).isEqualTo("(CheckedFunction1,Object,Object,Object,Object)Object");
+        assertThat(x.andThen(i -> i + 1).getType().toString()).isEqualTo("(Object,Object,Object,Object)Object");
         assertThat(x.arity()).isEqualTo(4);
         assertThat(x.curried().getType().toString()).isEqualTo("(Object)CheckedFunction1");
         assertThat(x.tupled().getType().toString()).isEqualTo("(Tuple4)Object");
@@ -270,7 +271,7 @@ public class FunctionsTest {
     public void shouldEnsureThatCheckedFunction5ImplementsTheFunctionInterface() {
         final CheckedFunction5<Integer, Integer, Integer, Integer, Integer, Integer> x = (i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5;
         assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1)).get()).isEqualTo(5);
-        assertThat(x.andThen(i -> i + 1).getType().toString()).isEqualTo("(CheckedFunction1,Object,Object,Object,Object,Object)Object");
+        assertThat(x.andThen(i -> i + 1).getType().toString()).isEqualTo("(Object,Object,Object,Object,Object)Object");
         assertThat(x.arity()).isEqualTo(5);
         assertThat(x.curried().getType().toString()).isEqualTo("(Object)CheckedFunction1");
         assertThat(x.tupled().getType().toString()).isEqualTo("(Tuple5)Object");
@@ -311,13 +312,67 @@ public class FunctionsTest {
     public void shouldEnsureThatCheckedFunction6ImplementsTheFunctionInterface() {
         final CheckedFunction6<Integer, Integer, Integer, Integer, Integer, Integer, Integer> x = (i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6;
         assertThat(Try.of(() -> x.apply(1, 1, 1, 1, 1, 1)).get()).isEqualTo(6);
-        assertThat(x.andThen(i -> i + 1).getType().toString()).isEqualTo("(CheckedFunction1,Object,Object,Object,Object,Object,Object)Object");
+        assertThat(x.andThen(i -> i + 1).getType().toString()).isEqualTo("(Object,Object,Object,Object,Object,Object)Object");
         assertThat(x.arity()).isEqualTo(6);
         assertThat(x.curried().getType().toString()).isEqualTo("(Object)CheckedFunction1");
         assertThat(x.tupled().getType().toString()).isEqualTo("(Tuple6)Object");
     }
 
     // -- lambda reflection tests
+
+    @Test
+    public void shouldRecognizeLambdaSignature() {
+        final Function1<Integer, Integer> f = i -> i + 1;
+        assertThat(f.getType().toString()).isEqualTo("(Integer)Integer");
+    }
+
+    @Test
+    public void shouldRecognizeLiftedLambdaSignature() {
+        final Function1<Integer, Integer> f = Function1.lift(i -> i + 1);
+        assertThat(f.getType().toString()).isEqualTo("(Integer)Integer");
+    }
+
+    @Test
+    public void shouldRecognizeSimpleMethodReferenceSignature() {
+        final class Test {
+            Integer method(Integer i) {
+                return i + 1;
+            }
+        }
+        final Test test = new Test();
+        final Function1<Integer, Integer> f = test::method;
+        assertThat(f.getType().toString()).isEqualTo("(Integer)Integer");
+    }
+
+    @Test
+    public void shouldRecognizeLambdaCallSignature() {
+        final Function<Integer, Integer> f1 = i -> i + 1;
+        final Function1<Integer, Integer> f2 = i -> f1.apply(i);
+        assertThat(f2.getType().toString()).isEqualTo("(Integer)Integer");
+    }
+
+    @Test
+    public void shouldRecognizeLiftedLambdaCallSignature() {
+        final Function<Integer, Integer> f1 = i -> i + 1;
+        final Function1<Integer, Integer> f2 = Function1.lift(i -> f1.apply(i));
+        assertThat(f2.getType().toString()).isEqualTo("(Integer)Integer");
+    }
+
+    @Test
+    public void shouldRecognizeMethodReferenceSignature() {
+        final Function<Integer, Integer> f1 = i -> i + 1;
+        final Function1<Integer, Integer> f2 = f1::apply;
+        assertThat(f2.getType().toString()).isEqualTo("(Integer)Integer");
+    }
+
+    @Test
+    public void shouldRecognizeLiftedMethodReferenceSignature() {
+        final Function<Integer, Integer> f1 = i -> i + 1;
+        final Function1<Integer, Integer> f2 = Function1.lift(f1::apply);
+        assertThat(f2.getType().toString()).isEqualTo("(Integer)Integer");
+    }
+
+    // -- more lambda reflection tests
 
     @Test
     public void shouldParseReturnTypeVoid() {
@@ -385,7 +440,7 @@ public class FunctionsTest {
 
     @Test
     public void shouldParseReturnTypeArrayOfInt() {
-        final ReturnTypeArrayOfInt lambda = () -> new int[]{};
+        final ReturnTypeArrayOfInt lambda = () -> new int[] {};
         final Class<?> actual = λ.getLambdaSignature(lambda).returnType();
         assertThat(actual.getName()).isEqualTo("[I");
     }
@@ -400,7 +455,7 @@ public class FunctionsTest {
 
     @Test
     public void shouldParseReturnTypeArrayOfArrayReference() {
-        final ReturnTypeArrayOfArrayOfString lambda = () -> new String[][]{};
+        final ReturnTypeArrayOfArrayOfString lambda = () -> new String[][] {};
         final Class<?> actual = λ.getLambdaSignature(lambda).returnType();
         assertThat(actual.getName()).isEqualTo("[[Ljava.lang.String;");
     }

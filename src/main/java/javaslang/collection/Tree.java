@@ -162,7 +162,7 @@ public interface Tree<T> extends Iterable<T> {
                     return List.of(tree.getValue());
                 } else {
                     final List<? extends Tree<T>> children = tree.getChildren();
-                    return children.tail().foldLeft(List.<T>nil(), (acc, child) -> acc.appendAll(inOrder(child)))
+                    return children.tail().foldLeft(List.<T>empty(), (acc, child) -> acc.appendAll(inOrder(child)))
                             .prepend(tree.getValue())
                             .prependAll(inOrder(children.head()));
                 }
@@ -170,12 +170,12 @@ public interface Tree<T> extends Iterable<T> {
 
             List<T> postOrder(Tree<T> tree) {
                 return tree.getChildren()
-                        .foldLeft(List.<T>nil(), (acc, child) -> acc.appendAll(postOrder(child)))
+                        .foldLeft(List.<T>empty(), (acc, child) -> acc.appendAll(postOrder(child)))
                         .append(tree.getValue());
             }
 
             List<T> levelOrder(Tree<T> tree) {
-                List<T> result = List.nil();
+                List<T> result = List.empty();
                 final java.util.Queue<Tree<T>> queue = new java.util.LinkedList<>();
                 queue.add(tree);
                 while (!queue.isEmpty()) {
@@ -187,14 +187,14 @@ public interface Tree<T> extends Iterable<T> {
             }
         }
         if (isEmpty()) {
-            return List.nil();
+            return List.empty();
         } else {
             final Flatten flatten = new Flatten();
             return Match
-                    .when(Order.PRE_ORDER, (Order o) -> flatten.preOrder(this))
-                    .when(Order.IN_ORDER, (Order o) -> flatten.inOrder(this))
-                    .when(Order.POST_ORDER, (Order o) -> flatten.postOrder(this))
-                    .when(Order.LEVEL_ORDER, (Order o) -> flatten.levelOrder(this))
+                    .whenIs(Order.PRE_ORDER).then(() -> flatten.preOrder(this))
+                    .whenIs(Order.IN_ORDER).then(() -> flatten.inOrder(this))
+                    .whenIs(Order.POST_ORDER).then(() -> flatten.postOrder(this))
+                    .whenIs(Order.LEVEL_ORDER).then(() -> flatten.levelOrder(this))
                     .apply(order);
         }
     }

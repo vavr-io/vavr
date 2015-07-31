@@ -32,21 +32,60 @@ import java.util.stream.Collector;
  * <pre>
  * <code>
  * // factory methods
- * Stream.nil()              // = Stream.of() = Nil.instance()
- * Stream.of(x)              // = new Cons&lt;&gt;(x, Nil.instance())
- * Stream.of(Object...)      // e.g. Stream.of(1, 2, 3)
- * Stream.of(Iterable)       // e.g. Stream.of(List.of(1, 2, 3)) = 1, 2, 3
- * Stream.of(Iterator)       // e.g. Stream.of(Arrays.asList(1, 2, 3).iterator()) = 1, 2, 3
+ * Stream.empty()                  // = Stream.of() = Nil.instance()
+ * Stream.of(x)                    // = new Cons&lt;&gt;(x, Nil.instance())
+ * Stream.of(Object...)            // e.g. Stream.of(1, 2, 3)
+ * Stream.ofAll(Iterable)          // e.g. Stream.of(List.of(1, 2, 3)) = 1, 2, 3
+ * Stream.ofAll(&lt;primitive array&gt;) // e.g. List.ofAll(new int[] {1, 2, 3}) = 1, 2, 3
  *
  * // int sequences
- * Stream.from(0)            // = 0, 1, 2, 3, ...
- * Stream.range(0, 3)        // = 0, 1, 2
- * Stream.rangeClosed(0, 3)  // = 0, 1, 2, 3
+ * Stream.from(0)                  // = 0, 1, 2, 3, ...
+ * Stream.range(0, 3)              // = 0, 1, 2
+ * Stream.rangeClosed(0, 3)        // = 0, 1, 2, 3
  *
  * // generators
- * Stream.gen(Supplier)          // e.g. Stream.gen(Math::random);
- * Stream.gen(Object, Function)  // e.g. Stream.gen(1, i -&gt; i * 2);
- * Stream.gen(Object, Supplier)  // e.g. Stream.gen(current, () -&gt; next(current));
+ * Stream.cons(Object, Supplier)   // e.g. Stream.cons(current, () -&gt; next(current));
+ * Stream.gen(Supplier)            // e.g. Stream.gen(Math::random);
+ * Stream.gen(Object, Function)    // e.g. Stream.gen(1, i -&gt; i * 2);
+ * </code>
+ * </pre>
+ *
+ * Factory method applications:
+ *
+ * <pre>
+ * <code>
+ * Stream&lt;Integer&gt;       s1 = Stream.of(1);
+ * Stream&lt;Integer&gt;       s2 = Stream.of(1, 2, 3);
+ *                       // = Stream.of(new Integer[] {1, 2, 3});
+ *
+ * Stream&lt;int[]&gt;         s3 = Stream.of(new int[] {1, 2, 3});
+ * Stream&lt;List&lt;Integer&gt;&gt; s4 = Stream.of(List.of(1, 2, 3));
+ *
+ * Stream&lt;Integer&gt;       s5 = Stream.ofAll(new int[] {1, 2, 3});
+ * Stream&lt;Integer&gt;       s6 = Stream.ofAll(List.of(1, 2, 3));
+ *
+ * // cuckoo's egg
+ * Stream&lt;Integer[]&gt;     s7 = Stream.&lt;Integer[]&gt; of(new Integer[] {1, 2, 3});
+ *                       //!= Stream.&lt;Integer[]&gt; of(1, 2, 3);
+ * </code>
+ * </pre>
+ *
+ * Example: Generating prime numbers
+ *
+ * <pre>
+ * <code>
+ * // = Stream(2L, 3L, 5L, 7L, ...)
+ * Stream.gen(2L, PrimeNumbers::nextPrimeFrom)
+ *
+ * // helpers
+ *
+ * static long nextPrimeFrom(long num) {
+ *     return Stream.from(num + 1).findFirst(PrimeNumbers::isPrime).get();
+ * }
+ *
+ * static boolean isPrime(long num) {
+ *     return !Stream.rangeClosed(2L, (long) Math.sqrt(num)).exists(d -&gt; num % d == 0);
+ * }
  * </code>
  * </pre>
  *
@@ -84,7 +123,19 @@ public interface Stream<T> extends Seq<T> {
      * @return a new Stream of int values starting from {@code from}
      */
     static Stream<Integer> from(int value) {
-        return new Cons<>(value, () -> from(value + 1));
+        return new Cons<>(() -> value, () -> from(value + 1));
+    }
+
+    /**
+     * Returns an infinitely long Stream of long values starting from {@code from}.
+     * <p>
+     * The {@code Stream} extends to {@code Integer.MIN_VALUE} when passing {@code Long.MAX_VALUE}.
+     *
+     * @param value a start long value
+     * @return a new Stream of long values starting from {@code from}
+     */
+    static Stream<Long> from(long value) {
+        return new Cons<>(() -> value, () -> from(value + 1));
     }
 
     /**
@@ -96,7 +147,7 @@ public interface Stream<T> extends Seq<T> {
      */
     static <T> Stream<T> gen(Supplier<T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
-        return new Cons<>(supplier.get(), () -> gen(supplier));
+        return new Cons<>(supplier, () -> gen(supplier));
     }
 
     /**
@@ -110,21 +161,20 @@ public interface Stream<T> extends Seq<T> {
      */
     static <T> Stream<T> gen(T seed, Function<T, T> f) {
         Objects.requireNonNull(f, "f is null");
-        return new Stream.Cons<>(seed, () -> gen(f.apply(seed), f));
+        return new Stream.Cons<>(() -> seed, () -> gen(f.apply(seed), f));
     }
 
     /**
-     * Generates an (theoretically) infinitely long Stream using a function to calculate the tail of the stream
-     * based on the head.
+     * Constructs a Stream of a head element and a tail supplier.
      *
-     * @param head         The first value in the Stream
-     * @param tailSupplier A function to calculate the tail values. To end the stream, return {@link Stream#nil}.
+     * @param head         The head element of the Stream
+     * @param tailSupplier A supplier of the tail values. To end the stream, return {@link Stream#empty}.
      * @param <T>          value type
      * @return A new Stream
      */
-    static <T> Stream<T> gen(T head, Supplier<Stream<T>> tailSupplier) {
+    static <T> Stream<T> cons(T head, Supplier<Stream<T>> tailSupplier) {
         Objects.requireNonNull(tailSupplier, "tailSupplier is null");
-        return new Stream.Cons<>(head, tailSupplier);
+        return new Stream.Cons<>(() -> head, tailSupplier);
     }
 
     /**
@@ -136,7 +186,7 @@ public interface Stream<T> extends Seq<T> {
      * @param <T> Component type of Nil, determined by type inference in the particular context.
      * @return The empty list.
      */
-    static <T> Stream<T> nil() {
+    static <T> Stream<T> empty() {
         return Nil.instance();
     }
 
@@ -148,7 +198,7 @@ public interface Stream<T> extends Seq<T> {
      * @return A new Stream instance containing the given element
      */
     static <T> Stream<T> of(T element) {
-        return new Cons<>(element, Nil::instance);
+        return new Cons<>(() -> element, Nil::instance);
     }
 
     /**
@@ -168,7 +218,7 @@ public interface Stream<T> extends Seq<T> {
     @SafeVarargs
     static <T> Stream<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return Stream.ofAll(new Iterator<T>() {
+        return Stream.ofAll(() -> new Iterator<T>() {
             int i = 0;
 
             @Override
@@ -196,68 +246,497 @@ public interface Stream<T> extends Seq<T> {
         if (elements instanceof Stream) {
             return (Stream<T>) elements;
         } else {
-            return Stream.ofAll(elements.iterator());
+            class StreamFactory {
+                // TODO: in a future version of Java this will be a private interface method
+                <T> Stream<T> create(Iterator<? extends T> iterator) {
+                    if (iterator.hasNext()) {
+                        // we need to get the head, otherwise a tail call would get the head instead
+                        final T head = iterator.next();
+                        return new Cons<>(() -> head, () -> create(iterator));
+                    } else {
+                        return Nil.instance();
+                    }
+                }
+            }
+            return new StreamFactory().create(elements.iterator());
         }
     }
 
     /**
-     * Creates a Stream based on an Iterator.
+     * Creates a Stream based on the elements of a boolean array.
      *
-     * @param iterator An Iterator
-     * @param <T>      Component type
-     * @return A new Stream
+     * @param array a boolean array
+     * @return A new Stream of Boolean values
      */
-    // providing this method to save resources creating a Stream - makes no sense for collections in general
-    static <T> Stream<T> ofAll(Iterator<? extends T> iterator) {
-        Objects.requireNonNull(iterator, "iterator is null");
-        if (iterator.hasNext()) {
-            return new Cons<>(iterator.next(), () -> Stream.ofAll(iterator));
-        } else {
-            return Nil.instance();
-        }
+    static Stream<Boolean> ofAll(boolean[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return Stream.ofAll(() -> new Iterator<Boolean>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Boolean next() {
+                return array[i++];
+            }
+        });
+    }
+
+    /**
+     * Creates a Stream based on the elements of a byte array.
+     *
+     * @param array a byte array
+     * @return A new Stream of Byte values
+     */
+    static Stream<Byte> ofAll(byte[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return Stream.ofAll(() -> new Iterator<Byte>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Byte next() {
+                return array[i++];
+            }
+        });
+    }
+
+    /**
+     * Creates a Stream based on the elements of a char array.
+     *
+     * @param array a char array
+     * @return A new Stream of Character values
+     */
+    static Stream<Character> ofAll(char[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return Stream.ofAll(() -> new Iterator<Character>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Character next() {
+                return array[i++];
+            }
+        });
+    }
+
+    /**
+     * Creates a Stream based on the elements of a double array.
+     *
+     * @param array a double array
+     * @return A new Stream of Double values
+     */
+    static Stream<Double> ofAll(double[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return Stream.ofAll(() -> new Iterator<Double>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Double next() {
+                return array[i++];
+            }
+        });
+    }
+
+    /**
+     * Creates a Stream based on the elements of a float array.
+     *
+     * @param array a float array
+     * @return A new Stream of Float values
+     */
+    static Stream<Float> ofAll(float[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return Stream.ofAll(() -> new Iterator<Float>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Float next() {
+                return array[i++];
+            }
+        });
+    }
+
+    /**
+     * Creates a Stream based on the elements of an int array.
+     *
+     * @param array an int array
+     * @return A new Stream of Integer values
+     */
+    static Stream<Integer> ofAll(int[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return Stream.ofAll(() -> new Iterator<Integer>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Integer next() {
+                return array[i++];
+            }
+        });
+    }
+
+    /**
+     * Creates a Stream based on the elements of a long array.
+     *
+     * @param array a long array
+     * @return A new Stream of Long values
+     */
+    static Stream<Long> ofAll(long[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return Stream.ofAll(() -> new Iterator<Long>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Long next() {
+                return array[i++];
+            }
+        });
+    }
+
+    /**
+     * Creates a Stream based on the elements of a short array.
+     *
+     * @param array a short array
+     * @return A new Stream of Short values
+     */
+    static Stream<Short> ofAll(short[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return Stream.ofAll(() -> new Iterator<Short>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Short next() {
+                return array[i++];
+            }
+        });
     }
 
     /**
      * Creates a Stream of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Stream.range(0, 0)  // = Stream()
+     * Stream.range(2, 0)  // = Stream()
+     * Stream.range(-2, 2) // = Stream(-2, -1, 0, 1)
+     * </code>
+     * </pre>
      *
      * @param from        the first number
      * @param toExclusive the last number + 1
      * @return a range of int values as specified or {@code Nil} if {@code from >= toExclusive}
      */
     static Stream<Integer> range(int from, int toExclusive) {
-        if (from >= toExclusive) {
-            return Nil.instance();
+        return rangeBy(from, toExclusive, 1);
+    }
+
+    /**
+     * Creates a Stream of int numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Stream.rangeBy(1, 3, 1)  // = Stream(1, 2)
+     * Stream.rangeBy(1, 4, 2)  // = Stream(1, 3)
+     * Stream.rangeBy(4, 1, -2) // = Stream(4, 2)
+     * Stream.rangeBy(4, 1, 2)  // = Stream()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @param step        the step
+     * @return a range of long values as specified or {@code Nil} if<br>
+     * {@code from >= toInclusive} and {@code step > 0} or<br>
+     * {@code from <= toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    static Stream<Integer> rangeBy(int from, int toExclusive, int step) {
+        if (step == 0) {
+            throw new IllegalArgumentException("step cannot be 0");
+        }
+        if (step > 0) {
+            if (from >= toExclusive) {
+                return Nil.instance();
+            } else {
+                return new Cons<>(() -> from, () -> rangeBy(from + step, toExclusive, step));
+            }
         } else {
-            return Stream.rangeClosed(from, toExclusive - 1);
+            if (from <= toExclusive) {
+                return Nil.instance();
+            } else {
+                return new Cons<>(() -> from, () -> rangeBy(from + step, toExclusive, step));
+            }
+        }
+    }
+
+    /**
+     * Creates a Stream of long numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Stream.range(0L, 0L)  // = Stream()
+     * Stream.range(2L, 0L)  // = Stream()
+     * Stream.range(-2L, 2L) // = Stream(-2L, -1L, 0L, 1L)
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @return a range of long values as specified or {@code Nil} if {@code from >= toExclusive}
+     */
+    static Stream<Long> range(long from, long toExclusive) {
+        return rangeBy(from, toExclusive, 1);
+    }
+
+    /**
+     * Creates a Stream of long numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Stream.rangeBy(1L, 3L, 1L)  // = Stream(1L, 2L)
+     * Stream.rangeBy(1L, 4L, 2L)  // = Stream(1L, 3L)
+     * Stream.rangeBy(4L, 1L, -2L) // = Stream(4L, 2L)
+     * Stream.rangeBy(4L, 1L, 2L)  // = Stream()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @param step        the step
+     * @return a range of long values as specified or {@code Nil} if<br>
+     * {@code from >= toInclusive} and {@code step > 0} or<br>
+     * {@code from <= toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    static Stream<Long> rangeBy(long from, long toExclusive, long step) {
+        if (step == 0) {
+            throw new IllegalArgumentException("step cannot be 0");
+        }
+        if (step > 0) {
+            if (from >= toExclusive) {
+                return Nil.instance();
+            } else {
+                return new Cons<>(() -> from, () -> rangeBy(from + step, toExclusive, step));
+            }
+        } else {
+            if (from <= toExclusive) {
+                return Nil.instance();
+            } else {
+                return new Cons<>(() -> from, () -> rangeBy(from + step, toExclusive, step));
+            }
         }
     }
 
     /**
      * Creates a Stream of int numbers starting from {@code from}, extending to {@code toInclusive}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Stream.rangeClosed(0, 0)  // = Stream(0)
+     * Stream.rangeClosed(2, 0)  // = Stream()
+     * Stream.rangeClosed(-2, 2) // = Stream(-2, -1, 0, 1, 2)
+     * </code>
+     * </pre>
      *
      * @param from        the first number
      * @param toInclusive the last number
      * @return a range of int values as specified or {@code Nil} if {@code from > toInclusive}
      */
     static Stream<Integer> rangeClosed(int from, int toInclusive) {
-        if (from > toInclusive) {
-            return Nil.instance();
-        } else if (from == Integer.MAX_VALUE) {
-            return Stream.of(Integer.MAX_VALUE);
+        return rangeClosedBy(from, toInclusive, 1);
+    }
+
+    /**
+     * Creates a Stream of int numbers starting from {@code from}, extending to {@code toInclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Stream.rangeClosedBy(1, 3, 1)  // = Stream(1, 2, 3)
+     * Stream.rangeClosedBy(1, 4, 2)  // = Stream(1, 3)
+     * Stream.rangeClosedBy(4, 1, -2) // = Stream(4, 2)
+     * Stream.rangeClosedBy(4, 1, 2)  // = Stream()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @param step        the step
+     * @return a range of int values as specified or {@code Nil} if<br>
+     * {@code from > toInclusive} and {@code step > 0} or<br>
+     * {@code from < toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    static Stream<Integer> rangeClosedBy(int from, int toInclusive, int step) {
+        if (step == 0) {
+            throw new IllegalArgumentException("step cannot be 0");
+        }
+        if (step > 0) {
+            if (from > toInclusive) {
+                return Nil.instance();
+            } else if (from > Integer.MAX_VALUE - step) {
+                return Stream.of(from);
+            } else {
+                return new Cons<>(() -> from, () -> rangeClosedBy(from + step, toInclusive, step));
+            }
         } else {
-            return new Cons<>(from, () -> rangeClosed(from + 1, toInclusive));
+            if (from < toInclusive) {
+                return Nil.instance();
+            } else if (from < Integer.MIN_VALUE - step) {
+                return Stream.of(from);
+            } else {
+                return new Cons<>(() -> from, () -> rangeClosedBy(from + step, toInclusive, step));
+            }
+        }
+    }
+
+    /**
+     * Creates a Stream of long numbers starting from {@code from}, extending to {@code toInclusive}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Stream.rangeClosed(0L, 0L)  // = Stream(0L)
+     * Stream.rangeClosed(2L, 0L)  // = Stream()
+     * Stream.rangeClosed(-2L, 2L) // = Stream(-2L, -1L, 0L, 1L, 2L)
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @return a range of long values as specified or {@code Nil} if {@code from > toInclusive}
+     */
+    static Stream<Long> rangeClosed(long from, long toInclusive) {
+        return rangeClosedBy(from, toInclusive, 1);
+    }
+
+    /**
+     * Creates a Stream of long numbers starting from {@code from}, extending to {@code toInclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Stream.rangeClosedBy(1L, 3L, 1L)  // = Stream(1L, 2L, 3L)
+     * Stream.rangeClosedBy(1L, 4L, 2L)  // = Stream(1L, 3L)
+     * Stream.rangeClosedBy(4L, 1L, -2L) // = Stream(4L, 2L)
+     * Stream.rangeClosedBy(4L, 1L, 2L)  // = Stream()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @param step        the step
+     * @return a range of int values as specified or {@code Nil} if<br>
+     * {@code from > toInclusive} and {@code step > 0} or<br>
+     * {@code from < toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    static Stream<Long> rangeClosedBy(long from, long toInclusive, long step) {
+        if (step == 0) {
+            throw new IllegalArgumentException("step cannot be 0");
+        }
+        if (step > 0) {
+            if (from > toInclusive) {
+                return Nil.instance();
+            } else if (from > Long.MAX_VALUE - step) {
+                return Stream.of(from);
+            } else {
+                return new Cons<>(() -> from, () -> rangeClosedBy(from + step, toInclusive, step));
+            }
+        } else {
+            if (from < toInclusive) {
+                return Nil.instance();
+            } else if (from < Long.MIN_VALUE - step) {
+                return Stream.of(from);
+            } else {
+                return new Cons<>(() -> from, () -> rangeClosedBy(from + step, toInclusive, step));
+            }
         }
     }
 
     @Override
-    default Stream<T> append(T element) {
-        return isEmpty() ? Stream.of(element) : new Cons<>(head(), () -> tail().append(element));
+    Stream<T> append(T element);
+
+    @Override
+    Stream<T> appendAll(Iterable<? extends T> elements);
+
+    /**
+     * Appends itself to the end of stream with {@code mapper} function.
+     * <p>
+     * <strong>Example:</strong>
+     * <p>
+     * Well known scala code for Fibonacci infinite sequence
+     * <pre>
+     * <code>
+     * val fibs:Stream[Int] = 0 #:: 1 #:: (fibs zip fibs.tail).map{ t =&gt; t._1 + t._2 }
+     * </code>
+     * </pre>
+     * can be transformed to
+     * <pre>
+     * <code>
+     * Stream.of(0, 1).appendSelf(self -&gt; self.zip(self.tail()).map(t -&gt; t._1 + t._2));
+     * </code>
+     * </pre>
+     *
+     * @param mapper an mapper
+     * @return a new Stream
+     */
+    Stream<T> appendSelf(Function<? super Stream<T>, ? extends Stream<T>> mapper);
+
+    @Override
+    default Stream<Tuple2<T, T>> cartesianProduct() {
+        return cartesianProduct(this);
     }
 
     @Override
-    default Stream<T> appendAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        return isEmpty() ? Stream.ofAll(elements) : new Cons<>(head(), () -> tail().appendAll(elements));
+    default <U> Stream<Tuple2<T, U>> cartesianProduct(Iterable<? extends U> that) {
+        Objects.requireNonNull(that, "that is null");
+        final Stream<? extends U> other = Stream.ofAll(that);
+        return flatMap(a -> other.map(b -> Tuple.of(a, b)));
     }
 
     @Override
@@ -274,7 +753,7 @@ public interface Stream<T> extends Seq<T> {
     default Stream<Stream<T>> combinations(int k) {
         class Recursion {
             Stream<Stream<T>> combinations(Stream<T> elements, int k) {
-                return (k == 0) ? Stream.of(Stream.nil()) :
+                return (k == 0) ? Stream.of(Stream.empty()) :
                         elements.zipWithIndex().flatMap(t ->
                                 combinations(elements.drop(t._2 + 1), (k - 1))
                                         .map((Stream<T> c) -> c.prepend(t._1)));
@@ -325,7 +804,7 @@ public interface Stream<T> extends Seq<T> {
             stream = stream.tail();
         }
         final Stream<T> finalStream = stream;
-        return stream.isEmpty() ? stream : new Cons<>(stream.head(), () -> finalStream.tail().filter(predicate));
+        return stream.isEmpty() ? stream : new Cons<>(stream::head, () -> finalStream.tail().filter(predicate));
     }
 
     @Override
@@ -334,7 +813,7 @@ public interface Stream<T> extends Seq<T> {
     }
 
     @Override
-    default <U> Stream<U> flatMap(Function<? super T, ? extends Iterable<U>> mapper) {
+    default <U> Stream<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? Nil.instance() : map(mapper).flatten(Function.identity());
     }
@@ -363,9 +842,9 @@ public interface Stream<T> extends Seq<T> {
      */
     @SuppressWarnings("unchecked")
     @Override
-    default <U> Stream<U> flatten(Function<? super T, ? extends Iterable<U>> f) {
+    default <U> Stream<U> flatten(Function<? super T, ? extends Iterable<? extends U>> f) {
         Objects.requireNonNull(f, "f is null");
-        return isEmpty() ? Nil.instance() : Stream.ofAll(new Iterator<U>() {
+        return isEmpty() ? Nil.instance() : Stream.ofAll(() -> new Iterator<U>() {
 
             final Iterator<? extends T> inputs = Stream.this.iterator();
             Iterator<? extends U> current = Collections.emptyIterator();
@@ -439,47 +918,13 @@ public interface Stream<T> extends Seq<T> {
     Option<Stream<T>> initOption();
 
     @Override
-    default Stream<T> insert(int index, T element) {
-        if (index < 0) {
-            throw new IndexOutOfBoundsException("insert(" + index + ", e)");
-        }
-        if (index > 0 && isEmpty()) {
-            throw new IndexOutOfBoundsException("insert(" + index + ", e) on Nil");
-        }
-        if (index == 0) {
-            return new Cons<>(element, () -> this);
-        } else {
-            return new Cons<>(head(), () -> tail().insert(index - 1, element));
-        }
-    }
+    Stream<T> insert(int index, T element);
 
     @Override
-    default Stream<T> insertAll(int index, Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        if (index < 0) {
-            throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
-        }
-        if (index > 0 && isEmpty()) {
-            throw new IndexOutOfBoundsException("insertAll(" + index + ", elements) on Nil");
-        }
-        if (index == 0) {
-            return Stream.ofAll(elements).appendAll(this);
-        } else {
-            return new Cons<>(head(), () -> tail().insertAll(index - 1, elements));
-        }
-    }
+    Stream<T> insertAll(int index, Iterable<? extends T> elements);
 
     @Override
-    default Stream<T> intersperse(T element) {
-        if (isEmpty()) {
-            return Nil.instance();
-        } else {
-            return new Cons<>(head(), () -> {
-                final Stream<T> tail = tail();
-                return tail.isEmpty() ? tail : new Cons<>(element, () -> tail.intersperse(element));
-            });
-        }
-    }
+    Stream<T> intersperse(T element);
 
     @Override
     default int lastIndexOf(T element) {
@@ -498,7 +943,7 @@ public interface Stream<T> extends Seq<T> {
         if (isEmpty()) {
             return Nil.instance();
         } else {
-            return new Cons<>(mapper.apply(head()), () -> tail().map(mapper));
+            return new Cons<>(() -> mapper.apply(head()), () -> tail().map(mapper));
         }
     }
 
@@ -509,15 +954,7 @@ public interface Stream<T> extends Seq<T> {
     }
 
     @Override
-    default Stream<T> peek(Consumer<? super T> action) {
-        if (isEmpty()) {
-            return this;
-        } else {
-            final T head = head();
-            action.accept(head);
-            return new Cons<>(head, () -> tail().peek(action));
-        }
-    }
+    Stream<T> peek(Consumer<? super T> action);
 
     @Override
     default Stream<Stream<T>> permutations() {
@@ -537,7 +974,7 @@ public interface Stream<T> extends Seq<T> {
 
     @Override
     default Stream<T> prepend(T element) {
-        return new Cons<>(element, () -> this);
+        return new Cons<>(() -> element, () -> this);
     }
 
     @Override
@@ -547,14 +984,7 @@ public interface Stream<T> extends Seq<T> {
     }
 
     @Override
-    default Stream<T> remove(T element) {
-        if (isEmpty()) {
-            return this;
-        } else {
-            final T head = head();
-            return Objects.equals(head, element) ? tail() : new Cons<>(head, () -> tail().remove(element));
-        }
-    }
+    Stream<T> remove(T element);
 
     @Override
     default Stream<T> removeAll(T removed) {
@@ -569,26 +999,17 @@ public interface Stream<T> extends Seq<T> {
     }
 
     @Override
-    default Stream<T> replace(T currentElement, T newElement) {
-        if (isEmpty()) {
-            return this;
-        } else {
-            final T head = head();
-            if (Objects.equals(head, currentElement)) {
-                return new Cons<>(newElement, this::tail);
-            } else {
-                return new Cons<>(head, () -> tail().replace(currentElement, newElement));
-            }
-        }
-    }
+    Stream<T> replace(T currentElement, T newElement);
 
     @Override
     default Stream<T> replaceAll(T currentElement, T newElement) {
         if (isEmpty()) {
             return this;
         } else {
-            final T head = head();
-            final T newHead = Objects.equals(head, currentElement) ? newElement : head;
+            final Supplier<T> newHead = () -> {
+                final T head = head();
+                return Objects.equals(head, currentElement) ? newElement : head;
+            };
             return new Cons<>(newHead, () -> tail().replaceAll(currentElement, newElement));
         }
     }
@@ -598,7 +1019,7 @@ public interface Stream<T> extends Seq<T> {
         if (isEmpty()) {
             return this;
         } else {
-            return new Cons<>(operator.apply(head()), () -> tail().replaceAll(operator));
+            return new Cons<>(() -> operator.apply(head()), () -> tail().replaceAll(operator));
         }
     }
 
@@ -615,7 +1036,7 @@ public interface Stream<T> extends Seq<T> {
 
     @Override
     default Stream<T> reverse() {
-        return isEmpty() ? this : foldLeft(Stream.nil(), Stream::prepend);
+        return isEmpty() ? this : foldLeft(Stream.empty(), Stream::prepend);
     }
 
     @Override
@@ -655,7 +1076,7 @@ public interface Stream<T> extends Seq<T> {
             return Nil.instance();
         } else {
             final Tuple2<Stream<T>, Stream<T>> split = splitAt(size);
-            return new Cons<>(split._1, () -> split._2.isEmpty() ? nil() : drop(step).sliding(size, step));
+            return new Cons<>(() -> split._1, () -> split._2.isEmpty() ? empty() : drop(step).sliding(size, step));
         }
     }
 
@@ -702,22 +1123,7 @@ public interface Stream<T> extends Seq<T> {
     }
 
     @Override
-    default Stream<T> subsequence(int beginIndex, int endIndex) {
-        if (beginIndex < 0 || beginIndex > endIndex) {
-            throw new IndexOutOfBoundsException(String.format("subsequence(%s, %s)", beginIndex, endIndex));
-        }
-        if (beginIndex == endIndex) {
-            return Nil.instance();
-        }
-        if (isEmpty()) {
-            throw new IndexOutOfBoundsException("subsequence of Nil");
-        }
-        if (beginIndex == 0) {
-            return new Cons<>(head(), () -> tail().subsequence(0, endIndex - 1));
-        } else {
-            return tail().subsequence(beginIndex - 1, endIndex - 1);
-        }
-    }
+    Stream<T> subsequence(int beginIndex, int endIndex);
 
     @Override
     Stream<T> tail();
@@ -726,15 +1132,7 @@ public interface Stream<T> extends Seq<T> {
     Option<Stream<T>> tailOption();
 
     @Override
-    default Stream<T> take(int n) {
-        if (isEmpty()) {
-            return this;
-        } else if (n < 1) {
-            return Nil.instance();
-        } else {
-            return new Cons<>(head(), () -> tail().take(n - 1));
-        }
-    }
+    Stream<T> take(int n);
 
     @Override
     default Stream<T> takeRight(int n) {
@@ -742,18 +1140,11 @@ public interface Stream<T> extends Seq<T> {
     }
 
     @Override
-    default Stream<T> takeWhile(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        if (isEmpty()) {
-            return this;
-        } else {
-            final T head = head();
-            if (predicate.test(head)) {
-                return new Cons<>(head, () -> tail().takeWhile(predicate));
-            } else {
-                return Nil.instance();
-            }
-        }
+    Stream<T> takeWhile(Predicate<? super T> predicate);
+
+    @Override
+    default Stream<T> cons(Iterable<? extends T> iterable) {
+        return Stream.ofAll(iterable);
     }
 
     @Override
@@ -772,7 +1163,7 @@ public interface Stream<T> extends Seq<T> {
         if (this.isEmpty() || that.isEmpty()) {
             return Nil.instance();
         } else {
-            return new Cons<>(Tuple.of(this.head(), that.head()), () -> this.tail().zip(that.tail()));
+            return new Cons<>(() -> Tuple.of(this.head(), that.head()), () -> this.tail().zip(that.tail()));
         }
     }
 
@@ -785,11 +1176,16 @@ public interface Stream<T> extends Seq<T> {
         if (isThisEmpty && isThatEmpty) {
             return Nil.instance();
         } else {
-            final T head1 = isThisEmpty ? thisElem : this.head();
-            final U head2 = isThatEmpty ? thatElem : that.head();
-            final Stream<T> tail1 = isThisEmpty ? this : this.tail();
-            final Stream<U> tail2 = isThatEmpty ? that : that.tail();
-            return new Cons<>(Tuple.of(head1, head2), () -> tail1.zipAll(tail2, thisElem, thatElem));
+            final Supplier<Tuple2<T, U>> zippedHead = () -> Tuple.of(
+                    isThisEmpty ? thisElem : this.head(),
+                    isThatEmpty ? thatElem : that.head()
+            );
+            final Supplier<Stream<Tuple2<T, U>>> zippedTail = () -> {
+                final Stream<T> tail1 = isThisEmpty ? this : this.tail();
+                final Stream<U> tail2 = isThatEmpty ? that : that.tail();
+                return tail1.zipAll(tail2, thisElem, thatElem);
+            };
+            return new Cons<>(zippedHead, zippedTail);
         }
     }
 
@@ -811,7 +1207,7 @@ public interface Stream<T> extends Seq<T> {
 
         private static final long serialVersionUID = 1L;
 
-        private final T head;
+        private final Lazy<T> head;
         private final Lazy<Stream<T>> tail;
 
         /**
@@ -820,19 +1216,57 @@ public interface Stream<T> extends Seq<T> {
          * @param head A head element
          * @param tail A tail {@code Stream} supplier, {@linkplain Nil} denotes the end of the {@code Stream}
          */
-        Cons(T head, Supplier<Stream<T>> tail) {
-            this.head = head;
+        public Cons(Supplier<T> head, Supplier<Stream<T>> tail) {
+            this.head = Lazy.of(head);
             this.tail = Lazy.of(Objects.requireNonNull(tail, "tail is null"));
         }
 
         @Override
+        public Stream<T> append(T element) {
+            return new Cons<>(head, () -> tail().append(element));
+        }
+
+        @Override
+        public Stream<T> appendAll(Iterable<? extends T> elements) {
+            Objects.requireNonNull(elements, "elements is null");
+            return new Cons<>(head, () -> tail().appendAll(elements));
+        }
+
+        @Override
+        public Stream<T> appendSelf(Function<? super Stream<T>, ? extends Stream<T>> mapper) {
+            Objects.requireNonNull(mapper, "mapper is null");
+
+            class Recursion {
+
+                private final Cons<T> self;
+
+                Recursion(Cons<T> self) {
+                    this.self = appendAll(self);
+                }
+
+                private Cons<T> appendAll(Cons<T> stream) {
+                    return new Cons<>(stream.head, () -> {
+                        final Stream<T> tail = stream.tail();
+                        return tail.isEmpty() ? mapper.apply(self) : appendAll((Cons<T>) tail);
+                    });
+                }
+
+                Cons<T> stream() {
+                    return self;
+                }
+            }
+
+            return new Recursion(this).stream();
+        }
+
+        @Override
         public T head() {
-            return head;
+            return head.get();
         }
 
         @Override
         public Some<T> headOption() {
-            return new Some<>(head);
+            return new Some<>(head.get());
         }
 
         @Override
@@ -841,13 +1275,86 @@ public interface Stream<T> extends Seq<T> {
             if (tail.isEmpty()) {
                 return Nil.instance();
             } else {
-                return new Cons<>(head(), tail::init);
+                return new Cons<>(head, tail::init);
             }
         }
 
         @Override
         public Some<Stream<T>> initOption() {
             return new Some<>(init());
+        }
+
+        @Override
+        public Stream<T> insert(int index, T element) {
+            if (index < 0) {
+                throw new IndexOutOfBoundsException("insert(" + index + ", e)");
+            }
+            if (index == 0) {
+                return new Cons<>(() -> element, () -> this);
+            } else {
+                return new Cons<>(head, () -> tail().insert(index - 1, element));
+            }
+        }
+
+        @Override
+        public Stream<T> insertAll(int index, Iterable<? extends T> elements) {
+            Objects.requireNonNull(elements, "elements is null");
+            if (index < 0) {
+                throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
+            }
+            if (index == 0) {
+                return Stream.ofAll(elements).appendAll(this);
+            } else {
+                return new Cons<>(head, () -> tail().insertAll(index - 1, elements));
+            }
+        }
+
+        @Override
+        public Stream<T> intersperse(T element) {
+            return new Cons<>(head, () -> {
+                final Stream<T> tail = tail();
+                return tail.isEmpty() ? tail : new Cons<>(() -> element, () -> tail.intersperse(element));
+            });
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return false;
+        }
+
+        @Override
+        public Stream<T> peek(Consumer<? super T> action) {
+            action.accept(head.get());
+            return new Cons<>(head, () -> tail().peek(action));
+        }
+
+        @Override
+        public Stream<T> remove(T element) {
+            return Objects.equals(head.get(), element) ? tail() : new Cons<>(head, () -> tail().remove(element));
+        }
+
+        @Override
+        public Stream<T> replace(T currentElement, T newElement) {
+            if (Objects.equals(head.get(), currentElement)) {
+                return new Cons<>(() -> newElement, this::tail);
+            } else {
+                return new Cons<>(head, () -> tail().replace(currentElement, newElement));
+            }
+        }
+
+        @Override
+        public Stream<T> subsequence(int beginIndex, int endIndex) {
+            if (beginIndex < 0 || beginIndex > endIndex) {
+                throw new IndexOutOfBoundsException(String.format("subsequence(%s, %s)", beginIndex, endIndex));
+            }
+            if (beginIndex == endIndex) {
+                return Nil.instance();
+            }
+            if (beginIndex == 0) {
+                return new Cons<>(head, () -> tail().subsequence(0, endIndex - 1));
+            } else {
+                return tail().subsequence(beginIndex - 1, endIndex - 1);
+            }
         }
 
         @Override
@@ -861,8 +1368,22 @@ public interface Stream<T> extends Seq<T> {
         }
 
         @Override
-        public boolean isEmpty() {
-            return false;
+        public Stream<T> take(int n) {
+            if (n < 1) {
+                return Nil.instance();
+            } else {
+                return new Cons<>(head, () -> tail().take(n - 1));
+            }
+        }
+
+        @Override
+        public Stream<T> takeWhile(Predicate<? super T> predicate) {
+            Objects.requireNonNull(predicate, "predicate is null");
+            if (predicate.test(head.get())) {
+                return new Cons<>(head, () -> tail().takeWhile(predicate));
+            } else {
+                return Nil.instance();
+            }
         }
 
         /**
@@ -1004,6 +1525,27 @@ public interface Stream<T> extends Seq<T> {
         }
 
         @Override
+        public Stream<T> append(T element) {
+            return Stream.of(element);
+        }
+
+        @Override
+        public Stream<T> appendAll(Iterable<? extends T> elements) {
+            Objects.requireNonNull(elements, "elements is null");
+            return Stream.ofAll(elements);
+        }
+
+        @Override
+        public Stream<T> appendSelf(Function<? super Stream<T>, ? extends Stream<T>> mapperr) {
+            return this;
+        }
+
+        @Override
+        public boolean containsSlice(Iterable<? extends T> that) {
+            return !that.iterator().hasNext();
+        }
+
+        @Override
         public T head() {
             throw new NoSuchElementException("head of empty stream");
         }
@@ -1024,6 +1566,61 @@ public interface Stream<T> extends Seq<T> {
         }
 
         @Override
+        public Stream<T> insert(int index, T element) {
+            if (index != 0) {
+                throw new IndexOutOfBoundsException("insert(" + index + ", e) on Nil");
+            } else {
+                return new Cons<>(() -> element, Nil::instance);
+            }
+        }
+
+        @Override
+        public Stream<T> insertAll(int index, Iterable<? extends T> elements) {
+            Objects.requireNonNull(elements, "elements is null");
+            if (index != 0) {
+                throw new IndexOutOfBoundsException("insertAll(" + index + ", elements) on Nil");
+            } else {
+                return Stream.ofAll(elements);
+            }
+        }
+
+        @Override
+        public Stream<T> intersperse(T element) {
+            return Nil.instance();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return true;
+        }
+
+        @Override
+        public Stream<T> peek(Consumer<? super T> action) {
+            return this;
+        }
+
+        @Override
+        public Stream<T> remove(T element) {
+            return this;
+        }
+
+        @Override
+        public Stream<T> replace(T currentElement, T newElement) {
+            return this;
+        }
+
+        @Override
+        public Stream<T> subsequence(int beginIndex, int endIndex) {
+            if (beginIndex < 0 || beginIndex > endIndex) {
+                throw new IndexOutOfBoundsException(String.format("subsequence(%s, %s)", beginIndex, endIndex));
+            }
+            if (beginIndex == endIndex) {
+                return this;
+            }
+            throw new IndexOutOfBoundsException("subsequence of Nil");
+        }
+
+        @Override
         public Stream<T> tail() {
             throw new UnsupportedOperationException("tail of empty stream");
         }
@@ -1034,8 +1631,14 @@ public interface Stream<T> extends Seq<T> {
         }
 
         @Override
-        public boolean isEmpty() {
-            return true;
+        public Stream<T> take(int n) {
+            return this;
+        }
+
+        @Override
+        public Stream<T> takeWhile(Predicate<? super T> predicate) {
+            Objects.requireNonNull(predicate, "predicate is null");
+            return this;
         }
 
         /**
@@ -1098,8 +1701,8 @@ public interface Stream<T> extends Seq<T> {
             Stream<T> stream = this;
             while (stream != null && !stream.isEmpty()) {
                 final Cons<T> cons = (Cons<T>) stream;
-                builder.append(cons.head);
-                if (cons.tail.isDefined()) {
+                builder.append(cons.head.get());
+                if (cons.tail.isEvaluated()) {
                     stream = cons.tail.get();
                     if (!stream.isEmpty()) {
                         builder.append(", ");

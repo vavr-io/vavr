@@ -6,20 +6,31 @@
 package javaslang.collection;
 
 import javaslang.Serializables;
-import javaslang.collection.List.Cons;
-import javaslang.collection.List.Nil;
 import org.junit.Test;
 
 import java.io.InvalidObjectException;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.stream.Collector;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ListTest extends AbstractSeqTest {
 
+    // -- construction
+
     @Override
-    protected <T> List<T> nil() {
-        return List.nil();
+    protected <T> Collector<T, ArrayList<T>, List<T>> collector() {
+        return List.collector();
+    }
+
+    @Override
+    protected <T> List<T> empty() {
+        return List.empty();
+    }
+
+    @Override
+    protected <T> List<T> of(T element) {
+        return List.of(element);
     }
 
     @SuppressWarnings("unchecked")
@@ -28,124 +39,108 @@ public class ListTest extends AbstractSeqTest {
         return List.of(elements);
     }
 
-    // -- static collector()
-
-    @Test
-    public void shouldStreamAndCollectNil() {
-        final List<?> actual = List.nil().toJavaStream().collect(List.collector());
-        assertThat(actual).isEqualTo(List.nil());
+    @Override
+    protected <T> List<T> ofAll(Iterable<? extends T> elements) {
+        return List.ofAll(elements);
     }
 
-    @Test
-    public void shouldStreamAndCollectNonNil() {
-        final List<?> actual = List.of(1, 2, 3).toJavaStream().collect(List.collector());
-        assertThat(actual).isEqualTo(List.of(1, 2, 3));
+    @Override
+    protected List<Boolean> ofAll(boolean[] array) {
+        return List.ofAll(array);
     }
 
-    @Test
-    public void shouldParallelStreamAndCollectNil() {
-        final List<?> actual = List.nil().toJavaStream().parallel().collect(List.collector());
-        assertThat(actual).isEqualTo(List.nil());
+    @Override
+    protected List<Byte> ofAll(byte[] array) {
+        return List.ofAll(array);
     }
 
-    @Test
-    public void shouldParallelStreamAndCollectNonNil() {
-        final List<?> actual = List.of(1, 2, 3).toJavaStream().parallel().collect(List.collector());
-        assertThat(actual).isEqualTo(List.of(1, 2, 3));
+    @Override
+    protected List<Character> ofAll(char[] array) {
+        return List.ofAll(array);
     }
 
-    // -- static nil()
-
-    @Test
-    public void shouldCreateNil() {
-        assertThat(List.nil()).isEqualTo(Nil.instance());
+    @Override
+    protected List<Double> ofAll(double[] array) {
+        return List.ofAll(array);
     }
 
-    // -- static of()
-
-    @Test
-    public void shouldCreateListOfListUsingCons() {
-        assertThat(List.of(List.nil()).toString()).isEqualTo("List(List())");
+    @Override
+    protected List<Float> ofAll(float[] array) {
+        return List.ofAll(array);
     }
 
-    // -- static of(T...)
-
-    @Test
-    public void shouldCreateListOfElements() {
-        final List<Integer> actual = List.of(1, 2);
-        final List<Integer> expected = new Cons<>(1, new Cons<>(2, Nil.instance()));
-        assertThat(actual).isEqualTo(expected);
+    @Override
+    protected List<Integer> ofAll(int[] array) {
+        return List.ofAll(array);
     }
 
-    // -- static of(Iterable)
-
-    @Test
-    public void shouldCreateListOfIterable() {
-        final java.util.List<Integer> arrayList = Arrays.asList(1, 2, 3);
-        assertThat(List.ofAll(arrayList)).isEqualTo(List.of(1, 2, 3));
+    @Override
+    protected List<Long> ofAll(long[] array) {
+        return List.ofAll(array);
     }
 
-    // -- static rangeClosed(int, int)
-
-    @Test
-    public void shouldCreateListOfRangeWhereFromIsGreaterThanTo() {
-        assertThat(List.rangeClosed(1, 0)).isEqualTo(List.nil());
+    @Override
+    protected List<Short> ofAll(short[] array) {
+        return List.ofAll(array);
     }
 
-    @Test
-    public void shouldCreateListOfRangeWhereFromEqualsTo() {
-        assertThat(List.rangeClosed(0, 0)).isEqualTo(List.of(0));
+    @Override
+    protected List<Integer> range(int from, int toExclusive) {
+        return List.range(from, toExclusive);
     }
 
-    @Test
-    public void shouldCreateListOfRangeWhereFromIsLessThanTo() {
-        assertThat(List.rangeClosed(1, 3)).isEqualTo(List.of(1, 2, 3));
+    @Override
+    protected List<Integer> rangeBy(int from, int toExclusive, int step) {
+        return List.rangeBy(from, toExclusive, step);
     }
 
-    @Test
-    public void shouldCreateListOfRangeWhereFromEqualsToEqualsInteger_MIN_VALUE() {
-        assertThat(List.rangeClosed(Integer.MIN_VALUE, Integer.MIN_VALUE)).isEqualTo(List.of(Integer.MIN_VALUE));
+    @Override
+    protected List<Long> range(long from, long toExclusive) {
+        return List.range(from, toExclusive);
     }
 
-    // -- static range(int, int)
-
-    @Test
-    public void shouldCreateListOfUntilWhereFromIsGreaterThanTo() {
-        assertThat(List.range(1, 0)).isEqualTo(List.nil());
+    @Override
+    protected List<Long> rangeBy(long from, long toExclusive, long step) {
+        return List.rangeBy(from, toExclusive, step);
     }
 
-    @Test
-    public void shouldCreateListOfUntilWhereFromEqualsTo() {
-        assertThat(List.range(0, 0)).isEqualTo(List.nil());
+    @Override
+    protected List<Integer> rangeClosed(int from, int toInclusive) {
+        return List.rangeClosed(from, toInclusive);
     }
 
-    @Test
-    public void shouldCreateListOfUntilWhereFromIsLessThanTo() {
-        assertThat(List.range(1, 3)).isEqualTo(List.of(1, 2));
+    @Override
+    protected List<Integer> rangeClosedBy(int from, int toInclusive, int step) {
+        return List.rangeClosedBy(from, toInclusive, step);
     }
 
-    @Test
-    public void shouldCreateListOfUntilWhereFromEqualsToEqualsInteger_MIN_VALUE() {
-        assertThat(List.range(Integer.MIN_VALUE, Integer.MIN_VALUE)).isEqualTo(List.nil());
+    @Override
+    protected List<Long> rangeClosed(long from, long toInclusive) {
+        return List.rangeClosed(from, toInclusive);
+    }
+
+    @Override
+    protected List<Long> rangeClosedBy(long from, long toInclusive, long step) {
+        return List.rangeClosedBy(from, toInclusive, step);
     }
 
     // -- combinations
 
-        @Test
+    @Test
     public void shouldComputeCombinationsOfEmptyList() {
-        assertThat(List.nil().combinations()).isEqualTo(List.of(List.nil()));
+        assertThat(List.empty().combinations()).isEqualTo(List.of(List.empty()));
     }
 
     @Test
     public void shouldComputeCombinationsOfNonEmptyList() {
-        assertThat(List.of(1, 2, 3).combinations()).isEqualTo(List.of(List.nil(), List.of(1), List.of(2), List.of(3), List.of(1, 2), List.of(1, 3), List.of(2, 3), List.of(1, 2, 3)));
+        assertThat(List.of(1, 2, 3).combinations()).isEqualTo(List.of(List.empty(), List.of(1), List.of(2), List.of(3), List.of(1, 2), List.of(1, 3), List.of(2, 3), List.of(1, 2, 3)));
     }
 
     // -- combinations(k)
 
     @Test
     public void shouldComputeKCombinationsOfEmptyList() {
-        assertThat(List.nil().combinations(1)).isEqualTo(List.nil());
+        assertThat(List.empty().combinations(1)).isEqualTo(List.empty());
     }
 
     @Test
@@ -155,7 +150,7 @@ public class ListTest extends AbstractSeqTest {
 
     @Test
     public void shouldComputeKCombinationsOfNegativeK() {
-        assertThat(List.of(1).combinations(-1)).isEqualTo(List.of(List.nil()));
+        assertThat(List.of(1).combinations(-1)).isEqualTo(List.of(List.empty()));
     }
 
     // -- peek
@@ -169,7 +164,7 @@ public class ListTest extends AbstractSeqTest {
 
     @Test
     public void shouldComputePermutationsOfEmptyList() {
-        assertThat(List.nil().permutations()).isEqualTo(List.nil());
+        assertThat(List.empty().permutations()).isEqualTo(List.empty());
     }
 
     @Test
@@ -181,12 +176,12 @@ public class ListTest extends AbstractSeqTest {
 
     @Test
     public void shouldStringifyNil() {
-        assertThat(this.nil().toString()).isEqualTo("List()");
+        assertThat(empty().toString()).isEqualTo("List()");
     }
 
     @Test
     public void shouldStringifyNonNil() {
-        assertThat(this.of(1, 2, 3).toString()).isEqualTo("List(1, 2, 3)");
+        assertThat(of(1, 2, 3).toString()).isEqualTo("List(1, 2, 3)");
     }
 
     // -- Cons test

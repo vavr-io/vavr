@@ -11,16 +11,28 @@ import javaslang.collection.Stream.Nil;
 import org.junit.Test;
 
 import java.io.InvalidObjectException;
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.stream.Collector;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class StreamTest extends AbstractSeqTest {
 
+    // -- construction
+
     @Override
-    protected <T> Stream<T> nil() {
-        return Stream.nil();
+    protected <T> Collector<T, ArrayList<T>, Stream<T>> collector() {
+        return Stream.collector();
+    }
+
+    @Override
+    protected <T> Stream<T> empty() {
+        return Stream.empty();
+    }
+
+    @Override
+    protected <T> Stream<T> of(T element) {
+        return Stream.of(element);
     }
 
     @SuppressWarnings("unchecked")
@@ -29,30 +41,89 @@ public class StreamTest extends AbstractSeqTest {
         return Stream.of(elements);
     }
 
-    // -- static collector()
-
-    @Test
-    public void shouldStreamAndCollectNil() {
-        final Stream<?> actual = Stream.nil().toJavaStream().collect(Stream.collector());
-        assertThat(actual).isEqualTo(Stream.nil());
+    @Override
+    protected <T> Stream<T> ofAll(Iterable<? extends T> elements) {
+        return Stream.ofAll(elements);
     }
 
-    @Test
-    public void shouldStreamAndCollectNonNil() {
-        final Stream<?> actual = Stream.of(1, 2, 3).toJavaStream().collect(Stream.collector());
-        assertThat(actual).isEqualTo(Stream.of(1, 2, 3));
+    @Override
+    protected Stream<Boolean> ofAll(boolean[] array) {
+        return Stream.ofAll(array);
     }
 
-    @Test
-    public void shouldParallelStreamAndCollectNil() {
-        final Stream<?> actual = Stream.nil().toJavaStream().parallel().collect(Stream.collector());
-        assertThat(actual).isEqualTo(Stream.nil());
+    @Override
+    protected Stream<Byte> ofAll(byte[] array) {
+        return Stream.ofAll(array);
     }
 
-    @Test
-    public void shouldParallelStreamAndCollectNonNil() {
-        final Stream<?> actual = Stream.of(1, 2, 3).toJavaStream().parallel().collect(Stream.collector());
-        assertThat(actual).isEqualTo(Stream.of(1, 2, 3));
+    @Override
+    protected Stream<Character> ofAll(char[] array) {
+        return Stream.ofAll(array);
+    }
+
+    @Override
+    protected Stream<Double> ofAll(double[] array) {
+        return Stream.ofAll(array);
+    }
+
+    @Override
+    protected Stream<Float> ofAll(float[] array) {
+        return Stream.ofAll(array);
+    }
+
+    @Override
+    protected Stream<Integer> ofAll(int[] array) {
+        return Stream.ofAll(array);
+    }
+
+    @Override
+    protected Stream<Long> ofAll(long[] array) {
+        return Stream.ofAll(array);
+    }
+
+    @Override
+    protected Stream<Short> ofAll(short[] array) {
+        return Stream.ofAll(array);
+    }
+
+    @Override
+    protected Stream<Integer> range(int from, int toExclusive) {
+        return Stream.range(from, toExclusive);
+    }
+
+    @Override
+    protected Stream<Integer> rangeBy(int from, int toExclusive, int step) {
+        return Stream.rangeBy(from, toExclusive, step);
+    }
+
+    @Override
+    protected Stream<Long> range(long from, long toExclusive) {
+        return Stream.range(from, toExclusive);
+    }
+
+    @Override
+    protected Stream<Long> rangeBy(long from, long toExclusive, long step) {
+        return Stream.rangeBy(from, toExclusive, step);
+    }
+
+    @Override
+    protected Stream<Integer> rangeClosed(int from, int toInclusive) {
+        return Stream.rangeClosed(from, toInclusive);
+    }
+
+    @Override
+    protected Stream<Integer> rangeClosedBy(int from, int toInclusive, int step) {
+        return Stream.rangeClosedBy(from, toInclusive, step);
+    }
+
+    @Override
+    protected Stream<Long> rangeClosed(long from, long toInclusive) {
+        return Stream.rangeClosed(from, toInclusive);
+    }
+
+    @Override
+    protected Stream<Long> rangeClosedBy(long from, long toInclusive, long step) {
+        return Stream.rangeClosedBy(from, toInclusive, step);
     }
 
     // -- static from(int)
@@ -66,6 +137,19 @@ public class StreamTest extends AbstractSeqTest {
     public void shouldGenerateTerminatingIntStream() {
         //noinspection NumericOverflow
         assertThat(Stream.from(Integer.MAX_VALUE).take(2)).isEqualTo(Stream.of(Integer.MAX_VALUE, Integer.MAX_VALUE + 1));
+    }
+
+    // -- static from(long)
+
+    @Test
+    public void shouldGenerateLongStream() {
+        assertThat(Stream.from(-1L).take(3)).isEqualTo(Stream.of(-1L, 0L, 1L));
+    }
+
+    @Test
+    public void shouldGenerateTerminatingLongStream() {
+        //noinspection NumericOverflow
+        assertThat(Stream.from(Long.MAX_VALUE).take(2)).isEqualTo(Stream.of(Long.MAX_VALUE, Long.MAX_VALUE + 1));
     }
 
     // -- static gen(Supplier)
@@ -82,122 +166,30 @@ public class StreamTest extends AbstractSeqTest {
         assertThat(Stream.gen(2, (i) -> i + 2).take(3).reduce((i, j) -> i + j)).isEqualTo(12);
     }
 
-    // -- static gen(T, Supplier)
+    // -- static cons(T, Supplier)
+
     @Test
     public void shouldBuildStreamBasedOnHeadAndTailSupplierWithAccessToHead() {
-        assertThat(Stream.gen(1, () -> Stream.gen(2, () -> Stream.nil()))).isEqualTo(Stream.of(1, 2));
-    }
-
-    // -- static nil()
-
-    @Test
-    public void shouldCreateNil() {
-        assertThat(Stream.nil()).isEqualTo(Nil.instance());
-    }
-
-    // -- static of()
-
-    @Test
-    public void shouldCreateStreamOfStreamUsingCons() {
-        assertThat(Stream.of(Stream.nil()).toString()).isEqualTo("Stream(Stream(), ?)");
-    }
-
-    // -- static of(T...)
-
-    @Test
-    public void shouldCreateStreamOfElements() {
-        final Stream<Integer> actual = Stream.of(1, 2);
-        final Stream<Integer> expected = new Cons<>(1, () -> new Cons<>(2, Nil::instance));
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    // -- static of(Iterable)
-
-    @Test
-    public void shouldCreateStreamOfIterable() {
-        final java.util.List<Integer> arrayList = Arrays.asList(1, 2, 3);
-        assertThat(Stream.ofAll(arrayList)).isEqualTo(Stream.of(1, 2, 3));
-    }
-
-    // -- static of(Iterator)
-
-    @Test
-    public void shouldCreateStreamOfIterator() {
-        final Iterator<Integer> iterator = Arrays.asList(1, 2, 3).iterator();
-        assertThat(Stream.ofAll(iterator)).isEqualTo(Stream.of(1, 2, 3));
-    }
-
-    // -- static rangeClosed(int, int)
-
-    @Test
-    public void shouldCreateStreamOfRangeWhereFromIsGreaterThanTo() {
-        assertThat(Stream.rangeClosed(1, 0)).isEqualTo(Stream.nil());
-    }
-
-    @Test
-    public void shouldCreateStreamOfRangeWhereFromEqualsTo() {
-        assertThat(Stream.rangeClosed(0, 0)).isEqualTo(Stream.of(0));
-    }
-
-    @Test
-    public void shouldCreateStreamOfRangeWhereFromIsLessThanTo() {
-        assertThat(Stream.rangeClosed(1, 3)).isEqualTo(Stream.of(1, 2, 3));
-    }
-
-    @Test
-    public void shouldCreateStreamOfRangeWhereFromEqualsToEqualsInteger_MIN_VALUE() {
-        assertThat(Stream.rangeClosed(Integer.MIN_VALUE, Integer.MIN_VALUE)).isEqualTo(Stream.of(Integer.MIN_VALUE));
-    }
-
-    @Test
-    public void shouldCreateStreamOfRangeWhereFromEqualsToEqualsInteger_MAX_VALUE() {
-        assertThat(Stream.rangeClosed(Integer.MAX_VALUE, Integer.MAX_VALUE)).isEqualTo(Stream.of(Integer.MAX_VALUE));
-    }
-
-    // -- static range(int, int)
-
-    @Test
-    public void shouldCreateStreamOfUntilWhereFromIsGreaterThanTo() {
-        assertThat(Stream.range(1, 0)).isEqualTo(Stream.nil());
-    }
-
-    @Test
-    public void shouldCreateStreamOfUntilWhereFromEqualsTo() {
-        assertThat(Stream.range(0, 0)).isEqualTo(Stream.nil());
-    }
-
-    @Test
-    public void shouldCreateStreamOfUntilWhereFromIsLessThanTo() {
-        assertThat(Stream.range(1, 3)).isEqualTo(Stream.of(1, 2));
-    }
-
-    @Test
-    public void shouldCreateStreamOfUntilWhereFromEqualsToEqualsInteger_MIN_VALUE() {
-        assertThat(Stream.range(Integer.MIN_VALUE, Integer.MIN_VALUE)).isEqualTo(Stream.nil());
-    }
-
-    @Test
-    public void shouldCreateStreamOfUntilWhereFromEqualsToEqualsInteger_MAX_VALUE() {
-        assertThat(Stream.range(Integer.MAX_VALUE, Integer.MAX_VALUE)).isEqualTo(Stream.nil());
+        assertThat(Stream.cons(1, () -> Stream.cons(2, Stream::empty))).isEqualTo(Stream.of(1, 2));
     }
 
     // -- combinations
 
     @Test
     public void shouldComputeCombinationsOfEmptyStream() {
-        assertThat(Stream.nil().combinations()).isEqualTo(Stream.of(Stream.nil()));
+        assertThat(Stream.empty().combinations()).isEqualTo(Stream.of(Stream.empty()));
     }
 
     @Test
     public void shouldComputeCombinationsOfNonEmptyStream() {
-        assertThat(Stream.of(1, 2, 3).combinations()).isEqualTo(Stream.of(Stream.nil(), Stream.of(1), Stream.of(2), Stream.of(3), Stream.of(1, 2), Stream.of(1, 3), Stream.of(2, 3), Stream.of(1, 2, 3)));
+        assertThat(Stream.of(1, 2, 3).combinations()).isEqualTo(Stream.of(Stream.empty(), Stream.of(1), Stream.of(2), Stream.of(3), Stream.of(1, 2), Stream.of(1, 3), Stream.of(2, 3), Stream.of(1, 2, 3)));
     }
 
     // -- combinations(k)
 
     @Test
     public void shouldComputeKCombinationsOfEmptyStream() {
-        assertThat(Stream.nil().combinations(1)).isEqualTo(Stream.nil());
+        assertThat(Stream.empty().combinations(1)).isEqualTo(Stream.empty());
     }
 
     @Test
@@ -214,14 +206,14 @@ public class StreamTest extends AbstractSeqTest {
 
     @Test
     public void shouldComputeKCombinationsOfNegativeK() {
-        assertThat(Stream.of(1).combinations(-1)).isEqualTo(Stream.of(Stream.nil()));
+        assertThat(Stream.of(1).combinations(-1)).isEqualTo(Stream.of(Stream.empty()));
     }
 
     // -- permutations
 
     @Test
     public void shouldComputePermutationsOfEmptyStream() {
-        assertThat(Stream.nil().permutations()).isEqualTo(Stream.nil());
+        assertThat(Stream.empty().permutations()).isEqualTo(Stream.empty());
     }
 
     @Test
@@ -229,16 +221,51 @@ public class StreamTest extends AbstractSeqTest {
         assertThat(Stream.of(1, 2, 3).permutations()).isEqualTo(Stream.ofAll(Stream.of(Stream.of(1, 2, 3), Stream.of(1, 3, 2), Stream.of(2, 1, 3), Stream.of(2, 3, 1), Stream.of(3, 1, 2), Stream.of(3, 2, 1))));
     }
 
+    // -- addSelf
+
+    @Test
+    public void shouldRecurrentlyCalculateFibonacci() {
+        assertThat(Stream.of(1, 1).appendSelf(self -> self.zip(self.tail()).map(t -> t._1 + t._2)).take(10)).isEqualTo(Stream.of(1, 1, 2, 3, 5, 8, 13, 21, 34, 55));
+    }
+
+    @Test
+    public void shouldRecurrentlyCalculatePrimes() {
+        assertThat(Stream.of(2).appendSelf(self -> Stream.gen(3, i -> i + 2).filter(i -> self.takeWhile(j -> j * j <= i).forAll(k -> i % k > 0))).take(10)).isEqualTo(Stream.of(2, 3, 5, 7, 11, 13, 17, 19, 23, 29));
+    }
+
+    @Test
+    public void shouldDoNothingOnNil() {
+        assertThat(Stream.empty().appendSelf(self -> self)).isEqualTo(Stream.empty());
+    }
+
+    @Test
+    public void shouldRecurrentlyCalculateArithmeticProgression() {
+        assertThat(Stream.of(1).appendSelf(self -> self.map(t -> t + 1)).take(4)).isEqualTo(Stream.of(1, 2, 3, 4));
+    }
+
+    @Test
+    public void shouldRecurrentlyCalculateGeometricProgression() {
+        assertThat(Stream.of(1).appendSelf(self -> self.map(t -> t * 2)).take(4)).isEqualTo(Stream.of(1, 2, 4, 8));
+    }
+
+    // -- containsSlice
+
+    @Test
+    public void shouldRecognizeInfiniteDoesContainSlice() {
+        final boolean actual = Stream.gen(1, i -> i + 1).containsSlice(of(12, 13, 14));
+        assertThat(actual).isTrue();
+    }
+
     // -- toString
 
     @Test
     public void shouldStringifyNil() {
-        assertThat(this.nil().toString()).isEqualTo("Stream()");
+        assertThat(empty().toString()).isEqualTo("Stream()");
     }
 
     @Test
     public void shouldStringifyNonNil() {
-        assertThat(this.of(1, 2, 3).toString()).isEqualTo("Stream(1, ?)");
+        assertThat(of(1, 2, 3).toString()).isEqualTo("Stream(1, ?)");
     }
 
     @Test
@@ -252,7 +279,7 @@ public class StreamTest extends AbstractSeqTest {
 
     @Test(expected = InvalidObjectException.class)
     public void shouldNotSerializeEnclosingClassOfCons() throws Throwable {
-        Serializables.callReadObject(new Cons<>(1, Nil::instance));
+        Serializables.callReadObject(new Cons<>(() -> 1, Nil::instance));
     }
 
     @Test(expected = InvalidObjectException.class)

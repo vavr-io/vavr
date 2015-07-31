@@ -14,11 +14,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class BinaryTreeTest extends AbstractTreeTest {
 
-    final BinaryTree<Integer> tree = BinaryTree.branch(BinaryTree.branch(BinaryTree.branch(BinaryTree.leaf(7), 4, BinaryTree.nil()), 2, BinaryTree.leaf(5)), 1, BinaryTree.branch(BinaryTree.branch(BinaryTree.leaf(8), 6, BinaryTree.leaf(9)), 3, BinaryTree.nil()));
+    final BinaryTree<Integer> tree = BinaryTree.branch(BinaryTree.branch(BinaryTree.branch(BinaryTree.leaf(7), 4, BinaryTree.empty()), 2, BinaryTree.leaf(5)), 1, BinaryTree.branch(BinaryTree.branch(BinaryTree.leaf(8), 6, BinaryTree.leaf(9)), 3, BinaryTree.empty()));
 
     @Override
-    protected BinaryTree<Integer> nil() {
-        return BinaryTree.nil();
+    protected BinaryTree<Integer> empty() {
+        return BinaryTree.empty();
     }
 
     @Override
@@ -52,12 +52,12 @@ public class BinaryTreeTest extends AbstractTreeTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldNotCreateBranchWithEmptySubTrees() {
-        new BinaryTree.Branch<>(BinaryTree.nil(), 1, BinaryTree.nil());
+        new BinaryTree.Branch<>(BinaryTree.empty(), 1, BinaryTree.empty());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldNotCreateBranchUsingBranchFactoryMethodAndBothSubtreesAreNil() {
-        BinaryTree.branch(nil(), 1, nil());
+        BinaryTree.branch(empty(), 1, empty());
     }
 
     @Test(expected = InvalidObjectException.class)
@@ -69,12 +69,12 @@ public class BinaryTreeTest extends AbstractTreeTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void shouldThrowWhenLeftOfNil() {
-        BinaryTree.nil().left();
+        BinaryTree.empty().left();
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void shouldThrowWhenRightOfNil() {
-        BinaryTree.nil().right();
+        BinaryTree.empty().right();
     }
 
     // -- AbstractBinaryTree test
@@ -83,7 +83,7 @@ public class BinaryTreeTest extends AbstractTreeTest {
 
     @Test
     public void shouldBeAwareThatTwoTreesOfSameInstanceAreEqual() {
-        assertThat(nil().equals(nil())).isTrue();
+        assertThat(empty().equals(empty())).isTrue();
     }
 
     @Test
@@ -100,7 +100,7 @@ public class BinaryTreeTest extends AbstractTreeTest {
 
     @Test
     public void shouldBeAwareThatHashCodeOfNilIsOne() {
-        assertThat(nil().hashCode()).isEqualTo(1);
+        assertThat(empty().hashCode()).isEqualTo(1);
     }
 
     @Test
@@ -112,7 +112,7 @@ public class BinaryTreeTest extends AbstractTreeTest {
 
     @Test
     public void shouldReturnStringRepresentationOfNil() {
-        assertThat(nil().toString()).isEqualTo("BinaryTree()");
+        assertThat(empty().toString()).isEqualTo("BinaryTree()");
     }
 
     @Test

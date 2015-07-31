@@ -24,9 +24,9 @@ public interface RoseTree<T> extends Tree<T> {
      * By definition, a node with no children is a leaf.
      *
      * @param value    The value of the node.
-     * @param children The tree node's non-nil children, i.e. leafs and branches.
+     * @param children The tree node's non-empty children, i.e. leafs and branches.
      * @param <T>      The value type
-     * @return A new, non-nil rose tree
+     * @return A new, non-empty rose tree
      */
     @SafeVarargs
     @SuppressWarnings("varargs")
@@ -75,12 +75,12 @@ public interface RoseTree<T> extends Tree<T> {
      * @param <T> the tree's value type
      * @return the empty rose tree
      */
-    static <T> Nil<T> nil() {
+    static <T> Nil<T> empty() {
         return Nil.instance();
     }
 
     /**
-     * Returns the children of this tree which are non-nil, i.e. either leafs or branches.
+     * Returns the children of this tree which are non-empty, i.e. either leafs or branches.
      *
      * @return the rose tree's children
      */
@@ -139,7 +139,7 @@ public interface RoseTree<T> extends Tree<T> {
 
         @Override
         public List<NonNil<T>> getChildren() {
-            return List.nil();
+            return List.empty();
         }
 
         @Override
@@ -348,7 +348,7 @@ public interface RoseTree<T> extends Tree<T> {
 
         @Override
         public List<NonNil<T>> getChildren() {
-            return List.nil();
+            return List.empty();
         }
 
         @Override

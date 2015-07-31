@@ -31,395 +31,9 @@ def generateMainClasses(): Unit = {
   // Workaround: Use /$** instead of /** in a StringContext when IntelliJ IDEA otherwise shows up errors in the editor
   val javadoc = "**"
 
-  genMatch()
   genFunctions()
   genPropertyChecks()
   genTuples()
-
-  def genMatch(): Unit =
-    genJavaslangFile("javaslang.control", "Match")((im: ImportManager, packageName: String, className: String) => {
-
-      val function1 = im.getType("javaslang.Function1")
-      val lazyy = im.getType("javaslang.Lazy")
-      val list = im.getType("javaslang.collection.List")
-      val option = im.getType("javaslang.control.Option")
-      val none = im.getType("javaslang.control.None")
-      val some = im.getType("javaslang.control.Some")
-
-      val objects = im.getType("java.util.Objects")
-      val function = im.getType("java.util.function.Function")
-      val predicate = im.getType("java.util.function.Predicate")
-      val supplier = im.getType("java.util.function.Supplier")
-
-      val primitiveTypes = Seq("boolean", "byte", "char", "double", "float", "int", "long", "short")
-
-      def toObject(primitiveType: String): String = primitiveType match {
-        case "char" => "Character"
-        case "int" => "Integer"
-        case _ => primitiveType.firstUpper
-      }
-
-      xs"""
-        /**
-         * {@code Match} is a better switch for Java. Some characteristics of {@code Match} are:
-         * <ul>
-         * <li>it has a fluent API</li>
-         * <li>it is a {@code Function<Object, R>}</li>
-         * <li>it is able to match types, i.e. {@code Match.when((byte b) -> "a byte: " + b)}</li>
-         * <li>it is able to match values, i.e. {@code Match.when(BigDecimal.ZERO, b -> "Zero: " + b)}</li>
-         * </ul>
-         *
-         * Example of a Match as <a href="http://en.wikipedia.org/wiki/Partial_function"><strong>partial</strong> function</a>:
-         *
-         * <pre>
-         * <code>
-         * final Match&lt;Number&gt; toNumber = Match.as(Number.class)
-         *     .when((Integer i) -&gt; i)
-         *     .when((String s) -&gt; new BigDecimal(s));
-         * final Number number = toNumber.apply(1.0d); // throws a MatchError
-         * </code>
-         * </pre>
-         *
-         * Example of a Match as <a href="http://en.wikipedia.org/wiki/Function_(mathematics)"><strong>total</strong> function</a>:
-         *
-         * <pre>
-         * <code>
-         * Match.as(Number.class)
-         *     .when((Integer i) -&gt; i)
-         *     .when((String s) -&gt; new BigDecimal(s))
-         *     .otherwise(() -&gt; -1)
-         *     .apply(1.0d); // result: -1
-         * </code>
-         * </pre>
-         *
-         * @param <R> The result type of the {@code Match}.
-         * @since 1.0.0
-         */
-        public interface Match<R> extends $function<Object, R> {
-
-            /**
-             * Applies this {@code Match} to an {@code Object}.
-             *
-             * @param o an {@code Object}
-             * @throws MatchError if no {@code Case} matched
-             */
-            @Override
-            R apply(Object o);
-
-            /**
-             * Specifies the type of the match expression. In many cases it is not necessary to call {@code as}. This
-             * method is intended to be used for readability reasons when the upper bound of the cases cannot be inferred,
-             * i.e. instead of
-             *
-             * <pre>
-             * <code>
-             * final Match&lt;Number&gt; toNumber = Match
-             *         .&lt;Number&gt; when((Integer i) -&gt; i)
-             *         .when((String s) -&gt; new BigDecimal(s))
-             * </code>
-             * </pre>
-             *
-             * we write
-             *
-             * <pre>
-             * <code>
-             * final Match&lt;Number&gt; toNumber = Match.as(Number.class)
-             *         .when((Integer i) -&gt; i)
-             *         .when((String s) -&gt; new BigDecimal(s))
-             * </code>
-             * </pre>
-             *
-             * @param type the hint of type {@code R}
-             * @param <R>  the type of the {@code Match} expression
-             * @return a new match builder
-             */
-            static <R> Typed<R> as(Class<R> type) {
-                $objects.requireNonNull(type, "type is null");
-                return new Typed<>();
-            }
-
-            /**
-             * Creates a {@code Match.Case} by value.
-             *
-             * @param <T> type of the prototype value
-             * @param <R> result type of the matched case
-             * @param prototype A specific value to be matched
-             * @param function A function which is applied to the value given a match
-             * @return a new {@code Case}
-             * @throws NullPointerException if {@code function} is null
-             */
-            static <T, R> Case<R> when(T prototype, $function1<? super T, ? extends R> function) {
-                $objects.requireNonNull(function, "function is null");
-                return Case.of(prototype, function);
-            }
-
-            /**
-             * Creates a {@code Match.Case} by type.
-             *
-             * @param <R> result type of the matched case
-             * @param function An {@code Object} to {@code R} function
-             * @return a new {@code Case}
-             * @throws NullPointerException if {@code function} is null
-             */
-            @SuppressWarnings("overloads")
-            static <R> Case<R> when($function1<?, ? extends R> function) {
-                $objects.requireNonNull(function, "function is null");
-                return Case.of(function);
-            }
-
-            ${primitiveTypes.gen(name => xs"""
-              /$javadoc
-               * Creates a {@code Match.Case} by primitive type {@code $name}.
-               *
-               * @param <R> result type of the matched case
-               * @param function An {@code $name} to {@code R} function
-               * @return a new {@code Case}
-               * @throws NullPointerException if {@code function} is null
-               */
-              @SuppressWarnings("overloads")
-              static <R> Case<R> when(${name.firstUpper}Function<? extends R> function) {
-                  $objects.requireNonNull(function, "function is null");
-                  return Case.of(function);
-              }
-            """)("\n\n")}
-
-            /**
-             * The result of {@code Match.as(Class)}, which explicitly sets the {@code Match} result type.
-             *
-             * @param <R> the result type
-             * @since 1.2.1
-             */
-            final class Typed<R> implements Expression.HasCases<R> {
-
-                private Typed() {
-                }
-
-                @Override
-                public <T> Case<R> when(T prototype, $function1<? super T, ? extends R> function) {
-                    $objects.requireNonNull(function, "function is null");
-                    return Case.of(prototype, function);
-                }
-
-                @Override
-                public Case<R> when($function1<?, ? extends R> function) {
-                    $objects.requireNonNull(function, "function is null");
-                    return Case.of(function);
-                }
-
-                ${primitiveTypes.gen(name => xs"""
-                  @Override
-                  public Case<R> when(${name.firstUpper}Function<? extends R> function) {
-                      $objects.requireNonNull(function, "function is null");
-                      return Case.of(function);
-                  }
-                """)("\n\n")}
-            }
-
-            /**
-             * A {@code Match.Case} which matches an {@code Object} by <em>type</em> or by <em>value</em>.
-             * <p>
-             * Typically there is a chain of match cases. The first applicable match is applied to an object.
-             * <p>
-             * The {@code otherwise()} methods provide a default value which is returned if no case matches.
-             *
-             * @param <R> result type of the {@code Match.Case}
-             * @since 1.0.0
-             */
-            final class Case<R> implements Match<R>, Expression.HasCases<R> {
-
-                private final $list<$function<Object, $option<R>>> cases;
-                private final $lazyy<Expression<R>> match;
-
-                private Case(List<$function<Object, $option<R>>> cases) {
-                    this.cases = cases;
-                    this.match = $lazyy.of(() -> new Expression<>(cases.reverse(), $none.instance()));
-                }
-
-                private static <T, R> Case<R> of(T prototype, $function1<? super T, ? extends R> function) {
-                    return new Case<>($list.of(Case.when(new $some<>(prototype), function)));
-                }
-
-                @SuppressWarnings("overloads")
-                private static <R> Case<R> of($function1<?, ? extends R> function) {
-                    return new Case<>($list.of(Case.when($none.instance(), function)));
-                }
-
-                ${primitiveTypes.gen(name => xs"""
-                  @SuppressWarnings("overloads")
-                  private static <R> Case<R> of(${name.firstUpper}Function<? extends R> function) {
-                    return new Case<>($list.of(Case.when($none.instance(), ($function1<${toObject(name)}, R>) function::apply, ${toObject(name)}.class)));
-                  }
-                """)("\n\n")}
-
-                @Override
-                public R apply(Object o) {
-                    return match.get().apply(o);
-                }
-
-                @Override
-                public <T> Case<R> when(T prototype, $function1<? super T, ? extends R> function) {
-                    $objects.requireNonNull(function, "function is null");
-                    final $function<Object, $option<R>> when = when(new $some<>(prototype), function);
-                    return new Case<>(cases.prepend(when));
-                }
-
-                @Override
-                public Case<R> when($function1<?, ? extends R> function) {
-                    $objects.requireNonNull(function, "function is null");
-                    final $function<Object, $option<R>> when = when($none.instance(), function);
-                    return new Case<>(cases.prepend(when));
-                }
-
-                ${primitiveTypes.gen(name => xs"""
-                  @Override
-                  public Case<R> when(${name.firstUpper}Function<? extends R> function) {
-                      $objects.requireNonNull(function, "function is null");
-                      final $function<Object, $option<R>> when = when($none.instance(), ($function1<${toObject(name)}, R>) function::apply, ${toObject(name)}.class);
-                      return new Case<>(cases.prepend(when));
-                  }
-                """)("\n\n")}
-
-                /**
-                 * <p>Provides a default value which is returned if no case matches.</p>
-                 * <p>Note that this method takes the default by value which means that the input is
-                 * <em>eagerly evaluated</em> even if the {@code otherwise} clause of the expression is not executed.
-                 * Unless you already have a default value calculated or as a literal it might be better
-                 * to use the {@link Match.Case#otherwise(Supplier)} alternative to gain lazy evaluation.</p>
-                 *
-                 * @param defaultValue The default value.
-                 * @return a Match-expression
-                 */
-                public Expression<R> otherwise(R defaultValue) {
-                    return new Expression<>(cases.reverse(), new $some<>($lazyy.of(() -> defaultValue)));
-                }
-
-                /**
-                 * <p>Provides a default value which is returned if no case matches.</p>
-                 * @param defaultSupplier A Supplier returning the default value.
-                 * @return a Match-expression
-                 */
-                public Expression<R> otherwise($supplier<R> defaultSupplier) {
-                    $objects.requireNonNull(defaultSupplier, "defaultSupplier is null");
-                    return new Expression<>(cases.reverse(), new $some<>($lazyy.of(defaultSupplier)));
-                }
-
-                private static <T, R> $function<Object, $option<R>> when($option<T> prototype, $function1<T, ? extends R> function) {
-                    final ${im.getType("java.lang.invoke.MethodType")} type = function.getType();
-                    // the compiler may add additional parameters to the lambda, our parameter is the last one
-                    final Class<?> parameterType = type.parameterType(type.parameterCount() - 1);
-                    return when(prototype, function, parameterType);
-                }
-
-                private static <T, R> $function<Object, $option<R>> when($option<T> prototype, $function1<T, ? extends R> function, Class<?> parameterType) {
-                    final $predicate<Object> applicable = obj -> {
-                        final boolean isCompatible = obj == null || parameterType.isAssignableFrom(obj.getClass());
-                        return isCompatible
-                                && prototype.map(val -> val == obj || (val != null && val.equals(obj))).orElse(obj != null);
-                    };
-                    return obj -> {
-                        if (applicable.test(obj)) {
-                            @SuppressWarnings("unchecked")
-                            final R result = (($function1<Object, R>) function).apply(obj);
-                            return new $some<>(result);
-                        } else {
-                            return $none.instance();
-                        }
-                    };
-                }
-            }
-
-            /**
-             * A final {@code Match} expression which may be applied to an {@code Object}.
-             *
-             * @param <R> result type of the {@code Match}
-             * @since 1.0.0
-             */
-            final class Expression<R> implements Match<R> {
-
-                private Iterable<$function<Object, $option<R>>> cases;
-                private $option<$lazyy<R>> otherwise;
-
-                private Expression(Iterable<$function<Object, $option<R>>> cases, $option<$lazyy<R>> otherwise) {
-                    this.cases = cases;
-                    this.otherwise = otherwise;
-                }
-
-                @Override
-                public R apply(Object o) {
-                    for ($function<Object, $option<R>> when : cases) {
-                        final $option<R> result = when.apply(o);
-                        if (result.isDefined()) {
-                            return result.get();
-                        }
-                    }
-                    return otherwise.orElseThrow(() -> new MatchError(o)).get();
-                }
-
-                // Note: placed this interface here, because interface Match cannot have private inner interfaces
-                private interface HasCases<R> {
-
-                    /**
-                     * Creates a {@code Match.Case} by value.
-                     *
-                     * @param <T> type of the prototype value
-                     * @param prototype A specific value to be matched
-                     * @param function A function which is applied to the value given a match
-                     * @return a new {@code Case}
-                     * @throws NullPointerException if {@code function} is null
-                     */
-                    <T> HasCases<R> when(T prototype, $function1<? super T, ? extends R> function);
-
-                    /**
-                     * Creates a {@code Match.Case} by type.
-                     *
-                     * @param function An {@code Object} to {@code R} function
-                     * @return a new {@code Case}
-                     * @throws NullPointerException if {@code function} is null
-                     */
-                    @SuppressWarnings("overloads")
-                    HasCases<R> when($function1<?, ? extends R> function);
-
-                    ${primitiveTypes.gen(name => xs"""
-                      /$javadoc
-                       * Creates a {@code Match.Case} by primitive type {@code $name}.
-                       *
-                       * @param function An {@code $name} to {@code R} function
-                       * @return a new {@code Case}
-                       * @throws NullPointerException if {@code function} is null
-                       */
-                      @SuppressWarnings("overloads")
-                      HasCases<R> when(${name.firstUpper}Function<? extends R> function);
-                    """)("\n\n")}
-                }
-            }
-
-            ${primitiveTypes.gen(name => xs"""
-              /$javadoc
-               * A function {@code f: $name -> R} that takes a primitive {@code $name} value and returns a value of type {@code R}.
-               *
-               * @param <R> return type of this function
-               * @since 1.0.0
-               */
-              @FunctionalInterface
-              interface ${name.firstUpper}Function<R> extends ${im.getType("java.io.Serializable")} {
-
-                  /$javadoc
-                   * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
-                   */
-                  long serialVersionUID = 1L;
-
-                  /$javadoc
-                   * Applies this function to the given value.
-                   *
-                   * @param value A $name value
-                   * @return A new value of type R
-                   */
-                  R apply($name value);
-              }
-            """)("\n\n")}
-        }
-      """
-    })
 
   /**
    * Generator of javaslang.test.Property
@@ -660,6 +274,7 @@ def generateMainClasses(): Unit = {
 
       def genFunction(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
 
+        val Objects = im.getType("java.util.Objects")
         val generics = (1 to i).gen(j => s"T$j")(", ")
         val fullGenerics = s"<${(i > 0).gen(s"$generics, ")}R>"
         val genericsReversed = (1 to i).reverse.gen(j => s"T$j")(", ")
@@ -718,7 +333,31 @@ def generateMainClasses(): Unit = {
 
               /**
                * Lifts a <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html">method
-               * reference</a> to a {@code $className}.
+               * reference</a> or a
+               * <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html#syntax">lambda
+               * expression</a> to a {@code $className}.
+               * <p>
+               * Examples (w.l.o.g. referring to Function1):
+               * <pre><code>// lifting a lambda expression
+               * Function1&lt;Integer, Integer&gt; add1 = Function1.lift(i -&gt; i + 1);
+               *
+               * // lifting a method reference (, e.g. Integer method(Integer i) { return i + 1; })
+               * Function1&lt;Integer, Integer&gt; add2 = Function1.lift(this::method);
+               *
+               * // lifting a lambda reference
+               * Function1&lt;Integer, Integer&gt; add3 = Function1.lift(add1::apply);
+               * </code></pre>
+               * <p>
+               * <strong>Caution:</strong> Reflection loses type information of lifted lambda reference.
+               * <pre><code>// type of lifted a lambda expression
+               * MethodType type1 = add1.getType(); // (Integer)Integer
+               *
+               * // type of lifted method reference
+               * MethodType type2 = add2.getType(); // (Integer)Integer
+               *
+               * // type of lifted lambda reference
+               * MethodType type2 = add3.getType(); // (Object)Object
+               * </code></pre>
                *
                * @param methodReference (typically) a method reference, e.g. {@code Type::method}
                ${(0 to i).gen(j => if (j == 0) "* @param <R> return type" else s"* @param <T$j> ${j.ordinal} argument")("\n")}
@@ -729,15 +368,16 @@ def generateMainClasses(): Unit = {
               }
 
               ${(i == 1).gen(xs"""
-              /$javadoc
-               * Returns the identity $className, i.e. the function that returns its input.
-               *
-               * @param <T> argument type (and return type) of the identity function
-               * @return the identity $className
-               */
-              static <T> ${name}1<T, T> identity() {
-                  return t -> t;
-              }""")}
+                /$javadoc
+                 * Returns the identity $className, i.e. the function that returns its input.
+                 *
+                 * @param <T> argument type (and return type) of the identity function
+                 * @return the identity $className
+                 */
+                static <T> ${name}1<T, T> identity() {
+                    return t -> t;
+                }
+              """)}
 
               /$javadoc
                * Applies this function to ${arguments(i)} and returns the result.
@@ -746,6 +386,38 @@ def generateMainClasses(): Unit = {
                * ${checked.gen("@throws Throwable if something goes wrong applying this function to the given arguments")}
                */
               R apply($paramsDecl)${checked.gen(" throws Throwable")};
+
+              ${(i > 0).gen(xs"""
+                /$javadoc
+                 * Checks if this function is applicable to the given objects,
+                 * i.e. each of the given objects is either null or the object type is assignable to the parameter type.
+                 * <p>
+                 * Please note that it is not checked if this function is defined for the given objects.
+                 ${(0 to i).gen(j => if (j == 0) "*" else s"* @param o$j object $j")("\n")}
+                 * @return true, if this function is applicable to the given objects, false otherwise.
+                 */
+                default boolean isApplicableTo(${(1 to i).gen(j => s"Object o$j")(", ")}) {
+                    final Class<?>[] paramTypes = getType().parameterArray();
+                    return
+                            ${(1 to i).gen(j => xs"""
+                              (o$j == null || paramTypes[${j - 1}].isAssignableFrom(o$j.getClass()))
+                            """)(" &&\n")};
+                }
+
+                /$javadoc
+                 * Checks if this function is generally applicable to objects of the given types.
+                 ${(0 to i).gen(j => if (j == 0) "*" else s"* @param type$j type $j")("\n")}
+                 * @return true, if this function is applicable to objects of the given types, false otherwise.
+                 */
+                default boolean isApplicableToType${(i > 1).gen("s")}(${(1 to i).gen(j => s"Class<?> type$j")(", ")}) {
+                    ${(1 to i).gen(j => xs"""$Objects.requireNonNull(type$j, "type$j is null");""")("\n")}
+                    final Class<?>[] paramTypes = getType().parameterArray();
+                    return
+                            ${(1 to i).gen(j => xs"""
+                              paramTypes[${j - 1}].isAssignableFrom(type$j)
+                            """)(" &&\n")};
+                }
+              """)}
 
               ${(1 to i - 1).gen(j => {
                 val partialApplicationArgs = (1 to j).gen(k => s"T$k t$k")(", ")
@@ -801,24 +473,34 @@ def generateMainClasses(): Unit = {
 
               @Override
               default $className$fullGenerics memoized() {
-                  ${val mappingFunction = (checked, i) match {
-                      case (true, 0) => s"() -> $Try.of(this::apply).get()"
-                      case (true, 1) => s"t -> $Try.of(() -> this.apply(t)).get()"
-                      case (true, _) => s"t -> $Try.of(() -> tupled.apply(t)).get()"
-                      case (false, 0) => s"this::apply"
-                      case (false, 1) => s"this::apply"
-                      case (false, _) => s"tupled::apply"
-                    }
-                    if (i == 0) xs"""
-                      return Lazy.of($mappingFunction)::get;
-                    """ else if (i == 1) xs"""
-                      final ${im.getType("java.util.Map")}<$generics, R> cache = new ${im.getType("java.util.concurrent.ConcurrentHashMap")}<>();
-                      return $params -> cache.computeIfAbsent($params, $mappingFunction);
-                    """ else xs"""
-                      final ${im.getType("java.util.Map")}<Tuple$i<$generics>, R> cache = new ${im.getType("java.util.concurrent.ConcurrentHashMap")}<>();
-                      final ${checked.gen("Checked")}Function1<Tuple$i<$generics>, R> tupled = tupled();
-                      return ($params) -> cache.computeIfAbsent(Tuple.of($params), $mappingFunction);
-                    """
+                  if (this instanceof Memoized) {
+                      return this;
+                  } else {
+                      ${val mappingFunction = (checked, i) match {
+                          case (true, 0) => s"() -> $Try.of(this::apply).get()"
+                          case (true, 1) => s"t -> $Try.of(() -> this.apply(t)).get()"
+                          case (true, _) => s"t -> $Try.of(() -> tupled.apply(t)).get()"
+                          case (false, 0) => s"this::apply"
+                          case (false, 1) => s"this::apply"
+                          case (false, _) => s"tupled::apply"
+                        }
+                        val forNull = (checked, i) match {
+                          case (true, 1) => s"$Try.of(() -> apply(null))::get"
+                          case (false, 1) => s"() -> apply(null)"
+                          case _ => null
+                        }
+                        if (i == 0) xs"""
+                          return ($className$fullGenerics & Memoized) Lazy.of($mappingFunction)::get;
+                        """ else if (i == 1) xs"""
+                          final Lazy<R> forNull = Lazy.of($forNull);
+                          final ${im.getType("java.util.Map")}<$generics, R> cache = new ${im.getType("java.util.concurrent.ConcurrentHashMap")}<>();
+                          return ($className$fullGenerics & Memoized) t1 -> (t1 == null) ? forNull.get() : cache.computeIfAbsent(t1, $mappingFunction);
+                        """ else xs"""
+                          final ${im.getType("java.util.Map")}<Tuple$i<$generics>, R> cache = new ${im.getType("java.util.concurrent.ConcurrentHashMap")}<>();
+                          final ${checked.gen("Checked")}Function1<Tuple$i<$generics>, R> tupled = tupled();
+                          return ($className$fullGenerics & Memoized) ($params) -> cache.computeIfAbsent(Tuple.of($params), $mappingFunction);
+                        """
+                      }
                   }
               }
 
@@ -832,7 +514,7 @@ def generateMainClasses(): Unit = {
                * @throws NullPointerException if after is null
                */
               default <V> $className<${genericsFunction}V> andThen($compositionType<? super R, ? extends V> after) {
-                  ${im.getType("java.util.Objects")}.requireNonNull(after, "after is null");
+                  $Objects.requireNonNull(after, "after is null");
                   return ($params) -> after.apply(apply($params));
               }
 
@@ -847,7 +529,7 @@ def generateMainClasses(): Unit = {
                  * @throws NullPointerException if before is null
                  */
                 default <V> ${name}1<V, R> compose($compositionType<? super V, ? extends T1> before) {
-                    ${im.getType("java.util.Objects")}.requireNonNull(before, "before is null");
+                    $Objects.requireNonNull(before, "before is null");
                     return v -> apply(before.apply(v));
                 }
               """)}
@@ -1026,6 +708,8 @@ def generateTestClasses(): Unit = {
 
       def genFunctionTest(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
 
+        val AtomicInteger = im.getType("java.util.concurrent.atomic.AtomicInteger");
+
         val functionArgsDecl = (1 to i).gen(j => s"Object o$j")(", ")
         val functionArgs = (1 to i).gen(j => s"o$j")(", ")
         val generics = (1 to i + 1).gen(j => "Object")(", ")
@@ -1071,6 +755,26 @@ def generateTestClasses(): Unit = {
                 """
               })("\n\n")}
 
+              ${(i > 0).gen(xs"""
+              @$test
+                public void shouldRecognizeApplicabilityOfNull() {
+                    final $name$i<$generics> f = ($functionArgs) -> null;
+                    $assertThat(f.isApplicableTo(${(1 to i).gen(j => "null")(", ")})).isTrue();
+                }
+
+                @$test
+                public void shouldRecognizeApplicabilityOfNonNull() {
+                    final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
+                    $assertThat(f.isApplicableTo(${(1 to i).gen(j => s"$j")(", ")})).isTrue();
+                }
+
+                @$test
+                public void shouldRecognizeApplicabilityToType${(i > 1).gen("s")}() {
+                    final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
+                    $assertThat(f.isApplicableToType${(i > 1).gen("s")}(${(1 to i).gen(j => "Integer.class")(", ")})).isTrue();
+                }
+              """)}
+
               @$test
               public void shouldGetArity() {
                   final $name$i<$generics> f = ($functionArgs) -> null;
@@ -1095,6 +799,47 @@ def generateTestClasses(): Unit = {
               public void shouldReverse() {
                   final $name$i<$generics> f = ($functionArgs) -> null;
                   $assertThat(f.reversed()).isNotNull();
+              }
+
+              @$test
+              public void shouldMemoize()${checked.gen(" throws Throwable")} {
+                  final $AtomicInteger integer = new $AtomicInteger();
+                  final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> ${(1 to i).gen(j => s"i$j")(" + ")}${(i > 0).gen(" + ")}integer.getAndIncrement();
+                  final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> memo = f.memoized();
+                  // should apply f on first apply()
+                  final int expected = memo.apply(${(1 to i).gen(j => s"$j")(", ")});
+                  // should return memoized value of second apply()
+                  $assertThat(memo.apply(${(1 to i).gen(j => s"$j")(", ")})).isEqualTo(expected);
+                  ${(i > 0).gen(xs"""
+                    // should calculate new values when called subsequently with different parameters
+                    $assertThat(memo.apply(${(1 to i).gen(j => s"${j + 1} ")(", ")})).isEqualTo(${(1 to i).gen(j => s"${j + 1} ")(" + ")} + 1);
+                    // should return memoized value of second apply() (for new value)
+                    $assertThat(memo.apply(${(1 to i).gen(j => s"${j + 1} ")(", ")})).isEqualTo(${(1 to i).gen(j => s"${j + 1} ")(" + ")} + 1);
+                  """)}
+              }
+
+              @$test
+              public void shouldNotMemoizeAlreadyMemoizedFunction()${checked.gen(" throws Throwable")} {
+                  final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
+                  final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> memo = f.memoized();
+                  $assertThat(memo.memoized() == memo).isTrue();
+              }
+
+              ${(i > 0).gen(xs"""
+                @$test
+                public void shouldMemoizeValueGivenNullArguments()${checked.gen(" throws Throwable")} {
+                    final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
+                    final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> memo = f.memoized();
+                    $assertThat(memo.apply(${(1 to i).gen(j => "null")(", ")})).isNull();
+                }
+              """)}
+
+              @$test
+              public void shouldRecognizeMemoizedFunctions() {
+                  final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
+                  final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> memo = f.memoized();
+                  $assertThat(f.isMemoized()).isFalse();
+                  $assertThat(memo.isMemoized()).isTrue();
               }
 
               @$test
@@ -1585,9 +1330,8 @@ object JavaGenerator {
    */
   def genJavaFile(baseDir: String, packageName: String, className: String)(classHeader: String)(gen: (ImportManager, String, String) => String, knownSimpleClassNames: List[String] = List())(implicit charset: Charset = StandardCharsets.UTF_8): Unit = {
 
-    import java.io.File
-
-    val dirName = packageName.replaceAll("\\.", File.separator)
+    // DEV-NOTE: using File.separator instead of "/" does *not* work on windows!
+    val dirName = packageName.replaceAll("[.]", "/")
     val fileName = className + ".java"
     val importManager = new ImportManager(packageName, knownSimpleClassNames)
     val classBody = gen.apply(importManager, packageName, className)

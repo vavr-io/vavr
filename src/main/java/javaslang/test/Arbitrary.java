@@ -85,7 +85,7 @@ public interface Arbitrary<T> extends TraversableOnce<T> {
      * @param <U>    New type of arbitrary objects
      * @return A new Arbitrary
      */
-    default <U> Arbitrary<U> flatMap(Function<? super T, ? extends Arbitrary<U>> mapper) {
+    default <U> Arbitrary<U> flatMap(Function<? super T, ? extends Arbitrary<? extends U>> mapper) {
         return n -> {
             final Gen<T> generator = apply(n);
             return random -> mapper.apply(generator.apply(random)).apply(n).apply(random);
@@ -102,10 +102,10 @@ public interface Arbitrary<T> extends TraversableOnce<T> {
         return n -> apply(n).filter(predicate);
     }
 
-    default <U> Arbitrary<U> flatten(Function<? super T, ? extends Arbitrary<U>> f) {
+    default <U> Arbitrary<U> flatten(Function<? super T, ? extends Arbitrary<? extends U>> f) {
         return size -> random -> {
             final Gen<T> gen = apply(size);
-            final Arbitrary<U> arbitrary = f.apply(gen.apply(random));
+            final Arbitrary<? extends U> arbitrary = f.apply(gen.apply(random));
             return arbitrary.apply(size).apply(random);
         };
     }
@@ -176,7 +176,7 @@ public interface Arbitrary<T> extends TraversableOnce<T> {
         return size -> {
             final Gen<T> genT = arbitraryT.apply(size);
             return random -> Gen.choose(0, size).map(i -> {
-                List<T> list = List.nil();
+                List<T> list = List.empty();
                 for (int j = 0; j < i; j++) {
                     final T element = genT.apply(random);
                     list = list.prepend(element);

@@ -26,8 +26,8 @@ public class TryTest {
     // -- flatten(Function)
 
     static final Match<Try<Integer>> MATCH = Match
-        .when((Try<Integer> o) -> o)
-        .when((Integer i) -> new Success<>(i));
+            .whenApplicable((Try<Integer> o) -> o).thenApply()
+            .whenType(Integer.class).then(Success::new);
 
     @Test
     public void shouldFlattenUnnestedSuccessWithFunction() {
@@ -51,7 +51,9 @@ public class TryTest {
 
     @Test
     public void shouldReturnFailureWhenFlatteningSuccessThrows() {
-        assertThat(new Success<>(1).flatten(ignored -> { throw new Error("error"); })).isEqualTo(new Failure<>(new Error("error")));
+        assertThat(new Success<>(1).flatten(ignored -> {
+            throw new Error("error");
+        })).isEqualTo(new Failure<>(new Error("error")));
     }
 
     // -- exists
@@ -73,7 +75,9 @@ public class TryTest {
 
     @Test(expected = Error.class)
     public void shouldNotHoldPropertyExistsWhenPredicateThrows() {
-        new Success<>(1).exists(e -> { throw new Error("error"); });
+        new Success<>(1).exists(e -> {
+            throw new Error("error");
+        });
     }
 
     // -- forall
@@ -229,7 +233,7 @@ public class TryTest {
 
     @Test
     public void shouldRecoverWithOnFailure() {
-        assertThat(TryTest.<String> failure().recoverWith(x -> success()).get()).isEqualTo(OK);
+        assertThat(TryTest.<String>failure().recoverWith(x -> success()).get()).isEqualTo(OK);
     }
 
     @Test
@@ -242,7 +246,7 @@ public class TryTest {
 
     @Test
     public void shouldConsumeThrowableWhenCallingOnFailureGivenFailure() {
-        final String[] result = new String[]{FAILURE};
+        final String[] result = new String[] { FAILURE };
         failure().onFailure(x -> result[0] = OK);
         assertThat(result[0]).isEqualTo(OK);
     }
@@ -303,7 +307,7 @@ public class TryTest {
     @Test
     public void shouldForEachOnFailure() {
         final List<String> actual = new ArrayList<>();
-        TryTest.<String> failure().forEach(actual::add);
+        TryTest.<String>failure().forEach(actual::add);
         assertThat(actual.isEmpty()).isTrue();
     }
 
@@ -336,21 +340,45 @@ public class TryTest {
     }
 
     @Test
-    public void shouldChainSuccessWithAndThen() {
+    public void shouldChainSuccessWithMapTry() {
         final Try<Integer> actual = Try.of(() -> 100)
-                .andThen(x -> x + 100)
-                .andThen(x -> x + 50);
+                .mapTry(x -> x + 100)
+                .mapTry(x -> x + 50);
 
         final Try<Integer> expected = new Success<>(250);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    public void shouldChainFailureWithAndThen() {
+    public void shouldChainFailureWithMapTry() {
         final Try<Integer> actual = Try.of(() -> 100)
-                .andThen(x -> x + 100)
-                .andThen(x -> Integer.parseInt("aaa") + x)   //Throws exception.
-                .andThen(x -> x / 2);
+                .mapTry(x -> x + 100)
+                .mapTry(x -> Integer.parseInt("aaa") + x)   //Throws exception.
+                .mapTry(x -> x / 2);
+
+        final Try<Integer> expected = new Failure<>(new NumberFormatException("For input string: \"aaa\""));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldChainConsumableSuccessWithAndThen() {
+        final Try<Integer> actual = Try.of(() -> new ArrayList<Integer>())
+                .andThen(arr -> arr.add(10))
+                .andThen(arr -> arr.add(30))
+                .andThen(arr -> arr.add(20))
+                .mapTry(arr -> arr.get(1));
+
+        final Try<Integer> expected = new Success<>(30);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldChainConsumableFailureWithAndThen() {
+        final Try<Integer> actual = Try.of(() -> new ArrayList<Integer>())
+                .andThen(arr -> arr.add(10))
+                .andThen(arr -> arr.add(Integer.parseInt("aaa"))) //Throws exception.
+                .andThen(arr -> arr.add(20))
+                .mapTry(arr -> arr.get(1));
 
         final Try<Integer> expected = new Failure<>(new NumberFormatException("For input string: \"aaa\""));
         assertThat(actual).isEqualTo(expected);
@@ -445,7 +473,7 @@ public class TryTest {
 
     @Test
     public void shouldOrElseRunOnSuccess() {
-        final String[] result = new String[]{OK};
+        final String[] result = new String[] { OK };
         success().orElseRun(x -> result[0] = FAILURE);
         assertThat(result[0]).isEqualTo(OK);
     }
@@ -467,7 +495,7 @@ public class TryTest {
 
     @Test
     public void shouldNotConsumeThrowableWhenCallingOnFailureGivenSuccess() {
-        final String[] result = new String[]{OK};
+        final String[] result = new String[] { OK };
         success().onFailure(x -> result[0] = FAILURE);
         assertThat(result[0]).isEqualTo(OK);
     }
@@ -570,7 +598,9 @@ public class TryTest {
 
     @Test
     public void shouldPeekSuccessAndThrow() {
-        assertThat(success().peek(t -> { failure().get(); })).isEqualTo(failure());
+        assertThat(success().peek(t -> {
+            failure().get();
+        })).isEqualTo(failure());
     }
 
     // equals

@@ -27,6 +27,7 @@ import java.util.stream.StreamSupport;
  * <li>{@link #clear()}</li>
  * <li>{@link #contains(Object)}</li>
  * <li>{@link #containsAll(Iterable)}</li>
+ * <li>{@link #containsSlice(Iterable)}</li>
  * <li>{@link #head()}</li>
  * <li>{@link #headOption()}</li>
  * <li>{@link #init()}</li>
@@ -37,6 +38,7 @@ import java.util.stream.StreamSupport;
  * <li>{@link #length()}</li>
  * <li>{@link #tail()}</li>
  * <li>{@link #tailOption()}</li>
+ * <li>{@link #cons(Iterable)}</li>
  * </ul>
  *
  * Conversion:
@@ -65,8 +67,10 @@ import java.util.stream.StreamSupport;
  * <li>{@link #average()}</li>
  * <li>{@link #max()}</li>
  * <li>{@link #maxBy(Comparator)}</li>
+ * <li>{@link #maxBy(Function)}</li>
  * <li>{@link #min()}</li>
  * <li>{@link #minBy(Comparator)}</li>
+ * <li>{@link #minBy(Function)}</li>
  * <li>{@link #product()}</li>
  * <li>{@link #sum()}</li>
  * </ul>
@@ -119,6 +123,8 @@ import java.util.stream.StreamSupport;
  * Transformation:
  *
  * <ul>
+ * <li>{@link #cartesianProduct()}</li>
+ * <li>{@link #cartesianProduct(Iterable)}</li>
  * <li>{@link #combinations()}</li>
  * <li>{@link #combinations(int)}</li>
  * <li>{@link #distinct()}</li>
@@ -171,22 +177,51 @@ public interface Traversable<T> extends TraversableOnce<T> {
         if (isEmpty()) {
             return None.instance();
         } else {
-            final OptionalDouble average = Match
-                    .when((byte t) -> ((java.util.stream.Stream<Byte>) toJavaStream()).mapToInt(Number::intValue).average())
-                    .when((double t) -> ((java.util.stream.Stream<Double>) toJavaStream()).mapToDouble(Number::doubleValue).average())
-                    .when((float t) -> ((java.util.stream.Stream<Float>) toJavaStream()).mapToDouble(Number::doubleValue).average())
-                    .when((int t) -> ((java.util.stream.Stream<Integer>) toJavaStream()).mapToInt(Number::intValue).average())
-                    .when((long t) -> ((java.util.stream.Stream<Long>) toJavaStream()).mapToLong(Number::longValue).average())
-                    .when((short t) -> ((java.util.stream.Stream<Short>) toJavaStream()).mapToInt(Number::intValue).average())
-                    .when((BigInteger t) -> ((java.util.stream.Stream<BigInteger>) toJavaStream()).mapToLong(Number::longValue).average())
-                    .when((BigDecimal t) -> ((java.util.stream.Stream<BigDecimal>) toJavaStream()).mapToDouble(Number::doubleValue).average())
+            final java.util.stream.Stream<Number> numbers = ((java.util.stream.Stream<Number>) toJavaStream());
+            return Match.of(head())
+                    .whenTypeIn(Byte.class, Integer.class, Short.class).then(() -> numbers.mapToInt(Number::intValue).average())
+                    .whenTypeIn(Double.class, Float.class, BigDecimal.class).then(() -> numbers.mapToDouble(Number::doubleValue).average())
+                    .whenTypeIn(Long.class, BigInteger.class).then(() -> numbers.mapToLong(Number::longValue).average())
                     .otherwise(() -> {
                         throw new UnsupportedOperationException("not numeric");
                     })
-                    .apply(head());
-            return new Some<>(average.getAsDouble());
+                    .map(OptionalDouble::getAsDouble)
+                    .toOption();
         }
     }
+
+    /**
+     * Calculates the cartesian product (, i.e. square) of {@code this x this}.
+     * <p>
+     * Example:
+     * <pre>
+     * <code>
+     * // = List of Tuples (1, 1), (1, 2), (1, 3), (2, 1), (2, 2), (2, 3), (3, 1), (3, 2), (3, 3)
+     * List.of(1, 2, 3).cartesianProduct();
+     * </code>
+     * </pre>
+     *
+     * @return a new Traversable containing the square of {@code this}
+     */
+    Traversable<Tuple2<T, T>> cartesianProduct();
+
+    /**
+     * Calculates the cartesian product {@code this x that}.
+     * <p>
+     * Example:
+     * <pre>
+     * <code>
+     * // = List of Tuples (1, 'a'), (1, 'b'), (2, 'a'), (2, 'b'), (3, 'a'), (3, 'b')
+     * List.of(1, 2, 3).cartesianProduct(List.of('a', 'b');
+     * </code>
+     * </pre>
+     *
+     * @param that Another Traversable
+     * @param <U>  Component type
+     * @return a new Traversable containing the cartesian product {@code this x that}
+     * @throws NullPointerException if that is null
+     */
+    <U> Traversable<Tuple2<T, U>> cartesianProduct(Iterable<? extends U> that);
 
     /**
      * Returns an empty version of this traversable, i.e. {@code this.clear().isEmpty() == true}.
@@ -236,6 +271,34 @@ public interface Traversable<T> extends TraversableOnce<T> {
     }
 
     /**
+     * Tests whether this sequence contains a given sequence as a slice.
+     * <p>
+     * Note: may not terminate for infinite-sized collections.
+     *
+     * @param that the sequence to test
+     * @return true if this sequence contains a slice with the same elements as that, otherwise false.
+     */
+    default boolean containsSlice(Iterable<? extends T> that) {
+
+        class Util {
+            boolean checkSlice(Traversable<T> t, Traversable<T> slice) {
+                return checkPrefix(t, slice) || (!t.isEmpty() && checkSlice(t.tail(), slice));
+            }
+
+            private boolean checkPrefix(Traversable<T> t, Traversable<T> prefix) {
+                if (prefix.isEmpty()) {
+                    return true;
+                } else {
+                    return !t.isEmpty() && java.util.Objects.equals(t.head(), prefix.head())
+                            && checkPrefix(t.tail(), prefix.tail());
+                }
+            }
+        }
+
+        return new Util().checkSlice(this, cons(that));
+    }
+
+    /**
      * <p>
      * Tests if this Traversable contains all given elements.
      * </p>
@@ -245,7 +308,7 @@ public interface Traversable<T> extends TraversableOnce<T> {
      * without recursion.
      * </p>
      *
-     * @param elements A List of values of type E.
+     * @param elements A List of values of type T.
      * @return true, if this List contains all given elements, false otherwise.
      * @throws NullPointerException if {@code elements} is null
      */
@@ -358,7 +421,7 @@ public interface Traversable<T> extends TraversableOnce<T> {
         return reverse().findFirst(predicate);
     }
 
-    <U> Traversable<U> flatMap(Function<? super T, ? extends Iterable<U>> mapper);
+    <U> Traversable<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     /**
      * Flattens a {@code Traversable} using a function.
@@ -368,7 +431,7 @@ public interface Traversable<T> extends TraversableOnce<T> {
      * @return a new {@code Traversable}
      * @throws NullPointerException if {@code f} is null
      */
-    <U> Traversable<U> flatten(Function<? super T, ? extends Iterable<U>> f);
+    <U> Traversable<U> flatten(Function<? super T, ? extends Iterable<? extends U>> f);
 
     /**
      * <p>
@@ -389,13 +452,14 @@ public interface Traversable<T> extends TraversableOnce<T> {
     }
 
     /**
-     * <p>
      * Accumulates the elements of this Traversable by successively calling the given function {@code f} from the left,
      * starting with a value {@code zero} of type B.
-     * </p>
      * <p>
-     * Example: {@code List.of("a", "b", "c").foldLeft("", (xs, x) -> xs + x) = "abc"}
-     * </p>
+     * Example: Reverse and map a Traversable in one pass
+     * <pre><code>
+     * List.of("a", "b", "c").foldLeft(List.empty(), (xs, x) -&gt; xs.prepend(x.toUpperCase()))
+     * // = List("C", "B", "A")
+     * </code></pre>
      *
      * @param zero Value to start the accumulation with.
      * @param f    The accumulator function.
@@ -665,6 +729,22 @@ public interface Traversable<T> extends TraversableOnce<T> {
     }
 
     /**
+     * Calculates the maximum of this elements within the co-domain of a specific function.
+     *
+     * @param f   A function that maps this elements to comparable elements
+     * @param <U> The type where elements are compared
+     * @return The element of type T which is the maximum within U
+     */
+    default <U extends Comparable<? super U>> Option<T> maxBy(Function<? super T, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        if (isEmpty()) {
+            return None.instance();
+        } else {
+            return maxBy((t1, t2) -> f.apply(t1).compareTo(f.apply(t2)));
+        }
+    }
+
+    /**
      * Calculates the minimum of this elements according to their natural order.
      *
      * @return {@code Some(minimum)} of this elements or {@code None} if this is empty or this elements are not comparable
@@ -692,6 +772,22 @@ public interface Traversable<T> extends TraversableOnce<T> {
         } else {
             final T value = reduce((t1, t2) -> comparator.compare(t1, t2) <= 0 ? t1 : t2);
             return new Some<>(value);
+        }
+    }
+
+    /**
+     * Calculates the minimum of this elements within the co-domain of a specific function.
+     *
+     * @param f   A function that maps this elements to comparable elements
+     * @param <U> The type where elements are compared
+     * @return The element of type T which is the minimum within U
+     */
+    default <U extends Comparable<? super U>> Option<T> minBy(Function<? super T, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        if (isEmpty()) {
+            return None.instance();
+        } else {
+            return minBy((t1, t2) -> f.apply(t1).compareTo(f.apply(t2)));
         }
     }
 
@@ -736,19 +832,12 @@ public interface Traversable<T> extends TraversableOnce<T> {
         if (isEmpty()) {
             return 1;
         } else {
-            return Match.as(Number.class)
-                    .when((byte t) -> ((java.util.stream.Stream<Byte>) toJavaStream()).mapToInt(Number::intValue).reduce(1, (i1, i2) -> i1 * i2))
-                    .when((double t) -> ((java.util.stream.Stream<Double>) toJavaStream()).mapToDouble(Number::doubleValue).reduce(1.0, (d1, d2) -> d1 * d2))
-                    .when((float t) -> ((java.util.stream.Stream<Float>) toJavaStream()).mapToDouble(Number::doubleValue).reduce(1.0, (d1, d2) -> d1 * d2))
-                    .when((int t) -> ((java.util.stream.Stream<Integer>) toJavaStream()).mapToInt(Number::intValue).reduce(1, (i1, i2) -> i1 * i2))
-                    .when((long t) -> ((java.util.stream.Stream<Long>) toJavaStream()).mapToLong(Number::longValue).reduce(1L, (l1, l2) -> l1 * l2))
-                    .when((short t) -> ((java.util.stream.Stream<Short>) toJavaStream()).mapToInt(Number::intValue).reduce(1, (i1, i2) -> i1 * i2))
-                    .when((BigInteger t) -> ((java.util.stream.Stream<BigInteger>) toJavaStream()).mapToLong(Number::longValue).reduce(1L, (l1, l2) -> l1 * l2))
-                    .when((BigDecimal t) -> ((java.util.stream.Stream<BigDecimal>) toJavaStream()).mapToDouble(Number::doubleValue).reduce(1.0, (d1, d2) -> d1 * d2))
-                    .otherwise(() -> {
-                        throw new UnsupportedOperationException("not numeric");
-                    })
-                    .apply(head());
+            final java.util.stream.Stream<Number> numbers = ((java.util.stream.Stream<Number>) toJavaStream());
+            return Match.of(head()).as(Number.class)
+                    .whenTypeIn(Byte.class, Integer.class, Short.class).then(() -> numbers.mapToInt(Number::intValue).reduce(1, (i1, i2) -> i1 * i2))
+                    .whenTypeIn(Double.class, Float.class, BigDecimal.class).then(() -> numbers.mapToDouble(Number::doubleValue).reduce(1.0, (d1, d2) -> d1 * d2))
+                    .whenTypeIn(Long.class, BigInteger.class).then(ignored -> numbers.mapToLong(Number::longValue).reduce(1L, (l1, l2) -> l1 * l2))
+                    .orElseThrow(() -> new UnsupportedOperationException("not numeric"));
         }
     }
 
@@ -933,19 +1022,12 @@ public interface Traversable<T> extends TraversableOnce<T> {
         if (isEmpty()) {
             return 0;
         } else {
-            return Match.as(Number.class)
-                    .when((byte t) -> ((java.util.stream.Stream<Byte>) toJavaStream()).mapToInt(Number::intValue).sum())
-                    .when((double t) -> ((java.util.stream.Stream<Double>) toJavaStream()).mapToDouble(Number::doubleValue).sum())
-                    .when((float t) -> ((java.util.stream.Stream<Float>) toJavaStream()).mapToDouble(Number::doubleValue).sum())
-                    .when((int t) -> ((java.util.stream.Stream<Integer>) toJavaStream()).mapToInt(Number::intValue).sum())
-                    .when((long t) -> ((java.util.stream.Stream<Long>) toJavaStream()).mapToLong(Number::longValue).sum())
-                    .when((short t) -> ((java.util.stream.Stream<Short>) toJavaStream()).mapToInt(Number::intValue).sum())
-                    .when((BigInteger t) -> ((java.util.stream.Stream<BigInteger>) toJavaStream()).mapToLong(Number::longValue).sum())
-                    .when((BigDecimal t) -> ((java.util.stream.Stream<BigDecimal>) toJavaStream()).mapToDouble(Number::doubleValue).sum())
-                    .otherwise(() -> {
-                        throw new UnsupportedOperationException("not numeric");
-                    })
-                    .apply(head());
+            final java.util.stream.Stream<Number> numbers = ((java.util.stream.Stream<Number>) toJavaStream());
+            return Match.of(head()).as(Number.class)
+                    .whenTypeIn(Byte.class, Integer.class, Short.class).then(() -> numbers.mapToInt(Number::intValue).sum())
+                    .whenTypeIn(Double.class, Float.class, BigDecimal.class).then(() -> numbers.mapToDouble(Number::doubleValue).sum())
+                    .whenTypeIn(Long.class, BigInteger.class).then(ignored -> numbers.mapToLong(Number::longValue).sum())
+                    .orElseThrow(() -> new UnsupportedOperationException("not numeric"));
         }
     }
 
@@ -1099,6 +1181,14 @@ public interface Traversable<T> extends TraversableOnce<T> {
     default java.util.stream.Stream<T> toJavaStream() {
         return StreamSupport.stream(spliterator(), false);
     }
+
+    /**
+     * Creates an instance of this type of an {@code Iterable}.
+     *
+     * @param iterable an {@code Iterable}
+     * @return A new instance of this collection containing the elements of the given {@code iterable}.
+     */
+    Traversable<T> cons(Iterable<? extends T> iterable);
 
     /**
      * Unzips this elements by mapping this elements to pairs which are subsequentially split into to distinct
