@@ -5,8 +5,12 @@
  */
 package javaslang.collection;
 
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.stream.Collector;
+
+import static org.assertj.core.api.StrictAssertions.assertThat;
 
 public class QueueTest extends AbstractSeqTest {
 
@@ -119,6 +123,48 @@ public class QueueTest extends AbstractSeqTest {
         return Queue.rangeClosedBy(from, toInclusive, step);
     }
 
+    // -- indexOf
+
+    private Queue<Integer> enqueued() {
+        return Queue.of(1).enqueue(2, 3, 1, 5, 6);
+    }
+
+    @Test
+    public void shouldNotFindIndexOfElementWhenStartIsGreaterEnc() {
+        assertThat(enqueued().indexOf(2, 2)).isEqualTo(-1);
+    }
+
+    @Test
+    public void shouldFindIndexOfFirstElementEnc() {
+        assertThat(enqueued().indexOf(1)).isEqualTo(0);
+    }
+
+    @Test
+    public void shouldFindIndexOfInnerElementEnc() {
+        assertThat(enqueued().indexOf(2)).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldFindIndexOfLastElementEnc() {
+        assertThat(enqueued().indexOf(3)).isEqualTo(2);
+    }
+
+    // -- lastIndexOf
+
+    @Test
+    public void shouldNotFindLastIndexOfElementWhenEndIdLessEnc() {
+        assertThat(enqueued().lastIndexOf(3, 1)).isEqualTo(-1);
+    }
+
+    @Test
+    public void shouldFindLastIndexOfElementEnc() {
+        assertThat(enqueued().lastIndexOf(1)).isEqualTo(3);
+    }
+
+    @Test
+    public void shouldFindLastIndexOfElementWithEndEnc() {
+        assertThat(enqueued().lastIndexOf(1, 1)).isEqualTo(0);
+    }
     // -- other
 
     @Override

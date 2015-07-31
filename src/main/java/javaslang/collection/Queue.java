@@ -645,13 +645,13 @@ public class Queue<T> implements Seq<T>, Serializable {
     }
 
     @Override
-    public int indexOf(T element) {
-        final int frontIndex = front.indexOf(element);
+    public int indexOf(T element, int from) {
+        final int frontIndex = front.indexOf(element, from);
         if (frontIndex != -1) {
             return frontIndex;
         } else {
             // we need to reverse because we search the first occurrence
-            final int rearIndex = rear.reverse().indexOf(element);
+            final int rearIndex = rear.reverse().indexOf(element, from - front.length());
             return (rearIndex == -1) ? -1 : rearIndex + front.length();
         }
     }
@@ -730,8 +730,8 @@ public class Queue<T> implements Seq<T>, Serializable {
     }
 
     @Override
-    public int lastIndexOf(T element) {
-        return toList().lastIndexOf(element);
+    public int lastIndexOf(T element, int end) {
+        return toList().lastIndexOf(element, end);
     }
 
     @Override

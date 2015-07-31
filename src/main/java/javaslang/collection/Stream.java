@@ -901,10 +901,10 @@ public interface Stream<T> extends Seq<T> {
     }
 
     @Override
-    default int indexOf(T element) {
+    default int indexOf(T element, int from) {
         int index = 0;
         for (Stream<T> stream = this; !stream.isEmpty(); stream = stream.tail(), index++) {
-            if (Objects.equals(stream.head(), element)) {
+            if (index >= from && Objects.equals(stream.head(), element)) {
                 return index;
             }
         }
@@ -927,10 +927,10 @@ public interface Stream<T> extends Seq<T> {
     Stream<T> intersperse(T element);
 
     @Override
-    default int lastIndexOf(T element) {
+    default int lastIndexOf(T element, int end) {
         int result = -1, index = 0;
         for (Stream<T> stream = this; !stream.isEmpty(); stream = stream.tail(), index++) {
-            if (Objects.equals(stream.head(), element)) {
+            if (index <= end && Objects.equals(stream.head(), element)) {
                 result = index;
             }
         }

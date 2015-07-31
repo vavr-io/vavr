@@ -175,6 +175,11 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     }
 
     @Test
+    public void shouldNotFindIndexOfElementWhenStartIsGreater() {
+        assertThat(of(1, 2, 3, 4).indexOf(2, 2)).isEqualTo(-1);
+    }
+
+    @Test
     public void shouldFindIndexOfFirstElement() {
         assertThat(of(1, 2, 3).indexOf(1)).isEqualTo(0);
     }
@@ -313,8 +318,18 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     }
 
     @Test
+    public void shouldNotFindLastIndexOfElementWhenEndIdLess() {
+        assertThat(of(1, 2, 3, 4).lastIndexOf(3, 1)).isEqualTo(-1);
+    }
+
+    @Test
     public void shouldFindLastIndexOfElement() {
         assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOf(1)).isEqualTo(3);
+    }
+
+    @Test
+    public void shouldFindLastIndexOfElementWithEnd() {
+        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOf(1, 1)).isEqualTo(0);
     }
 
     // -- prepend
