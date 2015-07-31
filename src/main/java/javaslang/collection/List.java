@@ -776,10 +776,10 @@ public interface List<T> extends Seq<T>, Stack<T> {
     }
 
     @Override
-    default int indexOf(T element) {
+    default int indexOf(T element, int from) {
         int index = 0;
         for (List<T> list = this; !list.isEmpty(); list = list.tail(), index++) {
-            if (Objects.equals(list.head(), element)) {
+            if (index >= from && Objects.equals(list.head(), element)) {
                 return index;
             }
         }
@@ -839,9 +839,9 @@ public interface List<T> extends Seq<T>, Stack<T> {
     }
 
     @Override
-    default int lastIndexOf(T element) {
+    default int lastIndexOf(T element, int end) {
         int result = -1, index = 0;
-        for (List<T> list = this; !list.isEmpty(); list = list.tail(), index++) {
+        for (List<T> list = this; index <= end && !list.isEmpty(); list = list.tail(), index++) {
             if (Objects.equals(list.head(), element)) {
                 result = index;
             }
