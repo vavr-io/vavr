@@ -647,7 +647,7 @@ public class Future<T> {
 
     public static <T> Future<List<T>> sequence(Iterable<Future<T>> source, Executor ex) {
         return List.ofAll(source)
-		        .foldRight(Future.success(List.nil()), (next, accumulator) -> accumulator.flatMap(list -> next.map(list::prepend, ex), ex));
+		        .foldRight(Future.success(List.empty()), (next, accumulator) -> accumulator.flatMap(list -> next.map(list::prepend, ex), ex));
     }
 
     public static <T> Future<List<T>> sequence(Iterable<Future<T>> source) {
