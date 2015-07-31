@@ -377,7 +377,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     Seq<T> takeWhile(Predicate<? super T> predicate);
 
     @Override
-    Seq<T> cons(Iterable<? extends T> iterable);
+    Seq<T> unit(Iterable<? extends T> iterable);
 
     @Override
     <T1, T2> Tuple2<? extends Seq<T1>, ? extends Seq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);

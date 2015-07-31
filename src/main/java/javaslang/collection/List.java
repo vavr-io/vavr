@@ -1202,7 +1202,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> cons(Iterable<? extends T> iterable) {
+    default List<T> unit(Iterable<? extends T> iterable) {
         return List.ofAll(iterable);
     }
 
