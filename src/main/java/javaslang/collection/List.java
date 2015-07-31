@@ -1468,11 +1468,6 @@ public interface List<T> extends Seq<T>, Stack<T> {
         }
 
         @Override
-        public boolean containsSlice(Iterable<? extends T> that) {
-            return !that.iterator().hasNext();
-        }
-
-        @Override
         public T head() {
             throw new NoSuchElementException("head of empty list");
         }
