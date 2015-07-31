@@ -929,8 +929,8 @@ public interface Stream<T> extends Seq<T> {
     @Override
     default int lastIndexOf(T element, int end) {
         int result = -1, index = 0;
-        for (Stream<T> stream = this; !stream.isEmpty(); stream = stream.tail(), index++) {
-            if (index <= end && Objects.equals(stream.head(), element)) {
+        for (Stream<T> stream = this; index <= end && !stream.isEmpty(); stream = stream.tail(), index++) {
+            if (Objects.equals(stream.head(), element)) {
                 result = index;
             }
         }

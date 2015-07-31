@@ -841,8 +841,8 @@ public interface List<T> extends Seq<T>, Stack<T> {
     @Override
     default int lastIndexOf(T element, int end) {
         int result = -1, index = 0;
-        for (List<T> list = this; !list.isEmpty(); list = list.tail(), index++) {
-            if (index <= end && Objects.equals(list.head(), element)) {
+        for (List<T> list = this; index <= end && !list.isEmpty(); list = list.tail(), index++) {
+            if (Objects.equals(list.head(), element)) {
                 result = index;
             }
         }
