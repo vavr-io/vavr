@@ -278,8 +278,10 @@ public interface Traversable<T> extends TraversableOnce<T> {
      *
      * @param that the sequence to test
      * @return true if this sequence contains a slice with the same elements as that, otherwise false.
+     * @throws NullPointerException if {@code that} is null.
      */
     default boolean containsSlice(Iterable<? extends T> that) {
+        Objects.requireNonNull(that, "that is null");
         return indexOfSlice(that) >= 0;
     }
 
@@ -564,8 +566,10 @@ public interface Traversable<T> extends TraversableOnce<T> {
      * @param that the sequence to test
      * @return the first index such that the elements of this sequence starting at this index match
      * the elements of sequence that, or -1 of no such subsequence exists.
+     * @throws NullPointerException if {@code that} is null.
      */
     default int indexOfSlice(Iterable<? extends T> that) {
+        Objects.requireNonNull(that, "that is null");
         return indexOfSlice(that, 0);
     }
 
@@ -577,8 +581,10 @@ public interface Traversable<T> extends TraversableOnce<T> {
      * @param from the start index
      * @return the first index >= from such that the elements of this sequence starting at this index match
      * the elements of sequence that, or -1 of no such subsequence exists.
+     * @throws NullPointerException if {@code that} is null.
      */
     default int indexOfSlice(Iterable<? extends T> that, int from) {
+        Objects.requireNonNull(that, "that is null");
         class Util {
             int indexOfSlice(Traversable<T> t, Traversable<T> slice, int from) {
                 if (t.isEmpty()) {
@@ -748,8 +754,10 @@ public interface Traversable<T> extends TraversableOnce<T> {
      * @param that the sequence to test
      * @return the last index such that the elements of this sequence starting a this index match the elements
      * of sequence that, or -1 of no such subsequence exists.
+     * @throws NullPointerException if {@code that} is null.
      */
-    default int lastIndexOfSlice(Iterable<T> that) {
+    default int lastIndexOfSlice(Iterable<? extends T> that) {
+        Objects.requireNonNull(that, "that is null");
         return lastIndexOfSlice(that, Integer.MAX_VALUE);
     }
 
@@ -759,8 +767,10 @@ public interface Traversable<T> extends TraversableOnce<T> {
      * @param end the end index
      * @return the last index &lt;= end such that the elements of this sequence starting at this index match
      * the elements of sequence that, or -1 of no such subsequence exists.
+     * @throws NullPointerException if {@code that} is null.
      */
-    default int lastIndexOfSlice(Iterable<T> that, int end) {
+    default int lastIndexOfSlice(Iterable<? extends T> that, int end) {
+        Objects.requireNonNull(that, "that is null");
         class Util {
             int lastIndexOfSlice(Traversable<T> t, Traversable<T> slice, int end) {
                 if (end < 0) {
