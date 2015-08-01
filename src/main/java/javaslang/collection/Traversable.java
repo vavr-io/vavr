@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.FilterMonadic;
 import javaslang.Kind;
 import javaslang.Tuple;
 import javaslang.Tuple2;
@@ -154,7 +155,9 @@ import java.util.stream.StreamSupport;
  * @param <T> Component type
  * @since 1.1.0
  */
-public interface Traversable<T> extends TraversableOnce<T>, Kind<Traversable.IterableKind<?>, T> {
+public interface Traversable<T> extends TraversableOnce<T>,
+        FilterMonadic<Traversable.IterableKind<?>, T>,
+        Kind<Traversable.IterableKind<?>, T> {
 
     /**
      * Calculates the average of this elements. Returns {@code None} if this is empty, otherwise {@code Some(average)}.
@@ -555,7 +558,7 @@ public interface Traversable<T> extends TraversableOnce<T>, Kind<Traversable.Ite
      * or -1 if this does not contain the given element.
      *
      * @param element an element
-     * @param from start index
+     * @param from    start index
      * @return the index of the first occurrence of the given element
      */
     int indexOf(T element, int from);
@@ -564,6 +567,7 @@ public interface Traversable<T> extends TraversableOnce<T>, Kind<Traversable.Ite
      * Finds first index where this sequence contains a given sequence as a slice.
      * <p>
      * Note: may not terminate for infinite-sized collections.
+     *
      * @param that the sequence to test
      * @return the first index such that the elements of this sequence starting at this index match
      * the elements of sequence that, or -1 of no such subsequence exists.
@@ -578,6 +582,7 @@ public interface Traversable<T> extends TraversableOnce<T>, Kind<Traversable.Ite
      * Finds first index after or at a start index where this sequence contains a given sequence as a slice.
      * <p>
      * Note: may not terminate for infinite-sized collections.
+     *
      * @param that the sequence to test
      * @param from the start index
      * @return the first index &gt;= from such that the elements of this sequence starting at this index match
@@ -591,7 +596,7 @@ public interface Traversable<T> extends TraversableOnce<T>, Kind<Traversable.Ite
                 if (t.isEmpty()) {
                     return from == 0 && slice.isEmpty() ? 0 : -1;
                 }
-                if(from <= 0 && checkPrefix(t, slice)) {
+                if (from <= 0 && checkPrefix(t, slice)) {
                     return 0;
                 }
                 int idx = indexOfSlice(t.tail(), slice, from - 1);
@@ -743,7 +748,7 @@ public interface Traversable<T> extends TraversableOnce<T>, Kind<Traversable.Ite
      * or -1 if this does not contain the given element.
      *
      * @param element an element
-     * @param end the end index
+     * @param end     the end index
      * @return the index of the last occurrence of the given element
      */
     int lastIndexOf(T element, int end);
@@ -752,6 +757,7 @@ public interface Traversable<T> extends TraversableOnce<T>, Kind<Traversable.Ite
      * Finds last index where this sequence contains a given sequence as a slice.
      * <p>
      * Note: will not terminate for infinite-sized collections.
+     *
      * @param that the sequence to test
      * @return the last index such that the elements of this sequence starting a this index match the elements
      * of sequence that, or -1 of no such subsequence exists.
@@ -764,8 +770,9 @@ public interface Traversable<T> extends TraversableOnce<T>, Kind<Traversable.Ite
 
     /**
      * Finds last index before or at a given end index where this sequence contains a given sequence as a slice.
+     *
      * @param that the sequence to test
-     * @param end the end index
+     * @param end  the end index
      * @return the last index &lt;= end such that the elements of this sequence starting at this index match
      * the elements of sequence that, or -1 of no such subsequence exists.
      * @throws NullPointerException if {@code that} is null.
@@ -790,7 +797,7 @@ public interface Traversable<T> extends TraversableOnce<T>, Kind<Traversable.Ite
                 }
                 if (r._2 <= end) {
                     int idx = lastIndexOfSlice(r._1.tail(), slice, end - r._2);
-                    return idx >= 0 ? idx + 1 + r._2: r._2;
+                    return idx >= 0 ? idx + 1 + r._2 : r._2;
                 } else {
                     return -1;
                 }
@@ -801,7 +808,7 @@ public interface Traversable<T> extends TraversableOnce<T>, Kind<Traversable.Ite
                 if (t.isEmpty()) {
                     return slice.isEmpty() ? Tuple.of(t, 0) : null;
                 }
-                if(checkPrefix(t, slice)) {
+                if (checkPrefix(t, slice)) {
                     return Tuple.of(t, 0);
                 }
                 Tuple2<Traversable<T>, Integer> idx = findSlice(t.tail(), slice);
