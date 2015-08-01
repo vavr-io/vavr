@@ -586,7 +586,7 @@ def generateMainClasses(): Unit = {
                     default Class<T$j> parameterType$j() {
                         return (Class<T$j>) parameterArray()[${j-1}];
                     }
-                  """)}
+                  """)("\n\n")}
               }
           }
         """

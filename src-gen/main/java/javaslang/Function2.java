@@ -219,7 +219,9 @@ public interface Function2<T1, T2, R> extends λ<R>, BiFunction<T1, T2, R> {
         @SuppressWarnings("unchecked")
         default Class<T1> parameterType1() {
             return (Class<T1>) parameterArray()[0];
-        }@SuppressWarnings("unchecked")
+        }
+
+        @SuppressWarnings("unchecked")
         default Class<T2> parameterType2() {
             return (Class<T2>) parameterArray()[1];
         }

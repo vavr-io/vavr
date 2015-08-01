@@ -309,19 +309,29 @@ public interface CheckedFunction6<T1, T2, T3, T4, T5, T6, R> extends λ<R> {
         @SuppressWarnings("unchecked")
         default Class<T1> parameterType1() {
             return (Class<T1>) parameterArray()[0];
-        }@SuppressWarnings("unchecked")
+        }
+
+        @SuppressWarnings("unchecked")
         default Class<T2> parameterType2() {
             return (Class<T2>) parameterArray()[1];
-        }@SuppressWarnings("unchecked")
+        }
+
+        @SuppressWarnings("unchecked")
         default Class<T3> parameterType3() {
             return (Class<T3>) parameterArray()[2];
-        }@SuppressWarnings("unchecked")
+        }
+
+        @SuppressWarnings("unchecked")
         default Class<T4> parameterType4() {
             return (Class<T4>) parameterArray()[3];
-        }@SuppressWarnings("unchecked")
+        }
+
+        @SuppressWarnings("unchecked")
         default Class<T5> parameterType5() {
             return (Class<T5>) parameterArray()[4];
-        }@SuppressWarnings("unchecked")
+        }
+
+        @SuppressWarnings("unchecked")
         default Class<T6> parameterType6() {
             return (Class<T6>) parameterArray()[5];
         }
