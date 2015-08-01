@@ -158,4 +158,10 @@ public class CheckedFunction8Test {
         assertThat(composed).isNotNull();
     }
 
+    @Test
+    public void shouldGetType() {
+        final CheckedFunction8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4, i5, i6, i7, i8) -> null;
+        final CheckedFunction8.Type<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> type = f.getType();
+        assertThat(type.toString()).isEqualTo("(java.lang.Integer, java.lang.Integer, java.lang.Integer, java.lang.Integer, java.lang.Integer, java.lang.Integer, java.lang.Integer, java.lang.Integer) -> java.lang.Integer");
+    }
 }

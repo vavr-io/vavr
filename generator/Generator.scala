@@ -533,6 +533,61 @@ def generateMainClasses(): Unit = {
                     return v -> apply(before.apply(v));
                 }
               """)}
+
+              @Override
+              default Type$fullGenerics getType() {
+
+                  final λ.Type<R> superType = λ.super.getType();
+
+                  return new Type$fullGenerics() {
+
+                      private static final long serialVersionUID = 1L;
+
+                      @Override
+                      public Class<R> returnType() {
+                          return superType.returnType();
+                      }
+
+                      @Override
+                      public Class<?>[] parameterArray() {
+                          return superType.parameterArray();
+                      }
+
+                      @Override
+                      public boolean equals(Object o) {
+                          return superType.equals(o);
+                      }
+
+                      @Override
+                      public int hashCode() {
+                          return superType.hashCode();
+                      }
+
+                      @Override
+                      public String toString() {
+                          return superType.toString();
+                      }
+                  };
+              }
+
+              /**
+               * Represents the type of a {@code $name} which consists of $i <em>parameter ${i.numerus("type")}</em>
+               * and a <em>return type</em>.
+               *
+               ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> the ${j.ordinal} parameter type of the function")("\n")}
+               * @param <R> the return type of the function
+               */
+              interface Type$fullGenerics extends λ.Type<R> {
+
+                  long serialVersionUID = 1L;
+
+                  ${(1 to i).gen(j => xs"""
+                    @SuppressWarnings("unchecked")
+                    default Class<T$j> parameterType$j() {
+                        return (Class<T$j>) parameterArray()[${j-1}];
+                    }
+                  """)("\n\n")}
+              }
           }
         """
       }
@@ -859,6 +914,13 @@ def generateTestClasses(): Unit = {
                     $assertThat(composed).isNotNull();
                 }
               """)}
+
+              @$test
+              public void shouldGetType() {
+                  final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
+                  final $name$i.Type<${(1 to i + 1).gen(j => "Integer")(", ")}> type = f.getType();
+                  $assertThat(type.toString()).isEqualTo("(${(1 to i).gen(j => "java.lang.Integer")(", ")}) -> java.lang.Integer");
+              }
           }
         """
       }

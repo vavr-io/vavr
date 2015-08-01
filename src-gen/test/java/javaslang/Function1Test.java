@@ -123,4 +123,11 @@ public class Function1Test {
         final Function1<Object, Object> composed = f.compose(before);
         assertThat(composed).isNotNull();
     }
+
+    @Test
+    public void shouldGetType() {
+        final Function1<Integer, Integer> f = (i1) -> null;
+        final Function1.Type<Integer, Integer> type = f.getType();
+        assertThat(type.toString()).isEqualTo("(java.lang.Integer) -> java.lang.Integer");
+    }
 }

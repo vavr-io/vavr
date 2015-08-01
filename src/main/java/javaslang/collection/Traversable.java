@@ -425,7 +425,7 @@ public interface Traversable<T> extends TraversableOnce<T> {
      * Accumulates the elements of this Traversable by successively calling the given operator {@code op}.
      * </p>
      * <p>
-     * Example: {@code List("a", "b", "c").fold("", (a, b) -> a + b) = "abc"}
+     * Example: {@code List("a", "b", "c").fold("", (xs, x) -> xs + x) = "abc"}
      * </p>
      *
      * @param zero Value to start the accumulation with.
@@ -579,7 +579,7 @@ public interface Traversable<T> extends TraversableOnce<T> {
      * Note: may not terminate for infinite-sized collections.
      * @param that the sequence to test
      * @param from the start index
-     * @return the first index >= from such that the elements of this sequence starting at this index match
+     * @return the first index &gt;= from such that the elements of this sequence starting at this index match
      * the elements of sequence that, or -1 of no such subsequence exists.
      * @throws NullPointerException if {@code that} is null.
      */

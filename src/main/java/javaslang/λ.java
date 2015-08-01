@@ -5,23 +5,20 @@
  */
 package javaslang;
 
+import javaslang.collection.List;
 import javaslang.control.Try;
 
 import java.io.Serializable;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 /**
- * <p>
  * This is a general definition of a (checked/unchecked) function of unknown parameters and a return type R.
- * Lambda extends Serializable in order to be able to get runtime type information via {@link #getLambdaSignature(java.io.Serializable)}
- * and {@link #getSerializedLambda(java.io.Serializable)}.
- * </p>
  * <p>
  * A checked function may throw an exception. The exception type cannot be expressed as a generic type parameter
  * because Java cannot calculate type bounds on function composition.
- * </p>
  *
  * @param <R> Return type of the function.
  * @since 1.0.0
@@ -84,48 +81,99 @@ public interface λ<R> extends Serializable {
     /**
      * Get reflective type information about lambda parameters and return type.
      *
-     * @return A {@link java.lang.invoke.MethodType}
+     * @return A new instance containing the type information
      */
-    default MethodType getType() {
-        return λ.getLambdaSignature(this);
+    default Type<R> getType() {
+
+        final class ReflectionUtil {
+
+            MethodType getLambdaSignature(Serializable lambda) {
+                final String signature = getSerializedLambda(lambda).getInstantiatedMethodType();
+                return MethodType.fromMethodDescriptorString(signature, lambda.getClass().getClassLoader());
+            }
+
+            private SerializedLambda getSerializedLambda(Serializable lambda) {
+                return Try.of(() -> {
+                    final Method method = lambda.getClass().getDeclaredMethod("writeReplace");
+                    method.setAccessible(true);
+                    return (SerializedLambda) method.invoke(lambda);
+                }).get();
+            }
+        }
+
+        final MethodType methodType = new ReflectionUtil().getLambdaSignature(this);
+
+        return new Type<R>() {
+
+            private static final long serialVersionUID = 1L;
+
+            private transient final Lazy<Integer> hashCode = Lazy.of(() -> List.of(parameterArray())
+                    .map(c -> c.getName().hashCode())
+                    .fold(1, (acc, i) -> acc * 31 + i)
+                    * 31 + returnType().getName().hashCode()
+            );
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public Class<R> returnType() {
+                return (Class<R>) methodType.returnType();
+            }
+
+            @Override
+            public Class<?>[] parameterArray() {
+                return methodType.parameterArray();
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                if (o == this) {
+                    return true;
+                } else if (o instanceof Type) {
+                    final Type<?> that = (Type<?>) o;
+                    return this.hashCode() == that.hashCode()
+                            && this.returnType().equals(that.returnType())
+                            && Arrays.equals(this.parameterArray(), that.parameterArray());
+                } else {
+                    return false;
+                }
+            }
+
+            @Override
+            public int hashCode() {
+                return hashCode.get();
+            }
+
+            @Override
+            public String toString() {
+                return List.of(parameterArray()).map(Class::getName).join(", ", "(", ")")
+                        + " -> "
+                        + returnType().getName();
+            }
+        };
     }
 
     /**
-     * <p>
-     * Gets the runtime method signature of the given lambda instance. This function is especially handy when the
-     * functional interface is generic and the parameter and/or return types cannot be determined directly.
-     * </p>
-     * <p>
-     * Uses internally the {@link java.lang.invoke.SerializedLambda#getImplMethodSignature()} by parsing the JVM field
-     * types of the method signature. The result is a {@link java.lang.invoke.MethodType} which contains the return type
-     * and the parameter types of the given lambda.
-     * </p>
+     * Represents the type of a function which consists of <em>parameter types</em> and a <em>return type</em>.
      *
-     * @param lambda A serializable lambda.
-     * @return The signature of the lambda as {@linkplain java.lang.invoke.MethodType}.
+     * @param <R> the return type of the function
      */
-    static MethodType getLambdaSignature(Serializable lambda) {
-        final String signature = getSerializedLambda(lambda).getInstantiatedMethodType();
-        return MethodType.fromMethodDescriptorString(signature, lambda.getClass().getClassLoader());
-    }
+    interface Type<R> extends Serializable {
 
-    /**
-     * Serializes a lambda and returns the corresponding {@link java.lang.invoke.SerializedLambda}.
-     *
-     * @param lambda A serializable lambda
-     * @return The serialized lambda wrapped in a {@link javaslang.control.Success}, or a {@link javaslang.control.Failure}
-     * if an exception occurred.
-     * @see <a
-     * href="http://stackoverflow.com/questions/21860875/printing-debug-info-on-errors-with-java-8-lambda-expressions">printing
-     * debug info on errors with java 8 lambda expressions</a>
-     * @see <a href="http://www.slideshare.net/hendersk/method-handles-in-java">Method Handles in Java</a>
-     */
-    static SerializedLambda getSerializedLambda(Serializable lambda) {
-        return Try.of(() -> {
-            final Method method = lambda.getClass().getDeclaredMethod("writeReplace");
-            method.setAccessible(true);
-            return (SerializedLambda) method.invoke(lambda);
-        }).get();
+        long serialVersionUID = 1L;
+
+        /**
+         * Returns the return type of the {@code λ}.
+         *
+         * @return the return type
+         */
+        Class<R> returnType();
+
+        /**
+         * Presents the parameter types of the {@code λ} as an array.
+         *
+         * @return the parameter types
+         */
+        Class<?>[] parameterArray();
     }
 
     /**

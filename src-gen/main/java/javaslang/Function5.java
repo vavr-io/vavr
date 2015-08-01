@@ -229,4 +229,81 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends λ<R> {
         return (t1, t2, t3, t4, t5) -> after.apply(apply(t1, t2, t3, t4, t5));
     }
 
+    @Override
+    default Type<T1, T2, T3, T4, T5, R> getType() {
+
+        final λ.Type<R> superType = λ.super.getType();
+
+        return new Type<T1, T2, T3, T4, T5, R>() {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public Class<R> returnType() {
+                return superType.returnType();
+            }
+
+            @Override
+            public Class<?>[] parameterArray() {
+                return superType.parameterArray();
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                return superType.equals(o);
+            }
+
+            @Override
+            public int hashCode() {
+                return superType.hashCode();
+            }
+
+            @Override
+            public String toString() {
+                return superType.toString();
+            }
+        };
+    }
+
+    /**
+     * Represents the type of a {@code Function} which consists of 5 <em>parameter 5 types</em>
+     * and a <em>return type</em>.
+     *
+     *
+     * @param <T1> the 1st parameter type of the function
+     * @param <T2> the 2nd parameter type of the function
+     * @param <T3> the 3rd parameter type of the function
+     * @param <T4> the 4th parameter type of the function
+     * @param <T5> the 5th parameter type of the function
+     * @param <R> the return type of the function
+     */
+    interface Type<T1, T2, T3, T4, T5, R> extends λ.Type<R> {
+
+        long serialVersionUID = 1L;
+
+        @SuppressWarnings("unchecked")
+        default Class<T1> parameterType1() {
+            return (Class<T1>) parameterArray()[0];
+        }
+
+        @SuppressWarnings("unchecked")
+        default Class<T2> parameterType2() {
+            return (Class<T2>) parameterArray()[1];
+        }
+
+        @SuppressWarnings("unchecked")
+        default Class<T3> parameterType3() {
+            return (Class<T3>) parameterArray()[2];
+        }
+
+        @SuppressWarnings("unchecked")
+        default Class<T4> parameterType4() {
+            return (Class<T4>) parameterArray()[3];
+        }
+
+        @SuppressWarnings("unchecked")
+        default Class<T5> parameterType5() {
+            return (Class<T5>) parameterArray()[4];
+        }
+    }
 }
