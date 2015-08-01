@@ -117,7 +117,9 @@ public interface λ<R> extends Serializable {
      *
      * @param <R> Result type of the function
      * @since 2.0.0
+     * @deprecated Internal API, not intended to be used. This class will disappear from public API as soon as possible.
      */
+    @Deprecated
     abstract class AbstractType<R> implements Type<R>, Serializable {
 
         private static final long serialVersionUID = 1L;

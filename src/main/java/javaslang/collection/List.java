@@ -1537,7 +1537,9 @@ public interface List<T> extends Seq<T>, Stack<T> {
      *
      * @param <T> Component type of the List.
      * @since 1.1.0
+     * @deprecated Internal API, not intended to be used. This class will disappear from public API as soon as possible.
      */
+    @Deprecated
     abstract class AbstractList<T> implements List<T> {
 
         /**

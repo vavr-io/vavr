@@ -136,6 +136,7 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
      * @param <R> the return type of the function
      * @since 2.0.0
      */
+    @SuppressWarnings("deprecation")
     final class Type<R> extends λ.AbstractType<R> {
 
         private static final long serialVersionUID = 1L;

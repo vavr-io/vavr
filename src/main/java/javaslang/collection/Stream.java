@@ -1657,7 +1657,9 @@ public interface Stream<T> extends Seq<T> {
      *
      * @param <T> Component type of the Stream.
      * @since 1.1.0
+     * @deprecated Internal API, not intended to be used. This class will disappear from public API as soon as possible.
      */
+    @Deprecated
     abstract class AbstractStream<T> implements Stream<T> {
 
         /**
