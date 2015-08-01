@@ -9,9 +9,16 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import java.io.Serializable;
+import java.lang.invoke.MethodType;
+import java.lang.invoke.SerializedLambda;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import javaslang.collection.List;
+import javaslang.control.Try;
 
 /**
  * Represents a function with 6 arguments.
@@ -254,38 +261,7 @@ public interface Function6<T1, T2, T3, T4, T5, T6, R> extends λ<R> {
 
     @Override
     default Type<T1, T2, T3, T4, T5, T6, R> getType() {
-
-        final λ.Type<R> superType = λ.super.getType();
-
-        return new Type<T1, T2, T3, T4, T5, T6, R>() {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Class<R> returnType() {
-                return superType.returnType();
-            }
-
-            @Override
-            public Class<?>[] parameterArray() {
-                return superType.parameterArray();
-            }
-
-            @Override
-            public boolean equals(Object o) {
-                return superType.equals(o);
-            }
-
-            @Override
-            public int hashCode() {
-                return superType.hashCode();
-            }
-
-            @Override
-            public String toString() {
-                return superType.toString();
-            }
-        };
+        return Type.of(this);
     }
 
     /**
@@ -301,38 +277,109 @@ public interface Function6<T1, T2, T3, T4, T5, T6, R> extends λ<R> {
      * @param <T6> the 6th parameter type of the function
      * @param <R> the return type of the function
      */
-    interface Type<T1, T2, T3, T4, T5, T6, R> extends λ.Type<R> {
+    final class Type<T1, T2, T3, T4, T5, T6, R> implements λ.Type<R>, Serializable {
 
-        long serialVersionUID = 1L;
+        private static final long serialVersionUID = 1L;
 
-        @SuppressWarnings("unchecked")
-        default Class<T1> parameterType1() {
-            return (Class<T1>) parameterArray()[0];
+        private final Class<R> returnType;
+        private final Class<?>[] parameterArray;
+
+        private transient final Lazy<Integer> hashCode = Lazy.of(() -> List.of(parameterArray())
+                .map(c -> c.getName().hashCode())
+                .fold(1, (acc, i) -> acc * 31 + i)
+                * 31 + returnType().getName().hashCode()
+        );
+
+        private Type(Class<R> returnType, Class<?>[] parameterArray) {
+            this.returnType = returnType;
+            this.parameterArray = parameterArray;
         }
 
         @SuppressWarnings("unchecked")
-        default Class<T2> parameterType2() {
-            return (Class<T2>) parameterArray()[1];
+        private static <T1, T2, T3, T4, T5, T6, R> Type<T1, T2, T3, T4, T5, T6, R> of(Function6<T1, T2, T3, T4, T5, T6, R> f) {
+            final MethodType methodType = getLambdaSignature(f);
+            return new Type<>((Class<R>) methodType.returnType(), methodType.parameterArray());
+        }
+
+        // TODO: get rid of this repitition in every Function*.Type (with Java 9?)
+        private static MethodType getLambdaSignature(Serializable lambda) {
+            final String signature = getSerializedLambda(lambda).getInstantiatedMethodType();
+            return MethodType.fromMethodDescriptorString(signature, lambda.getClass().getClassLoader());
+        }
+
+        private static SerializedLambda getSerializedLambda(Serializable lambda) {
+            return Try.of(() -> {
+                final Method method = lambda.getClass().getDeclaredMethod("writeReplace");
+                method.setAccessible(true);
+                return (SerializedLambda) method.invoke(lambda);
+            }).get();
         }
 
         @SuppressWarnings("unchecked")
-        default Class<T3> parameterType3() {
-            return (Class<T3>) parameterArray()[2];
+        @Override
+        public Class<R> returnType() {
+            return returnType;
+        }
+
+        @Override
+        public Class<?>[] parameterArray() {
+            return parameterArray;
         }
 
         @SuppressWarnings("unchecked")
-        default Class<T4> parameterType4() {
-            return (Class<T4>) parameterArray()[3];
+        public Class<T1> parameterType1() {
+            return (Class<T1>) parameterArray[0];
         }
 
         @SuppressWarnings("unchecked")
-        default Class<T5> parameterType5() {
-            return (Class<T5>) parameterArray()[4];
+        public Class<T2> parameterType2() {
+            return (Class<T2>) parameterArray[1];
         }
 
         @SuppressWarnings("unchecked")
-        default Class<T6> parameterType6() {
-            return (Class<T6>) parameterArray()[5];
+        public Class<T3> parameterType3() {
+            return (Class<T3>) parameterArray[2];
+        }
+
+        @SuppressWarnings("unchecked")
+        public Class<T4> parameterType4() {
+            return (Class<T4>) parameterArray[3];
+        }
+
+        @SuppressWarnings("unchecked")
+        public Class<T5> parameterType5() {
+            return (Class<T5>) parameterArray[4];
+        }
+
+        @SuppressWarnings("unchecked")
+        public Class<T6> parameterType6() {
+            return (Class<T6>) parameterArray[5];
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            } else if (o instanceof Type) {
+                final Type<?, ?, ?, ?, ?, ?, ?> that = (Type<?, ?, ?, ?, ?, ?, ?>) o;
+                return this.hashCode() == that.hashCode()
+                        && this.returnType.equals(that.returnType)
+                        && Arrays.equals(this.parameterArray, that.parameterArray);
+            } else {
+                return false;
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            return hashCode.get();
+        }
+
+        @Override
+        public String toString() {
+            return List.of(parameterArray).map(Class::getName).join(", ", "(", ")")
+                    + " -> "
+                    + returnType.getName();
         }
     }
 }

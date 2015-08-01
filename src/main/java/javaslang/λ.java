@@ -5,14 +5,7 @@
  */
 package javaslang;
 
-import javaslang.collection.List;
-import javaslang.control.Try;
-
 import java.io.Serializable;
-import java.lang.invoke.MethodType;
-import java.lang.invoke.SerializedLambda;
-import java.lang.reflect.Method;
-import java.util.Arrays;
 
 /**
  * This is a general definition of a (checked/unchecked) function of unknown parameters and a return type R.
@@ -83,83 +76,14 @@ public interface λ<R> extends Serializable {
      *
      * @return A new instance containing the type information
      */
-    default Type<R> getType() {
-
-        final class ReflectionUtil {
-
-            MethodType getLambdaSignature(Serializable lambda) {
-                final String signature = getSerializedLambda(lambda).getInstantiatedMethodType();
-                return MethodType.fromMethodDescriptorString(signature, lambda.getClass().getClassLoader());
-            }
-
-            private SerializedLambda getSerializedLambda(Serializable lambda) {
-                return Try.of(() -> {
-                    final Method method = lambda.getClass().getDeclaredMethod("writeReplace");
-                    method.setAccessible(true);
-                    return (SerializedLambda) method.invoke(lambda);
-                }).get();
-            }
-        }
-
-        final MethodType methodType = new ReflectionUtil().getLambdaSignature(this);
-
-        return new Type<R>() {
-
-            private static final long serialVersionUID = 1L;
-
-            private transient final Lazy<Integer> hashCode = Lazy.of(() -> List.of(parameterArray())
-                    .map(c -> c.getName().hashCode())
-                    .fold(1, (acc, i) -> acc * 31 + i)
-                    * 31 + returnType().getName().hashCode()
-            );
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public Class<R> returnType() {
-                return (Class<R>) methodType.returnType();
-            }
-
-            @Override
-            public Class<?>[] parameterArray() {
-                return methodType.parameterArray();
-            }
-
-            @Override
-            public boolean equals(Object o) {
-                if (o == this) {
-                    return true;
-                } else if (o instanceof Type) {
-                    final Type<?> that = (Type<?>) o;
-                    return this.hashCode() == that.hashCode()
-                            && this.returnType().equals(that.returnType())
-                            && Arrays.equals(this.parameterArray(), that.parameterArray());
-                } else {
-                    return false;
-                }
-            }
-
-            @Override
-            public int hashCode() {
-                return hashCode.get();
-            }
-
-            @Override
-            public String toString() {
-                return List.of(parameterArray()).map(Class::getName).join(", ", "(", ")")
-                        + " -> "
-                        + returnType().getName();
-            }
-        };
-    }
+    Type<R> getType();
 
     /**
      * Represents the type of a function which consists of <em>parameter types</em> and a <em>return type</em>.
      *
      * @param <R> the return type of the function
      */
-    interface Type<R> extends Serializable {
-
-        long serialVersionUID = 1L;
+    interface Type<R> {
 
         /**
          * Returns the return type of the {@code λ}.
