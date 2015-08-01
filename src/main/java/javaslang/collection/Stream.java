@@ -1660,6 +1660,12 @@ public interface Stream<T> extends Seq<T> {
      */
     abstract class AbstractStream<T> implements Stream<T> {
 
+        /**
+         * This class is not public API (but currently cannot be hidden as of Java 8).
+         */
+        protected AbstractStream() {
+        }
+
         @Override
         public boolean equals(Object o) {
             if (o == this) {

@@ -9,15 +9,9 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import java.io.Serializable;
-import java.lang.invoke.MethodType;
-import java.lang.invoke.SerializedLambda;
-import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import javaslang.collection.List;
 import javaslang.control.Try;
 
 /**
@@ -99,7 +93,7 @@ public interface CheckedFunction3<T1, T2, T3, R> extends λ<R> {
      * @return true, if this function is applicable to the given objects, false otherwise.
      */
     default boolean isApplicableTo(Object o1, Object o2, Object o3) {
-        final Class<?>[] paramTypes = getType().parameterArray();
+        final Class<?>[] paramTypes = getType().parameterTypes();
         return
                 (o1 == null || paramTypes[0].isAssignableFrom(o1.getClass())) &&
                 (o2 == null || paramTypes[1].isAssignableFrom(o2.getClass())) &&
@@ -118,7 +112,7 @@ public interface CheckedFunction3<T1, T2, T3, R> extends λ<R> {
         Objects.requireNonNull(type1, "type1 is null");
         Objects.requireNonNull(type2, "type2 is null");
         Objects.requireNonNull(type3, "type3 is null");
-        final Class<?>[] paramTypes = getType().parameterArray();
+        final Class<?>[] paramTypes = getType().parameterTypes();
         return
                 paramTypes[0].isAssignableFrom(type1) &&
                 paramTypes[1].isAssignableFrom(type2) &&
@@ -195,7 +189,7 @@ public interface CheckedFunction3<T1, T2, T3, R> extends λ<R> {
 
     @Override
     default Type<T1, T2, T3, R> getType() {
-        return Type.of(this);
+        return new Type<>(this);
     }
 
     /**
@@ -207,95 +201,30 @@ public interface CheckedFunction3<T1, T2, T3, R> extends λ<R> {
      * @param <T2> the 2nd parameter type of the function
      * @param <T3> the 3rd parameter type of the function
      * @param <R> the return type of the function
+     * @since 2.0.0
      */
-    final class Type<T1, T2, T3, R> implements λ.Type<R>, Serializable {
+    final class Type<T1, T2, T3, R> extends λ.AbstractType<R> {
 
         private static final long serialVersionUID = 1L;
 
-        private final Class<R> returnType;
-        private final Class<?>[] parameterArray;
-
-        private transient final Lazy<Integer> hashCode = Lazy.of(() -> List.of(parameterArray())
-                .map(c -> c.getName().hashCode())
-                .fold(1, (acc, i) -> acc * 31 + i)
-                * 31 + returnType().getName().hashCode()
-        );
-
-        private Type(Class<R> returnType, Class<?>[] parameterArray) {
-            this.returnType = returnType;
-            this.parameterArray = parameterArray;
-        }
-
-        @SuppressWarnings("unchecked")
-        private static <T1, T2, T3, R> Type<T1, T2, T3, R> of(CheckedFunction3<T1, T2, T3, R> f) {
-            final MethodType methodType = getLambdaSignature(f);
-            return new Type<>((Class<R>) methodType.returnType(), methodType.parameterArray());
-        }
-
-        // TODO: get rid of this repitition in every Function*.Type (with Java 9?)
-        private static MethodType getLambdaSignature(Serializable lambda) {
-            final String signature = getSerializedLambda(lambda).getInstantiatedMethodType();
-            return MethodType.fromMethodDescriptorString(signature, lambda.getClass().getClassLoader());
-        }
-
-        private static SerializedLambda getSerializedLambda(Serializable lambda) {
-            return Try.of(() -> {
-                final Method method = lambda.getClass().getDeclaredMethod("writeReplace");
-                method.setAccessible(true);
-                return (SerializedLambda) method.invoke(lambda);
-            }).get();
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public Class<R> returnType() {
-            return returnType;
-        }
-
-        @Override
-        public Class<?>[] parameterArray() {
-            return parameterArray;
+        @SuppressWarnings("deprecation")
+        private Type(CheckedFunction3<T1, T2, T3, R> λ) {
+            super(λ);
         }
 
         @SuppressWarnings("unchecked")
         public Class<T1> parameterType1() {
-            return (Class<T1>) parameterArray[0];
+            return (Class<T1>) parameterTypes()[0];
         }
 
         @SuppressWarnings("unchecked")
         public Class<T2> parameterType2() {
-            return (Class<T2>) parameterArray[1];
+            return (Class<T2>) parameterTypes()[1];
         }
 
         @SuppressWarnings("unchecked")
         public Class<T3> parameterType3() {
-            return (Class<T3>) parameterArray[2];
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (o == this) {
-                return true;
-            } else if (o instanceof Type) {
-                final Type<?, ?, ?, ?> that = (Type<?, ?, ?, ?>) o;
-                return this.hashCode() == that.hashCode()
-                        && this.returnType.equals(that.returnType)
-                        && Arrays.equals(this.parameterArray, that.parameterArray);
-            } else {
-                return false;
-            }
-        }
-
-        @Override
-        public int hashCode() {
-            return hashCode.get();
-        }
-
-        @Override
-        public String toString() {
-            return List.of(parameterArray).map(Class::getName).join(", ", "(", ")")
-                    + " -> "
-                    + returnType.getName();
+            return (Class<T3>) parameterTypes()[2];
         }
     }
 }

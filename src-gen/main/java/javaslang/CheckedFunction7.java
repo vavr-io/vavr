@@ -9,15 +9,9 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import java.io.Serializable;
-import java.lang.invoke.MethodType;
-import java.lang.invoke.SerializedLambda;
-import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import javaslang.collection.List;
 import javaslang.control.Try;
 
 /**
@@ -115,7 +109,7 @@ public interface CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> extends λ<R> {
      * @return true, if this function is applicable to the given objects, false otherwise.
      */
     default boolean isApplicableTo(Object o1, Object o2, Object o3, Object o4, Object o5, Object o6, Object o7) {
-        final Class<?>[] paramTypes = getType().parameterArray();
+        final Class<?>[] paramTypes = getType().parameterTypes();
         return
                 (o1 == null || paramTypes[0].isAssignableFrom(o1.getClass())) &&
                 (o2 == null || paramTypes[1].isAssignableFrom(o2.getClass())) &&
@@ -146,7 +140,7 @@ public interface CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> extends λ<R> {
         Objects.requireNonNull(type5, "type5 is null");
         Objects.requireNonNull(type6, "type6 is null");
         Objects.requireNonNull(type7, "type7 is null");
-        final Class<?>[] paramTypes = getType().parameterArray();
+        final Class<?>[] paramTypes = getType().parameterTypes();
         return
                 paramTypes[0].isAssignableFrom(type1) &&
                 paramTypes[1].isAssignableFrom(type2) &&
@@ -285,7 +279,7 @@ public interface CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> extends λ<R> {
 
     @Override
     default Type<T1, T2, T3, T4, T5, T6, T7, R> getType() {
-        return Type.of(this);
+        return new Type<>(this);
     }
 
     /**
@@ -301,115 +295,50 @@ public interface CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> extends λ<R> {
      * @param <T6> the 6th parameter type of the function
      * @param <T7> the 7th parameter type of the function
      * @param <R> the return type of the function
+     * @since 2.0.0
      */
-    final class Type<T1, T2, T3, T4, T5, T6, T7, R> implements λ.Type<R>, Serializable {
+    final class Type<T1, T2, T3, T4, T5, T6, T7, R> extends λ.AbstractType<R> {
 
         private static final long serialVersionUID = 1L;
 
-        private final Class<R> returnType;
-        private final Class<?>[] parameterArray;
-
-        private transient final Lazy<Integer> hashCode = Lazy.of(() -> List.of(parameterArray())
-                .map(c -> c.getName().hashCode())
-                .fold(1, (acc, i) -> acc * 31 + i)
-                * 31 + returnType().getName().hashCode()
-        );
-
-        private Type(Class<R> returnType, Class<?>[] parameterArray) {
-            this.returnType = returnType;
-            this.parameterArray = parameterArray;
-        }
-
-        @SuppressWarnings("unchecked")
-        private static <T1, T2, T3, T4, T5, T6, T7, R> Type<T1, T2, T3, T4, T5, T6, T7, R> of(CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> f) {
-            final MethodType methodType = getLambdaSignature(f);
-            return new Type<>((Class<R>) methodType.returnType(), methodType.parameterArray());
-        }
-
-        // TODO: get rid of this repitition in every Function*.Type (with Java 9?)
-        private static MethodType getLambdaSignature(Serializable lambda) {
-            final String signature = getSerializedLambda(lambda).getInstantiatedMethodType();
-            return MethodType.fromMethodDescriptorString(signature, lambda.getClass().getClassLoader());
-        }
-
-        private static SerializedLambda getSerializedLambda(Serializable lambda) {
-            return Try.of(() -> {
-                final Method method = lambda.getClass().getDeclaredMethod("writeReplace");
-                method.setAccessible(true);
-                return (SerializedLambda) method.invoke(lambda);
-            }).get();
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public Class<R> returnType() {
-            return returnType;
-        }
-
-        @Override
-        public Class<?>[] parameterArray() {
-            return parameterArray;
+        @SuppressWarnings("deprecation")
+        private Type(CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> λ) {
+            super(λ);
         }
 
         @SuppressWarnings("unchecked")
         public Class<T1> parameterType1() {
-            return (Class<T1>) parameterArray[0];
+            return (Class<T1>) parameterTypes()[0];
         }
 
         @SuppressWarnings("unchecked")
         public Class<T2> parameterType2() {
-            return (Class<T2>) parameterArray[1];
+            return (Class<T2>) parameterTypes()[1];
         }
 
         @SuppressWarnings("unchecked")
         public Class<T3> parameterType3() {
-            return (Class<T3>) parameterArray[2];
+            return (Class<T3>) parameterTypes()[2];
         }
 
         @SuppressWarnings("unchecked")
         public Class<T4> parameterType4() {
-            return (Class<T4>) parameterArray[3];
+            return (Class<T4>) parameterTypes()[3];
         }
 
         @SuppressWarnings("unchecked")
         public Class<T5> parameterType5() {
-            return (Class<T5>) parameterArray[4];
+            return (Class<T5>) parameterTypes()[4];
         }
 
         @SuppressWarnings("unchecked")
         public Class<T6> parameterType6() {
-            return (Class<T6>) parameterArray[5];
+            return (Class<T6>) parameterTypes()[5];
         }
 
         @SuppressWarnings("unchecked")
         public Class<T7> parameterType7() {
-            return (Class<T7>) parameterArray[6];
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (o == this) {
-                return true;
-            } else if (o instanceof Type) {
-                final Type<?, ?, ?, ?, ?, ?, ?, ?> that = (Type<?, ?, ?, ?, ?, ?, ?, ?>) o;
-                return this.hashCode() == that.hashCode()
-                        && this.returnType.equals(that.returnType)
-                        && Arrays.equals(this.parameterArray, that.parameterArray);
-            } else {
-                return false;
-            }
-        }
-
-        @Override
-        public int hashCode() {
-            return hashCode.get();
-        }
-
-        @Override
-        public String toString() {
-            return List.of(parameterArray).map(Class::getName).join(", ", "(", ")")
-                    + " -> "
-                    + returnType.getName();
+            return (Class<T7>) parameterTypes()[6];
         }
     }
 }

@@ -197,7 +197,7 @@ public final class Failure<T> implements Try<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
-        Cause(Throwable cause) {
+        protected Cause(Throwable cause) {
             super(cause);
         }
 
@@ -247,7 +247,7 @@ public final class Failure<T> implements Try<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
-        Fatal(Throwable cause) {
+        public Fatal(Throwable cause) {
             super(cause);
         }
 
@@ -264,7 +264,7 @@ public final class Failure<T> implements Try<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
-        NonFatal(Throwable cause) {
+        public NonFatal(Throwable cause) {
             super(cause);
         }
 

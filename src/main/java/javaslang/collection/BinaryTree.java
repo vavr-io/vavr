@@ -540,6 +540,12 @@ public interface BinaryTree<T> extends Tree<T> {
      */
     abstract class AbstractBinaryTree<T> implements BinaryTree<T> {
 
+        /**
+         * This class is not public API (but currently cannot be hidden as of Java 8).
+         */
+        protected AbstractBinaryTree() {
+        }
+
         @Override
         public boolean equals(Object o) {
             if (o == this) {

@@ -275,9 +275,7 @@ def generateMainClasses(): Unit = {
       def genFunction(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
 
         val generics = (1 to i).gen(j => s"T$j")(", ")
-        val wildcards = (1 to i).gen(j => "?")(", ")
         val fullGenerics = s"<${(i > 0).gen(s"$generics, ")}R>"
-        val fullGenericsWithWildcards = s"<${(i > 0).gen(s"$wildcards, ")}?>"
         val genericsReversed = (1 to i).reverse.gen(j => s"T$j")(", ")
         val genericsTuple = if (i > 0) s"<$generics>" else ""
         val genericsFunction = if (i > 0) s"$generics, " else ""
@@ -291,16 +289,8 @@ def generateMainClasses(): Unit = {
 
         // imports
 
-        val Arrays = im.getType("java.util.Arrays")
-        val List = im.getType("javaslang.collection.List")
-        val Method = im.getType("java.lang.reflect.Method")
-        val MethodType = im.getType("java.lang.invoke.MethodType")
         val Objects = im.getType("java.util.Objects")
-        val Serializable = im.getType("java.io.Serializable")
-        val SerializedLambda = im.getType("java.lang.invoke.SerializedLambda")
-        val Try = im.getType("javaslang.control.Try")
-        // TODO: DELME val Try = if (checked) im.getType("javaslang.control.Try") else ""
-
+        val Try = if (checked) im.getType("javaslang.control.Try") else ""
         val additionalExtends = (checked, i) match {
           case (false, 0) => ", " + im.getType("java.util.function.Supplier") + "<R>"
           case (false, 1) => ", " + im.getType("java.util.function.Function") + "<T1, R>"
@@ -410,7 +400,7 @@ def generateMainClasses(): Unit = {
                  * @return true, if this function is applicable to the given objects, false otherwise.
                  */
                 default boolean isApplicableTo(${(1 to i).gen(j => s"Object o$j")(", ")}) {
-                    final Class<?>[] paramTypes = getType().parameterArray();
+                    final Class<?>[] paramTypes = getType().parameterTypes();
                     return
                             ${(1 to i).gen(j => xs"""
                               (o$j == null || paramTypes[${j - 1}].isAssignableFrom(o$j.getClass()))
@@ -424,7 +414,7 @@ def generateMainClasses(): Unit = {
                  */
                 default boolean isApplicableToType${(i > 1).gen("s")}(${(1 to i).gen(j => s"Class<?> type$j")(", ")}) {
                     ${(1 to i).gen(j => xs"""$Objects.requireNonNull(type$j, "type$j is null");""")("\n")}
-                    final Class<?>[] paramTypes = getType().parameterArray();
+                    final Class<?>[] paramTypes = getType().parameterTypes();
                     return
                             ${(1 to i).gen(j => xs"""
                               paramTypes[${j - 1}].isAssignableFrom(type$j)
@@ -549,7 +539,7 @@ def generateMainClasses(): Unit = {
 
               @Override
               default Type$fullGenerics getType() {
-                  return Type.of(this);
+                  return new Type<>(this);
               }
 
               /**
@@ -558,88 +548,23 @@ def generateMainClasses(): Unit = {
                *
                ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> the ${j.ordinal} parameter type of the function")("\n")}
                * @param <R> the return type of the function
+               * @since 2.0.0
                */
-              final class Type$fullGenerics implements λ.Type<R>, $Serializable {
+              final class Type$fullGenerics extends λ.AbstractType<R> {
 
                   private static final long serialVersionUID = 1L;
 
-                  private final Class<R> returnType;
-                  private final Class<?>[] parameterArray;
-
-                  private transient final Lazy<Integer> hashCode = Lazy.of(() -> $List.of(parameterArray())
-                          .map(c -> c.getName().hashCode())
-                          .fold(1, (acc, i) -> acc * 31 + i)
-                          * 31 + returnType().getName().hashCode()
-                  );
-
-                  private Type(Class<R> returnType, Class<?>[] parameterArray) {
-                      this.returnType = returnType;
-                      this.parameterArray = parameterArray;
-                  }
-
-                  @SuppressWarnings("unchecked")
-                  private static $fullGenerics Type$fullGenerics of($name$i$fullGenerics f) {
-                      final $MethodType methodType = getLambdaSignature(f);
-                      return new Type<>((Class<R>) methodType.returnType(), methodType.parameterArray());
-                  }
-
-                  // TODO: get rid of this repitition in every Function*.Type (with Java 9?)
-                  private static $MethodType getLambdaSignature($Serializable lambda) {
-                      final String signature = getSerializedLambda(lambda).getInstantiatedMethodType();
-                      return $MethodType.fromMethodDescriptorString(signature, lambda.getClass().getClassLoader());
-                  }
-
-                  private static $SerializedLambda getSerializedLambda($Serializable lambda) {
-                      return $Try.of(() -> {
-                          final $Method method = lambda.getClass().getDeclaredMethod("writeReplace");
-                          method.setAccessible(true);
-                          return ($SerializedLambda) method.invoke(lambda);
-                      }).get();
-                  }
-
-                  @SuppressWarnings("unchecked")
-                  @Override
-                  public Class<R> returnType() {
-                      return returnType;
-                  }
-
-                  @Override
-                  public Class<?>[] parameterArray() {
-                      return parameterArray;
+                  @SuppressWarnings("deprecation")
+                  private Type($name$i$fullGenerics λ) {
+                      super(λ);
                   }
 
                   ${(1 to i).gen(j => xs"""
                     @SuppressWarnings("unchecked")
                     public Class<T$j> parameterType$j() {
-                        return (Class<T$j>) parameterArray[${j-1}];
+                        return (Class<T$j>) parameterTypes()[${j-1}];
                     }
                   """)("\n\n")}
-
-                  @Override
-                  public boolean equals(Object o) {
-                      if (o == this) {
-                          return true;
-                      } else if (o instanceof Type) {
-                          final Type$fullGenericsWithWildcards that = (Type$fullGenericsWithWildcards) o;
-                          return this.hashCode() == that.hashCode()
-                                  && this.returnType.equals(that.returnType)
-                                  && $Arrays.equals(this.parameterArray, that.parameterArray);
-                      } else {
-                          return false;
-                      }
-                  }
-
-                  @Override
-                  public int hashCode() {
-                      return hashCode.get();
-                  }
-
-                  @Override
-                  public String toString() {
-                      return $List.of(parameterArray).map(Class::getName).join(", ", "(", ")")
-                              + " -> "
-                              + returnType.getName();
-                  }
               }
           }
         """

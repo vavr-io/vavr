@@ -9,15 +9,8 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import java.io.Serializable;
-import java.lang.invoke.MethodType;
-import java.lang.invoke.SerializedLambda;
-import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Supplier;
-import javaslang.collection.List;
-import javaslang.control.Try;
 
 /**
  * Represents a function with no arguments.
@@ -132,7 +125,7 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
 
     @Override
     default Type<R> getType() {
-        return Type.of(this);
+        return new Type<>(this);
     }
 
     /**
@@ -141,80 +134,16 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
      *
      *
      * @param <R> the return type of the function
+     * @since 2.0.0
      */
-    final class Type<R> implements λ.Type<R>, Serializable {
+    final class Type<R> extends λ.AbstractType<R> {
 
         private static final long serialVersionUID = 1L;
 
-        private final Class<R> returnType;
-        private final Class<?>[] parameterArray;
-
-        private transient final Lazy<Integer> hashCode = Lazy.of(() -> List.of(parameterArray())
-                .map(c -> c.getName().hashCode())
-                .fold(1, (acc, i) -> acc * 31 + i)
-                * 31 + returnType().getName().hashCode()
-        );
-
-        private Type(Class<R> returnType, Class<?>[] parameterArray) {
-            this.returnType = returnType;
-            this.parameterArray = parameterArray;
+        @SuppressWarnings("deprecation")
+        private Type(Function0<R> λ) {
+            super(λ);
         }
 
-        @SuppressWarnings("unchecked")
-        private static <R> Type<R> of(Function0<R> f) {
-            final MethodType methodType = getLambdaSignature(f);
-            return new Type<>((Class<R>) methodType.returnType(), methodType.parameterArray());
-        }
-
-        // TODO: get rid of this repitition in every Function*.Type (with Java 9?)
-        private static MethodType getLambdaSignature(Serializable lambda) {
-            final String signature = getSerializedLambda(lambda).getInstantiatedMethodType();
-            return MethodType.fromMethodDescriptorString(signature, lambda.getClass().getClassLoader());
-        }
-
-        private static SerializedLambda getSerializedLambda(Serializable lambda) {
-            return Try.of(() -> {
-                final Method method = lambda.getClass().getDeclaredMethod("writeReplace");
-                method.setAccessible(true);
-                return (SerializedLambda) method.invoke(lambda);
-            }).get();
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public Class<R> returnType() {
-            return returnType;
-        }
-
-        @Override
-        public Class<?>[] parameterArray() {
-            return parameterArray;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (o == this) {
-                return true;
-            } else if (o instanceof Type) {
-                final Type<?> that = (Type<?>) o;
-                return this.hashCode() == that.hashCode()
-                        && this.returnType.equals(that.returnType)
-                        && Arrays.equals(this.parameterArray, that.parameterArray);
-            } else {
-                return false;
-            }
-        }
-
-        @Override
-        public int hashCode() {
-            return hashCode.get();
-        }
-
-        @Override
-        public String toString() {
-            return List.of(parameterArray).map(Class::getName).join(", ", "(", ")")
-                    + " -> "
-                    + returnType.getName();
-        }
     }
 }
