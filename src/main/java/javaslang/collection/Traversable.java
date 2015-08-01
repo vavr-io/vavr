@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Kind;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.Match;
@@ -153,7 +154,7 @@ import java.util.stream.StreamSupport;
  * @param <T> Component type
  * @since 1.1.0
  */
-public interface Traversable<T> extends TraversableOnce<T> {
+public interface Traversable<T> extends TraversableOnce<T>, Kind<Traversable.IterableKind<?>, T> {
 
     /**
      * Calculates the average of this elements. Returns {@code None} if this is empty, otherwise {@code Some(average)}.
@@ -1390,4 +1391,22 @@ public interface Traversable<T> extends TraversableOnce<T> {
      * @return A new List containing all elements of this List paired with their index, starting with 0.
      */
     Traversable<Tuple2<T, Integer>> zipWithIndex();
+
+    /**
+     * A {@code Kind} representation of Java's {@code `Iterable`} needed for {@link javaslang.FilterMonadic} operations.
+     *
+     * @param <T> component type
+     */
+    interface IterableKind<T> extends Iterable<T>, Kind<IterableKind<?>, T> {
+
+        @SuppressWarnings("unchecked")
+        static <T> IterableKind<T> lift(Iterable<? extends T> iterable) {
+            return (IterableKind<T>) iterable;
+        }
+
+        @SuppressWarnings("unchecked")
+        static <T> Iterable<T> narrow(IterableKind<? extends T> iterableKind) {
+            return (Iterable<T>) iterableKind;
+        }
+    }
 }

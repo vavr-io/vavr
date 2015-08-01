@@ -89,6 +89,16 @@ public interface TraversableOnce<T> extends Iterable<T> {
     }
 
     /**
+     * Performs an action on the first element (regarding the order, if any) if this is an eager implementation.
+     * <p>
+     * Performs an action on all elements (the first immediately, successive deferred), if this is a lazy implementation.
+     *
+     * @param action The action the will be performed on the element(s).
+     * @return this instance
+     */
+    TraversableOnce<T> peek(Consumer<? super T> action);
+
+    /**
      * Converts this TraversableOnce to a List.
      *
      * @return A List of all of this elements.
