@@ -165,12 +165,13 @@ public class Future<T> {
     synchronized void complete(Try<T> result) {
         if (value.isEmpty()) {
             value = new Some<>(result);
-            notifyAll();
 
             while (!callBacks.isEmpty()) {
                 Tuple2<Executor, Consumer<Try<T>>> pair = callBacks.poll();
                 pair._1.execute(() -> pair._2.accept(result));
             }
+
+	        notifyAll();
 
             //These lines were using in testing to ensure that no callBacks were slipping through.
 //            try {
@@ -225,7 +226,7 @@ public class Future<T> {
      * @param <R>  The result type of the Function
      * @return A new Future who's value will be calculated with the supplied function once this Future's result is evaluated.
      */
-    public <R> Future<R> flatMap(Function<? super T, ? extends Future<R>> func, Executor ex) {
+    public <R> Future<R> flatMap(Function<? super T, Future<R>> func, Executor ex) {
         Objects.requireNonNull(func, "func is null");
 
         Promise<R> result = new Promise<>();
@@ -243,7 +244,7 @@ public class Future<T> {
      * @param <R>  The result type of the Function
      * @return A new Future who's value will be calculated with the supplied function once this Future's result is evaluated.
      */
-    public <R> Future<R> flatMap(Function<? super T, ? extends Future<R>> func) {
+    public <R> Future<R> flatMap(Function<? super T, Future<R>> func) {
         return flatMap(func, ForkJoinPool.commonPool());
     }
 
@@ -256,7 +257,7 @@ public class Future<T> {
      * @param <R>  The result type of the Function
      * @return A new Future who's value will be calculated with the supplied function once this Future's result is evaluated.
      */
-    public <R> Future<R> mapTry(Function<? super Try<T>, ? extends Try<R>> func, Executor ex) {
+    public <R> Future<R> mapTry(Function<Try<T>, Try<R>> func, Executor ex) {
         Objects.requireNonNull(func, "func is null");
         Promise<R> result = new Promise<>();
 
@@ -273,7 +274,7 @@ public class Future<T> {
      * @param <R>  The result type of the Function
      * @return A new Future who's value will be calculated with the supplied function once this Future's result is evaluated.
      */
-    public <R> Future<R> mapTry(Function<? super Try<T>, ? extends Try<R>> func) {
+    public <R> Future<R> mapTry(Function<Try<T>, Try<R>> func) {
         return mapTry(func, ForkJoinPool.commonPool());
     }
 
@@ -286,7 +287,7 @@ public class Future<T> {
      * @param <R>  The result type of the Function
      * @return A new Future who's value will be calculated with the supplied function once this Future's result is evaluated.
      */
-    public <R> Future<R> flatMapTry(Function<? super Try<T>, ? extends Future<Try<R>>> func, Executor ex) {
+    public <R> Future<R> flatMapTry(Function<Try<T>, Future<Try<R>>> func, Executor ex) {
         Objects.requireNonNull(func, "func is null");
         Promise<R> result = new Promise<>();
 
@@ -306,7 +307,7 @@ public class Future<T> {
      * @param <R>  The result type of the Function
      * @return A new Future who's value will be calculated with the supplied function once this Future's result is evaluated.
      */
-    public <R> Future<R> flatMapTry(Function<? super Try<T>, ? extends Future<Try<R>>> func) {
+    public <R> Future<R> flatMapTry(Function<Try<T>, Future<Try<R>>> func) {
         return flatMapTry(func, ForkJoinPool.commonPool());
     }
 
@@ -385,7 +386,7 @@ public class Future<T> {
      * @param func A Function to handle any exception and return some value.
      * @param ex   Executor to use for this operation. Becomes the default Executor for the resulting Future.
      */
-    public Future<T> recoverWith(Function<Throwable, ? extends Future<T>> func, Executor ex) {
+    public Future<T> recoverWith(Function<Throwable, Future<T>> func, Executor ex) {
         Objects.requireNonNull(func, "func is null");
 
         Promise<T> result = new Promise<>();
@@ -401,7 +402,7 @@ public class Future<T> {
      *
      * @param func A Function to handle any exception and return some value.
      */
-    public Future<T> recoverWith(Function<Throwable, ? extends Future<T>> func) {
+    public Future<T> recoverWith(Function<Throwable, Future<T>> func) {
         return recoverWith(func, ForkJoinPool.commonPool());
     }
 
