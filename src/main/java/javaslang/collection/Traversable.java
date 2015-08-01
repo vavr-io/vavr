@@ -425,7 +425,7 @@ public interface Traversable<T> extends TraversableOnce<T> {
      * Accumulates the elements of this Traversable by successively calling the given operator {@code op}.
      * </p>
      * <p>
-     * Example: {@code List("a", "b", "c").fold("", (a, b) -> a + b) = "abc"}
+     * Example: {@code List("a", "b", "c").fold("", (xs, x) -> xs + x) = "abc"}
      * </p>
      *
      * @param zero Value to start the accumulation with.

@@ -229,7 +229,7 @@ public interface Match<R> extends Function<Object, R> {
 
             @SuppressWarnings("unchecked")
             private static <T> Predicate<? super Object> of(Function1<? super T, ? extends Boolean> predicate) {
-                final Class<?> type = predicate.getType().parameterType(0);
+                final Class<? super T> type = predicate.getType().parameterType1();
                 return value -> (value == null || type.isAssignableFrom(value.getClass()))
                         && ((Function1<? super Object, ? extends Boolean>) predicate).apply(value);
             }

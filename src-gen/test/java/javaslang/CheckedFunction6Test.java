@@ -146,4 +146,10 @@ public class CheckedFunction6Test {
         assertThat(composed).isNotNull();
     }
 
+    @Test
+    public void shouldGetType() {
+        final CheckedFunction6<Integer, Integer, Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4, i5, i6) -> null;
+        final CheckedFunction6.Type<Integer, Integer, Integer, Integer, Integer, Integer, Integer> type = f.getType();
+        assertThat(type.toString()).isEqualTo("(java.lang.Integer, java.lang.Integer, java.lang.Integer, java.lang.Integer, java.lang.Integer, java.lang.Integer) -> java.lang.Integer");
+    }
 }

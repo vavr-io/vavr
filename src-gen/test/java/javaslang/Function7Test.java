@@ -152,4 +152,10 @@ public class Function7Test {
         assertThat(composed).isNotNull();
     }
 
+    @Test
+    public void shouldGetType() {
+        final Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4, i5, i6, i7) -> null;
+        final Function7.Type<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> type = f.getType();
+        assertThat(type.toString()).isEqualTo("(java.lang.Integer, java.lang.Integer, java.lang.Integer, java.lang.Integer, java.lang.Integer, java.lang.Integer, java.lang.Integer) -> java.lang.Integer");
+    }
 }

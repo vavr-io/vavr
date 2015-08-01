@@ -123,4 +123,52 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
         return () -> after.apply(apply());
     }
 
+    @Override
+    default Type<R> getType() {
+
+        final λ.Type<R> superType = λ.super.getType();
+
+        return new Type<R>() {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public Class<R> returnType() {
+                return superType.returnType();
+            }
+
+            @Override
+            public Class<?>[] parameterArray() {
+                return superType.parameterArray();
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                return superType.equals(o);
+            }
+
+            @Override
+            public int hashCode() {
+                return superType.hashCode();
+            }
+
+            @Override
+            public String toString() {
+                return superType.toString();
+            }
+        };
+    }
+
+    /**
+     * Represents the type of a {@code Function} which consists of 0 <em>parameter no types</em>
+     * and a <em>return type</em>.
+     *
+     *
+     * @param <R> the return type of the function
+     */
+    interface Type<R> extends λ.Type<R> {
+
+        long serialVersionUID = 1L;
+
+    }
 }
