@@ -11,11 +11,8 @@ import javaslang.collection.List;
 import javaslang.control.Failure;
 import javaslang.control.Success;
 import javaslang.control.Try;
-import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -221,7 +218,10 @@ public class FutureTest {
 	    order.empty();
     }
 
-	class TestException extends RuntimeException{}
+	class TestException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+	}
 
 	@Test
 	public void failureTest() throws InterruptedException, ExecutionException, TimeoutException {
