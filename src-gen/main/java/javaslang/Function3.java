@@ -92,7 +92,7 @@ public interface Function3<T1, T2, T3, R> extends λ<R> {
      * @return true, if this function is applicable to the given objects, false otherwise.
      */
     default boolean isApplicableTo(Object o1, Object o2, Object o3) {
-        final Class<?>[] paramTypes = getType().parameterArray();
+        final Class<?>[] paramTypes = getType().parameterTypes();
         return
                 (o1 == null || paramTypes[0].isAssignableFrom(o1.getClass())) &&
                 (o2 == null || paramTypes[1].isAssignableFrom(o2.getClass())) &&
@@ -111,7 +111,7 @@ public interface Function3<T1, T2, T3, R> extends λ<R> {
         Objects.requireNonNull(type1, "type1 is null");
         Objects.requireNonNull(type2, "type2 is null");
         Objects.requireNonNull(type3, "type3 is null");
-        final Class<?>[] paramTypes = getType().parameterArray();
+        final Class<?>[] paramTypes = getType().parameterTypes();
         return
                 paramTypes[0].isAssignableFrom(type1) &&
                 paramTypes[1].isAssignableFrom(type2) &&
@@ -188,38 +188,7 @@ public interface Function3<T1, T2, T3, R> extends λ<R> {
 
     @Override
     default Type<T1, T2, T3, R> getType() {
-
-        final λ.Type<R> superType = λ.super.getType();
-
-        return new Type<T1, T2, T3, R>() {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Class<R> returnType() {
-                return superType.returnType();
-            }
-
-            @Override
-            public Class<?>[] parameterArray() {
-                return superType.parameterArray();
-            }
-
-            @Override
-            public boolean equals(Object o) {
-                return superType.equals(o);
-            }
-
-            @Override
-            public int hashCode() {
-                return superType.hashCode();
-            }
-
-            @Override
-            public String toString() {
-                return superType.toString();
-            }
-        };
+        return new Type<>(this);
     }
 
     /**
@@ -231,24 +200,31 @@ public interface Function3<T1, T2, T3, R> extends λ<R> {
      * @param <T2> the 2nd parameter type of the function
      * @param <T3> the 3rd parameter type of the function
      * @param <R> the return type of the function
+     * @since 2.0.0
      */
-    interface Type<T1, T2, T3, R> extends λ.Type<R> {
+    @SuppressWarnings("deprecation")
+    final class Type<T1, T2, T3, R> extends λ.AbstractType<R> {
 
-        long serialVersionUID = 1L;
+        private static final long serialVersionUID = 1L;
 
-        @SuppressWarnings("unchecked")
-        default Class<T1> parameterType1() {
-            return (Class<T1>) parameterArray()[0];
+        @SuppressWarnings("deprecation")
+        private Type(Function3<T1, T2, T3, R> λ) {
+            super(λ);
         }
 
         @SuppressWarnings("unchecked")
-        default Class<T2> parameterType2() {
-            return (Class<T2>) parameterArray()[1];
+        public Class<T1> parameterType1() {
+            return (Class<T1>) parameterTypes()[0];
         }
 
         @SuppressWarnings("unchecked")
-        default Class<T3> parameterType3() {
-            return (Class<T3>) parameterArray()[2];
+        public Class<T2> parameterType2() {
+            return (Class<T2>) parameterTypes()[1];
+        }
+
+        @SuppressWarnings("unchecked")
+        public Class<T3> parameterType3() {
+            return (Class<T3>) parameterTypes()[2];
         }
     }
 }

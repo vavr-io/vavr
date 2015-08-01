@@ -197,7 +197,8 @@ public final class Failure<T> implements Try<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
-        Cause(Throwable cause) {
+        // DEV-NOTE: need to be protected because of serialization
+        protected Cause(Throwable cause) {
             super(cause);
         }
 
@@ -247,7 +248,12 @@ public final class Failure<T> implements Try<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
-        Fatal(Throwable cause) {
+        /**
+         * Use {@link Cause#of(Throwable)} to get an instance of this class.
+         *
+         * @param cause A cause
+         */
+        private Fatal(Throwable cause) {
             super(cause);
         }
 
@@ -264,7 +270,12 @@ public final class Failure<T> implements Try<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
-        NonFatal(Throwable cause) {
+        /**
+         * Use {@link Cause#of(Throwable)} to get an instance of this class.
+         *
+         * @param cause A cause
+         */
+        private NonFatal(Throwable cause) {
             super(cause);
         }
 

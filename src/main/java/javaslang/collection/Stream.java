@@ -1657,8 +1657,16 @@ public interface Stream<T> extends Seq<T> {
      *
      * @param <T> Component type of the Stream.
      * @since 1.1.0
+     * @deprecated Internal API, not intended to be used. This class will disappear from public API as soon as possible.
      */
+    @Deprecated
     abstract class AbstractStream<T> implements Stream<T> {
+
+        /**
+         * This class is not public API (but currently cannot be hidden as of Java 8).
+         */
+        protected AbstractStream() {
+        }
 
         @Override
         public boolean equals(Object o) {
