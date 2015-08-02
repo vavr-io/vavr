@@ -10,14 +10,14 @@ import javaslang.control.None;
 import javaslang.control.Option;
 
 /**
- * Hash array mapped trie
- * https://en.wikipedia.org/wiki/Hash_array_mapped_trie
+ * A {@code HashMap} implementation based on a
+ * <a href="https://en.wikipedia.org/wiki/Hash_array_mapped_trie">Hash array mapped trie (HAMT)</a>.
  */
-public interface HashArrayMappedTrie<K,V> extends Map<K, V> {
+public interface HashMap<K, V> extends Map<K, V> {
 
     EmptyNode<?, ?> EMPTY = new EmptyNode<>();
 
-    static <K, V> AbstractNode<K, V> empty() {
+    static <K, V> HashMap<K, V> empty() {
         @SuppressWarnings("unchecked")
         final EmptyNode<K, V> instance = (EmptyNode<K, V>) EMPTY;
         return instance;
@@ -34,23 +34,23 @@ public interface HashArrayMappedTrie<K,V> extends Map<K, V> {
     }
 
     default V getOrDefault(K key, V defaultValue) {
-        Option<V> opt = ((AbstractNode<K, V>) this).lookup(0, key);
-        return opt.isDefined() ? opt.get() : defaultValue;
+        return ((AbstractNode<K, V>) this).lookup(0, key).orElse(defaultValue);
     }
 
     default boolean containsKey(K key) {
+        // TODO: what if the stored value is null? the result is ambiguous
         return get(key) != null;
     }
 
-    default HashArrayMappedTrie<K,V> put(K key, V value) {
+    default HashMap<K, V> put(K key, V value) {
         return ((AbstractNode<K, V>) this).modify(0, key, value);
     }
 
-    default HashArrayMappedTrie<K,V> remove(K key) {
+    default HashMap<K, V> remove(K key) {
         return ((AbstractNode<K, V>) this).modify(0, key, null);
     }
 
-    abstract class AbstractNode<K, V> implements HashArrayMappedTrie<K, V> {
+    abstract class AbstractNode<K, V> implements HashMap<K, V> {
         final static int SIZE = 5;
         final static int BUCKET_SIZE = 1 << SIZE;
         final static int MAX_INDEX_NODE = BUCKET_SIZE / 2;
@@ -58,6 +58,10 @@ public interface HashArrayMappedTrie<K,V> extends Map<K, V> {
         final static int M1 = 0x55555555;
         final static int M2 = 0x33333333;
         final static int M4 = 0x0f0f0f0f;
+
+        static <K, V> AbstractNode<K, V> empty() {
+            return (AbstractNode<K, V>) HashMap.empty();
+        }
 
         static int bitCount(int x) {
             x = x - ((x >> 1) & M1);
@@ -81,13 +85,16 @@ public interface HashArrayMappedTrie<K,V> extends Map<K, V> {
         }
 
         abstract boolean isLeaf();
+
         abstract Option<V> lookup(int shift, K key);
-        abstract AbstractNode<K,V> modify(int shift, K key, V value);
+
+        abstract AbstractNode<K, V> modify(int shift, K key, V value);
     }
 
     class EmptyNode<K, V> extends AbstractNode<K, V> {
 
-        private EmptyNode() {}
+        private EmptyNode() {
+        }
 
         @Override
         public Option<V> lookup(int shift, K key) {
@@ -126,7 +133,7 @@ public interface HashArrayMappedTrie<K,V> extends Map<K, V> {
         // TODO
         AbstractNode<K, V> update(K key, V value) {
             List<Entry<K, V>> filtered = entries.filter(t -> !t.key.equals(key));
-            if(value == null) {
+            if (value == null) {
                 return filtered.isEmpty() ? empty() : new LeafNode<>(hash, filtered);
             } else {
                 return new LeafNode<>(hash, filtered.append(new Entry<>(key, value)));
@@ -135,7 +142,7 @@ public interface HashArrayMappedTrie<K,V> extends Map<K, V> {
 
         @Override
         Option<V> lookup(int shift, K key) {
-            if(hash != key.hashCode()) {
+            if (hash != key.hashCode()) {
                 return None.instance();
             }
             return entries.filter(t -> t.key.equals(key)).headOption().map(t -> t.value);
@@ -143,7 +150,7 @@ public interface HashArrayMappedTrie<K,V> extends Map<K, V> {
 
         @Override
         AbstractNode<K, V> modify(int shift, K key, V value) {
-            if(key.hashCode() == hash) {
+            if (key.hashCode() == hash) {
                 return update(key, value);
             } else {
                 return value == null ? this : mergeLeaves(shift, new LeafNode<>(key.hashCode(), key, value));
@@ -186,7 +193,7 @@ public interface HashArrayMappedTrie<K,V> extends Map<K, V> {
         IndexedNode(int bitmap, List<AbstractNode<K, V>> subNodes) {
             this.bitmap = bitmap;
             this.subNodes = subNodes;
-            this.size = subNodes.map(HashArrayMappedTrie::size).sum().intValue();
+            this.size = subNodes.map(HashMap::size).sum().intValue();
         }
 
         @Override
@@ -205,25 +212,25 @@ public interface HashArrayMappedTrie<K,V> extends Map<K, V> {
             int mask = bitmap;
             boolean exists = (mask & bit) != 0;
             AbstractNode<K, V> child = exists ? subNodes.get(indx).modify(shift + SIZE, key, value)
-                    : HashArrayMappedTrie.<K,V>empty().modify(shift + SIZE, key, value);
+                    : AbstractNode.<K, V> empty().modify(shift + SIZE, key, value);
             boolean removed = exists && child.isEmpty();
             boolean added = !exists && !child.isEmpty();
             int newBitmap = removed ? mask & ~bit : added ? mask | bit : mask;
-            if(newBitmap == 0) {
+            if (newBitmap == 0) {
                 return empty();
             } else if (removed) {
                 if (subNodes.length() <= 2 && subNodes.get(indx ^ 1).isLeaf()) {
                     return subNodes.get(indx ^ 1); // collapse
                 } else {
-                    Tuple2<List<AbstractNode<K,V>>,List<AbstractNode<K,V>>> spl = subNodes.splitAt(indx);
-                    List<AbstractNode<K,V>> rem = spl._1;
-                    if(!spl._2.isEmpty()) {
+                    Tuple2<List<AbstractNode<K, V>>, List<AbstractNode<K, V>>> spl = subNodes.splitAt(indx);
+                    List<AbstractNode<K, V>> rem = spl._1;
+                    if (!spl._2.isEmpty()) {
                         rem = rem.appendAll(spl._2.tail());
                     }
                     return new IndexedNode<>(newBitmap, rem);
                 }
             } else if (added) {
-                if(subNodes.length() >= MAX_INDEX_NODE) {
+                if (subNodes.length() >= MAX_INDEX_NODE) {
                     return expand(frag, child, mask, subNodes);
                 } else {
                     return new IndexedNode<>(newBitmap, subNodes.insert(indx, child));
@@ -233,7 +240,7 @@ public interface HashArrayMappedTrie<K,V> extends Map<K, V> {
             }
         }
 
-        ArrayNode<K, V> expand(int frag, AbstractNode<K, V> child, int mask, List<AbstractNode<K, V>> subNodes)  {
+        ArrayNode<K, V> expand(int frag, AbstractNode<K, V> child, int mask, List<AbstractNode<K, V>> subNodes) {
             int bit = mask;
             int count = 0;
             List<AbstractNode<K, V>> sub = subNodes;
@@ -253,6 +260,7 @@ public interface HashArrayMappedTrie<K,V> extends Map<K, V> {
             }
             return new ArrayNode<>(count, arr);
         }
+
         @Override
         public boolean isLeaf() {
             return false;
@@ -272,7 +280,7 @@ public interface HashArrayMappedTrie<K,V> extends Map<K, V> {
         ArrayNode(int count, List<AbstractNode<K, V>> subNodes) {
             this.subNodes = subNodes;
             this.count = count;
-            this.size = subNodes.map(HashArrayMappedTrie::size).sum().intValue();
+            this.size = subNodes.map(HashMap::size).sum().intValue();
         }
 
         @Override
@@ -289,8 +297,8 @@ public interface HashArrayMappedTrie<K,V> extends Map<K, V> {
             AbstractNode<K, V> newChild = child.modify(shift + SIZE, key, value);
             if (child.isEmpty() && !newChild.isEmpty()) {
                 return new ArrayNode<>(count + 1, subNodes.set(frag, newChild));
-            } else if(!child.isEmpty() && newChild.isEmpty()) {
-                if(count - 1 <= MIN_ARRAY_NODE) {
+            } else if (!child.isEmpty() && newChild.isEmpty()) {
+                if (count - 1 <= MIN_ARRAY_NODE) {
                     return pack(frag, this.subNodes);
                 } else {
                     return new ArrayNode<>(count - 1, subNodes.set(frag, empty()));
@@ -325,5 +333,4 @@ public interface HashArrayMappedTrie<K,V> extends Map<K, V> {
             return size;
         }
     }
-
 }
