@@ -1706,12 +1706,12 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldConvertNilToHashMap() {
-        assertThat(this.<Integer>empty().toJavaMap(x -> Tuple.of(x, x))).isEqualTo(new HashMap<>());
+        assertThat(this.<Integer>empty().toJavaMap(x -> Tuple.of(x, x))).isEqualTo(new java.util.HashMap<>());
     }
 
     @Test
     public void shouldConvertNonNilToHashMap() {
-        final java.util.Map<Integer, Integer> expected = new HashMap<>();
+        final java.util.Map<Integer, Integer> expected = new java.util.HashMap<>();
         expected.put(1, 1);
         expected.put(2, 2);
         assertThat(of(1, 2).toJavaMap(x -> Tuple.of(x, x))).isEqualTo(expected);
@@ -1721,7 +1721,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldConvertNilToHashSet() {
-        assertThat(this.<Integer>empty().toJavaMap(x -> Tuple.of(x, x))).isEqualTo(new HashMap<>());
+        assertThat(this.<Integer>empty().toJavaSet()).isEqualTo(new java.util.HashSet<>());
     }
 
     @Test

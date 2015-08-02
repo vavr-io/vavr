@@ -7,6 +7,7 @@ package javaslang.collection;
 
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -89,12 +90,26 @@ public interface TraversableOnce<T> extends Iterable<T> {
     }
 
     /**
+     * Performs the given {@code action} on the first element if this is an <em>eager</em> implementation.
+     * Performs the given {@code action} on all elements (the first immediately, successive deferred),
+     * if this is a <em>lazy</em> implementation.
+     *
+     * @param action The action the will be performed on the element(s).
+     * @return this instance
+     */
+    TraversableOnce<T> peek(Consumer<? super T> action);
+
+    /**
      * Converts this TraversableOnce to a List.
      *
      * @return A List of all of this elements.
      */
     default List<T> toList() {
         return List.ofAll(this);
+    }
+
+    default <K, V> Map<K, V> toMap(Function<? super T, ? extends Map.Entry<? extends K, ? extends V>> f) {
+        return HashMap.ofAll(toList().map(f::apply));
     }
 
     /**

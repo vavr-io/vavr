@@ -14,11 +14,11 @@ import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class HAMTTest {
+public class HashMapTest {
 
     @Test
     public void testGetExistingKey() {
-        HashArrayMappedTrie<Integer,Integer> hamt = HashArrayMappedTrie.empty();
+        HashMap<Integer, Integer> hamt = HashMap.empty();
         hamt = hamt.put(1, 2).put(4, 5);
         assertThat(hamt.get(1)).isEqualTo(2);
         assertThat(hamt.get(4)).isEqualTo(5);
@@ -26,21 +26,21 @@ public class HAMTTest {
 
     @Test
     public void testGetUnknownKey() {
-        HashArrayMappedTrie<Integer,Integer> hamt = HashArrayMappedTrie.empty();
+        HashMap<Integer, Integer> hamt = HashMap.empty();
         hamt = hamt.put(1, 2).put(4, 5);
         assertThat(hamt.get(2)).isNull();
     }
 
     @Test
     public void testRemoveFromEmpty() {
-        HashArrayMappedTrie<Integer,Integer> hamt = HashArrayMappedTrie.empty();
+        HashMap<Integer, Integer> hamt = HashMap.empty();
         hamt = hamt.remove(1);
         assertThat(hamt.size()).isEqualTo(0);
     }
 
     @Test
     public void testRemoveUnknownKey() {
-        HashArrayMappedTrie<Integer,Integer> hamt = HashArrayMappedTrie.empty();
+        HashMap<Integer, Integer> hamt = HashMap.empty();
         hamt = hamt.put(1, 2).remove(3);
         assertThat(hamt.size()).isEqualTo(1);
         hamt = hamt.remove(1);
@@ -57,14 +57,14 @@ public class HAMTTest {
         testBigData(5000, t -> Tuple.of(new WeakInteger(t._1), t._2));
     }
 
-    private <K extends Comparable<K>, V> void testBigData(int count, Function<Tuple2<Integer,Integer>, Tuple2<K, V>> mapper) {
+    private <K extends Comparable<K>, V> void testBigData(int count, Function<Tuple2<Integer, Integer>, Tuple2<K, V>> mapper) {
         Comparator<K, V> cmp = new Comparator<>();
         java.util.Map<K, V> rnd = rnd(count, mapper);
         for (java.util.Map.Entry<K, V> e : rnd.entrySet()) {
             cmp.set(e.getKey(), e.getValue());
         }
         cmp.test();
-        for (K key: new java.util.TreeSet<>(rnd.keySet())) {
+        for (K key : new java.util.TreeSet<>(rnd.keySet())) {
             rnd.remove(key);
             cmp.remove(key);
         }
@@ -91,7 +91,7 @@ public class HAMTTest {
 
     private class Comparator<K, V> {
         private final java.util.Map<K, V> classic = new java.util.HashMap<>();
-        private HashArrayMappedTrie<K, V> hamt = HashArrayMappedTrie.empty();
+        private HashMap<K, V> hamt = HashMap.empty();
 
         void test() {
             assertThat(hamt.size()).isEqualTo(classic.size());
@@ -111,7 +111,7 @@ public class HAMTTest {
         }
     }
 
-    private <K, V> java.util.Map<K, V> rnd(int count, Function<Tuple2<Integer,Integer>, Tuple2<K, V>> mapper) {
+    private <K, V> java.util.Map<K, V> rnd(int count, Function<Tuple2<Integer, Integer>, Tuple2<K, V>> mapper) {
         Random r = new Random();
         java.util.HashMap<K, V> mp = new java.util.HashMap<>();
         for (int i = 0; i < count; i++) {

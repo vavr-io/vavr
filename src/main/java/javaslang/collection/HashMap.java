@@ -9,18 +9,70 @@ import javaslang.Tuple2;
 import javaslang.control.None;
 import javaslang.control.Option;
 
+import java.io.Serializable;
+import java.util.Objects;
+
 /**
- * Hash array mapped trie
- * https://en.wikipedia.org/wiki/Hash_array_mapped_trie
+ * A {@code HashMap} implementation based on a
+ * <a href="https://en.wikipedia.org/wiki/Hash_array_mapped_trie">Hash array mapped trie (HAMT)</a>.
  */
-public interface HashArrayMappedTrie<K,V> extends Map<K, V> {
+public interface HashMap<K, V> extends Map<K, V> {
 
-    EmptyNode<?, ?> EMPTY = new EmptyNode<>();
+    static <K, V> HashMap<K, V> empty() {
+        return EmptyNode.instance();
+    }
 
-    static <K, V> AbstractNode<K, V> empty() {
-        @SuppressWarnings("unchecked")
-        final EmptyNode<K, V> instance = (EmptyNode<K, V>) EMPTY;
-        return instance;
+    /**
+     * Returns a singleton {@code List}, i.e. a {@code List} of one element.
+     *
+     * @param entry A map entry.
+     * @param <K>   The key type
+     * @param <V>   The value type
+     * @return A new HashMap containing the given entry
+     */
+    static <K, V> HashMap<K, V> of(Entry<? extends K, ? extends V> entry) {
+        final HashMap<K, V> map = empty();
+        return map.put(entry.key, entry.value);
+    }
+
+    /**
+     * Creates a HashMap of the given entries.
+     *
+     * @param entries Map entries
+     * @param <K>     The key type
+     * @param <V>     The value type
+     * @return A new HashMap containing the given entries
+     */
+    @SafeVarargs
+    static <K, V> HashMap<K, V> of(Entry<? extends K, ? extends V>... entries) {
+        Objects.requireNonNull(entries, "entries is null");
+        HashMap<K, V> map = empty();
+        for (Entry<? extends K, ? extends V> entry : entries) {
+            map = map.put(entry.key, entry.value);
+        }
+        return map;
+    }
+
+    /**
+     * Creates a HashMap of the given entries.
+     *
+     * @param entries Map entries
+     * @param <K>     The key type
+     * @param <V>     The value type
+     * @return A new HashMap containing the given entries
+     */
+    @SuppressWarnings("unchecked")
+    static <K, V> HashMap<K, V> ofAll(Iterable<? extends Entry<? extends K, ? extends V>> entries) {
+        Objects.requireNonNull(entries, "elements is null");
+        if (entries instanceof HashMap) {
+            return (HashMap<K, V>) entries;
+        } else {
+            HashMap<K, V> map = empty();
+            for (Entry<? extends K, ? extends V> entry : entries) {
+                map = map.put(entry.key, entry.value);
+            }
+            return map;
+        }
     }
 
     default boolean isEmpty() {
@@ -34,30 +86,32 @@ public interface HashArrayMappedTrie<K,V> extends Map<K, V> {
     }
 
     default V getOrDefault(K key, V defaultValue) {
-        Option<V> opt = ((AbstractNode<K, V>) this).lookup(0, key);
-        return opt.isDefined() ? opt.get() : defaultValue;
+        return ((AbstractNode<K, V>) this).lookup(0, key).orElse(defaultValue);
     }
 
     default boolean containsKey(K key) {
+        // TODO: what if the stored value is null? the result is ambiguous
         return get(key) != null;
     }
 
-    default HashArrayMappedTrie<K,V> put(K key, V value) {
+    default HashMap<K, V> put(K key, V value) {
         return ((AbstractNode<K, V>) this).modify(0, key, value);
     }
 
-    default HashArrayMappedTrie<K,V> remove(K key) {
+    default HashMap<K, V> remove(K key) {
         return ((AbstractNode<K, V>) this).modify(0, key, null);
     }
 
-    abstract class AbstractNode<K, V> implements HashArrayMappedTrie<K, V> {
-        final static int SIZE = 5;
-        final static int BUCKET_SIZE = 1 << SIZE;
-        final static int MAX_INDEX_NODE = BUCKET_SIZE / 2;
-        final static int MIN_ARRAY_NODE = BUCKET_SIZE / 4;
-        final static int M1 = 0x55555555;
-        final static int M2 = 0x33333333;
-        final static int M4 = 0x0f0f0f0f;
+    abstract class AbstractNode<K, V> implements HashMap<K, V> {
+
+        static final int SIZE = 5;
+        static final int BUCKET_SIZE = 1 << SIZE;
+        static final int MAX_INDEX_NODE = BUCKET_SIZE / 2;
+        static final int MIN_ARRAY_NODE = BUCKET_SIZE / 4;
+
+        private static final int M1 = 0x55555555;
+        private static final int M2 = 0x33333333;
+        private static final int M4 = 0x0f0f0f0f;
 
         static int bitCount(int x) {
             x = x - ((x >> 1) & M1);
@@ -81,13 +135,51 @@ public interface HashArrayMappedTrie<K,V> extends Map<K, V> {
         }
 
         abstract boolean isLeaf();
+
         abstract Option<V> lookup(int shift, K key);
-        abstract AbstractNode<K,V> modify(int shift, K key, V value);
+
+        abstract AbstractNode<K, V> modify(int shift, K key, V value);
+
+        @Override
+        public boolean equals(Object o) {
+// TODO:
+//            if (o == this) {
+//                return true;
+//            } else if (o instanceof AbstractNode) {
+//                final AbstractNode<?, ?> that = (AbstractNode<?, ?>) o;
+//                return ...;
+//            } else {
+//                return false;
+//            }
+            return super.equals(o);
+        }
+
+        @Override
+        public int hashCode() {
+            // TODO
+            return super.hashCode();
+        }
+
+        @Override
+        public String toString() {
+            // TODO: return entrySet().join(", ", "HashMap(", ")");
+            return "HashMap";
+        }
     }
 
-    class EmptyNode<K, V> extends AbstractNode<K, V> {
+    final class EmptyNode<K, V> extends AbstractNode<K, V> implements Serializable {
 
-        private EmptyNode() {}
+        private static final long serialVersionUID = 1L;
+
+        private static final EmptyNode<?, ?> INSTANCE = new EmptyNode<>();
+
+        private EmptyNode() {
+        }
+
+        @SuppressWarnings("unchecked")
+        static <K, V> EmptyNode<K, V> instance() {
+            return (EmptyNode<K, V>) INSTANCE;
+        }
 
         @Override
         public Option<V> lookup(int shift, K key) {
@@ -108,11 +200,24 @@ public interface HashArrayMappedTrie<K,V> extends Map<K, V> {
         public int size() {
             return 0;
         }
+
+        /**
+         * Instance control for object serialization.
+         *
+         * @return The singleton instance of Nil.
+         * @see java.io.Serializable
+         */
+        private Object readResolve() {
+            return INSTANCE;
+        }
     }
 
-    class LeafNode<K, V> extends AbstractNode<K, V> {
-        final int hash;
-        final List<Entry<K, V>> entries;
+    final class LeafNode<K, V> extends AbstractNode<K, V> implements Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        private final int hash;
+        private final List<Entry<K, V>> entries;
 
         private LeafNode(int hash, K key, V value) {
             this(hash, List.of(new Entry<>(key, value)));
@@ -126,8 +231,8 @@ public interface HashArrayMappedTrie<K,V> extends Map<K, V> {
         // TODO
         AbstractNode<K, V> update(K key, V value) {
             List<Entry<K, V>> filtered = entries.filter(t -> !t.key.equals(key));
-            if(value == null) {
-                return filtered.isEmpty() ? empty() : new LeafNode<>(hash, filtered);
+            if (value == null) {
+                return filtered.isEmpty() ? EmptyNode.instance() : new LeafNode<>(hash, filtered);
             } else {
                 return new LeafNode<>(hash, filtered.append(new Entry<>(key, value)));
             }
@@ -135,7 +240,7 @@ public interface HashArrayMappedTrie<K,V> extends Map<K, V> {
 
         @Override
         Option<V> lookup(int shift, K key) {
-            if(hash != key.hashCode()) {
+            if (hash != key.hashCode()) {
                 return None.instance();
             }
             return entries.filter(t -> t.key.equals(key)).headOption().map(t -> t.value);
@@ -143,7 +248,7 @@ public interface HashArrayMappedTrie<K,V> extends Map<K, V> {
 
         @Override
         AbstractNode<K, V> modify(int shift, K key, V value) {
-            if(key.hashCode() == hash) {
+            if (key.hashCode() == hash) {
                 return update(key, value);
             } else {
                 return value == null ? this : mergeLeaves(shift, new LeafNode<>(key.hashCode(), key, value));
@@ -178,15 +283,18 @@ public interface HashArrayMappedTrie<K,V> extends Map<K, V> {
         }
     }
 
-    class IndexedNode<K, V> extends AbstractNode<K, V> {
-        final int bitmap;
-        final List<AbstractNode<K, V>> subNodes;
-        final int size;
+    final class IndexedNode<K, V> extends AbstractNode<K, V> implements Serializable {
 
-        IndexedNode(int bitmap, List<AbstractNode<K, V>> subNodes) {
+        private static final long serialVersionUID = 1L;
+
+        private final int bitmap;
+        private final List<AbstractNode<K, V>> subNodes;
+        private final int size;
+
+        private IndexedNode(int bitmap, List<AbstractNode<K, V>> subNodes) {
             this.bitmap = bitmap;
             this.subNodes = subNodes;
-            this.size = subNodes.map(HashArrayMappedTrie::size).sum().intValue();
+            this.size = subNodes.map(HashMap::size).sum().intValue();
         }
 
         @Override
@@ -205,25 +313,25 @@ public interface HashArrayMappedTrie<K,V> extends Map<K, V> {
             int mask = bitmap;
             boolean exists = (mask & bit) != 0;
             AbstractNode<K, V> child = exists ? subNodes.get(indx).modify(shift + SIZE, key, value)
-                    : HashArrayMappedTrie.<K,V>empty().modify(shift + SIZE, key, value);
+                    : EmptyNode.<K, V> instance().modify(shift + SIZE, key, value);
             boolean removed = exists && child.isEmpty();
             boolean added = !exists && !child.isEmpty();
             int newBitmap = removed ? mask & ~bit : added ? mask | bit : mask;
-            if(newBitmap == 0) {
-                return empty();
+            if (newBitmap == 0) {
+                return EmptyNode.instance();
             } else if (removed) {
                 if (subNodes.length() <= 2 && subNodes.get(indx ^ 1).isLeaf()) {
                     return subNodes.get(indx ^ 1); // collapse
                 } else {
-                    Tuple2<List<AbstractNode<K,V>>,List<AbstractNode<K,V>>> spl = subNodes.splitAt(indx);
-                    List<AbstractNode<K,V>> rem = spl._1;
-                    if(!spl._2.isEmpty()) {
+                    Tuple2<List<AbstractNode<K, V>>, List<AbstractNode<K, V>>> spl = subNodes.splitAt(indx);
+                    List<AbstractNode<K, V>> rem = spl._1;
+                    if (!spl._2.isEmpty()) {
                         rem = rem.appendAll(spl._2.tail());
                     }
                     return new IndexedNode<>(newBitmap, rem);
                 }
             } else if (added) {
-                if(subNodes.length() >= MAX_INDEX_NODE) {
+                if (subNodes.length() >= MAX_INDEX_NODE) {
                     return expand(frag, child, mask, subNodes);
                 } else {
                     return new IndexedNode<>(newBitmap, subNodes.insert(indx, child));
@@ -233,7 +341,7 @@ public interface HashArrayMappedTrie<K,V> extends Map<K, V> {
             }
         }
 
-        ArrayNode<K, V> expand(int frag, AbstractNode<K, V> child, int mask, List<AbstractNode<K, V>> subNodes)  {
+        ArrayNode<K, V> expand(int frag, AbstractNode<K, V> child, int mask, List<AbstractNode<K, V>> subNodes) {
             int bit = mask;
             int count = 0;
             List<AbstractNode<K, V>> sub = subNodes;
@@ -247,12 +355,13 @@ public interface HashArrayMappedTrie<K,V> extends Map<K, V> {
                     arr = arr.append(child);
                     count++;
                 } else {
-                    arr = arr.append(empty());
+                    arr = arr.append(EmptyNode.instance());
                 }
                 bit = bit >>> 1;
             }
             return new ArrayNode<>(count, arr);
         }
+
         @Override
         public boolean isLeaf() {
             return false;
@@ -264,15 +373,18 @@ public interface HashArrayMappedTrie<K,V> extends Map<K, V> {
         }
     }
 
-    class ArrayNode<K, V> extends AbstractNode<K, V> {
-        final List<AbstractNode<K, V>> subNodes;
-        final int count;
-        final int size;
+    final class ArrayNode<K, V> extends AbstractNode<K, V> implements Serializable {
 
-        ArrayNode(int count, List<AbstractNode<K, V>> subNodes) {
+        private static final long serialVersionUID = 1L;
+
+        private final List<AbstractNode<K, V>> subNodes;
+        private final int count;
+        private final int size;
+
+        private ArrayNode(int count, List<AbstractNode<K, V>> subNodes) {
             this.subNodes = subNodes;
             this.count = count;
-            this.size = subNodes.map(HashArrayMappedTrie::size).sum().intValue();
+            this.size = subNodes.map(HashMap::size).sum().intValue();
         }
 
         @Override
@@ -289,11 +401,11 @@ public interface HashArrayMappedTrie<K,V> extends Map<K, V> {
             AbstractNode<K, V> newChild = child.modify(shift + SIZE, key, value);
             if (child.isEmpty() && !newChild.isEmpty()) {
                 return new ArrayNode<>(count + 1, subNodes.set(frag, newChild));
-            } else if(!child.isEmpty() && newChild.isEmpty()) {
-                if(count - 1 <= MIN_ARRAY_NODE) {
+            } else if (!child.isEmpty() && newChild.isEmpty()) {
+                if (count - 1 <= MIN_ARRAY_NODE) {
                     return pack(frag, this.subNodes);
                 } else {
-                    return new ArrayNode<>(count - 1, subNodes.set(frag, empty()));
+                    return new ArrayNode<>(count - 1, subNodes.set(frag, EmptyNode.instance()));
                 }
             } else {
                 return new ArrayNode<>(count, subNodes.set(frag, newChild));
@@ -325,5 +437,4 @@ public interface HashArrayMappedTrie<K,V> extends Map<K, V> {
             return size;
         }
     }
-
 }

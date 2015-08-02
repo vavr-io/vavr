@@ -164,8 +164,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
     static <T> List<T> ofAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof List) {
-            final List<T> list = (List<T>) elements;
-            return list;
+            return (List<T>) elements;
         } else if (elements instanceof java.util.List) {
             List<T> result = Nil.instance();
             final java.util.List<T> list = (java.util.List<T>) elements;
