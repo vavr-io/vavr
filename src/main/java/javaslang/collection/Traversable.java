@@ -155,9 +155,9 @@ import java.util.stream.StreamSupport;
  * @param <T> Component type
  * @since 1.1.0
  */
-public interface Traversable<T> extends TraversableOnce<T>,
+public interface Traversable<T> extends TraversableOnce<T> /*,
         FilterMonadic<Traversable.IterableKind<?>, T>,
-        Kind<Traversable.IterableKind<?>, T> {
+        Kind<Traversable.IterableKind<?>, T> */ {
 
     /**
      * Calculates the average of this elements. Returns {@code None} if this is empty, otherwise {@code Some(average)}.
@@ -960,13 +960,7 @@ public interface Traversable<T> extends TraversableOnce<T>,
      */
     Tuple2<? extends Traversable<T>, ? extends Traversable<T>> partition(Predicate<? super T> predicate);
 
-    /**
-     * Performs the given action on the first element of eager collections (like {@code List}) or on all elements of
-     * lazy collections (like {@code Stream}).
-     *
-     * @param action An action
-     * @return this instance
-     */
+    @Override
     Traversable<T> peek(Consumer<? super T> action);
 
     /**

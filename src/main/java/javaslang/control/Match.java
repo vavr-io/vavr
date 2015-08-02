@@ -15,6 +15,7 @@ import javaslang.collection.TraversableOnce;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -648,6 +649,12 @@ public interface Match<R> extends Function<Object, R> {
                 }
 
                 @Override
+                public MatchMonad<R> peek(Consumer<? super R> action) {
+                    result.peek(supplier -> action.accept(supplier.get()));
+                    return this;
+                }
+
+                @Override
                 public R get() {
                     return result.orElseThrow(() -> new MatchError(value)).get();
                 }
@@ -699,30 +706,36 @@ public interface Match<R> extends Function<Object, R> {
         final class Otherwise<R> implements MatchMonad<R> {
 
             // we need to ensure referential transparency of Otherwise.get()
-            private final Lazy<R> value;
+            private final Lazy<R> result;
 
             private Otherwise(Supplier<? extends R> supplier) {
-                this.value = Lazy.of(supplier);
+                this.result = Lazy.of(supplier);
             }
 
             @Override
             public <U> MatchMonad<U> flatMap(Function<? super R, ? extends MatchMonad<? extends U>> mapper) {
-                return new Otherwise<>(() -> mapper.apply(value.get()).get());
+                return new Otherwise<>(() -> mapper.apply(result.get()).get());
             }
 
             @Override
             public <U> MatchMonad<U> flatten(Function<? super R, ? extends MatchMonad<? extends U>> f) {
-                return new Otherwise<>(() -> f.apply(value.get()).get());
+                return new Otherwise<>(() -> f.apply(result.get()).get());
             }
 
             @Override
             public <U> MatchMonad<U> map(Function<? super R, ? extends U> mapper) {
-                return new Otherwise<>(() -> mapper.apply(value.get()));
+                return new Otherwise<>(() -> mapper.apply(result.get()));
+            }
+
+            @Override
+            public MatchMonad<R> peek(Consumer<? super R> action) {
+                action.accept(result.get());
+                return this;
             }
 
             @Override
             public R get() {
-                return value.get();
+                return result.get();
             }
 
             @Override
@@ -732,7 +745,7 @@ public interface Match<R> extends Function<Object, R> {
 
             @Override
             public Iterator<R> iterator() {
-                return Collections.singleton(value.get()).iterator();
+                return Collections.singleton(result.get()).iterator();
             }
         }
     }
