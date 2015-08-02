@@ -1,6 +1,10 @@
+/*     / \____  _    ______   _____ / \____   ____  _____
+ *    /  \__  \/ \  / \__  \ /  __//  \__  \ /    \/ __  \   Javaslang
+ *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014-2015 Daniel Dietrich
+ * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
+ */
 package javaslang.collection;
 
-import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.None;
 import javaslang.control.Option;
@@ -9,7 +13,7 @@ import javaslang.control.Option;
  * Hash array mapped trie
  * https://en.wikipedia.org/wiki/Hash_array_mapped_trie
  */
-public interface HashArrayMappedTrie<K,V> {
+public interface HashArrayMappedTrie<K,V> extends Map<K, V> {
 
     EmptyNode<?, ?> EMPTY = new EmptyNode<>();
 
@@ -25,11 +29,20 @@ public interface HashArrayMappedTrie<K,V> {
 
     int size();
 
-    default Option<V> get(K key) {
-        return ((AbstractNode<K, V>) this).lookup(0, key);
+    default V get(K key) {
+        return getOrDefault(key, null);
     }
 
-    default HashArrayMappedTrie<K,V> add(K key, V value) {
+    default V getOrDefault(K key, V defaultValue) {
+        Option<V> opt = ((AbstractNode<K, V>) this).lookup(0, key);
+        return opt.isDefined() ? opt.get() : defaultValue;
+    }
+
+    default boolean containsKey(K key) {
+        return get(key) != null;
+    }
+
+    default HashArrayMappedTrie<K,V> put(K key, V value) {
         return ((AbstractNode<K, V>) this).modify(0, key, value);
     }
 
@@ -99,24 +112,24 @@ public interface HashArrayMappedTrie<K,V> {
 
     class LeafNode<K, V> extends AbstractNode<K, V> {
         final int hash;
-        final List<Tuple2<K, V>> tuples;
+        final List<Entry<K, V>> entries;
 
         private LeafNode(int hash, K key, V value) {
-            this(hash, List.of(Tuple.of(key, value)));
+            this(hash, List.of(new Entry<>(key, value)));
         }
 
-        private LeafNode(int hash, List<Tuple2<K, V>> tuples) {
+        private LeafNode(int hash, List<Entry<K, V>> entries) {
             this.hash = hash;
-            this.tuples = tuples;
+            this.entries = entries;
         }
 
         // TODO
         AbstractNode<K, V> update(K key, V value) {
-            List<Tuple2<K, V>> filtered = tuples.filter(t -> !t._1.equals(key));
+            List<Entry<K, V>> filtered = entries.filter(t -> !t.key.equals(key));
             if(value == null) {
                 return filtered.isEmpty() ? empty() : new LeafNode<>(hash, filtered);
             } else {
-                return new LeafNode<>(hash, filtered.append(Tuple.of(key, value)));
+                return new LeafNode<>(hash, filtered.append(new Entry<>(key, value)));
             }
         }
 
@@ -125,7 +138,7 @@ public interface HashArrayMappedTrie<K,V> {
             if(hash != key.hashCode()) {
                 return None.instance();
             }
-            return tuples.filter(t -> t._1.equals(key)).headOption().map(t -> t._2);
+            return entries.filter(t -> t.key.equals(key)).headOption().map(t -> t.value);
         }
 
         @Override
@@ -141,9 +154,9 @@ public interface HashArrayMappedTrie<K,V> {
             int h1 = this.hash;
             int h2 = other.hash;
             if (h1 == h2) {
-                List<Tuple2<K, V>> newList = List.empty();
-                newList.appendAll(this.tuples);
-                newList.appendAll(other.tuples);
+                List<Entry<K, V>> newList = List.empty();
+                newList.appendAll(this.entries);
+                newList.appendAll(other.entries);
                 return new LeafNode<>(h1, newList);
             }
             int subH1 = hashFragment(shift, h1);
@@ -161,7 +174,7 @@ public interface HashArrayMappedTrie<K,V> {
 
         @Override
         public int size() {
-            return tuples.length();
+            return entries.length();
         }
     }
 

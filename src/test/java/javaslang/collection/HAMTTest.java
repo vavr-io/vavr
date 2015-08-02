@@ -1,11 +1,15 @@
+/*     / \____  _    ______   _____ / \____   ____  _____
+ *    /  \__  \/ \  / \__  \ /  __//  \__  \ /    \/ __  \   Javaslang
+ *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014-2015 Daniel Dietrich
+ * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
+ */
 package javaslang.collection;
 
 import javaslang.Tuple;
 import javaslang.Tuple2;
-import javaslang.control.Option;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Random;
 import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,20 +19,16 @@ public class HAMTTest {
     @Test
     public void testGetExistingKey() {
         HashArrayMappedTrie<Integer,Integer> hamt = HashArrayMappedTrie.empty();
-        hamt = hamt.add(1, 2).add(4, 5);
-        Option<Integer> o1 = hamt.get(1);
-        assertThat(o1.isDefined()).isTrue();
-        assertThat(o1.get()).isEqualTo(2);
-        Option<Integer> o2 = hamt.get(4);
-        assertThat(o2.isDefined()).isTrue();
-        assertThat(o2.get()).isEqualTo(5);
+        hamt = hamt.put(1, 2).put(4, 5);
+        assertThat(hamt.get(1)).isEqualTo(2);
+        assertThat(hamt.get(4)).isEqualTo(5);
     }
 
     @Test
     public void testGetUnknownKey() {
         HashArrayMappedTrie<Integer,Integer> hamt = HashArrayMappedTrie.empty();
-        hamt = hamt.add(1, 2).add(4, 5);
-        assertThat(hamt.get(2).isDefined()).isFalse();
+        hamt = hamt.put(1, 2).put(4, 5);
+        assertThat(hamt.get(2)).isNull();
     }
 
     @Test
@@ -41,7 +41,7 @@ public class HAMTTest {
     @Test
     public void testRemoveUnknownKey() {
         HashArrayMappedTrie<Integer,Integer> hamt = HashArrayMappedTrie.empty();
-        hamt = hamt.add(1, 2).remove(3);
+        hamt = hamt.put(1, 2).remove(3);
         assertThat(hamt.size()).isEqualTo(1);
         hamt = hamt.remove(1);
         assertThat(hamt.size()).isEqualTo(0);
@@ -59,12 +59,12 @@ public class HAMTTest {
 
     private <K extends Comparable<K>, V> void testBigData(int count, Function<Tuple2<Integer,Integer>, Tuple2<K, V>> mapper) {
         Comparator<K, V> cmp = new Comparator<>();
-        Map<K, V> rnd = rnd(count, mapper);
-        for (Map.Entry<K, V> e : rnd.entrySet()) {
+        java.util.Map<K, V> rnd = rnd(count, mapper);
+        for (java.util.Map.Entry<K, V> e : rnd.entrySet()) {
             cmp.set(e.getKey(), e.getValue());
         }
         cmp.test();
-        for (K key: new TreeSet<>(rnd.keySet())) {
+        for (K key: new java.util.TreeSet<>(rnd.keySet())) {
             rnd.remove(key);
             cmp.remove(key);
         }
@@ -90,21 +90,19 @@ public class HAMTTest {
     }
 
     private class Comparator<K, V> {
-        private final Map<K, V> classic = new HashMap<>();
+        private final java.util.Map<K, V> classic = new java.util.HashMap<>();
         private HashArrayMappedTrie<K, V> hamt = HashArrayMappedTrie.empty();
 
         void test() {
             assertThat(hamt.size()).isEqualTo(classic.size());
-            for (Map.Entry<K, V> e : classic.entrySet()) {
-                Option<V> f = hamt.get(e.getKey());
-                assertThat(f.isDefined()).isTrue();
-                assertThat(f.get()).isEqualTo(e.getValue());
+            for (java.util.Map.Entry<K, V> e : classic.entrySet()) {
+                assertThat(hamt.get(e.getKey())).isEqualTo(e.getValue());
             }
         }
 
         void set(K key, V value) {
             classic.put(key, value);
-            hamt = hamt.add(key, value);
+            hamt = hamt.put(key, value);
         }
 
         void remove(K key) {
@@ -113,9 +111,9 @@ public class HAMTTest {
         }
     }
 
-    private <K, V> Map<K, V> rnd(int count, Function<Tuple2<Integer,Integer>, Tuple2<K, V>> mapper) {
+    private <K, V> java.util.Map<K, V> rnd(int count, Function<Tuple2<Integer,Integer>, Tuple2<K, V>> mapper) {
         Random r = new Random();
-        HashMap<K, V> mp = new HashMap<>();
+        java.util.HashMap<K, V> mp = new java.util.HashMap<>();
         for (int i = 0; i < count; i++) {
             Tuple2<K, V> entry = mapper.apply(Tuple.of(r.nextInt(), r.nextInt()));
             mp.put(entry._1, entry._2);
