@@ -7,6 +7,7 @@ package javaslang.collection;
 
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -105,6 +106,10 @@ public interface TraversableOnce<T> extends Iterable<T> {
      */
     default List<T> toList() {
         return List.ofAll(this);
+    }
+
+    default <K, V> Map<K, V> toMap(Function<? super T, ? extends Map.Entry<? extends K, ? extends V>> f) {
+        return HashMap.ofAll(toList().map(f::apply));
     }
 
     /**
