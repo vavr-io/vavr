@@ -17,10 +17,9 @@ public interface HashMap<K, V> extends Map<K, V> {
 
     EmptyNode<?, ?> EMPTY = new EmptyNode<>();
 
+    @SuppressWarnings("unchecked")
     static <K, V> HashMap<K, V> empty() {
-        @SuppressWarnings("unchecked")
-        final EmptyNode<K, V> instance = (EmptyNode<K, V>) EMPTY;
-        return instance;
+        return (EmptyNode<K, V>) EMPTY;
     }
 
     default boolean isEmpty() {
@@ -59,8 +58,9 @@ public interface HashMap<K, V> extends Map<K, V> {
         final static int M2 = 0x33333333;
         final static int M4 = 0x0f0f0f0f;
 
+        @SuppressWarnings("unchecked")
         static <K, V> AbstractNode<K, V> empty() {
-            return (AbstractNode<K, V>) HashMap.empty();
+            return (AbstractNode<K, V>) EMPTY;
         }
 
         static int bitCount(int x) {
