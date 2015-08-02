@@ -125,38 +125,7 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
 
     @Override
     default Type<R> getType() {
-
-        final λ.Type<R> superType = λ.super.getType();
-
-        return new Type<R>() {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Class<R> returnType() {
-                return superType.returnType();
-            }
-
-            @Override
-            public Class<?>[] parameterArray() {
-                return superType.parameterArray();
-            }
-
-            @Override
-            public boolean equals(Object o) {
-                return superType.equals(o);
-            }
-
-            @Override
-            public int hashCode() {
-                return superType.hashCode();
-            }
-
-            @Override
-            public String toString() {
-                return superType.toString();
-            }
-        };
+        return new Type<>(this);
     }
 
     /**
@@ -165,10 +134,17 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
      *
      *
      * @param <R> the return type of the function
+     * @since 2.0.0
      */
-    interface Type<R> extends λ.Type<R> {
+    @SuppressWarnings("deprecation")
+    final class Type<R> extends λ.AbstractType<R> {
 
-        long serialVersionUID = 1L;
+        private static final long serialVersionUID = 1L;
+
+        @SuppressWarnings("deprecation")
+        private Type(Function0<R> λ) {
+            super(λ);
+        }
 
     }
 }

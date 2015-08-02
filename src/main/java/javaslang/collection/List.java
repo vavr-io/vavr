@@ -1529,17 +1529,24 @@ public interface List<T> extends Seq<T>, Stack<T> {
     }
 
     /**
-     * <p>
      * This class is needed because the interface {@link List} cannot use default methods to override Object's non-final
      * methods equals, hashCode and toString.
-     * </p>
+     * <p>
      * See <a href="http://mail.openjdk.java.net/pipermail/lambda-dev/2013-March/008435.html">Allow default methods to
      * override Object's methods</a>.
      *
      * @param <T> Component type of the List.
      * @since 1.1.0
+     * @deprecated Internal API, not intended to be used. This class will disappear from public API as soon as possible.
      */
+    @Deprecated
     abstract class AbstractList<T> implements List<T> {
+
+        /**
+         * This class is not public API (but currently cannot be hidden as of Java 8).
+         */
+        protected AbstractList() {
+        }
 
         @Override
         public boolean equals(Object o) {

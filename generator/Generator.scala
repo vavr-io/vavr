@@ -274,7 +274,6 @@ def generateMainClasses(): Unit = {
 
       def genFunction(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
 
-        val Objects = im.getType("java.util.Objects")
         val generics = (1 to i).gen(j => s"T$j")(", ")
         val fullGenerics = s"<${(i > 0).gen(s"$generics, ")}R>"
         val genericsReversed = (1 to i).reverse.gen(j => s"T$j")(", ")
@@ -287,6 +286,10 @@ def generateMainClasses(): Unit = {
         val paramsReversed = (1 to i).reverse.gen(j => s"t$j")(", ")
         val tupled = (1 to i).gen(j => s"t._$j")(", ")
         val compositionType = s"${checked.gen("Checked")}Function1"
+
+        // imports
+
+        val Objects = im.getType("java.util.Objects")
         val Try = if (checked) im.getType("javaslang.control.Try") else ""
         val additionalExtends = (checked, i) match {
           case (false, 0) => ", " + im.getType("java.util.function.Supplier") + "<R>"
@@ -397,7 +400,7 @@ def generateMainClasses(): Unit = {
                  * @return true, if this function is applicable to the given objects, false otherwise.
                  */
                 default boolean isApplicableTo(${(1 to i).gen(j => s"Object o$j")(", ")}) {
-                    final Class<?>[] paramTypes = getType().parameterArray();
+                    final Class<?>[] paramTypes = getType().parameterTypes();
                     return
                             ${(1 to i).gen(j => xs"""
                               (o$j == null || paramTypes[${j - 1}].isAssignableFrom(o$j.getClass()))
@@ -411,7 +414,7 @@ def generateMainClasses(): Unit = {
                  */
                 default boolean isApplicableToType${(i > 1).gen("s")}(${(1 to i).gen(j => s"Class<?> type$j")(", ")}) {
                     ${(1 to i).gen(j => xs"""$Objects.requireNonNull(type$j, "type$j is null");""")("\n")}
-                    final Class<?>[] paramTypes = getType().parameterArray();
+                    final Class<?>[] paramTypes = getType().parameterTypes();
                     return
                             ${(1 to i).gen(j => xs"""
                               paramTypes[${j - 1}].isAssignableFrom(type$j)
@@ -536,38 +539,7 @@ def generateMainClasses(): Unit = {
 
               @Override
               default Type$fullGenerics getType() {
-
-                  final λ.Type<R> superType = λ.super.getType();
-
-                  return new Type$fullGenerics() {
-
-                      private static final long serialVersionUID = 1L;
-
-                      @Override
-                      public Class<R> returnType() {
-                          return superType.returnType();
-                      }
-
-                      @Override
-                      public Class<?>[] parameterArray() {
-                          return superType.parameterArray();
-                      }
-
-                      @Override
-                      public boolean equals(Object o) {
-                          return superType.equals(o);
-                      }
-
-                      @Override
-                      public int hashCode() {
-                          return superType.hashCode();
-                      }
-
-                      @Override
-                      public String toString() {
-                          return superType.toString();
-                      }
-                  };
+                  return new Type<>(this);
               }
 
               /**
@@ -576,15 +548,22 @@ def generateMainClasses(): Unit = {
                *
                ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> the ${j.ordinal} parameter type of the function")("\n")}
                * @param <R> the return type of the function
+               * @since 2.0.0
                */
-              interface Type$fullGenerics extends λ.Type<R> {
+              @SuppressWarnings("deprecation")
+              final class Type$fullGenerics extends λ.AbstractType<R> {
 
-                  long serialVersionUID = 1L;
+                  private static final long serialVersionUID = 1L;
+
+                  @SuppressWarnings("deprecation")
+                  private Type($name$i$fullGenerics λ) {
+                      super(λ);
+                  }
 
                   ${(1 to i).gen(j => xs"""
                     @SuppressWarnings("unchecked")
-                    default Class<T$j> parameterType$j() {
-                        return (Class<T$j>) parameterArray()[${j-1}];
+                    public Class<T$j> parameterType$j() {
+                        return (Class<T$j>) parameterTypes()[${j-1}];
                     }
                   """)("\n\n")}
               }

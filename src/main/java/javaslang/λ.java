@@ -83,83 +83,15 @@ public interface λ<R> extends Serializable {
      *
      * @return A new instance containing the type information
      */
-    default Type<R> getType() {
-
-        final class ReflectionUtil {
-
-            MethodType getLambdaSignature(Serializable lambda) {
-                final String signature = getSerializedLambda(lambda).getInstantiatedMethodType();
-                return MethodType.fromMethodDescriptorString(signature, lambda.getClass().getClassLoader());
-            }
-
-            private SerializedLambda getSerializedLambda(Serializable lambda) {
-                return Try.of(() -> {
-                    final Method method = lambda.getClass().getDeclaredMethod("writeReplace");
-                    method.setAccessible(true);
-                    return (SerializedLambda) method.invoke(lambda);
-                }).get();
-            }
-        }
-
-        final MethodType methodType = new ReflectionUtil().getLambdaSignature(this);
-
-        return new Type<R>() {
-
-            private static final long serialVersionUID = 1L;
-
-            private transient final Lazy<Integer> hashCode = Lazy.of(() -> List.of(parameterArray())
-                    .map(c -> c.getName().hashCode())
-                    .fold(1, (acc, i) -> acc * 31 + i)
-                    * 31 + returnType().getName().hashCode()
-            );
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public Class<R> returnType() {
-                return (Class<R>) methodType.returnType();
-            }
-
-            @Override
-            public Class<?>[] parameterArray() {
-                return methodType.parameterArray();
-            }
-
-            @Override
-            public boolean equals(Object o) {
-                if (o == this) {
-                    return true;
-                } else if (o instanceof Type) {
-                    final Type<?> that = (Type<?>) o;
-                    return this.hashCode() == that.hashCode()
-                            && this.returnType().equals(that.returnType())
-                            && Arrays.equals(this.parameterArray(), that.parameterArray());
-                } else {
-                    return false;
-                }
-            }
-
-            @Override
-            public int hashCode() {
-                return hashCode.get();
-            }
-
-            @Override
-            public String toString() {
-                return List.of(parameterArray()).map(Class::getName).join(", ", "(", ")")
-                        + " -> "
-                        + returnType().getName();
-            }
-        };
-    }
+    Type<R> getType();
 
     /**
      * Represents the type of a function which consists of <em>parameter types</em> and a <em>return type</em>.
      *
      * @param <R> the return type of the function
+     * @since 2.0.0
      */
-    interface Type<R> extends Serializable {
-
-        long serialVersionUID = 1L;
+    interface Type<R> {
 
         /**
          * Returns the return type of the {@code λ}.
@@ -173,7 +105,103 @@ public interface λ<R> extends Serializable {
          *
          * @return the parameter types
          */
-        Class<?>[] parameterArray();
+        Class<?>[] parameterTypes();
+    }
+
+    /**
+     * This class is needed because the interface {@link Type} cannot use default methods to override Object's non-final
+     * methods equals, hashCode and toString.
+     * <p>
+     * See <a href="http://mail.openjdk.java.net/pipermail/lambda-dev/2013-March/008435.html">Allow default methods to
+     * override Object's methods</a>.
+     *
+     * @param <R> Result type of the function
+     * @since 2.0.0
+     * @deprecated Internal API, not intended to be used. This class will disappear from public API as soon as possible.
+     */
+    @Deprecated
+    abstract class AbstractType<R> implements Type<R>, Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        private final Class<R> returnType;
+        private final Class<?>[] parameterTypes;
+
+        private transient final Lazy<Integer> hashCode = Lazy.of(() -> List.of(parameterTypes())
+                        .map(c -> c.getName().hashCode())
+                        .fold(1, (acc, i) -> acc * 31 + i)
+                        * 31 + returnType().getName().hashCode()
+        );
+
+        /**
+         * Internal constructor.
+         *
+         * @param λ the outer function instance of this type
+         * @deprecated There should be a constructor {@code AbstractType(Class<R> returnType, Class<?>[] parameterArray)} but because of implementation details this one is needed. It will disappear as soon as possible.
+         */
+        @SuppressWarnings("unchecked")
+        @Deprecated
+        protected AbstractType(λ<R> λ) {
+
+            // hiding this functionality
+            final class ReflectionUtil {
+
+                MethodType getLambdaSignature(Serializable lambda) {
+                    final String signature = getSerializedLambda(lambda).getInstantiatedMethodType();
+                    return MethodType.fromMethodDescriptorString(signature, lambda.getClass().getClassLoader());
+                }
+
+                private SerializedLambda getSerializedLambda(Serializable lambda) {
+                    return Try.of(() -> {
+                        final Method method = lambda.getClass().getDeclaredMethod("writeReplace");
+                        method.setAccessible(true);
+                        return (SerializedLambda) method.invoke(lambda);
+                    }).get();
+                }
+            }
+
+            final MethodType methodType = new ReflectionUtil().getLambdaSignature(λ);
+
+            this.returnType = (Class<R>) methodType.returnType();
+            this.parameterTypes = methodType.parameterArray();
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public Class<R> returnType() {
+            return returnType;
+        }
+
+        @Override
+        public Class<?>[] parameterTypes() {
+            return parameterTypes;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            } else if (o instanceof AbstractType) {
+                final AbstractType<?> that = (AbstractType<?>) o;
+                return this.hashCode() == that.hashCode()
+                        && this.returnType().equals(that.returnType)
+                        && Arrays.equals(this.parameterTypes, that.parameterTypes);
+            } else {
+                return false;
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            return hashCode.get();
+        }
+
+        @Override
+        public String toString() {
+            return List.of(parameterTypes).map(Class::getName).join(", ", "(", ")")
+                    + " -> "
+                    + returnType.getName();
+        }
     }
 
     /**

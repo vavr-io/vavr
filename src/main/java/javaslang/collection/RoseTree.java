@@ -374,8 +374,16 @@ public interface RoseTree<T> extends Tree<T> {
      *
      * @param <T> value type of the rose tree
      * @since 1.1.0
+     * @deprecated Internal API, not intended to be used. This class will disappear from public API as soon as possible.
      */
+    @Deprecated
     abstract class AbstractRoseTree<T> implements RoseTree<T> {
+
+        /**
+         * This class is not public API (but currently cannot be hidden as of Java 8).
+         */
+        protected AbstractRoseTree() {
+        }
 
         @Override
         public boolean equals(Object o) {

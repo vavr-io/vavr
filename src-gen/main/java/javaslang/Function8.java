@@ -112,7 +112,7 @@ public interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<R> {
      * @return true, if this function is applicable to the given objects, false otherwise.
      */
     default boolean isApplicableTo(Object o1, Object o2, Object o3, Object o4, Object o5, Object o6, Object o7, Object o8) {
-        final Class<?>[] paramTypes = getType().parameterArray();
+        final Class<?>[] paramTypes = getType().parameterTypes();
         return
                 (o1 == null || paramTypes[0].isAssignableFrom(o1.getClass())) &&
                 (o2 == null || paramTypes[1].isAssignableFrom(o2.getClass())) &&
@@ -146,7 +146,7 @@ public interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<R> {
         Objects.requireNonNull(type6, "type6 is null");
         Objects.requireNonNull(type7, "type7 is null");
         Objects.requireNonNull(type8, "type8 is null");
-        final Class<?>[] paramTypes = getType().parameterArray();
+        final Class<?>[] paramTypes = getType().parameterTypes();
         return
                 paramTypes[0].isAssignableFrom(type1) &&
                 paramTypes[1].isAssignableFrom(type2) &&
@@ -303,38 +303,7 @@ public interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<R> {
 
     @Override
     default Type<T1, T2, T3, T4, T5, T6, T7, T8, R> getType() {
-
-        final λ.Type<R> superType = λ.super.getType();
-
-        return new Type<T1, T2, T3, T4, T5, T6, T7, T8, R>() {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Class<R> returnType() {
-                return superType.returnType();
-            }
-
-            @Override
-            public Class<?>[] parameterArray() {
-                return superType.parameterArray();
-            }
-
-            @Override
-            public boolean equals(Object o) {
-                return superType.equals(o);
-            }
-
-            @Override
-            public int hashCode() {
-                return superType.hashCode();
-            }
-
-            @Override
-            public String toString() {
-                return superType.toString();
-            }
-        };
+        return new Type<>(this);
     }
 
     /**
@@ -351,49 +320,56 @@ public interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<R> {
      * @param <T7> the 7th parameter type of the function
      * @param <T8> the 8th parameter type of the function
      * @param <R> the return type of the function
+     * @since 2.0.0
      */
-    interface Type<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ.Type<R> {
+    @SuppressWarnings("deprecation")
+    final class Type<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ.AbstractType<R> {
 
-        long serialVersionUID = 1L;
+        private static final long serialVersionUID = 1L;
 
-        @SuppressWarnings("unchecked")
-        default Class<T1> parameterType1() {
-            return (Class<T1>) parameterArray()[0];
+        @SuppressWarnings("deprecation")
+        private Type(Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> λ) {
+            super(λ);
         }
 
         @SuppressWarnings("unchecked")
-        default Class<T2> parameterType2() {
-            return (Class<T2>) parameterArray()[1];
+        public Class<T1> parameterType1() {
+            return (Class<T1>) parameterTypes()[0];
         }
 
         @SuppressWarnings("unchecked")
-        default Class<T3> parameterType3() {
-            return (Class<T3>) parameterArray()[2];
+        public Class<T2> parameterType2() {
+            return (Class<T2>) parameterTypes()[1];
         }
 
         @SuppressWarnings("unchecked")
-        default Class<T4> parameterType4() {
-            return (Class<T4>) parameterArray()[3];
+        public Class<T3> parameterType3() {
+            return (Class<T3>) parameterTypes()[2];
         }
 
         @SuppressWarnings("unchecked")
-        default Class<T5> parameterType5() {
-            return (Class<T5>) parameterArray()[4];
+        public Class<T4> parameterType4() {
+            return (Class<T4>) parameterTypes()[3];
         }
 
         @SuppressWarnings("unchecked")
-        default Class<T6> parameterType6() {
-            return (Class<T6>) parameterArray()[5];
+        public Class<T5> parameterType5() {
+            return (Class<T5>) parameterTypes()[4];
         }
 
         @SuppressWarnings("unchecked")
-        default Class<T7> parameterType7() {
-            return (Class<T7>) parameterArray()[6];
+        public Class<T6> parameterType6() {
+            return (Class<T6>) parameterTypes()[5];
         }
 
         @SuppressWarnings("unchecked")
-        default Class<T8> parameterType8() {
-            return (Class<T8>) parameterArray()[7];
+        public Class<T7> parameterType7() {
+            return (Class<T7>) parameterTypes()[6];
+        }
+
+        @SuppressWarnings("unchecked")
+        public Class<T8> parameterType8() {
+            return (Class<T8>) parameterTypes()[7];
         }
     }
 }
