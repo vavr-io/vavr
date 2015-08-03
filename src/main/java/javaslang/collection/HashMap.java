@@ -90,8 +90,7 @@ public interface HashMap<K, V> extends Map<K, V> {
     }
 
     default boolean containsKey(K key) {
-        // TODO: what if the stored value is null? the result is ambiguous
-        return get(key) != null;
+        return ((AbstractNode<K, V>) this).lookup(0, key).isDefined();
     }
 
     default HashMap<K, V> put(K key, V value) {
