@@ -5,11 +5,14 @@
  */
 package javaslang.control;
 
+import javaslang.Kind;
+
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Some represents a defined {@link javaslang.control.Option}. It contains a value which may be null. However, to
@@ -59,10 +62,41 @@ public final class Some<T> implements Option<T>, Serializable {
     }
 
     @Override
-    public Some<T> peek(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
-        action.accept(get());
-        return this;
+    public Option<T> filter(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return predicate.test(value) ? this : None.instance();
+    }
+
+    @Override
+    public Option<Some<T>> filterOption(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filter(predicate).map(Some::new);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <U> Option<U> flatMap(Function<? super T, ? extends Option<? extends U>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return (Option<U>) mapper.apply(value);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <U> Option<U> flatMapM(Function<? super T, ? extends Kind<? extends Option<?>, ? extends U>> mapper) {
+        return flatMap((Function<? super T, ? extends Option<? extends U>>) mapper);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <U> Option<U> flatten(Function<? super T, ? extends Option<? extends U>> f) {
+        Objects.requireNonNull(f, "f is null");
+        return (Option<U>) f.apply(value);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <U> Option<U> flattenM(Function<? super T, ? extends Kind<? extends Option<?>, ? extends U>> f) {
+        return flatten((Function<? super T, ? extends Option<? extends U>>) f);
     }
 
     @Override
@@ -72,8 +106,10 @@ public final class Some<T> implements Option<T>, Serializable {
     }
 
     @Override
-    public Optional<T> toJavaOptional() {
-        return Optional.ofNullable(value);
+    public Some<T> peek(Consumer<? super T> action) {
+        Objects.requireNonNull(action, "action is null");
+        action.accept(get());
+        return this;
     }
 
     @Override

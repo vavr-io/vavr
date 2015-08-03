@@ -155,9 +155,7 @@ import java.util.stream.StreamSupport;
  * @param <T> Component type
  * @since 1.1.0
  */
-public interface Traversable<T> extends TraversableOnce<T> /*,
-        FilterMonadic<Traversable.IterableKind<?>, T>,
-        Kind<Traversable.IterableKind<?>, T> */ {
+public interface Traversable<T> extends TraversableOnce<T>, FilterMonadic<Traversable.IterableKind<?>, T> {
 
     /**
      * Calculates the average of this elements. Returns {@code None} if this is empty, otherwise {@code Some(average)}.
@@ -360,13 +358,17 @@ public interface Traversable<T> extends TraversableOnce<T> /*,
     Traversable<T> dropWhile(Predicate<? super T> predicate);
 
     /**
-     * Returns a new traversable consisting of all elements of this which satisfy the given predicate.
+     * Returns a new traversable consisting of all elements which satisfy the given predicate.
      *
      * @param predicate A predicate
      * @return a new traversable
      * @throws NullPointerException if {@code predicate} is null
      */
+    @Override
     Traversable<T> filter(Predicate<? super T> predicate);
+
+    @Override
+    Traversable<Some<T>> filterOption(Predicate<? super T> predicate);
 
     /**
      * Essentially the same as {@link #filter(Predicate)} but the result type may differ,
@@ -414,6 +416,9 @@ public interface Traversable<T> extends TraversableOnce<T> /*,
 
     <U> Traversable<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
+    @Override
+    <U> Traversable<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper);
+
     /**
      * Flattens a {@code Traversable} using a function.
      *
@@ -423,6 +428,9 @@ public interface Traversable<T> extends TraversableOnce<T> /*,
      * @throws NullPointerException if {@code f} is null
      */
     <U> Traversable<U> flatten(Function<? super T, ? extends Iterable<? extends U>> f);
+
+    @Override
+    <U> Traversable<U> flattenM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> f);
 
     /**
      * <p>
@@ -854,6 +862,7 @@ public interface Traversable<T> extends TraversableOnce<T> /*,
      * @return a mapped Traversable
      * @throws NullPointerException if {@code mapper} is null
      */
+    @Override
     <U> Traversable<U> map(Function<? super T, ? extends U> mapper);
 
     /**

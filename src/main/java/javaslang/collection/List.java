@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Kind;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.None;
@@ -142,7 +143,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
     @SafeVarargs
     static <T> List<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        List<T> result = Nil.<T>instance();
+        List<T> result = Nil.<T> instance();
         for (int i = elements.length - 1; i >= 0; i--) {
             result = result.prepend(elements[i]);
         }
@@ -686,7 +687,13 @@ public interface List<T> extends Seq<T>, Stack<T> {
     @Override
     default List<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return isEmpty() ? this : foldLeft(List.<T>empty(), (xs, x) -> predicate.test(x) ? xs.prepend(x) : xs).reverse();
+        return isEmpty() ? this : foldLeft(List.<T> empty(), (xs, x) -> predicate.test(x) ? xs.prepend(x) : xs).reverse();
+    }
+
+    @Override
+    default List<Some<T>> filterOption(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return isEmpty() ? List.empty() : foldLeft(List.<Some<T>> empty(), (xs, x) -> predicate.test(x) ? xs.prepend(new Some<>(x)) : xs).reverse();
     }
 
     @Override
@@ -709,6 +716,12 @@ public interface List<T> extends Seq<T>, Stack<T> {
             }
             return list.reverse();
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> List<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper) {
+        return flatMap((Function<? super T, ? extends Iterable<? extends U>>) mapper);
     }
 
     /**
@@ -737,6 +750,12 @@ public interface List<T> extends Seq<T>, Stack<T> {
     default <U> List<U> flatten(Function<? super T, ? extends Iterable<? extends U>> f) {
         Objects.requireNonNull(f, "f is null");
         return isEmpty() ? Nil.instance() : foldRight(empty(), (t, xs) -> xs.prependAll(f.apply(t)));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> List<U> flattenM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> f) {
+        return flatten((Function<? super T, ? extends Iterable<? extends U>>) f);
     }
 
     @Override
@@ -940,7 +959,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
     @Override
     default List<T> push(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        List<T> result = Nil.<T>instance();
+        List<T> result = Nil.<T> instance();
         for (T element : elements) {
             result = result.prepend(element);
         }
@@ -950,7 +969,7 @@ public interface List<T> extends Seq<T>, Stack<T> {
     @Override
     default List<T> pushAll(Iterable<T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        List<T> result = Nil.<T>instance();
+        List<T> result = Nil.<T> instance();
         for (T element : elements) {
             result = result.prepend(element);
         }

@@ -5,13 +5,14 @@
  */
 package javaslang.control;
 
+import javaslang.FilterMonadic;
+import javaslang.Kind;
 import javaslang.Value;
 import javaslang.collection.TraversableOnce;
 
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -33,7 +34,8 @@ import java.util.function.Supplier;
  * @param <T> The type of the optional value.
  * @since 1.0.0
  */
-public interface Option<T> extends TraversableOnce<T>, Value<T> {
+public interface Option<T> extends TraversableOnce<T>, Value<T>,
+        FilterMonadic<Option<?>, T>, Kind<Option<?>, T> {
 
     /**
      * Creates a new Option of a given value.
@@ -123,14 +125,23 @@ public interface Option<T> extends TraversableOnce<T>, Value<T> {
      * @param predicate A predicate which is used to test an optional value
      * @return {@code Some(value)} or {@code None} as specified
      */
-    default Option<T> filter(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        if (isEmpty() || predicate.test(get())) {
-            return this;
-        } else {
-            return None.instance();
-        }
-    }
+    @Override
+    Option<T> filter(Predicate<? super T> predicate);
+
+    @Override
+    Option<Some<T>> filterOption(Predicate<? super T> predicate);
+
+    /**
+     * Maps the value to a new {@code Option} if this is a {@code Some}, otherwise returns {@code None}.
+     *
+     * @param mapper A value to Option mapper
+     * @param <U>    Component type of the resulting Option
+     * @return a new {@code Option}
+     */
+    <U> Option<U> flatMap(Function<? super T, ? extends Option<? extends U>> mapper);
+
+    @Override
+    <U> Option<U> flatMapM(Function<? super T, ? extends Kind<? extends Option<?>, ? extends U>> mapper);
 
     /**
      * Flattens an {@code Option} using a function. A common use case is to use the identity
@@ -154,23 +165,10 @@ public interface Option<T> extends TraversableOnce<T>, Value<T> {
      * @return a new {@code Option}
      * @throws NullPointerException if {@code f} is null
      */
-    @SuppressWarnings("unchecked")
-    default <U> Option<U> flatten(Function<? super T, ? extends Option<? extends U>> f) {
-        Objects.requireNonNull(f, "f is null");
-        if (isEmpty()) {
-            return None.instance();
-        } else {
-            return (Option<U>) f.apply(get());
-        }
-    }
+    <U> Option<U> flatten(Function<? super T, ? extends Option<? extends U>> f);
 
-    /**
-     * Applies an action to this value, if this option is defined, otherwise does nothing.
-     *
-     * @param action An action which can be applied to an optional value
-     * @return this {@code Option}
-     */
-    Option<T> peek(Consumer<? super T> action);
+    @Override
+    <U> Option<U> flattenM(Function<? super T, ? extends Kind<? extends Option<?>, ? extends U>> f);
 
     /**
      * Maps the value and wraps it in a new {@code Some} if this is a {@code Some}, returns {@code None}.
@@ -179,31 +177,17 @@ public interface Option<T> extends TraversableOnce<T>, Value<T> {
      * @param <U>    The new value type
      * @return a new {@code Some} containing the mapped value if this Option is defined, otherwise {@code None}, if this is empty.
      */
+    @Override
     <U> Option<U> map(Function<? super T, ? extends U> mapper);
 
     /**
-     * Maps the value to a new {@code Option} if this is a {@code Some}, otherwise returns {@code None}.
+     * Applies an action to this value, if this option is defined, otherwise does nothing.
      *
-     * @param mapper A value to Option mapper
-     * @param <U>    Component type of the resulting Option
-     * @return a new {@code Option}
+     * @param action An action which can be applied to an optional value
+     * @return this {@code Option}
      */
-    @SuppressWarnings("unchecked")
-    default <U> Option<U> flatMap(Function<? super T, ? extends Option<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        if (isEmpty()) {
-            return None.instance();
-        } else {
-            return (Option<U>) mapper.apply(get());
-        }
-    }
-
-    /**
-     * Converts this {@code Option} to a {@code java.util.Optional}.
-     *
-     * @return a new {@code Optional}
-     */
-    Optional<T> toJavaOptional();
+    @Override
+    Option<T> peek(Consumer<? super T> action);
 
     @Override
     default Iterator<T> iterator() {

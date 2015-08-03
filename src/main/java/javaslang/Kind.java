@@ -19,9 +19,6 @@ package javaslang;
  * <ul>
  * <li>Once a type extends {@code Kind} with a concrete first generic parameter type, like {@code List} does, the
  * {@code Kind} is fixated. There is no way for subclasses to implement a more specific {@code Kind}.</li>
- * <li>We can construct illegal relationships, like {@code interface Option<T> extends FilterMonadic<List<?>, T>}.
- * The compiler will detect this, if {@code Kind} is also extended appropriately:
- * {@code interface Option<T> extends Kind<Option<?>, T>, FilterMonadic<Option<?>, T>}.</li>
  * </ul>
  * <p>
  * See also

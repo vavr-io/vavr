@@ -5,10 +5,21 @@
  */
 package javaslang;
 
+import javaslang.collection.TraversableOnce;
+import javaslang.control.None;
+import javaslang.control.Option;
+import javaslang.control.Some;
+
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
@@ -36,7 +47,8 @@ import java.util.function.Supplier;
  *
  * @since 1.2.1
  */
-public final class Lazy<T> implements Supplier<T>, Value<T>, Serializable {
+public final class Lazy<T> implements Supplier<T>, Value<T>, TraversableOnce<T>, Serializable,
+        FilterMonadic<Lazy<?>, T>, Kind<Lazy<?>, T> {
 
     private static final long serialVersionUID = 1L;
 
@@ -86,23 +98,6 @@ public final class Lazy<T> implements Supplier<T>, Value<T>, Serializable {
         return (T) Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] { type }, handler);
     }
 
-    public boolean isEvaluated() {
-        return supplier == null;
-    }
-
-    /**
-     * Returns {@code false} because a present value cannot be empty, even if it is lazy.
-     * <p>
-     * This implies that {@link #get()} will always succeed, i.e.{@link #orElse(Object)} et.al. will not return an
-     * alternate value.
-     *
-     * @return false
-     */
-    @Override
-    public boolean isEmpty() {
-        return false;
-    }
-
     /**
      * Evaluates this lazy value and caches it, when called the first time.
      * On subsequent calls, returns the cached value.
@@ -120,6 +115,99 @@ public final class Lazy<T> implements Supplier<T>, Value<T>, Serializable {
             }
         }
         return value;
+    }
+
+    /**
+     * Returns {@code false} because a present value cannot be empty, even if it is lazy.
+     * <p>
+     * This implies that {@link #get()} will always succeed, i.e.{@link #orElse(Object)} et.al. will not return an
+     * alternate value.
+     *
+     * @return false
+     */
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
+    /**
+     * Checks, if this lazy value is evaluated.
+     * <p>
+     * Note: A value is internally evaluated (once) by calling {@link #get()}.
+     *
+     * @return true, if the value is evaluated, false otherwise.
+     */
+    public boolean isEvaluated() {
+        return supplier == null;
+    }
+
+    /**
+     * Filters this value. However, if the filter result is empty, a {@code Lazy} will we returned, that
+     * will throw a {@code NoSuchElementException} when being evaluated.
+     *
+     * @param predicate A predicate
+     * @return A new Lazy instance
+     */
+    @Override
+    public Lazy<T> filter(Predicate<? super T> predicate) {
+        return Lazy.of(() -> {
+            final T value = get();
+            if (predicate.test(value)) {
+                return value;
+            } else {
+                throw new NoSuchElementException("empty filter");
+            }
+        });
+    }
+
+    @Override
+    public Lazy<Option<T>> filterOption(Predicate<? super T> predicate) {
+        return Lazy.of(() -> {
+            final T value = get();
+            if (predicate.test(value)) {
+                return new Some<>(value);
+            } else {
+                return None.instance();
+            }
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    public <U> Lazy<U> flatMap(Function<? super T, ? extends Lazy<? extends U>> mapper) {
+        return (Lazy<U>) mapper.apply(get());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <U> Lazy<U> flatMapM(Function<? super T, ? extends Kind<? extends Lazy<?>, ? extends U>> mapper) {
+        return flatMap((Function<? super T, ? extends Lazy<? extends U>>) mapper);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <U> Lazy<U> flatten(Function<? super T, ? extends Lazy<? extends U>> f) {
+        return (Lazy<U>) f.apply(get());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <U> Lazy<U> flattenM(Function<? super T, ? extends Kind<? extends Lazy<?>, ? extends U>> f) {
+        return flatten((Function<? super T, ? extends Lazy<? extends U>>) f);
+    }
+
+    @Override
+    public <U> Lazy<U> map(Function<? super T, ? extends U> mapper) {
+        return Lazy.of(() -> mapper.apply(get()));
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return Collections.singleton(get()).iterator();
+    }
+
+    @Override
+    public Lazy<T> peek(Consumer<? super T> action) {
+        action.accept(get());
+        return this;
     }
 
     @Override

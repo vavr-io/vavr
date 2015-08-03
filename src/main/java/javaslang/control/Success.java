@@ -6,6 +6,7 @@
 package javaslang.control;
 
 import javaslang.CheckedFunction1;
+import javaslang.Kind;
 
 import java.io.Serializable;
 import java.util.NoSuchElementException;
@@ -92,18 +93,8 @@ public final class Success<T> implements Try<T>, Serializable {
     }
 
     @Override
-    public Some<T> toOption() {
-        return new Some<>(value);
-    }
-
-    @Override
-    public Right<Throwable, T> toEither() {
-        return new Right<>(value);
-    }
-
-    @Override
-    public Optional<T> toJavaOptional() {
-        return Optional.ofNullable(value);
+    public Failure<Throwable> failed() {
+        return new Failure<>(new UnsupportedOperationException("Success.failed()"));
     }
 
     @Override
@@ -120,18 +111,61 @@ public final class Success<T> implements Try<T>, Serializable {
     }
 
     @Override
-    public Failure<Throwable> failed() {
-        return new Failure<>(new UnsupportedOperationException("Success.failed()"));
+    public Try<T> filterTry(CheckedPredicate<? super T> predicate) {
+        return Try.of(() -> predicate.test(value)).flatMap(b -> filter(ignored -> b));
     }
 
     @Override
-    public Try<T> peek(Consumer<? super T> action) {
+    public Try<Option<T>> filterOption(Predicate<? super T> predicate) {
+        return filter(predicate).map(Option::of);
+    }
+
+    @Override
+    public Try<Option<T>> filterTryOption(CheckedPredicate<? super T> predicate) {
+        return Try.of(() -> predicate.test(value)).flatMap(b -> filterOption(ignored -> b));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <U> Try<U> flatMap(Function<? super T, ? extends Try<? extends U>> mapper) {
         try {
-            action.accept(value);
-            return this;
+            return (Try<U>) mapper.apply(value);
         } catch (Throwable t) {
             return new Failure<>(t);
         }
+    }
+
+    @Override
+    public <U> Try<U> flatMapTry(CheckedFunction<? super T, ? extends Try<? extends U>> mapper) {
+        return Try.of(() -> mapper.apply(value).get());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <U> Try<U> flatMapM(Function<? super T, ? extends Kind<? extends Try<?>, ? extends U>> mapper) {
+        return flatMap((Function<? super T, ? extends Try<? extends U>>) mapper);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <U> Try<U> flatten(Function<? super T, ? extends Try<? extends U>> f) {
+        Objects.requireNonNull(f, "f is null");
+        try {
+            return (Try<U>) f.apply(value);
+        } catch (Throwable t) {
+            return new Failure<>(t);
+        }
+    }
+
+    @Override
+    public <U> Try<U> flattenTry(CheckedFunction<? super T, ? extends Try<? extends U>> f) {
+        return Try.of(() -> f.apply(value).get());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <U> Try<U> flattenM(Function<? super T, ? extends Kind<? extends Try<?>, ? extends U>> f) {
+        return flatten((Function<? super T, ? extends Try<? extends U>>) f);
     }
 
     @Override
@@ -145,17 +179,32 @@ public final class Success<T> implements Try<T>, Serializable {
 
     @Override
     public <U> Try<U> mapTry(CheckedFunction1<? super T, ? extends U> f) {
-        return flatMap(value -> Try.of(() -> f.apply(value)));
+        return Try.of(() -> f.apply(value));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <U> Try<U> flatMap(Function<? super T, ? extends Try<? extends U>> mapper) {
+    public Try<T> peek(Consumer<? super T> action) {
         try {
-            return (Try<U>) mapper.apply(value);
+            action.accept(value);
+            return this;
         } catch (Throwable t) {
             return new Failure<>(t);
         }
+    }
+
+    @Override
+    public Some<T> toOption() {
+        return new Some<>(value);
+    }
+
+    @Override
+    public Right<Throwable, T> toEither() {
+        return new Right<>(value);
+    }
+
+    @Override
+    public Optional<T> toJavaOptional() {
+        return Optional.ofNullable(value);
     }
 
     @SuppressWarnings("unchecked")

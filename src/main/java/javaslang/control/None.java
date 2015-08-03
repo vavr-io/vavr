@@ -5,12 +5,15 @@
  */
 package javaslang.control;
 
+import javaslang.Kind;
+
 import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * None is a singleton representation of the undefined {@link javaslang.control.Option}. The instance is obtained by
@@ -62,9 +65,39 @@ public final class None<T> implements Option<T>, Serializable {
     }
 
     @Override
-    public None<T> peek(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
+    public None<T> filter(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
         return this;
+    }
+
+    @Override
+    public None<Some<T>> filterOption(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return None.instance();
+    }
+
+    @Override
+    public <U> None<U> flatMap(Function<? super T, ? extends Option<? extends U>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return None.instance();
+    }
+
+    @Override
+    public <U> None<U> flatMapM(Function<? super T, ? extends Kind<? extends Option<?>, ? extends U>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return None.instance();
+    }
+
+    @Override
+    public <U> None<U> flatten(Function<? super T, ? extends Option<? extends U>> f) {
+        Objects.requireNonNull(f, "f is null");
+        return None.instance();
+    }
+
+    @Override
+    public <U> None<U> flattenM(Function<? super T, ? extends Kind<? extends Option<?>, ? extends U>> f) {
+        Objects.requireNonNull(f, "f is null");
+        return None.instance();
     }
 
     @Override
@@ -74,8 +107,9 @@ public final class None<T> implements Option<T>, Serializable {
     }
 
     @Override
-    public Optional<T> toJavaOptional() {
-        return Optional.empty();
+    public None<T> peek(Consumer<? super T> action) {
+        Objects.requireNonNull(action, "action is null");
+        return this;
     }
 
     @Override
