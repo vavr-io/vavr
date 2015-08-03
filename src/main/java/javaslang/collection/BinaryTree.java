@@ -359,7 +359,7 @@ public interface BinaryTree<T> extends Tree<T> {
         @Override
         public List<BinaryTree<T>> getChildren() {
             // IntelliJ error: List.of(left, right).filter(tree -> !tree.isEmpty());
-            return List.<BinaryTree<T>>empty().prepend(right).prepend(left).filter(tree -> !tree.isEmpty());
+            return List.<BinaryTree<T>> empty().prepend(right).prepend(left).filter(tree -> !tree.isEmpty());
         }
 
         // -- Serializable implementation

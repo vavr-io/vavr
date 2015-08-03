@@ -8,7 +8,6 @@ package javaslang.control;
 import org.junit.Test;
 
 import java.util.Iterator;
-import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.StrictAssertions.fail;
@@ -781,7 +780,7 @@ public class MatchMonadTest {
         try {
             match.get();
             fail("nothing thrown");
-        } catch(RuntimeException x) {
+        } catch (RuntimeException x) {
             // ok
         }
     }
@@ -795,7 +794,7 @@ public class MatchMonadTest {
         try {
             match.get();
             fail("nothing thrown");
-        } catch(RuntimeException x) {
+        } catch (RuntimeException x) {
             // ok
         }
     }

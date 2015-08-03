@@ -81,7 +81,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldAppendElementToNil() {
-        final Seq<Integer> actual = this.<Integer>empty().append(1);
+        final Seq<Integer> actual = this.<Integer> empty().append(1);
         final Seq<Integer> expected = of(1);
         assertThat(actual).isEqualTo(expected);
     }
@@ -109,7 +109,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldAppendAllNonNilToNil() {
-        final Seq<Integer> actual = this.<Integer>empty().appendAll(of(1, 2, 3));
+        final Seq<Integer> actual = this.<Integer> empty().appendAll(of(1, 2, 3));
         final Seq<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
@@ -294,7 +294,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldInsertIntoNil() {
-        final Seq<Integer> actual = this.<Integer>empty().insert(0, 1);
+        final Seq<Integer> actual = this.<Integer> empty().insert(0, 1);
         final Seq<Integer> expected = of(1);
         assertThat(actual).isEqualTo(expected);
     }
@@ -339,7 +339,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldInserAlltIntoNil() {
-        final Seq<Integer> actual = this.<Integer>empty().insertAll(0, of(1, 2, 3));
+        final Seq<Integer> actual = this.<Integer> empty().insertAll(0, of(1, 2, 3));
         final Seq<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
@@ -410,7 +410,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldPrependElementToNil() {
-        final Seq<Integer> actual = this.<Integer>empty().prepend(1);
+        final Seq<Integer> actual = this.<Integer> empty().prepend(1);
         final Seq<Integer> expected = of(1);
         assertThat(actual).isEqualTo(expected);
     }
@@ -431,7 +431,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldPrependAllNilToNil() {
-        final Seq<Integer> actual = this.<Integer>empty().prependAll(empty());
+        final Seq<Integer> actual = this.<Integer> empty().prependAll(empty());
         final Seq<Integer> expected = empty();
         assertThat(actual).isEqualTo(expected);
     }
@@ -445,7 +445,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldPrependAllNonNilToNil() {
-        final Seq<Integer> actual = this.<Integer>empty().prependAll(of(1, 2, 3));
+        final Seq<Integer> actual = this.<Integer> empty().prependAll(of(1, 2, 3));
         final Seq<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
@@ -510,7 +510,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldSortNilUsingComparator() {
-        assertThat(this.<Integer>empty().sort((i, j) -> j - i)).isEqualTo(empty());
+        assertThat(this.<Integer> empty().sort((i, j) -> j - i)).isEqualTo(empty());
     }
 
     @Test
@@ -534,7 +534,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldReturnNilWhenSubsequenceFrom0OnNil() {
-        final Seq<Integer> actual = this.<Integer>empty().subsequence(0);
+        final Seq<Integer> actual = this.<Integer> empty().subsequence(0);
         assertThat(actual).isEqualTo(empty());
     }
 
@@ -581,7 +581,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldReturnNilWhenSubsequenceFrom0To0OnNil() {
-        final Seq<Integer> actual = this.<Integer>empty().subsequence(0, 0);
+        final Seq<Integer> actual = this.<Integer> empty().subsequence(0, 0);
         assertThat(actual).isEqualTo(empty());
     }
 
@@ -649,25 +649,25 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldStreamAndCollectNil() {
-        final Seq<?> actual = java.util.stream.Stream.empty().collect(this.<Object>collector());
+        final Seq<?> actual = java.util.stream.Stream.empty().collect(this.<Object> collector());
         assertThat(actual).isEqualTo(empty());
     }
 
     @Test
     public void shouldStreamAndCollectNonNil() {
-        final Seq<?> actual = java.util.stream.Stream.of(1, 2, 3).collect(this.<Object>collector());
+        final Seq<?> actual = java.util.stream.Stream.of(1, 2, 3).collect(this.<Object> collector());
         assertThat(actual).isEqualTo(of(1, 2, 3));
     }
 
     @Test
     public void shouldParallelStreamAndCollectNil() {
-        final Seq<?> actual = java.util.stream.Stream.empty().parallel().collect(this.<Object>collector());
+        final Seq<?> actual = java.util.stream.Stream.empty().parallel().collect(this.<Object> collector());
         assertThat(actual).isEqualTo(empty());
     }
 
     @Test
     public void shouldParallelStreamAndCollectNonNil() {
-        final Seq<?> actual = java.util.stream.Stream.of(1, 2, 3).parallel().collect(this.<Object>collector());
+        final Seq<?> actual = java.util.stream.Stream.of(1, 2, 3).parallel().collect(this.<Object> collector());
         assertThat(actual).isEqualTo(of(1, 2, 3));
     }
 

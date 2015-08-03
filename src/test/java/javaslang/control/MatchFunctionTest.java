@@ -11,7 +11,8 @@ import org.junit.Test;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 public class MatchFunctionTest {
 
@@ -661,7 +662,7 @@ public class MatchFunctionTest {
         try {
             match.apply(null);
             fail("nothing thrown");
-        } catch(RuntimeException x) {
+        } catch (RuntimeException x) {
             // ok
         }
     }
@@ -675,7 +676,7 @@ public class MatchFunctionTest {
         try {
             match.apply(null);
             fail("nothing thrown");
-        } catch(RuntimeException x) {
+        } catch (RuntimeException x) {
             // ok
         }
     }

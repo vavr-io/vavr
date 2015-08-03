@@ -11,10 +11,8 @@ import javaslang.Kind;
 import javaslang.Value;
 import javaslang.collection.TraversableOnce;
 
-import java.awt.*;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -202,8 +200,8 @@ public interface Try<T> extends TraversableOnce<T>, Value<T>,
      * </code>
      * </pre>
      *
-     * @param <U> The new component type
-     * @param mapper   A checked function
+     * @param <U>    The new component type
+     * @param mapper A checked function
      * @return a new {@code Try}
      */
     <U> Try<U> mapTry(CheckedFunction1<? super T, ? extends U> mapper);

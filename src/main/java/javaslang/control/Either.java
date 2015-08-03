@@ -10,7 +10,10 @@ import javaslang.Kind;
 import javaslang.Value;
 import javaslang.collection.TraversableOnce;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -265,7 +268,7 @@ public interface Either<L, R> {
             }
         }
 
-                /**
+        /**
          * FlatMaps the left value if the projected Either is a Left.
          *
          * @param mapper A mapper which takes a left value and returns a new Either
