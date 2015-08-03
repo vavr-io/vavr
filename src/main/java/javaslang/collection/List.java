@@ -80,7 +80,7 @@ import java.util.stream.Collector;
  * @param <T> Component type of the List
  * @since 1.1.0
  */
-public interface List<T> extends Seq<T>, Stack<T> {
+public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with

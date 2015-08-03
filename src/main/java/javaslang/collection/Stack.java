@@ -38,7 +38,7 @@ import java.util.stream.Collector;
  * @param <T> component type
  * @since 2.0.0
  */
-public interface Stack<T> extends Seq<T> {
+public interface Stack<T> extends LinearSeq<T> {
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with

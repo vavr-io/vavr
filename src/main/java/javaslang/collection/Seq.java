@@ -96,6 +96,36 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     Seq<T> appendAll(Iterable<? extends T> elements);
 
     /**
+     * Returns the union of all combinations from k = 0 to length().
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * [].combinations() = [[]]
+     *
+     * [1,2,3].combinations() = [
+     *   [],                  // k = 0
+     *   [1], [2], [3],       // k = 1
+     *   [1,2], [1,3], [2,3], // k = 2
+     *   [1,2,3]              // k = 3
+     * ]
+     * </code>
+     * </pre>
+     *
+     * @return the combinations of this
+     */
+    Seq<? extends Seq<T>> combinations();
+
+    /**
+     * Returns the k-combination of this traversable, i.e. all subset of this of k distinct elements.
+     *
+     * @param k Size of subsets
+     * @return the k-combination of this elements
+     * @see <a href="http://en.wikipedia.org/wiki/Combination">Combination</a>
+     */
+    Seq<? extends Seq<T>> combinations(int k);
+
+    /**
      * Tests whether this sequence contains a given sequence as a slice.
      * <p>
      * Note: may not terminate for infinite-sized collections.
@@ -447,36 +477,6 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
 
     @Override
     <U> Seq<Tuple2<T, U>> cartesianProduct(Iterable<? extends U> that);
-
-    /**
-     * Returns the union of all combinations from k = 0 to length().
-     * <p>
-     * Examples:
-     * <pre>
-     * <code>
-     * [].combinations() = [[]]
-     *
-     * [1,2,3].combinations() = [
-     *   [],                  // k = 0
-     *   [1], [2], [3],       // k = 1
-     *   [1,2], [1,3], [2,3], // k = 2
-     *   [1,2,3]              // k = 3
-     * ]
-     * </code>
-     * </pre>
-     *
-     * @return the combinations of this
-     */
-    Seq<? extends Seq<T>> combinations();
-
-    /**
-     * Returns the k-combination of this traversable, i.e. all subset of this of k distinct elements.
-     *
-     * @param k Size of subsets
-     * @return the k-combination of this elements
-     * @see <a href="http://en.wikipedia.org/wiki/Combination">Combination</a>
-     */
-    Seq<? extends Seq<T>> combinations(int k);
 
     @Override
     Seq<T> distinct();

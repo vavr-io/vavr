@@ -95,7 +95,7 @@ import java.util.stream.Collector;
  * @param <T> component type of this Stream
  * @since 1.1.0
  */
-public interface Stream<T> extends Seq<T> {
+public interface Stream<T> extends LinearSeq<T> {
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
@@ -881,18 +881,6 @@ public interface Stream<T> extends Seq<T> {
     @Override
     default <U> Stream<U> flattenM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> f) {
         return flatten((Function<? super T, ? extends Iterable<? extends U>>) f);
-    }
-
-    @Override
-    default void forEach(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
-        Seq.super.forEach(action);
-    }
-
-    @Override
-    default boolean forAll(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return Seq.super.forAll(predicate);
     }
 
     @Override

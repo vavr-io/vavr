@@ -43,7 +43,7 @@ import java.util.stream.Collector;
  * @param <T> Component type of the Queue
  * @since 2.0.0
  */
-public class Queue<T> implements Seq<T>, Serializable {
+public class Queue<T> implements LinearSeq<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
