@@ -233,7 +233,7 @@ public class TryTest {
 
     @Test
     public void shouldRecoverWithOnFailure() {
-        assertThat(TryTest.<String>failure().recoverWith(x -> success()).get()).isEqualTo(OK);
+        assertThat(TryTest.<String> failure().recoverWith(x -> success()).get()).isEqualTo(OK);
     }
 
     @Test
@@ -307,7 +307,7 @@ public class TryTest {
     @Test
     public void shouldForEachOnFailure() {
         final List<String> actual = new ArrayList<>();
-        TryTest.<String>failure().forEach(actual::add);
+        TryTest.<String> failure().forEach(actual::add);
         assertThat(actual.isEmpty()).isTrue();
     }
 

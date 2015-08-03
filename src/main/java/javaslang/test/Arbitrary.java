@@ -10,7 +10,6 @@ import javaslang.Kind;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
 import javaslang.collection.TraversableOnce;
-import javaslang.control.Option;
 import javaslang.control.Some;
 
 import java.util.Iterator;

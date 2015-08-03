@@ -527,7 +527,7 @@ public class Queue<T> implements Seq<T>, Serializable {
         return enqueueAll(elements);
     }
 
-        @Override
+    @Override
     public Queue<Tuple2<T, T>> cartesianProduct() {
         return cartesianProduct(this);
     }

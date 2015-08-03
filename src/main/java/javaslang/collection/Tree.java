@@ -162,7 +162,7 @@ public interface Tree<T> extends Iterable<T> {
                     return List.of(tree.getValue());
                 } else {
                     final List<? extends Tree<T>> children = tree.getChildren();
-                    return children.tail().foldLeft(List.<T>empty(), (acc, child) -> acc.appendAll(inOrder(child)))
+                    return children.tail().foldLeft(List.<T> empty(), (acc, child) -> acc.appendAll(inOrder(child)))
                             .prepend(tree.getValue())
                             .prependAll(inOrder(children.head()));
                 }
@@ -170,7 +170,7 @@ public interface Tree<T> extends Iterable<T> {
 
             List<T> postOrder(Tree<T> tree) {
                 return tree.getChildren()
-                        .foldLeft(List.<T>empty(), (acc, child) -> acc.appendAll(postOrder(child)))
+                        .foldLeft(List.<T> empty(), (acc, child) -> acc.appendAll(postOrder(child)))
                         .append(tree.getValue());
             }
 

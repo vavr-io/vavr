@@ -5,13 +5,11 @@
  */
 package javaslang.control;
 
-import javaslang.Serializables;
 import javaslang.control.Either.LeftProjection;
 import javaslang.control.Either.RightProjection;
 import org.junit.Test;
 
 import java.util.*;
-import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
