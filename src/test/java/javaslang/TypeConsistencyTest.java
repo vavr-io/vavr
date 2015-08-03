@@ -24,23 +24,21 @@ public class TypeConsistencyTest {
 
     static final List<String> WHITELIST = List.of(
 
-            // control.Map
+            // javaslang.control.Map
             "javaslang.collection.Map//public default java.util.function.Function java.util.function.Function.andThen(java.util.function.Function)",
             "javaslang.collection.Map//public default java.util.function.Function java.util.function.Function.compose(java.util.function.Function)",
 
-            // control.Match
+            // javaslang.control.Match
             "javaslang.control.Match//public default java.util.function.Function java.util.function.Function.andThen(java.util.function.Function)",
             "javaslang.control.Match//public default java.util.function.Function java.util.function.Function.compose(java.util.function.Function)",
 
-            // control.Failure
+            // javaslang.control.Failure
             "javaslang.control.Failure//public abstract javaslang.control.Try javaslang.control.Try.recover(java.util.function.Function)",
             "javaslang.control.Failure//public abstract javaslang.control.Try javaslang.control.Try.recoverWith(java.util.function.Function)",
             "javaslang.control.Failure//public abstract javaslang.control.Try javaslang.control.Try.failed()",
-            "javaslang.control.Failure//public default javaslang.control.Try javaslang.control.Try.flatten(java.util.function.Function)",
-            "javaslang.control.Failure//public abstract javaslang.control.Try javaslang.control.Try.map(java.util.function.Function)",
             "javaslang.control.Failure//public default javaslang.control.Try javaslang.control.Try.andThen(javaslang.control.Try$CheckedRunnable)",
 
-            // control.Success
+            // javaslang.control.Success
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.failed()",
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.filter(java.util.function.Predicate)",
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.filterTry(javaslang.control.Try$CheckedPredicate)",
@@ -58,7 +56,7 @@ public class TypeConsistencyTest {
             "javaslang.control.Success//public default javaslang.control.Try javaslang.control.Try.andThen(javaslang.control.Try$CheckedRunnable)",
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.andThen(javaslang.control.Try$CheckedConsumer)",
 
-            // control.Some
+            // javaslang.control.Some
             "javaslang.control.Some//public abstract javaslang.control.Option javaslang.control.Option.filter(java.util.function.Predicate)",
             "javaslang.control.Some//public abstract javaslang.control.Option javaslang.control.Option.filterOption(java.util.function.Predicate)",
             "javaslang.control.Some//public abstract javaslang.control.Option javaslang.control.Option.flatMap(java.util.function.Function)",
@@ -66,10 +64,10 @@ public class TypeConsistencyTest {
             "javaslang.control.Some//public abstract javaslang.control.Option javaslang.control.Option.flatten(java.util.function.Function)",
             "javaslang.control.Some//public abstract javaslang.control.Option javaslang.control.Option.flattenM(java.util.function.Function)",
 
-            // control.Left
+            // javaslang.control.Left
             "javaslang.control.Left//public abstract javaslang.control.Either javaslang.control.Either.swap()",
 
-            // control.Right
+            // javaslang.control.Right
             "javaslang.control.Right//public abstract javaslang.control.Either javaslang.control.Either.swap()"
     );
 
@@ -79,26 +77,48 @@ public class TypeConsistencyTest {
      */
     @Test
     public void shouldHaveAConsistentTypeSystem() {
-        final Stream<Class<?>> classes = loadClasses("src-gen/main/java")
+
+        final Stream<Class<?>> relevantClasses = loadClasses("src-gen/main/java")
                 .appendAll(loadClasses("src/main/java"))
                 .filter(c -> {
                     final String name = c.getName();
-                    return !name.startsWith("javaslang.Function") && !name.startsWith("javaslang.CheckedFunction") &&
-                            !name.startsWith("javaslang.Consumer") && !name.startsWith("javaslang.CheckedConsumer");
+                    return !name.startsWith("javaslang.Function") && !name.startsWith("javaslang.CheckedFunction");
                 });
-        final Stream<String> msgs = classes
+
+        final Stream<String> unoveriddenMethods = relevantClasses
                 .map(clazz -> Tuple.of(clazz, getUnoverriddenMethods(clazz)))
-                .filter(findings -> !findings._2.isEmpty())
                 .map(findings -> Tuple.of(findings._1, findings._2.filter(method -> {
                     final String signature = findings._1.getName() + "//" + method;
                     return !WHITELIST.contains(signature);
                 })))
                 .filter(findings -> !findings._2.isEmpty())
                 .sort((t1, t2) -> t1._1.getName().compareTo(t2._1.getName()))
-                .map(findings -> String.format("%s has to override the following methods with return type %s:\n%s",
-                        findings._1.getName(), findings._1.getSimpleName(), findings._2.map(m -> "* " + m).join("\n")));
-        if (!msgs.isEmpty()) {
-            throw new AssertionError(msgs.join("\n\n", "Unoverriden methods found.\n", ""));
+                .map(findings -> String.format("// %s does not override the following methods with return type %s:\n%s",
+                        findings._1.getName(), findings._1.getSimpleName(),
+                        findings._2.map(method -> "\"" + findings._1.getName() + "//" + method + "\"").join(",\n")));
+
+        final List<String> unusedWhitelistRules = WHITELIST.removeAll(relevantClasses
+                .map(clazz -> Tuple.of(clazz, getUnoverriddenMethods(clazz)))
+                .flatMap(findings -> findings._2.map(method -> findings._1.getName() + "//" + method)));
+
+        final StringBuilder messages = new StringBuilder();
+
+        if (!unoveriddenMethods.isEmpty()) {
+            messages.append(unoveriddenMethods.join(",\n\n",
+                    "Unoverriden methods found. Check if this is ok and copy & paste the necessary lines into the " +
+                            TypeConsistencyTest.class.getSimpleName() + ".WHITELIST:\n\n",
+                    "\n\n"));
+        }
+
+        if (!unusedWhitelistRules.isEmpty()) {
+            messages.append(unusedWhitelistRules.map(s -> "\"" + s + "\"").join(",\n",
+                    "// Please consolidate/remove the following " +
+                            TypeConsistencyTest.class.getSimpleName() + ".WHITELIST entries:\n\n",
+                    "\n\n"));
+        }
+
+        if (messages.length() > 0) {
+            throw new AssertionError(messages.toString());
         }
     }
 
@@ -122,16 +142,16 @@ public class TypeConsistencyTest {
                     .sort()
                     .map(comparableMethod -> comparableMethod.m);
         }
-    }
+        }
 
-    Stream<ComparableMethod> getOverridableMethods(Stream<Class<?>> classes) {
-        return classes
-                .flatMap(clazz ->
-                        Stream.of(clazz.getDeclaredMethods()).filter((Method m) ->
-                                // https://javax0.wordpress.com/2014/02/26/syntethic-and-bridge-methods/
-                                !m.isBridge() && !m.isSynthetic() &&
-                                        // private, static and final methods cannot be overridden
-                                        !Modifier.isPrivate(m.getModifiers()) && !Modifier.isFinal(m.getModifiers()) && !Modifier.isStatic(m.getModifiers()) &&
+        Stream<ComparableMethod> getOverridableMethods (Stream < Class < ? >> classes){
+            return classes
+                    .flatMap(clazz ->
+                            Stream.of(clazz.getDeclaredMethods()).filter((Method m) ->
+                                    // https://javax0.wordpress.com/2014/02/26/syntethic-and-bridge-methods/
+                                    !m.isBridge() && !m.isSynthetic() &&
+                                            // private, static and final methods cannot be overridden
+                                            !Modifier.isPrivate(m.getModifiers()) && !Modifier.isFinal(m.getModifiers()) && !Modifier.isStatic(m.getModifiers()) &&
                                         // we also don't want to cope with methods declared in Object
                                         !m.getDeclaringClass().equals(Object.class))
                                 .map(ComparableMethod::new));
