@@ -31,12 +31,6 @@ public interface Set<T> extends Traversable<T> {
     <U> Set<Tuple2<T, U>> cartesianProduct(Iterable<? extends U> that);
 
     @Override
-    Set<? extends Set<T>> combinations();
-
-    @Override
-    Set<? extends Set<T>> combinations(int k);
-
-    @Override
     Set<T> distinct();
 
     @Override
