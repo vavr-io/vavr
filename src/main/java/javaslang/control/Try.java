@@ -6,9 +6,12 @@
 package javaslang.control;
 
 import javaslang.CheckedFunction1;
+import javaslang.FilterMonadic;
+import javaslang.Kind;
 import javaslang.Value;
 import javaslang.collection.TraversableOnce;
 
+import java.awt.*;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
@@ -21,7 +24,8 @@ import java.util.function.Predicate;
  *
  * @param <T> Value type in the case of success.
  */
-public interface Try<T> extends TraversableOnce<T>, Value<T> {
+public interface Try<T> extends TraversableOnce<T>, Value<T>,
+        FilterMonadic<Try<?>, T>, Kind<Try<?>, T> {
 
     /**
      * Creates a Try of a CheckedSupplier.
@@ -121,7 +125,29 @@ public interface Try<T> extends TraversableOnce<T>, Value<T> {
      * @param predicate A predicate
      * @return a new Try
      */
+    @Override
     Try<T> filter(Predicate<? super T> predicate);
+
+    Try<T> filterTry(CheckedPredicate<? super T> predicate);
+
+    @Override
+    Try<Option<T>> filterOption(Predicate<? super T> predicate);
+
+    Try<Option<T>> filterTryOption(CheckedPredicate<? super T> predicate);
+
+    /**
+     * FlatMaps the value of a Success or returns a Failure.
+     *
+     * @param mapper A mapper
+     * @param <U>    The new component type
+     * @return a new Try
+     */
+    <U> Try<U> flatMap(Function<? super T, ? extends Try<? extends U>> mapper);
+
+    <U> Try<U> flatMapTry(CheckedFunction<? super T, ? extends Try<? extends U>> mapper);
+
+    @Override
+    <U> Try<U> flatMapM(Function<? super T, ? extends Kind<? extends Try<?>, ? extends U>> mapper);
 
     /**
      * Flattens a nested, monadic structure using a function.
@@ -144,27 +170,12 @@ public interface Try<T> extends TraversableOnce<T>, Value<T> {
      * @return a new {@code Try}
      * @throws NullPointerException if {@code f} is null
      */
-    @SuppressWarnings("unchecked")
-    default <U> Try<U> flatten(Function<? super T, ? extends Try<? extends U>> f) {
-        Objects.requireNonNull(f, "f is null");
-        if (isFailure()) {
-            return (Failure<U>) this;
-        } else {
-            try {
-                return (Try<U>) f.apply(get());
-            } catch (Throwable t) {
-                return new Failure<>(t);
-            }
-        }
-    }
+    <U> Try<U> flatten(Function<? super T, ? extends Try<? extends U>> f);
 
-    /**
-     * Applies the action to the value of a Success or does nothing in the case of a Failure.
-     *
-     * @param action A Consumer
-     * @return this Try
-     */
-    Try<T> peek(Consumer<? super T> action);
+    <U> Try<U> flattenTry(CheckedFunction<? super T, ? extends Try<? extends U>> f);
+
+    @Override
+    <U> Try<U> flattenM(Function<? super T, ? extends Kind<? extends Try<?>, ? extends U>> f);
 
     /**
      * Maps the value of a Success or returns a Failure.
@@ -173,6 +184,7 @@ public interface Try<T> extends TraversableOnce<T>, Value<T> {
      * @param mapper A mapper
      * @return a new Try
      */
+    @Override
     <U> Try<U> map(Function<? super T, ? extends U> mapper);
 
     /**
@@ -191,19 +203,19 @@ public interface Try<T> extends TraversableOnce<T>, Value<T> {
      * </pre>
      *
      * @param <U> The new component type
-     * @param f   A checked function taking a single argument.
+     * @param mapper   A checked function
      * @return a new {@code Try}
      */
-    <U> Try<U> mapTry(CheckedFunction1<? super T, ? extends U> f);
+    <U> Try<U> mapTry(CheckedFunction1<? super T, ? extends U> mapper);
 
     /**
-     * FlatMaps the value of a Success or returns a Failure.
+     * Applies the action to the value of a Success or does nothing in the case of a Failure.
      *
-     * @param mapper A mapper
-     * @param <U>    The new component type
-     * @return a new Try
+     * @param action A Consumer
+     * @return this Try
      */
-    <U> Try<U> flatMap(Function<? super T, ? extends Try<? extends U>> mapper);
+    @Override
+    Try<T> peek(Consumer<? super T> action);
 
     @Override
     default Iterator<T> iterator() {
@@ -279,20 +291,6 @@ public interface Try<T> extends TraversableOnce<T>, Value<T> {
     String toString();
 
     /**
-     * A {@linkplain java.lang.Runnable} which may throw.
-     */
-    @FunctionalInterface
-    interface CheckedRunnable {
-
-        /**
-         * Performs side-effects.
-         *
-         * @throws Throwable if an error occurs
-         */
-        void run() throws Throwable;
-    }
-
-    /**
      * A {@linkplain java.util.function.Consumer} which may throw.
      *
      * @param <T> the type of value supplied to this consumer.
@@ -307,6 +305,57 @@ public interface Try<T> extends TraversableOnce<T>, Value<T> {
          * @throws Throwable if an error occurs
          */
         void accept(T value) throws Throwable;
+    }
+
+    /**
+     * A {@linkplain java.util.function.Function} which may throw.
+     *
+     * @param <T> the type of the input to the function
+     * @param <R> the result type of the function
+     */
+    @FunctionalInterface
+    interface CheckedFunction<T, R> {
+
+        /**
+         * Applies this function to the given argument.
+         *
+         * @param t the function argument
+         * @return the function result
+         * @throws Throwable if an error occurs
+         */
+        R apply(T t) throws Throwable;
+    }
+
+    /**
+     * A {@linkplain java.util.function.Predicate} which may throw.
+     *
+     * @param <T> the type of the input to the predicate
+     */
+    @FunctionalInterface
+    interface CheckedPredicate<T> {
+
+        /**
+         * Evaluates this predicate on the given argument.
+         *
+         * @param t the input argument
+         * @return {@code true} if the input argument matches the predicate, otherwise {@code false}
+         * @throws Throwable if an error occurs
+         */
+        boolean test(T t) throws Throwable;
+    }
+
+    /**
+     * A {@linkplain java.lang.Runnable} which may throw.
+     */
+    @FunctionalInterface
+    interface CheckedRunnable {
+
+        /**
+         * Performs side-effects.
+         *
+         * @throws Throwable if an error occurs
+         */
+        void run() throws Throwable;
     }
 
     /**

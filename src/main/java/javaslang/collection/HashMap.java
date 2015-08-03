@@ -63,7 +63,7 @@ public interface HashMap<K, V> extends Map<K, V> {
      */
     @SuppressWarnings("unchecked")
     static <K, V> HashMap<K, V> ofAll(Iterable<? extends Entry<? extends K, ? extends V>> entries) {
-        Objects.requireNonNull(entries, "elements is null");
+        Objects.requireNonNull(entries, "entries is null");
         if (entries instanceof HashMap) {
             return (HashMap<K, V>) entries;
         } else {
@@ -162,7 +162,7 @@ public interface HashMap<K, V> extends Map<K, V> {
 
         @Override
         public String toString() {
-            // TODO: return entrySet().join(", ", "HashMap(", ")");
+            // TODO: return join(", ", "HashMap(", ")");
             return "HashMap";
         }
     }

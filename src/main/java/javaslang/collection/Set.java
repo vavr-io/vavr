@@ -5,8 +5,10 @@
  */
 package javaslang.collection;
 
+import javaslang.Kind;
 import javaslang.Tuple2;
 import javaslang.control.Option;
+import javaslang.control.Some;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -47,13 +49,22 @@ public interface Set<T> extends Traversable<T> {
     Set<T> filter(Predicate<? super T> predicate);
 
     @Override
+    Set<Some<T>> filterOption(Predicate<? super T> predicate);
+
+    @Override
     Set<T> findAll(Predicate<? super T> predicate);
 
     @Override
     <U> Set<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
+    <U> Set<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper);
+
+    @Override
     <U> Set<U> flatten(Function<? super T, ? extends Iterable<? extends U>> f);
+
+    @Override
+    <U> Set<U> flattenM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> f);
 
     @Override
     Set<? extends Set<T>> grouped(int size);

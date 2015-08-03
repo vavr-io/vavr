@@ -5,9 +5,13 @@
  */
 package javaslang.test;
 
+import javaslang.FilterMonadic;
+import javaslang.Kind;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 import javaslang.collection.TraversableOnce;
+import javaslang.control.Option;
+import javaslang.control.Some;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -30,7 +34,8 @@ import java.util.function.Predicate;
  * @since 1.2.0
  */
 @FunctionalInterface
-public interface Gen<T> extends TraversableOnce<T> {
+public interface Gen<T> extends TraversableOnce<T>,
+        FilterMonadic<Gen<?>, T>, Kind<Gen<?>, T> {
 
     int FILTER_THRESHOLD = Integer.MAX_VALUE;
 
@@ -265,35 +270,12 @@ public interface Gen<T> extends TraversableOnce<T> {
     }
 
     /**
-     * Maps generated Ts to Us.
-     *
-     * @param mapper A function that maps a generated T to an object of type U.
-     * @param <U>    Type of the mapped object
-     * @return A new generator
-     */
-    default <U> Gen<U> map(Function<? super T, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return random -> mapper.apply(apply(random));
-    }
-
-    /**
-     * Maps generated Ts to Us.
-     *
-     * @param mapper A function that maps a generated T to a new generator which generates objects of type U.
-     * @param <U>    Type of generated objects of the new generator
-     * @return A new generator
-     */
-    default <U> Gen<U> flatMap(Function<? super T, ? extends Gen<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return random -> mapper.apply(apply(random)).apply(random);
-    }
-
-    /**
      * Returns a generator based on this generator which produces values that fulfill the given predicate.
      *
      * @param predicate A predicate
      * @return A new generator
      */
+    @Override
     default Gen<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return random -> {
@@ -309,13 +291,56 @@ public interface Gen<T> extends TraversableOnce<T> {
         };
     }
 
-    default <U> Gen<U> flatten(Function<? super T, ? extends Gen<? extends U>> f) {
-        return random -> {
-            final Gen<? extends U> gen = f.apply(apply(random));
-            return gen.apply(random);
-        };
+    @Override
+    default Gen<Some<T>> filterOption(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        final Gen<T> gen = filter(predicate);
+        return random -> new Some<>(gen.apply(random));
     }
 
+    /**
+     * Maps generated Ts to Us.
+     *
+     * @param mapper A function that maps a generated T to a new generator which generates objects of type U.
+     * @param <U>    Type of generated objects of the new generator
+     * @return A new generator
+     */
+    default <U> Gen<U> flatMap(Function<? super T, ? extends Gen<? extends U>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return random -> mapper.apply(apply(random)).apply(random);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Gen<U> flatMapM(Function<? super T, ? extends Kind<? extends Gen<?>, ? extends U>> mapper) {
+        return flatMap((Function<? super T, ? extends Gen<? extends U>>) mapper);
+    }
+
+    default <U> Gen<U> flatten(Function<? super T, ? extends Gen<? extends U>> f) {
+        Objects.requireNonNull(f, "f is null");
+        return random -> f.apply(apply(random)).apply(random);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Gen<U> flattenM(Function<? super T, ? extends Kind<? extends Gen<?>, ? extends U>> f) {
+        return flatten((Function<? super T, ? extends Gen<? extends U>>) f);
+    }
+
+    /**
+     * Maps generated Ts to Us.
+     *
+     * @param mapper A function that maps a generated T to an object of type U.
+     * @param <U>    Type of the mapped object
+     * @return A new generator
+     */
+    @Override
+    default <U> Gen<U> map(Function<? super T, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return random -> mapper.apply(apply(random));
+    }
+
+    @Override
     default Gen<T> peek(Consumer<? super T> action) {
         return random -> {
             final T t = apply(random);

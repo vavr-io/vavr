@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Kind;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.None;
@@ -585,6 +586,11 @@ public class Queue<T> implements Seq<T>, Serializable {
     }
 
     @Override
+    public Queue<Some<T>> filterOption(Predicate<? super T> predicate) {
+        return toList().filterOption(predicate).toQueue();
+    }
+
+    @Override
     public Queue<T> findAll(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return toList().findAll(predicate).toQueue();
@@ -596,10 +602,22 @@ public class Queue<T> implements Seq<T>, Serializable {
         return new Queue<>(front.flatMap(mapper), rear.flatMap(mapper));
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public <U> Queue<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper) {
+        return flatMap((Function<? super T, ? extends Iterable<? extends U>>) mapper);
+    }
+
     @Override
     public <U> Queue<U> flatten(Function<? super T, ? extends Iterable<? extends U>> f) {
         Objects.requireNonNull(f, "f is null");
         return new Queue<>(front.flatten(f), rear.flatten(f));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <U> Queue<U> flattenM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> f) {
+        return flatten((Function<? super T, ? extends Iterable<? extends U>>) f);
     }
 
     @Override

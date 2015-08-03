@@ -5,8 +5,10 @@
  */
 package javaslang.collection;
 
+import javaslang.Kind;
 import javaslang.Tuple2;
 import javaslang.control.Option;
+import javaslang.control.Some;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -501,13 +503,22 @@ public interface Stack<T> extends Seq<T> {
     Stack<T> filter(Predicate<? super T> predicate);
 
     @Override
+    Stack<Some<T>> filterOption(Predicate<? super T> predicate);
+
+    @Override
     Stack<T> findAll(Predicate<? super T> predicate);
 
     @Override
     <U> Stack<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
+    <U> Stack<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper);
+
+    @Override
     <U> Stack<U> flatten(Function<? super T, ? extends Iterable<? extends U>> f);
+
+    @Override
+    <U> Stack<U> flattenM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> f);
 
     @Override
     Stack<? extends Stack<T>> grouped(int size);

@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Kind;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
@@ -808,6 +809,11 @@ public interface Stream<T> extends Seq<T> {
     }
 
     @Override
+    default Stream<Some<T>> filterOption(Predicate<? super T> predicate) {
+        return filter(predicate).map(Some::new);
+    }
+
+    @Override
     default Stream<T> findAll(Predicate<? super T> predicate) {
         return filter(predicate);
     }
@@ -816,6 +822,12 @@ public interface Stream<T> extends Seq<T> {
     default <U> Stream<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? Nil.instance() : map(mapper).flatten(Function.identity());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Stream<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper) {
+        return flatMap((Function<? super T, ? extends Iterable<? extends U>>) mapper);
     }
 
     /**
@@ -863,6 +875,12 @@ public interface Stream<T> extends Seq<T> {
                 return current.next();
             }
         });
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Stream<U> flattenM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> f) {
+        return flatten((Function<? super T, ? extends Iterable<? extends U>>) f);
     }
 
     @Override

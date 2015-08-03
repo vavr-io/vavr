@@ -211,9 +211,9 @@ public class EitherTest {
         assertThat(actual).isTrue();
     }
 
-    @Test
+    @Test(expected = NoSuchElementException.class)
     public void shouldFilterNoneOnLeftProjectionOfLeftIfPredicateNotMatches() {
-        assertThat(new Left<>(1).left().filter(i -> false).get()).isEqualTo(None.instance());
+        new Left<>(1).left().filter(i -> false);
     }
 
     @Test
@@ -416,54 +416,6 @@ public class EitherTest {
         assertThat(new Right<>(1).left().toString()).isEqualTo("LeftProjection(Right(1))");
     }
 
-    // -- LeftProjection.Nothing
-
-    @SuppressWarnings("unchecked")
-    static <L, R> Left<L, R> nothingLeft() {
-        return (Left<L, R>) new Left<>(1).left().filter(ignored -> false).toEither();
-    }
-
-    @Test
-    public void shouldReturnNoneWhenGetOnLeftNothing() {
-        assertThat(nothingLeft().get()).isEqualTo(None.instance());
-    }
-
-    @Test
-    public void shouldBeLeftWhenCallingIsLeftOnNothingLeft() {
-        assertThat(nothingLeft().isLeft()).isTrue();
-    }
-
-    @Test
-    public void shouldNotBeRightWhenCallingIsLeftOnNothingLeft() {
-        assertThat(nothingLeft().isRight()).isFalse();
-    }
-
-    @Test
-    public void shouldReturnNoneWhenCallingBimapOnNothingLeft() {
-        assertThat(nothingLeft().bimap(Function.identity(), Function.identity()).get()).isEqualTo(None.instance());
-    }
-
-    @Test
-    public void shouldEqualSameInstanceWhenNothingLeft() {
-        assertThat(nothingLeft().equals(nothingLeft())).isTrue();
-    }
-
-    @Test
-    public void shouldHaveHashCode1WhenNothingLeft() {
-        assertThat(nothingLeft().hashCode()).isEqualTo(1);
-    }
-
-    @Test
-    public void shouldStringifyNothingLeft() {
-        assertThat(nothingLeft().toString()).isEqualTo("Left(None)");
-    }
-
-    @Test
-    public void shouldSerializeDeserializeNothingLeft() {
-        final Object o = Serializables.deserialize(Serializables.serialize(nothingLeft()));
-        assertThat(o).isEqualTo(nothingLeft());
-    }
-
     // -- Right
 
     @Test
@@ -634,9 +586,9 @@ public class EitherTest {
         assertThat(actual).isTrue();
     }
 
-    @Test
+    @Test(expected = NoSuchElementException.class)
     public void shouldFilterNoneOnRightProjectionOfRightIfPredicateNotMatches() {
-        assertThat(new Right<String, Integer>(1).right().filter(i -> false).get()).isEqualTo(None.instance());
+        new Right<String, Integer>(1).right().filter(i -> false);
     }
 
     @Test
@@ -837,53 +789,5 @@ public class EitherTest {
     @Test
     public void shouldConvertRightProjectionOfRightToString() {
         assertThat(new Right<>(1).right().toString()).isEqualTo("RightProjection(Right(1))");
-    }
-
-    // -- RightProjection.Nothing
-
-    @SuppressWarnings("unchecked")
-    static <L, R> Right<L, R> nothingRight() {
-        return (Right<L, R>) new Right<>(1).right().filter(ignored -> false).toEither();
-    }
-
-    @Test
-    public void shouldReturnNoneWhenCallingGetOnNothingRight() {
-        assertThat(nothingRight().get()).isEqualTo(None.instance());
-    }
-
-    @Test
-    public void shouldBeRightWhenCallingIsRightOnNothingRight() {
-        assertThat(nothingRight().isRight()).isTrue();
-    }
-
-    @Test
-    public void shouldNotBeLeftWhenCallingIsRightOnNothingRight() {
-        assertThat(nothingRight().isLeft()).isFalse();
-    }
-
-    @Test
-    public void shouldReturnNoneWhenCallingBimapOnNothingRight() {
-        assertThat(nothingRight().bimap(Function.identity(), Function.identity()).get()).isEqualTo(None.instance());
-    }
-
-    @Test
-    public void shouldEqualSameInstanceWhenNothingRight() {
-        assertThat(nothingRight().equals(nothingRight())).isTrue();
-    }
-
-    @Test
-    public void shouldHaveHashCode1WhenNothingRight() {
-        assertThat(nothingRight().hashCode()).isEqualTo(1);
-    }
-
-    @Test
-    public void shouldStringifyNothingRight() {
-        assertThat(nothingRight().toString()).isEqualTo("Right(None)");
-    }
-
-    @Test
-    public void shouldSerializeDeserializeNothingRight() {
-        final Object o = Serializables.deserialize(Serializables.serialize(nothingRight()));
-        assertThat(o).isEqualTo(nothingRight());
     }
 }

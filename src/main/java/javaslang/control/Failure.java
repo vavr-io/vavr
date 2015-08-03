@@ -6,6 +6,7 @@
 package javaslang.control;
 
 import javaslang.CheckedFunction1;
+import javaslang.Kind;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -133,8 +134,56 @@ public final class Failure<T> implements Try<T>, Serializable {
     }
 
     @Override
-    public Failure<T> peek(Consumer<? super T> action) {
+    public Failure<T> filterTry(CheckedPredicate<? super T> predicate) {
         return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Failure<Option<T>> filterOption(Predicate<? super T> predicate) {
+        return (Failure<Option<T>>) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Failure<Option<T>> filterTryOption(CheckedPredicate<? super T> predicate) {
+        return (Failure<Option<T>>) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <U> Failure<U> flatMap(Function<? super T, ? extends Try<? extends U>> mapper) {
+        return (Failure<U>) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <U> Failure<U> flatMapTry(CheckedFunction<? super T, ? extends Try<? extends U>> mapper) {
+        return (Failure<U>) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <U> Failure<U> flatMapM(Function<? super T, ? extends Kind<? extends Try<?>, ? extends U>> mapper) {
+        return (Failure<U>) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <U> Failure<U> flatten(Function<? super T, ? extends Try<? extends U>> f) {
+        return (Failure<U>) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <U> Failure<U> flattenTry(CheckedFunction<? super T, ? extends Try<? extends U>> f) {
+        return (Failure<U>) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <U> Failure<U> flattenM(Function<? super T, ? extends Kind<? extends Try<?>, ? extends U>> f) {
+        return (Failure<U>) this;
     }
 
     @SuppressWarnings("unchecked")
@@ -149,9 +198,9 @@ public final class Failure<T> implements Try<T>, Serializable {
         return (Failure<U>) this;
     }
 
-    @SuppressWarnings("unchecked")
-    public <U> Failure<U> flatMap(Function<? super T, ? extends Try<? extends U>> mapper) {
-        return (Failure<U>) this;
+    @Override
+    public Failure<T> peek(Consumer<? super T> action) {
+        return this;
     }
 
     @SuppressWarnings("unchecked")

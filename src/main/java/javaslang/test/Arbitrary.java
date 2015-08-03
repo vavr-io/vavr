@@ -5,9 +5,13 @@
  */
 package javaslang.test;
 
+import javaslang.FilterMonadic;
+import javaslang.Kind;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
 import javaslang.collection.TraversableOnce;
+import javaslang.control.Option;
+import javaslang.control.Some;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -22,7 +26,8 @@ import java.util.function.Predicate;
  * @since 1.2.0
  */
 @FunctionalInterface
-public interface Arbitrary<T> extends TraversableOnce<T> {
+public interface Arbitrary<T> extends TraversableOnce<T>,
+        FilterMonadic<Arbitrary<?>, T>, Kind<Arbitrary<?>, T> {
 
     /**
      * <p>
@@ -64,17 +69,22 @@ public interface Arbitrary<T> extends TraversableOnce<T> {
     Gen<T> apply(int size);
 
     /**
-     * Maps arbitrary objects T to arbitrary object U.
+     * Returns an Arbitrary based on this Arbitrary which produces values that fulfill the given predicate.
      *
-     * @param mapper A function that maps an arbitrary T to an object of type U.
-     * @param <U>    Type of the mapped object
+     * @param predicate A predicate
      * @return A new generator
      */
-    default <U> Arbitrary<U> map(Function<? super T, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return n -> {
-            final Gen<T> generator = apply(n);
-            return random -> mapper.apply(generator.apply(random));
+    @Override
+    default Arbitrary<T> filter(Predicate<? super T> predicate) {
+        return size -> apply(size).filter(predicate);
+    }
+
+    @Override
+    default Arbitrary<Some<T>> filterOption(Predicate<? super T> predicate) {
+        final Arbitrary<T> arbitrary = filter(predicate);
+        return size -> {
+            final Gen<T> gen = arbitrary.apply(size);
+            return random -> new Some<>(gen.apply(random));
         };
     }
 
@@ -86,20 +96,16 @@ public interface Arbitrary<T> extends TraversableOnce<T> {
      * @return A new Arbitrary
      */
     default <U> Arbitrary<U> flatMap(Function<? super T, ? extends Arbitrary<? extends U>> mapper) {
-        return n -> {
-            final Gen<T> generator = apply(n);
-            return random -> mapper.apply(generator.apply(random)).apply(n).apply(random);
+        return size -> {
+            final Gen<T> gen = apply(size);
+            return random -> mapper.apply(gen.apply(random)).apply(size).apply(random);
         };
     }
 
-    /**
-     * Returns an Arbitrary based on this Arbitrary which produces values that fulfill the given predicate.
-     *
-     * @param predicate A predicate
-     * @return A new generator
-     */
-    default Arbitrary<T> filter(Predicate<? super T> predicate) {
-        return n -> apply(n).filter(predicate);
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Arbitrary<U> flatMapM(Function<? super T, ? extends Kind<? extends Arbitrary<?>, ? extends U>> mapper) {
+        return flatMap((Function<? super T, ? extends Arbitrary<? extends U>>) mapper);
     }
 
     default <U> Arbitrary<U> flatten(Function<? super T, ? extends Arbitrary<? extends U>> f) {
@@ -110,6 +116,29 @@ public interface Arbitrary<T> extends TraversableOnce<T> {
         };
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Arbitrary<U> flattenM(Function<? super T, ? extends Kind<? extends Arbitrary<?>, ? extends U>> f) {
+        return flatten((Function<? super T, ? extends Arbitrary<? extends U>>) f);
+    }
+
+    /**
+     * Maps arbitrary objects T to arbitrary object U.
+     *
+     * @param mapper A function that maps an arbitrary T to an object of type U.
+     * @param <U>    Type of the mapped object
+     * @return A new generator
+     */
+    @Override
+    default <U> Arbitrary<U> map(Function<? super T, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return n -> {
+            final Gen<T> generator = apply(n);
+            return random -> mapper.apply(generator.apply(random));
+        };
+    }
+
+    @Override
     default Arbitrary<T> peek(Consumer<? super T> action) {
         return size -> apply(size).peek(action);
     }

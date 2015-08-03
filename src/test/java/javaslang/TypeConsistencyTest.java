@@ -24,6 +24,10 @@ public class TypeConsistencyTest {
 
     static final List<String> WHITELIST = List.of(
 
+            // control.Map
+            "javaslang.collection.Map//public default java.util.function.Function java.util.function.Function.andThen(java.util.function.Function)",
+            "javaslang.collection.Map//public default java.util.function.Function java.util.function.Function.compose(java.util.function.Function)",
+
             // control.Match
             "javaslang.control.Match//public default java.util.function.Function java.util.function.Function.andThen(java.util.function.Function)",
             "javaslang.control.Match//public default java.util.function.Function java.util.function.Function.compose(java.util.function.Function)",
@@ -39,23 +43,28 @@ public class TypeConsistencyTest {
             // control.Success
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.failed()",
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.filter(java.util.function.Predicate)",
+            "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.filterTry(javaslang.control.Try$CheckedPredicate)",
+            "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.filterOption(java.util.function.Predicate)",
+            "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.filterTryOption(javaslang.control.Try$CheckedPredicate)",
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.flatMap(java.util.function.Function)",
-            "javaslang.control.Success//public default javaslang.control.Try javaslang.control.Try.flatten(java.util.function.Function)",
+            "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.flatMapM(java.util.function.Function)",
+            "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.flatMapTry(javaslang.control.Try$CheckedFunction)",
+            "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.flatten(java.util.function.Function)",
+            "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.flattenM(java.util.function.Function)",
+            "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.flattenTry(javaslang.control.Try$CheckedFunction)",
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.map(java.util.function.Function)",
+            "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.mapTry(javaslang.CheckedFunction1)",
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.peek(java.util.function.Consumer)",
             "javaslang.control.Success//public default javaslang.control.Try javaslang.control.Try.andThen(javaslang.control.Try$CheckedRunnable)",
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.andThen(javaslang.control.Try$CheckedConsumer)",
-            "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.mapTry(javaslang.CheckedFunction1)",
-
-            // control.None
-            "javaslang.control.None//public default javaslang.control.Option javaslang.control.Option.filter(java.util.function.Predicate)",
-            "javaslang.control.None//public default javaslang.control.Option javaslang.control.Option.flatMap(java.util.function.Function)",
-            "javaslang.control.None//public default javaslang.control.Option javaslang.control.Option.flatten(java.util.function.Function)",
 
             // control.Some
-            "javaslang.control.Some//public default javaslang.control.Option javaslang.control.Option.filter(java.util.function.Predicate)",
-            "javaslang.control.Some//public default javaslang.control.Option javaslang.control.Option.flatMap(java.util.function.Function)",
-            "javaslang.control.Some//public default javaslang.control.Option javaslang.control.Option.flatten(java.util.function.Function)",
+            "javaslang.control.Some//public abstract javaslang.control.Option javaslang.control.Option.filter(java.util.function.Predicate)",
+            "javaslang.control.Some//public abstract javaslang.control.Option javaslang.control.Option.filterOption(java.util.function.Predicate)",
+            "javaslang.control.Some//public abstract javaslang.control.Option javaslang.control.Option.flatMap(java.util.function.Function)",
+            "javaslang.control.Some//public abstract javaslang.control.Option javaslang.control.Option.flatMapM(java.util.function.Function)",
+            "javaslang.control.Some//public abstract javaslang.control.Option javaslang.control.Option.flatten(java.util.function.Function)",
+            "javaslang.control.Some//public abstract javaslang.control.Option javaslang.control.Option.flattenM(java.util.function.Function)",
 
             // control.Left
             "javaslang.control.Left//public abstract javaslang.control.Either javaslang.control.Either.swap()",

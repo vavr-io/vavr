@@ -5,9 +5,11 @@
  */
 package javaslang.collection;
 
+import javaslang.Kind;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.Option;
+import javaslang.control.Some;
 
 import java.util.Comparator;
 import java.util.Iterator;
@@ -34,9 +36,9 @@ import java.util.function.*;
  * <ul>
  * <li>{@link #get(int)}</li>
  * <li>{@link #indexOf(Object)}</li>
- * <li>{@link #indexOf(Object,int)}</li>
+ * <li>{@link #indexOf(Object, int)}</li>
  * <li>{@link #lastIndexOf(Object)}</li>
- * <li>{@link #lastIndexOf(Object,int)}</li>
+ * <li>{@link #lastIndexOf(Object, int)}</li>
  * <li>{@link #subsequence(int)}</li>
  * <li>{@link #subsequence(int, int)}</li>
  * </ul>
@@ -495,13 +497,22 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     Seq<T> filter(Predicate<? super T> predicate);
 
     @Override
+    Seq<Some<T>> filterOption(Predicate<? super T> predicate);
+
+    @Override
     Seq<T> findAll(Predicate<? super T> predicate);
 
     @Override
     <U> Seq<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
+    <U> Seq<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper);
+
+    @Override
     <U> Seq<U> flatten(Function<? super T, ? extends Iterable<? extends U>> f);
+
+    @Override
+    <U> Seq<U> flattenM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> f);
 
     @Override
     Seq<? extends Seq<T>> grouped(int size);

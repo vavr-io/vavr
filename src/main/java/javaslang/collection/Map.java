@@ -7,27 +7,36 @@ package javaslang.collection;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.function.Function;
 
-interface Map<K, V>  {
+interface Map<K, V> extends /*TODO: Traversable<Map.Entry<K, V>>,*/ Function<K, V> {
+
+    @Override
+    default V apply(K key) {
+        return get(key);
+    }
 
     boolean containsKey(K key);
 
     // TODO
     //boolean containsValue(V value);
 
-    // we will add this when we have Set
+    // TODO
     // Set<Entry<K, V>> entrySet();
 
     V get(K key);
 
     V getOrDefault(K key, V defaultValue);
 
-    // we will add this when we have Set
+    // TODO
     // Set<K> keySet();
 
     Map<K, V> put(K key, V value);
 
     Map<K, V> remove(K key);
+
+    // TODO
+    // Traversable<V> values();
 
     final class Entry<K, V> implements Serializable {
 
@@ -61,7 +70,7 @@ interface Map<K, V>  {
 
         @Override
         public String toString() {
-            return "(" + key + ", "+ value + ")";
+            return key + " -> " + value;
         }
     }
 }

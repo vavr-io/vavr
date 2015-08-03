@@ -5,9 +5,7 @@
  */
 package javaslang.control;
 
-import javaslang.Function1;
-import javaslang.Lazy;
-import javaslang.Value;
+import javaslang.*;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
 import javaslang.collection.TraversableOnce;
@@ -391,19 +389,38 @@ public interface Match<R> extends Function<Object, R> {
     /**
      * @since 2.0.0
      */
-    interface MatchMonad<R> extends TraversableOnce<R>, Value<R> {
+    interface MatchMonad<R> extends TraversableOnce<R>, Value<R>,
+            FilterMonadic<MatchMonad<?>, R>, Kind<MatchMonad<?>, R> {
 
-        // -- TODO: extract filter monadic operations to FilterMonadic interface
+        @Override
+        MatchMonad<R> filter(Predicate<? super R> predicate);
 
-        // TODO: MatchMonad<R> filter(Predicate<? super R> predicate);
+        @Override
+        default MatchMonad<Some<R>> filterOption(Predicate<? super R> predicate) {
+            return map(Some::new);
+        }
 
         <U> MatchMonad<U> flatMap(Function<? super R, ? extends MatchMonad<? extends U>> mapper);
 
+        @SuppressWarnings("unchecked")
+        @Override
+        default <U> MatchMonad<U> flatMapM(Function<? super R, ? extends Kind<? extends MatchMonad<?>, ? extends U>> mapper) {
+            return flatMap((Function<? super R, ? extends MatchMonad<? extends U>>) mapper);
+        }
+
         <U> MatchMonad<U> flatten(Function<? super R, ? extends MatchMonad<? extends U>> f);
 
+        @SuppressWarnings("unchecked")
+        @Override
+        default <U> MatchMonad<U> flattenM(Function<? super R, ? extends Kind<? extends MatchMonad<?>, ? extends U>> f) {
+            return flatten((Function<? super R, ? extends MatchMonad<? extends U>>) f);
+        }
+
+        @Override
         <U> MatchMonad<U> map(Function<? super R, ? extends U> mapper);
 
-        // TODO: MatchMonad<R> peek(Consumer<? super R> action);
+        @Override
+        MatchMonad<R> peek(Consumer<? super R> action);
 
         final class Of<T> {
 
@@ -623,11 +640,24 @@ public interface Match<R> extends Function<Object, R> {
 
                 @SuppressWarnings("unchecked")
                 @Override
+                public MatchMonad<R> filter(Predicate<? super R> predicate) {
+                    return result.map(supplier -> {
+                        final R resultValue = supplier.get();
+                        if (predicate.test(resultValue)) {
+                            return this;
+                        } else {
+                            return new Then<>(value, Option.<Supplier<? extends R>> none());
+                        }
+                    }).orElse(this);
+                }
+
+                @SuppressWarnings("unchecked")
+                @Override
                 public <U> MatchMonad<U> flatMap(Function<? super R, ? extends MatchMonad<? extends U>> mapper) {
                     Objects.requireNonNull(mapper, "mapper is null");
                     return result
-                            .map(supplier -> (MatchMonad<U>) new Then<>(value, Option.of(() -> mapper.apply(supplier.get()).get())))
-                            .orElseGet(() -> (MatchMonad<U>) this);
+                            .map(supplier -> (MatchMonad<U>) new Then<>(value, new Some<>(() -> mapper.apply(supplier.get()).get())))
+                            .orElse((MatchMonad<U>) this);
                 }
 
                 @SuppressWarnings("unchecked")
@@ -635,7 +665,7 @@ public interface Match<R> extends Function<Object, R> {
                 public <U> MatchMonad<U> flatten(Function<? super R, ? extends MatchMonad<? extends U>> f) {
                     Objects.requireNonNull(f, "f is null");
                     return result
-                            .map(supplier -> (MatchMonad<U>) new Then<>(value, Option.of(() -> f.apply(supplier.get()).get())))
+                            .map(supplier -> (MatchMonad<U>) new Then<>(value, new Some<>(() -> f.apply(supplier.get()).get())))
                             .orElseGet(() -> (MatchMonad<U>) this);
                 }
 
@@ -666,7 +696,7 @@ public interface Match<R> extends Function<Object, R> {
 
                 @Override
                 public Iterator<R> iterator() {
-                    return isEmpty() ? Collections.emptyIterator() : Collections.singleton(get()).iterator();
+                    return result.isEmpty() ? Collections.emptyIterator() : Collections.singleton(get()).iterator();
                 }
 
                 private boolean isMatching(Supplier<Predicate<? super Object>> predicate) {
@@ -710,6 +740,11 @@ public interface Match<R> extends Function<Object, R> {
 
             private Otherwise(Supplier<? extends R> supplier) {
                 this.result = Lazy.of(supplier);
+            }
+
+            @Override
+            public MatchMonad<R> filter(Predicate<? super R> predicate) {
+                return new Otherwise<>(() -> result.filter(predicate).get());
             }
 
             @Override
