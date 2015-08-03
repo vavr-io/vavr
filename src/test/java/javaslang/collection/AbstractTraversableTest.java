@@ -220,26 +220,6 @@ public abstract class AbstractTraversableTest {
         assertThat(actual).isTrue();
     }
 
-    // -- containsSlice
-
-    @Test
-    public void shouldRecognizeNilNotContainsSlice() {
-        final boolean actual = empty().containsSlice(of(1, 2, 3));
-        assertThat(actual).isFalse();
-    }
-
-    @Test
-    public void shouldRecognizeNonNilDoesContainSlice() {
-        final boolean actual = of(1, 2, 3, 4, 5).containsSlice(of(2, 3));
-        assertThat(actual).isTrue();
-    }
-
-    @Test
-    public void shouldRecognizeNonNilDoesNotContainSlice() {
-        final boolean actual = of(1, 2, 3, 4, 5).containsSlice(of(2, 1, 4));
-        assertThat(actual).isFalse();
-    }
-
     // -- distinct
 
     @Test
@@ -548,109 +528,6 @@ public abstract class AbstractTraversableTest {
     @Test
     public void shouldBeAwareOfPropertyThatNotHoldsForAll() {
         assertThat(of(2, 3).forAll(i -> i % 2 == 0)).isFalse();
-    }
-
-    // -- indexOf
-
-    @Test
-    public void shouldNotFindIndexOfElementWhenSeqIsEmpty() {
-        assertThat(empty().indexOf(1)).isEqualTo(-1);
-    }
-
-    @Test
-    public void shouldNotFindIndexOfElementWhenStartIsGreater() {
-        assertThat(of(1, 2, 3, 4).indexOf(2, 2)).isEqualTo(-1);
-    }
-
-    @Test
-    public void shouldFindIndexOfFirstElement() {
-        assertThat(of(1, 2, 3).indexOf(1)).isEqualTo(0);
-    }
-
-    @Test
-    public void shouldFindIndexOfInnerElement() {
-        assertThat(of(1, 2, 3).indexOf(2)).isEqualTo(1);
-    }
-
-    @Test
-    public void shouldFindIndexOfLastElement() {
-        assertThat(of(1, 2, 3).indexOf(3)).isEqualTo(2);
-    }
-
-    // -- indexOfSlice
-
-    @Test
-    public void shouldNotFindIndexOfSliceWhenSeqIsEmpty() {
-        assertThat(empty().indexOfSlice(of(2, 3))).isEqualTo(-1);
-    }
-
-    @Test
-    public void shouldNotFindIndexOfSliceWhenStartIsGreater() {
-        assertThat(of(1, 2, 3, 4).indexOfSlice(of(2, 3), 2)).isEqualTo(-1);
-    }
-
-    @Test
-    public void shouldFindIndexOfFirstSlice() {
-        assertThat(of(1, 2, 3, 4).indexOfSlice(of(1, 2))).isEqualTo(0);
-    }
-
-    @Test
-    public void shouldFindIndexOfInnerSlice() {
-        assertThat(of(1, 2, 3, 4).indexOfSlice(of(2, 3))).isEqualTo(1);
-    }
-
-    @Test
-    public void shouldFindIndexOfLastSlice() {
-        assertThat(of(1, 2, 3).indexOfSlice(of(2, 3))).isEqualTo(1);
-    }
-
-    // -- lastIndexOf
-
-    @Test
-    public void shouldNotFindLastIndexOfElementWhenSeqIsEmpty() {
-        assertThat(empty().lastIndexOf(1)).isEqualTo(-1);
-    }
-
-    @Test
-    public void shouldNotFindLastIndexOfElementWhenEndIdLess() {
-        assertThat(of(1, 2, 3, 4).lastIndexOf(3, 1)).isEqualTo(-1);
-    }
-
-    @Test
-    public void shouldFindLastIndexOfElement() {
-        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOf(1)).isEqualTo(3);
-    }
-
-    @Test
-    public void shouldFindLastIndexOfElementWithEnd() {
-        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOf(1, 1)).isEqualTo(0);
-    }
-
-    // -- lastIndexOfSlice
-
-    @Test
-    public void shouldNotFindLastIndexOfSliceWhenSeqIsEmpty() {
-        assertThat(empty().lastIndexOfSlice(of(2, 3))).isEqualTo(-1);
-    }
-
-    @Test
-    public void shouldNotFindLastIndexOfSliceWhenEndIdLess() {
-        assertThat(of(1, 2, 3, 4, 5).lastIndexOfSlice(of(3, 4), 1)).isEqualTo(-1);
-    }
-
-    @Test
-    public void shouldFindLastIndexOfSlice() {
-        assertThat(of(1, 2, 3, 1, 2).lastIndexOfSlice(empty())).isEqualTo(5);
-        assertThat(of(1, 2, 3, 1, 2).lastIndexOfSlice(of(2))).isEqualTo(4);
-        assertThat(of(1, 2, 3, 1, 2, 3, 4).lastIndexOfSlice(of(2, 3))).isEqualTo(4);
-    }
-
-    @Test
-    public void shouldFindLastIndexOfSliceWithEnd() {
-        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSlice(empty(), 2)).isEqualTo(2);
-        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSlice(of(2), 2)).isEqualTo(1);
-        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSlice(of(2, 3), 2)).isEqualTo(1);
-        assertThat(of(1, 2, 3, 1, 2, 3, 4).lastIndexOfSlice(of(2, 3), 2)).isEqualTo(1);
     }
 
     // -- grouped
