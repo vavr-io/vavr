@@ -109,14 +109,14 @@ public interface TraversableOnce<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this TraversableOnce to a HashMap.
+     * Converts this TraversableOnce to a Map.
      *
      * @param f   A function that maps an element to a Map.Entry
      * @param <K> The key type of a Map Entry
      * @param <V> The value type of a Map Entry
      * @return a new HashMap containing the elements mapped to entries
      */
-    default <K, V> HashMap<K, V> toHashMap(Function<? super T, ? extends Map.Entry<? extends K, ? extends V>> f) {
+    default <K, V> Map<K, V> toMap(Function<? super T, ? extends Map.Entry<? extends K, ? extends V>> f) {
         Objects.requireNonNull(f, "f is null");
         return HashMap.<K, V> ofAll(toList().map(f::apply));
     }

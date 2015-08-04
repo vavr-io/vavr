@@ -1585,7 +1585,7 @@ public abstract class AbstractTraversableTest {
 
     @Test
     public void shouldConvertNonNilToHashSet() {
-        final java.util.Set<Integer> expected = new HashSet<>();
+        final java.util.Set<Integer> expected = new java.util.HashSet<>();
         expected.add(2);
         expected.add(1);
         expected.add(3);

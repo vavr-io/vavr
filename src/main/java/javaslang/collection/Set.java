@@ -10,10 +10,7 @@ import javaslang.Tuple2;
 import javaslang.control.Option;
 import javaslang.control.Some;
 
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
+import java.util.function.*;
 
 public interface Set<T> extends Traversable<T> {
 

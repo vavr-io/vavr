@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -15,6 +16,10 @@ interface Map<K, V> extends /*TODO: Traversable<Map.Entry<K, V>>,*/ Function<K, 
     default V apply(K key) {
         return get(key);
     }
+
+    int size();
+
+    Iterator<Entry<K, V>> iterator();
 
     boolean containsKey(K key);
 
