@@ -18,7 +18,7 @@ public class HashMapTest {
 
     @Test
     public void testGetExistingKey() {
-        HashMap<Integer, Integer> hamt = HashMap.empty();
+        Map<Integer, Integer> hamt = HashMap.empty();
         hamt = hamt.put(1, 2).put(4, 5);
         assertThat(hamt.get(1)).isEqualTo(2);
         assertThat(hamt.get(4)).isEqualTo(5);
@@ -26,21 +26,21 @@ public class HashMapTest {
 
     @Test
     public void testGetUnknownKey() {
-        HashMap<Integer, Integer> hamt = HashMap.empty();
+        Map<Integer, Integer> hamt = HashMap.empty();
         hamt = hamt.put(1, 2).put(4, 5);
         assertThat(hamt.get(2)).isNull();
     }
 
     @Test
     public void testRemoveFromEmpty() {
-        HashMap<Integer, Integer> hamt = HashMap.empty();
+        Map<Integer, Integer> hamt = HashMap.empty();
         hamt = hamt.remove(1);
         assertThat(hamt.size()).isEqualTo(0);
     }
 
     @Test
     public void testRemoveUnknownKey() {
-        HashMap<Integer, Integer> hamt = HashMap.empty();
+        Map<Integer, Integer> hamt = HashMap.empty();
         hamt = hamt.put(1, 2).remove(3);
         assertThat(hamt.size()).isEqualTo(1);
         hamt = hamt.remove(1);
@@ -91,13 +91,12 @@ public class HashMapTest {
 
     private class Comparator<K, V> {
         private final java.util.Map<K, V> classic = new java.util.HashMap<>();
-        private HashMap<K, V> hamt = HashMap.empty();
+        private Map<K, V> hamt = HashMap.empty();
 
         void test() {
             assertThat(hamt.size()).isEqualTo(classic.size());
-            for (java.util.Map.Entry<K, V> e : classic.entrySet()) {
-                assertThat(hamt.get(e.getKey())).isEqualTo(e.getValue());
-            }
+            hamt.iterator().forEachRemaining(e -> assertThat(classic.get(e.key)).isEqualTo(e.value));
+            classic.forEach((k, v) -> assertThat(hamt.get(k)).isEqualTo(v));
         }
 
         void set(K key, V value) {
