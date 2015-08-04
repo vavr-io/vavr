@@ -15,13 +15,16 @@ import java.util.Iterator;
  */
 class HashMap<K, V> implements Map<K, V> {
 
+    private static final HashMap<?, ?> INSTANCE = new HashMap<>(HashArrayMappedTrie.empty());
+
+    @SuppressWarnings("unchecked")
     static <K, V> HashMap<K, V> empty() {
-        return new HashMap<>(HashTree.empty());
+        return (HashMap<K, V>) INSTANCE;
     }
 
-    private final HashTree<K, V> tree;
+    private final HashArrayMappedTrie<K, V> tree;
 
-    private HashMap(HashTree<K, V> tree) {
+    private HashMap(HashArrayMappedTrie<K, V> tree) {
         this.tree = tree;
     }
 

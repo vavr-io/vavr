@@ -17,11 +17,11 @@ import java.util.Iterator;
 /**
  * <a href="https://en.wikipedia.org/wiki/Hash_array_mapped_trie">Hash array mapped trie (HAMT)</a>.
  */
-abstract class HashTree<K, V> implements Iterable<Tuple2<K, V>> {
+abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>> {
 
     private static final EmptyNode<?, ?> INSTANCE = new EmptyNode<>();
 
-    static <K, V> HashTree<K, V> empty() {
+    static <K, V> HashArrayMappedTrie<K, V> empty() {
         return EmptyNode.instance();
     }
 
@@ -39,15 +39,15 @@ abstract class HashTree<K, V> implements Iterable<Tuple2<K, V>> {
         return get(key).isDefined();
     }
 
-    HashTree<K, V> put(K key, V value) {
+    HashArrayMappedTrie<K, V> put(K key, V value) {
         return ((AbstractNode<K, V>) this).modify(0, key, value);
     }
 
-    HashTree<K, V> remove(K key) {
+    HashArrayMappedTrie<K, V> remove(K key) {
         return ((AbstractNode<K, V>) this).modify(0, key, null);
     }
 
-    private static abstract class AbstractNode<K, V> extends HashTree<K, V> {
+    private static abstract class AbstractNode<K, V> extends HashArrayMappedTrie<K, V> {
 
         static final int SIZE = 5;
         static final int BUCKET_SIZE = 1 << SIZE;
@@ -247,7 +247,7 @@ abstract class HashTree<K, V> implements Iterable<Tuple2<K, V>> {
         private IndexedNode(int bitmap, List<AbstractNode<K, V>> subNodes) {
             this.bitmap = bitmap;
             this.subNodes = subNodes;
-            this.size = subNodes.map(HashTree::size).sum().intValue();
+            this.size = subNodes.map(HashArrayMappedTrie::size).sum().intValue();
         }
 
         @Override
@@ -343,7 +343,7 @@ abstract class HashTree<K, V> implements Iterable<Tuple2<K, V>> {
         private ArrayNode(int count, List<AbstractNode<K, V>> subNodes) {
             this.subNodes = subNodes;
             this.count = count;
-            this.size = subNodes.map(HashTree::size).sum().intValue();
+            this.size = subNodes.map(HashArrayMappedTrie::size).sum().intValue();
         }
 
         @Override
