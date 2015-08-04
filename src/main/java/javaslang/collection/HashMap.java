@@ -8,6 +8,7 @@ package javaslang.collection;
 import javaslang.Tuple2;
 
 import java.util.Iterator;
+import java.util.Objects;
 
 /**
  * A {@code HashMap} implementation based on a
@@ -20,6 +21,59 @@ class HashMap<K, V> implements Map<K, V> {
     @SuppressWarnings("unchecked")
     static <K, V> HashMap<K, V> empty() {
         return (HashMap<K, V>) INSTANCE;
+    }
+
+    /**
+     * Returns a singleton {@code List}, i.e. a {@code List} of one element.
+     *
+     * @param entry A map entry.
+     * @param <K>   The key type
+     * @param <V>   The value type
+     * @return A new Map containing the given entry
+     */
+    static <K, V> HashMap<K, V> of(Entry<? extends K, ? extends V> entry) {
+        final HashMap<K, V> map = HashMap.empty();
+        return map.put(entry.key, entry.value);
+    }
+
+    /**
+     * Creates a Map of the given entries.
+     *
+     * @param entries Map entries
+     * @param <K>     The key type
+     * @param <V>     The value type
+     * @return A new Map containing the given entries
+     */
+    @SafeVarargs
+    static <K, V> HashMap<K, V> of(Entry<? extends K, ? extends V>... entries) {
+        Objects.requireNonNull(entries, "entries is null");
+        HashMap<K, V> map = HashMap.empty();
+        for (Entry<? extends K, ? extends V> entry : entries) {
+            map = map.put(entry.key, entry.value);
+        }
+        return map;
+    }
+
+    /**
+     * Creates a Map of the given entries.
+     *
+     * @param entries Map entries
+     * @param <K>     The key type
+     * @param <V>     The value type
+     * @return A new Map containing the given entries
+     */
+    @SuppressWarnings("unchecked")
+    static <K, V> HashMap<K, V> ofAll(Iterable<? extends Entry<? extends K, ? extends V>> entries) {
+        Objects.requireNonNull(entries, "entries is null");
+        if (entries instanceof HashMap) {
+            return (HashMap<K, V>) entries;
+        } else {
+            HashMap<K, V> map = HashMap.empty();
+            for (Entry<? extends K, ? extends V> entry : entries) {
+                map = map.put(entry.key, entry.value);
+            }
+            return map;
+        }
     }
 
     private final HashArrayMappedTrie<K, V> tree;

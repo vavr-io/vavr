@@ -118,7 +118,7 @@ public interface TraversableOnce<T> extends Iterable<T> {
      */
     default <K, V> Map<K, V> toMap(Function<? super T, ? extends Map.Entry<? extends K, ? extends V>> f) {
         Objects.requireNonNull(f, "f is null");
-        return Map.<K, V> ofAll(toList().map(f::apply));
+        return HashMap.<K, V> ofAll(toList().map(f::apply));
     }
 
     /**

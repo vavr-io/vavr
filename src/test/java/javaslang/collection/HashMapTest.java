@@ -18,7 +18,7 @@ public class HashMapTest {
 
     @Test
     public void testGetExistingKey() {
-        Map<Integer, Integer> hamt = Map.empty();
+        Map<Integer, Integer> hamt = HashMap.empty();
         hamt = hamt.put(1, 2).put(4, 5);
         assertThat(hamt.get(1)).isEqualTo(2);
         assertThat(hamt.get(4)).isEqualTo(5);
@@ -26,21 +26,21 @@ public class HashMapTest {
 
     @Test
     public void testGetUnknownKey() {
-        Map<Integer, Integer> hamt = Map.empty();
+        Map<Integer, Integer> hamt = HashMap.empty();
         hamt = hamt.put(1, 2).put(4, 5);
         assertThat(hamt.get(2)).isNull();
     }
 
     @Test
     public void testRemoveFromEmpty() {
-        Map<Integer, Integer> hamt = Map.empty();
+        Map<Integer, Integer> hamt = HashMap.empty();
         hamt = hamt.remove(1);
         assertThat(hamt.size()).isEqualTo(0);
     }
 
     @Test
     public void testRemoveUnknownKey() {
-        Map<Integer, Integer> hamt = Map.empty();
+        Map<Integer, Integer> hamt = HashMap.empty();
         hamt = hamt.put(1, 2).remove(3);
         assertThat(hamt.size()).isEqualTo(1);
         hamt = hamt.remove(1);
@@ -91,7 +91,7 @@ public class HashMapTest {
 
     private class Comparator<K, V> {
         private final java.util.Map<K, V> classic = new java.util.HashMap<>();
-        private Map<K, V> hamt = Map.empty();
+        private Map<K, V> hamt = HashMap.empty();
 
         void test() {
             assertThat(hamt.size()).isEqualTo(classic.size());
