@@ -47,9 +47,7 @@ public class TypeConsistencyTest {
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.flatMap(java.util.function.Function)",
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.flatMapM(java.util.function.Function)",
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.flatMapTry(javaslang.control.Try$CheckedFunction)",
-            "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.flatten(java.util.function.Function)",
-            "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.flattenM(java.util.function.Function)",
-            "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.flattenTry(javaslang.control.Try$CheckedFunction)",
+            "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.flatten()",
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.map(java.util.function.Function)",
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.mapTry(javaslang.CheckedFunction1)",
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.peek(java.util.function.Consumer)",
@@ -61,8 +59,7 @@ public class TypeConsistencyTest {
             "javaslang.control.Some//public abstract javaslang.control.Option javaslang.control.Option.filterOption(java.util.function.Predicate)",
             "javaslang.control.Some//public abstract javaslang.control.Option javaslang.control.Option.flatMap(java.util.function.Function)",
             "javaslang.control.Some//public abstract javaslang.control.Option javaslang.control.Option.flatMapM(java.util.function.Function)",
-            "javaslang.control.Some//public abstract javaslang.control.Option javaslang.control.Option.flatten(java.util.function.Function)",
-            "javaslang.control.Some//public abstract javaslang.control.Option javaslang.control.Option.flattenM(java.util.function.Function)",
+            "javaslang.control.Some//public abstract javaslang.control.Option javaslang.control.Option.flatten()",
 
             // javaslang.control.Left
             "javaslang.control.Left//public abstract javaslang.control.Either javaslang.control.Either.swap()",

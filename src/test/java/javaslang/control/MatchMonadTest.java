@@ -689,30 +689,30 @@ public class MatchMonadTest {
 
     @Test
     public void shouldFlatttenMatched() {
-        final int actual = Match.of(1)
+        final Object actual = Match.of(1)
                 .whenIs(1).then(1)
-                .flatten(i -> Match.of(i).whenIs(1).then(2))
+                .flatten()
                 .get();
-        assertThat(actual).isEqualTo(2);
+        assertThat(actual).isEqualTo(1);
     }
 
     @Test
     public void shouldFlattenUnmatched() {
-        final int actual = Match.of(0)
+        final Object actual = Match.of(0)
                 .whenIs(1).then(1)
-                .flatten(i -> Match.of(i).whenIs(1).then(1))
+                .flatten()
                 .orElse(-1);
         assertThat(actual).isEqualTo(-1);
     }
 
     @Test
     public void shouldFlattenOtherwise() {
-        final int actual = Match.of(0)
+        final Object actual = Match.of(0)
                 .whenIs(1).then(1)
                 .otherwise(-1)
-                .flatten(i -> Match.of(i).whenIs(-1).then(2))
+                .flatten()
                 .get();
-        assertThat(actual).isEqualTo(2);
+        assertThat(actual).isEqualTo(-1);
     }
 
     @Test

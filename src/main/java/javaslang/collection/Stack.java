@@ -515,10 +515,7 @@ public interface Stack<T> extends LinearSeq<T> {
     <U> Stack<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper);
 
     @Override
-    <U> Stack<U> flatten(Function<? super T, ? extends Iterable<? extends U>> f);
-
-    @Override
-    <U> Stack<U> flattenM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> f);
+    Stack<Object> flatten();
 
     @Override
     Stack<? extends Stack<T>> grouped(int size);
@@ -623,7 +620,7 @@ public interface Stack<T> extends LinearSeq<T> {
     Stack<T> takeWhile(Predicate<? super T> predicate);
 
     @Override
-    Stack<T> unit(Iterable<? extends T> iterable);
+    <U> Stack<U> unit(Iterable<? extends U> iterable);
 
     @Override
     <T1, T2> Tuple2<? extends Stack<T1>, ? extends Stack<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);

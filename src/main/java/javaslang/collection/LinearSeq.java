@@ -25,7 +25,7 @@ import java.util.function.UnaryOperator;
  */
 public interface LinearSeq<T> extends Seq<T> {
 
-        // -- Adjusted return types of Seq methods
+    // -- Adjusted return types of Seq methods
 
     @Override
     LinearSeq<T> append(T element);
@@ -79,10 +79,7 @@ public interface LinearSeq<T> extends Seq<T> {
     <U> LinearSeq<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper);
 
     @Override
-    <U> LinearSeq<U> flatten(Function<? super T, ? extends Iterable<? extends U>> f);
-
-    @Override
-    <U> LinearSeq<U> flattenM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> f);
+    LinearSeq<Object> flatten();
 
     @Override
     LinearSeq<? extends LinearSeq<T>> grouped(int size);
@@ -184,7 +181,7 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> takeWhile(Predicate<? super T> predicate);
 
     @Override
-    LinearSeq<T> unit(Iterable<? extends T> iterable);
+    <U> LinearSeq<U> unit(Iterable<? extends U> iterable);
 
     @Override
     <T1, T2> Tuple2<? extends LinearSeq<T1>, ? extends LinearSeq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);

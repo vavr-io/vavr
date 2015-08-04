@@ -230,12 +230,12 @@ public class EitherTest {
 
     @Test
     public void shouldFlattenLeftWithFunctionUsingLeftProjection() {
-        assertThat(new Left<>(1).left().flatten(i -> new Left<>(i).left()).toEither()).isEqualTo(new Left<>(1));
+        assertThat(new Left<>(1).left().flatten().toEither()).isEqualTo(new Left<>(1));
     }
 
     @Test
     public void shouldFlattenRightWithFunctionUsingLeftProjection() {
-        assertThat(new Right<Integer, String>("1").left().flatten(i -> new Left<Integer, String>(i).left()).toEither()).isEqualTo(new Right<>("1"));
+        assertThat(new Right<Integer, String>("1").left().flatten().toEither()).isEqualTo(new Right<>("1"));
     }
 
     // flatMap
@@ -605,12 +605,12 @@ public class EitherTest {
 
     @Test
     public void shouldFlattenRightWithFunctionUsingRightProjection() {
-        assertThat(new Right<String, Integer>(1).right().flatten(i -> new Right<String, Integer>(i).right()).toEither()).isEqualTo(new Right<>(1));
+        assertThat(new Right<String, Integer>(1).right().flatten().toEither()).isEqualTo(new Right<>(1));
     }
 
     @Test
     public void shouldFlattenLeftWithFunctionUsingRightProjection() {
-        assertThat(new Left<String, Integer>("1").right().flatten(i -> new Right<String, Integer>(i).right()).toEither()).isEqualTo(new Left<>("1"));
+        assertThat(new Left<String, Integer>("1").right().flatten().toEither()).isEqualTo(new Left<>("1"));
     }
 
     // flatMap

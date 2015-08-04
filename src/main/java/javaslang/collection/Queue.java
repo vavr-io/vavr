@@ -609,15 +609,8 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Queue<U> flatten(Function<? super T, ? extends Iterable<? extends U>> f) {
-        Objects.requireNonNull(f, "f is null");
-        return new Queue<>(front.flatten(f), rear.flatten(f));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> Queue<U> flattenM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> f) {
-        return flatten((Function<? super T, ? extends Iterable<? extends U>>) f);
+    public Queue<Object> flatten() {
+        return toList().flatten().toQueue();
     }
 
     @Override
@@ -929,7 +922,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public Queue<T> unit(Iterable<? extends T> iterable) {
+    public <U> Queue<U> unit(Iterable<? extends U> iterable) {
         return Queue.ofAll(iterable);
     }
 

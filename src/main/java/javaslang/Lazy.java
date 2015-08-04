@@ -36,14 +36,9 @@ import java.util.function.Supplier;
  * </code>
  * </pre>
  *
- * Since 2.0.0 you may also create <em>real</em> lazy value (works only with interfaces):
+ * Since 2.0.0 you may also create a <em>real</em> lazy value (works only with interfaces):
  *
- * <pre>
- * <code>
- * final CharSequence chars = Lazy.of(() -&gt; "Yay!", CharSequence.class);
- *
- * </code>
- * </pre>
+ * <pre><code>final CharSequence chars = Lazy.of(() -&gt; "Yay!", CharSequence.class);</code></pre>
  *
  * @since 1.2.1
  */
@@ -172,9 +167,8 @@ public final class Lazy<T> implements Supplier<T>, Value<T>, TraversableOnce<T>,
         });
     }
 
-    @SuppressWarnings("unchecked")
     public <U> Lazy<U> flatMap(Function<? super T, ? extends Lazy<? extends U>> mapper) {
-        return (Lazy<U>) mapper.apply(get());
+        return Lazy.of(() -> mapper.apply(get()).get());
     }
 
     @SuppressWarnings("unchecked")
@@ -183,15 +177,12 @@ public final class Lazy<T> implements Supplier<T>, Value<T>, TraversableOnce<T>,
         return flatMap((Function<? super T, ? extends Lazy<? extends U>>) mapper);
     }
 
-    @SuppressWarnings("unchecked")
-    public <U> Lazy<U> flatten(Function<? super T, ? extends Lazy<? extends U>> f) {
-        return (Lazy<U>) f.apply(get());
-    }
-
-    @SuppressWarnings("unchecked")
     @Override
-    public <U> Lazy<U> flattenM(Function<? super T, ? extends Kind<? extends Lazy<?>, ? extends U>> f) {
-        return flatten((Function<? super T, ? extends Lazy<? extends U>>) f);
+    public Lazy<Object> flatten() {
+        return Lazy.of(() -> {
+            final T value = get();
+            return (value instanceof Value) ? Lazy.of(((Value<?>) value)::get).flatten().get() : value;
+        });
     }
 
     @Override

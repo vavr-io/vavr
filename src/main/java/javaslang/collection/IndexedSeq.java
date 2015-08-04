@@ -79,10 +79,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     <U> IndexedSeq<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper);
 
     @Override
-    <U> IndexedSeq<U> flatten(Function<? super T, ? extends Iterable<? extends U>> f);
-
-    @Override
-    <U> IndexedSeq<U> flattenM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> f);
+    IndexedSeq<Object> flatten();
 
     @Override
     IndexedSeq<? extends IndexedSeq<T>> grouped(int size);
@@ -184,7 +181,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> takeWhile(Predicate<? super T> predicate);
 
     @Override
-    IndexedSeq<T> unit(Iterable<? extends T> iterable);
+    <U> IndexedSeq<U> unit(Iterable<? extends U> iterable);
 
     @Override
     <T1, T2> Tuple2<? extends IndexedSeq<T1>, ? extends IndexedSeq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);

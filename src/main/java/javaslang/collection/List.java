@@ -632,7 +632,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default List<List<T>> combinations() {
-        return List.rangeClosed(0, length()).map(this::combinations).flatten(Function.identity());
+        return List.rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity());
     }
 
     @Override
@@ -724,39 +724,8 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         return flatMap((Function<? super T, ? extends Iterable<? extends U>>) mapper);
     }
 
-    /**
-     * Flattens a {@code List} using a function {@code f}. A common use case is to use the identity
-     * {@code list.flatten(Function::identity)} to flatten a {@code List} of {@code List}s.
-     * <p>
-     * Examples:
-     * <pre>
-     * <code>
-     * Match&lt;List&lt;U&gt;&gt; f = Match
-     *    .when((List&lt;U&gt; l) -&gt; l)
-     *    .when((U u) -&gt; List.of(u));
-     * List.of(1).flatten(f);              // = List(1)
-     * List.of(List.of(1)).flatten(f);     // = List(1)
-     * List.of(Nil.instance()).flatten(f); // = Nil
-     * Nil.instance().flatten(f);          // = Nil
-     * </code>
-     * </pre>
-     *
-     * @param <U> component type of the result {@code List}
-     * @param f   a function which maps elements of this {@code List} to {@code List}s
-     * @return a new {@code List}
-     * @throws NullPointerException if {@code f} is null
-     */
     @Override
-    default <U> List<U> flatten(Function<? super T, ? extends Iterable<? extends U>> f) {
-        Objects.requireNonNull(f, "f is null");
-        return isEmpty() ? Nil.instance() : foldRight(empty(), (t, xs) -> xs.prependAll(f.apply(t)));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> List<U> flattenM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> f) {
-        return flatten((Function<? super T, ? extends Iterable<? extends U>>) f);
-    }
+    List<Object> flatten();
 
     @Override
     default void forEach(Consumer<? super T> action) {
@@ -1220,7 +1189,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> unit(Iterable<? extends T> iterable) {
+    default <U> List<U> unit(Iterable<? extends U> iterable) {
         return List.ofAll(iterable);
     }
 
@@ -1298,6 +1267,11 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         public Cons(T head, List<T> tail) {
             this.head = head;
             this.tail = tail;
+        }
+
+        @Override
+        public List<Object> flatten() {
+            return flatMap(t -> (t instanceof Iterable) ? List.ofAll((Iterable<?>) t).flatten() : List.of(t));
         }
 
         @Override
@@ -1483,6 +1457,11 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         @SuppressWarnings("unchecked")
         public static <T> Nil<T> instance() {
             return (Nil<T>) INSTANCE;
+        }
+
+        @Override
+        public Nil<Object> flatten() {
+            return Nil.instance();
         }
 
         @Override

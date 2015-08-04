@@ -23,37 +23,26 @@ public class TryTest {
     private static final String OK = "ok";
     private static final String FAILURE = "failure";
 
-    // -- flatten(Function)
-
-    static final Match<Try<Integer>> MATCH = Match
-            .whenApplicable((Try<Integer> o) -> o).thenApply()
-            .whenType(Integer.class).then(Success::new);
+    // -- flatten()
 
     @Test
-    public void shouldFlattenUnnestedSuccessWithFunction() {
-        assertThat(new Success<>(1)).isEqualTo(new Success<>(1));
+    public void shouldFlattenUnnestedSuccess() {
+        assertThat(new Success<>(1).flatten()).isEqualTo(new Success<>(1));
     }
 
     @Test
-    public void shouldFlattenSuccessOfSuccessWithFunction() {
-        assertThat(new Success<>(new Success<>(1)).flatten(MATCH::apply)).isEqualTo(new Success<>(1));
+    public void shouldFlattenSuccessOfSuccess() {
+        assertThat(new Success<>(new Success<>(1)).flatten()).isEqualTo(new Success<>(1));
     }
 
     @Test
-    public void shouldFlattenSuccessOfFailureWithFunction() {
-        assertThat(new Success<>(failure()).flatten(MATCH::apply)).isEqualTo(failure());
+    public void shouldFlattenSuccessOfFailure() {
+        assertThat(new Success<>(failure()).flatten()).isEqualTo(failure());
     }
 
     @Test
-    public void shouldFlattenFailureWithFunction() {
-        assertThat(failure().flatten(MATCH::apply)).isEqualTo(failure());
-    }
-
-    @Test
-    public void shouldReturnFailureWhenFlatteningSuccessThrows() {
-        assertThat(new Success<>(1).flatten(ignored -> {
-            throw new Error("error");
-        })).isEqualTo(new Failure<>(new Error("error")));
+    public void shouldFlattenFailure() {
+        assertThat(failure().flatten()).isEqualTo(failure());
     }
 
     // -- exists

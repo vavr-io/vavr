@@ -143,32 +143,8 @@ public interface Option<T> extends TraversableOnce<T>, Value<T>,
     @Override
     <U> Option<U> flatMapM(Function<? super T, ? extends Kind<? extends Option<?>, ? extends U>> mapper);
 
-    /**
-     * Flattens an {@code Option} using a function. A common use case is to use the identity
-     * {@code option.flatten(Function::identity)} to flatten an {@code Option} of {@code Options}s.
-     * <p>
-     * Examples:
-     * <pre>
-     * <code>
-     * Match&lt;Option&lt;U&gt;&gt; f = Match
-     *    .when((Option&lt;U&gt; o) -&gt; o)
-     *    .when((U u) -&gt; new Some&lt;&gt;(u));
-     * new Some&lt;&gt;(1).flatten(f);                   // = Some(1)
-     * new Some&lt;&gt;(new Some&lt;&gt;(1)).flatten(f); // = Some(1)
-     * new Some&lt;&gt;(None.instance()).flatten(f);     // = None
-     * new None.instance().flatten(f);                   // = None
-     * </code>
-     * </pre>
-     *
-     * @param <U> component type of the result {@code Option}
-     * @param f   a function which maps elements of this {@code Option} to {@code Option}s
-     * @return a new {@code Option}
-     * @throws NullPointerException if {@code f} is null
-     */
-    <U> Option<U> flatten(Function<? super T, ? extends Option<? extends U>> f);
-
     @Override
-    <U> Option<U> flattenM(Function<? super T, ? extends Kind<? extends Option<?>, ? extends U>> f);
+    Option<Object> flatten();
 
     /**
      * Maps the value and wraps it in a new {@code Some} if this is a {@code Some}, returns {@code None}.

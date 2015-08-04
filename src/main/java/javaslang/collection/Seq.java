@@ -509,10 +509,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     <U> Seq<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper);
 
     @Override
-    <U> Seq<U> flatten(Function<? super T, ? extends Iterable<? extends U>> f);
-
-    @Override
-    <U> Seq<U> flattenM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> f);
+    Seq<Object> flatten();
 
     @Override
     Seq<? extends Seq<T>> grouped(int size);
@@ -584,7 +581,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     Seq<T> takeWhile(Predicate<? super T> predicate);
 
     @Override
-    Seq<T> unit(Iterable<? extends T> iterable);
+    <U> Seq<U> unit(Iterable<? extends U> iterable);
 
     @Override
     <T1, T2> Tuple2<? extends Seq<T1>, ? extends Seq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);

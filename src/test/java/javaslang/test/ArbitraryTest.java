@@ -52,11 +52,11 @@ public class ArbitraryTest {
         assertThat(arbitraryTreeWithEvenNodeCount.apply(10).apply(new Random())).isNotNull();
     }
 
-    // -- flatten(Function)
+    // -- flatten()
 
     @Test
     public void shouldFlatteningArbitraryIntegerUsingFunction() {
-        assertThat(Arbitrary.integer().flatten(i -> Gen.of(i).arbitrary()).apply(1).apply(new Random())).isNotNull();
+        assertThat(Arbitrary.integer().flatten().apply(1).apply(new Random())).isNotNull();
     }
 
     // -- exists
