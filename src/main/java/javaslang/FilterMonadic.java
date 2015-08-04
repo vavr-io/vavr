@@ -15,7 +15,7 @@ import java.util.function.Predicate;
  *
  * @since 2.0.0
  */
-public interface FilterMonadic<M extends Kind<M, ?>, T> {
+public interface FilterMonadic<M extends Kind<M, ?>, T> extends Kind<M, T> {
 
     /**
      * Returns a new {@code FilterMonadic} consisting of all elements which satisfy the given predicate.
@@ -58,21 +58,17 @@ public interface FilterMonadic<M extends Kind<M, ?>, T> {
     <U> FilterMonadic<M, U> flatMapM(Function<? super T, ? extends Kind<? extends M, ? extends U>> mapper);
 
     /**
-     * Flattens a {@code FilterMonadic} using a function.
+     * Flattens a {@code FilterMonadic}.
      * <p>
-     * This method effectively does call
+     * The semantics may vary from class to class. The commonality is,
+     * that some kind of wrapped state is recursively unwrapped.
+     * <p>
+     * Example:
+     * <pre><code>((1, 2), 3, (4, (5, 6))).flatten() = (1, 2, 3, 4, 5, 6)</code></pre>
      *
-     * <pre><code>this.flatten((Function&lt;? super T, ? extends M&lt;? extends U&gt;&gt;) f);</code></pre>
-     *
-     * It exists, because Java's type system (the lack of higher-order kinds) does not allow us to
-     * define an interface containing the mentioned <code>flatten</code> method.
-     *
-     * @param <U> component type of the result
-     * @param f   a function which maps elements from type T to M
-     * @return the flattened {@code FilterMonadic}
-     * @throws NullPointerException if {@code f} is null
+     * @return A flattened version of this {@code FilterMonadic}.
      */
-    <U> FilterMonadic<M, U> flattenM(Function<? super T, ? extends Kind<? extends M, ? extends U>> f);
+    FilterMonadic<M, Object> flatten();
 
     /**
      * Maps the elements of this elements of a new type preserving their order, if any.
@@ -83,4 +79,5 @@ public interface FilterMonadic<M extends Kind<M, ?>, T> {
      * @throws NullPointerException if {@code mapper} is null
      */
     <U> FilterMonadic<M, U> map(Function<? super T, ? extends U> mapper);
+
 }

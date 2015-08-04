@@ -88,14 +88,7 @@ public final class None<T> implements Option<T>, Serializable {
     }
 
     @Override
-    public <U> None<U> flatten(Function<? super T, ? extends Option<? extends U>> f) {
-        Objects.requireNonNull(f, "f is null");
-        return None.instance();
-    }
-
-    @Override
-    public <U> None<U> flattenM(Function<? super T, ? extends Kind<? extends Option<?>, ? extends U>> f) {
-        Objects.requireNonNull(f, "f is null");
+    public None<Object> flatten() {
         return None.instance();
     }
 

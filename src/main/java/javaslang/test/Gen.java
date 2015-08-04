@@ -315,15 +315,12 @@ public interface Gen<T> extends TraversableOnce<T>,
         return flatMap((Function<? super T, ? extends Gen<? extends U>>) mapper);
     }
 
-    default <U> Gen<U> flatten(Function<? super T, ? extends Gen<? extends U>> f) {
-        Objects.requireNonNull(f, "f is null");
-        return random -> f.apply(apply(random)).apply(random);
-    }
-
-    @SuppressWarnings("unchecked")
     @Override
-    default <U> Gen<U> flattenM(Function<? super T, ? extends Kind<? extends Gen<?>, ? extends U>> f) {
-        return flatten((Function<? super T, ? extends Gen<? extends U>>) f);
+    default Gen<Object> flatten() {
+        return random -> {
+            final T value = apply(random);
+            return (value instanceof Gen) ? ((Gen<?>) value).flatten().apply(random) : value;
+        };
     }
 
     /**

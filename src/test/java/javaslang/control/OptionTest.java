@@ -159,30 +159,26 @@ public class OptionTest {
         assertThat(Option.<Integer> none().filter(i -> i == 1)).isEqualTo(Option.none());
     }
 
-    // -- flatten(Function)
-
-    static final Match<Option<Integer>> MATCH = Match
-            .whenApplicable((Option<Integer> o) -> o).thenApply()
-            .whenApplicable((Integer i) -> new Some<>(i)).thenApply();
+    // -- flatten()
 
     @Test
-    public void shouldFlattenUnnestedSomeWithFunction() {
-        assertThat(new Some<>(1)).isEqualTo(new Some<>(1));
+    public void shouldFlattenUnnestedSome() {
+        assertThat(new Some<>(1).flatten()).isEqualTo(new Some<>(1));
     }
 
     @Test
-    public void shouldFlattenSomeOfSomeWithFunction() {
-        assertThat(new Some<>(new Some<>(1)).flatten(MATCH)).isEqualTo(new Some<>(1));
+    public void shouldFlattenSomeOfSome() {
+        assertThat(new Some<>(new Some<>(1)).flatten()).isEqualTo(new Some<>(1));
     }
 
     @Test
-    public void shouldFlattenSomeOfNoneWithFunction() {
-        assertThat(new Some<>(None.instance()).flatten(MATCH)).isEqualTo(None.instance());
+    public void shouldFlattenSomeOfNone() {
+        assertThat(new Some<>(None.instance()).flatten()).isEqualTo(None.instance());
     }
 
     @Test
-    public void shouldFlattenNoneWithFunction() {
-        assertThat(None.instance().flatten(MATCH)).isEqualTo(None.instance());
+    public void shouldFlattenNone() {
+        assertThat(None.instance().flatten()).isEqualTo(None.instance());
     }
 
     // -- map

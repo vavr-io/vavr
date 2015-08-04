@@ -408,12 +408,9 @@ public interface Match<R> extends Function<Object, R> {
             return flatMap((Function<? super R, ? extends MatchMonad<? extends U>>) mapper);
         }
 
-        <U> MatchMonad<U> flatten(Function<? super R, ? extends MatchMonad<? extends U>> f);
-
-        @SuppressWarnings("unchecked")
         @Override
-        default <U> MatchMonad<U> flattenM(Function<? super R, ? extends Kind<? extends MatchMonad<?>, ? extends U>> f) {
-            return flatten((Function<? super R, ? extends MatchMonad<? extends U>>) f);
+        default MatchMonad<Object> flatten() {
+            return flatMap(result -> (result instanceof MatchMonad) ? ((MatchMonad<?>) result).flatten() : this);
         }
 
         @Override
@@ -662,15 +659,6 @@ public interface Match<R> extends Function<Object, R> {
 
                 @SuppressWarnings("unchecked")
                 @Override
-                public <U> MatchMonad<U> flatten(Function<? super R, ? extends MatchMonad<? extends U>> f) {
-                    Objects.requireNonNull(f, "f is null");
-                    return result
-                            .map(supplier -> (MatchMonad<U>) new Then<>(value, new Some<>(() -> f.apply(supplier.get()).get())))
-                            .orElseGet(() -> (MatchMonad<U>) this);
-                }
-
-                @SuppressWarnings("unchecked")
-                @Override
                 public <U> MatchMonad<U> map(Function<? super R, ? extends U> mapper) {
                     Objects.requireNonNull(mapper, "mapper is null");
                     return result
@@ -750,11 +738,6 @@ public interface Match<R> extends Function<Object, R> {
             @Override
             public <U> MatchMonad<U> flatMap(Function<? super R, ? extends MatchMonad<? extends U>> mapper) {
                 return new Otherwise<>(() -> mapper.apply(result.get()).get());
-            }
-
-            @Override
-            public <U> MatchMonad<U> flatten(Function<? super R, ? extends MatchMonad<? extends U>> f) {
-                return new Otherwise<>(() -> f.apply(result.get()).get());
             }
 
             @Override

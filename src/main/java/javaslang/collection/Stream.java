@@ -95,7 +95,7 @@ import java.util.stream.Collector;
  * @param <T> component type of this Stream
  * @since 1.1.0
  */
-public interface Stream<T> extends Seq<T> {
+public interface Stream<T> extends LinearSeq<T> {
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
@@ -747,7 +747,7 @@ public interface Stream<T> extends Seq<T> {
 
     @Override
     default Stream<Stream<T>> combinations() {
-        return Stream.rangeClosed(0, length()).map(this::combinations).flatten(Function.identity());
+        return Stream.rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity());
     }
 
     @Override
@@ -821,41 +821,6 @@ public interface Stream<T> extends Seq<T> {
     @Override
     default <U> Stream<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return isEmpty() ? Nil.instance() : map(mapper).flatten(Function.identity());
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> Stream<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper) {
-        return flatMap((Function<? super T, ? extends Iterable<? extends U>>) mapper);
-    }
-
-    /**
-     * Flattens a {@code Stream} using a function. A common use case is to use the identity
-     * {@code stream.flatten(Function::identity)} to flatten a {@code Stream} of {@code Stream}s.
-     * <p>
-     * Examples:
-     * <pre>
-     * <code>
-     * Match&lt;Stream&lt;U&gt;&gt; f = Match
-     *    .when((Stream&lt;U&gt; l) -&gt; l)
-     *    .when((U u) -&gt; Stream.of(u));
-     * Stream.of(1).flatten(f);              // = Stream(1)
-     * Stream.of(Stream.of(1)).flatten(f);   // = Stream(1)
-     * Stream.of(Nil.instance()).flatten(f); // = Nil
-     * Nil.instance().flatten(f);            // = Nil
-     * </code>
-     * </pre>
-     *
-     * @param <U> component type of the result {@code Stream}
-     * @param f   a function which maps elements of this {@code Stream} to {@code Stream}s
-     * @return a new {@code Stream}
-     * @throws NullPointerException if {@code f} is null
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> Stream<U> flatten(Function<? super T, ? extends Iterable<? extends U>> f) {
-        Objects.requireNonNull(f, "f is null");
         return isEmpty() ? Nil.instance() : Stream.ofAll(() -> new Iterator<U>() {
 
             final Iterator<? extends T> inputs = Stream.this.iterator();
@@ -865,7 +830,7 @@ public interface Stream<T> extends Seq<T> {
             public boolean hasNext() {
                 boolean currentHasNext;
                 while (!(currentHasNext = current.hasNext()) && inputs.hasNext()) {
-                    current = f.apply(inputs.next()).iterator();
+                    current = mapper.apply(inputs.next()).iterator();
                 }
                 return currentHasNext;
             }
@@ -879,21 +844,12 @@ public interface Stream<T> extends Seq<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    default <U> Stream<U> flattenM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> f) {
-        return flatten((Function<? super T, ? extends Iterable<? extends U>>) f);
+    default <U> Stream<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper) {
+        return flatMap((Function<? super T, ? extends Iterable<? extends U>>) mapper);
     }
 
     @Override
-    default void forEach(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
-        Seq.super.forEach(action);
-    }
-
-    @Override
-    default boolean forAll(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return Seq.super.forAll(predicate);
-    }
+    Stream<Object> flatten();
 
     @Override
     default T get(int index) {
@@ -1161,7 +1117,7 @@ public interface Stream<T> extends Seq<T> {
     Stream<T> takeWhile(Predicate<? super T> predicate);
 
     @Override
-    default Stream<T> unit(Iterable<? extends T> iterable) {
+    default <U> Stream<U> unit(Iterable<? extends U> iterable) {
         return Stream.ofAll(iterable);
     }
 
@@ -1275,6 +1231,11 @@ public interface Stream<T> extends Seq<T> {
             }
 
             return new Recursion(this).stream();
+        }
+
+        @Override
+        public Stream<Object> flatten() {
+            return flatMap(t -> (t instanceof Iterable) ? Stream.ofAll((Iterable<?>) t).flatten() : Stream.of(t));
         }
 
         @Override
@@ -1556,6 +1517,11 @@ public interface Stream<T> extends Seq<T> {
         @Override
         public Stream<T> appendSelf(Function<? super Stream<T>, ? extends Stream<T>> mapperr) {
             return this;
+        }
+
+        @Override
+        public Nil<Object> flatten() {
+            return Nil.instance();
         }
 
         @Override

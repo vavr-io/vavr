@@ -85,17 +85,9 @@ public final class Some<T> implements Option<T>, Serializable {
         return flatMap((Function<? super T, ? extends Option<? extends U>>) mapper);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <U> Option<U> flatten(Function<? super T, ? extends Option<? extends U>> f) {
-        Objects.requireNonNull(f, "f is null");
-        return (Option<U>) f.apply(value);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> Option<U> flattenM(Function<? super T, ? extends Kind<? extends Option<?>, ? extends U>> f) {
-        return flatten((Function<? super T, ? extends Option<? extends U>>) f);
+    public Option<Object> flatten() {
+        return flatMap(value -> (value instanceof Option) ? ((Option<?>) value).flatten() : this);
     }
 
     @Override

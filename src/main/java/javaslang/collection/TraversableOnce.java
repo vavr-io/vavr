@@ -29,7 +29,7 @@ public interface TraversableOnce<T> extends Iterable<T> {
      * Checks, if an element exists such that the predicate holds.
      *
      * @param predicate A Predicate
-     * @return true, if predicate holds for an element of this, false otherwise
+     * @return true, if predicate holds for one or more elements, false otherwise
      * @throws NullPointerException if {@code predicate} is null
      */
     default boolean exists(Predicate<? super T> predicate) {
@@ -46,7 +46,7 @@ public interface TraversableOnce<T> extends Iterable<T> {
      * Checks, if a unique elements exists such that the predicate holds.
      *
      * @param predicate A Predicate
-     * @return true, if predicate holds for a unique element of this, false otherwise
+     * @return true, if predicate holds for a unique element, false otherwise
      * @throws NullPointerException if {@code predicate} is null
      */
     default boolean existsUnique(Predicate<? super T> predicate) {
@@ -65,10 +65,10 @@ public interface TraversableOnce<T> extends Iterable<T> {
     }
 
     /**
-     * Checks, if the given predicate holds for all elements of this.
+     * Checks, if the given predicate holds for all elements.
      *
      * @param predicate A Predicate
-     * @return true, if the predicate holds for all elements of this, false otherwise
+     * @return true, if the predicate holds for all elements, false otherwise
      * @throws NullPointerException if {@code predicate} is null
      */
     default boolean forAll(Predicate<? super T> predicate) {
@@ -77,7 +77,7 @@ public interface TraversableOnce<T> extends Iterable<T> {
     }
 
     /**
-     * Performs an action on each element of this monad.
+     * Performs an action on each element.
      *
      * @param action A {@code Consumer}
      * @throws NullPointerException if {@code action} is null
@@ -102,7 +102,7 @@ public interface TraversableOnce<T> extends Iterable<T> {
     /**
      * Converts this TraversableOnce to a List.
      *
-     * @return A List of all of this elements.
+     * @return A List of this elements.
      */
     default List<T> toList() {
         return List.ofAll(this);
@@ -124,7 +124,7 @@ public interface TraversableOnce<T> extends Iterable<T> {
     /**
      * Converts this TraversableOnce to a Queue.
      *
-     * @return A Queue of all of this elements.
+     * @return A Queue of this elements.
      */
     default Queue<T> toQueue() {
         return Queue.ofAll(this);
@@ -133,7 +133,7 @@ public interface TraversableOnce<T> extends Iterable<T> {
     /**
      * Converts this TraversableOnce to a Stream.
      *
-     * @return A Stream of all of this elements.
+     * @return A Stream of this elements.
      */
     default Stream<T> toStream() {
         return Stream.ofAll(this);
@@ -142,7 +142,7 @@ public interface TraversableOnce<T> extends Iterable<T> {
     /**
      * Converts this TraversableOnce to a Stack.
      *
-     * @return A Stack of all of this elements.
+     * @return A Stack of this elements.
      */
     default Stack<T> toStack() {
         return Stack.ofAll(this);

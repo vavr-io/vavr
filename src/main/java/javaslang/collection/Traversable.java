@@ -129,7 +129,7 @@ import java.util.stream.StreamSupport;
  * <li>{@link #distinct()}</li>
  * <li>{@link #distinct(Function)}</li>
  * <li>{@link #flatMap(Function)}</li>
- * <li>{@link #flatten(Function)}</li>
+ * <li>{@link #flatten()}</li>
  * <li>{@link #grouped(int)}</li>
  * <li>TODO(#110): #groupBy</li>
  * <li>{@link #intersperse(Object)}</li>
@@ -371,18 +371,8 @@ public interface Traversable<T> extends TraversableOnce<T>, FilterMonadic<Traver
     @Override
     <U> Traversable<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper);
 
-    /**
-     * Flattens a {@code Traversable} using a function.
-     *
-     * @param <U> component type of the result {@code Traversable}
-     * @param f   a function which maps elements of this Traversable to Traversables
-     * @return a new {@code Traversable}
-     * @throws NullPointerException if {@code f} is null
-     */
-    <U> Traversable<U> flatten(Function<? super T, ? extends Iterable<? extends U>> f);
-
     @Override
-    <U> Traversable<U> flattenM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> f);
+    Traversable<Object> flatten();
 
     /**
      * <p>
@@ -1134,7 +1124,7 @@ public interface Traversable<T> extends TraversableOnce<T>, FilterMonadic<Traver
      * @param iterable an {@code Iterable}
      * @return A new instance of this collection containing the elements of the given {@code iterable}.
      */
-    Traversable<T> unit(Iterable<? extends T> iterable);
+    <U> Traversable<U> unit(Iterable<? extends U> iterable);
 
     /**
      * Unzips this elements by mapping this elements to pairs which are subsequentially split into to distinct

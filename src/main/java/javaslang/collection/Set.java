@@ -61,10 +61,7 @@ public interface Set<T> extends Traversable<T> {
     <U> Set<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper);
 
     @Override
-    <U> Set<U> flatten(Function<? super T, ? extends Iterable<? extends U>> f);
-
-    @Override
-    <U> Set<U> flattenM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> f);
+    Set<Object> flatten();
 
     @Override
     Set<? extends Set<T>> grouped(int size);
@@ -136,7 +133,7 @@ public interface Set<T> extends Traversable<T> {
     Set<T> takeWhile(Predicate<? super T> predicate);
 
     @Override
-    Set<T> unit(Iterable<? extends T> iterable);
+    <U> Set<U> unit(Iterable<? extends U> iterable);
 
     @Override
     <T1, T2> Tuple2<? extends Set<T1>, ? extends Set<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);

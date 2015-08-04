@@ -107,18 +107,12 @@ public interface Arbitrary<T> extends TraversableOnce<T>,
         return flatMap((Function<? super T, ? extends Arbitrary<? extends U>>) mapper);
     }
 
-    default <U> Arbitrary<U> flatten(Function<? super T, ? extends Arbitrary<? extends U>> f) {
-        return size -> random -> {
-            final Gen<T> gen = apply(size);
-            final Arbitrary<? extends U> arbitrary = f.apply(gen.apply(random));
-            return arbitrary.apply(size).apply(random);
-        };
-    }
-
-    @SuppressWarnings("unchecked")
     @Override
-    default <U> Arbitrary<U> flattenM(Function<? super T, ? extends Kind<? extends Arbitrary<?>, ? extends U>> f) {
-        return flatten((Function<? super T, ? extends Arbitrary<? extends U>>) f);
+    default Arbitrary<Object> flatten() {
+        return size -> random -> {
+            final T value = apply(size).apply(random);
+            return (value instanceof Arbitrary) ? ((Arbitrary<?>) value).flatten().apply(size).apply(random) : value;
+        };
     }
 
     /**

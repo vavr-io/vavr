@@ -170,20 +170,8 @@ public final class Failure<T> implements Try<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U> Failure<U> flatten(Function<? super T, ? extends Try<? extends U>> f) {
-        return (Failure<U>) this;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> Failure<U> flattenTry(CheckedFunction<? super T, ? extends Try<? extends U>> f) {
-        return (Failure<U>) this;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> Failure<U> flattenM(Function<? super T, ? extends Kind<? extends Try<?>, ? extends U>> f) {
-        return (Failure<U>) this;
+    public Failure<Object> flatten() {
+        return (Failure<Object>) this;
     }
 
     @SuppressWarnings("unchecked")

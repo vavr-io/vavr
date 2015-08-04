@@ -146,26 +146,9 @@ public final class Success<T> implements Try<T>, Serializable {
         return flatMap((Function<? super T, ? extends Try<? extends U>>) mapper);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <U> Try<U> flatten(Function<? super T, ? extends Try<? extends U>> f) {
-        Objects.requireNonNull(f, "f is null");
-        try {
-            return (Try<U>) f.apply(value);
-        } catch (Throwable t) {
-            return new Failure<>(t);
-        }
-    }
-
-    @Override
-    public <U> Try<U> flattenTry(CheckedFunction<? super T, ? extends Try<? extends U>> f) {
-        return Try.of(() -> f.apply(value).get());
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> Try<U> flattenM(Function<? super T, ? extends Kind<? extends Try<?>, ? extends U>> f) {
-        return flatten((Function<? super T, ? extends Try<? extends U>>) f);
+    public Try<Object> flatten() {
+        return flatMap(value -> (value instanceof Try) ? ((Try<?>) value).flatten() : this);
     }
 
     @Override

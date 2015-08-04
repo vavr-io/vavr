@@ -281,28 +281,10 @@ public interface Either<L, R> {
             return flatMap((Function<? super L, ? extends LeftProjection<? extends U, ? extends R>>) mapper);
         }
 
-        /**
-         * Flattens a {@code LeftProjection} using a function.
-         *
-         * @param <U> the new type of the left value
-         * @param f   a function which maps elements of this LeftProjection to LeftProjections
-         * @return a {@code LeftProjection}
-         * @throws NullPointerException if {@code f} is null
-         */
-        @SuppressWarnings("unchecked")
-        public <U> LeftProjection<U, R> flatten(Function<? super L, ? extends LeftProjection<? extends U, ? extends R>> f) {
-            Objects.requireNonNull(f, "f is null");
-            if (either.isRight()) {
-                return (LeftProjection<U, R>) this;
-            } else {
-                return (LeftProjection<U, R>) f.apply(get());
-            }
-        }
-
         @SuppressWarnings("unchecked")
         @Override
-        public <U> LeftProjection<U, R> flattenM(Function<? super L, ? extends Kind<? extends LeftProjection<?, R>, ? extends U>> f) {
-            return flatten((Function<? super L, ? extends LeftProjection<? extends U, ? extends R>>) f);
+        public LeftProjection<Object, R> flatten() {
+            return flatMap(value -> (value instanceof LeftProjection) ? ((LeftProjection<?, R>) value).flatten() : this);
         }
 
         /**
@@ -526,28 +508,10 @@ public interface Either<L, R> {
             return flatMap((Function<? super R, ? extends RightProjection<? extends L, ? extends U>>) mapper);
         }
 
-        /**
-         * Flattens a {@code RightProjection} using a function.
-         *
-         * @param <U> the new type of the right value
-         * @param f   a function which maps elements of this RightProjection to RightProjections
-         * @return a {@code RightProjection}
-         * @throws NullPointerException if {@code f} is null
-         */
-        @SuppressWarnings("unchecked")
-        public <U> RightProjection<L, U> flatten(Function<? super R, ? extends RightProjection<? extends L, ? extends U>> f) {
-            Objects.requireNonNull(f, "f is null");
-            if (either.isLeft()) {
-                return (RightProjection<L, U>) this;
-            } else {
-                return (RightProjection<L, U>) f.apply(get());
-            }
-        }
-
         @SuppressWarnings("unchecked")
         @Override
-        public <U> FilterMonadic<RightProjection<L, ?>, U> flattenM(Function<? super R, ? extends Kind<? extends RightProjection<L, ?>, ? extends U>> f) {
-            return flatten((Function<? super R, ? extends RightProjection<? extends L, ? extends U>>) f);
+        public RightProjection<L, Object> flatten() {
+            return flatMap(value -> (value instanceof RightProjection) ? ((RightProjection<L, ?>) value).flatten() : this);
         }
 
         /**

@@ -147,33 +147,8 @@ public interface Try<T> extends TraversableOnce<T>, Value<T>,
     @Override
     <U> Try<U> flatMapM(Function<? super T, ? extends Kind<? extends Try<?>, ? extends U>> mapper);
 
-    /**
-     * Flattens a nested, monadic structure using a function.
-     * <p>
-     * Examples:
-     * <pre>
-     * <code>
-     * Match&lt;Try&lt;U&gt;&gt; f = Match
-     *    .when((Try&lt;U&gt; o) -&gt; o)
-     *    .when((U u) -&gt; new Success&lt;&gt;(u));
-     * new Success&lt;&gt;(1).flatten(f);                                  // = Success(1)
-     * new Success&lt;&gt;(new Success&lt;&gt;(1)).flatten(f);             // = Success(1)
-     * new Success&lt;&gt;(new Failure&lt;&gt;(new Error(""))).flatten(f); // = Failure("Error")
-     * new Failure&lt;&gt;(new Error("")).flatten(f);                      // = Failure("Error")
-     * </code>
-     * </pre>
-     *
-     * @param <U> component type of the result {@code Try}
-     * @param f   a function which maps elements of this {@code Try} to {@code Try}s
-     * @return a new {@code Try}
-     * @throws NullPointerException if {@code f} is null
-     */
-    <U> Try<U> flatten(Function<? super T, ? extends Try<? extends U>> f);
-
-    <U> Try<U> flattenTry(CheckedFunction<? super T, ? extends Try<? extends U>> f);
-
     @Override
-    <U> Try<U> flattenM(Function<? super T, ? extends Kind<? extends Try<?>, ? extends U>> f);
+    Try<Object> flatten();
 
     /**
      * Maps the value of a Success or returns a Failure.
