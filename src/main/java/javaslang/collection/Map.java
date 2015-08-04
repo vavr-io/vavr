@@ -12,7 +12,7 @@ import java.util.function.Function;
 
 interface Map<K, V> extends /*TODO: Traversable<Map.Entry<K, V>>,*/ Function<K, V> {
 
-    static <K, V> Map<K, V> empty() {
+    static <K, V> HashMap<K, V> empty() {
         return HashMap.empty();
     }
 
@@ -24,7 +24,7 @@ interface Map<K, V> extends /*TODO: Traversable<Map.Entry<K, V>>,*/ Function<K, 
      * @param <V>   The value type
      * @return A new Map containing the given entry
      */
-    static <K, V> Map<K, V> of(Entry<? extends K, ? extends V> entry) {
+    static <K, V> HashMap<K, V> of(Entry<? extends K, ? extends V> entry) {
         final HashMap<K, V> map = HashMap.empty();
         return map.put(entry.key, entry.value);
     }
@@ -38,7 +38,7 @@ interface Map<K, V> extends /*TODO: Traversable<Map.Entry<K, V>>,*/ Function<K, 
      * @return A new Map containing the given entries
      */
     @SafeVarargs
-    static <K, V> Map<K, V> of(Entry<? extends K, ? extends V>... entries) {
+    static <K, V> HashMap<K, V> of(Entry<? extends K, ? extends V>... entries) {
         Objects.requireNonNull(entries, "entries is null");
         HashMap<K, V> map = HashMap.empty();
         for (Entry<? extends K, ? extends V> entry : entries) {
@@ -56,7 +56,7 @@ interface Map<K, V> extends /*TODO: Traversable<Map.Entry<K, V>>,*/ Function<K, 
      * @return A new Map containing the given entries
      */
     @SuppressWarnings("unchecked")
-    static <K, V> Map<K, V> ofAll(Iterable<? extends Entry<? extends K, ? extends V>> entries) {
+    static <K, V> HashMap<K, V> ofAll(Iterable<? extends Entry<? extends K, ? extends V>> entries) {
         Objects.requireNonNull(entries, "entries is null");
         if (entries instanceof HashMap) {
             return (HashMap<K, V>) entries;
