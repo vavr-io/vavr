@@ -17,7 +17,7 @@ import java.util.Iterator;
 /**
  * <a href="https://en.wikipedia.org/wiki/Hash_array_mapped_trie">Hash array mapped trie (HAMT)</a>.
  */
-abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>> {
+abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>>, Serializable {
 
     private static final EmptyNode<?, ?> INSTANCE = new EmptyNode<>();
 

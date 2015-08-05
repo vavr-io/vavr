@@ -10,11 +10,17 @@ import javaslang.Tuple2;
 import javaslang.control.Option;
 import javaslang.control.Some;
 
+import java.util.Iterator;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.function.*;
 
 public interface Set<T> extends Traversable<T> {
 
     // TODO: set operations
+
+    @Override
+    Iterator<T> iterator();
 
     // -- Adjusted return types of Traversable methods
 
@@ -73,6 +79,9 @@ public interface Set<T> extends Traversable<T> {
     Set<T> intersperse(T element);
 
     @Override
+    int length();
+
+    @Override
     <U> Set<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
@@ -113,6 +122,11 @@ public interface Set<T> extends Traversable<T> {
 
     @Override
     Tuple2<? extends Set<T>, ? extends Set<T>> span(Predicate<? super T> predicate);
+
+    @Override
+    default Spliterator<T> spliterator() {
+        return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
+    }
 
     @Override
     Set<T> tail();
