@@ -14,7 +14,7 @@ import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class HashMapTest {
+public class HashArrayMappedTrieTest {
 
     @Test
     public void testGetExistingKey() {

@@ -9,6 +9,7 @@ import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.None;
 import javaslang.control.Option;
+import javaslang.control.Some;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -40,11 +41,11 @@ abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>>, Seri
     }
 
     HashArrayMappedTrie<K, V> put(K key, V value) {
-        return ((AbstractNode<K, V>) this).modify(0, key, value);
+        return ((AbstractNode<K, V>) this).modify(0, key, new Some<V>(value));
     }
 
     HashArrayMappedTrie<K, V> remove(K key) {
-        return ((AbstractNode<K, V>) this).modify(0, key, null);
+        return ((AbstractNode<K, V>) this).modify(0, key, None.instance());
     }
 
     private static abstract class AbstractNode<K, V> extends HashArrayMappedTrie<K, V> {
@@ -85,7 +86,7 @@ abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>>, Seri
 
         abstract Option<V> lookup(int shift, K key);
 
-        abstract AbstractNode<K, V> modify(int shift, K key, V value);
+        abstract AbstractNode<K, V> modify(int shift, K key, Option<V> value);
 
         @Override
         public boolean equals(Object o) {
@@ -134,8 +135,8 @@ abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>>, Seri
         }
 
         @Override
-        AbstractNode<K, V> modify(int shift, K key, V value) {
-            return value == null ? this : new LeafNode<>(key.hashCode(), key, value);
+        AbstractNode<K, V> modify(int shift, K key, Option<V> value) {
+            return value.isEmpty() ? this : new LeafNode<>(key.hashCode(), key, value.get());
         }
 
         @Override
@@ -172,12 +173,12 @@ abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>>, Seri
         }
 
         // TODO
-        AbstractNode<K, V> update(K key, V value) {
+        AbstractNode<K, V> update(K key, Option<V> value) {
             List<Tuple2<K, V>> filtered = entries.filter(t -> !t._1.equals(key));
-            if (value == null) {
+            if (value.isEmpty()) {
                 return filtered.isEmpty() ? EmptyNode.instance() : new LeafNode<>(hash, filtered);
             } else {
-                return new LeafNode<>(hash, filtered.append(Tuple.of(key, value)));
+                return new LeafNode<>(hash, filtered.append(Tuple.of(key, value.get())));
             }
         }
 
@@ -190,11 +191,11 @@ abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>>, Seri
         }
 
         @Override
-        AbstractNode<K, V> modify(int shift, K key, V value) {
+        AbstractNode<K, V> modify(int shift, K key, Option<V> value) {
             if (key.hashCode() == hash) {
                 return update(key, value);
             } else {
-                return value == null ? this : mergeLeaves(shift, new LeafNode<>(key.hashCode(), key, value));
+                return value.isEmpty() ? this : mergeLeaves(shift, new LeafNode<>(key.hashCode(), key, value.get()));
             }
         }
 
@@ -254,7 +255,7 @@ abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>>, Seri
         }
 
         @Override
-        AbstractNode<K, V> modify(int shift, K key, V value) {
+        AbstractNode<K, V> modify(int shift, K key, Option<V> value) {
             int frag = hashFragment(shift, key.hashCode());
             int bit = toBitmap(frag);
             int indx = fromBitmap(bitmap, bit);
@@ -271,12 +272,7 @@ abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>>, Seri
                 if (subNodes.length() <= 2 && subNodes.get(indx ^ 1).isLeaf()) {
                     return subNodes.get(indx ^ 1); // collapse
                 } else {
-                    Tuple2<List<AbstractNode<K, V>>, List<AbstractNode<K, V>>> spl = subNodes.splitAt(indx);
-                    List<AbstractNode<K, V>> rem = spl._1;
-                    if (!spl._2.isEmpty()) {
-                        rem = rem.appendAll(spl._2.tail());
-                    }
-                    return new IndexedNode<>(newBitmap, rem);
+                    return new IndexedNode<>(newBitmap, removeIndx(subNodes, indx));
                 }
             } else if (added) {
                 if (subNodes.length() >= MAX_INDEX_NODE) {
@@ -285,8 +281,21 @@ abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>>, Seri
                     return new IndexedNode<>(newBitmap, subNodes.insert(indx, child));
                 }
             } else {
-                return new IndexedNode<>(newBitmap, subNodes.set(indx, child));
+                if(!exists) {
+                    return this;
+                } else {
+                    return new IndexedNode<>(newBitmap, subNodes.set(indx, child));
+                }
             }
+        }
+
+        List<AbstractNode<K, V>> removeIndx(List<AbstractNode<K, V>> l, int idx) {
+            Tuple2<List<AbstractNode<K, V>>, List<AbstractNode<K, V>>> spl = l.splitAt(idx);
+            List<AbstractNode<K, V>> rem = spl._1;
+            if (!spl._2.isEmpty()) {
+                rem = rem.appendAll(spl._2.tail());
+            }
+            return rem;
         }
 
         ArrayNode<K, V> expand(int frag, AbstractNode<K, V> child, int mask, List<AbstractNode<K, V>> subNodes) {
@@ -349,7 +358,7 @@ abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>>, Seri
         }
 
         @Override
-        AbstractNode<K, V> modify(int shift, K key, V value) {
+        AbstractNode<K, V> modify(int shift, K key, Option<V> value) {
             int frag = hashFragment(shift, key.hashCode());
             AbstractNode<K, V> child = subNodes.get(frag);
             AbstractNode<K, V> newChild = child.modify(shift + SIZE, key, value);
@@ -357,7 +366,7 @@ abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>>, Seri
                 return new ArrayNode<>(count + 1, subNodes.set(frag, newChild));
             } else if (!child.isEmpty() && newChild.isEmpty()) {
                 if (count - 1 <= MIN_ARRAY_NODE) {
-                    return pack(frag, this.subNodes);
+                    return pack(frag, subNodes);
                 } else {
                     return new ArrayNode<>(count - 1, subNodes.set(frag, EmptyNode.instance()));
                 }

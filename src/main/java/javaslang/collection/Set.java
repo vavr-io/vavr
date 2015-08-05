@@ -19,10 +19,7 @@ public interface Set<T> extends Traversable<T> {
 
     // TODO: set operations
 
-    @Override
-    Iterator<T> iterator();
-
-    // -- Adjusted return types of Traversable methods
+    Set<T> add(T element);
 
     @Override
     Set<T> clear();
@@ -32,6 +29,8 @@ public interface Set<T> extends Traversable<T> {
 
     @Override
     <U> Set<Tuple2<T, U>> cartesianProduct(Iterable<? extends U> that);
+
+    boolean contains(T element);
 
     @Override
     Set<T> distinct();
@@ -77,6 +76,9 @@ public interface Set<T> extends Traversable<T> {
 
     @Override
     Set<T> intersperse(T element);
+
+    @Override
+    Iterator<T> iterator();
 
     @Override
     int length();
