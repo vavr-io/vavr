@@ -47,17 +47,18 @@ public interface RedBlackTree<T> {
 
     default TreeNode<T> balance(Color color, RedBlackTree<T> left, T value, RedBlackTree<T> right, Comparator<T> comparator) {
         if (color == BLACK) {
-            if (!left.isEmpty()) {
+            if (!left.isEmpty() && !left.isLeaf()) {
                 final TreeNode<T> ln = (TreeNode<T>) left;
                 if (ln.color == RED) {
-                    if (!ln.left.isEmpty()) {
+                    if (!ln.left.isEmpty()/* && !ln.left.isLeaf()*/) {
                         final TreeNode<T> lln = (TreeNode<T>) ln.left;
                         if (lln.color == RED) {
                             final TreeNode<T> newLeft = new TreeNode<>(BLACK, lln.left, lln.value, lln.right, comparator);
                             final TreeNode<T> newRight = new TreeNode<>(BLACK, ln.right, value, right, comparator);
                             return new TreeNode<>(RED, newLeft, ln.value, newRight, comparator);
                         }
-                    } else if (!ln.right.isEmpty()) {
+                    }
+                    if (!ln.right.isEmpty()/* && !ln.right.isLeaf()*/) {
                         final TreeNode<T> lrn = (TreeNode<T>) ln.right;
                         if (lrn.color == RED) {
                             final TreeNode<T> newLeft = new TreeNode<>(BLACK, ln.left, ln.value, lrn.left, comparator);
@@ -66,17 +67,19 @@ public interface RedBlackTree<T> {
                         }
                     }
                 }
-            } else if (!right.isEmpty()) {
+            }
+            if (!right.isEmpty() && !right.isLeaf()) {
                 final TreeNode<T> rn = (TreeNode<T>) right;
                 if (rn.color == RED) {
-                    if (!rn.left.isEmpty()) {
+                    if (!rn.left.isEmpty()/* && !rn.left.isLeaf()*/) {
                         final TreeNode<T> rln = (TreeNode<T>) rn.left;
                         if (rln.color == RED) {
                             final TreeNode<T> newLeft = new TreeNode<>(BLACK, left, value, rln.left, comparator);
                             final TreeNode<T> newRight = new TreeNode<>(BLACK, rln.right, rn.value, rn.right, comparator);
                             return new TreeNode<>(RED, newLeft, rln.value, newRight, comparator);
                         }
-                    } else if (!rn.right.isEmpty()) {
+                    }
+                    if (!rn.right.isEmpty()/* && !rn.right.isLeaf()*/) {
                         final TreeNode<T> rrn = (TreeNode<T>) rn.right;
                         if (rrn.color == RED) {
                             final TreeNode<T> newLeft = new TreeNode<>(BLACK, left, value, rn.left, comparator);
@@ -93,6 +96,8 @@ public interface RedBlackTree<T> {
     boolean contains(T that);
 
     boolean isEmpty();
+
+    boolean isLeaf();
 
     // does not consider Comparator
     @Override
@@ -145,6 +150,11 @@ public interface RedBlackTree<T> {
         }
 
         @Override
+        public boolean isLeaf() {
+            return left.isEmpty() && right.isEmpty();
+        }
+
+        @Override
         public boolean equals(Object o) {
             if (o == this) {
                 return true;
@@ -165,7 +175,7 @@ public interface RedBlackTree<T> {
 
         @Override
         public String toString() {
-            return isLeaf(this) ? "(" + value + ")" : toLispString(this);
+            return isLeaf() ? "(" + color + ":" + value + ")" : toLispString(this);
         }
 
         private static String toLispString(RedBlackTree<?> tree) {
@@ -174,7 +184,7 @@ public interface RedBlackTree<T> {
             } else {
                 final TreeNode<?> node = (TreeNode<?>) tree;
                 final String value = node.color + ":" + node.value;
-                if (isLeaf(node)) {
+                if (node.isLeaf()) {
                     return value;
                 } else {
                     final String left = node.left.isEmpty() ? "" : " " + toLispString(node.left);
@@ -182,10 +192,6 @@ public interface RedBlackTree<T> {
                     return "(" + value + left + right + ")";
                 }
             }
-        }
-
-        private static boolean isLeaf(TreeNode<?> tree) {
-            return tree.left.isEmpty() && tree.right.isEmpty();
         }
     }
 
@@ -207,6 +213,11 @@ public interface RedBlackTree<T> {
         @Override
         public boolean isEmpty() {
             return true;
+        }
+
+        @Override
+        public boolean isLeaf() {
+            return false;
         }
 
         @Override

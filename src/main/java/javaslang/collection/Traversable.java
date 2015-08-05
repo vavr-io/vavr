@@ -1121,6 +1121,7 @@ public interface Traversable<T> extends TraversableOnce<T>, FilterMonadic<Traver
     /**
      * Creates an instance of this type of an {@code Iterable}.
      *
+     * @param <U> Component type
      * @param iterable an {@code Iterable}
      * @return A new instance of this collection containing the elements of the given {@code iterable}.
      */

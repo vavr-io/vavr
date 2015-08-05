@@ -7,16 +7,13 @@ package javaslang.collection;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import scala.Char;
 
 import java.util.Comparator;
 
-import static javaslang.collection.RedBlackTree.TreeNode;
-import static javaslang.collection.RedBlackTree.EmptyNode;
-
 import static javaslang.collection.RedBlackTree.Color.BLACK;
 import static javaslang.collection.RedBlackTree.Color.RED;
-
+import static javaslang.collection.RedBlackTree.EmptyNode;
+import static javaslang.collection.RedBlackTree.TreeNode;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class RedBlackTreeTest {
@@ -92,16 +89,13 @@ public class RedBlackTreeTest {
      *     b    c
      * </code></pre>
      */
+    @Ignore
     @Test
     public void shouldBalanceCase1() {
         final TreeNode<Character> testee = black(red(red('a'), 'x', red(red('b'), 'y', red('c'))), 'z', red('d'));
         final TreeNode<Character> actual = balance(testee);
-        // TODO:
-        System.out.println(testee);
-        System.out.println(actual);
-        System.out.println(EXAMPLE);
-//        assertThat(actual.equals(testee)).isFalse();
-//        assertThat(actual.equals(EXAMPLE)).isTrue();
+        assertThat(actual.equals(testee)).isFalse();
+        assertThat(actual.equals(EXAMPLE)).isTrue();
     }
 
     /**
@@ -113,19 +107,15 @@ public class RedBlackTreeTest {
      *     /  \
      *   (Ry)  d
      *   /  \
-     *  c    d
+     *  b    c
      * </code></pre>
      */
     @Test
     public void shouldBalanceCase2() {
-        final TreeNode<Character> testee = black(red('a'), 'x', red(red(red('c'), 'y', red('d')), 'z', red('d')));
+        final TreeNode<Character> testee = black(red('a'), 'x', red(red(red('b'), 'y', red('c')), 'z', red('d')));
         final TreeNode<Character> actual = balance(testee);
-        // TODO:
-        System.out.println(testee);
-        System.out.println(actual);
-        System.out.println(EXAMPLE);
-//        assertThat(actual.equals(testee)).isFalse();
-//        assertThat(actual.equals(EXAMPLE)).isTrue();
+        assertThat(actual.equals(testee)).isFalse();
+        assertThat(actual.equals(EXAMPLE)).isTrue();
     }
 
     /**
@@ -141,16 +131,13 @@ public class RedBlackTreeTest {
      *       c    d
      * </code></pre>
      */
+    @Ignore
     @Test
     public void shouldBalanceCase3() {
         final TreeNode<Character> testee = black(red('a'), 'x', red(red('b'), 'y', red(red('c'), 'z', red('d'))));
         final TreeNode<Character> actual = balance(testee);
-        // TODO:
-        System.out.println(testee);
-        System.out.println(actual);
-        System.out.println(EXAMPLE);
-//        assertThat(actual.equals(testee)).isFalse();
-//        assertThat(actual.equals(EXAMPLE)).isTrue();
+        assertThat(actual.equals(testee)).isFalse();
+        assertThat(actual.equals(EXAMPLE)).isTrue();
     }
 
     private static <T> TreeNode<T> balance(TreeNode<T> tree) {
@@ -167,58 +154,34 @@ public class RedBlackTreeTest {
 
         // insert 2
         tree = tree.add(2);
-        assertThat(toLispString(tree)).isEqualTo("(b2)");
+        assertThat(tree.toString()).isEqualTo("(B:2)");
 
         // insert 1
         tree = tree.add(1);
-        assertThat(toLispString(tree)).isEqualTo("(b2 r1)");
+        assertThat(tree.toString()).isEqualTo("(B:2 R:1)");
 
         // insert 4
         tree = tree.add(4);
-        assertThat(toLispString(tree)).isEqualTo("(b2 r1 r4)");
+        assertThat(tree.toString()).isEqualTo("(B:2 R:1 R:4)");
 
         // insert 5
         tree = tree.add(5);
-        assertThat(toLispString(tree)).isEqualTo("(b2 b1 (b4 r5))"); // currently (b2 r1 (r4 r5))
+        assertThat(tree.toString()).isEqualTo("(B:2 B:1 (B:4 R:5))"); // failing!
 
         // insert 9
         tree = tree.add(9);
-        assertThat(toLispString(tree)).isEqualTo("(b2 b1 (b5 r4 r9))");
+        assertThat(tree.toString()).isEqualTo("(B:2 B:1 (B:5 R:4 R:9))");
 
         // insert 3
         tree = tree.add(3);
-        assertThat(toLispString(tree)).isEqualTo("(b2 b1 (r5 (b4 r3) b9))");
+        assertThat(tree.toString()).isEqualTo("(B:2 B:1 (R:5 (B:4 R:3) B:9))");
 
         // insert 6
         tree = tree.add(6);
-        assertThat(toLispString(tree)).isEqualTo("(b2 b1 (b5 (b4 r3) (b9 r6)))");
+        assertThat(tree.toString()).isEqualTo("(B:2 B:1 (B:5 (B:4 R:3) (B:9 R:6)))");
 
         // insert 7
         tree = tree.add(7);
-        assertThat(toLispString(tree)).isEqualTo("(b2 b1 (r5 (b4 r3) (b7 r6 r9)))");
-    }
-
-    private static <T> String toLispString(RedBlackTree<T> tree) {
-        class Local {
-            String toString(RedBlackTree<T> tree) {
-                if (tree.isEmpty()) {
-                    return "";
-                } else {
-                    final RedBlackTree.TreeNode<T> node = (RedBlackTree.TreeNode<T>) tree;
-                    final String value = node.color.toString().toLowerCase().charAt(0) + String.valueOf(node.value).replaceAll("\\s+", " ").trim();
-                    final boolean isLeaf = node.left.isEmpty() && node.right.isEmpty();
-                    if (isLeaf) {
-                        return value;
-                    } else {
-                        final String children = List.of(node.left, node.right)
-                                .map(Local.this::toString)
-                                .join(" ").trim();
-                        return "(" + value + (children.isEmpty() ? "" : " " + children) + ")";
-                    }
-                }
-            }
-        }
-        final String string = new Local().toString(tree);
-        return !string.startsWith("(") ? "(" + string + ")" : string;
+        assertThat(tree.toString()).isEqualTo("(B:2 B:1 (R:5 (B:4 R:3) (B:7 R:6 R:9)))");
     }
 }
