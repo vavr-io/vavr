@@ -24,6 +24,12 @@ public class TypeConsistencyTest {
 
     static final List<String> WHITELIST = List.of(
 
+            // javaslang.collection.RedBlackTree
+            "javaslang.collection.RedBlackTree//public abstract javaslang.collection.BinarySearchTree javaslang.collection.BinarySearchTree.add(java.lang.Object)",
+            "javaslang.collection.RedBlackTree//public abstract javaslang.collection.BinarySearchTree javaslang.collection.BinarySearchTree.addAll(java.lang.Object[])",
+            "javaslang.collection.RedBlackTree//public abstract javaslang.collection.BinarySearchTree javaslang.collection.BinarySearchTree.addAll(java.lang.Iterable)",
+
+
             // javaslang.collection.Map
             "javaslang.collection.Map//public default java.util.function.Function java.util.function.Function.andThen(java.util.function.Function)",
             "javaslang.collection.Map//public default java.util.function.Function java.util.function.Function.compose(java.util.function.Function)",
@@ -139,16 +145,16 @@ public class TypeConsistencyTest {
                     .sort()
                     .map(comparableMethod -> comparableMethod.m);
         }
-        }
+    }
 
-        Stream<ComparableMethod> getOverridableMethods (Stream < Class < ? >> classes){
-            return classes
-                    .flatMap(clazz ->
-                            Stream.of(clazz.getDeclaredMethods()).filter((Method m) ->
-                                    // https://javax0.wordpress.com/2014/02/26/syntethic-and-bridge-methods/
-                                    !m.isBridge() && !m.isSynthetic() &&
-                                            // private, static and final methods cannot be overridden
-                                            !Modifier.isPrivate(m.getModifiers()) && !Modifier.isFinal(m.getModifiers()) && !Modifier.isStatic(m.getModifiers()) &&
+    Stream<ComparableMethod> getOverridableMethods(Stream<Class<?>> classes) {
+        return classes
+                .flatMap(clazz ->
+                        Stream.of(clazz.getDeclaredMethods()).filter((Method m) ->
+                                // https://javax0.wordpress.com/2014/02/26/syntethic-and-bridge-methods/
+                                !m.isBridge() && !m.isSynthetic() &&
+                                        // private, static and final methods cannot be overridden
+                                        !Modifier.isPrivate(m.getModifiers()) && !Modifier.isFinal(m.getModifiers()) && !Modifier.isStatic(m.getModifiers()) &&
                                         // we also don't want to cope with methods declared in Object
                                         !m.getDeclaringClass().equals(Object.class))
                                 .map(ComparableMethod::new));
