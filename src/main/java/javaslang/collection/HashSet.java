@@ -121,6 +121,7 @@ final class HashSet<T> implements Set<T>, Serializable {
         return new HashSet<>(tree.put(element, O));
     }
 
+    @Override
     public Iterator<T> iterator() {
         return new Iterator<T>() {
             Iterator<Tuple2<T, Object>> it = tree.iterator();
@@ -154,80 +155,80 @@ final class HashSet<T> implements Set<T>, Serializable {
 
 
     @Override
-    public Set<T> clear() {
+    public HashSet<T> clear() {
         return empty();
     }
 
     @Override
-    public Set<Tuple2<T, T>> cartesianProduct() {
+    public HashSet<Tuple2<T, T>> cartesianProduct() {
         return cartesianProduct(this);
     }
 
     @Override
-    public <U> Set<Tuple2<T, U>> cartesianProduct(Iterable<? extends U> that) {
+    public <U> HashSet<Tuple2<T, U>> cartesianProduct(Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         return HashSet.ofAll(list.get().cartesianProduct(that));
     }
 
     @Override
-    public Set<T> distinct() {
+    public HashSet<T> distinct() {
         return HashSet.ofAll(list.get().distinct());
     }
 
     @Override
-    public <U> Set<T> distinct(Function<? super T, ? extends U> keyExtractor) {
+    public <U> HashSet<T> distinct(Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         return HashSet.ofAll(list.get().distinct(keyExtractor));
     }
 
     @Override
-    public Set<T> drop(int n) {
+    public HashSet<T> drop(int n) {
         return HashSet.ofAll(list.get().drop(n));
     }
 
     @Override
-    public Set<T> dropRight(int n) {
+    public HashSet<T> dropRight(int n) {
         return HashSet.ofAll(list.get().dropRight(n));
     }
 
     @Override
-    public Set<T> dropWhile(Predicate<? super T> predicate) {
+    public HashSet<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return HashSet.ofAll(list.get().dropWhile(predicate));
     }
 
     @Override
-    public Set<T> filter(Predicate<? super T> predicate) {
+    public HashSet<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return HashSet.ofAll(list.get().filter(predicate));
     }
 
     @Override
-    public Set<Some<T>> filterOption(Predicate<? super T> predicate) {
+    public HashSet<Some<T>> filterOption(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return HashSet.ofAll(list.get().filterOption(predicate));
     }
 
     @Override
-    public Set<T> findAll(Predicate<? super T> predicate) {
+    public HashSet<T> findAll(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return HashSet.ofAll(list.get().findAll(predicate));
     }
 
     @Override
-    public <U> Set<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    public <U> HashSet<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return HashSet.ofAll(list.get().flatMap(mapper));
     }
 
     @Override
-    public <U> Set<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper) {
+    public <U> HashSet<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return HashSet.ofAll(list.get().flatMapM(mapper));
     }
 
     @Override
-    public Set<Object> flatten() {
+    public HashSet<Object> flatten() {
         return HashSet.ofAll(list.get().flatten());
     }
 
@@ -247,7 +248,7 @@ final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public Set<T> init() {
+    public HashSet<T> init() {
         return HashSet.ofAll(list.get().init());
     }
 
@@ -258,7 +259,7 @@ final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public Set<T> intersperse(T element) {
+    public HashSet<T> intersperse(T element) {
         return HashSet.ofAll(list.get().intersperse(element));
     }
 
@@ -273,72 +274,72 @@ final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public <U> Set<U> map(Function<? super T, ? extends U> mapper) {
+    public <U> HashSet<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return HashSet.ofAll(list.get().map(mapper));
     }
 
     @Override
-    public Tuple2<Set<T>, Set<T>> partition(Predicate<? super T> predicate) {
+    public Tuple2<HashSet<T>, HashSet<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         Tuple2<List<T>, List<T>> t = list.get().partition(predicate);
         return Tuple.of(HashSet.ofAll(t._1), HashSet.ofAll(t._2));
     }
 
     @Override
-    public Set<T> peek(Consumer<? super T> action) {
+    public HashSet<T> peek(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         return HashSet.ofAll(list.get().peek(action));
     }
 
     @Override
-    public Set<T> remove(T element) {
+    public HashSet<T> remove(T element) {
         return HashSet.ofAll(list.get().remove(element));
     }
 
     @Override
-    public Set<T> removeAll(T element) {
+    public HashSet<T> removeAll(T element) {
         return HashSet.ofAll(list.get().removeAll(element));
     }
 
     @Override
-    public Set<T> removeAll(Iterable<? extends T> elements) {
+    public HashSet<T> removeAll(Iterable<? extends T> elements) {
         return HashSet.ofAll(list.get().removeAll(elements));
     }
 
     @Override
-    public Set<T> replace(T currentElement, T newElement) {
+    public HashSet<T> replace(T currentElement, T newElement) {
         return HashSet.ofAll(list.get().replace(currentElement, newElement));
     }
 
     @Override
-    public Set<T> replaceAll(T currentElement, T newElement) {
+    public HashSet<T> replaceAll(T currentElement, T newElement) {
         return HashSet.ofAll(list.get().replaceAll(currentElement, newElement));
     }
 
     @Override
-    public Set<T> replaceAll(UnaryOperator<T> operator) {
+    public HashSet<T> replaceAll(UnaryOperator<T> operator) {
         Objects.requireNonNull(operator, "operator is null");
         return HashSet.ofAll(list.get().replaceAll(operator));
     }
 
     @Override
-    public Set<T> retainAll(Iterable<? extends T> elements) {
+    public HashSet<T> retainAll(Iterable<? extends T> elements) {
         return HashSet.ofAll(list.get().retainAll(elements));
     }
 
     @Override
-    public Set<T> reverse() {
+    public HashSet<T> reverse() {
         return HashSet.ofAll(list.get().reverse());
     }
 
     @Override
-    public Set<? extends Set<T>> sliding(int size) {
+    public HashSet<? extends Set<T>> sliding(int size) {
         return sliding(size, 1);
     }
 
     @Override
-    public Set<HashSet<T>> sliding(int size, int step) {
+    public HashSet<HashSet<T>> sliding(int size, int step) {
         List<HashSet<T>> l = list.get().sliding(size, step).map(HashSet::ofAll);
         return HashSet.ofAll(l);
     }
@@ -351,7 +352,7 @@ final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public Set<T> tail() {
+    public HashSet<T> tail() {
         return HashSet.ofAll(list.get().tail());
     }
 
@@ -362,23 +363,23 @@ final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public Set<T> take(int n) {
+    public HashSet<T> take(int n) {
         return HashSet.ofAll(list.get().take(n));
     }
 
     @Override
-    public Set<T> takeRight(int n) {
+    public HashSet<T> takeRight(int n) {
         return HashSet.ofAll(list.get().takeRight(n));
     }
 
     @Override
-    public Set<T> takeWhile(Predicate<? super T> predicate) {
+    public HashSet<T> takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return HashSet.ofAll(list.get().takeWhile(predicate));
     }
 
     @Override
-    public <U> Set<U> unit(Iterable<? extends U> iterable) {
+    public <U> HashSet<U> unit(Iterable<? extends U> iterable) {
         return HashSet.ofAll(list.get().unit(iterable));
     }
 
@@ -390,19 +391,19 @@ final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public <U> Set<Tuple2<T, U>> zip(Iterable<U> that) {
+    public <U> HashSet<Tuple2<T, U>> zip(Iterable<U> that) {
         Objects.requireNonNull(that, "that is null");
         return HashSet.ofAll(list.get().zip(that));
     }
 
     @Override
-    public <U> Set<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
+    public <U> HashSet<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         return HashSet.ofAll(list.get().zipAll(that, thisElem, thatElem));
     }
 
     @Override
-    public Set<Tuple2<T, Integer>> zipWithIndex() {
+    public HashSet<Tuple2<T, Integer>> zipWithIndex() {
         return HashSet.ofAll(list.get().zipWithIndex());
     }
 

@@ -19,6 +19,8 @@ import java.util.Iterator;
  */
 abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>>, Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     private static final EmptyNode<?, ?> INSTANCE = new EmptyNode<>();
 
     static <K, V> HashArrayMappedTrie<K, V> empty() {
@@ -48,6 +50,8 @@ abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>>, Seri
     }
 
     private static abstract class AbstractNode<K, V> extends HashArrayMappedTrie<K, V> {
+
+        private static final long serialVersionUID = 1L;
 
         static final int SIZE = 5;
         static final int BUCKET_SIZE = 1 << SIZE;
@@ -112,7 +116,7 @@ abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>>, Seri
         }
     }
 
-    private static class EmptyNode<K, V> extends AbstractNode<K, V> implements Serializable {
+    private static class EmptyNode<K, V> extends AbstractNode<K, V> {
 
         private static final long serialVersionUID = 1L;
 
@@ -149,18 +153,9 @@ abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>>, Seri
             return Collections.emptyIterator();
         }
 
-        /**
-         * Instance control for object serialization.
-         *
-         * @return The singleton instance of Nil.
-         * @see Serializable
-         */
-        private Object readResolve() {
-            return INSTANCE;
-        }
     }
 
-    private static class LeafNode<K, V> extends AbstractNode<K, V> implements Serializable {
+    private static class LeafNode<K, V> extends AbstractNode<K, V> {
 
         private static final long serialVersionUID = 1L;
 
@@ -236,7 +231,7 @@ abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>>, Seri
         }
     }
 
-    private static class IndexedNode<K, V> extends AbstractNode<K, V> implements Serializable {
+    private static class IndexedNode<K, V> extends AbstractNode<K, V> {
 
         private static final long serialVersionUID = 1L;
 
@@ -332,7 +327,7 @@ abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>>, Seri
 
     }
 
-    private static class ArrayNode<K, V> extends AbstractNode<K, V> implements Serializable {
+    private static class ArrayNode<K, V> extends AbstractNode<K, V> {
 
         private static final long serialVersionUID = 1L;
 
