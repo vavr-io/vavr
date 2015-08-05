@@ -146,9 +146,10 @@ public interface Stream<T> extends LinearSeq<T> {
      * @param <T>      value type
      * @return A new Stream
      */
-    static <T> Stream<T> gen(Supplier<T> supplier) {
+    @SuppressWarnings("unchecked")
+    static <T> Stream<T> gen(Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
-        return new Cons<>(supplier, () -> gen(supplier));
+        return new Cons<>((Supplier<T>) supplier, () -> gen(supplier));
     }
 
     /**
@@ -160,7 +161,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @param <T>  value type
      * @return A new Stream
      */
-    static <T> Stream<T> gen(T seed, Function<T, T> f) {
+    static <T> Stream<T> gen(T seed, Function<? super T, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         return new Stream.Cons<>(() -> seed, () -> gen(f.apply(seed), f));
     }
@@ -173,7 +174,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @param <T>          value type
      * @return A new Stream
      */
-    static <T> Stream<T> cons(T head, Supplier<Stream<T>> tailSupplier) {
+    static <T> Stream<T> cons(T head, Supplier<? extends Stream<T>> tailSupplier) {
         Objects.requireNonNull(tailSupplier, "tailSupplier is null");
         return new Stream.Cons<>(() -> head, tailSupplier);
     }
@@ -1190,7 +1191,7 @@ public interface Stream<T> extends LinearSeq<T> {
          * @param head A head element
          * @param tail A tail {@code Stream} supplier, {@linkplain Nil} denotes the end of the {@code Stream}
          */
-        public Cons(Supplier<T> head, Supplier<Stream<T>> tail) {
+        public Cons(Supplier<? extends T> head, Supplier<? extends Stream<T>> tail) {
             this.head = Lazy.of(head);
             this.tail = Lazy.of(Objects.requireNonNull(tail, "tail is null"));
         }
