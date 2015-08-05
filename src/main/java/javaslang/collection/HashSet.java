@@ -117,6 +117,7 @@ final class HashSet<T> implements Set<T>, Serializable {
         this.hash = Lazy.of(() -> list.get().hashCode());
     }
 
+    @Override
     public HashSet<T> add(T element) {
         return new HashSet<>(tree.put(element, O));
     }
@@ -168,6 +169,11 @@ final class HashSet<T> implements Set<T>, Serializable {
     public <U> HashSet<Tuple2<T, U>> cartesianProduct(Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         return HashSet.ofAll(list.get().cartesianProduct(that));
+    }
+
+    @Override
+    public boolean contains(T element) {
+        return tree.get(element).isDefined();
     }
 
     @Override
@@ -294,43 +300,64 @@ final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<T> remove(T element) {
-        return HashSet.ofAll(list.get().remove(element));
+        return new HashSet<>(tree.remove(element));
     }
 
     @Override
     public HashSet<T> removeAll(T element) {
-        return HashSet.ofAll(list.get().removeAll(element));
+        return remove(element);
     }
 
     @Override
     public HashSet<T> removeAll(Iterable<? extends T> elements) {
-        return HashSet.ofAll(list.get().removeAll(elements));
+        Objects.requireNonNull(elements, "elements is null");
+        HashArrayMappedTrie<T, Object> trie = tree;
+        for (T element : elements) {
+            trie = trie.remove(element);
+        }
+        return new HashSet<>(trie);
     }
 
     @Override
     public HashSet<T> replace(T currentElement, T newElement) {
-        return HashSet.ofAll(list.get().replace(currentElement, newElement));
+        if(tree.containsKey(currentElement)) {
+            return remove(currentElement).add(newElement);
+        } else {
+            return this;
+        }
     }
 
     @Override
     public HashSet<T> replaceAll(T currentElement, T newElement) {
-        return HashSet.ofAll(list.get().replaceAll(currentElement, newElement));
+        return replace(currentElement, newElement);
     }
 
     @Override
     public HashSet<T> replaceAll(UnaryOperator<T> operator) {
         Objects.requireNonNull(operator, "operator is null");
-        return HashSet.ofAll(list.get().replaceAll(operator));
+        HashSet<T> result = HashSet.empty();
+        for (T element : this) {
+            result = result.add(operator.apply(element));
+        }
+        return result;
     }
 
     @Override
     public HashSet<T> retainAll(Iterable<? extends T> elements) {
-        return HashSet.ofAll(list.get().retainAll(elements));
+        Objects.requireNonNull(elements, "elements is null");
+        final HashSet<T> keeped = HashSet.ofAll(elements);
+        HashSet<T> result = HashSet.empty();
+        for (T element : this) {
+            if (keeped.contains(element)) {
+                result = result.add(element);
+            }
+        }
+        return result.reverse();
     }
 
     @Override
     public HashSet<T> reverse() {
-        return HashSet.ofAll(list.get().reverse());
+        return this;
     }
 
     @Override
@@ -364,7 +391,13 @@ final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<T> take(int n) {
-        return HashSet.ofAll(list.get().take(n));
+        HashSet<T> result = HashSet.empty();
+        Iterator<T> it = iterator();
+        while (n > 0 && it.hasNext()) {
+            result = result.add(it.next());
+            n--;
+        }
+        return result;
     }
 
     @Override
