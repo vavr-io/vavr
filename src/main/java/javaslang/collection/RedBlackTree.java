@@ -7,61 +7,130 @@ package javaslang.collection;
 
 import java.io.Serializable;
 import java.util.Comparator;
-import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.function.Function;
 
 import static javaslang.collection.RedBlackTree.Color.BLACK;
 import static javaslang.collection.RedBlackTree.Color.RED;
 
-public interface RedBlackTree<T> extends Tree<T> {
+// Scala's RedBlackTree: https://github.com/scala/scala/blob/v2.11.7/src/library/scala/collection/immutable/RedBlackTree.scala
+// Scala's TreeSet API: http://www.scala-lang.org/api/current/index.html#scala.collection.immutable.TreeSet
+// A mutable implementation: http://cs.lmu.edu/~ray/notes/redblacktrees/
+public interface RedBlackTree<T> {
 
     @SuppressWarnings("unchecked")
     static <T> EmptyNode<T> empty() {
         return new EmptyNode<>((o1, o2) -> ((Comparable<T>) o1).compareTo(o2));
     }
 
-    TreeNode<T> add(T that);
+    default TreeNode<T> add(T that) {
+        class Util {
+            TreeNode<T> insert(RedBlackTree<T> tree, T that) {
+                if (tree.isEmpty()) {
+                    final EmptyNode<T> empty = (EmptyNode<T>) tree;
+                    return new TreeNode<>(RED, empty, that, empty, empty.comparator);
+                } else {
+                    final TreeNode<T> node = (TreeNode<T>) tree;
+                    final int result = node.comparator.compare(node.value, that);
+                    if (result == 0) {
+                        return node;
+                    } else if (result < 0) {
+                        return balance(node.color, node.left, node.value, insert(node.right, that), node.comparator);
+                    } else {
+                        return balance(node.color, insert(node.left, that), node.value, node.right, node.comparator);
+                    }
+                }
+            }
+        }
+        final TreeNode<T> result = new Util().insert(this, that);
+        return new TreeNode<>(BLACK, result.left, result.value, result.right, result.comparator);
+    }
 
-    @Override
+    default TreeNode<T> balance(Color color, RedBlackTree<T> left, T value, RedBlackTree<T> right, Comparator<T> comparator) {
+        if (color == BLACK) {
+            if (!left.isEmpty()) {
+                final TreeNode<T> ln = (TreeNode<T>) left;
+                if (ln.color == RED) {
+                    if (!ln.left.isEmpty()) {
+                        final TreeNode<T> lln = (TreeNode<T>) ln.left;
+                        if (lln.color == RED) {
+                            final TreeNode<T> newLeft = new TreeNode<>(BLACK, lln.left, lln.value, lln.right, comparator);
+                            final TreeNode<T> newRight = new TreeNode<>(BLACK, ln.right, value, right, comparator);
+                            return new TreeNode<>(RED, newLeft, ln.value, newRight, comparator);
+                        }
+                    } else if (!ln.right.isEmpty()) {
+                        final TreeNode<T> lrn = (TreeNode<T>) ln.right;
+                        if (lrn.color == RED) {
+                            final TreeNode<T> newLeft = new TreeNode<>(BLACK, ln.left, ln.value, lrn.left, comparator);
+                            final TreeNode<T> newRight = new TreeNode<>(BLACK, lrn.right, value, right, comparator);
+                            return new TreeNode<>(RED, newLeft, lrn.value, newRight, comparator);
+                        }
+                    }
+                }
+            } else if (!right.isEmpty()) {
+                final TreeNode<T> rn = (TreeNode<T>) right;
+                if (rn.color == RED) {
+                    if (!rn.left.isEmpty()) {
+                        final TreeNode<T> rln = (TreeNode<T>) rn.left;
+                        if (rln.color == RED) {
+                            final TreeNode<T> newLeft = new TreeNode<>(BLACK, left, value, rln.left, comparator);
+                            final TreeNode<T> newRight = new TreeNode<>(BLACK, rln.right, rn.value, rn.right, comparator);
+                            return new TreeNode<>(RED, newLeft, rln.value, newRight, comparator);
+                        }
+                    } else if (!rn.right.isEmpty()) {
+                        final TreeNode<T> rrn = (TreeNode<T>) rn.right;
+                        if (rrn.color == RED) {
+                            final TreeNode<T> newLeft = new TreeNode<>(BLACK, left, value, rn.left, comparator);
+                            final TreeNode<T> newRight = new TreeNode<>(BLACK, rrn.left, rrn.value, rrn.right, comparator);
+                            return new TreeNode<>(RED, newLeft, rn.value, newRight, comparator);
+                        }
+                    }
+                }
+            }
+        }
+        return new TreeNode<>(color, left, value, right, comparator);
+    }
+
     boolean contains(T that);
 
-    @Override
     boolean isEmpty();
 
+    // does not consider Comparator
     @Override
-    <U> RedBlackTree<U> map(Function<? super T, ? extends U> mapper);
+    boolean equals(Object o);
 
-    enum Color { RED, BLACK }
+    // does not consider Comparator
+    @Override
+    int hashCode();
 
-    class TreeNode<T> extends AbstractTreeNode<T> implements Serializable {
+    @Override
+    String toString();
+
+    enum Color {
+
+        RED, BLACK;
+
+        @Override
+        public String toString() {
+            return (this == RED) ? "R" : "B";
+        }
+    }
+
+    class TreeNode<T> implements RedBlackTree<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
-        private final Color color;
-        private final RedBlackTree<T> left;
-        private final T value;
-        private final RedBlackTree<T> right;
-        private final Comparator<T> comparator;
+        final Color color;
+        final RedBlackTree<T> left;
+        final T value;
+        final RedBlackTree<T> right;
+        final Comparator<T> comparator;
 
-        private TreeNode(Color color, RedBlackTree<T> left, T value, RedBlackTree<T> right, Comparator<T> comparator) {
+        TreeNode(Color color, RedBlackTree<T> left, T value, RedBlackTree<T> right, Comparator<T> comparator) {
             this.color = color;
             this.left = left;
             this.value = value;
             this.right = right;
             this.comparator = comparator;
-        }
-
-        @Override
-        public TreeNode<T> add(T that) {
-            final int result = comparator.compare(value, that);
-            if (result == 0) {
-                return this;
-            } else if (result < 0) {
-                return balance(left, right.add(that));
-            } else {
-                return balance(left.add(that), right);
-            }
         }
 
         @Override
@@ -71,103 +140,63 @@ public interface RedBlackTree<T> extends Tree<T> {
         }
 
         @Override
-        public T getValue() {
-            return value;
-        }
-
-        @Override
         public boolean isEmpty() {
             return false;
         }
 
         @Override
-        public boolean isLeaf() {
-            return left.isEmpty() && right.isEmpty();
-        }
-
-        @Override
-        public List<? extends Tree<T>> getChildren() {
-            if (left.isEmpty()) {
-                if (right.isEmpty()) {
-                    return List.empty();
-                } else {
-                    return List.of(right);
-                }
+        public boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            } else if (o instanceof TreeNode) {
+                final TreeNode<?> that = (TreeNode<?>) o;
+                return Objects.equals(this.value, that.value)
+                        && this.left.equals(that.left)
+                        && this.right.equals(that.right);
             } else {
-                if (right.isEmpty()) {
-                    return List.of(left);
-                } else {
-                    return List.of(left, right);
-                }
+                return false;
             }
         }
 
-        // TODO: new comparator for objects of type U needed. using natural comparator of objects - may throw ClassCastExeption
-        @SuppressWarnings("unchecked")
         @Override
-        public <U> RedBlackTree<U> map(Function<? super T, ? extends U> mapper) {
-            return new TreeNode<U>(color, left.map(mapper), mapper.apply(value), right.map(mapper), (o1, o2) -> ((Comparable<U>) o1).compareTo(o2));
+        public int hashCode() {
+            return Objects.hash(value, left, right);
         }
 
-        private TreeNode<T> balance(RedBlackTree<T> left, RedBlackTree<T> right) {
-            if (color == BLACK) {
-                if (!left.isEmpty()) {
-                    final TreeNode<T> ln = (TreeNode<T>) left;
-                    if (ln.color == RED) {
-                        if (!ln.left.isEmpty()) {
-                            final TreeNode<T> lln = (TreeNode<T>) ln.left;
-                            if (lln.color == RED) {
-                                final TreeNode<T> newLeft = new TreeNode<>(BLACK, lln.left, lln.value, lln.right, comparator);
-                                final TreeNode<T> newRight = new TreeNode<>(BLACK, ln.right, value, right, comparator);
-                                return new TreeNode<>(RED, newLeft, ln.value, newRight, comparator);
-                            }
-                        } else if (!ln.right.isEmpty()) {
-                            final TreeNode<T> lrn = (TreeNode<T>) ln.right;
-                            if (lrn.color == RED) {
-                                final TreeNode<T> newLeft = new TreeNode<>(BLACK, ln.left, ln.value, lrn.left, comparator);
-                                final TreeNode<T> newRight = new TreeNode<>(BLACK, lrn.right, value, right, comparator);
-                                return new TreeNode<>(RED, newLeft, lrn.value, newRight, comparator);
-                            }
-                        }
-                    }
-                } else if (!right.isEmpty()) {
-                    final TreeNode<T> rn = (TreeNode<T>) right;
-                    if (rn.color == RED) {
-                        if (!rn.left.isEmpty()) {
-                            final TreeNode<T> rln = (TreeNode<T>) rn.left;
-                            if (rln.color == RED) {
-                                final TreeNode<T> newLeft = new TreeNode<>(BLACK, left, value, rln.left, comparator);
-                                final TreeNode<T> newRight = new TreeNode<>(BLACK, rln.right, rn.value, rn.right, comparator);
-                                return new TreeNode<>(RED, newLeft, rln.value, newRight, comparator);
-                            }
-                        } else if (!rn.right.isEmpty()) {
-                            final TreeNode<T> rrn = (TreeNode<T>) rn.right;
-                            if (rrn.color == RED) {
-                                final TreeNode<T> newLeft = new TreeNode<>(BLACK, left, value, rn.left, comparator);
-                                final TreeNode<T> newRight = new TreeNode<>(BLACK, rrn.left, rrn.value, rrn.right, comparator);
-                                return new TreeNode<>(RED, newLeft, rn.value, newRight, comparator);
-                            }
-                        }
-                    }
+        @Override
+        public String toString() {
+            return isLeaf(this) ? "(" + value + ")" : toLispString(this);
+        }
+
+        private static String toLispString(RedBlackTree<?> tree) {
+            if (tree.isEmpty()) {
+                return "";
+            } else {
+                final TreeNode<?> node = (TreeNode<?>) tree;
+                final String value = node.color + ":" + node.value;
+                if (isLeaf(node)) {
+                    return value;
+                } else {
+                    final String left = node.left.isEmpty() ? "" : " " + toLispString(node.left);
+                    final String right = node.right.isEmpty() ? "" : " " + toLispString(node.right);
+                    return "(" + value + left + right + ")";
                 }
             }
-            return new TreeNode<>(color, left, value, right, comparator);
+        }
+
+        private static boolean isLeaf(TreeNode<?> tree) {
+            return tree.left.isEmpty() && tree.right.isEmpty();
         }
     }
 
-    class EmptyNode<T>  extends AbstractTreeNode<T> implements Serializable {
+    class EmptyNode<T> implements RedBlackTree<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
-        private final Comparator<T> comparator;
+        final Comparator<T> comparator;
 
-        private EmptyNode(Comparator<T> comparator) {
+        EmptyNode(Comparator<T> comparator) {
             this.comparator = comparator;
-        }
-
-        @Override
-        public TreeNode<T> add(T that) {
-            return new TreeNode<>(Color.RED, this, that, this, comparator);
         }
 
         @Override
@@ -176,60 +205,23 @@ public interface RedBlackTree<T> extends Tree<T> {
         }
 
         @Override
-        public T getValue() {
-            throw new NoSuchElementException("EmptyNode.getValue()");
-        }
-
-        @Override
         public boolean isEmpty() {
             return true;
         }
 
         @Override
-        public boolean isLeaf() {
-            return false;
-        }
-
-        @Override
-        public List<? extends Tree<T>> getChildren() {
-            return List.empty();
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public <U> EmptyNode<U> map(Function<? super T, ? extends U> mapper) {
-            return (EmptyNode<U>) this;
-        }
-    }
-
-    abstract class AbstractTreeNode<T> implements RedBlackTree<T> {
-
-        @Override
         public boolean equals(Object o) {
-            if (o == this) {
-                return true;
-            } else if (o instanceof RedBlackTree) {
-                final RedBlackTree<?> that = (RedBlackTree<?>) o;
-                return (this.isEmpty() && that.isEmpty()) || (!this.isEmpty() && !that.isEmpty()
-                        && Objects.equals(this.getValue(), that.getValue())
-                        && this.getChildren().equals(that.getChildren()));
-            } else {
-                return false;
-            }
+            return (o == this) || (o instanceof EmptyNode);
         }
 
         @Override
         public int hashCode() {
-            if (isEmpty()) {
-                return 1;
-            } else {
-                return getChildren().map(Objects::hashCode).foldLeft(31 + Objects.hashCode(getValue()), (i, j) -> i * 31 + j);
-            }
+            return 1;
         }
 
         @Override
         public String toString() {
-            return RedBlackTree.class.getSimpleName() + toLispString();
+            return "()";
         }
     }
 }
