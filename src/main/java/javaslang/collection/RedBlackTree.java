@@ -124,9 +124,9 @@ public interface RedBlackTree<T> extends BinarySearchTree<T> {
         }
 
         @Override
-        public boolean contains(T that) {
-            final int result = comparator.compare(value, that);
-            return (result == 0) || (result < 0 && left.contains(that)) || (result > 0 && right.contains(that));
+        public boolean contains(T value) {
+            final int result = comparator.compare(value, value);
+            return (result == 0) || (result < 0 && left.contains(value)) || (result > 0 && right.contains(value));
         }
 
         @Override
@@ -190,7 +190,7 @@ public interface RedBlackTree<T> extends BinarySearchTree<T> {
         }
 
         @Override
-        public boolean contains(T that) {
+        public boolean contains(T value) {
             return false;
         }
 

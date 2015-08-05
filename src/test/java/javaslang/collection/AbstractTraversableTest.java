@@ -10,6 +10,7 @@ import javaslang.Tuple2;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
+import org.assertj.core.api.*;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -24,13 +25,40 @@ import java.util.stream.Collector;
 
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
 /**
  * Tests all methods defined in {@link javaslang.collection.Traversable}.
  */
 public abstract class AbstractTraversableTest {
+
+    protected <T> IterableAssert<T> assertThat(Iterable<T> actual) {
+        return new IterableAssert<T>(actual) {};
+    }
+
+    protected <T> ObjectAssert<T> assertThat(T actual) {
+        return new ObjectAssert<T>(actual) {};
+    }
+
+    protected BooleanAssert assertThat(Boolean actual) {
+        return new BooleanAssert(actual) {};
+    }
+
+    protected DoubleAssert assertThat(Double actual) {
+        return new DoubleAssert(actual) {};
+    }
+
+    protected IntegerAssert assertThat(Integer actual) {
+        return new IntegerAssert(actual) {};
+    }
+
+    protected LongAssert assertThat(Long actual) {
+        return new LongAssert(actual) {};
+    }
+
+    protected StringAssert assertThat(String actual) {
+        return new StringAssert(actual) {};
+    }
 
     abstract protected <T> Collector<T, ArrayList<T>, ? extends Traversable<T>> collector();
 
