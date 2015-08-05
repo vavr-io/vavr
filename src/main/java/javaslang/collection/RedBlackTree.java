@@ -14,9 +14,48 @@ import static javaslang.collection.RedBlackTree.Color.RED;
 
 public interface RedBlackTree<T> extends BinarySearchTree<T> {
 
-    @SuppressWarnings("unchecked")
-    static <T> EmptyNode<T> empty() {
-        return new EmptyNode<>((o1, o2) -> ((Comparable<T>) o1).compareTo(o2));
+    static <T extends Comparable<T>> EmptyNode<T> empty() {
+        return new EmptyNode<>(T::compareTo);
+    }
+
+    static <T> EmptyNode<T> empty(Comparator<? super T> comparator) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        return new EmptyNode<>(comparator);
+    }
+
+    static <T extends Comparable<T>> TreeNode<T> of(T value) {
+        return RedBlackTree.<T> empty().add(value);
+    }
+
+    static <T extends Comparable<T>> TreeNode<T> of(Comparator<? super T> comparator, T value) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        return RedBlackTree.empty(comparator).add(value);
+    }
+
+    @SuppressWarnings({ "unchecked", "varargs" })
+    @SafeVarargs
+    static <T extends Comparable<T>> RedBlackTree<T> of(T... values) {
+        Objects.requireNonNull(values, "values is null");
+        return RedBlackTree.<T> empty().addAll(values);
+    }
+
+    @SuppressWarnings({ "unchecked", "varargs" })
+    @SafeVarargs
+    static <T extends Comparable<T>> RedBlackTree<T> of(Comparator<? super T> comparator, T... values) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        Objects.requireNonNull(values, "values is null");
+        return RedBlackTree.empty(comparator).addAll(values);
+    }
+
+    static <T extends Comparable<T>> RedBlackTree<T> ofAll(Iterable<? extends T> values) {
+        Objects.requireNonNull(values, "values is null");
+        return RedBlackTree.<T> empty().addAll(values);
+    }
+
+    static <T extends Comparable<T>> RedBlackTree<T> ofAll(Comparator<? super T> comparator, Iterable<? extends T> values) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        Objects.requireNonNull(values, "values is null");
+        return RedBlackTree.empty(comparator).addAll(values);
     }
 
     @Override
@@ -41,7 +80,7 @@ public interface RedBlackTree<T> extends BinarySearchTree<T> {
                 }
             }
 
-            private TreeNode<T> balance(Color color, RedBlackTree<T> left, T value, RedBlackTree<T> right, Comparator<T> comparator) {
+            private TreeNode<T> balance(Color color, RedBlackTree<T> left, T value, RedBlackTree<T> right, Comparator<? super T> comparator) {
                 if (color == BLACK) {
                     if (!left.isEmpty()) {
                         final TreeNode<T> ln = (TreeNode<T>) left;
@@ -95,6 +134,51 @@ public interface RedBlackTree<T> extends BinarySearchTree<T> {
         return new TreeNode<>(BLACK, node.left, node.value, node.right, node.comparator);
     }
 
+    @SuppressWarnings({ "unchecked", "varargs" })
+    @Override
+    default TreeNode<T> addAll(T... values) {
+        Objects.requireNonNull(values, "values is null");
+        RedBlackTree<T> node = this;
+        for (T value : values) {
+            node = node.add(value);
+        }
+        return (TreeNode<T>) node;
+    }
+
+    @Override
+    default TreeNode<T> addAll(Iterable<? extends T> values) {
+        Objects.requireNonNull(values, "values is null");
+        RedBlackTree<T> node = this;
+        for (T value : values) {
+            node = node.add(value);
+        }
+        return (TreeNode<T>) node;
+    }
+
+    /**
+     * Compares color, value and sub-trees. The comparator is not compared because function equality is not computable.
+     *
+     * @return The hash code of this tree.
+     */
+    @Override
+    boolean equals(Object o);
+
+    /**
+     * Computes the hash code of this tree based on color, value and sub-trees. The comparator is not taken into account.
+     *
+     * @return The hash code of this tree.
+     */
+    @Override
+    int hashCode();
+
+    /**
+     * Returns a Lisp like representation of this tree.
+     *
+     * @return This Tree as Lisp like String.
+     */
+    @Override
+    String toString();
+
     enum Color {
 
         RED, BLACK;
@@ -105,6 +189,11 @@ public interface RedBlackTree<T> extends BinarySearchTree<T> {
         }
     }
 
+    /**
+     * A non-empty tree node.
+     *
+     * @param <T> Component type
+     */
     class TreeNode<T> implements RedBlackTree<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
@@ -113,9 +202,10 @@ public interface RedBlackTree<T> extends BinarySearchTree<T> {
         private final RedBlackTree<T> left;
         private final T value;
         private final RedBlackTree<T> right;
-        private final Comparator<T> comparator;
+        private final Comparator<? super T> comparator;
 
-        private TreeNode(Color color, RedBlackTree<T> left, T value, RedBlackTree<T> right, Comparator<T> comparator) {
+        // This is no public API! The RedBlackTree takes care of passing the correct Comparator.
+        private TreeNode(Color color, RedBlackTree<T> left, T value, RedBlackTree<T> right, Comparator<? super T> comparator) {
             this.color = color;
             this.left = left;
             this.value = value;
@@ -179,13 +269,19 @@ public interface RedBlackTree<T> extends BinarySearchTree<T> {
         }
     }
 
+    /**
+     * The empty tree node. It can't be a singleton because it depends on a {@link Comparator}.
+     *
+     * @param <T> Component type
+     */
     class EmptyNode<T> implements RedBlackTree<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
-        private final Comparator<T> comparator;
+        private final Comparator<? super T> comparator;
 
-        private EmptyNode(Comparator<T> comparator) {
+        // This is no public API! The RedBlackTree takes care of passing the correct Comparator.
+        private EmptyNode(Comparator<? super T> comparator) {
             this.comparator = comparator;
         }
 

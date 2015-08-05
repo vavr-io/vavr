@@ -26,6 +26,9 @@ public class TypeConsistencyTest {
 
             // javaslang.collection.RedBlackTree
             "javaslang.collection.RedBlackTree//public abstract javaslang.collection.BinarySearchTree javaslang.collection.BinarySearchTree.add(java.lang.Object)",
+            "javaslang.collection.RedBlackTree//public abstract javaslang.collection.BinarySearchTree javaslang.collection.BinarySearchTree.addAll(java.lang.Object[])",
+            "javaslang.collection.RedBlackTree//public abstract javaslang.collection.BinarySearchTree javaslang.collection.BinarySearchTree.addAll(java.lang.Iterable)",
+
 
             // javaslang.collection.Map
             "javaslang.collection.Map//public default java.util.function.Function java.util.function.Function.andThen(java.util.function.Function)",

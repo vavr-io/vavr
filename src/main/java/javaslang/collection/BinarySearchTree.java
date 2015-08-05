@@ -11,6 +11,11 @@ public interface BinarySearchTree<T> {
 
     BinarySearchTree<T> add(T value);
 
+    @SuppressWarnings({ "unchecked", "varargs" })
+    BinarySearchTree<T> addAll(T... values);
+
+    BinarySearchTree<T> addAll(Iterable<? extends T> values);
+
     boolean isEmpty();
 
 }
