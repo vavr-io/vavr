@@ -127,7 +127,8 @@ import java.util.stream.StreamSupport;
  * <li>{@link #cartesianProduct()}</li>
  * <li>{@link #cartesianProduct(Iterable)}</li>
  * <li>{@link #distinct()}</li>
- * <li>{@link #distinct(Function)}</li>
+ * <li>{@link #distinctBy(Comparator)}</li>
+ * <li>{@link #distinctBy(Function)}</li>
  * <li>{@link #flatMap(Function)}</li>
  * <li>{@link #flatten()}</li>
  * <li>{@link #grouped(int)}</li>
@@ -269,6 +270,15 @@ public interface Traversable<T> extends TraversableOnce<T>, FilterMonadic<Traver
     Traversable<T> distinct();
 
     /**
+     * Returns a new version of this which contains no duplicates. Elements are compared using the given
+     * {@code comparator}.
+     *
+     * @param comparator A comparator
+     * @return a new {@code Traversable} containing this elements without duplicates
+     */
+    Traversable<T> distinctBy(Comparator<? super T> comparator);
+
+    /**
      * Returns a new version of this which contains no duplicates. Elements mapped to keys which are compared using
      * {@code equals}.
      * <p>
@@ -279,7 +289,7 @@ public interface Traversable<T> extends TraversableOnce<T>, FilterMonadic<Traver
      * @return a new {@code Traversable} containing this elements without duplicates
      * @throws NullPointerException if {@code keyExtractor} is null
      */
-    <U> Traversable<T> distinct(Function<? super T, ? extends U> keyExtractor);
+    <U> Traversable<T> distinctBy(Function<? super T, ? extends U> keyExtractor);
 
     /**
      * Drops the first n elements of this or all elements, if this length &lt; n.

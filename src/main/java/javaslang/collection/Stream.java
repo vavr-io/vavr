@@ -766,11 +766,18 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Stream<T> distinct() {
-        return distinct(Function.identity());
+        return distinctBy(Function.identity());
     }
 
     @Override
-    default <U> Stream<T> distinct(Function<? super T, ? extends U> keyExtractor) {
+    default Stream<T> distinctBy(Comparator<? super T> comparator) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        final java.util.Set<T> seen = new java.util.TreeSet<>(comparator);
+        return filter(seen::add);
+    }
+
+    @Override
+    default <U> Stream<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
         final java.util.Set<U> seen = new java.util.HashSet<>();
         return filter(t -> seen.add(keyExtractor.apply(t)));
     }

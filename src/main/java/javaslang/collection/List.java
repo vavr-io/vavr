@@ -650,11 +650,18 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default List<T> distinct() {
-        return distinct(Function.identity());
+        return distinctBy(Function.identity());
     }
 
     @Override
-    default <U> List<T> distinct(Function<? super T, ? extends U> keyExtractor) {
+    default List<T> distinctBy(Comparator<? super T> comparator) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        final java.util.Set<T> seen = new java.util.TreeSet<>(comparator);
+        return filter(seen::add);
+    }
+
+    @Override
+    default <U> List<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         final java.util.Set<U> seen = new java.util.HashSet<>();
         return filter(t -> seen.add(keyExtractor.apply(t)));

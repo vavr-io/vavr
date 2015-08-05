@@ -488,7 +488,10 @@ public interface Stack<T> extends LinearSeq<T> {
     Stack<T> distinct();
 
     @Override
-    <U> Stack<T> distinct(Function<? super T, ? extends U> keyExtractor);
+    Stack<T> distinctBy(Comparator<? super T> comparator);
+
+    @Override
+    <U> Stack<T> distinctBy(Function<? super T, ? extends U> keyExtractor);
 
     @Override
     Stack<T> drop(int n);

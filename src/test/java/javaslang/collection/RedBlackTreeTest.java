@@ -6,10 +6,15 @@
 package javaslang.collection;
 
 import javaslang.collection.RedBlackTree.TreeNode;
-import javaslang.test.*;
+import javaslang.test.Arbitrary;
+import javaslang.test.Checkable;
+import javaslang.test.Gen;
+import javaslang.test.Property;
 import org.junit.Test;
 
+import java.util.Comparator;
 import java.util.Random;
+import java.util.function.IntUnaryOperator;
 
 import static javaslang.collection.RedBlackTree.Color.BLACK;
 import static javaslang.collection.RedBlackTree.Color.RED;
@@ -23,6 +28,8 @@ public class RedBlackTreeTest {
         final Gen<Integer> intGen = Arbitrary.integer().apply(size);
         return Gen.<RedBlackTree<Integer>> of(RedBlackTree.empty(), tree -> tree.add(intGen.apply(random)));
     };
+
+    // Rudimentary tests
 
     @Test
     public void shouldCreateEmptyTree() {
@@ -61,18 +68,18 @@ public class RedBlackTreeTest {
         assertThat(tree.toString()).isEqualTo("(B:4 (B:2 R:1 R:3) (R:6 B:5 (B:9 R:7)))");
     }
 
+    // Red/Black Tree invariants
+
     @Test
     public void shouldObeyInvariant1() {
-        final CheckResult checkResult = new Property("No red node has a red child")
+        new Property("No red node has a red child")
                 .forAll(TREES)
                 .suchThat(RedBlackTreeTest::invariant1)
-                .check();
-        CheckResultAssertions.assertThat(checkResult).isSatisfied();
+                .check()
+                .assertIsSatisfied();
     }
 
-    // Red/Black Tree Invariants
-
-    private static Boolean invariant1(RedBlackTree<?> tree) {
+    private static boolean invariant1(RedBlackTree<?> tree) {
         if (tree.isEmpty()) {
             return true;
         } else {
@@ -88,32 +95,89 @@ public class RedBlackTreeTest {
 
     @Test
     public void shouldObeyInvariant2() {
-        final CheckResult checkResult = new Property("Every path from the root to an empty node contains the same number of black nodes")
+        new Property("Every path from the root to an empty node contains the same number of black nodes")
                 .forAll(TREES)
                 .suchThat(RedBlackTreeTest::invariant2)
-                .check();
-        CheckResultAssertions.assertThat(checkResult).isSatisfied();
+                .check()
+                .assertIsSatisfied();
     }
 
-    private static <T> Boolean invariant2(RedBlackTree<?> tree) {
-        class Util {
-            List<List<TreeNode<?>>> paths(RedBlackTree<?> tree) {
-                if (tree.isEmpty()) {
-                    return List.empty();
-                } else {
-                    final TreeNode<?> node = (TreeNode<?>) tree;
-                    final boolean isLeaf = node.left.isEmpty() && node.right.isEmpty();
-                    if (isLeaf) {
-                        return List.of(List.of(node));
-                    } else {
-                        return paths(node.left).prependAll(paths(node.right)).map(path -> path.prepend(node));
-                    }
-                }
-            }
-        }
-        return new Util().paths(tree)
+    private static boolean invariant2(RedBlackTree<?> tree) {
+        return TreeUtil.paths(tree)
                 .map(path -> path.filter(node -> node.color == BLACK).length())
                 .distinct()
                 .length() <= 1;
+    }
+
+    // Essential Red/Black Tree properties
+
+    @Test
+    public void shouldNotContainDuplicates() {
+        new Property("tree contains no duplicate values")
+                .forAll(TREES)
+                .suchThat(RedBlackTreeTest::containsNoDuplicates)
+                .check()
+                .assertIsSatisfied();
+    }
+
+    private static <T> boolean containsNoDuplicates(RedBlackTree<T> tree) {
+        if (tree.isEmpty()) {
+            return true;
+        } else {
+            final List<T> values = TreeUtil.values(tree);
+            final Comparator<? super T> comparator = ((TreeNode<T>) tree).comparator;
+            return values.length() == values.distinctBy(comparator).length();
+        }
+    }
+
+    @Test
+    public void shouldNotExceedMaximumDepth() {
+        new Property("n := size(tree) => depth(node) <= 2 * floor(log2(n + 1)), for all nodes of tree")
+                .forAll(TREES)
+                .suchThat(RedBlackTreeTest::doesNotExceedMaximumDepth)
+                .check()
+                .assertIsSatisfied();
+    }
+
+    private static boolean doesNotExceedMaximumDepth(RedBlackTree<?> tree) {
+        final int n = TreeUtil.size(tree);
+        final int depth = TreeUtil.paths(tree).map(Traversable::length).max().orElse(0);
+        final IntUnaryOperator log2 = i -> (int) (Math.log(i) / Math.log(2));
+        return depth <= 2 * log2.applyAsInt(n + 1);
+    }
+
+    // some helpful tree functions
+    static class TreeUtil {
+
+        static List<List<TreeNode<?>>> paths(RedBlackTree<?> tree) {
+            if (tree.isEmpty()) {
+                return List.empty();
+            } else {
+                final TreeNode<?> node = (TreeNode<?>) tree;
+                final boolean isLeaf = node.left.isEmpty() && node.right.isEmpty();
+                if (isLeaf) {
+                    return List.of(List.of(node));
+                } else {
+                    return paths(node.left).prependAll(paths(node.right)).map(path -> path.prepend(node));
+                }
+            }
+        }
+
+        static <T> List<T> values(RedBlackTree<T> tree) {
+            return nodes(tree).map(node -> node.value);
+        }
+
+        static <T> List<TreeNode<T>> nodes(RedBlackTree<T> tree) {
+            if (tree.isEmpty()) {
+                return List.empty();
+            } else {
+                final TreeNode<T> node = (TreeNode<T>) tree;
+                return nodes(node.left).prependAll(nodes(node.right)).prepend(node);
+            }
+        }
+
+        static int size(RedBlackTree<?> tree) {
+            return nodes(tree).length();
+        }
     }
 }

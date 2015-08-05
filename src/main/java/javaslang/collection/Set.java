@@ -10,6 +10,7 @@ import javaslang.Tuple2;
 import javaslang.control.Option;
 import javaslang.control.Some;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -36,7 +37,10 @@ public interface Set<T> extends Traversable<T> {
     Set<T> distinct();
 
     @Override
-    <U> Set<T> distinct(Function<? super T, ? extends U> keyExtractor);
+    Set<T> distinctBy(Comparator<? super T> comparator);
+
+    @Override
+    <U> Set<T> distinctBy(Function<? super T, ? extends U> keyExtractor);
 
     @Override
     Set<T> drop(int n);

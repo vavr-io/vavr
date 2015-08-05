@@ -267,4 +267,75 @@ public class CheckResultTest {
     public void shouldComputeToStringOfErroneous() {
         assertThat(ERRONEOUS.toString()).isEqualTo("Erroneous(propertyName = test, count = 0, error = test, sample = None)");
     }
+
+    // Assertions
+
+    // -- satisfied
+
+    @Test
+    public void shouldAssertThatCheckResultIsSatisfied() {
+        new CheckResult.Satisfied("test", 0, false).assertIsSatisfied();
+    }
+
+    @Test(expected = AssertionError.class)
+    public void shouldThrowWhenAssertThatNonSatisfiedCheckResultIsSatisfied() {
+        new CheckResult.Falsified("test", 0, Tuple.empty()).assertIsSatisfied();
+    }
+
+    // -- satisfiedWithExhaustion
+
+    @Test
+    public void shouldAssertThatCheckResultIsSatisfiedWithExhaustionTrue() {
+        new CheckResult.Satisfied("test", 0, true).assertIsSatisfiedWithExhaustion(true);
+    }
+
+    @Test
+    public void shouldAssertThatCheckResultIsSatisfiedWithExhaustionFalse() {
+        new CheckResult.Satisfied("test", 0, false).assertIsSatisfiedWithExhaustion(false);
+    }
+
+    @Test(expected = AssertionError.class)
+    public void shouldThrowWhenAssertThatNonSatisfiedCheckResultIsSatisfiedWithExhaustionTrue() {
+        new CheckResult.Falsified("test", 0, Tuple.empty()).assertIsSatisfiedWithExhaustion(true);
+    }
+
+    @Test(expected = AssertionError.class)
+    public void shouldThrowWhenAssertThatNonSatisfiedCheckResultIsSatisfiedWithExhaustionFalse() {
+        new CheckResult.Falsified("test", 0, Tuple.empty()).assertIsSatisfiedWithExhaustion(false);
+    }
+
+    @Test(expected = AssertionError.class)
+    public void shouldThrowWhenAssertThatSatisfiedNonExhaustedCheckResultIsSatisfiedWithExhaustionTrue() {
+        new CheckResult.Satisfied("test", 0, false).assertIsSatisfiedWithExhaustion(true);
+    }
+
+    @Test(expected = AssertionError.class)
+    public void shouldThrowWhenAssertThatSatisfiedExhaustedCheckResultIsSatisfiedWithExhaustionFalse() {
+        new CheckResult.Satisfied("test", 0, true).assertIsSatisfiedWithExhaustion(false);
+    }
+
+    // -- falsified
+
+    @Test
+    public void shouldAssertThatCheckResultIsFalsified() {
+        new CheckResult.Falsified("test", 0, Tuple.empty()).assertIsFalsified();
+    }
+
+    @Test(expected = AssertionError.class)
+    public void shouldThrowWhenAssertThatNonFalsifiedCheckResultIsFalsified() {
+        new CheckResult.Satisfied("test", 0, false).assertIsFalsified();
+    }
+
+    // -- erroneous
+
+    @Test
+    public void shouldAssertThatCheckResultIsErroneous() {
+        new CheckResult.Erroneous("test", 0, new Error(), None.instance()).assertIsErroneous();
+    }
+
+    @Test(expected = AssertionError.class)
+    public void shouldThrowWhenAssertThatNonErroneousCheckResultIsErroneous() {
+        new CheckResult.Falsified("test", 0, Tuple.empty()).assertIsErroneous();
+    }
+
 }
