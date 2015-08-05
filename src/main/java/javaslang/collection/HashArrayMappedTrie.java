@@ -19,8 +19,6 @@ import java.util.Iterator;
  */
 abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>> {
 
-    private static final EmptyNode<?, ?> INSTANCE = new EmptyNode<>();
-
     static <K, V> HashArrayMappedTrie<K, V> empty() {
         return EmptyNode.instance();
     }
@@ -115,6 +113,8 @@ abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>> {
     private static class EmptyNode<K, V> extends AbstractNode<K, V> implements Serializable {
 
         private static final long serialVersionUID = 1L;
+
+        private static final EmptyNode<?, ?> INSTANCE = new EmptyNode<>();
 
         private EmptyNode() {
         }

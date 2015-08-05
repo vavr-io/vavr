@@ -16,11 +16,11 @@ import java.util.Objects;
  */
 class HashMap<K, V> implements Map<K, V> {
 
-    private static final HashMap<?, ?> INSTANCE = new HashMap<>(HashArrayMappedTrie.empty());
+    private static final HashMap<?, ?> EMPTY = new HashMap<>(HashArrayMappedTrie.empty());
 
     @SuppressWarnings("unchecked")
     static <K, V> HashMap<K, V> empty() {
-        return (HashMap<K, V>) INSTANCE;
+        return (HashMap<K, V>) EMPTY;
     }
 
     /**
