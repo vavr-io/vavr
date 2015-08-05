@@ -57,6 +57,11 @@ public interface Gen<T> extends TraversableOnce<T>,
         return ignored -> t;
     }
 
+    static <T> Gen<T> of(T seed, Function<? super T, ? extends T> next) {
+        final Iterator<T> iterator = Stream.gen(seed, next).iterator();
+        return ignored -> iterator.next();
+    }
+
     /**
      * <p>Chooses an int between min and max, bounds inclusive and numbers distributed according to the distribution of
      * the underlying random number generator.</p>
