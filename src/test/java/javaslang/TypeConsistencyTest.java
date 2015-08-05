@@ -24,7 +24,7 @@ public class TypeConsistencyTest {
 
     static final List<String> WHITELIST = List.of(
 
-            // javaslang.control.Map
+            // javaslang.collection.Map
             "javaslang.collection.Map//public default java.util.function.Function java.util.function.Function.andThen(java.util.function.Function)",
             "javaslang.collection.Map//public default java.util.function.Function java.util.function.Function.compose(java.util.function.Function)",
 
