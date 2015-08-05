@@ -21,7 +21,7 @@ public class HashSetTest extends AbstractTraversableTest {
                 Iterable<T> expected = (Iterable<T>) obj;
                 java.util.Map<T, Integer> actualMap = countMap(actual);
                 java.util.Map<T, Integer> expectedMap = countMap(expected);
-                assertThat(actualMap.size() == expectedMap.size());
+                assertThat(actualMap.size()).isEqualTo(expectedMap.size());
                 actualMap.keySet().forEach(k -> assertThat(actualMap.get(k)).isEqualTo(expectedMap.get(k)));
                 return this;
             }
@@ -173,6 +173,11 @@ public class HashSetTest extends AbstractTraversableTest {
 
     @Override
     public void shouldFindLastOfNonNil() {
+        // ignore
+    }
+
+    @Override
+    public void shouldReplaceElementOfNonNilUsingCurrNew() {
         // ignore
     }
 
