@@ -33,31 +33,38 @@ import static org.assertj.core.api.Assertions.within;
 public abstract class AbstractTraversableTest {
 
     protected <T> IterableAssert<T> assertThat(Iterable<T> actual) {
-        return new IterableAssert<T>(actual) {};
+        return new IterableAssert<T>(actual) {
+        };
     }
 
     protected <T> ObjectAssert<T> assertThat(T actual) {
-        return new ObjectAssert<T>(actual) {};
+        return new ObjectAssert<T>(actual) {
+        };
     }
 
     protected BooleanAssert assertThat(Boolean actual) {
-        return new BooleanAssert(actual) {};
+        return new BooleanAssert(actual) {
+        };
     }
 
     protected DoubleAssert assertThat(Double actual) {
-        return new DoubleAssert(actual) {};
+        return new DoubleAssert(actual) {
+        };
     }
 
     protected IntegerAssert assertThat(Integer actual) {
-        return new IntegerAssert(actual) {};
+        return new IntegerAssert(actual) {
+        };
     }
 
     protected LongAssert assertThat(Long actual) {
-        return new LongAssert(actual) {};
+        return new LongAssert(actual) {
+        };
     }
 
     protected StringAssert assertThat(String actual) {
-        return new StringAssert(actual) {};
+        return new StringAssert(actual) {
+        };
     }
 
     abstract protected <T> Collector<T, ArrayList<T>, ? extends Traversable<T>> collector();
@@ -259,16 +266,30 @@ public abstract class AbstractTraversableTest {
         assertThat(of(1, 1, 2, 2, 3, 3).distinct()).isEqualTo(of(1, 2, 3));
     }
 
-    // -- distinct(Function)
+    // -- distinct(Comparator)
 
     @Test
-    public void shouldComputeDistinctOfEmptyTraversableUsingKeyExtractor() {
-        assertThat(empty().distinct(Function.identity())).isEqualTo(empty());
+    public void shouldComputeDistinctByOfEmptyTraversableUsingComparator() {
+        final Comparator<Integer> comparator = (i1, i2) -> i1 - i2;
+        assertThat(this.<Integer> empty().distinctBy(comparator)).isEqualTo(empty());
     }
 
     @Test
-    public void shouldComputeDistinctOfNonEmptyTraversableUsingKeyExtractor() {
-        assertThat(of("1a", "2a", "3a", "3b", "4b", "5c").distinct(c -> c.charAt(1))).isEqualTo(of("1a", "3b", "5c"));
+    public void shouldComputeDistinctByOfNonEmptyTraversableUsingComparator() {
+        final Comparator<String> comparator = (s1, s2) -> ((int) s1.charAt(1)) - ((int) s2.charAt(1));
+        assertThat(of("1a", "2a", "3a", "3b", "4b", "5c").distinctBy(comparator)).isEqualTo(of("1a", "3b", "5c"));
+    }
+
+    // -- distinct(Function)
+
+    @Test
+    public void shouldComputeDistinctByOfEmptyTraversableUsingKeyExtractor() {
+        assertThat(empty().distinctBy(Function.identity())).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldComputeDistinctByOfNonEmptyTraversableUsingKeyExtractor() {
+        assertThat(of("1a", "2a", "3a", "3b", "4b", "5c").distinctBy(c -> c.charAt(1))).isEqualTo(of("1a", "3b", "5c"));
     }
 
     // -- drop
@@ -450,7 +471,7 @@ public abstract class AbstractTraversableTest {
     // -- flatten()
 
     @Test
-    public <T> void shouldFlattenEmptyTraversable() {
+    public void shouldFlattenEmptyTraversable() {
         assertThat(empty().flatten()).isEqualTo(empty());
     }
 

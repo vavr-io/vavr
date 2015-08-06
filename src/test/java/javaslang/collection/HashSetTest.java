@@ -167,7 +167,12 @@ public class HashSetTest extends AbstractTraversableTest {
     }
 
     @Override
-    public void shouldComputeDistinctOfNonEmptyTraversableUsingKeyExtractor() {
+    public void shouldComputeDistinctByOfNonEmptyTraversableUsingComparator() {
+        // ignore
+    }
+
+    @Override
+    public void shouldComputeDistinctByOfNonEmptyTraversableUsingKeyExtractor() {
         // ignore
     }
 

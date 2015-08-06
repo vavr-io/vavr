@@ -558,9 +558,15 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Queue<T> distinct(Function<? super T, ? extends U> keyExtractor) {
+    public Queue<T> distinctBy(Comparator<? super T> comparator) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        return toList().distinctBy(comparator).toQueue();
+    }
+
+    @Override
+    public <U> Queue<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
-        return toList().distinct(keyExtractor).toQueue();
+        return toList().distinctBy(keyExtractor).toQueue();
     }
 
     @Override

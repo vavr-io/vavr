@@ -20,13 +20,13 @@ public class PropertyCheck8Test {
 
     @Test
     public void shouldApplyForAllOfArity8() {
-        final Property.ForAll8<Object, Object, Object, Object, Object, Object, Object, Object> forAll = new Property("test").forAll(null, null, null, null, null, null, null, null);
+        final Property.ForAll8<Object, Object, Object, Object, Object, Object, Object, Object> forAll = Property.def("test").forAll(null, null, null, null, null, null, null, null);
         assertThat(forAll).isNotNull();
     }
 
     @Test
     public void shouldApplySuchThatOfArity8() {
-        final Property.ForAll8<Object, Object, Object, Object, Object, Object, Object, Object> forAll = new Property("test").forAll(OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS);
+        final Property.ForAll8<Object, Object, Object, Object, Object, Object, Object, Object> forAll = Property.def("test").forAll(OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS);
         final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Boolean> predicate = (o1, o2, o3, o4, o5, o6, o7, o8) -> true;
         final Property.Property8<Object, Object, Object, Object, Object, Object, Object, Object> suchThat = forAll.suchThat(predicate);
         assertThat(suchThat).isNotNull();
@@ -34,7 +34,7 @@ public class PropertyCheck8Test {
 
     @Test
     public void shouldCheckTrueProperty8() {
-        final Property.ForAll8<Object, Object, Object, Object, Object, Object, Object, Object> forAll = new Property("test").forAll(OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS);
+        final Property.ForAll8<Object, Object, Object, Object, Object, Object, Object, Object> forAll = Property.def("test").forAll(OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS);
         final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Boolean> predicate = (o1, o2, o3, o4, o5, o6, o7, o8) -> true;
         final CheckResult result = forAll.suchThat(predicate).check();
         assertThat(result.isSatisfied()).isTrue();
@@ -43,7 +43,7 @@ public class PropertyCheck8Test {
 
     @Test
     public void shouldCheckFalseProperty8() {
-        final Property.ForAll8<Object, Object, Object, Object, Object, Object, Object, Object> forAll = new Property("test").forAll(OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS);
+        final Property.ForAll8<Object, Object, Object, Object, Object, Object, Object, Object> forAll = Property.def("test").forAll(OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS);
         final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Boolean> predicate = (o1, o2, o3, o4, o5, o6, o7, o8) -> false;
         final CheckResult result = forAll.suchThat(predicate).check();
         assertThat(result.isFalsified()).isTrue();
@@ -51,7 +51,7 @@ public class PropertyCheck8Test {
 
     @Test
     public void shouldCheckErroneousProperty8() {
-        final Property.ForAll8<Object, Object, Object, Object, Object, Object, Object, Object> forAll = new Property("test").forAll(OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS);
+        final Property.ForAll8<Object, Object, Object, Object, Object, Object, Object, Object> forAll = Property.def("test").forAll(OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS);
         final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Boolean> predicate = (o1, o2, o3, o4, o5, o6, o7, o8) -> { throw new RuntimeException("yay! (this is a negative test)"); };
         final CheckResult result = forAll.suchThat(predicate).check();
         assertThat(result.isErroneous()).isTrue();
@@ -59,7 +59,7 @@ public class PropertyCheck8Test {
 
     @Test
     public void shouldCheckProperty8ImplicationWithTruePrecondition() {
-        final Property.ForAll8<Object, Object, Object, Object, Object, Object, Object, Object> forAll = new Property("test").forAll(OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS);
+        final Property.ForAll8<Object, Object, Object, Object, Object, Object, Object, Object> forAll = Property.def("test").forAll(OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS);
         final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Boolean> p1 = (o1, o2, o3, o4, o5, o6, o7, o8) -> true;
         final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Boolean> p2 = (o1, o2, o3, o4, o5, o6, o7, o8) -> true;
         final CheckResult result = forAll.suchThat(p1).implies(p2).check();
@@ -69,7 +69,7 @@ public class PropertyCheck8Test {
 
     @Test
     public void shouldCheckProperty8ImplicationWithFalsePrecondition() {
-        final Property.ForAll8<Object, Object, Object, Object, Object, Object, Object, Object> forAll = new Property("test").forAll(OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS);
+        final Property.ForAll8<Object, Object, Object, Object, Object, Object, Object, Object> forAll = Property.def("test").forAll(OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS);
         final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Boolean> p1 = (o1, o2, o3, o4, o5, o6, o7, o8) -> false;
         final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Boolean> p2 = (o1, o2, o3, o4, o5, o6, o7, o8) -> true;
         final CheckResult result = forAll.suchThat(p1).implies(p2).check();
@@ -79,7 +79,7 @@ public class PropertyCheck8Test {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowOnProperty8CheckGivenNegativeTries() {
-        new Property("test")
+        Property.def("test")
             .forAll(OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS)
             .suchThat((o1, o2, o3, o4, o5, o6, o7, o8) -> true)
             .check(Checkable.RNG.get(), 0, -1);
@@ -88,7 +88,7 @@ public class PropertyCheck8Test {
     @Test
     public void shouldReturnErroneousProperty8CheckResultIfGenFails() {
         final Arbitrary<Object> failingGen = Gen.fail("yay! (this is a negative test)").arbitrary();
-        final CheckResult result = new Property("test")
+        final CheckResult result = Property.def("test")
             .forAll(failingGen, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS)
             .suchThat((o1, o2, o3, o4, o5, o6, o7, o8) -> true)
             .check();
@@ -98,7 +98,7 @@ public class PropertyCheck8Test {
     @Test
     public void shouldReturnErroneousProperty8CheckResultIfArbitraryFails() {
         final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("yay! (this is a negative test)"); };
-        final CheckResult result = new Property("test")
+        final CheckResult result = Property.def("test")
             .forAll(failingArbitrary, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS, OBJECTS)
             .suchThat((o1, o2, o3, o4, o5, o6, o7, o8) -> true)
             .check();

@@ -482,7 +482,10 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     Seq<T> distinct();
 
     @Override
-    <U> Seq<T> distinct(Function<? super T, ? extends U> keyExtractor);
+    Seq<T> distinctBy(Comparator<? super T> comparator);
+
+    @Override
+    <U> Seq<T> distinctBy(Function<? super T, ? extends U> keyExtractor);
 
     @Override
     Seq<T> drop(int n);

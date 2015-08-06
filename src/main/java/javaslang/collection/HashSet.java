@@ -15,6 +15,7 @@ import javaslang.control.Some;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.*;
@@ -57,7 +58,7 @@ final class HashSet<T> implements Set<T>, Serializable {
      * @return A new HashSet instance containing the given element
      */
     static <T> HashSet<T> of(T element) {
-        return HashSet.<T>empty().add(element);
+        return HashSet.<T> empty().add(element);
     }
 
     /**
@@ -126,6 +127,7 @@ final class HashSet<T> implements Set<T>, Serializable {
     public Iterator<T> iterator() {
         return new Iterator<T>() {
             Iterator<Tuple2<T, Object>> it = tree.iterator();
+
             @Override
             public boolean hasNext() {
                 return it.hasNext();
@@ -182,9 +184,15 @@ final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public <U> HashSet<T> distinct(Function<? super T, ? extends U> keyExtractor) {
+    public HashSet<T> distinctBy(Comparator<? super T> comparator) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        return HashSet.ofAll(list.get().distinctBy(comparator));
+    }
+
+    @Override
+    public <U> HashSet<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
-        return HashSet.ofAll(list.get().distinct(keyExtractor));
+        return HashSet.ofAll(list.get().distinctBy(keyExtractor));
     }
 
     @Override
@@ -320,7 +328,7 @@ final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<T> replace(T currentElement, T newElement) {
-        if(tree.containsKey(currentElement)) {
+        if (tree.containsKey(currentElement)) {
             return remove(currentElement).add(newElement);
         } else {
             return this;
