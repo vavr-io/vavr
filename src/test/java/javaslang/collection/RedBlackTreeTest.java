@@ -72,7 +72,7 @@ public class RedBlackTreeTest {
 
     @Test
     public void shouldObeyInvariant1() {
-        new Property("No red node has a red child")
+        Property.def("No red node has a red child")
                 .forAll(TREES)
                 .suchThat(RedBlackTreeTest::invariant1)
                 .check()
@@ -95,7 +95,7 @@ public class RedBlackTreeTest {
 
     @Test
     public void shouldObeyInvariant2() {
-        new Property("Every path from the root to an empty node contains the same number of black nodes")
+        Property.def("Every path from the root to an empty node contains the same number of black nodes")
                 .forAll(TREES)
                 .suchThat(RedBlackTreeTest::invariant2)
                 .check()
@@ -113,7 +113,7 @@ public class RedBlackTreeTest {
 
     @Test
     public void shouldNotContainDuplicates() {
-        new Property("tree contains no duplicate values")
+        Property.def("tree contains no duplicate values")
                 .forAll(TREES)
                 .suchThat(RedBlackTreeTest::containsNoDuplicates)
                 .check()
@@ -132,7 +132,7 @@ public class RedBlackTreeTest {
 
     @Test
     public void shouldNotExceedMaximumDepth() {
-        new Property("n := size(tree) => depth(node) <= 2 * floor(log2(n + 1)), for all nodes of tree")
+        Property.def("n := size(tree) => depth(node) <= 2 * floor(log2(n + 1)), for all nodes of tree")
                 .forAll(TREES)
                 .suchThat(RedBlackTreeTest::doesNotExceedMaximumDepth)
                 .check()
@@ -163,10 +163,6 @@ public class RedBlackTreeTest {
             }
         }
 
-        static <T> List<T> values(RedBlackTree<T> tree) {
-            return nodes(tree).map(node -> node.value);
-        }
-
         static <T> List<TreeNode<T>> nodes(RedBlackTree<T> tree) {
             if (tree.isEmpty()) {
                 return List.empty();
@@ -174,6 +170,10 @@ public class RedBlackTreeTest {
                 final TreeNode<T> node = (TreeNode<T>) tree;
                 return nodes(node.left).prependAll(nodes(node.right)).prepend(node);
             }
+        }
+
+        static <T> List<T> values(RedBlackTree<T> tree) {
+            return nodes(tree).map(node -> node.value);
         }
 
         static int size(RedBlackTree<?> tree) {

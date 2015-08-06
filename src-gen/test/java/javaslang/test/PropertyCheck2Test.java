@@ -20,13 +20,13 @@ public class PropertyCheck2Test {
 
     @Test
     public void shouldApplyForAllOfArity2() {
-        final Property.ForAll2<Object, Object> forAll = new Property("test").forAll(null, null);
+        final Property.ForAll2<Object, Object> forAll = Property.def("test").forAll(null, null);
         assertThat(forAll).isNotNull();
     }
 
     @Test
     public void shouldApplySuchThatOfArity2() {
-        final Property.ForAll2<Object, Object> forAll = new Property("test").forAll(OBJECTS, OBJECTS);
+        final Property.ForAll2<Object, Object> forAll = Property.def("test").forAll(OBJECTS, OBJECTS);
         final CheckedFunction2<Object, Object, Boolean> predicate = (o1, o2) -> true;
         final Property.Property2<Object, Object> suchThat = forAll.suchThat(predicate);
         assertThat(suchThat).isNotNull();
@@ -34,7 +34,7 @@ public class PropertyCheck2Test {
 
     @Test
     public void shouldCheckTrueProperty2() {
-        final Property.ForAll2<Object, Object> forAll = new Property("test").forAll(OBJECTS, OBJECTS);
+        final Property.ForAll2<Object, Object> forAll = Property.def("test").forAll(OBJECTS, OBJECTS);
         final CheckedFunction2<Object, Object, Boolean> predicate = (o1, o2) -> true;
         final CheckResult result = forAll.suchThat(predicate).check();
         assertThat(result.isSatisfied()).isTrue();
@@ -43,7 +43,7 @@ public class PropertyCheck2Test {
 
     @Test
     public void shouldCheckFalseProperty2() {
-        final Property.ForAll2<Object, Object> forAll = new Property("test").forAll(OBJECTS, OBJECTS);
+        final Property.ForAll2<Object, Object> forAll = Property.def("test").forAll(OBJECTS, OBJECTS);
         final CheckedFunction2<Object, Object, Boolean> predicate = (o1, o2) -> false;
         final CheckResult result = forAll.suchThat(predicate).check();
         assertThat(result.isFalsified()).isTrue();
@@ -51,7 +51,7 @@ public class PropertyCheck2Test {
 
     @Test
     public void shouldCheckErroneousProperty2() {
-        final Property.ForAll2<Object, Object> forAll = new Property("test").forAll(OBJECTS, OBJECTS);
+        final Property.ForAll2<Object, Object> forAll = Property.def("test").forAll(OBJECTS, OBJECTS);
         final CheckedFunction2<Object, Object, Boolean> predicate = (o1, o2) -> { throw new RuntimeException("yay! (this is a negative test)"); };
         final CheckResult result = forAll.suchThat(predicate).check();
         assertThat(result.isErroneous()).isTrue();
@@ -59,7 +59,7 @@ public class PropertyCheck2Test {
 
     @Test
     public void shouldCheckProperty2ImplicationWithTruePrecondition() {
-        final Property.ForAll2<Object, Object> forAll = new Property("test").forAll(OBJECTS, OBJECTS);
+        final Property.ForAll2<Object, Object> forAll = Property.def("test").forAll(OBJECTS, OBJECTS);
         final CheckedFunction2<Object, Object, Boolean> p1 = (o1, o2) -> true;
         final CheckedFunction2<Object, Object, Boolean> p2 = (o1, o2) -> true;
         final CheckResult result = forAll.suchThat(p1).implies(p2).check();
@@ -69,7 +69,7 @@ public class PropertyCheck2Test {
 
     @Test
     public void shouldCheckProperty2ImplicationWithFalsePrecondition() {
-        final Property.ForAll2<Object, Object> forAll = new Property("test").forAll(OBJECTS, OBJECTS);
+        final Property.ForAll2<Object, Object> forAll = Property.def("test").forAll(OBJECTS, OBJECTS);
         final CheckedFunction2<Object, Object, Boolean> p1 = (o1, o2) -> false;
         final CheckedFunction2<Object, Object, Boolean> p2 = (o1, o2) -> true;
         final CheckResult result = forAll.suchThat(p1).implies(p2).check();
@@ -79,7 +79,7 @@ public class PropertyCheck2Test {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowOnProperty2CheckGivenNegativeTries() {
-        new Property("test")
+        Property.def("test")
             .forAll(OBJECTS, OBJECTS)
             .suchThat((o1, o2) -> true)
             .check(Checkable.RNG.get(), 0, -1);
@@ -88,7 +88,7 @@ public class PropertyCheck2Test {
     @Test
     public void shouldReturnErroneousProperty2CheckResultIfGenFails() {
         final Arbitrary<Object> failingGen = Gen.fail("yay! (this is a negative test)").arbitrary();
-        final CheckResult result = new Property("test")
+        final CheckResult result = Property.def("test")
             .forAll(failingGen, OBJECTS)
             .suchThat((o1, o2) -> true)
             .check();
@@ -98,7 +98,7 @@ public class PropertyCheck2Test {
     @Test
     public void shouldReturnErroneousProperty2CheckResultIfArbitraryFails() {
         final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("yay! (this is a negative test)"); };
-        final CheckResult result = new Property("test")
+        final CheckResult result = Property.def("test")
             .forAll(failingArbitrary, OBJECTS)
             .suchThat((o1, o2) -> true)
             .check();

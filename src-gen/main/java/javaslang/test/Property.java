@@ -25,32 +25,40 @@ public class Property {
 
     private final String name;
 
-    /**
-     * Construct a named property.
-     * @param name property name
-     */
-    public Property(String name) {
-        Objects.requireNonNull(name, "name is null");
-        if (name.isEmpty()) {
-            throw new IllegalArgumentException("name is empty");
-        }
+    private Property(String name) {
         this.name = name;
     }
 
-    private static void logSatisfied(String name, int tries, boolean exhausted) {
+    /**
+     * Defines a new Property.
+     *
+     * @param name property name
+     * @return a new {@code Property}
+     * @throws NullPointerException if name is null.
+     * @throws IllegalArgumentException if name is empty or consists of whitespace only
+     */
+    public static Property def(String name) {
+        Objects.requireNonNull(name, "name is null");
+        if (name.trim().isEmpty()) {
+            throw new IllegalArgumentException("name is empty");
+        }
+        return new Property(name);
+    }
+
+    private static void logSatisfied(String name, int tries, long millis, boolean exhausted) {
         if (exhausted) {
-            log(String.format("%s: Exhausted after %s tests.", name, tries));
+            log(String.format("%s: Exhausted after %s tests in %s ms.", name, tries, millis));
         } else {
-            log(String.format("%s: OK, passed %s tests.", name, tries));
+            log(String.format("%s: OK, passed %s tests in %s ms.", name, tries, millis));
         }
     }
 
-    private static void logFalsified(String name, int currentTry) {
-        log(String.format("%s: Falsified after %s passed tests.", name, currentTry - 1));
+    private static void logFalsified(String name, int currentTry, long millis) {
+        log(String.format("%s: Falsified after %s passed tests in %s ms.", name, currentTry - 1, millis));
     }
 
-    private static void logErroneous(String name, int currentTry, String errorMessage) {
-        log(String.format("%s: Errored after %s passed tests with message: %s", name, Math.max(0, currentTry - 1), errorMessage));
+    private static void logErroneous(String name, int currentTry, long millis, String errorMessage) {
+        log(String.format("%s: Errored after %s passed tests in %s ms with message: %s", name, Math.max(0, currentTry - 1), millis, errorMessage));
     }
 
     private static void log(String msg) {
@@ -549,6 +557,7 @@ public class Property {
             if (tries < 0) {
                 throw new IllegalArgumentException("tries < 0");
             }
+            final long startTime = System.currentTimeMillis();
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 boolean exhausted = true;
@@ -560,23 +569,23 @@ public class Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    logFalsified(name, i);
+                                    logFalsified(name, i, System.currentTimeMillis() - startTime);
                                     return new CheckResult.Falsified(name, i, Tuple.of(val1));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
                             return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
                         return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                logSatisfied(name, tries, exhausted);
+                logSatisfied(name, tries, System.currentTimeMillis() - startTime, exhausted);
                 return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                logErroneous(name, 0, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
                 return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
@@ -624,6 +633,7 @@ public class Property {
             if (tries < 0) {
                 throw new IllegalArgumentException("tries < 0");
             }
+            final long startTime = System.currentTimeMillis();
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -637,23 +647,23 @@ public class Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    logFalsified(name, i);
+                                    logFalsified(name, i, System.currentTimeMillis() - startTime);
                                     return new CheckResult.Falsified(name, i, Tuple.of(val1, val2));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
                             return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
                         return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                logSatisfied(name, tries, exhausted);
+                logSatisfied(name, tries, System.currentTimeMillis() - startTime, exhausted);
                 return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                logErroneous(name, 0, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
                 return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
@@ -703,6 +713,7 @@ public class Property {
             if (tries < 0) {
                 throw new IllegalArgumentException("tries < 0");
             }
+            final long startTime = System.currentTimeMillis();
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -718,23 +729,23 @@ public class Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    logFalsified(name, i);
+                                    logFalsified(name, i, System.currentTimeMillis() - startTime);
                                     return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
                             return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
                         return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                logSatisfied(name, tries, exhausted);
+                logSatisfied(name, tries, System.currentTimeMillis() - startTime, exhausted);
                 return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                logErroneous(name, 0, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
                 return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
@@ -786,6 +797,7 @@ public class Property {
             if (tries < 0) {
                 throw new IllegalArgumentException("tries < 0");
             }
+            final long startTime = System.currentTimeMillis();
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -803,23 +815,23 @@ public class Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    logFalsified(name, i);
+                                    logFalsified(name, i, System.currentTimeMillis() - startTime);
                                     return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
                             return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
                         return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                logSatisfied(name, tries, exhausted);
+                logSatisfied(name, tries, System.currentTimeMillis() - startTime, exhausted);
                 return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                logErroneous(name, 0, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
                 return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
@@ -873,6 +885,7 @@ public class Property {
             if (tries < 0) {
                 throw new IllegalArgumentException("tries < 0");
             }
+            final long startTime = System.currentTimeMillis();
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -892,23 +905,23 @@ public class Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    logFalsified(name, i);
+                                    logFalsified(name, i, System.currentTimeMillis() - startTime);
                                     return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
                             return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
                         return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                logSatisfied(name, tries, exhausted);
+                logSatisfied(name, tries, System.currentTimeMillis() - startTime, exhausted);
                 return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                logErroneous(name, 0, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
                 return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
@@ -964,6 +977,7 @@ public class Property {
             if (tries < 0) {
                 throw new IllegalArgumentException("tries < 0");
             }
+            final long startTime = System.currentTimeMillis();
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -985,23 +999,23 @@ public class Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    logFalsified(name, i);
+                                    logFalsified(name, i, System.currentTimeMillis() - startTime);
                                     return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
                             return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
                         return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                logSatisfied(name, tries, exhausted);
+                logSatisfied(name, tries, System.currentTimeMillis() - startTime, exhausted);
                 return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                logErroneous(name, 0, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
                 return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
@@ -1059,6 +1073,7 @@ public class Property {
             if (tries < 0) {
                 throw new IllegalArgumentException("tries < 0");
             }
+            final long startTime = System.currentTimeMillis();
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -1082,23 +1097,23 @@ public class Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    logFalsified(name, i);
+                                    logFalsified(name, i, System.currentTimeMillis() - startTime);
                                     return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6, val7));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
                             return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
                         return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                logSatisfied(name, tries, exhausted);
+                logSatisfied(name, tries, System.currentTimeMillis() - startTime, exhausted);
                 return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                logErroneous(name, 0, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
                 return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }
@@ -1158,6 +1173,7 @@ public class Property {
             if (tries < 0) {
                 throw new IllegalArgumentException("tries < 0");
             }
+            final long startTime = System.currentTimeMillis();
             try {
                 final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
                 final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
@@ -1183,23 +1199,23 @@ public class Property {
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
-                                    logFalsified(name, i);
+                                    logFalsified(name, i, System.currentTimeMillis() - startTime);
                                     return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8));
                                 }
                             }
                         } catch(Failure.NonFatal nonFatal) {
-                            logErroneous(name, i, nonFatal.getCause().getMessage());
+                            logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
                             return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new Some<>(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8)));
                         }
                     } catch(Failure.NonFatal nonFatal) {
-                        logErroneous(name, i, nonFatal.getCause().getMessage());
+                        logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
                         return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), None.instance());
                     }
                 }
-                logSatisfied(name, tries, exhausted);
+                logSatisfied(name, tries, System.currentTimeMillis() - startTime, exhausted);
                 return new CheckResult.Satisfied(name, tries, exhausted);
             } catch(Failure.NonFatal nonFatal) {
-                logErroneous(name, 0, nonFatal.getCause().getMessage());
+                logErroneous(name, 0, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
                 return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), None.instance());
             }
         }

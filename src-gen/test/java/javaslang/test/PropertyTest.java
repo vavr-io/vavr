@@ -31,38 +31,38 @@ public class PropertyTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenPropertyNameIsNull() {
-        new Property(null);
+        Property.def(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowWhenPropertyNameIsEmpty() {
-        new Property("");
+        Property.def("");
     }
 
     // -- Property.check methods
 
     @Test
     public void shouldCheckUsingDefaultConfiguration() {
-        final CheckResult result = new Property("test").forAll(OBJECTS).suchThat(tautology()).check();
+        final CheckResult result = Property.def("test").forAll(OBJECTS).suchThat(tautology()).check();
         assertThat(result.isSatisfied()).isTrue();
         assertThat(result.isExhausted()).isFalse();
     }
 
     @Test
     public void shouldCheckGivenSizeAndTries() {
-        final CheckResult result = new Property("test").forAll(OBJECTS).suchThat(tautology()).check(0, 0);
+        final CheckResult result = Property.def("test").forAll(OBJECTS).suchThat(tautology()).check(0, 0);
         assertThat(result.isSatisfied()).isTrue();
         assertThat(result.isExhausted()).isTrue();
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowOnCheckGivenNegativeTries() {
-        new Property("test").forAll(OBJECTS).suchThat(tautology()).check(0, -1);
+        Property.def("test").forAll(OBJECTS).suchThat(tautology()).check(0, -1);
     }
 
     @Test
     public void shouldCheckGivenRandomAndSizeAndTries() {
-        final CheckResult result = new Property("test").forAll(OBJECTS).suchThat(tautology()).check(new Random(), 0, 0);
+        final CheckResult result = Property.def("test").forAll(OBJECTS).suchThat(tautology()).check(new Random(), 0, 0);
         assertThat(result.isSatisfied()).isTrue();
         assertThat(result.isExhausted()).isTrue();
     }
@@ -75,7 +75,7 @@ public class PropertyTest {
         final Arbitrary<Double> real = n -> Gen.choose(0, (double) n).filter(d -> d > .0d);
 
         // (∀a,b ∈ ℝ+ ∃c ∈ ℝ+ : a²+b²=c²) ≡ (∀a,b ∈ ℝ+ : √(a²+b²) ∈ ℝ+)
-        final Checkable property = new Property("test").forAll(real, real).suchThat((a, b) -> Math.sqrt(a * a + b * b) > .0d);
+        final Checkable property = Property.def("test").forAll(real, real).suchThat((a, b) -> Math.sqrt(a * a + b * b) > .0d);
         final CheckResult result = property.check();
 
         assertThat(result.isSatisfied()).isTrue();
@@ -93,7 +93,7 @@ public class PropertyTest {
                         Tuple.of(1, Gen.choose('a', 'z')),
                         Tuple.of(1, Gen.choose('0', '9'))
                     )));
-        final CheckResult result = new Property("test")
+        final CheckResult result = Property.def("test")
                 .forAll(ints, strings)
                 .suchThat((is, ss) -> is.length() == ss.length())
                 .implies((is, ss) -> is.zip(ss).unzip(t -> t).equals(Tuple.of(is, ss)))
@@ -106,7 +106,7 @@ public class PropertyTest {
 
     @Test
     public void shouldRecognizeExhaustedParameters() {
-        final CheckResult result = new Property("test").forAll(OBJECTS).suchThat(falsum()).implies(tautology()).check();
+        final CheckResult result = Property.def("test").forAll(OBJECTS).suchThat(falsum()).implies(tautology()).check();
         assertThat(result.isSatisfied()).isTrue();
         assertThat(result.isExhausted()).isTrue();
     }
@@ -116,7 +116,7 @@ public class PropertyTest {
     @Test
     public void shouldFalsifyFalseProperty() {
         final Arbitrary<Integer> ones = n -> random -> 1;
-        final CheckResult result = new Property("test").forAll(ones).suchThat(one -> one == 2).check();
+        final CheckResult result = Property.def("test").forAll(ones).suchThat(one -> one == 2).check();
         assertThat(result.isFalsified()).isTrue();
         assertThat(result.isExhausted()).isFalse();
         assertThat(result.count()).isEqualTo(1);
@@ -127,7 +127,7 @@ public class PropertyTest {
     @Test
     public void shouldRecognizeArbitraryError() {
         final Arbitrary<?> arbitrary = n -> { throw new RuntimeException("yay! (this is a negative test)"); };
-        final CheckResult result = new Property("test").forAll(arbitrary).suchThat(tautology()).check();
+        final CheckResult result = Property.def("test").forAll(arbitrary).suchThat(tautology()).check();
         assertThat(result.isErroneous()).isTrue();
         assertThat(result.isExhausted()).isFalse();
         assertThat(result.count()).isEqualTo(0);
@@ -137,7 +137,7 @@ public class PropertyTest {
     @Test
     public void shouldRecognizeGenError() {
         final Arbitrary<?> arbitrary = Gen.fail("yay! (this is a negative test)").arbitrary();
-        final CheckResult result = new Property("test").forAll(arbitrary).suchThat(tautology()).check();
+        final CheckResult result = Property.def("test").forAll(arbitrary).suchThat(tautology()).check();
         assertThat(result.isErroneous()).isTrue();
         assertThat(result.isExhausted()).isFalse();
         assertThat(result.count()).isEqualTo(1);
@@ -148,7 +148,7 @@ public class PropertyTest {
     public void shouldRecognizePropertyError() {
         final Arbitrary<Integer> a1 = n -> random -> 1;
         final Arbitrary<Integer> a2 = n -> random -> 2;
-        final CheckResult result = new Property("test").forAll(a1, a2).suchThat((a, b) -> {
+        final CheckResult result = Property.def("test").forAll(a1, a2).suchThat((a, b) -> {
             throw new RuntimeException("yay! (this is a negative test)");
         }).check();
         assertThat(result.isErroneous()).isTrue();
@@ -162,32 +162,32 @@ public class PropertyTest {
 
     @Test
     public void shouldCheckAndCombinationWhereFirstPropertyIsTrueAndSecondPropertyIsTrue() {
-        final Checkable p1 = new Property("test").forAll(OBJECTS).suchThat(tautology());
-        final Checkable p2 = new Property("test").forAll(OBJECTS).suchThat(tautology());
+        final Checkable p1 = Property.def("test").forAll(OBJECTS).suchThat(tautology());
+        final Checkable p2 = Property.def("test").forAll(OBJECTS).suchThat(tautology());
         final CheckResult result = p1.and(p2).check();
         assertThat(result.isSatisfied()).isTrue();
     }
 
     @Test
     public void shouldCheckAndCombinationWhereFirstPropertyIsTrueAndSecondPropertyIsFalse() {
-        final Checkable p1 = new Property("test").forAll(OBJECTS).suchThat(tautology());
-        final Checkable p2 = new Property("test").forAll(OBJECTS).suchThat(falsum());
+        final Checkable p1 = Property.def("test").forAll(OBJECTS).suchThat(tautology());
+        final Checkable p2 = Property.def("test").forAll(OBJECTS).suchThat(falsum());
         final CheckResult result = p1.and(p2).check();
         assertThat(result.isSatisfied()).isFalse();
     }
 
     @Test
     public void shouldCheckAndCombinationWhereFirstPropertyIsFalseAndSecondPropertyIsTrue() {
-        final Checkable p1 = new Property("test").forAll(OBJECTS).suchThat(falsum());
-        final Checkable p2 = new Property("test").forAll(OBJECTS).suchThat(tautology());
+        final Checkable p1 = Property.def("test").forAll(OBJECTS).suchThat(falsum());
+        final Checkable p2 = Property.def("test").forAll(OBJECTS).suchThat(tautology());
         final CheckResult result = p1.and(p2).check();
         assertThat(result.isSatisfied()).isFalse();
     }
 
     @Test
     public void shouldCheckAndCombinationWhereFirstPropertyIsFalseAndSecondPropertyIsFalse() {
-        final Checkable p1 = new Property("test").forAll(OBJECTS).suchThat(falsum());
-        final Checkable p2 = new Property("test").forAll(OBJECTS).suchThat(falsum());
+        final Checkable p1 = Property.def("test").forAll(OBJECTS).suchThat(falsum());
+        final Checkable p2 = Property.def("test").forAll(OBJECTS).suchThat(falsum());
         final CheckResult result = p1.and(p2).check();
         assertThat(result.isSatisfied()).isFalse();
     }
@@ -196,32 +196,32 @@ public class PropertyTest {
 
     @Test
     public void shouldCheckOrCombinationWhereFirstPropertyIsTrueAndSecondPropertyIsTrue() {
-        final Checkable p1 = new Property("test").forAll(OBJECTS).suchThat(tautology());
-        final Checkable p2 = new Property("test").forAll(OBJECTS).suchThat(tautology());
+        final Checkable p1 = Property.def("test").forAll(OBJECTS).suchThat(tautology());
+        final Checkable p2 = Property.def("test").forAll(OBJECTS).suchThat(tautology());
         final CheckResult result = p1.or(p2).check();
         assertThat(result.isSatisfied()).isTrue();
     }
 
     @Test
     public void shouldCheckOrCombinationWhereFirstPropertyIsTrueAndSecondPropertyIsFalse() {
-        final Checkable p1 = new Property("test").forAll(OBJECTS).suchThat(tautology());
-        final Checkable p2 = new Property("test").forAll(OBJECTS).suchThat(falsum());
+        final Checkable p1 = Property.def("test").forAll(OBJECTS).suchThat(tautology());
+        final Checkable p2 = Property.def("test").forAll(OBJECTS).suchThat(falsum());
         final CheckResult result = p1.or(p2).check();
         assertThat(result.isSatisfied()).isTrue();
     }
 
     @Test
     public void shouldCheckOrCombinationWhereFirstPropertyIsFalseAndSecondPropertyIsTrue() {
-        final Checkable p1 = new Property("test").forAll(OBJECTS).suchThat(falsum());
-        final Checkable p2 = new Property("test").forAll(OBJECTS).suchThat(tautology());
+        final Checkable p1 = Property.def("test").forAll(OBJECTS).suchThat(falsum());
+        final Checkable p2 = Property.def("test").forAll(OBJECTS).suchThat(tautology());
         final CheckResult result = p1.or(p2).check();
         assertThat(result.isSatisfied()).isTrue();
     }
 
     @Test
     public void shouldCheckOrCombinationWhereFirstPropertyIsFalseAndSecondPropertyIsFalse() {
-        final Checkable p1 = new Property("test").forAll(OBJECTS).suchThat(falsum());
-        final Checkable p2 = new Property("test").forAll(OBJECTS).suchThat(falsum());
+        final Checkable p1 = Property.def("test").forAll(OBJECTS).suchThat(falsum());
+        final Checkable p2 = Property.def("test").forAll(OBJECTS).suchThat(falsum());
         final CheckResult result = p1.or(p2).check();
         assertThat(result.isSatisfied()).isFalse();
     }
