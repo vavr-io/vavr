@@ -19,8 +19,8 @@ import java.util.function.*;
 import java.util.stream.Collector;
 
 /**
- * A {@code Stream} is lazy sequence of elements which may be infinitely long. Its immutability makes it suitable for
- * concurrent programming.
+ * An immutable {@code Stream} is lazy sequence of elements which may be infinitely long.
+ * Its immutability makes it suitable for concurrent programming.
  * <p>
  * A {@code Stream} is composed of a {@code head} element and a lazy evaluated {@code tail} {@code Stream}.
  * <p>

@@ -17,7 +17,7 @@ import java.util.function.*;
 import java.util.stream.Collector;
 
 /**
- * A {@code Stack} stores elements allowing a last-in-first-out (LIFO) retrieval.
+ * An immutable {@code Stack} stores elements allowing a last-in-first-out (LIFO) retrieval.
  * <p>
  * Stack API:
  *

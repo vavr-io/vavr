@@ -17,7 +17,7 @@ import java.util.Objects;
 import java.util.function.*;
 
 /**
- * Interface for sequential, traversable data structures.
+ * Interface for immutable sequential data structures.
  * <p>
  * Mutation:
  *

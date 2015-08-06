@@ -16,7 +16,9 @@ import java.util.Collections;
 import java.util.Iterator;
 
 /**
- * <a href="https://en.wikipedia.org/wiki/Hash_array_mapped_trie">Hash array mapped trie (HAMT)</a>.
+ * An immutable <a href="https://en.wikipedia.org/wiki/Hash_array_mapped_trie">Hash array mapped trie (HAMT)</a>.
+ *
+ * @since 2.0.0
  */
 abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>>, Serializable {
 
@@ -281,7 +283,7 @@ abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>>, Seri
                     return new IndexedNode<>(newBitmap, subNodes.insert(indx, child));
                 }
             } else {
-                if(!exists) {
+                if (!exists) {
                     return this;
                 } else {
                     return new IndexedNode<>(newBitmap, subNodes.set(indx, child));

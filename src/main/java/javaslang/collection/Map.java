@@ -10,6 +10,13 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Function;
 
+/**
+ * An immutable {@code Map} interface.
+ *
+ * @param <K> Key type
+ * @param <V> Value type
+ * @since 2.0.0
+ */
 interface Map<K, V> extends /*TODO: Traversable<Map.Entry<K, V>>,*/ Function<K, V> {
 
     @Override

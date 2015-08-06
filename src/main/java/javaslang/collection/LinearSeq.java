@@ -17,11 +17,12 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
 /**
- * Interface for linear sequences.
+ * Interface for immutable, linear sequences.
  * <p>
  * Efficient {@code head()}, {@code tail()}, and {@code isEmpty()} methods are characteristic for linear sequences.
  *
  * @param <T> component type
+ * @since 2.0.0
  */
 public interface LinearSeq<T> extends Seq<T> {
 

@@ -21,9 +21,9 @@ import java.util.function.Predicate;
  * Methods on {@link Future} return new Futures that will perform their operations or call backs when the value is available.
  *
  * @param <T> The type of this Future's eventual value.
- * @author Dillon Jett Callis
  * @see {@link Promise} if you want Futures that can be success by some other method.
- * @since 1.3.0
+ *
+ * @since 2.0.0
  */
 public class Future<T> {
 
