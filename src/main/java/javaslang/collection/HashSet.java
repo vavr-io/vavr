@@ -14,10 +14,7 @@ import javaslang.control.Option;
 import javaslang.control.Some;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
@@ -178,7 +175,7 @@ final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<T> distinct() {
-        return HashSet.ofAll(list.get().distinct());
+        return HashSet.ofAll(list.get());
     }
 
     @Override
@@ -224,24 +221,35 @@ final class HashSet<T> implements Set<T>, Serializable {
     @Override
     public HashSet<T> findAll(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return HashSet.ofAll(list.get().findAll(predicate));
+        return filter(predicate);
     }
 
     @Override
     public <U> HashSet<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return HashSet.ofAll(list.get().flatMap(mapper));
+        if (isEmpty()) {
+            return empty();
+        } else {
+            HashSet<U> set = empty();
+            for (T t : this) {
+                for (U u : mapper.apply(t)) {
+                    set = set.add(u);
+                }
+            }
+            return set;
+        }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <U> HashSet<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return HashSet.ofAll(list.get().flatMapM(mapper));
+        return flatMap((Function<? super T, ? extends Iterable<? extends U>>) mapper);
     }
 
     @Override
     public HashSet<Object> flatten() {
-        return HashSet.ofAll(list.get().flatten());
+        return flatMap(t -> (t instanceof Iterable) ? HashSet.ofAll((Iterable<?>) t).flatten() : HashSet.of(t));
     }
 
     @Override
@@ -251,7 +259,10 @@ final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public T head() {
-        return list.get().head();
+        if(tree.isEmpty()) {
+            throw new NoSuchElementException("head of empty set");
+        }
+        return iterator().next();
     }
 
     @Override
@@ -288,14 +299,26 @@ final class HashSet<T> implements Set<T>, Serializable {
     @Override
     public <U> HashSet<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return HashSet.ofAll(list.get().map(mapper));
+        HashSet<U> result = HashSet.empty();
+        for (T t : this) {
+            result = result.add(mapper.apply(t));
+        }
+        return result;
     }
 
     @Override
     public Tuple2<HashSet<T>, HashSet<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        Tuple2<List<T>, List<T>> t = list.get().partition(predicate);
-        return Tuple.of(HashSet.ofAll(t._1), HashSet.ofAll(t._2));
+        HashSet<T> first = HashSet.empty();
+        HashSet<T> second = HashSet.empty();
+        for (T t : this) {
+            if (predicate.test(t)) {
+                first = first.add(t);
+            } else {
+                second = second.add(t);
+            }
+        }
+        return Tuple.of(first, second);
     }
 
     @Override
@@ -386,13 +409,19 @@ final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<T> tail() {
-        return HashSet.ofAll(list.get().tail());
+        if(tree.isEmpty()) {
+            throw new UnsupportedOperationException("tail of empty set");
+        }
+        return remove(head());
     }
 
     @Override
     public Option<HashSet<T>> tailOption() {
-        Option<List<T>> opt = list.get().tailOption();
-        return opt.isDefined() ? new Some<>(HashSet.ofAll(opt.get())) : None.instance();
+        if(tree.isEmpty()) {
+            return None.instance();
+        } else {
+            return new Some<>(tail());
+        }
     }
 
     @Override
@@ -419,7 +448,7 @@ final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public <U> HashSet<U> unit(Iterable<? extends U> iterable) {
-        return HashSet.ofAll(list.get().unit(iterable));
+        return HashSet.ofAll(iterable);
     }
 
     @Override
