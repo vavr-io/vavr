@@ -100,17 +100,15 @@ final class HashSet<T> implements Set<T>, Serializable {
         } else {
             HashArrayMappedTrie<T, Object> tree = HashArrayMappedTrie.empty();
             for (T entry : entries) {
-                tree = tree.put(entry, O);
+                tree = tree.put(entry, entry);
             }
             return tree.isEmpty() ? empty() : new HashSet<>(tree);
         }
     }
 
-    private final static Object O = new Object();
-
     private final HashArrayMappedTrie<T, Object> tree;
-    private final Lazy<List<T>> list;
-    private final Lazy<Integer> hash;
+    private final transient Lazy<List<T>> list;
+    private final transient Lazy<Integer> hash;
 
     private HashSet(HashArrayMappedTrie<T, Object> tree) {
         this.tree = tree;
@@ -120,7 +118,7 @@ final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<T> add(T element) {
-        return new HashSet<>(tree.put(element, O));
+        return new HashSet<>(tree.put(element, element));
     }
 
     @Override
