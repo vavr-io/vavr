@@ -5,6 +5,12 @@
  */
 package javaslang.collection;
 
+/**
+ * An immutable {@code SortedSet} interface.
+ *
+ * @param <T> Component type
+ * @since 2.0.0
+ */
 public interface SortedSet<T> /*extends Set<T>*/ {
 
     // TODO

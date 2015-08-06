@@ -18,7 +18,7 @@ import java.util.function.*;
 import java.util.stream.Collector;
 
 /**
- * A {@code Queue} stores elements allowing a first-in-first-out (FIFO) retrieval.
+ * An immutable {@code Queue} stores elements allowing a first-in-first-out (FIFO) retrieval.
  * <p>
  * Queue API:
  *

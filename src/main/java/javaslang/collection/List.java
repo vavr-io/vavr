@@ -18,7 +18,7 @@ import java.util.function.*;
 import java.util.stream.Collector;
 
 /**
- * A {@code List} is an eager sequence of elements. Its immutability makes it suitable for concurrent programming.
+ * An immutable {@code List} is an eager sequence of elements. Its immutability makes it suitable for concurrent programming.
  * <p>
  * A {@code List} is composed of a {@code head} element and a {@code tail} {@code List}.
  * <p>

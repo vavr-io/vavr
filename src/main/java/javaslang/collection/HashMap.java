@@ -11,8 +11,10 @@ import java.util.Iterator;
 import java.util.Objects;
 
 /**
- * A {@code HashMap} implementation based on a
+ * An immutable {@code HashMap} implementation based on a
  * <a href="https://en.wikipedia.org/wiki/Hash_array_mapped_trie">Hash array mapped trie (HAMT)</a>.
+ *
+ * @since 2.0.0
  */
 class HashMap<K, V> implements Map<K, V> {
 
@@ -105,6 +107,7 @@ class HashMap<K, V> implements Map<K, V> {
     public Iterator<Entry<K, V>> iterator() {
         return new Iterator<Entry<K, V>>() {
             Iterator<Tuple2<K, V>> it = tree.iterator();
+
             @Override
             public boolean hasNext() {
                 return it.hasNext();

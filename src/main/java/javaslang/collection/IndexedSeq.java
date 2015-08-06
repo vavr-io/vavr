@@ -17,11 +17,12 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
 /**
- * Interface for indexed sequences.
+ * Interface for immutable, indexed sequences.
  * <p>
  * Efficient random access is characteristic for indexed sequences.
  *
  * @param <T> component type
+ * @since 2.0.0
  */
 public interface IndexedSeq<T> extends Seq<T> {
 

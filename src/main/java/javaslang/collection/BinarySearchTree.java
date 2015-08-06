@@ -5,6 +5,12 @@
  */
 package javaslang.collection;
 
+/**
+ * An immutable {@code BinarySearchTree} interface.
+ *
+ * @param <T> Component type
+ * @since 2.0.0
+ */
 public interface BinarySearchTree<T> {
 
     boolean contains(T value);

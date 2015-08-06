@@ -12,6 +12,12 @@ import java.util.Objects;
 import static javaslang.collection.RedBlackTree.Color.BLACK;
 import static javaslang.collection.RedBlackTree.Color.RED;
 
+/**
+ * An immutable {@code RedBlackTree} implementation, based on the book "Purely Functional Data Structures" (Okasaki, 2003).
+ *
+ * @param <T> Component type
+ * @since 2.0.0
+ */
 public interface RedBlackTree<T> extends BinarySearchTree<T> {
 
     static <T extends Comparable<T>> EmptyNode<T> empty() {

@@ -16,6 +16,12 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.*;
 
+/**
+ * An immutable {@code Set} interface.
+ *
+ * @param <T>
+ * @since 2.0.0
+ */
 public interface Set<T> extends Traversable<T> {
 
     // TODO: set operations
