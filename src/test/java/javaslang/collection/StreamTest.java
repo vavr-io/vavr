@@ -197,6 +197,13 @@ public class StreamTest extends AbstractSeqTest {
         assertThat(Stream.of(1, 2, 3).combinations(2)).isEqualTo(Stream.of(Stream.of(1, 2), Stream.of(1, 3), Stream.of(2, 3)));
     }
 
+    // -- flatMap
+
+    @Test
+    public void shouldFlatMapInfiniteTraversable() {
+        assertThat(Stream.gen(1, i -> i + 1).flatMap(i -> List.of(i, 2 * i)).take(7)).isEqualTo(Stream.of(1, 2, 2, 4, 3, 6, 4));
+    }
+
     // -- peek
 
     @Override

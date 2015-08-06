@@ -331,7 +331,9 @@ abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>>, Seri
 
         @Override
         public Iterator<Tuple2<K, V>> iterator() {
-            return subNodes.flatMap(child -> child::iterator).iterator();
+            // we use Stream.ofAll(subNodes).flatMap(...) instead of subNodes.flatMap(...)
+            // because of the lazy implementation
+            return Stream.ofAll(subNodes).flatMap(child -> child::iterator).iterator();
         }
 
     }
@@ -402,7 +404,9 @@ abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>>, Seri
 
         @Override
         public Iterator<Tuple2<K, V>> iterator() {
-            return subNodes.flatMap(child -> child::iterator).iterator();
+            // we use Stream.ofAll(subNodes).flatMap(...) instead of subNodes.flatMap(...)
+            // because of the lazy implementation
+            return Stream.ofAll(subNodes).flatMap(child -> child::iterator).iterator();
         }
     }
 }
