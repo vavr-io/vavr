@@ -70,17 +70,17 @@ public interface RedBlackTree<T> extends BinarySearchTree<T> {
                 } else {
                     final TreeNode<T> node = (TreeNode<T>) tree;
                     final int comparison = node.comparator.compare(node.value, value);
-                    if (comparison < 0) {
-                        return balance(node.color, node.left, node.value, insert(node.right), node.comparator);
-                    } else if (comparison > 0) {
-                        return balance(node.color, insert(node.left), node.value, node.right, node.comparator);
+                    if (comparison > 0) {
+                        return lbalance(node.color, insert(node.left), node.value, node.right, node.comparator);
+                    } else if (comparison < 0) {
+                        return rbalance(node.color, node.left, node.value, insert(node.right), node.comparator);
                     } else {
                         return node;
                     }
                 }
             }
 
-            private TreeNode<T> balance(Color color, RedBlackTree<T> left, T value, RedBlackTree<T> right, Comparator<? super T> comparator) {
+            private TreeNode<T> lbalance(Color color, RedBlackTree<T> left, T value, RedBlackTree<T> right, Comparator<? super T> comparator) {
                 if (color == BLACK) {
                     if (!left.isEmpty()) {
                         final TreeNode<T> ln = (TreeNode<T>) left;
@@ -103,6 +103,12 @@ public interface RedBlackTree<T> extends BinarySearchTree<T> {
                             }
                         }
                     }
+                }
+                return new TreeNode<>(color, left, value, right, comparator);
+            }
+
+            private TreeNode<T> rbalance(Color color, RedBlackTree<T> left, T value, RedBlackTree<T> right, Comparator<? super T> comparator) {
+                if (color == BLACK) {
                     if (!right.isEmpty()) {
                         final TreeNode<T> rn = (TreeNode<T>) right;
                         if (rn.color == RED) {
