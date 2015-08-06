@@ -154,11 +154,11 @@ public interface RedBlackTree<T> extends BinarySearchTree<T> {
 
         private static final long serialVersionUID = 1L;
 
-        final Color color;
-        final RedBlackTree<T> left;
-        final T value;
-        final RedBlackTree<T> right;
-        final Comparator<? super T> comparator;
+        public final Color color;
+        public final RedBlackTree<T> left;
+        public final T value;
+        public final RedBlackTree<T> right;
+        public final Comparator<? super T> comparator;
 
         // This is no public API! The RedBlackTree takes care of passing the correct Comparator.
         private TreeNode(Color color, RedBlackTree<T> left, T value, RedBlackTree<T> right, Comparator<? super T> comparator) {
@@ -288,7 +288,7 @@ public interface RedBlackTree<T> extends BinarySearchTree<T> {
 
         private static final long serialVersionUID = 1L;
 
-        final Comparator<? super T> comparator;
+        public final Comparator<? super T> comparator;
 
         // This is no public API! The RedBlackTree takes care of passing the correct Comparator.
         private EmptyNode(Comparator<? super T> comparator) {
