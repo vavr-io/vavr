@@ -166,9 +166,9 @@ public interface Traversable<T> extends TraversableOnce<T>, FilterMonadic<Iterab
      * class MyCollection implements Serializable {
      *
      *     // Not allowed to be serialized!
-     *     private final transient Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
+     *     private final transient Lazy&lt;Integer&gt; hashCode = Lazy.of(() -&gt; Traversable.hash(this));
      *
-     *     @Override
+     *     &#64;Override
      *     public int hashCode() {
      *         return hashCode.get();
      *     }
@@ -180,11 +180,11 @@ public interface Traversable<T> extends TraversableOnce<T>, FilterMonadic<Iterab
      * directly return {@code Traversable.hash(this)} instead of asking a {@code Lazy} value:
      * <pre>
      * <code>
-     * interface List<T> {
+     * interface List&lt;T&gt; {
      *
-     *     class Nil<T> {
+     *     class Nil&lt;T&gt; {
      *
-     *         @Override
+     *         &#64;Override
      *         public int hashCode() {
      *             return Traversable.hash(this);
      *         }
@@ -193,6 +193,7 @@ public interface Traversable<T> extends TraversableOnce<T>, FilterMonadic<Iterab
      * </code>
      * </pre>
      *
+     * @param <T> Component type
      * @param objects An Iterable
      * @return The hashCode of the given Iterable
      * @throws NullPointerException if objects is null
