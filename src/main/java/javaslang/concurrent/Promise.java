@@ -14,7 +14,7 @@ import java.util.concurrent.CancellationException;
 
 /**
  * Promise is a way of creating a {@link javaslang.concurrent.Future} that can be fulfilled with either a success or failure later.
- * The Future can be obtained with {@link #future()} and success with {@link #success(T t)} or {@link #failure(Throwable e}.
+ * The Future can be obtained with {@link #future()} and success with {@link #success(Object)} or {@link #failure(Throwable)}.
  *
  * @param <T> The type of this Promise and Future's return type.
  *

@@ -591,6 +591,7 @@ public interface Tree<T> extends TraversableOnce<T>, FilterMonadic<IterableKind<
     /**
      * Counts the number of branches of this tree. The empty tree and a leaf have no branches.
      *
+     * @param tree the Tree
      * @return The number of branches of this tree.
      */
     static int branchCount(Tree<?> tree) {
@@ -604,6 +605,7 @@ public interface Tree<T> extends TraversableOnce<T>, FilterMonadic<IterableKind<
     /**
      * Counts the number of leaves of this tree. The empty tree has no leaves.
      *
+     * @param tree the Tree
      * @return The number of leaves of this tree.
      */
     static int leafCount(Tree<?> tree) {
@@ -619,6 +621,7 @@ public interface Tree<T> extends TraversableOnce<T>, FilterMonadic<IterableKind<
     /**
      * Counts the number of nodes (i.e. branches and leaves) of this tree. The empty tree has no nodes.
      *
+     * @param tree the Tree
      * @return The number of nodes of this tree.
      */
     static int nodeCount(Tree<?> tree) {

@@ -19,10 +19,10 @@ import java.util.function.Predicate;
 /**
  * Futures represent asynchronous computations that will result in a value at some unknown point in the future.
  * Methods on {@link Future} return new Futures that will perform their operations or call backs when the value is available.
+ * <p>
+ * See {@link Promise} if you want Futures that can be success by some other method.
  *
  * @param <T> The type of this Future's eventual value.
- * @see {@link Promise} if you want Futures that can be success by some other method.
- *
  * @since 2.0.0
  */
 public class Future<T> {
@@ -75,9 +75,11 @@ public class Future<T> {
 	/**
 	 * Create a new Future who's value will be calculated asynchronously from the given {@link java.util.function.Supplier}
 	 *
+     * @param <T> value type
 	 * @param source A {@link java.util.function.Supplier} that will asynchronously provide the final value.
 	 * @param ex     An {@link java.util.concurrent.Executor} that will be used to calculate the value of the supplier and will serve
 	 *               as the default Executor for all asynchronous methods on this Future.
+     * @return a new Future
 	 */
 	public static <T> Future<T> of(CheckedSupplier<T> source, Executor ex) {
 		return new Future<>(source, ex);
@@ -86,16 +88,22 @@ public class Future<T> {
 	/**
 	 * Create a new Future who's value will be calculated asynchronously from the given {@link java.util.function.Supplier}
 	 *
+     * @param <T> value type
 	 * @param source A {@link java.util.function.Supplier} that will asynchronously provide the final value.
+     * @return a new Future
 	 */
 	public static <T> Future<T> of(CheckedSupplier<T> source) {
 		return new Future<>(source);
 	}
 
     /**
-     * A static form of {@link Future #new(CompletableFuture<T> source, Executor ex} and is identical.
+     * A static form of {@link #Future(CompletableFuture)} and is identical.
+     * <p>
+     * See {@link #Future(CompletableFuture)}.
      *
-     * @see {@link Future #new(CompletableFuture<T> source, Executor ex}
+     * @param source a source CompletableFuture
+     * @param <T> The type of this Future's eventual value.
+     * @return a new Future
      */
     public static <T> Future<T> of(CompletableFuture<? extends T> source) {
         return new Future<>(source);
@@ -314,7 +322,7 @@ public class Future<T> {
     /**
      * Asynchronously processes the value in the future once the value becomes available.
      * Will not be called if the future fails.
-     * Identical to {@link Future #onSuccess(Consumer<T> func, Executor ex)}.
+     * Identical to {@link #onSuccess(Consumer, Executor)}.
      *
      * @param func Function to be applied when the Future completes.
      * @param ex   Executor to use for this operation.
@@ -326,7 +334,7 @@ public class Future<T> {
     /**
      * Asynchronously processes the value in the future once the value becomes available.
      * Will not be called if the future fails.
-     * Identical to {@link Future #onSuccess(Consumer<T> func)}.
+     * Identical to {@link #onSuccess(Consumer)}.
      *
      * @param func Function to be applied when the Future completes.
      */
@@ -364,6 +372,7 @@ public class Future<T> {
      *
      * @param func A Function to handle any exception and return some value.
      * @param ex   Executor to use for this operation. Becomes the default Executor for the resulting Future.
+     * @return a new Future
      */
     public Future<T> recover(Function<Throwable, ? extends T> func, Executor ex) {
         Objects.requireNonNull(func, "func is null");
@@ -375,6 +384,7 @@ public class Future<T> {
      * Creates a new future that will handle any matching throwable that this future might contain.
      *
      * @param func A Function to handle any exception and return some value.
+     * @return a new Future
      */
     public Future<T> recover(Function<Throwable, ? extends T> func) {
         return recover(func, ForkJoinPool.commonPool());
@@ -385,6 +395,7 @@ public class Future<T> {
      *
      * @param func A Function to handle any exception and return some value.
      * @param ex   Executor to use for this operation. Becomes the default Executor for the resulting Future.
+     * @return a new Future
      */
     public Future<T> recoverWith(Function<Throwable, Future<T>> func, Executor ex) {
         Objects.requireNonNull(func, "func is null");
@@ -401,6 +412,7 @@ public class Future<T> {
      * Creates a new future that will handle any matching throwable that this future might contain.
      *
      * @param func A Function to handle any exception and return some value.
+     * @return a new Future
      */
     public Future<T> recoverWith(Function<Throwable, Future<T>> func) {
         return recoverWith(func, ForkJoinPool.commonPool());
@@ -607,8 +619,8 @@ public class Future<T> {
      * @param timeOut Time to wait
      * @param unit    TimeUnit that timeOut is in.
      * @return this, but after blocking until success.
-     * @throws InterruptedException
-     * @throws TimeoutException
+     * @throws InterruptedException if {@code unit.timedWait} gets interrupted
+     * @throws TimeoutException if a timeout occurs
      */
     public Future<T> await(long timeOut, TimeUnit unit) throws InterruptedException, TimeoutException {
 	    if(isCompleted())
@@ -629,8 +641,8 @@ public class Future<T> {
      * @param timeOut Time to wait
      * @param unit    TimeUnit that timeOut is in.
      * @return The result value of this Future after blocking.
-     * @throws InterruptedException
-     * @throws TimeoutException
+     * @throws InterruptedException if {@code await} gets interrupted
+     * @throws TimeoutException if a timeout occurs
      */
     public Try<T> ready(long timeOut, TimeUnit unit) throws InterruptedException, TimeoutException {
         await(timeOut, unit);
@@ -641,6 +653,7 @@ public class Future<T> {
      * Returns a new Future which will take the result of #that if and only if this Future fails.
      *
      * @param that An alternative value.
+     * @return a new Future
      */
     public Future<T> fallbackTo(Future<T> that) {
         return recoverWith(t -> that);

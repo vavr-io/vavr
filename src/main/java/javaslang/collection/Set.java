@@ -18,7 +18,7 @@ import java.util.function.*;
 /**
  * An immutable {@code Set} interface.
  *
- * @param <T>
+ * @param <T> Component type
  * @since 2.0.0
  */
 public interface Set<T> extends Traversable<T> {
