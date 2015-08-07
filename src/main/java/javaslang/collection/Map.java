@@ -5,8 +5,12 @@
  */
 package javaslang.collection;
 
+import javaslang.FilterMonadic;
+import javaslang.Tuple2;
+
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -60,6 +64,19 @@ interface Map<K, V> extends /*TODO: Traversable<Map.Entry<K, V>>,*/ Function<K, 
         public Entry(K key, V value) {
             this.key = key;
             this.value = value;
+        }
+
+        public static <K, V> Entry<K, V> of(Tuple2<K, V> t) {
+            return new Entry<>(t._1, t._2);
+        }
+
+        @SuppressWarnings("unchecked")
+        public <X, Y> Entry<X, Y> flatMap(BiFunction<? super K, ? super V, ? extends Entry<? extends X, ? extends Y>> mapper) {
+            return (Entry<X, Y>) mapper.apply(key, value);
+        }
+
+        public <X, Y> Entry<X, Y> map(Function<? super K, ? extends X> keyMapper, Function<? super V, ? extends Y> valueMapper) {
+            return new Entry<>(keyMapper.apply(key), valueMapper.apply(value));
         }
 
         @Override

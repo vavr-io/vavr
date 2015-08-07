@@ -86,41 +86,13 @@ public interface λ<R> extends Serializable {
     Type<R> getType();
 
     /**
+    /**
      * Represents the type of a function which consists of <em>parameter types</em> and a <em>return type</em>.
      *
      * @param <R> the return type of the function
      * @since 2.0.0
      */
-    interface Type<R> {
-
-        /**
-         * Returns the return type of the {@code λ}.
-         *
-         * @return the return type
-         */
-        Class<R> returnType();
-
-        /**
-         * Presents the parameter types of the {@code λ} as an array.
-         *
-         * @return the parameter types
-         */
-        Class<?>[] parameterTypes();
-    }
-
-    /**
-     * This class is needed because the interface {@link Type} cannot use default methods to override Object's non-final
-     * methods equals, hashCode and toString.
-     * <p>
-     * See <a href="http://mail.openjdk.java.net/pipermail/lambda-dev/2013-March/008435.html">Allow default methods to
-     * override Object's methods</a>.
-     *
-     * @param <R> Result type of the function
-     * @since 2.0.0
-     * @deprecated Internal API, not intended to be used. This class will disappear from public API as soon as possible.
-     */
-    @Deprecated
-    abstract class AbstractType<R> implements Type<R>, Serializable {
+    abstract class Type<R> implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -141,7 +113,7 @@ public interface λ<R> extends Serializable {
          */
         @SuppressWarnings("unchecked")
         @Deprecated
-        protected AbstractType(λ<R> λ) {
+        protected Type(λ<R> λ) {
 
             // hiding this functionality
             final class ReflectionUtil {
@@ -167,12 +139,10 @@ public interface λ<R> extends Serializable {
         }
 
         @SuppressWarnings("unchecked")
-        @Override
         public Class<R> returnType() {
             return returnType;
         }
 
-        @Override
         public Class<?>[] parameterTypes() {
             return parameterTypes;
         }
@@ -181,8 +151,8 @@ public interface λ<R> extends Serializable {
         public boolean equals(Object o) {
             if (o == this) {
                 return true;
-            } else if (o instanceof AbstractType) {
-                final AbstractType<?> that = (AbstractType<?>) o;
+            } else if (o instanceof Type) {
+                final Type<?> that = (Type<?>) o;
                 return this.hashCode() == that.hashCode()
                         && this.returnType().equals(that.returnType)
                         && Arrays.equals(this.parameterTypes, that.parameterTypes);

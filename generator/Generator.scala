@@ -560,7 +560,7 @@ def generateMainClasses(): Unit = {
                * @since 2.0.0
                */
               @SuppressWarnings("deprecation")
-              final class Type$fullGenerics extends λ.AbstractType<R> {
+              final class Type$fullGenerics extends λ.Type<R> {
 
                   private static final long serialVersionUID = 1L;
 

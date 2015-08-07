@@ -19,11 +19,23 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
+ * {@code javaslang.collection.Iterator} is a powerful replacement for {@code java.util.Iterator}.
+ * Javaslang's {@code Iterator} extends Java's, so it integrates seemlessly in existing code.
+ * Both are data structures whose purpose is to iterate <em>once</em> over a sequence of elements.
+ * <p>
+ * <strong>Note:</strong> Iterators encapsulate mutable state.
+ * They are not meant to used concurrently by differnet threads.
+ * <p>
+ * There are two abstract methods: {@code hasNext} for checking if there is a next element available,
+ * and {@code next} which removes the next element from the iterator and returns it. They can be called
+ * an arbitrary amount of times. If {@code hasNext} returns false, a call of {@code next} will throw
+ * a {@code NoSuchElementException}.
+ * <p>
+ * <strong>Caution:</strong> Other methods than {@code hasNext} and {@code next} can be called only once (exclusively).
+ * More specifically, after calling a method it cannot be guaranteed that the next call will succeed.
+ *
  * An Iterator that can be only used once because it is a traversal pointer into a collection, and not a collection
  * itself.
- * <p>
- * Transformation such as map and filter can be applied to simply get a new Iterator which will only apply these
- * transformations when you ask for the next element.
  *
  * @param <T> Component type
  * @since 2.0.0
@@ -152,6 +164,75 @@ public interface Iterator<T> extends java.util.Iterator<T>, /*TODO: TraversableO
                 return iterator.next();
             }
         };
+    }
+
+    /**
+     * Removes up to n elements from this iterator.
+     *
+     * @param n A number
+     * @return The empty iterator, if {@code n <= 0} or this is empty, otherwise a new iterator without the first n elements.
+     */
+    default Iterator<T> drop(int n) {
+        if (n <= 0) {
+            return this;
+        } else if(!hasNext()) {
+            return Iterator.empty();
+        } else {
+            final Iterator<T> that = this;
+            return new Iterator<T>() {
+
+                int count = n;
+
+                @Override
+                public boolean hasNext() {
+                    while (count > 0 && that.hasNext()) {
+                        that.next(); // discarded
+                        count--;
+                    }
+                    return that.hasNext();
+                }
+
+                @Override
+                public T next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
+                    return that.next();
+                }
+            };
+        }
+    }
+
+    /**
+     * Take the first n elements from this iterator.
+     *
+     * @param n A number
+     * @return The empty iterator, if {@code n <= 0} or this is empty, otherwise a new iterator without the first n elements.
+     */
+    default Iterator<T> take(int n) {
+        if (n <= 0 || !hasNext()) {
+            return Iterator.empty();
+        } else {
+            final Iterator<T> that = this;
+            return new Iterator<T>() {
+
+                int count = n;
+
+                @Override
+                public boolean hasNext() {
+                    return count > 0 && that.hasNext();
+                }
+
+                @Override
+                public T next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
+                    count--;
+                    return that.next();
+                }
+            };
+        }
     }
 
     /**

@@ -190,7 +190,7 @@ final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<T> drop(int n) {
-        return HashSet.ofAll(list.get().drop(n));
+        return HashSet.ofAll(() -> iterator().drop(n));
     }
 
     @Override
@@ -437,13 +437,7 @@ final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<T> take(int n) {
-        HashSet<T> result = HashSet.empty();
-        Iterator<T> it = iterator();
-        while (n > 0 && it.hasNext()) {
-            result = result.add(it.next());
-            n--;
-        }
-        return result;
+        return HashSet.ofAll(() -> iterator().take(n));
     }
 
     @Override

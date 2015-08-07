@@ -203,7 +203,7 @@ public interface Function3<T1, T2, T3, R> extends λ<R> {
      * @since 2.0.0
      */
     @SuppressWarnings("deprecation")
-    final class Type<T1, T2, T3, R> extends λ.AbstractType<R> {
+    final class Type<T1, T2, T3, R> extends λ.Type<R> {
 
         private static final long serialVersionUID = 1L;
 
