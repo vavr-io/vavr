@@ -289,7 +289,20 @@ final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<T> intersperse(T element) {
+        // TODO strange behaviour for this collection
         return HashSet.ofAll(list.get().intersperse(element));
+    }
+
+    @Override
+    public String join(CharSequence delimiter,
+                CharSequence prefix,
+                CharSequence suffix) {
+        final StringBuilder builder = new StringBuilder(prefix);
+        forEach(t -> builder.append(String.valueOf(t)).append(String.valueOf(delimiter)));
+        if (!isEmpty()) {
+            builder.delete(builder.length() - delimiter.length(), builder.length());
+        }
+        return builder.append(suffix).toString();
     }
 
     @Override
