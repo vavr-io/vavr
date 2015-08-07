@@ -138,7 +138,7 @@ import java.util.stream.StreamSupport;
  * <li>{@link #flatMap(Function)}</li>
  * <li>{@link #flatten()}</li>
  * <li>{@link #grouped(int)}</li>
- * <li>TODO(#110): #groupBy</li>
+ * <li>{@link #groupBy(Function)}</li>
  * <li>{@link #intersperse(Object)}</li>
  * <li>{@link #map(Function)}</li>
  * <li>{@link #partition(Predicate)}</li>
