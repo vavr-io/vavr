@@ -86,6 +86,9 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<Object> flatten();
 
     @Override
+    <C> Map<C, ? extends LinearSeq<T>> groupBy(Function<? super T, ? extends C> classifier);
+
+    @Override
     LinearSeq<? extends LinearSeq<T>> grouped(int size);
 
     @Override

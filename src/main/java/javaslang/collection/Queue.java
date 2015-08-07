@@ -646,6 +646,15 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
+    public <C> Map<C, Queue<T>> groupBy(Function<? super T, ? extends C> classifier) {
+        return foldLeft(HashMap.empty(), (map, t) -> {
+            final C key = classifier.apply(t);
+            final Queue<T> queue = map.getOption(key).orElse(Queue.empty()).enqueue(t);
+            return map.put(key, queue);
+        });
+    }
+
+    @Override
     public Queue<Queue<T>> grouped(int size) {
         return toList().grouped(size).map(Queue::ofAll).toQueue();
     }

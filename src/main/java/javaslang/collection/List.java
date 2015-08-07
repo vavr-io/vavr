@@ -766,6 +766,17 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
+    default <C> Map<C, List<T>> groupBy(Function<? super T, ? extends C> classifier) {
+        Map<C, List<T>> result = HashMap.empty();
+        for (T t : this) {
+            final C key = classifier.apply(t);
+            final List<T> list = result.get(key);
+            result = result.put(key, (list == null) ? List.of(t) : list.prepend(t));
+        }
+        return result;
+    }
+
+    @Override
     default List<List<T>> grouped(int size) {
         return sliding(size, size);
     }

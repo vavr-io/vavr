@@ -86,6 +86,9 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<Object> flatten();
 
     @Override
+    <C> Map<C, ? extends IndexedSeq<T>> groupBy(Function<? super T, ? extends C> classifier);
+
+    @Override
     IndexedSeq<? extends IndexedSeq<T>> grouped(int size);
 
     @Override

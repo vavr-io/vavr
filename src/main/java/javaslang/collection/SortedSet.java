@@ -5,6 +5,8 @@
  */
 package javaslang.collection;
 
+import java.util.function.Function;
+
 /**
  * An immutable {@code SortedSet} interface.
  *
@@ -16,6 +18,9 @@ public interface SortedSet<T> /*extends Set<T>*/ {
     // TODO: additional SortedSet methods
 
     // -- Adjusted return types of Set methods
+
+    // TODO: @Override
+    <C> Map<C, ? extends SortedSet<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     // TODO
 

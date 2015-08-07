@@ -5,7 +5,13 @@
  */
 package javaslang.collection;
 
+import javaslang.control.None;
+import javaslang.control.Option;
+import javaslang.control.Some;
+
 import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * An immutable {@code HashMap} implementation based on a
@@ -80,13 +86,9 @@ class HashMap<K, V> implements Map<K, V> {
         }
     }
 
-    public boolean isEmpty() {
-        return tree.isEmpty();
-    }
-
     @Override
-    public int size() {
-        return tree.size();
+    public boolean containsKey(K key) {
+        return tree.containsKey(key);
     }
 
     @Override
@@ -95,8 +97,33 @@ class HashMap<K, V> implements Map<K, V> {
     }
 
     @Override
+    public Option<V> getOption(K key) {
+        if (containsKey(key)) {
+            return new Some<>(get(key));
+        } else {
+            return None.instance();
+        }
+    }
+
+    @Override
     public V getOrDefault(K key, V defaultValue) {
         return tree.get(key).orElse(defaultValue);
+    }
+
+    @Override
+    public <C> Map<C, HashMap<K, V>> groupBy(Function<? super Entry<? super K, ? super V>, ? extends C> classifier) {
+        Map<C, HashMap<K, V>> result = HashMap.empty();
+        for (Entry<K, V> entry : this) {
+            final C key = classifier.apply(entry);
+            final HashMap<K, V> map = result.get(key);
+            result = result.put(key, (map == null) ? HashMap.of(entry) : map.put(entry.key, entry.value));
+        }
+        return result;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return tree.isEmpty();
     }
 
     @Override
@@ -105,8 +132,11 @@ class HashMap<K, V> implements Map<K, V> {
     }
 
     @Override
-    public boolean containsKey(K key) {
-        return tree.containsKey(key);
+    public HashMap<K, V> peek(Consumer<? super Entry<K, V>> action) {
+        if (!isEmpty()) {
+            action.accept(iterator().next());
+        }
+        return this;
     }
 
     @Override
@@ -119,4 +149,8 @@ class HashMap<K, V> implements Map<K, V> {
         return new HashMap<>(tree.remove(key));
     }
 
+    @Override
+    public int size() {
+        return tree.size();
+    }
 }
