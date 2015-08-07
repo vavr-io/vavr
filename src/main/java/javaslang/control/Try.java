@@ -9,10 +9,9 @@ import javaslang.CheckedFunction1;
 import javaslang.FilterMonadic;
 import javaslang.Kind;
 import javaslang.Value;
+import javaslang.collection.Iterator;
 import javaslang.collection.TraversableOnce;
 
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -192,11 +191,7 @@ public interface Try<T> extends TraversableOnce<T>, Value<T>,
 
     @Override
     default Iterator<T> iterator() {
-        if (isSuccess()) {
-            return Collections.singleton(get()).iterator();
-        } else {
-            return Collections.emptyIterator();
-        }
+        return isSuccess() ? Iterator.of(get()) : Iterator.empty();
     }
 
     /**

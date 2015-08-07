@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.Kind;
+import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.None;
@@ -52,6 +53,8 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     private final List<T> front;
     private final List<T> rear;
 
+    private final /*TODO(FIXME): transient*/ Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
+
     /**
      * Creates a Queue consisting of a front List and a rear List.
      * <p>
@@ -62,9 +65,9 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
      * @param rear  A List of rear elements, in reverse order.
      */
     public Queue(List<T> front, List<T> rear) {
-        final boolean isFrontEmpty = front.isEmpty();
-        this.front = isFrontEmpty ? rear.reverse() : front;
-        this.rear = isFrontEmpty ? front : rear;
+        final boolean frontIsEmpty = front.isEmpty();
+        this.front = frontIsEmpty ? rear.reverse() : front;
+        this.rear = frontIsEmpty ? front : rear;
     }
 
     /**
@@ -965,7 +968,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
             return true;
         } else if (o instanceof Queue) {
             final Queue<?> that = (Queue<?>) o;
-            return this.toList().equals(that.toList());
+            return this.hashCode() == that.hashCode() && this.toList().equals(that.toList());
         } else {
             return false;
         }
@@ -973,11 +976,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
 
     @Override
     public int hashCode() {
-        int hashCode = 1;
-        for (T element : this) {
-            hashCode = 31 * hashCode + Objects.hashCode(element);
-        }
-        return hashCode;
+        return hashCode.get();
     }
 
     @Override

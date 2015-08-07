@@ -8,12 +8,9 @@ package javaslang.test;
 import javaslang.Tuple;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
-import javaslang.collection.Tree;
 import org.junit.Test;
 
-import java.util.Objects;
 import java.util.Random;
-import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -49,9 +46,9 @@ public class ArbitraryTest {
 
     @Test
     public void shouldFilterArbitrary() {
-        final Arbitrary<BinaryTree<Integer>> arbitraryTree = new ArbitraryBinaryTree(0, 1000);
-        final Arbitrary<BinaryTree<Integer>> arbitraryTreeWithEvenNodeCount = arbitraryTree.filter(tree -> tree.nodeCount() % 3 == 0);
-        assertThat(arbitraryTreeWithEvenNodeCount.apply(10).apply(new Random())).isNotNull();
+        final Arbitrary<Integer> ints = Arbitrary.integer();
+        final Arbitrary<Integer> evenInts = ints.filter(i -> i % 2 == 0);
+        assertThat(evenInts.apply(10).apply(new Random())).isNotNull();
     }
 
     // -- flatten()
@@ -161,179 +158,40 @@ public class ArbitraryTest {
         }
     }
 
-    interface BinaryTree<T> extends Tree<T> {
-
-        static <T> BinaryTree<T> of(BinaryTree<T> left, T value, BinaryTree<T> right) {
-            Objects.requireNonNull(left, "left is null");
-            Objects.requireNonNull(right, "right is null");
-            if (left.isEmpty() && right.isEmpty()) {
-                return new Leaf<>(value);
-            } else {
-                return new Branch<>(left, value, right);
-            }
-        }
+    interface BinaryTree<T> {
 
         static <T> Branch<T> branch(BinaryTree<T> left, T value, BinaryTree<T> right) {
-            Objects.requireNonNull(left, "left is null");
-            Objects.requireNonNull(right, "right is null");
-            if (left.isEmpty() && right.isEmpty()) {
-                throw new IllegalArgumentException("left and right are Nil - use BinaryTree.of(left, value, right) if in doubt.");
-            }
             return new Branch<>(left, value, right);
         }
 
-        static <T> Leaf<T> leaf(T value) {
-            return new Leaf<>(value);
+        static <T> Branch<T> leaf(T value) {
+            return new Branch<>(empty(), value, empty());
         }
 
-        static <T> Nil<T> empty() {
-            return Nil.instance();
+        static <T> Empty<T> empty() {
+            return Empty.instance();
         }
 
-        @Override
-        List<BinaryTree<T>> getChildren();
+        class Branch<T> implements BinaryTree<T> {
 
-        BinaryTree<T> left();
+            final BinaryTree<T> left;
+            final T value;
+            final BinaryTree<T> right;
 
-        BinaryTree<T> right();
-
-        @Override
-        default <U> BinaryTree<U> map(Function<? super T, ? extends U> mapper) {
-            if (isEmpty()) {
-                return Nil.instance();
-            } else {
-                return BinaryTree.of(left().map(mapper), mapper.apply(getValue()), right().map(mapper));
-            }
-        }
-
-        final class Leaf<T> implements BinaryTree<T> {
-
-            private final T value;
-
-            public Leaf(T value) {
-                this.value = value;
-            }
-
-            @Override
-            public BinaryTree<T> left() {
-                return BinaryTree.empty();
-            }
-
-            @Override
-            public BinaryTree<T> right() {
-                return BinaryTree.empty();
-            }
-
-            @Override
-            public T getValue() {
-                return value;
-            }
-
-            @Override
-            public boolean isEmpty() {
-                return false;
-            }
-
-            @Override
-            public boolean isLeaf() {
-                return true;
-            }
-
-            @Override
-            public List<BinaryTree<T>> getChildren() {
-                return List.empty();
-            }
-        }
-
-        final class Branch<T> implements BinaryTree<T> {
-
-            private final BinaryTree<T> left;
-            private final BinaryTree<T> right;
-            private final T value;
-
-            public Branch(BinaryTree<T> left, T value, BinaryTree<T> right) {
-                Objects.requireNonNull(left, "left is null");
-                Objects.requireNonNull(right, "right is null");
-                if (left.isEmpty() && right.isEmpty()) {
-                    throw new IllegalArgumentException("left and right are Nil - use Leaf instead of Branch");
-                }
+            Branch(BinaryTree<T> left, T value, BinaryTree<T> right) {
                 this.left = left;
-                this.right = right;
                 this.value = value;
-            }
-
-            @Override
-            public BinaryTree<T> left() {
-                return left;
-            }
-
-            @Override
-            public BinaryTree<T> right() {
-                return right;
-            }
-
-            @Override
-            public T getValue() {
-                return value;
-            }
-
-            @Override
-            public boolean isEmpty() {
-                return false;
-            }
-
-            @Override
-            public boolean isLeaf() {
-                return false;
-            }
-
-            @Override
-            public List<BinaryTree<T>> getChildren() {
-                return List.of(left, right).filter(tree -> !tree.isEmpty());
+                this.right = right;
             }
         }
 
-        final class Nil<T> implements BinaryTree<T> {
+        class Empty<T> implements BinaryTree<T> {
 
-            private static final Nil<?> INSTANCE = new Nil<>();
+            private static final Empty<?> INSTANCE = new Empty<>();
 
-            private Nil() {
-            }
-
-            public static <T> Nil<T> instance() {
-                @SuppressWarnings("unchecked")
-                final Nil<T> instance = (Nil<T>) INSTANCE;
-                return instance;
-            }
-
-            @Override
-            public BinaryTree<T> left() {
-                throw new UnsupportedOperationException("left of Nil");
-            }
-
-            @Override
-            public BinaryTree<T> right() {
-                throw new UnsupportedOperationException("right of Nil");
-            }
-
-            @Override
-            public T getValue() {
-                throw new UnsupportedOperationException("getValue of Nil");
-            }
-
-            @Override
-            public boolean isEmpty() {
-                return true;
-            }
-
-            @Override
-            public boolean isLeaf() {
-                return false;
-            }
-
-            @Override
-            public List<BinaryTree<T>> getChildren() {
-                return List.empty();
+            @SuppressWarnings("unchecked")
+            static <T> Empty<T> instance() {
+                return (Empty<T>) INSTANCE;
             }
         }
     }

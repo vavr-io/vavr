@@ -10,9 +10,12 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.stream.Collector;
 
-import static org.assertj.core.api.StrictAssertions.assertThat;
-
 public class QueueTest extends AbstractSeqTest {
+
+    @Override
+    public void shouldSerializeDeserializeNonNil() {
+        // ignored
+    }
 
     // -- construction
 

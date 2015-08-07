@@ -5,6 +5,7 @@
  */
 package javaslang;
 
+import javaslang.collection.Iterator;
 import javaslang.collection.TraversableOnce;
 import javaslang.control.None;
 import javaslang.control.Option;
@@ -13,8 +14,6 @@ import javaslang.control.Some;
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -52,7 +51,8 @@ public final class Lazy<T> implements Supplier<T>, Value<T>, TraversableOnce<T>,
     private volatile T value = null;
 
     private Lazy(Supplier<? extends T> supplier) {
-        this.supplier = Objects.requireNonNull(supplier, "supplier is null");
+        Objects.requireNonNull(supplier, "supplier is null");
+        this.supplier = supplier;
     }
 
     /**
@@ -192,7 +192,7 @@ public final class Lazy<T> implements Supplier<T>, Value<T>, TraversableOnce<T>,
 
     @Override
     public Iterator<T> iterator() {
-        return Collections.singleton(get()).iterator();
+        return Iterator.of(get());
     }
 
     @Override

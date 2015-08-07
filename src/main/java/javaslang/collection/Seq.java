@@ -12,7 +12,6 @@ import javaslang.control.Option;
 import javaslang.control.Some;
 
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.*;
 

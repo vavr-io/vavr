@@ -108,8 +108,8 @@ public abstract class AbstractTreeTest {
     public void shouldGetChildrenOfBranch() {
         final List<? extends Tree<Integer>> children = tree().getChildren();
         assertThat(children.length()).isEqualTo(2);
-        assertThat(children.get(0).toLispString()).isEqualTo("(2 (4 7) 5)");
-        assertThat(children.get(1).toLispString()).isEqualTo("(3 (6 8 9))");
+        assertThat(children.get(0).toString()).isEqualTo("(2 (4 7) 5)");
+        assertThat(children.get(1).toString()).isEqualTo("(3 (6 8 9))");
     }
 
     @Test
@@ -121,36 +121,36 @@ public abstract class AbstractTreeTest {
 
     @Test
     public void shouldCountBranchesOfNil() {
-        assertThat(empty().branchCount()).isEqualTo(0);
+        assertThat(Tree.branchCount(empty())).isEqualTo(0);
     }
 
     @Test
     public void shouldCountBranchesOfNonNil() {
-        assertThat(tree().branchCount()).isEqualTo(5);
+        assertThat(Tree.branchCount(tree())).isEqualTo(5);
     }
 
     // -- leafCount
 
     @Test
     public void shouldCountLeavesOfNil() {
-        assertThat(empty().leafCount()).isEqualTo(0);
+        assertThat(Tree.leafCount(empty())).isEqualTo(0);
     }
 
     @Test
     public void shouldCountLeavesOfNonNil() {
-        assertThat(tree().leafCount()).isEqualTo(4);
+        assertThat(Tree.leafCount(tree())).isEqualTo(4);
     }
 
     // -- nodeCount
 
     @Test
     public void shouldCountNodesOfNil() {
-        assertThat(empty().nodeCount()).isEqualTo(0);
+        assertThat(Tree.nodeCount(empty())).isEqualTo(0);
     }
 
     @Test
     public void shouldCountNodesOfNonNil() {
-        assertThat(tree().nodeCount()).isEqualTo(9);
+        assertThat(Tree.nodeCount(tree())).isEqualTo(9);
     }
 
     // -- cotains
@@ -197,29 +197,29 @@ public abstract class AbstractTreeTest {
 
     @Test
     public void shouldFlattenNil() {
-        assertThat(empty().flatten()).isEqualTo(List.empty());
+        assertThat(empty().traverse()).isEqualTo(List.empty());
     }
 
     // -- flatten(Order)
 
     @Test
     public void shouldFlattenTreeUsingPreOrder() {
-        assertThat(tree().flatten(Tree.Order.PRE_ORDER)).isEqualTo(List.of(1, 2, 4, 7, 5, 3, 6, 8, 9));
+        assertThat(tree().traverse(Tree.Order.PRE_ORDER)).isEqualTo(List.of(1, 2, 4, 7, 5, 3, 6, 8, 9));
     }
 
     @Test
     public void shouldFlattenTreeUsingInOrder() {
-        assertThat(tree().flatten(Tree.Order.IN_ORDER)).isEqualTo(List.of(7, 4, 2, 5, 1, 8, 6, 9, 3));
+        assertThat(tree().traverse(Tree.Order.IN_ORDER)).isEqualTo(List.of(7, 4, 2, 5, 1, 8, 6, 9, 3));
     }
 
     @Test
     public void shouldFlattenTreeUsingPostOrder() {
-        assertThat(tree().flatten(Tree.Order.POST_ORDER)).isEqualTo(List.of(7, 4, 5, 2, 8, 9, 6, 3, 1));
+        assertThat(tree().traverse(Tree.Order.POST_ORDER)).isEqualTo(List.of(7, 4, 5, 2, 8, 9, 6, 3, 1));
     }
 
     @Test
     public void shouldFlattenTreeUsingLevelOrder() {
-        assertThat(tree().flatten(Tree.Order.LEVEL_ORDER)).isEqualTo(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
+        assertThat(tree().traverse(Tree.Order.LEVEL_ORDER)).isEqualTo(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
     }
 
     // -- map
@@ -231,31 +231,19 @@ public abstract class AbstractTreeTest {
 
     @Test
     public void shouldMapTree() {
-        assertThat(tree().map(i -> (char) (i + 64)).toLispString()).isEqualTo("(A (B (D G) E) (C (F H I)))");
+        assertThat(tree().map(i -> (char) (i + 64)).toString()).isEqualTo("(A (B (D G) E) (C (F H I)))");
     }
 
     // -- toListString
 
     @Test
     public void shouldConvertNilToLispString() {
-        assertThat(empty().toLispString()).isEqualTo("()");
+        assertThat(empty().toString()).isEqualTo("()");
     }
 
     @Test
     public void shouldConvertNonNilToLispString() {
-        assertThat(tree().toLispString()).isEqualTo("(1 (2 (4 7) 5) (3 (6 8 9)))");
-    }
-
-    // -- toIndentedString
-
-    @Test
-    public void shouldConvertNilToIndentedString() {
-        assertThat(empty().toIndentedString()).isEqualTo("");
-    }
-
-    @Test
-    public void shouldConvertNonNilToIndentedString() {
-        assertThat(tree().toIndentedString().replaceAll("\\r", "")).isEqualTo("\n1\n  2\n    4\n      7\n    5\n  3\n    6\n      8\n      9");
+        assertThat(tree().toString()).isEqualTo("(1 (2 (4 7) 5) (3 (6 8 9)))");
     }
 
     // -- Serializable interface

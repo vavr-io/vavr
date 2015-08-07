@@ -8,11 +8,11 @@ package javaslang.test;
 import javaslang.FilterMonadic;
 import javaslang.Kind;
 import javaslang.Tuple2;
+import javaslang.collection.Iterator;
 import javaslang.collection.Stream;
 import javaslang.collection.TraversableOnce;
 import javaslang.control.Some;
 
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.Random;
 import java.util.function.Consumer;

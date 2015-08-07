@@ -6,7 +6,6 @@
 package javaslang.collection;
 
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -24,10 +23,6 @@ interface Map<K, V> extends /*TODO: Traversable<Map.Entry<K, V>>,*/ Function<K, 
         return get(key);
     }
 
-    int size();
-
-    Iterator<Entry<K, V>> iterator();
-
     boolean containsKey(K key);
 
     // TODO
@@ -40,12 +35,17 @@ interface Map<K, V> extends /*TODO: Traversable<Map.Entry<K, V>>,*/ Function<K, 
 
     V getOrDefault(K key, V defaultValue);
 
+    // @Override
+    Iterator<Entry<K, V>> iterator();
+
     // TODO
     // Set<K> keySet();
 
     Map<K, V> put(K key, V value);
 
     Map<K, V> remove(K key);
+
+    int size();
 
     // TODO
     // Traversable<V> values();
@@ -77,7 +77,7 @@ interface Map<K, V> extends /*TODO: Traversable<Map.Entry<K, V>>,*/ Function<K, 
 
         @Override
         public int hashCode() {
-            return Objects.hash(key) * 31 + Objects.hash(value);
+            return Objects.hash(key, value);
         }
 
         @Override

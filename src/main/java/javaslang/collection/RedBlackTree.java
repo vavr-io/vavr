@@ -5,6 +5,8 @@
  */
 package javaslang.collection;
 
+import javaslang.Lazy;
+
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
@@ -14,11 +16,13 @@ import static javaslang.collection.RedBlackTree.Color.RED;
 
 /**
  * An immutable {@code RedBlackTree} implementation, based on the book "Purely Functional Data Structures" (Okasaki, 2003).
+ * <p>
+ * RedBlackTrees are typically used to implement sorted sets.
  *
  * @param <T> Component type
  * @since 2.0.0
  */
-public interface RedBlackTree<T> extends BinarySearchTree<T> {
+public interface RedBlackTree<T> {
 
     static <T extends Comparable<T>> EmptyNode<T> empty() {
         return new EmptyNode<>(T::compareTo);
@@ -38,33 +42,6 @@ public interface RedBlackTree<T> extends BinarySearchTree<T> {
         return RedBlackTree.empty(comparator).add(value);
     }
 
-    @SuppressWarnings({ "unchecked", "varargs" })
-    @SafeVarargs
-    static <T extends Comparable<T>> RedBlackTree<T> of(T... values) {
-        Objects.requireNonNull(values, "values is null");
-        return RedBlackTree.<T> empty().addAll(values);
-    }
-
-    @SuppressWarnings({ "unchecked", "varargs" })
-    @SafeVarargs
-    static <T extends Comparable<T>> RedBlackTree<T> of(Comparator<? super T> comparator, T... values) {
-        Objects.requireNonNull(comparator, "comparator is null");
-        Objects.requireNonNull(values, "values is null");
-        return RedBlackTree.empty(comparator).addAll(values);
-    }
-
-    static <T extends Comparable<T>> RedBlackTree<T> ofAll(Iterable<? extends T> values) {
-        Objects.requireNonNull(values, "values is null");
-        return RedBlackTree.<T> empty().addAll(values);
-    }
-
-    static <T extends Comparable<T>> RedBlackTree<T> ofAll(Comparator<? super T> comparator, Iterable<? extends T> values) {
-        Objects.requireNonNull(comparator, "comparator is null");
-        Objects.requireNonNull(values, "values is null");
-        return RedBlackTree.empty(comparator).addAll(values);
-    }
-
-    @Override
     default TreeNode<T> add(T value) {
 
         class Util {
@@ -96,26 +73,20 @@ public interface RedBlackTree<T> extends BinarySearchTree<T> {
         return new TreeNode<>(BLACK, node.left, node.value, node.right, node.comparator);
     }
 
-    @SuppressWarnings({ "unchecked", "varargs" })
-    @Override
-    default TreeNode<T> addAll(T... values) {
-        Objects.requireNonNull(values, "values is null");
-        RedBlackTree<T> node = this;
-        for (T value : values) {
-            node = node.add(value);
-        }
-        return (TreeNode<T>) node;
-    }
+    /**
+     * Checks, if this {@code RedBlackTree} contains the given {@code value}.
+     *
+     * @param value A value.
+     * @return true, if this tree contains the value, false otherwise.
+     */
+    boolean contains(T value);
 
-    @Override
-    default TreeNode<T> addAll(Iterable<? extends T> values) {
-        Objects.requireNonNull(values, "values is null");
-        RedBlackTree<T> node = this;
-        for (T value : values) {
-            node = node.add(value);
-        }
-        return (TreeNode<T>) node;
-    }
+    /**
+     * Checks if this {@code RedBlackTree} is empty, i.e. an instance of {@code EmptyNode}.
+     *
+     * @return true, if it is empty, false otherwise.
+     */
+    boolean isEmpty();
 
     /**
      * Compares color, value and sub-trees. The comparator is not compared because function equality is not computable.
@@ -166,6 +137,8 @@ public interface RedBlackTree<T> extends BinarySearchTree<T> {
         public final RedBlackTree<T> right;
         public final Comparator<? super T> comparator;
 
+        private final transient Lazy<Integer> hashCode;
+
         // This is no public API! The RedBlackTree takes care of passing the correct Comparator.
         private TreeNode(Color color, RedBlackTree<T> left, T value, RedBlackTree<T> right, Comparator<? super T> comparator) {
             this.color = color;
@@ -173,6 +146,7 @@ public interface RedBlackTree<T> extends BinarySearchTree<T> {
             this.value = value;
             this.right = right;
             this.comparator = comparator;
+            this.hashCode =  Lazy.of(() -> Objects.hash(this.value, this.left, this.right));
         }
 
         @Override
@@ -202,7 +176,7 @@ public interface RedBlackTree<T> extends BinarySearchTree<T> {
 
         @Override
         public int hashCode() {
-            return Objects.hash(value, left, right);
+            return hashCode.get();
         }
 
         @Override

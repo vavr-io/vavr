@@ -6,12 +6,11 @@
 package javaslang.control;
 
 import javaslang.*;
+import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
 import javaslang.collection.TraversableOnce;
 
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -684,7 +683,7 @@ public interface Match<R> extends Function<Object, R> {
 
                 @Override
                 public Iterator<R> iterator() {
-                    return result.isEmpty() ? Collections.emptyIterator() : Collections.singleton(get()).iterator();
+                    return result.isEmpty() ? Iterator.empty() : Iterator.of(get());
                 }
 
                 private boolean isMatching(Supplier<Predicate<? super Object>> predicate) {
@@ -763,7 +762,7 @@ public interface Match<R> extends Function<Object, R> {
 
             @Override
             public Iterator<R> iterator() {
-                return Collections.singleton(result.get()).iterator();
+                return Iterator.of(get());
             }
         }
     }

@@ -8,10 +8,9 @@ package javaslang.control;
 import javaslang.FilterMonadic;
 import javaslang.Kind;
 import javaslang.Value;
+import javaslang.collection.Iterator;
 import javaslang.collection.TraversableOnce;
 
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -323,9 +322,9 @@ public interface Either<L, R> {
         @Override
         public Iterator<L> iterator() {
             if (either.isLeft()) {
-                return Collections.singleton(asLeft()).iterator();
+                return Iterator.of(asLeft());
             } else {
-                return Collections.emptyIterator();
+                return Iterator.empty();
             }
         }
 
@@ -550,9 +549,9 @@ public interface Either<L, R> {
         @Override
         public Iterator<R> iterator() {
             if (either.isRight()) {
-                return Collections.singleton(asRight()).iterator();
+                return Iterator.of(asRight());
             } else {
-                return Collections.emptyIterator();
+                return Iterator.empty();
             }
         }
 

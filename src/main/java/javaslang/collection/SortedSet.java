@@ -13,6 +13,10 @@ package javaslang.collection;
  */
 public interface SortedSet<T> /*extends Set<T>*/ {
 
+    // TODO: additional SortedSet methods
+
+    // -- Adjusted return types of Set methods
+
     // TODO
 
 }

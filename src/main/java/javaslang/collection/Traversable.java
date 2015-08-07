@@ -7,6 +7,7 @@ package javaslang.collection;
 
 import javaslang.FilterMonadic;
 import javaslang.Kind;
+import javaslang.Kind.IterableKind;
 import javaslang.Tuple2;
 import javaslang.control.Match;
 import javaslang.control.None;
@@ -22,6 +23,8 @@ import java.util.stream.StreamSupport;
 /**
  * An interface for inherently recursive data structures. The order of elements is determined by
  * {@link Iterable#iterator()}, which may vary each time it is called.
+ * <p>
+ * Implementations of {@code Traversable} should calculate the {@code hashCode} via {@link #hash(Iterable)}.
  * <p>
  * Basic operations:
  *
@@ -152,7 +155,55 @@ import java.util.stream.StreamSupport;
  * @param <T> Component type
  * @since 1.1.0
  */
-public interface Traversable<T> extends TraversableOnce<T>, FilterMonadic<Traversable.IterableKind<?>, T> {
+public interface Traversable<T> extends TraversableOnce<T>, FilterMonadic<IterableKind<?>, T> {
+
+    /**
+     * Used by collections to compute the hashCode only once.
+     * <p>
+     * Idiom:
+     * <pre>
+     * <code>
+     * class MyCollection implements Serializable {
+     *
+     *     // Not allowed to be serialized!
+     *     private final transient Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
+     *
+     *     @Override
+     *     public int hashCode() {
+     *         return hashCode.get();
+     *     }
+     * }
+     * </code>
+     * </pre>
+     *
+     * <strong>Note:</strong> In the case of an empty collection, such as {@code List.Nil} it is recommended to
+     * directly return {@code Traversable.hash(this)} instead of asking a {@code Lazy} value:
+     * <pre>
+     * <code>
+     * interface List<T> {
+     *
+     *     class Nil<T> {
+     *
+     *         @Override
+     *         public int hashCode() {
+     *             return Traversable.hash(this);
+     *         }
+     *     }
+     * }
+     * </code>
+     * </pre>
+     *
+     * @param objects An Iterable
+     * @return The hashCode of the given Iterable
+     * @throws NullPointerException if objects is null
+     */
+    static <T> int hash(Iterable<? extends T> objects) {
+        int hashCode = 1;
+        for (Object o : objects) {
+            hashCode = 31 * hashCode + Objects.hashCode(o);
+        }
+        return hashCode;
+    }
 
     /**
      * Calculates the average of this elements. Returns {@code None} if this is empty, otherwise {@code Some(average)}.
@@ -534,6 +585,11 @@ public interface Traversable<T> extends TraversableOnce<T>, FilterMonadic<Traver
     @Override
     boolean isEmpty();
 
+    /**
+     * An iterator by means of head() and tail(). Subclasses may want to override this method.
+     *
+     * @return A new Iterator of this Traversable elements.
+     */
     @Override
     default Iterator<T> iterator() {
         return new Iterator<T>() {
@@ -1186,22 +1242,4 @@ public interface Traversable<T> extends TraversableOnce<T>, FilterMonadic<Traver
      * @return A new List containing all elements of this List paired with their index, starting with 0.
      */
     Traversable<Tuple2<T, Integer>> zipWithIndex();
-
-    /**
-     * A {@code Kind} representation of Java's {@code `Iterable`} needed for {@link javaslang.FilterMonadic} operations.
-     *
-     * @param <T> component type
-     */
-    interface IterableKind<T> extends Iterable<T>, Kind<IterableKind<?>, T> {
-
-        @SuppressWarnings("unchecked")
-        static <T> IterableKind<T> lift(Iterable<? extends T> iterable) {
-            return (IterableKind<T>) iterable;
-        }
-
-        @SuppressWarnings("unchecked")
-        static <T> Iterable<T> narrow(IterableKind<? extends T> iterableKind) {
-            return (Iterable<T>) iterableKind;
-        }
-    }
 }

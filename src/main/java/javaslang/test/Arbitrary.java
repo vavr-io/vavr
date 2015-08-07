@@ -7,12 +7,12 @@ package javaslang.test;
 
 import javaslang.FilterMonadic;
 import javaslang.Kind;
+import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
 import javaslang.collection.TraversableOnce;
 import javaslang.control.Some;
 
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;

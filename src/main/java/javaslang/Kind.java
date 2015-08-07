@@ -33,4 +33,22 @@ package javaslang;
  * @since 2.0.0
  */
 public interface Kind<TYPE extends Kind<TYPE, ?>, T> {
+
+    /**
+     * A {@code Kind} representation of Java's {@code `Iterable`}, e.g. needed for {@link javaslang.FilterMonadic} operations.
+     *
+     * @param <T> component type
+     */
+    interface IterableKind<T> extends java.lang.Iterable<T>, Kind<IterableKind<?>, T> {
+
+        @SuppressWarnings("unchecked")
+        static <T> IterableKind<T> lift(Iterable<? extends T> iterable) {
+            return (IterableKind<T>) iterable;
+        }
+
+        @SuppressWarnings("unchecked")
+        static <T> Iterable<T> narrow(IterableKind<? extends T> iterableKind) {
+            return (Iterable<T>) iterableKind;
+        }
+    }
 }

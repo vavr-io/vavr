@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.Kind;
+import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.None;
@@ -176,7 +177,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
             return result;
         } else if (elements instanceof NavigableSet) {
             List<T> result = Nil.instance();
-            final Iterator<T> iterator = ((NavigableSet<T>) elements).descendingIterator();
+            final java.util.Iterator<T> iterator = ((NavigableSet<T>) elements).descendingIterator();
             while (iterator.hasNext()) {
                 result = result.prepend(iterator.next());
             }
@@ -1219,7 +1220,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         Objects.requireNonNull(that, "that is null");
         List<Tuple2<T, U>> result = Nil.instance();
         List<T> list1 = this;
-        Iterator<U> list2 = that.iterator();
+        java.util.Iterator<U> list2 = that.iterator();
         while (!list1.isEmpty() && list2.hasNext()) {
             result = result.prepend(Tuple.of(list1.head(), list2.next()));
             list1 = list1.tail();
@@ -1232,7 +1233,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         Objects.requireNonNull(that, "that is null");
         List<Tuple2<T, U>> result = Nil.instance();
         Iterator<T> list1 = this.iterator();
-        Iterator<U> list2 = that.iterator();
+        java.util.Iterator<U> list2 = that.iterator();
         while (list1.hasNext() || list2.hasNext()) {
             final T elem1 = list1.hasNext() ? list1.next() : thisElem;
             final U elem2 = list2.hasNext() ? list2.next() : thatElem;
@@ -1258,12 +1259,14 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      * @since 1.1.0
      */
     // DEV NOTE: class declared final because of serialization proxy pattern (see Effective Java, 2nd ed., p. 315)
-    final class Cons<T> extends AbstractList<T> implements Serializable {
+    final class Cons<T> implements List<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
         private final T head;
         private final List<T> tail;
+
+        private final transient Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
 
         /**
          * Creates a List consisting of a head value and a trailing List.
@@ -1329,6 +1332,37 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         @Override
         public boolean isEmpty() {
             return false;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            } else if (o instanceof List) {
+                List<?> list1 = this;
+                List<?> list2 = (List<?>) o;
+                while (!list1.isEmpty() && !list2.isEmpty()) {
+                    final boolean isEqual = Objects.equals(list1.head(), list2.head());
+                    if (!isEqual) {
+                        return false;
+                    }
+                    list1 = list1.tail();
+                    list2 = list2.tail();
+                }
+                return list1.isEmpty() && list2.isEmpty();
+            } else {
+                return false;
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            return hashCode.get();
+        }
+
+        @Override
+        public String toString() {
+            return map(String::valueOf).join(", ", "List(", ")");
         }
 
         /**
@@ -1445,7 +1479,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      * @param <T> Component type of the List.
      * @since 1.1.0
      */
-    final class Nil<T> extends AbstractList<T> implements Serializable {
+    final class Nil<T> implements List<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -1521,6 +1555,21 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
             return true;
         }
 
+        @Override
+        public boolean equals(Object o) {
+            return o == this;
+        }
+
+        @Override
+        public int hashCode() {
+            return Traversable.hash(this);
+        }
+
+        @Override
+        public String toString() {
+            return "List()";
+        }
+
         /**
          * Instance control for object serialization.
          *
@@ -1529,62 +1578,6 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
          */
         private Object readResolve() {
             return INSTANCE;
-        }
-    }
-
-    /**
-     * This class is needed because the interface {@link List} cannot use default methods to override Object's non-final
-     * methods equals, hashCode and toString.
-     * <p>
-     * See <a href="http://mail.openjdk.java.net/pipermail/lambda-dev/2013-March/008435.html">Allow default methods to
-     * override Object's methods</a>.
-     *
-     * @param <T> Component type of the List.
-     * @since 1.1.0
-     * @deprecated Internal API, not intended to be used. This class will disappear from public API as soon as possible.
-     */
-    @Deprecated
-    abstract class AbstractList<T> implements List<T> {
-
-        /**
-         * This class is not public API (but currently cannot be hidden as of Java 8).
-         */
-        protected AbstractList() {
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (o == this) {
-                return true;
-            } else if (o instanceof List) {
-                List<?> list1 = this;
-                List<?> list2 = (List<?>) o;
-                while (!list1.isEmpty() && !list2.isEmpty()) {
-                    final boolean isEqual = Objects.equals(list1.head(), list2.head());
-                    if (!isEqual) {
-                        return false;
-                    }
-                    list1 = list1.tail();
-                    list2 = list2.tail();
-                }
-                return list1.isEmpty() && list2.isEmpty();
-            } else {
-                return false;
-            }
-        }
-
-        @Override
-        public int hashCode() {
-            int hashCode = 1;
-            for (T element : this) {
-                hashCode = 31 * hashCode + Objects.hashCode(element);
-            }
-            return hashCode;
-        }
-
-        @Override
-        public String toString() {
-            return map(String::valueOf).join(", ", "List(", ")");
         }
     }
 }
