@@ -77,58 +77,58 @@ public class HashSetTest extends AbstractTraversableTest {
     }
 
     @Override
-    protected <T> Traversable<T> of(T element) {
+    protected <T> HashSet<T> of(T element) {
         return HashSet.of(element);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    protected <T> Traversable<T> of(T... elements) {
+    protected <T> HashSet<T> of(T... elements) {
         return HashSet.of(elements);
     }
 
     @Override
-    protected <T> Traversable<T> ofAll(Iterable<? extends T> elements) {
+    protected <T> HashSet<T> ofAll(Iterable<? extends T> elements) {
         return HashSet.ofAll(elements);
     }
 
     @Override
-    protected Traversable<Boolean> ofAll(boolean[] array) {
+    protected HashSet<Boolean> ofAll(boolean[] array) {
         return null;
     }
 
     @Override
-    protected Traversable<Byte> ofAll(byte[] array) {
+    protected HashSet<Byte> ofAll(byte[] array) {
         return null;
     }
 
     @Override
-    protected Traversable<Character> ofAll(char[] array) {
+    protected HashSet<Character> ofAll(char[] array) {
         return null;
     }
 
     @Override
-    protected Traversable<Double> ofAll(double[] array) {
+    protected HashSet<Double> ofAll(double[] array) {
         return null;
     }
 
     @Override
-    protected Traversable<Float> ofAll(float[] array) {
+    protected HashSet<Float> ofAll(float[] array) {
         return null;
     }
 
     @Override
-    protected Traversable<Integer> ofAll(int[] array) {
+    protected HashSet<Integer> ofAll(int[] array) {
         return null;
     }
 
     @Override
-    protected Traversable<Long> ofAll(long[] array) {
+    protected HashSet<Long> ofAll(long[] array) {
         return null;
     }
 
     @Override
-    protected Traversable<Short> ofAll(short[] array) {
+    protected HashSet<Short> ofAll(short[] array) {
         return null;
     }
 
@@ -137,53 +137,57 @@ public class HashSetTest extends AbstractTraversableTest {
         return 1;
     }
 
-    // -- ignore
-    // TODO
+    // HashSet special cases
 
     @Override
     public void shouldFoldRightNonNil() {
-        // ignore
+        String actual = of("a", "b", "c").foldRight("", (x, xs) -> x + xs);
+        assertThat(List.of("abc", "acb", "bac", "bca", "cab", "cba")).contains(actual);
     }
 
     @Override
     public void shouldReduceRightNonNil() {
-        // ignore
+        String actual = of("a", "b", "c").reduceRight((x, xs) -> x + xs);
+        assertThat(List.of("abc", "acb", "bac", "bca", "cab", "cba")).contains(actual);
     }
 
     @Override
     public void shouldJoinWithDelimiterNonNil() {
-        // ignore
+        String actual = of('a', 'b', 'c').join(",");
+        assertThat(List.of("a,b,c", "a,c,b", "b,a,c", "b,c,a", "c,a,b", "c,b,a")).contains(actual);
     }
 
     @Override
     public void shouldJoinWithDelimiterAndPrefixAndSuffixNonNil() {
-        // ignore
+        String actual = of('a', 'b', 'c').join(",", "[", "]");
+        assertThat(List.of("[a,b,c]", "[a,c,b]", "[b,a,c]", "[b,c,a]", "[c,a,b]", "[c,b,a]")).contains(actual);
     }
 
 
     @Override
     public void shouldBeAwareOfExistingNonUniqueElement() {
-        // ignore
+        // TODO
     }
 
     @Override
     public void shouldComputeDistinctByOfNonEmptyTraversableUsingComparator() {
-        // ignore
+        // TODO
     }
 
     @Override
     public void shouldComputeDistinctByOfNonEmptyTraversableUsingKeyExtractor() {
-        // ignore
+        // TODO
     }
 
     @Override
     public void shouldFindLastOfNonNil() {
-        // ignore
+        int actual = of(1, 2, 3, 4).findLast(i -> i % 2 == 0).get();
+        assertThat(List.of(1, 2, 3, 4)).contains(actual);
     }
 
     @Override
     public void shouldReplaceElementOfNonNilUsingCurrNew() {
-        // ignore
+        // TODO
     }
 
 }
