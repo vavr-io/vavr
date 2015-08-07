@@ -175,7 +175,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, /*TODO: TraversableO
     default Iterator<T> drop(int n) {
         if (n <= 0) {
             return this;
-        } else if(!hasNext()) {
+        } else if (!hasNext()) {
             return Iterator.empty();
         } else {
             final Iterator<T> that = this;

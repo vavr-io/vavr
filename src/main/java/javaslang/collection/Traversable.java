@@ -16,7 +16,10 @@ import javaslang.control.Some;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Comparator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.OptionalDouble;
 import java.util.function.*;
 import java.util.stream.StreamSupport;
 
@@ -193,7 +196,7 @@ public interface Traversable<T> extends TraversableOnce<T>, FilterMonadic<Iterab
      * </code>
      * </pre>
      *
-     * @param <T> Component type
+     * @param <T>     Component type
      * @param objects An Iterable
      * @return The hashCode of the given Iterable
      * @throws NullPointerException if objects is null
@@ -508,6 +511,15 @@ public interface Traversable<T> extends TraversableOnce<T>, FilterMonadic<Iterab
         Objects.requireNonNull(f, "f is null");
         return reverse().foldLeft(zero, (xs, x) -> f.apply(x, xs));
     }
+
+    /**
+     * Groups this elements by classifying the elements.
+     *
+     * @param classifier A function which classifies elements into classes
+     * @param <C> classified class type
+     * @return A Map containing the grouped elements
+     */
+    <C> Map<C, ? extends Traversable<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     /**
      * Groups this {@code Traversable} into fixed size blocks like so:
@@ -1188,7 +1200,7 @@ public interface Traversable<T> extends TraversableOnce<T>, FilterMonadic<Iterab
     /**
      * Creates an instance of this type of an {@code Iterable}.
      *
-     * @param <U> Component type
+     * @param <U>      Component type
      * @param iterable an {@code Iterable}
      * @return A new instance of this collection containing the elements of the given {@code iterable}.
      */

@@ -28,6 +28,9 @@ public class TypeConsistencyTest {
             "javaslang.collection.Map//public default java.util.function.Function java.util.function.Function.andThen(java.util.function.Function)",
             "javaslang.collection.Map//public default java.util.function.Function java.util.function.Function.compose(java.util.function.Function)",
 
+            // javaslang.collection.HashMap
+            "javaslang.collection.HashMap//public abstract javaslang.collection.Map javaslang.collection.Map.groupBy(java.util.function.Function)",
+
             // javaslang.control.Match
             "javaslang.control.Match//public default java.util.function.Function java.util.function.Function.andThen(java.util.function.Function)",
             "javaslang.control.Match//public default java.util.function.Function java.util.function.Function.compose(java.util.function.Function)",

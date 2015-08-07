@@ -149,7 +149,6 @@ final class HashSet<T> implements Set<T>, Serializable {
         }
     }
 
-
     @Override
     public HashSet<T> clear() {
         return empty();
@@ -248,6 +247,17 @@ final class HashSet<T> implements Set<T>, Serializable {
     @Override
     public HashSet<Object> flatten() {
         return flatMap(t -> (t instanceof Iterable) ? HashSet.ofAll((Iterable<?>) t).flatten() : HashSet.of(t));
+    }
+
+    @Override
+    public <C> Map<C, HashSet<T>> groupBy(Function<? super T, ? extends C> classifier) {
+        Map<C, HashSet<T>> result = HashMap.empty();
+        for (T t : this) {
+            final C key = classifier.apply(t);
+            final HashSet<T> set = result.get(key);
+            result = result.put(key, (set == null) ? HashSet.of(t) : set.add(t));
+        }
+        return result;
     }
 
     @Override

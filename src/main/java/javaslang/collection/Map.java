@@ -5,12 +5,13 @@
  */
 package javaslang.collection;
 
-import javaslang.FilterMonadic;
 import javaslang.Tuple2;
+import javaslang.control.Option;
 
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -20,7 +21,8 @@ import java.util.function.Function;
  * @param <V> Value type
  * @since 2.0.0
  */
-interface Map<K, V> extends /*TODO: Traversable<Map.Entry<K, V>>,*/ Function<K, V> {
+interface Map<K, V> extends /*TODO: Traversable<Map.Entry<K, V>>,*/ Function<K, V>,
+    /*TODO:remove Iterable, TraversableOnce*/ Iterable<Map.Entry<K, V>>, TraversableOnce<Map.Entry<K, V>> {
 
     @Override
     default V apply(K key) {
@@ -36,6 +38,8 @@ interface Map<K, V> extends /*TODO: Traversable<Map.Entry<K, V>>,*/ Function<K, 
     // Set<Entry<K, V>> entrySet();
 
     V get(K key);
+
+    Option<V> getOption(K key);
 
     V getOrDefault(K key, V defaultValue);
 
@@ -54,6 +58,22 @@ interface Map<K, V> extends /*TODO: Traversable<Map.Entry<K, V>>,*/ Function<K, 
     // TODO
     // Traversable<V> values();
 
+    // -- Adjusted return types of Traversable methods
+
+    // TODO: @Override
+    <C> Map<C, ? extends Map<K, V>> groupBy(Function<? super Entry<? super K, ? super V>, ? extends C> classifier);
+
+    @Override
+    Map<K, V> peek(Consumer<? super Entry<K, V>> action);
+
+    // TODO
+
+    /**
+     * Representation of a Map entry.
+     *
+     * @param <K> Key type
+     * @param <V> Value type
+     */
     final class Entry<K, V> implements Serializable {
 
         private static final long serialVersionUID = 1L;

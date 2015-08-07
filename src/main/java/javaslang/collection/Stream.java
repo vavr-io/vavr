@@ -878,6 +878,17 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
+    default <C> Map<C, Stream<T>> groupBy(Function<? super T, ? extends C> classifier) {
+        Map<C, Stream<T>> result = HashMap.empty();
+        for (T t : this) {
+            final C key = classifier.apply(t);
+            final Stream<T> stream = result.get(key);
+            result = result.put(key, (stream == null) ? Stream.of(t) : stream.prepend(t)); // or append?
+        }
+        return result;
+    }
+
+    @Override
     default Stream<Stream<T>> grouped(int size) {
         return sliding(size, size);
     }

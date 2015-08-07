@@ -521,6 +521,9 @@ public interface Stack<T> extends LinearSeq<T> {
     Stack<Object> flatten();
 
     @Override
+    <C> Map<C, ? extends Stack<T>> groupBy(Function<? super T, ? extends C> classifier);
+
+    @Override
     Stack<? extends Stack<T>> grouped(int size);
 
     @Override

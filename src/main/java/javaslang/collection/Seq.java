@@ -514,6 +514,9 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     Seq<Object> flatten();
 
     @Override
+    <C> Map<C, ? extends Seq<T>> groupBy(Function<? super T, ? extends C> classifier);
+
+    @Override
     Seq<? extends Seq<T>> grouped(int size);
 
     @Override

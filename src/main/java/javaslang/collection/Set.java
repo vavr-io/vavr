@@ -77,6 +77,9 @@ public interface Set<T> extends Traversable<T> {
     Set<Object> flatten();
 
     @Override
+    <C> Map<C, ? extends Set<T>> groupBy(Function<? super T, ? extends C> classifier);
+
+    @Override
     Set<? extends Set<T>> grouped(int size);
 
     @Override
