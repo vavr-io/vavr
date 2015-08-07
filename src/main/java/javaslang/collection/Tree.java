@@ -430,7 +430,7 @@ public interface Tree<T> extends TraversableOnce<T>, FilterMonadic<IterableKind<
     }
 
     /**
-     * The singleton instance of the empty rose tree.
+     * The singleton instance of the empty tree.
      *
      * @param <T> type of the tree's values
      */
@@ -445,10 +445,10 @@ public interface Tree<T> extends TraversableOnce<T>, FilterMonadic<IterableKind<
         }
 
         /**
-         * Returns the singleton instance of the empty rose tree.
+         * Returns the singleton instance of the empty tree.
          *
          * @param <T> type of the tree's values
-         * @return the single rose tree instance
+         * @return the single tree instance
          */
         @SuppressWarnings("unchecked")
         public static <T> Empty<T> instance() {

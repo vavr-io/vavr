@@ -12,7 +12,7 @@ import java.io.InvalidObjectException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class RoseTreeTest extends AbstractTreeTest {
+public class TreeTest extends AbstractTreeTest {
 
     final Tree<Integer> tree = Tree.of(1, Tree.of(2, Tree.of(4, Tree.of(7)), Tree.of(5)), Tree.of(3, Tree.of(6, Tree.of(8), Tree.of(9))));
 
