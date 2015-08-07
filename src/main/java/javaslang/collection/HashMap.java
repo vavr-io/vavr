@@ -37,8 +37,7 @@ class HashMap<K, V> implements Map<K, V> {
      * @return A new Map containing the given entry
      */
     static <K, V> HashMap<K, V> of(Entry<? extends K, ? extends V> entry) {
-        final HashMap<K, V> map = HashMap.empty();
-        return map.put(entry.key, entry.value);
+        return HashMap.<K, V> empty().put(entry.key, entry.value);
     }
 
     /**
@@ -102,7 +101,7 @@ class HashMap<K, V> implements Map<K, V> {
 
     @Override
     public Iterator<Entry<K, V>> iterator() {
-        return tree.iterator().map(t -> new Entry<>(t._1, t._2));
+        return tree.iterator().map(Entry::of);
     }
 
     @Override
