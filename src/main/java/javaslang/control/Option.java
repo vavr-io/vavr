@@ -8,10 +8,9 @@ package javaslang.control;
 import javaslang.FilterMonadic;
 import javaslang.Kind;
 import javaslang.Value;
+import javaslang.collection.Iterator;
 import javaslang.collection.TraversableOnce;
 
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -167,11 +166,7 @@ public interface Option<T> extends TraversableOnce<T>, Value<T>,
 
     @Override
     default Iterator<T> iterator() {
-        if (isEmpty()) {
-            return Collections.emptyIterator();
-        } else {
-            return Collections.singleton(get()).iterator();
-        }
+        return isEmpty() ? Iterator.empty() : Iterator.of(get());
     }
 
     @Override

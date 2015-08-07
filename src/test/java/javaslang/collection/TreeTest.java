@@ -12,52 +12,52 @@ import java.io.InvalidObjectException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class RoseTreeTest extends AbstractTreeTest {
+public class TreeTest extends AbstractTreeTest {
 
-    final RoseTree<Integer> tree = RoseTree.branch(1, RoseTree.branch(2, RoseTree.branch(4, RoseTree.leaf(7)), RoseTree.leaf(5)), RoseTree.branch(3, RoseTree.branch(6, RoseTree.leaf(8), RoseTree.leaf(9))));
+    final Tree<Integer> tree = Tree.of(1, Tree.of(2, Tree.of(4, Tree.of(7)), Tree.of(5)), Tree.of(3, Tree.of(6, Tree.of(8), Tree.of(9))));
 
     @Override
-    protected RoseTree<Integer> empty() {
-        return RoseTree.empty();
+    protected Tree<Integer> empty() {
+        return Tree.empty();
     }
 
     @Override
-    protected RoseTree<Integer> leaf() {
-        return RoseTree.leaf(0);
+    protected Tree<Integer> leaf() {
+        return Tree.of(0);
     }
 
     @Override
-    protected RoseTree<Integer> tree() {
+    protected Tree<Integer> tree() {
         return tree;
     }
 
-    // -- RoseTree test
+    // -- Tree test
 
     @Test
-    public void shouldInstantiateRoseTreeBranchWithOf() {
-        final RoseTree<Integer> actual = RoseTree.of(1, RoseTree.leaf(2), RoseTree.leaf(3));
-        final RoseTree<Integer> expected = new RoseTree.Branch<>(1, List.of(new RoseTree.Leaf<>(2), new RoseTree.Leaf<>(3)));
+    public void shouldInstantiateTreeBranchWithOf() {
+        final Tree<Integer> actual = Tree.of(1, Tree.of(2), Tree.of(3));
+        final Tree<Integer> expected = new Tree.Node<>(1, List.of(new Tree.Node<>(2, List.empty()), new Tree.Node<>(3, List.empty())));
         assertThat(actual).isEqualTo(expected);
     }
 
     // -- Leaf test
 
     @Test
-    public void shouldInstantiateRoseTreeLeafWithOf() {
-        final RoseTree<Integer> actual = RoseTree.of(1);
-        final RoseTree<Integer> expected = new RoseTree.Leaf<>(1);
+    public void shouldInstantiateTreeLeafWithOf() {
+        final Tree<Integer> actual = Tree.of(1);
+        final Tree<Integer> expected = new Tree.Node<>(1, List.empty());
         assertThat(actual).isEqualTo(expected);
     }
 
-    // -- Branch test
+    // -- Node test
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldNotCreateABranchWithoutChildren() {
-        new RoseTree.Branch<>(1, List.empty());
+    @Test
+    public void shouldCreateANodeWithoutChildren() {
+        new Tree.Node<>(1, List.empty());
     }
 
     @Test(expected = InvalidObjectException.class)
-    public void shouldNotCallReadObjectOnBranchInstance() throws Throwable {
+    public void shouldNotCallReadObjectOnNodeInstance() throws Throwable {
         Serializables.callReadObject(tree());
     }
 
@@ -96,11 +96,11 @@ public class RoseTreeTest extends AbstractTreeTest {
 
     @Test
     public void shouldReturnStringRepresentationOfNil() {
-        assertThat(empty().toString()).isEqualTo("RoseTree()");
+        assertThat(empty().toString()).isEqualTo("()");
     }
 
     @Test
-    public void shouldReturnStringRepresentationOfBranch() {
-        assertThat(tree().toString()).isEqualTo("RoseTree(1 (2 (4 7) 5) (3 (6 8 9)))");
+    public void shouldReturnStringRepresentationOfNode() {
+        assertThat(tree().toString()).isEqualTo("(1 (2 (4 7) 5) (3 (6 8 9)))");
     }
 }

@@ -16,6 +16,7 @@ import java.util.function.Predicate;
  * @param <T> element type of Iterable
  * @since 2.0.0
  */
+// TODO: implement take, drop, slice, et al. See http://www.scala-lang.org/api/current/index.html#scala.collection.TraversableOnce
 public interface TraversableOnce<T> extends Iterable<T> {
 
     /**
@@ -24,6 +25,14 @@ public interface TraversableOnce<T> extends Iterable<T> {
      * @return true, if this is empty, false otherwise
      */
     boolean isEmpty();
+
+    /**
+     * Returns a {@link javaslang.collection.Iterator}.
+     *
+     * @return A new Iterator
+     */
+    @Override
+    Iterator<T> iterator();
 
     /**
      * Checks, if an element exists such that the predicate holds.

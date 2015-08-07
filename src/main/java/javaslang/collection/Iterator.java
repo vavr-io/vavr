@@ -1,0 +1,311 @@
+/*     / \____  _    ______   _____ / \____   ____  _____
+ *    /  \__  \/ \  / \__  \ /  __//  \__  \ /    \/ __  \   Javaslang
+ *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014-2015 Daniel Dietrich
+ * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
+ */
+package javaslang.collection;
+
+import javaslang.FilterMonadic;
+import javaslang.Kind;
+import javaslang.Kind.IterableKind;
+import javaslang.control.None;
+import javaslang.control.Option;
+import javaslang.control.Some;
+
+import java.util.Collections;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.function.Predicate;
+
+/**
+ * An Iterator that can be only used once because it is a traversal pointer into a collection, and not a collection
+ * itself.
+ * <p>
+ * Transformation such as map and filter can be applied to simply get a new Iterator which will only apply these
+ * transformations when you ask for the next element.
+ *
+ * @param <T> Component type
+ * @since 2.0.0
+ */
+public interface Iterator<T> extends java.util.Iterator<T>, /*TODO: TraversableOnce,*/ FilterMonadic<IterableKind<?>, T> {
+
+    /**
+     * The empty Iterator.
+     */
+    Iterator<Object> EMPTY = new Iterator<Object>() {
+
+        @Override
+        public boolean hasNext() {
+            return false;
+        }
+
+        @Override
+        public Object next() {
+            throw new NoSuchElementException();
+        }
+    };
+
+    /**
+     * Returns the empty Iterator.
+     *
+     * @param <T> Component type
+     * @return The empty Iterator
+     */
+    @SuppressWarnings("unchecked")
+    static <T> Iterator<T> empty() {
+        return (Iterator<T>) EMPTY;
+    }
+
+    /**
+     * Creates an Iterator which traverses one element.
+     *
+     * @param element An element
+     * @param <T>     Component type.
+     * @return A new Iterator
+     */
+    static <T> Iterator<T> of(T element) {
+        return new Iterator<T>() {
+
+            boolean hasNext = true;
+
+            @Override
+            public boolean hasNext() {
+                return hasNext;
+            }
+
+            @Override
+            public T next() {
+                if (!hasNext) {
+                    throw new NoSuchElementException();
+                }
+                hasNext = false;
+                return element;
+            }
+        };
+    }
+
+    /**
+     * Creates an Iterator which traverses the given elements.
+     *
+     * @param elements Zero or more elements
+     * @param <T>      Component type
+     * @return A new Iterator
+     */
+    @SafeVarargs
+    static <T> Iterator<T> of(T... elements) {
+        Objects.requireNonNull(elements, "elements.isNull");
+        return new Iterator<T>() {
+
+            int index = 0;
+
+            @Override
+            public boolean hasNext() {
+                return index < elements.length;
+            }
+
+            @Override
+            public T next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+                return elements[index++];
+            }
+        };
+    }
+
+    /**
+     * Creates a FilterMonadic Iterator based on the given Iterable. This is a convenience method for
+     * {@code Iterator.of(iterable.iterator()}.
+     *
+     * @param iterable An Iterable
+     * @param <T>      Component type.
+     * @return A new {@code javaslang.collection.Iterator}
+     */
+    static <T> Iterator<T> ofAll(Iterable<? extends T> iterable) {
+        Objects.requireNonNull(iterable, "iterator is null");
+        return Iterator.ofAll(iterable.iterator());
+    }
+
+    /**
+     * Creates a FilterMonadic Iterator based on the given Iterator by
+     * delegating calls of {@code hasNext()} and {@code next()} to it.
+     *
+     * @param iterator A {@link java.util.Iterator}
+     * @param <T>      Component type.
+     * @return A new {@code javaslang.collection.Iterator}
+     */
+    static <T> Iterator<T> ofAll(java.util.Iterator<? extends T> iterator) {
+        Objects.requireNonNull(iterator, "iterator is null");
+        return new Iterator<T>() {
+
+            @Override
+            public boolean hasNext() {
+                return iterator.hasNext();
+            }
+
+            @Override
+            public T next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+                return iterator.next();
+            }
+        };
+    }
+
+    /**
+     * Returns an Iterator that contains elements that satisfy the given {@code predicate}.
+     *
+     * @param predicate A predicate
+     * @return A new Iterator
+     */
+    @Override
+    default Iterator<T> filter(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        if (!hasNext()) {
+            return Iterator.empty();
+        } else {
+            final Iterator<T> that = this;
+            return new Iterator<T>() {
+
+                Option<T> next = None.instance();
+
+                @Override
+                public boolean hasNext() {
+                    while (next.isEmpty() && that.hasNext()) {
+                        final T candidate = that.next();
+                        if (predicate.test(candidate)) {
+                            next = new Some<>(candidate);
+                        }
+                    }
+                    return next.isDefined();
+                }
+
+                @Override
+                public T next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
+                    return next.get();
+                }
+            };
+        }
+    }
+
+    /**
+     * Creates an Iterator equivalent to {@code filter(predicate).map(Some::new)}.
+     *
+     * @param predicate A predicate
+     * @return A new Iterator
+     */
+    @Override
+    default Iterator<Some<T>> filterOption(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        if (!hasNext()) {
+            return Iterator.empty();
+        } else {
+            return filter(predicate).map(Some::new);
+        }
+    }
+
+    /**
+     * FlatMaps the elements of this Iterator to Iterables, which are iterated in the order of occurrence.
+     *
+     * @param mapper A mapper
+     * @param <U>    Component type
+     * @return A new Iterable
+     */
+    default <U> Iterator<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        if (!hasNext()) {
+            return Iterator.empty();
+        } else {
+            final Iterator<T> that = this;
+            return new Iterator<U>() {
+
+                final Iterator<? extends T> inputs = that;
+                java.util.Iterator<? extends U> current = Collections.emptyIterator();
+
+                @Override
+                public boolean hasNext() {
+                    boolean currentHasNext;
+                    while (!(currentHasNext = current.hasNext()) && inputs.hasNext()) {
+                        current = mapper.apply(inputs.next()).iterator();
+                    }
+                    return currentHasNext;
+                }
+
+                @Override
+                public U next() {
+                    return current.next();
+                }
+            };
+        }
+    }
+
+    /**
+     * FlatMaps the elements of this Iterable by effectively calling
+     * <pre><code>flatMap((Function&lt;? super T, ? extends Iterator&lt;? extends U&gt;&gt;) mapper)</code></pre>
+     *
+     * @param mapper A mapper.
+     * @param <U>    Component type
+     * @return A new Iterable
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Iterator<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        if (!hasNext()) {
+            return Iterator.empty();
+        } else {
+            return flatMap((Function<? super T, ? extends Iterable<? extends U>>) mapper);
+        }
+    }
+
+    /**
+     * Flattens the elements of this Iterator.
+     *
+     * @return A flattened Iterator
+     */
+    @Override
+    default Iterator<Object> flatten() {
+        if (!hasNext()) {
+            return Iterator.empty();
+        } else {
+            return flatMap(t -> () -> (t instanceof Iterable) ? ofAll((Iterable<?>) t).flatten() : of(t));
+        }
+    }
+
+    /**
+     * Maps the elements of this Iterator lazily using the given {@code mapper}.
+     *
+     * @param mapper A mapper.
+     * @param <U>    Component type
+     * @return A new Iterator
+     */
+    @Override
+    default <U> Iterator<U> map(Function<? super T, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        if (!hasNext()) {
+            return Iterator.empty();
+        } else {
+            final Iterator<T> that = this;
+            return new Iterator<U>() {
+
+                @Override
+                public boolean hasNext() {
+                    return that.hasNext();
+                }
+
+                @Override
+                public U next() {
+                    if (!that.hasNext()) {
+                        throw new NoSuchElementException();
+                    }
+                    return mapper.apply(that.next());
+                }
+            };
+        }
+    }
+}

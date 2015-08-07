@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.None;
@@ -12,47 +13,52 @@ import javaslang.control.Option;
 import javaslang.control.Some;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Iterator;
+import java.util.Objects;
 
 /**
  * An immutable <a href="https://en.wikipedia.org/wiki/Hash_array_mapped_trie">Hash array mapped trie (HAMT)</a>.
  *
  * @since 2.0.0
  */
-abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>>, Serializable {
-
-    private static final long serialVersionUID = 1L;
+public interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>> {
 
     static <K, V> HashArrayMappedTrie<K, V> empty() {
         return EmptyNode.instance();
     }
 
-    boolean isEmpty() {
-        return this == empty();
+    default boolean isEmpty() {
+        return this == EmptyNode.INSTANCE;
     }
 
-    abstract int size();
+    int size();
 
-    Option<V> get(K key) {
+    default Option<V> get(K key) {
         return ((AbstractNode<K, V>) this).lookup(0, key);
     }
 
-    boolean containsKey(K key) {
+    default boolean containsKey(K key) {
         return get(key).isDefined();
     }
 
-    HashArrayMappedTrie<K, V> put(K key, V value) {
-        return ((AbstractNode<K, V>) this).modify(0, key, new Some<V>(value));
+    default HashArrayMappedTrie<K, V> put(K key, V value) {
+        return ((AbstractNode<K, V>) this).modify(0, key, new Some<>(value));
     }
 
-    HashArrayMappedTrie<K, V> remove(K key) {
+    default HashArrayMappedTrie<K, V> remove(K key) {
         return ((AbstractNode<K, V>) this).modify(0, key, None.instance());
     }
 
-    private static abstract class AbstractNode<K, V> extends HashArrayMappedTrie<K, V> {
+    // this is a javaslang.collection.Iterator!
+    @Override
+    Iterator<Tuple2<K, V>> iterator();
 
-        private static final long serialVersionUID = 1L;
+    /**
+     * TODO: javadoc
+     *
+     * @param <K> Key type
+     * @param <V> Value type
+     */
+    abstract class AbstractNode<K, V> implements HashArrayMappedTrie<K, V> {
 
         static final int SIZE = 5;
         static final int BUCKET_SIZE = 1 << SIZE;
@@ -62,6 +68,8 @@ abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>>, Seri
         private static final int M1 = 0x55555555;
         private static final int M2 = 0x33333333;
         private static final int M4 = 0x0f0f0f0f;
+
+        private final transient Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
 
         int bitCount(int x) {
             x = x - ((x >> 1) & M1);
@@ -92,32 +100,40 @@ abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>>, Seri
 
         @Override
         public boolean equals(Object o) {
-// TODO:
-//            if (o == this) {
-//                return true;
-//            } else if (o instanceof AbstractNode) {
-//                final AbstractNode<?, ?> that = (AbstractNode<?, ?>) o;
-//                return ...;
-//            } else {
-//                return false;
-//            }
-            return super.equals(o);
+            if (o == this) {
+                return true;
+            } else if (o instanceof HashArrayMappedTrie) {
+                final Iterator<?> iter1 = this.iterator();
+                final Iterator<?> iter2 = ((HashArrayMappedTrie<?, ?>) o).iterator();
+                while (iter1.hasNext() && iter2.hasNext()) {
+                    if (!Objects.equals(iter1.next(), iter2.next())) {
+                        return false;
+                    }
+                }
+                return !iter1.hasNext() && !iter2.hasNext();
+            } else {
+                return false;
+            }
         }
 
         @Override
         public int hashCode() {
-            // TODO
-            return super.hashCode();
+            return hashCode.get();
         }
 
         @Override
         public String toString() {
-            // TODO: return join(", ", "HashMap(", ")");
-            return "HashMap";
+            return List.ofAll(this).join(", ", "HashMap(", ")");
         }
     }
 
-    private static class EmptyNode<K, V> extends AbstractNode<K, V> {
+    /**
+     * TODO: javadoc
+     *
+     * @param <K> Key type
+     * @param <V> Value type
+     */
+    class EmptyNode<K, V> extends AbstractNode<K, V> implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -147,18 +163,33 @@ abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>>, Seri
         }
 
         @Override
-        int size() {
+        public int size() {
             return 0;
         }
 
         @Override
         public Iterator<Tuple2<K, V>> iterator() {
-            return Collections.emptyIterator();
+            return Iterator.empty();
         }
 
+        /**
+         * Instance control for object serialization.
+         *
+         * @return The singleton instance of EmptyNode.
+         * @see java.io.Serializable
+         */
+        private Object readResolve() {
+            return INSTANCE;
+        }
     }
 
-    private static class LeafNode<K, V> extends AbstractNode<K, V> {
+    /**
+     * TODO: javadoc
+     *
+     * @param <K> Key type
+     * @param <V> Value type
+     */
+    class LeafNode<K, V> extends AbstractNode<K, V> implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -224,7 +255,7 @@ abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>>, Seri
         }
 
         @Override
-        int size() {
+        public int size() {
             return entries.length();
         }
 
@@ -234,7 +265,13 @@ abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>>, Seri
         }
     }
 
-    private static class IndexedNode<K, V> extends AbstractNode<K, V> {
+    /**
+     * TODO: javadoc
+     *
+     * @param <K> Key type
+     * @param <V> Value type
+     */
+    class IndexedNode<K, V> extends AbstractNode<K, V> implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -327,20 +364,26 @@ abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>>, Seri
         }
 
         @Override
-        int size() {
+        public int size() {
             return size;
         }
 
         @Override
         public Iterator<Tuple2<K, V>> iterator() {
-            // we use Stream.ofAll(subNodes).flatMap(...) instead of subNodes.flatMap(...)
+            // we use Iterator.ofAll(subNodes).flatMap(...) instead of subNodes.flatMap(...)
             // because of the lazy implementation
-            return Stream.ofAll(subNodes).flatMap(child -> child::iterator).iterator();
+            return Iterator.ofAll(subNodes).flatMap(child -> child::iterator);
         }
 
     }
 
-    private static class ArrayNode<K, V> extends AbstractNode<K, V> {
+    /**
+     * TODO: javadoc
+     *
+     * @param <K> Key type
+     * @param <V> Value type
+     */
+    class ArrayNode<K, V> extends AbstractNode<K, V> implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -400,15 +443,15 @@ abstract class HashArrayMappedTrie<K, V> implements Iterable<Tuple2<K, V>>, Seri
         }
 
         @Override
-        int size() {
+        public int size() {
             return size;
         }
 
         @Override
         public Iterator<Tuple2<K, V>> iterator() {
-            // we use Stream.ofAll(subNodes).flatMap(...) instead of subNodes.flatMap(...)
+            // we use Iterator.ofAll(subNodes).flatMap(...) instead of subNodes.flatMap(...)
             // because of the lazy implementation
-            return Stream.ofAll(subNodes).flatMap(child -> child::iterator).iterator();
+            return Iterator.ofAll(subNodes).flatMap(child -> child::iterator);
         }
     }
 }

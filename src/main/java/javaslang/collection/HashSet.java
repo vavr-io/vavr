@@ -14,7 +14,10 @@ import javaslang.control.Option;
 import javaslang.control.Some;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
 
@@ -28,11 +31,11 @@ final class HashSet<T> implements Set<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final HashSet<?> INSTANCE = new HashSet<>(HashArrayMappedTrie.empty());
+    private static final HashSet<?> EMPTY = new HashSet<>(HashArrayMappedTrie.empty());
 
     @SuppressWarnings("unchecked")
     public static <T> HashSet<T> empty() {
-        return (HashSet<T>) INSTANCE;
+        return (HashSet<T>) EMPTY;
     }
 
     /**
@@ -82,8 +85,8 @@ final class HashSet<T> implements Set<T>, Serializable {
     static <T> HashSet<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
         HashSet<T> result = HashSet.empty();
-        for (int i = 0; i < elements.length; i++) {
-            result = result.add(elements[i]);
+        for (T element : elements) {
+            result = result.add(element);
         }
         return result;
     }
@@ -110,13 +113,14 @@ final class HashSet<T> implements Set<T>, Serializable {
     }
 
     private final HashArrayMappedTrie<T, Object> tree;
+    // TODO: get rid of this (mid-term)
     private final transient Lazy<List<T>> list;
     private final transient Lazy<Integer> hash;
 
     private HashSet(HashArrayMappedTrie<T, Object> tree) {
         this.tree = tree;
-        this.list = Lazy.of(() -> List.ofAll(tree::iterator).map(t -> t._1));
-        this.hash = Lazy.of(() -> list.get().hashCode());
+        this.list = Lazy.of(() -> List.ofAll(() -> tree.iterator().map(t -> t._1)));
+        this.hash = Lazy.of(() -> Traversable.hash(tree::iterator));
     }
 
     @Override
@@ -126,19 +130,7 @@ final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public Iterator<T> iterator() {
-        return new Iterator<T>() {
-            Iterator<Tuple2<T, Object>> it = tree.iterator();
-
-            @Override
-            public boolean hasNext() {
-                return it.hasNext();
-            }
-
-            @Override
-            public T next() {
-                return it.next()._1;
-            }
-        };
+        return tree.iterator().map(t -> t._1);
     }
 
     @Override

@@ -250,7 +250,7 @@ public interface Stream<T> extends LinearSeq<T> {
         } else {
             class StreamFactory {
                 // TODO: in a future version of Java this will be a private interface method
-                <T> Stream<T> create(Iterator<? extends T> iterator) {
+                <T> Stream<T> create(java.util.Iterator<? extends T> iterator) {
                     if (iterator.hasNext()) {
                         // we need to get the head, otherwise a tail call would get the head instead
                         final T head = iterator.next();
@@ -832,7 +832,7 @@ public interface Stream<T> extends LinearSeq<T> {
         return isEmpty() ? Nil.instance() : Stream.ofAll(() -> new Iterator<U>() {
 
             final Iterator<? extends T> inputs = Stream.this.iterator();
-            Iterator<? extends U> current = Collections.emptyIterator();
+            java.util.Iterator<? extends U> current = Collections.emptyIterator();
 
             @Override
             public boolean hasNext() {
@@ -1185,12 +1185,14 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     // DEV NOTE: class declared final because of serialization proxy pattern.
     // (see Effective Java, 2nd ed., p. 315)
-    final class Cons<T> extends AbstractStream<T> implements Serializable {
+    final class Cons<T> implements Stream<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
         private final Lazy<T> head;
         private final Lazy<Stream<T>> tail;
+
+        private final transient Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
 
         /**
          * Creates a new {@code Stream} consisting of a head element and a lazy trailing {@code Stream}.
@@ -1373,6 +1375,52 @@ public interface Stream<T> extends LinearSeq<T> {
             }
         }
 
+        @Override
+        public boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            } else if (o instanceof Stream) {
+                Stream<?> stream1 = this;
+                Stream<?> stream2 = (Stream<?>) o;
+                while (!stream1.isEmpty() && !stream2.isEmpty()) {
+                    final boolean isEqual = Objects.equals(stream1.head(), stream2.head());
+                    if (!isEqual) {
+                        return false;
+                    }
+                    stream1 = stream1.tail();
+                    stream2 = stream2.tail();
+                }
+                return stream1.isEmpty() && stream2.isEmpty();
+            } else {
+                return false;
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            return hashCode.get();
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder builder = new StringBuilder("Stream(");
+            Stream<T> stream = this;
+            while (stream != null && !stream.isEmpty()) {
+                final Cons<T> cons = (Cons<T>) stream;
+                builder.append(cons.head.get());
+                if (cons.tail.isEvaluated()) {
+                    stream = cons.tail.get();
+                    if (!stream.isEmpty()) {
+                        builder.append(", ");
+                    }
+                } else {
+                    builder.append(", ?");
+                    stream = null;
+                }
+            }
+            return builder.append(")").toString();
+        }
+
         /**
          * <p>
          * {@code writeReplace} method for the serialization proxy pattern.
@@ -1490,7 +1538,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @param <T> Component type of the Stream.
      * @since 1.1.0
      */
-    final class Nil<T> extends AbstractStream<T> implements Serializable {
+    final class Nil<T> implements Stream<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -1628,6 +1676,21 @@ public interface Stream<T> extends LinearSeq<T> {
             return this;
         }
 
+        @Override
+        public boolean equals(Object o) {
+            return o == this;
+        }
+
+        @Override
+        public int hashCode() {
+            return Traversable.hash(this);
+        }
+
+        @Override
+        public String toString() {
+            return "Stream()";
+        }
+
         /**
          * Instance control for object serialization.
          *
@@ -1636,78 +1699,6 @@ public interface Stream<T> extends LinearSeq<T> {
          */
         private Object readResolve() {
             return INSTANCE;
-        }
-    }
-
-    /**
-     * <p>
-     * This class is needed because the interface {@link Stream} cannot use default methods to override Object's non-final
-     * methods equals, hashCode and toString.
-     * </p>
-     * See <a href="http://mail.openjdk.java.net/pipermail/lambda-dev/2013-March/008435.html">Allow default methods to
-     * override Object's methods</a>.
-     *
-     * @param <T> Component type of the Stream.
-     * @since 1.1.0
-     * @deprecated Internal API, not intended to be used. This class will disappear from public API as soon as possible.
-     */
-    @Deprecated
-    abstract class AbstractStream<T> implements Stream<T> {
-
-        /**
-         * This class is not public API (but currently cannot be hidden as of Java 8).
-         */
-        protected AbstractStream() {
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (o == this) {
-                return true;
-            } else if (o instanceof Stream) {
-                Stream<?> stream1 = this;
-                Stream<?> stream2 = (Stream<?>) o;
-                while (!stream1.isEmpty() && !stream2.isEmpty()) {
-                    final boolean isEqual = Objects.equals(stream1.head(), stream2.head());
-                    if (!isEqual) {
-                        return false;
-                    }
-                    stream1 = stream1.tail();
-                    stream2 = stream2.tail();
-                }
-                return stream1.isEmpty() && stream2.isEmpty();
-            } else {
-                return false;
-            }
-        }
-
-        @Override
-        public int hashCode() {
-            int hashCode = 1;
-            for (T element : this) {
-                hashCode = 31 * hashCode + Objects.hashCode(element);
-            }
-            return hashCode;
-        }
-
-        @Override
-        public String toString() {
-            final StringBuilder builder = new StringBuilder("Stream(");
-            Stream<T> stream = this;
-            while (stream != null && !stream.isEmpty()) {
-                final Cons<T> cons = (Cons<T>) stream;
-                builder.append(cons.head.get());
-                if (cons.tail.isEvaluated()) {
-                    stream = cons.tail.get();
-                    if (!stream.isEmpty()) {
-                        builder.append(", ");
-                    }
-                } else {
-                    builder.append(", ?");
-                    stream = null;
-                }
-            }
-            return builder.append(")").toString();
         }
     }
 }

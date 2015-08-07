@@ -5,12 +5,18 @@
  */
 package javaslang.collection;
 
+import javaslang.FilterMonadic;
+import javaslang.Kind;
+import javaslang.Kind.IterableKind;
+import javaslang.Lazy;
 import javaslang.control.Match;
+import javaslang.control.Some;
 
-import java.util.Arrays;
-import java.util.Iterator;
+import java.io.*;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * <p>A general Tree interface.</p>
@@ -18,7 +24,27 @@ import java.util.function.Function;
  * @param <T> component type of this Tree
  * @since 1.1.0
  */
-public interface Tree<T> extends Iterable<T> {
+public interface Tree<T> extends TraversableOnce<T>, FilterMonadic<IterableKind<?>, T> {
+
+    static <T> Empty<T> empty() {
+        return Empty.instance();
+    }
+
+    static <T> Node<T> of(T value) {
+        return new Node<>(value, List.empty());
+    }
+
+    @SuppressWarnings({ "unchecked", "varargs" })
+    @SafeVarargs
+    static <T> Node<T> of(T value, Node<T>... children) {
+        Objects.requireNonNull(children, "children is null");
+        return new Node<>(value, List.of(children));
+    }
+
+    static <T> Node<T> of(T value, List<Node<T>> children) {
+        Objects.requireNonNull(children, "children is null");
+        return new Node<>(value, children);
+    }
 
     /**
      * Gets the value of this tree.
@@ -27,6 +53,13 @@ public interface Tree<T> extends Iterable<T> {
      * @throws java.lang.UnsupportedOperationException if this tree is empty
      */
     T getValue();
+
+    /**
+     * Returns the children of this tree.
+     *
+     * @return the tree's children
+     */
+    List<? extends Tree<T>> getChildren();
 
     /**
      * Checks if this tree is the empty tree.
@@ -54,54 +87,6 @@ public interface Tree<T> extends Iterable<T> {
     }
 
     /**
-     * Returns the List of children of this tree.
-     *
-     * @return The empty list, if this is the empty tree or a leaf, otherwise the non-empty list of children.
-     */
-    List<? extends Tree<T>> getChildren();
-
-    /**
-     * Counts the number of branches of this tree. The empty tree and a leaf have no branches.
-     *
-     * @return The number of branches of this tree.
-     */
-    default int branchCount() {
-        if (isEmpty() || isLeaf()) {
-            return 0;
-        } else {
-            return getChildren().foldLeft(1, (count, child) -> count + child.branchCount());
-        }
-    }
-
-    /**
-     * Counts the number of leaves of this tree. The empty tree has no leaves.
-     *
-     * @return The number of leaves of this tree.
-     */
-    default int leafCount() {
-        if (isEmpty()) {
-            return 0;
-        } else if (isLeaf()) {
-            return 1;
-        } else {
-            return getChildren().foldLeft(0, (count, child) -> count + child.leafCount());
-        }
-    }
-
-    /**
-     * Counts the number of nodes (i.e. branches and leaves) of this tree. The empty tree has no nodes.
-     *
-     * @return The number of nodes of this tree.
-     */
-    default int nodeCount() {
-        if (isEmpty()) {
-            return 0;
-        } else {
-            return 1 + getChildren().foldLeft(0, (count, child) -> count + child.nodeCount());
-        }
-    }
-
-    /**
      * Checks whether the given element occurs in this tree.
      *
      * @param element An element.
@@ -123,35 +108,25 @@ public interface Tree<T> extends Iterable<T> {
     }
 
     /**
-     * Iterates over the elements of this tree in pre-order.
-     *
-     * @return An iterator of this tree's node values.
-     */
-    @Override
-    default Iterator<T> iterator() {
-        return flatten().iterator();
-    }
-
-    /**
-     * Flattens the Tree to a List, traversing the tree in pre-order.
+     * Traverses the Tree in pre-order.
      *
      * @return A List containing all elements of this tree, which is List.Nil if this tree is empty.
      * @throws java.lang.NullPointerException if order is null
      */
-    default List<T> flatten() {
-        return flatten(Order.PRE_ORDER);
+    default List<T> traverse() {
+        return traverse(Order.PRE_ORDER);
     }
 
     /**
-     * Flattens the Tree to a List, traversing the tree in a specific order.
+     * Traverses the Tree in a specific order.
      *
      * @param order the tree traversal order
      * @return A List containing all elements of this tree, which is List.Nil if this tree is empty.
      * @throws java.lang.NullPointerException if order is null
      */
-    default List<T> flatten(Order order) {
+    default List<T> traverse(Order order) {
         Objects.requireNonNull(order, "order is null");
-        class Flatten {
+        class Traversal {
             List<T> preOrder(Tree<T> tree) {
                 return tree.getChildren()
                         .foldLeft(List.of(tree.getValue()), (acc, child) -> acc.appendAll(preOrder(child)));
@@ -189,76 +164,378 @@ public interface Tree<T> extends Iterable<T> {
         if (isEmpty()) {
             return List.empty();
         } else {
-            final Flatten flatten = new Flatten();
-            return Match
-                    .whenIs(Order.PRE_ORDER).then(() -> flatten.preOrder(this))
-                    .whenIs(Order.IN_ORDER).then(() -> flatten.inOrder(this))
-                    .whenIs(Order.POST_ORDER).then(() -> flatten.postOrder(this))
-                    .whenIs(Order.LEVEL_ORDER).then(() -> flatten.levelOrder(this))
-                    .apply(order);
+            final Traversal traversal = new Traversal();
+            return Match.of(order)
+                    .whenIs(Order.PRE_ORDER).then(() -> traversal.preOrder(this))
+                    .whenIs(Order.IN_ORDER).then(() -> traversal.inOrder(this))
+                    .whenIs(Order.POST_ORDER).then(() -> traversal.postOrder(this))
+                    .whenIs(Order.LEVEL_ORDER).then(() -> traversal.levelOrder(this))
+                    .get();
         }
     }
 
+    @Override
+    Tree<T> peek(Consumer<? super T> action);
+
+    @Override
+    Tree<T> filter(Predicate<? super T> predicate);
+
+    @Override
+    Tree<Some<T>> filterOption(Predicate<? super T> predicate);
+
+    <U> Tree<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
+
+    @Override
+    <U> Tree<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper);
+
+    @Override
+    Tree<Object> flatten();
+
+    @Override
     <U> Tree<U> map(Function<? super T, ? extends U> mapper);
 
     /**
-     * Returns a list string representation of this tree.
+     * Iterates over the elements of this tree in pre-order.
      *
-     * @return A new string
+     * @return An iterator of this tree's node values.
      */
-    default String toLispString() {
-        class Local {
-            String toString(Tree<T> tree) {
-                if (tree.isEmpty()) {
-                    return "()";
-                } else {
-                    final String value = String.valueOf(tree.getValue()).replaceAll("\\s+", " ").trim();
-                    if (tree.isLeaf()) {
-                        return value;
-                    } else {
-                        final String children = tree.getChildren()
-                                .map(Local.this::toString)
-                                .join(" ");
-                        return "(" + value + " " + children + ")";
-                    }
-                }
+    @Override
+    default Iterator<T> iterator() {
+        return traverse().iterator();
+    }
+
+    @Override
+    boolean equals(Object o);
+
+    @Override
+    int hashCode();
+
+    @Override
+    String toString();
+
+    /**
+     * Represents a tree node.
+     *
+     * @param <T> value type
+     */
+    final class Node<T> implements Tree<T>, Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        private final T value;
+        private final List<Node<T>> children;
+
+        private final transient Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
+
+        /**
+         * Constructs a rose tree branch.
+         *
+         * @param value    A value.
+         * @param children A non-empty list of children.
+         * @throws NullPointerException     if children is null
+         * @throws IllegalArgumentException if children is empty
+         */
+        public Node(T value, List<Node<T>> children) {
+            Objects.requireNonNull(children, "children is null");
+            this.value = value;
+            this.children = children;
+        }
+
+        @Override
+        public T getValue() {
+            return value;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return false;
+        }
+
+        @Override
+        public boolean isLeaf() {
+            return children.isEmpty();
+        }
+
+        @Override
+        public List<Node<T>> getChildren() {
+            return children;
+        }
+
+        @Override
+        public Node<T> peek(Consumer<? super T> action) {
+            return null;
+        }
+
+        @Override
+        public Tree<T> filter(Predicate<? super T> predicate) {
+            return null; // TODO
+        }
+
+        @Override
+        public Tree<Some<T>> filterOption(Predicate<? super T> predicate) {
+            return null; // TODO
+        }
+
+        @Override
+        public <U> Tree<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+            return null; // TODO
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public <U> Tree<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper) {
+            return flatMap((Function<? super T, ? extends IterableKind<? extends U>>) mapper);
+        }
+
+        @Override
+        public Node<Object> flatten() {
+            return null; // TODO
+        }
+
+        @Override
+        public <U> Node<U> map(Function<? super T, ? extends U> mapper) {
+            final U value = mapper.apply(getValue());
+            final List<Node<U>> children = getChildren().map(tree -> tree.map(mapper));
+            return new Node<>(value, children);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            } else if (o instanceof Node) {
+                final Node<?> that = (Node<?>) o;
+                return Objects.equals(this.getValue(), that.getValue())
+                        && Objects.equals(this.getChildren(), that.getChildren());
+            } else {
+                return false;
             }
         }
-        final String string = new Local().toString(this);
-        return isLeaf() ? "(" + string + ")" : string;
+
+        @Override
+        public int hashCode() {
+            return hashCode.get();
+        }
+
+        @Override
+        public String toString() {
+            return isLeaf() ? "(" + value + ")" : toLispString(this);
+        }
+
+        private static String toLispString(Node<?> node) {
+            final String value = String.valueOf(node.value);
+            if (node.isLeaf()) {
+                return value;
+            } else {
+                return String.format("(%s %s)", value, node.children.map(Node::toLispString).join(" "));
+            }
+        }
+
+        // -- Serializable implementation
+
+        /**
+         * <p>
+         * {@code writeReplace} method for the serialization proxy pattern.
+         * </p>
+         * The presence of this method causes the serialization system to emit a SerializationProxy instance instead of
+         * an instance of the enclosing class.
+         *
+         * @return A SerialiationProxy for this enclosing class.
+         */
+        private Object writeReplace() {
+            return new SerializationProxy<>(this);
+        }
+
+        /**
+         * <p>
+         * {@code readObject} method for the serialization proxy pattern.
+         * </p>
+         * Guarantees that the serialization system will never generate a serialized instance of the enclosing class.
+         *
+         * @param stream An object serialization stream.
+         * @throws java.io.InvalidObjectException This method will throw with the message "Proxy required".
+         */
+        private void readObject(ObjectInputStream stream) throws InvalidObjectException {
+            throw new InvalidObjectException("Proxy required");
+        }
+
+        /**
+         * A serialization proxy which, in this context, is used to deserialize immutable nodes with final
+         * instance fields.
+         *
+         * @param <T> The component type of the underlying tree.
+         */
+        // DEV NOTE: The serialization proxy pattern is not compatible with non-final, i.e. extendable,
+        // classes. Also, it may not be compatible with circular object graphs.
+        private static final class SerializationProxy<T> implements Serializable {
+
+            private static final long serialVersionUID = 1L;
+
+            // the instance to be serialized/deserialized
+            private transient Node<T> node;
+
+            /**
+             * Constructor for the case of serialization, called by {@link Node#writeReplace()}.
+             * <p/>
+             * The constructor of a SerializationProxy takes an argument that concisely represents the logical state of
+             * an instance of the enclosing class.
+             *
+             * @param node a Branch
+             */
+            SerializationProxy(Node<T> node) {
+                this.node = node;
+            }
+
+            /**
+             * Write an object to a serialization stream.
+             *
+             * @param s An object serialization stream.
+             * @throws java.io.IOException If an error occurs writing to the stream.
+             */
+            private void writeObject(ObjectOutputStream s) throws IOException {
+                s.defaultWriteObject();
+                s.writeObject(node.value);
+                s.writeObject(node.children);
+            }
+
+            /**
+             * Read an object from a deserialization stream.
+             *
+             * @param s An object deserialization stream.
+             * @throws ClassNotFoundException If the object's class read from the stream cannot be found.
+             * @throws IOException            If an error occurs reading from the stream.
+             */
+            @SuppressWarnings("unchecked")
+            private void readObject(ObjectInputStream s) throws ClassNotFoundException, IOException {
+                s.defaultReadObject();
+                final T value = (T) s.readObject();
+                final List<Node<T>> children = (List<Node<T>>) s.readObject();
+                node = new Node<>(value, children);
+            }
+
+            /**
+             * <p>
+             * {@code readResolve} method for the serialization proxy pattern.
+             * </p>
+             * Returns a logically equivalent instance of the enclosing class. The presence of this method causes the
+             * serialization system to translate the serialization proxy back into an instance of the enclosing class
+             * upon deserialization.
+             *
+             * @return A deserialized instance of the enclosing class.
+             */
+            private Object readResolve() {
+                return node;
+            }
+        }
     }
 
     /**
-     * Returns an indented multiline string representation of this tree.
+     * The singleton instance of the empty tree.
      *
-     * @return A new string
+     * @param <T> type of the tree's values
      */
-    default String toIndentedString() {
-        class Local {
-            String toString(Tree<T> tree, int depth) {
-                if (tree.isEmpty()) {
-                    return "";
-                } else {
-                    final String indent = repeat(' ', depth * 2);
-                    final String value = String.valueOf(tree.getValue()).replaceAll("\\s+", " ").trim();
-                    if (tree.isLeaf()) {
-                        return "\n" + indent + value;
-                    } else {
-                        final String children = tree.getChildren()
-                                .map(child -> toString(child, depth + 1))
-                                .join();
-                        return "\n" + indent + value + children;
-                    }
-                }
-            }
+    final class Empty<T> implements Tree<T>, Serializable {
 
-            String repeat(char c, int n) {
-                final char[] buf = new char[n];
-                Arrays.fill(buf, c);
-                return String.valueOf(buf);
-            }
+        private static final long serialVersionUID = 1L;
+
+        private static final Empty<?> INSTANCE = new Empty<>();
+
+        // hidden
+        private Empty() {
         }
-        return new Local().toString(this, 0);
+
+        /**
+         * Returns the singleton instance of the empty tree.
+         *
+         * @param <T> type of the tree's values
+         * @return the single tree instance
+         */
+        @SuppressWarnings("unchecked")
+        public static <T> Empty<T> instance() {
+            return (Empty<T>) INSTANCE;
+        }
+
+        @Override
+        public T getValue() {
+            throw new UnsupportedOperationException("getValue of Nil");
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return true;
+        }
+
+        @Override
+        public boolean isLeaf() {
+            return false;
+        }
+
+        @Override
+        public List<Node<T>> getChildren() {
+            return List.empty();
+        }
+
+        @Override
+        public Empty<T> peek(Consumer<? super T> action) {
+            return this;
+        }
+
+        @Override
+        public Empty<T> filter(Predicate<? super T> predicate) {
+            return this;
+        }
+
+        @Override
+        public Empty<Some<T>> filterOption(Predicate<? super T> predicate) {
+            return Empty.instance();
+        }
+
+        @Override
+        public <U> Empty<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+            return Empty.instance();
+        }
+
+        @Override
+        public <U> Empty<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper) {
+            return Empty.instance();
+        }
+
+        @Override
+        public Empty<Object> flatten() {
+            return Empty.instance();
+        }
+
+        @Override
+        public <U> Empty<U> map(Function<? super T, ? extends U> mapper) {
+            return Empty.instance();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return o == this;
+        }
+
+        @Override
+        public int hashCode() {
+            return Traversable.hash(this);
+        }
+
+        @Override
+        public String toString() {
+            return "()";
+        }
+
+        // -- Serializable implementation
+
+        /**
+         * Instance control for object serialization.
+         *
+         * @return The singleton instance of Nil.
+         * @see java.io.Serializable
+         */
+        private Object readResolve() {
+            return INSTANCE;
+        }
     }
 
     /**
@@ -285,7 +562,7 @@ public interface Tree<T> extends Iterable<T> {
      * <li>See <a href="http://rosettacode.org/wiki/Tree_traversal">Tree traversal</a> (rosetta code)</li>
      * </ul>
      */
-    // see http://programmers.stackexchange.com/questions/138766/in-order-traversal-of-m-way-trees
+// see http://programmers.stackexchange.com/questions/138766/in-order-traversal-of-m-way-trees
     enum Order {
 
         /**
@@ -307,5 +584,48 @@ public interface Tree<T> extends Iterable<T> {
          * 1 2 3 4 5 6 7 8 9 (= breadth-first)
          */
         LEVEL_ORDER
+    }
+
+    // -- static extension methods
+
+    /**
+     * Counts the number of branches of this tree. The empty tree and a leaf have no branches.
+     *
+     * @return The number of branches of this tree.
+     */
+    static int branchCount(Tree<?> tree) {
+        if (tree.isEmpty() || tree.isLeaf()) {
+            return 0;
+        } else {
+            return tree.getChildren().foldLeft(1, (count, child) -> count + Tree.branchCount(child));
+        }
+    }
+
+    /**
+     * Counts the number of leaves of this tree. The empty tree has no leaves.
+     *
+     * @return The number of leaves of this tree.
+     */
+    static int leafCount(Tree<?> tree) {
+        if (tree.isEmpty()) {
+            return 0;
+        } else if (tree.isLeaf()) {
+            return 1;
+        } else {
+            return tree.getChildren().foldLeft(0, (count, child) -> count + Tree.leafCount(child));
+        }
+    }
+
+    /**
+     * Counts the number of nodes (i.e. branches and leaves) of this tree. The empty tree has no nodes.
+     *
+     * @return The number of nodes of this tree.
+     */
+    static int nodeCount(Tree<?> tree) {
+        if (tree.isEmpty()) {
+            return 0;
+        } else {
+            return 1 + tree.getChildren().foldLeft(0, (count, child) -> count + Tree.nodeCount(child));
+        }
     }
 }

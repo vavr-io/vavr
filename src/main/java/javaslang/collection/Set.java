@@ -11,7 +11,6 @@ import javaslang.control.Option;
 import javaslang.control.Some;
 
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.*;
@@ -24,7 +23,9 @@ import java.util.function.*;
  */
 public interface Set<T> extends Traversable<T> {
 
-    // TODO: set operations
+    // TODO: additional set operations
+
+    // -- Adjusted return types of Traversable methods
 
     Set<T> add(T element);
 

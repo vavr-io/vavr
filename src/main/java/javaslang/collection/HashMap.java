@@ -5,9 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple2;
-
-import java.util.Iterator;
 import java.util.Objects;
 
 /**
@@ -19,6 +16,12 @@ import java.util.Objects;
 class HashMap<K, V> implements Map<K, V> {
 
     private static final HashMap<?, ?> EMPTY = new HashMap<>(HashArrayMappedTrie.empty());
+
+    private final HashArrayMappedTrie<K, V> tree;
+
+    private HashMap(HashArrayMappedTrie<K, V> tree) {
+        this.tree = tree;
+    }
 
     @SuppressWarnings("unchecked")
     static <K, V> HashMap<K, V> empty() {
@@ -78,12 +81,6 @@ class HashMap<K, V> implements Map<K, V> {
         }
     }
 
-    private final HashArrayMappedTrie<K, V> tree;
-
-    private HashMap(HashArrayMappedTrie<K, V> tree) {
-        this.tree = tree;
-    }
-
     public boolean isEmpty() {
         return tree.isEmpty();
     }
@@ -105,20 +102,7 @@ class HashMap<K, V> implements Map<K, V> {
 
     @Override
     public Iterator<Entry<K, V>> iterator() {
-        return new Iterator<Entry<K, V>>() {
-            Iterator<Tuple2<K, V>> it = tree.iterator();
-
-            @Override
-            public boolean hasNext() {
-                return it.hasNext();
-            }
-
-            @Override
-            public Entry<K, V> next() {
-                Tuple2<K, V> t = it.next();
-                return new Entry<>(t._1, t._2);
-            }
-        };
+        return tree.iterator().map(t -> new Entry<>(t._1, t._2));
     }
 
     @Override
