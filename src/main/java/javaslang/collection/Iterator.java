@@ -268,7 +268,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, /*TODO: TraversableO
                     if (!hasNext()) {
                         throw new NoSuchElementException();
                     }
-                    return next.get();
+                    T result = next.get();
+                    next = None.instance();
+                    return result;
                 }
             };
         }
