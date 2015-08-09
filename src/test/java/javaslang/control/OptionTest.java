@@ -8,6 +8,7 @@ package javaslang.control;
 import javaslang.Serializables;
 import org.junit.Test;
 
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
@@ -277,12 +278,12 @@ public class OptionTest {
 
     @Test
     public void shouldReturnIteratorOfSome() {
-        assertThat(new Some<>(1).iterator()).isNotNull();
+        assertThat((Iterator<Integer>) new Some<>(1).iterator()).isNotNull();
     }
 
     @Test
     public void shouldReturnIteratorOfNone() {
-        assertThat(None.instance().iterator()).isNotNull();
+        assertThat((Iterator<Object>) None.instance().iterator()).isNotNull();
     }
 
     // -- equals

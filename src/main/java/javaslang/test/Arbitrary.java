@@ -224,17 +224,17 @@ public interface Arbitrary<T> extends TraversableOnce<T>,
     static <T> Arbitrary<Stream<T>> stream(Arbitrary<T> arbitraryT) {
         return size -> {
             final Gen<T> genT = arbitraryT.apply(size);
-            return random -> Gen.choose(0, size).map(i -> Stream.ofAll(() -> new Iterator<T>() {
+            return random -> Gen.choose(0, size).map(i -> Stream.ofAll(() -> new Iterator.Impl<T>() {
 
                 int count = i;
 
                 @Override
-                public boolean hasNext() {
+                public boolean hsNext() {
                     return count-- > 0;
                 }
 
                 @Override
-                public T next() {
+                public T getNext() {
                     return genT.apply(random);
                 }
             })).apply(random);

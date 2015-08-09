@@ -358,15 +358,15 @@ public interface Gen<T> extends TraversableOnce<T>,
     @Override
     default Iterator<T> iterator() {
         final Random random = Checkable.RNG.get();
-        return new Iterator<T>() {
+        return new Iterator.Impl<T>() {
 
             @Override
-            public boolean hasNext() {
+            public boolean hsNext() {
                 return true;
             }
 
             @Override
-            public T next() {
+            public T getNext() {
                 return apply(random);
             }
         };

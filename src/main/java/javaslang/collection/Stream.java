@@ -220,16 +220,16 @@ public interface Stream<T> extends LinearSeq<T> {
     @SafeVarargs
     static <T> Stream<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return Stream.ofAll(() -> new Iterator<T>() {
+        return Stream.ofAll(() -> new Iterator.Impl<T>() {
             int i = 0;
 
             @Override
-            public boolean hasNext() {
+            public boolean hsNext() {
                 return i < elements.length;
             }
 
             @Override
-            public T next() {
+            public T getNext() {
                 return elements[i++];
             }
         });
@@ -272,16 +272,16 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static Stream<Boolean> ofAll(boolean[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(() -> new Iterator<Boolean>() {
+        return Stream.ofAll(() -> new Iterator.Impl<Boolean>() {
             int i = 0;
 
             @Override
-            public boolean hasNext() {
+            public boolean hsNext() {
                 return i < array.length;
             }
 
             @Override
-            public Boolean next() {
+            public Boolean getNext() {
                 return array[i++];
             }
         });
@@ -295,16 +295,16 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static Stream<Byte> ofAll(byte[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(() -> new Iterator<Byte>() {
+        return Stream.ofAll(() -> new Iterator.Impl<Byte>() {
             int i = 0;
 
             @Override
-            public boolean hasNext() {
+            public boolean hsNext() {
                 return i < array.length;
             }
 
             @Override
-            public Byte next() {
+            public Byte getNext() {
                 return array[i++];
             }
         });
@@ -318,16 +318,16 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static Stream<Character> ofAll(char[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(() -> new Iterator<Character>() {
+        return Stream.ofAll(() -> new Iterator.Impl<Character>() {
             int i = 0;
 
             @Override
-            public boolean hasNext() {
+            public boolean hsNext() {
                 return i < array.length;
             }
 
             @Override
-            public Character next() {
+            public Character getNext() {
                 return array[i++];
             }
         });
@@ -341,16 +341,16 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static Stream<Double> ofAll(double[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(() -> new Iterator<Double>() {
+        return Stream.ofAll(() -> new Iterator.Impl<Double>() {
             int i = 0;
 
             @Override
-            public boolean hasNext() {
+            public boolean hsNext() {
                 return i < array.length;
             }
 
             @Override
-            public Double next() {
+            public Double getNext() {
                 return array[i++];
             }
         });
@@ -364,16 +364,16 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static Stream<Float> ofAll(float[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(() -> new Iterator<Float>() {
+        return Stream.ofAll(() -> new Iterator.Impl<Float>() {
             int i = 0;
 
             @Override
-            public boolean hasNext() {
+            public boolean hsNext() {
                 return i < array.length;
             }
 
             @Override
-            public Float next() {
+            public Float getNext() {
                 return array[i++];
             }
         });
@@ -387,16 +387,16 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static Stream<Integer> ofAll(int[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(() -> new Iterator<Integer>() {
+        return Stream.ofAll(() -> new Iterator.Impl<Integer>() {
             int i = 0;
 
             @Override
-            public boolean hasNext() {
+            public boolean hsNext() {
                 return i < array.length;
             }
 
             @Override
-            public Integer next() {
+            public Integer getNext() {
                 return array[i++];
             }
         });
@@ -410,16 +410,16 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static Stream<Long> ofAll(long[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(() -> new Iterator<Long>() {
+        return Stream.ofAll(() -> new Iterator.Impl<Long>() {
             int i = 0;
 
             @Override
-            public boolean hasNext() {
+            public boolean hsNext() {
                 return i < array.length;
             }
 
             @Override
-            public Long next() {
+            public Long getNext() {
                 return array[i++];
             }
         });
@@ -433,16 +433,16 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static Stream<Short> ofAll(short[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(() -> new Iterator<Short>() {
+        return Stream.ofAll(() -> new Iterator.Impl<Short>() {
             int i = 0;
 
             @Override
-            public boolean hasNext() {
+            public boolean hsNext() {
                 return i < array.length;
             }
 
             @Override
-            public Short next() {
+            public Short getNext() {
                 return array[i++];
             }
         });
@@ -829,13 +829,13 @@ public interface Stream<T> extends LinearSeq<T> {
     @Override
     default <U> Stream<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return isEmpty() ? Nil.instance() : Stream.ofAll(() -> new Iterator<U>() {
+        return isEmpty() ? Nil.instance() : Stream.ofAll(() -> new Iterator.Impl<U>() {
 
             final Iterator<? extends T> inputs = Stream.this.iterator();
             java.util.Iterator<? extends U> current = Collections.emptyIterator();
 
             @Override
-            public boolean hasNext() {
+            public boolean hsNext() {
                 boolean currentHasNext;
                 while (!(currentHasNext = current.hasNext()) && inputs.hasNext()) {
                     current = mapper.apply(inputs.next()).iterator();
@@ -844,7 +844,7 @@ public interface Stream<T> extends LinearSeq<T> {
             }
 
             @Override
-            public U next() {
+            public U getNext() {
                 return current.next();
             }
         });

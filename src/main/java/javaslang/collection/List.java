@@ -199,16 +199,16 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      */
     static List<Boolean> ofAll(boolean[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(() -> new Iterator<Boolean>() {
+        return List.ofAll(() -> new Iterator.Impl<Boolean>() {
             int i = 0;
 
             @Override
-            public boolean hasNext() {
+            public boolean hsNext() {
                 return i < array.length;
             }
 
             @Override
-            public Boolean next() {
+            public Boolean getNext() {
                 return array[i++];
             }
         });
@@ -222,16 +222,16 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      */
     static List<Byte> ofAll(byte[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(() -> new Iterator<Byte>() {
+        return List.ofAll(() -> new Iterator.Impl<Byte>() {
             int i = 0;
 
             @Override
-            public boolean hasNext() {
+            public boolean hsNext() {
                 return i < array.length;
             }
 
             @Override
-            public Byte next() {
+            public Byte getNext() {
                 return array[i++];
             }
         });
@@ -245,16 +245,16 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      */
     static List<Character> ofAll(char[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(() -> new Iterator<Character>() {
+        return List.ofAll(() -> new Iterator.Impl<Character>() {
             int i = 0;
 
             @Override
-            public boolean hasNext() {
+            public boolean hsNext() {
                 return i < array.length;
             }
 
             @Override
-            public Character next() {
+            public Character getNext() {
                 return array[i++];
             }
         });
@@ -268,16 +268,16 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      */
     static List<Double> ofAll(double[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(() -> new Iterator<Double>() {
+        return List.ofAll(() -> new Iterator.Impl<Double>() {
             int i = 0;
 
             @Override
-            public boolean hasNext() {
+            public boolean hsNext() {
                 return i < array.length;
             }
 
             @Override
-            public Double next() {
+            public Double getNext() {
                 return array[i++];
             }
         });
@@ -291,16 +291,16 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      */
     static List<Float> ofAll(float[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(() -> new Iterator<Float>() {
+        return List.ofAll(() -> new Iterator.Impl<Float>() {
             int i = 0;
 
             @Override
-            public boolean hasNext() {
+            public boolean hsNext() {
                 return i < array.length;
             }
 
             @Override
-            public Float next() {
+            public Float getNext() {
                 return array[i++];
             }
         });
@@ -314,16 +314,16 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      */
     static List<Integer> ofAll(int[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(() -> new Iterator<Integer>() {
+        return List.ofAll(() -> new Iterator.Impl<Integer>() {
             int i = 0;
 
             @Override
-            public boolean hasNext() {
+            public boolean hsNext() {
                 return i < array.length;
             }
 
             @Override
-            public Integer next() {
+            public Integer getNext() {
                 return array[i++];
             }
         });
@@ -337,16 +337,16 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      */
     static List<Long> ofAll(long[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(() -> new Iterator<Long>() {
+        return List.ofAll(() -> new Iterator.Impl<Long>() {
             int i = 0;
 
             @Override
-            public boolean hasNext() {
+            public boolean hsNext() {
                 return i < array.length;
             }
 
             @Override
-            public Long next() {
+            public Long getNext() {
                 return array[i++];
             }
         });
@@ -360,16 +360,16 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      */
     static List<Short> ofAll(short[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(() -> new Iterator<Short>() {
+        return List.ofAll(() -> new Iterator.Impl<Short>() {
             int i = 0;
 
             @Override
-            public boolean hasNext() {
+            public boolean hsNext() {
                 return i < array.length;
             }
 
             @Override
-            public Short next() {
+            public Short getNext() {
                 return array[i++];
             }
         });
