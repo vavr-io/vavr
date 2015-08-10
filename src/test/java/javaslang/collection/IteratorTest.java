@@ -96,6 +96,6 @@ public class IteratorTest extends AbstractTraversableOnceTest {
 
     @Override
     int getPeekNonNilPerformingAnAction() {
-        return 1;
+        return 3;
     }
 }

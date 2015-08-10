@@ -605,17 +605,17 @@ public interface Traversable<T> extends TraversableOnce<T>, FilterMonadic<Iterab
      */
     @Override
     default Iterator<T> iterator() {
-        return new Iterator.Impl<T>() {
+        return new Iterator<T>() {
 
             Traversable<T> traversable = Traversable.this;
 
             @Override
-            public boolean hsNext() {
+            public boolean hasNext() {
                 return !traversable.isEmpty();
             }
 
             @Override
-            public T getNext() {
+            public T next() {
                 if (traversable.isEmpty()) {
                     throw new NoSuchElementException();
                 } else {

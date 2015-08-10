@@ -46,15 +46,15 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
     /**
      * The empty Iterator.
      */
-    Iterator<Object> EMPTY = new Impl<Object>() {
+    Iterator<Object> EMPTY = new Iterator<Object>() {
 
         @Override
-        public boolean hsNext() {
+        public boolean hasNext() {
             return false;
         }
 
         @Override
-        public Object getNext() {
+        public Object next() {
             throw new NoSuchElementException();
         }
     };
@@ -78,17 +78,17 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
      * @return A new Iterator
      */
     static <T> Iterator<T> of(T element) {
-        return new Impl<T>() {
+        return new Iterator<T>() {
 
             boolean hasNext = true;
 
             @Override
-            public boolean hsNext() {
+            public boolean hasNext() {
                 return hasNext;
             }
 
             @Override
-            public T getNext() {
+            public T next() {
                 if (!hasNext) {
                     throw new NoSuchElementException();
                 }
@@ -108,17 +108,17 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
     @SafeVarargs
     static <T> Iterator<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements.isNull");
-        return new Impl<T>() {
+        return new Iterator<T>() {
 
             int index = 0;
 
             @Override
-            public boolean hsNext() {
+            public boolean hasNext() {
                 return index < elements.length;
             }
 
             @Override
-            public T getNext() {
+            public T next() {
                 if (!hasNext()) {
                     throw new NoSuchElementException();
                 }
@@ -150,15 +150,15 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
      */
     static <T> Iterator<T> ofAll(java.util.Iterator<? extends T> iterator) {
         Objects.requireNonNull(iterator, "iterator is null");
-        return new Impl<T>() {
+        return new Iterator<T>() {
 
             @Override
-            public boolean hsNext() {
+            public boolean hasNext() {
                 return iterator.hasNext();
             }
 
             @Override
-            public T getNext() {
+            public T next() {
                 if (!hasNext()) {
                     throw new NoSuchElementException();
                 }
@@ -166,9 +166,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
             }
         };
     }
-
-    @Override
-    Iterator<T> peek(Consumer<? super T> action);
 
     @Override
     default Iterator<T> iterator() {
@@ -193,12 +190,12 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
             return Iterator.empty();
         } else {
             final Iterator<T> that = this;
-            return new Impl<T>() {
+            return new Iterator<T>() {
 
                 int count = n;
 
                 @Override
-                public boolean hsNext() {
+                public boolean hasNext() {
                     while (count > 0 && that.hasNext()) {
                         that.next(); // discarded
                         count--;
@@ -207,7 +204,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
                 }
 
                 @Override
-                public T getNext() {
+                public T next() {
                     if (!hasNext()) {
                         throw new NoSuchElementException();
                     }
@@ -228,17 +225,17 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
             return Iterator.empty();
         } else {
             final Iterator<T> that = this;
-            return new Impl<T>() {
+            return new Iterator<T>() {
 
                 int count = n;
 
                 @Override
-                public boolean hsNext() {
+                public boolean hasNext() {
                     return count > 0 && that.hasNext();
                 }
 
                 @Override
-                public T getNext() {
+                public T next() {
                     if (!hasNext()) {
                         throw new NoSuchElementException();
                     }
@@ -262,12 +259,12 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
             return Iterator.empty();
         } else {
             final Iterator<T> that = this;
-            return new Impl<T>() {
+            return new Iterator<T>() {
 
                 Option<T> next = None.instance();
 
                 @Override
-                public boolean hsNext() {
+                public boolean hasNext() {
                     while (next.isEmpty() && that.hasNext()) {
                         final T candidate = that.next();
                         if (predicate.test(candidate)) {
@@ -278,7 +275,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
                 }
 
                 @Override
-                public T getNext() {
+                public T next() {
                     if (!hasNext()) {
                         throw new NoSuchElementException();
                     }
@@ -319,13 +316,13 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
             return Iterator.empty();
         } else {
             final Iterator<T> that = this;
-            return new Impl<U>() {
+            return new Iterator<U>() {
 
                 final Iterator<? extends T> inputs = that;
                 java.util.Iterator<? extends U> current = Collections.emptyIterator();
 
                 @Override
-                public boolean hsNext() {
+                public boolean hasNext() {
                     boolean currentHasNext;
                     while (!(currentHasNext = current.hasNext()) && inputs.hasNext()) {
                         current = mapper.apply(inputs.next()).iterator();
@@ -334,7 +331,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
                 }
 
                 @Override
-                public U getNext() {
+                public U next() {
                     return current.next();
                 }
             };
@@ -388,15 +385,15 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
             return Iterator.empty();
         } else {
             final Iterator<T> that = this;
-            return new Impl<U>() {
+            return new Iterator<U>() {
 
                 @Override
-                public boolean hsNext() {
+                public boolean hasNext() {
                     return that.hasNext();
                 }
 
                 @Override
-                public U getNext() {
+                public U next() {
                     if (!that.hasNext()) {
                         throw new NoSuchElementException();
                     }
@@ -406,44 +403,30 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
         }
     }
 
-    abstract class Impl<T> implements Iterator<T> {
-
-        private T next;
-
-        public abstract T getNext();
-
-        public abstract boolean hsNext();
-
-        @Override
-        public boolean hasNext() {
-            return next != null || hsNext();
-        }
-
-        @Override
-        public T next() {
-            if (next == null && !hsNext()) {
-                throw new NoSuchElementException();
-            }
-            if(next != null) {
-                T result = next;
-                next = null;
-                return result;
-            } else {
-                return getNext();
-            }
-        }
-
-        @Override
-        public Iterator<T> peek(Consumer<? super T> action) {
-            if(next != null) {
-                action.accept(next);
-            } else {
-                if (hsNext()) {
-                    next = getNext();
-                    action.accept(next);
+    @Override
+    default Iterator<T> peek(Consumer<? super T> action) {
+        Objects.requireNonNull(action, "action is null");
+        if (!hasNext()) {
+            return Iterator.empty();
+        } else {
+            final Iterator<T> that = this;
+            return new Iterator<T>() {
+                @Override
+                public boolean hasNext() {
+                    return that.hasNext();
                 }
-            }
-            return this;
+
+                @Override
+                public T next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
+                    final T next = that.next();
+                    action.accept(next);
+                    return next;
+                }
+            };
         }
     }
+
 }
