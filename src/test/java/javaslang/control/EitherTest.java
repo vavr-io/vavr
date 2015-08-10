@@ -338,12 +338,12 @@ public class EitherTest {
 
     @Test
     public void shouldReturnIteratorOfLeftOfLeftProjection() {
-        assertThat(new Left<>(1).left().iterator()).isNotNull();
+        assertThat((Iterator<Integer>) new Left<>(1).left().iterator()).isNotNull();
     }
 
     @Test
     public void shouldReturnIteratorOfRightOfLeftProjection() {
-        assertThat(new Right<>(1).left().iterator()).isNotNull();
+        assertThat((Iterator<Object>) new Right<>(1).left().iterator()).isNotNull();
     }
 
     // equals
@@ -713,12 +713,12 @@ public class EitherTest {
 
     @Test
     public void shouldReturnIteratorOfRightOfRightProjection() {
-        assertThat(new Right<>(1).right().iterator()).isNotNull();
+        assertThat((Iterator<Integer>) new Right<>(1).right().iterator()).isNotNull();
     }
 
     @Test
     public void shouldReturnIteratorOfLeftOfRightProjection() {
-        assertThat(new Left<>(1).right().iterator()).isNotNull();
+        assertThat((Iterator<Object>) new Left<>(1).right().iterator()).isNotNull();
     }
 
     // equals

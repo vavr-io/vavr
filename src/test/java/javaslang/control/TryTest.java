@@ -9,10 +9,7 @@ import javaslang.Serializables;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -97,12 +94,12 @@ public class TryTest {
 
     @Test
     public void shouldReturnIteratorOfSuccess() {
-        assertThat(new Success<>(1).iterator()).isNotNull();
+        assertThat((Iterator<Integer>) new Success<>(1).iterator()).isNotNull();
     }
 
     @Test
     public void shouldReturnIteratorOfFailure() {
-        assertThat(failure().iterator()).isNotNull();
+        assertThat((Iterator<Object>) failure().iterator()).isNotNull();
     }
 
     // -- Try.of

@@ -30,42 +30,7 @@ import static org.assertj.core.api.Assertions.within;
 /**
  * Tests all methods defined in {@link javaslang.collection.Traversable}.
  */
-public abstract class AbstractTraversableTest {
-
-    protected <T> IterableAssert<T> assertThat(Iterable<T> actual) {
-        return new IterableAssert<T>(actual) {
-        };
-    }
-
-    protected <T> ObjectAssert<T> assertThat(T actual) {
-        return new ObjectAssert<T>(actual) {
-        };
-    }
-
-    protected BooleanAssert assertThat(Boolean actual) {
-        return new BooleanAssert(actual) {
-        };
-    }
-
-    protected DoubleAssert assertThat(Double actual) {
-        return new DoubleAssert(actual) {
-        };
-    }
-
-    protected IntegerAssert assertThat(Integer actual) {
-        return new IntegerAssert(actual) {
-        };
-    }
-
-    protected LongAssert assertThat(Long actual) {
-        return new LongAssert(actual) {
-        };
-    }
-
-    protected StringAssert assertThat(String actual) {
-        return new StringAssert(actual) {
-        };
-    }
+public abstract class AbstractTraversableTest extends AbstractTraversableOnceTest {
 
     abstract protected <T> Collector<T, ArrayList<T>, ? extends Traversable<T>> collector();
 
@@ -358,35 +323,6 @@ public abstract class AbstractTraversableTest {
         assertThat(of(1, 2, 3).dropWhile(i -> i < 2)).isEqualTo(of(2, 3));
     }
 
-    // -- exists
-
-    @Test
-    public void shouldBeAwareOfExistingElement() {
-        assertThat(of(1, 2).exists(i -> i == 2)).isTrue();
-    }
-
-    @Test
-    public void shouldBeAwareOfNonExistingElement() {
-        assertThat(this.<Integer> empty().exists(i -> i == 1)).isFalse();
-    }
-
-    // -- existsUnique
-
-    @Test
-    public void shouldBeAwareOfExistingUniqueElement() {
-        assertThat(of(1, 2).existsUnique(i -> i == 1)).isTrue();
-    }
-
-    @Test
-    public void shouldBeAwareOfNonExistingUniqueElement() {
-        assertThat(this.<Integer> empty().existsUnique(i -> i == 1)).isFalse();
-    }
-
-    @Test
-    public void shouldBeAwareOfExistingNonUniqueElement() {
-        assertThat(of(1, 1, 2).existsUnique(i -> i == 1)).isFalse();
-    }
-
     // -- filter
 
     @Test
@@ -546,18 +482,6 @@ public abstract class AbstractTraversableTest {
     @Test
     public void shouldFoldRightNonNil() {
         assertThat(of("a", "b", "c").foldRight("", (x, xs) -> x + xs)).isEqualTo("abc");
-    }
-
-    // -- forAll
-
-    @Test
-    public void shouldBeAwareOfPropertyThatHoldsForAll() {
-        assertThat(of(2, 4).forAll(i -> i % 2 == 0)).isTrue();
-    }
-
-    @Test
-    public void shouldBeAwareOfPropertyThatNotHoldsForAll() {
-        assertThat(of(2, 3).forAll(i -> i % 2 == 0)).isFalse();
     }
 
     // -- grouped
@@ -1030,31 +954,6 @@ public abstract class AbstractTraversableTest {
     public void shouldCalculateInverseMinByFunctionOfInts() {
         assertThat(of(1, 2, 3).minBy(i -> -i)).isEqualTo(new Some<>(3));
     }
-
-    // -- peek
-
-    @Test
-    public void shouldPeekNil() {
-        assertThat(empty().peek(t -> {
-        })).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldPeekNonNilPerformingNoAction() {
-        assertThat(of(1).peek(t -> {
-        })).isEqualTo(of(1));
-    }
-
-    @Test
-    public void shouldPeekNonNilPerformingAnAction() {
-        final int[] effect = { 0 };
-        final Traversable<Integer> actual = of(1, 2, 3).peek(i -> effect[0] = i);
-        assertThat(actual).isEqualTo(of(1, 2, 3)); // traverses all elements in the lazy case
-        assertThat(effect[0]).isEqualTo(getPeekNonNilPerformingAnAction());
-    }
-
-    // returns the peek result of the specific Traversable implementation
-    abstract int getPeekNonNilPerformingAnAction();
 
     // -- product
 

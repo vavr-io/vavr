@@ -15,6 +15,7 @@ import javaslang.control.Some;
 import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -40,7 +41,7 @@ import java.util.function.Predicate;
  * @param <T> Component type
  * @since 2.0.0
  */
-public interface Iterator<T> extends java.util.Iterator<T>, /*TODO: TraversableOnce,*/ FilterMonadic<IterableKind<?>, T> {
+public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, FilterMonadic<IterableKind<?>, T> {
 
     /**
      * The empty Iterator.
@@ -164,6 +165,16 @@ public interface Iterator<T> extends java.util.Iterator<T>, /*TODO: TraversableO
                 return iterator.next();
             }
         };
+    }
+
+    @Override
+    default Iterator<T> iterator() {
+        return this;
+    }
+
+    @Override
+    default boolean isEmpty() {
+        return !hasNext();
     }
 
     /**
@@ -391,4 +402,31 @@ public interface Iterator<T> extends java.util.Iterator<T>, /*TODO: TraversableO
             };
         }
     }
+
+    @Override
+    default Iterator<T> peek(Consumer<? super T> action) {
+        Objects.requireNonNull(action, "action is null");
+        if (!hasNext()) {
+            return Iterator.empty();
+        } else {
+            final Iterator<T> that = this;
+            return new Iterator<T>() {
+                @Override
+                public boolean hasNext() {
+                    return that.hasNext();
+                }
+
+                @Override
+                public T next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
+                    final T next = that.next();
+                    action.accept(next);
+                    return next;
+                }
+            };
+        }
+    }
+
 }
