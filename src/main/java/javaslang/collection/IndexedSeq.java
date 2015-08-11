@@ -128,6 +128,9 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> remove(T element);
 
     @Override
+    IndexedSeq<T> removeIndx(int indx);
+
+    @Override
     IndexedSeq<T> removeAll(T element);
 
     @Override

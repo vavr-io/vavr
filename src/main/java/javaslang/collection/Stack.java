@@ -563,6 +563,9 @@ public interface Stack<T> extends LinearSeq<T> {
     Stack<T> remove(T element);
 
     @Override
+    Stack<T> removeIndx(int indx);
+
+    @Override
     Stack<T> removeAll(T element);
 
     @Override

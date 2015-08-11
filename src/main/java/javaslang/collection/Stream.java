@@ -980,6 +980,9 @@ public interface Stream<T> extends LinearSeq<T> {
     Stream<T> remove(T element);
 
     @Override
+    Stream<T> removeIndx(int indx);
+
+    @Override
     default Stream<T> removeAll(T removed) {
         return filter(e -> !Objects.equals(e, removed));
     }
@@ -1091,9 +1094,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Tuple2<Stream<T>, Stream<T>> splitAt(int n) {
-        return Tuple.of(take(n), drop(n));
-    }
+    Tuple2<Stream<T>, Stream<T>> splitAt(int n);
 
     @Override
     default Spliterator<T> spliterator() {
@@ -1310,6 +1311,16 @@ public interface Stream<T> extends LinearSeq<T> {
         }
 
         @Override
+        public Tuple2<Stream<T>, Stream<T>> splitAt(int n) {
+            if(n <= 0) {
+                return Tuple.of(empty(), this);
+            } else {
+                Tuple2<Stream<T>, Stream<T>> t = tail().splitAt(n - 1);
+                return Tuple.of(new Cons<>(head, () -> t._1), t._2);
+            }
+        }
+
+        @Override
         public Stream<T> intersperse(T element) {
             return new Cons<>(head, () -> {
                 final Stream<T> tail = tail();
@@ -1331,6 +1342,17 @@ public interface Stream<T> extends LinearSeq<T> {
         @Override
         public Stream<T> remove(T element) {
             return Objects.equals(head.get(), element) ? tail() : new Cons<>(head, () -> tail().remove(element));
+        }
+
+        @Override
+        public Stream<T> removeIndx(int indx) {
+            if(indx < 0) {
+                return this;
+            } else if (indx == 0) {
+                return tail();
+            } else {
+                return new Cons<>(head, () -> tail().removeIndx(indx - 1));
+            }
         }
 
         @Override
@@ -1631,6 +1653,11 @@ public interface Stream<T> extends LinearSeq<T> {
         }
 
         @Override
+        public Tuple2<Stream<T>, Stream<T>> splitAt(int n) {
+            return Tuple.of(empty(), empty());
+        }
+
+        @Override
         public Stream<T> intersperse(T element) {
             return Nil.instance();
         }
@@ -1647,6 +1674,11 @@ public interface Stream<T> extends LinearSeq<T> {
 
         @Override
         public Stream<T> remove(T element) {
+            return this;
+        }
+
+        @Override
+        public Stream<T> removeIndx(int indx) {
             return this;
         }
 

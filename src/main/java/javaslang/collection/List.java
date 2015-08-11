@@ -986,6 +986,21 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
+    default List<T> removeIndx(int indx) {
+        if(indx < 0) {
+            return this;
+        }
+        Tuple2<List<T>, List<T>> t = splitAt(indx);
+        if(t._1.isEmpty()) {
+            return t._2.isEmpty() ? empty() : tail();
+        } else if(t._2.isEmpty()) {
+            return this;
+        } else {
+            return t._1.appendAll(t._2.tail());
+        }
+    }
+
+    @Override
     default List<T> removeAll(T removed) {
         List<T> result = Nil.instance();
         for (T element : this) {
@@ -1132,9 +1147,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default Tuple2<List<T>, List<T>> splitAt(int n) {
-        return Tuple.of(take(n), drop(n));
-    }
+    Tuple2<List<T>, List<T>> splitAt(int n);
 
     @Override
     default Spliterator<T> spliterator() {
@@ -1313,6 +1326,18 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         @Override
         public Some<List<T>> initOption() {
             return new Some<>(init());
+        }
+
+        @Override
+        public Tuple2<List<T>, List<T>> splitAt(int n) {
+            List<T> head = Nil.instance();
+            List<T> tail = this;
+            while (n > 0 && !tail.isEmpty()) {
+                head = head.prepend(tail.head());
+                tail = tail.tail();
+                n--;
+            }
+            return Tuple.of(head.reverse(), tail);
         }
 
         @Override
@@ -1534,6 +1559,11 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         @Override
         public None<List<T>> initOption() {
             return None.instance();
+        }
+
+        @Override
+        public Tuple2<List<T>, List<T>> splitAt(int n) {
+            return Tuple.of(empty(), empty());
         }
 
         @Override

@@ -530,6 +530,50 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
         assertThat(of(1, 2, 3).splitAt(1)).isEqualTo(Tuple.of(of(1), of(2, 3)));
     }
 
+    @Test
+    public void shouldSplitAtBegin() {
+        assertThat(of(1, 2, 3).splitAt(0)).isEqualTo(Tuple.of(empty(), of(1, 2, 3)));
+    }
+
+    @Test
+    public void shouldSplitAtEnd() {
+        assertThat(of(1, 2, 3).splitAt(3)).isEqualTo(Tuple.of(of(1, 2, 3), empty()));
+    }
+
+    @Test
+    public void shouldSplitAtOutOfBounds() {
+        assertThat(of(1, 2, 3).splitAt(5)).isEqualTo(Tuple.of(of(1, 2, 3), empty()));
+        assertThat(of(1, 2, 3).splitAt(-1)).isEqualTo(Tuple.of(empty(), of(1, 2, 3)));
+    }
+
+    // -- removeIndx(index)
+
+    @Test
+    public void shouldRemoveIndxAtNil() {
+        assertThat(empty().removeIndx(1)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldRemoveIndxAtNonNil() {
+        assertThat(of(1, 2, 3).removeIndx(1)).isEqualTo(of(1, 3));
+    }
+
+    @Test
+    public void shouldRemoveIndxAtBegin() {
+        assertThat(of(1, 2, 3).removeIndx(0)).isEqualTo(of(2, 3));
+    }
+
+    @Test
+    public void shouldRemoveIndxAtEnd() {
+        assertThat(of(1, 2, 3).removeIndx(2)).isEqualTo(of(1, 2));
+    }
+
+    @Test
+    public void shouldRemoveIndxOutOfBoundsLeft() {
+        assertThat(of(1, 2, 3).removeIndx(-1)).isEqualTo(of(1, 2, 3));
+        assertThat(of(1, 2, 3).removeIndx(5)).isEqualTo(of(1, 2, 3));
+    }
+
     // -- subsequence(beginIndex)
 
     @Test
