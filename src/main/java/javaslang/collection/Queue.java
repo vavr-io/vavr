@@ -806,8 +806,8 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public Queue<T> removeIndx(int indx) {
-        return toList().removeIndx(indx).toQueue();
+    public Queue<T> removeAt(int indx) {
+        return toList().removeAt(indx).toQueue();
     }
 
     @Override

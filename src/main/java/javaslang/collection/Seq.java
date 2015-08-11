@@ -545,8 +545,9 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * (subtracts one from their indices).
      * @param indx position of element to remove
      * @return a sequence containing all elements of this without the element at the specified position.
+     * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
      */
-    Seq<T> removeIndx(int indx);
+    Seq<T> removeAt(int indx);
 
     @Override
     Seq<T> removeAll(T element);
