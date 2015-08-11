@@ -806,6 +806,11 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
+    public Queue<T> removeAt(int indx) {
+        return toList().removeAt(indx).toQueue();
+    }
+
+    @Override
     public Queue<T> removeAll(T element) {
         return new Queue<>(front.removeAll(element), rear.removeAll(element));
     }

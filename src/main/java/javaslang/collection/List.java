@@ -986,6 +986,9 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
+    List<T> removeAt(int indx);
+
+    @Override
     default List<T> removeAll(T removed) {
         List<T> result = Nil.instance();
         for (T element : this) {
@@ -1132,9 +1135,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default Tuple2<List<T>, List<T>> splitAt(int n) {
-        return Tuple.of(take(n), drop(n));
-    }
+    Tuple2<List<T>, List<T>> splitAt(int n);
 
     @Override
     default Spliterator<T> spliterator() {
@@ -1316,6 +1317,18 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         }
 
         @Override
+        public Tuple2<List<T>, List<T>> splitAt(int n) {
+            List<T> init = Nil.instance();
+            List<T> tail = this;
+            while (n > 0 && !tail.isEmpty()) {
+                init = init.prepend(tail.head());
+                tail = tail.tail();
+                n--;
+            }
+            return Tuple.of(init.reverse(), tail);
+        }
+
+        @Override
         public Some<T> peekOption() {
             return new Some<>(head());
         }
@@ -1328,6 +1341,24 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         @Override
         public Some<Tuple2<T, List<T>>> pop2Option() {
             return new Some<>(Tuple.of(head(), tail()));
+        }
+
+        @Override
+        public List<T> removeAt(int indx) {
+            if(indx < 0) {
+                throw new IndexOutOfBoundsException("removeAt(" + indx + ")");
+            }
+            List<T> init = Nil.instance();
+            List<T> tail = this;
+            while (indx > 0 && !tail.isEmpty()) {
+                init = init.prepend(tail.head());
+                tail = tail.tail();
+                indx--;
+            }
+            if(indx > 0 && tail.isEmpty()) {
+                throw new IndexOutOfBoundsException("removeAt() on Nil");
+            }
+            return init.reverse().appendAll(tail.tail());
         }
 
         @Override
@@ -1537,6 +1568,11 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         }
 
         @Override
+        public Tuple2<List<T>, List<T>> splitAt(int n) {
+            return Tuple.of(empty(), empty());
+        }
+
+        @Override
         public None<T> peekOption() {
             return None.instance();
         }
@@ -1549,6 +1585,11 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         @Override
         public None<Tuple2<T, List<T>>> pop2Option() {
             return None.instance();
+        }
+
+        @Override
+        public List<T> removeAt(int indx) {
+            throw new IndexOutOfBoundsException("removeAt() on Nil");
         }
 
         @Override

@@ -980,6 +980,9 @@ public interface Stream<T> extends LinearSeq<T> {
     Stream<T> remove(T element);
 
     @Override
+    Stream<T> removeAt(int indx);
+
+    @Override
     default Stream<T> removeAll(T removed) {
         return filter(e -> !Objects.equals(e, removed));
     }
@@ -1334,6 +1337,17 @@ public interface Stream<T> extends LinearSeq<T> {
         }
 
         @Override
+        public Stream<T> removeAt(int indx) {
+            if(indx < 0) {
+                throw new IndexOutOfBoundsException("removeAt(" + indx + ")");
+            } else if (indx == 0) {
+                return tail();
+            } else {
+                return new Cons<>(head, () -> tail().removeAt(indx - 1));
+            }
+        }
+
+        @Override
         public Stream<T> replace(T currentElement, T newElement) {
             if (Objects.equals(head.get(), currentElement)) {
                 return new Cons<>(() -> newElement, this::tail);
@@ -1648,6 +1662,11 @@ public interface Stream<T> extends LinearSeq<T> {
         @Override
         public Stream<T> remove(T element) {
             return this;
+        }
+
+        @Override
+        public Stream<T> removeAt(int indx) {
+            throw new IndexOutOfBoundsException("removeAt() on Nil");
         }
 
         @Override
