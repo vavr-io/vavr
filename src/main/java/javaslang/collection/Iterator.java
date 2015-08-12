@@ -128,6 +128,33 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
     }
 
     /**
+     * Creates an Iterator which traverses along all given iterators.
+     * @param iterators The list of iterators
+     * @param <T>       Component type.
+     * @return A new {@code javaslang.collection.Iterator}
+     */
+    @SafeVarargs
+    static <T> Iterator<T> ofIterators(Iterator<T>... iterators) {
+        Objects.requireNonNull(iterators, "iterators is null");
+        List<Iterator<T>> queue = List.empty();
+        for (Iterator<T> iterator : iterators) {
+            queue = queue.prepend(iterator);
+        }
+        return queue.isEmpty() ? Iterator.empty() : new ConcatIterator<>(queue.reverse());
+    }
+
+    /**
+     * Creates an Iterator which traverses along all given iterators.
+     * @param iterators The list of iterators
+     * @param <T>       Component type.
+     * @return A new {@code javaslang.collection.Iterator}
+     */
+    static <T> Iterator<T> ofIterators(Traversable<Iterator<T>> iterators) {
+        Objects.requireNonNull(iterators, "iterators is null");
+        return iterators.isEmpty() ? Iterator.empty() : new ConcatIterator<>(iterators);
+    }
+
+    /**
      * Creates a FilterMonadic Iterator based on the given Iterable. This is a convenience method for
      * {@code Iterator.of(iterable.iterator()}.
      *
@@ -136,7 +163,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
      * @return A new {@code javaslang.collection.Iterator}
      */
     static <T> Iterator<T> ofAll(Iterable<? extends T> iterable) {
-        Objects.requireNonNull(iterable, "iterator is null");
+        Objects.requireNonNull(iterable, "iterable is null");
         return Iterator.ofAll(iterable.iterator());
     }
 
@@ -426,6 +453,34 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
                     return next;
                 }
             };
+        }
+    }
+
+    class ConcatIterator<T> implements Iterator<T> {
+
+        private Traversable<Iterator<T>> queue;
+        private Iterator<T> current;
+
+        private ConcatIterator(Traversable<Iterator<T>> queue) {
+            this.current = queue.head();
+            this.queue = queue.tail();
+        }
+
+        @Override
+        public boolean hasNext() {
+            while (!current.hasNext() && !queue.isEmpty()) {
+                current = queue.head();
+                queue = queue.tail();
+            }
+            return current.hasNext();
+        }
+
+        @Override
+        public T next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            return current.next();
         }
     }
 

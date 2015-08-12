@@ -21,7 +21,18 @@ public class IteratorTest extends AbstractTraversableOnceTest {
         };
     }
 
-    // TODO remove
+    @Test
+    public void shouldConcatenateListOfEmptyIterators() {
+        assertThat(Iterator.ofIterators().isEmpty()).isTrue();
+        assertThat(Iterator.ofIterators(Iterator.empty()).isEmpty()).isTrue();
+        assertThat(Iterator.ofIterators(Iterator.empty(), Iterator.empty()).isEmpty()).isTrue();
+    }
+
+    @Test
+    public void shouldConcatenateListOfNonEmptyIterators() {
+        assertThat(Iterator.ofIterators(of(1, 2), of(), of(3))).isEqualTo(of(1, 2, 3));
+    }
+
     @Test
     public void shouldFilterNonEmptyTraversable() {
         Iterator<Integer> it = List.of(1, 2, 3, 4).iterator();

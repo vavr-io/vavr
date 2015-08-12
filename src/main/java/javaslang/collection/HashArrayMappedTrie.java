@@ -357,9 +357,7 @@ public interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>> {
 
         @Override
         public Iterator<Tuple2<K, V>> iterator() {
-            // we use Iterator.ofAll(subNodes).flatMap(...) instead of subNodes.flatMap(...)
-            // because of the lazy implementation
-            return Iterator.ofAll(subNodes).flatMap(child -> child::iterator);
+            return Iterator.ofIterators(subNodes.map(HashArrayMappedTrie::iterator));
         }
 
     }
@@ -436,9 +434,7 @@ public interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>> {
 
         @Override
         public Iterator<Tuple2<K, V>> iterator() {
-            // we use Iterator.ofAll(subNodes).flatMap(...) instead of subNodes.flatMap(...)
-            // because of the lazy implementation
-            return Iterator.ofAll(subNodes).flatMap(child -> child::iterator);
+            return Iterator.ofIterators(subNodes.map(HashArrayMappedTrie::iterator));
         }
     }
 }
