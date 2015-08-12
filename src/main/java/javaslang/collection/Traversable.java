@@ -864,6 +864,19 @@ public interface Traversable<T> extends TraversableOnce<T>, FilterMonadic<Iterab
      */
     Traversable<T> remove(T element);
 
+    /**
+     * Removes the first occurrence that satisfy predicate
+     * @param predicate an predicate
+     * @return a new Traversable
+     */
+    Traversable<T> removeFirst(Predicate<T> predicate);
+
+    /**
+     * Removes the last occurrence that satisfy predicate
+     * @param predicate an predicate
+     * @return a new Traversable
+     */
+    Traversable<T> removeLast(Predicate<T> predicate);
 
     /**
      * Removes all occurrences of the given element.

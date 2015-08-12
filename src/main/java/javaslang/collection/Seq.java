@@ -540,6 +540,12 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     @Override
     Seq<T> remove(T element);
 
+    @Override
+    Seq<T> removeFirst(Predicate<T> predicate);
+
+    @Override
+    Seq<T> removeLast(Predicate<T> predicate);
+
     /**
      * Removes the element at the specified position in this sequence. Shifts any subsequent elements to the left
      * (subtracts one from their indices).

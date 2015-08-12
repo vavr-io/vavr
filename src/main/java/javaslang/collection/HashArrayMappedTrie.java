@@ -206,28 +206,12 @@ public interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>> {
         }
 
         private AbstractNode<K, V> update(K key, Option<V> value) {
-            List<Tuple2<K, V>> init = List.empty();
-            List<Tuple2<K, V>> tail = entries;
-            while (!tail.isEmpty() && !tail.head()._1.equals(key)) {
-                init = init.prepend(tail.head());
-                tail = tail.tail();
-            }
-            if (!tail.isEmpty() && tail.head()._1.equals(key)) {
-                tail = tail.tail();
-            }
+            List<Tuple2<K, V>> filtered = entries.removeFirst(t -> t._1.equals(key));
             if (value.isEmpty()) {
-                return init.isEmpty() && tail.isEmpty() ? EmptyNode.instance() : new LeafNode<>(hash, mix(init, tail));
+                return filtered.isEmpty() ? EmptyNode.instance() : new LeafNode<>(hash, filtered);
             } else {
-                return new LeafNode<>(hash, mix(init, tail).prepend(Tuple.of(key, value.get())));
+                return new LeafNode<>(hash, filtered.prepend(Tuple.of(key, value.get())));
             }
-        }
-
-        private List<Tuple2<K, V>> mix(List<Tuple2<K, V>> source, List<Tuple2<K, V>> add) {
-            while (!add.isEmpty()) {
-                source = source.prepend(add.head());
-                add = add.tail();
-            }
-            return source;
         }
 
         @Override
@@ -251,7 +235,7 @@ public interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>> {
             int h1 = this.hash;
             int h2 = other.hash;
             if (h1 == h2) {
-                return new LeafNode<>(h1, mix(entries, other.entries));
+                return new LeafNode<>(h1, entries.foldLeft(other.entries, List::prepend));
             }
             int subH1 = hashFragment(shift, h1);
             int subH2 = hashFragment(shift, h2);
