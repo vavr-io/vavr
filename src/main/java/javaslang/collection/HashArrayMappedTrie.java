@@ -235,7 +235,7 @@ public interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>> {
             int h1 = this.hash;
             int h2 = other.hash;
             if (h1 == h2) {
-                return new LeafNode<>(h1, entries.foldLeft(other.entries, List::prepend));
+                return new LeafNode<>(h1, other.entries.foldLeft(entries, List::prepend));
             }
             int subH1 = hashFragment(shift, h1);
             int subH2 = hashFragment(shift, h2);
