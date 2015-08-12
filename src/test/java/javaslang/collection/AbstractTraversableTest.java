@@ -1085,6 +1085,80 @@ public abstract class AbstractTraversableTest extends AbstractTraversableOnceTes
         assertThat(of(1, 2, 3).remove(4)).isEqualTo(of(1, 2, 3));
     }
 
+    // -- removeFirst(Predicate)
+
+    @Test
+    public void shouldRemoveFirstElementByPredicateFromNil() {
+        assertThat(empty().removeFirst(v -> true)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldRemoveFirstElementByPredicateBegin() {
+        assertThat(of(1, 2, 3).removeFirst(v -> v == 1)).isEqualTo(of(2, 3));
+    }
+
+    @Test
+    public void shouldRemoveFirstElementByPredicateBeginM() {
+        assertThat(of(1, 2, 1, 3).removeFirst(v -> v == 1)).isEqualTo(of(2, 1, 3));
+    }
+
+    @Test
+    public void shouldRemoveFirstElementByPredicateEnd() {
+        assertThat(of(1, 2, 3).removeFirst(v -> v == 3)).isEqualTo(of(1, 2));
+    }
+
+    @Test
+    public void shouldRemoveFirstElementByPredicateInner() {
+        assertThat(of(1, 2, 3, 4, 5).removeFirst(v -> v == 3)).isEqualTo(of(1, 2, 4, 5));
+    }
+
+    @Test
+    public void shouldRemoveFirstElementByPredicateInnerM() {
+        assertThat(of(1, 2, 3, 2, 5).removeFirst(v -> v == 2)).isEqualTo(of(1, 3, 2, 5));
+    }
+
+    @Test
+    public void shouldRemoveFirstElementByPredicateNonExisting() {
+        assertThat(of(1, 2, 3).removeFirst(v -> v == 4)).isEqualTo(of(1, 2, 3));
+    }
+
+    // -- removeLast(Predicate)
+
+    @Test
+    public void shouldRemoveLastElementByPredicateFromNil() {
+        assertThat(empty().removeLast(v -> true)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldRemoveLastElementByPredicateBegin() {
+        assertThat(of(1, 2, 3).removeLast(v -> v == 1)).isEqualTo(of(2, 3));
+    }
+
+    @Test
+    public void shouldRemoveLastElementByPredicateEnd() {
+        assertThat(of(1, 2, 3).removeLast(v -> v == 3)).isEqualTo(of(1, 2));
+    }
+
+    @Test
+    public void shouldRemoveLastElementByPredicateEndM() {
+        assertThat(of(1, 3, 2, 3).removeLast(v -> v == 3)).isEqualTo(of(1, 3, 2));
+    }
+
+    @Test
+    public void shouldRemoveLastElementByPredicateInner() {
+        assertThat(of(1, 2, 3, 4, 5).removeLast(v -> v == 3)).isEqualTo(of(1, 2, 4, 5));
+    }
+
+    @Test
+    public void shouldRemoveLastElementByPredicateInnerM() {
+        assertThat(of(1, 2, 3, 2, 5).removeLast(v -> v == 2)).isEqualTo(of(1, 2, 3, 5));
+    }
+
+    @Test
+    public void shouldRemoveLastElementByPredicateNonExisting() {
+        assertThat(of(1, 2, 3).removeLast(v -> v == 4)).isEqualTo(of(1, 2, 3));
+    }
+
     // -- removeAll(Iterable)
 
     @Test

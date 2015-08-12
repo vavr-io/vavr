@@ -205,13 +205,12 @@ public interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>> {
             this.entries = entries;
         }
 
-        // TODO
-        AbstractNode<K, V> update(K key, Option<V> value) {
-            List<Tuple2<K, V>> filtered = entries.filter(t -> !t._1.equals(key));
+        private AbstractNode<K, V> update(K key, Option<V> value) {
+            List<Tuple2<K, V>> filtered = entries.removeFirst(t -> t._1.equals(key));
             if (value.isEmpty()) {
                 return filtered.isEmpty() ? EmptyNode.instance() : new LeafNode<>(hash, filtered);
             } else {
-                return new LeafNode<>(hash, filtered.append(Tuple.of(key, value.get())));
+                return new LeafNode<>(hash, filtered.prepend(Tuple.of(key, value.get())));
             }
         }
 
@@ -220,7 +219,7 @@ public interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>> {
             if (hash != key.hashCode()) {
                 return None.instance();
             }
-            return entries.filter(t -> t._1.equals(key)).headOption().map(t -> t._2);
+            return entries.findFirst(t -> t._1.equals(key)).map(t -> t._2);
         }
 
         @Override
@@ -236,10 +235,7 @@ public interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>> {
             int h1 = this.hash;
             int h2 = other.hash;
             if (h1 == h2) {
-                List<Tuple2<K, V>> newList = List.empty();
-                newList.appendAll(this.entries);
-                newList.appendAll(other.entries);
-                return new LeafNode<>(h1, newList);
+                return new LeafNode<>(h1, other.entries.foldLeft(entries, List::prepend));
             }
             int subH1 = hashFragment(shift, h1);
             int subH2 = hashFragment(shift, h2);
@@ -311,7 +307,7 @@ public interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>> {
                 if (subNodes.length() <= 2 && subNodes.get(indx ^ 1).isLeaf()) {
                     return subNodes.get(indx ^ 1); // collapse
                 } else {
-                    return new IndexedNode<>(newBitmap, removeIndx(subNodes, indx));
+                    return new IndexedNode<>(newBitmap, subNodes.removeAt(indx));
                 }
             } else if (added) {
                 if (subNodes.length() >= MAX_INDEX_NODE) {
@@ -328,34 +324,25 @@ public interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>> {
             }
         }
 
-        List<AbstractNode<K, V>> removeIndx(List<AbstractNode<K, V>> l, int idx) {
-            Tuple2<List<AbstractNode<K, V>>, List<AbstractNode<K, V>>> spl = l.splitAt(idx);
-            List<AbstractNode<K, V>> rem = spl._1;
-            if (!spl._2.isEmpty()) {
-                rem = rem.appendAll(spl._2.tail());
-            }
-            return rem;
-        }
-
         ArrayNode<K, V> expand(int frag, AbstractNode<K, V> child, int mask, List<AbstractNode<K, V>> subNodes) {
             int bit = mask;
             int count = 0;
             List<AbstractNode<K, V>> sub = subNodes;
             List<AbstractNode<K, V>> arr = List.empty();
-            for (int i = 0; i < 32; i++) {
+            for (int i = 0; i < BUCKET_SIZE; i++) {
                 if ((bit & 1) != 0) {
-                    arr = arr.append(sub.head());
+                    arr = arr.prepend(sub.head());
                     sub = sub.tail();
                     count++;
                 } else if (i == frag) {
-                    arr = arr.append(child);
+                    arr = arr.prepend(child);
                     count++;
                 } else {
-                    arr = arr.append(EmptyNode.instance());
+                    arr = arr.prepend(EmptyNode.instance());
                 }
                 bit = bit >>> 1;
             }
-            return new ArrayNode<>(count, arr);
+            return new ArrayNode<>(count, arr.reverse());
         }
 
         @Override
@@ -430,11 +417,11 @@ public interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>> {
                 AbstractNode<K, V> elem = sub.head();
                 sub = sub.tail();
                 if (i != idx && elem != empty()) {
-                    arr = arr.append(elem);
+                    arr = arr.prepend(elem);
                     bitmap = bitmap | (1 << i);
                 }
             }
-            return new IndexedNode<>(bitmap, arr);
+            return new IndexedNode<>(bitmap, arr.reverse());
         }
 
         @Override

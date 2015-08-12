@@ -354,6 +354,21 @@ final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
+    public HashSet<T> removeFirst(Predicate<T> predicate) {
+        Option<T> opt = findFirst(predicate);
+        if (opt.isDefined()) {
+            return remove(opt.get());
+        } else {
+            return this;
+        }
+    }
+
+    @Override
+    public HashSet<T> removeLast(Predicate<T> predicate) {
+        return removeFirst(predicate);
+    }
+
+    @Override
     public HashSet<T> removeAll(T element) {
         return remove(element);
     }

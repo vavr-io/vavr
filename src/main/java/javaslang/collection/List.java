@@ -986,6 +986,25 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
+    default List<T> removeFirst(Predicate<T> predicate) {
+        List<T> init = List.empty();
+        List<T> tail = this;
+        while (!tail.isEmpty() && !predicate.test(tail.head())) {
+            init = init.prepend(tail.head());
+            tail = tail.tail();
+        }
+        if (!tail.isEmpty()) {
+            tail = tail.tail();
+        }
+        return init.foldLeft(tail, List::prepend);
+    }
+
+    @Override
+    default List<T> removeLast(Predicate<T> predicate) {
+        return reverse().removeFirst(predicate).reverse();
+    }
+
+    @Override
     List<T> removeAt(int indx);
 
     @Override

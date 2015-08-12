@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import org.assertj.core.api.*;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.stream.Collector;
@@ -138,6 +139,26 @@ public class HashSetTest extends AbstractTraversableTest {
     }
 
     // HashSet special cases
+
+    @Test
+    public void shouldRemoveFirstElementByPredicateBeginM() {
+        assertThat(of(1, 2, 1, 3).removeFirst(v -> v == 1)).isEqualTo(of(2, 3));
+    }
+
+    @Test
+    public void shouldRemoveFirstElementByPredicateInnerM() {
+        assertThat(of(1, 2, 3, 2, 5).removeFirst(v -> v == 2)).isEqualTo(of(1, 3, 5));
+    }
+
+    @Test
+    public void shouldRemoveLastElementByPredicateEndM() {
+        assertThat(of(1, 3, 2, 3).removeLast(v -> v == 3)).isEqualTo(of(1, 2));
+    }
+
+    @Test
+    public void shouldRemoveLastElementByPredicateInnerM() {
+        assertThat(of(1, 2, 3, 2, 5).removeLast(v -> v == 2)).isEqualTo(of(1, 3, 5));
+    }
 
     @Override
     public void shouldFoldRightNonNil() {

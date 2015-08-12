@@ -806,6 +806,16 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
+    public Queue<T> removeFirst(Predicate<T> predicate) {
+        return toList().removeFirst(predicate).toQueue();
+    }
+
+    @Override
+    public Queue<T> removeLast(Predicate<T> predicate) {
+        return toList().removeLast(predicate).toQueue();
+    }
+
+    @Override
     public Queue<T> removeAt(int indx) {
         return toList().removeAt(indx).toQueue();
     }

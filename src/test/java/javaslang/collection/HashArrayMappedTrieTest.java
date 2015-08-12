@@ -74,6 +74,14 @@ public class HashArrayMappedTrieTest {
     private class WeakInteger implements Comparable<WeakInteger> {
         final int value;
 
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            WeakInteger that = (WeakInteger) o;
+            return value == that.value;
+        }
+
         WeakInteger(int value) {
             this.value = value;
         }

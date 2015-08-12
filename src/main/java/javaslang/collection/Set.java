@@ -110,6 +110,12 @@ public interface Set<T> extends Traversable<T> {
     Set<T> remove(T element);
 
     @Override
+    Set<T> removeFirst(Predicate<T> predicate);
+
+    @Override
+    Set<T> removeLast(Predicate<T> predicate);
+
+    @Override
     Set<T> removeAll(T element);
 
     @Override

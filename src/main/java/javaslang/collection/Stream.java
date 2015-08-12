@@ -980,6 +980,14 @@ public interface Stream<T> extends LinearSeq<T> {
     Stream<T> remove(T element);
 
     @Override
+    Stream<T> removeFirst(Predicate<T> predicate);
+
+    @Override
+    default Stream<T> removeLast(Predicate<T> predicate) {
+        return reverse().removeFirst(predicate).reverse();
+    }
+
+    @Override
     Stream<T> removeAt(int indx);
 
     @Override
@@ -1337,6 +1345,11 @@ public interface Stream<T> extends LinearSeq<T> {
         }
 
         @Override
+        public Stream<T> removeFirst(Predicate<T> predicate) {
+            return predicate.test(head()) ? tail() : new Cons<>(head, () -> tail().removeFirst(predicate));
+        }
+
+        @Override
         public Stream<T> removeAt(int indx) {
             if(indx < 0) {
                 throw new IndexOutOfBoundsException("removeAt(" + indx + ")");
@@ -1661,6 +1674,11 @@ public interface Stream<T> extends LinearSeq<T> {
 
         @Override
         public Stream<T> remove(T element) {
+            return this;
+        }
+
+        @Override
+        public Stream<T> removeFirst(Predicate<T> predicate) {
             return this;
         }
 
