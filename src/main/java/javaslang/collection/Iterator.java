@@ -159,7 +159,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
      * @param <T>       Component type.
      * @return A new {@code javaslang.collection.Iterator}
      */
-    static <T> Iterator<T> ofIterators(Iterator<Iterator<T>> iterators) {
+    static <T> Iterator<T> ofIterators(Iterator<? extends Iterator<? extends T>> iterators) {
         Objects.requireNonNull(iterators, "iterators is null");
         return iterators.isEmpty() ? Iterator.empty() : new ConcatIterator<>(Stream.ofAll(iterators).iterator());
     }
@@ -170,7 +170,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
      * @param <T>       Component type.
      * @return A new {@code javaslang.collection.Iterator}
      */
-    static <T> Iterator<T> ofIterables(Iterator<? extends Iterable<T>> iterables) {
+    static <T> Iterator<T> ofIterables(Iterator<? extends Iterable<? extends T>> iterables) {
         Objects.requireNonNull(iterables, "iterables is null");
         return iterables.isEmpty() ? Iterator.empty() : new ConcatIterator<>(Stream.ofAll(iterables).map(Iterator::ofAll).iterator());
     }
@@ -181,7 +181,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
      * @param <T>       Component type.
      * @return A new {@code javaslang.collection.Iterator}
      */
-    static <T> Iterator<T> ofIterators(Iterable<Iterator<T>> iterators) {
+    static <T> Iterator<T> ofIterators(Iterable<? extends Iterator<? extends T>> iterators) {
         Objects.requireNonNull(iterators, "iterators is null");
         if (ConcatIterator.maybeEmpty(iterators)) {
             return Iterator.empty();
@@ -195,7 +195,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
      * @param <T>       Component type.
      * @return A new {@code javaslang.collection.Iterator}
      */
-    static <T> Iterator<T> ofIterables(Iterable<? extends Iterable<T>> iterables) {
+    static <T> Iterator<T> ofIterables(Iterable<? extends Iterable<? extends T>> iterables) {
         Objects.requireNonNull(iterables, "iterables is null");
         if (ConcatIterator.maybeEmpty(iterables)) {
             return Iterator.empty();
