@@ -134,13 +134,14 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
      * @return A new {@code javaslang.collection.Iterator}
      */
     @SafeVarargs
-    static <T> Iterator<T> ofIterators(Iterator<T>... iterators) {
+    @SuppressWarnings("unchecked")
+    static <T> Iterator<T> ofIterators(Iterator<? extends T>... iterators) {
         Objects.requireNonNull(iterators, "iterators is null");
         List<Iterator<T>> queue = List.empty();
-        for (Iterator<T> iterator : iterators) {
-            queue = queue.prepend(iterator);
+        for (int i = iterators.length - 1; i >= 0; i--) {
+            queue = queue.prepend((Iterator<T>) iterators[i]);
         }
-        return queue.isEmpty() ? Iterator.empty() : new ConcatIterator<>(queue.reverse());
+        return queue.isEmpty() ? Iterator.empty() : new ConcatIterator<>(queue);
     }
 
     /**
