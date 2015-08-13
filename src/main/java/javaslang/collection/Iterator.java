@@ -183,7 +183,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
      */
     static <T> Iterator<T> ofIterators(Iterable<? extends Iterator<? extends T>> iterators) {
         Objects.requireNonNull(iterators, "iterators is null");
-        if (ConcatIterator.maybeEmpty(iterators)) {
+        if (!iterators.iterator().hasNext()) {
             return Iterator.empty();
         }
         return new ConcatIterator<>(Stream.ofAll(iterators).iterator());
@@ -197,7 +197,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
      */
     static <T> Iterator<T> ofIterables(Iterable<? extends Iterable<? extends T>> iterables) {
         Objects.requireNonNull(iterables, "iterables is null");
-        if (ConcatIterator.maybeEmpty(iterables)) {
+        if (!iterables.iterator().hasNext()) {
             return Iterator.empty();
         }
         return new ConcatIterator<>(Stream.ofAll(iterables).map(Iterator::ofAll).iterator());
@@ -513,11 +513,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
         private ConcatIterator(Iterator<? extends Iterator<? extends T>> iterators) {
             this.current = Iterator.empty();
             this.iterators = iterators;
-        }
-
-        private static boolean maybeEmpty(Iterable<?> iterable) {
-            return (iterable instanceof TraversableOnce && ((TraversableOnce<?>) iterable).isEmpty())
-                    || (iterable instanceof java.util.Collection && ((java.util.Collection<?>) iterable).isEmpty());
         }
 
         @Override
