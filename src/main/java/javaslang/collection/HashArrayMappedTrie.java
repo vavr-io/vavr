@@ -357,7 +357,7 @@ public interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>> {
 
         @Override
         public Iterator<Tuple2<K, V>> iterator() {
-            return Iterator.ofIterators(subNodes.map(HashArrayMappedTrie::iterator));
+            return Iterator.ofIterables(subNodes);
         }
 
     }
@@ -434,7 +434,7 @@ public interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>> {
 
         @Override
         public Iterator<Tuple2<K, V>> iterator() {
-            return Iterator.ofIterators(subNodes.map(HashArrayMappedTrie::iterator));
+            return Iterator.ofIterables(subNodes);
         }
     }
 }

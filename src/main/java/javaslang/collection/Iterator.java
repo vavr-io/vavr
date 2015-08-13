@@ -134,25 +134,73 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
      * @return A new {@code javaslang.collection.Iterator}
      */
     @SafeVarargs
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "varargs"})
     static <T> Iterator<T> ofIterators(Iterator<? extends T>... iterators) {
         Objects.requireNonNull(iterators, "iterators is null");
-        List<Iterator<T>> queue = List.empty();
-        for (int i = iterators.length - 1; i >= 0; i--) {
-            queue = queue.prepend((Iterator<T>) iterators[i]);
-        }
-        return queue.isEmpty() ? Iterator.empty() : new ConcatIterator<>(queue);
+        return iterators.length == 0 ? Iterator.empty() : new ConcatIterator<>(Stream.of(iterators).iterator());
+    }
+
+    /**
+     * Creates an Iterator which traverses along all given iterables.
+     * @param iterables The list of iterables
+     * @param <T>       Component type.
+     * @return A new {@code javaslang.collection.Iterator}
+     */
+    @SafeVarargs
+    @SuppressWarnings({"unchecked", "varargs"})
+    static <T> Iterator<T> ofIterables(Iterable<? extends T>... iterables) {
+        Objects.requireNonNull(iterables, "iterables is null");
+        return iterables.length == 0 ? Iterator.empty() : new ConcatIterator<>(Stream.of(iterables).map(Iterator::ofAll).iterator());
     }
 
     /**
      * Creates an Iterator which traverses along all given iterators.
-     * @param iterators The list of iterators
+     * @param iterators The iterator over iterators
      * @param <T>       Component type.
      * @return A new {@code javaslang.collection.Iterator}
      */
-    static <T> Iterator<T> ofIterators(Traversable<Iterator<T>> iterators) {
+    static <T> Iterator<T> ofIterators(Iterator<Iterator<T>> iterators) {
         Objects.requireNonNull(iterators, "iterators is null");
-        return iterators.isEmpty() ? Iterator.empty() : new ConcatIterator<>(iterators);
+        return iterators.isEmpty() ? Iterator.empty() : new ConcatIterator<>(Stream.ofAll(iterators).iterator());
+    }
+
+    /**
+     * Creates an Iterator which traverses along all given iterables.
+     * @param iterables The iterator over iterables
+     * @param <T>       Component type.
+     * @return A new {@code javaslang.collection.Iterator}
+     */
+    static <T> Iterator<T> ofIterables(Iterator<? extends Iterable<T>> iterables) {
+        Objects.requireNonNull(iterables, "iterables is null");
+        return iterables.isEmpty() ? Iterator.empty() : new ConcatIterator<>(Stream.ofAll(iterables).map(Iterator::ofAll).iterator());
+    }
+
+    /**
+     * Creates an Iterator which traverses along all given iterators.
+     * @param iterators The iterable of iterators
+     * @param <T>       Component type.
+     * @return A new {@code javaslang.collection.Iterator}
+     */
+    static <T> Iterator<T> ofIterators(Iterable<Iterator<T>> iterators) {
+        Objects.requireNonNull(iterators, "iterators is null");
+        if (ConcatIterator.maybeEmpty(iterators)) {
+            return Iterator.empty();
+        }
+        return new ConcatIterator<>(Stream.ofAll(iterators).iterator());
+    }
+
+    /**
+     * Creates an Iterator which traverses along all given iterables.
+     * @param iterables The iterable of iterables
+     * @param <T>       Component type.
+     * @return A new {@code javaslang.collection.Iterator}
+     */
+    static <T> Iterator<T> ofIterables(Iterable<? extends Iterable<T>> iterables) {
+        Objects.requireNonNull(iterables, "iterables is null");
+        if (ConcatIterator.maybeEmpty(iterables)) {
+            return Iterator.empty();
+        }
+        return new ConcatIterator<>(Stream.ofAll(iterables).map(Iterator::ofAll).iterator());
     }
 
     /**
@@ -459,19 +507,23 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
 
     class ConcatIterator<T> implements Iterator<T> {
 
-        private Traversable<Iterator<T>> queue;
-        private Iterator<T> current;
+        private final Iterator<? extends Iterator<? extends T>> iterators;
+        private Iterator<? extends T> current;
 
-        private ConcatIterator(Traversable<Iterator<T>> queue) {
-            this.current = queue.head();
-            this.queue = queue.tail();
+        private ConcatIterator(Iterator<? extends Iterator<? extends T>> iterators) {
+            this.current = Iterator.empty();
+            this.iterators = iterators;
+        }
+
+        private static boolean maybeEmpty(Iterable<?> iterable) {
+            return (iterable instanceof TraversableOnce && ((TraversableOnce<?>) iterable).isEmpty())
+                    || (iterable instanceof java.util.Collection && ((java.util.Collection<?>) iterable).isEmpty());
         }
 
         @Override
         public boolean hasNext() {
-            while (!current.hasNext() && !queue.isEmpty()) {
-                current = queue.head();
-                queue = queue.tail();
+            while (!current.hasNext() && !iterators.isEmpty()) {
+                current = iterators.next();
             }
             return current.hasNext();
         }
