@@ -128,6 +128,82 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
     }
 
     /**
+     * Creates an Iterator which traverses along all given iterators.
+     * @param iterators The list of iterators
+     * @param <T>       Component type.
+     * @return A new {@code javaslang.collection.Iterator}
+     */
+    @SafeVarargs
+    @SuppressWarnings({"unchecked", "varargs"})
+    static <T> Iterator<T> ofIterators(Iterator<? extends T>... iterators) {
+        Objects.requireNonNull(iterators, "iterators is null");
+        return iterators.length == 0 ? Iterator.empty() : new ConcatIterator<>(Stream.of(iterators).iterator());
+    }
+
+    /**
+     * Creates an Iterator which traverses along all given iterables.
+     * @param iterables The list of iterables
+     * @param <T>       Component type.
+     * @return A new {@code javaslang.collection.Iterator}
+     */
+    @SafeVarargs
+    @SuppressWarnings({"unchecked", "varargs"})
+    static <T> Iterator<T> ofIterables(Iterable<? extends T>... iterables) {
+        Objects.requireNonNull(iterables, "iterables is null");
+        return iterables.length == 0 ? Iterator.empty() : new ConcatIterator<>(Stream.of(iterables).map(Iterator::ofAll).iterator());
+    }
+
+    /**
+     * Creates an Iterator which traverses along all given iterators.
+     * @param iterators The iterator over iterators
+     * @param <T>       Component type.
+     * @return A new {@code javaslang.collection.Iterator}
+     */
+    static <T> Iterator<T> ofIterators(Iterator<? extends Iterator<? extends T>> iterators) {
+        Objects.requireNonNull(iterators, "iterators is null");
+        return iterators.isEmpty() ? Iterator.empty() : new ConcatIterator<>(Stream.ofAll(iterators).iterator());
+    }
+
+    /**
+     * Creates an Iterator which traverses along all given iterables.
+     * @param iterables The iterator over iterables
+     * @param <T>       Component type.
+     * @return A new {@code javaslang.collection.Iterator}
+     */
+    static <T> Iterator<T> ofIterables(Iterator<? extends Iterable<? extends T>> iterables) {
+        Objects.requireNonNull(iterables, "iterables is null");
+        return iterables.isEmpty() ? Iterator.empty() : new ConcatIterator<>(Stream.ofAll(iterables).map(Iterator::ofAll).iterator());
+    }
+
+    /**
+     * Creates an Iterator which traverses along all given iterators.
+     * @param iterators The iterable of iterators
+     * @param <T>       Component type.
+     * @return A new {@code javaslang.collection.Iterator}
+     */
+    static <T> Iterator<T> ofIterators(Iterable<? extends Iterator<? extends T>> iterators) {
+        Objects.requireNonNull(iterators, "iterators is null");
+        if (!iterators.iterator().hasNext()) {
+            return Iterator.empty();
+        }
+        return new ConcatIterator<>(Stream.ofAll(iterators).iterator());
+    }
+
+    /**
+     * Creates an Iterator which traverses along all given iterables.
+     * @param iterables The iterable of iterables
+     * @param <T>       Component type.
+     * @return A new {@code javaslang.collection.Iterator}
+     */
+    static <T> Iterator<T> ofIterables(Iterable<? extends Iterable<? extends T>> iterables) {
+        Objects.requireNonNull(iterables, "iterables is null");
+        if (!iterables.iterator().hasNext()) {
+            return Iterator.empty();
+        }
+        return new ConcatIterator<>(Stream.ofAll(iterables).map(Iterator::ofAll).iterator());
+    }
+
+    /**
      * Creates a FilterMonadic Iterator based on the given Iterable. This is a convenience method for
      * {@code Iterator.of(iterable.iterator()}.
      *
@@ -136,7 +212,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
      * @return A new {@code javaslang.collection.Iterator}
      */
     static <T> Iterator<T> ofAll(Iterable<? extends T> iterable) {
-        Objects.requireNonNull(iterable, "iterator is null");
+        Objects.requireNonNull(iterable, "iterable is null");
         return Iterator.ofAll(iterable.iterator());
     }
 
@@ -426,6 +502,33 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
                     return next;
                 }
             };
+        }
+    }
+
+    class ConcatIterator<T> implements Iterator<T> {
+
+        private final Iterator<? extends Iterator<? extends T>> iterators;
+        private Iterator<? extends T> current;
+
+        private ConcatIterator(Iterator<? extends Iterator<? extends T>> iterators) {
+            this.current = Iterator.empty();
+            this.iterators = iterators;
+        }
+
+        @Override
+        public boolean hasNext() {
+            while (!current.hasNext() && !iterators.isEmpty()) {
+                current = iterators.next();
+            }
+            return current.hasNext();
+        }
+
+        @Override
+        public T next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            return current.next();
         }
     }
 
