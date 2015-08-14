@@ -1355,21 +1355,25 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
         @Override
         public Tuple2<List<T>, List<T>> splitAt(Predicate<? super T> predicate) {
-            Tuple2<List<T>, List<T>> t = splitByPredicateFirstRound(this, predicate);
-            return Tuple.of(t._1.reverse(), t._2);
-        }
-
-        @Override
-        public Tuple2<List<T>, List<T>> splitAtInclusive(Predicate<? super T> predicate) {
-            Tuple2<List<T>, List<T>> t = splitByPredicateFirstRound(this, predicate);
-            if (!t._2.isEmpty()) {
-                return Tuple.of(t._1.prepend(t._2.head()).reverse(), t._2.tail());
+            final Tuple2<List<T>, List<T>> t = splitByPredicateReversed(this, predicate);
+            if (t._2.isEmpty()) {
+                return Tuple.of(this, empty());
             } else {
                 return Tuple.of(t._1.reverse(), t._2);
             }
         }
 
-        private static <T> Tuple2<List<T>, List<T>> splitByPredicateFirstRound(List<T> source, Predicate<? super T> predicate) {
+        @Override
+        public Tuple2<List<T>, List<T>> splitAtInclusive(Predicate<? super T> predicate) {
+            final Tuple2<List<T>, List<T>> t = splitByPredicateReversed(this, predicate);
+            if (t._2.isEmpty() || t._2.tail().isEmpty()) {
+                return Tuple.of(this, empty());
+            } else {
+                return Tuple.of(t._1.prepend(t._2.head()).reverse(), t._2.tail());
+            }
+        }
+
+        private static <T> Tuple2<List<T>, List<T>> splitByPredicateReversed(List<T> source, Predicate<? super T> predicate) {
             List<T> init = Nil.instance();
             List<T> tail = source;
             while (!tail.isEmpty() && !predicate.test(tail.head())) {

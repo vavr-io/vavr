@@ -424,16 +424,16 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     Tuple2<? extends Seq<T>, ? extends Seq<T>> splitAt(int n);
 
     /**
-     * Splits a sequence at the first element which satisfies the Predicate, e.g. Tuple(init, element+tail).
+     * Splits a sequence at the first element which satisfies the {@link Predicate}, e.g. Tuple(init, element+tail).
      * @param predicate An predicate
-     * @return A Tuple containing divided sequences
+     * @return A {@link Tuple} containing divided sequences
      */
     Tuple2<? extends Seq<T>, ? extends Seq<T>> splitAt(Predicate<? super T> predicate);
 
     /**
-     * Splits a sequence at the first element which satisfies the Predicate, e.g. Tuple(init+element, tail).
+     * Splits a sequence at the first element which satisfies the {@link Predicate}, e.g. Tuple(init+element, tail).
      * @param predicate An predicate
-     * @return A Tuple containing divided sequences
+     * @return A {@link Tuple} containing divided sequences
      */
     Tuple2<? extends Seq<T>, ? extends Seq<T>> splitAtInclusive(Predicate<? super T> predicate);
 

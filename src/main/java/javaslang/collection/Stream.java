@@ -1113,7 +1113,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Tuple2<Stream<T>, Stream<T>> splitAtInclusive(Predicate<? super T> predicate) {
-        Tuple2<Stream<T>, Stream<T>> split = splitAt(predicate);
+        final Tuple2<Stream<T>, Stream<T>> split = splitAt(predicate);
         if(split._2.isEmpty()) {
             return split;
         } else {
