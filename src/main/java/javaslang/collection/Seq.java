@@ -423,6 +423,10 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      */
     Tuple2<? extends Seq<T>, ? extends Seq<T>> splitAt(int n);
 
+    Tuple2<? extends Seq<T>, ? extends Seq<T>> splitAt(Predicate<? super T> predicate);
+
+    Tuple2<? extends Seq<T>, ? extends Seq<T>> splitAtInclusive(Predicate<? super T> predicate);
+
     /**
      * <p>Returns a Seq that is a subsequence of this. The subsequence begins with the element at the specified index
      * and extends to the end of this Seq.</p>

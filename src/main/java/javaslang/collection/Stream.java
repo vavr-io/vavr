@@ -1107,6 +1107,21 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
+    default Tuple2<Stream<T>, Stream<T>> splitAt(Predicate<? super T> predicate) {
+        return Tuple.of(takeWhile(predicate.negate()), dropWhile(predicate.negate()));
+    }
+
+    @Override
+    default Tuple2<Stream<T>, Stream<T>> splitAtInclusive(Predicate<? super T> predicate) {
+        Tuple2<Stream<T>, Stream<T>> split = splitAt(predicate);
+        if(split._2.isEmpty()) {
+            return split;
+        } else {
+            return Tuple.of(split._1.append(split._2.head()), split._2.tail());
+        }
+    }
+
+    @Override
     default Spliterator<T> spliterator() {
         // the focus of the Stream API is on random-access collections of *known size*
         return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);

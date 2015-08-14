@@ -614,6 +614,12 @@ public interface Stack<T> extends LinearSeq<T> {
     Tuple2<? extends Stack<T>, ? extends Stack<T>> splitAt(int n);
 
     @Override
+    Tuple2<? extends Stack<T>, ? extends Stack<T>> splitAt(Predicate<? super T> predicate);
+
+    @Override
+    Tuple2<? extends Stack<T>, ? extends Stack<T>> splitAtInclusive(Predicate<? super T> predicate);
+
+    @Override
     Stack<T> subsequence(int beginIndex);
 
     @Override

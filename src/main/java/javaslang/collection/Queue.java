@@ -896,6 +896,16 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
+    public Tuple2<Queue<T>, Queue<T>> splitAt(Predicate<? super T> predicate) {
+        return toList().splitAt(predicate).map(List::toQueue, List::toQueue);
+    }
+
+    @Override
+    public Tuple2<Queue<T>, Queue<T>> splitAtInclusive(Predicate<? super T> predicate) {
+        return toList().splitAtInclusive(predicate).map(List::toQueue, List::toQueue);
+    }
+
+    @Override
     public Spliterator<T> spliterator() {
         return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
     }
