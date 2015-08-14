@@ -799,6 +799,9 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     Option<List<T>> initOption();
 
     @Override
+    int length();
+
+    @Override
     default List<T> insert(int index, T element) {
         if (index < 0) {
             throw new IndexOutOfBoundsException("insert(" + index + ", e)");
@@ -1302,6 +1305,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
         private final T head;
         private final List<T> tail;
+        private final int length;
 
         private final transient Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
 
@@ -1314,6 +1318,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         public Cons(T head, List<T> tail) {
             this.head = head;
             this.tail = tail;
+            this.length = 1 + tail.length();
         }
 
         @Override
@@ -1339,6 +1344,11 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         @Override
         public Some<List<T>> initOption() {
             return new Some<>(init());
+        }
+
+        @Override
+        public int length() {
+            return length;
         }
 
         @Override
@@ -1620,6 +1630,11 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         @Override
         public None<List<T>> initOption() {
             return None.instance();
+        }
+
+        @Override
+        public int length() {
+            return 0;
         }
 
         @Override
