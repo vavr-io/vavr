@@ -1157,6 +1157,12 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     Tuple2<List<T>, List<T>> splitAt(int n);
 
     @Override
+    Tuple2<List<T>, List<T>> splitAt(Predicate<? super T> predicate);
+
+    @Override
+    Tuple2<List<T>, List<T>> splitAtInclusive(Predicate<? super T> predicate);
+
+    @Override
     default Spliterator<T> spliterator() {
         return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
     }
@@ -1345,6 +1351,36 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
                 n--;
             }
             return Tuple.of(init.reverse(), tail);
+        }
+
+        @Override
+        public Tuple2<List<T>, List<T>> splitAt(Predicate<? super T> predicate) {
+            final Tuple2<List<T>, List<T>> t = splitByPredicateReversed(this, predicate);
+            if (t._2.isEmpty()) {
+                return Tuple.of(this, empty());
+            } else {
+                return Tuple.of(t._1.reverse(), t._2);
+            }
+        }
+
+        @Override
+        public Tuple2<List<T>, List<T>> splitAtInclusive(Predicate<? super T> predicate) {
+            final Tuple2<List<T>, List<T>> t = splitByPredicateReversed(this, predicate);
+            if (t._2.isEmpty() || t._2.tail().isEmpty()) {
+                return Tuple.of(this, empty());
+            } else {
+                return Tuple.of(t._1.prepend(t._2.head()).reverse(), t._2.tail());
+            }
+        }
+
+        private static <T> Tuple2<List<T>, List<T>> splitByPredicateReversed(List<T> source, Predicate<? super T> predicate) {
+            List<T> init = Nil.instance();
+            List<T> tail = source;
+            while (!tail.isEmpty() && !predicate.test(tail.head())) {
+                init = init.prepend(tail.head());
+                tail = tail.tail();
+            }
+            return Tuple.of(init, tail);
         }
 
         @Override
@@ -1588,6 +1624,16 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
         @Override
         public Tuple2<List<T>, List<T>> splitAt(int n) {
+            return Tuple.of(empty(), empty());
+        }
+
+        @Override
+        public Tuple2<List<T>, List<T>> splitAt(Predicate<? super T> predicate) {
+            return Tuple.of(empty(), empty());
+        }
+
+        @Override
+        public Tuple2<List<T>, List<T>> splitAtInclusive(Predicate<? super T> predicate) {
             return Tuple.of(empty(), empty());
         }
 

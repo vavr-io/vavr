@@ -546,6 +546,60 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
         assertThat(of(1, 2, 3).splitAt(-1)).isEqualTo(Tuple.of(empty(), of(1, 2, 3)));
     }
 
+    // -- splitAt(predicate)
+
+    @Test
+    public void shouldSplitPredicateAtNil() {
+        assertThat(empty().splitAt(e -> true)).isEqualTo(Tuple.of(empty(), empty()));
+    }
+
+    @Test
+    public void shouldSplitPredicateAtNonNil() {
+        assertThat(of(1, 2, 3).splitAt(e -> e == 2)).isEqualTo(Tuple.of(of(1), of(2, 3)));
+    }
+
+    @Test
+    public void shouldSplitAtPredicateBegin() {
+        assertThat(of(1, 2, 3).splitAt(e -> e == 1)).isEqualTo(Tuple.of(empty(), of(1, 2, 3)));
+    }
+
+    @Test
+    public void shouldSplitAtPredicateEnd() {
+        assertThat(of(1, 2, 3).splitAt(e -> e == 3)).isEqualTo(Tuple.of(of(1, 2), of(3)));
+    }
+
+    @Test
+    public void shouldSplitAtPredicateNotFound() {
+        assertThat(of(1, 2, 3).splitAt(e -> e == 5)).isEqualTo(Tuple.of(of(1, 2, 3), empty()));
+    }
+
+    // -- splitAtInclusive(predicate)
+
+    @Test
+    public void shouldSplitInclusivePredicateAtNil() {
+        assertThat(empty().splitAtInclusive(e -> true)).isEqualTo(Tuple.of(empty(), empty()));
+    }
+
+    @Test
+    public void shouldSplitInclusivePredicateAtNonNil() {
+        assertThat(of(1, 2, 3).splitAtInclusive(e -> e == 2)).isEqualTo(Tuple.of(of(1, 2), of(3)));
+    }
+
+    @Test
+    public void shouldSplitAtInclusivePredicateBegin() {
+        assertThat(of(1, 2, 3).splitAtInclusive(e -> e == 1)).isEqualTo(Tuple.of(of(1), of(2, 3)));
+    }
+
+    @Test
+    public void shouldSplitAtInclusivePredicateEnd() {
+        assertThat(of(1, 2, 3).splitAtInclusive(e -> e == 3)).isEqualTo(Tuple.of(of(1, 2, 3), empty()));
+    }
+
+    @Test
+    public void shouldSplitAtInclusivePredicateNotFound() {
+        assertThat(of(1, 2, 3).splitAtInclusive(e -> e == 5)).isEqualTo(Tuple.of(of(1, 2, 3), empty()));
+    }
+
     // -- removeAt(index)
 
     @Test(expected = IndexOutOfBoundsException.class)
