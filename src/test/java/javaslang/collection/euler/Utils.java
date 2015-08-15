@@ -15,4 +15,16 @@ public final class Utils {
     public static Stream<Integer> fibonacci() {
         return Stream.of(1, 1).appendSelf(self -> self.zip(self.tail()).map(t -> t._1 + t._2));
     }
+
+    public static String reverse(String s) {
+        return new StringBuilder(s).reverse().toString();
+    }
+
+    public static boolean isPalindrome(String val) {
+        return val.equals(reverse(val));
+    }
+
+    public static boolean isPalindrome(int val) {
+        return isPalindrome(Long.toString(val));
+    }
 }

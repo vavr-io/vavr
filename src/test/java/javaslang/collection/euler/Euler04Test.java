@@ -33,16 +33,7 @@ public class Euler04Test {
                 .cartesianProduct()
                 .filter(t -> t._1 <= t._2)
                 .map(t -> t._1 * t._2)
-                .filter(Euler04Test::isPalindrome)
+                .filter(Utils::isPalindrome)
                 .max().get();
-    }
-
-    private static boolean isPalindrome(int val) {
-        final String valAsString = Long.toString(val);
-        return valAsString.equals(reverse(valAsString));
-    }
-
-    private static String reverse(String s) {
-        return new StringBuilder(s).reverse().toString();
     }
 }
