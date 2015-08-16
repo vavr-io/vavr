@@ -700,19 +700,8 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default List<T> filter(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        List<T> list = this;
-        List<T> result = List.empty();
-        boolean testFailed = false;
-        while (!list.isEmpty()) {
-            if (predicate.test(list.head())) {
-                result = result.prepend(list.head());
-            } else {
-                testFailed = true;
-            }
-            list = list.tail();
-        }
-        return testFailed ? result.reverse() : this;
+        final List<T> filtered = foldLeft(List.<T> empty(), (xs, x) -> predicate.test(x) ? xs.prepend(x) : xs);
+        return this.length() == filtered.length() ? this : filtered.reverse();
     }
 
     @Override

@@ -360,7 +360,8 @@ final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<T> remove(T element) {
-        return contains(element) ? new HashSet<>(tree.remove(element)) : this;
+        final HashArrayMappedTrie<T, Object> newTree = tree.remove(element);
+        return newTree == tree ? this : new HashSet<>(newTree);
     }
 
     @Override
@@ -390,7 +391,7 @@ final class HashSet<T> implements Set<T>, Serializable {
         for (T element : elements) {
             trie = trie.remove(element);
         }
-        return trie.size() == list.get().length() ? this : new HashSet<>(trie);
+        return trie == tree ? this : new HashSet<>(trie);
     }
 
     @Override

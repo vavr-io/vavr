@@ -795,6 +795,8 @@ public interface Stream<T> extends LinearSeq<T> {
     default Stream<T> dropRight(int n) {
         if(n <= 0) {
             return this;
+        } else if (length() <= n) {
+            return empty();
         } else {
             return reverse().drop(n).reverse();
         }
@@ -991,11 +993,8 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Stream<T> removeLast(Predicate<T> predicate) {
-        if(findFirst(predicate).isDefined()) {
-            return reverse().removeFirst(predicate).reverse();
-        } else {
-            return this;
-        }
+        final Stream<T> removed = reverse().removeFirst(predicate);
+        return removed.length() == length() ? this : removed.reverse();
     }
 
     @Override
@@ -1166,7 +1165,9 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Stream<T> takeRight(int n) {
-        if(length() <= n) {
+        if (n <= 0) {
+            return empty();
+        } else if (length() <= n) {
             return this;
         } else {
             return reverse().take(n).reverse();
