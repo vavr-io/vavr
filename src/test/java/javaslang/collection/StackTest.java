@@ -125,4 +125,10 @@ public class StackTest extends AbstractSeqTest {
     int getPeekNonNilPerformingAnAction() {
         return 1;
     }
+
+    @Override
+    boolean isThisLazyCollection() {
+        return false;
+    }
+
 }

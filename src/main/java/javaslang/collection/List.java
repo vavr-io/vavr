@@ -679,6 +679,12 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default List<T> dropRight(int n) {
+        if (n <= 0) {
+            return this;
+        }
+        if (n >= length()) {
+            return empty();
+        }
         return reverse().drop(n).reverse();
     }
 
@@ -694,8 +700,8 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default List<T> filter(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return isEmpty() ? this : foldLeft(List.<T> empty(), (xs, x) -> predicate.test(x) ? xs.prepend(x) : xs).reverse();
+        final List<T> filtered = foldLeft(List.<T> empty(), (xs, x) -> predicate.test(x) ? xs.prepend(x) : xs);
+        return this.length() == filtered.length() ? this : filtered.reverse();
     }
 
     @Override
@@ -981,6 +987,9 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
             }
             tail = tail.tail();
         }
+        if (!found) {
+            return this;
+        }
         List<T> result = tail;
         for (T next : preceding) {
             result = result.prepend(next);
@@ -996,15 +1005,17 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
             init = init.prepend(tail.head());
             tail = tail.tail();
         }
-        if (!tail.isEmpty()) {
-            tail = tail.tail();
+        if (tail.isEmpty()) {
+            return this;
+        } else {
+            return init.foldLeft(tail.tail(), List::prepend);
         }
-        return init.foldLeft(tail, List::prepend);
     }
 
     @Override
     default List<T> removeLast(Predicate<T> predicate) {
-        return reverse().removeFirst(predicate).reverse();
+        final List<T> removedAndReversed = reverse().removeFirst(predicate);
+        return removedAndReversed.length() == length() ? this : removedAndReversed.reverse();
     }
 
     @Override
@@ -1013,12 +1024,15 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     @Override
     default List<T> removeAll(T removed) {
         List<T> result = Nil.instance();
+        boolean found = false;
         for (T element : this) {
-            if (!element.equals(removed)) {
+            if (element.equals(removed)) {
+                found = true;
+            } else {
                 result = result.prepend(element);
             }
         }
-        return result.reverse();
+        return found ? result.reverse() : this;
     }
 
     @Override
@@ -1026,12 +1040,15 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         Objects.requireNonNull(elements, "elements is null");
         List<T> removed = List.ofAll(elements).distinct();
         List<T> result = Nil.instance();
+        boolean found = false;
         for (T element : this) {
-            if (!removed.contains(element)) {
+            if (removed.contains(element)) {
+                found = true;
+            } else {
                 result = result.prepend(element);
             }
         }
-        return result.reverse();
+        return found ? result.reverse() : this;
     }
 
     @Override
@@ -1213,6 +1230,12 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default List<T> take(int n) {
+        if (n >= length()) {
+            return this;
+        }
+        if (n <= 0) {
+            return empty();
+        }
         List<T> result = Nil.instance();
         List<T> list = this;
         for (int i = 0; i < n && !list.isEmpty(); i++, list = list.tail()) {
@@ -1223,6 +1246,12 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default List<T> takeRight(int n) {
+        if (n >= length()) {
+            return this;
+        }
+        if (n <= 0) {
+            return empty();
+        }
         return reverse().take(n).reverse();
     }
 
@@ -1233,7 +1262,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         for (List<T> list = this; !list.isEmpty() && predicate.test(list.head()); list = list.tail()) {
             result = result.prepend(list.head());
         }
-        return result.reverse();
+        return result.length() == length() ? this : result.reverse();
     }
 
     @Override

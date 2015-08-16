@@ -224,4 +224,10 @@ public class ListTest extends AbstractSeqTest {
             throw (x.getCause() != null) ? x.getCause() : x;
         }
     }
+
+    @Override
+    boolean isThisLazyCollection() {
+        return false;
+    }
+
 }
