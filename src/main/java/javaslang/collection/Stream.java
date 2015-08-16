@@ -793,7 +793,11 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Stream<T> dropRight(int n) {
-        return reverse().drop(n).reverse();
+        if(n <= 0) {
+            return this;
+        } else {
+            return reverse().drop(n).reverse();
+        }
     }
 
     @Override
@@ -931,6 +935,9 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
+    int length();
+
+    @Override
     default <U> Stream<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
@@ -984,7 +991,11 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Stream<T> removeLast(Predicate<T> predicate) {
-        return reverse().removeFirst(predicate).reverse();
+        if(findFirst(predicate).isDefined()) {
+            return reverse().removeFirst(predicate).reverse();
+        } else {
+            return this;
+        }
     }
 
     @Override
@@ -1155,7 +1166,11 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Stream<T> takeRight(int n) {
-        return reverse().take(n).reverse();
+        if(length() <= n) {
+            return this;
+        } else {
+            return reverse().take(n).reverse();
+        }
     }
 
     @Override
@@ -1230,6 +1245,7 @@ public interface Stream<T> extends LinearSeq<T> {
         private final Lazy<Stream<T>> tail;
 
         private final transient Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
+        private final transient Lazy<Integer> length = Lazy.of(() -> foldLeft(0, (n, ignored) -> n + 1));
 
         /**
          * Creates a new {@code Stream} consisting of a head element and a lazy trailing {@code Stream}.
@@ -1341,6 +1357,11 @@ public interface Stream<T> extends LinearSeq<T> {
                 final Stream<T> tail = tail();
                 return tail.isEmpty() ? tail : new Cons<>(() -> element, () -> tail.intersperse(element));
             });
+        }
+
+        @Override
+        public int length() {
+            return length.get();
         }
 
         @Override
@@ -1675,6 +1696,11 @@ public interface Stream<T> extends LinearSeq<T> {
         @Override
         public Stream<T> intersperse(T element) {
             return Nil.instance();
+        }
+
+        @Override
+        public int length() {
+            return 0;
         }
 
         @Override

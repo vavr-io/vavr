@@ -211,4 +211,9 @@ public class HashSetTest extends AbstractTraversableTest {
         // TODO
     }
 
+    @Override
+    boolean isThisLazyCollection() {
+        return false;
+    }
+
 }

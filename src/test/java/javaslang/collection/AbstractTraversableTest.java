@@ -266,7 +266,8 @@ public abstract class AbstractTraversableTest extends AbstractTraversableOnceTes
 
     @Test
     public void shouldDropNoneIfCountIsNegative() {
-        assertThat(of(1, 2, 3).drop(-1)).isEqualTo(of(1, 2, 3));
+        final Traversable<Integer> t = of(1, 2, 3);
+        assertThat(t.drop(-1)).isSameAs(t);
     }
 
     @Test
@@ -288,7 +289,8 @@ public abstract class AbstractTraversableTest extends AbstractTraversableOnceTes
 
     @Test
     public void shouldDropRightNoneIfCountIsNegative() {
-        assertThat(of(1, 2, 3).dropRight(-1)).isEqualTo(of(1, 2, 3));
+        final Traversable<Integer> t = of(1, 2, 3);
+        assertThat(t.dropRight(-1)).isSameAs(t);
     }
 
     @Test
@@ -310,7 +312,8 @@ public abstract class AbstractTraversableTest extends AbstractTraversableOnceTes
 
     @Test
     public void shouldDropWhileNoneIfPredicateIsFalse() {
-        assertThat(of(1, 2, 3).dropWhile(ignored -> false)).isEqualTo(of(1, 2, 3));
+        Traversable<Integer> t = of(1, 2, 3);
+        assertThat(t.dropWhile(ignored -> false)).isSameAs(t);
     }
 
     @Test
@@ -333,6 +336,16 @@ public abstract class AbstractTraversableTest extends AbstractTraversableOnceTes
     @Test
     public void shouldFilterNonEmptyTraversable() {
         assertThat(of(1, 2, 3, 4).filter(i -> i % 2 == 0)).isEqualTo(of(2, 4));
+    }
+
+    @Test
+    public void shouldFilterNonEmptyTraversableAllMatch() {
+        final Traversable<Integer> t = of(1, 2, 3, 4);
+        if(isThisLazyCollection()) {
+            assertThat(t.filter(i -> true)).isEqualTo(t);
+        } else {
+            assertThat(t.filter(i -> true)).isSameAs(t);
+        }
     }
 
     // -- findAll
@@ -1082,7 +1095,12 @@ public abstract class AbstractTraversableTest extends AbstractTraversableOnceTes
 
     @Test
     public void shouldRemoveNonExistingElement() {
-        assertThat(of(1, 2, 3).remove(4)).isEqualTo(of(1, 2, 3));
+        final Traversable<Integer> t = of(1, 2, 3);
+        if(isThisLazyCollection()) {
+            assertThat(t.remove(4)).isEqualTo(t);
+        } else {
+            assertThat(t.remove(4)).isSameAs(t);
+        }
     }
 
     // -- removeFirst(Predicate)
@@ -1119,7 +1137,12 @@ public abstract class AbstractTraversableTest extends AbstractTraversableOnceTes
 
     @Test
     public void shouldRemoveFirstElementByPredicateNonExisting() {
-        assertThat(of(1, 2, 3).removeFirst(v -> v == 4)).isEqualTo(of(1, 2, 3));
+        final Traversable<Integer> t = of(1, 2, 3);
+        if(isThisLazyCollection()) {
+            assertThat(t.removeFirst(v -> v == 4)).isEqualTo(t);
+        } else {
+            assertThat(t.removeFirst(v -> v == 4)).isSameAs(t);
+        }
     }
 
     // -- removeLast(Predicate)
@@ -1156,7 +1179,8 @@ public abstract class AbstractTraversableTest extends AbstractTraversableOnceTes
 
     @Test
     public void shouldRemoveLastElementByPredicateNonExisting() {
-        assertThat(of(1, 2, 3).removeLast(v -> v == 4)).isEqualTo(of(1, 2, 3));
+        final Traversable<Integer> t = of(1, 2, 3);
+        assertThat(t.removeLast(v -> v == 4)).isSameAs(t);
     }
 
     // -- removeAll(Iterable)
@@ -1173,7 +1197,12 @@ public abstract class AbstractTraversableTest extends AbstractTraversableOnceTes
 
     @Test
     public void shouldNotRemoveAllNonExistingElementsFromNonNil() {
-        assertThat(of(1, 2, 3).removeAll(of(4, 5))).isEqualTo(of(1, 2, 3));
+        final Traversable<Integer> t = of(1, 2, 3);
+        if(isThisLazyCollection()) {
+            assertThat(t.removeAll(of(4, 5))).isEqualTo(t);
+        } else {
+            assertThat(t.removeAll(of(4, 5))).isSameAs(t);
+        }
     }
 
     // -- removeAll(Object)
@@ -1190,7 +1219,12 @@ public abstract class AbstractTraversableTest extends AbstractTraversableOnceTes
 
     @Test
     public void shouldNotRemoveAllNonObjectsElementsFromNonNil() {
-        assertThat(of(1, 2, 3).removeAll(4)).isEqualTo(of(1, 2, 3));
+        final Traversable<Integer> t = of(1, 2, 3);
+        if(isThisLazyCollection()) {
+            assertThat(t.removeAll(4)).isEqualTo(t);
+        } else {
+            assertThat(t.removeAll(4)).isSameAs(t);
+        }
     }
 
     // -- replace(curr, new)
@@ -1483,7 +1517,12 @@ public abstract class AbstractTraversableTest extends AbstractTraversableOnceTes
 
     @Test
     public void shouldTakeAllIfCountExceedsSize() {
-        assertThat(of(1, 2, 3).take(4)).isEqualTo(of(1, 2, 3));
+        final Traversable<Integer> t = of(1, 2, 3);
+        if(isThisLazyCollection()) {
+            assertThat(t.take(4)).isEqualTo(t);
+        } else {
+            assertThat(t.take(4)).isSameAs(t);
+        }
     }
 
     // -- takeRight
@@ -1505,7 +1544,8 @@ public abstract class AbstractTraversableTest extends AbstractTraversableOnceTes
 
     @Test
     public void shouldTakeRightAllIfCountExceedsSize() {
-        assertThat(of(1, 2, 3).takeRight(4)).isEqualTo(of(1, 2, 3));
+        final Traversable<Integer> t = of(1, 2, 3);
+        assertThat(t.takeRight(4)).isSameAs(t);
     }
 
     // -- takeWhile
@@ -1522,7 +1562,12 @@ public abstract class AbstractTraversableTest extends AbstractTraversableOnceTes
 
     @Test
     public void shouldTakeWhileAllOnTrueCondition() {
-        assertThat(of(1, 2, 3).takeWhile(x -> true)).isEqualTo(of(1, 2, 3));
+        final Traversable<Integer> t = of(1, 2, 3);
+        if(isThisLazyCollection()) {
+            assertThat(t.takeWhile(x -> true)).isEqualTo(t);
+        } else {
+            assertThat(t.takeWhile(x -> true)).isSameAs(t);
+        }
     }
 
     @Test
@@ -1843,4 +1888,6 @@ public abstract class AbstractTraversableTest extends AbstractTraversableOnceTes
             }
         });
     }
+
+    abstract boolean isThisLazyCollection();
 }

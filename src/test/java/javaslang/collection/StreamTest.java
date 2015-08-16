@@ -322,4 +322,10 @@ public class StreamTest extends AbstractSeqTest {
             throw (x.getCause() != null) ? x.getCause() : x;
         }
     }
+
+    @Override
+    boolean isThisLazyCollection() {
+        return true;
+    }
+
 }

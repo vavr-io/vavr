@@ -174,4 +174,10 @@ public class QueueTest extends AbstractSeqTest {
     int getPeekNonNilPerformingAnAction() {
         return 1;
     }
+
+    @Override
+    boolean isThisLazyCollection() {
+        return false;
+    }
+
 }
