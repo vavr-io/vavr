@@ -574,24 +574,32 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
 
     @Override
     public Queue<T> drop(int n) {
+        if(n <= 0) {
+            return this;
+        }
         return new Queue<>(front.drop(n), rear.dropRight(n - front.length()));
     }
 
     @Override
     public Queue<T> dropRight(int n) {
+        if(n <= 0) {
+            return this;
+        }
         return new Queue<>(front.dropRight(n), rear.drop(n - front.length()));
     }
 
     @Override
     public Queue<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return toList().dropWhile(predicate).toQueue();
+        final List<T> dropped = toList().dropWhile(predicate);
+        return dropped.length() == length() ? this : dropped.toQueue();
     }
 
     @Override
     public Queue<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return toList().filter(predicate).toQueue();
+        final List<T> filtered = toList().filter(predicate);
+        return filtered.length() == length() ? this : filtered.toQueue();
     }
 
     @Override
@@ -759,6 +767,11 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
+    public int length() {
+        return front.length() + rear.length();
+    }
+
+    @Override
     public <U> Queue<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return new Queue<>(front.map(mapper), rear.map(mapper));
@@ -797,17 +810,20 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
 
     @Override
     public Queue<T> remove(T element) {
-        return toList().remove(element).toQueue();
+        final List<T> removed = toList().remove(element);
+        return removed.length() == length() ? this : removed.toQueue();
     }
 
     @Override
     public Queue<T> removeFirst(Predicate<T> predicate) {
-        return toList().removeFirst(predicate).toQueue();
+        final List<T> removed = toList().removeFirst(predicate);
+        return removed.length() == length() ? this : removed.toQueue();
     }
 
     @Override
     public Queue<T> removeLast(Predicate<T> predicate) {
-        return toList().removeLast(predicate).toQueue();
+        final List<T> removed = toList().removeLast(predicate);
+        return removed.length() == length() ? this : removed.toQueue();
     }
 
     @Override
@@ -817,13 +833,17 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
 
     @Override
     public Queue<T> removeAll(T element) {
-        return new Queue<>(front.removeAll(element), rear.removeAll(element));
+        final List<T> newFront = front.removeAll(element);
+        final List<T> newRear = rear.removeAll(element);
+        return newFront.length() + newRear.length() == length() ? this : new Queue<>(newFront, newRear);
     }
 
     @Override
     public Queue<T> removeAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return new Queue<>(front.removeAll(elements), rear.removeAll(elements));
+        final List<T> newFront = front.removeAll(elements);
+        final List<T> newRear = rear.removeAll(elements);
+        return newFront.length() + newRear.length() == length() ? this : new Queue<>(newFront, newRear);
     }
 
     @Override
@@ -931,6 +951,9 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
 
     @Override
     public Queue<T> take(int n) {
+        if(n >= length()) {
+            return this;
+        }
         final int frontLength = front.length();
         if (n < frontLength) {
             return new Queue<>(front.take(n), List.empty());
@@ -943,6 +966,9 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
 
     @Override
     public Queue<T> takeRight(int n) {
+        if(n >= length()) {
+            return this;
+        }
         final int rearLength = rear.length();
         if (n < rearLength) {
             return new Queue<>(rear.take(n).reverse(), List.empty());
@@ -956,7 +982,8 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     @Override
     public Queue<T> takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return toList().takeWhile(predicate).toQueue();
+        final List<T> taken = toList().takeWhile(predicate);
+        return taken.length() == length() ? this : taken.toQueue();
     }
 
     @Override

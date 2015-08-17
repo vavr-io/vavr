@@ -224,4 +224,8 @@ public class HashSetTest extends AbstractTraversableTest {
     public void shouldFindLastOfNil() {
         // TODO
     }
+
+    boolean isThisLazyCollection() {
+        return false;
+    }
 }

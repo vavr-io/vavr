@@ -511,7 +511,6 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-
     // -- remove
 
     @Test
@@ -536,9 +535,13 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldRemoveNonExistingElement() {
-        assertThat(of(1, 2, 3).remove(4)).isEqualTo(of(1, 2, 3));
+        final Seq<Integer> t = of(1, 2, 3);
+        if (isThisLazyCollection()) {
+            assertThat(t.remove(4)).isEqualTo(t);
+        } else {
+            assertThat(t.remove(4)).isSameAs(t);
+        }
     }
-
 
     // -- removeFirst(Predicate)
 
@@ -574,7 +577,12 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldRemoveFirstElementByPredicateNonExisting() {
-        assertThat(of(1, 2, 3).removeFirst(v -> v == 4)).isEqualTo(of(1, 2, 3));
+        final Seq<Integer> t = of(1, 2, 3);
+        if (isThisLazyCollection()) {
+            assertThat(t.removeFirst(v -> v == 4)).isEqualTo(t);
+        } else {
+            assertThat(t.removeFirst(v -> v == 4)).isSameAs(t);
+        }
     }
 
     // -- removeLast(Predicate)
@@ -611,7 +619,8 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldRemoveLastElementByPredicateNonExisting() {
-        assertThat(of(1, 2, 3).removeLast(v -> v == 4)).isEqualTo(of(1, 2, 3));
+        final Seq<Integer> t = of(1, 2, 3);
+        assertThat(t.removeLast(v -> v == 4)).isSameAs(t);
     }
 
     // -- removeAll(Iterable)
@@ -628,7 +637,12 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldNotRemoveAllNonExistingElementsFromNonNil() {
-        assertThat(of(1, 2, 3).removeAll(of(4, 5))).isEqualTo(of(1, 2, 3));
+        final Seq<Integer> t = of(1, 2, 3);
+        if (isThisLazyCollection()) {
+            assertThat(t.removeAll(of(4, 5))).isEqualTo(t);
+        } else {
+            assertThat(t.removeAll(of(4, 5))).isSameAs(t);
+        }
     }
 
     // -- removeAll(Object)
@@ -645,7 +659,12 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldNotRemoveAllNonObjectsElementsFromNonNil() {
-        assertThat(of(1, 2, 3).removeAll(4)).isEqualTo(of(1, 2, 3));
+        final Seq<Integer> t = of(1, 2, 3);
+        if (isThisLazyCollection()) {
+            assertThat(t.removeAll(4)).isEqualTo(t);
+        } else {
+            assertThat(t.removeAll(4)).isSameAs(t);
+        }
     }
 
     // -- reverse
@@ -968,43 +987,43 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldZipNils() {
-        final Traversable<?> actual = empty().zip(empty());
+        final Seq<?> actual = empty().zip(empty());
         assertThat(actual).isEqualTo(empty());
     }
 
     @Test
     public void shouldZipEmptyAndNonNil() {
-        final Traversable<?> actual = empty().zip(of(1));
+        final Seq<?> actual = empty().zip(of(1));
         assertThat(actual).isEqualTo(empty());
     }
 
     @Test
     public void shouldZipNonEmptyAndNil() {
-        final Traversable<?> actual = of(1).zip(empty());
+        final Seq<?> actual = of(1).zip(empty());
         assertThat(actual).isEqualTo(empty());
     }
 
     @Test
     public void shouldZipNonNilsIfThisIsSmaller() {
-        final Traversable<Tuple2<Integer, String>> actual = of(1, 2).zip(of("a", "b", "c"));
+        final Seq<Tuple2<Integer, String>> actual = of(1, 2).zip(of("a", "b", "c"));
         @SuppressWarnings("unchecked")
-        final Traversable<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"));
+        final Seq<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipNonNilsIfThatIsSmaller() {
-        final Traversable<Tuple2<Integer, String>> actual = of(1, 2, 3).zip(of("a", "b"));
+        final Seq<Tuple2<Integer, String>> actual = of(1, 2, 3).zip(of("a", "b"));
         @SuppressWarnings("unchecked")
-        final Traversable<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"));
+        final Seq<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipNonNilsOfSameSize() {
-        final Traversable<Tuple2<Integer, String>> actual = of(1, 2, 3).zip(of("a", "b", "c"));
+        final Seq<Tuple2<Integer, String>> actual = of(1, 2, 3).zip(of("a", "b", "c"));
         @SuppressWarnings("unchecked")
-        final Traversable<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
+        final Seq<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -1017,47 +1036,47 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldZipAllNils() {
-        final Traversable<?> actual = empty().zipAll(empty(), null, null);
+        final Seq<?> actual = empty().zipAll(empty(), null, null);
         assertThat(actual).isEqualTo(empty());
     }
 
     @Test
     public void shouldZipAllEmptyAndNonNil() {
-        final Traversable<?> actual = empty().zipAll(of(1), null, null);
+        final Seq<?> actual = empty().zipAll(of(1), null, null);
         @SuppressWarnings("unchecked")
-        final Traversable<Tuple2<Object, Integer>> expected = of(Tuple.of(null, 1));
+        final Seq<Tuple2<Object, Integer>> expected = of(Tuple.of(null, 1));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipAllNonEmptyAndNil() {
-        final Traversable<?> actual = of(1).zipAll(empty(), null, null);
+        final Seq<?> actual = of(1).zipAll(empty(), null, null);
         @SuppressWarnings("unchecked")
-        final Traversable<Tuple2<Integer, Object>> expected = of(Tuple.of(1, null));
+        final Seq<Tuple2<Integer, Object>> expected = of(Tuple.of(1, null));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipAllNonNilsIfThisIsSmaller() {
-        final Traversable<Tuple2<Integer, String>> actual = of(1, 2).zipAll(of("a", "b", "c"), 9, "z");
+        final Seq<Tuple2<Integer, String>> actual = of(1, 2).zipAll(of("a", "b", "c"), 9, "z");
         @SuppressWarnings("unchecked")
-        final Traversable<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(9, "c"));
+        final Seq<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(9, "c"));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipAllNonNilsIfThatIsSmaller() {
-        final Traversable<Tuple2<Integer, String>> actual = of(1, 2, 3).zipAll(of("a", "b"), 9, "z");
+        final Seq<Tuple2<Integer, String>> actual = of(1, 2, 3).zipAll(of("a", "b"), 9, "z");
         @SuppressWarnings("unchecked")
-        final Traversable<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "z"));
+        final Seq<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "z"));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipAllNonNilsOfSameSize() {
-        final Traversable<Tuple2<Integer, String>> actual = of(1, 2, 3).zipAll(of("a", "b", "c"), 9, "z");
+        final Seq<Tuple2<Integer, String>> actual = of(1, 2, 3).zipAll(of("a", "b", "c"), 9, "z");
         @SuppressWarnings("unchecked")
-        final Traversable<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
+        final Seq<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -1075,9 +1094,9 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldZipNonNilWithIndex() {
-        final Traversable<Tuple2<String, Integer>> actual = of("a", "b", "c").zipWithIndex();
+        final Seq<Tuple2<String, Integer>> actual = of("a", "b", "c").zipWithIndex();
         @SuppressWarnings("unchecked")
-        final Traversable<Tuple2<String, Integer>> expected = of(Tuple.of("a", 0), Tuple.of("b", 1), Tuple.of("c", 2));
+        final Seq<Tuple2<String, Integer>> expected = of(Tuple.of("a", 0), Tuple.of("b", 1), Tuple.of("c", 2));
         assertThat(actual).isEqualTo(expected);
     }
 

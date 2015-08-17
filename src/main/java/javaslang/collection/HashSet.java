@@ -178,24 +178,34 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<T> drop(int n) {
-        return HashSet.ofAll(() -> iterator().drop(n));
+        if (n <= 0) {
+            return this;
+        } else {
+            return HashSet.ofAll(() -> iterator().drop(n));
+        }
     }
 
     @Override
     public HashSet<T> dropRight(int n) {
-        return HashSet.ofAll(list.get().dropRight(n));
+        if (n <= 0) {
+            return this;
+        } else {
+            return HashSet.ofAll(list.get().dropRight(n));
+        }
     }
 
     @Override
     public HashSet<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return HashSet.ofAll(list.get().dropWhile(predicate));
+        final List<T> dropped = list.get().dropWhile(predicate);
+        return dropped.length() == list.get().length() ? this : HashSet.ofAll(dropped);
     }
 
     @Override
     public HashSet<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return HashSet.ofAll(list.get().filter(predicate));
+        final List<T> filtered = list.get().filter(predicate);
+        return filtered.length() == list.get().length() ? this : HashSet.ofAll(filtered);
     }
 
     @Override
@@ -348,7 +358,8 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<T> remove(T element) {
-        return new HashSet<>(tree.remove(element));
+        final HashArrayMappedTrie<T, Object> newTree = tree.remove(element);
+        return newTree == tree ? this : new HashSet<>(newTree);
     }
 
     @Override
@@ -358,7 +369,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
         for (T element : elements) {
             trie = trie.remove(element);
         }
-        return new HashSet<>(trie);
+        return trie == tree ? this : new HashSet<>(trie);
     }
 
     @Override
@@ -435,18 +446,25 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<T> take(int n) {
+        if(tree.size() <= n) {
+            return this;
+        }
         return HashSet.ofAll(() -> iterator().take(n));
     }
 
     @Override
     public HashSet<T> takeRight(int n) {
+        if(tree.size() <= n) {
+            return this;
+        }
         return HashSet.ofAll(list.get().takeRight(n));
     }
 
     @Override
     public HashSet<T> takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return HashSet.ofAll(list.get().takeWhile(predicate));
+        List<T> taken = list.get().takeWhile(predicate);
+        return taken.length() == list.get().length() ? this : HashSet.ofAll(taken);
     }
 
     @Override
