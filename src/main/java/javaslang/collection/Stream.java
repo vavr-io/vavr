@@ -804,6 +804,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Stream<T> dropWhile(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
         Stream<T> stream = this;
         while (!stream.isEmpty() && predicate.test(stream.head())) {
             stream = stream.tail();
@@ -1113,6 +1114,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Tuple2<Stream<T>, Stream<T>> splitAt(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
         return Tuple.of(takeWhile(predicate.negate()), dropWhile(predicate.negate()));
     }
 
@@ -1378,6 +1380,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
         @Override
         public Stream<T> removeFirst(Predicate<T> predicate) {
+            Objects.requireNonNull(predicate, "predicate is null");
             return predicate.test(head()) ? tail() : new Cons<>(head, () -> tail().removeFirst(predicate));
         }
 
