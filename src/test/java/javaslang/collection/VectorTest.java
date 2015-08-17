@@ -12,114 +12,121 @@ import java.io.InvalidObjectException;
 import java.util.ArrayList;
 import java.util.stream.Collector;
 
-public class ListTest extends AbstractSeqTest {
-
-    // -- construction
-
+public class VectorTest extends AbstractSeqTest {
     @Override
-    protected <T> Collector<T, ArrayList<T>, List<T>> collector() {
-        return List.collector();
+    protected <T> Collector<T, ArrayList<T>, Vector<T>> collector() {
+        return Vector.collector();
     }
 
     @Override
-    protected <T> List<T> empty() {
-        return List.empty();
+    protected <T> Vector<T> empty() {
+        return Vector.empty();
     }
 
     @Override
-    protected <T> List<T> of(T element) {
-        return List.of(element);
+    protected <T> Vector<T> of(T element) {
+        return Vector.of(element);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    protected <T> List<T> of(T... elements) {
-        return List.of(elements);
+    protected <T> Vector<T> of(T... elements) {
+        return Vector.of(elements);
     }
 
     @Override
-    protected <T> List<T> ofAll(Iterable<? extends T> elements) {
-        return List.ofAll(elements);
+    protected <T> Vector<T> ofAll(Iterable<? extends T> elements) {
+        return Vector.ofAll(elements);
     }
 
     @Override
-    protected List<Boolean> ofAll(boolean[] array) {
-        return List.ofAll(array);
+    protected Vector<Boolean> ofAll(boolean[] array) {
+        return Vector.ofAll(array);
     }
 
     @Override
-    protected List<Byte> ofAll(byte[] array) {
-        return List.ofAll(array);
+    protected Vector<Byte> ofAll(byte[] array) {
+        return Vector.ofAll(array);
     }
 
     @Override
-    protected List<Character> ofAll(char[] array) {
-        return List.ofAll(array);
+    protected Vector<Character> ofAll(char[] array) {
+        return Vector.ofAll(array);
     }
 
     @Override
-    protected List<Double> ofAll(double[] array) {
-        return List.ofAll(array);
+    protected Vector<Double> ofAll(double[] array) {
+        return Vector.ofAll(array);
     }
 
     @Override
-    protected List<Float> ofAll(float[] array) {
-        return List.ofAll(array);
+    protected Vector<Float> ofAll(float[] array) {
+        return Vector.ofAll(array);
     }
 
     @Override
-    protected List<Integer> ofAll(int[] array) {
-        return List.ofAll(array);
+    protected Vector<Integer> ofAll(int[] array) {
+        return Vector.ofAll(array);
     }
 
     @Override
-    protected List<Long> ofAll(long[] array) {
-        return List.ofAll(array);
+    protected Vector<Long> ofAll(long[] array) {
+        return Vector.ofAll(array);
     }
 
     @Override
-    protected List<Short> ofAll(short[] array) {
-        return List.ofAll(array);
+    protected Vector<Short> ofAll(short[] array) {
+        return Vector.ofAll(array);
     }
 
     @Override
-    protected List<Integer> range(int from, int toExclusive) {
-        return List.range(from, toExclusive);
+    int getPeekNonNilPerformingAnAction() {
+        return 1;
     }
 
     @Override
-    protected List<Integer> rangeBy(int from, int toExclusive, int step) {
-        return List.rangeBy(from, toExclusive, step);
+    boolean isThisLazyCollection() {
+        return false;
     }
 
     @Override
-    protected List<Long> range(long from, long toExclusive) {
-        return List.range(from, toExclusive);
+    protected Vector<Integer> range(int from, int toExclusive) {
+        return Vector.range(from, toExclusive);
     }
 
     @Override
-    protected List<Long> rangeBy(long from, long toExclusive, long step) {
-        return List.rangeBy(from, toExclusive, step);
+    protected Vector<Integer> rangeBy(int from, int toExclusive, int step) {
+        return Vector.rangeBy(from, toExclusive, step);
     }
 
     @Override
-    protected List<Integer> rangeClosed(int from, int toInclusive) {
-        return List.rangeClosed(from, toInclusive);
+    protected Vector<Long> range(long from, long toExclusive) {
+        return Vector.range(from, toExclusive);
     }
 
     @Override
-    protected List<Integer> rangeClosedBy(int from, int toInclusive, int step) {
-        return List.rangeClosedBy(from, toInclusive, step);
+    protected Vector<Long> rangeBy(long from, long toExclusive, long step) {
+        return Vector.rangeBy(from, toExclusive, step);
     }
 
     @Override
-    protected List<Long> rangeClosed(long from, long toInclusive) {
-        return List.rangeClosed(from, toInclusive);
+    protected Vector<Integer> rangeClosed(int from, int toInclusive) {
+        return Vector.rangeClosed(from, toInclusive);
     }
 
     @Override
-    protected List<Long> rangeClosedBy(long from, long toInclusive, long step) {
-        return List.rangeClosedBy(from, toInclusive, step);
+    protected Vector<Integer> rangeClosedBy(int from, int toInclusive, int step) {
+        return Vector.rangeClosedBy(from, toInclusive, step);
+    }
+
+    @Override
+    protected Vector<Long> rangeClosed(long from, long toInclusive) {
+        return Vector.rangeClosed(from, toInclusive);
+    }
+
+    @Override
+    protected Vector<Long> rangeClosedBy(long from, long toInclusive, long step) {
+        return Vector.rangeClosedBy(from, toInclusive, step);
     }
 
     // -- combinations
@@ -151,13 +158,6 @@ public class ListTest extends AbstractSeqTest {
         assertThat(List.of(1).combinations(-1)).isEqualTo(List.of(List.empty()));
     }
 
-    // -- peek
-
-    @Override
-    int getPeekNonNilPerformingAnAction() {
-        return 1;
-    }
-
     // -- permutations
 
     @Test
@@ -174,12 +174,12 @@ public class ListTest extends AbstractSeqTest {
 
     @Test
     public void shouldStringifyNil() {
-        assertThat(empty().toString()).isEqualTo("List()");
+        assertThat(empty().toString()).isEqualTo("Vector()");
     }
 
     @Test
     public void shouldStringifyNonNil() {
-        assertThat(of(1, 2, 3).toString()).isEqualTo("List(1, 2, 3)");
+        assertThat(of(1, 2, 3).toString()).isEqualTo("Vector(1, 2, 3)");
     }
 
     // -- Cons test
@@ -221,11 +221,6 @@ public class ListTest extends AbstractSeqTest {
         } catch (IllegalStateException x) {
             throw (x.getCause() != null) ? x.getCause() : x;
         }
-    }
-
-    @Override
-    boolean isThisLazyCollection() {
-        return false;
     }
 
 }
