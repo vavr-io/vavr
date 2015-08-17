@@ -1419,7 +1419,7 @@ public interface Vector<T> extends IndexedSeq<T> {
         }
     }
 
-    class Empty<T> implements Vector<T>, Serializable {
+    final class Empty<T> implements Vector<T>, Serializable {
         private static final long serialVersionUID = 1L;
         private static final Vector<?> INSTANCE = new Empty<>();
 
