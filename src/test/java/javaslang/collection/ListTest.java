@@ -12,8 +12,6 @@ import java.io.InvalidObjectException;
 import java.util.ArrayList;
 import java.util.stream.Collector;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class ListTest extends AbstractSeqTest {
 
     // -- construction

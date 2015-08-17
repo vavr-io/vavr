@@ -700,6 +700,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default List<T> filter(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
         final List<T> filtered = foldLeft(List.<T> empty(), (xs, x) -> predicate.test(x) ? xs.prepend(x) : xs);
         return this.length() == filtered.length() ? this : filtered.reverse();
     }
@@ -993,6 +994,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default List<T> removeFirst(Predicate<T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
         List<T> init = List.empty();
         List<T> tail = this;
         while (!tail.isEmpty() && !predicate.test(tail.head())) {
@@ -1008,6 +1010,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default List<T> removeLast(Predicate<T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
         final List<T> removedAndReversed = reverse().removeFirst(predicate);
         return removedAndReversed.length() == length() ? this : removedAndReversed.reverse();
     }
@@ -1407,6 +1410,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         }
 
         private static <T> Tuple2<List<T>, List<T>> splitByPredicateReversed(List<T> source, Predicate<? super T> predicate) {
+            Objects.requireNonNull(predicate, "predicate is null");
             List<T> init = Nil.instance();
             List<T> tail = source;
             while (!tail.isEmpty() && !predicate.test(tail.head())) {
