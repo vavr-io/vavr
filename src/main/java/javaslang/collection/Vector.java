@@ -840,7 +840,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public boolean isEmpty() {
-        return length() == 0;
+        return trie.isEmpty();
     }
 
     @Override
