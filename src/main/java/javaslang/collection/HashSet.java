@@ -33,6 +33,17 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     private static final HashSet<?> EMPTY = new HashSet<>(HashArrayMappedTrie.empty());
 
+    private final HashArrayMappedTrie<T, Object> tree;
+    // TODO: get rid of this (mid-term)
+    private final transient Lazy<List<T>> list;
+    private final transient Lazy<Integer> hash;
+
+    private HashSet(HashArrayMappedTrie<T, Object> tree) {
+        this.tree = tree;
+        this.list = Lazy.of(() -> List.ofAll(() -> tree.iterator().map(t -> t._1)));
+        this.hash = Lazy.of(() -> Traversable.hash(tree::iterator));
+    }
+
     @SuppressWarnings("unchecked")
     public static <T> HashSet<T> empty() {
         return (HashSet<T>) EMPTY;
@@ -110,17 +121,6 @@ public final class HashSet<T> implements Set<T>, Serializable {
             }
             return tree.isEmpty() ? empty() : new HashSet<>(tree);
         }
-    }
-
-    private final HashArrayMappedTrie<T, Object> tree;
-    // TODO: get rid of this (mid-term)
-    private final transient Lazy<List<T>> list;
-    private final transient Lazy<Integer> hash;
-
-    private HashSet(HashArrayMappedTrie<T, Object> tree) {
-        this.tree = tree;
-        this.list = Lazy.of(() -> List.ofAll(() -> tree.iterator().map(t -> t._1)));
-        this.hash = Lazy.of(() -> Traversable.hash(tree::iterator));
     }
 
     @Override
@@ -263,7 +263,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public T head() {
-        if(tree.isEmpty()) {
+        if (tree.isEmpty()) {
             throw new NoSuchElementException("head of empty set");
         }
         return iterator().next();
@@ -293,8 +293,8 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public String join(CharSequence delimiter,
-                CharSequence prefix,
-                CharSequence suffix) {
+                       CharSequence prefix,
+                       CharSequence suffix) {
         final StringBuilder builder = new StringBuilder(prefix);
         forEach(t -> builder.append(String.valueOf(t)).append(String.valueOf(delimiter)));
         if (!isEmpty()) {
@@ -422,7 +422,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<T> tail() {
-        if(tree.isEmpty()) {
+        if (tree.isEmpty()) {
             throw new UnsupportedOperationException("tail of empty set");
         }
         return remove(head());
@@ -430,7 +430,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public Option<HashSet<T>> tailOption() {
-        if(tree.isEmpty()) {
+        if (tree.isEmpty()) {
             return None.instance();
         } else {
             return new Some<>(tail());
@@ -439,7 +439,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<T> take(int n) {
-        if(tree.size() <= n) {
+        if (tree.size() <= n) {
             return this;
         }
         return HashSet.ofAll(() -> iterator().take(n));
@@ -447,7 +447,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<T> takeRight(int n) {
-        if(tree.size() <= n) {
+        if (tree.size() <= n) {
             return this;
         }
         return HashSet.ofAll(list.get().takeRight(n));

@@ -9,6 +9,7 @@ import javaslang.Kind;
 import javaslang.Tuple2;
 import javaslang.control.Option;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.*;
@@ -19,7 +20,9 @@ import java.util.function.*;
  *
  * @since 2.0.0
  */
-public final class HashMap<K, V> implements Map<K, V> {
+public final class HashMap<K, V> implements Map<K, V>, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private static final HashMap<?, ?> EMPTY = new HashMap<>(HashArrayMappedTrie.empty());
 
@@ -157,6 +160,11 @@ public final class HashMap<K, V> implements Map<K, V> {
     }
 
     @Override
+    public <U, W> Map<U, W> flatMap(BiFunction<? super K, ? super V, ? extends Map<? extends U, ? extends W>> mapper) {
+        return null;
+    }
+
+    @Override
     public <U> Set<U> flatMap(Function<? super Entry<K, V>, ? extends Iterable<? extends U>> mapper) {
         return null;
     }
@@ -179,6 +187,18 @@ public final class HashMap<K, V> implements Map<K, V> {
     @Override
     public Option<V> get(K key) {
         return tree.get(key);
+    }
+
+    @Override
+    public <C> Map<C, HashMap<K, V>> groupBy(Function<? super Entry<K, V>, ? extends C> classifier) {
+        return foldLeft(HashMap.empty(), (map, entry) -> {
+            final C key = classifier.apply(entry);
+            final HashMap<K, V> values = map
+                    .get(key)
+                    .map(entries -> entries.put(entry.key, entry.value))
+                    .orElse(HashMap.of(entry));
+            return map.put(key, values);
+        });
     }
 
     @Override
@@ -207,34 +227,6 @@ public final class HashMap<K, V> implements Map<K, V> {
     }
 
     @Override
-    public Set<K> keySet() {
-        return map(entry -> entry.key);
-    }
-
-
-
-
-
-
-
-    @Override
-    public <U, W> Map<U, W> flatMap(BiFunction<? super K, ? super V, ? extends Map<? extends U, ? extends W>> mapper) {
-        return null;
-    }
-
-    @Override
-    public <C> Map<C, HashMap<K, V>> groupBy(Function<? super Entry<K, V>, ? extends C> classifier) {
-        return foldLeft(HashMap.empty(), (map, entry) -> {
-            final C key = classifier.apply(entry);
-            final HashMap<K, V> values = map
-                    .get(key)
-                    .map(entries -> entries.put(entry.key, entry.value))
-                    .orElse(HashMap.of(entry));
-            return map.put(key, values);
-        });
-    }
-
-    @Override
     public boolean isEmpty() {
         return tree.isEmpty();
     }
@@ -242,6 +234,11 @@ public final class HashMap<K, V> implements Map<K, V> {
     @Override
     public Iterator<Entry<K, V>> iterator() {
         return tree.iterator().map(Entry::of);
+    }
+
+    @Override
+    public Set<K> keySet() {
+        return map(entry -> entry.key);
     }
 
     @Override
@@ -273,7 +270,22 @@ public final class HashMap<K, V> implements Map<K, V> {
     }
 
     @Override
+    public HashMap<K, V> put(K key, V value) {
+        return new HashMap<>(tree.put(key, value));
+    }
+
+    @Override
     public Entry<K, V> reduceRight(BiFunction<? super Entry<K, V>, ? super Entry<K, V>, ? extends Entry<K, V>> op) {
+        return null;
+    }
+
+    @Override
+    public HashMap<K, V> remove(K key) {
+        return new HashMap<>(tree.remove(key));
+    }
+
+    @Override
+    public Map<K, V> removeAll(Iterable<? extends K> keys) {
         return null;
     }
 
@@ -295,6 +307,11 @@ public final class HashMap<K, V> implements Map<K, V> {
     @Override
     public Map<K, V> retainAll(Iterable<? extends Entry<K, V>> elements) {
         return null;
+    }
+
+    @Override
+    public int size() {
+        return tree.size();
     }
 
     @Override
@@ -335,26 +352,6 @@ public final class HashMap<K, V> implements Map<K, V> {
     @Override
     public Map<K, V> takeWhile(Predicate<? super Entry<K, V>> predicate) {
         return null;
-    }
-
-    @Override
-    public HashMap<K, V> put(K key, V value) {
-        return new HashMap<>(tree.put(key, value));
-    }
-
-    @Override
-    public HashMap<K, V> remove(K key) {
-        return new HashMap<>(tree.remove(key));
-    }
-
-    @Override
-    public Map<K, V> removeAll(Iterable<? extends K> keys) {
-        return null;
-    }
-
-    @Override
-    public int size() {
-        return tree.size();
     }
 
     @Override
