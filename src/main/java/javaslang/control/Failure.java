@@ -140,18 +140,6 @@ public final class Failure<T> implements Try<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Failure<Option<T>> filterOption(Predicate<? super T> predicate) {
-        return (Failure<Option<T>>) this;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Failure<Option<T>> filterTryOption(CheckedPredicate<? super T> predicate) {
-        return (Failure<Option<T>>) this;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
     public <U> Failure<U> flatMap(Function<? super T, ? extends Try<? extends U>> mapper) {
         return (Failure<U>) this;
     }

@@ -9,7 +9,6 @@ import javaslang.FilterMonadic;
 import javaslang.Kind;
 import javaslang.Value;
 import javaslang.collection.Iterator;
-import javaslang.collection.TraversableOnce;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -33,7 +32,7 @@ import java.util.function.Supplier;
  * @param <T> The type of the optional value.
  * @since 1.0.0
  */
-public interface Option<T> extends TraversableOnce<T>, Value<T>,
+public interface Option<T> extends Value<T>,
         FilterMonadic<Option<?>, T>, Kind<Option<?>, T> {
 
     /**
@@ -126,9 +125,6 @@ public interface Option<T> extends TraversableOnce<T>, Value<T>,
      */
     @Override
     Option<T> filter(Predicate<? super T> predicate);
-
-    @Override
-    Option<Some<T>> filterOption(Predicate<? super T> predicate);
 
     /**
      * Maps the value to a new {@code Option} if this is a {@code Some}, otherwise returns {@code None}.

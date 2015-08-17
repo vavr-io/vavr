@@ -8,7 +8,6 @@ package javaslang.collection;
 import javaslang.Kind;
 import javaslang.Tuple2;
 import javaslang.control.Option;
-import javaslang.control.Some;
 
 import java.util.Comparator;
 import java.util.function.Consumer;
@@ -38,10 +37,10 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> clear();
 
     @Override
-    LinearSeq<Tuple2<T, T>> cartesianProduct();
+    LinearSeq<Tuple2<T, T>> crossProduct();
 
     @Override
-    <U> LinearSeq<Tuple2<T, U>> cartesianProduct(Iterable<? extends U> that);
+    <U> LinearSeq<Tuple2<T, U>> crossProduct(Iterable<? extends U> that);
 
     @Override
     LinearSeq<? extends LinearSeq<T>> combinations();
@@ -69,9 +68,6 @@ public interface LinearSeq<T> extends Seq<T> {
 
     @Override
     LinearSeq<T> filter(Predicate<? super T> predicate);
-
-    @Override
-    LinearSeq<Some<T>> filterOption(Predicate<? super T> predicate);
 
     @Override
     LinearSeq<T> findAll(Predicate<? super T> predicate);

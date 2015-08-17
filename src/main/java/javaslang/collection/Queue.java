@@ -531,13 +531,13 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public Queue<Tuple2<T, T>> cartesianProduct() {
-        return cartesianProduct(this);
+    public Queue<Tuple2<T, T>> crossProduct() {
+        return crossProduct(this);
     }
 
     @Override
-    public <U> Queue<Tuple2<T, U>> cartesianProduct(Iterable<? extends U> that) {
-        return toList().cartesianProduct(that).toQueue();
+    public <U> Queue<Tuple2<T, U>> crossProduct(Iterable<? extends U> that) {
+        return toList().crossProduct(that).toQueue();
     }
 
     @Override
@@ -600,11 +600,6 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
         Objects.requireNonNull(predicate, "predicate is null");
         final List<T> filtered = toList().filter(predicate);
         return filtered.length() == length() ? this : filtered.toQueue();
-    }
-
-    @Override
-    public Queue<Some<T>> filterOption(Predicate<? super T> predicate) {
-        return toList().filterOption(predicate).toQueue();
     }
 
     @Override

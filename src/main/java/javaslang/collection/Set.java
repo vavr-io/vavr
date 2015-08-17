@@ -8,12 +8,14 @@ package javaslang.collection;
 import javaslang.Kind;
 import javaslang.Tuple2;
 import javaslang.control.Option;
-import javaslang.control.Some;
 
 import java.util.Comparator;
 import java.util.Spliterator;
 import java.util.Spliterators;
-import java.util.function.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 
 /**
  * An immutable {@code Set} interface.
@@ -23,21 +25,28 @@ import java.util.function.*;
  */
 public interface Set<T> extends Traversable<T> {
 
-    // TODO: additional set operations
-
-    // -- Adjusted return types of Traversable methods
+    // TODO: additional set operations (union, intersection, etc.)
 
     Set<T> add(T element);
+
+    Set<T> remove(T element);
+
+    Set<T> removeAll(Iterable<? extends T> elements);
+
+    <T1, T2> Tuple2<? extends Set<T1>, ? extends Set<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
+
+    <U> Set<Tuple2<T, U>> zip(Iterable<U> that);
+
+    <U> Set<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
+
+    Set<Tuple2<T, Integer>> zipWithIndex();
+
+    // -- Adjusted return types of Traversable methods
 
     @Override
     Set<T> clear();
 
     @Override
-    Set<Tuple2<T, T>> cartesianProduct();
-
-    @Override
-    <U> Set<Tuple2<T, U>> cartesianProduct(Iterable<? extends U> that);
-
     boolean contains(T element);
 
     @Override
@@ -60,9 +69,6 @@ public interface Set<T> extends Traversable<T> {
 
     @Override
     Set<T> filter(Predicate<? super T> predicate);
-
-    @Override
-    Set<Some<T>> filterOption(Predicate<? super T> predicate);
 
     @Override
     Set<T> findAll(Predicate<? super T> predicate);
@@ -107,21 +113,6 @@ public interface Set<T> extends Traversable<T> {
     Set<T> peek(Consumer<? super T> action);
 
     @Override
-    Set<T> remove(T element);
-
-    @Override
-    Set<T> removeFirst(Predicate<T> predicate);
-
-    @Override
-    Set<T> removeLast(Predicate<T> predicate);
-
-    @Override
-    Set<T> removeAll(T element);
-
-    @Override
-    Set<T> removeAll(Iterable<? extends T> elements);
-
-    @Override
     Set<T> replace(T currentElement, T newElement);
 
     @Override
@@ -132,9 +123,6 @@ public interface Set<T> extends Traversable<T> {
 
     @Override
     Set<T> retainAll(Iterable<? extends T> elements);
-
-    @Override
-    Set<T> reverse();
 
     @Override
     Set<? extends Set<T>> sliding(int size);
@@ -164,20 +152,5 @@ public interface Set<T> extends Traversable<T> {
 
     @Override
     Set<T> takeWhile(Predicate<? super T> predicate);
-
-    @Override
-    <U> Set<U> unit(Iterable<? extends U> iterable);
-
-    @Override
-    <T1, T2> Tuple2<? extends Set<T1>, ? extends Set<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
-
-    @Override
-    <U> Set<Tuple2<T, U>> zip(Iterable<U> that);
-
-    @Override
-    <U> Set<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
-
-    @Override
-    Set<Tuple2<T, Integer>> zipWithIndex();
 
 }

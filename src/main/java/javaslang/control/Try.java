@@ -10,7 +10,6 @@ import javaslang.FilterMonadic;
 import javaslang.Kind;
 import javaslang.Value;
 import javaslang.collection.Iterator;
-import javaslang.collection.TraversableOnce;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -21,7 +20,7 @@ import java.util.function.Predicate;
  *
  * @param <T> Value type in the case of success.
  */
-public interface Try<T> extends TraversableOnce<T>, Value<T>,
+public interface Try<T> extends Value<T>,
         FilterMonadic<Try<?>, T>, Kind<Try<?>, T> {
 
     /**
@@ -126,11 +125,6 @@ public interface Try<T> extends TraversableOnce<T>, Value<T>,
     Try<T> filter(Predicate<? super T> predicate);
 
     Try<T> filterTry(CheckedPredicate<? super T> predicate);
-
-    @Override
-    Try<Option<T>> filterOption(Predicate<? super T> predicate);
-
-    Try<Option<T>> filterTryOption(CheckedPredicate<? super T> predicate);
 
     /**
      * FlatMaps the value of a Success or returns a Failure.

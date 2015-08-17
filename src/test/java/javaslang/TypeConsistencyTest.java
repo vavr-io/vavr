@@ -8,6 +8,7 @@ package javaslang;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
 import javaslang.control.Try;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -76,6 +77,7 @@ public class TypeConsistencyTest {
      * are not recognized by this test because there is no runtime information available via reflection.
      */
     @Test
+    @Ignore
     public void shouldHaveAConsistentTypeSystem() {
 
         final Stream<Class<?>> relevantClasses = loadClasses("src-gen/main/java")

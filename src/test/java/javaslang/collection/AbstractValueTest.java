@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Value;
 import org.assertj.core.api.*;
 import org.junit.Test;
 
@@ -14,7 +15,7 @@ import java.util.stream.Collector;
 /**
  * Tests all methods defined in {@link Traversable}.
  */
-public abstract class AbstractTraversableOnceTest {
+public abstract class AbstractValueTest {
 
     protected <T> IterableAssert<T> assertThat(Iterable<T> actual) {
         return new IterableAssert<T>(actual) {
@@ -53,30 +54,30 @@ public abstract class AbstractTraversableOnceTest {
 
     abstract protected <T> Collector<T, ArrayList<T>, ? extends Traversable<T>> collector();
 
-    abstract protected <T> TraversableOnce<T> empty();
+    abstract protected <T> Value<T> empty();
 
-    abstract protected <T> TraversableOnce<T> of(T element);
+    abstract protected <T> Value<T> of(T element);
 
     @SuppressWarnings("unchecked")
-    abstract protected <T> TraversableOnce<T> of(T... elements);
+    abstract protected <T> Value<T> of(T... elements);
 
-    abstract protected <T> TraversableOnce<T> ofAll(Iterable<? extends T> elements);
+    abstract protected <T> Value<T> ofAll(Iterable<? extends T> elements);
 
-    abstract protected TraversableOnce<Boolean> ofAll(boolean[] array);
+    abstract protected Value<Boolean> ofAll(boolean[] array);
 
-    abstract protected TraversableOnce<Byte> ofAll(byte[] array);
+    abstract protected Value<Byte> ofAll(byte[] array);
 
-    abstract protected TraversableOnce<Character> ofAll(char[] array);
+    abstract protected Value<Character> ofAll(char[] array);
 
-    abstract protected TraversableOnce<Double> ofAll(double[] array);
+    abstract protected Value<Double> ofAll(double[] array);
 
-    abstract protected TraversableOnce<Float> ofAll(float[] array);
+    abstract protected Value<Float> ofAll(float[] array);
 
-    abstract protected TraversableOnce<Integer> ofAll(int[] array);
+    abstract protected Value<Integer> ofAll(int[] array);
 
-    abstract protected TraversableOnce<Long> ofAll(long[] array);
+    abstract protected Value<Long> ofAll(long[] array);
 
-    abstract protected TraversableOnce<Short> ofAll(short[] array);
+    abstract protected Value<Short> ofAll(short[] array);
 
     // -- exists
 
@@ -88,23 +89,6 @@ public abstract class AbstractTraversableOnceTest {
     @Test
     public void shouldBeAwareOfNonExistingElement() {
         assertThat(this.<Integer> empty().exists(i -> i == 1)).isFalse();
-    }
-
-    // -- existsUnique
-
-    @Test
-    public void shouldBeAwareOfExistingUniqueElement() {
-        assertThat(of(1, 2).existsUnique(i -> i == 1)).isTrue();
-    }
-
-    @Test
-    public void shouldBeAwareOfNonExistingUniqueElement() {
-        assertThat(this.<Integer> empty().existsUnique(i -> i == 1)).isFalse();
-    }
-
-    @Test
-    public void shouldBeAwareOfExistingNonUniqueElement() {
-        assertThat(of(1, 1, 2).existsUnique(i -> i == 1)).isFalse();
     }
 
     // -- forAll
@@ -134,14 +118,11 @@ public abstract class AbstractTraversableOnceTest {
     }
 
     @Test
-    public void shouldPeekNonNilPerformingAnAction() {
+    public void shouldPeekSingleValuePerformingAnAction() {
         final int[] effect = { 0 };
-        final TraversableOnce<Integer> actual = of(1, 2, 3).peek(i -> effect[0] = i);
-        assertThat(actual).isEqualTo(of(1, 2, 3)); // traverses all elements in the lazy case
-        assertThat(effect[0]).isEqualTo(getPeekNonNilPerformingAnAction());
+        final Value<Integer> actual = of(1).peek(i -> effect[0] = i);
+        assertThat(actual).isEqualTo(of(1));
+        assertThat(effect[0]).isEqualTo(1);
     }
-
-    // returns the peek result of the specific Traversable implementation
-    abstract int getPeekNonNilPerformingAnAction();
 
 }

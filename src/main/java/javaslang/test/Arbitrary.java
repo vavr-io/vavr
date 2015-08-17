@@ -7,11 +7,10 @@ package javaslang.test;
 
 import javaslang.FilterMonadic;
 import javaslang.Kind;
+import javaslang.Value;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
-import javaslang.collection.TraversableOnce;
-import javaslang.control.Some;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -25,8 +24,7 @@ import java.util.function.Predicate;
  * @since 1.2.0
  */
 @FunctionalInterface
-public interface Arbitrary<T> extends TraversableOnce<T>,
-        FilterMonadic<Arbitrary<?>, T>, Kind<Arbitrary<?>, T> {
+public interface Arbitrary<T> extends Value<T>, FilterMonadic<Arbitrary<?>, T>, Kind<Arbitrary<?>, T> {
 
     /**
      * <p>
@@ -78,15 +76,6 @@ public interface Arbitrary<T> extends TraversableOnce<T>,
         return size -> apply(size).filter(predicate);
     }
 
-    @Override
-    default Arbitrary<Some<T>> filterOption(Predicate<? super T> predicate) {
-        final Arbitrary<T> arbitrary = filter(predicate);
-        return size -> {
-            final Gen<T> gen = arbitrary.apply(size);
-            return random -> new Some<>(gen.apply(random));
-        };
-    }
-
     /**
      * Maps arbitrary objects T to arbitrary object U.
      *
@@ -134,6 +123,11 @@ public interface Arbitrary<T> extends TraversableOnce<T>,
     @Override
     default Arbitrary<T> peek(Consumer<? super T> action) {
         return size -> apply(size).peek(action);
+    }
+
+    @Override
+    default T get() {
+        return apply(Checkable.DEFAULT_SIZE).get();
     }
 
     @Override

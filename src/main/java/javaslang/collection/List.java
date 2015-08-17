@@ -615,14 +615,14 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<Tuple2<T, T>> cartesianProduct() {
-        return cartesianProduct(this);
+    default List<Tuple2<T, T>> crossProduct() {
+        return crossProduct(this);
     }
 
     @Override
-    default <U> List<Tuple2<T, U>> cartesianProduct(Iterable<? extends U> that) {
+    default <U> List<Tuple2<T, U>> crossProduct(Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
-        final List<? extends U> other = List.ofAll(that);
+        final List<? extends U> other = unit(that);
         return flatMap(a -> other.map(b -> Tuple.of(a, b)));
     }
 
@@ -702,12 +702,6 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     default List<T> filter(Predicate<? super T> predicate) {
         final List<T> filtered = foldLeft(List.<T> empty(), (xs, x) -> predicate.test(x) ? xs.prepend(x) : xs);
         return this.length() == filtered.length() ? this : filtered.reverse();
-    }
-
-    @Override
-    default List<Some<T>> filterOption(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return isEmpty() ? List.empty() : foldLeft(List.<Some<T>> empty(), (xs, x) -> predicate.test(x) ? xs.prepend(new Some<>(x)) : xs).reverse();
     }
 
     @Override

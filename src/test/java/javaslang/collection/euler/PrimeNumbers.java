@@ -17,7 +17,7 @@ public final class PrimeNumbers {
                             .filter(i -> self.takeWhile(j -> j * j <= i).forAll(k -> i % k > 0))
             );
 
-    private static final Function<Integer, Long> MEMOIZED_PRIMES = Function1.lift(PRIMES::get).memoized();
+    private static final Function<Integer, Long> MEMOIZED_PRIMES = Function1.lift(PRIMES::apply).memoized();
 
     private PrimeNumbers() {
     }

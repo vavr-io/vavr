@@ -115,16 +115,6 @@ public final class Success<T> implements Try<T>, Serializable {
         return Try.of(() -> predicate.test(value)).flatMap(b -> filter(ignored -> b));
     }
 
-    @Override
-    public Try<Option<T>> filterOption(Predicate<? super T> predicate) {
-        return filter(predicate).map(Option::of);
-    }
-
-    @Override
-    public Try<Option<T>> filterTryOption(CheckedPredicate<? super T> predicate) {
-        return Try.of(() -> predicate.test(value)).flatMap(b -> filterOption(ignored -> b));
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public <U> Try<U> flatMap(Function<? super T, ? extends Try<? extends U>> mapper) {

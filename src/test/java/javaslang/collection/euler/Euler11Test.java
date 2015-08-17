@@ -80,7 +80,7 @@ public class Euler11Test {
     }
 
     private static int maxProduct(int dr, int dc) {
-        return range(dr).cartesianProduct(range(dc)).map(rc -> product(rc._1, rc._2, dr, dc)).max().get();
+        return range(dr).crossProduct(range(dc)).map(rc -> product(rc._1, rc._2, dr, dc)).max().get();
     }
 
     private static List<Integer> range(int d) {

@@ -12,9 +12,13 @@ import java.util.function.Predicate;
 
 /**
  * {@code FilterMonadic} is an abstraction for filter-monadic operations.
+ * <p>
+ * Likewise to Scala, a FilterMonadic type is not a real monad.
+ * See <a href="http://stackoverflow.com/questions/27750046/is-a-collection-with-flatmap-a-monad">Is a collection with flatMap a monad?</a>.
  *
  * @since 2.0.0
  */
+// DEV-NOTE: We implement Kind<M, T> in order to prevent misusage like Option<T> extends FilterMonadic<Try<?>, T>, Kind<Try<?>, T>
 public interface FilterMonadic<M extends Kind<M, ?>, T> extends Kind<M, T> {
 
     /**
@@ -25,20 +29,6 @@ public interface FilterMonadic<M extends Kind<M, ?>, T> extends Kind<M, T> {
      * @throws NullPointerException if {@code predicate} is null
      */
     FilterMonadic<M, T> filter(Predicate<? super T> predicate);
-
-    /**
-     * Returns a new {@code FilterMonadic} consisting of {@code Some} elements if there are elements which satisfy the
-     * given predicate. Otherwise the results contains one {@code None} element. Please note, that the result
-     * will not contain a mixture of {@code Some} and {@code None} elements.
-     * <p>
-     * This method is intended to be used with monadic types which may have only one value,
-     * e.g. {@code Lazy} and {@code Match} (resp. {@code MatchMonad}).
-     *
-     * @param predicate A predicate
-     * @return a new FilterMonadic instance
-     * @throws NullPointerException if {@code predicate} is null
-     */
-    FilterMonadic<M, ? extends Option<T>> filterOption(Predicate<? super T> predicate);
 
     /**
      * Flat maps the elements of this elements of a new type preserving their order, if any.

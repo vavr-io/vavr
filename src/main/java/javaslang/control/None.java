@@ -70,12 +70,6 @@ public final class None<T> implements Option<T>, Serializable {
     }
 
     @Override
-    public None<Some<T>> filterOption(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return None.instance();
-    }
-
-    @Override
     public <U> None<U> flatMap(Function<? super T, ? extends Option<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return None.instance();

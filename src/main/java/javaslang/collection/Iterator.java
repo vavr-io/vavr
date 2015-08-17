@@ -8,6 +8,7 @@ package javaslang.collection;
 import javaslang.FilterMonadic;
 import javaslang.Kind;
 import javaslang.Kind.IterableKind;
+import javaslang.Value;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -41,7 +42,7 @@ import java.util.function.Predicate;
  * @param <T> Component type
  * @since 2.0.0
  */
-public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, FilterMonadic<IterableKind<?>, T> {
+public interface Iterator<T> extends java.util.Iterator<T>, Value<T>, FilterMonadic<IterableKind<?>, T> {
 
     /**
      * The empty Iterator.
@@ -249,6 +250,11 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
     }
 
     @Override
+    default T get() {
+        return next();
+    }
+
+    @Override
     default boolean isEmpty() {
         return !hasNext();
     }
@@ -360,22 +366,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
                     return result;
                 }
             };
-        }
-    }
-
-    /**
-     * Creates an Iterator equivalent to {@code filter(predicate).map(Some::new)}.
-     *
-     * @param predicate A predicate
-     * @return A new Iterator
-     */
-    @Override
-    default Iterator<Some<T>> filterOption(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        if (!hasNext()) {
-            return Iterator.empty();
-        } else {
-            return filter(predicate).map(Some::new);
         }
     }
 
@@ -531,5 +521,4 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T>, 
             return current.next();
         }
     }
-
 }
