@@ -66,12 +66,6 @@ public final class Some<T> implements Option<T>, Serializable {
         return predicate.test(value) ? this : None.instance();
     }
 
-    @Override
-    public Option<Some<T>> filterOption(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return filter(predicate).map(Some::new);
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public <U> Option<U> flatMap(Function<? super T, ? extends Option<? extends U>> mapper) {

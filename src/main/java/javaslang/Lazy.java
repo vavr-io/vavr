@@ -6,7 +6,7 @@
 package javaslang;
 
 import javaslang.collection.Iterator;
-import javaslang.collection.TraversableOnce;
+import javaslang.collection.List;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -41,18 +41,31 @@ import java.util.function.Supplier;
  *
  * @since 1.2.1
  */
-public final class Lazy<T> implements Supplier<T>, Value<T>, TraversableOnce<T>, Serializable,
+public final class Lazy<T> implements Supplier<T>, Value<T>, Serializable,
         FilterMonadic<Lazy<?>, T>, Kind<Lazy<?>, T> {
 
     private static final long serialVersionUID = 1L;
 
     // read http://javarevisited.blogspot.de/2014/05/double-checked-locking-on-singleton-in-java.html
-    private volatile Supplier<? extends T> supplier;
+    private transient volatile Supplier<? extends T> supplier;
     private volatile T value = null;
 
-    private Lazy(Supplier<? extends T> supplier) {
-        Objects.requireNonNull(supplier, "supplier is null");
+    private final boolean isEmpty;
+
+    private Lazy(Supplier<? extends T> supplier, boolean isEmpty) {
         this.supplier = supplier;
+        this.isEmpty = isEmpty;
+    }
+
+    /**
+     * Returns a Lazy instance that will throw a {@code NoSuchElementException} on {@code get()} and {@code isEmpty()}
+     * returns {@code true}.
+     *
+     * @param <T> Component type
+     * @return An undefined lazy value.
+     */
+    public static <T> Lazy<T> empty() {
+        return new Lazy<>(() -> { throw new NoSuchElementException("get() on empty lazy"); }, true);
     }
 
     /**
@@ -65,10 +78,11 @@ public final class Lazy<T> implements Supplier<T>, Value<T>, TraversableOnce<T>,
      */
     @SuppressWarnings("unchecked")
     public static <T> Lazy<T> of(Supplier<? extends T> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
         if (supplier instanceof Lazy) {
             return (Lazy<T>) supplier;
         } else {
-            return new Lazy<>(supplier);
+            return new Lazy<>(supplier, false);
         }
     }
 
@@ -151,18 +165,6 @@ public final class Lazy<T> implements Supplier<T>, Value<T>, TraversableOnce<T>,
                 return value;
             } else {
                 throw new NoSuchElementException("empty filter");
-            }
-        });
-    }
-
-    @Override
-    public Lazy<Option<T>> filterOption(Predicate<? super T> predicate) {
-        return Lazy.of(() -> {
-            final T value = get();
-            if (predicate.test(value)) {
-                return new Some<>(value);
-            } else {
-                return None.instance();
             }
         });
     }

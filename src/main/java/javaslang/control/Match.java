@@ -9,7 +9,6 @@ import javaslang.*;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
-import javaslang.collection.TraversableOnce;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -388,16 +387,11 @@ public interface Match<R> extends Function<Object, R> {
     /**
      * @since 2.0.0
      */
-    interface MatchMonad<R> extends TraversableOnce<R>, Value<R>,
+    interface MatchMonad<R> extends Value<R>,
             FilterMonadic<MatchMonad<?>, R>, Kind<MatchMonad<?>, R> {
 
         @Override
         MatchMonad<R> filter(Predicate<? super R> predicate);
-
-        @Override
-        default MatchMonad<Some<R>> filterOption(Predicate<? super R> predicate) {
-            return map(Some::new);
-        }
 
         <U> MatchMonad<U> flatMap(Function<? super R, ? extends MatchMonad<? extends U>> mapper);
 

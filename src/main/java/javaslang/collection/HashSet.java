@@ -27,7 +27,7 @@ import java.util.stream.Collector;
  * @param <T> Component type
  * @since 2.0.0
  */
-final class HashSet<T> implements Set<T>, Serializable {
+public final class HashSet<T> implements Set<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -155,17 +155,6 @@ final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<Tuple2<T, T>> cartesianProduct() {
-        return cartesianProduct(this);
-    }
-
-    @Override
-    public <U> HashSet<Tuple2<T, U>> cartesianProduct(Iterable<? extends U> that) {
-        Objects.requireNonNull(that, "that is null");
-        return HashSet.ofAll(list.get().cartesianProduct(that));
-    }
-
-    @Override
     public boolean contains(T element) {
         return tree.get(element).isDefined();
     }
@@ -210,15 +199,14 @@ final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<Some<T>> filterOption(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return HashSet.ofAll(list.get().filterOption(predicate));
-    }
-
-    @Override
     public HashSet<T> findAll(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate);
+    }
+
+    @Override
+    public Option<T> findLast(Predicate<? super T> predicate) {
+        return null;
     }
 
     @Override
@@ -247,6 +235,11 @@ final class HashSet<T> implements Set<T>, Serializable {
     @Override
     public HashSet<Object> flatten() {
         return flatMap(t -> (t instanceof Iterable) ? HashSet.ofAll((Iterable<?>) t).flatten() : HashSet.of(t));
+    }
+
+    @Override
+    public <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
+        return null;
     }
 
     @Override
@@ -349,28 +342,13 @@ final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
+    public T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
+        return null;
+    }
+
+    @Override
     public HashSet<T> remove(T element) {
         return new HashSet<>(tree.remove(element));
-    }
-
-    @Override
-    public HashSet<T> removeFirst(Predicate<T> predicate) {
-        Option<T> opt = findFirst(predicate);
-        if (opt.isDefined()) {
-            return remove(opt.get());
-        } else {
-            return this;
-        }
-    }
-
-    @Override
-    public HashSet<T> removeLast(Predicate<T> predicate) {
-        return removeFirst(predicate);
-    }
-
-    @Override
-    public HashSet<T> removeAll(T element) {
-        return remove(element);
     }
 
     @Override
@@ -417,12 +395,7 @@ final class HashSet<T> implements Set<T>, Serializable {
                 result = result.add(element);
             }
         }
-        return result.reverse();
-    }
-
-    @Override
-    public HashSet<T> reverse() {
-        return this;
+        return result;
     }
 
     @Override
@@ -474,11 +447,6 @@ final class HashSet<T> implements Set<T>, Serializable {
     public HashSet<T> takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return HashSet.ofAll(list.get().takeWhile(predicate));
-    }
-
-    @Override
-    public <U> HashSet<U> unit(Iterable<? extends U> iterable) {
-        return HashSet.ofAll(iterable);
     }
 
     @Override

@@ -730,12 +730,12 @@ public interface Stream<T> extends LinearSeq<T> {
     Stream<T> appendSelf(Function<? super Stream<T>, ? extends Stream<T>> mapper);
 
     @Override
-    default Stream<Tuple2<T, T>> cartesianProduct() {
-        return cartesianProduct(this);
+    default Stream<Tuple2<T, T>> crossProduct() {
+        return crossProduct(this);
     }
 
     @Override
-    default <U> Stream<Tuple2<T, U>> cartesianProduct(Iterable<? extends U> that) {
+    default <U> Stream<Tuple2<T, U>> crossProduct(Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         final Stream<? extends U> other = Stream.ofAll(that);
         return flatMap(a -> other.map(b -> Tuple.of(a, b)));
@@ -814,11 +814,6 @@ public interface Stream<T> extends LinearSeq<T> {
         }
         final Stream<T> finalStream = stream;
         return stream.isEmpty() ? stream : new Cons<>(stream::head, () -> finalStream.tail().filter(predicate));
-    }
-
-    @Override
-    default Stream<Some<T>> filterOption(Predicate<? super T> predicate) {
-        return filter(predicate).map(Some::new);
     }
 
     @Override

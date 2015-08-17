@@ -9,6 +9,7 @@ import javaslang.FilterMonadic;
 import javaslang.Kind;
 import javaslang.Kind.IterableKind;
 import javaslang.Tuple2;
+import javaslang.Value;
 import javaslang.control.Match;
 import javaslang.control.None;
 import javaslang.control.Option;
@@ -21,7 +22,6 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.OptionalDouble;
 import java.util.function.*;
-import java.util.stream.StreamSupport;
 
 /**
  * An interface for inherently recursive data structures. The order of elements is determined by
@@ -45,26 +45,12 @@ import java.util.stream.StreamSupport;
  * <li>{@link #length()}</li>
  * <li>{@link #tail()}</li>
  * <li>{@link #tailOption()}</li>
- * <li>{@link #unit(Iterable)}</li>
- * </ul>
- *
- * Conversion:
- *
- * <ul>
- * <li>{@link #toJavaArray(Class)}</li>
- * <li>{@link #toJavaList()}</li>
- * <li>{@link #toJavaMap(Function)}</li>
- * <li>{@link #toJavaSet()}</li>
- * <li>{@link #toJavaStream()}</li>
  * </ul>
  *
  * Filtering:
  *
  * <ul>
  * <li>{@link #filter(Predicate)}</li>
- * <li>{@link #remove(Object)}</li>
- * <li>{@link #removeAll(Object)}</li>
- * <li>{@link #removeAll(Iterable)}</li>
  * <li>{@link #retainAll(Iterable)}</li>
  * </ul>
  *
@@ -130,8 +116,6 @@ import java.util.stream.StreamSupport;
  * Transformation:
  *
  * <ul>
- * <li>{@link #cartesianProduct()}</li>
- * <li>{@link #cartesianProduct(Iterable)}</li>
  * <li>{@link #distinct()}</li>
  * <li>{@link #distinctBy(Comparator)}</li>
  * <li>{@link #distinctBy(Function)}</li>
@@ -145,20 +129,15 @@ import java.util.stream.StreamSupport;
  * <li>{@link #replace(Object, Object)}</li>
  * <li>{@link #replaceAll(Object, Object)}</li>
  * <li>{@link #replaceAll(UnaryOperator)}</li>
- * <li>{@link #reverse()}</li>
  * <li>{@link #sliding(int)}</li>
  * <li>{@link #sliding(int, int)}</li>
  * <li>{@link #span(Predicate)}</li>
- * <li>{@link #unzip(Function)}</li>
- * <li>{@link #zip(Iterable)}</li>
- * <li>{@link #zipAll(Iterable, Object, Object)}</li>
- * <li>{@link #zipWithIndex()}</li>
  * </ul>
  *
  * @param <T> Component type
  * @since 1.1.0
  */
-public interface Traversable<T> extends TraversableOnce<T>, FilterMonadic<IterableKind<?>, T> {
+public interface Traversable<T> extends Value<T>, FilterMonadic<IterableKind<?>, T> {
 
     /**
      * Used by collections to compute the hashCode only once.
@@ -244,39 +223,6 @@ public interface Traversable<T> extends TraversableOnce<T>, FilterMonadic<Iterab
                     .toOption();
         }
     }
-
-    /**
-     * Calculates the cartesian product (, i.e. square) of {@code this x this}.
-     * <p>
-     * Example:
-     * <pre>
-     * <code>
-     * // = List of Tuples (1, 1), (1, 2), (1, 3), (2, 1), (2, 2), (2, 3), (3, 1), (3, 2), (3, 3)
-     * List.of(1, 2, 3).cartesianProduct();
-     * </code>
-     * </pre>
-     *
-     * @return a new Traversable containing the square of {@code this}
-     */
-    Traversable<Tuple2<T, T>> cartesianProduct();
-
-    /**
-     * Calculates the cartesian product {@code this x that}.
-     * <p>
-     * Example:
-     * <pre>
-     * <code>
-     * // = List of Tuples (1, 'a'), (1, 'b'), (2, 'a'), (2, 'b'), (3, 'a'), (3, 'b')
-     * List.of(1, 2, 3).cartesianProduct(List.of('a', 'b');
-     * </code>
-     * </pre>
-     *
-     * @param that Another Traversable
-     * @param <U>  Component type
-     * @return a new Traversable containing the cartesian product {@code this x that}
-     * @throws NullPointerException if that is null
-     */
-    <U> Traversable<Tuple2<T, U>> cartesianProduct(Iterable<? extends U> that);
 
     /**
      * Returns an empty version of this traversable, i.e. {@code this.clear().isEmpty() == true}.
@@ -375,6 +321,28 @@ public interface Traversable<T> extends TraversableOnce<T>, FilterMonadic<Iterab
     Traversable<T> dropWhile(Predicate<? super T> predicate);
 
     /**
+     * Checks, if a unique elements exists such that the predicate holds.
+     *
+     * @param predicate A Predicate
+     * @return true, if predicate holds for a unique element, false otherwise
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    default boolean existsUnique(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        boolean exists = false;
+        for (T t : this) {
+            if (predicate.test(t)) {
+                if (exists) {
+                    return false;
+                } else {
+                    exists = true;
+                }
+            }
+        }
+        return exists;
+    }
+
+    /**
      * Returns a new traversable consisting of all elements which satisfy the given predicate.
      *
      * @param predicate A predicate
@@ -383,9 +351,6 @@ public interface Traversable<T> extends TraversableOnce<T>, FilterMonadic<Iterab
      */
     @Override
     Traversable<T> filter(Predicate<? super T> predicate);
-
-    @Override
-    Traversable<Some<T>> filterOption(Predicate<? super T> predicate);
 
     /**
      * Essentially the same as {@link #filter(Predicate)} but the result type may differ,
@@ -426,10 +391,7 @@ public interface Traversable<T> extends TraversableOnce<T>, FilterMonadic<Iterab
      * @return Some(element) or None, where element may be null (i.e. {@code List.of(null).findFirst(e -> e == null)}).
      * @throws NullPointerException if {@code predicate} is null
      */
-    default Option<T> findLast(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return reverse().findFirst(predicate);
-    }
+    Option<T> findLast(Predicate<? super T> predicate);
 
     <U> Traversable<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
@@ -507,9 +469,11 @@ public interface Traversable<T> extends TraversableOnce<T>, FilterMonadic<Iterab
      * @return an accumulated version of this.
      * @throws NullPointerException if {@code f} is null
      */
-    default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
-        return reverse().foldLeft(zero, (xs, x) -> f.apply(x, xs));
+    <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f);
+
+    @Override
+    default T get() {
+        return iterator().next();
     }
 
     /**
@@ -857,45 +821,6 @@ public interface Traversable<T> extends TraversableOnce<T>, FilterMonadic<Iterab
     }
 
     /**
-     * Removes the first occurrence of the given element.
-     *
-     * @param element An element to be removed from this Traversable.
-     * @return a Traversable containing all elements of this without the first occurrence of the given element.
-     */
-    Traversable<T> remove(T element);
-
-    /**
-     * Removes the first occurrence that satisfy predicate
-     * @param predicate an predicate
-     * @return a new Traversable
-     */
-    Traversable<T> removeFirst(Predicate<T> predicate);
-
-    /**
-     * Removes the last occurrence that satisfy predicate
-     * @param predicate an predicate
-     * @return a new Traversable
-     */
-    Traversable<T> removeLast(Predicate<T> predicate);
-
-    /**
-     * Removes all occurrences of the given element.
-     *
-     * @param element An element to be removed from this Traversable.
-     * @return a Traversable containing all elements of this but not the given element.
-     */
-    Traversable<T> removeAll(T element);
-
-    /**
-     * Removes all occurrences of the given elements.
-     *
-     * @param elements Elements to be removed from this Traversable.
-     * @return a Traversable containing all elements of this but none of the given elements.
-     * @throws NullPointerException if {@code elements} is null
-     */
-    Traversable<T> removeAll(Iterable<? extends T> elements);
-
-    /**
      * Accumulates the elements of this Traversable by successively calling the given operation {@code op}.
      * The order of element iteration is undetermined.
      *
@@ -934,15 +859,7 @@ public interface Traversable<T> extends TraversableOnce<T>, FilterMonadic<Iterab
      * @throws NoSuchElementException if this is empty
      * @throws NullPointerException   if {@code op} is null
      */
-    default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "op is null");
-        if (isEmpty()) {
-            throw new NoSuchElementException("reduceRight on Nil");
-        } else {
-            final Traversable<T> reversed = reverse();
-            return reversed.tail().foldLeft(reversed.head(), (xs, x) -> op.apply(x, xs));
-        }
-    }
+    T reduceRight(BiFunction<? super T, ? super T, ? extends T> op);
 
     /**
      * Replaces the first occurrence (if exists) of the given currentElement with newElement.
@@ -980,13 +897,6 @@ public interface Traversable<T> extends TraversableOnce<T>, FilterMonadic<Iterab
      * @throws NullPointerException if {@code elements} is null
      */
     Traversable<T> retainAll(Iterable<? extends T> elements);
-
-    /**
-     * Reverses the order of elements.
-     *
-     * @return the reversed elements.
-     */
-    Traversable<T> reverse();
 
     /**
      * Slides a window of a specific {@code size} and step size 1 over this {@code Traversable} by calling
@@ -1140,132 +1050,4 @@ public interface Traversable<T> extends TraversableOnce<T>, FilterMonadic<Iterab
      */
     Traversable<T> takeWhile(Predicate<? super T> predicate);
 
-    /**
-     * Converts this to a Java array.
-     * <p>
-     * Tip: Given a {@code Traversable<M<T>> t} use {@code t.toJavaArray((Class<M<T>>) (Class) M.class)}.
-     *
-     * @param componentType Type of resulting array's elements.
-     * @return a new array containing this elements
-     * @throws NullPointerException if {@code componentType} is null
-     */
-    @SuppressWarnings("unchecked")
-    default T[] toJavaArray(Class<T> componentType) {
-        Objects.requireNonNull(componentType, "componentType is null");
-        final java.util.List<T> list = toJavaList();
-        return list.toArray((T[]) java.lang.reflect.Array.newInstance(componentType, list.size()));
-    }
-
-    /**
-     * Converts this to a {@link java.util.List}.
-     *
-     * @return a new {@linkplain java.util.ArrayList} containing this elements
-     */
-    default java.util.List<T> toJavaList() {
-        final java.util.List<T> result = new java.util.ArrayList<>();
-        for (T a : this) {
-            result.add(a);
-        }
-        return result;
-    }
-
-    /**
-     * Converts this to a {@link java.util.Map} by converting this elements to key-value pairs.
-     *
-     * @param <K> key type
-     * @param <V> value type
-     * @param f   a function which converts elements of this to key-value pairs inserted into the resulting Map
-     * @return a new {@linkplain java.util.HashMap} containing this key-value representations of this elements
-     * @throws NullPointerException if {@code f} is null
-     */
-    default <K, V> java.util.Map<K, V> toJavaMap(Function<? super T, Tuple2<K, V>> f) {
-        Objects.requireNonNull(f, "f is null");
-        final java.util.Map<K, V> map = new java.util.HashMap<>();
-        for (T a : this) {
-            final Tuple2<K, V> entry = f.apply(a);
-            map.put(entry._1, entry._2);
-        }
-        return map;
-    }
-
-    /**
-     * Converts this to a {@link java.util.Set}.
-     *
-     * @return a new {@linkplain java.util.HashSet} containing this elements
-     */
-    default java.util.Set<T> toJavaSet() {
-        final java.util.Set<T> result = new java.util.HashSet<>();
-        for (T a : this) {
-            result.add(a);
-        }
-        return result;
-    }
-
-    /**
-     * Converts this to a sequential {@link java.util.stream.Stream} by calling {@code this.toJavaList().stream()}.
-     *
-     * @return a new {@linkplain java.util.stream.Stream} containing this elements
-     */
-    default java.util.stream.Stream<T> toJavaStream() {
-        return StreamSupport.stream(spliterator(), false);
-    }
-
-    /**
-     * Creates an instance of this type of an {@code Iterable}.
-     *
-     * @param <U>      Component type
-     * @param iterable an {@code Iterable}
-     * @return A new instance of this collection containing the elements of the given {@code iterable}.
-     */
-    <U> Traversable<U> unit(Iterable<? extends U> iterable);
-
-    /**
-     * Unzips this elements by mapping this elements to pairs which are subsequentially split into to distinct
-     * traversables.
-     *
-     * @param unzipper a function which converts elements of this to pairs
-     * @param <T1>     1st element type of a pair returned by unzipper
-     * @param <T2>     2nd element type of a pair returned by unzipper
-     * @return A pair of traversables containing elements split by unzipper
-     * @throws NullPointerException if {@code unzipper} is null
-     */
-    <T1, T2> Tuple2<? extends Traversable<T1>, ? extends Traversable<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
-
-    /**
-     * Returns a Traversable formed from this Traversable and another Iterable collection by combining corresponding elements
-     * in pairs. If one of the two Traversables is longer than the other, its remaining elements are ignored.
-     * <p>
-     * The length of the returned collection is the minimum of the lengths of this Traversable and that.
-     *
-     * @param <U>  The type of the second half of the returned pairs.
-     * @param that The Iterable providing the second half of each result pair.
-     * @return a new Traversable containing pairs consisting of corresponding elements of this list and that.
-     * @throws NullPointerException if {@code that} is null
-     */
-    <U> Traversable<Tuple2<T, U>> zip(Iterable<U> that);
-
-    /**
-     * Returns a Traversable formed from this Traversable and another Iterable by combining corresponding elements in
-     * pairs. If one of the two collections is shorter than the other, placeholder elements are used to extend the
-     * shorter collection to the length of the longer.
-     * <p>
-     * The length of the returned Traversable is the maximum of the lengths of this Traversable and that.
-     * If this Traversable is shorter than that, thisElem values are used to fill the result.
-     * If that is shorter than this Traversable, thatElem values are used to fill the result.
-     *
-     * @param <U>      The type of the second half of the returned pairs.
-     * @param that     The Iterable providing the second half of each result pair.
-     * @param thisElem The element to be used to fill up the result if this Traversable is shorter than that.
-     * @param thatElem The element to be used to fill up the result if that is shorter than this Traversable.
-     * @return A new Traversable containing pairs consisting of corresponding elements of this Traversable and that.
-     * @throws NullPointerException if {@code that} is null
-     */
-    <U> Traversable<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
-
-    /**
-     * Zips this List with its indices.
-     *
-     * @return A new List containing all elements of this List paired with their index, starting with 0.
-     */
-    Traversable<Tuple2<T, Integer>> zipWithIndex();
 }

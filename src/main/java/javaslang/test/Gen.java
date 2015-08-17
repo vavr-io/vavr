@@ -8,10 +8,9 @@ package javaslang.test;
 import javaslang.FilterMonadic;
 import javaslang.Kind;
 import javaslang.Tuple2;
+import javaslang.Value;
 import javaslang.collection.Iterator;
 import javaslang.collection.Stream;
-import javaslang.collection.TraversableOnce;
-import javaslang.control.Some;
 
 import java.util.Objects;
 import java.util.Random;
@@ -33,8 +32,7 @@ import java.util.function.Predicate;
  * @since 1.2.0
  */
 @FunctionalInterface
-public interface Gen<T> extends TraversableOnce<T>,
-        FilterMonadic<Gen<?>, T>, Kind<Gen<?>, T> {
+public interface Gen<T> extends Value<T>, FilterMonadic<Gen<?>, T>, Kind<Gen<?>, T> {
 
     int FILTER_THRESHOLD = Integer.MAX_VALUE;
 
@@ -295,13 +293,6 @@ public interface Gen<T> extends TraversableOnce<T>,
         };
     }
 
-    @Override
-    default Gen<Some<T>> filterOption(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        final Gen<T> gen = filter(predicate);
-        return random -> new Some<>(gen.apply(random));
-    }
-
     /**
      * Maps generated Ts to Us.
      *
@@ -348,6 +339,11 @@ public interface Gen<T> extends TraversableOnce<T>,
             action.accept(t);
             return t;
         };
+    }
+
+    @Override
+    default T get() {
+        return apply(Checkable.RNG.get());
     }
 
     @Override

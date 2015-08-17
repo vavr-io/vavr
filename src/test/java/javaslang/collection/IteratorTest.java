@@ -7,7 +7,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.stream.Collector;
 
-public class IteratorTest extends AbstractTraversableOnceTest {
+public class IteratorTest extends AbstractValueTest {
 
     protected <T> IterableAssert<T> assertThat(Iterable<T> actual) {
         return new IterableAssert<T>(actual) {
@@ -103,10 +103,5 @@ public class IteratorTest extends AbstractTraversableOnceTest {
     @Override
     protected Iterator<Short> ofAll(short[] array) {
         return null;
-    }
-
-    @Override
-    int getPeekNonNilPerformingAnAction() {
-        return 3;
     }
 }

@@ -8,7 +8,6 @@ package javaslang.collection;
 import javaslang.Kind;
 import javaslang.Tuple2;
 import javaslang.control.Option;
-import javaslang.control.Some;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -470,10 +469,10 @@ public interface Stack<T> extends LinearSeq<T> {
     Stack<T> appendAll(Iterable<? extends T> elements);
 
     @Override
-    Stack<Tuple2<T, T>> cartesianProduct();
+    Stack<Tuple2<T, T>> crossProduct();
 
     @Override
-    <U> Stack<Tuple2<T, U>> cartesianProduct(Iterable<? extends U> that);
+    <U> Stack<Tuple2<T, U>> crossProduct(Iterable<? extends U> that);
 
     @Override
     Stack<T> clear();
@@ -504,9 +503,6 @@ public interface Stack<T> extends LinearSeq<T> {
 
     @Override
     Stack<T> filter(Predicate<? super T> predicate);
-
-    @Override
-    Stack<Some<T>> filterOption(Predicate<? super T> predicate);
 
     @Override
     Stack<T> findAll(Predicate<? super T> predicate);

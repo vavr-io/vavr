@@ -8,7 +8,6 @@ package javaslang.collection;
 import javaslang.Kind;
 import javaslang.Tuple2;
 import javaslang.control.Option;
-import javaslang.control.Some;
 
 import java.util.Comparator;
 import java.util.function.Consumer;
@@ -38,10 +37,10 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> clear();
 
     @Override
-    IndexedSeq<Tuple2<T, T>> cartesianProduct();
+    IndexedSeq<Tuple2<T, T>> crossProduct();
 
     @Override
-    <U> IndexedSeq<Tuple2<T, U>> cartesianProduct(Iterable<? extends U> that);
+    <U> IndexedSeq<Tuple2<T, U>> crossProduct(Iterable<? extends U> that);
 
     @Override
     IndexedSeq<? extends IndexedSeq<T>> combinations();
@@ -69,9 +68,6 @@ public interface IndexedSeq<T> extends Seq<T> {
 
     @Override
     IndexedSeq<T> filter(Predicate<? super T> predicate);
-
-    @Override
-    IndexedSeq<Some<T>> filterOption(Predicate<? super T> predicate);
 
     @Override
     IndexedSeq<T> findAll(Predicate<? super T> predicate);

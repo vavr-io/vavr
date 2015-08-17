@@ -9,7 +9,6 @@ import javaslang.FilterMonadic;
 import javaslang.Kind;
 import javaslang.Value;
 import javaslang.collection.Iterator;
-import javaslang.collection.TraversableOnce;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -124,7 +123,7 @@ public interface Either<L, R> {
      * @param <R> The type of the Right value of an Either.
      * @since 1.0.0
      */
-    final class LeftProjection<L, R> implements TraversableOnce<L>, Value<L>,
+    final class LeftProjection<L, R> implements Value<L>,
             FilterMonadic<LeftProjection<?, R>, L>, Kind<LeftProjection<?, R>, L> {
 
         private final Either<L, R> either;
@@ -244,12 +243,6 @@ public interface Either<L, R> {
             }
         }
 
-        @Override
-        public LeftProjection<Option<L>, R> filterOption(Predicate<? super L> predicate) {
-            Objects.requireNonNull(predicate, "predicate is null");
-            return map(value -> predicate.test(value) ? new Some<>(value) : None.instance());
-        }
-
         /**
          * FlatMaps the left value if the projected Either is a Left.
          *
@@ -359,7 +352,7 @@ public interface Either<L, R> {
      * @param <R> The type of the Right value of an Either.
      * @since 1.0.0
      */
-    final class RightProjection<L, R> implements TraversableOnce<R>, Value<R>,
+    final class RightProjection<L, R> implements Value<R>,
             FilterMonadic<RightProjection<L, ?>, R>, Kind<RightProjection<L, ?>, R> {
 
         private final Either<L, R> either;
@@ -476,12 +469,6 @@ public interface Either<L, R> {
             } else {
                 throw new NoSuchElementException("empty filter");
             }
-        }
-
-        @Override
-        public RightProjection<L, Option<R>> filterOption(Predicate<? super R> predicate) {
-            Objects.requireNonNull(predicate, "predicate is null");
-            return map(value -> predicate.test(value) ? new Some<>(value) : None.instance());
         }
 
         /**
