@@ -31,7 +31,7 @@ import java.util.stream.StreamSupport;
  * @param <T> The type of the wrapped value.
  * @since 2.0.0
  */
-public interface Value<T> extends MonadLike<T>, IterableLike<T>, ConversionOps<T> {
+public interface Value<T> extends MonadOps<T>, IterableOps<T>, ConversionOps<T> {
 
     /**
      * Gets the underlying value or throws if no value is present.
@@ -273,15 +273,15 @@ public interface Value<T> extends MonadLike<T>, IterableLike<T>, ConversionOps<T
 }
 
 /**
+ * Internal interface.
+ * <p>
  * Some essential operations for monad-like types.
  * The <code>flatMap</code> method is missing here in order to have only one generic type parameter.
- * <p>
- * Internal interface to reduce code duplication. Currently used by Value only.
  *
  * @param <T> Component type
  * @since 2.0.0
  */
-interface MonadLike<T> {
+interface MonadOps<T> {
 
     /**
      * Filters this {@code Value} by testing a predicate.
@@ -325,14 +325,14 @@ interface MonadLike<T> {
 }
 
 /**
- * Some essential operations for iterable-like types.
+ * Internal interface.
  * <p>
- * Internal interface to reduce code duplication. Currently used by Value only.
+ * Some essential operations for iterable-like types.
  *
  * @param <T> Component type
  * @since 2.0.0
  */
-interface IterableLike<T> extends Iterable<T> {
+interface IterableOps<T> extends Iterable<T> {
 
     /**
      * Checks, if an element exists such that the predicate holds.
@@ -384,13 +384,13 @@ interface IterableLike<T> extends Iterable<T> {
      * @param action The action the will be performed on the element(s).
      * @return this instance
      */
-    IterableLike<T> peek(Consumer<? super T> action);
+    IterableOps<T> peek(Consumer<? super T> action);
 }
 
 /**
- * Inter-Javaslang type and to-Java type conversions. Currently used by Value only.
+ * Internal interface.
  * <p>
- * Internal interface to reduce code duplication. Currently used by Value only.
+ * Inter-Javaslang type and to-Java type conversions. Currently used by Value only.
  *
  * @param <T> Component type
  * @since 2.0.0
