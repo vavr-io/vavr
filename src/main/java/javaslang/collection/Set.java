@@ -92,9 +92,6 @@ public interface Set<T> extends Traversable<T> {
     Option<? extends Set<T>> initOption();
 
     @Override
-    Set<T> intersperse(T element);
-
-    @Override
     Iterator<T> iterator();
 
     @Override

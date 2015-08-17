@@ -94,7 +94,7 @@ public class TypeConsistencyTest {
                 .sort((t1, t2) -> t1._1.getName().compareTo(t2._1.getName()))
                 .map(findings -> String.format("// %s does not override the following methods with return type %s:\n%s",
                         findings._1.getName(), findings._1.getSimpleName(),
-                        findings._2.map(method -> "\"" + findings._1.getName() + "//" + method + "\"").join(",\n")));
+                        findings._2.map(method -> "\"" + findings._1.getName() + "//" + method + "\"").mkString(",\n")));
 
         final List<String> unusedWhitelistRules = WHITELIST.removeAll(relevantClasses
                 .map(clazz -> Tuple.of(clazz, getUnoverriddenMethods(clazz)))
@@ -103,14 +103,14 @@ public class TypeConsistencyTest {
         final StringBuilder messages = new StringBuilder();
 
         if (!unoveriddenMethods.isEmpty()) {
-            messages.append(unoveriddenMethods.join(",\n\n",
+            messages.append(unoveriddenMethods.mkString(",\n\n",
                     "Unoverriden methods found. Check if this is ok and copy & paste the necessary lines into the " +
                             TypeConsistencyTest.class.getSimpleName() + ".WHITELIST:\n\n",
                     "\n\n"));
         }
 
         if (!unusedWhitelistRules.isEmpty()) {
-            messages.append(unusedWhitelistRules.map(s -> "\"" + s + "\"").join(",\n",
+            messages.append(unusedWhitelistRules.map(s -> "\"" + s + "\"").mkString(",\n",
                     "// Please consolidate/remove the following " +
                             TypeConsistencyTest.class.getSimpleName() + ".WHITELIST entries:\n\n",
                     "\n\n"));
@@ -217,7 +217,7 @@ public class TypeConsistencyTest {
         @Override
         public String toString() {
             return m.getName() +
-                    List.of(m.getParameterTypes()).map(Class::getName).join(", ", "(", ")") +
+                    List.of(m.getParameterTypes()).map(Class::getName).mkString(", ", "(", ")") +
                     ": " +
                     m.getReturnType().getName();
         }

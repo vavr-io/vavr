@@ -507,23 +507,6 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(of(1, 2, 3).initOption()).isEqualTo(new Some<>(of(1, 2)));
     }
 
-    // -- intersperse
-
-    @Test
-    public void shouldIntersperseNil() {
-        assertThat(this.<Character> empty().intersperse(',')).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldIntersperseSingleton() {
-        assertThat(of('a').intersperse(',')).isEqualTo(of('a'));
-    }
-
-    @Test
-    public void shouldIntersperseMultipleElements() {
-        assertThat(of('a', 'b').intersperse(',')).isEqualTo(of('a', ',', 'b'));
-    }
-
     // -- isEmpty
 
     @Test
@@ -564,40 +547,40 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(iterator.hasNext()).isFalse();
     }
 
-    // -- join()
+    // -- mkString()
 
     @Test
-    public void shouldJoinNil() {
-        assertThat(empty().join()).isEqualTo("");
+    public void shouldMkStringNil() {
+        assertThat(empty().mkString()).isEqualTo("");
     }
 
     @Test
-    public void shouldJoinNonNil() {
-        assertThat(of('a', 'b', 'c').join()).isEqualTo("abc");
+    public void shouldMkStringNonNil() {
+        assertThat(of('a', 'b', 'c').mkString()).isEqualTo("abc");
     }
 
-    // -- join(delimiter)
+    // -- mkString(delimiter)
 
     @Test
-    public void shouldJoinWithDelimiterNil() {
-        assertThat(empty().join(",")).isEqualTo("");
-    }
-
-    @Test
-    public void shouldJoinWithDelimiterNonNil() {
-        assertThat(of('a', 'b', 'c').join(",")).isEqualTo("a,b,c");
-    }
-
-    // -- join(delimiter, prefix, suffix)
-
-    @Test
-    public void shouldJoinWithDelimiterAndPrefixAndSuffixNil() {
-        assertThat(empty().join(",", "[", "]")).isEqualTo("[]");
+    public void shouldMkStringWithDelimiterNil() {
+        assertThat(empty().mkString(",")).isEqualTo("");
     }
 
     @Test
-    public void shouldJoinWithDelimiterAndPrefixAndSuffixNonNil() {
-        assertThat(of('a', 'b', 'c').join(",", "[", "]")).isEqualTo("[a,b,c]");
+    public void shouldMkStringWithDelimiterNonNil() {
+        assertThat(of('a', 'b', 'c').mkString(",")).isEqualTo("a,b,c");
+    }
+
+    // -- mkString(delimiter, prefix, suffix)
+
+    @Test
+    public void shouldMkStringWithDelimiterAndPrefixAndSuffixNil() {
+        assertThat(empty().mkString(",", "[", "]")).isEqualTo("[]");
+    }
+
+    @Test
+    public void shouldMkStringWithDelimiterAndPrefixAndSuffixNonNil() {
+        assertThat(of('a', 'b', 'c').mkString(",", "[", "]")).isEqualTo("[a,b,c]");
     }
 
     // -- last

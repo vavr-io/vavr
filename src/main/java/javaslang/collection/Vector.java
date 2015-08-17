@@ -1366,6 +1366,6 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public String toString() {
-        return map(String::valueOf).join(", ", "Vector(", ")");
+        return mkString(", ", "Vector(", ")");
     }
 }

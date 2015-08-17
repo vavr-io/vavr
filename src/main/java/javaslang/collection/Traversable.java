@@ -74,9 +74,9 @@ import java.util.function.*;
  * <li>{@link #fold(Object, BiFunction)}</li>
  * <li>{@link #foldLeft(Object, BiFunction)}</li>
  * <li>{@link #foldRight(Object, BiFunction)}</li>
- * <li>{@link #join()}</li>
- * <li>{@link #join(CharSequence)}</li>
- * <li>{@link #join(CharSequence, CharSequence, CharSequence)}</li>
+ * <li>{@link #mkString()}</li>
+ * <li>{@link #mkString(CharSequence)}</li>
+ * <li>{@link #mkString(CharSequence, CharSequence, CharSequence)}</li>
  * <li>{@link #reduce(BiFunction)}</li>
  * <li>{@link #reduceLeft(BiFunction)}</li>
  * <li>{@link #reduceRight(BiFunction)}</li>
@@ -122,7 +122,6 @@ import java.util.function.*;
  * <li>{@link #flatMap(Function)}</li>
  * <li>{@link #flatten()}</li>
  * <li>{@link #groupBy(Function)}</li>
- * <li>{@link #intersperse(Object)}</li>
  * <li>{@link #map(Function)}</li>
  * <li>{@link #partition(Predicate)}</li>
  * <li>{@link #replace(Object, Object)}</li>
@@ -479,7 +478,7 @@ public interface Traversable<T> extends Value<T>, FilterMonadic<IterableKind<?>,
      * Groups this elements by classifying the elements.
      *
      * @param classifier A function which classifies elements into classes
-     * @param <C> classified class type
+     * @param <C>        classified class type
      * @return A Map containing the grouped elements
      */
     <C> Map<C, ? extends Traversable<T>> groupBy(Function<? super T, ? extends C> classifier);
@@ -513,14 +512,6 @@ public interface Traversable<T> extends Value<T>, FilterMonadic<IterableKind<?>,
      * @return {@code Some(traversable)} or {@code None} if this is empty.
      */
     Option<? extends Traversable<T>> initOption();
-
-    /**
-     * Inserts an element between all elements of this Traversable.
-     *
-     * @param element An element.
-     * @return an interspersed version of this
-     */
-    Traversable<T> intersperse(T element);
 
     /**
      * Checks if this Traversable is empty.
@@ -562,41 +553,41 @@ public interface Traversable<T> extends Value<T>, FilterMonadic<IterableKind<?>,
     /**
      * Joins the elements of this by concatenating their string representations.
      * <p>
-     * This has the same effect as calling {@code join("", "", "")}.
+     * This has the same effect as calling {@code mkString("", "", "")}.
      *
      * @return a new String
      */
-    default String join() {
-        return join("", "", "");
+    default String mkString() {
+        return mkString("", "", "");
     }
 
     /**
      * Joins the string representations of this elements using a specific delimiter.
      * <p>
-     * This has the same effect as calling {@code join(delimiter, "", "")}.
+     * This has the same effect as calling {@code mkString(delimiter, "", "")}.
      *
      * @param delimiter A delimiter string put between string representations of elements of this
      * @return A new String
      */
-    default String join(CharSequence delimiter) {
-        return join(delimiter, "", "");
+    default String mkString(CharSequence delimiter) {
+        return mkString(delimiter, "", "");
     }
 
     /**
      * Joins the string representations of this elements using a specific delimiter, prefix and suffix.
      * <p>
-     * Example: {@code List.of("a", "b", "c").join(", ", "Chars(", ")") = "Chars(a, b, c)"}
+     * Example: {@code List.of("a", "b", "c").mkString(", ", "Chars(", ")") = "Chars(a, b, c)"}
      *
      * @param delimiter A delimiter string put between string representations of elements of this
      * @param prefix    prefix of the resulting string
      * @param suffix    suffix of the resulting string
      * @return a new String
      */
-    default String join(CharSequence delimiter,
+    default String mkString(CharSequence delimiter,
                         CharSequence prefix,
                         CharSequence suffix) {
         final StringBuilder builder = new StringBuilder(prefix);
-        map(String::valueOf).intersperse(String.valueOf(delimiter)).forEach(builder::append);
+        iterator().map(String::valueOf).intersperse(String.valueOf(delimiter)).forEach(builder::append);
         return builder.append(suffix).toString();
     }
 

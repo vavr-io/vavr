@@ -1494,7 +1494,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
         @Override
         public String toString() {
-            return map(String::valueOf).join(", ", "List(", ")");
+            return mkString(", ", "List(", ")");
         }
 
         /**

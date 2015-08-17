@@ -130,12 +130,13 @@ public interface Iterator<T> extends java.util.Iterator<T>, Value<T>, FilterMona
 
     /**
      * Creates an Iterator which traverses along all given iterators.
+     *
      * @param iterators The list of iterators
      * @param <T>       Component type.
      * @return A new {@code javaslang.collection.Iterator}
      */
     @SafeVarargs
-    @SuppressWarnings({"unchecked", "varargs"})
+    @SuppressWarnings({ "unchecked", "varargs" })
     static <T> Iterator<T> ofIterators(Iterator<? extends T>... iterators) {
         Objects.requireNonNull(iterators, "iterators is null");
         return iterators.length == 0 ? Iterator.empty() : new ConcatIterator<>(Stream.of(iterators).iterator());
@@ -143,12 +144,13 @@ public interface Iterator<T> extends java.util.Iterator<T>, Value<T>, FilterMona
 
     /**
      * Creates an Iterator which traverses along all given iterables.
+     *
      * @param iterables The list of iterables
      * @param <T>       Component type.
      * @return A new {@code javaslang.collection.Iterator}
      */
     @SafeVarargs
-    @SuppressWarnings({"unchecked", "varargs"})
+    @SuppressWarnings({ "unchecked", "varargs" })
     static <T> Iterator<T> ofIterables(Iterable<? extends T>... iterables) {
         Objects.requireNonNull(iterables, "iterables is null");
         return iterables.length == 0 ? Iterator.empty() : new ConcatIterator<>(Stream.of(iterables).map(Iterator::ofAll).iterator());
@@ -156,6 +158,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Value<T>, FilterMona
 
     /**
      * Creates an Iterator which traverses along all given iterators.
+     *
      * @param iterators The iterator over iterators
      * @param <T>       Component type.
      * @return A new {@code javaslang.collection.Iterator}
@@ -167,6 +170,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Value<T>, FilterMona
 
     /**
      * Creates an Iterator which traverses along all given iterables.
+     *
      * @param iterables The iterator over iterables
      * @param <T>       Component type.
      * @return A new {@code javaslang.collection.Iterator}
@@ -178,6 +182,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Value<T>, FilterMona
 
     /**
      * Creates an Iterator which traverses along all given iterators.
+     *
      * @param iterators The iterable of iterators
      * @param <T>       Component type.
      * @return A new {@code javaslang.collection.Iterator}
@@ -192,6 +197,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Value<T>, FilterMona
 
     /**
      * Creates an Iterator which traverses along all given iterables.
+     *
      * @param iterables The iterable of iterables
      * @param <T>       Component type.
      * @return A new {@code javaslang.collection.Iterator}
@@ -244,21 +250,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Value<T>, FilterMona
         };
     }
 
-    @Override
-    default Iterator<T> iterator() {
-        return this;
-    }
-
-    @Override
-    default T get() {
-        return next();
-    }
-
-    @Override
-    default boolean isEmpty() {
-        return !hasNext();
-    }
-
     /**
      * Removes up to n elements from this iterator.
      *
@@ -296,36 +287,13 @@ public interface Iterator<T> extends java.util.Iterator<T>, Value<T>, FilterMona
         }
     }
 
-    /**
-     * Take the first n elements from this iterator.
-     *
-     * @param n A number
-     * @return The empty iterator, if {@code n <= 0} or this is empty, otherwise a new iterator without the first n elements.
-     */
-    default Iterator<T> take(int n) {
-        if (n <= 0 || !hasNext()) {
-            return Iterator.empty();
-        } else {
-            final Iterator<T> that = this;
-            return new Iterator<T>() {
-
-                int count = n;
-
-                @Override
-                public boolean hasNext() {
-                    return count > 0 && that.hasNext();
-                }
-
-                @Override
-                public T next() {
-                    if (!hasNext()) {
-                        throw new NoSuchElementException();
-                    }
-                    count--;
-                    return that.next();
-                }
-            };
+    default boolean equals(Iterator<? extends T> that) {
+        while (this.hasNext() && that.hasNext()) {
+            if (!Objects.equals(this.next(), that.next())) {
+                return false;
+            }
         }
+        return this.hasNext() == that.hasNext();
     }
 
     /**
@@ -437,6 +405,69 @@ public interface Iterator<T> extends java.util.Iterator<T>, Value<T>, FilterMona
         }
     }
 
+    @Override
+    default T get() {
+        return head();
+    }
+
+    default T head() {
+        if (!hasNext()) {
+            throw new NoSuchElementException();
+        }
+        return next();
+    }
+
+    default Option<T> headOption() {
+        return hasNext() ? new Some<>(next()) : None.instance();
+    }
+
+    /**
+     * Inserts an element between all elements of this Iterator.
+     *
+     * @param element An element.
+     * @return an interspersed version of this
+     */
+    default Iterator<T> intersperse(T element) {
+        if (!hasNext()) {
+            return Iterator.empty();
+        } else {
+            final Iterator<T> that = this;
+            return new Iterator<T>() {
+
+                boolean insertElement = false;
+
+                @Override
+                public boolean hasNext() {
+                    return that.hasNext();
+                }
+
+                @Override
+                public T next() {
+                    if (!that.hasNext()) {
+                        throw new NoSuchElementException();
+                    }
+                    if (insertElement) {
+                        insertElement = false;
+                        return element;
+                    } else {
+                        insertElement = true;
+                        return that.next();
+                    }
+                }
+            };
+        }
+    }
+
+    @Override
+    default boolean isEmpty() {
+        return !hasNext();
+    }
+
+    @Override
+    default Iterator<T> iterator() {
+        return this;
+    }
+
     /**
      * Maps the elements of this Iterator lazily using the given {@code mapper}.
      *
@@ -490,6 +521,47 @@ public interface Iterator<T> extends java.util.Iterator<T>, Value<T>, FilterMona
                     final T next = that.next();
                     action.accept(next);
                     return next;
+                }
+            };
+        }
+    }
+
+    default Iterator<T> tail() {
+        if (!hasNext()) {
+            throw new UnsupportedOperationException();
+        } else {
+            next(); // remove first element
+            return this;
+        }
+    }
+
+    /**
+     * Take the first n elements from this iterator.
+     *
+     * @param n A number
+     * @return The empty iterator, if {@code n <= 0} or this is empty, otherwise a new iterator without the first n elements.
+     */
+    default Iterator<T> take(int n) {
+        if (n <= 0 || !hasNext()) {
+            return Iterator.empty();
+        } else {
+            final Iterator<T> that = this;
+            return new Iterator<T>() {
+
+                int count = n;
+
+                @Override
+                public boolean hasNext() {
+                    return count > 0 && that.hasNext();
+                }
+
+                @Override
+                public T next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
+                    count--;
+                    return that.next();
                 }
             };
         }

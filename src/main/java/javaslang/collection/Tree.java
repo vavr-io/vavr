@@ -227,9 +227,6 @@ public interface Tree<T> extends Traversable<T> {
     @Override
     Option<List<T>> initOption();
 
-    @Override
-    List<T> intersperse(T element);
-
     /**
      * Checks if this tree is the empty tree.
      *
@@ -431,11 +428,6 @@ public interface Tree<T> extends Traversable<T> {
         }
 
         @Override
-        public List<T> intersperse(T element) {
-            return traverse().intersperse(element);
-        }
-
-        @Override
         public List<Node<T>> getChildren() {
             return children;
         }
@@ -549,7 +541,7 @@ public interface Tree<T> extends Traversable<T> {
             if (node.isLeaf()) {
                 return value;
             } else {
-                return String.format("(%s %s)", value, node.children.map(Node::toLispString).join(" "));
+                return String.format("(%s %s)", value, node.children.map(Node::toLispString).mkString(" "));
             }
         }
 
@@ -855,11 +847,6 @@ public interface Tree<T> extends Traversable<T> {
         @Override
         public None<List<T>> initOption() {
             return None.instance();
-        }
-
-        @Override
-        public List.Nil<T> intersperse(T element) {
-            return List.Nil.instance();
         }
 
         @Override
