@@ -487,6 +487,7 @@ interface ConversionOps<T> {
     /**
      * Converts this instance to a Java array.
      *
+     * @param componentType Component type of the array
      * @return A new Java array.
      * @throws NullPointerException if componentType is null
      */
