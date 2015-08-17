@@ -1374,6 +1374,11 @@ public interface Vector<T> extends IndexedSeq<T> {
         }
 
         @Override
+        public String toString() {
+            return map(String::valueOf).join(", ", "Vector(", ")");
+        }
+
+        @Override
         public HashArrayMappedTrie<Integer, T> toHashArrayMappedTrie() {
             return trie;
         }
@@ -1451,6 +1456,11 @@ public interface Vector<T> extends IndexedSeq<T> {
         @Override
         public int hashCode() {
             return Traversable.hash(this);
+        }
+
+        @Override
+        public String toString() {
+            return "Vector()";
         }
 
         @Override

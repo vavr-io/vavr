@@ -5,6 +5,10 @@
  */
 package javaslang.collection;
 
+import javaslang.Serializables;
+import org.junit.Test;
+
+import java.io.InvalidObjectException;
 import java.util.ArrayList;
 import java.util.stream.Collector;
 
@@ -124,4 +128,99 @@ public class VectorTest extends AbstractSeqTest {
     protected Vector<Long> rangeClosedBy(long from, long toInclusive, long step) {
         return Vector.rangeClosedBy(from, toInclusive, step);
     }
+
+    // -- combinations
+
+    @Test
+    public void shouldComputeCombinationsOfEmptyList() {
+        assertThat(List.empty().combinations()).isEqualTo(List.of(List.empty()));
+    }
+
+    @Test
+    public void shouldComputeCombinationsOfNonEmptyList() {
+        assertThat(List.of(1, 2, 3).combinations()).isEqualTo(List.of(List.empty(), List.of(1), List.of(2), List.of(3), List.of(1, 2), List.of(1, 3), List.of(2, 3), List.of(1, 2, 3)));
+    }
+
+    // -- combinations(k)
+
+    @Test
+    public void shouldComputeKCombinationsOfEmptyList() {
+        assertThat(List.empty().combinations(1)).isEqualTo(List.empty());
+    }
+
+    @Test
+    public void shouldComputeKCombinationsOfNonEmptyList() {
+        assertThat(List.of(1, 2, 3).combinations(2)).isEqualTo(List.of(List.of(1, 2), List.of(1, 3), List.of(2, 3)));
+    }
+
+    @Test
+    public void shouldComputeKCombinationsOfNegativeK() {
+        assertThat(List.of(1).combinations(-1)).isEqualTo(List.of(List.empty()));
+    }
+
+    // -- permutations
+
+    @Test
+    public void shouldComputePermutationsOfEmptyList() {
+        assertThat(List.empty().permutations()).isEqualTo(List.empty());
+    }
+
+    @Test
+    public void shouldComputePermutationsOfNonEmptyList() {
+        assertThat(List.of(1, 2, 3).permutations()).isEqualTo(List.ofAll(List.of(List.of(1, 2, 3), List.of(1, 3, 2), List.of(2, 1, 3), List.of(2, 3, 1), List.of(3, 1, 2), List.of(3, 2, 1))));
+    }
+
+    // -- toString
+
+    @Test
+    public void shouldStringifyNil() {
+        assertThat(empty().toString()).isEqualTo("Vector()");
+    }
+
+    @Test
+    public void shouldStringifyNonNil() {
+        assertThat(of(1, 2, 3).toString()).isEqualTo("Vector(1, 2, 3)");
+    }
+
+    // -- Cons test
+
+    @Test(expected = InvalidObjectException.class)
+    public void shouldNotSerializeEnclosingClass() throws Throwable {
+        Serializables.callReadObject(List.of(1));
+    }
+
+    @Test(expected = InvalidObjectException.class)
+    public void shouldNotDeserializeListWithSizeLessThanOne() throws Throwable {
+        try {
+            /*
+             * This implementation is stable regarding jvm impl changes of object serialization. The index of the
+             * number of List elements is gathered dynamically.
+             */
+            final byte[] listWithOneElement = Serializables.serialize(List.of(0));
+            final byte[] listWithTwoElements = Serializables.serialize(List.of(0, 0));
+            int index = -1;
+            for (int i = 0; i < listWithOneElement.length && index == -1; i++) {
+                final byte b1 = listWithOneElement[i];
+                final byte b2 = listWithTwoElements[i];
+                if (b1 != b2) {
+                    if (b1 != 1 || b2 != 2) {
+                        throw new IllegalStateException("Difference does not indicate number of elements.");
+                    } else {
+                        index = i;
+                    }
+                }
+            }
+            if (index == -1) {
+                throw new IllegalStateException("Hack incomplete - index not found");
+            }
+            /*
+             * Hack the serialized data and fake zero elements.
+             */
+            listWithOneElement[index] = 0;
+            Serializables.deserialize(listWithOneElement);
+        } catch (IllegalStateException x) {
+            throw (x.getCause() != null) ? x.getCause() : x;
+        }
+    }
+
 }
