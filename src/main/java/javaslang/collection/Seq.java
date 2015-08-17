@@ -67,6 +67,7 @@ import java.util.function.*;
  * <li>{@link #combinations()}</li>
  * <li>{@link #combinations(int)}</li>
  * <li>{@link #grouped(int)}</li>
+ * <li>{@link #intersperse(Object)}</li>
  * <li>{@link #permutations()}</li>
  * <li>{@link #reverse()}</li>
  * <li>{@link #sort()}</li>
@@ -328,6 +329,14 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
      */
     Seq<T> insertAll(int index, Iterable<? extends T> elements);
+
+    /**
+     * Inserts an element between all elements of this Traversable.
+     *
+     * @param element An element.
+     * @return an interspersed version of this
+     */
+    Seq<T> intersperse(T element);
 
     /**
      * Returns an iterator of this elements starting at the given index.
@@ -697,9 +706,6 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
 
     @Override
     Option<? extends Seq<T>> initOption();
-
-    @Override
-    Seq<T> intersperse(T element);
 
     @Override
     <U> Seq<U> map(Function<? super T, ? extends U> mapper);

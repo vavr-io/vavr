@@ -123,7 +123,7 @@ public interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>> {
 
         @Override
         public String toString() {
-            return List.ofAll(this).join(", ", "HashMap(", ")");
+            return List.ofAll(this).mkString(", ", "HashMap(", ")");
         }
     }
 

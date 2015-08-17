@@ -474,6 +474,24 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
         empty().insertAll(1, empty());
     }
 
+
+    // -- intersperse
+
+    @Test
+    public void shouldIntersperseNil() {
+        assertThat(this.<Character> empty().intersperse(',')).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldIntersperseSingleton() {
+        assertThat(of('a').intersperse(',')).isEqualTo(of('a'));
+    }
+
+    @Test
+    public void shouldIntersperseMultipleElements() {
+        assertThat(of('a', 'b').intersperse(',')).isEqualTo(of('a', ',', 'b'));
+    }
+
     // -- iterator(int)
 
     @Test(expected = IndexOutOfBoundsException.class)
@@ -1001,7 +1019,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowOnSubsequenceWhenEndIndexExceedsUpperBound() {
-        of(1, 2, 3).subsequence(1, 4).join(); // force computation of last element, e.g. because Stream is lazy
+        of(1, 2, 3).subsequence(1, 4).mkString(); // force computation of last element, e.g. because Stream is lazy
     }
 
     // -- unzip

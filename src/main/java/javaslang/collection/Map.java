@@ -132,9 +132,6 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
     Option<? extends Map<K, V>> initOption();
 
     @Override
-    Map<K, V> intersperse(Entry<K, V> element);
-
-    @Override
     Iterator<Entry<K, V>> iterator();
 
     @Override

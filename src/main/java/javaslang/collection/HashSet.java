@@ -134,22 +134,6 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public int hashCode() {
-        return hash.get();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o instanceof HashSet) {
-            return list.equals(((HashSet) o).list);
-        } else {
-            return false;
-        }
-    }
-
-    @Override
     public HashSet<T> clear() {
         return empty();
     }
@@ -161,7 +145,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<T> distinct() {
-        return HashSet.ofAll(list.get());
+        return this;
     }
 
     @Override
@@ -271,11 +255,14 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public Option<T> headOption() {
-        return list.get().headOption();
+        return iterator().headOption();
     }
 
     @Override
     public HashSet<T> init() {
+        if (isEmpty()) {
+            throw new UnsupportedOperationException();
+        }
         return HashSet.ofAll(list.get().init());
     }
 
@@ -286,13 +273,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> intersperse(T element) {
-        // TODO strange behaviour for this collection
-        return HashSet.ofAll(list.get().intersperse(element));
-    }
-
-    @Override
-    public String join(CharSequence delimiter,
+    public String mkString(CharSequence delimiter,
                        CharSequence prefix,
                        CharSequence suffix) {
         final StringBuilder builder = new StringBuilder(prefix);
@@ -482,6 +463,28 @@ public final class HashSet<T> implements Set<T>, Serializable {
     @Override
     public HashSet<Tuple2<T, Integer>> zipWithIndex() {
         return HashSet.ofAll(list.get().zipWithIndex());
+    }
+
+    @Override
+    public int hashCode() {
+        return hash.get();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        } else if (o instanceof HashSet) {
+            final HashSet<?> that = (HashSet<?>) o;
+            return this.iterator().equals(that.iterator());
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return mkString(", ", "HashSet(", ")");
     }
 
     /**

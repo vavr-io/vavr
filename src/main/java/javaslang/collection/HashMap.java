@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.Kind;
+import javaslang.Lazy;
 import javaslang.Tuple2;
 import javaslang.control.Option;
 
@@ -27,9 +28,11 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     private static final HashMap<?, ?> EMPTY = new HashMap<>(HashArrayMappedTrie.empty());
 
     private final HashArrayMappedTrie<K, V> tree;
+    private final transient Lazy<Integer> hash;
 
     private HashMap(HashArrayMappedTrie<K, V> tree) {
         this.tree = tree;
+        this.hash = Lazy.of(() -> Traversable.hash(tree::iterator));
     }
 
     @SuppressWarnings("unchecked")
@@ -222,11 +225,6 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public HashMap<K, V> intersperse(Entry<K, V> element) {
-        return null;
-    }
-
-    @Override
     public boolean isEmpty() {
         return tree.isEmpty();
     }
@@ -382,5 +380,27 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public HashMap<Tuple2<K, V>, Integer> zipWithIndex() {
         return null;
+    }
+
+    @Override
+    public int hashCode() {
+        return hash.get();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        } else if (o instanceof HashSet) {
+            final HashSet<?> that = (HashSet<?>) o;
+            return this.iterator().equals(that.iterator());
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return mkString(", ", "HashMap(", ")");
     }
 }

@@ -1037,6 +1037,6 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
 
     @Override
     public String toString() {
-        return map(String::valueOf).join(", ", "Queue(", ")");
+        return mkString(", ", "Queue(", ")");
     }
 }
