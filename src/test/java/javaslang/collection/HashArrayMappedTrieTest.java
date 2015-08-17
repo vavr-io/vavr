@@ -7,6 +7,8 @@ package javaslang.collection;
 
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.control.None;
+import javaslang.control.Some;
 import org.junit.Test;
 
 import java.util.Random;
@@ -20,15 +22,15 @@ public class HashArrayMappedTrieTest {
     public void testGetExistingKey() {
         Map<Integer, Integer> hamt = HashMap.empty();
         hamt = hamt.put(1, 2).put(4, 5);
-        assertThat(hamt.get(1)).isEqualTo(2);
-        assertThat(hamt.get(4)).isEqualTo(5);
+        assertThat(hamt.get(1)).isEqualTo(new Some<>(2));
+        assertThat(hamt.get(4)).isEqualTo(new Some<>(5));
     }
 
     @Test
     public void testGetUnknownKey() {
         Map<Integer, Integer> hamt = HashMap.empty();
         hamt = hamt.put(1, 2).put(4, 5);
-        assertThat(hamt.get(2)).isNull();
+        assertThat(hamt.get(2)).isEqualTo(None.instance());
     }
 
     @Test
@@ -104,7 +106,7 @@ public class HashArrayMappedTrieTest {
         void test() {
             assertThat(hamt.size()).isEqualTo(classic.size());
             hamt.iterator().forEachRemaining(e -> assertThat(classic.get(e.key)).isEqualTo(e.value));
-            classic.forEach((k, v) -> assertThat(hamt.get(k)).isEqualTo(v));
+            classic.forEach((k, v) -> assertThat(hamt.get(k).get()).isEqualTo(v));
         }
 
         void set(K key, V value) {

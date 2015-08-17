@@ -10,10 +10,7 @@ import javaslang.Tuple2;
 import javaslang.control.Option;
 
 import java.io.Serializable;
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.Spliterator;
-import java.util.Spliterators;
+import java.util.*;
 import java.util.function.*;
 
 /**
@@ -27,7 +24,7 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
 
     @Override
     default V apply(K key) {
-        return get(key);
+        return get(key).orElseThrow(NoSuchElementException::new);
     }
 
     boolean containsKey(K key);
@@ -38,17 +35,33 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
 
     <U, W> Map<U, W> flatMap(BiFunction<? super K, ? super V, ? extends Map<? extends U, ? extends W>> mapper);
 
-    V get(K key);
-
-    Option<V> getOption(K key);
-
-    V getOrDefault(K key, V defaultValue);
+    Option<V> get(K key);
 
     Set<K> keySet();
 
-    <U, W> Map<U, W> map(BiFunction<? super K, ? super V, ? extends Entry<U, W>> mapper);
+    <U, W> Map<U, W> map(BiFunction<? super K, ? super V, ? extends Entry<? extends U, ? extends W>> mapper);
 
     Map<K, V> put(K key, V value);
+
+    /**
+     * Convenience method for {@code put(entry.key, entry.value)}.
+     *
+     * @param entry A Map.Entry
+     * @return A new Map containing these elements and that entry.
+     */
+    default Map<K, V> put(Entry<? extends K, ? extends V> entry) {
+        return put(entry.key, entry.value);
+    }
+
+    /**
+     * Convenience method for {@code put(entry._1, entry._2)}.
+     *
+     * @param entry A Map.Entry
+     * @return A new Map containing these elements and that entry.
+     */
+    default Map<K, V> put(Tuple2<? extends K, ? extends V> entry) {
+        return put(entry._1, entry._2);
+    }
 
     Map<K, V> remove(K key);
 
@@ -56,9 +69,11 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
 
     int size();
 
-    <K1, V1, K2, V2> Tuple2<? extends Map<K1, V1>, ? extends Map<K2, V2>> unzip(Function<? super Entry<K, V>, Tuple2<? extends Entry<K1, V1>, ? extends Entry<K2, V2>>> unzipper);
+    <K1, V1, K2, V2> Tuple2<? extends Map<K1, V1>, ? extends Map<K2, V2>> unzip(Function<? super Entry<? super K, ? super V>, Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>>> unzipper);
 
-    Traversable<V> values();
+    <K1, V1, K2, V2> Tuple2<? extends Map<K1, V1>, ? extends Map<K2, V2>> unzip(BiFunction<? super K, ? super V, Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>>> unzipper);
+
+    Seq<V> values();
 
     <U> Map<Tuple2<K, V>, U> zip(Iterable<U> that);
 
@@ -109,9 +124,6 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
 
     @Override
     <C> Map<C, ? extends Map<K, V>> groupBy(Function<? super Entry<K, V>, ? extends C> classifier);
-
-    @Override
-    Set<? extends Map<K, V>> grouped(int size);
 
     @Override
     Map<K, V> init();

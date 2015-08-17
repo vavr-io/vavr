@@ -66,6 +66,7 @@ import java.util.function.*;
  * <li>{@link #crossProduct(Iterable)}</li>
  * <li>{@link #combinations()}</li>
  * <li>{@link #combinations(int)}</li>
+ * <li>{@link #grouped(int)}</li>
  * <li>{@link #permutations()}</li>
  * <li>{@link #reverse()}</li>
  * <li>{@link #sort()}</li>
@@ -203,6 +204,37 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
      */
     T get(int index);
+
+    /**
+     * Groups this {@code Traversable} into fixed size blocks like so:
+     * <ul>
+     * <li>If {@code this.isEmpty()}, the resulting {@code Traversable} is empty.</li>
+     * <li>If {@code size <= this.length()}, the resulting {@code Traversable} will contain {@code this.length() / size}
+     * blocks of size {@code size} and maybe a non-empty block of size {@code this.length() % size}, if there are
+     * remaining elements.</li>
+     * <li>If {@code size > this.length()}, the resulting {@code Traversable} will contain one block of size
+     * {@code this.length()}.</li>
+     * </ul>
+     * Examples:
+     * <pre>
+     * <code>
+     * [].grouped(1) = []
+     * [].grouped(0) throws
+     * [].grouped(-1) throws
+     * [1,2,3,4].grouped(2) = [[1,2],[3,4]]
+     * [1,2,3,4,5].grouped(2) = [[1,2],[3,4],[5]]
+     * [1,2,3,4].grouped(5) = [[1,2,3,4]]
+     * </code>
+     * </pre>
+     *
+     * Please note that {@code grouped(int)} is a special case of {@linkplain #sliding(int, int)}, i.e.
+     * {@code grouped(size)} is the same as {@code sliding(size, size)}.
+     *
+     * @param size a positive block size
+     * @return A new Traversable of sliced blocks of the given size
+     * @throws IllegalArgumentException if {@code size} is negative or zero
+     */
+    Seq<? extends Seq<T>> grouped(int size);
 
     /**
      * Returns the index of the first occurrence of the given element or -1 if this does not contain the given element.
@@ -659,9 +691,6 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
 
     @Override
     <C> Map<C, ? extends Seq<T>> groupBy(Function<? super T, ? extends C> classifier);
-
-    @Override
-    Seq<? extends Seq<T>> grouped(int size);
 
     @Override
     Seq<T> init();

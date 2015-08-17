@@ -286,7 +286,7 @@ public interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>> {
             int h = key.hashCode();
             int frag = hashFragment(shift, h);
             int bit = toBitmap(frag);
-            return ((bitmap & bit) != 0) ? subNodes.get(fromBitmap(bitmap, bit)).lookup(shift + SIZE, key) : None.instance();
+            return ((bitmap & bit) != 0) ? subNodes.apply(fromBitmap(bitmap, bit)).lookup(shift + SIZE, key) : None.instance();
         }
 
         @Override
@@ -296,7 +296,7 @@ public interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>> {
             int indx = fromBitmap(bitmap, bit);
             int mask = bitmap;
             boolean exists = (mask & bit) != 0;
-            AbstractNode<K, V> child = exists ? subNodes.get(indx).modify(shift + SIZE, key, value)
+            AbstractNode<K, V> child = exists ? subNodes.apply(indx).modify(shift + SIZE, key, value)
                     : EmptyNode.<K, V> instance().modify(shift + SIZE, key, value);
             boolean removed = exists && child.isEmpty();
             boolean added = !exists && !child.isEmpty();

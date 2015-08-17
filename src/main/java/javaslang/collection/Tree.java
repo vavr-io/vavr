@@ -216,9 +216,6 @@ public interface Tree<T> extends Traversable<T> {
     <C> Map<C, List<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     @Override
-    List<List<T>> grouped(int size);
-
-    @Override
     T head();
 
     @Override
@@ -411,11 +408,6 @@ public interface Tree<T> extends Traversable<T> {
         @Override
         public <C> Map<C, List<T>> groupBy(Function<? super T, ? extends C> classifier) {
             return traverse().groupBy(classifier);
-        }
-
-        @Override
-        public List<List<T>> grouped(int size) {
-            return traverse().grouped(size);
         }
 
         @Override
@@ -843,11 +835,6 @@ public interface Tree<T> extends Traversable<T> {
         @Override
         public <C> Map<C, List<T>> groupBy(Function<? super T, ? extends C> classifier) {
             return HashMap.empty();
-        }
-
-        @Override
-        public List.Nil<List<T>> grouped(int size) {
-            return List.Nil.instance();
         }
 
         @Override

@@ -880,13 +880,11 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default <C> Map<C, Stream<T>> groupBy(Function<? super T, ? extends C> classifier) {
-        Map<C, Stream<T>> result = HashMap.empty();
-        for (T t : this) {
+        return foldLeft(HashMap.empty(), (map, t) -> {
             final C key = classifier.apply(t);
-            final Stream<T> stream = result.get(key);
-            result = result.put(key, (stream == null) ? Stream.of(t) : stream.prepend(t)); // or append?
-        }
-        return result;
+            final Stream<T> values = map.get(key).map(ts -> ts.prepend(t)).orElse(Stream.of(t));
+            return map.put(key, values);
+        });
     }
 
     @Override

@@ -254,18 +254,11 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public <C> Map<C, HashSet<T>> groupBy(Function<? super T, ? extends C> classifier) {
-        Map<C, HashSet<T>> result = HashMap.empty();
-        for (T t : this) {
+        return foldLeft(HashMap.empty(), (map, t) -> {
             final C key = classifier.apply(t);
-            final HashSet<T> set = result.get(key);
-            result = result.put(key, (set == null) ? HashSet.of(t) : set.add(t));
-        }
-        return result;
-    }
-
-    @Override
-    public HashSet<HashSet<T>> grouped(int size) {
-        return HashSet.ofAll(list.get().grouped(size).map(HashSet::ofAll));
+            final HashSet<T> values = map.get(key).map(ts -> ts.add(t)).orElse(HashSet.of(t));
+            return map.put(key, values);
+        });
     }
 
     @Override

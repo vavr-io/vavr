@@ -459,41 +459,6 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(of("a", "b", "c").foldRight("", (x, xs) -> x + xs)).isEqualTo("abc");
     }
 
-    // -- grouped
-
-    @Test
-    public void shouldGroupedNil() {
-        assertThat(empty().grouped(1)).isEqualTo(empty());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowWhenGroupedWithSizeZero() {
-        empty().grouped(0);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowWhenGroupedWithNegativeSize() {
-        empty().grouped(-1);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void shouldGroupedTraversableWithEqualSizedBlocks() {
-        assertThat(of(1, 2, 3, 4).grouped(2)).isEqualTo(of(of(1, 2), of(3, 4)));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void shouldGroupedTraversableWithRemainder() {
-        assertThat(of(1, 2, 3, 4, 5).grouped(2)).isEqualTo(of(of(1, 2), of(3, 4), of(5)));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void shouldGroupedWhenTraversableLengthIsSmallerThanBlockSize() {
-        assertThat(of(1, 2, 3, 4).grouped(5)).isEqualTo(of(of(1, 2, 3, 4)));
-    }
-
     // -- head
 
     @Test(expected = NoSuchElementException.class)
