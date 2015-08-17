@@ -86,9 +86,6 @@ public interface Set<T> extends Traversable<T> {
     <C> Map<C, ? extends Set<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     @Override
-    Set<? extends Set<T>> grouped(int size);
-
-    @Override
     Set<T> init();
 
     @Override

@@ -13,19 +13,38 @@ import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
 
-import java.io.*;
+import java.io.Serializable;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
 /**
  * TODO javadoc
- * @param <T>
+ *
+ * @param <T> Component type of the Vector.
  */
-public interface Vector<T> extends IndexedSeq<T> {
+public final class Vector<T> implements IndexedSeq<T>, Serializable {
 
-    static <T> Vector<T> empty() {
-        return Empty.instance();
+    private static final long serialVersionUID = 1L;
+
+    private static final Vector<?> EMPTY = new Vector<>(HashArrayMappedTrie.empty());
+
+    private final HashArrayMappedTrie<Integer, T> trie;
+    private final transient Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
+
+    private Vector(HashArrayMappedTrie<Integer, T> trie) {
+        this.trie = trie;
+    }
+
+    /**
+     * Returns the empty Vector.
+     *
+     * @param <T> Component type.
+     * @return The empty Vector.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Vector<T> empty() {
+        return (Vector<T>) EMPTY;
     }
 
     /**
@@ -35,7 +54,7 @@ public interface Vector<T> extends IndexedSeq<T> {
      * @param <T> Component type of the Vector.
      * @return A javaslang.collection.List Collector.
      */
-    static <T> Collector<T, ArrayList<T>, Vector<T>> collector() {
+    public static <T> Collector<T, ArrayList<T>, Vector<T>> collector() {
         final Supplier<ArrayList<T>> supplier = ArrayList::new;
         final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
         final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
@@ -53,27 +72,28 @@ public interface Vector<T> extends IndexedSeq<T> {
      * @param <T>     The component type
      * @return A new Vector instance containing the given element
      */
-    static <T> Vector<T> of(T element) {
-        return new Impl<>(HashArrayMappedTrie.<Integer, T> empty().put(0, element));
+    public static <T> Vector<T> of(T element) {
+        return new Vector<>(HashArrayMappedTrie.<Integer, T> empty().put(0, element));
     }
 
     /**
      * <p>
      * Creates a Vector of the given elements.
      * </p>
+     *
      * @param <T>      Component type of the Vector.
      * @param elements Zero or more elements.
      * @return A vector containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
     @SafeVarargs
-    static <T> Vector<T> of(T... elements) {
+    public static <T> Vector<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
         HashArrayMappedTrie<Integer, T> result = HashArrayMappedTrie.empty();
         for (T element : elements) {
             result = result.put(result.size(), element);
         }
-        return elements.length == 0 ? empty() : new Impl<>(result);
+        return elements.length == 0 ? empty() : new Vector<>(result);
     }
 
     /**
@@ -88,12 +108,16 @@ public interface Vector<T> extends IndexedSeq<T> {
      * @throws NullPointerException if {@code elements} is null
      */
     @SuppressWarnings("unchecked")
-    static <T> Vector<T> ofAll(Iterable<? extends T> elements) {
+    public static <T> Vector<T> ofAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof Vector) {
             return (Vector<T>) elements;
         } else {
-            return new Impl<>(elements);
+            HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
+            for (T element : elements) {
+                trie = trie.put(trie.size(), element);
+            }
+            return new Vector<>(trie);
         }
     }
 
@@ -103,7 +127,7 @@ public interface Vector<T> extends IndexedSeq<T> {
      * @param array a boolean array
      * @return A new Vector of Boolean values
      */
-    static Vector<Boolean> ofAll(boolean[] array) {
+    public static Vector<Boolean> ofAll(boolean[] array) {
         Objects.requireNonNull(array, "array is null");
         return Vector.ofAll(() -> new Iterator<Boolean>() {
             int i = 0;
@@ -126,7 +150,7 @@ public interface Vector<T> extends IndexedSeq<T> {
      * @param array a byte array
      * @return A new Vector of Byte values
      */
-    static Vector<Byte> ofAll(byte[] array) {
+    public static Vector<Byte> ofAll(byte[] array) {
         Objects.requireNonNull(array, "array is null");
         return Vector.ofAll(() -> new Iterator<Byte>() {
             int i = 0;
@@ -149,7 +173,7 @@ public interface Vector<T> extends IndexedSeq<T> {
      * @param array a char array
      * @return A new Vector of Character values
      */
-    static Vector<Character> ofAll(char[] array) {
+    public static Vector<Character> ofAll(char[] array) {
         Objects.requireNonNull(array, "array is null");
         return Vector.ofAll(() -> new Iterator<Character>() {
             int i = 0;
@@ -172,7 +196,7 @@ public interface Vector<T> extends IndexedSeq<T> {
      * @param array a double array
      * @return A new Vector of Double values
      */
-    static Vector<Double> ofAll(double[] array) {
+    public static Vector<Double> ofAll(double[] array) {
         Objects.requireNonNull(array, "array is null");
         return Vector.ofAll(() -> new Iterator<Double>() {
             int i = 0;
@@ -195,7 +219,7 @@ public interface Vector<T> extends IndexedSeq<T> {
      * @param array a float array
      * @return A new Vector of Float values
      */
-    static Vector<Float> ofAll(float[] array) {
+    public static Vector<Float> ofAll(float[] array) {
         Objects.requireNonNull(array, "array is null");
         return Vector.ofAll(() -> new Iterator<Float>() {
             int i = 0;
@@ -218,7 +242,7 @@ public interface Vector<T> extends IndexedSeq<T> {
      * @param array an int array
      * @return A new Vector of Integer values
      */
-    static Vector<Integer> ofAll(int[] array) {
+    public static Vector<Integer> ofAll(int[] array) {
         Objects.requireNonNull(array, "array is null");
         return Vector.ofAll(() -> new Iterator<Integer>() {
             int i = 0;
@@ -241,7 +265,7 @@ public interface Vector<T> extends IndexedSeq<T> {
      * @param array a long array
      * @return A new Vector of Long values
      */
-    static Vector<Long> ofAll(long[] array) {
+    public static Vector<Long> ofAll(long[] array) {
         Objects.requireNonNull(array, "array is null");
         return Vector.ofAll(() -> new Iterator<Long>() {
             int i = 0;
@@ -264,7 +288,7 @@ public interface Vector<T> extends IndexedSeq<T> {
      * @param array a short array
      * @return A new Vector of Short values
      */
-    static Vector<Short> ofAll(short[] array) {
+    public static Vector<Short> ofAll(short[] array) {
         Objects.requireNonNull(array, "array is null");
         return Vector.ofAll(() -> new Iterator<Short>() {
             int i = 0;
@@ -297,7 +321,7 @@ public interface Vector<T> extends IndexedSeq<T> {
      * @param toExclusive the last number + 1
      * @return a range of int values as specified or the empty range if {@code from >= toExclusive}
      */
-    static Vector<Integer> range(int from, int toExclusive) {
+    public static Vector<Integer> range(int from, int toExclusive) {
         return Vector.rangeBy(from, toExclusive, 1);
     }
 
@@ -323,7 +347,7 @@ public interface Vector<T> extends IndexedSeq<T> {
      * {@code from <= toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
-    static Vector<Integer> rangeBy(int from, int toExclusive, int step) {
+    public static Vector<Integer> rangeBy(int from, int toExclusive, int step) {
         if (step == 0) {
             throw new IllegalArgumentException("step cannot be 0");
         } else if (from == toExclusive || step * (from - toExclusive) > 0) {
@@ -350,7 +374,7 @@ public interface Vector<T> extends IndexedSeq<T> {
      * @param toExclusive the last number + 1
      * @return a range of long values as specified or the empty range if {@code from >= toExclusive}
      */
-    static Vector<Long> range(long from, long toExclusive) {
+    public static Vector<Long> range(long from, long toExclusive) {
         return Vector.rangeBy(from, toExclusive, 1);
     }
 
@@ -376,7 +400,7 @@ public interface Vector<T> extends IndexedSeq<T> {
      * {@code from <= toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
-    static Vector<Long> rangeBy(long from, long toExclusive, long step) {
+    public static Vector<Long> rangeBy(long from, long toExclusive, long step) {
         if (step == 0) {
             throw new IllegalArgumentException("step cannot be 0");
         } else if (from == toExclusive || step * (from - toExclusive) > 0) {
@@ -403,7 +427,7 @@ public interface Vector<T> extends IndexedSeq<T> {
      * @param toInclusive the last number
      * @return a range of int values as specified or the empty range if {@code from > toInclusive}
      */
-    static Vector<Integer> rangeClosed(int from, int toInclusive) {
+    public static Vector<Integer> rangeClosed(int from, int toInclusive) {
         return Vector.rangeClosedBy(from, toInclusive, 1);
     }
 
@@ -429,7 +453,7 @@ public interface Vector<T> extends IndexedSeq<T> {
      * {@code from < toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
-    static Vector<Integer> rangeClosedBy(int from, int toInclusive, int step) {
+    public static Vector<Integer> rangeClosedBy(int from, int toInclusive, int step) {
         if (step == 0) {
             throw new IllegalArgumentException("step cannot be 0");
         } else if (from == toInclusive) {
@@ -442,7 +466,7 @@ public interface Vector<T> extends IndexedSeq<T> {
                 int i = from;
                 while (i <= toInclusive) {
                     trie = trie.put(trie.size(), i);
-                    if(Integer.MAX_VALUE - step < i) {
+                    if (Integer.MAX_VALUE - step < i) {
                         break;
                     }
                     i += step;
@@ -451,13 +475,13 @@ public interface Vector<T> extends IndexedSeq<T> {
                 int i = from;
                 while (i >= toInclusive) {
                     trie = trie.put(trie.size(), i);
-                    if(Integer.MIN_VALUE - step > i) {
+                    if (Integer.MIN_VALUE - step > i) {
                         break;
                     }
                     i += step;
                 }
             }
-            return trie.size() == 0 ? empty() : new Impl<>(trie);
+            return trie.size() == 0 ? empty() : new Vector<>(trie);
         }
     }
 
@@ -477,7 +501,7 @@ public interface Vector<T> extends IndexedSeq<T> {
      * @param toInclusive the last number
      * @return a range of long values as specified or the empty range if {@code from > toInclusive}
      */
-    static Vector<Long> rangeClosed(long from, long toInclusive) {
+    public static Vector<Long> rangeClosed(long from, long toInclusive) {
         return Vector.rangeClosedBy(from, toInclusive, 1L);
     }
 
@@ -503,7 +527,7 @@ public interface Vector<T> extends IndexedSeq<T> {
      * {@code from < toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
-    static Vector<Long> rangeClosedBy(long from, long toInclusive, long step) {
+    public static Vector<Long> rangeClosedBy(long from, long toInclusive, long step) {
         if (step == 0) {
             throw new IllegalArgumentException("step cannot be 0");
         } else if (from == toInclusive) {
@@ -516,7 +540,7 @@ public interface Vector<T> extends IndexedSeq<T> {
                 long i = from;
                 while (i <= toInclusive) {
                     trie = trie.put(trie.size(), i);
-                    if(Long.MAX_VALUE - step < i) {
+                    if (Long.MAX_VALUE - step < i) {
                         break;
                     }
                     i += step;
@@ -525,46 +549,54 @@ public interface Vector<T> extends IndexedSeq<T> {
                 long i = from;
                 while (i >= toInclusive) {
                     trie = trie.put(trie.size(), i);
-                    if(Long.MIN_VALUE - step > i) {
+                    if (Long.MIN_VALUE - step > i) {
                         break;
                     }
                     i += step;
                 }
             }
-            return trie.size() == 0 ? empty() : new Impl<>(trie);
+            return trie.size() == 0 ? empty() : new Vector<>(trie);
         }
     }
 
     @Override
-    Vector<T> append(T element);
-
-    @Override
-    Vector<T> appendAll(Iterable<? extends T> elements);
-
-    @Override
-    default Vector<T> clear() {
-        return Empty.instance();
+    public Vector<T> append(T element) {
+        return new Vector<>(trie.put(trie.size(), element));
     }
 
     @Override
-    default Vector<Tuple2<T, T>> crossProduct() {
+    public Vector<T> appendAll(Iterable<? extends T> elements) {
+        HashArrayMappedTrie<Integer, T> result = trie;
+        for (T element : elements) {
+            result = result.put(result.size(), element);
+        }
+        return new Vector<>(result);
+    }
+
+    @Override
+    public Vector<T> clear() {
+        return Vector.empty();
+    }
+
+    @Override
+    public Vector<Tuple2<T, T>> crossProduct() {
         return crossProduct(this);
     }
 
     @Override
-    default <U> Vector<Tuple2<T, U>> crossProduct(Iterable<? extends U> that) {
+    public <U> Vector<Tuple2<T, U>> crossProduct(Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         final Vector<? extends U> other = Vector.ofAll(that);
         return flatMap(a -> other.map(b -> Tuple.of(a, b)));
     }
 
     @Override
-    default Vector<Vector<T>> combinations() {
+    public Vector<Vector<T>> combinations() {
         return Vector.rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity());
     }
 
     @Override
-    default Vector<Vector<T>> combinations(int k) {
+    public Vector<Vector<T>> combinations(int k) {
         class Recursion {
             Vector<Vector<T>> combinations(Vector<T> elements, int k) {
                 return (k == 0)
@@ -577,26 +609,26 @@ public interface Vector<T> extends IndexedSeq<T> {
     }
 
     @Override
-    default Vector<T> distinct() {
+    public Vector<T> distinct() {
         return distinctBy(Function.identity());
     }
 
     @Override
-    default Vector<T> distinctBy(Comparator<? super T> comparator) {
+    public Vector<T> distinctBy(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         final java.util.Set<T> seen = new java.util.TreeSet<>(comparator);
         return filter(seen::add);
     }
 
     @Override
-    default <U> Vector<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
+    public <U> Vector<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         final java.util.Set<U> seen = new java.util.HashSet<>();
         return filter(t -> seen.add(keyExtractor.apply(t)));
     }
 
     @Override
-    default Vector<T> drop(int n) {
+    public Vector<T> drop(int n) {
         if (n <= 0) {
             return this;
         }
@@ -607,11 +639,11 @@ public interface Vector<T> extends IndexedSeq<T> {
         for (int i = n; i < length(); i++) {
             trie = trie.put(i - n, get(i));
         }
-        return trie.size() == 0 ? empty() : new Impl<>(trie);
+        return trie.size() == 0 ? empty() : new Vector<>(trie);
     }
 
     @Override
-    default Vector<T> dropRight(int n) {
+    public Vector<T> dropRight(int n) {
         if (n <= 0) {
             return this;
         }
@@ -622,14 +654,14 @@ public interface Vector<T> extends IndexedSeq<T> {
         for (int i = 0; i < length() - n; i++) {
             trie = trie.put(trie.size(), get(i));
         }
-        return new Impl<>(trie);
+        return new Vector<>(trie);
     }
 
     @Override
-    default Vector<T> dropWhile(Predicate<? super T> predicate) {
+    public Vector<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         for (int i = 0; i < length(); i++) {
-            if(!predicate.test(get(i))) {
+            if (!predicate.test(get(i))) {
                 return drop(i);
             }
         }
@@ -637,10 +669,10 @@ public interface Vector<T> extends IndexedSeq<T> {
     }
 
     @Override
-    default Vector<T> filter(Predicate<? super T> predicate) {
+    public Vector<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
-        for (T t: this) {
+        for (T t : this) {
             if (predicate.test(t)) {
                 trie = trie.put(trie.size(), t);
             }
@@ -648,18 +680,18 @@ public interface Vector<T> extends IndexedSeq<T> {
         if (trie.size() == length()) {
             return this;
         } else {
-            return trie.size() == 0 ? empty() : new Impl<>(trie);
+            return trie.size() == 0 ? empty() : new Vector<>(trie);
         }
     }
 
     @Override
-    default Vector<T> findAll(Predicate<? super T> predicate) {
+    public Vector<T> findAll(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate);
     }
 
     @Override
-    default <U> Vector<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    public <U> Vector<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return empty();
@@ -670,40 +702,63 @@ public interface Vector<T> extends IndexedSeq<T> {
                     trie = trie.put(trie.size(), u);
                 }
             }
-            return trie.size() == 0 ? empty() : new Impl<>(trie);
+            return trie.size() == 0 ? empty() : new Vector<>(trie);
         }
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    default <U> Vector<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper) {
+    public <U> Vector<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper) {
         return flatMap((Function<? super T, ? extends Iterable<? extends U>>) mapper);
     }
 
     @Override
-    default Vector<Object> flatten() {
+    public Vector<Object> flatten() {
         return flatMap(t -> (t instanceof Iterable) ? Vector.ofAll((Iterable<?>) t).flatten() : Vector.of(t));
     }
 
     @Override
-    default <C> Map<C, ? extends Vector<T>> groupBy(Function<? super T, ? extends C> classifier) {
-        Map<C, Vector<T>> result = HashMap.empty();
-        for (int i = 0; i < length(); i++) {
-            final T value = get(i);
-            final C key = classifier.apply(value);
-            final Vector<T> list = result.get(key);
-            result = result.put(key, (list == null) ? Vector.of(value) : list.append(value));
+    public T get(int index) {
+        if (index < 0 || index >= length()) {
+            throw new IndexOutOfBoundsException("get(" + index + ")");
         }
-        return result;
+        return trie.get(index).get();
     }
 
     @Override
-    default Vector<? extends Vector<T>> grouped(int size) {
+    public T head() {
+        if (isEmpty()) {
+            throw new NoSuchElementException("head of empty vector");
+        } else {
+            return get(0);
+        }
+    }
+
+    @Override
+    public Option<T> headOption() {
+        if (isEmpty()) {
+            return None.instance();
+        } else {
+            return new Some<>(get(0));
+        }
+    }
+
+    @Override
+    public <C> Map<C, Vector<T>> groupBy(Function<? super T, ? extends C> classifier) {
+        return foldLeft(HashMap.empty(), (map, t) -> {
+            final C key = classifier.apply(t);
+            final Vector<T> values = map.get(key).map(ts -> ts.append(t)).orElse(Vector.of(t));
+            return map.put(key, values);
+        });
+    }
+
+    @Override
+    public Vector<? extends Vector<T>> grouped(int size) {
         return sliding(size, size);
     }
 
     @Override
-    default int indexOf(T element, int from) {
+    public int indexOf(T element, int from) {
         for (int i = from; i < length(); i++) {
             if (Objects.equals(get(i), element)) {
                 return i;
@@ -713,11 +768,16 @@ public interface Vector<T> extends IndexedSeq<T> {
     }
 
     @Override
-    Vector<T> init();
+    public Vector<T> init() {
+        if (isEmpty()) {
+            throw new UnsupportedOperationException("init of empty vector");
+        }
+        return new Vector<>(trie.remove(length() - 1));
+    }
 
     @Override
-    default Option<? extends Vector<T>> initOption() {
-        if(isEmpty()) {
+    public Option<? extends Vector<T>> initOption() {
+        if (isEmpty()) {
             return None.instance();
         } else {
             return new Some<>(init());
@@ -725,7 +785,7 @@ public interface Vector<T> extends IndexedSeq<T> {
     }
 
     @Override
-    default Vector<T> insert(int index, T element) {
+    public Vector<T> insert(int index, T element) {
         if (index < 0) {
             throw new IndexOutOfBoundsException("insert(" + index + ", e)");
         }
@@ -734,18 +794,18 @@ public interface Vector<T> extends IndexedSeq<T> {
         }
         HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
         for (int i = 0; i <= length(); i++) {
-            if(i == index) {
+            if (i == index) {
                 trie = trie.put(trie.size(), element);
             }
-            if(i < length()) {
+            if (i < length()) {
                 trie = trie.put(trie.size(), get(i));
             }
         }
-        return new Impl<>(trie);
+        return new Vector<>(trie);
     }
 
     @Override
-    default Vector<T> insertAll(int index, Iterable<? extends T> elements) {
+    public Vector<T> insertAll(int index, Iterable<? extends T> elements) {
         if (index < 0) {
             throw new IndexOutOfBoundsException("insert(" + index + ", e)");
         }
@@ -754,37 +814,54 @@ public interface Vector<T> extends IndexedSeq<T> {
         }
         HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
         for (int i = 0; i <= length(); i++) {
-            if(i == index) {
+            if (i == index) {
                 for (T element : elements) {
                     trie = trie.put(trie.size(), element);
                 }
             }
-            if(i < length()) {
+            if (i < length()) {
                 trie = trie.put(trie.size(), get(i));
             }
         }
-        return new Impl<>(trie);
+        return new Vector<>(trie);
     }
 
     @Override
-    default Vector<T> intersperse(T element) {
+    public Vector<T> intersperse(T element) {
         HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
         for (int i = 0; i < length(); i++) {
-            if(i > 0) {
+            if (i > 0) {
                 trie = trie.put(trie.size(), element);
             }
             trie = trie.put(trie.size(), get(i));
         }
-        return trie.size() == 0 ? empty() : new Impl<>(trie);
+        return trie.size() == 0 ? empty() : new Vector<>(trie);
     }
 
     @Override
-    default boolean isEmpty() {
-        return length() == 0;
+    public boolean isEmpty() {
+        return trie.isEmpty();
     }
 
     @Override
-    default int lastIndexOf(T element, int end) {
+    public Iterator<T> iterator() {
+        return new Iterator<T>() {
+            private int index = 0;
+
+            @Override
+            public boolean hasNext() {
+                return index < trie.size();
+            }
+
+            @Override
+            public T next() {
+                return trie.get(index++).get();
+            }
+        };
+    }
+
+    @Override
+    public int lastIndexOf(T element, int end) {
         for (int i = Math.min(end, length() - 1); i >= 0; i--) {
             if (Objects.equals(get(i), element)) {
                 return i;
@@ -794,17 +871,22 @@ public interface Vector<T> extends IndexedSeq<T> {
     }
 
     @Override
-    default <U> Vector<U> map(Function<? super T, ? extends U> mapper) {
+    public int length() {
+        return trie.size();
+    }
+
+    @Override
+    public <U> Vector<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         HashArrayMappedTrie<Integer, U> trie = HashArrayMappedTrie.empty();
         for (int i = 0; i < length(); i++) {
             trie = trie.put(i, mapper.apply(get(i)));
         }
-        return trie.size() == 0 ? empty() : new Impl<>(trie);
+        return trie.size() == 0 ? empty() : new Vector<>(trie);
     }
 
     @Override
-    default Tuple2<Vector<T>, Vector<T>> partition(Predicate<? super T> predicate) {
+    public Tuple2<Vector<T>, Vector<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final java.util.List<T> left = new ArrayList<>(), right = new ArrayList<>();
         for (int i = 0; i < length(); i++) {
@@ -815,7 +897,7 @@ public interface Vector<T> extends IndexedSeq<T> {
     }
 
     @Override
-    default Vector<T> peek(Consumer<? super T> action) {
+    public Vector<T> peek(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         if (!isEmpty()) {
             action.accept(head());
@@ -824,9 +906,9 @@ public interface Vector<T> extends IndexedSeq<T> {
     }
 
     @Override
-    default Vector<Vector<T>> permutations() {
+    public Vector<Vector<T>> permutations() {
         if (isEmpty()) {
-            return Empty.instance();
+            return Vector.empty();
         } else {
             if (length() == 1) {
                 return Vector.of(this);
@@ -837,23 +919,23 @@ public interface Vector<T> extends IndexedSeq<T> {
                         trie = trie.put(trie.size(), ts);
                     }
                 }
-                return new Impl<>(trie);
+                return new Vector<>(trie);
             }
         }
     }
 
     @Override
-    default Vector<T> prepend(T element) {
+    public Vector<T> prepend(T element) {
         return insert(0, element);
     }
 
     @Override
-    default Vector<T> prependAll(Iterable<? extends T> elements) {
+    public Vector<T> prependAll(Iterable<? extends T> elements) {
         return insertAll(0, elements);
     }
 
     @Override
-    default Vector<T> remove(T element) {
+    public Vector<T> remove(T element) {
         HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
         boolean found = false;
         for (int i = 0; i < length(); i++) {
@@ -861,18 +943,18 @@ public interface Vector<T> extends IndexedSeq<T> {
             if (found) {
                 trie = trie.put(trie.size(), value);
             } else {
-                if(element.equals(value)) {
+                if (element.equals(value)) {
                     found = true;
                 } else {
                     trie = trie.put(trie.size(), value);
                 }
             }
         }
-        return trie.size() == length() ? this : trie.size() == 0 ? empty() : new Impl<>(trie);
+        return trie.size() == length() ? this : trie.size() == 0 ? empty() : new Vector<>(trie);
     }
 
     @Override
-    default Vector<T> removeFirst(Predicate<T> predicate) {
+    public Vector<T> removeFirst(Predicate<T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
         boolean found = false;
@@ -881,22 +963,22 @@ public interface Vector<T> extends IndexedSeq<T> {
             if (found) {
                 trie = trie.put(trie.size(), value);
             } else {
-                if(predicate.test(value)) {
+                if (predicate.test(value)) {
                     found = true;
                 } else {
                     trie = trie.put(trie.size(), value);
                 }
             }
         }
-        return trie.size() == length() ? this : trie.size() == 0 ? empty() : new Impl<>(trie);
+        return trie.size() == length() ? this : trie.size() == 0 ? empty() : new Vector<>(trie);
     }
 
     @Override
-    default Vector<T> removeLast(Predicate<T> predicate) {
+    public Vector<T> removeLast(Predicate<T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
         for (int i = length() - 1; i >= 0; i--) {
-            if(predicate.test(get(i))) {
+            if (predicate.test(get(i))) {
                 return removeAt(i);
             }
         }
@@ -904,24 +986,24 @@ public interface Vector<T> extends IndexedSeq<T> {
     }
 
     @Override
-    default Vector<T> removeAt(int indx) {
-        if(indx < 0) {
+    public Vector<T> removeAt(int indx) {
+        if (indx < 0) {
             throw new IndexOutOfBoundsException("removeAt(" + indx + ")");
         }
-        if(indx >= length()) {
+        if (indx >= length()) {
             throw new IndexOutOfBoundsException("removeAt(" + indx + ")");
         }
         HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
         for (int i = 0; i < length(); i++) {
-            if(i != indx) {
+            if (i != indx) {
                 trie = trie.put(trie.size(), get(i));
             }
         }
-        return trie.size() == 0 ? empty() : new Impl<>(trie);
+        return trie.size() == 0 ? empty() : new Vector<>(trie);
     }
 
     @Override
-    default Vector<T> removeAll(T element) {
+    public Vector<T> removeAll(T element) {
         HashArrayMappedTrie<Integer, T> result = HashArrayMappedTrie.empty();
         for (int i = 0; i < length(); i++) {
             final T value = get(i);
@@ -929,12 +1011,12 @@ public interface Vector<T> extends IndexedSeq<T> {
                 result = result.put(result.size(), value);
             }
         }
-        return result.size() == length() ? this : (result.size() == 0 ? empty() : new Impl<>(result));
+        return result.size() == length() ? this : (result.size() == 0 ? empty() : new Vector<>(result));
 
     }
 
     @Override
-    default Vector<T> removeAll(Iterable<? extends T> elements) {
+    public Vector<T> removeAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         HashArrayMappedTrie<T, T> removed = HashArrayMappedTrie.empty();
         for (T element : elements) {
@@ -950,11 +1032,11 @@ public interface Vector<T> extends IndexedSeq<T> {
                 result = result.put(result.size(), element);
             }
         }
-        return found ? (result.size() == 0 ? empty() : new Impl<>(result)) : this;
+        return found ? (result.size() == 0 ? empty() : new Vector<>(result)) : this;
     }
 
     @Override
-    default Vector<T> replace(T currentElement, T newElement) {
+    public Vector<T> replace(T currentElement, T newElement) {
         HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
         boolean found = false;
         for (int i = 0; i < length(); i++) {
@@ -962,7 +1044,7 @@ public interface Vector<T> extends IndexedSeq<T> {
             if (found) {
                 trie = trie.put(trie.size(), value);
             } else {
-                if(currentElement.equals(value)) {
+                if (currentElement.equals(value)) {
                     trie = trie.put(trie.size(), newElement);
                     found = true;
                 } else {
@@ -970,38 +1052,38 @@ public interface Vector<T> extends IndexedSeq<T> {
                 }
             }
         }
-        return found ? new Impl<>(trie) : this;
+        return found ? new Vector<>(trie) : this;
     }
 
     @Override
-    default Vector<T> replaceAll(T currentElement, T newElement) {
+    public Vector<T> replaceAll(T currentElement, T newElement) {
         HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
         boolean changed = false;
         for (int i = 0; i < length(); i++) {
             final T value = get(i);
-            if(currentElement.equals(value)) {
+            if (currentElement.equals(value)) {
                 trie = trie.put(trie.size(), newElement);
                 changed = true;
             } else {
                 trie = trie.put(trie.size(), value);
             }
         }
-        return changed ? (trie.size() == 0 ? empty() : new Impl<>(trie)) : this;
+        return changed ? (trie.size() == 0 ? empty() : new Vector<>(trie)) : this;
     }
 
     @Override
-    default Vector<T> replaceAll(UnaryOperator<T> operator) {
+    public Vector<T> replaceAll(UnaryOperator<T> operator) {
         Objects.requireNonNull(operator, "operator is null");
         HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
         for (int i = 0; i < length(); i++) {
             trie = trie.put(trie.size(), operator.apply(get(i)));
         }
-        return trie.size() == 0 ? empty() : new Impl<>(trie);
+        return trie.size() == 0 ? empty() : new Vector<>(trie);
 
     }
 
     @Override
-    default Vector<T> retainAll(Iterable<? extends T> elements) {
+    public Vector<T> retainAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         final Vector<T> keeped = Vector.ofAll(elements).distinct();
         HashArrayMappedTrie<Integer, T> result = HashArrayMappedTrie.empty();
@@ -1010,25 +1092,25 @@ public interface Vector<T> extends IndexedSeq<T> {
                 result = result.put(result.size(), element);
             }
         }
-        return result.size() == 0 ? empty() : new Impl<>(result);
+        return result.size() == 0 ? empty() : new Vector<>(result);
     }
 
     @Override
-    default Vector<T> reverse() {
+    public Vector<T> reverse() {
         HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
         for (int i = 0; i < length(); i++) {
             trie = trie.put(i, get(length() - 1 - i));
         }
-        return trie.size() == 0 ? empty() : new Impl<>(trie);
+        return trie.size() == 0 ? empty() : new Vector<>(trie);
     }
 
     @Override
-    default Vector<Vector<T>> sliding(int size) {
+    public Vector<Vector<T>> sliding(int size) {
         return sliding(size, 1);
     }
 
     @Override
-    default Vector<Vector<T>> sliding(int size, int step) {
+    public Vector<Vector<T>> sliding(int size, int step) {
         if (size <= 0 || step <= 0) {
             throw new IllegalArgumentException(String.format("size: %s or step: %s not positive", size, step));
         }
@@ -1037,42 +1119,42 @@ public interface Vector<T> extends IndexedSeq<T> {
         while (!list.isEmpty()) {
             final Tuple2<Vector<T>, Vector<T>> split = list.splitAt(size);
             result = result.put(result.size(), split._1);
-            list = split._2.isEmpty() ? Empty.instance() : list.drop(step);
+            list = split._2.isEmpty() ? Vector.empty() : list.drop(step);
         }
-        return result.size() == 0 ? empty() : new Impl<>(result);
+        return result.size() == 0 ? empty() : new Vector<>(result);
     }
 
     @Override
-    default Vector<T> sort() {
+    public Vector<T> sort() {
         return isEmpty() ? this : toJavaStream().sorted().collect(Vector.collector());
     }
 
     @Override
-    default Vector<T> sort(Comparator<? super T> comparator) {
+    public Vector<T> sort(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return isEmpty() ? this : toJavaStream().sorted(comparator).collect(Vector.collector());
     }
 
     @Override
-    default Tuple2<Vector<T>, Vector<T>> span(Predicate<? super T> predicate) {
+    public Tuple2<Vector<T>, Vector<T>> span(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return Tuple.of(takeWhile(predicate), dropWhile(predicate));
     }
 
     @Override
-    default Tuple2<Vector<T>, Vector<T>> splitAt(int n) {
+    public Tuple2<Vector<T>, Vector<T>> splitAt(int n) {
         return Tuple.of(take(n), drop(n));
     }
 
     @Override
-    default Tuple2<Vector<T>, Vector<T>> splitAt(Predicate<? super T> predicate) {
+    public Tuple2<Vector<T>, Vector<T>> splitAt(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Vector<T> init = takeWhile(predicate.negate());
         return Tuple.of(init, drop(init.length()));
     }
 
     @Override
-    default Tuple2<Vector<T>, Vector<T>> splitAtInclusive(Predicate<? super T> predicate) {
+    public Tuple2<Vector<T>, Vector<T>> splitAtInclusive(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         HashArrayMappedTrie<Integer, T> init = HashArrayMappedTrie.empty();
         for (T t : this) {
@@ -1081,7 +1163,7 @@ public interface Vector<T> extends IndexedSeq<T> {
                 if (init.size() == length()) {
                     Tuple.of(this, empty());
                 } else {
-                    return Tuple.of(init.size() == 0 ? empty() : new Impl<>(init), drop(init.size()));
+                    return Tuple.of(init.size() == 0 ? empty() : new Vector<>(init), drop(init.size()));
                 }
             }
         }
@@ -1089,12 +1171,12 @@ public interface Vector<T> extends IndexedSeq<T> {
     }
 
     @Override
-    default Spliterator<T> spliterator() {
+    public Spliterator<T> spliterator() {
         return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
     }
 
     @Override
-    default Vector<T> subsequence(int beginIndex) {
+    public Vector<T> subsequence(int beginIndex) {
         if (beginIndex < 0) {
             throw new IndexOutOfBoundsException("subsequence(" + beginIndex + ")");
         }
@@ -1105,41 +1187,34 @@ public interface Vector<T> extends IndexedSeq<T> {
     }
 
     @Override
-    default Vector<T> subsequence(int beginIndex, int endIndex) {
+    public Vector<T> subsequence(int beginIndex, int endIndex) {
         if (beginIndex < 0 || beginIndex > endIndex || endIndex > length()) {
             throw new IndexOutOfBoundsException(
                     String.format("subsequence(%s, %s) on List of length %s", beginIndex, endIndex, length()));
         }
-        if(beginIndex == endIndex) {
+        if (beginIndex == endIndex) {
             return Vector.empty();
         }
         HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
         for (int i = beginIndex; i < endIndex; i++) {
             trie = trie.put(trie.size(), get(i));
         }
-        return trie.size() == 0 ? empty() : new Impl<>(trie);
+        return trie.size() == 0 ? empty() : new Vector<>(trie);
     }
 
     @Override
-    default T head() {
-        if (isEmpty()) {
-            throw new NoSuchElementException("head of empty vector");
-        } else {
-            return get(0);
+    public Vector<T> set(int index, T element) {
+        if (index < 0) {
+            throw new IndexOutOfBoundsException("set(" + index + ")");
         }
-    }
-
-    @Override
-    default Option<T> headOption() {
-        if (isEmpty()) {
-            return None.instance();
-        } else {
-            return new Some<>(get(0));
+        if (index >= length()) {
+            throw new IndexOutOfBoundsException("set(" + index + ")");
         }
+        return new Vector<>(trie.put(index, element));
     }
 
     @Override
-    default Vector<T> tail() {
+    public Vector<T> tail() {
         if (isEmpty()) {
             throw new UnsupportedOperationException("tail of empty vector");
         }
@@ -1147,23 +1222,23 @@ public interface Vector<T> extends IndexedSeq<T> {
         for (int i = 1; i < length(); i++) {
             trie = trie.put(i - 1, get(i));
         }
-        return trie.size() == 0 ? empty() : new Impl<>(trie);
+        return trie.size() == 0 ? empty() : new Vector<>(trie);
     }
 
     @Override
-    default Option<Vector<T>> tailOption() {
-        if(isEmpty()) {
+    public Option<Vector<T>> tailOption() {
+        if (isEmpty()) {
             return None.instance();
         }
         HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
         for (int i = 1; i < length(); i++) {
             trie = trie.put(i - 1, get(i));
         }
-        return new Some<>(trie.size() == 0 ? empty() : new Impl<>(trie));
+        return new Some<>(trie.size() == 0 ? empty() : new Vector<>(trie));
     }
 
     @Override
-    default Vector<T> take(int n) {
+    public Vector<T> take(int n) {
         if (n >= length()) {
             return this;
         }
@@ -1174,11 +1249,11 @@ public interface Vector<T> extends IndexedSeq<T> {
         for (int i = 0; i < n; i++) {
             trie = trie.put(i, get(i));
         }
-        return new Impl<>(trie);
+        return new Vector<>(trie);
     }
 
     @Override
-    default Vector<T> takeRight(int n) {
+    public Vector<T> takeRight(int n) {
         if (n >= length()) {
             return this;
         }
@@ -1189,11 +1264,11 @@ public interface Vector<T> extends IndexedSeq<T> {
         for (int i = 0; i < n; i++) {
             trie = trie.put(i, get(length() - n + i));
         }
-        return new Impl<>(trie);
+        return new Vector<>(trie);
     }
 
     @Override
-    default Vector<T> takeWhile(Predicate<? super T> predicate) {
+    public Vector<T> takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
         for (int i = 0; i < length(); i++) {
@@ -1203,16 +1278,16 @@ public interface Vector<T> extends IndexedSeq<T> {
             }
             trie = trie.put(i, get(i));
         }
-        return trie.size() == length() ? this : trie.size() == 0 ? empty() : new Impl<>(trie);
+        return trie.size() == length() ? this : trie.size() == 0 ? empty() : new Vector<>(trie);
     }
 
     @Override
-    default <U> Vector<U> unit(Iterable<? extends U> iterable) {
+    public <U> Vector<U> unit(Iterable<? extends U> iterable) {
         return Vector.ofAll(iterable);
     }
 
     @Override
-    default <T1, T2> Tuple2<Vector<T1>, Vector<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+    public <T1, T2> Tuple2<Vector<T1>, Vector<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         HashArrayMappedTrie<Integer, T1> xs = HashArrayMappedTrie.empty();
         HashArrayMappedTrie<Integer, T2> ys = HashArrayMappedTrie.empty();
@@ -1221,11 +1296,11 @@ public interface Vector<T> extends IndexedSeq<T> {
             xs = xs.put(xs.size(), t._1);
             ys = ys.put(ys.size(), t._2);
         }
-        return Tuple.of(xs.size() == 0 ? empty() : new Impl<>(xs), ys.size() == 0 ? empty() : new Impl<>(ys));
+        return Tuple.of(xs.size() == 0 ? empty() : new Vector<>(xs), ys.size() == 0 ? empty() : new Vector<>(ys));
     }
 
     @Override
-    default <U> Vector<Tuple2<T, U>> zip(Iterable<U> that) {
+    public <U> Vector<Tuple2<T, U>> zip(Iterable<U> that) {
         Objects.requireNonNull(that, "that is null");
         HashArrayMappedTrie<Integer, Tuple2<T, U>> result = HashArrayMappedTrie.empty();
         Iterator<T> list1 = iterator();
@@ -1233,11 +1308,11 @@ public interface Vector<T> extends IndexedSeq<T> {
         while (list1.hasNext() && list2.hasNext()) {
             result = result.put(result.size(), Tuple.of(list1.next(), list2.next()));
         }
-        return result.size() == 0 ? empty() : new Impl<>(result);
+        return result.size() == 0 ? empty() : new Vector<>(result);
     }
 
     @Override
-    default <U> Vector<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
+    public <U> Vector<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         HashArrayMappedTrie<Integer, Tuple2<T, U>> result = HashArrayMappedTrie.empty();
         Iterator<T> list1 = iterator();
@@ -1247,250 +1322,50 @@ public interface Vector<T> extends IndexedSeq<T> {
             final U elem2 = list2.hasNext() ? list2.next() : thatElem;
             result = result.put(result.size(), Tuple.of(elem1, elem2));
         }
-        return result.size() == 0 ? empty() : new Impl<>(result);
+        return result.size() == 0 ? empty() : new Vector<>(result);
     }
 
     @Override
-    default Vector<Tuple2<T, Integer>> zipWithIndex() {
+    public Vector<Tuple2<T, Integer>> zipWithIndex() {
         HashArrayMappedTrie<Integer, Tuple2<T, Integer>> trie = HashArrayMappedTrie.empty();
         for (int i = 0; i < length(); i++) {
             trie = trie.put(i, Tuple.of(get(i), i));
         }
-        return trie.size() == 0 ? empty() : new Impl<>(trie);
+        return trie.size() == 0 ? empty() : new Vector<>(trie);
     }
 
-    final class Impl<T> implements Vector<T>, Serializable {
-        private static final long serialVersionUID = 1L;
+    private Object readResolve() {
+        return isEmpty() ? EMPTY : this;
+    }
 
-        private final HashArrayMappedTrie<Integer, T> trie;
-        private final transient Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
-
-        private Impl(HashArrayMappedTrie<Integer, T> trie) {
-            this.trie = trie;
-        }
-
-        private Impl(Iterable<? extends T> elements) {
-            HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
-            for (T element : elements) {
-                trie = trie.put(trie.size(), element);
-            }
-            this.trie = trie;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (o == this) {
-                return true;
-            } else if (o instanceof Vector) {
-                Vector<?> vector1 = this;
-                Vector<?> vector2 = (Vector<?>) o;
-                while (!vector1.isEmpty() && !vector2.isEmpty()) {
-                    final boolean isEqual = Objects.equals(vector1.head(), vector2.head());
-                    if (!isEqual) {
-                        return false;
-                    }
-                    vector1 = vector1.tail();
-                    vector2 = vector2.tail();
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        } else if (o instanceof Vector) {
+            Vector<?> vector1 = this;
+            Vector<?> vector2 = (Vector<?>) o;
+            while (!vector1.isEmpty() && !vector2.isEmpty()) {
+                final boolean isEqual = Objects.equals(vector1.head(), vector2.head());
+                if (!isEqual) {
+                    return false;
                 }
-                return vector1.isEmpty() && vector2.isEmpty();
-            } else {
-                return false;
+                vector1 = vector1.tail();
+                vector2 = vector2.tail();
             }
-        }
-
-        @Override
-        public int hashCode() {
-            return hashCode.get();
-        }
-
-        @Override
-        public String toString() {
-            return map(String::valueOf).join(", ", "Vector(", ")");
-        }
-
-        @Override
-        public Iterator<T> iterator() {
-            return new Iterator<T>() {
-                private int index = 0;
-
-                @Override
-                public boolean hasNext() {
-                    return index < trie.size();
-                }
-
-                @Override
-                public T next() {
-                    return trie.get(index++).get();
-                }
-            };
-        }
-
-        @Override
-        public Vector<T> append(T element) {
-            return new Impl<>(trie.put(trie.size(), element));
-        }
-
-        @Override
-        public Vector<T> appendAll(Iterable<? extends T> elements) {
-            HashArrayMappedTrie<Integer, T> result = trie;
-            for (T element : elements) {
-                result = result.put(result.size(), element);
-            }
-            return new Impl<>(result);
-        }
-
-        @Override
-        public T get(int index) {
-            if (index < 0 || index >= length()) {
-                throw new IndexOutOfBoundsException("get(" + index + ")");
-            }
-            return trie.get(index).get();
-        }
-
-        @Override
-        public Vector<T> init() {
-            return new Impl<>(trie.remove(length() - 1));
-        }
-
-        @Override
-        public Vector<T> set(int index, T element) {
-            if(index < 0) {
-                throw new IndexOutOfBoundsException("set(" + index + ")");
-            }
-            if(index >= length()) {
-                throw new IndexOutOfBoundsException("set(" + index + ")");
-            }
-            return new Impl<>(trie.put(index, element));
-        }
-
-        @Override
-        public int length() {
-            return trie.size();
-        }
-
-        private Object writeReplace() {
-            return new SerializationProxy<>(this);
-        }
-
-        private void readObject(ObjectInputStream stream) throws InvalidObjectException {
-            throw new InvalidObjectException("Proxy required");
-        }
-
-        /**
-         * A serialization proxy.
-         * See {@link List.Cons.SerializationProxy}
-         */
-        private static final class SerializationProxy<T> implements Serializable {
-
-            private static final long serialVersionUID = 1L;
-
-            private transient Impl<T> vector;
-
-            SerializationProxy(Impl<T> vector) {
-                this.vector = vector;
-            }
-
-            private void writeObject(ObjectOutputStream s) throws IOException {
-                s.defaultWriteObject();
-                s.writeInt(vector.length());
-                for (T t: vector) {
-                    s.writeObject(t);
-                }
-            }
-
-            private void readObject(ObjectInputStream s) throws ClassNotFoundException, IOException {
-                s.defaultReadObject();
-                final int size = s.readInt();
-                if (size <= 0) {
-                    throw new InvalidObjectException("No elements");
-                }
-                HashArrayMappedTrie<Integer, T> temp = HashArrayMappedTrie.empty();
-                for (int i = 0; i < size; i++) {
-                    @SuppressWarnings("unchecked")
-                    final T element = (T) s.readObject();
-                    temp = temp.put(temp.size(), element);
-                }
-                vector = new Impl<>(temp);
-            }
-
-            private Object readResolve() {
-                return vector;
-            }
+            return vector1.isEmpty() && vector2.isEmpty();
+        } else {
+            return false;
         }
     }
 
-    final class Empty<T> implements Vector<T>, Serializable {
-        private static final long serialVersionUID = 1L;
-        private static final Vector<?> INSTANCE = new Empty<>();
+    @Override
+    public int hashCode() {
+        return hashCode.get();
+    }
 
-        private final HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
-
-        private Empty() {
-        }
-
-        @SuppressWarnings("unchecked")
-        public static <T> Empty<T> instance() {
-            return (Empty<T>) INSTANCE;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            return o == this;
-        }
-
-        @Override
-        public int hashCode() {
-            return Traversable.hash(this);
-        }
-
-        @Override
-        public String toString() {
-            return "Vector()";
-        }
-
-        @Override
-        public Vector<T> append(T element) {
-            return of(element);
-        }
-
-        @Override
-        public Vector<T> appendAll(Iterable<? extends T> elements) {
-            return new Impl<T>(elements);
-        }
-
-        @Override
-        public T get(int index) {
-            throw new IndexOutOfBoundsException("get(" + index + ") on Empty");
-        }
-
-        @Override
-        public Vector<T> init() {
-            throw new UnsupportedOperationException("init of empty vector");
-        }
-
-        @Override
-        public Vector<T> set(int index, T element) {
-            throw new IndexOutOfBoundsException("set(" + index + ")");
-        }
-
-        @Override
-        public Iterator<T> iterator() {
-            return Iterator.empty();
-        }
-
-        @Override
-        public int length() {
-            return 0;
-        }
-
-        /**
-         * Instance control for object serialization.
-         *
-         * @return The singleton instance of Nil.
-         * @see java.io.Serializable
-         */
-        private Object readResolve() {
-            return INSTANCE;
-        }
+    @Override
+    public String toString() {
+        return map(String::valueOf).join(", ", "Vector(", ")");
     }
 }

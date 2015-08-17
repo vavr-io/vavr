@@ -7,10 +7,9 @@ package javaslang.collection;
 
 import javaslang.Kind;
 import javaslang.Tuple2;
-import javaslang.control.None;
 import javaslang.control.Option;
-import javaslang.control.Some;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.*;
@@ -21,7 +20,9 @@ import java.util.function.*;
  *
  * @since 2.0.0
  */
-public final class HashMap<K, V> implements Map<K, V> {
+public final class HashMap<K, V> implements Map<K, V>, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private static final HashMap<?, ?> EMPTY = new HashMap<>(HashArrayMappedTrie.empty());
 
@@ -89,6 +90,16 @@ public final class HashMap<K, V> implements Map<K, V> {
     }
 
     @Override
+    public HashMap<K, V> clear() {
+        return HashMap.empty();
+    }
+
+    @Override
+    public boolean contains(Entry<K, V> element) {
+        return get(element.key).map(v -> Objects.equals(v, element.value)).orElse(false);
+    }
+
+    @Override
     public boolean containsKey(K key) {
         return tree.containsKey(key);
     }
@@ -99,32 +110,53 @@ public final class HashMap<K, V> implements Map<K, V> {
     }
 
     @Override
+    public HashMap<K, V> distinct() {
+        return this;
+    }
+
+    @Override
+    public HashMap<K, V> distinctBy(Comparator<? super Entry<K, V>> comparator) {
+        return null;
+    }
+
+    @Override
+    public <U> HashMap<K, V> distinctBy(Function<? super Entry<K, V>, ? extends U> keyExtractor) {
+        return null;
+    }
+
+    @Override
+    public HashMap<K, V> drop(int n) {
+        return null;
+    }
+
+    @Override
+    public HashMap<K, V> dropRight(int n) {
+        return null;
+    }
+
+    @Override
+    public HashMap<K, V> dropWhile(Predicate<? super Entry<K, V>> predicate) {
+        return null;
+    }
+
+    @Override
     public Set<Entry<K, V>> entrySet() {
         return null;
     }
 
     @Override
-    public V get(K key) {
-        return getOrDefault(key, null);
+    public HashMap<K, V> filter(Predicate<? super Entry<K, V>> predicate) {
+        return null;
     }
 
     @Override
-    public Option<V> getOption(K key) {
-        if (containsKey(key)) {
-            return new Some<>(get(key));
-        } else {
-            return None.instance();
-        }
+    public HashMap<K, V> findAll(Predicate<? super Entry<K, V>> predicate) {
+        return null;
     }
 
     @Override
-    public V getOrDefault(K key, V defaultValue) {
-        return tree.get(key).orElse(defaultValue);
-    }
-
-    @Override
-    public Set<K> keySet() {
-        return map(entry -> entry.key);
+    public Option<Entry<K, V>> findLast(Predicate<? super Entry<K, V>> predicate) {
+        return null;
     }
 
     @Override
@@ -133,14 +165,65 @@ public final class HashMap<K, V> implements Map<K, V> {
     }
 
     @Override
+    public <U> Set<U> flatMap(Function<? super Entry<K, V>, ? extends Iterable<? extends U>> mapper) {
+        return null;
+    }
+
+    @Override
+    public <U> Set<U> flatMapM(Function<? super Entry<K, V>, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper) {
+        return null;
+    }
+
+    @Override
+    public Set<Object> flatten() {
+        return null;
+    }
+
+    @Override
+    public <U> U foldRight(U zero, BiFunction<? super Entry<K, V>, ? super U, ? extends U> f) {
+        return null;
+    }
+
+    @Override
+    public Option<V> get(K key) {
+        return tree.get(key);
+    }
+
+    @Override
     public <C> Map<C, HashMap<K, V>> groupBy(Function<? super Entry<K, V>, ? extends C> classifier) {
-        HashMap<C, HashMap<K, V>> result = HashMap.empty();
-        for (Entry<K, V> entry : this) {
+        return foldLeft(HashMap.empty(), (map, entry) -> {
             final C key = classifier.apply(entry);
-            final HashMap<K, V> map = result.get(key);
-            result = result.put(key, (map == null) ? HashMap.of(entry) : map.put(entry.key, entry.value));
-        }
-        return result;
+            final HashMap<K, V> values = map
+                    .get(key)
+                    .map(entries -> entries.put(entry.key, entry.value))
+                    .orElse(HashMap.of(entry));
+            return map.put(key, values);
+        });
+    }
+
+    @Override
+    public Entry<K, V> head() {
+        return null;
+    }
+
+    @Override
+    public Option<Entry<K, V>> headOption() {
+        return null;
+    }
+
+    @Override
+    public HashMap<K, V> init() {
+        return null;
+    }
+
+    @Override
+    public Option<HashMap<K, V>> initOption() {
+        return null;
+    }
+
+    @Override
+    public HashMap<K, V> intersperse(Entry<K, V> element) {
+        return null;
     }
 
     @Override
@@ -154,12 +237,17 @@ public final class HashMap<K, V> implements Map<K, V> {
     }
 
     @Override
+    public Set<K> keySet() {
+        return map(entry -> entry.key);
+    }
+
+    @Override
     public int length() {
         return 0;
     }
 
     @Override
-    public <U, W> Map<U, W> map(BiFunction<? super K, ? super V, ? extends Entry<U, W>> mapper) {
+    public <U, W> Map<U, W> map(BiFunction<? super K, ? super V, ? extends Entry<? extends U, ? extends W>> mapper) {
         return null;
     }
 
@@ -182,7 +270,22 @@ public final class HashMap<K, V> implements Map<K, V> {
     }
 
     @Override
+    public HashMap<K, V> put(K key, V value) {
+        return new HashMap<>(tree.put(key, value));
+    }
+
+    @Override
     public Entry<K, V> reduceRight(BiFunction<? super Entry<K, V>, ? super Entry<K, V>, ? extends Entry<K, V>> op) {
+        return null;
+    }
+
+    @Override
+    public HashMap<K, V> remove(K key) {
+        return new HashMap<>(tree.remove(key));
+    }
+
+    @Override
+    public Map<K, V> removeAll(Iterable<? extends K> keys) {
         return null;
     }
 
@@ -204,6 +307,11 @@ public final class HashMap<K, V> implements Map<K, V> {
     @Override
     public Map<K, V> retainAll(Iterable<? extends Entry<K, V>> elements) {
         return null;
+    }
+
+    @Override
+    public int size() {
+        return tree.size();
     }
 
     @Override
@@ -247,152 +355,32 @@ public final class HashMap<K, V> implements Map<K, V> {
     }
 
     @Override
-    public HashMap<K, V> put(K key, V value) {
-        return new HashMap<>(tree.put(key, value));
-    }
-
-    @Override
-    public HashMap<K, V> remove(K key) {
-        return new HashMap<>(tree.remove(key));
-    }
-
-    @Override
-    public Map<K, V> removeAll(Iterable<? extends K> keys) {
+    public <K1, V1, K2, V2> Tuple2<HashMap<K1, V1>, HashMap<K2, V2>> unzip(Function<? super Entry<? super K, ? super V>, Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>>> unzipper) {
         return null;
     }
 
     @Override
-    public int size() {
-        return tree.size();
-    }
-
-    @Override
-    public <K1, V1, K2, V2> Tuple2<? extends Map<K1, V1>, ? extends Map<K2, V2>> unzip(Function<? super Entry<K, V>, Tuple2<? extends Entry<K1, V1>, ? extends Entry<K2, V2>>> unzipper) {
+    public <K1, V1, K2, V2> Tuple2<HashMap<K1, V1>, HashMap<K2, V2>> unzip(BiFunction<? super K, ? super V, Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>>> unzipper) {
         return null;
     }
 
     @Override
-    public Traversable<V> values() {
+    public Seq<V> values() {
         return null;
     }
 
     @Override
-    public <U> Map<Tuple2<K, V>, U> zip(Iterable<U> that) {
+    public <U> HashMap<Tuple2<K, V>, U> zip(Iterable<U> that) {
         return null;
     }
 
     @Override
-    public <U> Map<Tuple2<K, V>, U> zipAll(Iterable<U> that, Entry<K, V> thisElem, U thatElem) {
+    public <U> HashMap<Tuple2<K, V>, U> zipAll(Iterable<U> that, Entry<K, V> thisElem, U thatElem) {
         return null;
     }
 
     @Override
-    public Map<Tuple2<K, V>, Integer> zipWithIndex() {
-        return null;
-    }
-
-    @Override
-    public Map<K, V> clear() {
-        return null;
-    }
-
-    @Override
-    public boolean contains(Entry<K, V> element) {
-        return false;
-    }
-
-    @Override
-    public Map<K, V> distinct() {
-        return null;
-    }
-
-    @Override
-    public Map<K, V> distinctBy(Comparator<? super Entry<K, V>> comparator) {
-        return null;
-    }
-
-    @Override
-    public <U> Map<K, V> distinctBy(Function<? super Entry<K, V>, ? extends U> keyExtractor) {
-        return null;
-    }
-
-    @Override
-    public Map<K, V> drop(int n) {
-        return null;
-    }
-
-    @Override
-    public Map<K, V> dropRight(int n) {
-        return null;
-    }
-
-    @Override
-    public Map<K, V> dropWhile(Predicate<? super Entry<K, V>> predicate) {
-        return null;
-    }
-
-    @Override
-    public Map<K, V> filter(Predicate<? super Entry<K, V>> predicate) {
-        return null;
-    }
-
-    @Override
-    public Map<K, V> findAll(Predicate<? super Entry<K, V>> predicate) {
-        return null;
-    }
-
-    @Override
-    public Option<Entry<K, V>> findLast(Predicate<? super Entry<K, V>> predicate) {
-        return null;
-    }
-
-    @Override
-    public <U> Set<U> flatMap(Function<? super Entry<K, V>, ? extends Iterable<? extends U>> mapper) {
-        return null;
-    }
-
-    @Override
-    public <U> Set<U> flatMapM(Function<? super Entry<K, V>, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper) {
-        return null;
-    }
-
-    @Override
-    public Set<Object> flatten() {
-        return null;
-    }
-
-    @Override
-    public <U> U foldRight(U zero, BiFunction<? super Entry<K, V>, ? super U, ? extends U> f) {
-        return null;
-    }
-
-    @Override
-    public Set<? extends Map<K, V>> grouped(int size) {
-        return null;
-    }
-
-    @Override
-    public Entry<K, V> head() {
-        return null;
-    }
-
-    @Override
-    public Option<Entry<K, V>> headOption() {
-        return null;
-    }
-
-    @Override
-    public Map<K, V> init() {
-        return null;
-    }
-
-    @Override
-    public Option<? extends Map<K, V>> initOption() {
-        return null;
-    }
-
-    @Override
-    public Map<K, V> intersperse(Entry<K, V> element) {
+    public HashMap<Tuple2<K, V>, Integer> zipWithIndex() {
         return null;
     }
 }

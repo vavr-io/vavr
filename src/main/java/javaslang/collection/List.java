@@ -768,13 +768,11 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default <C> Map<C, List<T>> groupBy(Function<? super T, ? extends C> classifier) {
-        Map<C, List<T>> result = HashMap.empty();
-        for (T t : this) {
+        return foldLeft(HashMap.empty(), (map, t) -> {
             final C key = classifier.apply(t);
-            final List<T> list = result.get(key);
-            result = result.put(key, (list == null) ? List.of(t) : list.prepend(t));
-        }
-        return result;
+            final List<T> values = map.get(key).map(ts -> ts.prepend(t)).orElse(List.of(t));
+            return map.put(key, values);
+        });
     }
 
     @Override

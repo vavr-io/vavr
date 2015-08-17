@@ -64,7 +64,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
      * @param front A List of front elements, in correct order.
      * @param rear  A List of rear elements, in reverse order.
      */
-    public Queue(List<T> front, List<T> rear) {
+    private Queue(List<T> front, List<T> rear) {
         final boolean frontIsEmpty = front.isEmpty();
         this.front = frontIsEmpty ? rear.reverse() : front;
         this.rear = frontIsEmpty ? front : rear;
@@ -652,7 +652,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     public <C> Map<C, Queue<T>> groupBy(Function<? super T, ? extends C> classifier) {
         return foldLeft(HashMap.empty(), (map, t) -> {
             final C key = classifier.apply(t);
-            final Queue<T> queue = map.getOption(key).orElse(Queue.empty()).enqueue(t);
+            final Queue<T> queue = map.get(key).orElse(Queue.empty()).enqueue(t);
             return map.put(key, queue);
         });
     }

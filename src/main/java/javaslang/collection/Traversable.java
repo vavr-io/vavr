@@ -121,7 +121,6 @@ import java.util.function.*;
  * <li>{@link #distinctBy(Function)}</li>
  * <li>{@link #flatMap(Function)}</li>
  * <li>{@link #flatten()}</li>
- * <li>{@link #grouped(int)}</li>
  * <li>{@link #groupBy(Function)}</li>
  * <li>{@link #intersperse(Object)}</li>
  * <li>{@link #map(Function)}</li>
@@ -484,37 +483,6 @@ public interface Traversable<T> extends Value<T>, FilterMonadic<IterableKind<?>,
      * @return A Map containing the grouped elements
      */
     <C> Map<C, ? extends Traversable<T>> groupBy(Function<? super T, ? extends C> classifier);
-
-    /**
-     * Groups this {@code Traversable} into fixed size blocks like so:
-     * <ul>
-     * <li>If {@code this.isEmpty()}, the resulting {@code Traversable} is empty.</li>
-     * <li>If {@code size <= this.length()}, the resulting {@code Traversable} will contain {@code this.length() / size}
-     * blocks of size {@code size} and maybe a non-empty block of size {@code this.length() % size}, if there are
-     * remaining elements.</li>
-     * <li>If {@code size > this.length()}, the resulting {@code Traversable} will contain one block of size
-     * {@code this.length()}.</li>
-     * </ul>
-     * Examples:
-     * <pre>
-     * <code>
-     * [].grouped(1) = []
-     * [].grouped(0) throws
-     * [].grouped(-1) throws
-     * [1,2,3,4].grouped(2) = [[1,2],[3,4]]
-     * [1,2,3,4,5].grouped(2) = [[1,2],[3,4],[5]]
-     * [1,2,3,4].grouped(5) = [[1,2,3,4]]
-     * </code>
-     * </pre>
-     *
-     * Please note that {@code grouped(int)} is a special case of {@linkplain #sliding(int, int)}, i.e.
-     * {@code grouped(size)} is the same as {@code sliding(size, size)}.
-     *
-     * @param size a positive block size
-     * @return A new Traversable of sliced blocks of the given size
-     * @throws IllegalArgumentException if {@code size} is negative or zero
-     */
-    Traversable<? extends Traversable<T>> grouped(int size);
 
     /**
      * Returns the first element of a non-empty Traversable.
