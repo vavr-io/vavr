@@ -6,6 +6,8 @@
 package javaslang.collection.euler;
 
 import javaslang.Function1;
+import javaslang.collection.HashMap;
+import javaslang.collection.Map;
 import javaslang.collection.Stream;
 
 import java.util.function.Function;
@@ -31,6 +33,17 @@ public final class PrimeNumbers {
             throw new IllegalArgumentException("index < 1");
         }
         return MEMOIZED_PRIMES.apply(index - 1);
+    }
+
+    public static HashMap<Long, Long> factorization(long num) {
+        if(num == 1) {
+            return HashMap.empty();
+        } else {
+            return primeFactors(num)
+                    .map(p -> HashMap.of(Map.Entry.of(p, 1L))
+                            .merged(factorization(num / p), (a, b) -> a + b))
+                    .orElseGet(HashMap::empty);
+        }
     }
 
     public static Stream<Long> primeFactors(long num) {

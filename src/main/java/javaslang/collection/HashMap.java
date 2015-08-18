@@ -255,6 +255,32 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
+    public HashMap<K, V> merged(HashMap<K, ? extends V> that) {
+        return merged(that, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <U extends V> HashMap<K, V> merged(HashMap<K, U> that, BiFunction<? super V, ? super U, ? extends V> mergef) {
+        if(isEmpty()) {
+            return (HashMap<K, V>) that;
+        }
+        if(that.isEmpty()) {
+            return this;
+        }
+        HashMap<K, V> result = this;
+        for (Entry<K, U> e : that) {
+            Option<V> old = result.get(e.key);
+            if (old.isDefined() && mergef != null) {
+                result = result.put(e.key, mergef.apply(old.get(), e.value));
+            } else {
+                result = result.put(e.key, e.value);
+            }
+        }
+        return result;
+    }
+
+    @Override
     public Tuple2<? extends Map<K, V>, ? extends Map<K, V>> partition(Predicate<? super Entry<K, V>> predicate) {
         return null;
     }

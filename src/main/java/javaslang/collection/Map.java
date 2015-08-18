@@ -140,6 +140,21 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
     @Override
     <U> Set<U> map(Function<? super Entry<K, V>, ? extends U> mapper);
 
+    HashMap<K, V> merged(HashMap<K, ? extends V> that);
+
+    /**
+     * Creates a new map which is the merge of this and the argument hash map.
+     * <p>
+     * Uses the specified collision resolution function if two keys are the same.
+     * The collision resolution function will always take the first argument from <code>this</code> hash map
+     * and the second from <code>that</code>.
+     *
+     * @param that the other hash map
+     * @param mergef the merge function or null if the first key-value pair is to be picked
+     * @return A merged map
+     */
+    <U extends V> HashMap<K, V> merged(HashMap<K, U> that, BiFunction<? super V, ? super U, ? extends V> mergef);
+
     @Override
     Tuple2<? extends Map<K, V>, ? extends Map<K, V>> partition(Predicate<? super Entry<K, V>> predicate);
 
@@ -207,6 +222,10 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
 
         public static <K, V> Entry<K, V> of(Tuple2<K, V> t) {
             return new Entry<>(t._1, t._2);
+        }
+
+        public static <K, V> Entry<K, V> of(K key, V value) {
+            return new Entry<>(key, value);
         }
 
         @SuppressWarnings("unchecked")
