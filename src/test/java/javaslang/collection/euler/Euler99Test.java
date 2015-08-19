@@ -5,16 +5,12 @@
  */
 package javaslang.collection.euler;
 
-import javaslang.collection.Iterator;
-import javaslang.collection.Stream;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.net.URL;
 import java.util.Arrays;
-import java.util.Scanner;
 
+import static javaslang.collection.euler.Utils.file;
+import static javaslang.collection.euler.Utils.readLines;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class Euler99Test {
@@ -47,33 +43,5 @@ public class Euler99Test {
                 .zipWithIndex()
                 .reduce((t1, t2) -> t1._1 > t2._1 ? t1 : t2)
                 ._2 + 1;
-    }
-
-    private static Stream<String> readLines(File file) {
-        final Scanner scanner;
-        try {
-            scanner = new Scanner(file);
-        } catch (FileNotFoundException e) {
-            return Stream.empty();
-        }
-        return Stream.ofAll(new Iterator<String>() {
-            @Override
-            public boolean hasNext() {
-                return scanner.hasNextLine();
-            }
-
-            @Override
-            public String next() {
-                return scanner.nextLine();
-            }
-        });
-    }
-
-    private static File file(String fileName) {
-        final URL resource = Euler99Test.class.getClassLoader().getResource(fileName);
-        if(resource == null) {
-            throw new RuntimeException("resource not found");
-        }
-        return new File(resource.getFile());
     }
 }
