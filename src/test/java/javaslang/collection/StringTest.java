@@ -2,12 +2,23 @@ package javaslang.collection;
 
 import javaslang.*;
 import javaslang.WrappedString;
+import javaslang.control.None;
+import javaslang.control.Option;
+import javaslang.control.Some;
 import org.assertj.core.api.*;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
-// TODO AbstractTraversableTest, AbstractValueTest
+import static javaslang.Serializables.deserialize;
+import static javaslang.Serializables.serialize;
+
+// TODO java.lang.StringTest, AbstractValueTest
 public class StringTest {
 
     protected <T> IterableAssert<T> assertThat(Iterable<T> actual) {
@@ -49,6 +60,1222 @@ public class StringTest {
         return WrappedString.empty();
     }
 
+    // -- average
+
+    @Test
+    public void shouldReturnNoneWhenComputingAverageOfNil() {
+        assertThat(empty().average()).isEqualTo(None.instance());
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldThrowWhenComputingAverageOfStrings() {
+        WrappedString.of('1', '2', '3').average();
+    }
+
+    // -- clear
+
+    @Test
+
+    public void shouldClearNil() {
+        assertThat(empty().clear()).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldClearNonNil() {
+        assertThat(WrappedString.of('1', '2', '3').clear()).isEqualTo(empty());
+    }
+
+    // -- contains
+
+    @Test
+    public void shouldRecognizeNilContainsNoElement() {
+        final boolean actual = empty().contains((Character) null);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void shouldRecognizeNonNilDoesNotContainElement() {
+        final boolean actual = WrappedString.of('1', '2', '3').contains('0');
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void shouldRecognizeNonNilDoesContainElement() {
+        final boolean actual = WrappedString.of('1', '2', '3').contains('2');
+        assertThat(actual).isTrue();
+    }
+
+    // -- containsAll
+
+    @Test
+    public void shouldRecognizeNilNotContainsAllElements() {
+        final boolean actual = empty().containsAll(WrappedString.of('1', '2', '3'));
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void shouldRecognizeNonNilNotContainsAllOverlappingElements() {
+        final boolean actual = WrappedString.of('1', '2', '3').containsAll(WrappedString.of('2', '3', '4'));
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void shouldRecognizeNonNilContainsAllOnSelf() {
+        final boolean actual = WrappedString.of('1', '2', '3').containsAll(WrappedString.of('1', '2', '3'));
+        assertThat(actual).isTrue();
+    }
+
+    // -- distinct
+
+    @Test
+    public void shouldComputeDistinctOfEmptyTraversable() {
+        assertThat(empty().distinct()).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldComputeDistinctOfNonEmptyTraversable() {
+        assertThat(WrappedString.of('1', '1', '2', '2', '3', '3').distinct()).isEqualTo(WrappedString.of('1', '2', '3'));
+    }
+
+    // -- distinct(Comparator)
+
+    @Test
+    public void shouldComputeDistinctByOfEmptyTraversableUsingComparator() {
+        final Comparator<Character> comparator = (i1, i2) -> i1 - i2;
+        assertThat(WrappedString.empty().distinctBy(comparator)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldComputeDistinctByOfNonEmptyTraversableUsingComparator() {
+        final Comparator<Character> comparator = (s1, s2) -> (s1 - s2);
+        assertThat(WrappedString.of('1', '2', '3', '3', '4', '5').distinctBy(comparator)).isEqualTo(WrappedString.of('1', '2', '3', '4', '5'));
+    }
+
+    // -- distinct(Function)
+
+    @Test
+    public void shouldComputeDistinctByOfEmptyTraversableUsingKeyExtractor() {
+        assertThat(empty().distinctBy(Function.identity())).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldComputeDistinctByOfNonEmptyTraversableUsingKeyExtractor() {
+        assertThat(WrappedString.of('1', '2', '3', '3', '4', '5').distinctBy(c -> c)).isEqualTo(WrappedString.of('1', '2', '3', '4', '5'));
+    }
+
+    // -- drop
+
+    @Test
+    public void shouldDropNoneOnNil() {
+        assertThat(empty().drop(1)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldDropNoneIfCountIsNegative() {
+        final WrappedString t = WrappedString.of('1', '2', '3');
+        assertThat(t.drop(-1)).isSameAs(t);
+    }
+
+    @Test
+    public void shouldDropAsExpectedIfCountIsLessThanSize() {
+        assertThat(WrappedString.of('1', '2', '3').drop(2)).isEqualTo(WrappedString.of('3'));
+    }
+
+    @Test
+    public void shouldDropAllIfCountExceedsSize() {
+        assertThat(WrappedString.of('1', '2', '3').drop('4')).isEqualTo(empty());
+    }
+
+    // -- dropRight
+
+    @Test
+    public void shouldDropRightNoneOnNil() {
+        assertThat(empty().dropRight(1)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldDropRightNoneIfCountIsNegative() {
+        final WrappedString t = WrappedString.of('1', '2', '3');
+        assertThat(t.dropRight(-1)).isSameAs(t);
+    }
+
+    @Test
+    public void shouldDropRightAsExpectedIfCountIsLessThanSize() {
+        assertThat(WrappedString.of('1', '2', '3').dropRight(2)).isEqualTo(WrappedString.of('1'));
+    }
+
+    @Test
+    public void shouldDropRightAllIfCountExceedsSize() {
+        assertThat(WrappedString.of('1', '2', '3').dropRight(4)).isEqualTo(empty());
+    }
+
+    // -- dropWhile
+
+    @Test
+    public void shouldDropWhileNoneOnNil() {
+        assertThat(empty().dropWhile(ignored -> true)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldDropWhileNoneIfPredicateIsFalse() {
+        WrappedString t = WrappedString.of('1', '2', '3');
+        assertThat(t.dropWhile(ignored -> false)).isSameAs(t);
+    }
+
+    @Test
+    public void shouldDropWhileAllIfPredicateIsTrue() {
+        assertThat(WrappedString.of('1', '2', '3').dropWhile(ignored -> true)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldDropWhileCorrect() {
+        assertThat(WrappedString.of('1', '2', '3').dropWhile(i -> i == '1')).isEqualTo(WrappedString.of('2', '3'));
+    }
+
+
+    // -- existsUnique
+
+    @Test
+    public void shouldBeAwareOfExistingUniqueElement() {
+        assertThat(WrappedString.of('1', '2').existsUnique(i -> i == '1')).isTrue();
+    }
+
+    @Test
+    public void shouldBeAwareOfNonExistingUniqueElement() {
+        assertThat(WrappedString.empty().existsUnique(i -> i == '1')).isFalse();
+    }
+
+    @Test
+    public void shouldBeAwareOfExistingNonUniqueElement() {
+        assertThat(WrappedString.of('1', '1', '2').existsUnique(i -> i == '1')).isFalse();
+    }
+
+    // -- filter
+
+    @Test
+    public void shouldFilterEmptyTraversable() {
+        assertThat(empty().filter(ignored -> true)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldFilterNonEmptyTraversable() {
+        assertThat(WrappedString.of('1', '2', '3', '4').filter(i -> i == '2' || i == '4')).isEqualTo(WrappedString.of('2', '4'));
+    }
+
+    @Test
+    public void shouldFilterNonEmptyTraversableAllMatch() {
+        final WrappedString t = WrappedString.of('1', '2', '3', '4');
+        if(isThisLazyCollection()) {
+            assertThat(t.filter(i -> true)).isEqualTo(t);
+        } else {
+            assertThat(t.filter(i -> true)).isSameAs(t);
+        }
+    }
+
+    // -- findAll
+
+    @Test
+    public void shouldFindAllOfNil() {
+        assertThat(empty().findAll(ignored -> true)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldFindAllOfNonNil() {
+        assertThat(WrappedString.of('1', '2', '3', '4').findAll(i -> i % 2 == 0)).isEqualTo(WrappedString.of('2', '4'));
+    }
+
+    // -- findFirst
+
+    @Test
+    public void shouldFindFirstOfNil() {
+        assertThat(empty().findFirst(ignored -> true)).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldFindFirstOfNonNil() {
+        assertThat(WrappedString.of('1', '2', '3', '4').findFirst(i -> i % 2 == 0)).isEqualTo(Option.of('2'));
+    }
+
+    // -- findLast
+
+    @Test
+    public void shouldFindLastOfNil() {
+        assertThat(empty().findLast(ignored -> true)).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldFindLastOfNonNil() {
+        assertThat(WrappedString.of('1', '2', '3', '4').findLast(i -> i % 2 == 0)).isEqualTo(Option.of('4'));
+    }
+
+    // -- flatMap
+
+    @Test
+    public void shouldFlatMapEmptyTraversable() {
+        assertThat(empty().flatMap(WrappedString::of)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldFlatMapNonEmptyTraversable() {
+        assertThat(WrappedString.of('1', '2', '3').flatMap(WrappedString::of)).isEqualTo(WrappedString.of('1', '2', '3'));
+    }
+
+    @Test
+    public void shouldFlatMapTraversableByExpandingElements() {
+        assertThat(WrappedString.of('1', '2', '3').flatMap(i -> {
+            if (i == '1') {
+                return WrappedString.of('1', '2', '3');
+            } else if (i == '2') {
+                return WrappedString.of('4', '5');
+            } else {
+                return WrappedString.of('6');
+            }
+        })).isEqualTo(WrappedString.of('1', '2', '3', '4', '5', '6'));
+    }
+
+    @Test
+    public void shouldFlatMapElementsToSequentialValuesInTheRightOrder() {
+        final AtomicInteger seq = new AtomicInteger('0');
+        final Vector<Character> actualInts = WrappedString.of('0', '1', '2')
+                .flatMap(ignored -> Vector.of((char) seq.getAndIncrement(), (char) seq.getAndIncrement()));
+        final WrappedString expectedInts = WrappedString.of('0', '1', '2', '3', '4', '5');
+        assertThat(actualInts).isEqualTo(expectedInts);
+    }
+
+    // -- flatten()
+
+    @Test
+    public void shouldFlattenEmptyTraversable() {
+        assertThat(empty().flatten()).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldFlattenTraversableOfPlainElements() {
+        assertThat(WrappedString.of('1', '2', '3').flatten()).isEqualTo(WrappedString.of('1', '2', '3'));
+    }
+
+    // -- fold
+
+    @Test
+    public void shouldFoldNil() {
+        assertThat(empty().fold('0', (a, b) -> b)).isEqualTo('0');
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenFoldNullOperator() {
+        empty().fold(null, null);
+    }
+
+    @Test
+    public void shouldFoldNonNil() {
+        assertThat(WrappedString.of('1', '2', '3').fold('0', (a, b) -> b)).isEqualTo('3');
+    }
+
+    // -- foldLeft
+
+    @Test
+    public void shouldFoldLeftNil() {
+        assertThat(this.<String> empty().foldLeft("", (xs, x) -> xs + x)).isEqualTo("");
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenFoldLeftNullOperator() {
+        this.<String> empty().foldLeft(null, null);
+    }
+
+    @Test
+    public void shouldFoldLeftNonNil() {
+        assertThat(WrappedString.of('a', 'b', 'c').foldLeft("", (xs, x) -> xs + x)).isEqualTo("abc");
+    }
+
+    // -- foldRight
+
+    @Test
+    public void shouldFoldRightNil() {
+        assertThat(empty().foldRight("", (x, xs) -> x + xs)).isEqualTo("");
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenFoldRightNullOperator() {
+        this.<String> empty().foldRight(null, null);
+    }
+
+    @Test
+    public void shouldFoldRightNonNil() {
+        assertThat(WrappedString.of('a', 'b', 'c').foldRight("", (x, xs) -> x + xs)).isEqualTo("abc");
+    }
+
+    // -- head
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldThrowWhenHeadOnNil() {
+        empty().head();
+    }
+
+    @Test
+    public void shouldReturnHeadOfNonNil() {
+        assertThat(WrappedString.of('1', '2', '3').head()).isEqualTo('1');
+    }
+
+    // -- headOption
+
+    @Test
+    public void shouldReturnNoneWhenCallingHeadOptionOnNil() {
+        assertThat(empty().headOption().isEmpty()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnSomeHeadWhenCallingHeadOptionOnNonNil() {
+        assertThat(WrappedString.of('1', '2', '3').headOption()).isEqualTo(new Some<>('1'));
+    }
+
+    // -- init
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldThrowWhenInitOfNil() {
+        empty().init();
+    }
+
+    @Test
+    public void shouldGetInitOfNonNil() {
+        assertThat(WrappedString.of('1', '2', '3').init()).isEqualTo(WrappedString.of('1', '2'));
+    }
+
+    // -- initOption
+
+    @Test
+    public void shouldReturnNoneWhenCallingInitOptionOnNil() {
+        assertThat(empty().initOption().isEmpty()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnSomeInitWhenCallingInitOptionOnNonNil() {
+        assertThat(WrappedString.of('1', '2', '3').initOption()).isEqualTo(new Some<>(WrappedString.of('1', '2')));
+    }
+
+    // -- isEmpty
+
+    @Test
+    public void shouldRecognizeNil() {
+        assertThat(empty().isEmpty()).isTrue();
+    }
+
+    @Test
+    public void shouldRecognizeNonNil() {
+        assertThat(WrappedString.of('1').isEmpty()).isFalse();
+    }
+
+    // -- iterator
+
+    @Test
+    public void shouldNotHasNextWhenNilIterator() {
+        assertThat(empty().iterator().hasNext()).isFalse();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldThrowOnNextWhenNilIterator() {
+        empty().iterator().next();
+    }
+
+    @Test
+    public void shouldIterateFirstElementOfNonNil() {
+        assertThat(WrappedString.of('1', '2', '3').iterator().next()).isEqualTo('1');
+    }
+
+    @Test
+    public void shouldFullyIterateNonNil() {
+        final Iterator<Character> iterator = WrappedString.of('1', '2', '3').iterator();
+        int actual;
+        for (int i = 1; i <= 3; i++) {
+            actual = iterator.next();
+            assertThat(actual).isEqualTo('0' + i);
+        }
+        assertThat(iterator.hasNext()).isFalse();
+    }
+
+    // -- mkString()
+
+    @Test
+    public void shouldMkStringNil() {
+        assertThat(empty().mkString()).isEqualTo("");
+    }
+
+    @Test
+    public void shouldMkStringNonNil() {
+        assertThat(WrappedString.of('a', 'b', 'c').mkString()).isEqualTo("abc");
+    }
+
+    // -- mkString(delimiter)
+
+    @Test
+    public void shouldMkStringWithDelimiterNil() {
+        assertThat(empty().mkString(",")).isEqualTo("");
+    }
+
+    @Test
+    public void shouldMkStringWithDelimiterNonNil() {
+        assertThat(WrappedString.of('a', 'b', 'c').mkString(",")).isEqualTo("a,b,c");
+    }
+
+    // -- mkString(delimiter, prefix, suffix)
+
+    @Test
+    public void shouldMkStringWithDelimiterAndPrefixAndSuffixNil() {
+        assertThat(empty().mkString(",", "[", "]")).isEqualTo("[]");
+    }
+
+    @Test
+    public void shouldMkStringWithDelimiterAndPrefixAndSuffixNonNil() {
+        assertThat(WrappedString.of('a', 'b', 'c').mkString(",", "[", "]")).isEqualTo("[a,b,c]");
+    }
+
+    // -- last
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldThrowWhenLastOnNil() {
+        empty().last();
+    }
+
+    @Test
+    public void shouldReturnLastOfNonNil() {
+        assertThat(WrappedString.of('1', '2', '3').last()).isEqualTo('3');
+    }
+
+    // -- lastOption
+
+    @Test
+    public void shouldReturnNoneWhenCallingLastOptionOnNil() {
+        assertThat(empty().lastOption().isEmpty()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnSomeLastWhenCallingLastOptionOnNonNil() {
+        assertThat(WrappedString.of('1', '2', '3').lastOption()).isEqualTo(new Some<>('3'));
+    }
+
+    // -- length
+
+    @Test
+    public void shouldComputeLengthOfNil() {
+        assertThat(empty().length()).isEqualTo(0);
+    }
+
+    @Test
+    public void shouldComputeLengthOfNonNil() {
+        assertThat(WrappedString.of('1', '2', '3').length()).isEqualTo(3);
+    }
+
+    // -- map
+
+    @Test
+    public void shouldMapNil() {
+        assertThat(this.<Integer> empty().map(i -> i + 1)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldMapNonNil() {
+        assertThat(WrappedString.of('1', '2', '3').map(i -> (char)(i + 1))).isEqualTo(WrappedString.of('2', '3', '4'));
+    }
+
+    @Test
+    public void shouldMapElementsToSequentialValuesInTheRightOrder() {
+        final AtomicInteger seq = new AtomicInteger('0');
+        final WrappedString expectedInts = WrappedString.of('0', '1', '2', '3', '4');
+        final Vector<Character> actualInts = expectedInts.map(ignored -> (char)seq.getAndIncrement());
+        assertThat(actualInts).isEqualTo(expectedInts);
+    }
+
+    // -- partition
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenPartitionNilAndPredicateIsNull() {
+        empty().partition(null);
+    }
+
+    @Test
+    public void shouldPartitionNil() {
+        assertThat(empty().partition(e -> true)).isEqualTo(Tuple.of(empty(), empty()));
+    }
+
+    @Test
+    public void shouldPartitionIntsInOddAndEvenHavingOddAndEventNumbers() {
+        assertThat(WrappedString.of('1', '2', '3', '4').partition(i -> i % 2 != 0)).isEqualTo(Tuple.of(WrappedString.of('1', '3'), WrappedString.of('2', '4')));
+    }
+
+    @Test
+    public void shouldPartitionIntsInOddAndEvenHavingOnlyOddNumbers() {
+        assertThat(WrappedString.of('1', '3').partition(i -> i % 2 != 0)).isEqualTo(Tuple.of(WrappedString.of('1', '3'), empty()));
+    }
+
+    @Test
+    public void shouldPartitionIntsInOddAndEvenHavingOnlyEvenNumbers() {
+        assertThat(WrappedString.of('2', '4').partition(i -> i % 2 != 0)).isEqualTo(Tuple.of(empty(), WrappedString.of('2', '4')));
+    }
+
+    // -- max
+
+    @Test
+    public void shouldReturnNoneWhenComputingMaxOfNil() {
+        assertThat(empty().max()).isEqualTo(None.instance());
+    }
+
+    @Test
+    public void shouldComputeMaxOfChar() {
+        assertThat(WrappedString.of('a', 'b', 'c').max()).isEqualTo(new Some<>('c'));
+    }
+
+    // -- maxBy(Comparator)
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenMaxByWithNullComparator() {
+        WrappedString.of('1').maxBy((Comparator<Character>) null);
+    }
+
+    @Test
+    public void shouldThrowWhenMaxByOfNil() {
+        assertThat(empty().maxBy((o1, o2) -> 0)).isEqualTo(None.instance());
+    }
+
+    @Test
+    public void shouldCalculateMaxByOfInts() {
+        assertThat(WrappedString.of('1', '2', '3').maxBy((i1, i2) -> i1 - i2)).isEqualTo(new Some<>('3'));
+    }
+
+    @Test
+    public void shouldCalculateInverseMaxByOfInts() {
+        assertThat(WrappedString.of('1', '2', '3').maxBy((i1, i2) -> i2 - i1)).isEqualTo(new Some<>('1'));
+    }
+
+    // -- maxBy(Function)
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenMaxByWithNullFunction() {
+        WrappedString.of('1').maxBy((Function<Character, Character>) null);
+    }
+
+    @Test
+    public void shouldThrowWhenMaxByFunctionOfNil() {
+        assertThat(this.<Integer> empty().maxBy(i -> i)).isEqualTo(None.instance());
+    }
+
+    @Test
+    public void shouldCalculateMaxByFunctionOfInts() {
+        assertThat(WrappedString.of('1', '2', '3').maxBy(i -> i)).isEqualTo(new Some<>('3'));
+    }
+
+    @Test
+    public void shouldCalculateInverseMaxByFunctionOfInts() {
+        assertThat(WrappedString.of('1', '2', '3').maxBy(i -> -i)).isEqualTo(new Some<>('1'));
+    }
+
+    // -- min
+
+    @Test
+    public void shouldReturnNoneWhenComputingMinOfNil() {
+        assertThat(empty().min()).isEqualTo(None.instance());
+    }
+
+    @Test
+    public void shouldComputeMinOfChar() {
+        assertThat(WrappedString.of('a', 'b', 'c').min()).isEqualTo(new Some<>('a'));
+    }
+
+    // -- minBy(Comparator)
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenMinByWithNullComparator() {
+        WrappedString.of('1').minBy((Comparator<Character>) null);
+    }
+
+    @Test
+    public void shouldThrowWhenMinByOfNil() {
+        assertThat(empty().minBy((o1, o2) -> 0)).isEqualTo(None.instance());
+    }
+
+    @Test
+    public void shouldCalculateMinByOfInts() {
+        assertThat(WrappedString.of('1', '2', '3').minBy((i1, i2) -> i1 - i2)).isEqualTo(new Some<>('1'));
+    }
+
+    @Test
+    public void shouldCalculateInverseMinByOfInts() {
+        assertThat(WrappedString.of('1', '2', '3').minBy((i1, i2) -> i2 - i1)).isEqualTo(new Some<>('3'));
+    }
+
+    // -- minBy(Function)
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenMinByWithNullFunction() {
+        WrappedString.of('1').minBy((Function<Character, Character>) null);
+    }
+
+    @Test
+    public void shouldThrowWhenMinByFunctionOfNil() {
+        assertThat(empty().minBy(i -> i)).isEqualTo(None.instance());
+    }
+
+    @Test
+    public void shouldCalculateMinByFunctionOfInts() {
+        assertThat(WrappedString.of('1', '2', '3').minBy(i -> i)).isEqualTo(new Some<>('1'));
+    }
+
+    @Test
+    public void shouldCalculateInverseMinByFunctionOfInts() {
+        assertThat(WrappedString.of('1', '2', '3').minBy(i -> -i)).isEqualTo(new Some<>('3'));
+    }
+
+    // -- peek
+
+    @Test
+    public void shouldPeekNonNilPerformingAnAction() {
+        final char[] effect = { 0 };
+        final WrappedString actual = WrappedString.of('1', '2', '3').peek(i -> effect[0] = i);
+        assertThat(actual).isEqualTo(WrappedString.of('1', '2', '3')); // traverses all elements in the lazy case
+        assertThat(effect[0]).isEqualTo('1');
+    }
+
+    // -- product
+
+    @Test
+    public void shouldComputeProductOfNil() {
+        assertThat(empty().product()).isEqualTo(1);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldThrowWhenComputingProductOfStrings() {
+        WrappedString.of('1', '2', '3').product();
+    }
+
+    // -- reduce
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldThrowWhenReduceNil() {
+        empty().reduce((a, b) -> a);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenReduceNullOperator() {
+        this.<String> empty().reduce(null);
+    }
+
+    @Test
+    public void shouldReduceNonNil() {
+        assertThat(WrappedString.of('1', '2', '3').reduce((a, b) -> b)).isEqualTo('3');
+    }
+
+    // -- reduceLeft
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldThrowWhenReduceLeftNil() {
+        empty().reduceLeft((a, b) -> a);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenReduceLeftNullOperator() {
+        this.<String> empty().reduceLeft(null);
+    }
+
+    @Test
+    public void shouldReduceLeftNonNil() {
+        assertThat(WrappedString.of('a', 'b', 'c').reduceLeft((xs, x) -> x)).isEqualTo('c');
+    }
+
+    // -- reduceRight
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldThrowWhenReduceRightNil() {
+        empty().reduceRight((a, b) -> a);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenReduceRightNullOperator() {
+        empty().reduceRight(null);
+    }
+
+    @Test
+    public void shouldReduceRightNonNil() {
+        assertThat(WrappedString.of('a', 'b', 'c').reduceRight((x, xs) -> x)).isEqualTo('a');
+    }
+
+    // -- replace(curr, new)
+
+    @Test
+    public void shouldReplaceElementOfNilUsingCurrNew() {
+        assertThat(empty().replace('1', '2')).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldReplaceElementOfNonNilUsingCurrNew() {
+        assertThat(WrappedString.of('0', '1', '2', '1').replace('1', '3')).isEqualTo(WrappedString.of('0', '3', '2', '1'));
+    }
+
+    // -- replaceAll(curr, new)
+
+    @Test
+    public void shouldReplaceAllElementsOfNilUsingCurrNew() {
+        assertThat(empty().replaceAll('1', '2')).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldReplaceAllElementsOfNonNilUsingCurrNew() {
+        assertThat(WrappedString.of('0', '1', '2', '1').replaceAll('1', '3')).isEqualTo(WrappedString.of('0', '3', '2', '3'));
+    }
+
+    // -- replaceAll(UnaryOp)
+
+    @Test
+    public void shouldReplaceAllElementsOfNilUsingUnaryOp() {
+        assertThat(empty().replaceAll(i -> i)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldReplaceAllElementsOfNonNilUsingUnaryOp() {
+        assertThat(WrappedString.of('1', '2', '3').replaceAll(i -> i)).isEqualTo(WrappedString.of('1', '2', '3'));
+    }
+
+    // -- retainAll
+
+    @Test
+    public void shouldRetainAllElementsFromNil() {
+        assertThat(empty().retainAll(WrappedString.of('1', '2', '3'))).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldRetainAllExistingElementsFromNonNil() {
+        assertThat(WrappedString.of('1', '2', '3', '1', '2', '3').retainAll(WrappedString.of('1', '2'))).isEqualTo(WrappedString.of('1', '2', '1', '2'));
+    }
+
+    @Test
+    public void shouldNotRetainAllNonExistingElementsFromNonNil() {
+        assertThat(WrappedString.of('1', '2', '3').retainAll(WrappedString.of('4', '5'))).isEqualTo(empty());
+    }
+
+    // -- sliding(size)
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowWhenSlidingNilByZeroSize() {
+        empty().sliding(0);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowWhenSlidingNilByNegativeSize() {
+        empty().sliding(-1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowWhenSlidingNonNilByZeroSize() {
+        WrappedString.of('1').sliding(0);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowWhenSlidingNonNilByNegativeSize() {
+        WrappedString.of('1').sliding(-1);
+    }
+
+    @Test
+    public void shouldSlideNilBySize() {
+        assertThat(empty().sliding(1)).isEqualTo(empty());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldSlideNonNilBySize1() {
+        assertThat(WrappedString.of('1', '2', '3').sliding(1)).isEqualTo(Vector.of(WrappedString.of('1'), WrappedString.of('2'), WrappedString.of('3')));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test // #201
+    public void shouldSlideNonNilBySize2() {
+        assertThat(WrappedString.of('1', '2', '3', '4', '5').sliding(2))
+                .isEqualTo(Vector.of(WrappedString.of('1', '2'), WrappedString.of('2', '3'), WrappedString.of('3', '4'), WrappedString.of('4', '5')));
+    }
+
+    // -- sliding(size, step)
+
+    @Test
+    public void shouldSlideNilBySizeAndStep() {
+        assertThat(empty().sliding(1, 1)).isEqualTo(empty());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldSlide5ElementsBySize2AndStep3() {
+        assertThat(WrappedString.of('1', '2', '3', '4', '5').sliding(2, 3)).isEqualTo(Vector.of(WrappedString.of('1', '2'), WrappedString.of('4', '5')));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldSlide5ElementsBySize2AndStep4() {
+        assertThat(WrappedString.of('1', '2', '3', '4', '5').sliding(2, 4)).isEqualTo(Vector.of(WrappedString.of('1', '2'), WrappedString.of('5')));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldSlide5ElementsBySize2AndStep5() {
+        assertThat(WrappedString.of('1', '2', '3', '4', '5').sliding(2, 5)).isEqualTo(Vector.of(WrappedString.of('1', '2')));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldSlide4ElementsBySize5AndStep3() {
+        assertThat(WrappedString.of('1', '2', '3', '4').sliding(5, 3)).isEqualTo(Vector.of(WrappedString.of('1', '2', '3', '4')));
+    }
+
+    // -- span
+
+    @Test
+    public void shouldSpanNil() {
+        assertThat(this.<Integer> empty().span(i -> i < 2)).isEqualTo(Tuple.of(empty(), empty()));
+    }
+
+    @Test
+    public void shouldSpanNonNil() {
+        assertThat(WrappedString.of('0', '1', '2', '3').span(i -> i == '0' || i == '1')).isEqualTo(Tuple.of(WrappedString.of('0', '1'), WrappedString.of('2', '3')));
+    }
+
+    // -- spliterator
+
+    @Test
+    public void shouldSplitNil() {
+        final java.util.List<Character> actual = new java.util.ArrayList<>();
+        WrappedString.empty().spliterator().forEachRemaining(actual::add);
+        assertThat(actual).isEqualTo(Collections.emptyList());
+    }
+
+    @Test
+    public void shouldSplitNonNil() {
+        final java.util.List<Character> actual = new java.util.ArrayList<>();
+        WrappedString.of('1', '2', '3').spliterator().forEachRemaining(actual::add);
+        assertThat(actual).isEqualTo(Arrays.asList('1', '2', '3'));
+    }
+
+    @Test
+    public void shouldHaveImmutableSpliterator() {
+        assertThat(WrappedString.of('1', '2', '3').spliterator().characteristics() & Spliterator.IMMUTABLE).isNotZero();
+    }
+
+    @Test
+    public void shouldHaveOrderedSpliterator() {
+        assertThat(WrappedString.of('1', '2', '3').spliterator().characteristics() & Spliterator.ORDERED).isNotZero();
+    }
+
+    @Test
+    public void shouldHaveSizedSpliterator() {
+        assertThat(WrappedString.of('1', '2', '3').spliterator().characteristics() & Spliterator.SIZED).isNotZero();
+    }
+
+    @Test
+    public void shouldReturnSizeWhenSpliterator() {
+        assertThat(WrappedString.of('1', '2', '3').spliterator().getExactSizeIfKnown()).isEqualTo(3);
+    }
+
+    // -- stderr
+
+    @Test
+    public void shouldWriteToStderr() {
+        WrappedString.of('1', '2', '3').stderr();
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldHandleStderrIOException() {
+        final PrintStream originalErr = System.err;
+        try (PrintStream failingPrintStream = failingPrintStream()) {
+            System.setErr(failingPrintStream);
+            WrappedString.of('0').stderr();
+        } finally {
+            System.setErr(originalErr);
+        }
+    }
+
+    // -- stdout
+
+    @Test
+    public void shouldWriteToStdout() {
+        WrappedString.of('1', '2', '3').stdout();
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldHandleStdoutIOException() {
+        final PrintStream originalOut = System.out;
+        try (PrintStream failingPrintStream = failingPrintStream()) {
+            System.setOut(failingPrintStream);
+            WrappedString.of('0').stdout();
+        } finally {
+            System.setOut(originalOut);
+        }
+    }
+
+    // -- sum
+
+    @Test
+    public void shouldComputeSumOfNil() {
+        assertThat(empty().sum()).isEqualTo(0);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldThrowWhenComputingSumOfStrings() {
+        WrappedString.of('1', '2', '3').sum();
+    }
+
+    // -- take
+
+    @Test
+    public void shouldTakeNoneOnNil() {
+        assertThat(empty().take(1)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldTakeNoneIfCountIsNegative() {
+        assertThat(WrappedString.of('1', '2', '3').take(-1)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldTakeAsExpectedIfCountIsLessThanSize() {
+        assertThat(WrappedString.of('1', '2', '3').take(2)).isEqualTo(WrappedString.of('1', '2'));
+    }
+
+    @Test
+    public void shouldTakeAllIfCountExceedsSize() {
+        final WrappedString t = WrappedString.of('1', '2', '3');
+        if(isThisLazyCollection()) {
+            assertThat(t.take(4)).isEqualTo(t);
+        } else {
+            assertThat(t.take(4)).isSameAs(t);
+        }
+    }
+
+    // -- takeRight
+
+    @Test
+    public void shouldTakeRightNoneOnNil() {
+        assertThat(empty().takeRight(1)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldTakeRightNoneIfCountIsNegative() {
+        assertThat(WrappedString.of('1', '2', '3').takeRight(-1)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldTakeRightAsExpectedIfCountIsLessThanSize() {
+        assertThat(WrappedString.of('1', '2', '3').takeRight(2)).isEqualTo(WrappedString.of('2', '3'));
+    }
+
+    @Test
+    public void shouldTakeRightAllIfCountExceedsSize() {
+        final WrappedString t = WrappedString.of('1', '2', '3');
+        assertThat(t.takeRight(4)).isSameAs(t);
+    }
+
+    // -- takeWhile
+
+    @Test
+    public void shouldTakeWhileNoneOnNil() {
+        assertThat(empty().takeWhile(x -> true)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldTakeWhileAllOnFalseCondition() {
+        assertThat(WrappedString.of('1', '2', '3').takeWhile(x -> false)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldTakeWhileAllOnTrueCondition() {
+        final WrappedString t = WrappedString.of('1', '2', '3');
+        if(isThisLazyCollection()) {
+            assertThat(t.takeWhile(x -> true)).isEqualTo(t);
+        } else {
+            assertThat(t.takeWhile(x -> true)).isSameAs(t);
+        }
+    }
+
+    @Test
+    public void shouldTakeWhileAsExpected() {
+        assertThat(WrappedString.of('2', '4', '5', '6').takeWhile(x -> x % 2 == 0)).isEqualTo(WrappedString.of('2', '4'));
+    }
+
+    // -- tail
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldThrowWhenTailOnNil() {
+        empty().tail();
+    }
+
+    @Test
+    public void shouldReturnTailOfNonNil() {
+        assertThat(WrappedString.of('1', '2', '3').tail()).isEqualTo(WrappedString.of('2', '3'));
+    }
+
+    // -- tailOption
+
+    @Test
+    public void shouldReturnNoneWhenCallingTailOptionOnNil() {
+        assertThat(empty().tailOption().isEmpty()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnSomeTailWhenCallingTailOptionOnNonNil() {
+        assertThat(WrappedString.of('1', '2', '3').tailOption()).isEqualTo(new Some<>(WrappedString.of('2', '3')));
+    }
+
+    // -- toJavaArray(Class)
+
+    @Test
+    public void shouldConvertNilToJavaArray() {
+        final Character[] actual = WrappedString.empty().toJavaArray(Character.class);
+        final Character[] expected = new Character[] {};
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConvertNonNilToJavaArray() {
+        final Character[] array = WrappedString.of('1', '2').toJavaArray(Character.class);
+        final Character[] expected = new Character[]{ '1', '2' };
+        assertThat(array).isEqualTo(expected);
+    }
+
+    // -- toJavaList
+
+    @Test
+    public void shouldConvertNilToArrayList() {
+        assertThat(this.<Integer> empty().toJavaList()).isEqualTo(new ArrayList<Integer>());
+    }
+
+    @Test
+    public void shouldConvertNonNilToArrayList() {
+        assertThat(WrappedString.of('1', '2', '3').toJavaList()).isEqualTo(Arrays.asList('1', '2', '3'));
+    }
+
+    // -- toJavaMap(Function)
+
+    @Test
+    public void shouldConvertNilToHashMap() {
+        assertThat(this.<Integer> empty().toJavaMap(x -> Tuple.of(x, x))).isEqualTo(new java.util.HashMap<>());
+    }
+
+    @Test
+    public void shouldConvertNonNilToHashMap() {
+        final java.util.Map<Character, Character> expected = new java.util.HashMap<>();
+        expected.put('1', '1');
+        expected.put('2', '2');
+        assertThat(WrappedString.of('1', '2').toJavaMap(x -> Tuple.of(x, x))).isEqualTo(expected);
+    }
+
+    // -- toJavaSet
+
+    @Test
+    public void shouldConvertNilToHashSet() {
+        assertThat(WrappedString.empty().toJavaSet()).isEqualTo(new java.util.HashSet<>());
+    }
+
+    @Test
+    public void shouldConvertNonNilToHashSet() {
+        final java.util.Set<Character> expected = new java.util.HashSet<>();
+        expected.add('2');
+        expected.add('1');
+        expected.add('3');
+        assertThat(WrappedString.of('1', '2', '2', '3').toJavaSet()).isEqualTo(expected);
+    }
+
+    // ++++++ OBJECT ++++++
+
+    // -- equals
+
+    @Test
+    public void shouldEqualSameTraversableInstance() {
+        final Traversable<?> traversable = empty();
+        assertThat(traversable).isEqualTo(traversable);
+    }
+
+    @Test
+    public void shouldNilNotEqualsNull() {
+        assertThat(empty()).isNotNull();
+    }
+
+    @Test
+    public void shouldNonNilNotEqualsNull() {
+        assertThat(WrappedString.of('1')).isNotNull();
+    }
+
+    @Test
+    public void shouldEmptyNotEqualsDifferentType() {
+        assertThat(empty()).isNotEqualTo("");
+    }
+
+    @Test
+    public void shouldNonEmptyNotEqualsDifferentType() {
+        assertThat(WrappedString.of('1')).isNotEqualTo("");
+    }
+
+    @Test
+    public void shouldRecognizeEqualityOfNils() {
+        assertThat(empty()).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldRecognizeEqualityOfNonNils() {
+        assertThat(WrappedString.of('1', '2', '3').equals(WrappedString.of('1', '2', '3'))).isTrue();
+    }
+
+    @Test
+    public void shouldRecognizeNonEqualityOfTraversablesOfSameSize() {
+        assertThat(WrappedString.of('1', '2', '3').equals(WrappedString.of('1', '2', '4'))).isFalse();
+    }
+
+    @Test
+    public void shouldRecognizeNonEqualityOfTraversablesOfDifferentSize() {
+        assertThat(WrappedString.of('1', '2', '3').equals(WrappedString.of('1', '2'))).isFalse();
+    }
+
+    // -- hashCode
+
+    @Test
+    public void shouldCalculateHashCodeOfNil() {
+        assertThat(empty().hashCode() == empty().hashCode()).isTrue();
+    }
+
+    @Test
+    public void shouldCalculateHashCodeOfNonNil() {
+        assertThat(WrappedString.of('1', '2').hashCode() == WrappedString.of('1', '2').hashCode()).isTrue();
+    }
+
+    @Test
+    public void shouldCalculateDifferentHashCodesForDifferentTraversables() {
+        assertThat(WrappedString.of('1', '2').hashCode() != WrappedString.of('2', '3').hashCode()).isTrue();
+    }
+
+    // -- Serializable interface
+
+    @Test
+    public void shouldSerializeDeserializeNil() {
+        final Object actual = deserialize(serialize(empty()));
+        final Object expected = empty();
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldPreserveSingletonInstanceOnDeserialization() {
+        final boolean actual = deserialize(serialize(empty())) == empty();
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void shouldSerializeDeserializeNonNil() {
+        final Object actual = deserialize(serialize(WrappedString.of('1', '2', '3')));
+        final Object expected = WrappedString.of('1', '2', '3');
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // helpers
+
+    static PrintStream failingPrintStream() {
+        return new PrintStream(new OutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+                throw new IOException();
+            }
+        });
+    }
     // -- append
 
     @Test

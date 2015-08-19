@@ -217,7 +217,7 @@ public final class WrappedString implements CharSequence, IndexedSeq<Character>,
         while (index < length() && predicate.test(charAt(index))) {
             index++;
         }
-        return index < length() ? of(back.substring(index)) : empty();
+        return index < length() ? (index == 0 ? this : of(back.substring(index))) : empty();
     }
 
     @Override
@@ -230,7 +230,7 @@ public final class WrappedString implements CharSequence, IndexedSeq<Character>,
                 sb.append(ch);
             }
         }
-        return of(sb.toString());
+        return sb.length() == 0 ? EMPTY : sb.length() == length() ? this : of(sb.toString());
     }
 
     @Override
@@ -341,6 +341,9 @@ public final class WrappedString implements CharSequence, IndexedSeq<Character>,
 
             @Override
             public Character next() {
+                if(index >= back.length()) {
+                    throw new NoSuchElementException();
+                }
                 return back.charAt(index++);
             }
         };
@@ -641,6 +644,11 @@ public final class WrappedString implements CharSequence, IndexedSeq<Character>,
     }
 
     @Override
+    public Spliterator<Character> spliterator() {
+        return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
+    }
+
+    @Override
     public WrappedString subsequence(int beginIndex) {
         if (beginIndex < 0) {
             throw new IndexOutOfBoundsException("subsequence(" + beginIndex + ")");
@@ -699,7 +707,7 @@ public final class WrappedString implements CharSequence, IndexedSeq<Character>,
         } if (n <= 0) {
             return EMPTY;
         }else {
-            return of(back.substring(n));
+            return of(back.substring(length() - n));
         }
     }
 
@@ -1718,39 +1726,6 @@ public final class WrappedString implements CharSequence, IndexedSeq<Character>,
      */
     public WrappedString concat(WrappedString str) {
         return of(back.concat(str.back));
-    }
-
-    /**
-     * Returns a string resulting from replacing all occurrences of
-     * {@code oldChar} in this string with {@code newChar}.
-     * <p>
-     * If the character {@code oldChar} does not occur in the
-     * character sequence represented by this {@code String} object,
-     * then a reference to this {@code String} object is returned.
-     * Otherwise, a {@code String} object is returned that
-     * represents a character sequence identical to the character sequence
-     * represented by this {@code String} object, except that every
-     * occurrence of {@code oldChar} is replaced by an occurrence
-     * of {@code newChar}.
-     * <p>
-     * Examples:
-     * <blockquote><pre>
-     * "mesquite in your cellar".replace('e', 'o')
-     *         returns "mosquito in your collar"
-     * "the war of baronets".replace('r', 'y')
-     *         returns "the way of bayonets"
-     * "sparring with a purple porpoise".replace('p', 't')
-     *         returns "starring with a turtle tortoise"
-     * "JonL".replace('q', 'x') returns "JonL" (no change)
-     * </pre></blockquote>
-     *
-     * @param   oldChar   the old character.
-     * @param   newChar   the new character.
-     * @return  a string derived from this string by replacing every
-     *          occurrence of {@code oldChar} with {@code newChar}.
-     */
-    public WrappedString replace(char oldChar, char newChar) {
-        return of(back.replace(oldChar, newChar));
     }
 
     /**
