@@ -149,6 +149,7 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
      * The collision resolution function will always take the first argument from <code>this</code> hash map
      * and the second from <code>that</code>.
      *
+     * @param <U> value type of that HashMap
      * @param that the other hash map
      * @param mergef the merge function or null if the first key-value pair is to be picked
      * @return A merged map
