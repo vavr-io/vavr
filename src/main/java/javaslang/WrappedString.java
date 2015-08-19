@@ -86,13 +86,14 @@ public final class WrappedString implements CharSequence, IndexedSeq<Character>,
     }
 
     /**
-     * Creates a String of {@code java.lang.String}.
+     * Creates a String of {@code CharSequence}.
      *
-     * @param javaString {@code java.lang.String} instance.
+     * @param sequence {@code CharSequence} instance.
      * @return A new {@code javaslang.String}
      */
-    public static WrappedString of(java.lang.String javaString) {
-        return javaString.isEmpty() ? empty() : new WrappedString(javaString);
+    public static WrappedString of(CharSequence sequence) {
+        Objects.requireNonNull(sequence, "sequence is null");
+        return sequence.length() == 0 ? empty() : new WrappedString(sequence.toString());
     }
 
     /**
@@ -106,6 +107,7 @@ public final class WrappedString implements CharSequence, IndexedSeq<Character>,
      * @throws NullPointerException if {@code elements} is null
      */
     public static WrappedString ofAll(Iterable<? extends Character> elements) {
+        Objects.requireNonNull(elements, "elements is null");
         final StringBuilder sb = new StringBuilder();
         for (Character character : elements) {
             sb.append(character);
