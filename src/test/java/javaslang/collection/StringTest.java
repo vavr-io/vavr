@@ -60,6 +60,52 @@ public class StringTest {
         return WrappedString.empty();
     }
 
+    // -- exists
+
+    @Test
+    public void shouldBeAwareOfExistingElement() {
+        assertThat(WrappedString.of('1', '2').exists(i -> i == '2')).isTrue();
+    }
+
+    @Test
+    public void shouldBeAwareOfNonExistingElement() {
+        assertThat(empty().exists(i -> i == 1)).isFalse();
+    }
+
+    // -- forAll
+
+    @Test
+    public void shouldBeAwareOfPropertyThatHoldsForAll() {
+        assertThat(WrappedString.of('2', '4').forAll(i -> i % 2 == 0)).isTrue();
+    }
+
+    @Test
+    public void shouldBeAwareOfPropertyThatNotHoldsForAll() {
+        assertThat(WrappedString.of('2', '3').forAll(i -> i % 2 == 0)).isFalse();
+    }
+
+    // -- peek
+
+    @Test
+    public void shouldPeekNil() {
+        assertThat(empty().peek(t -> {
+        })).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldPeekNonNilPerformingNoAction() {
+        assertThat(WrappedString.of('1').peek(t -> {
+        })).isEqualTo(WrappedString.of('1'));
+    }
+
+    @Test
+    public void shouldPeekSingleValuePerformingAnAction() {
+        final char[] effect = { 0 };
+        final WrappedString actual = WrappedString.of('1').peek(i -> effect[0] = i);
+        assertThat(actual).isEqualTo(WrappedString.of('1'));
+        assertThat(effect[0]).isEqualTo('1');
+    }
+
     // -- average
 
     @Test
