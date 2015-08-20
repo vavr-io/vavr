@@ -1186,7 +1186,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> subsequence(int beginIndex) {
+    public Vector<T> subSequence(int beginIndex) {
         if (beginIndex < 0) {
             throw new IndexOutOfBoundsException("subsequence(" + beginIndex + ")");
         }
@@ -1197,7 +1197,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> subsequence(int beginIndex, int endIndex) {
+    public Vector<T> subSequence(int beginIndex, int endIndex) {
         if (beginIndex < 0 || beginIndex > endIndex || endIndex > length()) {
             throw new IndexOutOfBoundsException(
                     String.format("subsequence(%s, %s) on List of length %s", beginIndex, endIndex, length()));
