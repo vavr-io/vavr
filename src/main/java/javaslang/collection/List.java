@@ -1351,6 +1351,11 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         }
 
         @Override
+        public boolean hasDefiniteSize() {
+            return true;
+        }
+
+        @Override
         public T head() {
             return head;
         }
@@ -1368,6 +1373,11 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         @Override
         public Some<List<T>> initOption() {
             return new Some<>(init());
+        }
+
+        @Override
+        public boolean isTraversableAgain() {
+            return true;
         }
 
         @Override
@@ -1638,6 +1648,11 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         }
 
         @Override
+        public boolean hasDefiniteSize() {
+            return true;
+        }
+
+        @Override
         public T head() {
             throw new NoSuchElementException("head of empty list");
         }
@@ -1655,6 +1670,11 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         @Override
         public None<List<T>> initOption() {
             return None.instance();
+        }
+
+        @Override
+        public boolean isTraversableAgain() {
+            return true;
         }
 
         @Override

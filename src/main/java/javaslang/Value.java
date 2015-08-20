@@ -270,6 +270,39 @@ public interface Value<T> extends MonadOps<T>, IterableOps<T>, ConversionOps<T> 
         return StreamSupport.stream(spliterator(), false);
     }
 
+    // -- Object
+
+    /**
+     * Clarifies that values have a proper equals() method implemented.
+     * <p>
+     * See <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#equals-java.lang.Object-">Object.equals(Object)</a>.
+     *
+     * @param o An object
+     * @return true, if this equals o, false otherwise
+     */
+    @Override
+    boolean equals(Object o);
+
+    /**
+     * Clarifies that values have a proper hashCode() method implemented.
+     * <p>
+     * See <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#hashCode--">Object.hashCode()</a>.
+     *
+     * @return  The hashcode of this object
+     */
+    @Override
+    int hashCode();
+
+    /**
+     * Clarifies that values have a proper toString() method implemented.
+     * <p>
+     * See <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#toString--">Object.toString()</a>.
+     *
+     * @return A String representation of this object
+     */
+    @Override
+    String toString();
+
 }
 
 /**
@@ -401,28 +434,37 @@ interface ConversionOps<T> {
 
 // TODO:
 //    /**
-//     * Converts this instance to a {@link Array}.
+//     * Converts this value to a {@link Array}.
 //     *
 //     * @return A new {@link Array}.
 //     */
 //    Array<T> toArray();
 
     /**
-     * Converts this instance to a {@link Lazy}.
+     * Converts this value to a {@link CharSeq}.
+     *
+     * @return A new {@link CharSeq}.
+     */
+    default CharSeq toCharSeq() {
+        return CharSeq.of(toString());
+    }
+
+    /**
+     * Converts this value to a {@link Lazy}.
      *
      * @return A new {@link Lazy}.
      */
     Lazy<T> toLazy();
 
     /**
-     * Converts this instance to a {@link List}.
+     * Converts this value to a {@link List}.
      *
      * @return A new {@link List}.
      */
     List<T> toList();
 
     /**
-     * Converts this instance to a {@link Map}.
+     * Converts this value to a {@link Map}.
      *
      * @param f   A function that maps an element to a key/value pair represented by Tuple2
      * @param <K> The key type
@@ -432,43 +474,50 @@ interface ConversionOps<T> {
     <K, V> Map<K, V> toMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f);
 
     /**
-     * Converts this instance to an {@link Option}.
+     * Converts this value to an {@link Option}.
      *
      * @return A new {@link Option}.
      */
     Option<T> toOption();
 
     /**
-     * Converts this instance to a {@link Queue}.
+     * Converts this value to a {@link Queue}.
      *
      * @return A new {@link Queue}.
      */
     Queue<T> toQueue();
 
     /**
-     * Converts this instance to a {@link Set}.
+     * Converts this value to a {@link Set}.
      *
      * @return A new {@link HashSet}.
      */
     Set<T> toSet();
 
     /**
-     * Converts this instance to a {@link Stack}.
+     * Converts this value to a {@link Stack}.
      *
      * @return A new {@link List}, which is a {@link Stack}.
      */
     Stack<T> toStack();
 
     /**
-     * Converts this instance to a {@link Stream}.
+     * Converts this value to a {@link Stream}.
      *
      * @return A new {@link Stream}.
      */
     Stream<T> toStream();
 
+    /**
+     * Converts this value to a {@link java.lang.String}.
+     * @return A new {@link String}.
+     */
+    @Override
+    String toString();
+
 // TODO:
 //    /**
-//     * Converts this instance to a {@link Tree}.
+//     * Converts this value to a {@link Tree}.
 //     *
 //     * @return A new {@link Tree}.
 //     */
@@ -476,7 +525,7 @@ interface ConversionOps<T> {
 
 // TODO:
 //    /**
-//     * Converts this instance to a {@link Vector}.
+//     * Converts this value to a {@link Vector}.
 //     *
 //     * @return A new {@link Vector}.
 //     */
@@ -485,7 +534,7 @@ interface ConversionOps<T> {
     // -- Java types
 
     /**
-     * Converts this instance to a Java array.
+     * Converts this value to a Java array.
      *
      * @param componentType Component type of the array
      * @return A new Java array.
@@ -494,14 +543,14 @@ interface ConversionOps<T> {
     T[] toJavaArray(Class<T> componentType);
 
     /**
-     * Converts this instance to an {@link java.util.List}.
+     * Converts this value to an {@link java.util.List}.
      *
      * @return A new {@link java.util.ArrayList}.
      */
     java.util.List<T> toJavaList();
 
     /**
-     * Converts this instance to a {@link java.util.Map}.
+     * Converts this value to a {@link java.util.Map}.
      *
      * @param f   A function that maps an element to a key/value pair represented by Tuple2
      * @param <K> The key type
@@ -511,21 +560,21 @@ interface ConversionOps<T> {
     <K, V> java.util.Map<K, V> toJavaMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f);
 
     /**
-     * Converts this instance to an {@link java.util.Optional}.
+     * Converts this value to an {@link java.util.Optional}.
      *
      * @return A new {@link java.util.Optional}.
      */
     Optional<T> toJavaOptional();
 
     /**
-     * Converts this instance to a {@link java.util.Set}.
+     * Converts this value to a {@link java.util.Set}.
      *
      * @return A new {@link java.util.HashSet}.
      */
     java.util.Set<T> toJavaSet();
 
     /**
-     * Converts this instance to a {@link java.util.stream.Stream}.
+     * Converts this value to a {@link java.util.stream.Stream}.
      *
      * @return A new {@link java.util.stream.Stream}.
      */

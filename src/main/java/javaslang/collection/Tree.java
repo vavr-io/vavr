@@ -393,6 +393,11 @@ public interface Tree<T> extends Traversable<T> {
         }
 
         @Override
+        public boolean hasDefiniteSize() {
+            return true;
+        }
+
+        @Override
         public boolean isEmpty() {
             return false;
         }
@@ -400,6 +405,11 @@ public interface Tree<T> extends Traversable<T> {
         @Override
         public boolean isLeaf() {
             return children.isEmpty();
+        }
+
+        @Override
+        public boolean isTraversableAgain() {
+            return true;
         }
 
         @Override
@@ -710,6 +720,11 @@ public interface Tree<T> extends Traversable<T> {
         }
 
         @Override
+        public boolean hasDefiniteSize() {
+            return true;
+        }
+
+        @Override
         public boolean isEmpty() {
             return true;
         }
@@ -717,6 +732,11 @@ public interface Tree<T> extends Traversable<T> {
         @Override
         public boolean isLeaf() {
             return false;
+        }
+
+        @Override
+        public boolean isTraversableAgain() {
+            return true;
         }
 
         @Override

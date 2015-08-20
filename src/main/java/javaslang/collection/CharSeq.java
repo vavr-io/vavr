@@ -285,6 +285,11 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
+    public boolean hasDefiniteSize() {
+        return true;
+    }
+
+    @Override
     public CharSeq init() {
         if (isEmpty()) {
             throw new UnsupportedOperationException("init of empty string");
@@ -877,6 +882,11 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     @Override
     public boolean isEmpty() {
         return back.isEmpty();
+    }
+
+    @Override
+    public boolean isTraversableAgain() {
+        return true;
     }
 
     private Object readResolve() {
