@@ -5,7 +5,12 @@
  */
 package javaslang.collection;
 
-import java.util.function.Function;
+import javaslang.Kind;
+import javaslang.Tuple2;
+import javaslang.control.Option;
+
+import java.util.Comparator;
+import java.util.function.*;
 
 /**
  * An immutable {@code SortedSet} interface.
@@ -13,15 +18,121 @@ import java.util.function.Function;
  * @param <T> Component type
  * @since 2.0.0
  */
-public interface SortedSet<T> /*extends Set<T>*/ {
+public interface SortedSet<T> extends Set<T> {
 
     // TODO: additional SortedSet methods
 
     // -- Adjusted return types of Set methods
 
-    // TODO: @Override
+    @Override
+    SortedSet<T> add(T element);
+
+    @Override
+    SortedSet<T> clear();
+
+    @Override
+    SortedSet<T> distinct();
+
+    @Override
+    SortedSet<T> distinctBy(Comparator<? super T> comparator);
+
+    @Override
+    <U> SortedSet<T> distinctBy(Function<? super T, ? extends U> keyExtractor);
+
+    @Override
+    SortedSet<T> drop(int n);
+
+    @Override
+    SortedSet<T> dropRight(int n);
+
+    @Override
+    SortedSet<T> dropWhile(Predicate<? super T> predicate);
+
+    @Override
+    SortedSet<T> filter(Predicate<? super T> predicate);
+
+    @Override
+    SortedSet<T> findAll(Predicate<? super T> predicate);
+
+    @Override
+    <U> SortedSet<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
+
+    @Override
+    <U> SortedSet<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper);
+
+    @Override
+    SortedSet<Object> flatten();
+
+    @Override
     <C> Map<C, ? extends SortedSet<T>> groupBy(Function<? super T, ? extends C> classifier);
 
-    // TODO
+    @Override
+    SortedSet<T> init();
+
+    @Override
+    public Option<? extends SortedSet<T>> initOption();
+
+    @Override
+    <U> SortedSet<U> map(Function<? super T, ? extends U> mapper);
+
+    @Override
+    Tuple2<? extends SortedSet<T>, ? extends SortedSet<T>> partition(Predicate<? super T> predicate);
+
+    @Override
+    SortedSet<T> peek(Consumer<? super T> action);
+
+    @Override
+    SortedSet<T> remove(T element);
+
+    @Override
+    SortedSet<T> removeAll(Iterable<? extends T> elements);
+
+    @Override
+    SortedSet<T> replace(T currentElement, T newElement);
+
+    @Override
+    SortedSet<T> replaceAll(T currentElement, T newElement);
+
+    @Override
+    SortedSet<T> replaceAll(UnaryOperator<T> operator);
+
+    @Override
+    SortedSet<T> retainAll(Iterable<? extends T> elements);
+
+    @Override
+    SortedSet<? extends SortedSet<T>> sliding(int size);
+
+    @Override
+    SortedSet<? extends SortedSet<T>> sliding(int size, int step);
+
+    @Override
+    Tuple2<? extends SortedSet<T>, ? extends SortedSet<T>> span(Predicate<? super T> predicate);
+
+    @Override
+    SortedSet<T> tail();
+
+    @Override
+    Option<? extends SortedSet<T>> tailOption();
+
+    @Override
+    SortedSet<T> take(int n);
+
+    @Override
+    SortedSet<T> takeRight(int n);
+
+    @Override
+    SortedSet<T> takeWhile(Predicate<? super T> predicate);
+
+    @Override
+    <T1, T2> Tuple2<? extends SortedSet<T1>, ? extends SortedSet<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
+
+    @Override
+    <U> SortedSet<Tuple2<T, U>> zip(Iterable<U> that);
+
+    @Override
+    <U> SortedSet<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
+
+    @Override
+    SortedSet<Tuple2<T, Integer>> zipWithIndex();
 
 }
