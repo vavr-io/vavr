@@ -55,8 +55,8 @@ import java.util.function.*;
  * <li>{@link #indexOf(Object, int)}</li>
  * <li>{@link #lastIndexOf(Object)}</li>
  * <li>{@link #lastIndexOf(Object, int)}</li>
- * <li>{@link #subsequence(int)}</li>
- * <li>{@link #subsequence(int, int)}</li>
+ * <li>{@link #subSequence(int)}</li>
+ * <li>{@link #subSequence(int, int)}</li>
  * </ul>
  *
  * Transformation:
@@ -347,7 +347,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * @throws IndexOutOfBoundsException if index &lt; 0 or index &gt; length()
      */
     default Iterator<T> iterator(int index) {
-        return subsequence(index).iterator();
+        return subSequence(index).iterator();
     }
 
     /**
@@ -613,7 +613,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * @throws IndexOutOfBoundsException if {@code beginIndex} is negative or larger than the length of this
      *                                   {@code String} object.
      */
-    Seq<T> subsequence(int beginIndex);
+    Seq<T> subSequence(int beginIndex);
 
     /**
      * <p>Returns a Seq that is a subsequence of this. The subsequence begins with the element at the specified index
@@ -637,7 +637,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      *                                   {@code beginIndex} is larger than
      *                                   {@code endIndex}.
      */
-    Seq<T> subsequence(int beginIndex, int endIndex);
+    Seq<T> subSequence(int beginIndex, int endIndex);
 
     /**
      * Creates an instance of this type of an {@code Iterable}.

@@ -5,34 +5,24 @@
  */
 package javaslang.collection.euler;
 
-import javaslang.Function1;
 import javaslang.collection.HashMap;
 import javaslang.collection.Map;
 import javaslang.collection.Stream;
 
-import java.util.function.Function;
-
 public final class PrimeNumbers {
-
-    private static final Stream<Long> PRIMES =
-            Stream.of(2L).appendSelf(self -> Stream.gen(3L, i -> i + 2)
-                            .filter(i -> self.takeWhile(j -> j * j <= i).forAll(k -> i % k > 0))
-            );
-
-    private static final Function<Integer, Long> MEMOIZED_PRIMES = Function1.lift(PRIMES::apply).memoized();
 
     private PrimeNumbers() {
     }
 
     public static Stream<Long> primes() {
-        return PRIMES;
+        return Sieve.INSTANCE.streamOfLongs();
     }
 
     public static long prime(int index) {
         if (index < 1) {
             throw new IllegalArgumentException("index < 1");
         }
-        return MEMOIZED_PRIMES.apply(index - 1);
+        return Sieve.INSTANCE.array()[index-1];
     }
 
     public static HashMap<Long, Long> factorization(long num) {

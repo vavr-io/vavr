@@ -172,10 +172,10 @@ public interface LinearSeq<T> extends Seq<T> {
     Tuple2<? extends LinearSeq<T>, ? extends LinearSeq<T>> span(Predicate<? super T> predicate);
 
     @Override
-    LinearSeq<T> subsequence(int beginIndex);
+    LinearSeq<T> subSequence(int beginIndex);
 
     @Override
-    LinearSeq<T> subsequence(int beginIndex, int endIndex);
+    LinearSeq<T> subSequence(int beginIndex, int endIndex);
 
     @Override
     LinearSeq<T> tail();

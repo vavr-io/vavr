@@ -656,7 +656,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq subsequence(int beginIndex) {
+    public CharSeq subSequence(int beginIndex) {
         if (beginIndex < 0) {
             throw new IndexOutOfBoundsException("subsequence(" + beginIndex + ")");
         }
@@ -667,7 +667,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq subsequence(int beginIndex, int endIndex) {
+    public CharSeq subSequence(int beginIndex, int endIndex) {
         if (beginIndex < 0 || beginIndex > endIndex || endIndex > length()) {
             throw new IndexOutOfBoundsException(
                     java.lang.String.format("subsequence(%s, %s) on List of length %s", beginIndex, endIndex, length()));
@@ -949,31 +949,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     @Override
     public int length() {
         return back.length();
-    }
-
-    /**
-     * Returns a character sequence that is a subsequence of this sequence.
-     *
-     * <p> An invocation of this method of the form
-     *
-     * <blockquote><pre>
-     * str.subSequence(begin,&nbsp;end)</pre></blockquote>
-     *
-     * behaves in exactly the same way as the invocation
-     *
-     * <blockquote><pre>
-     * str.substring(begin,&nbsp;end)</pre></blockquote>
-     *
-     * @param beginIndex the begin index, inclusive.
-     * @param endIndex   the end index, exclusive.
-     * @return the specified subsequence.
-     * @throws IndexOutOfBoundsException if {@code beginIndex} or {@code endIndex} is negative,
-     *                                   if {@code endIndex} is greater than {@code length()},
-     *                                   or if {@code beginIndex} is greater than {@code endIndex}
-     */
-    @Override
-    public CharSeq subSequence(int beginIndex, int endIndex) {
-        return of(back.subSequence(beginIndex, endIndex));
     }
 
     //

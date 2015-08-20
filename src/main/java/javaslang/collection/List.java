@@ -1183,7 +1183,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> subsequence(int beginIndex) {
+    default List<T> subSequence(int beginIndex) {
         if (beginIndex < 0) {
             throw new IndexOutOfBoundsException("subsequence(" + beginIndex + ")");
         }
@@ -1198,7 +1198,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> subsequence(int beginIndex, int endIndex) {
+    default List<T> subSequence(int beginIndex, int endIndex) {
         if (beginIndex < 0 || beginIndex > endIndex) {
             throw new IndexOutOfBoundsException(
                     String.format("subsequence(%s, %s) on List of length %s", beginIndex, endIndex, length()));
