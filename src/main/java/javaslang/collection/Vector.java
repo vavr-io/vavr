@@ -758,6 +758,11 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
+    public boolean hasDefiniteSize() {
+        return true;
+    }
+
+    @Override
     public int indexOf(T element, int from) {
         for (int i = from; i < length(); i++) {
             if (Objects.equals(get(i), element)) {
@@ -841,6 +846,11 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     @Override
     public boolean isEmpty() {
         return trie.isEmpty();
+    }
+
+    @Override
+    public boolean isTraversableAgain() {
+        return true;
     }
 
     @Override

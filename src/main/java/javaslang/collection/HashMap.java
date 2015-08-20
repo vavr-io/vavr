@@ -205,6 +205,11 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
+    public boolean hasDefiniteSize() {
+        return true;
+    }
+
+    @Override
     public Entry<K, V> head() {
         return null;
     }
@@ -227,6 +232,11 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public boolean isEmpty() {
         return tree.isEmpty();
+    }
+
+    @Override
+    public boolean isTraversableAgain() {
+        return true;
     }
 
     @Override

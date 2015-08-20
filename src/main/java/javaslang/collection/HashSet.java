@@ -274,8 +274,8 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public String mkString(CharSequence delimiter,
-                       CharSequence prefix,
-                       CharSequence suffix) {
+                           CharSequence prefix,
+                           CharSequence suffix) {
         final StringBuilder builder = new StringBuilder(prefix);
         forEach(t -> builder.append(String.valueOf(t)).append(String.valueOf(delimiter)));
         if (!isEmpty()) {
@@ -290,8 +290,18 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
+    public boolean hasDefiniteSize() {
+        return true;
+    }
+
+    @Override
     public boolean isEmpty() {
         return tree.isEmpty();
+    }
+
+    @Override
+    public boolean isTraversableAgain() {
+        return true;
     }
 
     @Override

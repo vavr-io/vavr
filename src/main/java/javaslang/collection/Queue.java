@@ -663,6 +663,11 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
+    public boolean hasDefiniteSize() {
+        return true;
+    }
+
+    @Override
     public T head() {
         if (isEmpty()) {
             throw new NoSuchElementException("head of empty queue");
@@ -675,6 +680,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     public Option<T> headOption() {
         return isEmpty() ? None.instance() : new Some<>(front.head());
     }
+
 
     @Override
     public int indexOf(T element, int from) {
@@ -759,6 +765,11 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     @Override
     public boolean isEmpty() {
         return front.isEmpty();
+    }
+
+    @Override
+    public boolean isTraversableAgain() {
+        return true;
     }
 
     @Override

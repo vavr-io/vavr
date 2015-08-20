@@ -5,20 +5,17 @@
  */
 package javaslang.collection;
 
-import javaslang.FilterMonadic;
 import javaslang.Kind;
-import javaslang.Kind.IterableKind;
-import javaslang.Value;
+import javaslang.Tuple2;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 /**
  * {@code javaslang.collection.Iterator} is a powerful replacement for {@code java.util.Iterator}.
@@ -42,7 +39,7 @@ import java.util.function.Predicate;
  * @param <T> Component type
  * @since 2.0.0
  */
-public interface Iterator<T> extends java.util.Iterator<T>, Value<T>, FilterMonadic<IterableKind<?>, T> {
+public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
     /**
      * The empty Iterator.
@@ -250,6 +247,26 @@ public interface Iterator<T> extends java.util.Iterator<T>, Value<T>, FilterMona
         };
     }
 
+    @Override
+    default TraversableOnce<T> clear() {
+        return null;
+    }
+
+    @Override
+    default TraversableOnce<T> distinct() {
+        return null;
+    }
+
+    @Override
+    default TraversableOnce<T> distinctBy(Comparator<? super T> comparator) {
+        return null;
+    }
+
+    @Override
+    default <U> TraversableOnce<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
+        return null;
+    }
+
     /**
      * Removes up to n elements from this iterator.
      *
@@ -285,6 +302,16 @@ public interface Iterator<T> extends java.util.Iterator<T>, Value<T>, FilterMona
                 }
             };
         }
+    }
+
+    @Override
+    default TraversableOnce<T> dropRight(int n) {
+        return null;
+    }
+
+    @Override
+    default TraversableOnce<T> dropWhile(Predicate<? super T> predicate) {
+        return null;
     }
 
     default boolean equals(Iterator<? extends T> that) {
@@ -335,6 +362,16 @@ public interface Iterator<T> extends java.util.Iterator<T>, Value<T>, FilterMona
                 }
             };
         }
+    }
+
+    @Override
+    default TraversableOnce<T> findAll(Predicate<? super T> predicate) {
+        return null;
+    }
+
+    @Override
+    default Option<T> findLast(Predicate<? super T> predicate) {
+        return null;
     }
 
     /**
@@ -406,8 +443,18 @@ public interface Iterator<T> extends java.util.Iterator<T>, Value<T>, FilterMona
     }
 
     @Override
+    default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
+        return null;
+    }
+
+    @Override
     default T get() {
         return head();
+    }
+
+    @Override
+    default <C> Map<C, ? extends TraversableOnce<T>> groupBy(Function<? super T, ? extends C> classifier) {
+        return null;
     }
 
     default T head() {
@@ -419,6 +466,16 @@ public interface Iterator<T> extends java.util.Iterator<T>, Value<T>, FilterMona
 
     default Option<T> headOption() {
         return hasNext() ? new Some<>(next()) : None.instance();
+    }
+
+    @Override
+    default TraversableOnce<T> init() {
+        return null;
+    }
+
+    @Override
+    default Option<? extends TraversableOnce<T>> initOption() {
+        return null;
     }
 
     /**
@@ -501,6 +558,11 @@ public interface Iterator<T> extends java.util.Iterator<T>, Value<T>, FilterMona
     }
 
     @Override
+    default Tuple2<? extends TraversableOnce<T>, ? extends TraversableOnce<T>> partition(Predicate<? super T> predicate) {
+        return null;
+    }
+
+    @Override
     default Iterator<T> peek(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         if (!hasNext()) {
@@ -526,6 +588,46 @@ public interface Iterator<T> extends java.util.Iterator<T>, Value<T>, FilterMona
         }
     }
 
+    @Override
+    default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
+        return null;
+    }
+
+    @Override
+    default TraversableOnce<T> replace(T currentElement, T newElement) {
+        return null;
+    }
+
+    @Override
+    default TraversableOnce<T> replaceAll(T currentElement, T newElement) {
+        return null;
+    }
+
+    @Override
+    default TraversableOnce<T> replaceAll(UnaryOperator<T> operator) {
+        return null;
+    }
+
+    @Override
+    default TraversableOnce<T> retainAll(Iterable<? extends T> elements) {
+        return null;
+    }
+
+    @Override
+    default TraversableOnce<? extends TraversableOnce<T>> sliding(int size) {
+        return null;
+    }
+
+    @Override
+    default TraversableOnce<? extends TraversableOnce<T>> sliding(int size, int step) {
+        return null;
+    }
+
+    @Override
+    default Tuple2<? extends TraversableOnce<T>, ? extends TraversableOnce<T>> span(Predicate<? super T> predicate) {
+        return null;
+    }
+
     default Iterator<T> tail() {
         if (!hasNext()) {
             throw new UnsupportedOperationException();
@@ -533,6 +635,11 @@ public interface Iterator<T> extends java.util.Iterator<T>, Value<T>, FilterMona
             next(); // remove first element
             return this;
         }
+    }
+
+    @Override
+    default Option<? extends TraversableOnce<T>> tailOption() {
+        return null;
     }
 
     /**
@@ -565,6 +672,16 @@ public interface Iterator<T> extends java.util.Iterator<T>, Value<T>, FilterMona
                 }
             };
         }
+    }
+
+    @Override
+    default TraversableOnce<T> takeRight(int n) {
+        return null;
+    }
+
+    @Override
+    default TraversableOnce<T> takeWhile(Predicate<? super T> predicate) {
+        return null;
     }
 
     class ConcatIterator<T> implements Iterator<T> {

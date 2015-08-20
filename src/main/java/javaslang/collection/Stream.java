@@ -793,7 +793,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Stream<T> dropRight(int n) {
-        if(n <= 0) {
+        if (n <= 0) {
             return this;
         } else if (length() <= n) {
             return empty();
@@ -1119,7 +1119,7 @@ public interface Stream<T> extends LinearSeq<T> {
     @Override
     default Tuple2<Stream<T>, Stream<T>> splitAtInclusive(Predicate<? super T> predicate) {
         final Tuple2<Stream<T>, Stream<T>> split = splitAt(predicate);
-        if(split._2.isEmpty()) {
+        if (split._2.isEmpty()) {
             return split;
         } else {
             return Tuple.of(split._1.append(split._2.head()), split._2.tail());
@@ -1303,6 +1303,11 @@ public interface Stream<T> extends LinearSeq<T> {
         }
 
         @Override
+        public boolean hasDefiniteSize() {
+            return false;
+        }
+
+        @Override
         public Some<T> headOption() {
             return new Some<>(head.get());
         }
@@ -1356,6 +1361,11 @@ public interface Stream<T> extends LinearSeq<T> {
         }
 
         @Override
+        public boolean isTraversableAgain() {
+            return true;
+        }
+
+        @Override
         public int length() {
             return length.get();
         }
@@ -1384,7 +1394,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
         @Override
         public Stream<T> removeAt(int indx) {
-            if(indx < 0) {
+            if (indx < 0) {
                 throw new IndexOutOfBoundsException("removeAt(" + indx + ")");
             } else if (indx == 0) {
                 return tail();
@@ -1652,6 +1662,11 @@ public interface Stream<T> extends LinearSeq<T> {
         }
 
         @Override
+        public boolean hasDefiniteSize() {
+            return false;
+        }
+
+        @Override
         public T head() {
             throw new NoSuchElementException("head of empty stream");
         }
@@ -1702,6 +1717,11 @@ public interface Stream<T> extends LinearSeq<T> {
 
         @Override
         public boolean isEmpty() {
+            return true;
+        }
+
+        @Override
+        public boolean isTraversableAgain() {
             return true;
         }
 
