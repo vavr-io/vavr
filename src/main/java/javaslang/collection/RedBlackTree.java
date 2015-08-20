@@ -22,7 +22,7 @@ import static javaslang.collection.RedBlackTree.Color.RED;
  * @param <T> Component type
  * @since 2.0.0
  */
-public interface RedBlackTree<T> {
+public interface RedBlackTree<T> /*TODO: extends Iterable<T>*/{
 
     static <T extends Comparable<T>> EmptyNode<T> empty() {
         return new EmptyNode<>(T::compareTo);
@@ -31,15 +31,6 @@ public interface RedBlackTree<T> {
     static <T> EmptyNode<T> empty(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return new EmptyNode<>(comparator);
-    }
-
-    static <T extends Comparable<T>> TreeNode<T> of(T value) {
-        return RedBlackTree.<T> empty().add(value);
-    }
-
-    static <T extends Comparable<T>> TreeNode<T> of(Comparator<? super T> comparator, T value) {
-        Objects.requireNonNull(comparator, "comparator is null");
-        return RedBlackTree.empty(comparator).add(value);
     }
 
     default TreeNode<T> add(T value) {
@@ -72,6 +63,13 @@ public interface RedBlackTree<T> {
 
         return new TreeNode<>(BLACK, node.left, node.value, node.right, node.comparator);
     }
+
+    /**
+     * Clears this RedBlackTree.
+     *
+     * @return An EmptyNode
+     */
+    RedBlackTree.EmptyNode<T> clear();
 
     /**
      * Checks, if this {@code RedBlackTree} contains the given {@code value}.
@@ -147,6 +145,11 @@ public interface RedBlackTree<T> {
             this.right = right;
             this.comparator = comparator;
             this.hashCode =  Lazy.of(() -> Objects.hash(this.value, this.left, this.right));
+        }
+
+        @Override
+        public EmptyNode<T> clear() {
+            return RedBlackTree.empty(comparator);
         }
 
         @Override
@@ -273,6 +276,11 @@ public interface RedBlackTree<T> {
         // This is no public API! The RedBlackTree takes care of passing the correct Comparator.
         private EmptyNode(Comparator<? super T> comparator) {
             this.comparator = comparator;
+        }
+
+        @Override
+        public EmptyNode<T> clear() {
+            return this;
         }
 
         @Override

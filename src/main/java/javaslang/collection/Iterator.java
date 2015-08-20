@@ -53,7 +53,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
         @Override
         public Object next() {
-            throw new NoSuchElementException();
+            throw new NoSuchElementException("next() on empty iterator");
         }
     };
 
@@ -88,7 +88,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             @Override
             public T next() {
                 if (!hasNext) {
-                    throw new NoSuchElementException();
+                    EMPTY.next();
                 }
                 hasNext = false;
                 return element;
@@ -118,7 +118,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             @Override
             public T next() {
                 if (!hasNext()) {
-                    throw new NoSuchElementException();
+                    EMPTY.next();
                 }
                 return elements[index++];
             }
@@ -136,7 +136,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     @SuppressWarnings({ "unchecked", "varargs" })
     static <T> Iterator<T> ofIterators(Iterator<? extends T>... iterators) {
         Objects.requireNonNull(iterators, "iterators is null");
-        return iterators.length == 0 ? Iterator.empty() : new ConcatIterator<>(Stream.of(iterators).iterator());
+        return iterators.length == 0 ? empty() : new ConcatIterator<>(Stream.of(iterators).iterator());
     }
 
     /**
@@ -150,7 +150,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     @SuppressWarnings({ "unchecked", "varargs" })
     static <T> Iterator<T> ofIterables(Iterable<? extends T>... iterables) {
         Objects.requireNonNull(iterables, "iterables is null");
-        return iterables.length == 0 ? Iterator.empty() : new ConcatIterator<>(Stream.of(iterables).map(Iterator::ofAll).iterator());
+        return iterables.length == 0 ? empty() : new ConcatIterator<>(Stream.of(iterables).map(Iterator::ofAll).iterator());
     }
 
     /**
@@ -162,7 +162,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      */
     static <T> Iterator<T> ofIterators(Iterator<? extends Iterator<? extends T>> iterators) {
         Objects.requireNonNull(iterators, "iterators is null");
-        return iterators.isEmpty() ? Iterator.empty() : new ConcatIterator<>(Stream.ofAll(iterators).iterator());
+        return iterators.isEmpty() ? empty() : new ConcatIterator<>(Stream.ofAll(iterators).iterator());
     }
 
     /**
@@ -174,7 +174,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      */
     static <T> Iterator<T> ofIterables(Iterator<? extends Iterable<? extends T>> iterables) {
         Objects.requireNonNull(iterables, "iterables is null");
-        return iterables.isEmpty() ? Iterator.empty() : new ConcatIterator<>(Stream.ofAll(iterables).map(Iterator::ofAll).iterator());
+        return iterables.isEmpty() ? empty() : new ConcatIterator<>(Stream.ofAll(iterables).map(Iterator::ofAll).iterator());
     }
 
     /**
@@ -187,7 +187,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     static <T> Iterator<T> ofIterators(Iterable<? extends Iterator<? extends T>> iterators) {
         Objects.requireNonNull(iterators, "iterators is null");
         if (!iterators.iterator().hasNext()) {
-            return Iterator.empty();
+            return empty();
         }
         return new ConcatIterator<>(Stream.ofAll(iterators).iterator());
     }
@@ -202,7 +202,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     static <T> Iterator<T> ofIterables(Iterable<? extends Iterable<? extends T>> iterables) {
         Objects.requireNonNull(iterables, "iterables is null");
         if (!iterables.iterator().hasNext()) {
-            return Iterator.empty();
+            return empty();
         }
         return new ConcatIterator<>(Stream.ofAll(iterables).map(Iterator::ofAll).iterator());
     }
@@ -240,7 +240,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             @Override
             public T next() {
                 if (!hasNext()) {
-                    throw new NoSuchElementException();
+                    EMPTY.next();
                 }
                 return iterator.next();
             }
@@ -248,23 +248,35 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     @Override
-    default TraversableOnce<T> clear() {
-        return null;
+    default Iterator<T> clear() {
+        return empty();
     }
 
     @Override
-    default TraversableOnce<T> distinct() {
-        return null;
+    default Iterator<T> distinct() {
+        if (!hasNext()) {
+            return empty();
+        } else {
+            return new DistinctIterator<>(this, HashSet.empty(), Function.identity());
+        }
     }
 
     @Override
-    default TraversableOnce<T> distinctBy(Comparator<? super T> comparator) {
-        return null;
+    default Iterator<T> distinctBy(Comparator<? super T> comparator) {
+        if (!hasNext()) {
+            return empty();
+        } else {
+            return new DistinctIterator<>(this, TreeSet.empty(comparator), Function.identity());
+        }
     }
 
     @Override
-    default <U> TraversableOnce<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
-        return null;
+    default <U> Iterator<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
+        if (!hasNext()) {
+            return empty();
+        } else {
+            return new DistinctIterator<>(this, HashSet.empty(), keyExtractor);
+        }
     }
 
     /**
@@ -277,7 +289,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         if (n <= 0) {
             return this;
         } else if (!hasNext()) {
-            return Iterator.empty();
+            return empty();
         } else {
             final Iterator<T> that = this;
             return new Iterator<T>() {
@@ -296,7 +308,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
                 @Override
                 public T next() {
                     if (!hasNext()) {
-                        throw new NoSuchElementException();
+                        EMPTY.next();
                     }
                     return that.next();
                 }
@@ -305,12 +317,12 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     @Override
-    default TraversableOnce<T> dropRight(int n) {
+    default Iterator<T> dropRight(int n) {
         return null;
     }
 
     @Override
-    default TraversableOnce<T> dropWhile(Predicate<? super T> predicate) {
+    default Iterator<T> dropWhile(Predicate<? super T> predicate) {
         return null;
     }
 
@@ -333,7 +345,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     default Iterator<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         if (!hasNext()) {
-            return Iterator.empty();
+            return empty();
         } else {
             final Iterator<T> that = this;
             return new Iterator<T>() {
@@ -354,7 +366,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
                 @Override
                 public T next() {
                     if (!hasNext()) {
-                        throw new NoSuchElementException();
+                        EMPTY.next();
                     }
                     T result = next.get();
                     next = None.instance();
@@ -365,7 +377,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     @Override
-    default TraversableOnce<T> findAll(Predicate<? super T> predicate) {
+    default Iterator<T> findAll(Predicate<? super T> predicate) {
         return null;
     }
 
@@ -384,7 +396,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     default <U> Iterator<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (!hasNext()) {
-            return Iterator.empty();
+            return empty();
         } else {
             final Iterator<T> that = this;
             return new Iterator<U>() {
@@ -422,7 +434,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     default <U> Iterator<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (!hasNext()) {
-            return Iterator.empty();
+            return empty();
         } else {
             return flatMap((Function<? super T, ? extends Iterable<? extends U>>) mapper);
         }
@@ -436,7 +448,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     @Override
     default Iterator<Object> flatten() {
         if (!hasNext()) {
-            return Iterator.empty();
+            return empty();
         } else {
             return flatMap(t -> () -> (t instanceof Iterable) ? ofAll((Iterable<?>) t).flatten() : of(t));
         }
@@ -453,13 +465,13 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     @Override
-    default <C> Map<C, ? extends TraversableOnce<T>> groupBy(Function<? super T, ? extends C> classifier) {
+    default <C> Map<C, Iterator<T>> groupBy(Function<? super T, ? extends C> classifier) {
         return null;
     }
 
     default T head() {
         if (!hasNext()) {
-            throw new NoSuchElementException();
+            EMPTY.next();
         }
         return next();
     }
@@ -469,12 +481,12 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     @Override
-    default TraversableOnce<T> init() {
+    default Iterator<T> init() {
         return null;
     }
 
     @Override
-    default Option<? extends TraversableOnce<T>> initOption() {
+    default Option<Iterator<T>> initOption() {
         return null;
     }
 
@@ -486,7 +498,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      */
     default Iterator<T> intersperse(T element) {
         if (!hasNext()) {
-            return Iterator.empty();
+            return empty();
         } else {
             final Iterator<T> that = this;
             return new Iterator<T>() {
@@ -501,7 +513,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
                 @Override
                 public T next() {
                     if (!that.hasNext()) {
-                        throw new NoSuchElementException();
+                        EMPTY.next();
                     }
                     if (insertElement) {
                         insertElement = false;
@@ -536,7 +548,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     default <U> Iterator<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (!hasNext()) {
-            return Iterator.empty();
+            return empty();
         } else {
             final Iterator<T> that = this;
             return new Iterator<U>() {
@@ -549,7 +561,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
                 @Override
                 public U next() {
                     if (!that.hasNext()) {
-                        throw new NoSuchElementException();
+                        EMPTY.next();
                     }
                     return mapper.apply(that.next());
                 }
@@ -558,7 +570,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     @Override
-    default Tuple2<? extends TraversableOnce<T>, ? extends TraversableOnce<T>> partition(Predicate<? super T> predicate) {
+    default Tuple2<Iterator<T>, Iterator<T>> partition(Predicate<? super T> predicate) {
         return null;
     }
 
@@ -566,7 +578,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     default Iterator<T> peek(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         if (!hasNext()) {
-            return Iterator.empty();
+            return empty();
         } else {
             final Iterator<T> that = this;
             return new Iterator<T>() {
@@ -578,7 +590,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
                 @Override
                 public T next() {
                     if (!hasNext()) {
-                        throw new NoSuchElementException();
+                        EMPTY.next();
                     }
                     final T next = that.next();
                     action.accept(next);
@@ -594,37 +606,37 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     @Override
-    default TraversableOnce<T> replace(T currentElement, T newElement) {
+    default Iterator<T> replace(T currentElement, T newElement) {
         return null;
     }
 
     @Override
-    default TraversableOnce<T> replaceAll(T currentElement, T newElement) {
+    default Iterator<T> replaceAll(T currentElement, T newElement) {
         return null;
     }
 
     @Override
-    default TraversableOnce<T> replaceAll(UnaryOperator<T> operator) {
+    default Iterator<T> replaceAll(UnaryOperator<T> operator) {
         return null;
     }
 
     @Override
-    default TraversableOnce<T> retainAll(Iterable<? extends T> elements) {
+    default Iterator<T> retainAll(Iterable<? extends T> elements) {
         return null;
     }
 
     @Override
-    default TraversableOnce<? extends TraversableOnce<T>> sliding(int size) {
+    default Iterator<Iterator<T>> sliding(int size) {
         return null;
     }
 
     @Override
-    default TraversableOnce<? extends TraversableOnce<T>> sliding(int size, int step) {
+    default Iterator<Iterator<T>> sliding(int size, int step) {
         return null;
     }
 
     @Override
-    default Tuple2<? extends TraversableOnce<T>, ? extends TraversableOnce<T>> span(Predicate<? super T> predicate) {
+    default Tuple2<Iterator<T>, Iterator<T>> span(Predicate<? super T> predicate) {
         return null;
     }
 
@@ -638,7 +650,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     @Override
-    default Option<? extends TraversableOnce<T>> tailOption() {
+    default Option<Iterator<T>> tailOption() {
         return null;
     }
 
@@ -650,7 +662,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      */
     default Iterator<T> take(int n) {
         if (n <= 0 || !hasNext()) {
-            return Iterator.empty();
+            return empty();
         } else {
             final Iterator<T> that = this;
             return new Iterator<T>() {
@@ -665,7 +677,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
                 @Override
                 public T next() {
                     if (!hasNext()) {
-                        throw new NoSuchElementException();
+                        EMPTY.next();
                     }
                     count--;
                     return that.next();
@@ -675,12 +687,12 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     @Override
-    default TraversableOnce<T> takeRight(int n) {
+    default Iterator<T> takeRight(int n) {
         return null;
     }
 
     @Override
-    default TraversableOnce<T> takeWhile(Predicate<? super T> predicate) {
+    default Iterator<T> takeWhile(Predicate<? super T> predicate) {
         return null;
     }
 
@@ -690,7 +702,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         private Iterator<? extends T> current;
 
         private ConcatIterator(Iterator<? extends Iterator<? extends T>> iterators) {
-            this.current = Iterator.empty();
+            this.current = empty();
             this.iterators = iterators;
         }
 
@@ -705,9 +717,46 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         @Override
         public T next() {
             if (!hasNext()) {
-                throw new NoSuchElementException();
+                EMPTY.next();
             }
             return current.next();
+        }
+    }
+
+    class DistinctIterator<T, U> implements Iterator<T> {
+
+        private final Iterator<? extends T> that;
+        Set<U> known;
+        Function<? super T, ? extends U> keyExtractor;
+        T next = null;
+
+        private DistinctIterator(Iterator<? extends T> that, Set<U> set, Function<? super T, ? extends U> keyExtractor) {
+            this.that = that;
+            this.known = set;
+            this.keyExtractor = keyExtractor;
+        }
+
+        @Override
+        public boolean hasNext() {
+            while (next == null && that.hasNext()) {
+                T elem = that.next();
+                U key = keyExtractor.apply(elem);
+                if (!known.contains(key)) {
+                    known = known.add(key);
+                    next = elem;
+                }
+            }
+            return next != null;
+        }
+
+        @Override
+        public T next() {
+            if (!hasNext()) {
+                EMPTY.next();
+            }
+            final T result = next;
+            next = null;
+            return result;
         }
     }
 }
