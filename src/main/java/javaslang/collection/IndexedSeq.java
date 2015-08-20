@@ -172,10 +172,10 @@ public interface IndexedSeq<T> extends Seq<T> {
     Tuple2<? extends IndexedSeq<T>, ? extends IndexedSeq<T>> span(Predicate<? super T> predicate);
 
     @Override
-    IndexedSeq<T> subsequence(int beginIndex);
+    IndexedSeq<T> subSequence(int beginIndex);
 
     @Override
-    IndexedSeq<T> subsequence(int beginIndex, int endIndex);
+    IndexedSeq<T> subSequence(int beginIndex, int endIndex);
 
     @Override
     IndexedSeq<T> tail();

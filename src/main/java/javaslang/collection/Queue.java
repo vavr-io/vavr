@@ -937,13 +937,13 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public Queue<T> subsequence(int beginIndex) {
-        return toList().subsequence(beginIndex).toQueue();
+    public Queue<T> subSequence(int beginIndex) {
+        return toList().subSequence(beginIndex).toQueue();
     }
 
     @Override
-    public Queue<T> subsequence(int beginIndex, int endIndex) {
-        return toList().subsequence(beginIndex, endIndex).toQueue();
+    public Queue<T> subSequence(int beginIndex, int endIndex) {
+        return toList().subSequence(beginIndex, endIndex).toQueue();
     }
 
     @Override
