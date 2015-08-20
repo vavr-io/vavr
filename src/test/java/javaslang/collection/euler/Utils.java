@@ -10,6 +10,7 @@ import javaslang.collection.Stream;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.Scanner;
 
@@ -20,6 +21,10 @@ public final class Utils {
 
     public static Stream<Integer> fibonacci() {
         return Stream.of(1, 1).appendSelf(self -> self.zip(self.tail()).map(t -> t._1 + t._2));
+    }
+
+    public static BigInteger factorial(int n) {
+        return Stream.rangeClosed(1, n).map(BigInteger::valueOf).fold(BigInteger.ONE, BigInteger::multiply);
     }
 
     public static Stream<String> readLines(File file) {
