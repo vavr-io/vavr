@@ -113,6 +113,17 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         return sb.length() == 0 ? EMPTY : of(sb.toString());
     }
 
+    /**
+     * Creates a CharSeq based on the elements of a char array.
+     *
+     * @param array a char array
+     * @return A new List of Character values
+     */
+    static CharSeq ofAll(char[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return new CharSeq(String.valueOf(array));
+    }
+
     //
     //
     // IndexedSeq
@@ -257,6 +268,17 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         }
     }
 
+    public CharSeq flatMapChars(CharFunction<? extends CharSequence> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        if (isEmpty()) {
+            return this;
+        } else {
+            final StringBuilder builder = new StringBuilder();
+            back.chars().forEach(c -> builder.append(mapper.apply((char) c)));
+            return new CharSeq(builder.toString());
+        }
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public <U> Vector<U> flatMapM(Function<? super Character, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper) {
@@ -376,6 +398,19 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
             result = result.append(mapper.apply(get(i)));
         }
         return result;
+    }
+
+    public CharSeq mapChars(CharUnaryOperator mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        if (isEmpty()) {
+            return this;
+        } else {
+            final char[] chars = back.toCharArray();
+            for (int i = 0; i < chars.length; i++) {
+                chars[i] = mapper.apply(chars[i]);
+            }
+            return CharSeq.ofAll(chars);
+        }
     }
 
     @Override
@@ -2143,4 +2178,13 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         return back.toCharArray();
     }
 
+    @FunctionalInterface
+    interface CharUnaryOperator {
+        char apply(char c);
+    }
+
+    @FunctionalInterface
+    interface CharFunction<R> {
+        R apply(char c);
+    }
 }
