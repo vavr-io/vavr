@@ -533,9 +533,7 @@ public interface TraversableOnce<T> extends Value<T>, FilterMonadic<Kind.Iterabl
      *
      * @return the number of elements
      */
-    default int length() {
-        return foldLeft(0, (n, ignored) -> n + 1);
-    }
+    int length();
 
     /**
      * Maps the elements of this traversable to elements of a new type preserving their order, if any.

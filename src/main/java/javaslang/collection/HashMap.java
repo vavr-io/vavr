@@ -251,7 +251,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public int length() {
-        return 0;
+        return tree.size();
     }
 
     @Override
