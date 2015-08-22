@@ -420,7 +420,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldFoldLeftNil() {
-        assertThat(this.<String> empty().foldLeft("", (xs, x) -> xs + x)).isEqualTo("");
+        assertThat(this.<String>empty().foldLeft("", (xs, x) -> xs + x)).isEqualTo("");
     }
 
     @Test(expected = NullPointerException.class)
@@ -629,6 +629,17 @@ public class CharSeqTest {
         final Vector<Character> actualInts = expectedInts.map(ignored -> (char)seq.getAndIncrement());
         assertThat(actualInts).isEqualTo(expectedInts);
     }
+
+    @Test
+    public void shouldMapToVectorWhenMapIsUsed() {
+        assertThat(CharSeq.of('a', 'b', 'c').map(Integer::valueOf)).isInstanceOf(Vector.class);
+    }
+
+    @Test
+    public void shouldMapToCharSeqWhenMapCharsIsUsed() {
+        assertThat(CharSeq.of('a', 'b', 'c').mapChars(c -> (char) (c + 1))).isInstanceOf(CharSeq.class);
+    }
+
 
     // -- partition
 
