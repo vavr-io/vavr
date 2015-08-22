@@ -357,12 +357,12 @@ public class CharSeqTest {
 
     @Test
     public void shouldFlatMapEmptyTraversable() {
-        assertThat(empty().flatMap(CharSeq::of)).isEqualTo(empty());
+        assertThat(empty().flatMap(CharSeq::of)).isEqualTo(Vector.empty());
     }
 
     @Test
     public void shouldFlatMapNonEmptyTraversable() {
-        assertThat(CharSeq.of('1', '2', '3').flatMap(CharSeq::of)).isEqualTo(CharSeq.of('1', '2', '3'));
+        assertThat(CharSeq.of('1', '2', '3').flatMap(CharSeq::of)).isEqualTo(Vector.of('1', '2', '3'));
     }
 
     @Test
@@ -375,7 +375,7 @@ public class CharSeqTest {
             } else {
                 return CharSeq.of('6');
             }
-        })).isEqualTo(CharSeq.of('1', '2', '3', '4', '5', '6'));
+        })).isEqualTo(Vector.of('1', '2', '3', '4', '5', '6'));
     }
 
     @Test
@@ -383,7 +383,7 @@ public class CharSeqTest {
         final AtomicInteger seq = new AtomicInteger('0');
         final Vector<Character> actualInts = CharSeq.of('0', '1', '2')
                 .flatMap(ignored -> Vector.of((char) seq.getAndIncrement(), (char) seq.getAndIncrement()));
-        final CharSeq expectedInts = CharSeq.of('0', '1', '2', '3', '4', '5');
+        final Vector<Character> expectedInts = Vector.of('0', '1', '2', '3', '4', '5');
         assertThat(actualInts).isEqualTo(expectedInts);
     }
 
@@ -391,12 +391,12 @@ public class CharSeqTest {
 
     @Test
     public void shouldFlattenEmptyTraversable() {
-        assertThat(empty().flatten()).isEqualTo(empty());
+        assertThat(empty().flatten()).isEqualTo(Vector.empty());
     }
 
     @Test
     public void shouldFlattenTraversableOfPlainElements() {
-        assertThat(CharSeq.of('1', '2', '3').flatten()).isEqualTo(CharSeq.of('1', '2', '3'));
+        assertThat(CharSeq.of('1', '2', '3').flatten()).isEqualTo(Vector.of('1', '2', '3'));
     }
 
     // -- fold
@@ -614,18 +614,18 @@ public class CharSeqTest {
 
     @Test
     public void shouldMapNil() {
-        assertThat(this.<Integer> empty().map(i -> i + 1)).isEqualTo(empty());
+        assertThat(this.<Integer> empty().map(i -> i + 1)).isEqualTo(Vector.empty());
     }
 
     @Test
     public void shouldMapNonNil() {
-        assertThat(CharSeq.of('1', '2', '3').map(i -> (char)(i + 1))).isEqualTo(CharSeq.of('2', '3', '4'));
+        assertThat(CharSeq.of('1', '2', '3').map(i -> (char) (i + 1))).isEqualTo(Vector.of('2', '3', '4'));
     }
 
     @Test
     public void shouldMapElementsToSequentialValuesInTheRightOrder() {
         final AtomicInteger seq = new AtomicInteger('0');
-        final CharSeq expectedInts = CharSeq.of('0', '1', '2', '3', '4');
+        final Vector<Character> expectedInts = Vector.of('0', '1', '2', '3', '4');
         final Vector<Character> actualInts = expectedInts.map(ignored -> (char)seq.getAndIncrement());
         assertThat(actualInts).isEqualTo(expectedInts);
     }
@@ -919,7 +919,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldSlideNilBySize() {
-        assertThat(empty().sliding(1)).isEqualTo(empty());
+        assertThat(empty().sliding(1)).isEqualTo(Vector.empty());
     }
 
     @SuppressWarnings("unchecked")
@@ -939,7 +939,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldSlideNilBySizeAndStep() {
-        assertThat(empty().sliding(1, 1)).isEqualTo(empty());
+        assertThat(empty().sliding(1, 1)).isEqualTo(Vector.empty());
     }
 
     @SuppressWarnings("unchecked")
@@ -1404,7 +1404,7 @@ public class CharSeqTest {
     @Test
     public void shouldCalculateCrossProductOfNil() {
         final Vector<Tuple2<Character, Character>> actual = empty().crossProduct();
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isEqualTo(Vector.empty());
     }
 
     @SuppressWarnings("unchecked")
@@ -1423,19 +1423,19 @@ public class CharSeqTest {
     @Test
     public void shouldCalculateCrossProductOfNilAndNil() {
         final Traversable<Tuple2<Character, Object>> actual = empty().crossProduct(empty());
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isEqualTo(Vector.empty());
     }
 
     @Test
     public void shouldCalculateCrossProductOfNilAndNonNil() {
         final Traversable<Tuple2<Character, Object>> actual = empty().crossProduct(CharSeq.of('1', '2', '3'));
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isEqualTo(Vector.empty());
     }
 
     @Test
     public void shouldCalculateCrossProductOfNonNilAndNil() {
         final Traversable<Tuple2<Character, Character>> actual = CharSeq.of('1', '2', '3').crossProduct(CharSeq.empty());
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isEqualTo(Vector.empty());
     }
 
     @SuppressWarnings("unchecked")
@@ -1490,7 +1490,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldGroupedNil() {
-        assertThat(empty().grouped(1)).isEqualTo(empty());
+        assertThat(empty().grouped(1)).isEqualTo(Vector.empty());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -2275,7 +2275,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldUnzipNil() {
-        assertThat(empty().unzip(x -> Tuple.of(x, x))).isEqualTo(Tuple.of(empty(), empty()));
+        assertThat(empty().unzip(x -> Tuple.of(x, x))).isEqualTo(Tuple.of(Vector.empty(), Vector.empty()));
     }
 
     @Test
@@ -2290,19 +2290,19 @@ public class CharSeqTest {
     @Test
     public void shouldZipNils() {
         final Seq<?> actual = empty().zip(empty());
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isEqualTo(Vector.empty());
     }
 
     @Test
     public void shouldZipEmptyAndNonNil() {
         final Seq<?> actual = empty().zip(CharSeq.of('1'));
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isEqualTo(Vector.empty());
     }
 
     @Test
     public void shouldZipNonEmptyAndNil() {
         final Seq<?> actual = CharSeq.of('1').zip(empty());
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isEqualTo(Vector.empty());
     }
 
     @Test
@@ -2339,7 +2339,7 @@ public class CharSeqTest {
     @Test
     public void shouldZipAllNils() {
         final Seq<?> actual = empty().zipAll(empty(), null, null);
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isEqualTo(Vector.empty());
     }
 
     @Test
@@ -2391,7 +2391,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldZipNilWithIndex() {
-        assertThat(this.<CharSeq> empty().zipWithIndex()).isEqualTo(this.<Tuple2<CharSeq, Integer>> empty());
+        assertThat(empty().zipWithIndex()).isEqualTo(Vector.empty());
     }
 
     @Test
