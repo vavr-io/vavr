@@ -1352,9 +1352,9 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     public boolean equals(Object o) {
         if (o == this) {
             return true;
-        } else if (o instanceof IndexedSeq) {
+        } else if (o instanceof Vector) {
             Vector<?> vector1 = this;
-            IndexedSeq<?> vector2 = (IndexedSeq<?>) o;
+            Vector<?> vector2 = (Vector<?>) o;
             while (!vector1.isEmpty() && !vector2.isEmpty()) {
                 final boolean isEqual = Objects.equals(vector1.head(), vector2.head());
                 if (!isEqual) {
