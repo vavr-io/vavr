@@ -23,11 +23,11 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Array<?> EMPTY = new Array<>(BinaryRandomAccessList.empty());
+    private static final Array<?> EMPTY = new Array<>(RandomAccessList.empty());
 
-    private final BinaryRandomAccessList<T> binaryList;
+    private final RandomAccessList<T> binaryList;
 
-    private Array(BinaryRandomAccessList<T> binaryList) {
+    private Array(RandomAccessList<T> binaryList) {
         this.binaryList = binaryList;
     }
 
