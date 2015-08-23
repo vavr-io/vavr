@@ -481,11 +481,12 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public boolean equals(Object o) {
         if (o == this) {
             return true;
         } else if (o instanceof HashSet) {
-            final HashSet<?> that = (HashSet<?>) o;
+            final HashSet<T> that = (HashSet<T>) o;
             return this.iterator().equals(that.iterator());
         } else {
             return false;
