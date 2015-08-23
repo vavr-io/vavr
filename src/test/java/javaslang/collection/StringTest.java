@@ -150,12 +150,12 @@ public class StringTest {
 
     @Test
     public void substring() {
-        assertThat((Iterable) CharSeq.of("123").substring(1)).isEqualTo(CharSeq.of("23"));
+        assertThat((Iterable<Character>) CharSeq.of("123").substring(1)).isEqualTo(CharSeq.of("23"));
     }
 
     @Test
     public void substringBE() {
-        assertThat((Iterable) CharSeq.of("123").substring(0, 2)).isEqualTo(CharSeq.of("12"));
+        assertThat((Iterable<Character>) CharSeq.of("123").substring(0, 2)).isEqualTo(CharSeq.of("12"));
     }
 
     @Test
@@ -165,7 +165,7 @@ public class StringTest {
 
     @Test
     public void concat() {
-        assertThat((Iterable) CharSeq.of("123").concat(CharSeq.of("321"))).isEqualTo(CharSeq.of("123321"));
+        assertThat((Iterable<Character>) CharSeq.of("123").concat(CharSeq.of("321"))).isEqualTo(CharSeq.of("123321"));
     }
 
     @Test
@@ -180,17 +180,17 @@ public class StringTest {
 
     @Test
     public void replaceFirst() {
-        assertThat((Iterable) CharSeq.of("123123").replaceFirst("1", "#")).isEqualTo(CharSeq.of("#23123"));
+        assertThat((Iterable<Character>) CharSeq.of("123123").replaceFirst("1", "#")).isEqualTo(CharSeq.of("#23123"));
     }
 
     @Test
     public void replaceAll() {
-        assertThat((Iterable) CharSeq.of("123123").replaceAll("1", "#")).isEqualTo(CharSeq.of("#23#23"));
+        assertThat((Iterable<Character>) CharSeq.of("123123").replaceAll("1", "#")).isEqualTo(CharSeq.of("#23#23"));
     }
 
     @Test
     public void replace() {
-        assertThat((Iterable) CharSeq.of("123").replace("1", "#")).isEqualTo(CharSeq.of("#23"));
+        assertThat((Iterable<Character>) CharSeq.of("123").replace("1", "#")).isEqualTo(CharSeq.of("#23"));
     }
 
     @Test
