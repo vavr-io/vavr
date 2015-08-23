@@ -258,10 +258,10 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     public <U, W> Map<U, W> map(BiFunction<? super K, ? super V, ? extends Entry<? extends U, ? extends W>> mapper) {
         return null;
     }
-
     @Override
     public <U> Set<U> map(Function<? super Entry<K, V>, ? extends U> mapper) {
-        return null;
+        Objects.requireNonNull(mapper, "mapper is null");
+        return foldLeft(HashSet.empty(), (acc, entry) -> acc.add(mapper.apply(entry)));
     }
 
     @Override
