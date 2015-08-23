@@ -27,10 +27,26 @@ public class HashMapTest {
         final Set<Integer> expected = HashSet.<Integer>of(1, 2);
         final Set<Integer> actual =
                 HashMap.<Integer, String>of(
-                    Map.Entry.of(1, "1"),
-                    Map.Entry.of(2, "2"))
+                        Map.Entry.of(1, "1"),
+                        Map.Entry.of(2, "2"))
                 .map(entry -> entry.key);
 
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldReturnEmptySetWhenAskedForEntrySetOfAnEmptyHashMap() {
+        assertThat(HashMap.empty().entrySet()).isEqualTo(HashSet.empty());
+    }
+
+    @Test
+    public void shouldReturnEntrySetOfANonEmptyHashMap() {
+        assertThat(HashMap.<Integer, String>of(
+                    Map.Entry.of(1, "1"),
+                    Map.Entry.of(2, "2"))
+                .entrySet()).isEqualTo(
+                HashSet.of(
+                    Map.Entry.of(1, "2"),
+                    Map.Entry.of(2, "3")));
     }
 }

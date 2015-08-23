@@ -144,7 +144,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public Set<Entry<K, V>> entrySet() {
-        throw new UnsupportedOperationException("TODO");
+        return tree.iterator().map(Entry::of).toSet();
     }
 
     @Override
