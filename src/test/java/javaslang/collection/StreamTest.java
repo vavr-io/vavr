@@ -282,6 +282,14 @@ public class StreamTest extends AbstractSeqTest {
         assertThat(stream.toString()).isEqualTo("Stream(1, 2, ?)");
     }
 
+    @Test
+    public void shouldGroupByAndMapProperly() {
+        assertThat(Stream.of(1)
+                .groupBy(n -> n)
+                .map(longStreamEntry -> longStreamEntry.key)
+                .toList()).isEqualTo(List.of(1));
+    }
+
     // -- Serializable
 
     @Test(expected = InvalidObjectException.class)
