@@ -480,14 +480,14 @@ public final class HashSet<T> implements Set<T>, Serializable {
         return hash.get();
     }
 
-    @Override
     @SuppressWarnings("unchecked")
+    @Override
     public boolean equals(Object o) {
         if (o == this) {
             return true;
         } else if (o instanceof HashSet) {
-            final HashSet<T> that = (HashSet<T>) o;
-            return this.iterator().equals(that.iterator());
+            final HashSet<?> that = (HashSet<?>) o;
+            return this.length() == that.length() && ((HashSet<Object>) this).containsAll(that);
         } else {
             return false;
         }
