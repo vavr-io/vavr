@@ -5,6 +5,8 @@
  */
 package javaslang.collection;
 
+import javaslang.Tuple;
+import javaslang.Tuple2;
 import org.assertj.core.api.*;
 import org.junit.Test;
 
@@ -145,6 +147,122 @@ public class HashSetTest extends AbstractTraversableTest {
     @Override
     int getPeekNonNilPerformingAnAction() {
         return 1;
+    }
+
+    // TODO move to traversable
+    // -- zip
+
+    @Test
+    public void shouldZipNils() {
+        final HashSet<Tuple2<Object, Object>> actual = empty().zip(empty());
+        assertThat(actual).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldZipEmptyAndNonNil() {
+        final HashSet<Tuple2<Object, Integer>> actual = empty().zip(of(1));
+        assertThat(actual).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldZipNonEmptyAndNil() {
+        final HashSet<Tuple2<Integer, Integer>> actual = of(1).zip(empty());
+        assertThat(actual).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldZipNonNilsIfThisIsSmaller() {
+        final HashSet<Tuple2<Integer, String>> actual = of(1, 2).zip(of("a", "b", "c"));
+        @SuppressWarnings("unchecked")
+        final HashSet<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldZipNonNilsIfThatIsSmaller() {
+        final HashSet<Tuple2<Integer, String>> actual = of(1, 2, 3).zip(of("a", "b"));
+        @SuppressWarnings("unchecked")
+        final HashSet<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldZipNonNilsOfSameSize() {
+        final HashSet<Tuple2<Integer, String>> actual = of(1, 2, 3).zip(of("a", "b", "c"));
+        @SuppressWarnings("unchecked")
+        final HashSet<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowIfZipWithThatIsNull() {
+        empty().zip(null);
+    }
+
+    // TODO move to traversable
+    // -- zipAll
+
+    @Test
+    public void shouldZipAllNils() {
+        // ignore
+    }
+
+    @Test
+    public void shouldZipAllEmptyAndNonNil() {
+        // ignore
+    }
+
+    @Test
+    public void shouldZipAllNonEmptyAndNil() {
+        final HashSet<?> actual = of(1).zipAll(empty(), null, null);
+        @SuppressWarnings("unchecked")
+        final HashSet<Tuple2<Integer, Object>> expected = of(Tuple.of(1, null));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldZipAllNonNilsIfThisIsSmaller() {
+        final HashSet<Tuple2<Integer, String>> actual = of(1, 2).zipAll(of("a", "b", "c"), 9, "z");
+        @SuppressWarnings("unchecked")
+        final HashSet<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(9, "c"));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldZipAllNonNilsIfThatIsSmaller() {
+        final HashSet<Tuple2<Integer, String>> actual = of(1, 2, 3).zipAll(of("a", "b"), 9, "z");
+        @SuppressWarnings("unchecked")
+        final HashSet<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "z"));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldZipAllNonNilsOfSameSize() {
+        final HashSet<Tuple2<Integer, String>> actual = of(1, 2, 3).zipAll(of("a", "b", "c"), 9, "z");
+        @SuppressWarnings("unchecked")
+        final HashSet<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowIfZipAllWithThatIsNull() {
+        empty().zipAll(null, null, null);
+    }
+
+    // TODO move to traversable
+    // -- zipWithIndex
+
+    @Test
+    public void shouldZipNilWithIndex() {
+        assertThat(this.<String> empty().zipWithIndex()).isEqualTo(this.<Tuple2<String, Integer>> empty());
+    }
+
+    @Test
+    public void shouldZipNonNilWithIndex() {
+        final HashSet<Tuple2<String, Integer>> actual = of("a", "b", "c").zipWithIndex();
+        @SuppressWarnings("unchecked")
+        final HashSet<Tuple2<String, Integer>> expected = of(Tuple.of("a", 0), Tuple.of("b", 1), Tuple.of("c", 2));
+        assertThat(actual).isEqualTo(expected);
     }
 
     // HashSet special cases

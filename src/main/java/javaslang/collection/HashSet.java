@@ -165,7 +165,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
         if (n <= 0) {
             return this;
         } else {
-            return HashSet.ofAll(() -> iterator().drop(n));
+            return HashSet.ofAll(iterator().drop(n));
         }
     }
 
@@ -181,15 +181,15 @@ public final class HashSet<T> implements Set<T>, Serializable {
     @Override
     public HashSet<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        final List<T> dropped = list.get().dropWhile(predicate);
-        return dropped.length() == list.get().length() ? this : HashSet.ofAll(dropped);
+        final HashSet<T> dropped = HashSet.ofAll(iterator().dropWhile(predicate));
+        return dropped.length() == length() ? this : dropped;
     }
 
     @Override
     public HashSet<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        final List<T> filtered = list.get().filter(predicate);
-        return filtered.length() == list.get().length() ? this : HashSet.ofAll(filtered);
+        final HashSet<T> filtered = HashSet.ofAll(iterator().filter(predicate));
+        return filtered.length() == length() ? this : filtered;
     }
 
     @Override
@@ -453,25 +453,25 @@ public final class HashSet<T> implements Set<T>, Serializable {
     @Override
     public <T1, T2> Tuple2<HashSet<T1>, HashSet<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
-        Tuple2<List<T1>, List<T2>> t = list.get().unzip(unzipper);
+        Tuple2<Iterator<T1>, Iterator<T2>> t = iterator().unzip(unzipper);
         return Tuple.of(HashSet.ofAll(t._1), HashSet.ofAll(t._2));
     }
 
     @Override
     public <U> HashSet<Tuple2<T, U>> zip(Iterable<U> that) {
         Objects.requireNonNull(that, "that is null");
-        return HashSet.ofAll(list.get().zip(that));
+        return HashSet.ofAll(iterator().zip(that));
     }
 
     @Override
     public <U> HashSet<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
-        return HashSet.ofAll(list.get().zipAll(that, thisElem, thatElem));
+        return HashSet.ofAll(iterator().zipAll(that, thisElem, thatElem));
     }
 
     @Override
     public HashSet<Tuple2<T, Integer>> zipWithIndex() {
-        return HashSet.ofAll(list.get().zipWithIndex());
+        return HashSet.ofAll(iterator().zipWithIndex());
     }
 
     @Override
