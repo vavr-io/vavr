@@ -49,9 +49,7 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
      * @param entry A Map.Entry
      * @return A new Map containing these elements and that entry.
      */
-    default Map<K, V> put(Entry<? extends K, ? extends V> entry) {
-        return put(entry.key, entry.value);
-    }
+    Map<K, V> put(Entry<? extends K, ? extends V> entry);
 
     /**
      * Convenience method for {@code put(entry._1, entry._2)}.
@@ -59,9 +57,7 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
      * @param entry A Map.Entry
      * @return A new Map containing these elements and that entry.
      */
-    default Map<K, V> put(Tuple2<? extends K, ? extends V> entry) {
-        return put(entry._1, entry._2);
-    }
+    Map<K, V> put(Tuple2<? extends K, ? extends V> entry);
 
     Map<K, V> remove(K key);
 

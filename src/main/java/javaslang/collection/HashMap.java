@@ -314,6 +314,16 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
+    public HashMap<K, V> put(Entry<? extends K, ? extends V> entry) {
+        return put(entry.key, entry.value);
+    }
+
+    @Override
+    public HashMap<K, V> put(Tuple2<? extends K, ? extends V> entry) {
+        return put(entry._1, entry._2);
+    }
+
+    @Override
     public Entry<K, V> reduceRight(BiFunction<? super Entry<K, V>, ? super Entry<K, V>, ? extends Entry<K, V>> op) {
         throw new UnsupportedOperationException("TODO");
     }
