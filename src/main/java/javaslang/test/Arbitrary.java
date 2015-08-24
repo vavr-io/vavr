@@ -90,7 +90,7 @@ public interface Arbitrary<T> extends Value<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    default <U> Arbitrary<U> flatMapM(Function<? super T, ? extends Value<? extends U>> mapper) {
+    default <U> Arbitrary<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
         return size -> {
             final Gen<T> gen = apply(size);
             return random -> mapper.apply(gen.apply(random)).get();

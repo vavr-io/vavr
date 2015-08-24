@@ -280,7 +280,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public <U> Vector<U> flatMapM(Function<? super Character, ? extends Value<? extends U>> mapper) {
+    public <U> Vector<U> flatMapVal(Function<? super Character, ? extends Value<? extends U>> mapper) {
         return flatMap(mapper);
     }
 

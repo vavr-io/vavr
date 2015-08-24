@@ -305,7 +305,7 @@ public interface Gen<T> extends Value<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    default <U> Gen<U> flatMapM(Function<? super T, ? extends Value<? extends U>> mapper) {
+    default <U> Gen<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return random -> mapper.apply(apply(random)).get();
     }

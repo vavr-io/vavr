@@ -616,7 +616,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U> Queue<U> flatMapM(Function<? super T, ? extends Value<? extends U>> mapper) {
+    public <U> Queue<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
         return flatMap(mapper);
     }
 

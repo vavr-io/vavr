@@ -135,7 +135,7 @@ public interface Try<T> extends Value<T> {
     <U> Try<U> flatMapTry(CheckedFunction<? super T, ? extends Value<? extends U>> mapper);
 
     @Override
-    <U> Try<U> flatMapM(Function<? super T, ? extends Value<? extends U>> mapper);
+    <U> Try<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper);
 
     @Override
     Try<Object> flatten();

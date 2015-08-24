@@ -75,7 +75,7 @@ public final class Some<T> implements Option<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U> Option<U> flatMapM(Function<? super T, ? extends Value<? extends U>> mapper) {
+    public <U> Option<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
         return flatMap(mapper);
     }
 

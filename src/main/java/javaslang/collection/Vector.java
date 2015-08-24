@@ -707,7 +707,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Vector<U> flatMapM(Function<? super T, ? extends Value<? extends U>> mapper) {
+    public <U> Vector<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
         return flatMap(mapper);
     }
 

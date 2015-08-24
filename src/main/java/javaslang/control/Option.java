@@ -133,7 +133,7 @@ public interface Option<T> extends Value<T> {
     <U> Option<U> flatMap(Function<? super T, ? extends Value<? extends U>> mapper);
 
     @Override
-    <U> Option<U> flatMapM(Function<? super T, ? extends Value<? extends U>> mapper);
+    <U> Option<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper);
 
     @Override
     Option<Object> flatten();

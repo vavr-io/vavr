@@ -265,7 +265,7 @@ public interface Either<L, R> {
          * @return A new LeftProjection
          */
         @SuppressWarnings("unchecked")
-        public <U> LeftProjection<U, R> flatMapM(Function<? super L, ? extends Value<? extends U>> mapper) {
+        public <U> LeftProjection<U, R> flatMapVal(Function<? super L, ? extends Value<? extends U>> mapper) {
             return flatMap(mapper);
         }
 
@@ -484,7 +484,7 @@ public interface Either<L, R> {
 
         @SuppressWarnings("unchecked")
         @Override
-        public <U> RightProjection<L, U> flatMapM(Function<? super R, ? extends Value<? extends U>> mapper) {
+        public <U> RightProjection<L, U> flatMapVal(Function<? super R, ? extends Value<? extends U>> mapper) {
             return flatMap(mapper);
         }
 

@@ -76,7 +76,7 @@ public final class None<T> implements Option<T>, Serializable {
     }
 
     @Override
-    public <U> None<U> flatMapM(Function<? super T, ? extends Value<? extends U>> mapper) {
+    public <U> None<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return None.instance();
     }

@@ -204,7 +204,7 @@ public interface Tree<T> extends Traversable<T> {
     List<T> findAll(Predicate<? super T> predicate);
 
     @Override
-    default <U> Tree<U> flatMapM(Function<? super T, ? extends Value<? extends U>> mapper) {
+    default <U> Tree<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
         return flatMap(mapper);
     }
 
@@ -839,7 +839,7 @@ public interface Tree<T> extends Traversable<T> {
         }
 
         @Override
-        public <U> Empty<U> flatMapM(Function<? super T, ? extends Value<? extends U>> mapper) {
+        public <U> Empty<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
             return Empty.instance();
         }
 

@@ -117,7 +117,7 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
     <U> Set<U> flatMap(Function<? super Entry<K, V>, ? extends Iterable<? extends U>> mapper);
 
     @Override
-    <U> Set<U> flatMapM(Function<? super Entry<K, V>, ? extends Value<? extends U>> mapper);
+    <U> Set<U> flatMapVal(Function<? super Entry<K, V>, ? extends Value<? extends U>> mapper);
 
     @Override
     Set<Object> flatten();

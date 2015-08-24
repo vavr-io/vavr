@@ -853,7 +853,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default <U> Stream<U> flatMapM(Function<? super T, ? extends Value<? extends U>> mapper) {
+    default <U> Stream<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
         return flatMap(mapper);
     }
 

@@ -430,7 +430,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      * @return A new Iterable
      */
     @Override
-    default <U> Iterator<U> flatMapM(Function<? super T, ? extends Value<? extends U>> mapper) {
+    default <U> Iterator<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
         return flatMap(mapper);
     }
 

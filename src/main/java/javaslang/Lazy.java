@@ -165,12 +165,12 @@ public final class Lazy<T> implements Supplier<T>, Value<T>, Serializable {
     }
 
     public <U> Lazy<U> flatMap(Function<? super T, ? extends Lazy<? extends U>> mapper) {
-        return flatMapM(mapper);
+        return flatMapVal(mapper);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U> Lazy<U> flatMapM(Function<? super T, ? extends Value<? extends U>> mapper) {
+    public <U> Lazy<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
         if (isEmpty()) {
             return (Lazy<U>) this;
         } else {

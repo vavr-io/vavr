@@ -135,7 +135,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Array<U> flatMapM(Function<? super T, ? extends Value<? extends U>> mapper) {
+    public <U> Array<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
         throw new UnsupportedOperationException("TODO");
     }
 

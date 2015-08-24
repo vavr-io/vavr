@@ -393,11 +393,11 @@ public interface Match<R> extends Function<Object, R> {
         MatchMonad<R> filter(Predicate<? super R> predicate);
 
         default <U> MatchMonad<U> flatMap(Function<? super R, ? extends Value<? extends U>> mapper) {
-            return flatMapM(mapper);
+            return flatMapVal(mapper);
         }
 
         @Override
-        <U> MatchMonad<U> flatMapM(Function<? super R, ? extends Value<? extends U>> mapper);
+        <U> MatchMonad<U> flatMapVal(Function<? super R, ? extends Value<? extends U>> mapper);
 
         @Override
         default MatchMonad<Object> flatten() {
@@ -640,7 +640,7 @@ public interface Match<R> extends Function<Object, R> {
 
                 @SuppressWarnings("unchecked")
                 @Override
-                public <U> MatchMonad<U> flatMapM(Function<? super R, ? extends Value<? extends U>> mapper) {
+                public <U> MatchMonad<U> flatMapVal(Function<? super R, ? extends Value<? extends U>> mapper) {
                     Objects.requireNonNull(mapper, "mapper is null");
                     return result
                             .map(supplier -> (MatchMonad<U>) new Then<>(value, new Some<>(() -> mapper.apply(supplier.get()).get())))
@@ -726,7 +726,7 @@ public interface Match<R> extends Function<Object, R> {
             }
 
             @Override
-            public <U> MatchMonad<U> flatMapM(Function<? super R, ? extends Value<? extends U>> mapper) {
+            public <U> MatchMonad<U> flatMapVal(Function<? super R, ? extends Value<? extends U>> mapper) {
                 return new Otherwise<>(() -> mapper.apply(result.get()).get());
             }
 

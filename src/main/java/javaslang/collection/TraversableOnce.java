@@ -340,7 +340,7 @@ public interface TraversableOnce<T> extends Value<T> {
     <U> TraversableOnce<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
-    <U> TraversableOnce<U> flatMapM(Function<? super T, ? extends Value< ? extends U>> mapper);
+    <U> TraversableOnce<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper);
 
     @Override
     TraversableOnce<Object> flatten();

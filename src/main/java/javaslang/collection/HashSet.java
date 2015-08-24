@@ -220,7 +220,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public <U> HashSet<U> flatMapM(Function<? super T, ? extends Value<? extends U>> mapper) {
+    public <U> HashSet<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
         return flatMap(mapper);
     }
 

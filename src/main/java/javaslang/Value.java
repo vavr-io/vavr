@@ -198,7 +198,7 @@ public interface Value<T> extends Iterable<T> {
      * @return a mapped {@code Value}
      * @throws NullPointerException if {@code mapper} is null
      */
-    <U> Value<U> flatMapM(Function<? super T, ? extends Value<? extends U>> mapper);
+    <U> Value<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper);
 
     /**
      * Maps this value to a new value with different component type.

@@ -124,7 +124,7 @@ public final class Success<T> implements Try<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U> Try<U> flatMapM(Function<? super T, ? extends Value<? extends U>> mapper) {
+    public <U> Try<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
         return flatMapTry((CheckedFunction<T, Value<? extends U>>) mapper::apply);
     }
 

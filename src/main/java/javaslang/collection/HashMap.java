@@ -173,7 +173,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public <U> Set<U> flatMapM(Function<? super Entry<K, V>, ? extends Value<? extends U>> mapper) {
+    public <U> Set<U> flatMapVal(Function<? super Entry<K, V>, ? extends Value<? extends U>> mapper) {
         throw new UnsupportedOperationException("TODO");
     }
 
