@@ -5,8 +5,8 @@
  */
 package javaslang.collection;
 
-import javaslang.Kind;
 import javaslang.Tuple2;
+import javaslang.Value;
 import javaslang.control.Option;
 
 import java.util.ArrayList;
@@ -511,7 +511,7 @@ public interface Stack<T> extends LinearSeq<T> {
     <U> Stack<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
-    <U> Stack<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper);
+    <U> Stack<U> flatMapM(Function<? super T, ? extends Value<? extends U>> mapper);
 
     @Override
     Stack<Object> flatten();
@@ -539,6 +539,9 @@ public interface Stack<T> extends LinearSeq<T> {
 
     @Override
     <U> Stack<U> map(Function<? super T, ? extends U> mapper);
+
+    @Override
+    <U> Stack<U> mapM(Function<? super T, ? extends U> mapper);
 
     @Override
     Tuple2<? extends Stack<T>, ? extends Stack<T>> partition(Predicate<? super T> predicate);

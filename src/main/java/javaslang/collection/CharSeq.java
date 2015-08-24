@@ -5,9 +5,9 @@
  */
 package javaslang.collection;
 
-import javaslang.Kind;
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.Value;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -257,11 +257,9 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <U> Vector<U> flatMapM(Function<? super Character, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return flatMap((Function<? super Character, ? extends Iterable<? extends U>>) mapper);
+    public <U> Vector<U> flatMapM(Function<? super Character, ? extends Value<? extends U>> mapper) {
+        return flatMap(mapper);
     }
 
     @Override
@@ -376,6 +374,11 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
             result = result.append(mapper.apply(get(i)));
         }
         return result;
+    }
+
+    @Override
+    public <U> Vector<U> mapM(Function<? super Character, ? extends U> mapper) {
+        return map(mapper);
     }
 
     @Override

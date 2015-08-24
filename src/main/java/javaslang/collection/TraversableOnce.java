@@ -5,8 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.FilterMonadic;
-import javaslang.Kind;
 import javaslang.Tuple2;
 import javaslang.Value;
 import javaslang.control.Match;
@@ -132,7 +130,7 @@ import java.util.function.*;
  * @param <T> Component type
  * @since 2.0.0
  */
-public interface TraversableOnce<T> extends Value<T>, FilterMonadic<Kind.IterableKind<?>, T> {
+public interface TraversableOnce<T> extends Value<T> {
 
     /**
      * Calculates the average of this elements. Returns {@code None} if this is empty, otherwise {@code Some(average)}.
@@ -342,7 +340,7 @@ public interface TraversableOnce<T> extends Value<T>, FilterMonadic<Kind.Iterabl
     <U> TraversableOnce<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
-    <U> TraversableOnce<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper);
+    <U> TraversableOnce<U> flatMapM(Function<? super T, ? extends Value< ? extends U>> mapper);
 
     @Override
     TraversableOnce<Object> flatten();
@@ -545,8 +543,10 @@ public interface TraversableOnce<T> extends Value<T>, FilterMonadic<Kind.Iterabl
      * @return a mapped TraversableOnce
      * @throws NullPointerException if {@code mapper} is null
      */
-    @Override
     <U> TraversableOnce<U> map(Function<? super T, ? extends U> mapper);
+
+    @Override
+    <U> TraversableOnce<U> mapM(Function<? super T, ? extends U> mapper);
 
     /**
      * Calculates the maximum of this elements according to their natural order.

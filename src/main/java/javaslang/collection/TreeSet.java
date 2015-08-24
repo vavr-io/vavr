@@ -5,8 +5,8 @@
  */
 package javaslang.collection;
 
-import javaslang.Kind;
 import javaslang.Tuple2;
+import javaslang.Value;
 import javaslang.control.Option;
 
 import java.io.Serializable;
@@ -522,92 +522,92 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public TreeSet<T> distinct() {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public TreeSet<T> distinctBy(Comparator<? super T> comparator) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public <U> TreeSet<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public TreeSet<T> drop(int n) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public TreeSet<T> dropRight(int n) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public TreeSet<T> dropWhile(Predicate<? super T> predicate) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public TreeSet<T> filter(Predicate<? super T> predicate) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public TreeSet<T> findAll(Predicate<? super T> predicate) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Option<T> findLast(Predicate<? super T> predicate) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public <U> TreeSet<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
-    public <U> TreeSet<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper) {
-        return null;
+    public <U> TreeSet<U> flatMapM(Function<? super T, ? extends Value<? extends U>> mapper) {
+        return flatMap(mapper);
     }
 
     @Override
     public TreeSet<Object> flatten() {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public <C> Map<C, TreeSet<T>> groupBy(Function<? super T, ? extends C> classifier) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public T head() {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Option<T> headOption() {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public TreeSet<T> init() {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Option<TreeSet<T>> initOption() {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
@@ -617,7 +617,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public Iterator<T> iterator() {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
@@ -627,111 +627,116 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public <U> TreeSet<U> map(Function<? super T, ? extends U> mapper) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
+    }
+
+    @Override
+    public <U> TreeSet<U> mapM(Function<? super T, ? extends U> mapper) {
+        return map(mapper);
     }
 
     @Override
     public Tuple2<TreeSet<T>, TreeSet<T>> partition(Predicate<? super T> predicate) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public TreeSet<T> peek(Consumer<? super T> action) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public TreeSet<T> remove(T element) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public TreeSet<T> removeAll(Iterable<? extends T> elements) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public TreeSet<T> replace(T currentElement, T newElement) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public TreeSet<T> replaceAll(T currentElement, T newElement) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public TreeSet<T> replaceAll(UnaryOperator<T> operator) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public TreeSet<T> retainAll(Iterable<? extends T> elements) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public TreeSet<TreeSet<T>> sliding(int size) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public TreeSet<TreeSet<T>> sliding(int size, int step) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Tuple2<TreeSet<T>, TreeSet<T>> span(Predicate<? super T> predicate) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public TreeSet<T> tail() {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Option<TreeSet<T>> tailOption() {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public TreeSet<T> take(int n) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public TreeSet<T> takeRight(int n) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public TreeSet<T> takeWhile(Predicate<? super T> predicate) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public <T1, T2> Tuple2<TreeSet<T1>, TreeSet<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public <U> TreeSet<Tuple2<T, U>> zip(Iterable<U> that) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public <U> TreeSet<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public TreeSet<Tuple2<T, Integer>> zipWithIndex() {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 }

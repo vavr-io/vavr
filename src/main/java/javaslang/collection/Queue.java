@@ -5,10 +5,10 @@
  */
 package javaslang.collection;
 
-import javaslang.Kind;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.Value;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -616,8 +616,8 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U> Queue<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper) {
-        return flatMap((Function<? super T, ? extends Iterable<? extends U>>) mapper);
+    public <U> Queue<U> flatMapM(Function<? super T, ? extends Value<? extends U>> mapper) {
+        return flatMap(mapper);
     }
 
     @Override
@@ -786,6 +786,11 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     public <U> Queue<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return new Queue<>(front.map(mapper), rear.map(mapper));
+    }
+
+    @Override
+    public <U> Queue<U> mapM(Function<? super T, ? extends U> mapper) {
+        return map(mapper);
     }
 
     @Override

@@ -5,8 +5,8 @@
  */
 package javaslang.collection;
 
-import javaslang.Kind;
 import javaslang.Tuple2;
+import javaslang.Value;
 import javaslang.control.Option;
 
 import java.io.Serializable;
@@ -33,13 +33,13 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
 
     Set<Entry<K, V>> entrySet();
 
-    <U, W> Map<U, W> flatMap(BiFunction<? super K, ? super V, ? extends Map<? extends U, ? extends W>> mapper);
+    <U, W> Map<U, W> flatMap2(BiFunction<? super K, ? super V, ? extends Iterable<? extends Entry<? extends U, ? extends W>>> mapper);
 
     Option<V> get(K key);
 
     Set<K> keySet();
 
-    <U, W> Map<U, W> map(BiFunction<? super K, ? super V, ? extends Entry<? extends U, ? extends W>> mapper);
+    <U, W> Map<U, W> map2(BiFunction<? super K, ? super V, ? extends Entry<? extends U, ? extends W>> mapper);
 
     Map<K, V> put(K key, V value);
 
@@ -117,7 +117,7 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
     <U> Set<U> flatMap(Function<? super Entry<K, V>, ? extends Iterable<? extends U>> mapper);
 
     @Override
-    <U> Set<U> flatMapM(Function<? super Entry<K, V>, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper);
+    <U> Set<U> flatMapM(Function<? super Entry<K, V>, ? extends Value<? extends U>> mapper);
 
     @Override
     Set<Object> flatten();
@@ -140,7 +140,11 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
     @Override
     <U> Set<U> map(Function<? super Entry<K, V>, ? extends U> mapper);
 
-    HashMap<K, V> merged(HashMap<K, ? extends V> that);
+    @Override
+    <U> Set<U> mapM(Function<? super Entry<K, V>, ? extends U> mapper);
+
+    // TODO: ? extends K or K?
+    Map<K, V> merge(Map<K, ? extends V> that);
 
     /**
      * Creates a new map which is the merge of this and the argument hash map.
@@ -154,7 +158,8 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
      * @param mergef the merge function or null if the first key-value pair is to be picked
      * @return A merged map
      */
-    <U extends V> HashMap<K, V> merged(HashMap<K, U> that, BiFunction<? super V, ? super U, ? extends V> mergef);
+    // TODO: ? extends K or K?
+    <U extends V> Map<K, V> merge(Map<K, U> that, BiFunction<? super V, ? super U, ? extends V> mergef);
 
     @Override
     Tuple2<? extends Map<K, V>, ? extends Map<K, V>> partition(Predicate<? super Entry<K, V>> predicate);
@@ -175,10 +180,10 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
     Map<K, V> retainAll(Iterable<? extends Entry<K, V>> elements);
 
     @Override
-    Set<? extends Map<K, V>> sliding(int size);
+    Seq<? extends Map<K, V>> sliding(int size);
 
     @Override
-    Set<? extends Map<K, V>> sliding(int size, int step);
+    Seq<? extends Map<K, V>> sliding(int size, int step);
 
     @Override
     Tuple2<? extends Map<K, V>, ? extends Map<K, V>> span(Predicate<? super Entry<K, V>> predicate);

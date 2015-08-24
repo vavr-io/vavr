@@ -5,8 +5,6 @@
  */
 package javaslang.test;
 
-import javaslang.FilterMonadic;
-import javaslang.Kind;
 import javaslang.Tuple2;
 import javaslang.Value;
 import javaslang.collection.Iterator;
@@ -32,7 +30,7 @@ import java.util.function.Predicate;
  * @since 1.2.0
  */
 @FunctionalInterface
-public interface Gen<T> extends Value<T>, FilterMonadic<Gen<?>, T>, Kind<Gen<?>, T> {
+public interface Gen<T> extends Value<T> {
 
     int FILTER_THRESHOLD = Integer.MAX_VALUE;
 
@@ -307,8 +305,9 @@ public interface Gen<T> extends Value<T>, FilterMonadic<Gen<?>, T>, Kind<Gen<?>,
 
     @SuppressWarnings("unchecked")
     @Override
-    default <U> Gen<U> flatMapM(Function<? super T, ? extends Kind<? extends Gen<?>, ? extends U>> mapper) {
-        return flatMap((Function<? super T, ? extends Gen<? extends U>>) mapper);
+    default <U> Gen<U> flatMapM(Function<? super T, ? extends Value<? extends U>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return random -> mapper.apply(apply(random)).get();
     }
 
     @Override
@@ -326,10 +325,14 @@ public interface Gen<T> extends Value<T>, FilterMonadic<Gen<?>, T>, Kind<Gen<?>,
      * @param <U>    Type of the mapped object
      * @return A new generator
      */
-    @Override
     default <U> Gen<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return random -> mapper.apply(apply(random));
+    }
+
+    @Override
+    default <U> Gen<U> mapM(Function<? super T, ? extends U> mapper) {
+        return map(mapper);
     }
 
     @Override

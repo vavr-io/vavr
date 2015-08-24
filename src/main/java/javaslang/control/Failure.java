@@ -6,7 +6,7 @@
 package javaslang.control;
 
 import javaslang.CheckedFunction1;
-import javaslang.Kind;
+import javaslang.Value;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -140,19 +140,19 @@ public final class Failure<T> implements Try<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U> Failure<U> flatMap(Function<? super T, ? extends Try<? extends U>> mapper) {
+    public <U> Failure<U> flatMap(Function<? super T, ? extends Value<? extends U>> mapper) {
         return (Failure<U>) this;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U> Failure<U> flatMapTry(CheckedFunction<? super T, ? extends Try<? extends U>> mapper) {
+    public <U> Failure<U> flatMapTry(CheckedFunction<? super T, ? extends Value<? extends U>> mapper) {
         return (Failure<U>) this;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U> Failure<U> flatMapM(Function<? super T, ? extends Kind<? extends Try<?>, ? extends U>> mapper) {
+    public <U> Failure<U> flatMapM(Function<? super T, ? extends Value<? extends U>> mapper) {
         return (Failure<U>) this;
     }
 

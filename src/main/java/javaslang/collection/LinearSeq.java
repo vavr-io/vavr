@@ -5,8 +5,8 @@
  */
 package javaslang.collection;
 
-import javaslang.Kind;
 import javaslang.Tuple2;
+import javaslang.Value;
 import javaslang.control.Option;
 
 import java.util.Comparator;
@@ -76,7 +76,7 @@ public interface LinearSeq<T> extends Seq<T> {
     <U> LinearSeq<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
-    <U> LinearSeq<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper);
+    <U> LinearSeq<U> flatMapM(Function<? super T, ? extends Value<? extends U>> mapper);
 
     @Override
     LinearSeq<Object> flatten();
@@ -104,6 +104,9 @@ public interface LinearSeq<T> extends Seq<T> {
 
     @Override
     <U> LinearSeq<U> map(Function<? super T, ? extends U> mapper);
+
+    @Override
+    <U> LinearSeq<U> mapM(Function<? super T, ? extends U> mapper);
 
     @Override
     Tuple2<? extends LinearSeq<T>, ? extends LinearSeq<T>> partition(Predicate<? super T> predicate);

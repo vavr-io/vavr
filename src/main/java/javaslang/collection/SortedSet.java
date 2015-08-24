@@ -5,12 +5,15 @@
  */
 package javaslang.collection;
 
-import javaslang.Kind;
 import javaslang.Tuple2;
+import javaslang.Value;
 import javaslang.control.Option;
 
 import java.util.Comparator;
-import java.util.function.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 
 /**
  * An immutable {@code SortedSet} interface.
@@ -58,7 +61,7 @@ public interface SortedSet<T> extends Set<T> {
     <U> SortedSet<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
-    <U> SortedSet<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper);
+    <U> SortedSet<U> flatMapM(Function<? super T, ? extends Value<? extends U>> mapper);
 
     @Override
     SortedSet<Object> flatten();
@@ -74,6 +77,9 @@ public interface SortedSet<T> extends Set<T> {
 
     @Override
     <U> SortedSet<U> map(Function<? super T, ? extends U> mapper);
+
+    @Override
+    <U> SortedSet<U> mapM(Function<? super T, ? extends U> mapper);
 
     @Override
     Tuple2<? extends SortedSet<T>, ? extends SortedSet<T>> partition(Predicate<? super T> predicate);

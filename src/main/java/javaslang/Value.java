@@ -31,7 +31,7 @@ import java.util.stream.StreamSupport;
  * @param <T> The type of the wrapped value.
  * @since 2.0.0
  */
-public interface Value<T> extends MonadOps<T>, IterableOps<T>, ConversionOps<T> {
+public interface Value<T> extends Iterable<T> {
 
     /**
      * Gets the underlying value or throws if no value is present.
@@ -154,167 +154,11 @@ public interface Value<T> extends MonadOps<T>, IterableOps<T>, ConversionOps<T> 
         }
     }
 
-    @Override
-    Value<T> peek(Consumer<? super T> action);
-
-// TODO:
-//    @Override
-//    default Array<T> toArray() {
-//        return isEmpty() ? Array.empty() : Array.ofAll(this);
-//    }
-
-    @Override
-    default Lazy<T> toLazy() {
-        if (this instanceof Lazy) {
-            return (Lazy<T>) this;
-        } else {
-            return isEmpty() ? Lazy.empty() : Lazy.of(this::get);
-        }
-    }
-
-    @Override
-    default List<T> toList() {
-        return isEmpty() ? List.empty() : List.ofAll(this);
-    }
-
-    @Override
-    default <K, V> Map<K, V> toMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
-        Objects.requireNonNull(f, "f is null");
-        Map<K, V> map = HashMap.empty();
-        for (T a : this) {
-            final Tuple2<? extends K, ? extends V> entry = f.apply(a);
-            map = map.put(entry._1, entry._2);
-        }
-        return map;
-    }
-
-    @Override
-    default Option<T> toOption() {
-        if (this instanceof Option) {
-            return (Option<T>) this;
-        } else {
-            return isEmpty() ? None.instance() : new Some<>(get());
-        }
-    }
-
-    @Override
-    default Queue<T> toQueue() {
-        return isEmpty() ? Queue.empty() : Queue.ofAll(this);
-    }
-
-    @Override
-    default Set<T> toSet() {
-        return isEmpty() ? HashSet.empty() : HashSet.ofAll(this);
-    }
-
-    @Override
-    default Stack<T> toStack() {
-        return isEmpty() ? Stack.empty() : Stack.ofAll(this);
-    }
-
-    @Override
-    default Stream<T> toStream() {
-        return isEmpty() ? Stream.empty() : Stream.ofAll(this);
-    }
-
-// TODO:
-//    @Override
-//    default Vector<T> toVector() {
-//        return isEmpty() ? Vector.empty() : Vector.ofAll(this);
-//    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    default T[] toJavaArray(Class<T> componentType) {
-        Objects.requireNonNull(componentType, "componentType is null");
-        final java.util.List<T> list = toJavaList();
-        return list.toArray((T[]) java.lang.reflect.Array.newInstance(componentType, list.size()));
-    }
-
-    @Override
-    default java.util.List<T> toJavaList() {
-        final java.util.List<T> result = new java.util.ArrayList<>();
-        for (T a : this) {
-            result.add(a);
-        }
-        return result;
-    }
-
-    @Override
-    default Optional<T> toJavaOptional() {
-        return isEmpty() ? Optional.empty() : Optional.ofNullable(get());
-    }
-
-    @Override
-    default <K, V> java.util.Map<K, V> toJavaMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
-        Objects.requireNonNull(f, "f is null");
-        final java.util.Map<K, V> map = new java.util.HashMap<>();
-        for (T a : this) {
-            final Tuple2<? extends K, ? extends V> entry = f.apply(a);
-            map.put(entry._1, entry._2);
-        }
-        return map;
-    }
-
-    @Override
-    default java.util.Set<T> toJavaSet() {
-        final java.util.Set<T> result = new java.util.HashSet<>();
-        for (T a : this) {
-            result.add(a);
-        }
-        return result;
-    }
-
-    @Override
-    default java.util.stream.Stream<T> toJavaStream() {
-        return StreamSupport.stream(spliterator(), false);
-    }
-
-    // -- Object
-
-    /**
-     * Clarifies that values have a proper equals() method implemented.
-     * <p>
-     * See <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#equals-java.lang.Object-">Object.equals(Object)</a>.
-     *
-     * @param o An object
-     * @return true, if this equals o, false otherwise
-     */
-    @Override
-    boolean equals(Object o);
-
-    /**
-     * Clarifies that values have a proper hashCode() method implemented.
-     * <p>
-     * See <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#hashCode--">Object.hashCode()</a>.
-     *
-     * @return  The hashcode of this object
-     */
-    @Override
-    int hashCode();
-
-    /**
-     * Clarifies that values have a proper toString() method implemented.
-     * <p>
-     * See <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#toString--">Object.toString()</a>.
-     *
-     * @return A String representation of this object
-     */
-    @Override
-    String toString();
-
-}
-
-/**
- * Internal interface.
- * <p>
- * Some essential operations for monad-like types.
- * The <code>flatMap</code> method is missing here in order to have only one generic type parameter.
- *
- * @param <T> Component type
- * @since 2.0.0
- */
-interface MonadOps<T> {
+    // --
+    // --
+    // -- Monadic operations
+    // --
+    // --
 
     /**
      * Filters this {@code Value} by testing a predicate.
@@ -347,25 +191,30 @@ interface MonadOps<T> {
     Value<Object> flatten();
 
     /**
+     * FlatMaps this value to a new value with different component type.
+     *
+     * @param mapper A mapper
+     * @param <U> Component type of the mapped {@code Value}
+     * @return a mapped {@code Value}
+     * @throws NullPointerException if {@code mapper} is null
+     */
+    <U> Value<U> flatMapM(Function<? super T, ? extends Value<? extends U>> mapper);
+
+    /**
      * Maps this value to a new value with different component type.
      *
-     * @param mapper A mapper.
+     * @param mapper A mapper
      * @param <U>    Component type of the mapped {@code Value}
      * @return a mapped {@code Value}
      * @throws NullPointerException if {@code mapper} is null
      */
-    <U> Value<U> map(Function<? super T, ? extends U> mapper);
-}
+    <U> Value<U> mapM(Function<? super T, ? extends U> mapper);
 
-/**
- * Internal interface.
- * <p>
- * Some essential operations for iterable-like types.
- *
- * @param <T> Component type
- * @since 2.0.0
- */
-interface IterableOps<T> extends Iterable<T> {
+    // --
+    // --
+    // -- Iterable operations
+    // --
+    // --
 
     /**
      * Checks, if an element exists such that the predicate holds.
@@ -417,18 +266,13 @@ interface IterableOps<T> extends Iterable<T> {
      * @param action The action the will be performed on the element(s).
      * @return this instance
      */
-    IterableOps<T> peek(Consumer<? super T> action);
-}
+    Value<T> peek(Consumer<? super T> action);
 
-/**
- * Internal interface.
- * <p>
- * Inter-Javaslang type and to-Java type conversions. Currently used by Value only.
- *
- * @param <T> Component type
- * @since 2.0.0
- */
-interface ConversionOps<T> {
+    // --
+    // --
+    // -- Conversion operations
+    // --
+    // --
 
     // -- Javaslang types
 
@@ -438,7 +282,9 @@ interface ConversionOps<T> {
 //     *
 //     * @return A new {@link Array}.
 //     */
-//    Array<T> toArray();
+//    default Array<T> toArray() {
+//        return isEmpty() ? Array.empty() : Array.ofAll(this);
+//    }
 
     /**
      * Converts this value to a {@link CharSeq}.
@@ -454,14 +300,22 @@ interface ConversionOps<T> {
      *
      * @return A new {@link Lazy}.
      */
-    Lazy<T> toLazy();
+    default Lazy<T> toLazy() {
+        if (this instanceof Lazy) {
+            return (Lazy<T>) this;
+        } else {
+            return isEmpty() ? Lazy.empty() : Lazy.of(this::get);
+        }
+    }
 
     /**
      * Converts this value to a {@link List}.
      *
      * @return A new {@link List}.
      */
-    List<T> toList();
+    default List<T> toList() {
+        return isEmpty() ? List.empty() : List.ofAll(this);
+    }
 
     /**
      * Converts this value to a {@link Map}.
@@ -471,49 +325,64 @@ interface ConversionOps<T> {
      * @param <V> The value type
      * @return A new {@link HashMap}.
      */
-    <K, V> Map<K, V> toMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f);
+    default <K, V> Map<K, V> toMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
+        Objects.requireNonNull(f, "f is null");
+        Map<K, V> map = HashMap.empty();
+        for (T a : this) {
+            final Tuple2<? extends K, ? extends V> entry = f.apply(a);
+            map = map.put(entry._1, entry._2);
+        }
+        return map;
+    }
 
     /**
      * Converts this value to an {@link Option}.
      *
      * @return A new {@link Option}.
      */
-    Option<T> toOption();
+    default Option<T> toOption() {
+        if (this instanceof Option) {
+            return (Option<T>) this;
+        } else {
+            return isEmpty() ? None.instance() : new Some<>(get());
+        }
+    }
 
     /**
      * Converts this value to a {@link Queue}.
      *
      * @return A new {@link Queue}.
      */
-    Queue<T> toQueue();
+    default Queue<T> toQueue() {
+        return isEmpty() ? Queue.empty() : Queue.ofAll(this);
+    }
 
     /**
      * Converts this value to a {@link Set}.
      *
      * @return A new {@link HashSet}.
      */
-    Set<T> toSet();
+    default Set<T> toSet() {
+        return isEmpty() ? HashSet.empty() : HashSet.ofAll(this);
+    }
 
     /**
      * Converts this value to a {@link Stack}.
      *
      * @return A new {@link List}, which is a {@link Stack}.
      */
-    Stack<T> toStack();
+    default Stack<T> toStack() {
+        return isEmpty() ? Stack.empty() : Stack.ofAll(this);
+    }
 
     /**
      * Converts this value to a {@link Stream}.
      *
      * @return A new {@link Stream}.
      */
-    Stream<T> toStream();
-
-    /**
-     * Converts this value to a {@link java.lang.String}.
-     * @return A new {@link String}.
-     */
-    @Override
-    String toString();
+    default Stream<T> toStream() {
+        return isEmpty() ? Stream.empty() : Stream.ofAll(this);
+    }
 
 // TODO:
 //    /**
@@ -529,7 +398,10 @@ interface ConversionOps<T> {
 //     *
 //     * @return A new {@link Vector}.
 //     */
-//    Vector<T> toVector();
+//    default Vector<T> toVector() {
+//        return isEmpty() ? Vector.empty() : Vector.ofAll(this);
+//    }
+
 
     // -- Java types
 
@@ -540,14 +412,25 @@ interface ConversionOps<T> {
      * @return A new Java array.
      * @throws NullPointerException if componentType is null
      */
-    T[] toJavaArray(Class<T> componentType);
+    @SuppressWarnings("unchecked")
+    default T[] toJavaArray(Class<T> componentType) {
+        Objects.requireNonNull(componentType, "componentType is null");
+        final java.util.List<T> list = toJavaList();
+        return list.toArray((T[]) java.lang.reflect.Array.newInstance(componentType, list.size()));
+    }
 
     /**
      * Converts this value to an {@link java.util.List}.
      *
      * @return A new {@link java.util.ArrayList}.
      */
-    java.util.List<T> toJavaList();
+    default java.util.List<T> toJavaList() {
+        final java.util.List<T> result = new java.util.ArrayList<>();
+        for (T a : this) {
+            result.add(a);
+        }
+        return result;
+    }
 
     /**
      * Converts this value to a {@link java.util.Map}.
@@ -557,27 +440,82 @@ interface ConversionOps<T> {
      * @param <V> The value type
      * @return A new {@link java.util.HashMap}.
      */
-    <K, V> java.util.Map<K, V> toJavaMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f);
+    default <K, V> java.util.Map<K, V> toJavaMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
+        Objects.requireNonNull(f, "f is null");
+        final java.util.Map<K, V> map = new java.util.HashMap<>();
+        for (T a : this) {
+            final Tuple2<? extends K, ? extends V> entry = f.apply(a);
+            map.put(entry._1, entry._2);
+        }
+        return map;
+    }
 
     /**
      * Converts this value to an {@link java.util.Optional}.
      *
      * @return A new {@link java.util.Optional}.
      */
-    Optional<T> toJavaOptional();
+    default Optional<T> toJavaOptional() {
+        return isEmpty() ? Optional.empty() : Optional.ofNullable(get());
+    }
 
     /**
      * Converts this value to a {@link java.util.Set}.
      *
      * @return A new {@link java.util.HashSet}.
      */
-    java.util.Set<T> toJavaSet();
+    default java.util.Set<T> toJavaSet() {
+        final java.util.Set<T> result = new java.util.HashSet<>();
+        for (T a : this) {
+            result.add(a);
+        }
+        return result;
+    }
 
     /**
      * Converts this value to a {@link java.util.stream.Stream}.
      *
      * @return A new {@link java.util.stream.Stream}.
      */
-    java.util.stream.Stream<T> toJavaStream();
+    default java.util.stream.Stream<T> toJavaStream() {
+        return StreamSupport.stream(spliterator(), false);
+    }
+
+    // --
+    // --
+    // -- Object
+    // --
+    // --
+
+    /**
+     * Clarifies that values have a proper equals() method implemented.
+     * <p>
+     * See <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#equals-java.lang.Object-">Object.equals(Object)</a>.
+     *
+     * @param o An object
+     * @return true, if this equals o, false otherwise
+     */
+    @Override
+    boolean equals(Object o);
+
+    /**
+     * Clarifies that values have a proper hashCode() method implemented.
+     * <p>
+     * See <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#hashCode--">Object.hashCode()</a>.
+     *
+     * @return  The hashcode of this object
+     */
+    @Override
+    int hashCode();
+
+    /**
+     * Clarifies that values have a proper toString() method implemented.
+     * <p>
+     * See <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#toString--">Object.toString()</a>.
+     *
+     * @return A String representation of this object
+     */
+    @Override
+    String toString();
 
 }

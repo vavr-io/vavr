@@ -5,10 +5,10 @@
  */
 package javaslang.collection;
 
-import javaslang.Kind;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.Value;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -200,7 +200,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public Option<T> findLast(Predicate<? super T> predicate) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
@@ -219,11 +219,9 @@ public final class HashSet<T> implements Set<T>, Serializable {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <U> HashSet<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return flatMap((Function<? super T, ? extends Iterable<? extends U>>) mapper);
+    public <U> HashSet<U> flatMapM(Function<? super T, ? extends Value<? extends U>> mapper) {
+        return flatMap(mapper);
     }
 
     @Override
@@ -233,7 +231,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
@@ -243,6 +241,11 @@ public final class HashSet<T> implements Set<T>, Serializable {
             final HashSet<T> values = map.get(key).map(ts -> ts.add(t)).orElse(HashSet.of(t));
             return map.put(key, values);
         });
+    }
+
+    @Override
+    public boolean hasDefiniteSize() {
+        return true;
     }
 
     @Override
@@ -267,31 +270,9 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public Option<? extends Set<T>> initOption() {
+    public Option<HashSet<T>> initOption() {
         Option<List<T>> opt = list.get().initOption();
         return opt.isDefined() ? new Some<>(HashSet.ofAll(opt.get())) : None.instance();
-    }
-
-    @Override
-    public String mkString(CharSequence delimiter,
-                           CharSequence prefix,
-                           CharSequence suffix) {
-        final StringBuilder builder = new StringBuilder(prefix);
-        forEach(t -> builder.append(String.valueOf(t)).append(String.valueOf(delimiter)));
-        if (!isEmpty()) {
-            builder.delete(builder.length() - delimiter.length(), builder.length());
-        }
-        return builder.append(suffix).toString();
-    }
-
-    @Override
-    public int length() {
-        return tree.size();
-    }
-
-    @Override
-    public boolean hasDefiniteSize() {
-        return true;
     }
 
     @Override
@@ -305,6 +286,11 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
+    public int length() {
+        return tree.size();
+    }
+
+    @Override
     public <U> HashSet<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         HashSet<U> result = HashSet.empty();
@@ -312,6 +298,23 @@ public final class HashSet<T> implements Set<T>, Serializable {
             result = result.add(mapper.apply(t));
         }
         return result;
+    }
+
+    @Override
+    public <U> HashSet<U> mapM(Function<? super T, ? extends U> mapper) {
+        return map(mapper);
+    }
+
+    @Override
+    public String mkString(CharSequence delimiter,
+                           CharSequence prefix,
+                           CharSequence suffix) {
+        final StringBuilder builder = new StringBuilder(prefix);
+        forEach(t -> builder.append(String.valueOf(t)).append(String.valueOf(delimiter)));
+        if (!isEmpty()) {
+            builder.delete(builder.length() - delimiter.length(), builder.length());
+        }
+        return builder.append(suffix).toString();
     }
 
     @Override
@@ -337,7 +340,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
@@ -400,7 +403,8 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<HashSet<T>> sliding(int size, int step) {
-        List<HashSet<T>> l = list.get().sliding(size, step).map(HashSet::ofAll);
+        // TODO: may be removed by iterator().sliding(...) in order to remove list
+        final List<HashSet<T>> l = list.get().sliding(size, step).map(HashSet::ofAll);
         return HashSet.ofAll(l);
     }
 

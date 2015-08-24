@@ -5,10 +5,10 @@
  */
 package javaslang.collection;
 
-import javaslang.Kind;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.Value;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -706,10 +706,9 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <U> Vector<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper) {
-        return flatMap((Function<? super T, ? extends Iterable<? extends U>>) mapper);
+    public <U> Vector<U> flatMapM(Function<? super T, ? extends Value<? extends U>> mapper) {
+        return flatMap(mapper);
     }
 
     @Override
@@ -893,6 +892,11 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
             trie = trie.put(i, mapper.apply(get(i)));
         }
         return trie.size() == 0 ? empty() : new Vector<>(trie);
+    }
+
+    @Override
+    public <U> Vector<U> mapM(Function<? super T, ? extends U> mapper) {
+        return map(mapper);
     }
 
     @Override

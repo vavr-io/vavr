@@ -32,7 +32,7 @@ public class Euler05Test {
     private static long smallestPositiveNumberEvenlyDivisibleByAllNumbersFrom1To(int max) {
         return Stream.rangeClosed(2, max)
                 .map(PrimeNumbers::factorization)
-                .reduce((m1, m2) -> m1.merged(m2, Math::max))
+                .reduce((m1, m2) -> m1.merge(m2, Math::max))
                 .foldLeft(1L, (xs, x) -> xs * pow(x.key, x.value));
     }
 
