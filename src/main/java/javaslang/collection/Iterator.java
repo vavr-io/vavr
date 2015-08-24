@@ -531,6 +531,11 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         return this;
     }
 
+    @Override
+    default int length() {
+        return foldLeft(0, (n, ignored) -> n + 1);
+    }
+
     /**
      * Maps the elements of this Iterator lazily using the given {@code mapper}.
      *
@@ -560,11 +565,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
                 }
             };
         }
-    }
-
-    @Override
-    default <U> Iterator<U> mapM(Function<? super T, ? extends U> mapper) {
-        return map(mapper);
     }
 
     @Override

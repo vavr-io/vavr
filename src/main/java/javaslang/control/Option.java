@@ -147,9 +147,6 @@ public interface Option<T> extends Value<T> {
      */
     <U> Option<U> map(Function<? super T, ? extends U> mapper);
 
-    @Override
-    <U> Option<U> mapM(Function<? super T, ? extends U> mapper);
-
     /**
      * Applies an action to this value, if this option is defined, otherwise does nothing.
      *

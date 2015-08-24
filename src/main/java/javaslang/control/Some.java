@@ -91,11 +91,6 @@ public final class Some<T> implements Option<T>, Serializable {
     }
 
     @Override
-    public <U> Some<U> mapM(Function<? super T, ? extends U> mapper) {
-        return map(mapper);
-    }
-
-    @Override
     public Some<T> peek(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         action.accept(get());

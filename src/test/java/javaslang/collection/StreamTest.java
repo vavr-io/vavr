@@ -8,13 +8,17 @@ package javaslang.collection;
 import javaslang.Serializables;
 import javaslang.collection.Stream.Cons;
 import javaslang.collection.Stream.Nil;
+import org.assertj.core.data.MapEntry;
 import org.junit.Test;
 
 import java.io.InvalidObjectException;
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.function.Function;
 import java.util.stream.Collector;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.StrictAssertions.entry;
 
 public class StreamTest extends AbstractSeqTest {
 
@@ -280,6 +284,14 @@ public class StreamTest extends AbstractSeqTest {
         final Stream<Integer> stream = this.of(1, 2, 3);
         stream.tail(); // evaluates second head element
         assertThat(stream.toString()).isEqualTo("Stream(1, 2, ?)");
+    }
+
+    @Test
+    public void shouldGroupByAndMapProperly() {
+        assertThat(Stream.of(1)
+                .groupBy(Function.identity())
+                .map(entry -> entry.key)
+                .toList()).isEqualTo(List.of(1));
     }
 
     // -- Serializable

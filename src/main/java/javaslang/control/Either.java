@@ -292,11 +292,6 @@ public interface Either<L, R> {
             }
         }
 
-        @Override
-        public <U> LeftProjection<U, R> mapM(Function<? super L, ? extends U> mapper) {
-            return map(mapper);
-        }
-
         /**
          * Applies the given action to the value if the projected either is a Left. Otherwise nothing happens.
          *
@@ -514,11 +509,6 @@ public interface Either<L, R> {
             else {
                 return (RightProjection<L, U>) this;
             }
-        }
-
-        @Override
-        public <U> RightProjection<L, U> mapM(Function<? super R, ? extends U> mapper) {
-            return map(mapper);
         }
 
         /**

@@ -246,7 +246,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public Set<K> keySet() {
-        return mapM(entry -> entry.key);
+        return map(entry -> entry.key);
     }
 
     @Override
@@ -256,17 +256,17 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public <U> Set<U> map(Function<? super Entry<K, V>, ? extends U> mapper) {
-        throw new UnsupportedOperationException("TODO");
+        Objects.requireNonNull(mapper, "mapper is null");
+        return foldLeft(HashSet.empty(), (acc, entry) -> acc.add(mapper.apply(entry)));
     }
 
     @Override
     public <U, W> HashMap<U, W> map2(BiFunction<? super K, ? super V, ? extends Entry<? extends U, ? extends W>> mapper) {
-        throw new UnsupportedOperationException("TODO");
-    }
-
-    @Override
-    public <U> Set<U> mapM(Function<? super Entry<K, V>, ? extends U> mapper) {
-        throw new UnsupportedOperationException("TODO");
+        Objects.requireNonNull(mapper, "mapper is null");
+        return foldLeft(HashMap.empty(), (acc, entry) -> {
+            final Entry<? extends U, ? extends W> e = mapper.apply(entry.key, entry.value);
+            return acc.put(e.key, e.value);
+        });
     }
 
     @Override

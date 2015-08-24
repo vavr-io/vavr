@@ -106,9 +106,6 @@ public interface IndexedSeq<T> extends Seq<T> {
     <U> IndexedSeq<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
-    <U> IndexedSeq<U> mapM(Function<? super T, ? extends U> mapper);
-
-    @Override
     Tuple2<? extends IndexedSeq<T>, ? extends IndexedSeq<T>> partition(Predicate<? super T> predicate);
 
     @Override

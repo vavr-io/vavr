@@ -711,9 +711,6 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     <U> Seq<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
-    <U> Seq<U> mapM(Function<? super T, ? extends U> mapper);
-
-    @Override
     Tuple2<? extends Seq<T>, ? extends Seq<T>> partition(Predicate<? super T> predicate);
 
     @Override

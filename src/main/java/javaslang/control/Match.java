@@ -407,11 +407,6 @@ public interface Match<R> extends Function<Object, R> {
         <U> MatchMonad<U> map(Function<? super R, ? extends U> mapper);
 
         @Override
-        default <U> MatchMonad<U> mapM(Function<? super R, ? extends U> mapper) {
-            return map(mapper);
-        }
-
-        @Override
         MatchMonad<R> peek(Consumer<? super R> action);
 
         final class Of<T> {

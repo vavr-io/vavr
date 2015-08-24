@@ -789,11 +789,6 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Queue<U> mapM(Function<? super T, ? extends U> mapper) {
-        return map(mapper);
-    }
-
-    @Override
     public Tuple2<Queue<T>, Queue<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return toList().partition(predicate).map(List::toQueue, List::toQueue);

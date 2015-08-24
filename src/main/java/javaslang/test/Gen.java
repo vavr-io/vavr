@@ -331,11 +331,6 @@ public interface Gen<T> extends Value<T> {
     }
 
     @Override
-    default <U> Gen<U> mapM(Function<? super T, ? extends U> mapper) {
-        return map(mapper);
-    }
-
-    @Override
     default Gen<T> peek(Consumer<? super T> action) {
         return random -> {
             final T t = apply(random);

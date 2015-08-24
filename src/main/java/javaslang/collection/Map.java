@@ -140,9 +140,6 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
     @Override
     <U> Set<U> map(Function<? super Entry<K, V>, ? extends U> mapper);
 
-    @Override
-    <U> Set<U> mapM(Function<? super Entry<K, V>, ? extends U> mapper);
-
     // TODO: ? extends K or K?
     Map<K, V> merge(Map<K, ? extends V> that);
 

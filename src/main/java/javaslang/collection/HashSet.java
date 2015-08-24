@@ -301,11 +301,6 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public <U> HashSet<U> mapM(Function<? super T, ? extends U> mapper) {
-        return map(mapper);
-    }
-
-    @Override
     public String mkString(CharSequence delimiter,
                            CharSequence prefix,
                            CharSequence suffix) {
@@ -484,13 +479,14 @@ public final class HashSet<T> implements Set<T>, Serializable {
         return hash.get();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean equals(Object o) {
         if (o == this) {
             return true;
         } else if (o instanceof HashSet) {
             final HashSet<?> that = (HashSet<?>) o;
-            return this.iterator().equals(that.iterator());
+            return this.length() == that.length() && ((HashSet<Object>) this).containsAll(that);
         } else {
             return false;
         }

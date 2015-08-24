@@ -149,11 +149,6 @@ public interface Try<T> extends Value<T> {
      */
     <U> Try<U> map(Function<? super T, ? extends U> mapper);
 
-    @Override
-    default <U> Try<U> mapM(Function<? super T, ? extends U> mapper) {
-        return map(mapper);
-    }
-
     /**
      * Runs the given checked function if this is a {@code Success},
      * passing the result of the current expression to it.

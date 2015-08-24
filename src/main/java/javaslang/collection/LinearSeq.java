@@ -106,9 +106,6 @@ public interface LinearSeq<T> extends Seq<T> {
     <U> LinearSeq<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
-    <U> LinearSeq<U> mapM(Function<? super T, ? extends U> mapper);
-
-    @Override
     Tuple2<? extends LinearSeq<T>, ? extends LinearSeq<T>> partition(Predicate<? super T> predicate);
 
     @Override

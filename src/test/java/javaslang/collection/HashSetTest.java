@@ -6,10 +6,13 @@
 package javaslang.collection;
 
 import org.assertj.core.api.*;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.stream.Collector;
+
+import static org.junit.Assert.assertTrue;
 
 public class HashSetTest extends AbstractTraversableTest {
 
@@ -292,6 +295,11 @@ public class HashSetTest extends AbstractTraversableTest {
     @Override
     public void shouldSlideNonNilBySize2() {
 // TODO
+    }
+
+    @Test
+    public void shouldBeEqual() {
+        assertTrue(HashSet.of(1).equals(HashSet.of(1)));
     }
 
     boolean isThisLazyCollection() {

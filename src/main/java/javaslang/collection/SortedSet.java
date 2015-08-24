@@ -79,9 +79,6 @@ public interface SortedSet<T> extends Set<T> {
     <U> SortedSet<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
-    <U> SortedSet<U> mapM(Function<? super T, ? extends U> mapper);
-
-    @Override
     Tuple2<? extends SortedSet<T>, ? extends SortedSet<T>> partition(Predicate<? super T> predicate);
 
     @Override

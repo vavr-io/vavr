@@ -895,11 +895,6 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Vector<U> mapM(Function<? super T, ? extends U> mapper) {
-        return map(mapper);
-    }
-
-    @Override
     public Tuple2<Vector<T>, Vector<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final java.util.List<T> left = new ArrayList<>(), right = new ArrayList<>();
@@ -1356,9 +1351,9 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     public boolean equals(Object o) {
         if (o == this) {
             return true;
-        } else if (o instanceof IndexedSeq) {
+        } else if (o instanceof Vector) {
             Vector<?> vector1 = this;
-            IndexedSeq<?> vector2 = (IndexedSeq<?>) o;
+            Vector<?> vector2 = (Vector<?>) o;
             while (!vector1.isEmpty() && !vector2.isEmpty()) {
                 final boolean isEqual = Objects.equals(vector1.head(), vector2.head());
                 if (!isEqual) {

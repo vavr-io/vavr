@@ -208,7 +208,7 @@ public interface Value<T> extends Iterable<T> {
      * @return a mapped {@code Value}
      * @throws NullPointerException if {@code mapper} is null
      */
-    <U> Value<U> mapM(Function<? super T, ? extends U> mapper);
+    <U> Value<U> map(Function<? super T, ? extends U> mapper);
 
     // --
     // --

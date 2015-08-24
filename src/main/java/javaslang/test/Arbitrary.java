@@ -121,11 +121,6 @@ public interface Arbitrary<T> extends Value<T> {
     }
 
     @Override
-    default <U> Arbitrary<U> mapM(Function<? super T, ? extends U> mapper) {
-        return map(mapper);
-    }
-
-    @Override
     default Arbitrary<T> peek(Consumer<? super T> action) {
         return size -> apply(size).peek(action);
     }

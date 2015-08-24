@@ -246,11 +246,6 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
-    default <U> Tree<U> mapM(Function<? super T, ? extends U> mapper) {
-        return map(mapper);
-    }
-
-    @Override
     Tuple2<List<T>, List<T>> partition(Predicate<? super T> predicate);
 
     @Override
@@ -312,6 +307,7 @@ public interface Tree<T> extends Traversable<T> {
 
         private final T value;
         private final List<Node<T>> children;
+        private final Lazy<Integer> size;
 
         private final transient Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
 
@@ -327,6 +323,7 @@ public interface Tree<T> extends Traversable<T> {
             Objects.requireNonNull(children, "children is null");
             this.value = value;
             this.children = children;
+            this.size = Lazy.of(() -> 1 + children.foldLeft(0, (acc, child) -> acc + child.length()));
         }
 
         @Override
@@ -402,6 +399,11 @@ public interface Tree<T> extends Traversable<T> {
         @Override
         public boolean isEmpty() {
             return false;
+        }
+
+        @Override
+        public int length() {
+            return 0;
         }
 
         @Override
@@ -729,6 +731,11 @@ public interface Tree<T> extends Traversable<T> {
         @Override
         public boolean isEmpty() {
             return true;
+        }
+
+        @Override
+        public int length() {
+            return 0;
         }
 
         @Override

@@ -150,9 +150,6 @@ public interface Traversable<T> extends TraversableOnce<T> {
     <U> Traversable<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
-    <U> Traversable<U> mapM(Function<? super T, ? extends U> mapper);
-
-    @Override
     Tuple2<? extends Traversable<T>, ? extends Traversable<T>> partition(Predicate<? super T> predicate);
 
     @Override

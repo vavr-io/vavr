@@ -531,9 +531,7 @@ public interface TraversableOnce<T> extends Value<T> {
      *
      * @return the number of elements
      */
-    default int length() {
-        return foldLeft(0, (n, ignored) -> n + 1);
-    }
+    int length();
 
     /**
      * Maps the elements of this traversable to elements of a new type preserving their order, if any.
@@ -544,9 +542,6 @@ public interface TraversableOnce<T> extends Value<T> {
      * @throws NullPointerException if {@code mapper} is null
      */
     <U> TraversableOnce<U> map(Function<? super T, ? extends U> mapper);
-
-    @Override
-    <U> TraversableOnce<U> mapM(Function<? super T, ? extends U> mapper);
 
     /**
      * Calculates the maximum of this elements according to their natural order.

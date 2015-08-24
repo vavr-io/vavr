@@ -101,9 +101,6 @@ public interface Set<T> extends Traversable<T> {
     <U> Set<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
-    <U> Set<U> mapM(Function<? super T, ? extends U> mapper);
-
-    @Override
     Tuple2<? extends Set<T>, ? extends Set<T>> partition(Predicate<? super T> predicate);
 
     @Override

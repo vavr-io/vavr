@@ -186,12 +186,8 @@ public final class Lazy<T> implements Supplier<T>, Value<T>, Serializable {
         });
     }
 
-    public <U> Lazy<U> map(Function<? super T, ? extends U> mapper) {
-        return mapM(mapper);
-    }
-
     @Override
-    public <U> Lazy<U> mapM(Function<? super T, ? extends U> mapper) {
+    public <U> Lazy<U> map(Function<? super T, ? extends U> mapper) {
         return Lazy.of(() -> mapper.apply(get()));
     }
 
