@@ -5,8 +5,6 @@
  */
 package javaslang.control;
 
-import javaslang.FilterMonadic;
-import javaslang.Kind;
 import javaslang.Value;
 import javaslang.collection.Iterator;
 
@@ -32,8 +30,7 @@ import java.util.function.Supplier;
  * @param <T> The type of the optional value.
  * @since 1.0.0
  */
-public interface Option<T> extends Value<T>,
-        FilterMonadic<Option<?>, T>, Kind<Option<?>, T> {
+public interface Option<T> extends Value<T> {
 
     /**
      * Creates a new Option of a given value.
@@ -133,10 +130,10 @@ public interface Option<T> extends Value<T>,
      * @param <U>    Component type of the resulting Option
      * @return a new {@code Option}
      */
-    <U> Option<U> flatMap(Function<? super T, ? extends Option<? extends U>> mapper);
+    <U> Option<U> flatMap(Function<? super T, ? extends Value<? extends U>> mapper);
 
     @Override
-    <U> Option<U> flatMapM(Function<? super T, ? extends Kind<? extends Option<?>, ? extends U>> mapper);
+    <U> Option<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper);
 
     @Override
     Option<Object> flatten();
@@ -148,7 +145,6 @@ public interface Option<T> extends Value<T>,
      * @param <U>    The new value type
      * @return a new {@code Some} containing the mapped value if this Option is defined, otherwise {@code None}, if this is empty.
      */
-    @Override
     <U> Option<U> map(Function<? super T, ? extends U> mapper);
 
     /**

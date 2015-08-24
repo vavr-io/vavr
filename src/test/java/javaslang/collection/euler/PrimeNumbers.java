@@ -31,7 +31,7 @@ public final class PrimeNumbers {
         } else {
             return primeFactors(num)
                     .map(p -> HashMap.of(Map.Entry.of(p, 1L))
-                            .merged(factorization(num / p), (a, b) -> a + b))
+                            .merge(factorization(num / p), (a, b) -> a + b))
                     .orElseGet(HashMap::empty);
         }
     }

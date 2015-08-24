@@ -5,8 +5,8 @@
  */
 package javaslang.collection;
 
-import javaslang.Kind;
 import javaslang.Tuple2;
+import javaslang.Value;
 import javaslang.control.Option;
 
 import java.util.Comparator;
@@ -77,7 +77,7 @@ public interface Set<T> extends Traversable<T> {
     <U> Set<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
-    <U> Set<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper);
+    <U> Set<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper);
 
     @Override
     Set<Object> flatten();

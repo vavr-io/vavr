@@ -5,8 +5,6 @@
  */
 package javaslang.test;
 
-import javaslang.FilterMonadic;
-import javaslang.Kind;
 import javaslang.Value;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
@@ -24,7 +22,7 @@ import java.util.function.Predicate;
  * @since 1.2.0
  */
 @FunctionalInterface
-public interface Arbitrary<T> extends Value<T>, FilterMonadic<Arbitrary<?>, T>, Kind<Arbitrary<?>, T> {
+public interface Arbitrary<T> extends Value<T> {
 
     /**
      * <p>
@@ -92,8 +90,11 @@ public interface Arbitrary<T> extends Value<T>, FilterMonadic<Arbitrary<?>, T>, 
 
     @SuppressWarnings("unchecked")
     @Override
-    default <U> Arbitrary<U> flatMapM(Function<? super T, ? extends Kind<? extends Arbitrary<?>, ? extends U>> mapper) {
-        return flatMap((Function<? super T, ? extends Arbitrary<? extends U>>) mapper);
+    default <U> Arbitrary<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
+        return size -> {
+            final Gen<T> gen = apply(size);
+            return random -> mapper.apply(gen.apply(random)).get();
+        };
     }
 
     @Override
@@ -111,7 +112,6 @@ public interface Arbitrary<T> extends Value<T>, FilterMonadic<Arbitrary<?>, T>, 
      * @param <U>    Type of the mapped object
      * @return A new generator
      */
-    @Override
     default <U> Arbitrary<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return n -> {

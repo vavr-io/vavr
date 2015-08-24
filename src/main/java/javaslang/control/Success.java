@@ -6,7 +6,7 @@
 package javaslang.control;
 
 import javaslang.CheckedFunction1;
-import javaslang.Kind;
+import javaslang.Value;
 
 import java.io.Serializable;
 import java.util.NoSuchElementException;
@@ -117,23 +117,32 @@ public final class Success<T> implements Try<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U> Try<U> flatMap(Function<? super T, ? extends Try<? extends U>> mapper) {
-        try {
-            return (Try<U>) mapper.apply(value);
-        } catch (Throwable t) {
-            return new Failure<>(t);
-        }
+    public <U> Try<U> flatMap(Function<? super T, ? extends Value<? extends U>> mapper) {
+        return flatMapTry((CheckedFunction<T, Value<? extends U>>) mapper::apply);
     }
 
+
+    @SuppressWarnings("unchecked")
     @Override
-    public <U> Try<U> flatMapTry(CheckedFunction<? super T, ? extends Try<? extends U>> mapper) {
-        return Try.of(() -> mapper.apply(value).get());
+    public <U> Try<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
+        return flatMapTry((CheckedFunction<T, Value<? extends U>>) mapper::apply);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U> Try<U> flatMapM(Function<? super T, ? extends Kind<? extends Try<?>, ? extends U>> mapper) {
-        return flatMap((Function<? super T, ? extends Try<? extends U>>) mapper);
+    public <U> Try<U> flatMapTry(CheckedFunction<? super T, ? extends Value<? extends U>> mapper) {
+        try {
+            final Value<? extends U> val = mapper.apply(value);
+            if (val instanceof Try) {
+                return (Try<U>) val;
+            } else if (val.isDefined()) {
+                return new Success<>(val.get());
+            } else {
+                return new Failure<>(new NoSuchElementException("flatMap returned nothing"));
+            }
+        } catch (Throwable t) {
+            return new Failure<>(t);
+        }
     }
 
     @Override

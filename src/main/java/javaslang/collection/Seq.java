@@ -5,9 +5,9 @@
  */
 package javaslang.collection;
 
-import javaslang.Kind;
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.Value;
 import javaslang.control.Option;
 
 import java.util.Comparator;
@@ -687,7 +687,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     <U> Seq<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
-    <U> Seq<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper);
+    <U> Seq<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper);
 
     @Override
     Seq<Object> flatten();

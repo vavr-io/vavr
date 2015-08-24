@@ -5,10 +5,10 @@
  */
 package javaslang.collection;
 
-import javaslang.Kind;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.Value;
 import javaslang.control.Match;
 import javaslang.control.None;
 import javaslang.control.Option;
@@ -46,6 +46,8 @@ public interface Tree<T> extends Traversable<T> {
         return new Node<>(value, List.ofAll(children));
     }
 
+    <U> Tree<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
+
     /**
      * Gets the value of this tree.
      *
@@ -78,6 +80,8 @@ public interface Tree<T> extends Traversable<T> {
     default boolean isBranch() {
         return !(isEmpty() || isLeaf());
     }
+
+    <U> Tree<U> map(Function<? super T, ? extends U> mapper);
 
     /**
      * Traverses the Tree in pre-order.
@@ -200,12 +204,8 @@ public interface Tree<T> extends Traversable<T> {
     List<T> findAll(Predicate<? super T> predicate);
 
     @Override
-    <U> Tree<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
-
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> Tree<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper) {
-        return flatMap((Function<? super T, ? extends IterableKind<? extends U>>) mapper);
+    default <U> Tree<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
+        return flatMap(mapper);
     }
 
     @Override
@@ -244,9 +244,6 @@ public interface Tree<T> extends Traversable<T> {
     default Iterator<T> iterator() {
         return traverse().iterator();
     }
-
-    @Override
-    <U> Tree<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
     Tuple2<List<T>, List<T>> partition(Predicate<? super T> predicate);
@@ -842,7 +839,7 @@ public interface Tree<T> extends Traversable<T> {
         }
 
         @Override
-        public <U> Empty<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper) {
+        public <U> Empty<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
             return Empty.instance();
         }
 

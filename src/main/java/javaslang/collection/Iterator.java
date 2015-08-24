@@ -5,8 +5,8 @@
  */
 package javaslang.collection;
 
-import javaslang.Kind;
 import javaslang.Tuple2;
+import javaslang.Value;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -208,7 +208,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
-     * Creates a FilterMonadic Iterator based on the given Iterable. This is a convenience method for
+     * Creates an Iterator based on the given Iterable. This is a convenience method for
      * {@code Iterator.of(iterable.iterator()}.
      *
      * @param iterable An Iterable
@@ -221,7 +221,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
-     * Creates a FilterMonadic Iterator based on the given Iterator by
+     * Creates a an Iterator based on the given Iterator by
      * delegating calls of {@code hasNext()} and {@code next()} to it.
      *
      * @param iterator A {@link java.util.Iterator}
@@ -429,15 +429,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      * @param <U>    Component type
      * @return A new Iterable
      */
-    @SuppressWarnings("unchecked")
     @Override
-    default <U> Iterator<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        if (!hasNext()) {
-            return empty();
-        } else {
-            return flatMap((Function<? super T, ? extends Iterable<? extends U>>) mapper);
-        }
+    default <U> Iterator<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
+        return flatMap(mapper);
     }
 
     /**
@@ -549,7 +543,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      * @param <U>    Component type
      * @return A new Iterator
      */
-    @Override
     default <U> Iterator<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (!hasNext()) {

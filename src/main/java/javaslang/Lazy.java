@@ -6,10 +6,6 @@
 package javaslang;
 
 import javaslang.collection.Iterator;
-import javaslang.collection.List;
-import javaslang.control.None;
-import javaslang.control.Option;
-import javaslang.control.Some;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
@@ -41,8 +37,7 @@ import java.util.function.Supplier;
  *
  * @since 1.2.1
  */
-public final class Lazy<T> implements Supplier<T>, Value<T>, Serializable,
-        FilterMonadic<Lazy<?>, T>, Kind<Lazy<?>, T> {
+public final class Lazy<T> implements Supplier<T>, Value<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -136,7 +131,7 @@ public final class Lazy<T> implements Supplier<T>, Value<T>, Serializable,
      */
     @Override
     public boolean isEmpty() {
-        return false;
+        return isEmpty;
     }
 
     /**
@@ -170,13 +165,17 @@ public final class Lazy<T> implements Supplier<T>, Value<T>, Serializable,
     }
 
     public <U> Lazy<U> flatMap(Function<? super T, ? extends Lazy<? extends U>> mapper) {
-        return Lazy.of(() -> mapper.apply(get()).get());
+        return flatMapVal(mapper);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U> Lazy<U> flatMapM(Function<? super T, ? extends Kind<? extends Lazy<?>, ? extends U>> mapper) {
-        return flatMap((Function<? super T, ? extends Lazy<? extends U>>) mapper);
+    public <U> Lazy<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
+        if (isEmpty()) {
+            return (Lazy<U>) this;
+        } else {
+            return Lazy.of(() -> mapper.apply(get()).get());
+        }
     }
 
     @Override

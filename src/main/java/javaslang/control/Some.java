@@ -5,7 +5,7 @@
  */
 package javaslang.control;
 
-import javaslang.Kind;
+import javaslang.Value;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -68,15 +68,15 @@ public final class Some<T> implements Option<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U> Option<U> flatMap(Function<? super T, ? extends Option<? extends U>> mapper) {
+    public <U> Option<U> flatMap(Function<? super T, ? extends Value<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return (Option<U>) mapper.apply(value);
+        return (Option<U>) mapper.apply(value).toOption();
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U> Option<U> flatMapM(Function<? super T, ? extends Kind<? extends Option<?>, ? extends U>> mapper) {
-        return flatMap((Function<? super T, ? extends Option<? extends U>>) mapper);
+    public <U> Option<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
+        return flatMap(mapper);
     }
 
     @Override

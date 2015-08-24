@@ -5,7 +5,7 @@
  */
 package javaslang.control;
 
-import javaslang.Kind;
+import javaslang.Value;
 
 import java.io.Serializable;
 import java.util.NoSuchElementException;
@@ -70,13 +70,13 @@ public final class None<T> implements Option<T>, Serializable {
     }
 
     @Override
-    public <U> None<U> flatMap(Function<? super T, ? extends Option<? extends U>> mapper) {
+    public <U> None<U> flatMap(Function<? super T, ? extends Value<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return None.instance();
     }
 
     @Override
-    public <U> None<U> flatMapM(Function<? super T, ? extends Kind<? extends Option<?>, ? extends U>> mapper) {
+    public <U> None<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return None.instance();
     }

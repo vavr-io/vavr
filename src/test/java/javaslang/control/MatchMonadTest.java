@@ -657,7 +657,7 @@ public class MatchMonadTest {
         assertThat(actual).isTrue();
     }
 
-    // FilterMonadic operations
+    // monadic operations
 
     @Test
     public void shouldFlatMapMatched() {

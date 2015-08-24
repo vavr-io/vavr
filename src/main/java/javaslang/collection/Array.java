@@ -5,8 +5,8 @@
  */
 package javaslang.collection;
 
-import javaslang.Kind;
 import javaslang.Tuple2;
+import javaslang.Value;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -38,12 +38,12 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     
     @Override
     public Array<T> append(T element) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<T> appendAll(Iterable<? extends T> elements) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
@@ -63,22 +63,22 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Array<Tuple2<T, T>> crossProduct() {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public <U> Array<Tuple2<T, U>> crossProduct(Iterable<? extends U> that) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<? extends Array<T>> combinations() {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<? extends Array<T>> combinations(int k) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
@@ -91,62 +91,62 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Array<T> distinct() {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<T> distinctBy(Comparator<? super T> comparator) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public <U> Array<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<T> drop(int n) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<T> dropRight(int n) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<T> dropWhile(Predicate<? super T> predicate) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<T> filter(Predicate<? super T> predicate) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<T> findAll(Predicate<? super T> predicate) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public <U> Array<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
-    public <U> Array<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper) {
-        return null;
+    public <U> Array<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<Object> flatten() {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public <C> Map<C, ? extends Array<T>> groupBy(Function<? super T, ? extends C> classifier) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
@@ -164,7 +164,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Array<? extends Array<T>> grouped(int size) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
@@ -174,12 +174,12 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Array<T> init() {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Option<? extends Array<T>> initOption() {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
@@ -189,17 +189,17 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Array<T> insert(int index, T element) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<T> insertAll(int index, Iterable<? extends T> elements) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<T> intersperse(T element) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
@@ -214,22 +214,22 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public <U> Array<U> map(Function<? super T, ? extends U> mapper) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Tuple2<? extends Array<T>, ? extends Array<T>> partition(Predicate<? super T> predicate) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<T> peek(Consumer<? super T> action) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<? extends Array<T>> permutations() {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
@@ -239,62 +239,62 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Array<T> prependAll(Iterable<? extends T> elements) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<T> remove(T element) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<T> removeFirst(Predicate<T> predicate) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<T> removeLast(Predicate<T> predicate) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<T> removeAt(int indx) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<T> removeAll(T element) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<T> removeAll(Iterable<? extends T> elements) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<T> replace(T currentElement, T newElement) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<T> replaceAll(T currentElement, T newElement) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<T> replaceAll(UnaryOperator<T> operator) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<T> retainAll(Iterable<? extends T> elements) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<T> reverse() {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
@@ -304,52 +304,52 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Array<? extends Array<T>> sliding(int size) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<? extends Array<T>> sliding(int size, int step) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<T> sort() {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<T> sort(Comparator<? super T> comparator) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Tuple2<? extends Seq<T>, ? extends Seq<T>> splitAt(int n) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Tuple2<? extends Seq<T>, ? extends Seq<T>> splitAt(Predicate<? super T> predicate) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Tuple2<? extends Seq<T>, ? extends Seq<T>> splitAtInclusive(Predicate<? super T> predicate) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Tuple2<? extends Array<T>, ? extends Array<T>> span(Predicate<? super T> predicate) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<T> subSequence(int beginIndex) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<T> subSequence(int beginIndex, int endIndex) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
@@ -367,41 +367,41 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Array<T> take(int n) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<T> takeRight(int n) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<T> takeWhile(Predicate<? super T> predicate) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public <U> Array<U> unit(Iterable<? extends U> iterable) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public <T1, T2> Tuple2<? extends Array<T1>, ? extends Array<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public <U> Array<Tuple2<T, U>> zip(Iterable<U> that) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public <U> Array<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Array<Tuple2<T, Integer>> zipWithIndex() {
-        return null;
+        throw new UnsupportedOperationException("TODO");
     }
 }

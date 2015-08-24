@@ -387,26 +387,23 @@ public interface Match<R> extends Function<Object, R> {
     /**
      * @since 2.0.0
      */
-    interface MatchMonad<R> extends Value<R>,
-            FilterMonadic<MatchMonad<?>, R>, Kind<MatchMonad<?>, R> {
+    interface MatchMonad<R> extends Value<R> {
 
         @Override
         MatchMonad<R> filter(Predicate<? super R> predicate);
 
-        <U> MatchMonad<U> flatMap(Function<? super R, ? extends MatchMonad<? extends U>> mapper);
-
-        @SuppressWarnings("unchecked")
-        @Override
-        default <U> MatchMonad<U> flatMapM(Function<? super R, ? extends Kind<? extends MatchMonad<?>, ? extends U>> mapper) {
-            return flatMap((Function<? super R, ? extends MatchMonad<? extends U>>) mapper);
+        default <U> MatchMonad<U> flatMap(Function<? super R, ? extends Value<? extends U>> mapper) {
+            return flatMapVal(mapper);
         }
+
+        @Override
+        <U> MatchMonad<U> flatMapVal(Function<? super R, ? extends Value<? extends U>> mapper);
 
         @Override
         default MatchMonad<Object> flatten() {
             return flatMap(result -> (result instanceof MatchMonad) ? ((MatchMonad<?>) result).flatten() : this);
         }
 
-        @Override
         <U> MatchMonad<U> map(Function<? super R, ? extends U> mapper);
 
         @Override
@@ -643,7 +640,7 @@ public interface Match<R> extends Function<Object, R> {
 
                 @SuppressWarnings("unchecked")
                 @Override
-                public <U> MatchMonad<U> flatMap(Function<? super R, ? extends MatchMonad<? extends U>> mapper) {
+                public <U> MatchMonad<U> flatMapVal(Function<? super R, ? extends Value<? extends U>> mapper) {
                     Objects.requireNonNull(mapper, "mapper is null");
                     return result
                             .map(supplier -> (MatchMonad<U>) new Then<>(value, new Some<>(() -> mapper.apply(supplier.get()).get())))
@@ -729,7 +726,7 @@ public interface Match<R> extends Function<Object, R> {
             }
 
             @Override
-            public <U> MatchMonad<U> flatMap(Function<? super R, ? extends MatchMonad<? extends U>> mapper) {
+            public <U> MatchMonad<U> flatMapVal(Function<? super R, ? extends Value<? extends U>> mapper) {
                 return new Otherwise<>(() -> mapper.apply(result.get()).get());
             }
 

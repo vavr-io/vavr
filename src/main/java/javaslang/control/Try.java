@@ -6,8 +6,6 @@
 package javaslang.control;
 
 import javaslang.CheckedFunction1;
-import javaslang.FilterMonadic;
-import javaslang.Kind;
 import javaslang.Value;
 import javaslang.collection.Iterator;
 
@@ -20,8 +18,7 @@ import java.util.function.Predicate;
  *
  * @param <T> Value type in the case of success.
  */
-public interface Try<T> extends Value<T>,
-        FilterMonadic<Try<?>, T>, Kind<Try<?>, T> {
+public interface Try<T> extends Value<T> {
 
     /**
      * Creates a Try of a CheckedSupplier.
@@ -133,12 +130,12 @@ public interface Try<T> extends Value<T>,
      * @param <U>    The new component type
      * @return a new Try
      */
-    <U> Try<U> flatMap(Function<? super T, ? extends Try<? extends U>> mapper);
+    <U> Try<U> flatMap(Function<? super T, ? extends Value<? extends U>> mapper);
 
-    <U> Try<U> flatMapTry(CheckedFunction<? super T, ? extends Try<? extends U>> mapper);
+    <U> Try<U> flatMapTry(CheckedFunction<? super T, ? extends Value<? extends U>> mapper);
 
     @Override
-    <U> Try<U> flatMapM(Function<? super T, ? extends Kind<? extends Try<?>, ? extends U>> mapper);
+    <U> Try<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper);
 
     @Override
     Try<Object> flatten();
@@ -150,7 +147,6 @@ public interface Try<T> extends Value<T>,
      * @param mapper A mapper
      * @return a new Try
      */
-    @Override
     <U> Try<U> map(Function<? super T, ? extends U> mapper);
 
     /**
