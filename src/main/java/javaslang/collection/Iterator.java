@@ -324,6 +324,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
     @Override
     default Iterator<T> dropWhile(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
         if (!hasNext()) {
             return empty();
         } else {
@@ -408,11 +409,13 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
     @Override
     default Iterator<T> findAll(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate);
     }
 
     @Override
     default Option<T> findLast(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
         return null;
     }
 
@@ -599,6 +602,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
     @Override
     default Tuple2<Iterator<T>, Iterator<T>> partition(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
         return null;
     }
 
@@ -665,6 +669,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
     @Override
     default Tuple2<Iterator<T>, Iterator<T>> span(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
         return null;
     }
 
@@ -721,10 +726,12 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
     @Override
     default Iterator<T> takeWhile(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
         return null;
     }
 
     default <U> Iterator<Tuple2<T, U>> zip(Iterable<U> that) {
+        Objects.requireNonNull(that, "that is null");
         if(isEmpty()) {
             return empty();
         } else {
@@ -748,6 +755,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     default <U> Iterator<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
+        Objects.requireNonNull(that, "that is null");
         if(isEmpty()) {
             return empty();
         } else {
