@@ -8,7 +8,6 @@ package javaslang;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
 import javaslang.control.Try;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -32,6 +31,9 @@ public class TypeConsistencyTest {
             // javaslang.collection.HashMap
             "javaslang.collection.HashMap//public abstract javaslang.collection.Map javaslang.collection.Map.groupBy(java.util.function.Function)",
 
+            // javaslang.collection.SortedMap
+            "javaslang.collection.SortedMap//public abstract javaslang.collection.Map javaslang.collection.Map.groupBy(java.util.function.Function)",
+
             // javaslang.control.Match
             "javaslang.control.Match//public default java.util.function.Function java.util.function.Function.andThen(java.util.function.Function)",
             "javaslang.control.Match//public default java.util.function.Function java.util.function.Function.compose(java.util.function.Function)",
@@ -39,11 +41,9 @@ public class TypeConsistencyTest {
             // javaslang.control.Failure
             "javaslang.control.Failure//public abstract javaslang.control.Try javaslang.control.Try.recover(java.util.function.Function)",
             "javaslang.control.Failure//public abstract javaslang.control.Try javaslang.control.Try.recoverWith(java.util.function.Function)",
-            "javaslang.control.Failure//public abstract javaslang.control.Try javaslang.control.Try.failed()",
             "javaslang.control.Failure//public default javaslang.control.Try javaslang.control.Try.andThen(javaslang.control.Try$CheckedRunnable)",
 
             // javaslang.control.Success
-            "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.failed()",
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.filter(java.util.function.Predicate)",
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.filterTry(javaslang.control.Try$CheckedPredicate)",
             "javaslang.control.Success//public abstract javaslang.control.Try javaslang.control.Try.flatMap(java.util.function.Function)",
@@ -60,13 +60,7 @@ public class TypeConsistencyTest {
             "javaslang.control.Some//public abstract javaslang.control.Option javaslang.control.Option.filter(java.util.function.Predicate)",
             "javaslang.control.Some//public abstract javaslang.control.Option javaslang.control.Option.flatMap(java.util.function.Function)",
             "javaslang.control.Some//public abstract javaslang.control.Option javaslang.control.Option.flatMapVal(java.util.function.Function)",
-            "javaslang.control.Some//public abstract javaslang.control.Option javaslang.control.Option.flatten()",
-
-            // javaslang.control.Left
-            "javaslang.control.Left//public abstract javaslang.control.Either javaslang.control.Either.swap()",
-
-            // javaslang.control.Right
-            "javaslang.control.Right//public abstract javaslang.control.Either javaslang.control.Either.swap()"
+            "javaslang.control.Some//public abstract javaslang.control.Option javaslang.control.Option.flatten()"
     );
 
     /**
@@ -74,7 +68,6 @@ public class TypeConsistencyTest {
      * are not recognized by this test because there is no runtime information available via reflection.
      */
     @Test
-    @Ignore
     public void shouldHaveAConsistentTypeSystem() {
 
         final Stream<Class<?>> relevantClasses = loadClasses("src-gen/main/java")
@@ -134,10 +127,9 @@ public class TypeConsistencyTest {
                     comparableMethod.m.getDeclaringClass().equals(comparableMethod.m.getReturnType()));
             final Stream<ComparableMethod> thisMethods = getOverridableMethods(Stream.of(clazz));
             return superMethods.filter(superMethod -> thisMethods
-                    .findFirst(thisMethod -> thisMethod.equals(superMethod))
-                            // TODO: special case if visibility is package private and classes are in different package
-                    .map(thisMethod -> !clazz.equals(thisMethod.m.getReturnType()))
-                    .orElse(true))
+                    .findFirst(thisMethod -> thisMethod.overrides(superMethod))
+                    .map(thisMethod -> superMethod.m.getReturnType().equals(thisMethod.m.getReturnType())) // return type not changed at all
+                    .orElse(true)) // method is not overridden at all and is therefor returned
                     .sort()
                     .map(comparableMethod -> comparableMethod.m);
         }
@@ -191,6 +183,26 @@ public class TypeConsistencyTest {
             this.m = m;
         }
 
+        public boolean overrides(ComparableMethod that) {
+            if (that == null) {
+                return false;
+            }
+            if (!Objects.equals(this.m.getName(), that.m.getName())) {
+                return false;
+            }
+            final Class<?>[] thisParamTypes = this.m.getParameterTypes();
+            final Class<?>[] thatParamTypes = that.m.getParameterTypes();
+            if (thisParamTypes.length != thatParamTypes.length) {
+                return false;
+            }
+            for (int i = 0; i < thisParamTypes.length; i++) {
+                if (!thatParamTypes[i].isAssignableFrom(thisParamTypes[i])) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         @Override
         public int compareTo(ComparableMethod that) {
             return this.toString().compareTo(that.toString());
@@ -202,8 +214,8 @@ public class TypeConsistencyTest {
                 return true;
             } else if (o instanceof ComparableMethod) {
                 final ComparableMethod that = (ComparableMethod) o;
-                return Objects.equals(this.m.getName(), that.m.getName()) &&
-                        Arrays.equals(this.m.getParameterTypes(), that.m.getParameterTypes());
+                return Objects.equals(this.m.getName(), that.m.getName())
+                        && Arrays.equals(this.m.getParameterTypes(), that.m.getParameterTypes());
             } else {
                 return false;
             }

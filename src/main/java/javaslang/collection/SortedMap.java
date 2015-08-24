@@ -100,6 +100,12 @@ public interface SortedMap<K, V> extends Map<K, V> {
     SortedMap<K, V> put(K key, V value);
 
     @Override
+    SortedMap<K, V> put(Entry<? extends K, ? extends V> entry);
+
+    @Override
+    SortedMap<K, V> put(Tuple2<? extends K, ? extends V> entry);
+
+    @Override
     SortedMap<K, V> remove(K key);
 
     @Override
