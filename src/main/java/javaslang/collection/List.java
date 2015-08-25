@@ -1143,9 +1143,8 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         List<List<T>> result = Nil.instance();
         List<T> list = this;
         while (!list.isEmpty()) {
-            final Tuple2<List<T>, List<T>> split = list.splitAt(size);
-            result = result.prepend(split._1);
-            list = split._2.isEmpty() ? Nil.instance() : list.drop(step);
+            result = result.prepend(list.take(size));
+            list = list.drop(step);
         }
         return result.reverse();
     }

@@ -1126,9 +1126,8 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         HashArrayMappedTrie<Integer, Vector<T>> result = HashArrayMappedTrie.empty();
         Vector<T> list = this;
         while (!list.isEmpty()) {
-            final Tuple2<Vector<T>, Vector<T>> split = list.splitAt(size);
-            result = result.put(result.size(), split._1);
-            list = split._2.isEmpty() ? Vector.empty() : list.drop(step);
+            result = result.put(result.size(), list.take(size));
+            list = list.drop(step);
         }
         return result.size() == 0 ? empty() : new Vector<>(result);
     }
