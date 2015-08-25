@@ -267,6 +267,21 @@ public class HashSetTest extends AbstractTraversableTest {
 
     // HashSet special cases
 
+    @Test
+    public void shouldDropRightAsExpectedIfCountIsLessThanSize() {
+        assertThat(of(1, 2, 3).dropRight(2)).isEqualTo(of(3));
+    }
+
+    @Test
+    public void shouldTakeRightAsExpectedIfCountIsLessThanSize() {
+        assertThat(of(1, 2, 3).takeRight(2)).isEqualTo(of(1, 2));
+    }
+
+    @Test
+    public void shouldGetInitOfNonNil() {
+        assertThat(of(1, 2, 3).init()).isEqualTo(of(2, 3));
+    }
+
     @Override
     public void shouldFoldRightNonNil() {
         // TODO
