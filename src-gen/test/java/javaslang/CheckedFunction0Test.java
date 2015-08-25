@@ -80,6 +80,15 @@ public class CheckedFunction0Test {
         assertThat(memo.isMemoized()).isTrue();
     }
 
+    private static CheckedFunction0<Integer> recurrent1 = () -> 11;
+    private static CheckedFunction0<Integer> recurrent2 = CheckedFunction0Test.recurrent1.memoized();
+
+    @Test
+    public void shouldCalculatedRecursively() throws Throwable {
+        assertThat(recurrent1.apply()).isEqualTo(11);
+
+    }
+
     @Test
     public void shouldComposeWithAndThen() {
         final CheckedFunction0<Object> f = () -> null;

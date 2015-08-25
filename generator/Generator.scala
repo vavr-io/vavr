@@ -505,12 +505,26 @@ def generateMainClasses(): Unit = {
                           return ($className$fullGenerics & Memoized) Lazy.of($mappingFunction)::get;
                         """ else if (i == 1) xs"""
                           final Lazy<R> forNull = Lazy.of($forNull);
-                          final ${im.getType("java.util.Map")}<$generics, R> cache = new ${im.getType("java.util.concurrent.ConcurrentHashMap")}<>();
-                          return ($className$fullGenerics & Memoized) t1 -> (t1 == null) ? forNull.get() : cache.computeIfAbsent(t1, $mappingFunction);
+                          final Object lock = new Object();
+                          final ${im.getType("java.util.Map")}<$generics, R> cache = new ${im.getType("java.util.HashMap")}<>();
+                          return ($className$fullGenerics & Memoized) t1 -> {
+                              if (t1 == null) {
+                                  return forNull.get();
+                              } else {
+                                  synchronized (lock) {
+                                      return cache.computeIfAbsent(t1, $mappingFunction);
+                                  }
+                              }
+                          };
                         """ else xs"""
-                          final ${im.getType("java.util.Map")}<Tuple$i<$generics>, R> cache = new ${im.getType("java.util.concurrent.ConcurrentHashMap")}<>();
+                          final Object lock = new Object();
+                          final ${im.getType("java.util.Map")}<Tuple$i<$generics>, R> cache = new ${im.getType("java.util.HashMap")}<>();
                           final ${checked.gen("Checked")}Function1<Tuple$i<$generics>, R> tupled = tupled();
-                          return ($className$fullGenerics & Memoized) ($params) -> cache.computeIfAbsent(Tuple.of($params), $mappingFunction);
+                          return ($className$fullGenerics & Memoized) ($params) -> {
+                              synchronized (lock) {
+                                  return cache.computeIfAbsent(Tuple.of($params), $mappingFunction);
+                              }
+                          };
                         """
                       }
                   }
@@ -759,6 +773,7 @@ def generateTestClasses(): Unit = {
 
         val test = im.getType("org.junit.Test")
         val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
+        val recFuncF1 = if (i == 0) "11;" else s"i1 <= 0 ? i1 : $className.recurrent2.apply(${(1 to i).gen(j => s"i$j" + (j == 1).gen(s" - 1"))(", ")}) + 1;"
 
         def curriedType(max: Int, function: String): String = {
           if (max == 0) {
@@ -883,6 +898,15 @@ def generateTestClasses(): Unit = {
                   final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> memo = f.memoized();
                   $assertThat(f.isMemoized()).isFalse();
                   $assertThat(memo.isMemoized()).isTrue();
+              }
+
+              private static $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> recurrent1 = (${(1 to i).gen(j => s"i$j")(", ")}) -> $recFuncF1
+              private static $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> recurrent2 = $className.recurrent1.memoized();
+
+              @$test
+              public void shouldCalculatedRecursively()${checked.gen(" throws Throwable")} {
+                  assertThat(recurrent1.apply(${(1 to i).gen(j => "11")(", ")})).isEqualTo(11);
+                  ${(i > 0).gen(s"assertThat(recurrent1.apply(${(1 to i).gen(j => "22")(", ")})).isEqualTo(22);")}
               }
 
               @$test

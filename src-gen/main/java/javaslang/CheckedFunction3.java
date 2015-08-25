@@ -9,9 +9,9 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 import javaslang.control.Try;
 
 /**
@@ -167,9 +167,14 @@ public interface CheckedFunction3<T1, T2, T3, R> extends λ<R> {
         if (this instanceof Memoized) {
             return this;
         } else {
-            final Map<Tuple3<T1, T2, T3>, R> cache = new ConcurrentHashMap<>();
+            final Object lock = new Object();
+            final Map<Tuple3<T1, T2, T3>, R> cache = new HashMap<>();
             final CheckedFunction1<Tuple3<T1, T2, T3>, R> tupled = tupled();
-            return (CheckedFunction3<T1, T2, T3, R> & Memoized) (t1, t2, t3) -> cache.computeIfAbsent(Tuple.of(t1, t2, t3), t -> Try.of(() -> tupled.apply(t)).get());
+            return (CheckedFunction3<T1, T2, T3, R> & Memoized) (t1, t2, t3) -> {
+                synchronized (lock) {
+                    return cache.computeIfAbsent(Tuple.of(t1, t2, t3), t -> Try.of(() -> tupled.apply(t)).get());
+                }
+            };
         }
     }
 
