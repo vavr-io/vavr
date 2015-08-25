@@ -46,7 +46,7 @@ public class HashMapTest {
                     Map.Entry.of(2, "2"))
                 .entrySet()).isEqualTo(
                 HashSet.of(
-                    Map.Entry.of(1, "2"),
-                    Map.Entry.of(2, "3")));
+                    Map.Entry.of(1, "1"),
+                    Map.Entry.of(2, "2")));
     }
 }
