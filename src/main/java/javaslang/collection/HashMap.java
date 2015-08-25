@@ -149,12 +149,17 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public HashMap<K, V> filter(Predicate<? super Entry<K, V>> predicate) {
-        throw new UnsupportedOperationException("TODO");
+        Objects.requireNonNull(predicate, "predicate is null");
+        return foldLeft(HashMap.<K, V>empty(), (entries, kvEntry) -> {
+            if (predicate.test(kvEntry)) return entries.put(kvEntry);
+            else return entries;
+        });
     }
 
     @Override
     public HashMap<K, V> findAll(Predicate<? super Entry<K, V>> predicate) {
-        throw new UnsupportedOperationException("TODO");
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filter(predicate);
     }
 
     @Override
@@ -163,28 +168,34 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public <U> Set<U> flatMap(Function<? super Entry<K, V>, ? extends Iterable<? extends U>> mapper) {
-        throw new UnsupportedOperationException("TODO");
+    public <U> HashSet<U> flatMap(Function<? super Entry<K, V>, ? extends Iterable<? extends U>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return foldLeft(HashSet.<U>empty(), (HashSet<U> acc, Entry<K, V> entry) -> {
+            for (U u: mapper.apply(entry)) {
+                acc = acc.add(u);
+            }
+            return acc;
+        });
     }
 
     @Override
     public <U, W> HashMap<U, W> flatMap2(BiFunction<? super K, ? super V, ? extends Iterable<? extends Entry<? extends U, ? extends W>>> mapper) {
-        throw new UnsupportedOperationException("TODO");
+        throw new UnsupportedOperationException("TODO Patryk");
     }
 
     @Override
     public <U> Set<U> flatMapVal(Function<? super Entry<K, V>, ? extends Value<? extends U>> mapper) {
-        throw new UnsupportedOperationException("TODO");
+        throw new UnsupportedOperationException("TODO Patryk");
     }
 
     @Override
     public Set<Object> flatten() {
-        throw new UnsupportedOperationException("TODO");
+        throw new UnsupportedOperationException("TODO Patryk");
     }
 
     @Override
     public <U> U foldRight(U zero, BiFunction<? super Entry<K, V>, ? super U, ? extends U> f) {
-        throw new UnsupportedOperationException("TODO");
+        throw new UnsupportedOperationException("TODO Patryk");
     }
 
     @Override
@@ -340,17 +351,17 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public HashMap<K, V> replace(Entry<K, V> currentElement, Entry<K, V> newElement) {
-        throw new UnsupportedOperationException("TODO");
+        throw new UnsupportedOperationException("TODO Patryk");
     }
 
     @Override
     public HashMap<K, V> replaceAll(Entry<K, V> currentElement, Entry<K, V> newElement) {
-        throw new UnsupportedOperationException("TODO");
+        throw new UnsupportedOperationException("TODO Patryk");
     }
 
     @Override
     public HashMap<K, V> replaceAll(UnaryOperator<Entry<K, V>> operator) {
-        throw new UnsupportedOperationException("TODO");
+        throw new UnsupportedOperationException("TODO Patryk");
     }
 
     @Override
@@ -405,32 +416,32 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public <K1, V1, K2, V2> Tuple2<HashMap<K1, V1>, HashMap<K2, V2>> unzip(Function<? super Entry<? super K, ? super V>, Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>>> unzipper) {
-        throw new UnsupportedOperationException("TODO");
+        throw new UnsupportedOperationException("TODO Patryk");
     }
 
     @Override
     public <K1, V1, K2, V2> Tuple2<HashMap<K1, V1>, HashMap<K2, V2>> unzip(BiFunction<? super K, ? super V, Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>>> unzipper) {
-        throw new UnsupportedOperationException("TODO");
+        throw new UnsupportedOperationException("TODO Patryk");
     }
 
     @Override
     public Seq<V> values() {
-        throw new UnsupportedOperationException("TODO");
+        throw new UnsupportedOperationException("TODO Patryk");
     }
 
     @Override
     public <U> HashMap<Tuple2<K, V>, U> zip(Iterable<U> that) {
-        throw new UnsupportedOperationException("TODO");
+        throw new UnsupportedOperationException("TODO Patryk");
     }
 
     @Override
     public <U> HashMap<Tuple2<K, V>, U> zipAll(Iterable<U> that, Entry<K, V> thisElem, U thatElem) {
-        throw new UnsupportedOperationException("TODO");
+        throw new UnsupportedOperationException("TODO Patryk");
     }
 
     @Override
     public HashMap<Tuple2<K, V>, Integer> zipWithIndex() {
-        throw new UnsupportedOperationException("TODO");
+        throw new UnsupportedOperationException("TODO Patryk");
     }
 
     @Override
