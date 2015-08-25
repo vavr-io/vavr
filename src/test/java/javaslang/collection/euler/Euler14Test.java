@@ -38,8 +38,9 @@ public class Euler14Test {
     
     @Test
     public void shouldSolveProblem14() {
-        assertThat(Stream.from(1L)
-                .take(1_000_000)
+        // equivalent to from(1L).take(1_000_000)
+        assertThat(Stream.from(500_000L)
+                .take(500_000)
                 .maxBy(collatzSequenceLength)
                 .get()).isEqualTo(837799);
     }
