@@ -171,11 +171,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<T> dropRight(int n) {
-        if (n <= 0) {
-            return this;
-        } else {
-            return HashSet.ofAll(list.get().dropRight(n));
-        }
+        return drop(n);
     }
 
     @Override
@@ -263,16 +259,12 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<T> init() {
-        if (isEmpty()) {
-            throw new UnsupportedOperationException();
-        }
-        return HashSet.ofAll(list.get().init());
+        return tail();
     }
 
     @Override
     public Option<HashSet<T>> initOption() {
-        Option<List<T>> opt = list.get().initOption();
-        return opt.isDefined() ? new Some<>(HashSet.ofAll(opt.get())) : None.instance();
+        return tailOption();
     }
 
     @Override
@@ -437,10 +429,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<T> takeRight(int n) {
-        if (tree.size() <= n) {
-            return this;
-        }
-        return HashSet.ofAll(list.get().takeRight(n));
+        return take(n);
     }
 
     @Override
