@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.Lazy;
+import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Value;
 import javaslang.control.Option;
@@ -41,7 +42,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     /**
-     * Returns a singleton {@code List}, i.e. a {@code List} of one element.
+     * Returns a singleton {@code HashMap}, i.e. a {@code HashMap} of one element.
      *
      * @param entry A map entry.
      * @param <K>   The key type
@@ -150,9 +151,9 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public HashMap<K, V> filter(Predicate<? super Entry<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return foldLeft(HashMap.<K, V>empty(), (entries, kvEntry) -> {
-            if (predicate.test(kvEntry)) return entries.put(kvEntry);
-            else return entries;
+        return foldLeft(HashMap.<K, V>empty(), (acc, entry) -> {
+            if (predicate.test(entry)) return acc.put(entry);
+            else return acc;
         });
     }
 
@@ -180,16 +181,24 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public <U, W> HashMap<U, W> flatMap2(BiFunction<? super K, ? super V, ? extends Iterable<? extends Entry<? extends U, ? extends W>>> mapper) {
-        throw new UnsupportedOperationException("TODO Patryk");
+        Objects.requireNonNull(mapper, "mapper is null");
+        return foldLeft(HashMap.<U, W>empty(), (acc, entry) -> {
+            for (Entry<? extends U, ? extends W> mappedEntry: mapper.apply(entry.key, entry.value)) {
+                acc = acc.put(mappedEntry);
+            }
+            return acc;
+        });
     }
 
     @Override
     public <U> Set<U> flatMapVal(Function<? super Entry<K, V>, ? extends Value<? extends U>> mapper) {
-        throw new UnsupportedOperationException("TODO Patryk");
-    }
+        Objects.requireNonNull(mapper, "mapper is null");
+        return foldLeft(HashSet.<U>empty(),
+                (HashSet<U> acc, Entry<K, V> entry) -> mapper.apply(entry).map(acc::add).orElse(acc));
+        }
 
     @Override
-    public Set<Object> flatten() {
+    public HashSet<Object> flatten() {
         throw new UnsupportedOperationException("TODO Patryk");
     }
 
@@ -426,7 +435,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public Seq<V> values() {
-        throw new UnsupportedOperationException("TODO Patryk");
+        return map(entry -> entry.value).toList();
     }
 
     @Override
