@@ -727,7 +727,35 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     @Override
     default Iterator<T> takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return null;
+        final Iterator<T> that = this;
+        return new Iterator<T>() {
+
+            private T next = null;
+            private boolean finished = false;
+
+            @Override
+            public boolean hasNext() {
+                while (!finished && next == null && that.hasNext()) {
+                    final T value = that.next();
+                    if (predicate.test(value)) {
+                        next = value;
+                    } else {
+                        finished = true;
+                    }
+                }
+                return next != null;
+            }
+
+            @Override
+            public T next() {
+                if (!hasNext()) {
+                    EMPTY.next();
+                }
+                final T result = next;
+                next = null;
+                return result;
+            }
+        };
     }
 
     default <U> Iterator<Tuple2<T, U>> zip(Iterable<U> that) {
