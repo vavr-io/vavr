@@ -108,6 +108,15 @@ public class Function1Test {
         assertThat(memo.isMemoized()).isTrue();
     }
 
+    private static Function1<Integer, Integer> recurrent1 = (i1) -> i1 <= 0 ? i1 : Function1Test.recurrent2.apply(i1 - 1) + 1;
+    private static Function1<Integer, Integer> recurrent2 = Function1Test.recurrent1.memoized();
+
+    @Test
+    public void shouldCalculatedRecursively() {
+        assertThat(recurrent1.apply(11)).isEqualTo(11);
+        assertThat(recurrent1.apply(22)).isEqualTo(22);
+    }
+
     @Test
     public void shouldComposeWithAndThen() {
         final Function1<Object, Object> f = (o1) -> null;

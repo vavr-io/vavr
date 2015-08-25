@@ -9,9 +9,9 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Represents a function with 5 arguments.
@@ -209,9 +209,14 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends λ<R> {
         if (this instanceof Memoized) {
             return this;
         } else {
-            final Map<Tuple5<T1, T2, T3, T4, T5>, R> cache = new ConcurrentHashMap<>();
+            final Object lock = new Object();
+            final Map<Tuple5<T1, T2, T3, T4, T5>, R> cache = new HashMap<>();
             final Function1<Tuple5<T1, T2, T3, T4, T5>, R> tupled = tupled();
-            return (Function5<T1, T2, T3, T4, T5, R> & Memoized) (t1, t2, t3, t4, t5) -> cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4, t5), tupled::apply);
+            return (Function5<T1, T2, T3, T4, T5, R> & Memoized) (t1, t2, t3, t4, t5) -> {
+                synchronized (lock) {
+                    return cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4, t5), tupled::apply);
+                }
+            };
         }
     }
 

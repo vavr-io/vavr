@@ -9,9 +9,9 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 
 /**
@@ -147,9 +147,14 @@ public interface Function2<T1, T2, R> extends λ<R>, BiFunction<T1, T2, R> {
         if (this instanceof Memoized) {
             return this;
         } else {
-            final Map<Tuple2<T1, T2>, R> cache = new ConcurrentHashMap<>();
+            final Object lock = new Object();
+            final Map<Tuple2<T1, T2>, R> cache = new HashMap<>();
             final Function1<Tuple2<T1, T2>, R> tupled = tupled();
-            return (Function2<T1, T2, R> & Memoized) (t1, t2) -> cache.computeIfAbsent(Tuple.of(t1, t2), tupled::apply);
+            return (Function2<T1, T2, R> & Memoized) (t1, t2) -> {
+                synchronized (lock) {
+                    return cache.computeIfAbsent(Tuple.of(t1, t2), tupled::apply);
+                }
+            };
         }
     }
 
