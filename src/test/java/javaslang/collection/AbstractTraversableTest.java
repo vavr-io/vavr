@@ -1083,7 +1083,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @SuppressWarnings("unchecked")
     @Test // #201
     public void shouldSlideNonNilBySize2() {
-        assertThat(of(1, 2, 3, 4, 5).sliding(2)).isEqualTo(of(of(1, 2), of(2, 3), of(3, 4), of(4, 5)));
+        assertThat(of(1, 2, 3, 4, 5).sliding(2)).isEqualTo(of(of(1, 2), of(2, 3), of(3, 4), of(4, 5), of(5)));
     }
 
     // -- sliding(size, step)
@@ -1114,7 +1114,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @SuppressWarnings("unchecked")
     @Test
     public void shouldSlide4ElementsBySize5AndStep3() {
-        assertThat(of(1, 2, 3, 4).sliding(5, 3)).isEqualTo(of(of(1, 2, 3, 4)));
+        assertThat(of(1, 2, 3, 4).sliding(5, 3)).isEqualTo(of(of(1, 2, 3, 4), of(4)));
     }
 
     // -- span

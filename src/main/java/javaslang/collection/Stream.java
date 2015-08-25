@@ -1082,8 +1082,7 @@ public interface Stream<T> extends LinearSeq<T> {
         if (isEmpty()) {
             return Nil.instance();
         } else {
-            final Tuple2<Stream<T>, Stream<T>> split = splitAt(size);
-            return new Cons<>(() -> split._1, () -> split._2.isEmpty() ? empty() : drop(step).sliding(size, step));
+            return new Cons<>(() -> take(size), () -> drop(step).sliding(size, step));
         }
     }
 
