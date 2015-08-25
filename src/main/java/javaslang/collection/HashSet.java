@@ -446,8 +446,8 @@ public final class HashSet<T> implements Set<T>, Serializable {
     @Override
     public HashSet<T> takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        List<T> taken = list.get().takeWhile(predicate);
-        return taken.length() == list.get().length() ? this : HashSet.ofAll(taken);
+        HashSet<T> taken = HashSet.ofAll(iterator().takeWhile(predicate));
+        return taken.length() == length() ? this : taken;
     }
 
     @Override
