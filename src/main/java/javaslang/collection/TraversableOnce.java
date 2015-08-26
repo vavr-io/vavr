@@ -83,7 +83,6 @@ import java.util.function.*;
  * <li>{@link #drop(int)}</li>
  * <li>{@link #dropRight(int)}</li>
  * <li>{@link #dropWhile(Predicate)}</li>
- * <li>{@link #findAll(Predicate)}</li>
  * <li>{@link #findFirst(Predicate)}</li>
  * <li>{@link #findLast(Predicate)}</li>
  * <li>{@link #take(int)}</li>
@@ -295,16 +294,6 @@ public interface TraversableOnce<T> extends Value<T> {
      */
     @Override
     TraversableOnce<T> filter(Predicate<? super T> predicate);
-
-    /**
-     * Essentially the same as {@link #filter(Predicate)} but the result type may differ,
-     * i.e. tree.findAll() may be a List.
-     *
-     * @param predicate A predicate.
-     * @return all elements of this which satisfy the given predicate.
-     * @throws NullPointerException if {@code predicate} is null
-     */
-    TraversableOnce<T> findAll(Predicate<? super T> predicate);
 
     /**
      * Returns the first element of this which satisfies the given predicate.

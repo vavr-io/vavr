@@ -603,12 +603,6 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public Queue<T> findAll(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return toList().findAll(predicate).toQueue();
-    }
-
-    @Override
     public <U> Queue<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return new Queue<>(front.flatMap(mapper), rear.flatMap(mapper));

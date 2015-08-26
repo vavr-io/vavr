@@ -706,12 +706,6 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> findAll(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return filter(predicate);
-    }
-
-    @Override
     default <U> List<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {

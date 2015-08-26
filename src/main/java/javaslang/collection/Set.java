@@ -71,9 +71,6 @@ public interface Set<T> extends Traversable<T> {
     Set<T> filter(Predicate<? super T> predicate);
 
     @Override
-    Set<T> findAll(Predicate<? super T> predicate);
-
-    @Override
     <U> Set<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override

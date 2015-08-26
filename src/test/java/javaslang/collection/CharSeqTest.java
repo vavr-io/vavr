@@ -317,18 +317,6 @@ public class CharSeqTest {
         }
     }
 
-    // -- findAll
-
-    @Test
-    public void shouldFindAllOfNil() {
-        assertThat(empty().findAll(ignored -> true)).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldFindAllOfNonNil() {
-        assertThat(CharSeq.of('1', '2', '3', '4').findAll(i -> i % 2 == 0)).isEqualTo(CharSeq.of('2', '4'));
-    }
-
     // -- findFirst
 
     @Test

@@ -556,11 +556,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public TreeSet<T> findAll(Predicate<? super T> predicate) {
-        throw new UnsupportedOperationException("TODO");
-    }
-
-    @Override
     public Option<T> findLast(Predicate<? super T> predicate) {
         throw new UnsupportedOperationException("TODO");
     }

@@ -49,9 +49,6 @@ public interface SortedMap<K, V> extends Map<K, V> {
     SortedMap<K, V> filter(Predicate<? super Entry<K, V>> predicate);
 
     @Override
-    SortedMap<K, V> findAll(Predicate<? super Entry<K, V>> predicate);
-
-    @Override
     <U> Set<U> flatMap(Function<? super Entry<K, V>, ? extends Iterable<? extends U>> mapper);
 
     @Override

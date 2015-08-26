@@ -160,12 +160,6 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public HashMap<K, V> findAll(Predicate<? super Entry<K, V>> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return filter(predicate);
-    }
-
-    @Override
     public Option<Entry<K, V>> findLast(Predicate<? super Entry<K, V>> predicate) {
         throw new UnsupportedOperationException("TODO");
     }

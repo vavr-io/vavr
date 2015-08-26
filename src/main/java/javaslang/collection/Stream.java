@@ -824,11 +824,6 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> findAll(Predicate<? super T> predicate) {
-        return filter(predicate);
-    }
-
-    @Override
     default <U> Stream<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? Nil.instance() : Stream.ofAll(() -> new Iterator<U>() {
