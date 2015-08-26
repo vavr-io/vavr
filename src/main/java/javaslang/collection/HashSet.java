@@ -186,12 +186,6 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> findAll(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return filter(predicate);
-    }
-
-    @Override
     public Option<T> findLast(Predicate<? super T> predicate) {
         throw new UnsupportedOperationException("TODO");
     }

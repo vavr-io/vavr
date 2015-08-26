@@ -247,12 +247,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq findAll(Predicate<? super Character> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return filter(predicate);
-    }
-
-    @Override
     public <U> Vector<U> flatMap(Function<? super Character, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {

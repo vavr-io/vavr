@@ -129,9 +129,6 @@ public interface Traversable<T> extends TraversableOnce<T> {
     Traversable<T> filter(Predicate<? super T> predicate);
 
     @Override
-    Traversable<T> findAll(Predicate<? super T> predicate);
-
-    @Override
     <U> Traversable<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override

@@ -413,12 +413,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     @Override
-    default Iterator<T> findAll(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return filter(predicate);
-    }
-
-    @Override
     default Option<T> findLast(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         T last = null;

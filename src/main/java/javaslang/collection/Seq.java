@@ -675,9 +675,6 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     Seq<T> filter(Predicate<? super T> predicate);
 
     @Override
-    Seq<T> findAll(Predicate<? super T> predicate);
-
-    @Override
     default Option<T> findLast(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return reverse().findFirst(predicate);

@@ -685,12 +685,6 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> findAll(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return filter(predicate);
-    }
-
-    @Override
     public <U> Vector<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {

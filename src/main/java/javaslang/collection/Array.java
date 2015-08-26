@@ -125,11 +125,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> findAll(Predicate<? super T> predicate) {
-        throw new UnsupportedOperationException("TODO");
-    }
-
-    @Override
     public <U> Array<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         throw new UnsupportedOperationException("TODO");
     }

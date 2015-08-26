@@ -107,9 +107,6 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
     Map<K, V> filter(Predicate<? super Entry<K, V>> predicate);
 
     @Override
-    Map<K, V> findAll(Predicate<? super Entry<K, V>> predicate);
-
-    @Override
     <U> Set<U> flatMap(Function<? super Entry<K, V>, ? extends Iterable<? extends U>> mapper);
 
     @Override
