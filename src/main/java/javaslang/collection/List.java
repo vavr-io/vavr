@@ -35,7 +35,7 @@ import java.util.stream.Collector;
  * List.empty()                  // = List.of() = Nil.instance()
  * List.of(x)                    // = new Cons&lt;&gt;(x, Nil.instance())
  * List.of(Object...)            // e.g. List.of(1, 2, 3)
- * List.ofAll(Iterable)          // e.g. List.ofAll(Stream.of(1, 2, 3)) = 1, 2, 3
+ * List.ofAll(java.lang.Iterable)      // e.g. List.ofAll(Stream.of(1, 2, 3)) = 1, 2, 3
  * List.ofAll(&lt;primitive array&gt;) // e.g. List.ofAll(new int[] {1, 2, 3}) = 1, 2, 3
  *
  * // int sequences
@@ -158,12 +158,12 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      * if the iteration order of the elements is stable.
      *
      * @param <T>      Component type of the List.
-     * @param elements An Iterable of elements.
+     * @param elements An java.lang.Iterable of elements.
      * @return A list containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
     @SuppressWarnings("unchecked")
-    static <T> List<T> ofAll(Iterable<? extends T> elements) {
+    static <T> List<T> ofAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof List) {
             return (List<T>) elements;
@@ -531,14 +531,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         } else if (step * (from - toInclusive) > 0) {
             return List.empty();
         } else {
-            final int gap = (from - toInclusive) % step;
-            final int signum = (from < toInclusive) ? -1 : 1;
-            final int bound = from * signum;
-            List<Integer> result = List.empty();
-            for (int i = toInclusive + gap; i * signum <= bound; i -= step) {
-                result = result.prepend(i);
-            }
-            return result;
+            return List.ofAll(() -> Iterator.rangeClosedBy(from, toInclusive, step));
         }
     }
 
@@ -592,14 +585,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         } else if (step * (from - toInclusive) > 0) {
             return List.empty();
         } else {
-            final long gap = (from - toInclusive) % step;
-            final int signum = (from < toInclusive) ? -1 : 1;
-            final long bound = from * signum;
-            List<Long> result = List.empty();
-            for (long i = toInclusive + gap; i * signum <= bound; i -= step) {
-                result = result.prepend(i);
-            }
-            return result;
+            return List.ofAll(() -> Iterator.rangeClosedBy(from, toInclusive, step));
         }
     }
 
@@ -609,7 +595,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> appendAll(Iterable<? extends T> elements) {
+    default List<T> appendAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         return foldRight(List.ofAll(elements), (x, xs) -> xs.prepend(x));
     }
@@ -620,7 +606,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default <U> List<Tuple2<T, U>> crossProduct(Iterable<? extends U> that) {
+    default <U> List<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         final List<? extends U> other = unit(that);
         return flatMap(a -> other.map(b -> Tuple.of(a, b)));
@@ -706,7 +692,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default <U> List<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    default <U> List<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return empty();
@@ -769,11 +755,6 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<List<T>> grouped(int size) {
-        return sliding(size, size);
-    }
-
-    @Override
     default int indexOf(T element, int from) {
         int index = 0;
         for (List<T> list = this; !list.isEmpty(); list = list.tail(), index++) {
@@ -814,7 +795,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> insertAll(int index, Iterable<? extends T> elements) {
+    default List<T> insertAll(int index, java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (index < 0) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
@@ -928,7 +909,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> prependAll(Iterable<? extends T> elements) {
+    default List<T> prependAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         return isEmpty() ? List.ofAll(elements) : List.ofAll(elements).reverse().foldLeft(this, List::prepend);
     }
@@ -950,7 +931,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> pushAll(Iterable<T> elements) {
+    default List<T> pushAll(java.lang.Iterable<T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         List<T> result = Nil.<T> instance();
         for (T element : elements) {
@@ -1024,7 +1005,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> removeAll(Iterable<? extends T> elements) {
+    default List<T> removeAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         List<T> removed = List.ofAll(elements).distinct();
         List<T> result = Nil.instance();
@@ -1080,7 +1061,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> retainAll(Iterable<? extends T> elements) {
+    default List<T> retainAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         final List<T> keeped = List.ofAll(elements).distinct();
         List<T> result = Nil.instance();
@@ -1122,19 +1103,6 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
             result = result.prepend(next);
         }
         return result;
-    }
-
-    @Override
-    default List<List<T>> sliding(int size) {
-        return sliding(size, 1);
-    }
-
-    @Override
-    default List<List<T>> sliding(int size, int step) {
-        if (size <= 0 || step <= 0) {
-            throw new IllegalArgumentException(String.format("size: %s or step: %s not positive", size, step));
-        }
-        return List.ofAll(() -> iterator().sliding(size, step).map(List::ofAll));
     }
 
     @Override
@@ -1248,7 +1216,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default <U> List<U> unit(Iterable<? extends U> iterable) {
+    default <U> List<U> unit(java.lang.Iterable<? extends U> iterable) {
         return List.ofAll(iterable);
     }
 
@@ -1267,7 +1235,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default <U> List<Tuple2<T, U>> zip(Iterable<U> that) {
+    default <U> List<Tuple2<T, U>> zip(java.lang.Iterable<U> that) {
         Objects.requireNonNull(that, "that is null");
         List<Tuple2<T, U>> result = Nil.instance();
         List<T> list1 = this;
@@ -1280,7 +1248,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default <U> List<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
+    default <U> List<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         List<Tuple2<T, U>> result = Nil.instance();
         Iterator<T> list1 = this.iterator();
@@ -1334,7 +1302,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
         @Override
         public List<Object> flatten() {
-            return flatMap(t -> (t instanceof Iterable) ? List.ofAll((Iterable<?>) t).flatten() : List.of(t));
+            return flatMap(t -> (t instanceof java.lang.Iterable) ? List.ofAll((java.lang.Iterable<?>) t).flatten() : List.of(t));
         }
 
         @Override

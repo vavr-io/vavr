@@ -5,20 +5,17 @@
  */
 package javaslang.collection;
 
-import javaslang.Serializables;
+import javaslang.*;
 import javaslang.collection.Stream.Cons;
 import javaslang.collection.Stream.Nil;
-import org.assertj.core.data.MapEntry;
 import org.junit.Test;
 
 import java.io.InvalidObjectException;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.stream.Collector;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.StrictAssertions.entry;
 
 public class StreamTest extends AbstractSeqTest {
 
@@ -46,7 +43,7 @@ public class StreamTest extends AbstractSeqTest {
     }
 
     @Override
-    protected <T> Stream<T> ofAll(Iterable<? extends T> elements) {
+    protected <T> Stream<T> ofAll(java.lang.Iterable<? extends T> elements) {
         return Stream.ofAll(elements);
     }
 

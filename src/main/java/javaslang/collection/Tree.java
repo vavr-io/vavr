@@ -5,10 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Lazy;
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Value;
+import javaslang.*;
 import javaslang.control.Match;
 import javaslang.control.None;
 import javaslang.control.Option;
@@ -41,12 +38,12 @@ public interface Tree<T> extends Traversable<T> {
         return new Node<>(value, List.of(children));
     }
 
-    static <T> Node<T> of(T value, Iterable<? extends Node<T>> children) {
+    static <T> Node<T> of(T value, java.lang.Iterable<? extends Node<T>> children) {
         Objects.requireNonNull(children, "children is null");
         return new Node<>(value, List.ofAll(children));
     }
 
-    <U> Tree<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
+    <U> Tree<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
 
     /**
      * Gets the value of this tree.
@@ -258,13 +255,7 @@ public interface Tree<T> extends Traversable<T> {
     Tree<T> replaceAll(UnaryOperator<T> operator);
 
     @Override
-    List<T> retainAll(Iterable<? extends T> elements);
-
-    @Override
-    List<List<T>> sliding(int size);
-
-    @Override
-    List<List<T>> sliding(int size, int step);
+    List<T> retainAll(java.lang.Iterable<? extends T> elements);
 
     @Override
     Tuple2<List<T>, List<T>> span(Predicate<? super T> predicate);
@@ -364,7 +355,7 @@ public interface Tree<T> extends Traversable<T> {
         }
 
         @Override
-        public <U> Tree<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+        public <U> Tree<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
             return null; // TODO
         }
 
@@ -465,18 +456,8 @@ public interface Tree<T> extends Traversable<T> {
         }
 
         @Override
-        public List<T> retainAll(Iterable<? extends T> elements) {
+        public List<T> retainAll(java.lang.Iterable<? extends T> elements) {
             return traverse().retainAll(elements);
-        }
-
-        @Override
-        public List<List<T>> sliding(int size) {
-            return traverse().sliding(size);
-        }
-
-        @Override
-        public List<List<T>> sliding(int size, int step) {
-            return traverse().sliding(size, step);
         }
 
         @Override
@@ -766,17 +747,7 @@ public interface Tree<T> extends Traversable<T> {
         }
 
         @Override
-        public List.Nil<T> retainAll(Iterable<? extends T> elements) {
-            return List.Nil.instance();
-        }
-
-        @Override
-        public List.Nil<List<T>> sliding(int size) {
-            return List.Nil.instance();
-        }
-
-        @Override
-        public List.Nil<List<T>> sliding(int size, int step) {
+        public List.Nil<T> retainAll(java.lang.Iterable<? extends T> elements) {
             return List.Nil.instance();
         }
 
@@ -821,7 +792,7 @@ public interface Tree<T> extends Traversable<T> {
         }
 
         @Override
-        public <U> Empty<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+        public <U> Empty<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
             return Empty.instance();
         }
 

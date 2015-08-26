@@ -5,9 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Lazy;
-import javaslang.Tuple2;
-import javaslang.Value;
+import javaslang.*;
 import javaslang.control.Option;
 
 import java.io.Serializable;
@@ -79,7 +77,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      * @return A new Map containing the given entries
      */
     @SuppressWarnings("unchecked")
-    public static <K, V> HashMap<K, V> ofAll(Iterable<? extends Entry<? extends K, ? extends V>> entries) {
+    public static <K, V> HashMap<K, V> ofAll(java.lang.Iterable<? extends Entry<? extends K, ? extends V>> entries) {
         Objects.requireNonNull(entries, "entries is null");
         if (entries instanceof HashMap) {
             return (HashMap<K, V>) entries;
@@ -165,7 +163,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public <U> HashSet<U> flatMap(Function<? super Entry<K, V>, ? extends Iterable<? extends U>> mapper) {
+    public <U> HashSet<U> flatMap(Function<? super Entry<K, V>, ? extends java.lang.Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return foldLeft(HashSet.<U> empty(), (HashSet<U> acc, Entry<K, V> entry) -> {
             for (U u : mapper.apply(entry)) {
@@ -176,7 +174,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public <U, W> HashMap<U, W> flatMap2(BiFunction<? super K, ? super V, ? extends Iterable<? extends Entry<? extends U, ? extends W>>> mapper) {
+    public <U, W> HashMap<U, W> flatMap2(BiFunction<? super K, ? super V, ? extends java.lang.Iterable<? extends Entry<? extends U, ? extends W>>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return foldLeft(HashMap.<U, W> empty(), (acc, entry) -> {
             for (Entry<? extends U, ? extends W> mappedEntry : mapper.apply(entry.key, entry.value)) {
@@ -350,7 +348,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public HashMap<K, V> removeAll(Iterable<? extends K> keys) {
+    public HashMap<K, V> removeAll(java.lang.Iterable<? extends K> keys) {
         throw new UnsupportedOperationException("TODO");
     }
 
@@ -370,23 +368,13 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public HashMap<K, V> retainAll(Iterable<? extends Entry<K, V>> elements) {
+    public HashMap<K, V> retainAll(java.lang.Iterable<? extends Entry<K, V>> elements) {
         throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public int size() {
         return tree.size();
-    }
-
-    @Override
-    public Seq<HashMap<K, V>> sliding(int size) {
-        throw new UnsupportedOperationException("TODO");
-    }
-
-    @Override
-    public Seq<HashMap<K, V>> sliding(int size, int step) {
-        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
@@ -435,12 +423,12 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public <U> HashMap<Tuple2<K, V>, U> zip(Iterable<U> that) {
+    public <U> HashMap<Tuple2<K, V>, U> zip(java.lang.Iterable<U> that) {
         throw new UnsupportedOperationException("TODO Patryk");
     }
 
     @Override
-    public <U> HashMap<Tuple2<K, V>, U> zipAll(Iterable<U> that, Entry<K, V> thisElem, U thatElem) {
+    public <U> HashMap<Tuple2<K, V>, U> zipAll(java.lang.Iterable<U> that, Entry<K, V> thisElem, U thatElem) {
         throw new UnsupportedOperationException("TODO Patryk");
     }
 

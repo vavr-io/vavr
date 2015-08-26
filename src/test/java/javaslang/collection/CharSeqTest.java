@@ -20,7 +20,7 @@ import static javaslang.Serializables.serialize;
 // TODO java.lang.StringTest, AbstractValueTest
 public class CharSeqTest {
 
-    protected <T> IterableAssert<T> assertThat(Iterable<T> actual) {
+    protected <T> IterableAssert<T> assertThat(java.lang.Iterable<T> actual) {
         return new IterableAssert<T>(actual) {
         };
     }
@@ -54,7 +54,7 @@ public class CharSeqTest {
         return new StringAssert(actual) {
         };
     }
-    
+
     private CharSeq empty() {
         return CharSeq.empty();
     }
@@ -1417,7 +1417,7 @@ public class CharSeqTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    // -- crossProduct(Iterable)
+    // -- crossProduct(java.lang.Iterable)
 
     @Test
     public void shouldCalculateCrossProductOfNilAndNil() {
@@ -1924,7 +1924,7 @@ public class CharSeqTest {
         assertThat(t.removeLast(v -> v == 4)).isSameAs(t);
     }
 
-    // -- removeAll(Iterable)
+    // -- removeAll(java.lang.Iterable)
 
     @Test
     public void shouldRemoveAllElementsFromNil() {
@@ -2445,7 +2445,7 @@ public class CharSeqTest {
         assertThat(actual.get(1)).isEqualTo('2');
     }
 
-    // -- static ofAll(Iterable)
+    // -- static ofAll(java.lang.Iterable)
 
     @Test
     public void shouldCreateListOfIterable() {

@@ -31,7 +31,7 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> append(T element);
 
     @Override
-    LinearSeq<T> appendAll(Iterable<? extends T> elements);
+    LinearSeq<T> appendAll(java.lang.Iterable<? extends T> elements);
 
     @Override
     LinearSeq<T> clear();
@@ -40,7 +40,7 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<Tuple2<T, T>> crossProduct();
 
     @Override
-    <U> LinearSeq<Tuple2<T, U>> crossProduct(Iterable<? extends U> that);
+    <U> LinearSeq<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that);
 
     @Override
     LinearSeq<? extends LinearSeq<T>> combinations();
@@ -70,7 +70,7 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> filter(Predicate<? super T> predicate);
 
     @Override
-    <U> LinearSeq<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
+    <U> LinearSeq<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
 
     @Override
     <U> LinearSeq<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper);
@@ -82,9 +82,6 @@ public interface LinearSeq<T> extends Seq<T> {
     <C> Map<C, ? extends LinearSeq<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     @Override
-    LinearSeq<? extends LinearSeq<T>> grouped(int size);
-
-    @Override
     LinearSeq<T> init();
 
     @Override
@@ -94,7 +91,7 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> insert(int index, T element);
 
     @Override
-    LinearSeq<T> insertAll(int index, Iterable<? extends T> elements);
+    LinearSeq<T> insertAll(int index, java.lang.Iterable<? extends T> elements);
 
     @Override
     LinearSeq<T> intersperse(T element);
@@ -115,7 +112,7 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> prepend(T element);
 
     @Override
-    LinearSeq<T> prependAll(Iterable<? extends T> elements);
+    LinearSeq<T> prependAll(java.lang.Iterable<? extends T> elements);
 
     @Override
     LinearSeq<T> remove(T element);
@@ -133,7 +130,7 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> removeAll(T element);
 
     @Override
-    LinearSeq<T> removeAll(Iterable<? extends T> elements);
+    LinearSeq<T> removeAll(java.lang.Iterable<? extends T> elements);
 
     @Override
     LinearSeq<T> replace(T currentElement, T newElement);
@@ -145,19 +142,13 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> replaceAll(UnaryOperator<T> operator);
 
     @Override
-    LinearSeq<T> retainAll(Iterable<? extends T> elements);
+    LinearSeq<T> retainAll(java.lang.Iterable<? extends T> elements);
 
     @Override
     LinearSeq<T> reverse();
 
     @Override
     LinearSeq<T> set(int index, T element);
-
-    @Override
-    LinearSeq<? extends LinearSeq<T>> sliding(int size);
-
-    @Override
-    LinearSeq<? extends LinearSeq<T>> sliding(int size, int step);
 
     @Override
     LinearSeq<T> sort();
@@ -190,16 +181,16 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> takeWhile(Predicate<? super T> predicate);
 
     @Override
-    <U> LinearSeq<U> unit(Iterable<? extends U> iterable);
+    <U> LinearSeq<U> unit(java.lang.Iterable<? extends U> iterable);
 
     @Override
     <T1, T2> Tuple2<? extends LinearSeq<T1>, ? extends LinearSeq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
 
     @Override
-    <U> LinearSeq<Tuple2<T, U>> zip(Iterable<U> that);
+    <U> LinearSeq<Tuple2<T, U>> zip(java.lang.Iterable<U> that);
 
     @Override
-    <U> LinearSeq<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
+    <U> LinearSeq<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem);
 
     @Override
     LinearSeq<Tuple2<T, Integer>> zipWithIndex();

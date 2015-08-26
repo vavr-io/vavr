@@ -5,8 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple;
-import javaslang.Tuple2;
+import javaslang.*;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -34,7 +33,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     abstract protected <T> Seq<T> of(T... elements);
 
     @Override
-    abstract protected <T> Seq<T> ofAll(Iterable<? extends T> elements);
+    abstract protected <T> Seq<T> ofAll(java.lang.Iterable<? extends T> elements);
 
     @Override
     abstract protected Seq<Boolean> ofAll(boolean[] array);

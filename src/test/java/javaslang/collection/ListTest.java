@@ -5,7 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Serializables;
+import javaslang.*;
 import org.junit.Test;
 
 import java.io.InvalidObjectException;
@@ -38,7 +38,7 @@ public class ListTest extends AbstractSeqTest {
     }
 
     @Override
-    protected <T> List<T> ofAll(Iterable<? extends T> elements) {
+    protected <T> List<T> ofAll(java.lang.Iterable<? extends T> elements) {
         return List.ofAll(elements);
     }
 

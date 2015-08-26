@@ -28,10 +28,28 @@ import java.util.stream.StreamSupport;
  * How the empty state is interpreted depends on the context, i.e. it may be <em>undefined</em>, <em>failed</em>,
  * <em>not yet defined</em>, etc.
  *
+ * <p>
+ *
+ * Side-effects:
+ *
+ * <ul>
+ * <li>{@link #forEach(Consumer)}</li>
+ * <li>{@link #peek(Consumer)}</li>
+ * <li>{@link #stderr()}</li>
+ * <li>{@link #stdout()}</li>
+ * </ul>
+ *
+ * Tests:
+ *
+ * <ul>
+ * <li>{@link #exists(Predicate)}</li>
+ * <li>{@link #forAll(Predicate)}</li>
+ * </ul>
+ *
  * @param <T> The type of the wrapped value.
  * @since 2.0.0
  */
-public interface Value<T> extends Iterable<T> {
+public interface Value<T> extends javaslang.Iterable<T> {
 
     /**
      * Gets the underlying value or throws if no value is present.
@@ -209,54 +227,6 @@ public interface Value<T> extends Iterable<T> {
      * @throws NullPointerException if {@code mapper} is null
      */
     <U> Value<U> map(Function<? super T, ? extends U> mapper);
-
-    // --
-    // --
-    // -- Iterable operations
-    // --
-    // --
-
-    /**
-     * Checks, if an element exists such that the predicate holds.
-     *
-     * @param predicate A Predicate
-     * @return true, if predicate holds for one or more elements, false otherwise
-     * @throws NullPointerException if {@code predicate} is null
-     */
-    default boolean exists(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        for (T t : this) {
-            if (predicate.test(t)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Checks, if the given predicate holds for all elements.
-     *
-     * @param predicate A Predicate
-     * @return true, if the predicate holds for all elements, false otherwise
-     * @throws NullPointerException if {@code predicate} is null
-     */
-    default boolean forAll(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return !exists(predicate.negate());
-    }
-
-    /**
-     * Performs an action on each element.
-     *
-     * @param action A {@code Consumer}
-     * @throws NullPointerException if {@code action} is null
-     */
-    default void forEach(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
-        for (T t : this) {
-            action.accept(t);
-        }
-    }
 
     /**
      * Performs the given {@code action} on the first element if this is an <em>eager</em> implementation.
@@ -479,6 +449,42 @@ public interface Value<T> extends Iterable<T> {
      */
     default java.util.stream.Stream<T> toJavaStream() {
         return StreamSupport.stream(spliterator(), false);
+    }
+
+    // --
+    // --
+    // -- Console output
+    // --
+    // --
+
+    /**
+     * Sends the string representations of this value to the standard error stream {@linkplain System#err}.
+     * If this value consists of multiple elements, each element is displayed in a new line.
+     *
+     * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stderr.
+     */
+    default void stderr() {
+        for (T t : this) {
+            System.err.println(String.valueOf(t));
+            if (System.err.checkError()) {
+                throw new IllegalStateException("Error writing to stderr");
+            }
+        }
+    }
+
+    /**
+     * Sends the string representations of this value to the standard output stream {@linkplain System#out}.
+     * If this value consists of multiple elements, each element is displayed in a new line.
+     *
+     * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stdout.
+     */
+    default void stdout() {
+        for (T t : this) {
+            System.out.println(String.valueOf(t));
+            if (System.out.checkError()) {
+                throw new IllegalStateException("Error writing to stdout");
+            }
+        }
     }
 
     // --

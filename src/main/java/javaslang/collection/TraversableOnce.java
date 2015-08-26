@@ -5,8 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple2;
-import javaslang.Value;
+import javaslang.*;
 import javaslang.control.Match;
 import javaslang.control.None;
 import javaslang.control.Option;
@@ -29,7 +28,7 @@ import java.util.function.*;
  * <ul>
  * <li>{@link #clear()}</li>
  * <li>{@link #contains(Object)}</li>
- * <li>{@link #containsAll(Iterable)}</li>
+ * <li>{@link #containsAll(java.lang.Iterable)}</li>
  * <li>{@link #head()}</li>
  * <li>{@link #headOption()}</li>
  * <li>{@link #init()}</li>
@@ -46,7 +45,7 @@ import java.util.function.*;
  *
  * <ul>
  * <li>{@link #filter(Predicate)}</li>
- * <li>{@link #retainAll(Iterable)}</li>
+ * <li>{@link #retainAll(java.lang.Iterable)}</li>
  * </ul>
  *
  * Numeric operations:
@@ -90,21 +89,10 @@ import java.util.function.*;
  * <li>{@link #takeWhile(Predicate)}</li>
  * </ul>
  *
- * Side-effects:
- *
- * <ul>
- * <li>{@link #forEach(Consumer)}</li>
- * <li>{@link #peek(Consumer)}</li>
- * <li>{@link #stderr()}</li>
- * <li>{@link #stdout()}</li>
- * </ul>
- *
  * Tests:
  *
  * <ul>
- * <li>{@link #exists(Predicate)}</li>
  * <li>{@link #existsUnique(Predicate)}</li>
- * <li>{@link #forAll(Predicate)}</li>
  * </ul>
  *
  * Transformation:
@@ -198,7 +186,7 @@ public interface TraversableOnce<T> extends Value<T> {
      * @return true, if this List contains all given elements, false otherwise.
      * @throws NullPointerException if {@code elements} is null
      */
-    default boolean containsAll(Iterable<? extends T> elements) {
+    default boolean containsAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         return List.ofAll(elements)
                 .distinct()
@@ -326,7 +314,7 @@ public interface TraversableOnce<T> extends Value<T> {
      */
     Option<T> findLast(Predicate<? super T> predicate);
 
-    <U> TraversableOnce<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
+    <U> TraversableOnce<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
 
     @Override
     <U> TraversableOnce<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper);
@@ -788,38 +776,7 @@ public interface TraversableOnce<T> extends Value<T> {
      * @return a TraversableOnce containing all occurreces of the given elements.
      * @throws NullPointerException if {@code elements} is null
      */
-    TraversableOnce<T> retainAll(Iterable<? extends T> elements);
-
-    /**
-     * Slides a window of a specific {@code size} and step size 1 over this {@code TraversableOnce} by calling
-     * {@link #sliding(int, int)}.
-     *
-     * @param size a positive window size
-     * @return a new TraversableOnce of windows of a specific size using step size 1
-     * @throws IllegalArgumentException if {@code size} is negative or zero
-     */
-    TraversableOnce<? extends TraversableOnce<T>> sliding(int size);
-
-    /**
-     * Slides a window of a specific {@code size} and {@code step} size over this {@code TraversableOnce}.
-     * <p>
-     * Examples:
-     * <pre>
-     * <code>
-     * [].sliding(1,1) = []
-     * [1,2,3,4,5].sliding(2,3) = [[1,2],[4,5]]
-     * [1,2,3,4,5].sliding(2,4) = [[1,2],[5]]
-     * [1,2,3,4,5].sliding(2,5) = [[1,2]]
-     * [1,2,3,4].sliding(5,3) = [[1,2,3,4],[4]]
-     * </code>
-     * </pre>
-     *
-     * @param size a positive window size
-     * @param step a positive step size
-     * @return a new TraversableOnce of windows of a specific size using a specific step size
-     * @throws IllegalArgumentException if {@code size} or {@code step} are negative or zero
-     */
-    TraversableOnce<? extends TraversableOnce<T>> sliding(int size, int step);
+    TraversableOnce<T> retainAll(java.lang.Iterable<? extends T> elements);
 
     /**
      * Returns a tuple where the first element is the longest prefix of elements that satisfy p and the second element is the remainder.
@@ -858,36 +815,6 @@ public interface TraversableOnce<T> extends Value<T> {
                     .whenTypeIn(Double.class, Float.class, BigDecimal.class).then(() -> numbers.mapToDouble(Number::doubleValue).sum())
                     .whenTypeIn(Long.class, BigInteger.class).then(ignored -> numbers.mapToLong(Number::longValue).sum())
                     .orElseThrow(() -> new UnsupportedOperationException("not numeric"));
-        }
-    }
-
-    /**
-     * Sends the string representations of these elements to the standard error stream {@linkplain System#err},
-     * each in a new line.
-     *
-     * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stderr.
-     */
-    default void stderr() {
-        for (T t : this) {
-            System.err.println(String.valueOf(t));
-            if (System.err.checkError()) {
-                throw new IllegalStateException("Error writing to stderr");
-            }
-        }
-    }
-
-    /**
-     * Sends the string representations of these elements to the standard output stream {@linkplain System#out},
-     * each in a new line.
-     *
-     * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stdout.
-     */
-    default void stdout() {
-        for (T t : this) {
-            System.out.println(String.valueOf(t));
-            if (System.out.checkError()) {
-                throw new IllegalStateException("Error writing to stdout");
-            }
         }
     }
 

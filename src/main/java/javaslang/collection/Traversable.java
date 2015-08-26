@@ -5,8 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple2;
-import javaslang.Value;
+import javaslang.*;
 import javaslang.control.Option;
 
 import java.util.Comparator;
@@ -18,9 +17,9 @@ import java.util.function.UnaryOperator;
 
 /**
  * An interface for inherently recursive data structures. The order of elements is determined by
- * {@link Iterable#iterator()}, which may vary each time it is called.
+ * {@link java.lang.Iterable#iterator()}, which may vary each time it is called.
  * <p>
- * Implementations of {@code Traversable} should calculate the {@code hashCode} via {@link #hash(Iterable)}.
+ * Implementations of {@code Traversable} should calculate the {@code hashCode} via {@link #hash(java.lang.Iterable)}.
  * <p>
  * Additionally to {@link TraversableOnce} this interface has the following methods:
  *
@@ -71,11 +70,11 @@ public interface Traversable<T> extends TraversableOnce<T> {
      * </pre>
      *
      * @param <T>     Component type
-     * @param objects An Iterable
-     * @return The hashCode of the given Iterable
+     * @param objects An java.lang.Iterable
+     * @return The hashCode of the given java.lang.Iterable
      * @throws NullPointerException if objects is null
      */
-    static <T> int hash(Iterable<? extends T> objects) {
+    static <T> int hash(java.lang.Iterable<? extends T> objects) {
         int hashCode = 1;
         for (Object o : objects) {
             hashCode = 31 * hashCode + Objects.hashCode(o);
@@ -129,13 +128,16 @@ public interface Traversable<T> extends TraversableOnce<T> {
     Traversable<T> filter(Predicate<? super T> predicate);
 
     @Override
-    <U> Traversable<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
+    <U> Traversable<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
 
     @Override
     <U> Traversable<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper);
 
     @Override
     Traversable<Object> flatten();
+
+    @Override
+    <C> Map<C, ? extends Traversable<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     @Override
     Traversable<T> init();
@@ -162,13 +164,7 @@ public interface Traversable<T> extends TraversableOnce<T> {
     Traversable<T> replaceAll(UnaryOperator<T> operator);
 
     @Override
-    Traversable<T> retainAll(Iterable<? extends T> elements);
-
-    @Override
-    Traversable<? extends Traversable<T>> sliding(int size);
-
-    @Override
-    Traversable<? extends Traversable<T>> sliding(int size, int step);
+    Traversable<T> retainAll(java.lang.Iterable<? extends T> elements);
 
     @Override
     Tuple2<? extends Traversable<T>, ? extends Traversable<T>> span(Predicate<? super T> predicate);

@@ -5,8 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple2;
-import javaslang.Value;
+import javaslang.*;
 import javaslang.control.Option;
 
 import java.io.Serializable;
@@ -33,7 +32,7 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
 
     Set<Entry<K, V>> entrySet();
 
-    <U, W> Map<U, W> flatMap2(BiFunction<? super K, ? super V, ? extends Iterable<? extends Entry<? extends U, ? extends W>>> mapper);
+    <U, W> Map<U, W> flatMap2(BiFunction<? super K, ? super V, ? extends java.lang.Iterable<? extends Entry<? extends U, ? extends W>>> mapper);
 
     Option<V> get(K key);
 
@@ -61,7 +60,7 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
 
     Map<K, V> remove(K key);
 
-    Map<K, V> removeAll(Iterable<? extends K> keys);
+    Map<K, V> removeAll(java.lang.Iterable<? extends K> keys);
 
     int size();
 
@@ -71,9 +70,9 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
 
     Seq<V> values();
 
-    <U> Map<Tuple2<K, V>, U> zip(Iterable<U> that);
+    <U> Map<Tuple2<K, V>, U> zip(java.lang.Iterable<U> that);
 
-    <U> Map<Tuple2<K, V>, U> zipAll(Iterable<U> that, Entry<K, V> thisElem, U thatElem);
+    <U> Map<Tuple2<K, V>, U> zipAll(java.lang.Iterable<U> that, Entry<K, V> thisElem, U thatElem);
 
     Map<Tuple2<K, V>, Integer> zipWithIndex();
 
@@ -107,7 +106,7 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
     Map<K, V> filter(Predicate<? super Entry<K, V>> predicate);
 
     @Override
-    <U> Set<U> flatMap(Function<? super Entry<K, V>, ? extends Iterable<? extends U>> mapper);
+    <U> Set<U> flatMap(Function<? super Entry<K, V>, ? extends java.lang.Iterable<? extends U>> mapper);
 
     @Override
     <U> Set<U> flatMapVal(Function<? super Entry<K, V>, ? extends Value<? extends U>> mapper);
@@ -167,13 +166,7 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
     Map<K, V> replaceAll(UnaryOperator<Entry<K, V>> operator);
 
     @Override
-    Map<K, V> retainAll(Iterable<? extends Entry<K, V>> elements);
-
-    @Override
-    Seq<? extends Map<K, V>> sliding(int size);
-
-    @Override
-    Seq<? extends Map<K, V>> sliding(int size, int step);
+    Map<K, V> retainAll(java.lang.Iterable<? extends Entry<K, V>> elements);
 
     @Override
     Tuple2<? extends Map<K, V>, ? extends Map<K, V>> span(Predicate<? super Entry<K, V>> predicate);

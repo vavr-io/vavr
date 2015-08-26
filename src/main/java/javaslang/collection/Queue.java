@@ -5,10 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Lazy;
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Value;
+import javaslang.*;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -28,7 +25,7 @@ import java.util.stream.Collector;
  * <li>{@link #dequeueOption()}</li>
  * <li>{@link #enqueue(Object)}</li>
  * <li>{@link #enqueue(Object[])}</li>
- * <li>{@link #enqueueAll(Iterable)}</li>
+ * <li>{@link #enqueueAll(java.lang.Iterable)}</li>
  * <li>{@link #peek()}</li>
  * <li>{@link #peekOption()}</li>
  * </ul>
@@ -130,12 +127,12 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
      * Creates a Queue of the given elements.
      *
      * @param <T>      Component type of the Queue.
-     * @param elements An Iterable of elements.
+     * @param elements An java.lang.Iterable of elements.
      * @return A queue containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
     @SuppressWarnings("unchecked")
-    public static <T> Queue<T> ofAll(Iterable<? extends T> elements) {
+    public static <T> Queue<T> ofAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof Queue) {
             return (Queue<T>) elements;
@@ -481,11 +478,11 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
      * Enqueues the given elements. A queue has FIFO order, i.e. the first of the given elements is
      * the first which will be retrieved.
      *
-     * @param elements An Iterable of elements, may be empty
+     * @param elements An java.lang.Iterable of elements, may be empty
      * @return a new {@code Queue} instance, containing the new elements
      * @throws NullPointerException if elements is null
      */
-    public Queue<T> enqueueAll(Iterable<? extends T> elements) {
+    public Queue<T> enqueueAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         List<T> temp = rear;
         for (T element : elements) {
@@ -525,7 +522,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public Queue<T> appendAll(Iterable<? extends T> elements) {
+    public Queue<T> appendAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         return enqueueAll(elements);
     }
@@ -536,7 +533,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Queue<Tuple2<T, U>> crossProduct(Iterable<? extends U> that) {
+    public <U> Queue<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that) {
         return toList().crossProduct(that).toQueue();
     }
 
@@ -603,7 +600,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Queue<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    public <U> Queue<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return new Queue<>(front.flatMap(mapper), rear.flatMap(mapper));
     }
@@ -649,11 +646,6 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
             final Queue<T> queue = map.get(key).orElse(Queue.empty()).enqueue(t);
             return map.put(key, queue);
         });
-    }
-
-    @Override
-    public Queue<Queue<T>> grouped(int size) {
-        return toList().grouped(size).map(Queue::ofAll).toQueue();
     }
 
     @Override
@@ -725,7 +717,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public Queue<T> insertAll(int index, Iterable<? extends T> elements) {
+    public Queue<T> insertAll(int index, java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (index < 0) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", e)");
@@ -808,7 +800,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public Queue<T> prependAll(Iterable<? extends T> elements) {
+    public Queue<T> prependAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         return new Queue<>(front.prependAll(elements), rear);
     }
@@ -844,7 +836,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public Queue<T> removeAll(Iterable<? extends T> elements) {
+    public Queue<T> removeAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         final List<T> newFront = front.removeAll(elements);
         final List<T> newRear = rear.removeAll(elements);
@@ -868,7 +860,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public Queue<T> retainAll(Iterable<? extends T> elements) {
+    public Queue<T> retainAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         return new Queue<>(front.retainAll(elements), rear.retainAll(elements));
     }
@@ -881,16 +873,6 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     @Override
     public Queue<T> set(int index, T element) {
         return toList().set(index, element).toQueue();
-    }
-
-    @Override
-    public Queue<Queue<T>> sliding(int size) {
-        return toList().sliding(size).map(List::toQueue).toQueue();
-    }
-
-    @Override
-    public Queue<Queue<T>> sliding(int size, int step) {
-        return toList().sliding(size, step).map(List::toQueue).toQueue();
     }
 
     @Override
@@ -992,7 +974,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Queue<U> unit(Iterable<? extends U> iterable) {
+    public <U> Queue<U> unit(java.lang.Iterable<? extends U> iterable) {
         return Queue.ofAll(iterable);
     }
 
@@ -1003,13 +985,13 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Queue<Tuple2<T, U>> zip(Iterable<U> that) {
+    public <U> Queue<Tuple2<T, U>> zip(java.lang.Iterable<U> that) {
         Objects.requireNonNull(that, "that is null");
         return toList().zip(that).toQueue();
     }
 
     @Override
-    public <U> Queue<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
+    public <U> Queue<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         return toList().zipAll(that, thisElem, thatElem).toQueue();
     }

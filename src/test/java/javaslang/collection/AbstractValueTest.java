@@ -17,7 +17,7 @@ import java.util.stream.Collector;
  */
 public abstract class AbstractValueTest {
 
-    protected <T> IterableAssert<T> assertThat(Iterable<T> actual) {
+    protected <T> IterableAssert<T> assertThat(java.lang.Iterable<T> actual) {
         return new IterableAssert<T>(actual) {
         };
     }
@@ -61,7 +61,7 @@ public abstract class AbstractValueTest {
     @SuppressWarnings("unchecked")
     abstract protected <T> Value<T> of(T... elements);
 
-    abstract protected <T> Value<T> ofAll(Iterable<? extends T> elements);
+    abstract protected <T> Value<T> ofAll(java.lang.Iterable<? extends T> elements);
 
     abstract protected Value<Boolean> ofAll(boolean[] array);
 

@@ -5,8 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple2;
-import javaslang.Value;
+import javaslang.*;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -42,7 +41,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> appendAll(Iterable<? extends T> elements) {
+    public Array<T> appendAll(java.lang.Iterable<? extends T> elements) {
         throw new UnsupportedOperationException("TODO");
     }
 
@@ -67,7 +66,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Array<Tuple2<T, U>> crossProduct(Iterable<? extends U> that) {
+    public <U> Array<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that) {
         throw new UnsupportedOperationException("TODO");
     }
 
@@ -125,7 +124,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Array<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    public <U> Array<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
         throw new UnsupportedOperationException("TODO");
     }
 
@@ -158,11 +157,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<? extends Array<T>> grouped(int size) {
-        throw new UnsupportedOperationException("TODO");
-    }
-
-    @Override
     public int indexOf(T element, int from) {
         return 0;
     }
@@ -188,7 +182,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> insertAll(int index, Iterable<? extends T> elements) {
+    public Array<T> insertAll(int index, java.lang.Iterable<? extends T> elements) {
         throw new UnsupportedOperationException("TODO");
     }
 
@@ -233,7 +227,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> prependAll(Iterable<? extends T> elements) {
+    public Array<T> prependAll(java.lang.Iterable<? extends T> elements) {
         throw new UnsupportedOperationException("TODO");
     }
 
@@ -263,7 +257,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> removeAll(Iterable<? extends T> elements) {
+    public Array<T> removeAll(java.lang.Iterable<? extends T> elements) {
         throw new UnsupportedOperationException("TODO");
     }
 
@@ -283,7 +277,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> retainAll(Iterable<? extends T> elements) {
+    public Array<T> retainAll(java.lang.Iterable<? extends T> elements) {
         throw new UnsupportedOperationException("TODO");
     }
 
@@ -295,16 +289,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     @Override
     public Array<T> set(int index, T element) {
         return new Array<>(binaryList.set(index, element));
-    }
-
-    @Override
-    public Array<? extends Array<T>> sliding(int size) {
-        throw new UnsupportedOperationException("TODO");
-    }
-
-    @Override
-    public Array<? extends Array<T>> sliding(int size, int step) {
-        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
@@ -376,7 +360,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Array<U> unit(Iterable<? extends U> iterable) {
+    public <U> Array<U> unit(java.lang.Iterable<? extends U> iterable) {
         throw new UnsupportedOperationException("TODO");
     }
 
@@ -386,12 +370,12 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Array<Tuple2<T, U>> zip(Iterable<U> that) {
+    public <U> Array<Tuple2<T, U>> zip(java.lang.Iterable<U> that) {
         throw new UnsupportedOperationException("TODO");
     }
 
     @Override
-    public <U> Array<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
+    public <U> Array<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem) {
         throw new UnsupportedOperationException("TODO");
     }
 

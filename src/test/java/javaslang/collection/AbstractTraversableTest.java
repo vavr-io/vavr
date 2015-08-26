@@ -5,8 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple;
-import javaslang.Value;
+import javaslang.*;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -40,7 +39,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @SuppressWarnings("unchecked")
     abstract protected <T> Traversable<T> of(T... elements);
 
-    abstract protected <T> Traversable<T> ofAll(Iterable<? extends T> elements);
+    abstract protected <T> Traversable<T> ofAll(java.lang.Iterable<? extends T> elements);
 
     abstract protected Traversable<Boolean> ofAll(boolean[] array);
 
