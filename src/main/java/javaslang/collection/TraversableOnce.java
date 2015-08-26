@@ -474,9 +474,10 @@ public interface TraversableOnce<T> extends Value<T> {
      */
     @Override
     default Iterator<T> iterator() {
+        final TraversableOnce<T> that = this;
         return new Iterator<T>() {
 
-            TraversableOnce<T> traversable = TraversableOnce.this;
+            TraversableOnce<T> traversable = that;
 
             @Override
             public boolean hasNext() {
