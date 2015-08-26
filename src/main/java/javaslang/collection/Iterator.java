@@ -495,6 +495,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
     @Override
     default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
+        // TODO
         throw new UnsupportedOperationException("TODO");
     }
 
@@ -505,6 +506,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
     @Override
     default <C> Map<C, Iterator<T>> groupBy(Function<? super T, ? extends C> classifier) {
+        // TODO
         throw new UnsupportedOperationException("TODO");
     }
 
@@ -521,6 +523,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
     @Override
     default Iterator<T> init() {
+        // TODO
         throw new UnsupportedOperationException("TODO");
     }
 
@@ -615,6 +618,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     @Override
     default Tuple2<Iterator<T>, Iterator<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
+        // TODO
         throw new UnsupportedOperationException("TODO");
     }
 
@@ -646,6 +650,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
     @Override
     default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
+        // TODO
         throw new UnsupportedOperationException("TODO");
     }
 
@@ -736,6 +741,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
     @Override
     default Iterator<T> retainAll(Iterable<? extends T> elements) {
+        // TODO
         throw new UnsupportedOperationException("TODO");
     }
 
@@ -853,6 +859,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
     @Override
     default Iterator<T> takeRight(int n) {
+        // TODO
         throw new UnsupportedOperationException("TODO");
     }
 
