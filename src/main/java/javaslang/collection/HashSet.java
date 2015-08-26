@@ -390,7 +390,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<HashSet<T>> sliding(int size, int step) {
-        Iterator<HashSet<T>> itt = iterator().sliding(size, step).map(HashSet::ofAll);
+        final Iterator<HashSet<T>> itt = iterator().sliding(size, step).map(HashSet::ofAll);
         return HashSet.ofAll(itt);
     }
 
