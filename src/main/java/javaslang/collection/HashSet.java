@@ -390,9 +390,8 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<HashSet<T>> sliding(int size, int step) {
-        // TODO: may be removed by iterator().sliding(...) in order to remove list
-        final List<HashSet<T>> l = list.get().sliding(size, step).map(HashSet::ofAll);
-        return HashSet.ofAll(l);
+        final Iterator<HashSet<T>> itt = iterator().sliding(size, step).map(HashSet::ofAll);
+        return HashSet.ofAll(itt);
     }
 
     @Override
@@ -498,7 +497,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return A SerialiationProxy for this enclosing class.
      */
     private Object writeReplace() {
-        return new SerializationProxy<>(this.list.get());
+        return new SerializationProxy<>(this.tree);
     }
 
     /**
@@ -527,7 +526,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
         private static final long serialVersionUID = 1L;
 
         // the instance to be serialized/deserialized
-        private transient List<T> list;
+        private transient HashArrayMappedTrie<T, Object> tree;
 
         /**
          * Constructor for the case of serialization, called by {@link HashSet#writeReplace()}.
@@ -535,10 +534,10 @@ public final class HashSet<T> implements Set<T>, Serializable {
          * The constructor of a SerializationProxy takes an argument that concisely represents the logical state of
          * an instance of the enclosing class.
          *
-         * @param list a Cons
+         * @param tree a Cons
          */
-        SerializationProxy(List<T> list) {
-            this.list = list;
+        SerializationProxy(HashArrayMappedTrie<T, Object> tree) {
+            this.tree = tree;
         }
 
         /**
@@ -549,9 +548,9 @@ public final class HashSet<T> implements Set<T>, Serializable {
          */
         private void writeObject(ObjectOutputStream s) throws IOException {
             s.defaultWriteObject();
-            s.writeInt(list.length());
-            for (List<T> l = list; !l.isEmpty(); l = l.tail()) {
-                s.writeObject(l.head());
+            s.writeInt(tree.size());
+            for (Tuple2<T, Object> e : tree) {
+                s.writeObject(e._1);
             }
         }
 
@@ -569,13 +568,13 @@ public final class HashSet<T> implements Set<T>, Serializable {
             if (size < 0) {
                 throw new InvalidObjectException("No elements");
             }
-            List<T> temp = List.empty();
+            HashArrayMappedTrie<T, Object> temp = HashArrayMappedTrie.empty();
             for (int i = 0; i < size; i++) {
                 @SuppressWarnings("unchecked")
                 final T element = (T) s.readObject();
-                temp = temp.prepend(element);
+                temp = temp.put(element, element);
             }
-            list = temp.reverse();
+            tree = temp;
         }
 
         /**
@@ -589,7 +588,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
          * @return A deserialized instance of the enclosing class.
          */
         private Object readResolve() {
-            return HashSet.ofAll(list);
+            return tree.isEmpty() ? HashSet.empty() : new HashSet<>(tree);
         }
     }
 }
