@@ -592,14 +592,12 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         } else {
             return new Iterator<Integer>() {
 
-                final int gap = (from - toInclusive) % step;
-                final int signum = (from < toInclusive) ? -1 : 1;
-                final int bound = from * signum;
-                int i = toInclusive + gap;
+                final int signum = (from < toInclusive) ? 1 : -1;
+                int i = from;
 
                 @Override
                 public boolean hasNext() {
-                    return i * signum <= bound;
+                    return i * signum <= toInclusive;
                 }
 
                 @Override
@@ -608,7 +606,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
                         EMPTY.next();
                     }
                     final int next = i;
-                    i -= step;
+                    i += step;
                     return next;
                 }
             };
@@ -667,14 +665,12 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         } else {
             return new Iterator<Long>() {
 
-                final long gap = (from - toInclusive) % step;
-                final int signum = (from < toInclusive) ? -1 : 1;
-                final long bound = from * signum;
-                long i = toInclusive + gap;
+                final int signum = (from < toInclusive) ? 1 : -1;
+                long i = from;
 
                 @Override
                 public boolean hasNext() {
-                    return i * signum <= bound;
+                    return i * signum <= toInclusive;
                 }
 
                 @Override
@@ -682,9 +678,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
                     if (!hasNext()) {
                         EMPTY.next();
                     }
-                    long next = i;
-                    i -= step;
-                    return i;
+                    final long next = i;
+                    i += step;
+                    return next;
                 }
             };
         }
@@ -1188,34 +1184,18 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         }
         if (!hasNext()) {
             return empty();
+        } else {
+            // TODO (quick and dirty, need a real Iterator here) -->
+            List<T> list = List.ofAll(() -> this);
+            List<IndexedSeq<T>> result = List.empty();
+            while (!list.isEmpty()) {
+                final Tuple2<List<T>, List<T>> split = list.splitAt(size);
+                result = result.prepend(split._1.toVector());
+                list = split._2.isEmpty() ? List.Nil.instance() : list.drop(step);
+            }
+            return result.reverse().iterator();
+            // <-- TODO
         }
-        // TODO
-        throw new UnsupportedOperationException("TODO");
-//        final Stream<T> source = toStream();
-//        return new Iterator<Iterator<T>>() {
-//            private Stream<T> stream = source;
-//            private Iterator<T> next = null;
-//
-//            @Override
-//            public boolean hasNext() {
-//                if (next == null && !stream.isEmpty()) {
-//                    final Tuple2<Stream<T>, Stream<T>> split = stream.splitAt(size);
-//                    next = split._1.iterator();
-//                    stream = split._2.isEmpty() ? Stream.empty() : step == size ? split._2 : stream.drop(step);
-//                }
-//                return next != null;
-//            }
-//
-//            @Override
-//            public Iterator<T> next() {
-//                if (!hasNext()) {
-//                    EMPTY.next();
-//                }
-//                final Iterator<T> result = next;
-//                next = null;
-//                return result;
-//            }
-//        };
     }
 
     @Override

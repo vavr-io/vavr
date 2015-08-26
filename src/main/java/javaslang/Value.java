@@ -212,7 +212,7 @@ public interface Value<T> extends javaslang.Iterable<T> {
      * FlatMaps this value to a new value with different component type.
      *
      * @param mapper A mapper
-     * @param <U> Component type of the mapped {@code Value}
+     * @param <U>    Component type of the mapped {@code Value}
      * @return a mapped {@code Value}
      * @throws NullPointerException if {@code mapper} is null
      */
@@ -362,15 +362,14 @@ public interface Value<T> extends javaslang.Iterable<T> {
 //     */
 //    Tree<T> toTree();
 
-// TODO:
-//    /**
-//     * Converts this value to a {@link Vector}.
-//     *
-//     * @return A new {@link Vector}.
-//     */
-//    default Vector<T> toVector() {
-//        return isEmpty() ? Vector.empty() : Vector.ofAll(this);
-//    }
+    /**
+     * Converts this value to a {@link Vector}.
+     *
+     * @return A new {@link Vector}.
+     */
+    default Vector<T> toVector() {
+        return isEmpty() ? Vector.empty() : Vector.ofAll(this);
+    }
 
 
     // -- Java types
@@ -509,7 +508,7 @@ public interface Value<T> extends javaslang.Iterable<T> {
      * <p>
      * See <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#hashCode--">Object.hashCode()</a>.
      *
-     * @return  The hashcode of this object
+     * @return The hashcode of this object
      */
     @Override
     int hashCode();
