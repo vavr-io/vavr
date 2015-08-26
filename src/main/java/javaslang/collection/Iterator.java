@@ -321,10 +321,34 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
     @Override
     default Iterator<T> dropRight(int n) {
-        while (n-- > 0 && hasNext()) {
-            next();
+        if (n <= 0) {
+            return this;
+        } else if (!hasNext()) {
+            return empty();
+        } else {
+            final Iterator<T> that = this;
+            return new Iterator<T>() {
+                private Queue<T> queue = Queue.empty();
+
+                @Override
+                public boolean hasNext() {
+                    while (queue.length() < n && that.hasNext()) {
+                        queue = queue.append(that.next());
+                    }
+                    return queue.length() == n && that.hasNext();
+                }
+
+                @Override
+                public T next() {
+                    if (!hasNext()) {
+                        EMPTY.next();
+                    }
+                    Tuple2<T, Queue<T>> t = queue.append(that.next()).dequeue();
+                    queue = t._2;
+                    return t._1;
+                }
+            };
         }
-        return this;
     }
 
     @Override
