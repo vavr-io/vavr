@@ -41,7 +41,7 @@ import java.util.Objects;
  * }</code></pre>
  *
  * For details please take a look at the code.
- */gi
+ */
 public class TypeConsistencyTest {
 
     static final List<String> WHITELIST = List.of(
