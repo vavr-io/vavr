@@ -390,9 +390,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<HashSet<T>> sliding(int size, int step) {
-        // TODO: may be removed by iterator().sliding(...) in order to remove list
-        final List<HashSet<T>> l = list.get().sliding(size, step).map(HashSet::ofAll);
-        return HashSet.ofAll(l);
+        return HashSet.ofAll(iterator().sliding(size, step).map(HashSet::ofAll));
     }
 
     @Override

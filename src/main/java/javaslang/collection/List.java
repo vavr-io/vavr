@@ -1140,14 +1140,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         if (size <= 0 || step <= 0) {
             throw new IllegalArgumentException(String.format("size: %s or step: %s not positive", size, step));
         }
-        List<List<T>> result = Nil.instance();
-        List<T> list = this;
-        while (!list.isEmpty()) {
-            final Tuple2<List<T>, List<T>> split = list.splitAt(size);
-            result = result.prepend(split._1);
-            list = split._2.isEmpty() ? Nil.instance() : list.drop(step);
-        }
-        return result.reverse();
+        return List.ofAll(() -> iterator().sliding(size, step).map(List::ofAll));
     }
 
     @Override

@@ -659,12 +659,39 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
     @Override
     default Iterator<Iterator<T>> sliding(int size) {
-        return null;
+        return sliding(size, 1);
     }
 
     @Override
     default Iterator<Iterator<T>> sliding(int size, int step) {
-        return null;
+        if (size <= 0 || step <= 0) {
+            throw new IllegalArgumentException(String.format("size: %s or step: %s not positive", size, step));
+        }
+        final Stream<T> source = toStream();
+        return new Iterator<Iterator<T>>() {
+            private Stream<T> stream = source;
+            private Iterator<T> next = null;
+
+            @Override
+            public boolean hasNext() {
+                if (next == null && !stream.isEmpty()) {
+                    final Tuple2<Stream<T>, Stream<T>> split = stream.splitAt(size);
+                    next = split._1.iterator();
+                    stream = split._2.isEmpty() ? Stream.empty() : step == size ? split._2 : stream.drop(step);
+                }
+                return next != null;
+            }
+
+            @Override
+            public Iterator<T> next() {
+                if (!hasNext()) {
+                    EMPTY.next();
+                }
+                final Iterator<T> result = next;
+                next = null;
+                return result;
+            }
+        };
     }
 
     @Override
