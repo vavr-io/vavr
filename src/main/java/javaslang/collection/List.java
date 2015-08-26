@@ -685,7 +685,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         if (n >= length()) {
             return empty();
         }
-        return reverse().drop(n).reverse();
+        return List.ofAll(iterator().dropRight(n));
     }
 
     @Override
