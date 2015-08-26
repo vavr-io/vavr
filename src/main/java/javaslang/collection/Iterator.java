@@ -697,7 +697,18 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     @Override
     default Tuple2<Iterator<T>, Iterator<T>> span(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return null;
+        Stream<T> init = Stream.empty();
+        T firstImproper = null;
+        while (hasNext()) {
+            final T element = next();
+            if(predicate.test(element)) {
+                init = init.append(element);
+            } else {
+                firstImproper = element;
+                break;
+            }
+        }
+        return Tuple.of(init.iterator(), firstImproper == null ? empty() : Stream.of(firstImproper).appendAll(this).iterator());
     }
 
     default Iterator<T> tail() {

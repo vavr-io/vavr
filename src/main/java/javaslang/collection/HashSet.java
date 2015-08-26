@@ -34,13 +34,10 @@ public final class HashSet<T> implements Set<T>, Serializable {
     private static final HashSet<?> EMPTY = new HashSet<>(HashArrayMappedTrie.empty());
 
     private final HashArrayMappedTrie<T, Object> tree;
-    // TODO: get rid of this (mid-term)
-    private final transient Lazy<List<T>> list;
     private final transient Lazy<Integer> hash;
 
     private HashSet(HashArrayMappedTrie<T, Object> tree) {
         this.tree = tree;
-        this.list = Lazy.of(() -> List.ofAll(() -> tree.iterator().map(t -> t._1)));
         this.hash = Lazy.of(() -> Traversable.hash(tree::iterator));
     }
 
@@ -151,13 +148,13 @@ public final class HashSet<T> implements Set<T>, Serializable {
     @Override
     public HashSet<T> distinctBy(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        return HashSet.ofAll(list.get().distinctBy(comparator));
+        return HashSet.ofAll(iterator().distinctBy(comparator));
     }
 
     @Override
     public <U> HashSet<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
-        return HashSet.ofAll(list.get().distinctBy(keyExtractor));
+        return HashSet.ofAll(iterator().distinctBy(keyExtractor));
     }
 
     @Override
@@ -322,7 +319,10 @@ public final class HashSet<T> implements Set<T>, Serializable {
     @Override
     public HashSet<T> peek(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
-        return HashSet.ofAll(list.get().peek(action));
+        if(!isEmpty()) {
+            action.accept(iterator().head());
+        }
+        return this;
     }
 
     @Override
@@ -397,7 +397,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     @Override
     public Tuple2<HashSet<T>, HashSet<T>> span(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        Tuple2<List<T>, List<T>> t = list.get().span(predicate);
+        final Tuple2<Iterator<T>, Iterator<T>> t = iterator().span(predicate);
         return Tuple.of(HashSet.ofAll(t._1), HashSet.ofAll(t._2));
     }
 

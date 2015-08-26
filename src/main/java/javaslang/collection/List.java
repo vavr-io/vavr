@@ -1157,7 +1157,8 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     @Override
     default Tuple2<List<T>, List<T>> span(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return Tuple.of(takeWhile(predicate), dropWhile(predicate));
+        final Tuple2<Iterator<T>, Iterator<T>> itt = iterator().span(predicate);
+        return Tuple.of(List.ofAll(itt._1), List.ofAll(itt._2));
     }
 
     @Override
