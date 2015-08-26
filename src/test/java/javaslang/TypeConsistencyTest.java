@@ -20,19 +20,31 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
+/**
+ * Tests the 'type-consistency' of types OTHER than
+ *
+ * <ul>
+ * <li>javaslang.Function</li>
+ * <li>javaslang.CheckedFunction</li>
+ * <li>javaslang.collection.*</li>
+ * </ul>
+ *
+ * We call a type consistent, if the return type is related to the self type and overridden appropriately.
+ *
+ * <pre><code>interface Seq&lt;T&gt; {
+ *     Seq&lt;T&gt; remove(T element);
+ * }
+ *
+ * interface LinearSeq&lt;T&gt; extends Seq&lt;T&gt; {
+ *     @Override
+ *     LinearSeq&lt;T&gt; remove(T element); // return type is consistent!
+ * }</code></pre>
+ *
+ * For details please take a look at the code.
+ */
 public class TypeConsistencyTest {
 
     static final List<String> WHITELIST = List.of(
-
-            // javaslang.collection.Map
-            "javaslang.collection.Map//public default java.util.function.Function java.util.function.Function.andThen(java.util.function.Function)",
-            "javaslang.collection.Map//public default java.util.function.Function java.util.function.Function.compose(java.util.function.Function)",
-
-            // javaslang.collection.HashMap
-            "javaslang.collection.HashMap//public abstract javaslang.collection.Map javaslang.collection.Map.groupBy(java.util.function.Function)",
-
-            // javaslang.collection.SortedMap
-            "javaslang.collection.SortedMap//public abstract javaslang.collection.Map javaslang.collection.Map.groupBy(java.util.function.Function)",
 
             // javaslang.control.Match
             "javaslang.control.Match//public default java.util.function.Function java.util.function.Function.andThen(java.util.function.Function)",
@@ -74,7 +86,9 @@ public class TypeConsistencyTest {
                 .appendAll(loadClasses("src/main/java"))
                 .filter(c -> {
                     final String name = c.getName();
-                    return !name.startsWith("javaslang.Function") && !name.startsWith("javaslang.CheckedFunction");
+                    return !name.startsWith("javaslang.Function") &&
+                            !name.startsWith("javaslang.CheckedFunction") &&
+                            !name.startsWith("javaslang.collection.");
                 });
 
         final Stream<String> unoveriddenMethods = relevantClasses

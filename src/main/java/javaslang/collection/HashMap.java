@@ -6,7 +6,6 @@
 package javaslang.collection;
 
 import javaslang.Lazy;
-import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Value;
 import javaslang.control.Option;
@@ -151,9 +150,12 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public HashMap<K, V> filter(Predicate<? super Entry<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return foldLeft(HashMap.<K, V>empty(), (acc, entry) -> {
-            if (predicate.test(entry)) return acc.put(entry);
-            else return acc;
+        return foldLeft(HashMap.<K, V> empty(), (acc, entry) -> {
+            if (predicate.test(entry)) {
+                return acc.put(entry);
+            } else {
+                return acc;
+            }
         });
     }
 
@@ -171,8 +173,8 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public <U> HashSet<U> flatMap(Function<? super Entry<K, V>, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(HashSet.<U>empty(), (HashSet<U> acc, Entry<K, V> entry) -> {
-            for (U u: mapper.apply(entry)) {
+        return foldLeft(HashSet.<U> empty(), (HashSet<U> acc, Entry<K, V> entry) -> {
+            for (U u : mapper.apply(entry)) {
                 acc = acc.add(u);
             }
             return acc;
@@ -182,8 +184,8 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public <U, W> HashMap<U, W> flatMap2(BiFunction<? super K, ? super V, ? extends Iterable<? extends Entry<? extends U, ? extends W>>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(HashMap.<U, W>empty(), (acc, entry) -> {
-            for (Entry<? extends U, ? extends W> mappedEntry: mapper.apply(entry.key, entry.value)) {
+        return foldLeft(HashMap.<U, W> empty(), (acc, entry) -> {
+            for (Entry<? extends U, ? extends W> mappedEntry : mapper.apply(entry.key, entry.value)) {
                 acc = acc.put(mappedEntry);
             }
             return acc;
@@ -193,9 +195,9 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public <U> Set<U> flatMapVal(Function<? super Entry<K, V>, ? extends Value<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(HashSet.<U>empty(),
+        return foldLeft(HashSet.<U> empty(),
                 (HashSet<U> acc, Entry<K, V> entry) -> mapper.apply(entry).map(acc::add).orElse(acc));
-        }
+    }
 
     @Override
     public HashSet<Object> flatten() {
@@ -297,10 +299,10 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @SuppressWarnings("unchecked")
     @Override
     public <U extends V> HashMap<K, V> merge(Map<K, U> that, BiFunction<? super V, ? super U, ? extends V> mergef) {
-        if(isEmpty()) {
+        if (isEmpty()) {
             return (HashMap<K, V>) that;
         }
-        if(that.isEmpty()) {
+        if (that.isEmpty()) {
             return this;
         }
         HashMap<K, V> result = this;
