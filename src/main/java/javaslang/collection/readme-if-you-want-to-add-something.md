@@ -3,7 +3,7 @@ We need to follow some conventions to keep the collections consistent.
 There are two kinds of methods
 
 - **Accessors** access some of the elements of a collection, but return a result which is unrelated to the collection.
-  Example of accessors are: head, foldLeft, indexWhere, toSeq.
+  Example of accessors are: head, foldLeft, toList.
 
 - **Transformers** access elements of a collection and produce a new collection of same type as a result.
   Example of transformers are: filter, map, groupBy, zip.
