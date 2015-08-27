@@ -918,51 +918,51 @@ public class CharSeqTest {
 
     @Test
     public void shouldSlideNilBySize() {
-        assertThat(empty().sliding(1)).isEqualTo(Vector.empty());
+        assertThat(empty().sliding(1).isEmpty()).isTrue();
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void shouldSlideNonNilBySize1() {
-        assertThat(CharSeq.of('1', '2', '3').sliding(1)).isEqualTo(Vector.of(CharSeq.of('1'), CharSeq.of('2'), CharSeq.of('3')));
+        assertThat(CharSeq.of('1', '2', '3').sliding(1).toList()).isEqualTo(List.of(Vector.of('1'), Vector.of('2'), Vector.of('3')));
     }
 
     @SuppressWarnings("unchecked")
     @Test // #201
     public void shouldSlideNonNilBySize2() {
-        assertThat(CharSeq.of('1', '2', '3', '4', '5').sliding(2))
-                .isEqualTo(Vector.of(CharSeq.of('1', '2'), CharSeq.of('2', '3'), CharSeq.of('3', '4'), CharSeq.of('4', '5')));
+        assertThat(CharSeq.of('1', '2', '3', '4', '5').sliding(2).toList())
+                .isEqualTo(List.of(Vector.of('1', '2'), Vector.of('2', '3'), Vector.of('3', '4'), Vector.of('4', '5')));
     }
 
     // -- sliding(size, step)
 
     @Test
     public void shouldSlideNilBySizeAndStep() {
-        assertThat(empty().sliding(1, 1)).isEqualTo(Vector.empty());
+        assertThat(empty().sliding(1, 1).isEmpty()).isTrue();
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void shouldSlide5ElementsBySize2AndStep3() {
-        assertThat(CharSeq.of('1', '2', '3', '4', '5').sliding(2, 3)).isEqualTo(Vector.of(CharSeq.of('1', '2'), CharSeq.of('4', '5')));
+        assertThat(CharSeq.of('1', '2', '3', '4', '5').sliding(2, 3).toList()).isEqualTo(List.of(Vector.of('1', '2'), Vector.of('4', '5')));
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void shouldSlide5ElementsBySize2AndStep4() {
-        assertThat(CharSeq.of('1', '2', '3', '4', '5').sliding(2, 4)).isEqualTo(Vector.of(CharSeq.of('1', '2'), CharSeq.of('5')));
+        assertThat(CharSeq.of('1', '2', '3', '4', '5').sliding(2, 4).toList()).isEqualTo(List.of(Vector.of('1', '2'), Vector.of('5')));
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void shouldSlide5ElementsBySize2AndStep5() {
-        assertThat(CharSeq.of('1', '2', '3', '4', '5').sliding(2, 5)).isEqualTo(Vector.of(CharSeq.of('1', '2')));
+        assertThat(CharSeq.of('1', '2', '3', '4', '5').sliding(2, 5).toList()).isEqualTo(List.of(Vector.of('1', '2')));
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void shouldSlide4ElementsBySize5AndStep3() {
-        assertThat(CharSeq.of('1', '2', '3', '4').sliding(5, 3)).isEqualTo(Vector.of(CharSeq.of('1', '2', '3', '4')));
+        assertThat(CharSeq.of('1', '2', '3', '4').sliding(5, 3).toList()).isEqualTo(List.of(Vector.of('1', '2', '3', '4')));
     }
 
     // -- span
@@ -1489,7 +1489,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldGroupedNil() {
-        assertThat(empty().grouped(1)).isEqualTo(Vector.empty());
+        assertThat(empty().grouped(1).isEmpty()).isTrue();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -1505,19 +1505,19 @@ public class CharSeqTest {
     @SuppressWarnings("unchecked")
     @Test
     public void shouldGroupedTraversableWithEqualSizedBlocks() {
-        assertThat(CharSeq.of('1', '2', '3', '4').grouped(2)).isEqualTo(Vector.of(CharSeq.of('1', '2'), CharSeq.of('3', '4')));
+        assertThat(CharSeq.of('1', '2', '3', '4').grouped(2).toList()).isEqualTo(List.of(Vector.of('1', '2'), Vector.of('3', '4')));
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void shouldGroupedTraversableWithRemainder() {
-        assertThat(CharSeq.of('1', '2', '3', '4', '5').grouped(2)).isEqualTo(Vector.of(CharSeq.of('1', '2'), CharSeq.of('3', '4'), CharSeq.of('5')));
+        assertThat(CharSeq.of('1', '2', '3', '4', '5').grouped(2).toList()).isEqualTo(List.of(Vector.of('1', '2'), Vector.of('3', '4'), Vector.of('5')));
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void shouldGroupedWhenTraversableLengthIsSmallerThanBlockSize() {
-        assertThat(CharSeq.of('1', '2', '3', '4').grouped(5)).isEqualTo(Vector.of(CharSeq.of('1', '2', '3', '4')));
+        assertThat(CharSeq.of('1', '2', '3', '4').grouped(5).toList()).isEqualTo(List.of(Vector.of('1', '2', '3', '4')));
     }
 
     // -- indexOf

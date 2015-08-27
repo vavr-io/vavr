@@ -452,7 +452,7 @@ public interface TraversableOnce<T> extends Value<T> {
     @Override
     default Iterator<T> iterator() {
         final TraversableOnce<T> that = this;
-        return new Iterator<T>() {
+        return new Iterator.AbstractIterator<T>() {
 
             TraversableOnce<T> traversable = that;
 

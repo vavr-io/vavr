@@ -571,9 +571,9 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * Examples:
      * <pre>
      * <code>
-     * List.of(1, 2).substring(0) = List.of(1, 2)
-     * List.of(1, 2).substring(1) = List.of(2)
-     * List.of(1, 2).substring(2) = List.empty()
+     * List.of(1, 2).subSequence(0) = List.of(1, 2)
+     * List.of(1, 2).subSequence(1) = List.of(2)
+     * List.of(1, 2).subSequence(2) = List.empty()
      * </code>
      * </pre>
      *
@@ -590,9 +590,9 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * Examples:
      * <pre>
      * <code>
-     * List.of(1, 2, 3, 4).substring(1, 3) = List.of(2, 3)
-     * List.of(1, 2, 3, 4).substring(0, 4) = List.of(1, 2, 3, 4)
-     * List.of(1, 2, 3, 4).substring(2, 2) = List.empty()
+     * List.of(1, 2, 3, 4).subSequence(1, 3) = List.of(2, 3)
+     * List.of(1, 2, 3, 4).subSequence(0, 4) = List.of(1, 2, 3, 4)
+     * List.of(1, 2, 3, 4).subSequence(2, 2) = List.empty()
      * </code>
      * </pre>
      *

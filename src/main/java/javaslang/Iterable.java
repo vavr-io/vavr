@@ -28,6 +28,48 @@ public interface Iterable<T> extends java.lang.Iterable<T> {
     Iterator<T> iterator();
 
     /**
+     * Checks, if an element exists such that the predicate holds.
+     *
+     * @param predicate A Predicate
+     * @return true, if predicate holds for one or more elements, false otherwise
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    default boolean exists(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        for (T t : this) {
+            if (predicate.test(t)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks, if the given predicate holds for all elements.
+     *
+     * @param predicate A Predicate
+     * @return true, if the predicate holds for all elements, false otherwise
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    default boolean forAll(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return !exists(predicate.negate());
+    }
+
+    /**
+     * Performs an action on each element.
+     *
+     * @param action A {@code Consumer}
+     * @throws NullPointerException if {@code action} is null
+     */
+    default void forEach(Consumer<? super T> action) {
+        Objects.requireNonNull(action, "action is null");
+        for (T t : this) {
+            action.accept(t);
+        }
+    }
+
+    /**
      * Groups this {@code Traversable} into fixed size blocks like so:
      * <ul>
      * <li>If {@code this.isEmpty()}, the resulting {@code Traversable} is empty.</li>
@@ -94,48 +136,6 @@ public interface Iterable<T> extends java.lang.Iterable<T> {
      */
     default Iterator<IndexedSeq<T>> sliding(int size, int step) {
         return iterator().sliding(size, step);
-    }
-
-    /**
-     * Checks, if an element exists such that the predicate holds.
-     *
-     * @param predicate A Predicate
-     * @return true, if predicate holds for one or more elements, false otherwise
-     * @throws NullPointerException if {@code predicate} is null
-     */
-    default boolean exists(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        for (T t : this) {
-            if (predicate.test(t)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Checks, if the given predicate holds for all elements.
-     *
-     * @param predicate A Predicate
-     * @return true, if the predicate holds for all elements, false otherwise
-     * @throws NullPointerException if {@code predicate} is null
-     */
-    default boolean forAll(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return !exists(predicate.negate());
-    }
-
-    /**
-     * Performs an action on each element.
-     *
-     * @param action A {@code Consumer}
-     * @throws NullPointerException if {@code action} is null
-     */
-    default void forEach(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
-        for (T t : this) {
-            action.accept(t);
-        }
     }
 
 }

@@ -531,7 +531,14 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         } else if (step * (from - toInclusive) > 0) {
             return List.empty();
         } else {
-            return List.ofAll(() -> Iterator.rangeClosedBy(from, toInclusive, step));
+            final int gap = (from - toInclusive) % step;
+            final int signum = (from < toInclusive) ? -1 : 1;
+            final int bound = from * signum;
+            List<Integer> result = List.empty();
+            for (int i = toInclusive + gap; i * signum <= bound; i -= step) {
+                result = result.prepend(i);
+            }
+            return result;
         }
     }
 
@@ -585,7 +592,14 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         } else if (step * (from - toInclusive) > 0) {
             return List.empty();
         } else {
-            return List.ofAll(() -> Iterator.rangeClosedBy(from, toInclusive, step));
+            final long gap = (from - toInclusive) % step;
+            final int signum = (from < toInclusive) ? -1 : 1;
+            final long bound = from * signum;
+            List<Long> result = List.empty();
+            for (long i = toInclusive + gap; i * signum <= bound; i -= step) {
+                result = result.prepend(i);
+            }
+            return result;
         }
     }
 

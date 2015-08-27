@@ -47,7 +47,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     /**
      * The empty Iterator.
      */
-    Iterator<Object> EMPTY = new Iterator<Object>() {
+    Iterator<Object> EMPTY = new AbstractIterator<Object>() {
 
         @Override
         public boolean hasNext() {
@@ -79,7 +79,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      * @return A new Iterator
      */
     static <T> Iterator<T> of(T element) {
-        return new Iterator<T>() {
+        return new AbstractIterator<T>() {
 
             boolean hasNext = true;
 
@@ -109,7 +109,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     @SafeVarargs
     static <T> Iterator<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements.isNull");
-        return new Iterator<T>() {
+        return new AbstractIterator<T>() {
 
             int index = 0;
 
@@ -233,7 +233,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      */
     static <T> Iterator<T> ofAll(java.util.Iterator<? extends T> iterator) {
         Objects.requireNonNull(iterator, "iterator is null");
-        return new Iterator<T>() {
+        return new AbstractIterator<T>() {
 
             @Override
             public boolean hasNext() {
@@ -258,7 +258,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      */
     static Iterator<Boolean> ofAll(boolean[] array) {
         Objects.requireNonNull(array, "array is null");
-        return new Iterator<Boolean>() {
+        return new AbstractIterator<Boolean>() {
             int i = 0;
 
             @Override
@@ -281,7 +281,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      */
     static Iterator<Byte> ofAll(byte[] array) {
         Objects.requireNonNull(array, "array is null");
-        return new Iterator<Byte>() {
+        return new AbstractIterator<Byte>() {
             int i = 0;
 
             @Override
@@ -304,7 +304,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      */
     static Iterator<Character> ofAll(char[] array) {
         Objects.requireNonNull(array, "array is null");
-        return new Iterator<Character>() {
+        return new AbstractIterator<Character>() {
             int i = 0;
 
             @Override
@@ -327,7 +327,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      */
     static Iterator<Double> ofAll(double[] array) {
         Objects.requireNonNull(array, "array is null");
-        return new Iterator<Double>() {
+        return new AbstractIterator<Double>() {
             int i = 0;
 
             @Override
@@ -350,7 +350,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      */
     static Iterator<Float> ofAll(float[] array) {
         Objects.requireNonNull(array, "array is null");
-        return new Iterator<Float>() {
+        return new AbstractIterator<Float>() {
             int i = 0;
 
             @Override
@@ -373,7 +373,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      */
     static Iterator<Integer> ofAll(int[] array) {
         Objects.requireNonNull(array, "array is null");
-        return new Iterator<Integer>() {
+        return new AbstractIterator<Integer>() {
             int i = 0;
 
             @Override
@@ -396,7 +396,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      */
     static Iterator<Long> ofAll(long[] array) {
         Objects.requireNonNull(array, "array is null");
-        return new Iterator<Long>() {
+        return new AbstractIterator<Long>() {
             int i = 0;
 
             @Override
@@ -419,7 +419,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      */
     static Iterator<Short> ofAll(short[] array) {
         Objects.requireNonNull(array, "array is null");
-        return new Iterator<Short>() {
+        return new AbstractIterator<Short>() {
             int i = 0;
 
             @Override
@@ -590,23 +590,27 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         } else if (step * (from - toInclusive) > 0) {
             return Iterator.empty();
         } else {
-            return new Iterator<Integer>() {
+            return new AbstractIterator<Integer>() {
 
-                final int signum = (from < toInclusive) ? 1 : -1;
                 int i = from;
+                boolean hasNext = (step > 0) ? i <= toInclusive : i >= toInclusive;
 
                 @Override
                 public boolean hasNext() {
-                    return i * signum <= toInclusive;
+                    return hasNext;
                 }
 
                 @Override
                 public Integer next() {
-                    if (!hasNext()) {
+                    if (!hasNext) {
                         EMPTY.next();
                     }
                     final int next = i;
-                    i += step;
+                    if ((step > 0 && i > toInclusive - step) || (step < 0 && i < toInclusive - step)) {
+                        hasNext = false;
+                    } else {
+                        i += step;
+                    }
                     return next;
                 }
             };
@@ -663,23 +667,27 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         } else if (step * (from - toInclusive) > 0) {
             return Iterator.empty();
         } else {
-            return new Iterator<Long>() {
+            return new AbstractIterator<Long>() {
 
-                final int signum = (from < toInclusive) ? 1 : -1;
                 long i = from;
+                boolean hasNext = (step > 0) ? i <= toInclusive : i >= toInclusive;
 
                 @Override
                 public boolean hasNext() {
-                    return i * signum <= toInclusive;
+                    return hasNext;
                 }
 
                 @Override
                 public Long next() {
-                    if (!hasNext()) {
+                    if (!hasNext) {
                         EMPTY.next();
                     }
                     final long next = i;
-                    i += step;
+                    if ((step > 0 && i > toInclusive - step) || (step < 0 && i < toInclusive - step)) {
+                        hasNext = false;
+                    } else {
+                        i += step;
+                    }
                     return next;
                 }
             };
@@ -733,7 +741,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new Iterator<T>() {
+            return new AbstractIterator<T>() {
 
                 int count = n;
 
@@ -772,7 +780,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new Iterator<T>() {
+            return new AbstractIterator<T>() {
 
                 private T next = null;
 
@@ -822,7 +830,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new Iterator<T>() {
+            return new AbstractIterator<T>() {
 
                 Option<T> next = None.instance();
 
@@ -876,7 +884,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new Iterator<U>() {
+            return new AbstractIterator<U>() {
 
                 final Iterator<? extends T> inputs = that;
                 java.util.Iterator<? extends U> current = Collections.emptyIterator();
@@ -975,7 +983,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new Iterator<T>() {
+            return new AbstractIterator<T>() {
 
                 boolean insertElement = false;
 
@@ -1029,7 +1037,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new Iterator<U>() {
+            return new AbstractIterator<U>() {
 
                 @Override
                 public boolean hasNext() {
@@ -1061,7 +1069,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new Iterator<T>() {
+            return new AbstractIterator<T>() {
                 @Override
                 public boolean hasNext() {
                     return that.hasNext();
@@ -1092,7 +1100,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new Iterator<T>() {
+            return new AbstractIterator<T>() {
 
                 boolean done = false;
 
@@ -1124,7 +1132,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new Iterator<T>() {
+            return new AbstractIterator<T>() {
 
                 @Override
                 public boolean hasNext() {
@@ -1153,7 +1161,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new Iterator<T>() {
+            return new AbstractIterator<T>() {
 
                 @Override
                 public boolean hasNext() {
@@ -1249,7 +1257,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new Iterator<T>() {
+            return new AbstractIterator<T>() {
 
                 int count = n;
 
@@ -1283,7 +1291,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new Iterator<T>() {
+            return new AbstractIterator<T>() {
 
                 private T next = null;
                 private boolean finished = false;
@@ -1321,7 +1329,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         } else {
             final Iterator<T> it1 = this;
             final java.util.Iterator<U> it2 = that.iterator();
-            return new Iterator<Tuple2<T, U>>() {
+            return new AbstractIterator<Tuple2<T, U>>() {
                 @Override
                 public boolean hasNext() {
                     return it1.hasNext() && it2.hasNext();
@@ -1345,7 +1353,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         } else {
             final Iterator<T> it1 = this;
             final java.util.Iterator<U> it2 = that.iterator();
-            return new Iterator<Tuple2<T, U>>() {
+            return new AbstractIterator<Tuple2<T, U>>() {
                 @Override
                 public boolean hasNext() {
                     return it1.hasNext() || it2.hasNext();
@@ -1369,7 +1377,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             return empty();
         } else {
             final Iterator<T> it1 = this;
-            return new Iterator<Tuple2<T, Integer>>() {
+            return new AbstractIterator<Tuple2<T, Integer>>() {
                 private int index = 0;
                 @Override
                 public boolean hasNext() {
@@ -1397,7 +1405,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         }
     }
 
-    class ConcatIterator<T> implements Iterator<T> {
+    class ConcatIterator<T> extends AbstractIterator<T> {
 
         private final Iterator<? extends Iterator<? extends T>> iterators;
         private Iterator<? extends T> current;
@@ -1424,7 +1432,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         }
     }
 
-    class DistinctIterator<T, U> implements Iterator<T> {
+    class DistinctIterator<T, U> extends AbstractIterator<T> {
 
         private final Iterator<? extends T> that;
         Set<U> known;
@@ -1458,6 +1466,14 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             final T result = next;
             next = null;
             return result;
+        }
+    }
+
+    abstract class AbstractIterator<T> implements Iterator<T> {
+
+        @Override
+        public String toString() {
+            return (isEmpty() ? "" : "non-") + "empty iterator";
         }
     }
 }

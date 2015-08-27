@@ -1058,50 +1058,50 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldSlideNilBySize() {
-        assertThat(empty().sliding(1)).isEqualTo(empty());
+        assertThat(empty().sliding(1).isEmpty()).isTrue();
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void shouldSlideNonNilBySize1() {
-        assertThat(of(1, 2, 3).sliding(1)).isEqualTo(of(of(1), of(2), of(3)));
+        assertThat(of(1, 2, 3).sliding(1).toList()).isEqualTo(List.of(Vector.of(1), Vector.of(2), Vector.of(3)));
     }
 
     @SuppressWarnings("unchecked")
     @Test // #201
     public void shouldSlideNonNilBySize2() {
-        assertThat(of(1, 2, 3, 4, 5).sliding(2)).isEqualTo(of(of(1, 2), of(2, 3), of(3, 4), of(4, 5)));
+        assertThat(of(1, 2, 3, 4, 5).sliding(2).toList()).isEqualTo(List.of(Vector.of(1, 2), Vector.of(2, 3), Vector.of(3, 4), Vector.of(4, 5)));
     }
 
     // -- sliding(size, step)
 
     @Test
     public void shouldSlideNilBySizeAndStep() {
-        assertThat(empty().sliding(1, 1)).isEqualTo(empty());
+        assertThat(empty().sliding(1, 1).isEmpty()).isTrue();
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void shouldSlide5ElementsBySize2AndStep3() {
-        assertThat(of(1, 2, 3, 4, 5).sliding(2, 3)).isEqualTo(of(of(1, 2), of(4, 5)));
+        assertThat(of(1, 2, 3, 4, 5).sliding(2, 3).toList()).isEqualTo(List.of(Vector.of(1, 2), Vector.of(4, 5)));
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void shouldSlide5ElementsBySize2AndStep4() {
-        assertThat(of(1, 2, 3, 4, 5).sliding(2, 4)).isEqualTo(of(of(1, 2), of(5)));
+        assertThat(of(1, 2, 3, 4, 5).sliding(2, 4).toList()).isEqualTo(List.of(Vector.of(1, 2), Vector.of(5)));
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void shouldSlide5ElementsBySize2AndStep5() {
-        assertThat(of(1, 2, 3, 4, 5).sliding(2, 5)).isEqualTo(of(of(1, 2)));
+        assertThat(of(1, 2, 3, 4, 5).sliding(2, 5).toList()).isEqualTo(List.of(Vector.of(1, 2)));
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void shouldSlide4ElementsBySize5AndStep3() {
-        assertThat(of(1, 2, 3, 4).sliding(5, 3)).isEqualTo(of(of(1, 2, 3, 4)));
+        assertThat(of(1, 2, 3, 4).sliding(5, 3).toList()).isEqualTo(List.of(Vector.of(1, 2, 3, 4)));
     }
 
     // -- span
