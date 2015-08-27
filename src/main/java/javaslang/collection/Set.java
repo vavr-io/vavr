@@ -5,8 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple2;
-import javaslang.Value;
+import javaslang.*;
 import javaslang.control.Option;
 
 import java.util.Comparator;
@@ -31,13 +30,13 @@ public interface Set<T> extends Traversable<T> {
 
     Set<T> remove(T element);
 
-    Set<T> removeAll(Iterable<? extends T> elements);
+    Set<T> removeAll(java.lang.Iterable<? extends T> elements);
 
     <T1, T2> Tuple2<? extends Set<T1>, ? extends Set<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
 
-    <U> Set<Tuple2<T, U>> zip(Iterable<U> that);
+    <U> Set<Tuple2<T, U>> zip(java.lang.Iterable<U> that);
 
-    <U> Set<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
+    <U> Set<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem);
 
     Set<Tuple2<T, Integer>> zipWithIndex();
 
@@ -71,7 +70,7 @@ public interface Set<T> extends Traversable<T> {
     Set<T> filter(Predicate<? super T> predicate);
 
     @Override
-    <U> Set<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
+    <U> Set<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
 
     @Override
     <U> Set<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper);
@@ -113,13 +112,7 @@ public interface Set<T> extends Traversable<T> {
     Set<T> replaceAll(UnaryOperator<T> operator);
 
     @Override
-    Set<T> retainAll(Iterable<? extends T> elements);
-
-    @Override
-    Set<? extends Set<T>> sliding(int size);
-
-    @Override
-    Set<? extends Set<T>> sliding(int size, int step);
+    Set<T> retainAll(java.lang.Iterable<? extends T> elements);
 
     @Override
     Tuple2<? extends Set<T>, ? extends Set<T>> span(Predicate<? super T> predicate);

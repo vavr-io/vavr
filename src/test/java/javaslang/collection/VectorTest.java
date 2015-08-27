@@ -5,7 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Serializables;
+import javaslang.*;
 import org.junit.Test;
 
 import java.io.InvalidObjectException;
@@ -35,7 +35,7 @@ public class VectorTest extends AbstractSeqTest {
     }
 
     @Override
-    protected <T> Vector<T> ofAll(Iterable<? extends T> elements) {
+    protected <T> Vector<T> ofAll(java.lang.Iterable<? extends T> elements) {
         return Vector.ofAll(elements);
     }
 

@@ -5,10 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Lazy;
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Value;
+import javaslang.*;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -103,12 +100,12 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * if the iteration order of the elements is stable.
      *
      * @param <T>      Component type of the Vector.
-     * @param elements An Iterable of elements.
+     * @param elements An java.lang.Iterable of elements.
      * @return A vector containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
     @SuppressWarnings("unchecked")
-    public static <T> Vector<T> ofAll(Iterable<? extends T> elements) {
+    public static <T> Vector<T> ofAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof Vector) {
             return (Vector<T>) elements;
@@ -565,7 +562,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> appendAll(Iterable<? extends T> elements) {
+    public Vector<T> appendAll(java.lang.Iterable<? extends T> elements) {
         HashArrayMappedTrie<Integer, T> result = trie;
         for (T element : elements) {
             result = result.put(result.size(), element);
@@ -584,7 +581,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Vector<Tuple2<T, U>> crossProduct(Iterable<? extends U> that) {
+    public <U> Vector<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         final Vector<? extends U> other = Vector.ofAll(that);
         return flatMap(a -> other.map(b -> Tuple.of(a, b)));
@@ -685,7 +682,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Vector<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    public <U> Vector<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return empty();
@@ -707,7 +704,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Vector<Object> flatten() {
-        return flatMap(t -> (t instanceof Iterable) ? Vector.ofAll((Iterable<?>) t).flatten() : Vector.of(t));
+        return flatMap(t -> (t instanceof java.lang.Iterable) ? Vector.ofAll((java.lang.Iterable<?>) t).flatten() : Vector.of(t));
     }
 
     @Override
@@ -743,11 +740,6 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
             final Vector<T> values = map.get(key).map(ts -> ts.append(t)).orElse(Vector.of(t));
             return map.put(key, values);
         });
-    }
-
-    @Override
-    public Vector<? extends Vector<T>> grouped(int size) {
-        return sliding(size, size);
     }
 
     @Override
@@ -803,7 +795,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> insertAll(int index, Iterable<? extends T> elements) {
+    public Vector<T> insertAll(int index, java.lang.Iterable<? extends T> elements) {
         if (index < 0) {
             throw new IndexOutOfBoundsException("insert(" + index + ", e)");
         }
@@ -933,7 +925,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> prependAll(Iterable<? extends T> elements) {
+    public Vector<T> prependAll(java.lang.Iterable<? extends T> elements) {
         return insertAll(0, elements);
     }
 
@@ -1019,7 +1011,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> removeAll(Iterable<? extends T> elements) {
+    public Vector<T> removeAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         HashArrayMappedTrie<T, T> removed = HashArrayMappedTrie.empty();
         for (T element : elements) {
@@ -1086,7 +1078,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> retainAll(Iterable<? extends T> elements) {
+    public Vector<T> retainAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         final Vector<T> keeped = Vector.ofAll(elements).distinct();
         HashArrayMappedTrie<Integer, T> result = HashArrayMappedTrie.empty();
@@ -1105,26 +1097,6 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
             trie = trie.put(i, get(length() - 1 - i));
         }
         return trie.size() == 0 ? empty() : new Vector<>(trie);
-    }
-
-    @Override
-    public Vector<Vector<T>> sliding(int size) {
-        return sliding(size, 1);
-    }
-
-    @Override
-    public Vector<Vector<T>> sliding(int size, int step) {
-        if (size <= 0 || step <= 0) {
-            throw new IllegalArgumentException(String.format("size: %s or step: %s not positive", size, step));
-        }
-        HashArrayMappedTrie<Integer, Vector<T>> result = HashArrayMappedTrie.empty();
-        Vector<T> list = this;
-        while (!list.isEmpty()) {
-            final Tuple2<Vector<T>, Vector<T>> split = list.splitAt(size);
-            result = result.put(result.size(), split._1);
-            list = split._2.isEmpty() ? Vector.empty() : list.drop(step);
-        }
-        return result.size() == 0 ? empty() : new Vector<>(result);
     }
 
     @Override
@@ -1285,7 +1257,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Vector<U> unit(Iterable<? extends U> iterable) {
+    public <U> Vector<U> unit(java.lang.Iterable<? extends U> iterable) {
         return Vector.ofAll(iterable);
     }
 
@@ -1303,7 +1275,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Vector<Tuple2<T, U>> zip(Iterable<U> that) {
+    public <U> Vector<Tuple2<T, U>> zip(java.lang.Iterable<U> that) {
         Objects.requireNonNull(that, "that is null");
         HashArrayMappedTrie<Integer, Tuple2<T, U>> result = HashArrayMappedTrie.empty();
         Iterator<T> list1 = iterator();
@@ -1315,7 +1287,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Vector<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
+    public <U> Vector<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         HashArrayMappedTrie<Integer, Tuple2<T, U>> result = HashArrayMappedTrie.empty();
         Iterator<T> list1 = iterator();

@@ -42,7 +42,7 @@ public class QueueTest extends AbstractSeqTest {
     }
 
     @Override
-    protected <T> Queue<T> ofAll(Iterable<? extends T> elements) {
+    protected <T> Queue<T> ofAll(java.lang.Iterable<? extends T> elements) {
         return Queue.ofAll(elements);
     }
 

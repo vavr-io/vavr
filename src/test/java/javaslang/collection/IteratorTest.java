@@ -9,12 +9,12 @@ import java.util.stream.Collector;
 
 public class IteratorTest extends AbstractValueTest {
 
-    protected <T> IterableAssert<T> assertThat(Iterable<T> actual) {
+    protected <T> IterableAssert<T> assertThat(java.lang.Iterable<T> actual) {
         return new IterableAssert<T>(actual) {
             @Override
             public IterableAssert<T> isEqualTo(Object obj) {
                 @SuppressWarnings("unchecked")
-                Iterable<T> expected = (Iterable<T>) obj;
+                java.lang.Iterable<T> expected = (java.lang.Iterable<T>) obj;
                 Assertions.assertThat(List.ofAll(actual)).isEqualTo(List.ofAll(expected));
                 return this;
             }
@@ -61,7 +61,7 @@ public class IteratorTest extends AbstractValueTest {
     }
 
     @Override
-    protected <T> Iterator<T> ofAll(Iterable<? extends T> elements) {
+    protected <T> Iterator<T> ofAll(java.lang.Iterable<? extends T> elements) {
         return Iterator.ofAll(elements);
     }
 

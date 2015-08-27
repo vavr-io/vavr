@@ -5,8 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple;
-import javaslang.Tuple2;
+import javaslang.*;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -34,7 +33,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     abstract protected <T> Seq<T> of(T... elements);
 
     @Override
-    abstract protected <T> Seq<T> ofAll(Iterable<? extends T> elements);
+    abstract protected <T> Seq<T> ofAll(java.lang.Iterable<? extends T> elements);
 
     @Override
     abstract protected Seq<Boolean> ofAll(boolean[] array);
@@ -245,7 +244,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldGroupedNil() {
-        assertThat(empty().grouped(1)).isEqualTo(empty());
+        assertThat(empty().grouped(1).isEmpty()).isTrue();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -261,19 +260,19 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     @SuppressWarnings("unchecked")
     @Test
     public void shouldGroupedTraversableWithEqualSizedBlocks() {
-        assertThat(of(1, 2, 3, 4).grouped(2)).isEqualTo(of(of(1, 2), of(3, 4)));
+        assertThat(of(1, 2, 3, 4).grouped(2).toList()).isEqualTo(List.of(Vector.of(1, 2), Vector.of(3, 4)));
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void shouldGroupedTraversableWithRemainder() {
-        assertThat(of(1, 2, 3, 4, 5).grouped(2)).isEqualTo(of(of(1, 2), of(3, 4), of(5)));
+        assertThat(of(1, 2, 3, 4, 5).grouped(2).toList()).isEqualTo(List.of(Vector.of(1, 2), Vector.of(3, 4), Vector.of(5)));
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void shouldGroupedWhenTraversableLengthIsSmallerThanBlockSize() {
-        assertThat(of(1, 2, 3, 4).grouped(5)).isEqualTo(of(of(1, 2, 3, 4)));
+        assertThat(of(1, 2, 3, 4).grouped(5).toList()).isEqualTo(List.of(Vector.of(1, 2, 3, 4)));
     }
 
     // -- indexOf
@@ -1333,7 +1332,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     }
 
     @Test
-    public void shouldCreateRangeByWhereFromIsLessThanTo() {
+    public void  shouldCreateRangeByWhereFromIsLessThanTo() {
         assertThat(rangeClosedBy(1, 3, 1)).isEqualTo(of(1, 2, 3));
         assertThat(rangeClosedBy(1, 5, 2)).isEqualTo(of(1, 3, 5));
         assertThat(rangeClosedBy(1, 6, 2)).isEqualTo(of(1, 3, 5));

@@ -5,6 +5,7 @@
  */
 package javaslang.collection.euler;
 
+import javaslang.collection.IndexedSeq;
 import javaslang.collection.List;
 import org.junit.Test;
 
@@ -54,7 +55,7 @@ public class Euler08Test {
     private static long largestProductOfConsecutives(int sizeOfConsecutive, String num) {
         return digits(num)
                 .sliding(sizeOfConsecutive)
-                .map(List::product)
+                .map(IndexedSeq::product)
                 .max().get().longValue();
     }
 

@@ -64,7 +64,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return new TreeSet<>(tree);
     }
 
-    public static <T extends Comparable<T>> TreeSet<T> ofAll(Iterable<? extends T> values) {
+    public static <T extends Comparable<T>> TreeSet<T> ofAll(java.lang.Iterable<? extends T> values) {
         Objects.requireNonNull(values, "values is null");
         RedBlackTree<T> tree = RedBlackTree.empty();
         for (T value : values) {
@@ -73,7 +73,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return new TreeSet<>(tree);
     }
 
-    public static <T extends Comparable<T>> TreeSet<T> ofAll(Comparator<? super T> comparator, Iterable<? extends T> values) {
+    public static <T extends Comparable<T>> TreeSet<T> ofAll(Comparator<? super T> comparator, java.lang.Iterable<? extends T> values) {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(values, "values is null");
         RedBlackTree<T> tree = RedBlackTree.empty(comparator);
@@ -561,7 +561,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public <U> TreeSet<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    public <U> TreeSet<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
         throw new UnsupportedOperationException("TODO");
     }
 
@@ -646,7 +646,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public TreeSet<T> removeAll(Iterable<? extends T> elements) {
+    public TreeSet<T> removeAll(java.lang.Iterable<? extends T> elements) {
         throw new UnsupportedOperationException("TODO");
     }
 
@@ -666,17 +666,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public TreeSet<T> retainAll(Iterable<? extends T> elements) {
-        throw new UnsupportedOperationException("TODO");
-    }
-
-    @Override
-    public TreeSet<TreeSet<T>> sliding(int size) {
-        throw new UnsupportedOperationException("TODO");
-    }
-
-    @Override
-    public TreeSet<TreeSet<T>> sliding(int size, int step) {
+    public TreeSet<T> retainAll(java.lang.Iterable<? extends T> elements) {
         throw new UnsupportedOperationException("TODO");
     }
 
@@ -716,12 +706,12 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public <U> TreeSet<Tuple2<T, U>> zip(Iterable<U> that) {
+    public <U> TreeSet<Tuple2<T, U>> zip(java.lang.Iterable<U> that) {
         throw new UnsupportedOperationException("TODO");
     }
 
     @Override
-    public <U> TreeSet<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
+    public <U> TreeSet<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem) {
         throw new UnsupportedOperationException("TODO");
     }
 

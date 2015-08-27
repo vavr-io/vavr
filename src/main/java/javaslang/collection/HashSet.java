@@ -5,10 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Lazy;
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Value;
+import javaslang.*;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -107,7 +104,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return A new HashSet containing the given entries
      */
     @SuppressWarnings("unchecked")
-    public static <T> HashSet<T> ofAll(Iterable<? extends T> entries) {
+    public static <T> HashSet<T> ofAll(java.lang.Iterable<? extends T> entries) {
         Objects.requireNonNull(entries, "entries is null");
         if (entries instanceof HashSet) {
             return (HashSet<T>) entries;
@@ -191,7 +188,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public <U> HashSet<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    public <U> HashSet<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return empty();
@@ -213,7 +210,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<Object> flatten() {
-        return flatMap(t -> (t instanceof Iterable) ? HashSet.ofAll((Iterable<?>) t).flatten() : HashSet.of(t));
+        return flatMap(t -> (t instanceof java.lang.Iterable) ? HashSet.ofAll((java.lang.Iterable<?>) t).flatten() : HashSet.of(t));
     }
 
     @Override
@@ -331,7 +328,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> removeAll(Iterable<? extends T> elements) {
+    public HashSet<T> removeAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         HashArrayMappedTrie<T, Object> trie = tree;
         for (T element : elements) {
@@ -365,7 +362,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> retainAll(Iterable<? extends T> elements) {
+    public HashSet<T> retainAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         final HashSet<T> keeped = HashSet.ofAll(elements);
         HashSet<T> result = HashSet.empty();
@@ -375,17 +372,6 @@ public final class HashSet<T> implements Set<T>, Serializable {
             }
         }
         return result;
-    }
-
-    @Override
-    public HashSet<? extends Set<T>> sliding(int size) {
-        return sliding(size, 1);
-    }
-
-    @Override
-    public HashSet<HashSet<T>> sliding(int size, int step) {
-        final Iterator<HashSet<T>> itt = iterator().sliding(size, step).map(HashSet::ofAll);
-        return HashSet.ofAll(itt);
     }
 
     @Override
@@ -440,13 +426,13 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public <U> HashSet<Tuple2<T, U>> zip(Iterable<U> that) {
+    public <U> HashSet<Tuple2<T, U>> zip(java.lang.Iterable<U> that) {
         Objects.requireNonNull(that, "that is null");
         return HashSet.ofAll(iterator().zip(that));
     }
 
     @Override
-    public <U> HashSet<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
+    public <U> HashSet<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         return HashSet.ofAll(iterator().zipAll(that, thisElem, thatElem));
     }

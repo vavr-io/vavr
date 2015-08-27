@@ -659,21 +659,21 @@ public class Future<T> {
         return recoverWith(t -> that);
     }
 
-    public static <T> Future<List<T>> sequence(Iterable<Future<T>> source, Executor ex) {
+    public static <T> Future<List<T>> sequence(java.lang.Iterable<Future<T>> source, Executor ex) {
         return List.ofAll(source)
 		        .foldRight(Future.success(List.empty()), (next, accumulator) -> accumulator.flatMap(list -> next.map(list::prepend, ex), ex));
     }
 
-    public static <T> Future<List<T>> sequence(Iterable<Future<T>> source) {
+    public static <T> Future<List<T>> sequence(java.lang.Iterable<Future<T>> source) {
         return sequence(source, ForkJoinPool.commonPool());
     }
 
-    public static <T> Future<List<T>> traverse(Iterable<T> source, Function1<T, Future<T>> func, Executor ex) {
+    public static <T> Future<List<T>> traverse(java.lang.Iterable<T> source, Function1<T, Future<T>> func, Executor ex) {
         Objects.requireNonNull(func, "func is null");
         return sequence(List.ofAll(source).map(func), ex);
     }
 
-    public static <T> Future<List<T>> traverse(Iterable<T> source, Function1<T, Future<T>> func) {
+    public static <T> Future<List<T>> traverse(java.lang.Iterable<T> source, Function1<T, Future<T>> func) {
         return traverse(source, func, ForkJoinPool.commonPool());
     }
 

@@ -47,7 +47,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     /**
      * The empty Iterator.
      */
-    Iterator<Object> EMPTY = new Iterator<Object>() {
+    Iterator<Object> EMPTY = new AbstractIterator<Object>() {
 
         @Override
         public boolean hasNext() {
@@ -79,7 +79,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      * @return A new Iterator
      */
     static <T> Iterator<T> of(T element) {
-        return new Iterator<T>() {
+        return new AbstractIterator<T>() {
 
             boolean hasNext = true;
 
@@ -109,7 +109,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     @SafeVarargs
     static <T> Iterator<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements.isNull");
-        return new Iterator<T>() {
+        return new AbstractIterator<T>() {
 
             int index = 0;
 
@@ -151,7 +151,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      */
     @SafeVarargs
     @SuppressWarnings({ "unchecked", "varargs" })
-    static <T> Iterator<T> ofIterables(Iterable<? extends T>... iterables) {
+    static <T> Iterator<T> ofIterables(java.lang.Iterable<? extends T>... iterables) {
         Objects.requireNonNull(iterables, "iterables is null");
         return iterables.length == 0 ? empty() : new ConcatIterator<>(Stream.of(iterables).map(Iterator::ofAll).iterator());
     }
@@ -175,7 +175,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      * @param <T>       Component type.
      * @return A new {@code javaslang.collection.Iterator}
      */
-    static <T> Iterator<T> ofIterables(Iterator<? extends Iterable<? extends T>> iterables) {
+    static <T> Iterator<T> ofIterables(Iterator<? extends java.lang.Iterable<? extends T>> iterables) {
         Objects.requireNonNull(iterables, "iterables is null");
         return iterables.isEmpty() ? empty() : new ConcatIterator<>(Stream.ofAll(iterables).map(Iterator::ofAll).iterator());
     }
@@ -187,7 +187,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      * @param <T>       Component type.
      * @return A new {@code javaslang.collection.Iterator}
      */
-    static <T> Iterator<T> ofIterators(Iterable<? extends Iterator<? extends T>> iterators) {
+    static <T> Iterator<T> ofIterators(java.lang.Iterable<? extends Iterator<? extends T>> iterators) {
         Objects.requireNonNull(iterators, "iterators is null");
         if (!iterators.iterator().hasNext()) {
             return empty();
@@ -202,7 +202,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      * @param <T>       Component type.
      * @return A new {@code javaslang.collection.Iterator}
      */
-    static <T> Iterator<T> ofIterables(Iterable<? extends Iterable<? extends T>> iterables) {
+    static <T> Iterator<T> ofIterables(java.lang.Iterable<? extends java.lang.Iterable<? extends T>> iterables) {
         Objects.requireNonNull(iterables, "iterables is null");
         if (!iterables.iterator().hasNext()) {
             return empty();
@@ -211,14 +211,14 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
-     * Creates an Iterator based on the given Iterable. This is a convenience method for
+     * Creates an Iterator based on the given java.lang.Iterable. This is a convenience method for
      * {@code Iterator.of(iterable.iterator()}.
      *
-     * @param iterable An Iterable
+     * @param iterable A {@link java.lang.Iterable}
      * @param <T>      Component type.
      * @return A new {@code javaslang.collection.Iterator}
      */
-    static <T> Iterator<T> ofAll(Iterable<? extends T> iterable) {
+    static <T> Iterator<T> ofAll(java.lang.Iterable<? extends T> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
         return Iterator.ofAll(iterable.iterator());
     }
@@ -233,7 +233,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      */
     static <T> Iterator<T> ofAll(java.util.Iterator<? extends T> iterator) {
         Objects.requireNonNull(iterator, "iterator is null");
-        return new Iterator<T>() {
+        return new AbstractIterator<T>() {
 
             @Override
             public boolean hasNext() {
@@ -249,6 +249,452 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             }
         };
     }
+    
+    /**
+     * Creates a List based on the elements of a boolean array.
+     *
+     * @param array a boolean array
+     * @return A new List of Boolean values
+     */
+    static Iterator<Boolean> ofAll(boolean[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return new AbstractIterator<Boolean>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Boolean next() {
+                return array[i++];
+            }
+        };
+    }
+
+    /**
+     * Creates a List based on the elements of a byte array.
+     *
+     * @param array a byte array
+     * @return A new List of Byte values
+     */
+    static Iterator<Byte> ofAll(byte[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return new AbstractIterator<Byte>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Byte next() {
+                return array[i++];
+            }
+        };
+    }
+
+    /**
+     * Creates a List based on the elements of a char array.
+     *
+     * @param array a char array
+     * @return A new List of Character values
+     */
+    static Iterator<Character> ofAll(char[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return new AbstractIterator<Character>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Character next() {
+                return array[i++];
+            }
+        };
+    }
+
+    /**
+     * Creates a List based on the elements of a double array.
+     *
+     * @param array a double array
+     * @return A new List of Double values
+     */
+    static Iterator<Double> ofAll(double[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return new AbstractIterator<Double>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Double next() {
+                return array[i++];
+            }
+        };
+    }
+
+    /**
+     * Creates a List based on the elements of a float array.
+     *
+     * @param array a float array
+     * @return A new List of Float values
+     */
+    static Iterator<Float> ofAll(float[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return new AbstractIterator<Float>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Float next() {
+                return array[i++];
+            }
+        };
+    }
+
+    /**
+     * Creates a List based on the elements of an int array.
+     *
+     * @param array an int array
+     * @return A new List of Integer values
+     */
+    static Iterator<Integer> ofAll(int[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return new AbstractIterator<Integer>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Integer next() {
+                return array[i++];
+            }
+        };
+    }
+
+    /**
+     * Creates a List based on the elements of a long array.
+     *
+     * @param array a long array
+     * @return A new List of Long values
+     */
+    static Iterator<Long> ofAll(long[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return new AbstractIterator<Long>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Long next() {
+                return array[i++];
+            }
+        };
+    }
+
+    /**
+     * Creates a List based on the elements of a short array.
+     *
+     * @param array a short array
+     * @return A new List of Short values
+     */
+    static Iterator<Short> ofAll(short[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return new AbstractIterator<Short>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Short next() {
+                return array[i++];
+            }
+        };
+    }
+
+    /**
+     * Creates a List of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.range(0, 0)  // = List()
+     * List.range(2, 0)  // = List()
+     * List.range(-2, 2) // = List(-2, -1, 0, 1)
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @return a range of int values as specified or the empty range if {@code from >= toExclusive}
+     */
+    static Iterator<Integer> range(int from, int toExclusive) {
+        return Iterator.rangeBy(from, toExclusive, 1);
+    }
+
+    /**
+     * Creates a List of int numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.rangeBy(1, 3, 1)  // = List(1, 2)
+     * List.rangeBy(1, 4, 2)  // = List(1, 3)
+     * List.rangeBy(4, 1, -2) // = List(4, 2)
+     * List.rangeBy(4, 1, 2)  // = List()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @param step        the step
+     * @return a range of long values as specified or the empty range if<br>
+     * {@code from >= toInclusive} and {@code step > 0} or<br>
+     * {@code from <= toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    static Iterator<Integer> rangeBy(int from, int toExclusive, int step) {
+        if (step == 0) {
+            throw new IllegalArgumentException("step cannot be 0");
+        } else if (from == toExclusive || step * (from - toExclusive) > 0) {
+            return Iterator.empty();
+        } else {
+            final int one = (from < toExclusive) ? 1 : -1;
+            return Iterator.rangeClosedBy(from, toExclusive - one, step);
+        }
+    }
+
+    /**
+     * Creates a List of long numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.range(0L, 0L)  // = List()
+     * List.range(2L, 0L)  // = List()
+     * List.range(-2L, 2L) // = List(-2L, -1L, 0L, 1L)
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @return a range of long values as specified or the empty range if {@code from >= toExclusive}
+     */
+    static Iterator<Long> range(long from, long toExclusive) {
+        return Iterator.rangeBy(from, toExclusive, 1);
+    }
+
+    /**
+     * Creates a List of long numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.rangeBy(1L, 3L, 1L)  // = List(1L, 2L)
+     * List.rangeBy(1L, 4L, 2L)  // = List(1L, 3L)
+     * List.rangeBy(4L, 1L, -2L) // = List(4L, 2L)
+     * List.rangeBy(4L, 1L, 2L)  // = List()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @param step        the step
+     * @return a range of long values as specified or the empty range if<br>
+     * {@code from >= toInclusive} and {@code step > 0} or<br>
+     * {@code from <= toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    static Iterator<Long> rangeBy(long from, long toExclusive, long step) {
+        if (step == 0) {
+            throw new IllegalArgumentException("step cannot be 0");
+        } else if (from == toExclusive || step * (from - toExclusive) > 0) {
+            return Iterator.empty();
+        } else {
+            final int one = (from < toExclusive) ? 1 : -1;
+            return Iterator.rangeClosedBy(from, toExclusive - one, step);
+        }
+    }
+
+    /**
+     * Creates a List of int numbers starting from {@code from}, extending to {@code toInclusive}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.rangeClosed(0, 0)  // = List(0)
+     * List.rangeClosed(2, 0)  // = List()
+     * List.rangeClosed(-2, 2) // = List(-2, -1, 0, 1, 2)
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @return a range of int values as specified or the empty range if {@code from > toInclusive}
+     */
+    static Iterator<Integer> rangeClosed(int from, int toInclusive) {
+        return Iterator.rangeClosedBy(from, toInclusive, 1);
+    }
+
+    /**
+     * Creates a List of int numbers starting from {@code from}, extending to {@code toInclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.rangeClosedBy(1, 3, 1)  // = List(1, 2, 3)
+     * List.rangeClosedBy(1, 4, 2)  // = List(1, 3)
+     * List.rangeClosedBy(4, 1, -2) // = List(4, 2)
+     * List.rangeClosedBy(4, 1, 2)  // = List()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @param step        the step
+     * @return a range of int values as specified or the empty range if<br>
+     * {@code from > toInclusive} and {@code step > 0} or<br>
+     * {@code from < toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    static Iterator<Integer> rangeClosedBy(int from, int toInclusive, int step) {
+        if (step == 0) {
+            throw new IllegalArgumentException("step cannot be 0");
+        } else if (from == toInclusive) {
+            return Iterator.of(from);
+        } else if (step * (from - toInclusive) > 0) {
+            return Iterator.empty();
+        } else {
+            return new AbstractIterator<Integer>() {
+
+                int i = from;
+                boolean hasNext = (step > 0) ? i <= toInclusive : i >= toInclusive;
+
+                @Override
+                public boolean hasNext() {
+                    return hasNext;
+                }
+
+                @Override
+                public Integer next() {
+                    if (!hasNext) {
+                        EMPTY.next();
+                    }
+                    final int next = i;
+                    if ((step > 0 && i > toInclusive - step) || (step < 0 && i < toInclusive - step)) {
+                        hasNext = false;
+                    } else {
+                        i += step;
+                    }
+                    return next;
+                }
+            };
+        }
+    }
+
+    /**
+     * Creates a List of long numbers starting from {@code from}, extending to {@code toInclusive}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.rangeClosed(0L, 0L)  // = List(0L)
+     * List.rangeClosed(2L, 0L)  // = List()
+     * List.rangeClosed(-2L, 2L) // = List(-2L, -1L, 0L, 1L, 2L)
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @return a range of long values as specified or the empty range if {@code from > toInclusive}
+     */
+    static Iterator<Long> rangeClosed(long from, long toInclusive) {
+        return Iterator.rangeClosedBy(from, toInclusive, 1L);
+    }
+
+    /**
+     * Creates a List of long numbers starting from {@code from}, extending to {@code toInclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.rangeClosedBy(1L, 3L, 1L)  // = List(1L, 2L, 3L)
+     * List.rangeClosedBy(1L, 4L, 2L)  // = List(1L, 3L)
+     * List.rangeClosedBy(4L, 1L, -2L) // = List(4L, 2L)
+     * List.rangeClosedBy(4L, 1L, 2L)  // = List()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @param step        the step
+     * @return a range of int values as specified or the empty range if<br>
+     * {@code from > toInclusive} and {@code step > 0} or<br>
+     * {@code from < toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    static Iterator<Long> rangeClosedBy(long from, long toInclusive, long step) {
+        if (step == 0) {
+            throw new IllegalArgumentException("step cannot be 0");
+        } else if (from == toInclusive) {
+            return Iterator.of(from);
+        } else if (step * (from - toInclusive) > 0) {
+            return Iterator.empty();
+        } else {
+            return new AbstractIterator<Long>() {
+
+                long i = from;
+                boolean hasNext = (step > 0) ? i <= toInclusive : i >= toInclusive;
+
+                @Override
+                public boolean hasNext() {
+                    return hasNext;
+                }
+
+                @Override
+                public Long next() {
+                    if (!hasNext) {
+                        EMPTY.next();
+                    }
+                    final long next = i;
+                    if ((step > 0 && i > toInclusive - step) || (step < 0 && i < toInclusive - step)) {
+                        hasNext = false;
+                    } else {
+                        i += step;
+                    }
+                    return next;
+                }
+            };
+        }
+    }
+
+    // TODO: add static factory methods similar to Stream.from, Stream.gen, ...
 
     @Override
     default Iterator<T> clear() {
@@ -295,7 +741,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new Iterator<T>() {
+            return new AbstractIterator<T>() {
 
                 int count = n;
 
@@ -358,7 +804,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new Iterator<T>() {
+            return new AbstractIterator<T>() {
 
                 private T next = null;
 
@@ -408,7 +854,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new Iterator<T>() {
+            return new AbstractIterator<T>() {
 
                 Option<T> next = None.instance();
 
@@ -450,19 +896,19 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
-     * FlatMaps the elements of this Iterator to Iterables, which are iterated in the order of occurrence.
+     * FlatMaps the elements of this Iterator to java.lang.Iterables, which are iterated in the order of occurrence.
      *
      * @param mapper A mapper
      * @param <U>    Component type
-     * @return A new Iterable
+     * @return A new java.lang.Iterable
      */
-    default <U> Iterator<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    default <U> Iterator<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (!hasNext()) {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new Iterator<U>() {
+            return new AbstractIterator<U>() {
 
                 final Iterator<? extends T> inputs = that;
                 java.util.Iterator<? extends U> current = Collections.emptyIterator();
@@ -485,12 +931,12 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
-     * FlatMaps the elements of this Iterable by effectively calling
+     * FlatMaps the elements of this java.lang.Iterable by effectively calling
      * <pre><code>flatMap((Function&lt;? super T, ? extends Iterator&lt;? extends U&gt;&gt;) mapper)</code></pre>
      *
      * @param mapper A mapper.
      * @param <U>    Component type
-     * @return A new Iterable
+     * @return A new java.lang.Iterable
      */
     @Override
     default <U> Iterator<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
@@ -507,7 +953,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         if (!hasNext()) {
             return empty();
         } else {
-            return flatMap(t -> () -> (t instanceof Iterable) ? ofAll((Iterable<?>) t).flatten() : of(t));
+            return flatMap(t -> () -> (t instanceof java.lang.Iterable) ? ofAll((java.lang.Iterable<?>) t).flatten() : of(t));
         }
     }
 
@@ -561,7 +1007,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new Iterator<T>() {
+            return new AbstractIterator<T>() {
 
                 boolean insertElement = false;
 
@@ -615,7 +1061,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new Iterator<U>() {
+            return new AbstractIterator<U>() {
 
                 @Override
                 public boolean hasNext() {
@@ -647,7 +1093,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new Iterator<T>() {
+            return new AbstractIterator<T>() {
                 @Override
                 public boolean hasNext() {
                     return that.hasNext();
@@ -678,7 +1124,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new Iterator<T>() {
+            return new AbstractIterator<T>() {
 
                 boolean done = false;
 
@@ -710,7 +1156,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new Iterator<T>() {
+            return new AbstractIterator<T>() {
 
                 @Override
                 public boolean hasNext() {
@@ -739,7 +1185,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new Iterator<T>() {
+            return new AbstractIterator<T>() {
 
                 @Override
                 public boolean hasNext() {
@@ -758,49 +1204,30 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     @Override
-    default Iterator<T> retainAll(Iterable<? extends T> elements) {
+    default Iterator<T> retainAll(java.lang.Iterable<? extends T> elements) {
         // TODO
         throw new UnsupportedOperationException("TODO");
     }
 
     @Override
-    default Iterator<Iterator<T>> sliding(int size) {
-        return sliding(size, 1);
-    }
-
-    @Override
-    default Iterator<Iterator<T>> sliding(int size, int step) {
+    default Iterator<IndexedSeq<T>> sliding(int size, int step) {
         if (size <= 0 || step <= 0) {
             throw new IllegalArgumentException(String.format("size: %s or step: %s not positive", size, step));
         }
         if (!hasNext()) {
             return empty();
+        } else {
+            // TODO (quick and dirty, need a real Iterator here) -->
+            List<T> list = List.ofAll(() -> this);
+            List<IndexedSeq<T>> result = List.empty();
+            while (!list.isEmpty()) {
+                final Tuple2<List<T>, List<T>> split = list.splitAt(size);
+                result = result.prepend(split._1.toVector());
+                list = split._2.isEmpty() ? List.Nil.instance() : list.drop(step);
+            }
+            return result.reverse().iterator();
+            // <-- TODO
         }
-        final Stream<T> source = toStream();
-        return new Iterator<Iterator<T>>() {
-            private Stream<T> stream = source;
-            private Iterator<T> next = null;
-
-            @Override
-            public boolean hasNext() {
-                if (next == null && !stream.isEmpty()) {
-                    final Tuple2<Stream<T>, Stream<T>> split = stream.splitAt(size);
-                    next = split._1.iterator();
-                    stream = split._2.isEmpty() ? Stream.empty() : step == size ? split._2 : stream.drop(step);
-                }
-                return next != null;
-            }
-
-            @Override
-            public Iterator<T> next() {
-                if (!hasNext()) {
-                    EMPTY.next();
-                }
-                final Iterator<T> result = next;
-                next = null;
-                return result;
-            }
-        };
     }
 
     @Override
@@ -854,7 +1281,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new Iterator<T>() {
+            return new AbstractIterator<T>() {
 
                 int count = n;
 
@@ -888,7 +1315,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new Iterator<T>() {
+            return new AbstractIterator<T>() {
 
                 private T next = null;
                 private boolean finished = false;
@@ -919,14 +1346,14 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         }
     }
 
-    default <U> Iterator<Tuple2<T, U>> zip(Iterable<U> that) {
+    default <U> Iterator<Tuple2<T, U>> zip(java.lang.Iterable<U> that) {
         Objects.requireNonNull(that, "that is null");
         if(isEmpty()) {
             return empty();
         } else {
             final Iterator<T> it1 = this;
             final java.util.Iterator<U> it2 = that.iterator();
-            return new Iterator<Tuple2<T, U>>() {
+            return new AbstractIterator<Tuple2<T, U>>() {
                 @Override
                 public boolean hasNext() {
                     return it1.hasNext() && it2.hasNext();
@@ -943,14 +1370,14 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         }
     }
 
-    default <U> Iterator<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
+    default <U> Iterator<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         if(isEmpty()) {
             return empty();
         } else {
             final Iterator<T> it1 = this;
             final java.util.Iterator<U> it2 = that.iterator();
-            return new Iterator<Tuple2<T, U>>() {
+            return new AbstractIterator<Tuple2<T, U>>() {
                 @Override
                 public boolean hasNext() {
                     return it1.hasNext() || it2.hasNext();
@@ -974,7 +1401,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             return empty();
         } else {
             final Iterator<T> it1 = this;
-            return new Iterator<Tuple2<T, Integer>>() {
+            return new AbstractIterator<Tuple2<T, Integer>>() {
                 private int index = 0;
                 @Override
                 public boolean hasNext() {
@@ -1002,7 +1429,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         }
     }
 
-    class ConcatIterator<T> implements Iterator<T> {
+    class ConcatIterator<T> extends AbstractIterator<T> {
 
         private final Iterator<? extends Iterator<? extends T>> iterators;
         private Iterator<? extends T> current;
@@ -1029,7 +1456,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         }
     }
 
-    class DistinctIterator<T, U> implements Iterator<T> {
+    class DistinctIterator<T, U> extends AbstractIterator<T> {
 
         private final Iterator<? extends T> that;
         Set<U> known;
@@ -1063,6 +1490,14 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             final T result = next;
             next = null;
             return result;
+        }
+    }
+
+    abstract class AbstractIterator<T> implements Iterator<T> {
+
+        @Override
+        public String toString() {
+            return (isEmpty() ? "" : "non-") + "empty iterator";
         }
     }
 }

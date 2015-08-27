@@ -5,8 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple2;
-import javaslang.Value;
+import javaslang.*;
 import javaslang.control.Option;
 
 import java.util.Comparator;
@@ -49,10 +48,10 @@ public interface SortedMap<K, V> extends Map<K, V> {
     SortedMap<K, V> filter(Predicate<? super Entry<K, V>> predicate);
 
     @Override
-    <U> Set<U> flatMap(Function<? super Entry<K, V>, ? extends Iterable<? extends U>> mapper);
+    <U> Set<U> flatMap(Function<? super Entry<K, V>, ? extends java.lang.Iterable<? extends U>> mapper);
 
     @Override
-    <U, W> SortedMap<U, W> flatMap2(BiFunction<? super K, ? super V, ? extends Iterable<? extends Entry<? extends U, ? extends W>>> mapper);
+    <U, W> SortedMap<U, W> flatMap2(BiFunction<? super K, ? super V, ? extends java.lang.Iterable<? extends Entry<? extends U, ? extends W>>> mapper);
 
     @Override
     <U> SortedSet<U> flatMapVal(Function<? super Entry<K, V>, ? extends Value<? extends U>> mapper);
@@ -106,7 +105,7 @@ public interface SortedMap<K, V> extends Map<K, V> {
     SortedMap<K, V> remove(K key);
 
     @Override
-    SortedMap<K, V> removeAll(Iterable<? extends K> keys);
+    SortedMap<K, V> removeAll(java.lang.Iterable<? extends K> keys);
 
     @Override
     SortedMap<K, V> replace(Entry<K, V> currentElement, Entry<K, V> newElement);
@@ -118,13 +117,7 @@ public interface SortedMap<K, V> extends Map<K, V> {
     SortedMap<K, V> replaceAll(UnaryOperator<Entry<K, V>> operator);
 
     @Override
-    SortedMap<K, V> retainAll(Iterable<? extends Entry<K, V>> elements);
-
-    @Override
-    Seq<? extends SortedMap<K, V>> sliding(int size);
-
-    @Override
-    Seq<? extends SortedMap<K, V>> sliding(int size, int step);
+    SortedMap<K, V> retainAll(java.lang.Iterable<? extends Entry<K, V>> elements);
 
     @Override
     Tuple2<? extends SortedMap<K, V>, ? extends SortedMap<K, V>> span(Predicate<? super Entry<K, V>> predicate);
@@ -154,10 +147,10 @@ public interface SortedMap<K, V> extends Map<K, V> {
     Seq<V> values();
 
     @Override
-    <U> SortedMap<Tuple2<K, V>, U> zip(Iterable<U> that);
+    <U> SortedMap<Tuple2<K, V>, U> zip(java.lang.Iterable<U> that);
 
     @Override
-    <U> SortedMap<Tuple2<K, V>, U> zipAll(Iterable<U> that, Entry<K, V> thisElem, U thatElem);
+    <U> SortedMap<Tuple2<K, V>, U> zipAll(java.lang.Iterable<U> that, Entry<K, V> thisElem, U thatElem);
 
     @Override
     SortedMap<Tuple2<K, V>, Integer> zipWithIndex();
