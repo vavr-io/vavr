@@ -1217,16 +1217,31 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         if (!hasNext()) {
             return empty();
         } else {
-            // TODO (quick and dirty, need a real Iterator here) -->
-            List<T> list = List.ofAll(() -> this);
-            List<IndexedSeq<T>> result = List.empty();
-            while (!list.isEmpty()) {
-                final Tuple2<List<T>, List<T>> split = list.splitAt(size);
-                result = result.prepend(split._1.toVector());
-                list = split._2.isEmpty() ? List.Nil.instance() : list.drop(step);
-            }
-            return result.reverse().iterator();
-            // <-- TODO
+            final Stream<T> source = Stream.ofAll(this);
+            return new AbstractIterator<IndexedSeq<T>>() {
+                private Stream<T> that = source;
+                private IndexedSeq<T> next = null;
+
+                @Override
+                public boolean hasNext() {
+                    while (next == null && !that.isEmpty()) {
+                        final Tuple2<Stream<T>, Stream<T>> split = that.splitAt(size);
+                        next = split._1.toVector();
+                        that = split._2.isEmpty() ? Stream.<T>empty() : that.drop(step);
+                    }
+                    return next != null;
+                }
+
+                @Override
+                public IndexedSeq<T> next() {
+                    if (!hasNext()) {
+                        EMPTY.next();
+                    }
+                    final IndexedSeq<T> result = next;
+                    next = null;
+                    return result;
+                }
+            };
         }
     }
 
