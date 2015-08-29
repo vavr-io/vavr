@@ -585,6 +585,12 @@ public interface Stack<T> extends LinearSeq<T> {
     Stack<T> set(int index, T element);
 
     @Override
+    Stack<T> slice(int beginIndex);
+
+    @Override
+    Stack<T> slice(int beginIndex, int endIndex);
+
+    @Override
     Stack<T> sort();
 
     @Override
@@ -601,12 +607,6 @@ public interface Stack<T> extends LinearSeq<T> {
 
     @Override
     Tuple2<? extends Stack<T>, ? extends Stack<T>> splitAtInclusive(Predicate<? super T> predicate);
-
-    @Override
-    Stack<T> subSequence(int beginIndex);
-
-    @Override
-    Stack<T> subSequence(int beginIndex, int endIndex);
 
     @Override
     Stack<T> tail();

@@ -1101,7 +1101,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> subSequence(int beginIndex) {
+    default Stream<T> slice(int beginIndex) {
         if (beginIndex < 0) {
             throw new IndexOutOfBoundsException("subsequence(" + beginIndex + ")");
         }
@@ -1115,7 +1115,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    Stream<T> subSequence(int beginIndex, int endIndex);
+    Stream<T> slice(int beginIndex, int endIndex);
 
     @Override
     Stream<T> tail();
@@ -1381,7 +1381,7 @@ public interface Stream<T> extends LinearSeq<T> {
         }
 
         @Override
-        public Stream<T> subSequence(int beginIndex, int endIndex) {
+        public Stream<T> slice(int beginIndex, int endIndex) {
             if (beginIndex < 0 || beginIndex > endIndex) {
                 throw new IndexOutOfBoundsException(String.format("subsequence(%s, %s)", beginIndex, endIndex));
             }
@@ -1389,9 +1389,9 @@ public interface Stream<T> extends LinearSeq<T> {
                 return Nil.instance();
             }
             if (beginIndex == 0) {
-                return new Cons<>(head, () -> tail().subSequence(0, endIndex - 1));
+                return new Cons<>(head, () -> tail().slice(0, endIndex - 1));
             } else {
-                return tail().subSequence(beginIndex - 1, endIndex - 1);
+                return tail().slice(beginIndex - 1, endIndex - 1);
             }
         }
 
@@ -1719,7 +1719,7 @@ public interface Stream<T> extends LinearSeq<T> {
         }
 
         @Override
-        public Stream<T> subSequence(int beginIndex, int endIndex) {
+        public Stream<T> slice(int beginIndex, int endIndex) {
             if (beginIndex < 0 || beginIndex > endIndex) {
                 throw new IndexOutOfBoundsException(String.format("subsequence(%s, %s)", beginIndex, endIndex));
             }

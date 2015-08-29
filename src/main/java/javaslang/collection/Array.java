@@ -322,12 +322,12 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> subSequence(int beginIndex) {
+    public Array<T> slice(int beginIndex) {
         throw new UnsupportedOperationException("TODO");
     }
 
     @Override
-    public Array<T> subSequence(int beginIndex, int endIndex) {
+    public Array<T> slice(int beginIndex, int endIndex) {
         throw new UnsupportedOperationException("TODO");
     }
 

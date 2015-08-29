@@ -906,119 +906,119 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
         assertThat(of(1, 2, 3).removeAt(5)).isEqualTo(of(1, 2, 3));
     }
 
-    // -- subsequence(beginIndex)
+    // -- slice(beginIndex)
 
     @Test
-    public void shouldReturnNilWhenSubsequenceFrom0OnNil() {
-        final Seq<Integer> actual = this.<Integer> empty().subSequence(0);
+    public void shouldReturnNilWhenSliceFrom0OnNil() {
+        final Seq<Integer> actual = this.<Integer> empty().slice(0);
         assertThat(actual).isEqualTo(empty());
     }
 
     @Test
-    public void shouldReturnIdentityWhenSubsequenceFrom0OnNonNil() {
-        final Seq<Integer> actual = of(1).subSequence(0);
+    public void shouldReturnIdentityWhenSliceFrom0OnNonNil() {
+        final Seq<Integer> actual = of(1).slice(0);
         assertThat(actual).isEqualTo(of(1));
     }
 
     @Test
-    public void shouldReturnNilWhenSubsequenceFrom1OnSeqOf1() {
-        final Seq<Integer> actual = of(1).subSequence(1);
+    public void shouldReturnNilWhenSliceFrom1OnSeqOf1() {
+        final Seq<Integer> actual = of(1).slice(1);
         assertThat(actual).isEqualTo(empty());
     }
 
     @Test
-    public void shouldReturnSubsequenceWhenIndexIsWithinRange() {
-        final Seq<Integer> actual = of(1, 2, 3).subSequence(1);
+    public void shouldReturnSliceWhenIndexIsWithinRange() {
+        final Seq<Integer> actual = of(1, 2, 3).slice(1);
         assertThat(actual).isEqualTo(of(2, 3));
     }
 
     @Test
-    public void shouldReturnNilWhenSubsequenceBeginningWithSize() {
-        final Seq<Integer> actual = of(1, 2, 3).subSequence(3);
+    public void shouldReturnNilWhenSliceBeginningWithSize() {
+        final Seq<Integer> actual = of(1, 2, 3).slice(3);
         assertThat(actual).isEqualTo(empty());
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowWhenSubsequenceOnNil() {
-        empty().subSequence(1);
+    public void shouldThrowWhenSliceOnNil() {
+        empty().slice(1);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowWhenSubsequenceWithOutOfLowerBound() {
-        of(1, 2, 3).subSequence(-1);
+    public void shouldThrowWhenSliceWithOutOfLowerBound() {
+        of(1, 2, 3).slice(-1);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowWhenSubsequenceWithOutOfUpperBound() {
-        of(1, 2, 3).subSequence(4);
+    public void shouldThrowWhenSliceWithOutOfUpperBound() {
+        of(1, 2, 3).slice(4);
     }
 
-    // -- subsequence(beginIndex, endIndex)
+    // -- slice(beginIndex, endIndex)
 
     @Test
-    public void shouldReturnNilWhenSubsequenceFrom0To0OnNil() {
-        final Seq<Integer> actual = this.<Integer> empty().subSequence(0, 0);
+    public void shouldReturnNilWhenSliceFrom0To0OnNil() {
+        final Seq<Integer> actual = this.<Integer> empty().slice(0, 0);
         assertThat(actual).isEqualTo(empty());
     }
 
     @Test
-    public void shouldReturnNilWhenSubsequenceFrom0To0OnNonNil() {
-        final Seq<Integer> actual = of(1).subSequence(0, 0);
+    public void shouldReturnNilWhenSliceFrom0To0OnNonNil() {
+        final Seq<Integer> actual = of(1).slice(0, 0);
         assertThat(actual).isEqualTo(empty());
     }
 
     @Test
-    public void shouldReturnSeqWithFirstElementWhenSubsequenceFrom0To1OnNonNil() {
-        final Seq<Integer> actual = of(1).subSequence(0, 1);
+    public void shouldReturnSeqWithFirstElementWhenSliceFrom0To1OnNonNil() {
+        final Seq<Integer> actual = of(1).slice(0, 1);
         assertThat(actual).isEqualTo(of(1));
     }
 
     @Test
-    public void shouldReturnNilWhenSubsequenceFrom1To1OnNonNil() {
-        final Seq<Integer> actual = of(1).subSequence(1, 1);
+    public void shouldReturnNilWhenSliceFrom1To1OnNonNil() {
+        final Seq<Integer> actual = of(1).slice(1, 1);
         assertThat(actual).isEqualTo(empty());
     }
 
     @Test
-    public void shouldReturnSubsequenceWhenIndicesAreWithinRange() {
-        final Seq<Integer> actual = of(1, 2, 3).subSequence(1, 3);
+    public void shouldReturnSliceWhenIndicesAreWithinRange() {
+        final Seq<Integer> actual = of(1, 2, 3).slice(1, 3);
         assertThat(actual).isEqualTo(of(2, 3));
     }
 
     @Test
     public void shouldReturnNilWhenIndicesBothAreUpperBound() {
-        final Seq<Integer> actual = of(1, 2, 3).subSequence(3, 3);
+        final Seq<Integer> actual = of(1, 2, 3).slice(3, 3);
         assertThat(actual).isEqualTo(empty());
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowOnSubsequenceOnNonNilWhenBeginIndexIsGreaterThanEndIndex() {
-        of(1, 2, 3).subSequence(1, 0);
+    public void shouldThrowOnSliceOnNonNilWhenBeginIndexIsGreaterThanEndIndex() {
+        of(1, 2, 3).slice(1, 0);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowOnSubsequenceOnNilWhenBeginIndexIsGreaterThanEndIndex() {
-        empty().subSequence(1, 0);
+    public void shouldThrowOnSliceOnNilWhenBeginIndexIsGreaterThanEndIndex() {
+        empty().slice(1, 0);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowOnSubsequenceOnNonNilWhenBeginIndexExceedsLowerBound() {
-        of(1, 2, 3).subSequence(-1, 2);
+    public void shouldThrowOnSliceOnNonNilWhenBeginIndexExceedsLowerBound() {
+        of(1, 2, 3).slice(-1, 2);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowOnSubsequenceOnNilWhenBeginIndexExceedsLowerBound() {
-        empty().subSequence(-1, 2);
+    public void shouldThrowOnSliceOnNilWhenBeginIndexExceedsLowerBound() {
+        empty().slice(-1, 2);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowWhenSubsequence2OnNil() {
-        empty().subSequence(0, 1);
+    public void shouldThrowWhenSlice2OnNil() {
+        empty().slice(0, 1);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowOnSubsequenceWhenEndIndexExceedsUpperBound() {
-        of(1, 2, 3).subSequence(1, 4).mkString(); // force computation of last element, e.g. because Stream is lazy
+    public void shouldThrowOnSliceWhenEndIndexExceedsUpperBound() {
+        of(1, 2, 3).slice(1, 4).mkString(); // force computation of last element, e.g. because Stream is lazy
     }
 
     // -- unzip

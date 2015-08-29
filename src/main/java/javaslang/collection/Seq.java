@@ -55,8 +55,8 @@ import java.util.function.*;
  * <li>{@link #indexOf(Object, int)}</li>
  * <li>{@link #lastIndexOf(Object)}</li>
  * <li>{@link #lastIndexOf(Object, int)}</li>
- * <li>{@link #subSequence(int)}</li>
- * <li>{@link #subSequence(int, int)}</li>
+ * <li>{@link #slice(int)}</li>
+ * <li>{@link #slice(int, int)}</li>
  * </ul>
  *
  * Transformation:
@@ -233,7 +233,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      *
      * @param that the sequence to test
      * @return the first index such that the elements of this sequence starting at this index match
-     * the elements of sequence that, or -1 of no such subsequence exists.
+     * the elements of sequence that, or -1 of no such slice exists.
      * @throws NullPointerException if {@code that} is null.
      */
     default int indexOfSlice(java.lang.Iterable<? extends T> that) {
@@ -249,7 +249,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * @param that the sequence to test
      * @param from the start index
      * @return the first index &gt;= from such that the elements of this sequence starting at this index match
-     * the elements of sequence that, or -1 of no such subsequence exists.
+     * the elements of sequence that, or -1 of no such slice exists.
      * @throws NullPointerException if {@code that} is null.
      */
     default int indexOfSlice(java.lang.Iterable<? extends T> that, int from) {
@@ -309,14 +309,14 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
 
     /**
      * Returns an iterator of this elements starting at the given index.
-     * The result is equivalent to {@code this.subsequence(index).iterator()}.
+     * The result is equivalent to {@code this.slice(index).iterator()}.
      *
      * @param index an index
      * @return a new Iterator, starting with the element at the given index or the empty Iterator, if index = length()
      * @throws IndexOutOfBoundsException if index &lt; 0 or index &gt; length()
      */
     default Iterator<T> iterator(int index) {
-        return subSequence(index).iterator();
+        return slice(index).iterator();
     }
 
     /**
@@ -346,7 +346,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      *
      * @param that the sequence to test
      * @return the last index such that the elements of this sequence starting a this index match the elements
-     * of sequence that, or -1 of no such subsequence exists.
+     * of sequence that, or -1 of no such slice exists.
      * @throws NullPointerException if {@code that} is null.
      */
     default int lastIndexOfSlice(java.lang.Iterable<? extends T> that) {
@@ -360,7 +360,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * @param that the sequence to test
      * @param end  the end index
      * @return the last index &lt;= end such that the elements of this sequence starting at this index match
-     * the elements of sequence that, or -1 of no such subsequence exists.
+     * the elements of sequence that, or -1 of no such slice exists.
      * @throws NullPointerException if {@code that} is null.
      */
     default int lastIndexOfSlice(java.lang.Iterable<? extends T> that, int end) {
@@ -523,6 +523,49 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     Seq<T> set(int index, T element);
 
     /**
+     * <p>Returns a Seq that is a slice of this. The slice begins with the element at the specified index
+     * and extends to the end of this Seq.</p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.of(1, 2).slice(0) = List.of(1, 2)
+     * List.of(1, 2).slice(1) = List.of(2)
+     * List.of(1, 2).slice(2) = List.empty()
+     * </code>
+     * </pre>
+     *
+     * @param beginIndex the beginning index, inclusive
+     * @return the specified slice
+     * @throws IndexOutOfBoundsException if {@code beginIndex} is negative or larger than the length of this
+     *                                   {@code String} object.
+     */
+    Seq<T> slice(int beginIndex);
+
+    /**
+     * <p>Returns a Seq that is a slice of this. The slice begins with the element at the specified index
+     * and extends to the element at index {@code endIndex - 1}.</p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.of(1, 2, 3, 4).slice(1, 3) = List.of(2, 3)
+     * List.of(1, 2, 3, 4).slice(0, 4) = List.of(1, 2, 3, 4)
+     * List.of(1, 2, 3, 4).slice(2, 2) = List.empty()
+     * </code>
+     * </pre>
+     *
+     * @param beginIndex the beginning index, inclusive
+     * @param endIndex   the end index, exclusive
+     * @return the specified slice
+     * @throws IndexOutOfBoundsException if the
+     *                                   {@code beginIndex} is negative, or
+     *                                   {@code endIndex} is larger than the length of
+     *                                   this {@code String} object, or
+     *                                   {@code beginIndex} is larger than
+     *                                   {@code endIndex}.
+     */
+    Seq<T> slice(int beginIndex, int endIndex);
+
+    /**
      * Sorts this elements according to their natural order. If this elements are not
      * {@code Comparable}, a {@code java.lang.ClassCastException} may be thrown.
      *
@@ -564,49 +607,6 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * @return A {@link Tuple} containing divided sequences
      */
     Tuple2<? extends Seq<T>, ? extends Seq<T>> splitAtInclusive(Predicate<? super T> predicate);
-
-    /**
-     * <p>Returns a Seq that is a subsequence of this. The subsequence begins with the element at the specified index
-     * and extends to the end of this Seq.</p>
-     * Examples:
-     * <pre>
-     * <code>
-     * List.of(1, 2).subSequence(0) = List.of(1, 2)
-     * List.of(1, 2).subSequence(1) = List.of(2)
-     * List.of(1, 2).subSequence(2) = List.empty()
-     * </code>
-     * </pre>
-     *
-     * @param beginIndex the beginning index, inclusive
-     * @return the specified subsequence
-     * @throws IndexOutOfBoundsException if {@code beginIndex} is negative or larger than the length of this
-     *                                   {@code String} object.
-     */
-    Seq<T> subSequence(int beginIndex);
-
-    /**
-     * <p>Returns a Seq that is a subsequence of this. The subsequence begins with the element at the specified index
-     * and extends to the element at index {@code endIndex - 1}.</p>
-     * Examples:
-     * <pre>
-     * <code>
-     * List.of(1, 2, 3, 4).subSequence(1, 3) = List.of(2, 3)
-     * List.of(1, 2, 3, 4).subSequence(0, 4) = List.of(1, 2, 3, 4)
-     * List.of(1, 2, 3, 4).subSequence(2, 2) = List.empty()
-     * </code>
-     * </pre>
-     *
-     * @param beginIndex the beginning index, inclusive
-     * @param endIndex   the end index, exclusive
-     * @return the specified subsequence
-     * @throws IndexOutOfBoundsException if the
-     *                                   {@code beginIndex} is negative, or
-     *                                   {@code endIndex} is larger than the length of
-     *                                   this {@code String} object, or
-     *                                   {@code beginIndex} is larger than
-     *                                   {@code endIndex}.
-     */
-    Seq<T> subSequence(int beginIndex, int endIndex);
 
     /**
      * Creates an instance of this type of an {@code java.lang.Iterable}.

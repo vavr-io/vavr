@@ -1100,6 +1100,33 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
+    public Vector<T> slice(int beginIndex) {
+        if (beginIndex < 0) {
+            throw new IndexOutOfBoundsException("slice(" + beginIndex + ")");
+        }
+        if (beginIndex > length()) {
+            throw new IndexOutOfBoundsException("slice(" + beginIndex + ")");
+        }
+        return drop(beginIndex);
+    }
+
+    @Override
+    public Vector<T> slice(int beginIndex, int endIndex) {
+        if (beginIndex < 0 || beginIndex > endIndex || endIndex > length()) {
+            throw new IndexOutOfBoundsException(
+                    String.format("slice(%s, %s) on List of length %s", beginIndex, endIndex, length()));
+        }
+        if (beginIndex == endIndex) {
+            return Vector.empty();
+        }
+        HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
+        for (int i = beginIndex; i < endIndex; i++) {
+            trie = trie.put(trie.size(), get(i));
+        }
+        return trie.size() == 0 ? empty() : new Vector<>(trie);
+    }
+
+    @Override
     public Vector<T> sort() {
         return isEmpty() ? this : toJavaStream().sorted().collect(Vector.collector());
     }
@@ -1148,33 +1175,6 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     @Override
     public Spliterator<T> spliterator() {
         return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
-    }
-
-    @Override
-    public Vector<T> subSequence(int beginIndex) {
-        if (beginIndex < 0) {
-            throw new IndexOutOfBoundsException("subsequence(" + beginIndex + ")");
-        }
-        if (beginIndex > length()) {
-            throw new IndexOutOfBoundsException("subsequence(" + beginIndex + ")");
-        }
-        return drop(beginIndex);
-    }
-
-    @Override
-    public Vector<T> subSequence(int beginIndex, int endIndex) {
-        if (beginIndex < 0 || beginIndex > endIndex || endIndex > length()) {
-            throw new IndexOutOfBoundsException(
-                    String.format("subsequence(%s, %s) on List of length %s", beginIndex, endIndex, length()));
-        }
-        if (beginIndex == endIndex) {
-            return Vector.empty();
-        }
-        HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
-        for (int i = beginIndex; i < endIndex; i++) {
-            trie = trie.put(trie.size(), get(i));
-        }
-        return trie.size() == 0 ? empty() : new Vector<>(trie);
     }
 
     @Override
