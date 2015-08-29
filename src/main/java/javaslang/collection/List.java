@@ -1386,6 +1386,27 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
             }
         }
 
+        @Override
+        public boolean startsWidth(Iterable<? extends T> that, int offset) {
+            if (offset > 0) {
+                if (offset > length()) {
+                    return false;
+                } else {
+                    return drop(offset).startsWidth(that);
+                }
+            }
+            final java.util.Iterator<? extends T> it = that.iterator();
+            List<T> list = this;
+            while (it.hasNext() && !list.isEmpty()) {
+                if (Objects.equals(it.next(), list.head())) {
+                    list = list.tail();
+                } else {
+                    return false;
+                }
+            }
+            return !it.hasNext();
+        }
+
         private static <T> Tuple2<List<T>, List<T>> splitByPredicateReversed(List<T> source, Predicate<? super T> predicate) {
             Objects.requireNonNull(predicate, "predicate is null");
             List<T> init = Nil.instance();
@@ -1664,6 +1685,11 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         @Override
         public Tuple2<List<T>, List<T>> splitAtInclusive(Predicate<? super T> predicate) {
             return Tuple.of(empty(), empty());
+        }
+
+        @Override
+        public boolean startsWidth(Iterable<? extends T> that, int offset) {
+            return offset == 0 && !that.iterator().hasNext();
         }
 
         @Override

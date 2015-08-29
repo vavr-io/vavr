@@ -11,6 +11,7 @@ import javaslang.control.Option;
 import javaslang.control.Some;
 
 import java.io.*;
+import java.lang.Iterable;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
@@ -1396,6 +1397,27 @@ public interface Stream<T> extends LinearSeq<T> {
         }
 
         @Override
+        public boolean startsWidth(java.lang.Iterable<? extends T> that, int offset) {
+            if (offset > 0) {
+                if (offset >= length()) {
+                    throw new IndexOutOfBoundsException("startsWidth(" + this + ", " + offset + ")");
+                } else {
+                    return drop(offset).startsWidth(that);
+                }
+            }
+            final java.util.Iterator<? extends T> it = that.iterator();
+            Stream<T> stream = this;
+            while (it.hasNext() && !stream.isEmpty()) {
+                if (Objects.equals(it.next(), stream.head())) {
+                    stream = stream.tail();
+                } else {
+                    return false;
+                }
+            }
+            return !it.hasNext();
+        }
+
+        @Override
         public Stream<T> tail() {
             return tail.get();
         }
@@ -1727,6 +1749,11 @@ public interface Stream<T> extends LinearSeq<T> {
                 return this;
             }
             throw new IndexOutOfBoundsException("subsequence of Nil");
+        }
+
+        @Override
+        public boolean startsWidth(Iterable<? extends T> that, int offset) {
+            return offset == 0 && !that.iterator().hasNext();
         }
 
         @Override

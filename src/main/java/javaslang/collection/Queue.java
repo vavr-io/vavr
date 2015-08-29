@@ -11,6 +11,7 @@ import javaslang.control.Option;
 import javaslang.control.Some;
 
 import java.io.Serializable;
+import java.lang.Iterable;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
@@ -915,6 +916,11 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     @Override
     public Tuple2<Queue<T>, Queue<T>> splitAtInclusive(Predicate<? super T> predicate) {
         return toList().splitAtInclusive(predicate).map(List::toQueue, List::toQueue);
+    }
+
+    @Override
+    public boolean startsWidth(Iterable<? extends T> that, int offset) {
+        return toList().startsWidth(that, offset);
     }
 
     @Override

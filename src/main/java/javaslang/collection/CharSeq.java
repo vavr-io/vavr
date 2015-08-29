@@ -12,6 +12,7 @@ import javaslang.control.Some;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.lang.Iterable;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.HashSet;
@@ -859,6 +860,11 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         } else {
             return Tuple.of(of(left.toString()), of(back.substring(left.length())));
         }
+    }
+
+    @Override
+    public boolean startsWidth(Iterable<? extends Character> that, int offset) {
+        return startsWith(CharSeq.ofAll(that), offset);
     }
 
     @Override

@@ -9,6 +9,7 @@ import javaslang.*;
 import javaslang.control.Option;
 
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -163,6 +164,21 @@ public interface IndexedSeq<T> extends Seq<T> {
 
     @Override
     Tuple2<? extends IndexedSeq<T>, ? extends IndexedSeq<T>> span(Predicate<? super T> predicate);
+
+    @Override
+    default boolean startsWidth(java.lang.Iterable<? extends T> that, int offset) {
+        if (offset > length()) {
+            return false;
+        }
+        int index = offset;
+        for (T t : that) {
+            if (index >= length() || !Objects.equals(get(index), t)) {
+                return false;
+            }
+            index++;
+        }
+        return true;
+    }
 
     @Override
     IndexedSeq<T> tail();

@@ -5,9 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Value;
+import javaslang.*;
 import javaslang.control.Option;
 
 import java.util.Comparator;
@@ -607,6 +605,27 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * @return A {@link Tuple} containing divided sequences
      */
     Tuple2<? extends Seq<T>, ? extends Seq<T>> splitAtInclusive(Predicate<? super T> predicate);
+
+    /**
+     * Tests whether this list starts with the given sequence.
+     *
+     * @param that the sequence to test
+     * @return true if this collection has that as a prefix, false otherwise.
+     */
+    default boolean startsWidth(java.lang.Iterable<? extends T> that) {
+        return startsWidth(that, 0);
+    }
+
+    /**
+     * Tests whether this list contains the given sequence at a given index.
+     * <p>
+     * Note: If the both the receiver object this and the argument that are infinite sequences this method may not terminate.
+     *
+     * @param that the sequence to test
+     * @param offset the index where the sequence is searched.
+     * @return true if the sequence that is contained in this list at index offset, otherwise false.
+     */
+    boolean startsWidth(java.lang.Iterable<? extends T> that, int offset);
 
     /**
      * Creates an instance of this type of an {@code java.lang.Iterable}.
