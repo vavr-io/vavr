@@ -776,6 +776,11 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
+    public Queue<T> padTo(int length, T element) {
+        return toList().padTo(length, element).toQueue();
+    }
+
+    @Override
     public Tuple2<Queue<T>, Queue<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return toList().partition(predicate).map(List::toQueue, List::toQueue);

@@ -17,7 +17,6 @@ import java.util.function.Function;
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
 
-// TODO java.lang.StringTest, AbstractValueTest
 public class CharSeqTest {
 
     protected <T> IterableAssert<T> assertThat(java.lang.Iterable<T> actual) {
@@ -81,6 +80,27 @@ public class CharSeqTest {
     @Test
     public void shouldBeAwareOfPropertyThatNotHoldsForAll() {
         assertThat(CharSeq.of('2', '3').forAll(i -> i % 2 == 0)).isFalse();
+    }
+
+    // -- padTo
+
+    public void shouldPadEmptyToEmpty() {
+        assertThat(empty().padTo(0, 'a')).isSameAs(empty());
+    }
+
+    public void shouldPadEmptyToNonEmpty() {
+        assertThat(empty().padTo(2, 'a')).isEqualTo(CharSeq.of('a', 'a'));
+    }
+
+    public void shouldPadNonEmptyZeroLen() {
+        CharSeq seq = CharSeq.of('a');
+        assertThat(seq.padTo(0, 'b')).isSameAs(seq);
+    }
+
+    public void shouldPadNonEmpty() {
+        assertThat(CharSeq.of('a').padTo(2, 'a')).isEqualTo(CharSeq.of('a', 'a'));
+        assertThat(CharSeq.of('a').padTo(2, 'b')).isEqualTo(CharSeq.of('a', 'b'));
+        assertThat(CharSeq.of('a').padTo(3, 'b')).isEqualTo(CharSeq.of('a', 'b', 'b'));
     }
 
     // -- peek
@@ -1011,6 +1031,53 @@ public class CharSeqTest {
     @Test
     public void shouldReturnSizeWhenSpliterator() {
         assertThat(CharSeq.of('1', '2', '3').spliterator().getExactSizeIfKnown()).isEqualTo(3);
+    }
+
+    // -- startsWith
+
+    @Test
+    public void shouldStartsNilOfNilCalculate() {
+        assertThat(empty().startsWith(empty())).isTrue();
+    }
+
+    @Test
+    public void shouldStartsNilOfNonNilCalculate() {
+        assertThat(empty().startsWith(CharSeq.of('a'))).isFalse();
+    }
+
+    @Test
+    public void shouldStartsNilOfNilWithOffsetCalculate() {
+        assertThat(empty().startsWith(empty(), 1)).isFalse();
+    }
+
+    @Test
+    public void shouldStartsNilOfNonNilWithOffsetCalculate() {
+        assertThat(empty().startsWith(CharSeq.of('a'), 1)).isFalse();
+    }
+
+    @Test
+    public void shouldStartsNonNilOfNilCalculate() {
+        assertThat(CharSeq.of('a', 'b', 'c').startsWith(empty())).isTrue();
+    }
+
+    @Test
+    public void shouldStartsNonNilOfNonNilCalculate() {
+        assertThat(CharSeq.of('a', 'b', 'c').startsWith(CharSeq.of('a', 'b'))).isTrue();
+        assertThat(CharSeq.of('a', 'b', 'c').startsWith(CharSeq.of('a', 'b', 'c'))).isTrue();
+        assertThat(CharSeq.of('a', 'b', 'c').startsWith(CharSeq.of('a', 'b', 'c', 'd'))).isFalse();
+        assertThat(CharSeq.of('a', 'b', 'c').startsWith(CharSeq.of('a', 'c'))).isFalse();
+    }
+
+    @Test
+    public void shouldStartsNonNilOfNilWithOffsetCalculate() {
+        assertThat(CharSeq.of('a', 'b', 'c').startsWith(empty(), 1)).isTrue();
+    }
+
+    @Test
+    public void shouldStartsNonNilOfNonNilWithOffsetCalculate() {
+        assertThat(CharSeq.of('a', 'b', 'c').startsWith(CharSeq.of('b', 'c'), 1)).isTrue();
+        assertThat(CharSeq.of('a', 'b', 'c').startsWith(CharSeq.of('b', 'c', 'd'), 1)).isFalse();
+        assertThat(CharSeq.of('a', 'b', 'c').startsWith(CharSeq.of('b', 'd'), 1)).isFalse();
     }
 
     // -- stderr

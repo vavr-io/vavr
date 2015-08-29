@@ -931,6 +931,15 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
+    default Stream<T> padTo(int length, T element) {
+        if(length == 0) {
+            return this;
+        } else {
+            return appendAll(Stream.gen(() -> element).take(length));
+        }
+    }
+
+    @Override
     default Tuple2<Stream<T>, Stream<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return Tuple.of(filter(predicate), filter(predicate.negate()));

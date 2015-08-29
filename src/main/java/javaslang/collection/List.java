@@ -856,6 +856,15 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
+    default List<T> padTo(int length, T element) {
+        if(length == 0) {
+            return this;
+        } else {
+            return appendAll(Stream.gen(() -> element).take(length));
+        }
+    }
+
+    @Override
     default Tuple2<List<T>, List<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final java.util.List<T> left = new ArrayList<>(), right = new ArrayList<>();
