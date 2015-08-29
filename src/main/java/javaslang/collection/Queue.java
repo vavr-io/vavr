@@ -919,8 +919,8 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public boolean startsWidth(Iterable<? extends T> that, int offset) {
-        return toList().startsWidth(that, offset);
+    public boolean startsWith(Iterable<? extends T> that, int offset) {
+        return toList().startsWith(that, offset);
     }
 
     @Override

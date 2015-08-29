@@ -166,7 +166,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     Tuple2<? extends IndexedSeq<T>, ? extends IndexedSeq<T>> span(Predicate<? super T> predicate);
 
     @Override
-    default boolean startsWidth(java.lang.Iterable<? extends T> that, int offset) {
+    default boolean startsWith(java.lang.Iterable<? extends T> that, int offset) {
         if (offset > length()) {
             return false;
         }
