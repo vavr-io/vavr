@@ -863,7 +863,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public boolean startsWidth(Iterable<? extends Character> that, int offset) {
+    public boolean startsWith(Iterable<? extends Character> that, int offset) {
         return startsWith(CharSeq.ofAll(that), offset);
     }
 

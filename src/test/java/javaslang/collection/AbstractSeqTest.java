@@ -874,51 +874,51 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
         assertThat(of(1, 2, 3).splitAtInclusive(e -> e == 5)).isEqualTo(Tuple.of(of(1, 2, 3), empty()));
     }
 
-    // -- startsWidth
+    // -- startsWith
 
     @Test
     public void shouldStartsNilOfNilCalculate() {
-        assertThat(empty().startsWidth(empty())).isTrue();
+        assertThat(empty().startsWith(empty())).isTrue();
     }
 
     @Test
     public void shouldStartsNilOfNonNilCalculate() {
-        assertThat(empty().startsWidth(of(1))).isFalse();
+        assertThat(empty().startsWith(of(1))).isFalse();
     }
 
     @Test
     public void shouldStartsNilOfNilWithOffsetCalculate() {
-        assertThat(empty().startsWidth(empty(), 1)).isFalse();
+        assertThat(empty().startsWith(empty(), 1)).isFalse();
     }
 
     @Test
     public void shouldStartsNilOfNonNilWithOffsetCalculate() {
-        assertThat(empty().startsWidth(of(1), 1)).isFalse();
+        assertThat(empty().startsWith(of(1), 1)).isFalse();
     }
 
     @Test
     public void shouldStartsNonNilOfNilCalculate() {
-        assertThat(of(1, 2, 3).startsWidth(empty())).isTrue();
+        assertThat(of(1, 2, 3).startsWith(empty())).isTrue();
     }
 
     @Test
     public void shouldStartsNonNilOfNonNilCalculate() {
-        assertThat(of(1, 2, 3).startsWidth(of(1, 2))).isTrue();
-        assertThat(of(1, 2, 3).startsWidth(of(1, 2, 3))).isTrue();
-        assertThat(of(1, 2, 3).startsWidth(of(1, 2, 3, 4))).isFalse();
-        assertThat(of(1, 2, 3).startsWidth(of(1, 3))).isFalse();
+        assertThat(of(1, 2, 3).startsWith(of(1, 2))).isTrue();
+        assertThat(of(1, 2, 3).startsWith(of(1, 2, 3))).isTrue();
+        assertThat(of(1, 2, 3).startsWith(of(1, 2, 3, 4))).isFalse();
+        assertThat(of(1, 2, 3).startsWith(of(1, 3))).isFalse();
     }
 
     @Test
     public void shouldStartsNonNilOfNilWithOffsetCalculate() {
-        assertThat(of(1, 2, 3).startsWidth(empty(), 1)).isTrue();
+        assertThat(of(1, 2, 3).startsWith(empty(), 1)).isTrue();
     }
 
     @Test
     public void shouldStartsNonNilOfNonNilWithOffsetCalculate() {
-        assertThat(of(1, 2, 3).startsWidth(of(2, 3), 1)).isTrue();
-        assertThat(of(1, 2, 3).startsWidth(of(2, 3, 4), 1)).isFalse();
-        assertThat(of(1, 2, 3).startsWidth(of(2, 4), 1)).isFalse();
+        assertThat(of(1, 2, 3).startsWith(of(2, 3), 1)).isTrue();
+        assertThat(of(1, 2, 3).startsWith(of(2, 3, 4), 1)).isFalse();
+        assertThat(of(1, 2, 3).startsWith(of(2, 4), 1)).isFalse();
     }
 
     // -- removeAt(index)

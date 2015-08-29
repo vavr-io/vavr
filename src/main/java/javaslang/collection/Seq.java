@@ -612,8 +612,8 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * @param that the sequence to test
      * @return true if this collection has that as a prefix, false otherwise.
      */
-    default boolean startsWidth(java.lang.Iterable<? extends T> that) {
-        return startsWidth(that, 0);
+    default boolean startsWith(java.lang.Iterable<? extends T> that) {
+        return startsWith(that, 0);
     }
 
     /**
@@ -625,7 +625,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * @param offset the index where the sequence is searched.
      * @return true if the sequence that is contained in this list at index offset, otherwise false.
      */
-    boolean startsWidth(java.lang.Iterable<? extends T> that, int offset);
+    boolean startsWith(java.lang.Iterable<? extends T> that, int offset);
 
     /**
      * Creates an instance of this type of an {@code java.lang.Iterable}.

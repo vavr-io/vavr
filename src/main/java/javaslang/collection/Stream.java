@@ -1397,12 +1397,12 @@ public interface Stream<T> extends LinearSeq<T> {
         }
 
         @Override
-        public boolean startsWidth(java.lang.Iterable<? extends T> that, int offset) {
+        public boolean startsWith(java.lang.Iterable<? extends T> that, int offset) {
             if (offset > 0) {
                 if (offset >= length()) {
-                    throw new IndexOutOfBoundsException("startsWidth(" + this + ", " + offset + ")");
+                    throw new IndexOutOfBoundsException("startsWith(" + this + ", " + offset + ")");
                 } else {
-                    return drop(offset).startsWidth(that);
+                    return drop(offset).startsWith(that);
                 }
             }
             final java.util.Iterator<? extends T> it = that.iterator();
@@ -1752,7 +1752,7 @@ public interface Stream<T> extends LinearSeq<T> {
         }
 
         @Override
-        public boolean startsWidth(Iterable<? extends T> that, int offset) {
+        public boolean startsWith(Iterable<? extends T> that, int offset) {
             return offset == 0 && !that.iterator().hasNext();
         }
 
