@@ -2155,119 +2155,119 @@ public class CharSeqTest {
         assertThat(CharSeq.of('1', '2', '3').removeAt(5)).isEqualTo(CharSeq.of('1', '2', '3'));
     }
 
-    // -- subsequence(beginIndex)
+    // -- slice(beginIndex)
 
     @Test
-    public void shouldReturnNilWhenSubsequenceFrom0OnNil() {
-        final CharSeq actual = this.<Integer> empty().subSequence(0);
+    public void shouldReturnNilWhenSliceFrom0OnNil() {
+        final CharSeq actual = this.<Integer> empty().slice(0);
         assertThat(actual).isEqualTo(empty());
     }
 
     @Test
-    public void shouldReturnIdentityWhenSubsequenceFrom0OnNonNil() {
-        final CharSeq actual = CharSeq.of('1').subSequence(0);
+    public void shouldReturnIdentityWhenSliceFrom0OnNonNil() {
+        final CharSeq actual = CharSeq.of('1').slice(0);
         assertThat(actual).isEqualTo(CharSeq.of('1'));
     }
 
     @Test
-    public void shouldReturnNilWhenSubsequenceFrom1OnSeqOf1() {
-        final CharSeq actual = CharSeq.of('1').subSequence(1);
+    public void shouldReturnNilWhenSliceFrom1OnSeqOf1() {
+        final CharSeq actual = CharSeq.of('1').slice(1);
         assertThat(actual).isEqualTo(empty());
     }
 
     @Test
-    public void shouldReturnSubsequenceWhenIndexIsWithinRange() {
-        final CharSeq actual = CharSeq.of('1', '2', '3').subSequence(1);
+    public void shouldReturnSliceWhenIndexIsWithinRange() {
+        final CharSeq actual = CharSeq.of('1', '2', '3').slice(1);
         assertThat(actual).isEqualTo(CharSeq.of('2', '3'));
     }
 
     @Test
-    public void shouldReturnNilWhenSubsequenceBeginningWithSize() {
-        final CharSeq actual = CharSeq.of('1', '2', '3').subSequence(3);
+    public void shouldReturnNilWhenSliceBeginningWithSize() {
+        final CharSeq actual = CharSeq.of('1', '2', '3').slice(3);
         assertThat(actual).isEqualTo(empty());
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowWhenSubsequenceOnNil() {
-        empty().subSequence(1);
+    public void shouldThrowWhenSliceOnNil() {
+        empty().slice(1);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowWhenSubsequenceWithOutOfLowerBound() {
-        CharSeq.of('1', '2', '3').subSequence(-1);
+    public void shouldThrowWhenSliceWithOutOfLowerBound() {
+        CharSeq.of('1', '2', '3').slice(-1);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowWhenSubsequenceWithOutOfUpperBound() {
-        CharSeq.of('1', '2', '3').subSequence(4);
+    public void shouldThrowWhenSliceWithOutOfUpperBound() {
+        CharSeq.of('1', '2', '3').slice(4);
     }
 
-    // -- subsequence(beginIndex, endIndex)
+    // -- slice(beginIndex, endIndex)
 
     @Test
-    public void shouldReturnNilWhenSubsequenceFrom0To0OnNil() {
-        final CharSeq actual = this.<Integer> empty().subSequence(0, 0);
+    public void shouldReturnNilWhenSliceFrom0To0OnNil() {
+        final CharSeq actual = this.<Integer> empty().slice(0, 0);
         assertThat(actual).isEqualTo(empty());
     }
 
     @Test
-    public void shouldReturnNilWhenSubsequenceFrom0To0OnNonNil() {
-        final CharSeq actual = CharSeq.of('1').subSequence(0, 0);
+    public void shouldReturnNilWhenSliceFrom0To0OnNonNil() {
+        final CharSeq actual = CharSeq.of('1').slice(0, 0);
         assertThat(actual).isEqualTo(empty());
     }
 
     @Test
-    public void shouldReturnSeqWithFirstElementWhenSubsequenceFrom0To1OnNonNil() {
-        final CharSeq actual = CharSeq.of('1').subSequence(0, 1);
+    public void shouldReturnSeqWithFirstElementWhenSliceFrom0To1OnNonNil() {
+        final CharSeq actual = CharSeq.of('1').slice(0, 1);
         assertThat(actual).isEqualTo(CharSeq.of('1'));
     }
 
     @Test
-    public void shouldReturnNilWhenSubsequenceFrom1To1OnNonNil() {
-        final CharSeq actual = CharSeq.of('1').subSequence(1, 1);
+    public void shouldReturnNilWhenSliceFrom1To1OnNonNil() {
+        final CharSeq actual = CharSeq.of('1').slice(1, 1);
         assertThat(actual).isEqualTo(empty());
     }
 
     @Test
-    public void shouldReturnSubsequenceWhenIndicesAreWithinRange() {
-        final CharSeq actual = CharSeq.of('1', '2', '3').subSequence(1, 3);
+    public void shouldReturnSliceWhenIndicesAreWithinRange() {
+        final CharSeq actual = CharSeq.of('1', '2', '3').slice(1, 3);
         assertThat(actual).isEqualTo(CharSeq.of('2', '3'));
     }
 
     @Test
     public void shouldReturnNilWhenIndicesBothAreUpperBound() {
-        final CharSeq actual = CharSeq.of('1', '2', '3').subSequence(3, 3);
+        final CharSeq actual = CharSeq.of('1', '2', '3').slice(3, 3);
         assertThat(actual).isEqualTo(empty());
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowOnSubsequenceOnNonNilWhenBeginIndexIsGreaterThanEndIndex() {
-        CharSeq.of('1', '2', '3').subSequence(1, 0);
+    public void shouldThrowOnSliceOnNonNilWhenBeginIndexIsGreaterThanEndIndex() {
+        CharSeq.of('1', '2', '3').slice(1, 0);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowOnSubsequenceOnNilWhenBeginIndexIsGreaterThanEndIndex() {
-        empty().subSequence(1, 0);
+    public void shouldThrowOnSliceOnNilWhenBeginIndexIsGreaterThanEndIndex() {
+        empty().slice(1, 0);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowOnSubsequenceOnNonNilWhenBeginIndexExceedsLowerBound() {
-        CharSeq.of('1', '2', '3').subSequence(-'1', '2');
+    public void shouldThrowOnSliceOnNonNilWhenBeginIndexExceedsLowerBound() {
+        CharSeq.of('1', '2', '3').slice(-'1', '2');
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowOnSubsequenceOnNilWhenBeginIndexExceedsLowerBound() {
-        empty().subSequence(-'1', '2');
+    public void shouldThrowOnSliceOnNilWhenBeginIndexExceedsLowerBound() {
+        empty().slice(-'1', '2');
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowWhenSubsequence2OnNil() {
-        empty().subSequence(0, 1);
+    public void shouldThrowWhenSlice2OnNil() {
+        empty().slice(0, 1);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowOnSubsequenceWhenEndIndexExceedsUpperBound() {
-        CharSeq.of('1', '2', '3').subSequence(1, 4).mkString(); // force computation of last element, e.g. because Stream is lazy
+    public void shouldThrowOnSliceWhenEndIndexExceedsUpperBound() {
+        CharSeq.of('1', '2', '3').slice(1, 4).mkString(); // force computation of last element, e.g. because Stream is lazy
     }
 
     // -- unzip

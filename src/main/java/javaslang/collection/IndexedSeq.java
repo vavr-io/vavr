@@ -150,6 +150,12 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> set(int index, T element);
 
     @Override
+    IndexedSeq<T> slice(int beginIndex);
+
+    @Override
+    IndexedSeq<T> slice(int beginIndex, int endIndex);
+
+    @Override
     IndexedSeq<T> sort();
 
     @Override
@@ -157,12 +163,6 @@ public interface IndexedSeq<T> extends Seq<T> {
 
     @Override
     Tuple2<? extends IndexedSeq<T>, ? extends IndexedSeq<T>> span(Predicate<? super T> predicate);
-
-    @Override
-    IndexedSeq<T> subSequence(int beginIndex);
-
-    @Override
-    IndexedSeq<T> subSequence(int beginIndex, int endIndex);
 
     @Override
     IndexedSeq<T> tail();

@@ -151,6 +151,12 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> set(int index, T element);
 
     @Override
+    LinearSeq<T> slice(int beginIndex);
+
+    @Override
+    LinearSeq<T> slice(int beginIndex, int endIndex);
+
+    @Override
     LinearSeq<T> sort();
 
     @Override
@@ -158,12 +164,6 @@ public interface LinearSeq<T> extends Seq<T> {
 
     @Override
     Tuple2<? extends LinearSeq<T>, ? extends LinearSeq<T>> span(Predicate<? super T> predicate);
-
-    @Override
-    LinearSeq<T> subSequence(int beginIndex);
-
-    @Override
-    LinearSeq<T> subSequence(int beginIndex, int endIndex);
 
     @Override
     LinearSeq<T> tail();

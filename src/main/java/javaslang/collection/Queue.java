@@ -876,6 +876,16 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
+    public Queue<T> slice(int beginIndex) {
+        return toList().slice(beginIndex).toQueue();
+    }
+
+    @Override
+    public Queue<T> slice(int beginIndex, int endIndex) {
+        return toList().slice(beginIndex, endIndex).toQueue();
+    }
+
+    @Override
     public Queue<T> sort() {
         return toList().sort().toQueue();
     }
@@ -910,16 +920,6 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     @Override
     public Spliterator<T> spliterator() {
         return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
-    }
-
-    @Override
-    public Queue<T> subSequence(int beginIndex) {
-        return toList().subSequence(beginIndex).toQueue();
-    }
-
-    @Override
-    public Queue<T> subSequence(int beginIndex, int endIndex) {
-        return toList().subSequence(beginIndex, endIndex).toQueue();
     }
 
     @Override

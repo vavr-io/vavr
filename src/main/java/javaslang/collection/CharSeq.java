@@ -619,6 +619,29 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
+    public CharSeq slice(int beginIndex) {
+        if (beginIndex < 0) {
+            throw new IndexOutOfBoundsException("slice(" + beginIndex + ")");
+        }
+        if (beginIndex > length()) {
+            throw new IndexOutOfBoundsException("slice(" + beginIndex + ")");
+        }
+        return of(back.substring(beginIndex));
+    }
+
+    @Override
+    public CharSeq slice(int beginIndex, int endIndex) {
+        if (beginIndex < 0 || beginIndex > endIndex || endIndex > length()) {
+            throw new IndexOutOfBoundsException(
+                    java.lang.String.format("slice(%s, %s) on List of length %s", beginIndex, endIndex, length()));
+        }
+        if (beginIndex == endIndex) {
+            return EMPTY;
+        }
+        return of(back.substring(beginIndex, endIndex));
+    }
+
+    @Override
     public CharSeq sort() {
         return isEmpty() ? this : toJavaStream().sorted().collect(CharSeq.collector());
     }
@@ -653,29 +676,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     @Override
     public Spliterator<Character> spliterator() {
         return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
-    }
-
-    @Override
-    public CharSeq subSequence(int beginIndex) {
-        if (beginIndex < 0) {
-            throw new IndexOutOfBoundsException("subsequence(" + beginIndex + ")");
-        }
-        if (beginIndex > length()) {
-            throw new IndexOutOfBoundsException("subsequence(" + beginIndex + ")");
-        }
-        return of(back.substring(beginIndex));
-    }
-
-    @Override
-    public CharSeq subSequence(int beginIndex, int endIndex) {
-        if (beginIndex < 0 || beginIndex > endIndex || endIndex > length()) {
-            throw new IndexOutOfBoundsException(
-                    java.lang.String.format("subsequence(%s, %s) on List of length %s", beginIndex, endIndex, length()));
-        }
-        if (beginIndex == endIndex) {
-            return EMPTY;
-        }
-        return of(back.substring(beginIndex, endIndex));
     }
 
     @Override
@@ -1354,6 +1354,11 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      */
     public boolean regionMatches(boolean ignoreCase, int toffset, CharSeq other, int ooffset, int len) {
         return back.regionMatches(ignoreCase, toffset, other.back, ooffset, len);
+    }
+
+    @Override
+    public CharSeq subSequence(int beginIndex, int endIndex) {
+        return slice(beginIndex, endIndex);
     }
 
     /**
