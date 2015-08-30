@@ -314,10 +314,8 @@ public interface TraversableOnce<T> extends Value<T> {
      */
     Option<T> findLast(Predicate<? super T> predicate);
 
-    <U> TraversableOnce<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
-
     @Override
-    <U> TraversableOnce<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper);
+    <U> TraversableOnce<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
 
     @Override
     TraversableOnce<Object> flatten();

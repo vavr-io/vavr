@@ -507,9 +507,6 @@ public interface Stack<T> extends LinearSeq<T> {
     <U> Stack<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
 
     @Override
-    <U> Stack<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper);
-
-    @Override
     Stack<Object> flatten();
 
     @Override

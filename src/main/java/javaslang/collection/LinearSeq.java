@@ -73,9 +73,6 @@ public interface LinearSeq<T> extends Seq<T> {
     <U> LinearSeq<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
 
     @Override
-    <U> LinearSeq<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper);
-
-    @Override
     LinearSeq<Object> flatten();
 
     @Override

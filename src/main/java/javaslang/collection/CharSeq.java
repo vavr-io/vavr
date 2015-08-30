@@ -273,11 +273,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public <U> Vector<U> flatMapVal(Function<? super Character, ? extends Value<? extends U>> mapper) {
-        return flatMap(mapper);
-    }
-
-    @Override
     public Vector<Object> flatten() {
         return Vector.ofAll(iterator());
     }

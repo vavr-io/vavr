@@ -117,28 +117,19 @@ public final class Success<T> implements Try<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U> Try<U> flatMap(Function<? super T, ? extends Value<? extends U>> mapper) {
-        return flatMapTry((CheckedFunction<T, Value<? extends U>>) mapper::apply);
-    }
-
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> Try<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
-        return flatMapTry((CheckedFunction<T, Value<? extends U>>) mapper::apply);
+    public <U> Try<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
+        return flatMapTry((CheckedFunction<T, java.lang.Iterable<? extends U>>) mapper::apply);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U> Try<U> flatMapTry(CheckedFunction<? super T, ? extends Value<? extends U>> mapper) {
+    public <U> Try<U> flatMapTry(CheckedFunction<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
         try {
-            final Value<? extends U> val = mapper.apply(value);
-            if (val instanceof Try) {
-                return (Try<U>) val;
-            } else if (val.isDefined()) {
-                return new Success<>(val.get());
+            final Iterable<? extends U> iterable = mapper.apply(value);
+            if (iterable instanceof Value) {
+                return ((Value<U>) iterable).toTry();
             } else {
-                return new Failure<>(new NoSuchElementException("flatMap returned nothing"));
+                return Try.of(() -> Value.get(iterable));
             }
         } catch (Throwable t) {
             return new Failure<>(t);

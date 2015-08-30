@@ -140,19 +140,13 @@ public final class Failure<T> implements Try<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U> Failure<U> flatMap(Function<? super T, ? extends Value<? extends U>> mapper) {
+    public <U> Failure<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
         return (Failure<U>) this;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U> Failure<U> flatMapTry(CheckedFunction<? super T, ? extends Value<? extends U>> mapper) {
-        return (Failure<U>) this;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> Failure<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
+    public <U> Failure<U> flatMapTry(CheckedFunction<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
         return (Failure<U>) this;
     }
 

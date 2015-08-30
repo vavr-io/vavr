@@ -673,9 +673,6 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     <U> Seq<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
 
     @Override
-    <U> Seq<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper);
-
-    @Override
     Seq<Object> flatten();
 
     @Override

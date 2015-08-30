@@ -931,19 +931,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
-     * FlatMaps the elements of this java.lang.Iterable by effectively calling
-     * <pre><code>flatMap((Function&lt;? super T, ? extends Iterator&lt;? extends U&gt;&gt;) mapper)</code></pre>
-     *
-     * @param mapper A mapper.
-     * @param <U>    Component type
-     * @return A new java.lang.Iterable
-     */
-    @Override
-    default <U> Iterator<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
-        return flatMap(mapper);
-    }
-
-    /**
      * Flattens the elements of this Iterator.
      *
      * @return A flattened Iterator

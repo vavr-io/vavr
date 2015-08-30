@@ -81,19 +81,19 @@ public interface Arbitrary<T> extends Value<T> {
      * @param <U>    New type of arbitrary objects
      * @return A new Arbitrary
      */
-    default <U> Arbitrary<U> flatMap(Function<? super T, ? extends Arbitrary<? extends U>> mapper) {
-        return size -> {
-            final Gen<T> gen = apply(size);
-            return random -> mapper.apply(gen.apply(random)).apply(size).apply(random);
-        };
-    }
-
     @SuppressWarnings("unchecked")
     @Override
-    default <U> Arbitrary<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
+    default <U> Arbitrary<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
         return size -> {
             final Gen<T> gen = apply(size);
-            return random -> mapper.apply(gen.apply(random)).get();
+            return random -> {
+                final Iterable<? extends U> iterable = mapper.apply(gen.apply(random));
+                if (iterable instanceof Arbitrary) {
+                    return ((Arbitrary<U>) iterable).apply(size).apply(random);
+                } else {
+                    return Value.get(iterable);
+                }
+            };
         };
     }
 

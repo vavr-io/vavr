@@ -9,6 +9,7 @@ import javaslang.collection.*;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
+import javaslang.control.Try;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -50,6 +51,24 @@ import java.util.stream.StreamSupport;
  * @since 2.0.0
  */
 public interface Value<T> extends javaslang.Iterable<T> {
+
+    /**
+     * Gets the first value of the given Iterable if exists, otherwise throws.
+     *
+     * @param iterable An java.lang.Iterable
+     * @param <T> Component type
+     * @return An object of type T
+     * @throws java.util.NoSuchElementException if the given iterable is empty
+     */
+    @SuppressWarnings("unchecked")
+    static <T> T get(java.lang.Iterable<? extends T> iterable) {
+        Objects.requireNonNull(iterable, "iterable is null");
+        if (iterable instanceof Value) {
+            return ((Value<? extends T>) iterable).get();
+        } else {
+            return iterable.iterator().next();
+        }
+    }
 
     /**
      * Gets the underlying value or throws if no value is present.
@@ -216,7 +235,7 @@ public interface Value<T> extends javaslang.Iterable<T> {
      * @return a mapped {@code Value}
      * @throws NullPointerException if {@code mapper} is null
      */
-    <U> Value<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper);
+    <U> Value<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
 
     /**
      * Maps this value to a new value with different component type.
@@ -352,6 +371,19 @@ public interface Value<T> extends javaslang.Iterable<T> {
      */
     default Stream<T> toStream() {
         return isEmpty() ? Stream.empty() : Stream.ofAll(this);
+    }
+
+    /**
+     * Converts this value to an {@link Option}.
+     *
+     * @return A new {@link Option}.
+     */
+    default Try<T> toTry() {
+        if (this instanceof Try) {
+            return (Try<T>) this;
+        } else {
+            return Try.of(() -> get());
+        }
     }
 
 // TODO:
