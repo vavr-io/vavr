@@ -166,17 +166,13 @@ public final class Lazy<T> implements Supplier<T>, Value<T>, Serializable {
         });
     }
 
-    public <U> Lazy<U> flatMap(Function<? super T, ? extends Lazy<? extends U>> mapper) {
-        return flatMapVal(mapper);
-    }
-
     @SuppressWarnings("unchecked")
     @Override
-    public <U> Lazy<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
+    public <U> Lazy<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
         if (isEmpty()) {
             return (Lazy<U>) this;
         } else {
-            return Lazy.of(() -> mapper.apply(get()).get());
+            return Lazy.of(() -> Value.get(mapper.apply(get())));
         }
     }
 

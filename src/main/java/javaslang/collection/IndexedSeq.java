@@ -73,9 +73,6 @@ public interface IndexedSeq<T> extends Seq<T> {
     <U> IndexedSeq<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
 
     @Override
-    <U> IndexedSeq<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper);
-
-    @Override
     IndexedSeq<Object> flatten();
 
     @Override

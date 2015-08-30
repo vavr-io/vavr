@@ -644,11 +644,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Array<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
-        return flatMap(mapper);
-    }
-
-    @Override
     public Array<Object> flatten() {
         return flatMap(t -> (t instanceof java.lang.Iterable) ? Array.ofAll((java.lang.Iterable<?>) t).flatten() : Array.of(t));
     }

@@ -185,13 +185,6 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public <U> Set<U> flatMapVal(Function<? super Entry<K, V>, ? extends Value<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(HashSet.<U> empty(),
-                (HashSet<U> acc, Entry<K, V> entry) -> mapper.apply(entry).map(acc::add).orElse(acc));
-    }
-
-    @Override
     public HashSet<Object> flatten() {
         throw new UnsupportedOperationException("TODO Patryk");
     }

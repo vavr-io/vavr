@@ -8,6 +8,7 @@ package javaslang.control;
 import javaslang.Value;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -68,15 +69,19 @@ public final class Some<T> implements Option<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U> Option<U> flatMap(Function<? super T, ? extends Value<? extends U>> mapper) {
+    public <U> Option<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return (Option<U>) mapper.apply(value).toOption();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> Option<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
-        return flatMap(mapper);
+        final Iterable<? extends U> iterable = mapper.apply(value);
+        if (iterable instanceof Value) {
+            return ((Value<U>) iterable).toOption();
+        } else {
+            final Iterator<? extends U> iterator = iterable.iterator();
+            if (iterator.hasNext()) {
+                return new Some<>(iterator.next());
+            } else {
+                return None.instance();
+            }
+        }
     }
 
     @Override

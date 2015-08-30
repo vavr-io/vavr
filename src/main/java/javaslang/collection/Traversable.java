@@ -131,9 +131,6 @@ public interface Traversable<T> extends TraversableOnce<T> {
     <U> Traversable<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
 
     @Override
-    <U> Traversable<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper);
-
-    @Override
     Traversable<Object> flatten();
 
     @Override

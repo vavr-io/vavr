@@ -698,11 +698,6 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Vector<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
-        return flatMap(mapper);
-    }
-
-    @Override
     public Vector<Object> flatten() {
         return flatMap(t -> (t instanceof java.lang.Iterable) ? Vector.ofAll((java.lang.Iterable<?>) t).flatten() : Vector.of(t));
     }

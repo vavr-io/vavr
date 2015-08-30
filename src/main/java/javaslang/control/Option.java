@@ -126,14 +126,12 @@ public interface Option<T> extends Value<T> {
     /**
      * Maps the value to a new {@code Option} if this is a {@code Some}, otherwise returns {@code None}.
      *
-     * @param mapper A value to Option mapper
+     * @param mapper A mapper
      * @param <U>    Component type of the resulting Option
      * @return a new {@code Option}
      */
-    <U> Option<U> flatMap(Function<? super T, ? extends Value<? extends U>> mapper);
-
     @Override
-    <U> Option<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper);
+    <U> Option<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
     Option<Object> flatten();

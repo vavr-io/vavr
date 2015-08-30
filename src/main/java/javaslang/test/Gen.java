@@ -298,16 +298,18 @@ public interface Gen<T> extends Value<T> {
      * @param <U>    Type of generated objects of the new generator
      * @return A new generator
      */
-    default <U> Gen<U> flatMap(Function<? super T, ? extends Gen<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return random -> mapper.apply(apply(random)).apply(random);
-    }
-
     @SuppressWarnings("unchecked")
     @Override
-    default <U> Gen<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
+    default <U> Gen<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return random -> mapper.apply(apply(random)).get();
+        return random -> {
+            final Iterable<? extends U> iterable = mapper.apply(apply(random));
+            if (iterable instanceof Gen) {
+                return ((Gen<U>) iterable).apply(random);
+            } else {
+                return Value.get(iterable);
+            }
+        };
     }
 
     @Override

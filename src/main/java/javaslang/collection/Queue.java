@@ -606,12 +606,6 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
         return new Queue<>(front.flatMap(mapper), rear.flatMap(mapper));
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> Queue<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
-        return flatMap(mapper);
-    }
-
     @Override
     public Queue<Object> flatten() {
         return toList().flatten().toQueue();

@@ -243,30 +243,19 @@ public interface Either<L, R> {
         /**
          * FlatMaps the left value if the projected Either is a Left.
          *
-         * @param mapper A mapper which takes a left value and returns a new Either
+         * @param mapper A mapper which takes a left value and returns a java.lang.Iterable
          * @param <U>    The new type of a Left value
          * @return A new LeftProjection
          */
         @SuppressWarnings("unchecked")
-        public <U> LeftProjection<U, R> flatMap(Function<? super L, ? extends Value<? extends U>> mapper) {
+        @Override
+        public <U> LeftProjection<U, R> flatMap(Function<? super L, ? extends java.lang.Iterable<? extends U>> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
             if (either.isLeft()) {
-                return new Left<U, R>(mapper.apply(asLeft()).get()).left ();
+                return new Left<U, R>(Value.get(mapper.apply(asLeft()))).left();
             } else {
                 return (LeftProjection<U, R>) this;
             }
-        }
-
-        /**
-         * FlatMaps the left value if the projected Either is a Left.
-         *
-         * @param mapper A mapper which takes a left value and returns a new Either
-         * @param <U>    The new type of a Left value
-         * @return A new LeftProjection
-         */
-        @SuppressWarnings("unchecked")
-        public <U> LeftProjection<U, R> flatMapVal(Function<? super L, ? extends Value<? extends U>> mapper) {
-            return flatMap(mapper);
         }
 
         @SuppressWarnings("unchecked")
@@ -468,24 +457,19 @@ public interface Either<L, R> {
         /**
          * FlatMaps the right value if the projected Either is a Right.
          *
-         * @param mapper A mapper which takes a right value and returns a new Either
+         * @param mapper A mapper which takes a right value and returns a java.lang.Iterable
          * @param <U>    The new type of a Right value
          * @return A new RightProjection
          */
         @SuppressWarnings("unchecked")
-        public <U> RightProjection<L, U> flatMap(Function<? super R, ? extends Value<? extends U>> mapper) {
+        @Override
+        public <U> RightProjection<L, U> flatMap(Function<? super R, ? extends java.lang.Iterable<? extends U>> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
             if (either.isRight()) {
-                return new Right<L, U>(mapper.apply(asRight()).get()).right();
+                return new Right<L, U>(Value.get(mapper.apply(asRight()))).right();
             } else {
                 return (RightProjection<L, U>) this;
             }
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public <U> RightProjection<L, U> flatMapVal(Function<? super R, ? extends Value<? extends U>> mapper) {
-            return flatMap(mapper);
         }
 
         @SuppressWarnings("unchecked")

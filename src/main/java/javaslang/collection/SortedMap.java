@@ -54,9 +54,6 @@ public interface SortedMap<K, V> extends Map<K, V> {
     <U, W> SortedMap<U, W> flatMap(BiFunction<? super K, ? super V, ? extends java.lang.Iterable<? extends Entry<? extends U, ? extends W>>> mapper);
 
     @Override
-    <U> SortedSet<U> flatMapVal(Function<? super Entry<K, V>, ? extends Value<? extends U>> mapper);
-
-    @Override
     Set<Object> flatten();
 
     @Override

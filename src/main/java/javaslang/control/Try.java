@@ -130,12 +130,10 @@ public interface Try<T> extends Value<T> {
      * @param <U>    The new component type
      * @return a new Try
      */
-    <U> Try<U> flatMap(Function<? super T, ? extends Value<? extends U>> mapper);
-
-    <U> Try<U> flatMapTry(CheckedFunction<? super T, ? extends Value<? extends U>> mapper);
-
     @Override
-    <U> Try<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper);
+    <U> Try<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
+
+    <U> Try<U> flatMapTry(CheckedFunction<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
 
     @Override
     Try<Object> flatten();

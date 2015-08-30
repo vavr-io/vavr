@@ -722,11 +722,6 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default <U> List<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
-        return flatMap(mapper);
-    }
-
-    @Override
     List<Object> flatten();
 
     @Override

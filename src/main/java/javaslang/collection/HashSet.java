@@ -204,11 +204,6 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public <U> HashSet<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
-        return flatMap(mapper);
-    }
-
-    @Override
     public HashSet<Object> flatten() {
         return flatMap(t -> (t instanceof java.lang.Iterable) ? HashSet.ofAll((java.lang.Iterable<?>) t).flatten() : HashSet.of(t));
     }

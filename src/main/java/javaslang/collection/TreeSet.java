@@ -566,11 +566,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public <U> TreeSet<U> flatMapVal(Function<? super T, ? extends Value<? extends U>> mapper) {
-        return flatMap(mapper);
-    }
-
-    @Override
     public TreeSet<Object> flatten() {
         throw new UnsupportedOperationException("TODO");
     }
