@@ -51,7 +51,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     private final List<T> front;
     private final List<T> rear;
 
-    private final transient Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
+    private final /*TODO(FIXME): transient*/ Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
 
     /**
      * Creates a Queue consisting of a front List and a rear List.
