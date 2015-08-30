@@ -122,52 +122,9 @@ public class ListTest extends AbstractSeqTest {
         return List.rangeClosedBy(from, toInclusive, step);
     }
 
-    // -- combinations
-
-    @Test
-    public void shouldComputeCombinationsOfEmptyList() {
-        assertThat(List.empty().combinations()).isEqualTo(List.of(List.empty()));
-    }
-
-    @Test
-    public void shouldComputeCombinationsOfNonEmptyList() {
-        assertThat(List.of(1, 2, 3).combinations()).isEqualTo(List.of(List.empty(), List.of(1), List.of(2), List.of(3), List.of(1, 2), List.of(1, 3), List.of(2, 3), List.of(1, 2, 3)));
-    }
-
-    // -- combinations(k)
-
-    @Test
-    public void shouldComputeKCombinationsOfEmptyList() {
-        assertThat(List.empty().combinations(1)).isEqualTo(List.empty());
-    }
-
-    @Test
-    public void shouldComputeKCombinationsOfNonEmptyList() {
-        assertThat(List.of(1, 2, 3).combinations(2)).isEqualTo(List.of(List.of(1, 2), List.of(1, 3), List.of(2, 3)));
-    }
-
-    @Test
-    public void shouldComputeKCombinationsOfNegativeK() {
-        assertThat(List.of(1).combinations(-1)).isEqualTo(List.of(List.empty()));
-    }
-
-    // -- peek
-
     @Override
     int getPeekNonNilPerformingAnAction() {
         return 1;
-    }
-
-    // -- permutations
-
-    @Test
-    public void shouldComputePermutationsOfEmptyList() {
-        assertThat(List.empty().permutations()).isEqualTo(List.empty());
-    }
-
-    @Test
-    public void shouldComputePermutationsOfNonEmptyList() {
-        assertThat(List.of(1, 2, 3).permutations()).isEqualTo(List.ofAll(List.of(List.of(1, 2, 3), List.of(1, 3, 2), List.of(2, 1, 3), List.of(2, 3, 1), List.of(3, 1, 2), List.of(3, 2, 1))));
     }
 
     // -- toString

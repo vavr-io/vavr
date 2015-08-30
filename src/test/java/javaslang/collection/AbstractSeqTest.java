@@ -133,6 +133,37 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
         assertThat(of(1, 2, 3).apply(1)).isEqualTo(2);
     }
 
+    // -- combinations
+
+    @Test
+    public void shouldComputeCombinationsOfEmptyList() {
+        assertThat(empty().combinations()).isEqualTo(of(empty()));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldComputeCombinationsOfNonEmptyList() {
+        assertThat(of(1, 2, 3).combinations()).isEqualTo(of(empty(), of(1), of(2), of(3), of(1, 2), of(1, 3), of(2, 3), of(1, 2, 3)));
+    }
+
+    // -- combinations(k)
+
+    @Test
+    public void shouldComputeKCombinationsOfEmptyList() {
+        assertThat(empty().combinations(1)).isEqualTo(empty());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldComputeKCombinationsOfNonEmptyList() {
+        assertThat(of(1, 2, 3).combinations(2)).isEqualTo(of(of(1, 2), of(1, 3), of(2, 3)));
+    }
+
+    @Test
+    public void shouldComputeKCombinationsOfNegativeK() {
+        assertThat(of(1).combinations(-1)).isEqualTo(of(empty()));
+    }
+
     // -- containsSlice
 
     @Test
@@ -535,6 +566,19 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
         assertThat(of(1).padTo(2, 1)).isEqualTo(of(1, 1));
         assertThat(of(1).padTo(2, 2)).isEqualTo(of(1, 2));
         assertThat(of(1).padTo(3, 2)).isEqualTo(of(1, 2, 2));
+    }
+
+    // -- permutations
+
+    @Test
+    public void shouldComputePermutationsOfEmptyList() {
+        assertThat(empty().permutations()).isEqualTo(empty());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldComputePermutationsOfNonEmptyList() {
+        assertThat(of(1, 2, 3).permutations()).isEqualTo(ofAll(of(of(1, 2, 3), of(1, 3, 2), of(2, 1, 3), of(2, 3, 1), of(3, 1, 2), of(3, 2, 1))));
     }
 
     // -- prepend

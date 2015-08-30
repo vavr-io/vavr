@@ -212,11 +212,6 @@ public class StreamTest extends AbstractSeqTest {
         return 3;
     }
 
-    @Test
-    public void shouldComputeKCombinationsOfNegativeK() {
-        assertThat(Stream.of(1).combinations(-1)).isEqualTo(Stream.of(Stream.empty()));
-    }
-
     // -- permutations
 
     @Test
