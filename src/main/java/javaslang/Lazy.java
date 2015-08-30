@@ -7,7 +7,7 @@ package javaslang;
 
 import javaslang.collection.Iterator;
 
-import java.io.Serializable;
+import java.io.*;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.NoSuchElementException;
@@ -60,7 +60,9 @@ public final class Lazy<T> implements Supplier<T>, Value<T>, Serializable {
      * @return An undefined lazy value.
      */
     public static <T> Lazy<T> empty() {
-        return new Lazy<>(() -> { throw new NoSuchElementException("get() on empty lazy"); }, true);
+        return new Lazy<>(() -> {
+            throw new NoSuchElementException("get() on empty lazy");
+        }, true);
     }
 
     /**
@@ -215,5 +217,16 @@ public final class Lazy<T> implements Supplier<T>, Value<T>, Serializable {
     @Override
     public String toString() {
         return String.format("Lazy(%s)", !isEvaluated() ? "?" : value);
+    }
+
+    /**
+     * Ensures that the value is evaluated before serialization.
+     *
+     * @param s An object serialization stream.
+     * @throws java.io.IOException If an error occurs writing to the stream.
+     */
+    private void writeObject(ObjectOutputStream s) throws IOException {
+        get(); // evaluates the lazy value if it isn't evaluated yet!
+        s.defaultWriteObject();
     }
 }
