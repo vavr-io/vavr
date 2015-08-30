@@ -388,8 +388,11 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
     @Override
     public CharSeq padTo(int length, Character element) {
+        if(length <= back.length()) {
+            return this;
+        }
         final StringBuilder sb = new StringBuilder(back);
-        for (int i = 0; i < length; i++) {
+        for (int i = 0; i < length - back.length(); i++) {
             sb.append(element);
         }
         return new CharSeq(sb.toString());

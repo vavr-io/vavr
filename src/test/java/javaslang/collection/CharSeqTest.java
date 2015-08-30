@@ -84,19 +84,23 @@ public class CharSeqTest {
 
     // -- padTo
 
+    @Test
     public void shouldPadEmptyToEmpty() {
         assertThat(empty().padTo(0, 'a')).isSameAs(empty());
     }
 
+    @Test
     public void shouldPadEmptyToNonEmpty() {
         assertThat(empty().padTo(2, 'a')).isEqualTo(CharSeq.of('a', 'a'));
     }
 
+    @Test
     public void shouldPadNonEmptyZeroLen() {
         CharSeq seq = CharSeq.of('a');
         assertThat(seq.padTo(0, 'b')).isSameAs(seq);
     }
 
+    @Test
     public void shouldPadNonEmpty() {
         assertThat(CharSeq.of('a').padTo(2, 'a')).isEqualTo(CharSeq.of('a', 'a'));
         assertThat(CharSeq.of('a').padTo(2, 'b')).isEqualTo(CharSeq.of('a', 'b'));

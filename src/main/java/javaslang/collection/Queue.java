@@ -777,6 +777,9 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
 
     @Override
     public Queue<T> padTo(int length, T element) {
+        if(length <= length()) {
+            return this;
+        }
         return toList().padTo(length, element).toQueue();
     }
 

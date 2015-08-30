@@ -932,10 +932,10 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Stream<T> padTo(int length, T element) {
-        if(length == 0) {
+        if(length <= length()) {
             return this;
         } else {
-            return appendAll(Stream.gen(() -> element).take(length));
+            return appendAll(Stream.gen(() -> element).take(length - length()));
         }
     }
 

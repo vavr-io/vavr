@@ -857,10 +857,10 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default List<T> padTo(int length, T element) {
-        if(length == 0) {
+        if(length <= length()) {
             return this;
         } else {
-            return appendAll(Stream.gen(() -> element).take(length));
+            return appendAll(Stream.gen(() -> element).take(length - length()));
         }
     }
 
