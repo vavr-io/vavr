@@ -328,21 +328,21 @@ public interface HashArrayMappedTrie<K, V> extends java.lang.Iterable<Tuple2<K, 
             int bit = mask;
             int count = 0;
             List<AbstractNode<K, V>> sub = subNodes;
-            List<AbstractNode<K, V>> arr = List.empty();
+            final Object[] arr = new Object[BUCKET_SIZE];
             for (int i = 0; i < BUCKET_SIZE; i++) {
                 if ((bit & 1) != 0) {
-                    arr = arr.prepend(sub.head());
+                    arr[i] = sub.head();
                     sub = sub.tail();
                     count++;
                 } else if (i == frag) {
-                    arr = arr.prepend(child);
+                    arr[i] = child;
                     count++;
                 } else {
-                    arr = arr.prepend(EmptyNode.instance());
+                    arr[i] = EmptyNode.instance();
                 }
                 bit = bit >>> 1;
             }
-            return new ArrayNode<>(count, arr.reverse());
+            return new ArrayNode<>(count, Array.wrap(arr));
         }
 
         @Override
@@ -372,11 +372,11 @@ public interface HashArrayMappedTrie<K, V> extends java.lang.Iterable<Tuple2<K, 
 
         private static final long serialVersionUID = 1L;
 
-        private final List<AbstractNode<K, V>> subNodes;
+        private final Array<AbstractNode<K, V>> subNodes;
         private final int count;
         private final int size;
 
-        private ArrayNode(int count, List<AbstractNode<K, V>> subNodes) {
+        private ArrayNode(int count, Array<AbstractNode<K, V>> subNodes) {
             this.subNodes = subNodes;
             this.count = count;
             this.size = subNodes.map(HashArrayMappedTrie::size).sum().intValue();
@@ -407,19 +407,17 @@ public interface HashArrayMappedTrie<K, V> extends java.lang.Iterable<Tuple2<K, 
             }
         }
 
-        IndexedNode<K, V> pack(int idx, List<AbstractNode<K, V>> elements) {
-            List<AbstractNode<K, V>> sub = elements;
+        IndexedNode<K, V> pack(int idx, Array<AbstractNode<K, V>> elements) {
             List<AbstractNode<K, V>> arr = List.empty();
             int bitmap = 0;
-            for (int i = 0; !sub.isEmpty(); i++) {
-                AbstractNode<K, V> elem = sub.head();
-                sub = sub.tail();
+            for (int i = BUCKET_SIZE - 1; i >= 0; i--) {
+                AbstractNode<K, V> elem = elements.get(i);
                 if (i != idx && elem != empty()) {
                     arr = arr.prepend(elem);
                     bitmap = bitmap | (1 << i);
                 }
             }
-            return new IndexedNode<>(bitmap, arr.reverse());
+            return new IndexedNode<>(bitmap, arr);
         }
 
         @Override
