@@ -12,11 +12,6 @@ import java.util.stream.Collector;
 
 public class QueueTest extends AbstractSeqTest {
 
-    @Override
-    public void shouldSerializeDeserializeNonNil() {
-        // ignored
-    }
-
     // -- construction
 
     @Override
