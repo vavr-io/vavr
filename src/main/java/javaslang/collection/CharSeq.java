@@ -392,7 +392,8 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
             return this;
         }
         final StringBuilder sb = new StringBuilder(back);
-        for (int i = 0; i < length - back.length(); i++) {
+        final int limit = length - back.length();
+        for (int i = 0; i < limit; i++) {
             sb.append(element);
         }
         return new CharSeq(sb.toString());
