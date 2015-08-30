@@ -6,7 +6,6 @@
 package javaslang.control;
 
 import javaslang.CheckedFunction1;
-import javaslang.Value;
 
 import java.io.Serializable;
 import java.util.Objects;

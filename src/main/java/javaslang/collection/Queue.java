@@ -5,13 +5,14 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Lazy;
+import javaslang.Tuple;
+import javaslang.Tuple2;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
 
 import java.io.Serializable;
-import java.lang.Iterable;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;

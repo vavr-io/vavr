@@ -5,14 +5,14 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Tuple;
+import javaslang.Tuple2;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.lang.Iterable;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.HashSet;

@@ -5,7 +5,8 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Tuple2;
+import javaslang.Value;
 import javaslang.control.Match;
 import javaslang.control.None;
 import javaslang.control.Option;

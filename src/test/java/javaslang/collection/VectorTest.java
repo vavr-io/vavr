@@ -5,7 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Serializables;
 import org.junit.Test;
 
 import java.io.InvalidObjectException;

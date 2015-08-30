@@ -5,7 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Serializables;
 import javaslang.collection.Stream.Cons;
 import javaslang.collection.Stream.Nil;
 import org.junit.Test;
@@ -14,8 +14,6 @@ import java.io.InvalidObjectException;
 import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.stream.Collector;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class StreamTest extends AbstractSeqTest {
 
