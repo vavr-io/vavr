@@ -251,10 +251,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
     
     /**
-     * Creates a List based on the elements of a boolean array.
+     * Creates a Iterator based on the elements of a boolean array.
      *
      * @param array a boolean array
-     * @return A new List of Boolean values
+     * @return A new Iterator of Boolean values
      */
     static Iterator<Boolean> ofAll(boolean[] array) {
         Objects.requireNonNull(array, "array is null");
@@ -274,10 +274,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
-     * Creates a List based on the elements of a byte array.
+     * Creates a Iterator based on the elements of a byte array.
      *
      * @param array a byte array
-     * @return A new List of Byte values
+     * @return A new Iterator of Byte values
      */
     static Iterator<Byte> ofAll(byte[] array) {
         Objects.requireNonNull(array, "array is null");
@@ -297,10 +297,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
-     * Creates a List based on the elements of a char array.
+     * Creates a Iterator based on the elements of a char array.
      *
      * @param array a char array
-     * @return A new List of Character values
+     * @return A new Iterator of Character values
      */
     static Iterator<Character> ofAll(char[] array) {
         Objects.requireNonNull(array, "array is null");
@@ -320,10 +320,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
-     * Creates a List based on the elements of a double array.
+     * Creates a Iterator based on the elements of a double array.
      *
      * @param array a double array
-     * @return A new List of Double values
+     * @return A new Iterator of Double values
      */
     static Iterator<Double> ofAll(double[] array) {
         Objects.requireNonNull(array, "array is null");
@@ -343,10 +343,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
-     * Creates a List based on the elements of a float array.
+     * Creates a Iterator based on the elements of a float array.
      *
      * @param array a float array
-     * @return A new List of Float values
+     * @return A new Iterator of Float values
      */
     static Iterator<Float> ofAll(float[] array) {
         Objects.requireNonNull(array, "array is null");
@@ -366,10 +366,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
-     * Creates a List based on the elements of an int array.
+     * Creates a Iterator based on the elements of an int array.
      *
      * @param array an int array
-     * @return A new List of Integer values
+     * @return A new Iterator of Integer values
      */
     static Iterator<Integer> ofAll(int[] array) {
         Objects.requireNonNull(array, "array is null");
@@ -389,10 +389,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
-     * Creates a List based on the elements of a long array.
+     * Creates a Iterator based on the elements of a long array.
      *
      * @param array a long array
-     * @return A new List of Long values
+     * @return A new Iterator of Long values
      */
     static Iterator<Long> ofAll(long[] array) {
         Objects.requireNonNull(array, "array is null");
@@ -412,10 +412,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
-     * Creates a List based on the elements of a short array.
+     * Creates a Iterator based on the elements of a short array.
      *
      * @param array a short array
-     * @return A new List of Short values
+     * @return A new Iterator of Short values
      */
     static Iterator<Short> ofAll(short[] array) {
         Objects.requireNonNull(array, "array is null");

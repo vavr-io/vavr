@@ -914,16 +914,13 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         if (isEmpty()) {
             return Vector.empty();
         } else {
-            if (length() == 1) {
+            final Vector<T> tail = tail();
+            if (tail.isEmpty()) {
                 return Vector.of(this);
             } else {
-                HashArrayMappedTrie<Integer, Vector<T>> trie = HashArrayMappedTrie.empty();
-                for (T t : distinct()) {
-                    for (Vector<T> ts : remove(t).permutations()) {
-                        trie = trie.put(trie.size(), ts);
-                    }
-                }
-                return new Vector<>(trie);
+                final Vector<Vector<T>> zero = empty();
+                // TODO: IntelliJ IDEA 14.1.1 needs a redundant cast here, jdk 1.8.0_40 compiles fine
+                return distinct().foldLeft(zero, (xs, x) -> xs.appendAll(remove(x).permutations().map((Function<Vector<T>, Vector<T>>) l -> l.prepend(x))));
             }
         }
     }
@@ -1083,7 +1080,6 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
             trie = trie.put(trie.size(), operator.apply(get(i)));
         }
         return trie.size() == 0 ? empty() : new Vector<>(trie);
-
     }
 
     @Override
@@ -1174,7 +1170,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
                 if (init.size() == length()) {
                     Tuple.of(this, empty());
                 } else {
-                    return Tuple.of(init.size() == 0 ? empty() : new Vector<>(init), drop(init.size()));
+                    return Tuple.of(new Vector<>(init), drop(init.size()));
                 }
             }
         }
