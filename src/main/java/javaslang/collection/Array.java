@@ -207,6 +207,11 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
+    public Array<T> padTo(int length, T element) {
+        throw new UnsupportedOperationException("TODO");
+    }
+
+    @Override
     public Tuple2<? extends Array<T>, ? extends Array<T>> partition(Predicate<? super T> predicate) {
         throw new UnsupportedOperationException("TODO");
     }

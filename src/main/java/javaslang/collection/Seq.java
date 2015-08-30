@@ -66,6 +66,7 @@ import java.util.function.*;
  * <li>{@link #combinations(int)}</li>
  * <li>{@link #grouped(int)}</li>
  * <li>{@link #intersperse(Object)}</li>
+ * <li>{@link #padTo(int, Object)}</li>
  * <li>{@link #permutations()}</li>
  * <li>{@link #reverse()}</li>
  * <li>{@link #sort()}</li>
@@ -694,6 +695,16 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
 
     @Override
     <U> Seq<U> map(Function<? super T, ? extends U> mapper);
+
+    /**
+     * A copy of this sequence with an element appended until a given target length is reached.
+     *
+     * @param length the target length
+     * @param element the padding element
+     * @return a new sequence consisting of all elements of this sequence followed by the minimal number
+     * of occurrences of <code>element</code> so that the resulting sequence has a length of at least <code>length</code>.
+     */
+    Seq<T> padTo(int length, T element);
 
     @Override
     Tuple2<? extends Seq<T>, ? extends Seq<T>> partition(Predicate<? super T> predicate);

@@ -386,6 +386,19 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         return result;
     }
 
+    @Override
+    public CharSeq padTo(int length, Character element) {
+        if(length <= back.length()) {
+            return this;
+        }
+        final StringBuilder sb = new StringBuilder(back);
+        final int limit = length - back.length();
+        for (int i = 0; i < limit; i++) {
+            sb.append(element);
+        }
+        return new CharSeq(sb.toString());
+    }
+
     public CharSeq mapChars(CharUnaryOperator mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {

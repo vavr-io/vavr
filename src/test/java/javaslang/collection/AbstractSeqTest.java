@@ -512,6 +512,31 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
         assertThat(actual).isEqualTo(3);
     }
 
+    // -- padTo
+
+    @Test
+    public void shouldPadEmptyToEmpty() {
+        assertThat(empty().padTo(0, 1)).isSameAs(empty());
+    }
+
+    @Test
+    public void shouldPadEmptyToNonEmpty() {
+        assertThat(empty().padTo(2, 1)).isEqualTo(of(1, 1));
+    }
+
+    @Test
+    public void shouldPadNonEmptyZeroLen() {
+        Seq<Integer> seq = of(1);
+        assertThat(seq.padTo(0, 2)).isSameAs(seq);
+    }
+
+    @Test
+    public void shouldPadNonEmpty() {
+        assertThat(of(1).padTo(2, 1)).isEqualTo(of(1, 1));
+        assertThat(of(1).padTo(2, 2)).isEqualTo(of(1, 2));
+        assertThat(of(1).padTo(3, 2)).isEqualTo(of(1, 2, 2));
+    }
+
     // -- prepend
 
     @Test

@@ -534,6 +534,9 @@ public interface Stack<T> extends LinearSeq<T> {
     <U> Stack<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
+    Stack<T> padTo(int length, T element);
+
+    @Override
     Tuple2<? extends Stack<T>, ? extends Stack<T>> partition(Predicate<? super T> predicate);
 
     @Override
