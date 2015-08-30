@@ -51,7 +51,7 @@ public interface SortedMap<K, V> extends Map<K, V> {
     <U> Set<U> flatMap(Function<? super Entry<K, V>, ? extends java.lang.Iterable<? extends U>> mapper);
 
     @Override
-    <U, W> SortedMap<U, W> flatMap2(BiFunction<? super K, ? super V, ? extends java.lang.Iterable<? extends Entry<? extends U, ? extends W>>> mapper);
+    <U, W> SortedMap<U, W> flatMap(BiFunction<? super K, ? super V, ? extends java.lang.Iterable<? extends Entry<? extends U, ? extends W>>> mapper);
 
     @Override
     <U> SortedSet<U> flatMapVal(Function<? super Entry<K, V>, ? extends Value<? extends U>> mapper);
@@ -78,7 +78,7 @@ public interface SortedMap<K, V> extends Map<K, V> {
     <U> Set<U> map(Function<? super Entry<K, V>, ? extends U> mapper);
 
     @Override
-    <U, W> SortedMap<U, W> map2(BiFunction<? super K, ? super V, ? extends Entry<? extends U, ? extends W>> mapper);
+    <U, W> SortedMap<U, W> map(BiFunction<? super K, ? super V, ? extends Entry<? extends U, ? extends W>> mapper);
 
     @Override
     SortedMap<K, V> merge(Map<K, ? extends V> that);
