@@ -33,12 +33,6 @@ public class IteratorTest extends AbstractValueTest {
         assertThat(Iterator.ofIterators(of(1, 2), of(), of(3))).isEqualTo(of(1, 2, 3));
     }
 
-    @Test
-    public void shouldFilterNonEmptyTraversable() {
-        Iterator<Integer> it = List.of(1, 2, 3, 4).iterator();
-        assertThat(List.ofAll(() -> it.filter(i -> i % 2 == 0))).isEqualTo(List.of(2, 4));
-    }
-
     @Override
     protected <T> Collector<T, ArrayList<T>, ? extends Traversable<T>> collector() {
         return null;
@@ -103,5 +97,15 @@ public class IteratorTest extends AbstractValueTest {
     @Override
     protected Iterator<Short> ofAll(short[] array) {
         return null;
+    }
+
+    @Override
+    boolean isThisLazyJavaslangObject() {
+        return true;
+    }
+
+    @Override
+    int getPeekNonNilPerformingAnAction() {
+        return 3;
     }
 }

@@ -181,7 +181,7 @@ public class ListTest extends AbstractSeqTest {
     }
 
     @Override
-    boolean isThisLazyCollection() {
+    boolean isThisLazyJavaslangObject() {
         return false;
     }
 

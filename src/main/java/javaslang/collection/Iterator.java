@@ -855,7 +855,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         }
     }
 
-    default boolean equals(Iterator<? extends T> that) {
+    default boolean equals(Iterator<?> that) {
         Objects.requireNonNull(that, "that is null");
         while (this.hasNext() && that.hasNext()) {
             if (!Objects.equals(this.next(), that.next())) {

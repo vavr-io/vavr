@@ -440,8 +440,8 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     public boolean equals(Object o) {
         if (o == this) {
             return true;
-        } else if (o instanceof HashSet) {
-            final HashSet<?> that = (HashSet<?>) o;
+        } else if (o instanceof HashMap) {
+            final HashMap<?,?> that = (HashMap<?,?>) o;
             return this.iterator().equals(that.iterator());
         } else {
             return false;

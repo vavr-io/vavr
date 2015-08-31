@@ -85,7 +85,7 @@ public class VectorTest extends AbstractSeqTest {
     }
 
     @Override
-    boolean isThisLazyCollection() {
+    boolean isThisLazyJavaslangObject() {
         return false;
     }
 

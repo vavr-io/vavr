@@ -171,7 +171,7 @@ public class QueueTest extends AbstractSeqTest {
     }
 
     @Override
-    boolean isThisLazyCollection() {
+    boolean isThisLazyJavaslangObject() {
         return false;
     }
 

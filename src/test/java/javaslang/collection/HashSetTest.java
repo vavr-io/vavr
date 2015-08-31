@@ -435,7 +435,7 @@ public class HashSetTest extends AbstractTraversableTest {
         assertTrue(HashSet.of(1).equals(HashSet.of(1)));
     }
 
-    boolean isThisLazyCollection() {
+    boolean isThisLazyJavaslangObject() {
         return false;
     }
 }
