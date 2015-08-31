@@ -441,14 +441,8 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         if (o == this) {
             return true;
         } else if (o instanceof HashMap) {
-            final Iterator<?> thisIt = this.iterator();
-            final Iterator<?> thatIt = ((HashMap<?,?>) o).iterator();
-            while (thisIt.hasNext() && thatIt.hasNext()) {
-                if (!Objects.equals(thisIt.next(), thatIt.next())) {
-                    return false;
-                }
-            }
-            return thisIt.hasNext() == thatIt.hasNext();
+            final HashMap<?,?> that = (HashMap<?,?>) o;
+            return this.iterator().equals(that.iterator());
         } else {
             return false;
         }
