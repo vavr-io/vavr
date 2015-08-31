@@ -930,7 +930,7 @@ public interface Stream<T> extends LinearSeq<T> {
         if(length <= length()) {
             return this;
         } else {
-            return appendAll(Stream.gen(() -> element).take(length - length()));
+            return appendAll(Iterator.constant(element).take(length - length()));
         }
     }
 
