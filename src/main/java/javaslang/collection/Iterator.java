@@ -7,7 +7,6 @@ package javaslang.collection;
 
 import javaslang.Tuple;
 import javaslang.Tuple2;
-import javaslang.Value;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -42,7 +41,7 @@ import java.util.function.*;
  */
 public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
-    // DEV-NOTE: we prefer returing empty() over this if !hasNext() == true in order to free memory.
+    // DEV-NOTE: we prefer returning empty() over this if !hasNext() == true in order to free memory.
 
     /**
      * The empty Iterator.
@@ -130,7 +129,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      */
     @SafeVarargs
     static <T> Iterator<T> of(T... elements) {
-        Objects.requireNonNull(elements, "elements.isNull");
+        Objects.requireNonNull(elements, "elements is null");
         return new AbstractIterator<T>() {
 
             int index = 0;
@@ -734,6 +733,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
     @Override
     default Iterator<T> distinctBy(Comparator<? super T> comparator) {
+        Objects.requireNonNull(comparator, "comparator is null");
         if (!hasNext()) {
             return empty();
         } else {
@@ -743,6 +743,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
     @Override
     default <U> Iterator<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
+        Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         if (!hasNext()) {
             return empty();
         } else {
@@ -855,6 +856,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     default boolean equals(Iterator<? extends T> that) {
+        Objects.requireNonNull(that, "that is null");
         while (this.hasNext() && that.hasNext()) {
             if (!Objects.equals(this.next(), that.next())) {
                 return false;
@@ -968,6 +970,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
     @Override
     default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
         // TODO
         throw new UnsupportedOperationException("TODO");
     }
@@ -979,6 +982,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
     @Override
     default <C> Map<C, Iterator<T>> groupBy(Function<? super T, ? extends C> classifier) {
+        Objects.requireNonNull(classifier, "classifier is null");
         // TODO
         throw new UnsupportedOperationException("TODO");
     }
@@ -1123,6 +1127,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
     @Override
     default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
+        Objects.requireNonNull(op, "op is null");
         // TODO
         throw new UnsupportedOperationException("TODO");
     }
@@ -1147,7 +1152,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
                     if (!that.hasNext()) {
                         EMPTY.next();
                     }
-                    final T elem = next();
+                    final T elem = that.next();
                     if (done || !Objects.equals(currentElement, elem)) {
                         return elem;
                     } else {
@@ -1177,7 +1182,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
                     if (!that.hasNext()) {
                         EMPTY.next();
                     }
-                    final T elem = next();
+                    final T elem = that.next();
                     if (Objects.equals(currentElement, elem)) {
                         return newElement;
                     } else {
@@ -1190,6 +1195,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
     @Override
     default Iterator<T> replaceAll(UnaryOperator<T> operator) {
+        Objects.requireNonNull(operator, "operator is null");
         if (!hasNext()) {
             return empty();
         } else {
@@ -1206,7 +1212,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
                     if (!that.hasNext()) {
                         EMPTY.next();
                     }
-                    return operator.apply(next());
+                    return operator.apply(that.next());
                 }
             };
         }
@@ -1214,8 +1220,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
     @Override
     default Iterator<T> retainAll(java.lang.Iterable<? extends T> elements) {
-        // TODO
-        throw new UnsupportedOperationException("TODO");
+        Objects.requireNonNull(elements, "elements is null");
+        return hasNext() ? filter(HashSet.ofAll(elements)::contains) : empty();
     }
 
     @Override

@@ -7,7 +7,9 @@ package javaslang;
 
 import javaslang.collection.Iterator;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.NoSuchElementException;

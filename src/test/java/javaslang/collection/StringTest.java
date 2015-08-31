@@ -8,7 +8,6 @@ package javaslang.collection;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.Iterable;
 import java.nio.charset.Charset;
 
 import static org.assertj.core.api.Assertions.assertThat;

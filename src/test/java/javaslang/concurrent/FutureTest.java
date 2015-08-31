@@ -6,21 +6,6 @@
 package javaslang.concurrent;
 
 
-import javaslang.Function1;
-import javaslang.collection.List;
-import javaslang.control.Failure;
-import javaslang.control.Success;
-import javaslang.control.Try;
-import org.junit.Test;
-
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
-
-import static org.junit.Assert.*;
-
 public class FutureTest {
 
 //	private Consumer<Throwable> failOnError(String message){

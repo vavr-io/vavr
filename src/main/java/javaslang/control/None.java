@@ -5,8 +5,6 @@
  */
 package javaslang.control;
 
-import javaslang.Value;
-
 import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Objects;

@@ -5,7 +5,8 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Tuple;
+import javaslang.Tuple2;
 import org.junit.Test;
 
 import java.util.ArrayList;
