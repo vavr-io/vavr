@@ -1455,7 +1455,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             return Tuple.of(empty(), empty());
         } else {
             final Stream<Tuple2<? extends T1, ? extends T2>> source = Stream.ofAll(this.map(unzipper::apply));
-            return Tuple.of(source.map(t -> t._1).iterator(), source.map(t -> t._2).iterator());
+            return Tuple.of(source.map(t -> (T1) t._1).iterator(), source.map(t -> (T2) t._2).iterator());
         }
     }
 
