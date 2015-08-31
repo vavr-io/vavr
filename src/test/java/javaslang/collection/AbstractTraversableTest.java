@@ -288,28 +288,6 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(of(1, 1, 2).existsUnique(i -> i == 1)).isFalse();
     }
 
-    // -- filter
-
-    @Test
-    public void shouldFilterEmptyTraversable() {
-        assertThat(empty().filter(ignored -> true)).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldFilterNonEmptyTraversable() {
-        assertThat(of(1, 2, 3, 4).filter(i -> i % 2 == 0)).isEqualTo(of(2, 4));
-    }
-
-    @Test
-    public void shouldFilterNonEmptyTraversableAllMatch() {
-        final Traversable<Integer> t = of(1, 2, 3, 4);
-        if(isThisLazyCollection()) {
-            assertThat(t.filter(i -> true)).isEqualTo(t);
-        } else {
-            assertThat(t.filter(i -> true)).isSameAs(t);
-        }
-    }
-
     // -- findFirst
 
     @Test
@@ -332,68 +310,6 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldFindLastOfNonNil() {
         assertThat(of(1, 2, 3, 4).findLast(i -> i % 2 == 0)).isEqualTo(Option.of(4));
-    }
-
-    // -- flatMap
-
-    @Test
-    public void shouldFlatMapEmptyTraversable() {
-        assertThat(empty().flatMap(this::of)).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldFlatMapNonEmptyTraversable() {
-        assertThat(of(1, 2, 3).flatMap(this::of)).isEqualTo(of(1, 2, 3));
-    }
-
-    @Test
-    public void shouldFlatMapTraversableByExpandingElements() {
-        assertThat(of(1, 2, 3).flatMap(i -> {
-            if (i == 1) {
-                return of(1, 2, 3);
-            } else if (i == 2) {
-                return of(4, 5);
-            } else {
-                return of(6);
-            }
-        })).isEqualTo(of(1, 2, 3, 4, 5, 6));
-    }
-
-    @Test
-    public void shouldFlatMapElementsToSequentialValuesInTheRightOrder() {
-        final AtomicInteger seq = new AtomicInteger(0);
-        final Traversable<Integer> actualInts = of(0, 1, 2).flatMap(ignored -> of(seq.getAndIncrement(), seq.getAndIncrement()));
-        final Traversable<Integer> expectedInts = of(0, 1, 2, 3, 4, 5);
-        assertThat(actualInts).isEqualTo(expectedInts);
-    }
-
-    // -- flatten()
-
-    @Test
-    public void shouldFlattenEmptyTraversable() {
-        assertThat(empty().flatten()).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldFlattenTraversableOfPlainElements() {
-        assertThat(of(1, 2, 3).flatten()).isEqualTo(of(1, 2, 3));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void shouldFlattenTraversableOfTraversables() {
-        assertThat(of(of(1), of(2, 3)).flatten()).isEqualTo(of(1, 2, 3));
-    }
-
-    @Test
-    public void shouldFlattenTraversableOfTraversablesAndPlainElements() {
-        assertThat(of(1, of(of(2, 3), 4), 5).flatten()).isEqualTo(of(1, 2, 3, 4, 5));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void shouldFlattenDifferentElementTypes() {
-        assertThat(of(1, "2", of(3.1415, 1L)).flatten()).isEqualTo(of(1, "2", 3.1415, 1L));
     }
 
     // -- fold
@@ -605,26 +521,6 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldComputeLengthOfNonNil() {
         assertThat(of(1, 2, 3).length()).isEqualTo(3);
-    }
-
-    // -- map
-
-    @Test
-    public void shouldMapNil() {
-        assertThat(this.<Integer> empty().map(i -> i + 1)).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldMapNonNil() {
-        assertThat(of(1, 2, 3).map(i -> i + 1)).isEqualTo(of(2, 3, 4));
-    }
-
-    @Test
-    public void shouldMapElementsToSequentialValuesInTheRightOrder() {
-        final AtomicInteger seq = new AtomicInteger(0);
-        final Traversable<Integer> expectedInts = of(0, 1, 2, 3, 4);
-        final Traversable<Integer> actualInts = expectedInts.map(ignored -> seq.getAndIncrement());
-        assertThat(actualInts).isEqualTo(expectedInts);
     }
 
     // -- partition
@@ -865,19 +761,6 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     public void shouldCalculateInverseMinByFunctionOfInts() {
         assertThat(of(1, 2, 3).minBy(i -> -i)).isEqualTo(new Some<>(3));
     }
-
-    // -- peek
-
-    @Test
-    public void shouldPeekNonNilPerformingAnAction() {
-        final int[] effect = { 0 };
-        final Value<Integer> actual = of(1, 2, 3).peek(i -> effect[0] = i);
-        assertThat(actual).isEqualTo(of(1, 2, 3)); // traverses all elements in the lazy case
-        assertThat(effect[0]).isEqualTo(getPeekNonNilPerformingAnAction());
-    }
-
-    // returns the peek result of the specific Traversable implementation
-    abstract int getPeekNonNilPerformingAnAction();
 
     // -- product
 
@@ -1261,7 +1144,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldTakeAllIfCountExceedsSize() {
         final Traversable<Integer> t = of(1, 2, 3);
-        if(isThisLazyCollection()) {
+        if(isThisLazyJavaslangObject()) {
             assertThat(t.take(4)).isEqualTo(t);
         } else {
             assertThat(t.take(4)).isSameAs(t);
@@ -1306,7 +1189,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldTakeWhileAllOnTrueCondition() {
         final Traversable<Integer> t = of(1, 2, 3);
-        if(isThisLazyCollection()) {
+        if(isThisLazyJavaslangObject()) {
             assertThat(t.takeWhile(x -> true)).isEqualTo(t);
         } else {
             assertThat(t.takeWhile(x -> true)).isSameAs(t);
@@ -1500,6 +1383,4 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
             }
         });
     }
-
-    abstract boolean isThisLazyCollection();
 }

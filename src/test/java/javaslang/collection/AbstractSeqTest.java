@@ -658,7 +658,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     @Test
     public void shouldRemoveNonExistingElement() {
         final Seq<Integer> t = of(1, 2, 3);
-        if (isThisLazyCollection()) {
+        if (isThisLazyJavaslangObject()) {
             assertThat(t.remove(4)).isEqualTo(t);
         } else {
             assertThat(t.remove(4)).isSameAs(t);
@@ -700,7 +700,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     @Test
     public void shouldRemoveFirstElementByPredicateNonExisting() {
         final Seq<Integer> t = of(1, 2, 3);
-        if (isThisLazyCollection()) {
+        if (isThisLazyJavaslangObject()) {
             assertThat(t.removeFirst(v -> v == 4)).isEqualTo(t);
         } else {
             assertThat(t.removeFirst(v -> v == 4)).isSameAs(t);
@@ -760,7 +760,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     @Test
     public void shouldNotRemoveAllNonExistingElementsFromNonNil() {
         final Seq<Integer> t = of(1, 2, 3);
-        if (isThisLazyCollection()) {
+        if (isThisLazyJavaslangObject()) {
             assertThat(t.removeAll(of(4, 5))).isEqualTo(t);
         } else {
             assertThat(t.removeAll(of(4, 5))).isSameAs(t);
@@ -782,7 +782,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     @Test
     public void shouldNotRemoveAllNonObjectsElementsFromNonNil() {
         final Seq<Integer> t = of(1, 2, 3);
-        if (isThisLazyCollection()) {
+        if (isThisLazyJavaslangObject()) {
             assertThat(t.removeAll(4)).isEqualTo(t);
         } else {
             assertThat(t.removeAll(4)).isSameAs(t);

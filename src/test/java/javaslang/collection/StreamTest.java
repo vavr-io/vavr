@@ -326,7 +326,7 @@ public class StreamTest extends AbstractSeqTest {
     }
 
     @Override
-    boolean isThisLazyCollection() {
+    boolean isThisLazyJavaslangObject() {
         return true;
     }
 

@@ -265,15 +265,14 @@ public interface Value<T> extends javaslang.Iterable<T> {
 
     // -- Javaslang types
 
-// TODO:
-//    /**
-//     * Converts this value to a {@link Array}.
-//     *
-//     * @return A new {@link Array}.
-//     */
-//    default Array<T> toArray() {
-//        return isEmpty() ? Array.empty() : Array.ofAll(this);
-//    }
+    /**
+     * Converts this value to a {@link Array}.
+     *
+     * @return A new {@link Array}.
+     */
+    default Array<T> toArray() {
+        return isEmpty() ? Array.empty() : Array.ofAll(this);
+    }
 
     /**
      * Converts this value to a {@link CharSeq}.
