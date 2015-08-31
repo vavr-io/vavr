@@ -854,7 +854,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         if(length <= length()) {
             return this;
         } else {
-            return appendAll(Stream.gen(() -> element).take(length - length()));
+            return appendAll(Iterator.constant(element).take(length - length()));
         }
     }
 

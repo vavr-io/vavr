@@ -71,6 +71,28 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
+     * Creates an infinite Iterator which returns the same element.
+     *
+     * @param element An element
+     * @param <T>     Component type.
+     * @return A new Iterator
+     */
+    static <T> Iterator<T> constant(T element) {
+        return new AbstractIterator<T>() {
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public T next() {
+                return element;
+            }
+        };
+    }
+
+    /**
      * Creates an Iterator which traverses one element.
      *
      * @param element An element

@@ -882,7 +882,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         if(length <= length()) {
             return this;
         } else {
-            return appendAll(Stream.gen(() -> element).take(length - length()));
+            return appendAll(Iterator.constant(element).take(length - length()));
         }
     }
 
