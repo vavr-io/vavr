@@ -5,9 +5,13 @@
  */
 package javaslang;
 
+import javaslang.collection.List;
 import org.junit.Test;
 
+import java.lang.*;
+import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -85,6 +89,86 @@ public class LazyTest {
         assertThat(lazy.isEvaluated()).isFalse(); // remains not evaluated
         lazy.get();
         assertThat(lazy.isEvaluated()).isTrue();
+    }
+
+    // -- get
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldThrowGetEmpty() {
+        assertThat(Lazy.empty().get()).isEqualTo(1);
+    }
+
+    // -- filter
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldThrowFilterEmptyLazy() {
+        assertThat(Lazy.empty().filter(ignored -> true)).isEqualTo(Lazy.empty());
+    }
+
+    @Test
+    public void shouldFilterNonEmptyLazy() {
+        assertThat(Lazy.of(() -> 1).filter(i -> true)).isEqualTo(Lazy.of(() -> 1));
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldEmptyFilterNonEmptyLazy() {
+        assertThat(Lazy.empty().filter(i -> true)).isEqualTo(Lazy.of(() -> 1));
+    }
+
+    // -- flatten()
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldFlattenEmptyLazy() {
+        assertThat(Lazy.empty().flatten()).isEqualTo(Lazy.empty());
+    }
+
+    @Test
+    public void shouldFlattenNonEmptyLazy() {
+        assertThat(Lazy.of(() -> 1).flatten()).isEqualTo(Lazy.of(() -> 1));
+    }
+
+    @Test
+    public void shouldFlattenLazyOfLazy() {
+        assertThat(Lazy.of(Lazy.of(() -> 1)).flatten()).isEqualTo(Lazy.of(() -> 1));
+    }
+
+    // -- flatMap
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldFlatMapEmptyLazy() {
+        assertThat(Lazy.empty().flatMap(List::of)).isEqualTo(Lazy.empty());
+    }
+
+    @Test
+    public void shouldFlatMapNonEmptyLazy() {
+        assertThat(Lazy.of(() -> 1).flatMap(List::of)).isEqualTo(Lazy.of(() -> 1));
+    }
+
+    // -- map
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldMapEmpty() {
+        assertThat(Lazy.empty().map(Function.identity())).isEqualTo(Lazy.empty());
+    }
+
+    @Test
+    public void shouldMapNonEmpty() {
+        assertThat(Lazy.of(() -> 1).map(i -> i + 1)).isEqualTo(Lazy.of(() -> 2));
+    }
+
+    // -- peek
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldPeekEmpty() {
+        assertThat(Lazy.empty().peek(t -> {
+        })).isEqualTo(Lazy.empty());
+    }
+
+    @Test
+    public void shouldPeekSingleValuePerformingAnAction() {
+        final int[] effect = { 0 };
+        assertThat(Lazy.of(() -> 1).peek(i -> effect[0] = i)).isEqualTo(Lazy.of(() -> 1));
+        assertThat(effect[0]).isEqualTo(1);
     }
 
     // -- equals
