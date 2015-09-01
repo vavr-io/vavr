@@ -779,6 +779,16 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
+    public Queue<T> patch(int from, java.lang.Iterable<? extends T> that, int replaced) {
+        from = from < 0 ? 0 : from;
+        replaced = replaced < 0 ? 0 : replaced;
+        Queue<T> result = take(from).appendAll(that);
+        from += replaced;
+        result = result.appendAll(drop(from));
+        return result;
+    }
+
+    @Override
     public Tuple2<Queue<T>, Queue<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return toList().partition(predicate).map(List::toQueue, List::toQueue);

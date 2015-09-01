@@ -534,6 +534,9 @@ public interface Stack<T> extends LinearSeq<T> {
     Stack<T> padTo(int length, T element);
 
     @Override
+    Stack<T> patch(int from, java.lang.Iterable<? extends T> that, int replaced);
+
+    @Override
     Tuple2<? extends Stack<T>, ? extends Stack<T>> partition(Predicate<? super T> predicate);
 
     @Override

@@ -108,6 +108,70 @@ public class CharSeqTest {
         assertThat(CharSeq.of('a').padTo(3, 'b')).isEqualTo(CharSeq.of('a', 'b', 'b'));
     }
 
+    // -- patch
+
+    @Test
+    public void shouldPatchEmptyByEmpty() {
+        assertThat(empty().patch(0, empty(), 0)).isEqualTo(empty());
+        assertThat(empty().patch(-1, empty(), -1)).isEqualTo(empty());
+        assertThat(empty().patch(-1, empty(), 1)).isEqualTo(empty());
+        assertThat(empty().patch(1, empty(), -1)).isEqualTo(empty());
+        assertThat(empty().patch(1, empty(), 1)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldPatchEmptyByNonEmpty() {
+        Seq<Character> s = CharSeq.of('1', '2', '3');
+        assertThat(empty().patch(0, s, 0)).isEqualTo(s);
+        assertThat(empty().patch(-1, s, -1)).isEqualTo(s);
+        assertThat(empty().patch(-1, s, 1)).isEqualTo(s);
+        assertThat(empty().patch(1, s, -1)).isEqualTo(s);
+        assertThat(empty().patch(1, s, 1)).isEqualTo(s);
+    }
+
+    @Test
+    public void shouldPatchNonEmptyByEmpty() {
+        Seq<Character> s = CharSeq.of('1', '2', '3');
+        assertThat(s.patch(-1, empty(), -1)).isEqualTo(CharSeq.of('1', '2', '3'));
+        assertThat(s.patch(-1, empty(), 0)).isEqualTo(CharSeq.of('1', '2', '3'));
+        assertThat(s.patch(-1, empty(), 1)).isEqualTo(CharSeq.of('2', '3'));
+        assertThat(s.patch(-1, empty(), 3)).isEqualTo(empty());
+        assertThat(s.patch(0, empty(), -1)).isEqualTo(CharSeq.of('1', '2', '3'));
+        assertThat(s.patch(0, empty(), 0)).isEqualTo(CharSeq.of('1', '2', '3'));
+        assertThat(s.patch(0, empty(), 1)).isEqualTo(CharSeq.of('2', '3'));
+        assertThat(s.patch(0, empty(), 3)).isEqualTo(empty());
+        assertThat(s.patch(1, empty(), -1)).isEqualTo(CharSeq.of('1', '2', '3'));
+        assertThat(s.patch(1, empty(), 0)).isEqualTo(CharSeq.of('1', '2', '3'));
+        assertThat(s.patch(1, empty(), 1)).isEqualTo(CharSeq.of('1', '3'));
+        assertThat(s.patch(1, empty(), 3)).isEqualTo(CharSeq.of('1'));
+        assertThat(s.patch(4, empty(), -1)).isEqualTo(CharSeq.of('1', '2', '3'));
+        assertThat(s.patch(4, empty(), 0)).isEqualTo(CharSeq.of('1', '2', '3'));
+        assertThat(s.patch(4, empty(), 1)).isEqualTo(CharSeq.of('1', '2', '3'));
+        assertThat(s.patch(4, empty(), 3)).isEqualTo(CharSeq.of('1', '2', '3'));
+    }
+
+    @Test
+    public void shouldPatchNonEmptyByNonEmpty() {
+        Seq<Character> s = CharSeq.of('1', '2', '3');
+        Seq<Character> d = CharSeq.of('4', '5', '6');
+        assertThat(s.patch(-1, d, -1)).isEqualTo(CharSeq.of('4', '5', '6', '1', '2', '3'));
+        assertThat(s.patch(-1, d, 0)).isEqualTo(CharSeq.of('4', '5', '6', '1', '2', '3'));
+        assertThat(s.patch(-1, d, 1)).isEqualTo(CharSeq.of('4', '5', '6', '2', '3'));
+        assertThat(s.patch(-1, d, 3)).isEqualTo(CharSeq.of('4', '5', '6'));
+        assertThat(s.patch(0, d, -1)).isEqualTo(CharSeq.of('4', '5', '6', '1', '2', '3'));
+        assertThat(s.patch(0, d, 0)).isEqualTo(CharSeq.of('4', '5', '6', '1', '2', '3'));
+        assertThat(s.patch(0, d, 1)).isEqualTo(CharSeq.of('4', '5', '6', '2', '3'));
+        assertThat(s.patch(0, d, 3)).isEqualTo(CharSeq.of('4', '5', '6'));
+        assertThat(s.patch(1, d, -1)).isEqualTo(CharSeq.of('1', '4', '5', '6', '2', '3'));
+        assertThat(s.patch(1, d, 0)).isEqualTo(CharSeq.of('1', '4', '5', '6', '2', '3'));
+        assertThat(s.patch(1, d, 1)).isEqualTo(CharSeq.of('1', '4', '5', '6', '3'));
+        assertThat(s.patch(1, d, 3)).isEqualTo(CharSeq.of('1', '4', '5', '6'));
+        assertThat(s.patch(4, d, -1)).isEqualTo(CharSeq.of('1', '2', '3', '4', '5', '6'));
+        assertThat(s.patch(4, d, 0)).isEqualTo(CharSeq.of('1', '2', '3', '4', '5', '6'));
+        assertThat(s.patch(4, d, 1)).isEqualTo(CharSeq.of('1', '2', '3', '4', '5', '6'));
+        assertThat(s.patch(4, d, 3)).isEqualTo(CharSeq.of('1', '2', '3', '4', '5', '6'));
+    }
+
     // -- peek
 
     @Test

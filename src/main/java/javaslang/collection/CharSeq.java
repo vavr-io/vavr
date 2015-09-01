@@ -394,6 +394,21 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         return new CharSeq(sb.toString());
     }
 
+    @Override
+    public CharSeq patch(int from, java.lang.Iterable<? extends Character> that, int replaced) {
+        from = from < 0 ? 0 : from > length() ? length() : from;
+        replaced = replaced < 0 ? 0 : replaced;
+        final StringBuilder sb = new StringBuilder(back.substring(0, from));
+        for (Character character : that) {
+            sb.append(character);
+        }
+        from += replaced;
+        if(from < length()) {
+            sb.append(back.substring(from));
+        }
+        return new CharSeq(sb.toString());
+    }
+
     public CharSeq mapChars(CharUnaryOperator mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {

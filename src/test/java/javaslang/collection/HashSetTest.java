@@ -411,11 +411,6 @@ public class HashSetTest extends AbstractTraversableTest {
     }
 
     @Override
-    public void shouldRecognizeEqualityOfNonNils() {
-// TODO
-    }
-
-    @Override
     public void shouldPartitionIntsInOddAndEvenHavingOnlyOddNumbers() {
 // TODO
     }
