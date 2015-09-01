@@ -111,8 +111,8 @@ public class LazyTest {
     }
 
     @Test(expected = NoSuchElementException.class)
-    public void shouldEmptyFilterNonEmptyLazy() {
-        assertThat(Lazy.empty().filter(i -> false)).isEqualTo(Lazy.of(() -> 1));
+    public void shouldThrowEmptyFilterNonEmptyLazy() {
+        assertThat(Lazy.of(() -> 1).filter(i -> false)).isEqualTo(Lazy.of(() -> 1));
     }
 
     @Test
