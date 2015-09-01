@@ -100,6 +100,9 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> padTo(int length, T element);
 
     @Override
+    IndexedSeq<T> patch(int from, java.lang.Iterable<? extends T> that, int replaced);
+
+    @Override
     Tuple2<? extends IndexedSeq<T>, ? extends IndexedSeq<T>> partition(Predicate<? super T> predicate);
 
     @Override

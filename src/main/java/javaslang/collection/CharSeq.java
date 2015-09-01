@@ -395,7 +395,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public Seq<Character> patch(int from, java.lang.Iterable<? extends Character> that, int replaced) {
+    public CharSeq patch(int from, java.lang.Iterable<? extends Character> that, int replaced) {
         from = from < 0 ? 0 : from > length() ? length() : from;
         replaced = replaced < 0 ? 0 : replaced;
         final StringBuilder sb = new StringBuilder(back.substring(0, from));

@@ -99,6 +99,9 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> padTo(int length, T element);
 
     @Override
+    LinearSeq<T> patch(int from, java.lang.Iterable<? extends T> that, int replaced);
+
+    @Override
     Tuple2<? extends LinearSeq<T>, ? extends LinearSeq<T>> partition(Predicate<? super T> predicate);
 
     @Override
