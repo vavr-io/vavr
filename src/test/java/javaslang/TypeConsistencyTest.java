@@ -71,6 +71,12 @@ public class TypeConsistencyTest {
             "javaslang.control.Some//public abstract javaslang.control.Option javaslang.control.Option.flatMap(java.util.function.Function)",
             "javaslang.control.Some//public abstract javaslang.control.Option javaslang.control.Option.flatten()",
 
+            // javaslang.collection.IndexedSeq
+            "javaslang.collection.IndexedSeq//public default javaslang.collection.Seq javaslang.collection.Seq.patch(int,java.lang.Iterable,int)",
+
+            // javaslang.collection.LinearSeq
+            "javaslang.collection.LinearSeq//public default javaslang.collection.Seq javaslang.collection.Seq.patch(int,java.lang.Iterable,int)",
+
             // javaslang.collection.HashMap
             "javaslang.collection.HashMap//public abstract javaslang.collection.Map javaslang.collection.Map.groupBy(java.util.function.Function)",
 

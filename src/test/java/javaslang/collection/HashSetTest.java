@@ -24,18 +24,10 @@ public class HashSetTest extends AbstractTraversableTest {
             @Override
             public IterableAssert<T> isEqualTo(Object obj) {
                 @SuppressWarnings("unchecked")
-                java.lang.Iterable<T> expected = (java.lang.Iterable<T>) obj;
-                java.util.Map<T, Integer> actualMap = countMap(actual);
-                java.util.Map<T, Integer> expectedMap = countMap(expected);
-                assertThat(actualMap.size()).isEqualTo(expectedMap.size());
-                actualMap.keySet().forEach(k -> assertThat(actualMap.get(k)).isEqualTo(expectedMap.get(k)));
+                HashSet<T> expectedSet = HashSet.ofAll((java.lang.Iterable<T>) obj);
+                HashSet<T> actualSet = HashSet.ofAll(actual);
+                Assertions.assertThat(actualSet.equals(expectedSet)).isTrue();
                 return this;
-            }
-
-            private java.util.Map<T, Integer> countMap(java.lang.Iterable<? extends T> it) {
-                java.util.HashMap<T, Integer> cnt = new java.util.HashMap<>();
-                it.forEach(i -> cnt.merge(i, 1, (v1, v2) -> v1 + v2));
-                return cnt;
             }
         };
     }
@@ -407,11 +399,6 @@ public class HashSetTest extends AbstractTraversableTest {
 
     @Override
     public void shouldReturnSomeTailWhenCallingTailOptionOnNonNil() {
-// TODO
-    }
-
-    @Override
-    public void shouldRecognizeEqualityOfNonNils() {
 // TODO
     }
 

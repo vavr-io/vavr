@@ -704,6 +704,23 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      */
     Seq<T> padTo(int length, T element);
 
+    /**
+     * Produces a new list where a slice of elements in this list is replaced by another sequence.
+     *
+     * @param from the index of the first replaced element
+     * @param that sequence for replacement
+     * @param replaced the number of elements to drop in the original list
+     * @return a new sequence.
+     */
+    default Seq<T> patch(int from, java.lang.Iterable<? extends T> that, int replaced) {
+        from = from < 0 ? 0 : from;
+        replaced = replaced < 0 ? 0 : replaced;
+        Seq<T> result = take(from).appendAll(that);
+        from += replaced;
+        result = result.appendAll(drop(from));
+        return result;
+    }
+
     @Override
     Tuple2<? extends Seq<T>, ? extends Seq<T>> partition(Predicate<? super T> predicate);
 
