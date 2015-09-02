@@ -5,7 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.collection.RedBlackTree.TreeNode;
+import javaslang.collection.RedBlackTree.Node;
 import javaslang.test.Arbitrary;
 import javaslang.test.Checkable;
 import javaslang.test.Gen;
@@ -83,9 +83,9 @@ public class RedBlackTreeTest {
         if (tree.isEmpty()) {
             return true;
         } else {
-            final TreeNode<?> node = (TreeNode<?>) tree;
-            if (node.color == RED && ((!node.left.isEmpty() && ((TreeNode<?>) node.left).color == RED) ||
-                    (!node.right.isEmpty() && ((TreeNode<?>) node.right).color == RED))) {
+            final Node<?> node = (Node<?>) tree;
+            if (node.color == RED && ((!node.left.isEmpty() && ((Node<?>) node.left).color == RED) ||
+                    (!node.right.isEmpty() && ((Node<?>) node.right).color == RED))) {
                 return false;
             } else {
                 return invariant1(node.left) && invariant1(node.right);
@@ -125,7 +125,7 @@ public class RedBlackTreeTest {
             return true;
         } else {
             final List<T> values = TreeUtil.values(tree);
-            final Comparator<? super T> comparator = ((TreeNode<T>) tree).comparator;
+            final Comparator<? super T> comparator = ((Node<T>) tree).comparator;
             return values.length() == values.distinctBy(comparator).length();
         }
     }
@@ -149,11 +149,11 @@ public class RedBlackTreeTest {
     // some helpful tree functions
     static class TreeUtil {
 
-        static List<List<TreeNode<?>>> paths(RedBlackTree<?> tree) {
+        static List<List<Node<?>>> paths(RedBlackTree<?> tree) {
             if (tree.isEmpty()) {
                 return List.empty();
             } else {
-                final TreeNode<?> node = (TreeNode<?>) tree;
+                final Node<?> node = (Node<?>) tree;
                 final boolean isLeaf = node.left.isEmpty() && node.right.isEmpty();
                 if (isLeaf) {
                     return List.of(List.of(node));
@@ -163,11 +163,11 @@ public class RedBlackTreeTest {
             }
         }
 
-        static <T> List<TreeNode<T>> nodes(RedBlackTree<T> tree) {
+        static <T> List<Node<T>> nodes(RedBlackTree<T> tree) {
             if (tree.isEmpty()) {
                 return List.empty();
             } else {
-                final TreeNode<T> node = (TreeNode<T>) tree;
+                final Node<T> node = (Node<T>) tree;
                 return nodes(node.left).prependAll(nodes(node.right)).prepend(node);
             }
         }
