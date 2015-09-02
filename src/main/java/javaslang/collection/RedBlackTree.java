@@ -306,8 +306,9 @@ public interface RedBlackTree<T> {
                 } else if (color == BLACK && !ln.right.isEmpty()) {
                     final Node<T> lrn = (Node<T>) ln.right;
                     if (lrn.color == BLACK) {
-                        final Node<T> newNode = Node.balanceLeft(BLACK, blackHeight, lrn.color(RED), value, right, empty);
-                        return Tuple.of(new Node<>(BLACK, ln.blackHeight, ln.left, ln.value, newNode, empty), false);
+                        final Node<T> newRightNode = Node.balanceLeft(BLACK, blackHeight, lrn.color(RED), value, right, empty);
+                        final Node<T> newNode = new Node<>(BLACK, ln.blackHeight, ln.left, ln.value, newRightNode, empty);
+                        return Tuple.of(newNode, false);
                     }
                 }
             }
@@ -323,8 +324,9 @@ public interface RedBlackTree<T> {
                 } else if (color == BLACK && !rn.left.isEmpty()) {
                     final Node<T> rln = (Node<T>) rn.left;
                     if (rln.color == BLACK) {
-                        final Node<T> newNode = Node.balanceRight(BLACK, blackHeight, left, value, rln.color(RED), empty);
-                        return Tuple.of(new Node<>(BLACK, rn.blackHeight, newNode, rn.value, rn.right, empty), false);
+                        final Node<T> newLeftNode = Node.balanceRight(BLACK, blackHeight, left, value, rln.color(RED), empty);
+                        final Node<T> newNode = new Node<>(BLACK, rn.blackHeight, newLeftNode, rn.value, rn.right, empty);
+                        return Tuple.of(newNode, false);
                     }
                 }
             }
