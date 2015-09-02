@@ -125,7 +125,7 @@ public class RedBlackTreeTest {
             return true;
         } else {
             final List<T> values = TreeUtil.values(tree);
-            final Comparator<? super T> comparator = ((Node<T>) tree).comparator;
+            final Comparator<? super T> comparator = ((Node<T>) tree).empty.comparator;
             return values.length() == values.distinctBy(comparator).length();
         }
     }
