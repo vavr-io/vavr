@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.Lazy;
+import javaslang.Tuple;
 import javaslang.Tuple2;
 
 import java.io.Serializable;
@@ -296,12 +297,38 @@ public interface RedBlackTree<T> {
             return new Node<>(color, blackHeight, left, value, right, empty);
         }
 
-        private static <T> Tuple2<Node<T>, Boolean> unbalancedLeft(Color color, int blackHeight, RedBlackTree<T> left, T value, RedBlackTree<T> right, Comparator<? super T> comparator) {
-            return null; // TODO
+        private static <T> Tuple2<Node<T>, Boolean> unbalancedLeft(Color color, int blackHeight, RedBlackTree<T> left, T value, RedBlackTree<T> right, Empty<T> empty) {
+            if (!left.isEmpty()) {
+                final Node<T> ln = (Node<T>) left;
+                if (ln.color == BLACK) {
+                    final Node<T> newNode = Node.balanceLeft(BLACK, blackHeight, ln.color(RED), value, right, empty);
+                    return Tuple.of(newNode, color == BLACK);
+                } else if (color == BLACK && !ln.right.isEmpty()) {
+                    final Node<T> lrn = (Node<T>) ln.right;
+                    if (lrn.color == BLACK) {
+                        final Node<T> newNode = Node.balanceLeft(BLACK, blackHeight, lrn.color(RED), value, right, empty);
+                        return Tuple.of(new Node<>(BLACK, ln.blackHeight, ln.left, ln.value, newNode, empty), false);
+                    }
+                }
+            }
+            throw new IllegalStateException(String.format("unbalancedLeft(%s, %s, %s, %s, %s)", color, blackHeight, left, value, right));
         }
 
-        private static <T> Tuple2<Node<T>, Boolean> unbalancedRight(Color color, int blackHeight, RedBlackTree<T> left, T value, RedBlackTree<T> right, Comparator<? super T> comparator) {
-            return null; // TODO
+        private static <T> Tuple2<Node<T>, Boolean> unbalancedRight(Color color, int blackHeight, RedBlackTree<T> left, T value, RedBlackTree<T> right, Empty<T> empty) {
+            if (!right.isEmpty()) {
+                final Node<T> rn = (Node<T>) right;
+                if (rn.color == BLACK) {
+                    final Node<T> newNode = Node.balanceRight(BLACK, blackHeight, left, value, rn.color(RED), empty);
+                    return Tuple.of(newNode, color == BLACK);
+                } else if (color == BLACK && !rn.left.isEmpty()) {
+                    final Node<T> rln = (Node<T>) rn.left;
+                    if (rln.color == BLACK) {
+                        final Node<T> newNode = Node.balanceRight(BLACK, blackHeight, left, value, rln.color(RED), empty);
+                        return Tuple.of(new Node<>(BLACK, rn.blackHeight, newNode, rn.value, rn.right, empty), false);
+                    }
+                }
+            }
+            throw new IllegalStateException(String.format("unbalancedRight(%s, %s, %s, %s, %s)", color, blackHeight, left, value, right));
         }
     }
 
