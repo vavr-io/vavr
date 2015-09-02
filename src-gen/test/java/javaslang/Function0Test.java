@@ -101,6 +101,7 @@ public class Function0Test {
     public void shouldGetType() {
         final Function0<Integer> f = () -> null;
         final Function0.Type<Integer> type = f.getType();
+
         assertThat(type.toString()).isEqualTo("() -> java.lang.Integer");
     }
 }

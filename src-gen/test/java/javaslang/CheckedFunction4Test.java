@@ -147,6 +147,10 @@ public class CheckedFunction4Test {
     public void shouldGetType() {
         final CheckedFunction4<Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4) -> null;
         final CheckedFunction4.Type<Integer, Integer, Integer, Integer, Integer> type = f.getType();
+        assertThat(type.parameterType1()).isEqualTo(Integer.class);
+        assertThat(type.parameterType2()).isEqualTo(Integer.class);
+        assertThat(type.parameterType3()).isEqualTo(Integer.class);
+        assertThat(type.parameterType4()).isEqualTo(Integer.class);
         assertThat(type.toString()).isEqualTo("(java.lang.Integer, java.lang.Integer, java.lang.Integer, java.lang.Integer) -> java.lang.Integer");
     }
 }

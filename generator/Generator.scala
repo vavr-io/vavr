@@ -931,6 +931,7 @@ def generateTestClasses(): Unit = {
               public void shouldGetType() {
                   final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
                   final $name$i.Type<${(1 to i + 1).gen(j => "Integer")(", ")}> type = f.getType();
+                  ${(1 to i).gen(j => s"assertThat(type.parameterType$j()).isEqualTo(Integer.class);")("\n")}
                   $assertThat(type.toString()).isEqualTo("(${(1 to i).gen(j => "java.lang.Integer")(", ")}) -> java.lang.Integer");
               }
           }

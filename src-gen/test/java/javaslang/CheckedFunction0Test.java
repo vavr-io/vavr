@@ -101,6 +101,7 @@ public class CheckedFunction0Test {
     public void shouldGetType() {
         final CheckedFunction0<Integer> f = () -> null;
         final CheckedFunction0.Type<Integer> type = f.getType();
+
         assertThat(type.toString()).isEqualTo("() -> java.lang.Integer");
     }
 }
