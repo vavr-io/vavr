@@ -726,8 +726,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
         if (isEmpty()) {
             throw new NoSuchElementException("reduceRight on Nil");
         } else {
-            final Seq<T> reversed = reverse();
-            return reversed.tail().foldLeft(reversed.head(), (xs, x) -> op.apply(x, xs));
+            return iterator().reduceRight(op);
         }
     }
 

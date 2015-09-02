@@ -123,7 +123,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return a new Stream of int values starting from {@code from}
      */
     static Stream<Integer> from(int value) {
-        return new Cons<>(() -> value, () -> from(value + 1));
+        return Stream.ofAll(Iterator.from(value));
     }
 
     /**
@@ -135,7 +135,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return a new Stream of long values starting from {@code from}
      */
     static Stream<Long> from(long value) {
-        return new Cons<>(() -> value, () -> from(value + 1));
+        return Stream.ofAll(Iterator.from(value));
     }
 
     /**
@@ -148,7 +148,7 @@ public interface Stream<T> extends LinearSeq<T> {
     @SuppressWarnings("unchecked")
     static <T> Stream<T> gen(Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
-        return new Cons<>((Supplier<T>) supplier, () -> gen(supplier));
+        return Stream.ofAll(Iterator.gen(supplier));
     }
 
     /**
@@ -162,7 +162,7 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static <T> Stream<T> gen(T seed, Function<? super T, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
-        return new Stream.Cons<>(() -> seed, () -> gen(f.apply(seed), f));
+        return Stream.ofAll(Iterator.gen(seed, f));
     }
 
     /**
@@ -1150,7 +1150,7 @@ public interface Stream<T> extends LinearSeq<T> {
         } else if (length() <= n) {
             return this;
         } else {
-            return reverse().take(n).reverse();
+            return Stream.ofAll(iterator().takeRight(n));
         }
     }
 

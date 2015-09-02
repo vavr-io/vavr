@@ -346,16 +346,6 @@ public class HashSetTest extends AbstractTraversableTest {
     }
 
     @Override
-    public void shouldThrowWhenReduceRightNullOperator() {
-        throw new NullPointerException(); // TODO
-    }
-
-    @Override
-    public void shouldThrowWhenReduceRightNil() {
-        throw new NoSuchElementException(); // TODO
-    }
-
-    @Override
     public void shouldFindLastOfNil() {
         // TODO
     }
@@ -386,16 +376,6 @@ public class HashSetTest extends AbstractTraversableTest {
     }
 
     @Override
-    public void shouldPartitionIntsInOddAndEvenHavingOddAndEventNumbers() {
-        // TODO
-    }
-
-    @Override
-    public void shouldPartitionIntsInOddAndEvenHavingOnlyEvenNumbers() {
-        // TODO
-    }
-
-    @Override
     public void shouldSpanNonNil() {
 // TODO
     }
@@ -407,11 +387,6 @@ public class HashSetTest extends AbstractTraversableTest {
 
     @Override
     public void shouldReturnSomeTailWhenCallingTailOptionOnNonNil() {
-// TODO
-    }
-
-    @Override
-    public void shouldPartitionIntsInOddAndEvenHavingOnlyOddNumbers() {
 // TODO
     }
 
