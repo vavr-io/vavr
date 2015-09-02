@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.Lazy;
+import javaslang.Tuple2;
 
 import java.io.Serializable;
 import java.util.Comparator;
@@ -27,24 +28,24 @@ import static javaslang.collection.RedBlackTree.Color.RED;
  */
 public interface RedBlackTree<T> {
 
-    static <T extends Comparable<T>> Leaf<T> empty() {
-        return new Leaf<>(T::compareTo);
+    static <T extends Comparable<T>> Empty<T> empty() {
+        return new Empty<>(T::compareTo);
     }
 
-    static <T> Leaf<T> empty(Comparator<? super T> comparator) {
+    static <T> Empty<T> empty(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        return new Leaf<>(comparator);
+        return new Empty<>(comparator);
     }
 
     static <T extends Comparable<T>> Node<T> of(T value) {
-        final Leaf<T> empty = empty();
-        return new Node<>(BLACK, 1, empty, value, empty, empty.comparator);
+        final Empty<T> empty = empty();
+        return new Node<>(BLACK, 1, empty, value, empty, empty);
     }
 
     static <T> Node<T> of(T value, Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        final Leaf<T> empty = empty(comparator);
-        return new Node<>(BLACK, 1, empty, value, empty, comparator);
+        final Empty<T> empty = empty(comparator);
+        return new Node<>(BLACK, 1, empty, value, empty, empty);
     }
 
     default Node<T> add(T value) {
@@ -53,17 +54,17 @@ public interface RedBlackTree<T> {
 
             Node<T> insert(RedBlackTree<T> tree) {
                 if (tree.isEmpty()) {
-                    final Leaf<T> empty = (Leaf<T>) tree;
-                    return new Node<>(RED, 1, empty, value, empty, empty.comparator);
+                    final Empty<T> empty = (Empty<T>) tree;
+                    return new Node<>(RED, 1, empty, value, empty, empty);
                 } else {
                     final Node<T> node = (Node<T>) tree;
-                    final int comparison = node.comparator.compare(value, node.value);
+                    final int comparison = node.empty.comparator.compare(value, node.value);
                     if (comparison < 0) {
                         final RedBlackTree<T> newLeft = insert(node.left);
-                        return (newLeft == node.left) ? node : Node.balanceLeft(node.color, node.blackHeight, newLeft, node.value, node.right, node.comparator);
+                        return (newLeft == node.left) ? node : Node.balanceLeft(node.color, node.blackHeight, newLeft, node.value, node.right, node.empty);
                     } else if (comparison > 0) {
                         final RedBlackTree<T> newRight = insert(node.right);
-                        return (newRight == node.right) ? node : Node.balanceRight(node.color, node.blackHeight, node.left, node.value, newRight, node.comparator);
+                        return (newRight == node.right) ? node : Node.balanceRight(node.color, node.blackHeight, node.left, node.value, newRight, node.empty);
                     } else {
                         return node;
                     }
@@ -71,9 +72,7 @@ public interface RedBlackTree<T> {
             }
         }
 
-        final Node<T> node = new Util().insert(this);
-
-        return new Node<>(BLACK, node.blackHeight, node.left, node.value, node.right, node.comparator);
+        return new Util().insert(this).color(BLACK);
     }
 
     /**
@@ -81,7 +80,7 @@ public interface RedBlackTree<T> {
      *
      * @return An empty ReadBlackTree
      */
-    Leaf<T> clear();
+    Empty<T> clear();
 
     /**
      * Checks, if this {@code RedBlackTree} contains the given {@code value}.
@@ -153,29 +152,29 @@ public interface RedBlackTree<T> {
         public final RedBlackTree<T> left;
         public final T value;
         public final RedBlackTree<T> right;
-        public final Comparator<? super T> comparator;
+        public final Empty<T> empty;
 
         private final transient Lazy<Integer> hashCode;
 
         // This is no public API! The RedBlackTree takes care of passing the correct Comparator.
-        private Node(Color color, int blackHeight, RedBlackTree<T> left, T value, RedBlackTree<T> right, Comparator<? super T> comparator) {
+        private Node(Color color, int blackHeight, RedBlackTree<T> left, T value, RedBlackTree<T> right, Empty<T> empty) {
             this.color = color;
             this.blackHeight = blackHeight;
             this.left = left;
             this.value = value;
             this.right = right;
-            this.comparator = comparator;
+            this.empty = empty;
             this.hashCode = Lazy.of(() -> Objects.hash(this.value, this.left, this.right));
         }
 
         @Override
-        public Leaf<T> clear() {
-            return RedBlackTree.empty(comparator);
+        public Empty<T> clear() {
+            return empty;
         }
 
         @Override
         public boolean contains(T value) {
-            final int result = comparator.compare(value, value);
+            final int result = empty.comparator.compare(value, value);
             if (result < 0) {
                 return left.contains(value);
             } else if (result > 0) {
@@ -239,7 +238,11 @@ public interface RedBlackTree<T> {
             return left.isEmpty() && right.isEmpty();
         }
 
-        private static <T> Node<T> balanceLeft(Color color, int blackHeight, RedBlackTree<T> left, T value, RedBlackTree<T> right, Comparator<? super T> comparator) {
+        private Node<T> color(Color color) {
+            return (this.color == color) ? this : new Node<>(color, blackHeight, left, value, right, empty);
+        }
+
+        private static <T> Node<T> balanceLeft(Color color, int blackHeight, RedBlackTree<T> left, T value, RedBlackTree<T> right, Empty<T> empty) {
             if (color == BLACK) {
                 if (!left.isEmpty()) {
                     final Node<T> ln = (Node<T>) left;
@@ -247,26 +250,26 @@ public interface RedBlackTree<T> {
                         if (!ln.left.isEmpty()) {
                             final Node<T> lln = (Node<T>) ln.left;
                             if (lln.color == RED) {
-                                final Node<T> newLeft = new Node<>(BLACK, blackHeight, lln.left, lln.value, lln.right, comparator);
-                                final Node<T> newRight = new Node<>(BLACK, blackHeight, ln.right, value, right, comparator);
-                                return new Node<>(RED, blackHeight + 1, newLeft, ln.value, newRight, comparator);
+                                final Node<T> newLeft = new Node<>(BLACK, blackHeight, lln.left, lln.value, lln.right, empty);
+                                final Node<T> newRight = new Node<>(BLACK, blackHeight, ln.right, value, right, empty);
+                                return new Node<>(RED, blackHeight + 1, newLeft, ln.value, newRight, empty);
                             }
                         }
                         if (!ln.right.isEmpty()) {
                             final Node<T> lrn = (Node<T>) ln.right;
                             if (lrn.color == RED) {
-                                final Node<T> newLeft = new Node<>(BLACK, blackHeight, ln.left, ln.value, lrn.left, comparator);
-                                final Node<T> newRight = new Node<>(BLACK, blackHeight, lrn.right, value, right, comparator);
-                                return new Node<>(RED, blackHeight + 1, newLeft, lrn.value, newRight, comparator);
+                                final Node<T> newLeft = new Node<>(BLACK, blackHeight, ln.left, ln.value, lrn.left, empty);
+                                final Node<T> newRight = new Node<>(BLACK, blackHeight, lrn.right, value, right, empty);
+                                return new Node<>(RED, blackHeight + 1, newLeft, lrn.value, newRight, empty);
                             }
                         }
                     }
                 }
             }
-            return new Node<>(color, blackHeight, left, value, right, comparator);
+            return new Node<>(color, blackHeight, left, value, right, empty);
         }
 
-        private static <T> Node<T> balanceRight(Color color, int blackHeight, RedBlackTree<T> left, T value, RedBlackTree<T> right, Comparator<? super T> comparator) {
+        private static <T> Node<T> balanceRight(Color color, int blackHeight, RedBlackTree<T> left, T value, RedBlackTree<T> right, Empty<T> empty) {
             if (color == BLACK) {
                 if (!right.isEmpty()) {
                     final Node<T> rn = (Node<T>) right;
@@ -274,23 +277,31 @@ public interface RedBlackTree<T> {
                         if (!rn.right.isEmpty()) {
                             final Node<T> rrn = (Node<T>) rn.right;
                             if (rrn.color == RED) {
-                                final Node<T> newLeft = new Node<>(BLACK, blackHeight, left, value, rn.left, comparator);
-                                final Node<T> newRight = new Node<>(BLACK, blackHeight, rrn.left, rrn.value, rrn.right, comparator);
-                                return new Node<>(RED, blackHeight + 1, newLeft, rn.value, newRight, comparator);
+                                final Node<T> newLeft = new Node<>(BLACK, blackHeight, left, value, rn.left, empty);
+                                final Node<T> newRight = new Node<>(BLACK, blackHeight, rrn.left, rrn.value, rrn.right, empty);
+                                return new Node<>(RED, blackHeight + 1, newLeft, rn.value, newRight, empty);
                             }
                         }
                         if (!rn.left.isEmpty()) {
                             final Node<T> rln = (Node<T>) rn.left;
                             if (rln.color == RED) {
-                                final Node<T> newLeft = new Node<>(BLACK, blackHeight, left, value, rln.left, comparator);
-                                final Node<T> newRight = new Node<>(BLACK, blackHeight, rln.right, rn.value, rn.right, comparator);
-                                return new Node<>(RED, blackHeight + 1, newLeft, rln.value, newRight, comparator);
+                                final Node<T> newLeft = new Node<>(BLACK, blackHeight, left, value, rln.left, empty);
+                                final Node<T> newRight = new Node<>(BLACK, blackHeight, rln.right, rn.value, rn.right, empty);
+                                return new Node<>(RED, blackHeight + 1, newLeft, rln.value, newRight, empty);
                             }
                         }
                     }
                 }
             }
-            return new Node<>(color, blackHeight, left, value, right, comparator);
+            return new Node<>(color, blackHeight, left, value, right, empty);
+        }
+
+        private static <T> Tuple2<Node<T>, Boolean> unbalancedLeft(Color color, int blackHeight, RedBlackTree<T> left, T value, RedBlackTree<T> right, Comparator<? super T> comparator) {
+            return null; // TODO
+        }
+
+        private static <T> Tuple2<Node<T>, Boolean> unbalancedRight(Color color, int blackHeight, RedBlackTree<T> left, T value, RedBlackTree<T> right, Comparator<? super T> comparator) {
+            return null; // TODO
         }
     }
 
@@ -299,19 +310,19 @@ public interface RedBlackTree<T> {
      *
      * @param <T> Component type
      */
-    class Leaf<T> implements RedBlackTree<T>, Serializable {
+    class Empty<T> implements RedBlackTree<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
         public final Comparator<? super T> comparator;
 
         // This is no public API! The RedBlackTree takes care of passing the correct Comparator.
-        private Leaf(Comparator<? super T> comparator) {
+        private Empty(Comparator<? super T> comparator) {
             this.comparator = comparator;
         }
 
         @Override
-        public Leaf<T> clear() {
+        public Empty<T> clear() {
             return this;
         }
 
@@ -332,7 +343,7 @@ public interface RedBlackTree<T> {
 
         @Override
         public boolean equals(Object o) {
-            return (o == this) || (o instanceof Leaf);
+            return (o == this) || (o instanceof Empty);
         }
 
         @Override
