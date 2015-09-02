@@ -1462,7 +1462,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
                 @Override
                 public boolean hasNext() {
                     while (that.hasNext()) {
-                        queue = queue.append(that.next());
+                        queue = queue.enqueue(that.next());
                         if(queue.length() > n) {
                             queue = queue.dequeue()._2;
                         }
