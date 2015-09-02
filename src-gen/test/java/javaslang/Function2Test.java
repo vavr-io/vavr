@@ -135,6 +135,8 @@ public class Function2Test {
     public void shouldGetType() {
         final Function2<Integer, Integer, Integer> f = (i1, i2) -> null;
         final Function2.Type<Integer, Integer, Integer> type = f.getType();
+        assertThat(type.parameterType1()).isEqualTo(Integer.class);
+        assertThat(type.parameterType2()).isEqualTo(Integer.class);
         assertThat(type.toString()).isEqualTo("(java.lang.Integer, java.lang.Integer) -> java.lang.Integer");
     }
 }

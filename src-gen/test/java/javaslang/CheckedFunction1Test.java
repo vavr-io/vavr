@@ -137,6 +137,7 @@ public class CheckedFunction1Test {
     public void shouldGetType() {
         final CheckedFunction1<Integer, Integer> f = (i1) -> null;
         final CheckedFunction1.Type<Integer, Integer> type = f.getType();
+        assertThat(type.parameterType1()).isEqualTo(Integer.class);
         assertThat(type.toString()).isEqualTo("(java.lang.Integer) -> java.lang.Integer");
     }
 }
