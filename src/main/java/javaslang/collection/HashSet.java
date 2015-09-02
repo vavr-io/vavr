@@ -186,7 +186,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public Option<T> findLast(Predicate<? super T> predicate) {
-        throw new UnsupportedOperationException("TODO");
+        return findFirst(predicate);
     }
 
     @Override
@@ -212,7 +212,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
-        throw new UnsupportedOperationException("TODO");
+        return foldLeft(zero, (u, t) -> f.apply(t, u));
     }
 
     @Override
@@ -292,16 +292,8 @@ public final class HashSet<T> implements Set<T>, Serializable {
     @Override
     public Tuple2<HashSet<T>, HashSet<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        HashSet<T> first = HashSet.empty();
-        HashSet<T> second = HashSet.empty();
-        for (T t : this) {
-            if (predicate.test(t)) {
-                first = first.add(t);
-            } else {
-                second = second.add(t);
-            }
-        }
-        return Tuple.of(first, second);
+        final Tuple2<Iterator<T>, Iterator<T>> p = iterator().partition(predicate);
+        return Tuple.of(HashSet.ofAll(p._1), HashSet.ofAll(p._2));
     }
 
     @Override
@@ -315,7 +307,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
-        throw new UnsupportedOperationException("TODO");
+        return reduceLeft(op);
     }
 
     @Override

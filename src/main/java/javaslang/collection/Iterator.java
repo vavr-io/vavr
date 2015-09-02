@@ -715,7 +715,104 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         }
     }
 
-    // TODO: add static factory methods similar to Stream.from, Stream.gen, ...
+    /**
+     * Returns an infinitely iterator of int values starting from {@code from}.
+     * <p>
+     * The {@code Iterator} extends to {@code Integer.MIN_VALUE} when passing {@code Integer.MAX_VALUE}.
+     *
+     * @param value a start int value
+     * @return a new {@code Iterator} of int values starting from {@code from}
+     */
+    static Iterator<Integer> from(int value) {
+        return new AbstractIterator<Integer>() {
+            private int next = value;
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public Integer next() {
+                return next++;
+            }
+        };
+    }
+
+    /**
+     * Returns an infinitely iterator of long values starting from {@code from}.
+     * <p>
+     * The {@code Iterator} extends to {@code Long.MIN_VALUE} when passing {@code Long.MAX_VALUE}.
+     *
+     * @param value a start long value
+     * @return a new {@code Iterator} of long values starting from {@code from}
+     */
+    static Iterator<Long> from(long value) {
+        return new AbstractIterator<Long>() {
+            private long next = value;
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public Long next() {
+                return next++;
+            }
+        };
+    }
+
+    /**
+     * Generates an infinitely iterator using a value Supplier.
+     *
+     * @param supplier A Supplier of iterator values
+     * @param <T>      value type
+     * @return A new {@code Iterator}
+     */
+    @SuppressWarnings("unchecked")
+    static <T> Iterator<T> gen(Supplier<? extends T> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return new AbstractIterator<T>() {
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public T next() {
+                return supplier.get();
+            }
+        };
+    }
+
+    /**
+     * Generates an infinitely iterator using a function to calculate the next value
+     * based on the previous.
+     *
+     * @param seed The first value in the iterator
+     * @param f    A function to calculate the next value based on the previous
+     * @param <T>  value type
+     * @return A new {@code Iterator}
+     */
+    static <T> Iterator<T> gen(T seed, Function<? super T, ? extends T> f) {
+        Objects.requireNonNull(f, "f is null");
+        return new AbstractIterator<T>() {
+            T next = seed;
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public T next() {
+                T result = next;
+                next = f.apply(next);
+                return result;
+            }
+        };
+    }
 
     @Override
     default Iterator<T> clear() {
@@ -1095,8 +1192,14 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     @Override
     default Tuple2<Iterator<T>, Iterator<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        // TODO
-        throw new UnsupportedOperationException("TODO");
+        if (!hasNext()) {
+            return Tuple.of(empty(), empty());
+        } else {
+            final Stream<T> that = Stream.ofAll(this);
+            final Iterator<T> first = that.iterator().filter(predicate);
+            final Iterator<T> second = that.iterator().filter(predicate.negate());
+            return Tuple.of(first, second);
+        }
     }
 
     @Override
@@ -1126,10 +1229,25 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     @Override
+    default T reduceLeft(BiFunction<? super T, ? super T, ? extends T> op) {
+        Objects.requireNonNull(op, "op is null");
+        if (isEmpty()) {
+            throw new NoSuchElementException("reduceLeft on Nil");
+        } else {
+            Stream<T> stream = Stream.ofAll(this);
+            return stream.tail().foldLeft(stream.head(), op::apply);
+        }
+    }
+
+    @Override
     default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
-        // TODO
-        throw new UnsupportedOperationException("TODO");
+        if (isEmpty()) {
+            throw new NoSuchElementException("reduceLeft on Nil");
+        } else {
+            Stream<T> reversed = Stream.ofAll(this).reverse();
+            return reversed.tail().foldLeft(reversed.head(), (xs, x) -> op.apply(x, xs));
+        }
     }
 
     @Override
@@ -1334,8 +1452,35 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
     @Override
     default Iterator<T> takeRight(int n) {
-        // TODO
-        throw new UnsupportedOperationException("TODO");
+        if (n <= 0) {
+            return empty();
+        } else {
+            final Iterator<T> that = this;
+            return new Iterator<T>() {
+                private Queue<T> queue = Queue.empty();
+
+                @Override
+                public boolean hasNext() {
+                    while (that.hasNext()) {
+                        queue = queue.enqueue(that.next());
+                        if(queue.length() > n) {
+                            queue = queue.dequeue()._2;
+                        }
+                    }
+                    return queue.length() > 0;
+                }
+
+                @Override
+                public T next() {
+                    if (!hasNext()) {
+                        EMPTY.next();
+                    }
+                    final Tuple2<T, Queue<T>> t = queue.dequeue();
+                    queue = t._2;
+                    return t._1;
+                }
+            };
+        }
     }
 
     @Override

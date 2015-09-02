@@ -108,4 +108,45 @@ public class IteratorTest extends AbstractValueTest {
     int getPeekNonNilPerformingAnAction() {
         return 3;
     }
+
+    // -- static from(int)
+
+    @Test
+    public void shouldGenerateIntStream() {
+        assertThat(Iterator.from(-1).take(3)).isEqualTo(Iterator.of(-1, 0, 1));
+    }
+
+    @Test
+    public void shouldGenerateTerminatingIntStream() {
+        //noinspection NumericOverflow
+        assertThat(Iterator.from(Integer.MAX_VALUE).take(2)).isEqualTo(Iterator.of(Integer.MAX_VALUE, Integer.MAX_VALUE + 1));
+    }
+
+    // -- static from(long)
+
+    @Test
+    public void shouldGenerateLongStream() {
+        assertThat(Iterator.from(-1L).take(3)).isEqualTo(Iterator.of(-1L, 0L, 1L));
+    }
+
+    @Test
+    public void shouldGenerateTerminatingLongStream() {
+        //noinspection NumericOverflow
+        assertThat(Iterator.from(Long.MAX_VALUE).take(2)).isEqualTo(Iterator.of(Long.MAX_VALUE, Long.MAX_VALUE + 1));
+    }
+
+    // -- static gen(Supplier)
+
+    @Test
+    public void shouldGenerateInfiniteStreamBasedOnSupplier() {
+        assertThat(Iterator.gen(() -> 1).take(13).reduce((i, j) -> i + j)).isEqualTo(13);
+    }
+
+    // -- static gen(T, Function)
+
+    @Test
+    public void shouldGenerateInfiniteStreamBasedOnSupplierWithAccessToPreviousValue() {
+        assertThat(Iterator.gen(2, (i) -> i + 2).take(3).reduce((i, j) -> i + j)).isEqualTo(12);
+    }
+
 }
