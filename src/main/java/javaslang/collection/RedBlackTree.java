@@ -297,7 +297,7 @@ public interface RedBlackTree<T> {
 
         @Override
         public boolean contains(T value) {
-            final int result = empty.comparator.compare(value, value);
+            final int result = empty.comparator.compare(value, this.value);
             if (result < 0) {
                 return left.contains(value);
             } else if (result > 0) {
