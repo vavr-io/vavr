@@ -280,11 +280,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     @Override
     public <C> Map<C, CharSeq> groupBy(Function<? super Character, ? extends C> classifier) {
         Objects.requireNonNull(classifier, "classifier is null");
-        return foldLeft(HashMap.empty(), (map, t) -> {
-            final C key = classifier.apply(t);
-            final CharSeq values = map.get(key).map(ts -> ts.append(t)).orElse(CharSeq.of(t));
-            return map.put(key, values);
-        });
+        return iterator().groupBy(classifier).map((c, it) -> Map.Entry.of(c, CharSeq.ofAll(it)));
     }
 
     @Override
