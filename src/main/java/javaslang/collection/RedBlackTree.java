@@ -124,9 +124,25 @@ public interface RedBlackTree<T> {
                     final Node<T> node = (Node<T>) tree;
                     final int comparison = node.comparator().compare(value, node.value);
                     if (comparison < 0) {
-                        return null; // TODO
+                        final Tuple2<? extends RedBlackTree<T>, Boolean> deleted = delete(node.left);
+                        final RedBlackTree<T> l = deleted._1;
+                        final boolean d = deleted._2;
+                        if (d) {
+                            return Node.unbalancedRight(node.color, node.blackHeight - 1, l, node.value, node.right, node.empty);
+                        } else {
+                            final Node<T> newNode = new Node<>(node.color, node.blackHeight, l, node.value, node.right, node.empty);
+                            return Tuple.of(newNode, false);
+                        }
                     } else if (comparison > 0) {
-                        return null; // TODO
+                        final Tuple2<? extends RedBlackTree<T>, Boolean> deleted = delete(node.right);
+                        final RedBlackTree<T> r = deleted._1;
+                        final boolean d = deleted._2;
+                        if (d) {
+                            return Node.unbalancedLeft(node.color, node.blackHeight - 1, node.left, node.value, r, node.empty);
+                        } else {
+                            final Node<T> newNode = new Node<>(node.color, node.blackHeight, node.left, node.value, r, node.empty);
+                            return Tuple.of(newNode, false);
+                        }
                     } else {
                         if (node.right.isEmpty()) {
                             if (node.color == BLACK) {
@@ -135,7 +151,8 @@ public interface RedBlackTree<T> {
                                 return Tuple.of(node.left, false);
                             }
                         } else {
-                            final Tuple3<? extends RedBlackTree<T>, Boolean, T> newRight = deleteMin(node.right);
+                            final Node<T> nodeRight = (Node<T>) node.right;
+                            final Tuple3<? extends RedBlackTree<T>, Boolean, T> newRight = deleteMin(nodeRight);
                             final RedBlackTree<T> r = newRight._1;
                             final boolean d = newRight._2;
                             final T m = newRight._3;
@@ -151,11 +168,41 @@ public interface RedBlackTree<T> {
             }
 
             private Tuple2<? extends RedBlackTree<T>, Boolean> blackify(RedBlackTree<T> tree) {
-                return null; // TODO
+                if (tree instanceof Node) {
+                    final Node<T> node = (Node<T>) tree;
+                    if (node.color == RED) {
+                        return Tuple.of(node.color(BLACK), false);
+                    }
+                }
+                return Tuple.of(tree, true);
             }
 
-            private Tuple3<? extends RedBlackTree<T>, Boolean, T> deleteMin(RedBlackTree<T> tree) {
-                return null; // TODO
+            private Tuple3<? extends RedBlackTree<T>, Boolean, T> deleteMin(Node<T> node) {
+                if (node.left.isEmpty()) {
+                    if (node.color == BLACK) {
+                        if (node.right.isEmpty()) {
+                            return Tuple.of(node.empty, true, node.value);
+                        } else {
+                            final Node<T> rightNode = (Node<T>) node.right;
+                            return Tuple.of(rightNode.color(BLACK), false, node.value);
+                        }
+                    } else {
+                        return Tuple.of(node.right, false, node.value);
+                    }
+                } else {
+                    final Node<T> nodeLeft = (Node<T>) node.left;
+                    final Tuple3<? extends RedBlackTree<T>, Boolean, T> newNode = deleteMin(nodeLeft);
+                    final RedBlackTree<T> l = newNode._1;
+                    final boolean d = newNode._2;
+                    final T m = newNode._3;
+                    if (d) {
+                        final Tuple2<Node<T>, Boolean> tD = Node.unbalancedRight(node.color, node.blackHeight - 1, l, node.value, node.right, node.empty);
+                        return Tuple.of(tD._1, tD._2, m);
+                    } else {
+                        final Node<T> tD = new Node<>(node.color, node.blackHeight, l, node.value, node.right, node.empty);
+                        return Tuple.of(tD, false, m);
+                    }
+                }
             }
         }
 
