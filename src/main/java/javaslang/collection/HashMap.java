@@ -202,6 +202,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public <C> Map<C, HashMap<K, V>> groupBy(Function<? super Entry<K, V>, ? extends C> classifier) {
+        Objects.requireNonNull(classifier, "classifier is null");
         return foldLeft(HashMap.empty(), (map, entry) -> {
             final C key = classifier.apply(entry);
             final HashMap<K, V> values = map
