@@ -1068,7 +1068,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     @Override
     default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
-        return Stream.ofAll(this).reverse().foldRight(zero, f::apply);
+        return Stream.ofAll(this).foldRight(zero, f::apply);
     }
 
     @Override
