@@ -5,7 +5,8 @@
  */
 package javaslang.collection;
 
-import javaslang.collection.RedBlackTree.TreeNode;
+import javaslang.Tuple;
+import javaslang.collection.RedBlackTree.Node;
 import javaslang.test.Arbitrary;
 import javaslang.test.Checkable;
 import javaslang.test.Gen;
@@ -22,11 +23,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class RedBlackTreeTest {
 
-    // Generates constantly growing random RedBlackTrees
+    // Generates random RedBlackTrees, adding values with freq 3, deleting with freq 1
     static final Arbitrary<RedBlackTree<Integer>> TREES = size -> {
         final Random random = Checkable.RNG.get();
         final Gen<Integer> intGen = Arbitrary.integer().apply(size);
-        return Gen.<RedBlackTree<Integer>> of(RedBlackTree.empty(), tree -> tree.add(intGen.apply(random)));
+        return Gen.<RedBlackTree<Integer>> of(RedBlackTree.empty(), tree ->
+                        Gen.<RedBlackTree<Integer>> frequency(
+                                Tuple.of(1, rnd -> tree.delete(intGen.apply(rnd))),
+                                Tuple.of(3, rnd -> tree.add(intGen.apply(rnd)))
+                        ).apply(random)
+        );
     };
 
     // Rudimentary tests
@@ -68,6 +74,13 @@ public class RedBlackTreeTest {
         assertThat(tree.toString()).isEqualTo("(B:4 (B:2 R:1 R:3) (R:6 B:5 (B:9 R:7)))");
     }
 
+    @Test
+    public void shouldDelete_2_from_2_1_4_5_9_3_6_7() {
+        final RedBlackTree<Integer> testee = RedBlackTree.<Integer> empty().add(2).add(1).add(4).add(5).add(9).add(3).add(6).add(7);
+        final RedBlackTree<Integer> actual = testee.delete(2);
+        assertThat(actual.toString()).isEqualTo("(B:4 (B:3 R:1) (R:6 B:5 (B:9 R:7)))");
+    }
+
     // Red/Black Tree invariants
 
     @Test
@@ -83,9 +96,9 @@ public class RedBlackTreeTest {
         if (tree.isEmpty()) {
             return true;
         } else {
-            final TreeNode<?> node = (TreeNode<?>) tree;
-            if (node.color == RED && ((!node.left.isEmpty() && ((TreeNode<?>) node.left).color == RED) ||
-                    (!node.right.isEmpty() && ((TreeNode<?>) node.right).color == RED))) {
+            final Node<?> node = (Node<?>) tree;
+            if (node.color == RED && ((!node.left.isEmpty() && ((Node<?>) node.left).color == RED) ||
+                    (!node.right.isEmpty() && ((Node<?>) node.right).color == RED))) {
                 return false;
             } else {
                 return invariant1(node.left) && invariant1(node.right);
@@ -125,7 +138,7 @@ public class RedBlackTreeTest {
             return true;
         } else {
             final List<T> values = TreeUtil.values(tree);
-            final Comparator<? super T> comparator = ((TreeNode<T>) tree).comparator;
+            final Comparator<? super T> comparator = ((Node<T>) tree).empty.comparator;
             return values.length() == values.distinctBy(comparator).length();
         }
     }
@@ -149,11 +162,11 @@ public class RedBlackTreeTest {
     // some helpful tree functions
     static class TreeUtil {
 
-        static List<List<TreeNode<?>>> paths(RedBlackTree<?> tree) {
+        static List<List<Node<?>>> paths(RedBlackTree<?> tree) {
             if (tree.isEmpty()) {
                 return List.empty();
             } else {
-                final TreeNode<?> node = (TreeNode<?>) tree;
+                final Node<?> node = (Node<?>) tree;
                 final boolean isLeaf = node.left.isEmpty() && node.right.isEmpty();
                 if (isLeaf) {
                     return List.of(List.of(node));
@@ -163,11 +176,11 @@ public class RedBlackTreeTest {
             }
         }
 
-        static <T> List<TreeNode<T>> nodes(RedBlackTree<T> tree) {
+        static <T> List<Node<T>> nodes(RedBlackTree<T> tree) {
             if (tree.isEmpty()) {
                 return List.empty();
             } else {
-                final TreeNode<T> node = (TreeNode<T>) tree;
+                final Node<T> node = (Node<T>) tree;
                 return nodes(node.left).prependAll(nodes(node.right)).prepend(node);
             }
         }
