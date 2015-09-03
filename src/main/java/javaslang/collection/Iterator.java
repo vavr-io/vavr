@@ -1668,9 +1668,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     abstract class AbstractIterator<T> implements Iterator<T> {
 
         public boolean equals(Object o) {
-            if(o instanceof java.lang.Iterable) {
-                java.lang.Iterable<?> iterable = (java.lang.Iterable<?>) o;
-                java.util.Iterator<?> that = iterable.iterator();
+            if(o instanceof Iterator) {
+                final Iterator<?> that = (Iterator<?>) o;
                 while (this.hasNext() && that.hasNext()) {
                     if (!Objects.equals(this.next(), that.next())) {
                         return false;
