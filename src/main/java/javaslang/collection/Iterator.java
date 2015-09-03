@@ -1670,7 +1670,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         public boolean equals(Object o) {
             if(o instanceof java.lang.Iterable) {
                 java.lang.Iterable<?> iterable = (java.lang.Iterable<?>) o;
-                Objects.requireNonNull(iterable, "iterable is null");
                 java.util.Iterator<?> that = iterable.iterator();
                 while (this.hasNext() && that.hasNext()) {
                     if (!Objects.equals(this.next(), that.next())) {
