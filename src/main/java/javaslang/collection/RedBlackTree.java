@@ -28,7 +28,7 @@ import static javaslang.collection.RedBlackTree.Color.RED;
  *
  * @param <T> Component type
  */
-public interface RedBlackTree<T> {
+public interface RedBlackTree<T> extends Iterable<T> {
 
     static <T extends Comparable<T>> Empty<T> empty() {
         return new Empty<>(T::compareTo);
@@ -76,14 +76,6 @@ public interface RedBlackTree<T> {
 
         return new Util().insert(this).color(BLACK);
     }
-
-    /**
-     * The black height of the tree.
-     *
-     * @return The black hight.
-     */
-    // TODO: remove from public API
-    int blackHeight();
 
     /**
      * Clears this RedBlackTree.
@@ -210,12 +202,61 @@ public interface RedBlackTree<T> {
         return tree.isEmpty() ? tree : ((Node<T>) tree).color(BLACK);
     }
 
+    default RedBlackTree<T> difference(RedBlackTree<T> tree) {
+        Objects.requireNonNull(tree, "tree is null");
+        if (isEmpty() || tree.isEmpty()) {
+            return this;
+        } else {
+            final Node<T> that = (Node<T>) tree;
+            final Tuple2<RedBlackTree<T>, RedBlackTree<T>> split = Node.split((Node<T>) this, that.value);
+            return Node.merge(split._1.difference(that.left), split._2.difference(that.right));
+        }
+    }
+
+    default RedBlackTree<T> intersection(RedBlackTree<T> tree) {
+        Objects.requireNonNull(tree, "tree is null");
+        if (isEmpty()) {
+            return this;
+        } else if (tree.isEmpty()) {
+            return tree;
+        } else {
+            final Node<T> that = (Node<T>) tree;
+            final Tuple2<RedBlackTree<T>, RedBlackTree<T>> split = Node.split((Node<T>) this, that.value);
+            if (contains(that.value)) {
+                return Node.join(split._1.intersection(that.left), that.value, split._2.intersection(that.right));
+            } else {
+                return Node.merge(split._1.intersection(that.left), split._2.intersection(that.right));
+            }
+        }
+    }
+
     /**
      * Checks if this {@code RedBlackTree} is empty, i.e. an instance of {@code Leaf}.
      *
      * @return true, if it is empty, false otherwise.
      */
     boolean isEmpty();
+
+    default RedBlackTree<T> union(RedBlackTree<T> tree) {
+        Objects.requireNonNull(tree, "tree is null");
+        if (tree.isEmpty()) {
+            return this;
+        } else {
+            final Node<T> that = (Node<T>) tree;
+            if (isEmpty()) {
+                return that.color(BLACK);
+            } else {
+                final Tuple2<RedBlackTree<T>, RedBlackTree<T>> split = Node.split((Node<T>) this, that.value);
+                return Node.join(split._1.union(that.left), that.value, split._2.union(that.right));
+            }
+        }
+    }
+
+    @Override
+    default Iterator<T> iterator() {
+        // TODO
+        throw new UnsupportedOperationException("TODO: insort search");
+    }
 
     /**
      * Compares color, value and sub-trees. The comparator is not compared because function equality is not computable.
@@ -278,11 +319,6 @@ public interface RedBlackTree<T> {
             this.right = right;
             this.empty = empty;
             this.hashCode = Lazy.of(() -> Objects.hash(this.value, this.left, this.right));
-        }
-
-        @Override
-        public int blackHeight() {
-            return blackHeight;
         }
 
         @Override
@@ -360,6 +396,10 @@ public interface RedBlackTree<T> {
             return (this.color == color) ? this : new Node<>(color, blackHeight, left, value, right, empty);
         }
 
+        private static <T> RedBlackTree<T> color(RedBlackTree<T> tree, Color color) {
+            return tree.isEmpty() ? tree : ((Node<T>) tree).color(color);
+        }
+
         private static <T> Node<T> balanceLeft(Color color, int blackHeight, RedBlackTree<T> left, T value, RedBlackTree<T> right, Empty<T> empty) {
             if (color == BLACK) {
                 if (!left.isEmpty()) {
@@ -414,6 +454,32 @@ public interface RedBlackTree<T> {
             return new Node<>(color, blackHeight, left, value, right, empty);
         }
 
+        private static <T> RedBlackTree<T> join(RedBlackTree<T> t1, T value, RedBlackTree<T> t2) {
+            return null; // TODO
+        }
+
+        private static <T> RedBlackTree<T> merge(RedBlackTree<T> t1, RedBlackTree<T> t2) {
+            return null; // TODO
+        }
+
+        private static <T> Tuple2<RedBlackTree<T>, RedBlackTree<T>> split(RedBlackTree<T> tree, T value) {
+            if (tree.isEmpty()) {
+                return Tuple.of(tree, tree);
+            } else {
+                final Node<T> node = (Node<T>) tree;
+                final int comparison = node.comparator().compare(value, node.value);
+                if (comparison < 0) {
+                    final Tuple2<RedBlackTree<T>, RedBlackTree<T>> split = Node.split(node.left, value);
+                    return Tuple.of(split._1, Node.join(split._2, node.value, Node.color(node.right, BLACK)));
+                } else if (comparison > 0) {
+                    final Tuple2<RedBlackTree<T>, RedBlackTree<T>> split = Node.split(node.left, value);
+                    return Tuple.of(Node.join(Node.color(node.left, BLACK), node.value, split._1), split._2);
+                } else {
+                    return Tuple.of(Node.color(node.left, BLACK), Node.color(node.right, BLACK));
+                }
+            }
+        }
+
         private static <T> Tuple2<Node<T>, Boolean> unbalancedLeft(Color color, int blackHeight, RedBlackTree<T> left, T value, RedBlackTree<T> right, Empty<T> empty) {
             if (!left.isEmpty()) {
                 final Node<T> ln = (Node<T>) left;
@@ -465,11 +531,6 @@ public interface RedBlackTree<T> {
         // This is no public API! The RedBlackTree takes care of passing the correct Comparator.
         private Empty(Comparator<? super T> comparator) {
             this.comparator = comparator;
-        }
-
-        @Override
-        public int blackHeight() {
-            return 0;
         }
 
         @Override

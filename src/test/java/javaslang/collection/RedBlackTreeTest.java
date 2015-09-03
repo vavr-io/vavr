@@ -24,15 +24,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class RedBlackTreeTest {
 
     // Generates random RedBlackTrees, adding values with freq 3, deleting with freq 1
-    static final Arbitrary<RedBlackTree<Integer>> TREES = size -> {
-        final Random random = Checkable.RNG.get();
-        final Gen<Integer> intGen = Arbitrary.integer().apply(size);
-        return Gen.<RedBlackTree<Integer>> of(RedBlackTree.empty(), tree ->
+    static final Arbitrary<RedBlackTree<Integer>> TREES = size -> random -> {
+
+        final Gen<Integer> ints = Arbitrary.integer().apply(size);
+
+        final Gen<RedBlackTree<Integer>> gen = Gen.<RedBlackTree<Integer>> of(RedBlackTree.empty(), t ->
                         Gen.<RedBlackTree<Integer>> frequency(
-                                Tuple.of(1, rnd -> tree.delete(intGen.apply(rnd))),
-                                Tuple.of(3, rnd -> tree.add(intGen.apply(rnd)))
+                                Tuple.of(1, rnd -> t.delete(ints.apply(rnd))),
+                                Tuple.of(3, rnd -> t.add(ints.apply(rnd)))
                         ).apply(random)
         );
+
+        int count = Gen.choose(1, size).apply(random);
+
+        RedBlackTree<Integer> tree;
+
+        do {
+            tree = gen.apply(random);
+        } while(--count > 0);
+
+        return tree;
     };
 
     // Rudimentary tests
