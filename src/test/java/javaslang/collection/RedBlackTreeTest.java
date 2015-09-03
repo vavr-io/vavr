@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Tuple;
 import javaslang.collection.RedBlackTree.Node;
 import javaslang.test.Arbitrary;
 import javaslang.test.Checkable;
@@ -22,11 +23,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class RedBlackTreeTest {
 
-    // Generates constantly growing random RedBlackTrees
+    // Generates random RedBlackTrees, adding values with freq 3, deleting with freq 1
     static final Arbitrary<RedBlackTree<Integer>> TREES = size -> {
         final Random random = Checkable.RNG.get();
         final Gen<Integer> intGen = Arbitrary.integer().apply(size);
-        return Gen.<RedBlackTree<Integer>> of(RedBlackTree.empty(), tree -> tree.add(intGen.apply(random)));
+        return Gen.<RedBlackTree<Integer>> of(RedBlackTree.empty(), tree ->
+                        Gen.<RedBlackTree<Integer>> frequency(
+                                Tuple.of(1, rnd -> tree.delete(intGen.apply(rnd))),
+                                Tuple.of(3, rnd -> tree.add(intGen.apply(rnd)))
+                        ).apply(random)
+        );
     };
 
     // Rudimentary tests
@@ -66,6 +72,13 @@ public class RedBlackTreeTest {
 
         tree = tree.add(7);
         assertThat(tree.toString()).isEqualTo("(B:4 (B:2 R:1 R:3) (R:6 B:5 (B:9 R:7)))");
+    }
+
+    @Test
+    public void shouldDelete_2_from_2_1_4_5_9_3_6_7() {
+        final RedBlackTree<Integer> testee = RedBlackTree.<Integer> empty().add(2).add(1).add(4).add(5).add(9).add(3).add(6).add(7);
+        final RedBlackTree<Integer> actual = testee.delete(2);
+        assertThat(actual.toString()).isEqualTo("(B:4 (B:3 R:1) (R:6 B:5 (B:9 R:7)))");
     }
 
     // Red/Black Tree invariants
