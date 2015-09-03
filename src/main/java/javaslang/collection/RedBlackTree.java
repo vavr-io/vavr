@@ -8,6 +8,7 @@ package javaslang.collection;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.Tuple3;
 
 import java.io.Serializable;
 import java.util.Comparator;
@@ -59,12 +60,12 @@ public interface RedBlackTree<T> {
                     return new Node<>(RED, 1, empty, value, empty, empty);
                 } else {
                     final Node<T> node = (Node<T>) tree;
-                    final int comparison = node.empty.comparator.compare(value, node.value);
+                    final int comparison = node.comparator().compare(value, node.value);
                     if (comparison < 0) {
-                        final RedBlackTree<T> newLeft = insert(node.left);
+                        final Node<T> newLeft = insert(node.left);
                         return (newLeft == node.left) ? node : Node.balanceLeft(node.color, node.blackHeight, newLeft, node.value, node.right, node.empty);
                     } else if (comparison > 0) {
-                        final RedBlackTree<T> newRight = insert(node.right);
+                        final Node<T> newRight = insert(node.right);
                         return (newRight == node.right) ? node : Node.balanceRight(node.color, node.blackHeight, node.left, node.value, newRight, node.empty);
                     } else {
                         return node;
@@ -77,11 +78,26 @@ public interface RedBlackTree<T> {
     }
 
     /**
+     * The black height of the tree.
+     *
+     * @return The black hight.
+     */
+    // TODO: remove from public API
+    int blackHeight();
+
+    /**
      * Clears this RedBlackTree.
      *
      * @return An empty ReadBlackTree
      */
     Empty<T> clear();
+
+    /**
+     * Returns the underlying {@link java.util.Comparator} of this RedBlackTree.
+     *
+     * @return The comparator.
+     */
+    Comparator<? super T> comparator();
 
     /**
      * Checks, if this {@code RedBlackTree} contains the given {@code value}.
@@ -92,11 +108,60 @@ public interface RedBlackTree<T> {
     boolean contains(T value);
 
     /**
-     * The black height of the tree.
+     * Delete a value from this RedBlackTree.
      *
-     * @return The black hight.
+     * @param value A value
+     * @return A new RedBlackTree if the value is present, otherwise this.
      */
-    int blackHeight();
+    default RedBlackTree<T> delete(T value) {
+
+        class Util {
+
+            Tuple2<? extends RedBlackTree<T>, Boolean> delete(RedBlackTree<T> tree) {
+                if (tree.isEmpty()) {
+                    return Tuple.of(tree, false);
+                } else {
+                    final Node<T> node = (Node<T>) tree;
+                    final int comparison = node.comparator().compare(value, node.value);
+                    if (comparison < 0) {
+                        return null; // TODO
+                    } else if (comparison > 0) {
+                        return null; // TODO
+                    } else {
+                        if (node.right.isEmpty()) {
+                            if (node.color == BLACK) {
+                                return blackify(node.left);
+                            } else {
+                                return Tuple.of(node.left, false);
+                            }
+                        } else {
+                            final Tuple3<? extends RedBlackTree<T>, Boolean, T> newRight = deleteMin(node.right);
+                            final RedBlackTree<T> r = newRight._1;
+                            final boolean d = newRight._2;
+                            final T m = newRight._3;
+                            if (d) {
+                                return Node.unbalancedLeft(node.color, node.blackHeight - 1, node.left, m, r, node.empty);
+                            } else {
+                                final RedBlackTree<T> newNode = new Node<>(node.color, node.blackHeight, node.left, m, r, node.empty);
+                                return Tuple.of(newNode, false);
+                            }
+                        }
+                    }
+                }
+            }
+
+            private Tuple2<? extends RedBlackTree<T>, Boolean> blackify(RedBlackTree<T> tree) {
+                return null; // TODO
+            }
+
+            private Tuple3<? extends RedBlackTree<T>, Boolean, T> deleteMin(RedBlackTree<T> tree) {
+                return null; // TODO
+            }
+        }
+
+        final RedBlackTree<T> tree = new Util().delete(this)._1;
+        return tree.isEmpty() ? tree : ((Node<T>) tree).color(BLACK);
+    }
 
     /**
      * Checks if this {@code RedBlackTree} is empty, i.e. an instance of {@code Leaf}.
@@ -169,8 +234,18 @@ public interface RedBlackTree<T> {
         }
 
         @Override
+        public int blackHeight() {
+            return blackHeight;
+        }
+
+        @Override
         public Empty<T> clear() {
             return empty;
+        }
+
+        @Override
+        public Comparator<? super T> comparator() {
+            return empty.comparator;
         }
 
         @Override
@@ -183,11 +258,6 @@ public interface RedBlackTree<T> {
             } else {
                 return true;
             }
-        }
-
-        @Override
-        public int blackHeight() {
-            return blackHeight;
         }
 
         @Override
@@ -351,18 +421,23 @@ public interface RedBlackTree<T> {
         }
 
         @Override
+        public int blackHeight() {
+            return 0;
+        }
+
+        @Override
         public Empty<T> clear() {
             return this;
         }
 
         @Override
-        public boolean contains(T value) {
-            return false;
+        public Comparator<? super T> comparator() {
+            return comparator;
         }
 
         @Override
-        public int blackHeight() {
-            return 0;
+        public boolean contains(T value) {
+            return false;
         }
 
         @Override
