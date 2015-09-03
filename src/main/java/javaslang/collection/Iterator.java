@@ -1068,8 +1068,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     @Override
     default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
-        // TODO
-        throw new UnsupportedOperationException("TODO");
+        return Stream.ofAll(this).reverse().foldRight(zero, f::apply);
     }
 
     @Override
@@ -1080,8 +1079,19 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     @Override
     default <C> Map<C, Iterator<T>> groupBy(Function<? super T, ? extends C> classifier) {
         Objects.requireNonNull(classifier, "classifier is null");
-        // TODO
-        throw new UnsupportedOperationException("TODO");
+        if(!hasNext()) {
+            return HashMap.empty();
+        } else {
+            Map<C, Stream<T>> streams = foldLeft(HashMap.empty(), (map, entry) -> {
+                final C key = classifier.apply(entry);
+                final Stream<T> values = map
+                        .get(key)
+                        .map(entries -> entries.append(entry))
+                        .orElse(Stream.of(entry));
+                return map.put(key, values);
+            });
+            return streams.map((c, ts) -> Map.Entry.of(c, ts.iterator()));
+        }
     }
 
     default T head() {
@@ -1097,8 +1107,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
     @Override
     default Iterator<T> init() {
-        // TODO
-        throw new UnsupportedOperationException("TODO");
+        return dropRight(1);
     }
 
     @Override

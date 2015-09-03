@@ -271,19 +271,7 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static Stream<Boolean> ofAll(boolean[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(() -> new Iterator<Boolean>() {
-            int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return i < array.length;
-            }
-
-            @Override
-            public Boolean next() {
-                return array[i++];
-            }
-        });
+        return Stream.ofAll(() -> Iterator.ofAll(array));
     }
 
     /**
@@ -294,19 +282,7 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static Stream<Byte> ofAll(byte[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(() -> new Iterator<Byte>() {
-            int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return i < array.length;
-            }
-
-            @Override
-            public Byte next() {
-                return array[i++];
-            }
-        });
+        return Stream.ofAll(() -> Iterator.ofAll(array));
     }
 
     /**
@@ -317,19 +293,7 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static Stream<Character> ofAll(char[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(() -> new Iterator<Character>() {
-            int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return i < array.length;
-            }
-
-            @Override
-            public Character next() {
-                return array[i++];
-            }
-        });
+        return Stream.ofAll(() -> Iterator.ofAll(array));
     }
 
     /**
@@ -340,19 +304,7 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static Stream<Double> ofAll(double[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(() -> new Iterator<Double>() {
-            int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return i < array.length;
-            }
-
-            @Override
-            public Double next() {
-                return array[i++];
-            }
-        });
+        return Stream.ofAll(() -> Iterator.ofAll(array));
     }
 
     /**
@@ -363,19 +315,7 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static Stream<Float> ofAll(float[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(() -> new Iterator<Float>() {
-            int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return i < array.length;
-            }
-
-            @Override
-            public Float next() {
-                return array[i++];
-            }
-        });
+        return Stream.ofAll(() -> Iterator.ofAll(array));
     }
 
     /**
@@ -386,19 +326,7 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static Stream<Integer> ofAll(int[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(() -> new Iterator<Integer>() {
-            int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return i < array.length;
-            }
-
-            @Override
-            public Integer next() {
-                return array[i++];
-            }
-        });
+        return Stream.ofAll(() -> Iterator.ofAll(array));
     }
 
     /**
@@ -409,19 +337,7 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static Stream<Long> ofAll(long[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(() -> new Iterator<Long>() {
-            int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return i < array.length;
-            }
-
-            @Override
-            public Long next() {
-                return array[i++];
-            }
-        });
+        return Stream.ofAll(() -> Iterator.ofAll(array));
     }
 
     /**
@@ -432,19 +348,7 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static Stream<Short> ofAll(short[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(() -> new Iterator<Short>() {
-            int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return i < array.length;
-            }
-
-            @Override
-            public Short next() {
-                return array[i++];
-            }
-        });
+        return Stream.ofAll(() -> Iterator.ofAll(array));
     }
 
     /**
@@ -869,11 +773,8 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default <C> Map<C, Stream<T>> groupBy(Function<? super T, ? extends C> classifier) {
-        return foldLeft(HashMap.empty(), (map, t) -> {
-            final C key = classifier.apply(t);
-            final Stream<T> values = map.get(key).map(ts -> ts.prepend(t)).orElse(Stream.of(t));
-            return map.put(key, values);
-        });
+        Objects.requireNonNull(classifier, "classifier is null");
+        return iterator().groupBy(classifier).map((c, it) -> Map.Entry.of(c, Stream.ofAll(it)));
     }
 
     @Override

@@ -128,19 +128,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      */
     public static Vector<Boolean> ofAll(boolean[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Vector.ofAll(() -> new Iterator<Boolean>() {
-            int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return i < array.length;
-            }
-
-            @Override
-            public Boolean next() {
-                return array[i++];
-            }
-        });
+        return Vector.ofAll(() -> Iterator.ofAll(array));
     }
 
     /**
@@ -151,19 +139,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      */
     public static Vector<Byte> ofAll(byte[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Vector.ofAll(() -> new Iterator<Byte>() {
-            int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return i < array.length;
-            }
-
-            @Override
-            public Byte next() {
-                return array[i++];
-            }
-        });
+        return Vector.ofAll(() -> Iterator.ofAll(array));
     }
 
     /**
@@ -174,19 +150,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      */
     public static Vector<Character> ofAll(char[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Vector.ofAll(() -> new Iterator<Character>() {
-            int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return i < array.length;
-            }
-
-            @Override
-            public Character next() {
-                return array[i++];
-            }
-        });
+        return Vector.ofAll(() -> Iterator.ofAll(array));
     }
 
     /**
@@ -197,19 +161,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      */
     public static Vector<Double> ofAll(double[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Vector.ofAll(() -> new Iterator<Double>() {
-            int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return i < array.length;
-            }
-
-            @Override
-            public Double next() {
-                return array[i++];
-            }
-        });
+        return Vector.ofAll(() -> Iterator.ofAll(array));
     }
 
     /**
@@ -220,19 +172,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      */
     public static Vector<Float> ofAll(float[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Vector.ofAll(() -> new Iterator<Float>() {
-            int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return i < array.length;
-            }
-
-            @Override
-            public Float next() {
-                return array[i++];
-            }
-        });
+        return Vector.ofAll(() -> Iterator.ofAll(array));
     }
 
     /**
@@ -243,19 +183,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      */
     public static Vector<Integer> ofAll(int[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Vector.ofAll(() -> new Iterator<Integer>() {
-            int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return i < array.length;
-            }
-
-            @Override
-            public Integer next() {
-                return array[i++];
-            }
-        });
+        return Vector.ofAll(() -> Iterator.ofAll(array));
     }
 
     /**
@@ -266,19 +194,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      */
     public static Vector<Long> ofAll(long[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Vector.ofAll(() -> new Iterator<Long>() {
-            int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return i < array.length;
-            }
-
-            @Override
-            public Long next() {
-                return array[i++];
-            }
-        });
+        return Vector.ofAll(() -> Iterator.ofAll(array));
     }
 
     /**
@@ -289,19 +205,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      */
     public static Vector<Short> ofAll(short[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Vector.ofAll(() -> new Iterator<Short>() {
-            int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return i < array.length;
-            }
-
-            @Override
-            public Short next() {
-                return array[i++];
-            }
-        });
+        return Vector.ofAll(() -> Iterator.ofAll(array));
     }
 
     /**
@@ -732,11 +636,8 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public <C> Map<C, Vector<T>> groupBy(Function<? super T, ? extends C> classifier) {
-        return foldLeft(HashMap.empty(), (map, t) -> {
-            final C key = classifier.apply(t);
-            final Vector<T> values = map.get(key).map(ts -> ts.append(t)).orElse(Vector.of(t));
-            return map.put(key, values);
-        });
+        Objects.requireNonNull(classifier, "classifier is null");
+        return iterator().groupBy(classifier).map((c, it) -> Map.Entry.of(c, Vector.ofAll(it)));
     }
 
     @Override

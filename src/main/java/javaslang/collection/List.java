@@ -198,19 +198,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      */
     static List<Boolean> ofAll(boolean[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(() -> new Iterator<Boolean>() {
-            int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return i < array.length;
-            }
-
-            @Override
-            public Boolean next() {
-                return array[i++];
-            }
-        });
+        return List.ofAll(() -> Iterator.ofAll(array));
     }
 
     /**
@@ -221,19 +209,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      */
     static List<Byte> ofAll(byte[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(() -> new Iterator<Byte>() {
-            int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return i < array.length;
-            }
-
-            @Override
-            public Byte next() {
-                return array[i++];
-            }
-        });
+        return List.ofAll(() -> Iterator.ofAll(array));
     }
 
     /**
@@ -244,19 +220,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      */
     static List<Character> ofAll(char[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(() -> new Iterator<Character>() {
-            int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return i < array.length;
-            }
-
-            @Override
-            public Character next() {
-                return array[i++];
-            }
-        });
+        return List.ofAll(() -> Iterator.ofAll(array));
     }
 
     /**
@@ -267,19 +231,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      */
     static List<Double> ofAll(double[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(() -> new Iterator<Double>() {
-            int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return i < array.length;
-            }
-
-            @Override
-            public Double next() {
-                return array[i++];
-            }
-        });
+        return List.ofAll(() -> Iterator.ofAll(array));
     }
 
     /**
@@ -290,19 +242,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      */
     static List<Float> ofAll(float[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(() -> new Iterator<Float>() {
-            int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return i < array.length;
-            }
-
-            @Override
-            public Float next() {
-                return array[i++];
-            }
-        });
+        return List.ofAll(() -> Iterator.ofAll(array));
     }
 
     /**
@@ -313,19 +253,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      */
     static List<Integer> ofAll(int[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(() -> new Iterator<Integer>() {
-            int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return i < array.length;
-            }
-
-            @Override
-            public Integer next() {
-                return array[i++];
-            }
-        });
+        return List.ofAll(() -> Iterator.ofAll(array));
     }
 
     /**
@@ -336,19 +264,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      */
     static List<Long> ofAll(long[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(() -> new Iterator<Long>() {
-            int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return i < array.length;
-            }
-
-            @Override
-            public Long next() {
-                return array[i++];
-            }
-        });
+        return List.ofAll(() -> Iterator.ofAll(array));
     }
 
     /**
@@ -359,19 +275,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      */
     static List<Short> ofAll(short[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(() -> new Iterator<Short>() {
-            int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return i < array.length;
-            }
-
-            @Override
-            public Short next() {
-                return array[i++];
-            }
-        });
+        return List.ofAll(() -> Iterator.ofAll(array));
     }
 
     /**
@@ -755,11 +659,8 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default <C> Map<C, List<T>> groupBy(Function<? super T, ? extends C> classifier) {
-        return foldLeft(HashMap.empty(), (map, t) -> {
-            final C key = classifier.apply(t);
-            final List<T> values = map.get(key).map(ts -> ts.prepend(t)).orElse(List.of(t));
-            return map.put(key, values);
-        });
+        Objects.requireNonNull(classifier, "classifier is null");
+        return iterator().groupBy(classifier).map((c, it) -> Map.Entry.of(c, List.ofAll(it)));
     }
 
     @Override
