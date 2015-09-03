@@ -33,30 +33,30 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     abstract protected <T> Collector<T, ArrayList<T>, ? extends Traversable<T>> collector();
 
-    abstract protected <T> Traversable<T> empty();
+    abstract protected <T> TraversableOnce<T> empty();
 
-    abstract protected <T> Traversable<T> of(T element);
+    abstract protected <T> TraversableOnce<T> of(T element);
 
     @SuppressWarnings("unchecked")
-    abstract protected <T> Traversable<T> of(T... elements);
+    abstract protected <T> TraversableOnce<T> of(T... elements);
 
-    abstract protected <T> Traversable<T> ofAll(java.lang.Iterable<? extends T> elements);
+    abstract protected <T> TraversableOnce<T> ofAll(java.lang.Iterable<? extends T> elements);
 
-    abstract protected Traversable<Boolean> ofAll(boolean[] array);
+    abstract protected TraversableOnce<Boolean> ofAll(boolean[] array);
 
-    abstract protected Traversable<Byte> ofAll(byte[] array);
+    abstract protected TraversableOnce<Byte> ofAll(byte[] array);
 
-    abstract protected Traversable<Character> ofAll(char[] array);
+    abstract protected TraversableOnce<Character> ofAll(char[] array);
 
-    abstract protected Traversable<Double> ofAll(double[] array);
+    abstract protected TraversableOnce<Double> ofAll(double[] array);
 
-    abstract protected Traversable<Float> ofAll(float[] array);
+    abstract protected TraversableOnce<Float> ofAll(float[] array);
 
-    abstract protected Traversable<Integer> ofAll(int[] array);
+    abstract protected TraversableOnce<Integer> ofAll(int[] array);
 
-    abstract protected Traversable<Long> ofAll(long[] array);
+    abstract protected TraversableOnce<Long> ofAll(long[] array);
 
-    abstract protected Traversable<Short> ofAll(short[] array);
+    abstract protected TraversableOnce<Short> ofAll(short[] array);
 
     // -- average
 
@@ -210,7 +210,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldDropNoneIfCountIsNegative() {
-        final Traversable<Integer> t = of(1, 2, 3);
+        final TraversableOnce<Integer> t = of(1, 2, 3);
         assertThat(t.drop(-1)).isSameAs(t);
     }
 
@@ -233,7 +233,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldDropRightNoneIfCountIsNegative() {
-        final Traversable<Integer> t = of(1, 2, 3);
+        final TraversableOnce<Integer> t = of(1, 2, 3);
         assertThat(t.dropRight(-1)).isSameAs(t);
     }
 
@@ -256,8 +256,12 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldDropWhileNoneIfPredicateIsFalse() {
-        Traversable<Integer> t = of(1, 2, 3);
-        assertThat(t.dropWhile(ignored -> false)).isSameAs(t);
+        if(isThisLazyJavaslangObject()) {
+            assertThat(of(1, 2, 3).dropWhile(ignored -> false)).isEqualTo(of(1, 2, 3));
+        } else {
+            TraversableOnce<Integer> t = of(1, 2, 3);
+            assertThat(t.dropWhile(ignored -> false)).isSameAs(t);
+        }
     }
 
     @Test
@@ -391,7 +395,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void shouldThrowWhenInitOfNil() {
-        empty().init();
+        empty().init().get();
     }
 
     @Test
@@ -1143,10 +1147,10 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldTakeAllIfCountExceedsSize() {
-        final Traversable<Integer> t = of(1, 2, 3);
         if(isThisLazyJavaslangObject()) {
-            assertThat(t.take(4)).isEqualTo(t);
+            assertThat(of(1, 2, 3).take(4)).isEqualTo(of(1, 2, 3));
         } else {
+            final TraversableOnce<Integer> t = of(1, 2, 3);
             assertThat(t.take(4)).isSameAs(t);
         }
     }
@@ -1170,8 +1174,12 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldTakeRightAllIfCountExceedsSize() {
-        final Traversable<Integer> t = of(1, 2, 3);
-        assertThat(t.takeRight(4)).isSameAs(t);
+        if(isThisLazyJavaslangObject()) {
+            assertThat(of(1, 2, 3).takeRight(4)).isEqualTo(of(1, 2, 3));
+        } else {
+            final TraversableOnce<Integer> t = of(1, 2, 3);
+            assertThat(t.takeRight(4)).isSameAs(t);
+        }
     }
 
     // -- takeWhile
@@ -1188,9 +1196,9 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldTakeWhileAllOnTrueCondition() {
-        final Traversable<Integer> t = of(1, 2, 3);
+        final TraversableOnce<Integer> t = of(1, 2, 3);
         if(isThisLazyJavaslangObject()) {
-            assertThat(t.takeWhile(x -> true)).isEqualTo(t);
+            assertThat(of(1, 2, 3).takeWhile(x -> true)).isEqualTo(of(1, 2, 3));
         } else {
             assertThat(t.takeWhile(x -> true)).isSameAs(t);
         }
@@ -1290,7 +1298,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldEqualSameTraversableInstance() {
-        final Traversable<?> traversable = empty();
+        final TraversableOnce<?> traversable = empty();
         assertThat(traversable).isEqualTo(traversable);
     }
 

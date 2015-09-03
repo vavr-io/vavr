@@ -11,10 +11,7 @@ import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.*;
 
 /**
@@ -893,7 +890,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new Iterator<T>() {
+            return new AbstractIterator<T>() {
                 private Queue<T> queue = Queue.empty();
 
                 @Override
@@ -950,16 +947,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
                 }
             };
         }
-    }
-
-    default boolean equals(Iterator<?> that) {
-        Objects.requireNonNull(that, "that is null");
-        while (this.hasNext() && that.hasNext()) {
-            if (!Objects.equals(this.next(), that.next())) {
-                return false;
-            }
-        }
-        return this.hasNext() == that.hasNext();
     }
 
     /**
@@ -1107,7 +1094,11 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
     @Override
     default Iterator<T> init() {
-        return dropRight(1);
+        if(!hasNext()) {
+            throw new UnsupportedOperationException();
+        } else {
+            return dropRight(1);
+        }
     }
 
     @Override
@@ -1393,19 +1384,16 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         if (!hasNext()) {
             return Tuple.of(empty(), empty());
         } else {
-            Stream<T> init = Stream.empty();
-            T firstImproper = null;
-            while (hasNext()) {
-                final T element = next();
-                if (predicate.test(element)) {
-                    init = init.append(element);
-                } else {
-                    firstImproper = element;
-                    break;
-                }
-            }
-            return Tuple.of(init.iterator(), firstImproper == null ? empty() : Stream.of(firstImproper).appendAll(this).iterator());
+            Stream<T> that = Stream.ofAll(this);
+            return Tuple.of(that.iterator().takeWhile(predicate), that.iterator().dropWhile(predicate));
         }
+    }
+
+    @Override
+    default Spliterator<T> spliterator() {
+        // the focus of the Stream API is on random-access collections of *known size*
+        Stream<T> stream = Stream.ofAll(this);
+        return Spliterators.spliterator(stream.iterator(), stream.length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
     }
 
     default Iterator<T> tail() {
@@ -1465,7 +1453,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new Iterator<T>() {
+            return new AbstractIterator<T>() {
                 private Queue<T> queue = Queue.empty();
 
                 @Override
@@ -1678,6 +1666,22 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     abstract class AbstractIterator<T> implements Iterator<T> {
+
+        public boolean equals(Object o) {
+            if(o instanceof java.lang.Iterable) {
+                java.lang.Iterable<?> iterable = (java.lang.Iterable<?>) o;
+                Objects.requireNonNull(iterable, "iterable is null");
+                java.util.Iterator<?> that = iterable.iterator();
+                while (this.hasNext() && that.hasNext()) {
+                    if (!Objects.equals(this.next(), that.next())) {
+                        return false;
+                    }
+                }
+                return this.hasNext() == that.hasNext();
+            } else {
+                return false;
+            }
+        }
 
         @Override
         public String toString() {
