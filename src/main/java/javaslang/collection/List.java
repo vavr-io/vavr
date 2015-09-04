@@ -295,7 +295,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      * @return a range of int values as specified or the empty range if {@code from >= toExclusive}
      */
     static List<Integer> range(int from, int toExclusive) {
-        return List.rangeBy(from, toExclusive, 1);
+        return List.ofAll(Iterator.range(from, toExclusive));
     }
 
     /**
@@ -321,14 +321,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static List<Integer> rangeBy(int from, int toExclusive, int step) {
-        if (step == 0) {
-            throw new IllegalArgumentException("step cannot be 0");
-        } else if (from == toExclusive || step * (from - toExclusive) > 0) {
-            return List.empty();
-        } else {
-            final int one = (from < toExclusive) ? 1 : -1;
-            return List.rangeClosedBy(from, toExclusive - one, step);
-        }
+        return List.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     /**
@@ -348,7 +341,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      * @return a range of long values as specified or the empty range if {@code from >= toExclusive}
      */
     static List<Long> range(long from, long toExclusive) {
-        return List.rangeBy(from, toExclusive, 1);
+        return List.ofAll(Iterator.range(from, toExclusive));
     }
 
     /**
@@ -374,14 +367,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static List<Long> rangeBy(long from, long toExclusive, long step) {
-        if (step == 0) {
-            throw new IllegalArgumentException("step cannot be 0");
-        } else if (from == toExclusive || step * (from - toExclusive) > 0) {
-            return List.empty();
-        } else {
-            final int one = (from < toExclusive) ? 1 : -1;
-            return List.rangeClosedBy(from, toExclusive - one, step);
-        }
+        return List.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     /**
@@ -401,7 +387,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      * @return a range of int values as specified or the empty range if {@code from > toInclusive}
      */
     static List<Integer> rangeClosed(int from, int toInclusive) {
-        return List.rangeClosedBy(from, toInclusive, 1);
+        return List.ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
     /**
@@ -427,22 +413,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static List<Integer> rangeClosedBy(int from, int toInclusive, int step) {
-        if (step == 0) {
-            throw new IllegalArgumentException("step cannot be 0");
-        } else if (from == toInclusive) {
-            return List.of(from);
-        } else if (step * (from - toInclusive) > 0) {
-            return List.empty();
-        } else {
-            final int gap = (from - toInclusive) % step;
-            final int signum = (from < toInclusive) ? -1 : 1;
-            final int bound = from * signum;
-            List<Integer> result = List.empty();
-            for (int i = toInclusive + gap; i * signum <= bound; i -= step) {
-                result = result.prepend(i);
-            }
-            return result;
-        }
+        return List.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     /**
@@ -462,7 +433,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      * @return a range of long values as specified or the empty range if {@code from > toInclusive}
      */
     static List<Long> rangeClosed(long from, long toInclusive) {
-        return List.rangeClosedBy(from, toInclusive, 1L);
+        return List.ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
     /**
@@ -488,22 +459,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static List<Long> rangeClosedBy(long from, long toInclusive, long step) {
-        if (step == 0) {
-            throw new IllegalArgumentException("step cannot be 0");
-        } else if (from == toInclusive) {
-            return List.of(from);
-        } else if (step * (from - toInclusive) > 0) {
-            return List.empty();
-        } else {
-            final long gap = (from - toInclusive) % step;
-            final int signum = (from < toInclusive) ? -1 : 1;
-            final long bound = from * signum;
-            List<Long> result = List.empty();
-            for (long i = toInclusive + gap; i * signum <= bound; i -= step) {
-                result = result.prepend(i);
-            }
-            return result;
-        }
+        return List.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     @Override
