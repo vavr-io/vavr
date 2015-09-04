@@ -368,7 +368,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return a range of int values as specified or {@code Nil} if {@code from >= toExclusive}
      */
     static Stream<Integer> range(int from, int toExclusive) {
-        return rangeBy(from, toExclusive, 1);
+        return Stream.ofAll(Iterator.range(from, toExclusive));
     }
 
     /**
@@ -394,22 +394,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Stream<Integer> rangeBy(int from, int toExclusive, int step) {
-        if (step == 0) {
-            throw new IllegalArgumentException("step cannot be 0");
-        }
-        if (step > 0) {
-            if (from >= toExclusive) {
-                return Nil.instance();
-            } else {
-                return new Cons<>(() -> from, () -> rangeBy(from + step, toExclusive, step));
-            }
-        } else {
-            if (from <= toExclusive) {
-                return Nil.instance();
-            } else {
-                return new Cons<>(() -> from, () -> rangeBy(from + step, toExclusive, step));
-            }
-        }
+        return Stream.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     /**
@@ -429,7 +414,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return a range of long values as specified or {@code Nil} if {@code from >= toExclusive}
      */
     static Stream<Long> range(long from, long toExclusive) {
-        return rangeBy(from, toExclusive, 1);
+        return Stream.ofAll(Iterator.range(from, toExclusive));
     }
 
     /**
@@ -455,22 +440,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Stream<Long> rangeBy(long from, long toExclusive, long step) {
-        if (step == 0) {
-            throw new IllegalArgumentException("step cannot be 0");
-        }
-        if (step > 0) {
-            if (from >= toExclusive) {
-                return Nil.instance();
-            } else {
-                return new Cons<>(() -> from, () -> rangeBy(from + step, toExclusive, step));
-            }
-        } else {
-            if (from <= toExclusive) {
-                return Nil.instance();
-            } else {
-                return new Cons<>(() -> from, () -> rangeBy(from + step, toExclusive, step));
-            }
-        }
+        return Stream.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     /**
@@ -490,7 +460,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return a range of int values as specified or {@code Nil} if {@code from > toInclusive}
      */
     static Stream<Integer> rangeClosed(int from, int toInclusive) {
-        return rangeClosedBy(from, toInclusive, 1);
+        return Stream.ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
     /**
@@ -516,26 +486,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Stream<Integer> rangeClosedBy(int from, int toInclusive, int step) {
-        if (step == 0) {
-            throw new IllegalArgumentException("step cannot be 0");
-        }
-        if (step > 0) {
-            if (from > toInclusive) {
-                return Nil.instance();
-            } else if (from > Integer.MAX_VALUE - step) {
-                return Stream.of(from);
-            } else {
-                return new Cons<>(() -> from, () -> rangeClosedBy(from + step, toInclusive, step));
-            }
-        } else {
-            if (from < toInclusive) {
-                return Nil.instance();
-            } else if (from < Integer.MIN_VALUE - step) {
-                return Stream.of(from);
-            } else {
-                return new Cons<>(() -> from, () -> rangeClosedBy(from + step, toInclusive, step));
-            }
-        }
+        return Stream.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     /**
@@ -555,7 +506,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return a range of long values as specified or {@code Nil} if {@code from > toInclusive}
      */
     static Stream<Long> rangeClosed(long from, long toInclusive) {
-        return rangeClosedBy(from, toInclusive, 1);
+        return Stream.ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
     /**
@@ -581,26 +532,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Stream<Long> rangeClosedBy(long from, long toInclusive, long step) {
-        if (step == 0) {
-            throw new IllegalArgumentException("step cannot be 0");
-        }
-        if (step > 0) {
-            if (from > toInclusive) {
-                return Nil.instance();
-            } else if (from > Long.MAX_VALUE - step) {
-                return Stream.of(from);
-            } else {
-                return new Cons<>(() -> from, () -> rangeClosedBy(from + step, toInclusive, step));
-            }
-        } else {
-            if (from < toInclusive) {
-                return Nil.instance();
-            } else if (from < Long.MIN_VALUE - step) {
-                return Stream.of(from);
-            } else {
-                return new Cons<>(() -> from, () -> rangeClosedBy(from + step, toInclusive, step));
-            }
-        }
+        return Stream.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     @Override
