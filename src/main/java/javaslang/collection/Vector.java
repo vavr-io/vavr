@@ -225,7 +225,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return a range of int values as specified or the empty range if {@code from >= toExclusive}
      */
     public static Vector<Integer> range(int from, int toExclusive) {
-        return Vector.rangeBy(from, toExclusive, 1);
+        return Vector.ofAll(Iterator.range(from, toExclusive));
     }
 
     /**
@@ -251,14 +251,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Vector<Integer> rangeBy(int from, int toExclusive, int step) {
-        if (step == 0) {
-            throw new IllegalArgumentException("step cannot be 0");
-        } else if (from == toExclusive || step * (from - toExclusive) > 0) {
-            return Vector.empty();
-        } else {
-            final int one = (from < toExclusive) ? 1 : -1;
-            return Vector.rangeClosedBy(from, toExclusive - one, step);
-        }
+        return Vector.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     /**
@@ -278,7 +271,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return a range of long values as specified or the empty range if {@code from >= toExclusive}
      */
     public static Vector<Long> range(long from, long toExclusive) {
-        return Vector.rangeBy(from, toExclusive, 1);
+        return Vector.ofAll(Iterator.range(from, toExclusive));
     }
 
     /**
@@ -304,14 +297,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Vector<Long> rangeBy(long from, long toExclusive, long step) {
-        if (step == 0) {
-            throw new IllegalArgumentException("step cannot be 0");
-        } else if (from == toExclusive || step * (from - toExclusive) > 0) {
-            return Vector.empty();
-        } else {
-            final int one = (from < toExclusive) ? 1 : -1;
-            return Vector.rangeClosedBy(from, toExclusive - one, step);
-        }
+        return Vector.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     /**
@@ -331,7 +317,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return a range of int values as specified or the empty range if {@code from > toInclusive}
      */
     public static Vector<Integer> rangeClosed(int from, int toInclusive) {
-        return Vector.rangeClosedBy(from, toInclusive, 1);
+        return Vector.ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
     /**
@@ -357,35 +343,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Vector<Integer> rangeClosedBy(int from, int toInclusive, int step) {
-        if (step == 0) {
-            throw new IllegalArgumentException("step cannot be 0");
-        } else if (from == toInclusive) {
-            return Vector.of(from);
-        } else if (step * (from - toInclusive) > 0) {
-            return Vector.empty();
-        } else {
-            HashArrayMappedTrie<Integer, Integer> trie = HashArrayMappedTrie.empty();
-            if (step > 0) {
-                int i = from;
-                while (i <= toInclusive) {
-                    trie = trie.put(trie.size(), i);
-                    if (Integer.MAX_VALUE - step < i) {
-                        break;
-                    }
-                    i += step;
-                }
-            } else {
-                int i = from;
-                while (i >= toInclusive) {
-                    trie = trie.put(trie.size(), i);
-                    if (Integer.MIN_VALUE - step > i) {
-                        break;
-                    }
-                    i += step;
-                }
-            }
-            return trie.size() == 0 ? empty() : new Vector<>(trie);
-        }
+        return Vector.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     /**
@@ -405,7 +363,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return a range of long values as specified or the empty range if {@code from > toInclusive}
      */
     public static Vector<Long> rangeClosed(long from, long toInclusive) {
-        return Vector.rangeClosedBy(from, toInclusive, 1L);
+        return Vector.ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
     /**
@@ -431,35 +389,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Vector<Long> rangeClosedBy(long from, long toInclusive, long step) {
-        if (step == 0) {
-            throw new IllegalArgumentException("step cannot be 0");
-        } else if (from == toInclusive) {
-            return Vector.of(from);
-        } else if (step * (from - toInclusive) > 0) {
-            return Vector.empty();
-        } else {
-            HashArrayMappedTrie<Integer, Long> trie = HashArrayMappedTrie.empty();
-            if (step > 0) {
-                long i = from;
-                while (i <= toInclusive) {
-                    trie = trie.put(trie.size(), i);
-                    if (Long.MAX_VALUE - step < i) {
-                        break;
-                    }
-                    i += step;
-                }
-            } else {
-                long i = from;
-                while (i >= toInclusive) {
-                    trie = trie.put(trie.size(), i);
-                    if (Long.MIN_VALUE - step > i) {
-                        break;
-                    }
-                    i += step;
-                }
-            }
-            return trie.size() == 0 ? empty() : new Vector<>(trie);
-        }
+        return Vector.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     @Override

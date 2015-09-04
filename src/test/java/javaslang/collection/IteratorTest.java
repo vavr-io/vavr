@@ -4,10 +4,11 @@ import org.assertj.core.api.Assertions;
 import org.assertj.core.api.IterableAssert;
 import org.junit.Test;
 
+import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 import java.util.stream.Collector;
 
-public class IteratorTest extends AbstractValueTest {
+public class IteratorTest extends AbstractTraversableTest {
 
     protected <T> IterableAssert<T> assertThat(java.lang.Iterable<T> actual) {
         return new IterableAssert<T>(actual) {
@@ -19,18 +20,6 @@ public class IteratorTest extends AbstractValueTest {
                 return this;
             }
         };
-    }
-
-    @Test
-    public void shouldConcatenateListOfEmptyIterators() {
-        assertThat(Iterator.ofIterators().isEmpty()).isTrue();
-        assertThat(Iterator.ofIterators(Iterator.empty()).isEmpty()).isTrue();
-        assertThat(Iterator.ofIterators(Iterator.empty(), Iterator.empty()).isEmpty()).isTrue();
-    }
-
-    @Test
-    public void shouldConcatenateListOfNonEmptyIterators() {
-        assertThat(Iterator.ofIterators(of(1, 2), of(), of(3))).isEqualTo(of(1, 2, 3));
     }
 
     @Override
@@ -61,42 +50,42 @@ public class IteratorTest extends AbstractValueTest {
 
     @Override
     protected Iterator<Boolean> ofAll(boolean[] array) {
-        return null;
+        return Iterator.ofAll(array);
     }
 
     @Override
     protected Iterator<Byte> ofAll(byte[] array) {
-        return null;
+        return Iterator.ofAll(array);
     }
 
     @Override
     protected Iterator<Character> ofAll(char[] array) {
-        return null;
+        return Iterator.ofAll(array);
     }
 
     @Override
     protected Iterator<Double> ofAll(double[] array) {
-        return null;
+        return Iterator.ofAll(array);
     }
 
     @Override
     protected Iterator<Float> ofAll(float[] array) {
-        return null;
+        return Iterator.ofAll(array);
     }
 
     @Override
     protected Iterator<Integer> ofAll(int[] array) {
-        return null;
+        return Iterator.ofAll(array);
     }
 
     @Override
     protected Iterator<Long> ofAll(long[] array) {
-        return null;
+        return Iterator.ofAll(array);
     }
 
     @Override
     protected Iterator<Short> ofAll(short[] array) {
-        return null;
+        return Iterator.ofAll(array);
     }
 
     @Override
@@ -147,6 +136,43 @@ public class IteratorTest extends AbstractValueTest {
     @Test
     public void shouldGenerateInfiniteStreamBasedOnSupplierWithAccessToPreviousValue() {
         assertThat(Iterator.gen(2, (i) -> i + 2).take(3).reduce((i, j) -> i + j)).isEqualTo(12);
+    }
+
+    @Test
+    public void shouldCalculateHashCodeOfNonNil() {
+        /* ignore */
+    }
+
+    @Test
+    public void shouldCalculateDifferentHashCodesForDifferentTraversables() {
+        /* ignore */
+    }
+
+    @Test
+    public void shouldSerializeDeserializeNil() {
+        // TODO ?
+    }
+
+    @Test
+    public void shouldPreserveSingletonInstanceOnDeserialization() {
+        // TODO ?
+    }
+
+    @Test
+    public void shouldSerializeDeserializeNonNil() {
+        // TODO ?
+    }
+
+    @Test
+    public void shouldConcatenateListOfEmptyIterators() {
+        assertThat(Iterator.ofIterators().isEmpty()).isTrue();
+        assertThat(Iterator.ofIterators(Iterator.empty()).isEmpty()).isTrue();
+        assertThat(Iterator.ofIterators(Iterator.empty(), Iterator.empty()).isEmpty()).isTrue();
+    }
+
+    @Test
+    public void shouldConcatenateListOfNonEmptyIterators() {
+        assertThat(Iterator.ofIterators(of(1, 2), of(), of(3))).isEqualTo(of(1, 2, 3));
     }
 
 }

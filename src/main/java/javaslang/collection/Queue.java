@@ -258,7 +258,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
      * @return a range of int values as specified or {@code Nil} if {@code from >= toExclusive}
      */
     public static Queue<Integer> range(int from, int toExclusive) {
-        return Queue.ofAll(List.range(from, toExclusive));
+        return Queue.ofAll(Iterator.range(from, toExclusive));
     }
 
     /**
@@ -284,7 +284,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Queue<Integer> rangeBy(int from, int toExclusive, int step) {
-        return Queue.ofAll(List.rangeBy(from, toExclusive, step));
+        return Queue.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     /**
@@ -304,7 +304,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
      * @return a range of long values as specified or {@code Nil} if {@code from >= toExclusive}
      */
     public static Queue<Long> range(long from, long toExclusive) {
-        return Queue.ofAll(List.range(from, toExclusive));
+        return Queue.ofAll(Iterator.range(from, toExclusive));
     }
 
     /**
@@ -330,7 +330,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Queue<Long> rangeBy(long from, long toExclusive, long step) {
-        return Queue.ofAll(List.rangeBy(from, toExclusive, step));
+        return Queue.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     /**
@@ -350,7 +350,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
      * @return a range of int values as specified or {@code Nil} if {@code from > toInclusive}
      */
     public static Queue<Integer> rangeClosed(int from, int toInclusive) {
-        return Queue.ofAll(List.rangeClosed(from, toInclusive));
+        return Queue.ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
     /**
@@ -376,7 +376,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Queue<Integer> rangeClosedBy(int from, int toInclusive, int step) {
-        return Queue.ofAll(List.rangeClosedBy(from, toInclusive, step));
+        return Queue.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     /**
@@ -396,7 +396,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
      * @return a range of long values as specified or {@code Nil} if {@code from > toInclusive}
      */
     public static Queue<Long> rangeClosed(long from, long toInclusive) {
-        return Queue.ofAll(List.rangeClosed(from, toInclusive));
+        return Queue.ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
     /**
@@ -422,7 +422,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Queue<Long> rangeClosedBy(long from, long toInclusive, long step) {
-        return Queue.ofAll(List.rangeClosedBy(from, toInclusive, step));
+        return Queue.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     /**

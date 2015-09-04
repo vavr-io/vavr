@@ -5,8 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple2;
-import javaslang.Value;
+import javaslang.*;
 import javaslang.control.Match;
 import javaslang.control.None;
 import javaslang.control.Option;
@@ -143,11 +142,11 @@ public interface TraversableOnce<T> extends Value<T> {
         if (isEmpty()) {
             return None.instance();
         } else {
-            final java.util.stream.Stream<Number> numbers = ((java.util.stream.Stream<Number>) toJavaStream());
-            return Match.of(head())
-                    .whenTypeIn(Byte.class, Integer.class, Short.class).then(() -> numbers.mapToInt(Number::intValue).average())
-                    .whenTypeIn(Double.class, Float.class, BigDecimal.class).then(() -> numbers.mapToDouble(Number::doubleValue).average())
-                    .whenTypeIn(Long.class, BigInteger.class).then(() -> numbers.mapToLong(Number::longValue).average())
+            final Stream<Number> numbers = Stream.ofAll((javaslang.Iterable) iterator());
+            return Match.of(numbers.head())
+                    .whenTypeIn(Byte.class, Integer.class, Short.class).then(() -> numbers.toJavaStream().mapToInt(Number::intValue).average())
+                    .whenTypeIn(Double.class, Float.class, BigDecimal.class).then(() -> numbers.toJavaStream().mapToDouble(Number::doubleValue).average())
+                    .whenTypeIn(Long.class, BigInteger.class).then(() -> numbers.toJavaStream().mapToLong(Number::longValue).average())
                     .otherwise(() -> {
                         throw new UnsupportedOperationException("not numeric");
                     })
@@ -483,14 +482,12 @@ public interface TraversableOnce<T> extends Value<T> {
         if (isEmpty()) {
             throw new NoSuchElementException("last of Nil");
         } else {
-            TraversableOnce<T> traversable = this;
-            { // don't let escape tail
-                TraversableOnce<T> tail;
-                while (!(tail = traversable.tail()).isEmpty()) {
-                    traversable = tail;
-                }
+            final Iterator<T> it = iterator();
+            T result = null;
+            while (it.hasNext()) {
+                result = it.next();
             }
-            return traversable.head();
+            return result;
         }
     }
 
@@ -527,10 +524,11 @@ public interface TraversableOnce<T> extends Value<T> {
      */
     @SuppressWarnings("unchecked")
     default Option<T> max() {
-        if (isEmpty() || !(head() instanceof Comparable)) {
+        final Stream<T> stream = Stream.ofAll((javaslang.Iterable) iterator());
+        if (isEmpty() || !(stream.head() instanceof Comparable)) {
             return None.instance();
         } else {
-            return maxBy((o1, o2) -> ((Comparable<T>) o1).compareTo(o2));
+            return stream.maxBy((o1, o2) -> ((Comparable<T>) o1).compareTo(o2));
         }
     }
 
@@ -574,10 +572,11 @@ public interface TraversableOnce<T> extends Value<T> {
      */
     @SuppressWarnings("unchecked")
     default Option<T> min() {
-        if (isEmpty() || !(head() instanceof Comparable)) {
+        final Stream<T> stream = Stream.ofAll((javaslang.Iterable) iterator());
+        if (isEmpty() || !(stream.head() instanceof Comparable)) {
             return None.instance();
         } else {
-            return minBy((o1, o2) -> ((Comparable<T>) o1).compareTo(o2));
+            return stream.minBy((o1, o2) -> ((Comparable<T>) o1).compareTo(o2));
         }
     }
 
@@ -690,11 +689,11 @@ public interface TraversableOnce<T> extends Value<T> {
         if (isEmpty()) {
             return 1;
         } else {
-            final java.util.stream.Stream<Number> numbers = ((java.util.stream.Stream<Number>) toJavaStream());
-            return Match.of(head()).as(Number.class)
-                    .whenTypeIn(Byte.class, Integer.class, Short.class).then(() -> numbers.mapToInt(Number::intValue).reduce(1, (i1, i2) -> i1 * i2))
-                    .whenTypeIn(Double.class, Float.class, BigDecimal.class).then(() -> numbers.mapToDouble(Number::doubleValue).reduce(1.0, (d1, d2) -> d1 * d2))
-                    .whenTypeIn(Long.class, BigInteger.class).then(ignored -> numbers.mapToLong(Number::longValue).reduce(1L, (l1, l2) -> l1 * l2))
+            final Stream<Number> numbers = Stream.ofAll((javaslang.Iterable) iterator());
+            return Match.of(numbers.head()).as(Number.class)
+                    .whenTypeIn(Byte.class, Integer.class, Short.class).then(() -> numbers.toJavaStream().mapToInt(Number::intValue).reduce(1, (i1, i2) -> i1 * i2))
+                    .whenTypeIn(Double.class, Float.class, BigDecimal.class).then(() -> numbers.toJavaStream().mapToDouble(Number::doubleValue).reduce(1.0, (d1, d2) -> d1 * d2))
+                    .whenTypeIn(Long.class, BigInteger.class).then(ignored -> numbers.toJavaStream().mapToLong(Number::longValue).reduce(1L, (l1, l2) -> l1 * l2))
                     .orElseThrow(() -> new UnsupportedOperationException("not numeric"));
         }
     }
@@ -808,11 +807,11 @@ public interface TraversableOnce<T> extends Value<T> {
         if (isEmpty()) {
             return 0;
         } else {
-            final java.util.stream.Stream<Number> numbers = ((java.util.stream.Stream<Number>) toJavaStream());
-            return Match.of(head()).as(Number.class)
-                    .whenTypeIn(Byte.class, Integer.class, Short.class).then(() -> numbers.mapToInt(Number::intValue).sum())
-                    .whenTypeIn(Double.class, Float.class, BigDecimal.class).then(() -> numbers.mapToDouble(Number::doubleValue).sum())
-                    .whenTypeIn(Long.class, BigInteger.class).then(ignored -> numbers.mapToLong(Number::longValue).sum())
+            final Stream<Number> numbers = Stream.ofAll((javaslang.Iterable) iterator());
+            return Match.of(numbers.head()).as(Number.class)
+                    .whenTypeIn(Byte.class, Integer.class, Short.class).then(() -> numbers.toJavaStream().mapToInt(Number::intValue).sum())
+                    .whenTypeIn(Double.class, Float.class, BigDecimal.class).then(() -> numbers.toJavaStream().mapToDouble(Number::doubleValue).sum())
+                    .whenTypeIn(Long.class, BigInteger.class).then(ignored -> numbers.toJavaStream().mapToLong(Number::longValue).sum())
                     .orElseThrow(() -> new UnsupportedOperationException("not numeric"));
         }
     }
