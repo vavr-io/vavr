@@ -9,6 +9,7 @@ import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
+import javaslang.collection.Iterator.AbstractIterator;
 
 import java.io.Serializable;
 import java.util.Comparator;
@@ -208,7 +209,7 @@ public interface RedBlackTree<T> extends Iterable<T> {
             return this;
         } else {
             final Node<T> that = (Node<T>) tree;
-            final Tuple2<RedBlackTree<T>, RedBlackTree<T>> split = Node.split((Node<T>) this, that.value);
+            final Tuple2<RedBlackTree<T>, RedBlackTree<T>> split = Node.split(this, that.value);
             return Node.merge(split._1.difference(that.left), split._2.difference(that.right));
         }
     }
@@ -221,7 +222,7 @@ public interface RedBlackTree<T> extends Iterable<T> {
             return tree;
         } else {
             final Node<T> that = (Node<T>) tree;
-            final Tuple2<RedBlackTree<T>, RedBlackTree<T>> split = Node.split((Node<T>) this, that.value);
+            final Tuple2<RedBlackTree<T>, RedBlackTree<T>> split = Node.split(this, that.value);
             if (contains(that.value)) {
                 return Node.join(split._1.intersection(that.left), that.value, split._2.intersection(that.right));
             } else {
@@ -252,10 +253,61 @@ public interface RedBlackTree<T> extends Iterable<T> {
         }
     }
 
+      /**
+       * Returns an Iterator that iterates elements in the order induced by the underlying Comparator.
+       * <p>
+       * Internally an in-order traversal of the RedBlackTree is performed.
+       * <p>
+       * Example:
+       *
+       * <pre><code>
+       *       4
+       *      / \
+       *     2   6
+       *    / \ / \
+       *   1  3 5  7
+       * </code></post>
+       *
+       * Iteration order: 1, 2, 3, 4, 5, 6, 7
+       */
     @Override
     default Iterator<T> iterator() {
-        // TODO
-        throw new UnsupportedOperationException("TODO: insort search");
+        if (isEmpty()) {
+            return Iterator.empty();
+        } else {
+            final Node<T> that = (Node<T>) this;
+            return new AbstractIterator<T>() {
+
+                Stack<Node<T>> stack = pushLeftChildren(Stack.empty(), that);
+
+                @Override
+                public boolean hasNext() {
+                    return !stack.isEmpty();
+                }
+
+                @Override
+                public T next() {
+                    if (!hasNext()) {
+                        EMPTY.next();
+                    }
+                    final Tuple2<Node<T>, ? extends Stack<Node<T>>> result = stack.pop2();
+                    final Node<T> node = result._1;
+                    stack = node.right.isEmpty() ? result._2 : pushLeftChildren(result._2, (Node<T>) node.right);
+                    return result._1.value;
+                }
+
+                private Stack<Node<T>> pushLeftChildren(Stack<Node<T>> initialStack, Node<T> that) {
+                    Stack<Node<T>> stack = initialStack;
+                    RedBlackTree<T> tree = that;
+                    while (!tree.isEmpty()) {
+                        final Node<T> node = (Node<T>) tree;
+                        stack = stack.push(node);
+                        tree = node.left;
+                    }
+                    return stack;
+                }
+            };
+        }
     }
 
     /**
@@ -455,7 +507,44 @@ public interface RedBlackTree<T> extends Iterable<T> {
         }
 
         private static <T> RedBlackTree<T> join(RedBlackTree<T> t1, T value, RedBlackTree<T> t2) {
-            return null; // TODO
+
+            class Util {
+
+                Node<T> joinLT(Node<T> n1, T value, Node<T> n2, int h1) {
+                    if (n2.blackHeight == h1) {
+                        return new Node<>(RED, h1 + 1, n1, value, n2, n1.empty);
+                    } else {
+                        final Node<T> node = joinLT(n1, value, (Node<T>) n2.left, h1);
+                        return Node.balanceLeft(n2.color, n2.blackHeight, node, n2.value, n2.right, n2.empty);
+                    }
+                }
+
+                Node<T> joinGT(Node<T> n1, T value, Node<T> n2, int h2) {
+                    if (n1.blackHeight == h2) {
+                        return new Node<>(RED, h2 + 1, n1, value, n2, n1.empty);
+                    } else {
+                        final Node<T> node = joinGT((Node<T>) n1.right, value, n2, h2);
+                        return Node.balanceRight(n1.color, n1.blackHeight, n1.left, n1.value, node, n2.empty);
+                    }
+                }
+            }
+
+            if (t1.isEmpty()) {
+                return t2.add(value);
+            } else if (t2.isEmpty()) {
+                return t1.add(value);
+            } else {
+                final Node<T> n1 = (Node<T>) t1;
+                final Node<T> n2 = (Node<T>) t2;
+                final int comparison = n1.blackHeight - n2.blackHeight;
+                if (comparison < 0) {
+                    return new Util().joinLT(n1, value, n2, n1.blackHeight).color(BLACK);
+                } else if (comparison > 0) {
+                    return new Util().joinGT(n1, value, n2, n2.blackHeight).color(BLACK);
+                } else {
+                    return new Node<>(BLACK, n1.blackHeight + 1, n1, value, n2, n1.empty);
+                }
+            }
         }
 
         private static <T> RedBlackTree<T> merge(RedBlackTree<T> t1, RedBlackTree<T> t2) {

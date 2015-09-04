@@ -92,6 +92,20 @@ public class RedBlackTreeTest {
         assertThat(actual.toString()).isEqualTo("(B:4 (B:3 R:1) (R:6 B:5 (B:9 R:7)))");
     }
 
+    // iterator()
+
+    @Test
+    public void shouldIterateEmptyTree() {
+        assertThat(RedBlackTree.empty().iterator().hasNext()).isFalse();
+    }
+
+    @Test
+    public void shouldIterateNonEmptyTree() {
+        final RedBlackTree<Integer> testee = RedBlackTree.<Integer> empty().add(7).add(1).add(6).add(2).add(5).add(3).add(4);
+        final List<Integer> actual = testee.iterator().toList();
+        assertThat(actual.toString()).isEqualTo("List(1, 2, 3, 4, 5, 6, 7)");
+    }
+
     // Red/Black Tree invariants
 
     @Test
