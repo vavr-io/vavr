@@ -52,30 +52,7 @@ public interface RedBlackTree<T> extends Iterable<T> {
     }
 
     default Node<T> add(T value) {
-
-        class Util {
-
-            Node<T> insert(RedBlackTree<T> tree) {
-                if (tree.isEmpty()) {
-                    final Empty<T> empty = (Empty<T>) tree;
-                    return new Node<>(RED, 1, empty, value, empty, empty);
-                } else {
-                    final Node<T> node = (Node<T>) tree;
-                    final int comparison = node.comparator().compare(value, node.value);
-                    if (comparison < 0) {
-                        final Node<T> newLeft = insert(node.left);
-                        return (newLeft == node.left) ? node : Node.balanceLeft(node.color, node.blackHeight, newLeft, node.value, node.right, node.empty);
-                    } else if (comparison > 0) {
-                        final Node<T> newRight = insert(node.right);
-                        return (newRight == node.right) ? node : Node.balanceRight(node.color, node.blackHeight, node.left, node.value, newRight, node.empty);
-                    } else {
-                        return node;
-                    }
-                }
-            }
-        }
-
-        return new Util().insert(this).color(BLACK);
+        return Node.insert(this, value).color(BLACK);
     }
 
     /**
@@ -101,106 +78,14 @@ public interface RedBlackTree<T> extends Iterable<T> {
     boolean contains(T value);
 
     /**
-     * Delete a value from this RedBlackTree.
+     * Deletes a value from this RedBlackTree.
      *
      * @param value A value
      * @return A new RedBlackTree if the value is present, otherwise this.
      */
     default RedBlackTree<T> delete(T value) {
-
-        class Util {
-
-            Tuple2<? extends RedBlackTree<T>, Boolean> delete(RedBlackTree<T> tree) {
-                if (tree.isEmpty()) {
-                    return Tuple.of(tree, false);
-                } else {
-                    final Node<T> node = (Node<T>) tree;
-                    final int comparison = node.comparator().compare(value, node.value);
-                    if (comparison < 0) {
-                        final Tuple2<? extends RedBlackTree<T>, Boolean> deleted = delete(node.left);
-                        final RedBlackTree<T> l = deleted._1;
-                        final boolean d = deleted._2;
-                        if (d) {
-                            return Node.unbalancedRight(node.color, node.blackHeight - 1, l, node.value, node.right, node.empty);
-                        } else {
-                            final Node<T> newNode = new Node<>(node.color, node.blackHeight, l, node.value, node.right, node.empty);
-                            return Tuple.of(newNode, false);
-                        }
-                    } else if (comparison > 0) {
-                        final Tuple2<? extends RedBlackTree<T>, Boolean> deleted = delete(node.right);
-                        final RedBlackTree<T> r = deleted._1;
-                        final boolean d = deleted._2;
-                        if (d) {
-                            return Node.unbalancedLeft(node.color, node.blackHeight - 1, node.left, node.value, r, node.empty);
-                        } else {
-                            final Node<T> newNode = new Node<>(node.color, node.blackHeight, node.left, node.value, r, node.empty);
-                            return Tuple.of(newNode, false);
-                        }
-                    } else {
-                        if (node.right.isEmpty()) {
-                            if (node.color == BLACK) {
-                                return blackify(node.left);
-                            } else {
-                                return Tuple.of(node.left, false);
-                            }
-                        } else {
-                            final Node<T> nodeRight = (Node<T>) node.right;
-                            final Tuple3<? extends RedBlackTree<T>, Boolean, T> newRight = deleteMin(nodeRight);
-                            final RedBlackTree<T> r = newRight._1;
-                            final boolean d = newRight._2;
-                            final T m = newRight._3;
-                            if (d) {
-                                return Node.unbalancedLeft(node.color, node.blackHeight - 1, node.left, m, r, node.empty);
-                            } else {
-                                final RedBlackTree<T> newNode = new Node<>(node.color, node.blackHeight, node.left, m, r, node.empty);
-                                return Tuple.of(newNode, false);
-                            }
-                        }
-                    }
-                }
-            }
-
-            private Tuple2<? extends RedBlackTree<T>, Boolean> blackify(RedBlackTree<T> tree) {
-                if (tree instanceof Node) {
-                    final Node<T> node = (Node<T>) tree;
-                    if (node.color == RED) {
-                        return Tuple.of(node.color(BLACK), false);
-                    }
-                }
-                return Tuple.of(tree, true);
-            }
-
-            private Tuple3<? extends RedBlackTree<T>, Boolean, T> deleteMin(Node<T> node) {
-                if (node.left.isEmpty()) {
-                    if (node.color == BLACK) {
-                        if (node.right.isEmpty()) {
-                            return Tuple.of(node.empty, true, node.value);
-                        } else {
-                            final Node<T> rightNode = (Node<T>) node.right;
-                            return Tuple.of(rightNode.color(BLACK), false, node.value);
-                        }
-                    } else {
-                        return Tuple.of(node.right, false, node.value);
-                    }
-                } else {
-                    final Node<T> nodeLeft = (Node<T>) node.left;
-                    final Tuple3<? extends RedBlackTree<T>, Boolean, T> newNode = deleteMin(nodeLeft);
-                    final RedBlackTree<T> l = newNode._1;
-                    final boolean d = newNode._2;
-                    final T m = newNode._3;
-                    if (d) {
-                        final Tuple2<Node<T>, Boolean> tD = Node.unbalancedRight(node.color, node.blackHeight - 1, l, node.value, node.right, node.empty);
-                        return Tuple.of(tD._1, tD._2, m);
-                    } else {
-                        final Node<T> tD = new Node<>(node.color, node.blackHeight, l, node.value, node.right, node.empty);
-                        return Tuple.of(tD, false, m);
-                    }
-                }
-            }
-        }
-
-        final RedBlackTree<T> tree = new Util().delete(this)._1;
-        return tree.isEmpty() ? tree : ((Node<T>) tree).color(BLACK);
+        final RedBlackTree<T> tree = Node.delete(this, value)._1;
+        return Node.color(tree, BLACK);
     }
 
     default RedBlackTree<T> difference(RedBlackTree<T> tree) {
@@ -253,23 +138,23 @@ public interface RedBlackTree<T> extends Iterable<T> {
         }
     }
 
-      /**
-       * Returns an Iterator that iterates elements in the order induced by the underlying Comparator.
-       * <p>
-       * Internally an in-order traversal of the RedBlackTree is performed.
-       * <p>
-       * Example:
-       *
-       * <pre><code>
-       *       4
-       *      / \
-       *     2   6
-       *    / \ / \
-       *   1  3 5  7
-       * </code></post>
-       *
-       * Iteration order: 1, 2, 3, 4, 5, 6, 7
-       */
+    /**
+     * Returns an Iterator that iterates elements in the order induced by the underlying Comparator.
+     * <p>
+     * Internally an in-order traversal of the RedBlackTree is performed.
+     * <p>
+     * Example:
+     *
+     * <pre><code>
+     *       4
+     *      / \
+     *     2   6
+     *    / \ / \
+     *   1  3 5  7
+     * </code></post>
+     *
+     * Iteration order: 1, 2, 3, 4, 5, 6, 7
+     */
     @Override
     default Iterator<T> iterator() {
         if (isEmpty()) {
@@ -506,29 +391,118 @@ public interface RedBlackTree<T> extends Iterable<T> {
             return new Node<>(color, blackHeight, left, value, right, empty);
         }
 
-        private static <T> RedBlackTree<T> join(RedBlackTree<T> t1, T value, RedBlackTree<T> t2) {
-
-            class Util {
-
-                Node<T> joinLT(Node<T> n1, T value, Node<T> n2, int h1) {
-                    if (n2.blackHeight == h1) {
-                        return new Node<>(RED, h1 + 1, n1, value, n2, n1.empty);
-                    } else {
-                        final Node<T> node = joinLT(n1, value, (Node<T>) n2.left, h1);
-                        return Node.balanceLeft(n2.color, n2.blackHeight, node, n2.value, n2.right, n2.empty);
-                    }
+        private static <T> Tuple2<? extends RedBlackTree<T>, Boolean> blackify(RedBlackTree<T> tree) {
+            if (tree instanceof Node) {
+                final Node<T> node = (Node<T>) tree;
+                if (node.color == RED) {
+                    return Tuple.of(node.color(BLACK), false);
                 }
+            }
+            return Tuple.of(tree, true);
+        }
 
-                Node<T> joinGT(Node<T> n1, T value, Node<T> n2, int h2) {
-                    if (n1.blackHeight == h2) {
-                        return new Node<>(RED, h2 + 1, n1, value, n2, n1.empty);
+        private static <T> Tuple2<? extends RedBlackTree<T>, Boolean> delete(RedBlackTree<T> tree, T value) {
+            if (tree.isEmpty()) {
+                return Tuple.of(tree, false);
+            } else {
+                final Node<T> node = (Node<T>) tree;
+                final int comparison = node.comparator().compare(value, node.value);
+                if (comparison < 0) {
+                    final Tuple2<? extends RedBlackTree<T>, Boolean> deleted = delete(node.left, value);
+                    final RedBlackTree<T> l = deleted._1;
+                    final boolean d = deleted._2;
+                    if (d) {
+                        return Node.unbalancedRight(node.color, node.blackHeight - 1, l, node.value, node.right, node.empty);
                     } else {
-                        final Node<T> node = joinGT((Node<T>) n1.right, value, n2, h2);
-                        return Node.balanceRight(n1.color, n1.blackHeight, n1.left, n1.value, node, n2.empty);
+                        final Node<T> newNode = new Node<>(node.color, node.blackHeight, l, node.value, node.right, node.empty);
+                        return Tuple.of(newNode, false);
+                    }
+                } else if (comparison > 0) {
+                    final Tuple2<? extends RedBlackTree<T>, Boolean> deleted = delete(node.right, value);
+                    final RedBlackTree<T> r = deleted._1;
+                    final boolean d = deleted._2;
+                    if (d) {
+                        return Node.unbalancedLeft(node.color, node.blackHeight - 1, node.left, node.value, r, node.empty);
+                    } else {
+                        final Node<T> newNode = new Node<>(node.color, node.blackHeight, node.left, node.value, r, node.empty);
+                        return Tuple.of(newNode, false);
+                    }
+                } else {
+                    if (node.right.isEmpty()) {
+                        if (node.color == BLACK) {
+                            return blackify(node.left);
+                        } else {
+                            return Tuple.of(node.left, false);
+                        }
+                    } else {
+                        final Node<T> nodeRight = (Node<T>) node.right;
+                        final Tuple3<? extends RedBlackTree<T>, Boolean, T> newRight = deleteMin(nodeRight);
+                        final RedBlackTree<T> r = newRight._1;
+                        final boolean d = newRight._2;
+                        final T m = newRight._3;
+                        if (d) {
+                            return Node.unbalancedLeft(node.color, node.blackHeight - 1, node.left, m, r, node.empty);
+                        } else {
+                            final RedBlackTree<T> newNode = new Node<>(node.color, node.blackHeight, node.left, m, r, node.empty);
+                            return Tuple.of(newNode, false);
+                        }
                     }
                 }
             }
+        }
 
+        private static <T> Tuple3<? extends RedBlackTree<T>, Boolean, T> deleteMin(Node<T> node) {
+            if (node.left.isEmpty()) {
+                if (node.color == BLACK) {
+                    if (node.right.isEmpty()) {
+                        return Tuple.of(node.empty, true, node.value);
+                    } else {
+                        final Node<T> rightNode = (Node<T>) node.right;
+                        return Tuple.of(rightNode.color(BLACK), false, node.value);
+                    }
+                } else {
+                    return Tuple.of(node.right, false, node.value);
+                }
+            } else {
+                final Node<T> nodeLeft = (Node<T>) node.left;
+                final Tuple3<? extends RedBlackTree<T>, Boolean, T> newNode = deleteMin(nodeLeft);
+                final RedBlackTree<T> l = newNode._1;
+                final boolean d = newNode._2;
+                final T m = newNode._3;
+                if (d) {
+                    final Tuple2<Node<T>, Boolean> tD = Node.unbalancedRight(node.color, node.blackHeight - 1, l, node.value, node.right, node.empty);
+                    return Tuple.of(tD._1, tD._2, m);
+                } else {
+                    final Node<T> tD = new Node<>(node.color, node.blackHeight, l, node.value, node.right, node.empty);
+                    return Tuple.of(tD, false, m);
+                }
+            }
+        }
+
+        private static <T> Node<T> insert(RedBlackTree<T> tree, T value) {
+            if (tree.isEmpty()) {
+                final Empty<T> empty = (Empty<T>) tree;
+                return new Node<>(RED, 1, empty, value, empty, empty);
+            } else {
+                final Node<T> node = (Node<T>) tree;
+                final int comparison = node.comparator().compare(value, node.value);
+                if (comparison < 0) {
+                    final Node<T> newLeft = insert(node.left, value);
+                    return (newLeft == node.left) ? node : Node.balanceLeft(node.color, node.blackHeight, newLeft, node.value, node.right, node.empty);
+                } else if (comparison > 0) {
+                    final Node<T> newRight = insert(node.right, value);
+                    return (newRight == node.right) ? node : Node.balanceRight(node.color, node.blackHeight, node.left, node.value, newRight, node.empty);
+                } else {
+                    return node;
+                }
+            }
+        }
+
+        private static boolean isRed(RedBlackTree<?> tree) {
+            return !tree.isEmpty() && ((Node<?>) tree).color == RED;
+        }
+
+        private static <T> RedBlackTree<T> join(RedBlackTree<T> t1, T value, RedBlackTree<T> t2) {
             if (t1.isEmpty()) {
                 return t2.add(value);
             } else if (t2.isEmpty()) {
@@ -538,17 +512,95 @@ public interface RedBlackTree<T> extends Iterable<T> {
                 final Node<T> n2 = (Node<T>) t2;
                 final int comparison = n1.blackHeight - n2.blackHeight;
                 if (comparison < 0) {
-                    return new Util().joinLT(n1, value, n2, n1.blackHeight).color(BLACK);
+                    return Node.joinLT(n1, value, n2, n1.blackHeight).color(BLACK);
                 } else if (comparison > 0) {
-                    return new Util().joinGT(n1, value, n2, n2.blackHeight).color(BLACK);
+                    return Node.joinGT(n1, value, n2, n2.blackHeight).color(BLACK);
                 } else {
                     return new Node<>(BLACK, n1.blackHeight + 1, n1, value, n2, n1.empty);
                 }
             }
         }
 
+        private static <T> Node<T> joinGT(Node<T> n1, T value, Node<T> n2, int h2) {
+            if (n1.blackHeight == h2) {
+                return new Node<>(RED, h2 + 1, n1, value, n2, n1.empty);
+            } else {
+                final Node<T> node = joinGT((Node<T>) n1.right, value, n2, h2);
+                return Node.balanceRight(n1.color, n1.blackHeight, n1.left, n1.value, node, n2.empty);
+            }
+        }
+
+        private static <T> Node<T> joinLT(Node<T> n1, T value, Node<T> n2, int h1) {
+            if (n2.blackHeight == h1) {
+                return new Node<>(RED, h1 + 1, n1, value, n2, n1.empty);
+            } else {
+                final Node<T> node = joinLT(n1, value, (Node<T>) n2.left, h1);
+                return Node.balanceLeft(n2.color, n2.blackHeight, node, n2.value, n2.right, n2.empty);
+            }
+        }
+
         private static <T> RedBlackTree<T> merge(RedBlackTree<T> t1, RedBlackTree<T> t2) {
+
+            if (t1.isEmpty()) {
+                return t1;
+            } else if (t2.isEmpty()) {
+                return t2;
+            } else {
+                final Node<T> n1 = (Node<T>) t1;
+                final Node<T> n2 = (Node<T>) t2;
+                final int comparison = n1.blackHeight - n2.blackHeight;
+                if (comparison < 0) {
+                    final Node<T> node = Node.mergeLT(n1, n2, n1.blackHeight);
+                    return Node.color(node, BLACK);
+                } else if (comparison > 0) {
+                    final Node<T> node = Node.mergeGT(n1, n2, n2.blackHeight);
+                    return Node.color(node, BLACK);
+                } else {
+                    final Node<T> node = Node.mergeEQ(n1, n2);
+                    return Node.color(node, BLACK);
+                }
+            }
+        }
+
+        private static <T> Node<T> mergeEQ(Node<T> n1, Node<T> n2) {
+            if (n1.isEmpty() && n2.isEmpty()) {
+                return n1;
+            } else {
+                final T m = Node.minimum(n2);
+                final RedBlackTree<T> t2 = Node.deleteMin(n2)._1;
+                final int h2 = t2.isEmpty() ? 0 : ((Node<T>) t2).blackHeight;
+                final RedBlackTree<T> rl = ((Node<T>) n1.right).left;
+                final T rx = ((Node<T>) n1.right).value;
+                final RedBlackTree<T> rr = ((Node<T>) n1.right).right;
+                if (n1.blackHeight == h2) {
+                    return new Node<>(RED, n1.blackHeight + 1, n1, m, t2, n1.empty);
+                } else if (isRed(n1.left)) {
+                    final Node<T> node = new Node<>(BLACK, n1.blackHeight, n1.right, m, t2, n1.empty);
+                    return new Node<>(RED, n1.blackHeight, Node.color(n1.left, BLACK), n1.value, node, n1.empty);
+                } else if (isRed(n1.right)) {
+                    final Node<T> left = new Node<>(RED, n1.blackHeight, n1.left, n1.value, rl, n1.empty);
+                    final Node<T> right = new Node<>(RED, n1.blackHeight, rr, m, t2, n1.empty);
+                    return new Node<>(BLACK, n1.blackHeight, left, rx, right, n1.empty);
+                } else {
+                    return new Node<>(BLACK, n1.blackHeight, n1.color(RED), m, t2, n1.empty);
+                }
+            }
+        }
+
+        private static <T> Node<T> mergeGT(Node<T> n1, Node<T> n2, int h) {
             return null; // TODO
+        }
+
+        private static <T> Node<T> mergeLT(Node<T> n1, Node<T> n2, int h) {
+            return null; // TODO
+        }
+
+        private static <T> T minimum(Node<T> node) {
+            Node<T> curr = node;
+            while (!curr.left.isEmpty()) {
+                curr = (Node<T>) curr.left;
+            }
+            return curr.value;
         }
 
         private static <T> Tuple2<RedBlackTree<T>, RedBlackTree<T>> split(RedBlackTree<T> tree, T value) {
