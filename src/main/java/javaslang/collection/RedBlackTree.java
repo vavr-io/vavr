@@ -132,7 +132,7 @@ public interface RedBlackTree<T> extends Iterable<T> {
             if (isEmpty()) {
                 return that.color(BLACK);
             } else {
-                final Tuple2<RedBlackTree<T>, RedBlackTree<T>> split = Node.split((Node<T>) this, that.value);
+                final Tuple2<RedBlackTree<T>, RedBlackTree<T>> split = Node.split(this, that.value);
                 return Node.join(split._1.union(that.left), that.value, split._2.union(that.right));
             }
         }
@@ -540,11 +540,10 @@ public interface RedBlackTree<T> extends Iterable<T> {
         }
 
         private static <T> RedBlackTree<T> merge(RedBlackTree<T> t1, RedBlackTree<T> t2) {
-
             if (t1.isEmpty()) {
-                return t1;
-            } else if (t2.isEmpty()) {
                 return t2;
+            } else if (t2.isEmpty()) {
+                return t1;
             } else {
                 final Node<T> n1 = (Node<T>) t1;
                 final Node<T> n2 = (Node<T>) t2;
@@ -587,12 +586,22 @@ public interface RedBlackTree<T> extends Iterable<T> {
             }
         }
 
-        private static <T> Node<T> mergeGT(Node<T> n1, Node<T> n2, int h) {
-            return null; // TODO
+        private static <T> Node<T> mergeGT(Node<T> n1, Node<T> n2, int h2) {
+            if (n1.blackHeight == h2) {
+                return Node.mergeEQ(n1, n2);
+            } else {
+                final Node<T> node = Node.mergeGT((Node<T>) n1.right, n2, h2);
+                return Node.balanceRight(n1.color, n1.blackHeight, n1.left, n1.value, node, n1.empty);
+            }
         }
 
-        private static <T> Node<T> mergeLT(Node<T> n1, Node<T> n2, int h) {
-            return null; // TODO
+        private static <T> Node<T> mergeLT(Node<T> n1, Node<T> n2, int h1) {
+            if (n2.blackHeight == h1) {
+                return Node.mergeEQ(n1, n2);
+            } else {
+                final Node<T> node = Node.mergeLT(n1, (Node<T>) n2.left, h1);
+                return Node.balanceLeft(n2.color, n2.blackHeight, node, n2.value, n2.right, n2.empty);
+            }
         }
 
         private static <T> T minimum(Node<T> node) {
