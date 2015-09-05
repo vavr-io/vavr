@@ -379,7 +379,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
     @Override
     public CharSeq padTo(int length, Character element) {
-        if(length <= back.length()) {
+        if (length <= back.length()) {
             return this;
         }
         final StringBuilder sb = new StringBuilder(back);
@@ -399,7 +399,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
             sb.append(character);
         }
         from += replaced;
-        if(from < length()) {
+        if (from < length()) {
             sb.append(back.substring(from));
         }
         return new CharSeq(sb.toString());
@@ -628,17 +628,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq set(int index, Character element) {
-        if (index < 0) {
-            throw new IndexOutOfBoundsException("set(" + index + ")");
-        }
-        if (index >= length()) {
-            throw new IndexOutOfBoundsException("set(" + index + ")");
-        }
-        return of(back.substring(0, index) + element + back.substring(index + 1));
-    }
-
-    @Override
     public CharSeq slice(int beginIndex) {
         if (beginIndex < 0) {
             throw new IndexOutOfBoundsException("slice(" + beginIndex + ")");
@@ -771,6 +760,17 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
             ys = ys.append(t._2);
         }
         return Tuple.of(xs.length() == 0 ? Vector.<T1> empty() : xs, ys.length() == 0 ? Vector.<T2> empty() : ys);
+    }
+
+    @Override
+    public CharSeq update(int index, Character element) {
+        if (index < 0) {
+            throw new IndexOutOfBoundsException("update(" + index + ")");
+        }
+        if (index >= length()) {
+            throw new IndexOutOfBoundsException("update(" + index + ")");
+        }
+        return of(back.substring(0, index) + element + back.substring(index + 1));
     }
 
     @Override

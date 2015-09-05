@@ -882,11 +882,6 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public Queue<T> set(int index, T element) {
-        return toList().set(index, element).toQueue();
-    }
-
-    @Override
     public Queue<T> slice(int beginIndex) {
         return toList().slice(beginIndex).toQueue();
     }
@@ -998,6 +993,11 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     public <T1, T2> Tuple2<Queue<T1>, Queue<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         return toList().unzip(unzipper).map(List::toQueue, List::toQueue);
+    }
+
+        @Override
+    public Queue<T> update(int index, T element) {
+        return toList().update(index, element).toQueue();
     }
 
     @Override

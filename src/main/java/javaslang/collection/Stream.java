@@ -884,29 +884,6 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> set(int index, T element) {
-        if (isEmpty()) {
-            throw new IndexOutOfBoundsException("set(" + index + ", e) on Nil");
-        }
-        if (index < 0) {
-            throw new IndexOutOfBoundsException("set(" + index + ", e)");
-        }
-        Stream<T> preceding = Nil.instance();
-        Stream<T> tail = this;
-        for (int i = index; i > 0; i--, tail = tail.tail()) {
-            if (tail.isEmpty()) {
-                throw new IndexOutOfBoundsException("set(" + index + ", e) on Stream of size " + length());
-            }
-            preceding = preceding.prepend(tail.head());
-        }
-        if (tail.isEmpty()) {
-            throw new IndexOutOfBoundsException("set(" + index + ", e) on Stream of size " + length());
-        }
-        // skip the current head element because it is replaced
-        return preceding.reverse().appendAll(tail.tail().prepend(element));
-    }
-
-    @Override
     default Stream<T> sort() {
         return isEmpty() ? this : toJavaStream().sorted().collect(Stream.collector());
     }
@@ -1002,6 +979,29 @@ public interface Stream<T> extends LinearSeq<T> {
         final Stream<T1> stream1 = stream.map(t -> t._1);
         final Stream<T2> stream2 = stream.map(t -> t._2);
         return Tuple.of(stream1, stream2);
+    }
+
+    @Override
+    default Stream<T> update(int index, T element) {
+        if (isEmpty()) {
+            throw new IndexOutOfBoundsException("update(" + index + ", e) on Nil");
+        }
+        if (index < 0) {
+            throw new IndexOutOfBoundsException("update(" + index + ", e)");
+        }
+        Stream<T> preceding = Nil.instance();
+        Stream<T> tail = this;
+        for (int i = index; i > 0; i--, tail = tail.tail()) {
+            if (tail.isEmpty()) {
+                throw new IndexOutOfBoundsException("update(" + index + ", e) on Stream of size " + length());
+            }
+            preceding = preceding.prepend(tail.head());
+        }
+        if (tail.isEmpty()) {
+            throw new IndexOutOfBoundsException("update(" + index + ", e) on Stream of size " + length());
+        }
+        // skip the current head element because it is replaced
+        return preceding.reverse().appendAll(tail.tail().prepend(element));
     }
 
     @Override

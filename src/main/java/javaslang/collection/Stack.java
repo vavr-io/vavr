@@ -585,9 +585,6 @@ public interface Stack<T> extends LinearSeq<T> {
     Stack<T> reverse();
 
     @Override
-    Stack<T> set(int index, T element);
-
-    @Override
     Stack<T> slice(int beginIndex);
 
     @Override
@@ -631,6 +628,9 @@ public interface Stack<T> extends LinearSeq<T> {
 
     @Override
     <T1, T2> Tuple2<? extends Stack<T1>, ? extends Stack<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
+
+    @Override
+    Stack<T> update(int index, T element);
 
     @Override
     <U> Stack<Tuple2<T, U>> zip(java.lang.Iterable<U> that);

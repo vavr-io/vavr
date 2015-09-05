@@ -60,7 +60,7 @@ public interface Iterable<T> extends java.lang.Iterable<T> {
      * Example:
      *
      * <pre><code>
-     * // ((1, 2), ((3))) => structure: (()(())) values: 1, 2, 3
+     * // ((1, 2), ((3))) =&gt; structure: (()(())) values: 1, 2, 3
      * final Iterable&lt;?&gt; i1 = List.of(List.of(1, 2), Arrays.asList(List.of(3)));
      * final Iterable&lt;?&gt; i2 = Queue.of(Stream.of(1, 2), List.of(Lazy.of(() -> 3)));
      * assertThat(i1.eq(i2)).isTrue();

@@ -319,7 +319,7 @@ public interface HashArrayMappedTrie<K, V> extends java.lang.Iterable<Tuple2<K, 
                 if (!exists) {
                     return this;
                 } else {
-                    return new IndexedNode<>(newBitmap, subNodes.set(indx, child));
+                    return new IndexedNode<>(newBitmap, subNodes.update(indx, child));
                 }
             }
         }
@@ -395,15 +395,15 @@ public interface HashArrayMappedTrie<K, V> extends java.lang.Iterable<Tuple2<K, 
             AbstractNode<K, V> child = subNodes.get(frag);
             AbstractNode<K, V> newChild = child.modify(shift + SIZE, key, value);
             if (child.isEmpty() && !newChild.isEmpty()) {
-                return new ArrayNode<>(count + 1, subNodes.set(frag, newChild));
+                return new ArrayNode<>(count + 1, subNodes.update(frag, newChild));
             } else if (!child.isEmpty() && newChild.isEmpty()) {
                 if (count - 1 <= MIN_ARRAY_NODE) {
                     return pack(frag, subNodes);
                 } else {
-                    return new ArrayNode<>(count - 1, subNodes.set(frag, EmptyNode.instance()));
+                    return new ArrayNode<>(count - 1, subNodes.update(frag, EmptyNode.instance()));
                 }
             } else {
-                return new ArrayNode<>(count, subNodes.set(frag, newChild));
+                return new ArrayNode<>(count, subNodes.update(frag, newChild));
             }
         }
 

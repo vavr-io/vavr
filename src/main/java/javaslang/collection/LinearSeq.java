@@ -150,9 +150,6 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> reverse();
 
     @Override
-    LinearSeq<T> set(int index, T element);
-
-    @Override
     LinearSeq<T> slice(int beginIndex);
 
     @Override
@@ -187,6 +184,9 @@ public interface LinearSeq<T> extends Seq<T> {
 
     @Override
     <T1, T2> Tuple2<? extends LinearSeq<T1>, ? extends LinearSeq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
+
+    @Override
+    LinearSeq<T> update(int index, T element);
 
     @Override
     <U> LinearSeq<Tuple2<T, U>> zip(java.lang.Iterable<U> that);

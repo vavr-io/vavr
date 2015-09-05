@@ -10,7 +10,6 @@ import javaslang.Tuple2;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.stream.Collector;
 
@@ -870,37 +869,37 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowWhenSetWithNegativeIndexOnNil() {
-        empty().set(-1, null);
+        empty().update(-1, null);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowWhenSetWithNegativeIndexOnNonNil() {
-        of(1).set(-1, 2);
+        of(1).update(-1, 2);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowWhenSetOnNil() {
-        empty().set(0, null);
+        empty().update(0, null);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowWhenSetWithIndexExceedingByOneOnNonNil() {
-        of(1).set(1, 2);
+        of(1).update(1, 2);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowWhenSetWithIndexExceedingByTwoOnNonNil() {
-        of(1).set(2, 2);
+        of(1).update(2, 2);
     }
 
     @Test
     public void shouldSetFirstElement() {
-        assertThat(of(1, 2, 3).set(0, 4)).isEqualTo(of(4, 2, 3));
+        assertThat(of(1, 2, 3).update(0, 4)).isEqualTo(of(4, 2, 3));
     }
 
     @Test
     public void shouldSetLastElement() {
-        assertThat(of(1, 2, 3).set(2, 4)).isEqualTo(of(1, 2, 4));
+        assertThat(of(1, 2, 3).update(2, 4)).isEqualTo(of(1, 2, 4));
     }
 
     // -- sort()

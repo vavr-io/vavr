@@ -43,7 +43,7 @@ import java.util.function.*;
  * <li>{@link #insertAll(int, java.lang.Iterable)}</li>
  * <li>{@link #prepend(Object)}</li>
  * <li>{@link #prependAll(java.lang.Iterable)}</li>
- * <li>{@link #set(int, Object)}</li>
+ * <li>{@link #update(int, Object)}</li>
  * </ul>
  *
  * Selection:
@@ -513,16 +513,6 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     Seq<T> reverse();
 
     /**
-     * Sets the given element at the specified index.
-     *
-     * @param index   an index
-     * @param element an element
-     * @return a new Seq consisting of this elements and the given element is set at the given index
-     * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
-     */
-    Seq<T> set(int index, T element);
-
-    /**
      * <p>Returns a Seq that is a slice of this. The slice begins with the element at the specified index
      * and extends to the end of this Seq.</p>
      * Examples:
@@ -637,6 +627,16 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * @return A new instance of this collection containing the elements of the given {@code iterable}.
      */
     <U> Seq<U> unit(java.lang.Iterable<? extends U> iterable);
+
+    /**
+     * Updates the given element at the specified index.
+     *
+     * @param index   an index
+     * @param element an element
+     * @return a new Seq consisting of this elements and the given element is set at the given index
+     * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
+     */
+    Seq<T> update(int index, T element);
 
     // -- Adjusted return types of Traversable methods
 
