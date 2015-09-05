@@ -11,7 +11,6 @@ import org.assertj.core.api.*;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.NoSuchElementException;
 import java.util.stream.Collector;
 
 import static org.junit.Assert.assertTrue;
@@ -106,42 +105,42 @@ public class HashSetTest extends AbstractTraversableTest {
 
     @Override
     protected HashSet<Boolean> ofAll(boolean[] array) {
-        return null;
+        return HashSet.ofAll(array);
     }
 
     @Override
     protected HashSet<Byte> ofAll(byte[] array) {
-        return null;
+        return HashSet.ofAll(array);
     }
 
     @Override
     protected HashSet<Character> ofAll(char[] array) {
-        return null;
+        return HashSet.ofAll(array);
     }
 
     @Override
     protected HashSet<Double> ofAll(double[] array) {
-        return null;
+        return HashSet.ofAll(array);
     }
 
     @Override
     protected HashSet<Float> ofAll(float[] array) {
-        return null;
+        return HashSet.ofAll(array);
     }
 
     @Override
     protected HashSet<Integer> ofAll(int[] array) {
-        return null;
+        return HashSet.ofAll(array);
     }
 
     @Override
     protected HashSet<Long> ofAll(long[] array) {
-        return null;
+        return HashSet.ofAll(array);
     }
 
     @Override
     protected HashSet<Short> ofAll(short[] array) {
-        return null;
+        return HashSet.ofAll(array);
     }
 
     @Override

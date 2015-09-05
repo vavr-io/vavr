@@ -271,7 +271,7 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static Stream<Boolean> ofAll(boolean[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(() -> Iterator.ofAll(array));
+        return Stream.ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -282,7 +282,7 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static Stream<Byte> ofAll(byte[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(() -> Iterator.ofAll(array));
+        return Stream.ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -293,7 +293,7 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static Stream<Character> ofAll(char[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(() -> Iterator.ofAll(array));
+        return Stream.ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -304,7 +304,7 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static Stream<Double> ofAll(double[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(() -> Iterator.ofAll(array));
+        return Stream.ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -315,7 +315,7 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static Stream<Float> ofAll(float[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(() -> Iterator.ofAll(array));
+        return Stream.ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -326,7 +326,7 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static Stream<Integer> ofAll(int[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(() -> Iterator.ofAll(array));
+        return Stream.ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -337,7 +337,7 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static Stream<Long> ofAll(long[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(() -> Iterator.ofAll(array));
+        return Stream.ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -348,7 +348,7 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static Stream<Short> ofAll(short[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(() -> Iterator.ofAll(array));
+        return Stream.ofAll(Iterator.ofAll(array));
     }
 
     /**

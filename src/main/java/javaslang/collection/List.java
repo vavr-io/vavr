@@ -198,7 +198,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      */
     static List<Boolean> ofAll(boolean[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(() -> Iterator.ofAll(array));
+        return List.ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -209,7 +209,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      */
     static List<Byte> ofAll(byte[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(() -> Iterator.ofAll(array));
+        return List.ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -220,7 +220,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      */
     static List<Character> ofAll(char[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(() -> Iterator.ofAll(array));
+        return List.ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -231,7 +231,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      */
     static List<Double> ofAll(double[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(() -> Iterator.ofAll(array));
+        return List.ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -242,7 +242,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      */
     static List<Float> ofAll(float[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(() -> Iterator.ofAll(array));
+        return List.ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -253,7 +253,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      */
     static List<Integer> ofAll(int[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(() -> Iterator.ofAll(array));
+        return List.ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -264,7 +264,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      */
     static List<Long> ofAll(long[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(() -> Iterator.ofAll(array));
+        return List.ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -275,7 +275,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      */
     static List<Short> ofAll(short[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(() -> Iterator.ofAll(array));
+        return List.ofAll(Iterator.ofAll(array));
     }
 
     /**

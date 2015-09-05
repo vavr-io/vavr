@@ -16,16 +16,14 @@ import javaslang.control.Try;
 import org.assertj.core.api.*;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collector;
 
-/**
- * Tests all methods defined in {@link Traversable}.
- */
 public abstract class AbstractValueTest extends AbstractIterableTest {
 
-    protected <T> IterableAssert<T> assertThat(java.lang.Iterable<T> actual) {
+    protected <T> IterableAssert<T> assertThat(Iterable<T> actual) {
         return new IterableAssert<T>(actual) {
         };
     }
@@ -60,32 +58,12 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
         };
     }
 
-    abstract protected <T> Collector<T, ArrayList<T>, ? extends Traversable<T>> collector();
-
     abstract protected <T> Value<T> empty();
 
     abstract protected <T> Value<T> of(T element);
 
     @SuppressWarnings("unchecked")
     abstract protected <T> Value<T> of(T... elements);
-
-    abstract protected <T> Value<T> ofAll(java.lang.Iterable<? extends T> elements);
-
-    abstract protected Value<Boolean> ofAll(boolean[] array);
-
-    abstract protected Value<Byte> ofAll(byte[] array);
-
-    abstract protected Value<Character> ofAll(char[] array);
-
-    abstract protected Value<Double> ofAll(double[] array);
-
-    abstract protected Value<Float> ofAll(float[] array);
-
-    abstract protected Value<Integer> ofAll(int[] array);
-
-    abstract protected Value<Long> ofAll(long[] array);
-
-    abstract protected Value<Short> ofAll(short[] array);
 
     abstract boolean isThisLazyJavaslangObject();
 

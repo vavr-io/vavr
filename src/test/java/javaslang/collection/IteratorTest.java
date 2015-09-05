@@ -1,14 +1,13 @@
 package javaslang.collection;
 
+import javaslang.Tuple;
+import javaslang.Tuple2;
+import javaslang.control.Some;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.IterableAssert;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.stream.Collector;
-
-public class IteratorTest extends AbstractTraversableTest {
+public class IteratorTest extends AbstractTraversableOnceTest {
 
     protected <T> IterableAssert<T> assertThat(java.lang.Iterable<T> actual) {
         return new IterableAssert<T>(actual) {
@@ -23,69 +22,64 @@ public class IteratorTest extends AbstractTraversableTest {
     }
 
     @Override
-    protected <T> Collector<T, ArrayList<T>, ? extends Traversable<T>> collector() {
-        return null;
-    }
-
-    @Override
     protected <T> Iterator<T> empty() {
-        return IteratorWithEquals.lift(Iterator.empty());
+        return Iterator.empty();
     }
 
     @Override
     protected <T> Iterator<T> of(T element) {
-        return IteratorWithEquals.lift(Iterator.of(element));
+        return Iterator.of(element);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     protected <T> Iterator<T> of(T... elements) {
-        return IteratorWithEquals.lift(Iterator.of(elements));
+        return Iterator.of(elements);
     }
 
     @Override
     protected <T> Iterator<T> ofAll(java.lang.Iterable<? extends T> elements) {
-        return IteratorWithEquals.lift(Iterator.ofAll(elements));
+        return Iterator.ofAll(elements);
     }
 
     @Override
     protected Iterator<Boolean> ofAll(boolean[] array) {
-        return IteratorWithEquals.lift(Iterator.ofAll(array));
+        return Iterator.ofAll(array);
     }
 
     @Override
     protected Iterator<Byte> ofAll(byte[] array) {
-        return IteratorWithEquals.lift(Iterator.ofAll(array));
+        return Iterator.ofAll(array);
     }
 
     @Override
     protected Iterator<Character> ofAll(char[] array) {
-        return IteratorWithEquals.lift(Iterator.ofAll(array));
+        return Iterator.ofAll(array);
     }
 
     @Override
     protected Iterator<Double> ofAll(double[] array) {
-        return IteratorWithEquals.lift(Iterator.ofAll(array));
+        return Iterator.ofAll(array);
     }
 
     @Override
     protected Iterator<Float> ofAll(float[] array) {
-        return IteratorWithEquals.lift(Iterator.ofAll(array));
+        return Iterator.ofAll(array);
     }
 
     @Override
     protected Iterator<Integer> ofAll(int[] array) {
-        return IteratorWithEquals.lift(Iterator.ofAll(array));
+        return Iterator.ofAll(array);
     }
 
     @Override
     protected Iterator<Long> ofAll(long[] array) {
-        return IteratorWithEquals.lift(Iterator.ofAll(array));
+        return Iterator.ofAll(array);
     }
 
     @Override
     protected Iterator<Short> ofAll(short[] array) {
-        return IteratorWithEquals.lift(Iterator.ofAll(array));
+        return Iterator.ofAll(array);
     }
 
     @Override
@@ -139,31 +133,6 @@ public class IteratorTest extends AbstractTraversableTest {
     }
 
     @Test
-    public void shouldCalculateHashCodeOfNonNil() {
-        /* ignore */
-    }
-
-    @Test
-    public void shouldCalculateDifferentHashCodesForDifferentTraversables() {
-        /* ignore */
-    }
-
-    @Test
-    public void shouldSerializeDeserializeNil() {
-        // TODO ?
-    }
-
-    @Test
-    public void shouldPreserveSingletonInstanceOnDeserialization() {
-        // TODO ?
-    }
-
-    @Test
-    public void shouldSerializeDeserializeNonNil() {
-        // TODO ?
-    }
-
-    @Test
     public void shouldConcatenateListOfEmptyIterators() {
         assertThat(Iterator.ofIterators().isEmpty()).isTrue();
         assertThat(Iterator.ofIterators(Iterator.empty()).isEmpty()).isTrue();
@@ -175,52 +144,108 @@ public class IteratorTest extends AbstractTraversableTest {
         assertThat(Iterator.ofIterators(of(1, 2), of(), of(3))).isEqualTo(of(1, 2, 3));
     }
 
-    /**
-     * Needed for unit test assertions only.
-     */
-    static class IteratorWithEquals<T> extends Iterator.AbstractIterator<T> {
+    // -- initOption
 
-        private final List<T> list;
-        private final Iterator<T> delegate;
-
-        private IteratorWithEquals(Iterator<T> delegate) {
-            this.list = List.ofAll(delegate);
-            this.delegate = list.iterator();
-        }
-
-        static <T> Iterator<T> lift(Iterator<T> iterator) {
-            if (iterator.isEmpty()) {
-                return iterator;
-            } else {
-                return new IteratorWithEquals<>(iterator);
-            }
-        }
-
-        @Override
-        public boolean hasNext() {
-            return delegate.hasNext();
-        }
-
-        @Override
-        public T next() {
-            return delegate.next();
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (o == this) {
-                return true;
-            } else if (o instanceof java.lang.Iterable) {
-                final java.lang.Iterable<?> that = (java.lang.Iterable<?>) o;
-                return list.equals(List.ofAll(that));
-            } else {
-                return false;
-            }
-        }
-
-        @Override
-        public int hashCode() {
-            return list.hashCode();
-        }
+    @Override
+    @Test
+    public void shouldReturnSomeInitWhenCallingInitOptionOnNonNil() {
+        assertThat(of(1, 2, 3).initOption().map(List::ofAll)).isEqualTo(new Some<>(List.of(1, 2)));
     }
+
+    // -- partition
+
+    @Override
+    @Test
+    public void shouldPartitionIntsInOddAndEvenHavingOddAndEvenNumbers() {
+        final Tuple2<List<Integer>, List<Integer>> actual = of(1, 2, 3, 4)
+                .partition(i -> i % 2 != 0)
+                .map(IteratorTest::toList);
+        assertThat(actual).isEqualTo(Tuple.of(List.of(1, 3), List.of(2, 4)));
+    }
+
+    @Override
+    @Test
+    public void shouldPartitionIntsInOddAndEvenHavingOnlyEvenNumbers() {
+        final Tuple2<List<Integer>, List<Integer>> actual = of(2, 4).partition(i -> i % 2 != 0)
+                .map(IteratorTest::toList);
+        assertThat(actual).isEqualTo(Tuple.of(List.empty(), List.of(2, 4)));
+    }
+
+    @Override
+    @Test
+    public void shouldPartitionIntsInOddAndEvenHavingOnlyOddNumbers() {
+        final Tuple2<List<Integer>, List<Integer>> actual = of(1, 3).partition(i -> i % 2 != 0)
+                .map(IteratorTest::toList);
+        assertThat(actual).isEqualTo(Tuple.of(List.of(1, 3), List.empty()));
+    }
+
+    // -- span
+
+    @Override
+    @Test
+    public void shouldSpanNonNil() {
+        final Tuple2<List<Integer>, List<Integer>> actual = of(0, 1, 2, 3).span(i -> i < 2).map(IteratorTest::toList);
+        assertThat(actual).isEqualTo(Tuple.of(List.of(0, 1), List.of(2, 3)));
+    }
+
+    // -- tailOption
+
+    @Override
+    @Test
+    public void shouldReturnSomeTailWhenCallingTailOptionOnNonNil() {
+        assertThat(of(1, 2, 3).tailOption().map(List::ofAll)).isEqualTo(new Some<>(List.of(2, 3)));
+    }
+
+    // ++++++ OBJECT ++++++
+
+    // -- equals
+
+    @Override
+    @Test
+    public void shouldRecognizeEqualityOfNonNils() {
+        // a equals impl would enforce evaluation which is not wanted
+    }
+
+    // TODO: equals of same object and different objects of same shape
+
+    // -- hashCode
+
+    @Override
+    @Test
+    public void shouldCalculateHashCodeOfNonNil() {
+        // a hashCode impl would enforce evaluation which is not wanted
+    }
+
+    @Override
+    @Test
+    public void shouldCalculateDifferentHashCodesForDifferentTraversables() {
+        // a hashCode impl would enforce evaluation which is not wanted
+    }
+
+    // -- serialization/deserialization
+
+    @Override
+    @Test
+    public void shouldSerializeDeserializeNil() {
+        // iterators are intermediate objects and not serializable/deserializable
+    }
+
+    @Override
+    @Test
+    public void shouldPreserveSingletonInstanceOnDeserialization() {
+        // iterators are intermediate objects and not serializable/deserializable
+    }
+
+    @Override
+    @Test
+    public void shouldSerializeDeserializeNonNil() {
+        // iterators are intermediate objects and not serializable/deserializable
+    }
+
+    // helpers
+
+    private static <T1, T2> Tuple2<List<T1>, List<T2>> toList(Iterator<T1> i1, Iterator<T2> i2) {
+        return Tuple.of(i1.toList(), i2.toList());
+    }
+
 }

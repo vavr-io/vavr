@@ -27,6 +27,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     @Override
     abstract protected <T> Seq<T> empty();
 
+    @Override
     abstract protected <T> Seq<T> of(T element);
 
     @SuppressWarnings("unchecked")
@@ -1333,127 +1334,6 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    // -- static collector()
-
-    @Test
-    public void shouldStreamAndCollectNil() {
-        final Seq<?> actual = java.util.stream.Stream.empty().collect(this.<Object> collector());
-        assertThat(actual).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldStreamAndCollectNonNil() {
-        final Seq<?> actual = java.util.stream.Stream.of(1, 2, 3).collect(this.<Object> collector());
-        assertThat(actual).isEqualTo(of(1, 2, 3));
-    }
-
-    @Test
-    public void shouldParallelStreamAndCollectNil() {
-        final Seq<?> actual = java.util.stream.Stream.empty().parallel().collect(this.<Object> collector());
-        assertThat(actual).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldParallelStreamAndCollectNonNil() {
-        final Seq<?> actual = java.util.stream.Stream.of(1, 2, 3).parallel().collect(this.<Object> collector());
-        assertThat(actual).isEqualTo(of(1, 2, 3));
-    }
-
-    // -- static empty()
-
-    @Test
-    public void shouldCreateNil() {
-        final Seq<?> actual = empty();
-        assertThat(actual.length()).isEqualTo(0);
-    }
-
-    // -- static of()
-
-    @Test
-    public void shouldCreateSeqOfSeqUsingCons() {
-        final Seq<List<?>> actual = of(List.empty());
-        assertThat(actual.length()).isEqualTo(1);
-        assertThat(actual.contains(List.empty())).isTrue();
-    }
-
-    // -- static of(T...)
-
-    @Test
-    public void shouldCreateSeqOfElements() {
-        final Seq<Integer> actual = of(1, 2);
-        assertThat(actual.length()).isEqualTo(2);
-        assertThat(actual.get(0)).isEqualTo(1);
-        assertThat(actual.get(1)).isEqualTo(2);
-    }
-
-    // -- static ofAll(Iterable)
-
-    @Test
-    public void shouldCreateListOfIterable() {
-        final java.util.List<Integer> arrayList = Arrays.asList(1, 2);
-        final Seq<Integer> actual = ofAll(arrayList);
-        assertThat(actual.length()).isEqualTo(2);
-        assertThat(actual.get(0)).isEqualTo(1);
-        assertThat(actual.get(1)).isEqualTo(2);
-    }
-
-    // -- static ofAll(<primitive array>)
-
-    @Test
-    public void shouldCreateListOfPrimitiveBooleanArray() {
-        final Seq<Boolean> actual = ofAll(new boolean[] { true, false });
-        final Seq<Boolean> expected = of(true, false);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldCreateListOfPrimitiveByteArray() {
-        final Seq<Byte> actual = ofAll(new byte[] { 1, 2, 3 });
-        final Seq<Byte> expected = of((byte) 1, (byte) 2, (byte) 3);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldCreateListOfPrimitiveCharArray() {
-        final Seq<Character> actual = ofAll(new char[] { 'a', 'b', 'c' });
-        final Seq<Character> expected = of('a', 'b', 'c');
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldCreateListOfPrimitiveDoubleArray() {
-        final Seq<Double> actual = ofAll(new double[] { 1d, 2d, 3d });
-        final Seq<Double> expected = of(1d, 2d, 3d);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldCreateListOfPrimitiveFloatArray() {
-        final Seq<Float> actual = ofAll(new float[] { 1f, 2f, 3f });
-        final Seq<Float> expected = of(1f, 2f, 3f);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldCreateListOfPrimitiveIntArray() {
-        final Seq<Integer> actual = ofAll(new int[] { 1, 2, 3 });
-        final Seq<Integer> expected = of(1, 2, 3);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldCreateListOfPrimitiveLongArray() {
-        final Seq<Long> actual = ofAll(new long[] { 1L, 2L, 3L });
-        final Seq<Long> expected = of(1L, 2L, 3L);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldCreateListOfPrimitiveShortArray() {
-        final Seq<Short> actual = ofAll(new short[] { (short) 1, (short) 2, (short) 3 });
-        final Seq<Short> expected = of((short) 1, (short) 2, (short) 3);
-        assertThat(actual).isEqualTo(expected);
-    }
     // -- static rangeClosed(int, int)
 
     @Test
