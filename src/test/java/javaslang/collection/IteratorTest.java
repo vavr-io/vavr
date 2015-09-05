@@ -1,31 +1,65 @@
 package javaslang.collection;
 
+import javaslang.Tuple;
+import javaslang.Tuple2;
+import javaslang.control.Option;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.IterableAssert;
+import org.assertj.core.api.ObjectAssert;
 import org.junit.Test;
 
-import javax.swing.table.AbstractTableModel;
-import java.util.ArrayList;
-import java.util.stream.Collector;
+public class IteratorTest extends AbstractTraversableOnceTest {
 
-public class IteratorTest extends AbstractTraversableTest {
-
+    @Override
     protected <T> IterableAssert<T> assertThat(java.lang.Iterable<T> actual) {
         return new IterableAssert<T>(actual) {
+            @SuppressWarnings("unchecked")
             @Override
-            public IterableAssert<T> isEqualTo(Object obj) {
-                @SuppressWarnings("unchecked")
-                java.lang.Iterable<T> expected = (java.lang.Iterable<T>) obj;
-                Assertions.assertThat(List.ofAll(actual)).isEqualTo(List.ofAll(expected));
-                return this;
+            public IterableAssert<T> isEqualTo(Object expected) {
+                if (actual instanceof Option) {
+                    final Option<?> opt1 = ((Option<?>) actual);
+                    final Option<?> opt2 = (Option<?>) expected;
+                    Assertions.assertThat(wrapIterator(opt1)).isEqualTo(wrapIterator(opt2));
+                    return this;
+                } else {
+                    java.lang.Iterable<T> iterable = (java.lang.Iterable<T>) expected;
+                    Assertions.assertThat(List.ofAll(actual)).isEqualTo(List.ofAll(iterable));
+                    return this;
+                }
+            }
+
+            @SuppressWarnings("unchecked")
+            private Option<?> wrapIterator(Option<?> option) {
+                return option.map(o -> (o instanceof Iterator) ? List.ofAll((Iterator) o) : o);
             }
         };
     }
 
     @Override
-    protected <T> Collector<T, ArrayList<T>, ? extends Traversable<T>> collector() {
-        return null;
+    protected <T> ObjectAssert<T> assertThat(T actual) {
+        return new ObjectAssert<T>(actual) {
+            @Override
+            public ObjectAssert<T> isEqualTo(Object expected) {
+                if (actual instanceof Tuple2) {
+                    final Tuple2<?, ?> t1 = ((Tuple2<?, ?>) actual).map(this::toList);
+                    final Tuple2<?, ?> t2 = ((Tuple2<?, ?>) expected).map(this::toList);
+                    Assertions.assertThat(t1).isEqualTo(t2);
+                    return this;
+                } else {
+                    return super.isEqualTo(expected);
+                }
+            }
+
+            private Tuple2<Object, Object> toList(Object o1, Object o2) {
+                return Tuple.of(wrapIterator(o1), wrapIterator(o2));
+            }
+
+            private Object wrapIterator(Object o) {
+                return (o instanceof Iterator) ? List.ofAll((Iterator<?>) o) : o;
+            }
+        };
     }
+
 
     @Override
     protected <T> Iterator<T> empty() {
@@ -139,31 +173,6 @@ public class IteratorTest extends AbstractTraversableTest {
     }
 
     @Test
-    public void shouldCalculateHashCodeOfNonNil() {
-        /* ignore */
-    }
-
-    @Test
-    public void shouldCalculateDifferentHashCodesForDifferentTraversables() {
-        /* ignore */
-    }
-
-    @Test
-    public void shouldSerializeDeserializeNil() {
-        // TODO ?
-    }
-
-    @Test
-    public void shouldPreserveSingletonInstanceOnDeserialization() {
-        // TODO ?
-    }
-
-    @Test
-    public void shouldSerializeDeserializeNonNil() {
-        // TODO ?
-    }
-
-    @Test
     public void shouldConcatenateListOfEmptyIterators() {
         assertThat(Iterator.ofIterators().isEmpty()).isTrue();
         assertThat(Iterator.ofIterators(Iterator.empty()).isEmpty()).isTrue();
@@ -173,6 +182,52 @@ public class IteratorTest extends AbstractTraversableTest {
     @Test
     public void shouldConcatenateListOfNonEmptyIterators() {
         assertThat(Iterator.ofIterators(of(1, 2), of(), of(3))).isEqualTo(of(1, 2, 3));
+    }
+
+    // ++++++ OBJECT ++++++
+
+    // -- equals
+
+    @Override
+    @Test
+    public void shouldRecognizeEqualityOfNonNils() {
+        // a equals impl would enforce evaluation which is not wanted
+    }
+
+    // TODO: equals of same object and different objects of same shape
+
+    // -- hashCode
+
+    @Override
+    @Test
+    public void shouldCalculateHashCodeOfNonNil() {
+        // a hashCode impl would enforce evaluation which is not wanted
+    }
+
+    @Override
+    @Test
+    public void shouldCalculateDifferentHashCodesForDifferentTraversables() {
+        // a hashCode impl would enforce evaluation which is not wanted
+    }
+
+    // -- serialization/deserialization
+
+    @Override
+    @Test
+    public void shouldSerializeDeserializeNil() {
+        // iterators are intermediate objects and not serializable/deserializable
+    }
+
+    @Override
+    @Test
+    public void shouldPreserveSingletonInstanceOnDeserialization() {
+        // iterators are intermediate objects and not serializable/deserializable
+    }
+
+    @Override
+    @Test
+    public void shouldSerializeDeserializeNonNil() {
+        // iterators are intermediate objects and not serializable/deserializable
     }
 
 }

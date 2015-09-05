@@ -5,6 +5,7 @@
  */
 package javaslang;
 
+import javaslang.collection.AbstractValueTest;
 import javaslang.collection.List;
 import org.junit.Test;
 

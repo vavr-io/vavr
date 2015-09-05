@@ -49,4 +49,13 @@ public class HashMapTest {
                     Map.Entry.of(1, "1"),
                     Map.Entry.of(2, "2")));
     }
+
+    // equality
+
+    @Test
+    public void shouldIgnoreOrderOfEntriesWhenComparingForEquality() {
+        final Map<?, ?> map1 = HashMap.empty().put(1, 'a').put(2, 'b').put(3, 'c');
+        final Map<?, ?> map2 = HashMap.empty().put(3, 'c').put(2, 'b').put(1, 'a').remove(2).put(2, 'b');
+        assertThat(map1).isEqualTo(map2);
+    }
 }

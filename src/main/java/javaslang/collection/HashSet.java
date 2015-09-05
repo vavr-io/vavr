@@ -119,6 +119,94 @@ public final class HashSet<T> implements Set<T>, Serializable {
         }
     }
 
+    /**
+     * Creates a HashSet based on the elements of a boolean array.
+     *
+     * @param array a boolean array
+     * @return A new HashSet of Boolean values
+     */
+    static HashSet<Boolean> ofAll(boolean[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return HashSet.ofAll(Iterator.ofAll(array));
+    }
+
+    /**
+     * Creates a HashSet based on the elements of a byte array.
+     *
+     * @param array a byte array
+     * @return A new HashSet of Byte values
+     */
+    static HashSet<Byte> ofAll(byte[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return HashSet.ofAll(Iterator.ofAll(array));
+    }
+
+    /**
+     * Creates a HashSet based on the elements of a char array.
+     *
+     * @param array a char array
+     * @return A new HashSet of Character values
+     */
+    static HashSet<Character> ofAll(char[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return HashSet.ofAll(Iterator.ofAll(array));
+    }
+
+    /**
+     * Creates a HashSet based on the elements of a double array.
+     *
+     * @param array a double array
+     * @return A new HashSet of Double values
+     */
+    static HashSet<Double> ofAll(double[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return HashSet.ofAll(Iterator.ofAll(array));
+    }
+
+    /**
+     * Creates a HashSet based on the elements of a float array.
+     *
+     * @param array a float array
+     * @return A new HashSet of Float values
+     */
+    static HashSet<Float> ofAll(float[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return HashSet.ofAll(Iterator.ofAll(array));
+    }
+
+    /**
+     * Creates a HashSet based on the elements of an int array.
+     *
+     * @param array an int array
+     * @return A new HashSet of Integer values
+     */
+    static HashSet<Integer> ofAll(int[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return HashSet.ofAll(Iterator.ofAll(array));
+    }
+
+    /**
+     * Creates a HashSet based on the elements of a long array.
+     *
+     * @param array a long array
+     * @return A new HashSet of Long values
+     */
+    static HashSet<Long> ofAll(long[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return HashSet.ofAll(Iterator.ofAll(array));
+    }
+
+    /**
+     * Creates a HashSet based on the elements of a short array.
+     *
+     * @param array a short array
+     * @return A new HashSet of Short values
+     */
+    static HashSet<Short> ofAll(short[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return HashSet.ofAll(Iterator.ofAll(array));
+    }
+
     @Override
     public HashSet<T> add(T element) {
         return new HashSet<>(tree.put(element, element));

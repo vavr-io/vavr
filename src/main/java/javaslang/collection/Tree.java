@@ -107,6 +107,7 @@ public interface Tree<T> extends Traversable<T> {
                         .foldLeft(List.of(tree.getValue()), (acc, child) -> acc.appendAll(preOrder(child)));
             }
 
+            // see RedBlackTree.iterator() for in-order traversal without recursion
             List<T> inOrder(Tree<T> tree) {
                 if (tree.isLeaf()) {
                     return List.of(tree.getValue());

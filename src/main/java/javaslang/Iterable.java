@@ -9,6 +9,8 @@ import javaslang.collection.IndexedSeq;
 import javaslang.collection.Iterator;
 
 import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -26,6 +28,64 @@ public interface Iterable<T> extends java.lang.Iterable<T> {
      */
     @Override
     Iterator<T> iterator();
+
+    /**
+     * Tests whether every element of this iterable relates to the corresponding element of another iterable by
+     * satisfying a test predicate.
+     *
+     * @param <U> Component type of that iterable
+     * @param that      the other iterable
+     * @param predicate the test predicate, which relates elements from both iterables
+     * @return {@code true} if both iterables have the same length and {@code predicate(x, y)}
+     * is {@code true} for all corresponding elements {@code x} of this iterable and {@code y} of {@code that},
+     * otherwise {@code false}.
+     */
+    default <U> boolean corresponds(java.lang.Iterable<U> that, BiPredicate<T, U> predicate) {
+        final java.util.Iterator<T> it1 = iterator();
+        final java.util.Iterator<U> it2 = that.iterator();
+        while (it1.hasNext() && it2.hasNext()) {
+            if (!predicate.test(it1.next(), it2.next())) {
+                return false;
+            }
+        }
+        return !it1.hasNext() && !it2.hasNext();
+    }
+
+    /**
+     * A <em>smoothing</em> replacement for {@code equals}. It is similar to Scala's {@code ==} but better in the way
+     * that it is not limited to collection types, e.g. `Some(1) eq List(1)`, `None eq Failure(x)` etc.
+     *
+     * <pre><code>
+     * o == this                       : true
+     * o instanceof javaslang.Iterable : all iterable elements (this or that) are eq, all non-iterable elements are equal
+     * o instanceof java.lang.Iterable : this.eq(Iterator.ofAll((java.lang.Iterable&lt;?&gt;) o));
+     * otherwise                       : false
+     * </code></pre>
+     *
+     * @param o An object
+     * @return true, if this equals o according to the rules defined above, otherwise false.
+     */
+    default boolean eq(Object o) {
+        if (o == this) {
+            return true;
+        } else if (o instanceof Iterable) {
+            final Iterable<?> that = (Iterable<?>) o;
+            return this.iterator().corresponds(that.iterator(), (o1, o2) ->  {
+                if (o1 instanceof Iterable) {
+                    return ((Iterable<?>) o1).eq(o2);
+                } else if (o2 instanceof Iterable) {
+                    return ((Iterable<?>) o2).eq(o1);
+                } else {
+                    return Objects.equals(o1, o2);
+                }
+            });
+        } else if (o instanceof java.lang.Iterable) {
+            final Iterable<?> that = Iterator.ofAll((java.lang.Iterable<?>) o);
+            return this.eq(that);
+        } else {
+            return false;
+        }
+    }
 
     /**
      * Checks, if an element exists such that the predicate holds.

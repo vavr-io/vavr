@@ -99,7 +99,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      */
     public static Array<Boolean> ofAll(boolean[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Array.ofAll(() -> Iterator.ofAll(array));
+        return Array.ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -110,7 +110,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      */
     public static Array<Byte> ofAll(byte[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Array.ofAll(() -> Iterator.ofAll(array));
+        return Array.ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -121,7 +121,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      */
     public static Array<Character> ofAll(char[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Array.ofAll(() -> Iterator.ofAll(array));
+        return Array.ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -132,7 +132,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      */
     public static Array<Double> ofAll(double[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Array.ofAll(() -> Iterator.ofAll(array));
+        return Array.ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -143,7 +143,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      */
     public static Array<Float> ofAll(float[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Array.ofAll(() -> Iterator.ofAll(array));
+        return Array.ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -154,7 +154,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      */
     public static Array<Integer> ofAll(int[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Array.ofAll(() -> Iterator.ofAll(array));
+        return Array.ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -165,7 +165,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      */
     public static Array<Long> ofAll(long[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Array.ofAll(() -> Iterator.ofAll(array));
+        return Array.ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -176,7 +176,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      */
     public static Array<Short> ofAll(short[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Array.ofAll(() -> Iterator.ofAll(array));
+        return Array.ofAll(Iterator.ofAll(array));
     }
 
     /* package */ static <T> Array<T> wrap(Object[] array) {
