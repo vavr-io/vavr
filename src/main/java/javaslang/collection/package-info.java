@@ -51,6 +51,7 @@
  *     <li><small>const</small>&nbsp;&middot;&nbsp;constant time</li>
  *     <li><small>const<sup>a</sup></small>&nbsp;&middot;&nbsp;amotized constant time, few operations may take longer</li>
  *     <li><small>const<sup>eff</sup></small>&nbsp;&middot;&nbsp;effectively constant time, depending on assumptions like distribution of hash keys</li>
+ *     <li><small>const<sup>lazy</sup></small>&nbsp;&middot;&nbsp;lazy constant time, the operation is deferred</li>
  *     <li><small>log</small>&nbsp;&middot;&nbsp;logarithmic time</li>
  *     <li><small>linear</small>&nbsp;&middot;&nbsp;linear time</li>
  * </ul>
