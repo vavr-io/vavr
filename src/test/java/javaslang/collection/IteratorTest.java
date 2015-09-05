@@ -3,7 +3,6 @@ package javaslang.collection;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.Option;
-import javaslang.control.Some;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.IterableAssert;
 import org.assertj.core.api.ObjectAssert;
@@ -29,6 +28,7 @@ public class IteratorTest extends AbstractTraversableOnceTest {
                 }
             }
 
+            @SuppressWarnings("unchecked")
             private Option<?> wrapIterator(Option<?> option) {
                 return option.map(o -> (o instanceof Iterator) ? List.ofAll((Iterator) o) : o);
             }
