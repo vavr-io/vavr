@@ -10,7 +10,6 @@ import javaslang.Lazy;
 import javaslang.Value;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
-import javaslang.collection.Stream;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -240,7 +239,7 @@ public interface Match<R> extends Function<Object, R> {
             @SuppressWarnings({ "unchecked", "varargs" })
             @SafeVarargs
             private static <T> Predicate<? super Object> isIn(T... prototypes) {
-                return value -> Stream.of(prototypes).findFirst(prototype -> is(prototype).test(value)).isDefined();
+                return value -> Iterator.of(prototypes).findFirst(prototype -> is(prototype).test(value)).isDefined();
             }
 
             private static <T> Predicate<? super Object> type(Class<T> type) {
@@ -248,7 +247,7 @@ public interface Match<R> extends Function<Object, R> {
             }
 
             private static <T> Predicate<? super Object> typeIn(Class<?>... types) {
-                return value -> Stream.of(types).findFirst(type -> type(type).test(value)).isDefined();
+                return value -> Iterator.of(types).findFirst(type -> type(type).test(value)).isDefined();
             }
 
             public static final class Then<R> implements Match<R> {
