@@ -185,6 +185,35 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
         assertThat(actual).isFalse();
     }
 
+    // -- corresponds
+
+    @Test
+    public void shouldntCorrespondsNilNil() {
+        assertThat(empty().corresponds(empty(), ignore -> true)).isTrue();
+    }
+
+    @Test
+    public void shouldntCorrespondsNilNonNil() {
+        assertThat(empty().corresponds(of(1), ignore -> true)).isFalse();
+    }
+
+    @Test
+    public void shouldntCorrespondsNonNilNil() {
+        assertThat(of(1).corresponds(empty(), ignore -> true)).isFalse();
+    }
+
+    @Test
+    public void shouldntCorrespondsDifferentLengths() {
+        assertThat(of(1, 2, 3).corresponds(of(1, 2), ignore -> true)).isFalse();
+        assertThat(of(1, 2).corresponds(of(1, 2, 3), ignore -> true)).isFalse();
+    }
+
+    @Test
+    public void shouldCorresponds() {
+        assertThat(of(1, 2, 3).corresponds(of(3, 4, 5), t -> t._1 == t._2 - 2)).isTrue();
+        assertThat(of(1, 2, 3).corresponds(of(1, 2, 3), t -> t._1 == t._2 + 1)).isFalse();
+    }
+
     // -- crossProduct()
 
     @Test

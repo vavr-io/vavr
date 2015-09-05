@@ -198,6 +198,25 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     }
 
     /**
+     * Tests whether every element of this sequence relates to the corresponding element of another sequence by satisfying a test predicate.
+     *
+     * @param that the other sequence
+     * @param predicate the test predicate, which relates elements from both sequences
+     * @return {@code true} if both sequences have the same length and {@code predicate(x, y)}
+     * is {@code true} for all corresponding elements {@code x} of this sequence and {@code y} of {@code that}, otherwise {@code false}.
+     */
+    default <U> boolean corresponds(java.lang.Iterable<U> that, Predicate<Tuple2<T, U>> predicate) {
+        final java.util.Iterator<T> it1 = iterator();
+        final java.util.Iterator<U> it2 = that.iterator();
+        while (it1.hasNext() && it2.hasNext()) {
+            if (!predicate.test(Tuple.of(it1.next(), it2.next()))) {
+                return false;
+            }
+        }
+        return !it1.hasNext() && !it2.hasNext();
+    }
+
+    /**
      * Returns the element at the specified index.
      *
      * @param index an index
