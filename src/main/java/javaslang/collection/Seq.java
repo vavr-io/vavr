@@ -43,7 +43,7 @@ import java.util.function.*;
  * <li>{@link #insertAll(int, java.lang.Iterable)}</li>
  * <li>{@link #prepend(Object)}</li>
  * <li>{@link #prependAll(java.lang.Iterable)}</li>
- * <li>{@link #set(int, Object)}</li>
+ * <li>{@link #update(int, Object)}</li>
  * </ul>
  *
  * Selection:
